@@ -517,7 +517,7 @@ The tutor and grader run in separate trust domains, service accounts, networks, 
 
 - The tutor cannot access answer-key storage, grader traces, hidden tests, or another student's work.
 - The red-team and jailbreak suite measures direct leakage, paraphrased leakage, prompt injection, multi-turn extraction, retrieval poisoning, role confusion, encoded requests, and tool misuse. A release must meet the configured leakage ceiling.
-- The tutor offers a human help channel after repeated stalled turns or a student request.
+- The tutor offers a live (in person) human expert to help after repeated stalled turns or a student request.
 - The system exempts captions, translation approved by assessment policy, screen readers, speech input, and motor support from help decay.
 - The student can inspect the help receipt and challenge an incorrect classification.
 - Grader downtime cannot cause the tutor to invent a correctness judgment.
