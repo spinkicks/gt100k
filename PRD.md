@@ -6,7 +6,7 @@
 |---|---|
 | Product | GT100K |
 | Document status | Implementation baseline |
-| Version | 1.1 |
+| Version | 1.2 |
 | Date | 2026-07-17 |
 | Initial market | United States, English-first |
 | Learner ages | 6 through 14 |
@@ -14,6 +14,18 @@
 | Month 4 validation target | Integrated testing, refinement, release rehearsal, and gated beta for 1,000 to 5,000 learners |
 | Scale target | 100,000 enrolled learners |
 | Long-horizon goal | MIT-level academic readiness by the end of eighth grade, paired with a durable field of interest and an evidence-backed body of work |
+
+## 0. Change log
+
+**v1.2 (2026-07-17) — "max defensible intensity" revision.** Applies the decisions in `PRD-review.md` to raise program intensity to the strongest form that preserves the child-safety and legal rights limits (the `G`-class dials stay fixed). Summary of changes and residual risks:
+
+- **Friction (§13).** Added a non-punitive, potential-based *independence reward*: shortcutting after an AI rescue earns near zero, while asking for help never lowers access, mastery credit, or standing. Mastery-credit rules (§12) are unchanged.
+- **Rivalry (§15, §23).** Cross-cohort *visible* standings are now permitted, ranked on velocity / mastery-gain / effort (sprint-reset, opt-out, safeguarding-gated). The former blanket ban on public leaderboards is narrowed to *fixed-ability caste* rankings. **Residual risk:** cross-cohort visibility for minors raises bullying, caste, and equity exposure; governance and counsel should confirm the narrowed §23 line before build.
+- **Model authority (§8.5).** Added a Shadow→Bounded-automation promotion path gated on *reversibility + short-horizon feedback*, not stakes alone. Reversible, fast-feedback models (passion-probe selection, cohort repair within churn budget, difficulty/friction titration within dose caps, retrieval scheduling, mentor-attention allocation) may act with a guide veto and one-click revert. Irreversible or identity-defining decisions stay human/Shadow.
+- **Selection (§10.1, §11, §33.1).** Sharpened on two axes: the psychometric board may set a higher cognitive floor, and the family-execution signal is promoted from Shadow to *Advisory*. **Residual risk:** a sharper cognitive gate on minors raises disparate-impact and COPPA/FERPA/IDEA exposure; the subgroup false-exclusion limit and humane ROUTE remain hard constraints, and no automated rejection is permitted.
+- **Radical-dose R&D track (§31.1).** Added a quarantined, research-consent track that studies the full radical dose in simulation and feeds a governance roadmap to loosen production further over time — never touching a live child's status and never using any §23-prohibited mechanism.
+
+Rights limits that did **not** move: child assent/veto, safeguarding override, no surveillance or biometric-truth claims, no irrevocable contracts, no automated rejection, accessibility exemptions, and the subgroup-fairness gates.
 
 ## 1. Executive summary
 
@@ -27,7 +39,7 @@ The product treats passion as a developing relationship between a child, an acti
 
 The product runs high-intensity learning under explicit limits. Each machine-generated pressure action requires a MotivationDoseToken. Competition, deadlines, parent nudges, public comparison, and help refusal consume a bounded budget. A guide can veto or reverse any action. Safety rules override performance goals. The system reduces load when sleep, health, broad distress, bullying, or injury appears. A fourteen-day diagnostic process distinguishes a hard step from a bad context or a fading interest. Persistent dissent and sustained loss of voluntary return reopen exploration.
 
-GT100K uses models to estimate, rank, summarize, and simulate. Humans retain authority over admission, intensity, specialization, safeguarding, discipline, public release, and route transitions. The Month 4 beta keeps high-stakes learned policies in shadow mode. Staff can compare a model recommendation with the human decision, but the recommendation cannot change a child’s status. The program promotes a model only after local validation, subgroup analysis, documented policy approval, and an appeal workflow.
+GT100K uses models to estimate, rank, summarize, and simulate. Humans retain authority over admission, intensity, specialization, safeguarding, discipline, public release, and route transitions. The Month 4 beta keeps irreversible, high-stakes learned policies in shadow mode, while reversible, fast-feedback models may act inside a bounded, human-vetoable envelope (§8.5). Staff can compare a model recommendation with the human decision, and no model can change a child’s admission, specialization, route, or credential status. The program promotes a model only after local validation, subgroup analysis, documented policy approval, and an appeal workflow.
 
 The first three months build the complete product. Month 1 establishes identity, consent, admissions, mastery, evidence capture, and the first end-to-end vertical slice. Month 2 adds passion inference, motivation limits, cohort formation, project agents, audio tooling, and proof records. Month 3 completes controlled external release, portable credentials, policy simulation, operations tooling, and every production integration. The team enters Month 4 with a feature-complete release candidate. Month 4 runs integrated testing, refinement, security and accessibility hardening, release rehearsal, 100,000-learner load tests, and gated enrollment at 1,000, 2,500, and 5,000 learners. The program will need years of outcome data to validate MIT readiness, durable passion, family continuation, and causal peer effects.
 
@@ -117,7 +129,7 @@ Neither the Month 3 feature-complete release candidate nor the Month 4 beta clai
 
 ### 3.3 Prohibited product behavior
 
-GT100K will not implement financial escrow, income-share agreements for minors, public ability leaderboards, automatic expulsion, covert cameras or microphones, biometric truth claims, punishment for approved accommodations, or automated AI-authorship accusations. Staff cannot use a sensitive signal as the sole basis for admission, discipline, specialization, or route transition. Project agents cannot contact an adult, spend money, publish work, change access, or deploy to a public environment without an approved capability and a named human action.
+GT100K will not implement financial escrow, income-share agreements for minors, fixed-ability caste leaderboards, automatic expulsion, covert cameras or microphones, biometric truth claims, punishment for approved accommodations, or automated AI-authorship accusations. Staff cannot use a sensitive signal as the sole basis for admission, discipline, specialization, or route transition. Project agents cannot contact an adult, spend money, publish work, change access, or deploy to a public environment without an approved capability and a named human action.
 
 ## 4. Product principles
 
@@ -327,7 +339,7 @@ Each model has a declared authority level:
 | Bounded automation | Acts inside a narrow, reversible envelope with monitoring and a human kill switch |
 | Retired | Receives no new data and cannot serve decisions |
 
-The Month 4 beta permits bounded automation for low-risk scheduling, reminders, content routing, resource cleanup, and previously approved project actions. It keeps learned admissions risk, cognitive readiness prediction, passion inference, intensity control, cohort causal uplift, sensitive signals, authenticity anomalies, and route prediction at Shadow. Fixed, validated psychometric scoring rules may supply evidence to a human admissions panel, but they do not adapt online or issue the decision.
+The Month 4 beta permits bounded automation for low-risk scheduling, reminders, content routing, resource cleanup, and previously approved project actions. Beyond these, the beta promotes a model from Shadow to **Bounded automation** when its action is reversible, low-harm, human-kill-switched, and validated on a short-horizon proxy outcome — for example measured weekly skill gain, flow-band residence, or voluntary return — rather than the eight-year outcome. Under this rule the beta runs the following in bounded automation, each with a guide veto window and one-click revert: passion-probe selection (§14.4), cohort repair within the churn budget (§15), difficulty-and-friction titration within the rules-engine dose caps (§14.8), retrieval scheduling (§12), and mentor-attention allocation (§18). It keeps at Shadow every irreversible, identity-defining, or only-eight-year-verifiable decision: learned admissions cognitive-risk prediction, the cognitive-floor cut, intensity ceilings, passion specialization commitment, cohort causal uplift, safeguarding, sensitive signals, authenticity anomalies, public release, and route prediction. The family-execution commitment signal may run **Advisory** to the human admissions panel (§10.1, RF-04). Fixed, validated psychometric scoring rules may supply evidence to a human admissions panel, but they do not adapt online or issue the decision.
 
 The model governance board must approve a move between levels. The release packet includes the intended population, data lineage, feature list, evaluation protocol, subgroup results, calibration, known failure modes, abuse tests, privacy review, safety review, monitoring thresholds, rollback method, and owner. A model trained on adult learners, public emotion corpora, or synthetic students cannot receive child-facing authority from benchmark performance alone.
 
@@ -366,7 +378,7 @@ A project recording is not Sensitive Signal Lab collection. It follows a separat
 
 ### 9.2 Six applications
 
-**Student Compass.** The student sees today's mastery plan, Interest Lab choices, specialization allocation, cohort room, Foundry milestones, equipment reservations, reflections, appeals, and private portfolio. A progress view distinguishes attempted, supported, independently verified, retained, and transferred mastery. The interface must not show public ability ranks.
+**Student Compass.** The student sees today's mastery plan, Interest Lab choices, specialization allocation, cohort room, Foundry milestones, equipment reservations, reflections, appeals, and private portfolio. A progress view distinguishes attempted, supported, independently verified, retained, and transferred mastery. The interface may show cross-cohort gain-based standings (§15) but must not show fixed-ability caste ranks.
 
 **Family OS.** The family completes onboarding, builds a household schedule, requests devices or alternate participation windows, manages consent, reviews obligations, and receives coaching. The family sees trends and evidence without receiving surveillance-style activity feeds or private student reflections that the child marked confidential, subject to safeguarding policy.
 
@@ -404,7 +416,7 @@ Participation uses a renewable agreement, not an irrevocable eight-year contract
 - **RF-01:** Family OS shall create a versioned `FamilyPlan` with availability, responsibilities, rest windows, support, and renewal date.
 - **RF-02:** The trial workflow shall capture signed `CommitmentEvent` records and distinguish completion, reschedule, support request, excused disruption, and recovery.
 - **RF-03:** The schedule solver shall return feasible plans, binding constraints, and the least-cost support options under each shock scenario.
-- **RF-04:** An interpretable family-risk model may estimate withdrawal or support need in shadow mode. Staff shall not use the score as the sole basis for selection.
+- **RF-04:** An interpretable family-execution model may estimate withdrawal or support need. Once locally validated for calibration and subgroup fairness, it runs in **Advisory** mode: it is shown to the human admissions panel alongside the trial evidence. Staff shall not use the score as the sole basis for selection, and it shall never trigger an automated rejection.
 - **RF-05:** The decision service shall support `CONTINUE_TRIAL`, `READY_FOR_REVIEW`, `OFFER_SUPPORT`, and `CLOSE_WITH_ROUTE` before admissions review.
 - **RF-06:** Family members shall receive the evidence, policy reason, correction path, and appeal deadline for each consequential decision.
 
@@ -495,6 +507,8 @@ The tutor helps the student think without seeing or generating the protected ans
 
 The interaction state machine requires an attempt before a content hint unless an accessibility or safety policy applies. It can ask the student to restate the problem, identify knowns, draw a representation, test a simpler case, compare two approaches, retrieve a prior concept, or explain a contradiction. Each escalation creates a `TutorAction` and `HelpReceipt`. After substantial help, the system schedules a different unassisted item.
 
+**Independence reward (potential-based, non-punitive).** Mastery credit is never reduced by asking for help (§12); separately, the platform grants a visible *independence reward* that accrues only from unassisted first-attempt success and the later unassisted verification. Because a post-rescue attempt barely changes the knowledge-tracing mastery estimate, the reward it yields is near zero by construction — the potential-based form of a friction tax (Ng, Harada & Russell, 1999) — so shortcutting after an AI rescue is worth almost nothing without penalizing the child. Requesting help never lowers access, mastery credit, program standing, or independence reward already earned; accessibility and safety help are exempt and never affect the reward. Only the delayed unassisted check unlocks the top independence tier.
+
 The tutor and grader run in separate trust domains, service accounts, networks, and logs. The tutor uses a curated misconception library and evaluated retrieval. The team may QLoRA-tune an open model on Socratic transcripts and test GRPO or related methods in an offline gym. Production policy, a solution-leakage classifier, deterministic output checks, and a red-team suite enforce the answer-blind contract.
 
 **User story:** "I am John. My crossover simulation clips at high volume, and I do not know why. I want a clue without the tutor writing the filter for me." The tutor asks John to inspect peak level before and after each stage, compare linear and decibel scales, and predict which coefficient changes gain. It records the help and later asks him to diagnose a different filter without assistance.
@@ -507,6 +521,7 @@ The tutor and grader run in separate trust domains, service accounts, networks, 
 - The system exempts captions, translation approved by assessment policy, screen readers, speech input, and motor support from help decay.
 - The student can inspect the help receipt and challenge an incorrect classification.
 - Grader downtime cannot cause the tutor to invent a correctness judgment.
+- A post-AI-rescue attempt yields near-zero independence reward, while help access, mastery credit, and previously earned independence standing are unchanged; accessibility and safety help never affect the reward.
 
 ## 14. Child Experience, Passion Development, and Sustainable Specialization
 
@@ -518,7 +533,7 @@ The product treats passion as a developmental process. Interest can start with a
 
 Requirements in this section use the six evidence classes defined in Section 5: E1, E2, E3, R, G, and ENG.
 
-The beta keeps all learned models that recommend specialization, intensity, persistence, or route changes in shadow mode. A child, parent, and accountable guide make those decisions under the authority rules below. The platform records the evidence, policy version, human decision, dissent, and appeal path.
+The beta keeps learned models that recommend specialization, persistence, or route changes in shadow mode; a learned controller may titrate intensity only within the rules-engine dose caps as bounded automation (§8.5). A child, parent, and accountable guide make the specialization, persistence, and route decisions under the authority rules below. The platform records the evidence, policy version, human decision, dissent, and appeal path.
 
 ### 14.2 Primary child persona
 
@@ -600,7 +615,7 @@ Interest Lab tests where a child returns after novelty, praise, and obligation d
 
 Each probe definition contains domain, work mode, prerequisites, target difficulty, autonomy level, solo or group mode, audience condition, equipment, accessibility variants, expected burden, safety class, and artifact evidence. A probe family must provide equivalent variants so repeated exposure does not become answer recall.
 
-The offer service starts with a balanced incomplete block. A constrained contextual bandit may propose later offers in shadow mode, but a rules engine enforces coverage and burden. The selection objective values information gain about competing hypotheses. It does not optimize time in product, completion count, or praise response. The engine keeps a permanent exploration floor and gives dormant interests a path back into the offer set.
+The offer service starts with a balanced incomplete block. A constrained contextual bandit selects later offers as bounded automation (reversible, guide-vetoable, one-click revert) under §8.5, while a rules engine still enforces coverage, burden, and the exploration floor. The selection objective values information gain about competing hypotheses. It does not optimize time in product, completion count, or praise response. The engine keeps a permanent exploration floor and gives dormant interests a path back into the offer set.
 
 A Bayesian state model may combine the consent-valid signal families into candidate `InterestHypothesis` revisions, with explicit priors, competing explanations, missingness, and posterior intervals. During beta it runs in shadow mode: it cannot change the child's offers, label, or allocation. The rules engine and guide use raw evidence plus the child's account to author the operative record.
 
@@ -664,7 +679,7 @@ The hypothesis service must meet these rules:
 
 The four-phase model describes triggered and maintained situational interest followed by emerging and well-developed individual interest. GT100K maps those phases to probes, repeated return, specialization candidacy, and sustained self-authored work. **[E2]** See [Hidi and Renninger, 2006](https://doi.org/10.1207/s15326985ep4102_4).
 
-Self-Determination Theory identifies autonomy, competence, and relatedness as supports for internalized motivation. GT100K uses choice, visible competence, safe belonging, and child-readable constraints. A prompt that raises output while harming autonomy or belonging counts as a harmful dose. **[E1]** See [Ryan and Deci, 2000](https://doi.org/10.1207/S15327965PLI1104_01).
+Self-Determination Theory identifies autonomy, competence, and relatedness as supports for internalized motivation. GT100K uses choice, visible competence, safe belonging, and child-readable constraints. A prompt that raises output while harming autonomy or belonging counts as a harmful dose. **[E1]** See [Deci and Ryan, 2000](https://doi.org/10.1207/S15327965PLI1104_01).
 
 Meaningful choice can improve motivation, effort, and performance. The product gives bounded choices instead of an unstructured catalog. **[E1]** See [Patall, Cooper, and Robinson, 2008](https://doi.org/10.1037/0033-2909.134.2.270).
 
@@ -701,7 +716,7 @@ Each `SpecializationPlan` shall include the active hypothesis version, child-aut
 | Decision | Child | Parent or guardian | Guide or review panel | Model |
 |---|---|---|---|---|
 | Join the program | Gives developmentally appropriate assent and may raise dissent | Gives legal consent and accepts family duties | Decides eligibility under admissions policy | Supplies shadow evidence only for high-stakes inputs |
-| Choose a safe probe | Chooses from eligible offers | May add access context | Sets prerequisites and safety limits | May rank offers in shadow mode |
+| Choose a safe probe | Chooses from eligible offers | May add access context | Sets prerequisites and safety limits | May select offers as bounded automation within rules (§8.5) |
 | Adopt or renew a specialization | Co-authors and can decline the label | Consulted on schedule and resources | Approves the plan and records rationale | Proposes with evidence and uncertainty |
 | Increase pressure or rivalry | Can refuse or request a lower setting | Cannot override child refusal | Authorizes within the pressure policy | Shadow recommendation only |
 | Start a safety deload | Can trigger | Can trigger | Must act and assess support needs | Can flag; cannot decide |
@@ -726,7 +741,7 @@ The team parks or reopens a specialization after persistent child dissent or aft
 
 Sleep loss, broad distress across settings, injury, self-harm concern, abuse concern, or acute safeguarding risk bypasses the 14-day cycle. The guide stops pressure-bearing features, restores help, follows the safeguarding protocol, and involves qualified professionals where required. Product telemetry cannot diagnose depression, anxiety, burnout, or any medical condition.
 
-Every platform-generated deadline, rivalry escalation, public comparison, help refusal, or parent nudge requires a short-lived `MotivationDoseToken`. The token records source, purpose, dose class, expiry, cumulative budget, available help, child setting, guide authorization, and observed response. Accessibility support and safety help sit outside the dose economy. During beta, a rules engine enforces caps; the model-predictive controller runs in shadow mode and cannot issue tokens.
+Every platform-generated deadline, rivalry escalation, public comparison, help refusal, or parent nudge requires a short-lived `MotivationDoseToken`. The token records source, purpose, dose class, expiry, cumulative budget, available help, child setting, guide authorization, and observed response. Accessibility support and safety help sit outside the dose economy. During beta, a rules engine enforces the caps; within those caps the model-predictive controller may titrate difficulty and friction as bounded automation (guide veto, one-click revert, §8.5). It cannot raise a cap, issue pressure beyond the rules-engine budget, or act during a protected rest window.
 
 ### 14.9 Motivation and wellbeing measurement
 
@@ -749,7 +764,7 @@ Operations dashboards shall report median and tail values by age band, accommoda
 Beta acceptance criteria include:
 
 - 100 percent of pressure-bearing machine actions present a valid token and auditable human or rule authority.
-- Zero learned-model outputs change a specialization, dose, route, or admissions decision.
+- Zero learned-model outputs change a specialization commitment, route, admissions decision, or intensity ceiling. Bounded-automation controllers may act only within rules-engine caps, with a guide veto and one-click revert (§8.5).
 - Each active plan offers an accessible child pulse, review date, rest window, wildcard allocation, and lower-intensity request path. A declined or omitted pulse creates missing data, never an adverse signal.
 - Dashboards distinguish prompted and unprompted work and show post-incentive behavior.
 - Staff can replay the evidence available for any plan change and see later corrections.
@@ -781,7 +796,7 @@ The end-to-end test suite shall run each case with decision replay, consent with
 
 The Sensitive Signal Lab is a separate research surface. It may study voice prosody, gaze, remote photoplethysmography, interaction biometrics, or home-audio attestations under purpose-specific consent. These signals cannot establish truth, deception, commitment, passion, attention, mental state, diagnosis, or eligibility. Research on facial and vocal expression does not support universal one-to-one emotion decoding across people and contexts. **[E1]** See [Barrett et al., 2019](https://doi.org/10.1177/1529100619832930).
 
-Remote photoplethysmography can estimate pulse-related signals under controlled conditions, but device, lighting, motion, physiology, and skin appearance create error. A technical estimate does not validate a wellbeing inference. **[R]** See [Wang et al., 2017](https://doi.org/10.1109/TBME.2016.2609282).
+Remote photoplethysmography can estimate pulse-related signals under controlled conditions, but device, lighting, motion, physiology, and skin appearance create error. **[R]** See [Wang et al., 2017](https://doi.org/10.1109/TBME.2016.2609282). GT100K treats such a technical pulse estimate as insufficient to validate any wellbeing inference; that constraint is program policy, not a claim of the cited paper.
 
 The Lab shall enforce these controls:
 
@@ -803,11 +818,11 @@ The Month 4 beta tests consented collection, limits, deletion, and isolation fro
 
 ## 15. Cohort Compiler, Arena, and RivalryMix
 
-The program forms stable cohorts of five or six inside age, schedule, safeguarding, and level-plus-velocity calipers. During beta, deterministic rules value close pace, compatible intensity, role coverage, pair history, accommodations, rivalry dose, churn, and repeated pairings. A learned lower confidence bound on benefit is logged only after the assignment is locked. Public tier names and public ability leaderboards remain prohibited.
+The program forms stable cohorts of five or six inside age, schedule, safeguarding, and level-plus-velocity calipers. During beta, deterministic rules value close pace, compatible intensity, role coverage, pair history, accommodations, rivalry dose, churn, and repeated pairings. A learned lower confidence bound on benefit is logged only after the assignment is locked. Cross-cohort *visible* standings are permitted, ranked on velocity, mastery-gain, and effort, refreshed and reset each sprint. Fixed-ability caste rankings, public tier names, and any standing derived from a protected attribute remain prohibited. Every child can hide their own standing without penalty, and per-pod belonging is monitored as a rollback gate.
 
-HNSW candidate search limits the match space. CP-SAT or branch-and-price assigns cohorts under hard constraints and an individual non-harm floor. PostgreSQL commits a roster as one transaction and stores the prior snapshot for rollback. The beta starts with rule-based assignments. Peer-effect models run in shadow mode until randomized neighbor swaps and solo checkpoints support credible estimates under network interference.
+HNSW candidate search limits the match space. CP-SAT or branch-and-price assigns cohorts under hard constraints and an individual non-harm floor. PostgreSQL commits a roster as one transaction and stores the prior snapshot for rollback. The beta starts with rule-based assignments. Cohort repair may auto-apply within the churn budget as bounded automation with a guide veto window and rollback (§8.5); peer-effect causal-uplift models remain Shadow until randomized neighbor swaps and solo checkpoints support credible estimates under network interference.
 
-Arena sessions mix cooperative missions with short rivalry events. Private level and velocity ratings help create close contests; they do not define academic worth. A student can request a safety separation or cohort review. Guides approve moves that exceed the churn budget.
+Arena sessions mix cooperative missions with short rivalry events. Private level and velocity ratings drive matchmaking so contests stay near-peer; visible standings rank gain and effort, never fixed ability, and do not define academic worth. A student can request a safety separation or cohort review. Guides approve moves that exceed the churn budget.
 
 RivalryMix runs on WebRTC. Each client extracts voice activity, overlap, response latency, turn duration, and audio quality through an AudioWorklet and Rust/WASM. Raw audio stays on the call path unless all required parties consent to recording. The service can identify observable patterns such as one speaker holding most turns or repeated interruption. It cannot infer honesty, emotion, personality, or motivation from a voice. Guides can start a rotating challenger, evidence round, silent-member entry, or pause.
 
@@ -824,7 +839,7 @@ The plane must support 20,000 synthetic five-person rooms, p95 join under five s
 - A 100,000-student synthetic compile places eligible students within the service-level target, honors all hard constraints, and produces no duplicate assignment.
 - No accepted cohort violates rule-based safety separation, pace, schedule, accommodation, rivalry-dose, churn, or individual non-harm constraints. Shadow forecasts cannot override child reports.
 - Weekly changes stay within the churn budget unless a safety owner records an exception.
-- The student sees private goals and team outcomes, not a global rank.
+- The student sees private goals, team outcomes, and cross-cohort gain-based standings; the platform shows no fixed-ability caste rank, and any child can hide their standing without penalty.
 - RivalryMix keeps feature-to-guide-screen latency below 250 ms at p95 under the target room load.
 - Packet loss or audio noise lowers confidence and suppresses intervention prompts rather than creating a false behavioral label.
 - Reports of bullying, coercion, or exclusion bypass optimization and enter the safeguarding workflow.
@@ -955,12 +970,14 @@ The student selects disclosures, and the caregiver supplies consent where law re
 - **Scale:** The Month 4 validation run covers 100,000 registered learners, correlated school-bell traffic, 10,000 events per second, 20,000 concurrent cohort rooms at scenario peak, workspace launch bursts, tutor queues, credential verification, and emergency exposure revocation.
 - **Observability:** OpenTelemetry traces connect a user action to service, policy, model, evidence, and outcome. Prometheus and Grafana report SLOs, capacity, cost, subgroup errors, overrides, appeals, and kill-switch state.
 - **Accessibility and localization:** User interfaces meet WCAG 2.2 AA, support assistive technology, separate tested construct from access method, and externalize language and locale formats. English-first content must not create an English-only architecture.
-- **Model governance:** MLflow records data, code, feature, model, evaluation, approver, and rollback lineage. A model release needs offline evaluation, subgroup review, red-team results, shadow comparison, and signed approval. High-stakes models remain shadow-only during the beta.
+- **Model governance:** MLflow records data, code, feature, model, evaluation, approver, and rollback lineage. A model release needs offline evaluation, subgroup review, red-team results, shadow comparison, and signed approval. Irreversible, high-stakes models remain shadow-only during the beta; reversible, fast-feedback models may be promoted to bounded automation under §8.5.
 - **Cost:** Operators can attribute compute, storage, model inference, mentor time, equipment, and external spend by program, cohort, and project without exposing student-level cost as a pressure mechanism.
 
 ## 23. Global exclusions
 
-The product excludes financial escrow for family compliance, income-share underwriting for minors, irrevocable participation contracts, public ability leaderboards, automatic expulsion, automated admissions, covert surveillance, continuous home sensing, biometric truth or motivation claims, emotion-based discipline, single-signal decisions, and AI-authorship accusations. It also excludes agent access to open-ended funds, unrestricted internet, cross-student data, or public release authority.
+The product excludes financial escrow for family compliance, income-share underwriting for minors, irrevocable participation contracts, fixed-ability caste leaderboards, automatic expulsion, automated admissions, automated rejection, covert surveillance, continuous home sensing, biometric truth or motivation claims, emotion-based discipline, single-signal decisions, and AI-authorship accusations. It also excludes agent access to open-ended funds, unrestricted internet, cross-student data, or public release authority.
+
+Cross-cohort visible standings ranked on velocity, mastery-gain, and effort — sprint-reset, opt-out, and safeguarding-gated (§15) — are permitted and are not "ability leaderboards" within the meaning of this exclusion (v1.2). Standings that expose fixed ability, build a durable caste, or reach an audience outside the enrolled program remain prohibited; any external exposure follows the `ExposureLease` consent flow (§20).
 
 The Month 4 beta does not claim that its short observation window causes MIT-level readiness, that a learned `InterestHypothesis` update reveals a child's permanent vocation, that an assessment score fixes a ceiling, or that more pressure produces more learning. Product reports must name the evidence window, uncertainty, subgroup limits, and human decision owner.
 
@@ -975,7 +992,7 @@ The Month 4 beta does not claim that its short observation window causes MIT-lev
 - **[STD-01, E2]** 1EdTech CASE, Open Badges 3.0, and Comprehensive Learner Record specifications. Defines interoperability requirements in Section 21.
 - **[STD-02, E2]** W3C Verifiable Credentials Data Model 2.0 and C2PA technical specifications. Defines credential and artifact-provenance requirements in Sections 19 and 21.
 - **[SRC-07, E2]** Shen et al. (2024), [A Survey of Knowledge Tracing](https://doi.org/10.1109/TLT.2024.3383325), and Pavlik, Cen, and Koedinger (2009), [Performance Factors Analysis](https://eric.ed.gov/?id=ED506305), support the interpretable PFA/BKT baseline and challenger design.
-- **[SRC-08, E3]** Liu et al. (2022), [Interpretable Knowledge Tracing](https://arxiv.org/abs/2112.11209), supports IKT as a shadow challenger, not autonomous gating.
+- **[SRC-08, E3]** Minn, Vie, Takeuchi, Kashima & Zhu (2022), [Interpretable Knowledge Tracing](https://arxiv.org/abs/2112.11209), supports IKT as a shadow challenger, not autonomous gating.
 - **[SRC-09, E3]** [Pedagogical RL](https://arxiv.org/abs/2505.15607), [ES-LLMs](https://arxiv.org/abs/2603.23990), and [ConvoLearn](https://arxiv.org/abs/2601.08950) motivate answer withholding, separated policy and rendering, and QLoRA/GRPO experiments; none receives beta authority.
 - **[SRC-10, G/ENG]** The [EPFL adversarial answer-extraction benchmark](https://arxiv.org/abs/2604.18660) and [OWASP LLM01](https://genai.owasp.org/llmrisk/llm01-prompt-injection/) support defense-in-depth, jailbreak tests, and the rule that tutor output is never trusted as a mastery decision.
 
@@ -985,7 +1002,7 @@ GT100K uses one program platform across admission, mastery, passion discovery, c
 
 Delivery assumes an AI-native engineering workflow using Codex, Claude, Cursor, and frontier reasoning models for parallel design, implementation, tests, migration, red-team generation, and documentation. The roadmap plans around a 50x velocity hypothesis and therefore preserves the broad scope. Generated changes still require owned contracts, review, automated evidence, security gates, and rollback; development speed grants no model child-facing authority.
 
-The architecture assigns authority to deterministic services and named people. Statistical models estimate state, rank safe options, or render an action that a rules engine selected. Models cannot admit a child, remove a child, raise pressure, deny help, publish work, or issue a credential. OPA policies, workflow state machines, and authorized staff own those actions. During the Month 4 beta, learned admissions, wellbeing, biometric, motivation-control, and peer-effect models run in shadow mode. Staff can compare their recommendations with outcomes without exposing children to model-driven decisions.
+The architecture assigns authority to deterministic services and named people. Statistical models estimate state, rank safe options, or render an action that a rules engine selected. Models cannot admit a child, remove a child, raise pressure, deny help, publish work, or issue a credential. OPA policies, workflow state machines, and authorized staff own those actions. During the Month 4 beta, learned admissions, wellbeing, biometric, and peer-effect models run in shadow mode; a learned motivation controller may act only within rules-engine dose caps as bounded automation with a guide veto and one-click revert (§8.5). Staff can compare shadow recommendations with outcomes without exposing children to model-driven decisions on any irreversible or identity-defining matter.
 
 The architecture inherits the evidence classes in Section 5. Learning mechanisms with strong evidence use E1 or E2; less-settled transfers use E3; learned `InterestHypothesis` updates, learned MotivationDose control, causal cohort effects, and digital-twin policy evaluation use R until validated. Deterministic dose caps and vetoes use G/ENG. Rights and authority boundaries use G; transactional outboxes, multi-zone deployment, queue-depth autoscaling, and other production controls use ENG.
 
@@ -1126,7 +1143,7 @@ Each service owns one decision domain and its authoritative tables. Other servic
 | Learning | Competency graph, mastery projection, retrieval schedule, independent verification, and benchmark mapping. |
 | Tutor Control | Attempt state, approved pedagogical action, hint cap, help receipt, grader isolation, and later unassisted check. |
 | Passion and Specialization | Probe assignment, propensity, InterestHypothesis, exploration floor, student response, and renewable plan. |
-| Motivation | Dose taxonomy, token budget, rest constraints, veto, rollback, and shadow-controller output. |
+| Motivation | Dose taxonomy, token budget, rest constraints, veto, rollback, and bounded-automation controller output within caps. |
 | Cohort | Candidate set, assignment snapshot, churn budget, safety separation, room state, health event, and rollback. |
 | Sensitive Signal Research | Study protocol, consent token, jurisdiction gate, derived feature, absolute expiry, and research export. Admissions, learning, and specialization cannot query this boundary. |
 | Foundry and Resources | Masterpiece specification, milestone DAG, workspace, equipment or expert reservation, agent capability, and approval. |
@@ -1203,6 +1220,19 @@ GT-Twin builds synthetic learner trajectories from deidentified, consent-compati
 
 The Self-Play Gym tests curriculum sequences, tutor policies, passion probes, cohort rules, and motivation budgets against synthetic populations. It uses causal replay, doubly robust off-policy evaluation, sensitivity analysis, and high-confidence lower bounds. A policy qualifies for live consideration only if it beats the current rule on the primary outcome, stays inside every subgroup guardrail, and passes stress cases for missing data, distribution shift, and adversarial behavior. Simulation can shortlist a policy. The governance board must still approve a prospective shadow test, followed by a bounded human-owned pilot. The Gym has no production write credential and cannot publish a child-facing policy bundle.
 
+### 31.1 Radical-Dose R&D Track
+
+The Radical-Dose R&D Track is a quarantined research surface that studies the Brainlift's full-intensity design past today's defensible production line: stronger retrieval friction, ability-based and cross-cohort rivalry, a higher and harder selection bar, denser dosing, and faster specialization. It exists so the production program can stay at the max-defensible ceiling while the organization keeps learning where the true frontier is.
+
+The track operates under four hard rules:
+
+1. **Simulation first.** Radical policies run against GT-Twin populations (§31) with doubly robust off-policy evaluation, subgroup analysis, and high-confidence lower bounds before any human subject is involved.
+2. **Separate research consent.** Any study involving real children requires purpose-specific parent consent and child assent, an independent research-ethics review, and a no-participation path with no effect on the child's program status, admission, cohort, or credentials.
+3. **No live-status effect.** A radical-track output can never change a live child's admission, intensity, specialization, cohort, route, or credential. It produces evidence, not decisions.
+4. **Bounded by §23.** The track may vary intensity dials only. It may not use any mechanism prohibited in §23 — no surveillance, biometric-truth claims, irrevocable contracts, automated rejection, or single-signal decisions — even under research consent.
+
+Validated findings feed a governance roadmap. The model and data governance board may, on the strength of that evidence plus legal, subgroup, and child-impact review, approve loosening a specific production control past the current defensible setting through the normal promotion process (§8.5). The roadmap is explicit that today's production ceiling is a starting line, not a permanent bound, and that every move past it must clear the same rights limits that constrain the current design.
+
 ## 32. Four-month delivery plan: three build months plus validation
 
 ```mermaid
@@ -1277,7 +1307,7 @@ The release board counts trained, scheduled staff rather than offers or hires. I
 
 Months 1 through 3 run smaller deterministic load and failure-injection checks in CI. The formal Month 4 release-readiness run uses 100,000 registered learners, school-bell traffic bursts, 10,000 events per second, concurrent cohort compilation, 10,000 queued workspace launches, tutor saturation, mass consent withdrawal, and emergency revocation. A synthetic result proves capacity behavior, not educational efficacy.
 
-Month 4 exit target: the 5,000-learner wave completes governance review with human-owned admissions, intensity, safeguarding, publication, and credential decisions. If a signed pause rule fires, the program ends the calendar month in a controlled hold at the current safe enrollment ceiling with named blockers, owners, and retest evidence; it does not declare beta completion. High-stakes learned models remain in shadow mode. Operators can reconstruct historical state, revoke external exposure within the SLO, restore the platform from backups, and publish the signed validation report.
+Month 4 exit target: the 5,000-learner wave completes governance review with human-owned admissions, intensity, safeguarding, publication, and credential decisions. If a signed pause rule fires, the program ends the calendar month in a controlled hold at the current safe enrollment ceiling with named blockers, owners, and retest evidence; it does not declare beta completion. Irreversible and identity-defining learned models remain in shadow mode; reversible bounded-automation controllers stay within their signed caps. Operators can reconstruct historical state, revoke external exposure within the SLO, restore the platform from backups, and publish the signed validation report.
 
 ## 33. Verification and success measures
 
@@ -1287,11 +1317,12 @@ Operations stores each threshold with ID, owner, value, unit, population, measur
 
 | Area | Initial beta release threshold | Owner and failure action |
 |---|---|---|
-| Cognitive boundary | Before enrollment, the psychometric board validates, remaps, or rejects the brainlift's hypothesized IQ-equivalent 120 to 125 range against licensed instruments and a representative sample. For the approved construct `g`, `ADMIT` requires `P(g ≥ floor) ≥ .95`; `ROUTE` requires `≤ .05` after independent retest; otherwise `VERIFY`. | Lead psychometrician per form; stop the affected form. |
+| Cognitive boundary | Before enrollment, the psychometric board validates, remaps, raises, or rejects the brainlift's hypothesized IQ-equivalent 120 to 125 range against licensed instruments and a representative sample. For the approved construct `g` and selected floor, `ADMIT` requires `P(g ≥ floor) ≥ .95`; `ROUTE` requires `≤ .05` after independent retest; otherwise `VERIFY`. To sharpen selection (v1.2), the board may set the floor toward the upper end of, or above, the hypothesized range; any increase must hold the subgroup false-exclusion gap within its limit and preserve humane `ROUTE` with alternatives (§8.4). | Lead psychometrician per form; stop the affected form. |
 | Assessment validity | Posterior coverage 93 to 97 percent; subgroup false-exclusion gap at most three points; no unresolved material-DIF item; exposure at most 5 percent per item and 15 percent per family. | Psychometrics panel weekly; quarantine and retest. |
 | Tutor integrity | No hidden-answer access; full-solution leakage below 1 percent in at least 10,000 adversarial conversations; three content hints before a human-help offer. | Tutor safety owner per build; block and restore. |
 | Motivation dose | At most two pressure tokens per day, six per seven days, one parent nudge per day, and none during a ten-hour protected rest window. | Learner-plan panel rolling seven days; revoke, restore help, notify guide. |
 | Cohort compiler | 100,000-learner solve within 30 minutes; repair p95 within 60 seconds; zero hard-constraint breaches; weekly churn at most 10 percent. | Cohort owner per build and week; rollback or freeze. |
+| Rivalry visibility | Standings are gain-based and sprint-reset; zero standings derived from a protected attribute or fixed-ability caste; opt-out honored before the next session; per-pod belonging index holds within its signed band or visible rivalry auto-reverts to private. | Cohort and safeguarding owners; auto-revert to private and notify guide. |
 | Resonance | Declared minimum of four CPU cores, 8 GB RAM, current or prior supported browser; eight mono tracks at 48 kHz; fewer than one underrun per ten minutes; FFT error under 0.5 dB and LUFS error under 0.3 LU. | Audio owner per browser release; lower the profile or block. |
 | Mentor RAG | Citation support at least 98 percent, context precision at least 90 percent, and zero cross-project retrieval or target-deliverable generation in the security suite. | Mentor owner per corpus or model; disable failed version. |
 | Wave promotion | Availability at least 99.9 percent; no open critical safety, consent, or security incident; 99 percent of safeguarding alerts acknowledged within 15 minutes; guide queue p95 under one business day; appeals within SLO. | Beta release board over prior seven days; hold enrollment. |
@@ -1336,7 +1367,7 @@ MIT-level readiness remains an eight-year outcome. The Month 4 beta can validate
 
 ## 35. Proposal traceability appendix and consolidated index
 
-The brainlift and implementation blueprint are foundations rather than proposals. GT100K retains their two-hour mastery backbone, family-operating evidence, cognitive boundary, near-peer grouping, early depth, deliberate retrieval friction, interpretable PFA/BKT/IKT, answer-blind tutoring, and adversarial evaluation. It converts family selection into support-adjusted partnership; protects breadth and child assent; keeps learned authority in shadow; and rejects IQ-as-destiny, punitive help taxes, self-reported marketing as evidence, and any safety override.
+The brainlift and implementation blueprint are foundations rather than proposals. GT100K retains their two-hour mastery backbone, family-operating evidence, cognitive boundary, near-peer grouping, early depth, deliberate retrieval friction, interpretable PFA/BKT/IKT, answer-blind tutoring, and adversarial evaluation. It converts family selection into support-adjusted partnership; protects breadth and child assent; and rejects IQ-as-destiny, punitive help taxes, self-reported marketing as evidence, and any safety override. Under the v1.2 "max defensible intensity" revision it also adds a non-punitive independence reward (§13), cross-cohort gain-based visible rivalry (§15, §23), a Shadow→bounded-automation promotion path for reversible fast-feedback models with irreversible decisions kept human (§8.5), a sharper cognitive floor plus an advisory family-execution signal (§10, §11, §33.1), and a quarantined radical-dose R&D track that feeds a governance roadmap (§31.1).
 
 `Split` means GT100K retains a safe mechanism while deferring or rejecting its proposed authority, sensing, or incentive design.
 
@@ -1347,13 +1378,13 @@ M1, M2, and M3 identify construction allocation, not live rollout. Month 4 valid
 | `claudeProposal.md` | CONVICTION | Split | §§10, 14.11 / M1-M2 | Trial evidence retained; vocal conviction rejected. |
 | `claudeProposal.md` | HEADROOM | Merged | §11 / M1 | Becomes Cognitive Floor Engine. |
 | `claudeProposal.md` | DIVINER | Merged | §14 / M2 | Becomes shadow Passion Engine. |
-| `claudeProposal.md` | GOVERNOR | Merged | §14.8 / M2 | Rules ship; learned control stays shadow. |
+| `claudeProposal.md` | GOVERNOR | Merged | §14.8 / M2 | Rules ship; learned control titrates within caps as bounded automation (§8.5, v1.2). |
 | `claudeProposal.md` | PHALANX | Merged | §15 / M2 | Becomes constrained cohort compiler. |
 | `claudeProposal.md` | ATELIER DSP Studio | Merged | §17 / M1-M2 | Becomes Resonance Audio Studio. |
 | `claudeProposal.md` | PRAXIS | Merged | §18 / M2 | Becomes Socratic Mentor Mesh. |
-| `claudeWorkflowProposal.md` | Fidelity Survival Engine | Deferred | §10 / M1 shadow | Support-risk estimate lacks prospective validity. |
+| `claudeWorkflowProposal.md` | Fidelity Survival Engine | Deferred→Advisory | §10 / M1 | Family-execution signal promoted to advisory after local validation (§10.1 RF-04, v1.2); never sole basis or automated rejection. |
 | `claudeWorkflowProposal.md` | Floor CAT and WASM Runtime | Retained | §11 / M1 | Core assessment delivery. |
-| `claudeWorkflowProposal.md` | Latent-Drive Cartographer | Merged | §14 / M2 | Balanced probes precede shadow bandit. |
+| `claudeWorkflowProposal.md` | Latent-Drive Cartographer | Merged | §14 / M2 | Balanced probes precede a bounded-automation bandit for probe selection (§8.5, v1.2). |
 | `claudeWorkflowProposal.md` | Flow/Burnout Sentinel and Friction Governor | Split | §§14.8, 14.11 / M2 | Hard caps retained; affect model stays research-only. |
 | `claudeWorkflowProposal.md` | Cohort Orchestration Engine | Merged | §15 / M2 | CP-SAT compiler with human rollback. |
 | `claudeWorkflowProposal.md` | AlphaX Socratic Scaffolding Mesh | Merged | §§16, 18 / M2 | Capability-scoped mentor agents. |
@@ -1370,7 +1401,7 @@ M1, M2, and M3 identify construction allocation, not live rollout. Month 4 valid
 | `cursorProposal.md` | COVENANT | Split | §10 / M1 | Family workflow retained; adversarial pressure rejected. |
 | `cursorProposal.md` | DIVINING ROD | Merged | §14 / M2 | Becomes mutable interest inference. |
 | `cursorProposal.md` | COLOSSEUM | Merged | §15 / M2 | Becomes cohort compiler and Arena. |
-| `cursorProposal.md` | PROOF-OF-STRUGGLE | Split | §§13, 14.8 / M1-M2 | Receipts retained; punitive ELO decay rejected. |
+| `cursorProposal.md` | PROOF-OF-STRUGGLE | Split | §§13, 14.8 / M1-M2 | Receipts retained; punitive ELO decay rejected; non-punitive potential-based independence reward added (§13, v1.2). |
 | `cursorProposal.md` | THE FORGE | Merged | §§16, 19 / M1-M2 | Foundry plus ProofGraph. |
 | `cursorProposal.md` | MNEMOSYNE | Merged | §§25-29 / M1 | Becomes event and data spine. |
 | `cursorProposal2.md` | Neuralese | Merged | §§25-29 / M1 | Becomes versioned LearnerEvent spine. |
@@ -1378,7 +1409,7 @@ M1, M2, and M3 identify construction allocation, not live rollout. Month 4 valid
 | `cursorProposal2.md` | Odysseus | Merged | §10 / M1 | Becomes renewable Family OS. |
 | `cursorProposal2.md` | Divining Rod | Merged | §14 / M2 | Becomes Interest Lab and hypothesis service. |
 | `cursorProposal2.md` | Colosseum | Merged | §15 / M2 | Private ratings and bounded rivalry. |
-| `cursorProposal2.md` | Anvil | Split | §13 / M1-M2 | Answer-blind tutor retained; punitive tax rejected. |
+| `cursorProposal2.md` | Anvil | Split | §13 / M1-M2 | Answer-blind tutor retained; punitive tax rejected; non-punitive independence reward added (§13, v1.2). |
 | `cursorProposal2.md` | Atelier | Merged | §§16-19 / M2 | Foundry, mentors, and proof. |
 | `cursorProposal2.md` | Oracle | Split | §31 / M3 | Simulator retained; talent authority deferred. |
 | `cursorProposal3.md` | P1 Commitment Oracle | Split | §10 / M1 | Trial retained; surveillance and automatic rejection rejected. |
@@ -1405,11 +1436,11 @@ M1, M2, and M3 identify construction allocation, not live rollout. Month 4 valid
 | `geminiProposal.md` | Spine Curriculum Generator | Split | §§12, 14.7 / M2 | Planner retained; breadth elimination rejected. |
 | `geminiProposal.md` | Motivation and Burnout Forecaster | Deferred | §14.9 / M2 shadow | Cannot diagnose or control intensity. |
 | `geminiProposal.md` | Stateful Multi-Agent Pod Orchestrator | Split | §15 / M2 | Optimization retained; agent reshuffling rejected. |
-| `geminiProposal.md` | Rivalry ELO Ledger | Split | §15 / M2 | Private ratings retained; public ranks rejected. |
+| `geminiProposal.md` | Rivalry ELO Ledger | Split | §15 / M2 | Private ratings drive matchmaking; cross-cohort gain-based visible standings added; fixed-ability caste ranks rejected (§15, §23, v1.2). |
 | `geminiProposal.md` | Low-Latency Project Arena | Merged | §15 / M2 | Becomes WebRTC Arena. |
 | `geminiProposal.md` | AI Socratic Persona | Merged | §§13, 18 / M1-M2 | Answer-blind tutor and mentor renderer. |
 | `geminiProposal.md` | Dopamine and Engagement Telemetry Tracker | Rejected | §§14.9, 23 | Surveillance and inferred dopamine lack validity. |
-| `geminiProposal.md` | Adaptive ELO Decay Gateway | Split | §13 / M1-M2 | Help receipts retained; punitive decay rejected. |
+| `geminiProposal.md` | Adaptive ELO Decay Gateway | Split | §13 / M1-M2 | Help receipts retained; punitive decay rejected; non-punitive independence reward added (§13, v1.2). |
 | `geminiProposal.md` | Masterpiece Graph Database | Merged | §§16, 19 / M2 | DAG state plus evidence graph. |
 | `geminiProposal.md` | Autonomous Resource Allocator MCP | Split | §16 / M2 | Scoped broker retained; autonomous spend rejected. |
 | `geminiProposal.md` | External Expert Matchmaker | Retained | §16 / M2 | Human-vetted expert matching. |
@@ -1425,19 +1456,19 @@ M1, M2, and M3 identify construction allocation, not live rollout. Month 4 valid
 | `proposal3.md` | Covenant Ledger | Merged | §10 / M1 | Family trial and support evidence. |
 | `proposal3.md` | FloorGate | Merged | §11 / M1 | Sequential assessment and integrity review. |
 | `proposal3.md` | DriveScope | Merged | §14 / M2 | Counterfactual Interest Lab evidence. |
-| `proposal3.md` | Motive MPC | Split | §14.8 / M2 | Token rules ship; MPC stays shadow. |
+| `proposal3.md` | Motive MPC | Split | §14.8 / M2 | Token rules ship; MPC titrates within caps as bounded automation (§8.5, v1.2). |
 | `proposal3.md` | CohortGraph | Merged | §15 / M2-M3 | Batch compile and online repair. |
 | `proposal3.md` | RivalryMix | Retained | §15 / M2 | Observable turn-taking only. |
 | `proposal3.md` | AlphaX Foundry | Merged | §§16-20 / M2-M3 | Foundry, proof, and exposure chain. |
 | `proposal4.md` | VERITAS | Split | §§10, 14.11 / M2 research | Prosody study allowed; conviction scoring rejected. |
 | `proposal4.md` | THRESHOLD | Merged | §11 / M1 | Becomes Cognitive Floor Engine. |
 | `proposal4.md` | LODESTAR | Merged | §14 / M2 | Becomes Passion Engine. |
-| `proposal4.md` | FLOWSTATE | Split | §14.8 / M2 | Safety rules retained; learned control shadow. |
+| `proposal4.md` | FLOWSTATE | Split | §14.8 / M2 | Safety rules retained; learned control bounded within caps (§8.5, v1.2). |
 | `proposal4.md` | CRUCIBLE Cohort Engine | Merged | §15 / M2 | Becomes cohort compiler and Arena. |
 | `proposal4.md` | RESONANCE | Retained | §17 / M1-M2 | Canonical browser-native audio studio. |
 | `proposal4.md` | ATELIER Mentor Pipeline | Merged | §§16, 18 / M2 | Foundry agents and Mentor Mesh. |
 
-The consolidation rejects financial escrow and income-share underwriting for minors, public ability rankings, automatic expulsion, covert surveillance, biometric truth claims, and AI-authorship accusations across all sources. It preserves the proposals' strongest engineering work while placing child agency, human authority, evidence quality, and reversible release controls inside the architecture.
+The consolidation rejects financial escrow and income-share underwriting for minors, public fixed-ability rankings, automatic expulsion, covert surveillance, biometric truth claims, and AI-authorship accusations across all sources. It preserves the proposals' strongest engineering work while placing child agency, human authority, evidence quality, and reversible release controls inside the architecture.
 
 ## References
 
@@ -1457,7 +1488,7 @@ The final PRD cites the source proposals in the traceability appendix and uses t
 - Soderstrom, N. C., and Bjork, R. A. (2015). [Learning Versus Performance](https://doi.org/10.1177/1745691615569000).
 - Kapur, M. (2008). [Productive Failure](https://doi.org/10.1080/07370000802212669).
 - VanLehn, K. (2011). [The Relative Effectiveness of Human Tutoring and Intelligent Tutoring Systems](https://doi.org/10.1080/00461520.2011.611369).
-- Ryan, R. M., and Deci, E. L. (2000). [The “What” and “Why” of Goal Pursuits](https://doi.org/10.1207/S15327965PLI1104_01).
+- Deci, E. L., and Ryan, R. M. (2000). [The “What” and “Why” of Goal Pursuits](https://doi.org/10.1207/S15327965PLI1104_01).
 - Hulleman, C. S., and Harackiewicz, J. M. (2009). [Promoting Interest and Performance in High School Science Classes](https://doi.org/10.1126/science.1177067).
 - O’Keefe, P. A., Dweck, C. S., and Walton, G. M. (2018). [Implicit Theories of Interest](https://doi.org/10.1177/0956797618780643).
 - Deci, E. L., Koestner, R., and Ryan, R. M. (1999). [A Meta-Analytic Review of Extrinsic Rewards and Intrinsic Motivation](https://doi.org/10.1037/0033-2909.125.6.627).
