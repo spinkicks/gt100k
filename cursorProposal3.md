@@ -1,268 +1,361 @@
-# cursorProposal3.md
-## Non-Core Architectural Levers for GT-100k
-### 7 Portfolio-Defining Engineering Projects (+1 Wildcard) for a 4-Month Sprint
+# gt100k — The Non-Core Architecture
 
-**Author role:** Systems Architect / AI Product Manager
-**Scope:** The morning adaptive-curriculum tutor is *solved*. This document proposes the **non-core, infrastructure-level machinery** that makes the model work at a population of 100,000 — the levers the Brainlift argues are the *actual* binding constraints: **family fidelity, cognitive floor, peer composition, latent drive, and engineered friction.**
+### Portfolio-defining engineering projects to move 100,000 8th-graders to MIT-level readiness
 
-Every proposal is (a) grounded in a verified deep-research pass (110 research agents, 27 primary sources fetched, 25 falsifiable claims adversarially triple-voted, 22 confirmed / 3 refuted), (b) mapped to a specific numbered stack from the *Engineering Skills & End-to-End Project Matrix* (`impactful.md`), and (c) argued as an elite portfolio piece. It is built around the five spiky positions of the Brainlift (`gtBrainlift.md`).
-
-> **Honest framing (read this first).** The verified evidence maps cleanly onto three levers (Intake attrition, Passion/Motivation bandits, Cohort formation). Two areas — the **AlphaX/Masterpiece infrastructure** and **Elo/TrueSkill rivalry** engineering — returned *no surviving verified claim*; the supporting papers were *found* but not adversarially confirmed in this pass. That makes them research frontiers, which is precisely why building them is a standout move rather than a re-implementation. The dominant caveat across the whole corpus is **domain transfer**: nearly all attrition/engagement evidence comes from *adult, self-selected MOOC learners* (XuetangX, CAROL, OULAD, HarvardX), not K-8 children or their families, on class-imbalanced data — so headline accuracy figures (94%/98%) are base-rate-inflated. Treat the *mechanisms* as transferable and the *numbers* as targets to be re-earned on our own population. Each proposal carries its own caveat block.
+*A systems-architecture + AI-product proposal. Scope: the **non-core levers** — everything except the already-solved morning academic core. Every proposal names real algorithms/papers and maps to the [Engineering Skills & Project Matrix](impactful.md) by number `[n]`. Grounded in the five spiky positions of the [Brainlift](gtBrainlift.md).*
 
 ---
 
-## The Levers → Projects Map
+## 0. How to read this
 
-| # | Project | Lever | Primary Matrix Stack |
-|---|---------|-------|----------------------|
-| 1 | **Fidelity Survival Engine** | Admissions: family commitment (SPOV 1) | #4 gRPC/Kafka, #5 MLOps, #6 PyTorch |
-| 2 | **Floor CAT + Tamper-Proof Testing Runtime** | Admissions: cognitive floor (SPOV 2) | #12 WASM, #6 PyTorch, #1 SQL |
-| 3 | **Latent-Drive Cartographer** | Passion discovery (SPOV 4) | #6/#7 ML, #9 agentic |
-| 4 | **Flow/Burnout Sentinel + Friction Governor** | Motivation without extinguishing it (SPOV 5) | #12 WASM (on-device), #4 gRPC, #6 PyTorch |
-| 5 | **Cohort Orchestration Engine (Homogeneous Pods + Pace-Rating)** | Peer composition (SPOV 3) | #1 SQL, #4 Kafka, #5 K8s, ILP/Gurobi |
-| 6 | **AlphaX Socratic Scaffolding Mesh** | Masterpiece build support | #9 LangGraph, #10 MCP, #11 adversarial |
-| 7 | **Masterpiece Provenance & Authenticity Ledger** | Proving the work is real | #1 SQL/Merkle, #6 KT model, #10/#11 |
-| ✦ | **GT-Twin: Population Policy Simulator** (wildcard) | De-risk the whole machine | #12 WASM/Rust, causal ML |
+The Brainlift's thesis is that **pedagogy is a solved, dead lever** and the binding constraints are *dose, environment totality, peer composition, and cognitive ceiling*. That is a profound reframe: it means **the product is not a tutor — the product is the machine around the tutor.** The morning core is a function that consumes a prepared child and emits AP-5s. Everything that decides *which* child, in *which* home, in *which* cohort, chasing *which* obsession, under *how much* friction, judged by *what* evaluator — that is the uncaptured engineering, and it is where the elite systems work lives.
 
----
+This document proposes **8 flagship systems + 1 moonshot + an extended arsenal**, organized against the four named non-core areas plus the two cross-cutting layers (friction/integrity and the data backbone) that the four require to exist.
 
-## 1. The Fidelity Survival Engine — *"Select the family, not the child."*
+| # | Flagship system | Non-core area | Headline novelty | Heaviest Matrix stacks |
+|---|---|---|---|---|
+| **P1** | **The Commitment Oracle** | Admissions / family | Competing-risks survival + faking-resistant psychometrics + **zero-knowledge screen-free home attestation** | `6 1 2 12 11 4` |
+| **P2** | **The Cognitive Floor Engine** | Admissions / ceiling | Dual-objective CAT that **classifies at the floor, then generates items harder than the bank** to rank an uncapped tail | `2 4 6 8 9 12` |
+| **P3** | **The Passion Discovery Engine** | Passion / specialization | A **behavioral language model of a child** + IRL + optimal-stopping specialization timer with a **provable anti-foreclosure guarantee** | `6 4 7 9 10 8` |
+| **P4** | **The Flow Oracle & Burnout Radar** | Motivation / guardrail | Sensor-free **affect-*dynamics*** + overjustification-safe RL difficulty + edge-rPPG burnout radar + conformal route-out | `6 4 12 5 3 1` |
+| **P5** | **The Rivalry Engine** | Cohort orchestration | Streaming re-cohorting (CP-SAT + GNN chemistry) + Elo-MMR rating, engineered **against the Carrell–Sacerdote–West backfire** | `4 1 5 2 12 6` |
+| **P6** | **The Friction & Integrity Engine** | SPOV5 (friction) | An **answer-blind tutor** (leakage impossible by construction) + a **reward proven un-gameable** via potential-based shaping | `11 9 10 6 7 8` |
+| **P7** | **The Masterpiece Platform** | AlphaX / afternoon | Minor-safe microVM Forge + **proof-of-process authenticity ledger** + comparative-judgment eval at 100k scale | `3 5 10 11 12 7` |
+| **P8** | **The Learner Event Spine** | Platform backbone | A **decision-provenance event log** (logs propensities up front) + bitemporal point-in-time feature store + OPE-validated digital twin | `4 5 1 2 3 6` |
+| **★** | **The Pedagogical Self-Play Gym** | Moonshot | AlphaZero-for-pedagogy: train tutoring policies against 100k calibrated cognitive twins, deploy only HCPI-vetted ones | `6 8 9 5 4 1 3` |
 
-**Lever:** Admissions & Intake — screen for 8-year family commitment (Brainlift SPOV 1).
-
-### The problem
-The Brainlift's most radical claim is that the variance predicting elite outcomes lives in the far tail of *parental obsession*, not the child's age-6 test score. But "will this family hand its life to the program for eight years?" is the kind of judgment schools make with a gut-feel interview. That doesn't scale to 100,000 intakes, and it doesn't survive a lawsuit. We need a **quantified, auditable, continuously-updated model of family attrition risk** — because a family that folds in Year 3 has burned a cohort seat *and* destabilized a homogeneous pod.
-
-### The architectural mechanism
-Reframe admissions from *classification* ("admit / reject") to a **time-to-event survival problem**: estimate the hazard `h(t | X)` = probability a family withdraws or breaches fidelity at program-year `t`, given a behavioral covariate stream `X`.
-
-- **Signal capture (probationary onboarding, ~90 days before a seat is confirmed):** parent-app engagement clickstream, at-home practice-adherence logs, response latency to school communications, attestation-check completions (TV-free-home audits, daily parent-on-the-hook logs), and the legally-binding-continuation-contract signing funnel. Ingested over **type-safe gRPC → Kafka** (Matrix #4), one Protobuf event schema per signal type.
-- **Model:** a **deep survival network** in the SAVSNet / DeepSurv family (Matrix #6, PyTorch). Architecture mirrors the verified state of the art: a **1D-CNN smooths the volatile engagement time-series and auto-extracts behavioral features → an LSTM models temporal evolution → a survival head outputs a full hazard curve** (no proportional-hazards or distributional assumption required). This is the exact CONV-LSTM + survival design validated on 78k-student (CAROL) and 120k-student (XuetangX) corpora, with early-warning capability at **~80% accuracy after only 10% of a program has elapsed** and ~90% by mid-point.
-- **Serving:** per-family risk score recomputed on every new event via a KServe/Triton endpoint (Matrix #5) behind an HPA-autoscaled K8s deployment; drift monitored in Prometheus/Grafana. Admissions officers see a calibrated hazard curve, *not* a black-box yes/no — the model surfaces *which* signals drive the risk (SHAP over the covariate stream).
-- **Feature-weighting discipline (verified):** OULAD-scale evidence shows **prior assessment/coursework trajectory and cumulative engagement dominate; static demographics (region, age-band) correlate near zero** (r ≈ 0.008–0.07 vs 0.38–0.49). So the model is *explicitly weighted toward behavioral fidelity signals over demographics* — which is also the more defensible, less-discriminatory design.
-
-### Why it's an elite portfolio piece
-Survival analysis on **streaming behavioral data with a deep hazard head** is rare in candidate portfolios — most people ship a binary classifier. Time-to-event modeling + Kafka ingestion + a monitored MLOps serving loop demonstrates ML depth *and* production systems maturity in one artifact: an "I built a real-time actuarial engine," not "I trained a random forest."
-
-> **Caveat:** All survival evidence is adult MOOC dropout on heavily class-imbalanced data (inflating headline accuracy). Family-commitment base rates differ. Ship as **decision-support** with a human in the loop and a fairness audit, never an autonomous gate. The refuted claims are instructive: clickstream is *not* automatically superior to all other signals, and a naive "daily-activity flag" is *not* as good as a proper feature blend — resist over-trusting raw logs.
+**Design invariants** (non-negotiable constraints threaded through every system, not bolted on): (1) these are **100,000 minors** → privacy-by-architecture (edge compute, federation, differential privacy, ZK proofs) is a hard requirement; (2) any child-affecting decision must be **calibrated + uncertainty-quantified + human-in-the-loop + appealable** (conformal prediction, SHAP, contestability endpoints); (3) every optimized metric **will be Goodharted** by fanatical families and adversarial 13-year-olds → design under strategic classification and mechanism-design assumptions.
 
 ---
 
-## 2. The Floor CAT + Tamper-Proof Testing Runtime — *enforce the cognitive floor, efficiently and fairly.*
+## 1. Framing: the five SPOVs as engineering specs
 
-**Lever:** Admissions & Intake — gate at IQ ≈ 120–125 (Brainlift SPOV 2), a full SD below the gifted-program line.
-
-### The problem
-The model *insists* on a hard cognitive floor and admits the entire band (120–145) that gifted programs discard. Screening 100k applicants with a fixed 3-hour proctored battery is slow, expensive, coachable, and gameable. We must place each applicant *relative to the floor* in the **minimum number of items**, and the test must be **cheat-resistant at the client** because a life-altering seat creates enormous incentive to game it.
-
-### The architectural mechanism
-A **Computerized Adaptive Testing (CAT) engine** built on **Item Response Theory** — the same IRT/Rasch machinery the verified knowledge-tracing SOTA (DKT2) uses for interpretable ability estimation.
-
-- **Adaptive core:** maintain a posterior over latent ability `θ`; after each response, select the next item by **maximum Fisher information at the current `θ̂`** (or a Bayesian expected-information criterion). Terminate when the credible interval clears (or falls below) the floor. This collapses a 200-item bank to ~20–30 items per applicant while *tightening* precision exactly at the 120–125 decision boundary — the region we care about — far more efficient than a fixed test that wastes items far from the cut.
-- **Item bank + exposure control:** Postgres (Matrix #1) with a Sympson-Hetter exposure-control layer and calibrated item parameters; window functions and careful indexing for real-time item selection under concurrent load.
-- **The novel systems twist — a WebAssembly testing runtime (Matrix #12):** compile the item-selection + response-timing + integrity logic to **WASM (Rust → Emscripten)** running in the applicant's browser. This gives (a) sub-frame latency so timing telemetry is precise, (b) *deterministic, tamper-evident execution* — the scoring logic isn't sitting in inspectable JS, and (c) rich **process-level integrity signals** (response-latency distributions, answer-change patterns, paste events, focus-loss) streamed back for a lightweight anomaly model that flags coaching / proxy test-taking.
-- **Fairness instrumentation:** Differential Item Functioning (DIF) analysis baked into the calibration pipeline (Mantel-Haenszel / SIBTEST) so the floor gate is defensible across subgroups, shipped as a CI release gate.
-
-### Why it's an elite portfolio piece
-CAT + IRT is *psychometrically serious* — it signals you can build measurement systems, not just fit models. Compiling the secure test runtime to **WASM** is the Matrix's explicit "elite differentiation tier" (#12): manual memory, deterministic execution, native-to-browser bridging. Very few candidates can say "I shipped a psychometric engine whose integrity core runs as a hardened WASM binary."
-
-> **Caveat:** A cognitive-floor gate is ethically loaded; flawless engineering still harms if `θ` is treated as destiny. Pair it with the Brainlift's own stated policy — route below-floor applicants to *excellent ordinary schooling*, not a rejection letter — and log every decision immutably (feeds Project 7's ledger).
+| Brainlift SPOV | The buried operational problem | The system that owns it |
+|---|---|---|
+| **1 — Select the family, not the child** | 8-year commitment is a *time-to-event* problem with adversarial self-report and unverifiable home conditions | **P1 Commitment Oracle** |
+| **2 — The cognitive floor is real (and has no ceiling)** | Confidently *classify* at IQ ~120–125 for 100k, while *ranking* a right tail that standard tests ceiling out on | **P2 Cognitive Floor Engine** |
+| **3 — Homogeneous grouping is the biggest lever** | Continuously re-form 5–6-person rivalrous cohorts across 100k as everyone advances at different rates | **P5 Rivalry Engine** |
+| **4 — Specialize brutally early, burn breadth** | Decide *when/what* to specialize from behavior, without foreclosing a truer latent drive | **P3 Passion Discovery Engine** |
+| **5 — Friction is the product; make help hurt** | A tutor that *refuses answers* and a reward that makes shortcutting mathematically worthless — un-jailbreakable by kids | **P6 Friction & Integrity Engine** |
+| **Guardrail — optimize for those who thrive; route the rest out** | Detect breakage early and humanely; never off-ramp on a noisy point estimate | **P4 Flow Oracle & Burnout Radar** |
+| *(implicit)* — all of the above need one substrate | Longitudinal, leakage-free, ethically-experimentable data over 8 years | **P8 Learner Event Spine** |
+| *(implicit)* — afternoon Masterpiece block | Run real, shippable builds for 100k minors and grade the ungradeable | **P7 Masterpiece Platform** |
 
 ---
 
-## 3. The Latent-Drive Cartographer — *uncover the true, hidden passion.*
+## 2. System map
 
-**Lever:** Passion Discovery & Specialization — find the latent drive that justifies "specialize brutally early" (SPOV 4).
-
-### The problem
-SPOV 4 spends ages 6–14 on a narrow spine and burns breadth — but pointed at *what*? Specializing early is a catastrophic bet if you specialize a child into the wrong obsession. Self-reported interest is noise; an 8-year-old doesn't know their latent drive, and interests genuinely *shift*. We need a system that **actively explores** the space of possible passions, **exploits** signal as it accrues, and — critically — **detects when a real interest shift happens** versus transient boredom.
-
-### The architectural mechanism
-Model passion discovery as a **contextual multi-armed bandit** (Matrix #6/#7/#9). Arms = "passion probes" (micro-projects, problem genres, domains). Context = the student's feature vector (traced skills, prior probe outcomes, affect signals from Project 4).
-
-- **Exploration/exploitation:** **Linear Thompson Sampling (LinTS)** — the exact algorithm validated on 935k learner interactions in the verified corpus — where each probe's payoff is modeled as a linear function of learner features and the arm chosen is the one most likely to advance a targeted outcome. Thompson sampling's posterior sampling gives principled exploration without the cold-start brittleness of ε-greedy.
-- **The reward — the design crux.** Naive "skill gain" alone produces a grind-optimizer, not a passion-finder. Define a **composite reward** = `skill-gain` (change in traced mastery pre/post probe, à la the verified LinTS reward) **× intrinsic-engagement** (flow signal from Project 4) **× voluntary-return** (did the student choose this thread again, unprompted?). Passion = where a child *both* improves fast *and* is in flow *and* comes back on their own.
-- **Detecting genuine interest shifts:** wrap the bandit in a **piecewise-stationary "disjoint payoff" model (PSLinUCB)** — the verified AAAI-2020 mechanism that treats each arm's preference vector as piecewise-stationary with *asynchronous, per-arm change points* and a proven sublinear-regret bound. A detected change-point on an arm is a first-class event: *this child's drive just moved* — re-open exploration on that neighborhood instead of stubbornly exploiting a dead interest.
-- **Stack:** bandit service in Python/FastAPI, arm-payoff models in PyTorch, probe outcomes on Kafka, state in Postgres. A lightweight **LangGraph agent** (Matrix #9) authors/varies probe content within a domain to keep arms fresh.
-
-### Why it's an elite portfolio piece
-Contextual bandits with **non-stationarity handling** are genuinely advanced applied ML — what recommender teams at top companies actually fight with. Framing *passion discovery* as a change-point-aware exploration problem is novel and memorable, and the composite-reward design shows product judgment, not just algorithm knowledge.
-
-> **Caveat:** LinTS optimizes *myopic single-step* gain, not multi-step learning trajectories — a real risk when the goal is an 8-year obsession. Mitigate by periodically re-planning over longer horizons (bandit → offline RL for the long-horizon policy) and keeping a human mentor in the loop on the "commit to a spine" decision.
-
----
-
-## 4. The Flow/Burnout Sentinel + Friction Governor — *"Friction is the product; make help hurt to reach for."*
-
-**Lever:** Passion Discovery / Motivation — sustain drive without extinguishing it, and operationalize SPOV 5 (engineered friction, decayed-ELO help-tax).
-
-### The problem
-SPOV 5 says tax help: refuse the answer, run Socratic dialogue, and give a **decayed ELO reward to anyone who shortcuts after an AI rescue** so shortcutting is mathematically worthless. But friction is a *dosage* problem. Too little and you get the fluency illusion the Brainlift condemns; too much, at the wrong moment, and you snap a 10-year-old's motivation and cause the very burnout the enterprise is trying to avoid. **Friction cannot be set globally. It must be servo-controlled per-student, in real time, against their affective state.**
-
-### The architectural mechanism
-Two coupled subsystems: a **sensor** (detect flow vs. frustration vs. burnout vs. boredom) and an **actuator** (the friction governor).
-
-- **The Sentinel (sensor):** a **multimodal affective-computing pipeline** grounded in Self-Determination Theory and self-efficacy — the verified operationalization (Booth et al., CU Boulder NSF AI Institute): supervised ML mapping multimodal features (**gaze, facial action units, vocal prosody, interaction logs**) to engagement/affect states. SDT gives the operationalizable feature set — autonomy, self-efficacy, interest, and **challenge–skill balance** (the Csikszentmihályi flow condition). **Multimodal fusion is the robustness play** (verified: Bosch et al. reached ~98% *coverage* by borrowing signal across channels when the face detector failed under motion/occlusion/lighting).
-- **The novel systems twist — on-device WASM inference (Matrix #12):** children's faces are the most sensitive data imaginable. Run the affect model **entirely client-side as a WASM binary (Rust/C++ → Emscripten)** at 60 FPS; **only the derived low-dimensional affect state leaves the device over gRPC** (Matrix #4), never raw video. Privacy-by-architecture *and* the exact "native engine → WASM → browser at 60 FPS without a cloud round-trip" project the Matrix flags as elite differentiation.
-- **The Governor (actuator):** a control loop that takes the affect state and tunes the SPOV-5 friction parameters per-student: the Socratic-hint decay rate, the ELO penalty for post-rescue answers, and the challenge level. **Flow detected → hold or increase difficulty (protect the desirable difficulty). Frustration approaching burnout → temporarily relax friction, restore autonomy. Boredom / under-challenge → raise the tax and the difficulty.** Implement as a policy (start with a tuned PID/bandit controller; graduate to RL) so the friction curve is a *learned, personalized dosage*, not a constant.
-
-### Why it's an elite portfolio piece
-The single most *conceptually distinctive* build in the set: a **closed-loop affective control system** where perception (multimodal ML), privacy engineering (on-device WASM), and actuation (adaptive control of a pedagogical policy) meet. It implements a spiky Brainlift thesis as running code — "I built a servo loop that dials learning difficulty against a child's real-time flow state, and the face model never leaves the device."
-
-> **Caveat (be honest here):** Engagement/flow is a **latent construct with modest measurement validity** — real accuracy on public benchmarks (e.g., DAiSEE ~55%) is far below the ~98% *coverage* figure, which is data-availability, not correctness. So the Governor must be **conservative and reversible**: nudge friction within safe bounds, defer to a human mentor on sustained distress, never make irreversible motivational bets on a noisy signal.
-
----
-
-## 5. The Cohort Orchestration Engine — *the biggest lever in the building.*
-
-**Lever:** Peer composition — dynamic homogeneous pods of 5–6, engineered rivalry, matched-pace advancement (SPOV 3).
-
-### The problem
-The Brainlift calls homogeneous grouping "the biggest lever in the building" and the most suppressed fact in education. Assembling 100,000 students into ~17,000 tightly-matched pods of 5–6 — and **continuously re-assembling them as students advance at different rates** — is not a spreadsheet task. It's a hard combinatorial optimization problem, and the objective the published literature optimizes is *the opposite of ours.*
-
-### The architectural mechanism
-- **It's provably NP-hard (verified):** Educational Team Formation is NP-complete (reduction from SET COVER; EDU-TF), and balanced graph partitioning is NP-complete. Exact enumeration is impossible at 17k pods — this *demands* real optimization, which is the point.
-- **Skill representation:** derive each student's latent skill vector via **Laplacian-eigenmap dimensionality reduction over mastery/mark data** (the verified unsupervised approach) — students become vertices in a similarity graph with edge weights encoding skill/pace affinity.
-- **The core solver — and the crucial inversion (verified caveat):** the published graph-partitioning and genetic-algorithm methods optimize for *skill-diverse / heterogeneous* groups. **Our objective is the exact opposite: intra-pod homogeneity** (same pace, same ceiling, to manufacture rivalry and kill the dead-weight-slowest-kid problem). So we **flip the objective function to reward intra-group homogeneity** and solve it as a **constrained k-way graph partition** via a **hierarchical / lexicographic Integer Linear Program (Gurobi)** — the verified EDU-TF pattern: a feasibility base model, then stacked lexicographic objectives where each solved objective constrains the next (homogeneity first, then friend/rivalry social constraints, then logistics). Warm-start the ILP with a **genetic-algorithm** or **hill-climbing "priority" heuristic** (verified LAK-25 method with MAXITER/SPREAD/K params handling social preferences and anti-tokenism) to get good solutions fast and prove optimality where feasible.
-- **Dynamic re-pods (the real systems challenge):** pace ratings update continuously as students clear mastery gates. Stream those over **Kafka** (Matrix #4); run the partitioner as a scheduled batch optimization on **K8s** (Matrix #5) with incremental re-solve (only re-partition destabilized neighborhoods, not all 100k). Assignments and the full audit trail live in **Postgres** (Matrix #1) with heavy indexing and transactional integrity.
-- **The rivalry rating layer (research frontier — build it):** the requested **Elo/TrueSkill-style rating** returned *no verified evidence* for educational rivalry, so this is novel territory. Maintain a **Glicko-2 / TrueSkill pace-and-mastery rating** per student so pods are matched on a *calibrated* scale and rivalry is *productive* (near-peers) rather than *demoralizing* (a hopeless mismatch). The rating also drives cross-pod tournaments and leaderboards that engineer the shared-advancement pressure SPOV 3 wants.
-
-### Why it's an elite portfolio piece
-A real **operations-research + distributed-systems** system: NP-hard problem, ILP with a commercial solver, metaheuristic warm-starts, streaming re-optimization at scale. That combination is rare and immediately legible as senior-level work. The objective-inversion story — "the literature optimizes for diversity; our thesis demanded homogeneity, so I re-derived the objective" — is a fantastic technical-judgment narrative.
-
-> **Caveat:** Homogeneous grouping can create fairness and peer-effect pathologies (rigid tracking, self-fulfilling ceilings), and the *optimally* engineered peer group can even backfire when students self-segregate within it. The rating layer is *unproven* for rivalry engineering and could extinguish drive if mis-tuned (a permanently-losing student). Build in mobility (pods must be *escapable* upward) and monitor motivation via Project 4's Sentinel as a safety signal.
-
----
-
-## 6. The AlphaX Socratic Scaffolding Mesh — *build real things, without being handed the answer.*
-
-**Lever:** AlphaX / Masterpiece Infrastructure — the afternoon block where students build startups, apps, documentaries, Olympic-level projects.
-
-### The problem
-The afternoon is where students build *real* artifacts. The instant an LLM is in the room, the friction thesis (SPOV 5) collapses — a general chatbot just *hands over* working code, a polished script, a finished business plan, and the student learns nothing while feeling productive (the exact "fluency illusion" the Brainlift attacks). Worse, the verified research surfaces an **"interactional mismatch": real students actively bypass scaffolding to extract answers.** So the challenge is a build-support system that is *genuinely* Socratic and *adversarially robust* against being jailbroken into an answer machine — while still giving students real tools to ship real work.
-
-### The architectural mechanism
-A **stateful multi-agent mesh** (Matrix #9, LangGraph) that scaffolds rather than solves, plus a **secure real-world tool layer** (Matrix #10, MCP) and an **adversarial guardrail** (Matrix #11).
-
-- **Pedagogy-first agents, trained to withhold:** the research gives a concrete recipe — align the tutor with **on-policy RL (GRPO) on simulated student–tutor dialogues**, using a **conversation-level reward = student post-dialog solve rate + LLM-judge pedagogical acceptance** (verified 2025 method) so the agent is optimized to *make the student capable*, not to emit answers. A verified trade-off to design around: **subject-expertise and pedagogy trade off** — the best math solver is not the best teacher — so use a **role-split multi-agent** design (a "Copa"-style peer agent that promotes sense-making and *prevents over-reliance*, a separate expert consulted only through the pedagogical layer).
-- **Measure the thing that matters:** evaluate agents against a **MathTutorBench-style "scaffolding-not-answer-giving" metric** (verified) as a first-class CI gate — regressions that make the tutor more answer-giving *fail the build*.
-- **Real tools via MCP (Matrix #10):** students shipping actual products need actual capabilities — GitHub, cloud deploy, data/API access, CAD, video-editing pipelines. Expose these through **custom MCP servers over JSON-RPC/SSE** with **runtime ACL evaluation and per-student token-budget guards** — the exact elite MCP project in the Matrix. The scaffolding agent mediates tool use so a student *directs* the build and learns the workflow, rather than the agent silently doing it.
-- **Adversarial guardrail (Matrix #11) — the delicious part:** because students *will* try to jailbreak the tutor into giving answers, run a **red-team/defense loop**: an attacking agent continuously fuzzes the tutor with answer-extraction payloads, and **Llama Guard / NeMo Guardrails at the gateway** catch "answer-leak" attempts, producing a live "scaffolding-integrity" score. This turns OWASP-LLM security engineering toward a *pedagogical* objective — a genuinely novel reframing.
-
-### Why it's an elite portfolio piece
-It fuses **three** of the Matrix's most differentiating stacks — agentic orchestration (#9), MCP infrastructure (#10), and adversarial AI security (#11) — around a hard, unsolved problem the research explicitly flagged as an open frontier. "I built a multi-agent tutor that's RL-trained to withhold answers, gives students real deploy tooling through hardened MCP servers, and has an adversarial red-team loop stopping kids from jailbreaking it into a cheat engine" is a portfolio *centerpiece*, not a line item.
-
-> **Caveat:** This lever had **zero surviving verified claims** in the research pass — the supporting papers (GRPO Socratic tutor, MathTutorBench, Copa, interactional-mismatch) were *found* but not adversarially confirmed in this run. Treat the design as a well-motivated research bet and validate the scaffolding-vs-answer metric on real students early and often.
-
----
-
-## 7. The Masterpiece Provenance & Authenticity Ledger — *prove the student actually built it.*
-
-**Lever:** AlphaX / Masterpiece — credentialing and authenticity of student work; the adjacent lever the four categories miss.
-
-### The problem
-If the afternoon output (a shipped app, a funded startup, a documentary) is the *proof* of the model's success, then authenticity is existential. In an AI-saturated world, a submitted artifact is worthless as evidence unless we can show *this specific child, with their demonstrated capability, actually produced it.* The verified research is blunt: **AI-detection tools are unreliable, and AI-related misconduct now exceeds all other categories combined.** Detection-after-the-fact is a losing game. We must capture authenticity **at creation time.**
-
-### The architectural mechanism
-Three layers, moving from cryptographic provenance to a genuinely novel capability-consistency check.
-
-- **Content provenance (verified standard):** attach **C2PA Content Credentials** — cryptographically-bound manifests recording origin, every modification, and AI-tool usage — to every artifact a student produces (code commits, video files, design assets). This gives a tamper-evident creation history bound to the artifact itself.
-- **Tamper-evident portfolio ledger:** an **append-only, Merkle-hashed ledger in Postgres** (Matrix #1 — no blockchain needed; a Merkle-DAG over signed events gives tamper-evidence with far less complexity). Every build event, tool invocation (from Project 6's MCP layer), and mentor sign-off is a signed leaf. The student's whole masterpiece history becomes a verifiable, portable credential.
-- **The novel core — capability-consistency verification:** this is the part nobody ships. Run **large-scale knowledge tracing** (Matrix #6) over the student's entire learning history — a **DKT2 (xLSTM + Rasch/IRT) or SAKT self-attention** model, the verified SOTA for KT at 100k scale — to maintain a live estimate of each student's demonstrated capability curve. Then **compare the sophistication of a submitted artifact against the student's traced capability.** A child whose knowledge-tracing curve says mid-Algebra-II submitting a distributed system with production-grade concurrency control is a **capability–artifact mismatch → flag for human review.** This is *far* more robust than AI-detectors because it doesn't ask "was this AI-written?" (unanswerable) — it asks "is this consistent with what this specific student has provably learned?" (tractable, grounded in our own longitudinal data).
-- **Security posture (Matrix #11):** the ledger and KT signals feed the same guardrail dashboards, giving a per-student authenticity-risk score usable by other institutions that trust the credential.
-
-### Why it's an elite portfolio piece
-A **novel synthesis** — content-provenance cryptography (C2PA) + a tamper-evident data structure (Merkle/Postgres) + knowledge-tracing ML repurposed as an anti-fraud oracle. The "capability-consistency instead of AI-detection" insight is the kind of *reframe* that signals genuine engineering creativity, and it directly answers the research's finding that detection-based enforcement is a dead end.
-
-> **Caveat:** Capability-consistency can false-positive on genuine breakthroughs (a student *can* leap) and false-negative on sophisticated cheating that stays within-curve. It is a **triage signal for human judgment**, not an automated verdict — the same discipline the misconduct research recommends.
-
----
-
-## ✦ Wildcard — GT-Twin: The Population Policy Simulator
-
-**Lever:** De-risk *every other lever* before it touches a real child.
-
-### The problem
-The Brainlift makes aggressive, falsifiable bets: floor at 120–125 (not 145), pods of 5–6, decayed-ELO friction, brutal early specialization. Testing these on live 8-year-olds is slow, expensive, and ethically fraught. Before we deploy a policy change to 100,000 children, we should be able to *simulate its systemic effect.*
-
-### The architectural mechanism
-An **agent-based simulation + causal-inference platform.**
-- **Simulation core:** a high-performance **agent-based model in Rust compiled to WASM** (Matrix #12) — each simulated student is an agent with a learning-rate distribution, motivation dynamics (driven by a model of Project 4's flow signal), and peer-effect couplings (from Project 5's pod structure). Run 100k agents forward under a proposed policy at 60 FPS in-browser, no cloud round-trip.
-- **Causal layer:** wrap it in a **causal-inference harness** (do-calculus / uplift modeling) so we estimate the *counterfactual* effect of a lever change ("what if floor → 118? what if pods → 8?") rather than a naive correlation, using the real telemetry from Projects 1–7 to calibrate the agents.
-- **Serving:** results feed a Grafana-style policy dashboard; the whole thing is a decision-support tool for the people setting the Brainlift's guardrails.
-
-### Why it's an elite portfolio piece
-An in-browser 100k-agent simulation in WASM (#12) *plus* a causal-inference layer is a rare, cross-disciplinary flex — systems performance engineering and statistical rigor in one artifact. It also demonstrates *product maturity*: you built the thing that keeps the aggressive levers from hurting real children.
-
----
-
-## How the seven compose (mirroring the Brainlift's DOK-3 chain)
-
-```
-                 ┌─────────────────────────────────────────────┐
-   INTAKE  ──►   │ (1) Fidelity Survival   (2) Floor CAT/WASM   │  gate on
-                 │      family commitment        cognitive floor │  2 axes
-                 └───────────────┬─────────────────────────────┘
-                                 ▼
-   DISCOVER ──►  (3) Latent-Drive Cartographer  ──► points the spine (SPOV 4)
-                                 ▼
-   SUSTAIN  ──►  (4) Flow/Burnout Sentinel + Friction Governor  ── operationalizes SPOV 5
-                                 ▼
-   GROUP    ──►  (5) Cohort Orchestration Engine  ── the biggest lever (SPOV 3)
-                                 ▼
-   BUILD    ──►  (6) AlphaX Socratic Scaffolding Mesh  ── the afternoon block
-                                 ▼
-   PROVE    ──►  (7) Provenance & Authenticity Ledger  ── the credential
-                                 ▼
-   DE-RISK  ──►  (✦) GT-Twin Policy Simulator  ── test any lever change first
+```mermaid
+flowchart TB
+  subgraph SRC[Sourcing]
+    PROSPECT[Fanatical-Family Prospecting]
+  end
+  subgraph INTAKE[Admissions & Intake]
+    P1[P1 Commitment Oracle]
+    P2[P2 Cognitive Floor Engine]
+  end
+  subgraph LEARN[Daily learning loop]
+    P3[P3 Passion Discovery]
+    P4[P4 Flow Oracle / Burnout Radar]
+    P5[P5 Rivalry Engine]
+    P6[P6 Friction & Integrity Engine]
+  end
+  subgraph BUILD[Afternoon]
+    P7[P7 Masterpiece Platform]
+  end
+  subgraph FOUND[Foundation]
+    P8[(P8 Learner Event Spine + Feature Store + Digital Twin)]
+    GYM[★ Pedagogical Self-Play Gym]
+  end
+  PROSPECT --> P1 --> P2 --> P3
+  P2 --> P5
+  P3 --> P5
+  P5 <--> P6
+  P4 --> P5
+  P3 --> P7
+  P6 --> P7
+  P8 -. events/features/mastery .-> P1 & P2 & P3 & P4 & P5 & P6 & P7
+  P8 --> GYM
+  GYM -. vetted policies .-> P3 & P5 & P6
 ```
 
-Shared backbone (build once, reuse everywhere): a **Kafka event spine** (Matrix #4) every project produces to and consumes from; a **K8s + KServe/Triton serving plane** with Prometheus/Grafana observability (Matrix #5); **Postgres** as the transactional system-of-record (Matrix #1); and a common **gRPC/Protobuf** contract layer (Matrix #4). Any two of these projects is a strong portfolio; the shared backbone lets a 4-month sprint ship 3–4 of them credibly.
+Everything writes to and reads from **P8**. The **Gym** trains policies offline against twins built from P8 and ships only proven-safe policies back into the live loop.
 
 ---
 
-## Suggested 4-month sprint sequencing
+# FLAGSHIP PROJECTS
 
-| Phase | Weeks | Ship | Why |
-|-------|-------|------|-----|
-| Foundation | 1–3 | Kafka/gRPC event spine + Postgres + K8s serving plane | Every project needs it; also its own MLOps portfolio piece (#4/#5) |
-| Flagship A | 3–7 | **(5) Cohort Orchestration Engine** | Highest-leverage per the Brainlift; strongest OR + systems story |
-| Flagship B | 6–10 | **(4) Flow/Burnout Sentinel** (on-device WASM) | Most conceptually distinctive; exercises #12 |
-| Flagship C | 9–14 | **(6) AlphaX Scaffolding Mesh** | Fuses #9/#10/#11; unsolved frontier |
-| Depth add-on | 12–16 | **(1) Fidelity Survival Engine** *or* **(7) Provenance Ledger** | Rounds out ML (#6) or data-integrity depth (#1/#11) |
-
-*(2), (3), and (✦) are excellent stretch/parallel builds — (3) the bandit is the smallest self-contained ML win, (✦) GT-Twin is the best "product judgment" showpiece.)*
+Each flagship is scoped as a portfolio-defining build with a suggested **4-month MVP slice** (what one strong engineer could ship as an end-to-end vertical).
 
 ---
 
-## Research provenance & integrity notes
+## P1 — The Commitment Oracle
+### Admissions & Intake · *"Select the family, not the child" made computable*
 
-- **Method:** deep-research workflow — 6 search angles, 27 primary sources fetched, 122 falsifiable claims extracted, top 25 adversarially triple-voted (≥2/3 refutations kill a claim). **22 confirmed, 3 refuted.**
-- **Confirmed and load-bearing here:** deep survival + CONV-LSTM attrition at 100k scale (SAVSNet; Mubarak et al. 2021, *Computers & Electrical Engineering*; MOOCVERSITY); engagement/coursework ≫ demographics as predictors (OULAD); LinTS skill-gain bandit (De Kerpel et al., *INFORMS Trans. Education* 2026) + PSLinUCB piecewise-stationary interest-shift model (AAAI 2020); SDT-grounded multimodal affect detection with fusion-for-coverage (Booth et al. 2023; Bosch et al.); NP-completeness of educational team formation (EDU-TF) with Laplacian-eigenmap + constrained k-way ILP (Gurobi), GA (Moreno et al., *Computers & Education* 2011), and hill-climbing "priority" solvers (LAK'25).
-- **Explicitly refuted (do not build on these):** clickstream is *not* categorically superior to other signals; a simple daily-activity flag is *not* as good as a real feature blend; metaheuristics are *not* the sole dominant grouping technique (ILP is mainstream too).
-- **Genuine gaps (frontier, hence high-upside):** the entire **AlphaX/Masterpiece** lever and **Elo/TrueSkill rivalry** engineering returned no *verified* claim — the supporting papers were found but not confirmed in this pass. Projects 5 (rating layer), 6, and 7 are the research bets; validate them on real students early.
-- **Overarching caveat:** **domain transfer.** The evidence is adult MOOC learners, not K-8 families. Mechanisms transfer; accuracy numbers do not. Every gate here is designed as human-in-the-loop decision support, never an autonomous verdict on a child's future.
+**1 — The problem it solves.** SPOV1 converts admissions from a point-in-time aptitude screen into an **8-year longitudinal inference problem about a household**. Three sub-problems fall out: (a) predict *time-to-fold* under a binding contract (not a year-1 yes/no); (b) measure grit/fanaticism through *adversarial* self-report — families want in and will fake conscientiousness; (c) verify home conditions (screen-free, parent-on-the-hook) **without surveilling minors**. And per SPOV3, folds are *contagious* — one family quitting raises hazard for the other four in its cohort.
 
----
+**2 — The mechanism & stack.**
+- **Attrition as competing-risks survival, not churn classification.** Model exits — *voluntary withdrawal / guardrail route-out / relocation / disqualifying breach* — as competing risks with **DeepHit** (Lee et al., AAAI 2018) and **Dynamic-DeepHit** for time-varying daily covariates, with **Cox** and **Random Survival Forests** as interpretable baselines, evaluated on the **time-dependent (Antolini) C-index** and **Integrated Brier Score**. Cohort contagion enters as a **shared-frailty / multilevel hazard** term. `[6][1][2][5]`
+- **Faking-resistant fanaticism psychometrics.** Replace Likert grit scales with **multidimensional forced-choice (ipsative) blocks** scored by the **Thurstonian IRT model** (Brown & Maydeu-Olivares 2011), plus **van der Linden's lognormal response-time model** to flag *coached* answering (too-fast persona-consistent responses), plus the **Overclaiming Technique** (Paulhus 2003 — seed nonexistent items, score \(d'\)) as an objective faking suppressor. Estimated as a bespoke probabilistic model in **Pyro/NumPyro on PyTorch**. `[6][2][8][1]`
+- **A "fold-under-pressure" *causal* forecaster.** "Who quits when a relative calls this child abuse" is a treatment-effect question, not a correlation. Estimate CATE with **Causal Survival Forests** and **X-/DR-learners** (EconML), evaluated by **Qini/AUUC**, using documented pressure-shock natural experiments for identification. `[1][2][5]`
+- **Zero-knowledge screen-free home attestation (the standout).** Do *not* stream home audio/video. Run **on-device acoustic content recognition** (landmark-hash fingerprinting à la Shazam + an STFT/mel pipeline) in **Rust/C++ → WASM with SIMD**, evaluate the compliance predicate locally, and emit a **zk-SNARK** (Groth16 via Circom/snarkjs) proving "no TV-audio over the rolling window" **without revealing the signal** — bound to a **hardware root of trust** (TEE remote attestation, RFC 9334; Play Integrity / App Attest) to defeat spoofing. `[12][11][4][3]`
+- **A tamper-evident continuation-contract ledger** (Merkle/Certificate-Transparency-style, Trillian) with a **LangGraph** monitor that reads risk via a **least-privilege MCP** surface and is hardened against prompt-injection from untrusted parent messages (Llama Guard / NeMo). `[1][9][10][11]`
 
-## Key sources (verified this pass)
+**3 — Why it's a standout portfolio piece.** Competing-risks *deep survival with time-varying covariates* is a niche most ML engineers never touch — it proves you pose problems as time-to-event with censoring, not reflexive binary classification. Thurstonian-IRT-from-scratch is graduate psychometrics. And "prove a fact about a home without seeing the home" fuses **edge DSP + TEE attestation + zero-knowledge proofs** — four normally-siloed specialties in one privacy-preserving pipeline. Almost nobody can credibly build that.
 
-- SAVSNet — survival-analysis dropout network: pmc.ncbi.nlm.nih.gov/articles/PMC9071151
-- CONV-LSTM MOOC dropout (Mubarak et al. 2021): sciencedirect.com/science/article/abs/pii/S0045790621002548
-- MOOCVERSITY (deep dropout over weeks): researchgate.net/publication/343233362
-- OULAD predictor analysis: pmc.ncbi.nlm.nih.gov/articles/PMC11639146
-- LinTS contextual-bandit skill-gain recommender: arxiv.org/abs/2602.04347
-- PSLinUCB piecewise-stationary "disjoint payoff" bandit (AAAI 2020): arxiv.org/abs/2003.00359
-- Engagement detection review (Booth et al. 2023, CU Boulder): colorado.edu/research/ai-institute (Booth et al. 2023)
-- Fair & skill-diverse group formation via constrained k-way graph partitioning: arxiv.org/pdf/2301.09984
-- EDU-TF (NP-completeness + hierarchical ILP): arxiv.org/html/2506.02756
-- GA multi-objective group formation (Moreno et al. 2011): researchgate.net/publication/220140694
-- Priority hill-climbing group-formation algorithm (LAK'25): dl.acm.org/doi/10.1145/3706468.3706473
-- DKT2 (xLSTM + Rasch + IRT knowledge tracing at scale): arxiv.org/pdf/2501.14256
-- GRPO Socratic-tutor RL (found, unverified): arxiv.org/html/2505.15607v1
-- MathTutorBench (found, unverified): arxiv.org/html/2502.18940v1
-- C2PA content-provenance spec: spec.c2pa.org
+**4-month MVP slice.** Synthetic-cohort DeepHit competing-risks model + Antolini/IBS eval dashboard, the Thurstonian-IRT battery with overclaiming foils, and a *working* WASM on-device TV-audio detector emitting a Groth16 proof verified server-side. (Skip the full ledger; stub the agent.)
 
 ---
 
-*Deliverable prepared as an architecture + product brainstorm, grounded in a verified deep-research pass and mapped to the Engineering Matrix (`impactful.md`) and the five spiky positions of the Brainlift (`gtBrainlift.md`). Reference documents read: `impactful.md`, `gtBrainlift.md` only.*
+## P2 — The Cognitive Floor Engine
+### Admissions & Intake · *"The floor is real, the ceiling is not"*
+
+**1 — The problem it solves.** SPOV2 makes two claims that fight normal testing. For 95% of applicants we don't need a precise IQ — we need a **confident binary at the ~120–125 floor** (a full SD below gifted cutoffs), cheaply, for 100k at-home sessions, coaching- and cheat-resistant. But SPOV2 *also* says ability never saturates — so for the right tail we need to **rank kids the way commercial IQ tests can't**, because they ceiling out near 145–160 exactly where SPOV3 cohorting needs resolution. And an IQ gate is legally radioactive: every item and the cut must survive bias audits.
+
+**2 — The mechanism & stack.**
+- **A dual-objective adaptive test.** *Regime A (floor):* a **Sequential Probability Ratio Test** with an indifference region reaches ADMIT / ROUTE-OUT / VERIFY in far fewer items than precision estimation (Wald; Eggen 1999). *Regime B (tail):* once ADMIT is certain, flip to maximum-information estimation using **Kullback–Leibler item selection** (robust in the extremes, Chang & Ying 1996), **Warm's Weighted Likelihood** (kills tail bias), and a **4PL** upper asymptote so one slip doesn't sink a gifted child — and **synthesize items harder than anything in the live bank on demand** to defeat the ceiling. `[2][4]`
+- **A self-refilling generative item foundry.** Symbolic **automatic item generation** for figural matrices (Sandia/IMak/matRiks; the cognitive radicals *are* the difficulty), plus a **QLoRA**-tuned LLM writer for verbal/quant items, plus **pre-calibration without pretesting** via the **Linear Logistic Test Model** and LLM-feature→gradient-boosting difficulty predictors, plus an **online Elo→MML calibration cascade** (with the Urnings variance-inflation fix). HNSW novelty checks guarantee non-repetition so the bank can't be memorized or leaked. `[6][8][9][7][11]`
+- **Response time as ability signal, not exhaust.** Fit **van der Linden's hierarchical speed–accuracy model** and apply **effort-moderated IRT** (Wise & DeMars) so a bored rapid-guesser isn't falsely routed out (the expensive error). Amortized variational inference (VIBO) scales it to 100k. `[6][4][2]`
+- **An integrity mesh + fairness CI/CD.** On-device gaze/keystroke proctoring (WebGazer/OpenFace-class) fused with **psychometric aberrance indices** (person-fit \(l_z\), copying \(\omega\)-index, RT-based preknowledge) — the forensic layer typical proctoring vendors lack. Every generated item passes automated **DIF gates** (Mantel–Haenszel, SIBTEST, IRT-LR) and **alignment-method invariance** + **Stocking–Lord linking** to a normed anchor, so "120–125" is externally defensible, shipped like software. `[12][6][5][9]`
+- **A zero-latency WASM client** running provisional θ locally with encrypted item prefetch and WebGL-rendered (non-scrapeable) matrices, all item access through a **governed MCP** surface. `[12][10][4]`
+
+**3 — Why it's a standout portfolio piece.** Switching a live optimizer between **decision-theoretic classification (SPRT)** and **generative on-demand tail extension** is genuinely novel test theory; exposure control + hundreds of content constraints via a shadow-test MIP is elite operations research. Pre-calibrating items from their generative radicals (no pretest) is production psychometrics only Duolingo-class orgs ship. The whole thing reads as computational-psychometrics-meets-MLOps — a rare combination.
+
+> **Non-obvious upgrade to steal:** don't gate on folk-IQ at all — set a **decision-theoretic cutscore** on \(P(\text{SAT 1570+/AP-5 by 14} \mid \theta, \text{learning-rate})\) via Taylor–Russell utility on historical cohorts. That makes "the floor is real" *empirical* and formally justifies "no ceiling" (expected output is monotone in ability → never threshold the top). Add a short **dynamic-assessment / learning-rate** module (measure the *slope* of improvement under standardized hints) — arguably the truest predictor for an acceleration school and a fairness hedge against one-shot bias.
+
+**4-month MVP slice.** SPRT classification-CAT + KL/4PL tail estimation on a simulated IRT population, a symbolic matrix generator with LLTM pre-calibration, and a DIF release-gate notebook. WASM client optional.
+
+---
+
+## P3 — The Passion Discovery Engine
+### Passion & Specialization · *Recover latent drive from behavior; specialize without foreclosing*
+
+**1 — The problem it solves.** SPOV4 demands brutally early specialization, but the central failure mode is **foreclosing on a mirage** — an 8-year-old's self-report is unreliable, and an engagement spike can be genuine drive, a novelty high, or teacher/parent-pleasing. This is not a "recommender." It is a **sequential-decision + causal-inference** problem whose object of study is the child's hidden utility function over an 8-year attention budget, with the hardest sub-question being *when the option value of exploring drops below the value of committing.*
+
+**2 — The mechanism & stack.**
+- **A Behavioral Passion Language Model (BPLM) — "a GPT of the student."** Tokenize the lifelong event stream into **semantic IDs via RQ-VAE (TIGER**, Rajput et al., NeurIPS 2023) so an unseen domain shares code-prefixes with neighbors (cold-start priors on how a child will react *before they try it*), and train a generative-recommender backbone (**HSTU**, Zhai et al., ICML 2024) built for non-stationary high-cardinality streams. The vocabulary is **intrinsic-motivation events** — self-initiated returns, voluntary difficulty escalation, unprompted 11pm sessions, effort past the assignment. The model's own surprisal \(-\log p(e_t)\) is a per-moment curiosity meter. Per-cohort **LoRA** adapters personalize cheaply. `[6][4][1][7][8][12]`
+- **Revealed-preference Inverse RL.** Treat the child as a boundedly-rational agent whose *discretionary* choices maximize a hidden reward; recover it with **MaxEnt IRL** (Ziebart 2008) / **AIRL**. The recovered weight vector *is* the passion vector. Crucially, include **adversarial nuisance features** (novelty, being-observed, path-of-least-resistance) — if reward loads on those, the "passion" is an artifact. Grounded in economic revealed-preference theory (GARP/Afriat consistency as a "is this child even revealing stable preferences yet?" diagnostic). `[6][2][1]`
+- **A restless contextual bandit for the Masterpiece block.** Interest satiates and revives, so compose **rotting bandits** (Levine 2017) + **recovering bandits** (Pike-Burke 2019) + **restless/Whittle-index** scheduling to compute each dormant interest's "option value" and decide *when to re-probe it* — anti-foreclosure by construction. Reward is a composite of intrinsic-motivation signals (never task completion), including a **Random Network Distillation** novelty term repurposed to *measure the human*. `[2][6][4][1][5]`
+- **A causal "drive vs. novelty" discriminator** with a signature trick: for every new domain, co-introduce a **novelty-matched decoy** of low substantive depth; the CATE *difference* (real − decoy), combined with an interest-**survival half-life**, identifies drive net of novelty. `[6][2][1]`
+- **An optimal-stopping specialization timer.** Frame "when to burn breadth" as a **Gittins-index** problem over a deep-kernel-GP model of mastery-velocity, with an explicit, auditable **foreclosure-risk penalty** — commit only when half-life is long, causal lift is real, *and* \(\Pr(\exists \text{ better unfound passion})\) has collapsed. `[6][2][1]`
+- **A Seldonian offline-RL meta-policy** (CQL/IQL/Decision-Transformer) over the 8-year POMDP, deployed only if **high-confidence off-policy evaluation** proves improvement, subject to a *provable* **anti-foreclosure constraint**: \(\Pr(\pi \text{ forecloses any interest before evidence thresholds met}) \le \delta\). Delivered through a **LangGraph mentor** over a **RAG evidence dossier** (Ragas-checked) behind **guardrails**, exposed via **MCP** so students/parents/auditors can *contest* any decision. `[6][9][10][11][7][8][3][5]`
+
+**3 — Why it's a standout portfolio piece.** It's the 2024 generative-recommender frontier (HSTU + TIGER) rebuilt as a *foundation model of a human's motivation*; it connects inverse RL to economic revealed preference; it composes three non-stationary bandit families with a hand-designed intrinsic-motivation reward; and it turns "don't ruin a kid's future" from a slogan into a **checked mathematical invariant**. The single narrative — *"I built a governed system that infers a child's latent drive from behavior and decides when to specialize, with a guarantee it can't foreclose their future"* — is stronger than any single model.
+
+**4-month MVP slice.** BPLM (a SASRec/HSTU-lite trunk on synthetic life-logs) emitting a passion vector + surprisal, the novelty-decoy CATE discriminator, and the Gittins stopping timer with its foreclosure penalty visualized. Stub the full offline-RL policy; ship the Seldonian constraint as an evaluator.
+
+---
+
+## P4 — The Flow Oracle & Burnout Radar
+### Motivation Guardrail · *Maintain drive at brutal intensity without killing it — and detect breakage humanely*
+
+**1 — The problem it solves.** SPOV5 wants *productive struggle*; SPOV3 wants *rivalry*. But the strongest result in this space — the **overjustification effect** (Deci, Koestner & Ryan 1999; worse for children) — says performance-contingent extrinsic rewards *undermine* intrinsic motivation. A naive rivalry-and-rating economy is therefore a machine for manufacturing amotivation. Worse, **friction and breakage look identical in the logs** (both produce errors, latency, help requests). And the guardrail ("route the rest out") is a life-altering, false-positive-intolerant decision that must never fire on a noisy point estimate.
+
+**2 — The mechanism & stack.**
+- **A Flow Oracle keyed on affect *dynamics*, not levels.** The discriminator between productive and destructive struggle is the *transition*, per Baker/D'Mello: confusion→resolution is good; confusion→frustration→**boredom** (persistent, self-reinforcing) is breakage. Train a **Transformer over the interaction stream from scratch** with a *transition head* predicting the next affective state, fused with a live **DKT/BKT** skill estimate and IRT item difficulty to compute a **flow coordinate** (challenge − skill), targeting the empirically-optimal **~85% success band** (Wilson et al., *Nat. Comms.* 2019). `[6][4][1][5][2]`
+- **An overjustification-safe RL difficulty controller.** A constrained MDP picks next-item difficulty and *friction level* to hold each student in the flow band. The key guardrail: admit any "the kid finished / feels good now" bonus **only in potential-based form** (Ng, Harada & Russell 1999), which *provably* leaves the optimal (mastery-maximizing) policy invariant — the RL analog of "keep rewards informational, not controlling." A Lagrangian constraint caps cumulative anxiety exposure. Learned **offline (CQL)** with **doubly-robust OPE** before any rollout. `[6][4][5][9][1]`
+- **A privacy-preserving digital-phenotyping burnout radar.** Passive circadian/sleep-rhythm proxies + keystroke drift + optional physiology: **HRV/EDA** and **webcam rPPG** (Contrast-Phys, *unsupervised* — no labeled PPG) run **on-device in Rust/WASM/SIMD so raw video never egresses**; only derived HRV features leave, improved via **federated learning + DP-SGD**. Each child is their **own control**: **Bayesian Online Changepoint Detection** (Adams & MacKay 2007) + CUSUM catch the high performer quietly breaking, whom population thresholds miss. `[12][6][4][1][5][3]`
+- **A humane route-out as competing-risks survival.** **Dynamic-DeepHit** with time-varying covariates, but the competing risks are reframed as **thriving / better-fit alternative track / genuine distress** — route-out becomes *matching*, not elimination. A **conformal-prediction** lower bound (never a point estimate) gates the workflow; **SHAP** explanations accompany every flag; a human board decides. `[6][1][2][5][3]`
+
+**3 — Why it's a standout portfolio piece.** Using **potential-based reward shaping as a correctness proof against overjustification** is a genuinely non-obvious cross-disciplinary move (RL theory ↔ motivation psychology). Contactless **edge rPPG in WASM + federated/DP + per-individual Bayesian changepoint** is a systems-and-ethics triple-threat few can show end-to-end. And competing-risks survival with conformal guarantees + human-in-the-loop is textbook responsible ML for high-stakes decisions — reframing "elimination" as "matching" signals rare product maturity.
+
+> **Counter-engineer what SPOV3/SPOV5 destroy:** rivalry can gut the SDT *relatedness* need and breed performance-avoidance. Cheap, high-value levers: genuine **autonomy** (choice over path/order/pace), cooperative sub-teams / near-peer mentoring, and modeling **goal orientation** (mastery vs. performance) as a first-class breakage signal. And instrument **sleep/circadian health** — likely the single highest-value, log-invisible burnout predictor.
+
+**4-month MVP slice.** The affect-dynamics transition model + flow-coordinate dashboard, the potential-based-shaping difficulty controller in a gym sim (showing policy invariance empirically), and per-student BOCPD burnout alarms on synthetic engagement series. rPPG as a standalone WASM demo.
+
+---
+
+## P5 — The Rivalry Engine
+### Cohort Orchestration · *Continuously re-form 5–6-person rivalrous cohorts across 100k*
+
+**1 — The problem it solves.** SPOV3 calls homogeneous grouping "the engine." But students advance at different rates, so cohorts must be **continuously re-formed** as people speed up or stall — an online constrained-clustering + assignment problem at 100k scale, under many constraints (ability band, pace *velocity*, spine/specialization, schedule, anti-collusion). And there's a landmine: the **Carrell–Sacerdote–West (2013)** result that *optimally* engineered peer groups can **backfire** when students self-segregate within the group — so naive homogeneity is not enough; the objective must be *productive rivalry*, empirically validated.
+
+**2 — The mechanism & stack.**
+- **Rating that matches on level *and* velocity.** A **dual layer**: an **online multivariate IRT / Elo-as-IRT** ability estimate per knowledge-component (student-vs-item), wrapped in **Glicko-2** state (rating deviation + volatility so fast-improving juniors self-adjust), and **Elo-MMR** (Ebtekar & Liu, WWW 2021) / **TrueSkill2** for the multiplayer cohort ranking. Elo-MMR is chosen for being *Massive* (parallel), *Monotonic* (proven incentive-compatibility — leaned on in P6), and *Robust* (one bad day can't crater morale). A **latent-growth** term matches on trajectory, not just current level. `[1][2][4][5][6]`
+- **Making 100k tractable.** **Constraint-induced sharding** + **HNSW** candidate generation prune the O(n²) blowup, then cohort formation is posed as **size-constrained clique / set-partitioning** solved with **CP-SAT + branch-and-price**, warm-started by **METIS/KaHIP** balanced graph partitioning and **Louvain/Leiden** community detection. Multi-objective trade-offs (homogeneity vs. rivalry-diversity vs. schedule) via **NSGA-II**, with **hedonic-game stability** as an acceptance check so no student strictly prefers another cohort. `[1][2][4]`
+- **A causally-validated GNN chemistry model.** A graph neural net over the interaction graph predicts **cohort chemistry / peer-effect lift**, but — because of the Carrell backfire — it is validated with **switchback / cluster-randomized experiments** (handling Manski's reflection problem), not just observational fit. `[6][1][4]`
+- **Event-driven re-cohorting.** A **Kafka/Redpanda** loop triggers **incremental min-cost-flow** re-assignment when a student crosses a mastery/ELO threshold, with **hysteresis** (don't thrash) and **Social-Golfer rotation** for anti-collusion / fresh rivalries. Served over **gRPC**, state in Postgres, deployed on K8s with match-quality dashboards; hot kernels in **Rust/SIMD**. `[4][1][5][2][12]`
+
+**3 — Why it's a standout portfolio piece.** It's a real **distributed-systems + combinatorial-optimization** system: streaming re-clustering, CP-SAT/branch-and-price, min-cost flow, and a GNN whose predictions are *causally* validated against a famous published backfire. Turning "rivalry" into a matchmaking-quality objective (TrueSkill draw-probability) with anti-sandbagging detection shows ML-systems + product judgment together — and the Rust/WASM deterministic rating kernel is a rare systems flex.
+
+**4-month MVP slice.** The dual-layer rating (Elo-MMR + per-KC Elo-IRT) live over a Kafka stream, CP-SAT cohort formation on 10k synthetic students with a Pareto front, and an event-triggered incremental re-cohorting loop with hysteresis. GNN chemistry as an offline experiment.
+
+---
+
+## P6 — The Friction & Integrity Engine
+### SPOV5 · *A tutor that refuses answers, and a reward that makes shortcutting worthless*
+
+**1 — The problem it solves.** SPOV5 inverts the tutoring objective: *maximize productive struggle*, refuse the answer, run Socratic dialogue, and apply a **decayed reward** to anyone who shortcuts via AI. This creates four adversarial control problems: (a) a helpful LLM's default behavior *is* the failure mode — a motivated 8th-grader will jailbreak any tutor that holds the answer in-context; (b) the second-screen problem (paste into ChatGPT on a phone); (c) a naive penalty is trivially gamed (hint-farming, timing rescues); (d) push friction past the productive band and you manufacture learned helplessness.
+
+**2 — The mechanism & stack.**
+- **An answer-blind tutor — leakage impossible by construction.** Split into two trust domains that never share the key: an **answer-blind Tutor plane** and a network-segmented **Grader plane**. They talk *only* through **least-privilege MCP** (FastMCP/JSON-RPC) whose tool manifest contains `submit_attempt`, `request_hint_budget`, `get_worked_analogy` — and **no `get_answer` tool exists in scope**. The grader returns only `{correct, misconception_tags, proximity}` computed via embedding+NLI equivalence, so even a *fully jailbroken* tutor has no answer to leak, and token-budgeted calls prevent answer-space enumeration. RAG is **answer-blind** (returns pedagogy for *other* items, Ragas-gated). `[10][11][7][6][2][3]`
+- **Productive failure compiled into a state machine.** A **LangGraph** Socratic gate where there is *literally no edge* from "enter" to any instructional node until ≥N genuine attempts and T seconds of struggle are logged (Kapur productive failure; Bjork desirable difficulties). Each hint rung is a transition with deliberate latency and a lower reward ceiling — "make help hurt" as graph topology. Hint content is bounded by **NeMo Colang rails** so an L1 nudge is *architecturally incapable* of containing the solution. Item scheduling via **FSRS-6** + interleaving. `[9][11][1][4]`
+- **A reward proven un-gameable (the crown jewel).** Model the learner as an RL agent whose true reward is durable mastery (measured only by spaced, *proctored* retrieval). Shape with **potential-based reward shaping** \(F=\gamma\Phi(s')-\Phi(s)\), \(\Phi=\) knowledge-tracing mastery estimate. Ng–Harada–Russell prove this is the *only* form that leaves the optimal policy invariant, and it telescopes over any loop → **hint-farming nets exactly zero**. After an AI rescue, true mastery barely moves, so \(\Phi(s')\approx\Phi(s)\) and reward → 0 **automatically** — the principled version of "decayed reward," with a game-theoretic sketch that shortcutting is a **strictly dominated strategy**. Confidence is elicited with a **strictly proper scoring rule** (Brier/log) to close the self-report side-channel. `[6][1][4][11]`
+- **Defense-in-depth + a live student red-team loop.** Treat every child utterance as untrusted: **Spotlighting** (Microsoft) for injection defense, **Llama Guard 4** for the 14-hazard minor-safety taxonomy, and a bespoke **"answer-leakage classifier"** (the Anthropic Constitutional-Classifiers recipe, redefining "harm" as revealing the solution). Harvest real student jailbreak attempts nightly → LoRA-retrain the classifier; a CI gate (**PyRIT/garak**, GCG, many-shot, Crescendo) blocks deploys that regress leak-rate. `[11][8][6][5]`
+- **Cognitive-offloading detection — as corroboration, never verdict.** On-device **Rust/WASM/SIMD** keystroke/paste/latency + **stylometry drift** (Writeprints) features; AI-text detectors (DetectGPT/Binoculars) explicitly **advisory only** (documented bias against ESL writers) — a risk score routes to a human with due process. `[12][6][4][5]`
+
+**3 — Why it's a standout portfolio piece.** This is **security-by-architecture**: solving an LLM-safety problem with information-flow design + MCP ACLs instead of hoping a prompt holds — exactly the OWASP-LLM competency employers can't hire for. Compiling pedagogy into a *verifiable state machine*, re-purposing the constitutional-classifier recipe for **answer-leakage**, and a **proof-backed** claim that shortcutting is mathematically worthless (connecting RL theory, memory models, and product incentives) are each nameable, original contributions.
+
+> **The honest strategic reframe** (say it out loud, it's what makes the design credible): you cannot win the second-screen arms race on-device. You win on **incentives (the PBRS proof) + un-gameable proctored-retrieval ground truth** — if XP only accrues from unassisted retrieval, the second-screen problem largely dissolves. Telemetry is secondary corroboration, never the basis for an accusation.
+
+**4-month MVP slice.** The two-plane answer-blind tutor over MCP (with a red-team harness proving no leakage under jailbreak), the LangGraph Socratic gate with Colang-bounded hints, and the PBRS reward with a written domination proof + a notebook showing hint-farming yields ≈0.
+
+---
+
+## P7 — The Masterpiece Platform
+### AlphaX / Afternoon · *Let 100k minors ship real work, and grade the ungradeable*
+
+**1 — The problem it solves.** The afternoon block breaks every LMS assumption: output is **open-ended, real, and shippable**, users are **minors under deliberate friction**, and a "masterpiece" gates advancement — so the incentive to have an LLM or older sibling do it is enormous. Four hard problems: (a) run untrusted code/builds for 100k minors with a *hardware* trust boundary; (b) prove authenticity when AI-detectors are provably unreliable; (c) mentor at scale without *doing the work*; (d) grade a documentary, a Rust game, and a research paper consistently, defensibly, at 100k.
+
+**2 — The mechanism & stack.**
+- **The Forge: minor-safe ephemeral build fabric.** Per-student **Firecracker microVMs** (hardware-virtualized, ~125ms boot) via **Kata** on EKS, with the innermost untrusted step double-wrapped in **gVisor**; toolchains pinned with **Nix flakes** (reproducibility is also an anti-cheat + anti-"works on my machine" signal); warm-pool snapshot/restore for the 3pm stampede; **OPA/Gatekeeper** + **Cilium** default-deny egress. The novel piece: a **capability-scoped egress broker exposed as an MCP server** — minors get *tools* (`fetch_package`, `call_allowlisted_api`), not sockets, so minor-to-stranger contact and data-exfil are *structurally impossible* and every dependency is provenance-logged. `[3][5][10][11][12][2]`
+- **The Authenticity Ledger: proof-of-*process*, not AI-detection.** Stop trying to prove the *absence* of AI; prove the *presence* of authentic human process. Every editor/terminal/git action is a **Protobuf event over Kafka**, folded into a per-project **Merkle hash chain** (tamper-evident), with an edit-dynamics model scoring paste-burst ratio and stylometric drift. At publish, mint **C2PA Content Credentials** binding artifact→Merkle root→student VC; detectors stay advisory. `[4][1][6][11][7]`
+- **Comparative-judgment evaluation at 100k.** Humans (and LLMs) are far better at *"which is better?"* than *"score 0–100,"* so scale **Adaptive Comparative Judgment** (Thurstone → Bradley-Terry) with **TrueSkill-style adaptive pairing + Swiss matchmaking** to collapse O(n²) → ~O(n log n). LLM judges are **bias-hardened** (position-swap + **CalibraEval**, **G-Eval** rubric decomposition, a **panel across model families** for self-preference), **human-anchored weekly**, and — critically — every grade ships a **conformal Elo interval**: *if the band straddles a mastery gate, auto-escalate to a human.* Gating is never decided by an over-confident model. `[6][7][5][1][11][2]`
+- **A Socratic critic swarm + mentor attention market.** LangGraph supervisor + specialist critics under a **Constitutional "no-solution" constitution** and an **answer-leakage guardrail**, reaching the repo through **read-only scoped MCP**; a **productive-friction contextual bandit** titrates hint specificity to *downstream learning*, not satisfaction. Scarce elite human minutes are allocated by an **uplift model** (marginal benefit of a human *now* vs. letting the AI tier continue) over min-cost-flow / Gale-Shapley matching. `[9][10][11][6][8]`
+- **A remix-lineage graph.** Reframe plagiarism as **lineage + centrality**: structural (Dolos/Tree-sitter + winnowing), near-dup (MinHash/LSH), and semantic (UniXcoder) similarity build a "git-of-ideas" DAG where *attributed* remixing is **rewarded** and unattributed similarity **+ a process gap in the ledger** triggers review. `[7][1][4][6][12]`
+
+**3 — Why it's a standout portfolio piece.** "I ran arbitrary code for 100k minors with a hardware trust boundary and structurally-impossible exfiltration" is a systems-design interview in one sentence. **Proof-of-process over AI-detection** is a research-grade inversion built on event sourcing + Merkle + C2PA. Scaling **comparative judgment to 100k with bias-hardened panels and conformal gating** is publishable psychometrics-meets-ML. Each is the kind of thing FAANG/lab infra teams actually hire for.
+
+> **The ultimate rubric:** wire the Forge to *real* deploy targets (app-store sandbox, preview URL, preprint, film-festival submission). "Did strangers use it / cite it / watch it?" is a harder-to-game quality signal than any judge — instrument real-world telemetry as an evaluation feature.
+
+**4-month MVP slice.** Firecracker+Nix Forge with the MCP egress broker, the Kafka+Merkle authenticity ledger with a paste/stylometry anomaly score, and an ACJ pipeline (Bradley-Terry + adaptive pairing + G-Eval panel + conformal gate) on a corpus of sample projects.
+
+---
+
+## P8 — The Learner Event Spine & Digital-Twin Backbone
+### Foundation · *The substrate every other system stands on*
+
+**1 — The problem it solves.** Six ML products consume the same primitives (who the learner is, what they did, what they know, what happened next). Without a shared substrate you get training/serving skew ×6, six definitions of "mastery," and six leakage bugs. Two things make it brutally hard: **longitudinality** — the ultimate label ("MIT-ready at 14") arrives *years* after the decisions that caused it, so you can't wait for it and can't train on features that "saw the future" — and **ethics** — you cannot A/B a high-friction curriculum on real 12-year-olds to see if it backfires.
+
+**2 — The mechanism & stack.**
+- **A decision-provenance event log.** One append-only, `student_id`-keyed log on **Redpanda** (thread-per-core, no GC, sub-5ms p99) ingested via a **Go/Rust gRPC** gateway with **exactly-once** semantics. Events use **xAPI/Caliper** semantics but **Protobuf** serialization under a schema registry with `buf breaking` CI gates. The novel move: **every model-driven event carries the decision's propensity \(\pi(a|x)\) and model version at decision time** — logging propensities *up front* is what later makes unbiased **off-policy evaluation** possible; retrofitting it is impossible. **Bitemporal** (`event_time` vs `ingest_time`) so late/corrected events replay without corrupting history. `[4][1][3][5]`
+- **A point-in-time-correct feature store.** **Feast/Tecton** with one streaming-SQL definition (**RisingWave/Flink**) feeding both online (Redis, sub-10ms) and offline (**Iceberg** time-travel) planes → skew eliminated by construction. Training rows built with **AS-OF joins** (features as of decision time, never after), with temporal-integrity **CI gates** that assert no feature timestamp > label time — and the ability to **reconstruct feature state as of a decision 3 years ago** for years-delayed labels. `[1][4][2][3]`
+- **A two-speed mastery service on Triton.** Fast **AKT/SAINT+** (ONNX/TensorRT, p99<10ms) for prediction, reconciled with interpretable **BKT/PFA** for parents and cold-start; **calibrated** probabilities by design (they feed label-free monitoring). `[6][5][4][1][12]`
+- **An OPE-validated digital twin + ethics-aware experimentation.** A generative learner population (KT + response models) validated against logs via **DR/MRDR** *before* trusting it to extrapolate; offline RL (**CQL**) proposes policies gated by **High-Confidence OPE** before any child is exposed. Live experiments use **CUPED** (8-year pre-period → 30–70% variance cut → *half the children exposed for half as long*), **synthetic control** for campus rollouts, and an **always-valid (mSPRT) experiment controller** that auto-rolls-back the instant a subgroup guardrail trips. `[6][2][12][5][1]`
+- **Label-latency-aware monitoring.** Because true labels are years away, the *primary* health signal is **label-free performance estimation** (NannyML CBPE/DLE) + drift (ADWIN/PSI), wired into GitOps retraining (MLflow/Argo/KServe). `[5][2][3][1]`
+
+**3 — Why it's a standout portfolio piece.** Logging **propensities + bitemporal provenance up front** is the one decision that separates "we have logs" from "we have a causal-inference-ready substrate" — staff/principal reviewers recognize it instantly. Point-in-time correctness with **replay-as-of-any-past-decision under years-delayed labels** is the hardest correctness problem in applied ML. A monitoring loop whose north star is **accuracy estimated with zero labels** answers the question every reviewer asks: *"how do you know it works before you know if the kid got into MIT?"*
+
+**4-month MVP slice.** The Redpanda event spine with the propensity-logging Protobuf envelope, a Feast point-in-time feature store with temporal-integrity CI tests, and a small digital twin validated by doubly-robust OPE with an HCPI deployment gate.
+
+---
+
+# ★ THE MOONSHOT — The Pedagogical Self-Play Gym
+### *Stop experimenting on children. Experiment on their twins.*
+
+Build a **calibrated cognitive digital twin** of each of the 100,000 learners — a knowledge-tracing sequence model (BKT→DKT→AKT lineage) fused with P4's physiological state and P2's item-response history, framed as a **POMDP** where latent cognition is hidden — and validate twins by held-out trajectory prediction against real students. Then expose the twin population as a **Gymnasium** environment and train a curriculum/tutoring/cohorting/friction **policy** against it with a **MuZero-style learned-model planner** or **Dreamer** world-model rollouts, trained safely offline with **CQL**. This is exactly the direction the 2025–2026 literature is validating (PPO curriculum tutors over prerequisite graphs; PedagogicalRL, EMNLP 2025; surrogate-environment RL).
+
+**The payoff: compress a decade of pedagogical A/B testing into simulation.** Discover superhuman sequencing/friction/specialization policies *in silico*, then deploy only HCPI-vetted ones to real children under human oversight (via P8's gate). The twins triple as (a) the privacy-preserving synthetic-data generator for the data fabric, (b) the simulated examinees that pre-calibrate P2's item foundry, and (c) the counterfactual engine behind P1/P4's uplift and route-out. It is **self-play for curriculum** — the single highest-leverage, most audacious asset the program could own. `[6][8][9][5][4][1][3]`
+
+---
+
+# EXTENDED ARSENAL
+### High-leverage levers beyond the four named areas (compact treatments)
+
+The brief invited anything that helps the 100k→MIT goal. These are the strongest additions; each is a real, buildable system.
+
+### A1 — The Fanatical-Family Prospecting Engine *(top-of-funnel for SPOV1)*
+Admissions can only pick from who *applies*, but the qualifying set (IQ≥120 **and** fanatical **and** screen-free **and** contract-willing) is ~1-in-thousands of households — seating 100k is a **continental retrieval-and-ranking** problem nobody else owns. **Positive-Unlabeled learning** (Elkan-Noto → PUe/NIPW) over **sampling-bias-corrected two-tower** embeddings + **HNSW** lookalike ANN, **X-learner uplift** to spend budget only on *persuadable* families, and a **PostGIS Gaussian-process demand surface** over proxy signals (olympiad/robotics-club/homeschool-coop density). *Why elite:* FAANG-growth-infra (recsys + causal + geospatial) with an unusual, defensible objective. `[1][2][3][5][6][7]`
+
+### A2 — The Household Operating System *(family-as-a-system, post-selection)*
+The home is the largest uncontrolled variable and nobody instruments the **parent** — the actual actuator of SPOV1/SPOV5. A **LangGraph** family-success graph driven by **Just-In-Time Adaptive Intervention** decisioning via a **mixed-effects contextual bandit** (RoME, NeurIPS 2024) that pools across households while modeling per-family random effects; an LLM writes the nudge, guardrailed because it discusses a minor with a stressed adult; **on-device TV-audio detection** (YAMNet-class) emits only a boolean. *Why elite:* rigorous behavioral RL (regret bounds) on a novel actuator + edge-ML privacy. `[9][2][10][11][12][1]`
+
+### A3 — The Self-Calibrating Practice-Item Foundry *(mastery supply)*
+Mastery-gating 100k kids **burns items faster than humans can write them**, and any reused item leaks. **Automatic item generation** from item-models with a **QLoRA** writer, **zero-exposure calibration** via **SMART** (DPO-aligned simulated-student LLMs → fit 2PL/3PL IRT, EMNLP 2025) + text-embedding→IRT priors, **KAQG** knowledge-graph difficulty control, and RAG/Ragas + DIF QC. Structurally protects P6's integrity engine by making fresh items effectively infinite. *Why elite:* psychometrics + LLMs + MLOps fused into a factory with a hard correctness contract. `[6][7][8][11][4][5][2]`
+
+### A4 — The Chronobiological Scheduler *(biology as a controllable variable)*
+Schools fight adolescent circadian biology and lose; to compress a decade you must schedule learning/retrieval against each child's neurobiology. **FSRS-6** spaced-retrieval-as-a-service (benchmarked vs. DASH/HLR/ACT-R/Ebisu, optionally an RL controller over the memory model) + a **two-process circadian model** from wearable sleep/HRV to place high-load blocks at each child's alertness peak + cognitive-load-aware difficulty throttling closing the loop with A3. *Why elite:* SOTA SRS + chronobiology + streaming systems, quantitatively defensible. `[4][2][1][6][5][3]`
+
+### A5 — The Zero-Knowledge Learner Data Fabric *(existential risk → moat)*
+100k minors' longitudinal cognitive/physiological data is the crown-jewel training asset **and** the worst liability. Reframe compliance as architecture: **federated learning** (FedAvg) + **Secure Aggregation** (Flower SecAgg+) so models train in-home; **DP-SGD** (Opacus, Rényi-DP accounting); **edge QLoRA adapters** run fully offline in-browser via **WebLLM/ONNX-Runtime-Web over WASM-SIMD+WebGPU** (also solves low-connectivity global homes); **CRDTs** for offline sync; PII vault + row-level security + **OPA** policy-as-code. *Why elite:* a senior privacy-engineering portfolio in one system that converts a cost center into a technical moat. `[6][8][11][12][1][3]`
+
+### A6 — The Portable Mastery Passport *(the interface to MIT)*
+A proprietary transcript is worthless to an admissions officer and captive to the institution; the child should **own** a tamper-evident, portable record. Model the learner genome as a competency graph (**1EdTech CASE**), issue each mastery event as a **W3C Verifiable Credential 2.0 / Open Badges 3.0** in a **Comprehensive Learner Record**, held under a **DID**, with **BBS+ selective disclosure** ("prove SAT-equiv ≥1570 in domain X" without revealing the full record) and **C2PA** provenance on AlphaX artifacts, verifiable by universities over **MCP**. *Why elite:* applied ZK cryptography on live interoperability standards. `[12][10][1][2][3]`
+
+### A7 — The Human-Capital Underwriting Engine *(economic model + humane route-out)*
+If the model is outcomes-financed (ISA/income-share), someone must **price each trajectory** — and the same engine turns "route-out" from a blunt cut into a calibrated decision. **DeepSurv/DeepHit** time-to-milestone + **X-learner uplift** (invest coaching where it *causally* moves the trajectory) + a "thriving" classifier that **abstains under uncertainty** (conformal) with **equalized-odds** constraints and mandatory human-in-the-loop + RAG-generated, guardrailed explanations. *Why elite:* quant-grade survival + causal + fair-abstention applied to human-capital finance. `[6][7][11][1][2][5]`
+
+---
+
+# CROSS-CUTTING: Ethics, safety & legality as first-class architecture
+
+Not a disclaimer section — a set of *engineering* requirements that recur in every system above and are themselves portfolio-grade:
+
+- **Privacy-by-architecture for minors** (FERPA/COPPA/GDPR-K, Illinois BIPA for biometrics): edge feature extraction, federated learning + secure aggregation, DP-SGD, PII vaulting, crypto-shredding on an append-only log, consent-as-data flowing through the event spine.
+- **Calibration + abstention over point estimates**: conformal prediction anywhere a decision touches a child; "we don't know yet" is a valid, safe output.
+- **Fairness under a legally-hot gate**: DIF/measurement-invariance auditing, adverse-impact (four-fifths) monitoring, subgroup HTE guardrails, detector-fairness audits (documented ESL bias), no sanction on any detector alone — encoded as a *tested invariant*, not a guideline.
+- **Strategic-classification / Goodhart hardening**: prefer features costly to game (behavioral traces, ZK-attested facts) over cheap self-report; rotate metrics; re-estimate under the distribution shift our own deployment induces (performative prediction).
+- **Contestability as a feature**: every specialization/route-out/underwriting decision ships with SHAP + a RAG evidence dossier and an appeal endpoint.
+
+---
+
+# 4-month sprint sequencing
+
+Because P8 is the substrate, a realistic multi-builder sprint sequences roughly:
+
+```mermaid
+gantt
+    dateFormat  X
+    axisFormat  M%s
+    section Foundation
+    P8 Event Spine + Feature Store + Twin        :0, 4
+    section Intake (parallel)
+    P1 Commitment Oracle                         :0, 3
+    P2 Cognitive Floor Engine                    :1, 4
+    section Learning loop (parallel)
+    P6 Friction & Integrity Engine               :0, 3
+    P5 Rivalry Engine                            :1, 4
+    P3 Passion Discovery Engine                  :1, 4
+    P4 Flow Oracle & Burnout Radar               :2, 4
+    section Afternoon
+    P7 Masterpiece Platform                      :1, 4
+    section Capstone
+    Self-Play Gym (on top of P8 twin)            :3, 4
+```
+
+**Best solo capstones (maximal "wow" per engineer-month):** **P6** (answer-blind tutor + provable reward — a security *and* RL story), **P1's ZK home attestation** (edge DSP + TEE + zk-SNARK), **P2's dual-objective CAT** (novel test theory), or **P3's specialization timer with the anti-foreclosure guarantee** (RL + optimal stopping + ethics). **P8** is the highest-value *team* project and unlocks everything else, including the moonshot.
+
+---
+
+# Engineering Matrix coverage
+
+Every one of the 12 stacks is exercised, most of them many times over.
+
+| Matrix stack | Where it shows up (flagships + arsenal) |
+|---|---|
+| **1** SQL / relational | P1, P2, P4, P5, P6, P7, **P8**, A1–A7 |
+| **2** Python core (async/FastAPI) | P1, P2, P3, P4, P5, P6, P7, P8, A1–A7 |
+| **3** Cloud + IaC (Terraform) | P1, P4, P7, **P8**, A1, A5, A6, ★ |
+| **4** gRPC / Protobuf / Kafka | P1, P2, P4, **P5**, P6, **P7**, **P8**, A3, ★ |
+| **5** Docker/K8s/CI-CD/Triton/Grafana | P2, P4, **P5**, P6, **P7**, **P8**, A3, ★ |
+| **6** PyTorch / DL from scratch | **P1, P2, P3, P4**, P5, P6, P7, P8, A1, A3–A7, ★ |
+| **7** RAG / vector retrieval | P1?, **P2, P3**, P6, **P7**, A3, A7 |
+| **8** PEFT / LoRA / QLoRA | P1, **P2**, P3, P6, A3, A5, ★ |
+| **9** Agentic workflows (LangGraph) | P1, P2, **P3**, P4, **P6, P7**, A2, ★ |
+| **10** MCP infrastructure | P1, P2, **P3, P6, P7**, A2, A6 |
+| **11** Adversarial AI security / guardrails | **P1**, P2, P3, **P6, P7**, A2, A3, A5, A7 |
+| **12** WASM / low-level (C++/Rust/SIMD) | **P1**, P2, P3, **P4**, P5, P7, A2, A5, A6 |
+
+---
+
+# Consolidated references (real, grouped)
+
+**Educational evidence base (from the Brainlift + extensions).** Polderman et al. 2015 (heritability); Deary et al. 2007; Schmidt & Hunter 1998; Robertson et al. 2010 & Lubinski/Benbow SMPY (no threshold); Macnamara et al. 2014; Ericsson & Kintsch 1995; Steenbergen-Hu et al. 2016 (grouping/acceleration); **Carrell, Sacerdote & West 2013** (optimal-peer-group backfire); Soderstrom & Bjork 2015; Kapur 2008 (productive failure); Bernstein/Lubinski/Benbow 2021; LearnLM RCT 2025; Kosmyna et al. 2025 (cognitive debt); Bloom 1984 (2-sigma); Deci, Koestner & Ryan 1999 (overjustification); Csikszentmihalyi (flow); Wilson et al. 2019 (85% rule); Baker/D'Mello (affect dynamics); Beck & Gong 2013 (wheel-spinning).
+
+**Survival / causal / uplift.** Cox 1972; DeepSurv (Katzman 2018); DeepHit & Dynamic-DeepHit (Lee 2018/2019); Fine-Gray 1999; Random Survival Forests (Ishwaran 2008); Antolini C-index; Integrated Brier Score (Graf 1999); Causal Survival Forests (Cui 2023); X-/R-/DR-learners (Künzel 2019; Nie & Wager 2021; Kennedy 2023); Causal Forests / GRF (Wager & Athey 2018); CausalImpact/BSTS (Brodersen 2015); CUPED (Deng 2013); Synthetic Control (Abadie 2010); Double ML (Chernozhukov 2018); Qini/AUUC; Manski 1993 (reflection); VanderWeele & Ding 2017 (E-values); EconML/DoWhy/CausalML.
+
+**Psychometrics / knowledge tracing.** Rasch/Birnbaum IRT; Samejima GRM; 4PL (Barton & Lord 1981; Magis 2013); Thurstonian IRT (Brown & Maydeu-Olivares 2011); Grit-S (Duckworth & Quinn 2009); Overclaiming (Paulhus 2003); van der Linden lognormal RT (2006) & hierarchical model (2007); CAT (Wald SPRT; Eggen 1999; Chang & Ying 1996/1999 KL + α-stratification; Sympson-Hetter; shadow-test, van der Linden & Reese 1998); AIG (Carpenter/Just/Shell 1990; Sandia; IMak; matRiks; Gierl & Lai 2013; LLTM, Fischer 1973); SMART (EMNLP 2025); KAQG (2505.07618); online calibration (Urnings, Bolsinova 2022); DIF (Mantel-Haenszel; SIBTEST; IRT-LR); alignment (Asparouhov & Muthén 2014); linking (Stocking-Lord; Kolen & Brennan 2014); BKT (Corbett & Anderson 1994); PFA/AFM (Pavlik 2009); DKT (Piech 2015); DKVMN (Zhang 2017); SAKT (2019); SAINT+ (Shin 2021); AKT (Ghosh 2020); Elo-for-learning (Pelánek 2016); pyKT/pyBKT.
+
+**Ranking / bandits / RL / mechanism design.** Elo; Glicko-2 (Glickman); TrueSkill/TrueSkill2 (Herbrich 2007; Minka 2018); **Elo-MMR** (Ebtekar & Liu, WWW 2021); Bradley-Terry / Plackett-Luce; LinUCB (Li 2010); NeuralUCB (Zhou 2020); Thompson sampling; rotting bandits (Levine 2017); recovering bandits (Pike-Burke 2019); restless/Whittle (1988; UCWhittle 2023); RoME (NeurIPS 2024); JITAI (Nahum-Shani 2018); MaxEnt IRL (Ziebart 2008); AIRL (Fu 2018); GARP/Afriat; RND (Burda 2019); ICM (Pathak 2017); Gittins index (1979); GP-UCB (Srinivas 2010); Deep Kernel Learning (Wilson 2016); **potential-based reward shaping** (Ng, Harada & Russell 1999; Dynamic PBRS, Devlin & Kudenko 2012); proper scoring rules (Gneiting & Raftery 2007); Bayesian Truth Serum (Prelec 2004); CQL (Kumar 2020); IQL (Kostrikov 2022); Decision Transformer (Chen 2021); doubly-robust/MRDR/MAGIC OPE (Dudík 2011; Farajtabar 2018; Jiang & Li 2016); **HCOPE/Seldonian** (Thomas 2015; Science 2019); MuZero (Schrittwieser 2020); Dreamer/world models (Ha & Schmidhuber; Hafner); Gymnasium.
+
+**Optimization / systems / MLOps.** METIS/KaHIP; Louvain/Leiden; OR-Tools CP-SAT; branch-and-price / column generation; min-cost flow; Gale-Shapley; hedonic games; NSGA-II; Kafka/Redpanda; Buf schema registry; xAPI (IEEE 9274.1.1) / Caliper; Lambda vs Kappa (Marz; Kreps); Feast/Tecton (point-in-time joins); Apache Iceberg; RisingWave/Flink/Materialize; NVIDIA Triton/TensorRT/ONNX; KServe/Argo/MLflow; NannyML (CBPE/DLE); ADWIN (Bifet 2007); Evidently/River; Prometheus/Grafana/OpenTelemetry; Terraform/EKS/Karpenter/KEDA; HNSW (Malkov & Yashunin 2018); Qdrant/pgvector; Kleppmann (DDIA).
+
+**Generative recsys / agents / RAG / eval.** HSTU (Zhai, ICML 2024); TIGER/RQ-VAE (Rajput, NeurIPS 2023); SASRec/BERT4Rec; two-tower (Yi 2019); LangGraph/CrewAI; Reflexion (Shinn 2023); Constitutional AI (Bai 2022); MCP/FastMCP (JSON-RPC, SSE, OAuth 2.1/PKCE, RFC 8707/9334); G-Eval (Liu 2023); CalibraEval (ACL 2025); Adaptive Comparative Judgment (Thurstone 1927; Pollitt 2012); Chatbot Arena/LMArena; conformal Elo/SoftElo; Ragas/TruLens.
+
+**Security / crypto / provenance / integrity.** OWASP LLM Top 10 (2025); Llama Guard 4; NeMo Guardrails (Colang); Constitutional Classifiers (Anthropic 2501.18837); Spotlighting (Hines 2024); PyRIT/garak; GCG (Zou 2023); many-shot (Anil 2024); Crescendo (Russinovich 2024); Groth16 (Groth 2016) & zk-STARKs/Bulletproofs; zk remote attestation (zRA, NDSS 2024); RATS (RFC 9334); Play Integrity / App Attest; Shazam ACR (Wang 2003); Merkle/Certificate Transparency (RFC 6962; Trillian); C2PA / SynthID; Firecracker (Agache, NSDI 2020); gVisor; Kata; Nix; OPA/Gatekeeper; Cilium; Dolos + winnowing (Schleimer 2003); MinHash/LSH (Broder); UniXcoder/GraphCodeBERT; DetectGPT (Mitchell 2023) / Binoculars (Hans 2024) *(advisory only; ESL bias, Liang 2023)*; Writeprints (Abbasi & Chen); FedAvg (McMahan 2017); SecAgg (Bonawitz 2017); DP-SGD (Abadi 2016); Rényi-DP (Mironov 2017); Flower/Opacus; CRDTs (Shapiro 2011); W3C VC 2.0 / DID / Open Badges 3.0 / CLR (1EdTech); BBS+ signatures.
+
+**Affect / physiology / scheduling.** SDT (Ryan & Deci 2000); control-value theory (Pekrun 2006); rPPG (POS, Wang 2017; DeepPhys 2018; Contrast-Phys 2022/2024; rPPG-Toolbox, NeurIPS 2023); HRV/EDA (NeuroKit2; cvxEDA, Greco 2016); digital phenotyping (Onnela & Rauch 2016; Beiwe); BOCPD (Adams & MacKay 2007); CUSUM (Page 1954); FSRS-6; DASH (Lindsey 2014); Half-Life Regression (Settles & Meeder 2016); two-process model (Borbély 1982); MCTQ (Roenneberg); conformal prediction (Angelopoulos & Bates 2021); SHAP (Lundberg & Lee 2017).
+
+---
+
+*Deliverable prepared as an architecture + product brainstorm. Every mechanism is grounded in real, named techniques and mapped to the [Engineering Matrix](impactful.md); the whole system is engineered around the five spiky positions of the [Brainlift](gtBrainlift.md). Reference documents read: `impactful.md`, `gtBrainlift.md` only.*
