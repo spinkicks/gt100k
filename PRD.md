@@ -47,7 +47,7 @@ The first three months build the complete product. Month 1 establishes identity,
 
 ### 2.1 Mission
 
-GT100K gives selected children the foundations, environment, peers, tools, and sustained support required to reach advanced academic readiness by age 14 and build work in a field they choose to pursue. The program must preserve the child’s desire to return to that field after novelty, rewards, and adult prompts fade.
+GT100K gives selected children the foundations, environment, peers, tools, and sustained support required to reach advanced academic readiness by age 14 and build work in a field they choose to pursue (as well as having strong foundations in all other fields the state/federal curriculum requires of them). The program must preserve the child’s desire to return to that field after novelty, rewards, and adult prompts fade.
 
 ### 2.2 Product promise to the child
 
@@ -213,7 +213,7 @@ Each week includes independent mastery checks, one cohort mission, one project c
 
 ### 6.3 Guide role
 
-Guides supervise motivation, planning, safeguarding, and execution. Subject models and expert mentors provide content help. Each learner has a named guide and a backup. The beta staffs guides according to observed queue and safety load, with an initial planning ratio of one guide per 25 to 40 learners. The ratio drops for younger cohorts and learners with active interventions.
+Guides are experts in a variety of technical fields, as well as extensively trained to work with students. Guides supervise motivation, planning, safeguarding, and execution, as well as providing **in person** mentoring. Subject models and expert mentors provide content help. Each learner has a named guide and a backup. The beta staffs guides according to observed queue and safety load, with an initial planning ratio of one guide per 15 to 25 learners. The ratio drops for younger cohorts and learners with active interventions. A variety of guides with expertise coverng a large subset of topics should be available to the students at all time.
 
 ### 6.4 Family role
 
@@ -286,6 +286,8 @@ A consequential decision changes access, intensity, cohort, specialization, priv
 
 ### 8.2 Child assent and structured persistence
 
+NOTE: Needs some more clarification (for example for intensity)
+
 Parents provide legal consent where required. Children provide developmentally appropriate assent for intensive participation, interest-linked specialization, sensitive-signal research, recording, mentor interaction, and public release. The product asks for assent in language and controls appropriate to the child’s age. A checked guardian box cannot stand in for the child’s answer.
 
 A refusal during a hard task starts inquiry rather than punishment or trait inference. Closing one task does not change an agreed required academic goal by itself. The guide records the child's account, offers another route, and checks whether assent to the broader activity remains.
@@ -304,6 +306,8 @@ The fourteen-day hold applies only while the child assents to the broader goal. 
 The product must not show parents a button that raises intensity. Parents can request a review. The guide and policy service apply the agreed tier and pressure budget. Children can request help, privacy, a different adult, or a safety review at any time.
 
 ### 8.3 Accommodation and access policy
+
+NOTE: Keep in mind this is a gifted program, but will still strive to make sure students have all needed support.
 
 Admissions and learning services must support disability, language, sensory, motor, reading, and executive-function accommodations. The accommodation service stores the approved support separately from performance evidence and exposes only the minimum required instruction to the consuming service.
 
@@ -382,6 +386,8 @@ A project recording is not Sensitive Signal Lab collection. It follows a separat
 
 **Family OS.** The family completes onboarding, builds a household schedule, requests devices or alternate participation windows, manages consent, reviews obligations, and receives coaching. The family sees trends and evidence without receiving surveillance-style activity feeds or private student reflections that the child marked confidential, subject to safeguarding policy.
 
+NOTE: GUide/mentor distinction must be clarified
+
 **Guide and Mentor Console.** Guides receive action queues, mastery evidence, child-raised concerns, passion hypotheses, cohort health, project blockers, and safeguarding workflows. Mentors receive assigned project context, critique tools, and communication controls. The console separates observations from model inferences.
 
 **Admissions Workbench.** Reviewers manage the family trial, assessment sessions, accommodations, retests, policy decisions, overrides, and appeals. Reviewers can see whether an optional research workflow is unavailable or complete, but they cannot view Sensitive Signal Lab features or outputs. Approved research reviewers use the isolated governance path.
@@ -404,6 +410,8 @@ Recruitment seeks families who can sustain the operating cadence after the progr
 
 Ethical prospecting uses opt-in referrals, community and school partnerships, public information sessions, and family-initiated interest. Outreach ranking may optimize delivery and language fit, but it cannot predict child ability, scrape minors, buy household vulnerability data, or target families through protected-class proxies. Every source carries campaign, message, eligibility, and conversion metadata so operators can audit who was reached, excluded, or pressured. A decline suppresses further contact except for a family-requested follow-up.
 
+NOTE: Shadow erollment is just for the beta and mya not be implemented
+
 Qualified families enter a compensated 21-to-28-day shadow enrollment. They experience the real schedule, parent handoffs, a planned disruption, a missed obligation, recovery planning, and a support request. The trial measures follow-through against the family's declared availability, honest escalation, and recovery after disruption. Perfect attendance is not the goal.
 
 The Household Schedule Compiler accepts availability, device constraints, caregiver handoffs, rest, and accessibility needs. CP-SAT tests a weekly plan against illness, outages, shift changes, and caregiver conflicts. A second solve finds a support package that restores feasibility. Staff review the result before recording an unmet obligation as evidence.
@@ -413,6 +421,9 @@ Participation uses a renewable agreement, not an irrevocable eight-year contract
 ### 10.1 Functional requirements
 
 - **RF-00:** Recruitment shall record lawful source, consent basis, message version, eligibility rule, suppression state, and subgroup reach while prohibiting purchased minor profiles, covert enrichment, and prestige or outcome guarantees.
+
+NOTE: Final project should make no reference to the MIT brand, and instead brand itself as "elite academic preparation" or similar
+
 - **RF-01:** Family OS shall create a versioned `FamilyPlan` with availability, responsibilities, rest windows, support, and renewal date.
 - **RF-02:** The trial workflow shall capture signed `CommitmentEvent` records and distinguish completion, reschedule, support request, excused disruption, and recovery.
 - **RF-03:** The schedule solver shall return feasible plans, binding constraints, and the least-cost support options under each shock scenario.
@@ -426,6 +437,9 @@ Participation uses a renewable agreement, not an irrevocable eight-year contract
 - A family with a resource constraint receives a support feasibility review before a reviewer records a commitment concern.
 - Staff can reproduce the exact evidence and policy behind a trial outcome.
 - The product reports subgroup false-decline rates and abstains when sample sizes cannot support a stable estimate.
+
+NOTE: No home data should be collected at all (and any data collected at school should be explicitly communicated and strictly neccesary)
+
 - The trial collects no ambient home audio, continuous screen capture, precise location history, or employer data.
 
 ### 10.3 Family Coach
@@ -444,6 +458,8 @@ The Cognitive Floor Engine estimates whether current evidence supports the progr
 Credentialed psychometricians define the construct, validate item families, and map any threshold to licensed reference measures. Human reviewers approve each generative template and its scoring logic. Response time may flag device faults or unusual sessions but cannot reject a candidate.
 
 The Rust/WASM client delivers visual, verbal, quantitative, spatial, and approved auditory items with monotonic timing and offline recovery. The item service enforces exposure limits and streams signed attempts. A multidimensional Bayesian IRT model updates the readiness posterior. A boundary-focused CAT or SPRT policy selects items that reduce uncertainty near the configured floor and stops once the evidence enters a decision region or reaches the session burden cap.
+
+NOTE: Item difficulty is also calibrated with student data (perhaps goes in a different part) to refine accuracy
 
 Generative item families instantiate reviewed templates under content, difficulty, and scoring constraints. Psychometric information must remain adequate at the admissions boundary and through the extreme right tail so the engine can separate a clear boundary result from unresolved headroom without imposing a fixed ceiling. Exposure control applies across generated siblings, not only exact item IDs. Tail estimates remain construct-specific distributions and never become a public IQ label.
 
@@ -478,9 +494,13 @@ The Practice-Item Foundry creates variations from reviewed item models. Automate
 
 The competency graph has two required academic spines. The quantitative spine runs from number sense and arithmetic through algebra, geometry, probability, statistics, precalculus, calculus, and mathematical modeling. The verbal spine runs from decoding and comprehension through vocabulary, composition, argument, research, rhetoric, and literature. Science, computation, and project nodes cross-link both spines. Each node maps to age-appropriate leading indicators and, where valid, SAT and AP readiness evidence.
 
+NOTE: Curriculum is preliminary, we should also scope out advanced topics like olympiad math to deepen understanding
+
 ### 12.1 Mastery delivery and measurement ownership
 
 The Learning Measurement owner configures four 25-minute focus blocks inside the two-hour mastery period, with movement breaks and accommodation overrides from 15 to 45 minutes. Practice selection targets a rolling independent success band of 70 to 85 percent. This zone-of-proximal-development practice band does not replace the 90 percent independent mastery gate.
+
+NOTE: Acronyms should be defined in each section they are used unless they are well known
 
 PFA is the beta gating baseline. BKT and IKT run as challengers until they improve calibration without subgroup harm. Each item and skill carries reading-demand metadata. Psychometrics and accessibility owners audit error by skill and reading-access group; an absolute false-lockout gap above five percentage points, or any skill gap above ten points, freezes that gate pending repair.
 
@@ -505,7 +525,11 @@ PFA is the beta gating baseline. BKT and IKT run as challengers until they impro
 
 The tutor helps the student think without seeing or generating the protected answer. A separate grader service owns answer keys and correctness checks. The tutor receives the problem, the student's attempt, a misconception code or bounded diagnostic, permitted context, and the next allowed action. It never receives the final answer for an active mastery item.
 
+NOTE: Mastery quizzes should not have the tutor available, this is just forintroduction to the topic
+
 The interaction state machine requires an attempt before a content hint unless an accessibility or safety policy applies. It can ask the student to restate the problem, identify knowns, draw a representation, test a simpler case, compare two approaches, retrieve a prior concept, or explain a contradiction. Each escalation creates a `TutorAction` and `HelpReceipt`. After substantial help, the system schedules a different unassisted item.
+
+NOTE: Independecnce reward paragraph is unclear
 
 **Independence reward (potential-based, non-punitive).** Mastery credit is never reduced by asking for help (§12); separately, the platform grants a visible *independence reward* that accrues only from unassisted first-attempt success and the later unassisted verification. Because a post-rescue attempt barely changes the knowledge-tracing mastery estimate, the reward it yields is near zero by construction — the potential-based form of a friction tax (Ng, Harada & Russell, 1999) — so shortcutting after an AI rescue is worth almost nothing without penalizing the child. Requesting help never lowers access, mastery credit, program standing, or independence reward already earned; accessibility and safety help are exempt and never affect the reward. Only the delayed unassisted check unlocks the top independence tier.
 
@@ -591,6 +615,8 @@ The two-hour mastery block remains intact. Audio creates uses for mathematics an
 
 John moves from short probes to a project ladder: characterize a room, build and compare enclosures, design a passive crossover, write a digital filter, and measure a complete system. The Socratic Mentor Mesh asks for predictions and points to prerequisites. It does not generate a finished crossover or enclosure plan for him. Accessibility support, tool safety, and clarification remain available without a help penalty.
 
+NOTE: Proofgraph must be renamed because name conflicts with existing software and is confusing
+
 Each project produces sketches, calculations, measurements, failed versions, design decisions, mentor critique, and a later solo explanation. ProofGraph records AI assistance. Evaluation rewards demonstrated capability and revision quality.
 
 #### 14.3.6 Setback, repair, and persistence
@@ -624,6 +650,9 @@ A Bayesian state model may combine the consent-valid signal families into candid
 - **PASS-001 [G]:** Student Compass shall show the child why each probe appears and shall identify whether a guide, rule, or shadow model proposed it.
 - **PASS-002 [E3]:** The Lab shall offer 18 to 24 probes over eight to twelve weeks, with coverage across at least six domains, six work modes, solo and collaborative work, two difficulty bands, and audience and no-audience conditions.
 - **PASS-003 [G]:** The child shall choose among at least two safe, prerequisite-valid offers. A guide may assign a diagnostic probe only after explaining the purpose and recording the child’s response.
+
+NOTE: What return means needs to be clarified
+
 - **PASS-004 [R]:** The event model shall capture delayed voluntary return at 7 and 30 days, unrequired revision, chosen challenge, recovery after criticism or failure, self-authored scope, and prompt dependence.
 - **PASS-005 [G]:** The platform shall separate required participation from discretionary behavior. A return caused by a reminder, deadline, parent nudge, rivalry event, or reward shall carry that intervention context.
 - **PASS-006 [G]:** Accessibility help, safety intervention, translation, motor support, and communication support shall never count as low persistence or reduce a mastery or interest signal.
@@ -794,6 +823,8 @@ The end-to-end test suite shall run each case with decision replay, consent with
 
 ### 14.11 Sensitive Signal Lab boundaries
 
+NOTE: No information should be collected outside the school
+
 The Sensitive Signal Lab is a separate research surface. It may study voice prosody, gaze, remote photoplethysmography, interaction biometrics, or home-audio attestations under purpose-specific consent. These signals cannot establish truth, deception, commitment, passion, attention, mental state, diagnosis, or eligibility. Research on facial and vocal expression does not support universal one-to-one emotion decoding across people and contexts. **[E1]** See [Barrett et al., 2019](https://doi.org/10.1177/1529100619832930).
 
 Remote photoplethysmography can estimate pulse-related signals under controlled conditions, but device, lighting, motion, physiology, and skin appearance create error. **[R]** See [Wang et al., 2017](https://doi.org/10.1109/TBME.2016.2609282). GT100K treats such a technical pulse estimate as insufficient to validate any wellbeing inference; that constraint is program policy, not a claim of the cited paper.
@@ -822,9 +853,13 @@ The program forms stable cohorts of five or six inside age, schedule, safeguardi
 
 HNSW candidate search limits the match space. CP-SAT or branch-and-price assigns cohorts under hard constraints and an individual non-harm floor. PostgreSQL commits a roster as one transaction and stores the prior snapshot for rollback. The beta starts with rule-based assignments. Cohort repair may auto-apply within the churn budget as bounded automation with a guide veto window and rollback (§8.5); peer-effect causal-uplift models remain Shadow until randomized neighbor swaps and solo checkpoints support credible estimates under network interference.
 
+NOTE: All student interactions should be face to face in school. All programs must be there to support the students learinng but not replace face to face interaction
+
 Arena sessions mix cooperative missions with short rivalry events. Private level and velocity ratings drive matchmaking so contests stay near-peer; visible standings rank gain and effort, never fixed ability, and do not define academic worth. A student can request a safety separation or cohort review. Guides approve moves that exceed the churn budget.
 
 RivalryMix runs on WebRTC. Each client extracts voice activity, overlap, response latency, turn duration, and audio quality through an AudioWorklet and Rust/WASM. Raw audio stays on the call path unless all required parties consent to recording. The service can identify observable patterns such as one speaker holding most turns or repeated interruption. It cannot infer honesty, emotion, personality, or motivation from a voice. Guides can start a rotating challenger, evidence round, silent-member entry, or pause.
+
+NOTE: However, our platform must also support remote work by students, after school or with students from other schools.
 
 The room displays an analytics indicator. A student may disable personal turn analytics without leaving the call. Missing or refused analytics cannot lower cohort status, trigger an intervention, or enter a motivation hypothesis.
 
@@ -865,6 +900,8 @@ Untrusted code, media decoders, models, and build tools run in Firecracker or eq
 
 ## 17. Resonance Audio Studio
 
+NOTE: Set this feature as low priority (extra if we have time)
+
 Resonance gives students a browser-native environment for audio engineering and media production. A Rust DSP core runs through WASM and an AudioWorklet so the real-time path does not depend on cloud round trips. The Next.js interface supports multitrack recording and editing, waveform and spectrogram views, node-based routing, and evidence capture.
 
 The beta feature set includes FFT and STFT analysis, biquad and FIR filters, crossover design, enclosure-response experiments, spectral denoise, compression, limiting, clipping detection, LUFS and true-peak metering, impulse-response measurement, and room-correction previews. Later adapters may add phase-vocoder time stretch, pitch shift, and collaborative automation. Students can export measurements, settings, code, stems, and renders as ProofGraph evidence.
@@ -892,6 +929,8 @@ Evaluated RAG limits each agent to approved corpora, student-authorized project 
 
 The solution-leakage firewall blocks final deliverables, hidden-test extraction, fabricated evidence, and cross-project retrieval. Agents may generate a small illustrative example outside the student's target solution when policy permits. They may execute a tool only after a capability check and, for consequential actions, a student approval step. Human mentors receive an escalation when the student asks, the agent lacks confidence, critique repeats without progress, or policy detects safety or domain risk.
 
+NOTE: Highlight that the primary mentor is a human, and a human should always be available to support the student
+
 ### 18.1 Expert matching
 
 - **EM-01:** The matcher ranks eligible experts by verified skill, project need, availability, language, accessibility, time zone, and child preference.
@@ -911,6 +950,8 @@ Acceptance requires complete clearance and scoped access, no off-platform contac
 
 ## 19. ProofGraph and evaluation
 
+NOTE: Pls rename proofgraph as it conflicts with an already existing tool unrelated to education (make sure to update entire doc so no reference is stale)
+
 ProofGraph stores a content-addressed evidence DAG. Node types include `Artifact`, `Attempt`, `Transformation`, `Claim`, `Assistance`, `Review`, `Contribution`, and `Outcome`. Edges include `derived_from`, `authored_by`, `used_tool`, `validates`, `contradicts`, and `released_as`. Each node records hashes, actor, toolchain or container version, model involvement, inputs, timestamp, and consent scope.
 
 Each milestone creates a `ProofPacket` with source and artifact hashes, failed branches, reproducible run instructions, verifier output, contribution attestations, assistance lineage, review evidence, and outcomes tied to an exact release. Merkle checkpoints and C2PA or in-toto attestations make later changes visible. WASI verifiers run without ambient network or filesystem access.
@@ -918,6 +959,8 @@ Each milestone creates a `ProofPacket` with source and artifact hashes, failed b
 Evaluation combines deterministic checks with human judgment. Software builds and tests run in frozen containers. Research adapters rerun analyses. Audio adapters verify sources, edit lineage, measurement fixtures, rights, and delivery specifications. Physical adapters bind CAD, firmware, bill of materials, and signed sensor runs.
 
 Open-ended work uses adaptive comparative judgment and anchored rubrics. Calibrated model panels may suggest comparisons, while conformal intervals trigger more review under uncertainty. A human owns the result. A sampled live defense asks the student to explain a decision, modify a component, or reconstruct a step. Reviewers treat discontinuity as a sampling signal, never proof of misconduct.
+
+NOTE: All final grades and non deterministic judgement miust be made by a human (can be supported by model evidence)
 
 ### 19.1 Acceptance criteria
 
@@ -969,6 +1012,9 @@ The student selects disclosures, and the caregiver supplies consent where law re
 - **Reliability:** Transactional outboxes, idempotency keys, dead-letter handling, replayable projections, bitemporal state, backups, and tested disaster recovery protect consequential workflows. Control paths fail closed where consent, policy, or identity cannot resolve.
 - **Scale:** The Month 4 validation run covers 100,000 registered learners, correlated school-bell traffic, 10,000 events per second, 20,000 concurrent cohort rooms at scenario peak, workspace launch bursts, tutor queues, credential verification, and emergency exposure revocation.
 - **Observability:** OpenTelemetry traces connect a user action to service, policy, model, evidence, and outcome. Prometheus and Grafana report SLOs, capacity, cost, subgroup errors, overrides, appeals, and kill-switch state.
+
+NOTE: What is prometheus and grafana (also SLOs, remember to expand all acronyms in each section they are used in at least once unless they are common knowledge)
+
 - **Accessibility and localization:** User interfaces meet WCAG 2.2 AA, support assistive technology, separate tested construct from access method, and externalize language and locale formats. English-first content must not create an English-only architecture.
 - **Model governance:** MLflow records data, code, feature, model, evaluation, approver, and rollback lineage. A model release needs offline evaluation, subgroup review, red-team results, shadow comparison, and signed approval. Irreversible, high-stakes models remain shadow-only during the beta; reversible, fast-feedback models may be promoted to bounded automation under §8.5.
 - **Cost:** Operators can attribute compute, storage, model inference, mentor time, equipment, and external spend by program, cohort, and project without exposing student-level cost as a pressure mechanism.
@@ -1002,9 +1048,13 @@ GT100K uses one program platform across admission, mastery, passion discovery, c
 
 Delivery assumes an AI-native engineering workflow using Codex, Claude, Cursor, and frontier reasoning models for parallel design, implementation, tests, migration, red-team generation, and documentation. The roadmap plans around a 50x velocity hypothesis and therefore preserves the broad scope. Generated changes still require owned contracts, review, automated evidence, security gates, and rollback; development speed grants no model child-facing authority.
 
+NOTE: Strict human review before any product is presented to consumers/especially children
+
 The architecture assigns authority to deterministic services and named people. Statistical models estimate state, rank safe options, or render an action that a rules engine selected. Models cannot admit a child, remove a child, raise pressure, deny help, publish work, or issue a credential. OPA policies, workflow state machines, and authorized staff own those actions. During the Month 4 beta, learned admissions, wellbeing, biometric, and peer-effect models run in shadow mode; a learned motivation controller may act only within rules-engine dose caps as bounded automation with a guide veto and one-click revert (§8.5). Staff can compare shadow recommendations with outcomes without exposing children to model-driven decisions on any irreversible or identity-defining matter.
 
 The architecture inherits the evidence classes in Section 5. Learning mechanisms with strong evidence use E1 or E2; less-settled transfers use E3; learned `InterestHypothesis` updates, learned MotivationDose control, causal cohort effects, and digital-twin policy evaluation use R until validated. Deterministic dose caps and vetoes use G/ENG. Rights and authority boundaries use G; transactional outboxes, multi-zone deployment, queue-depth autoscaling, and other production controls use ENG.
+
+NOTE: Make sure implementation blueprint is updated to reflect updates to PRD
 
 The [Implementation Blueprint](RESEARCH-implementation-blueprint.md) supplies the evidence basis for the two-hour structure, interpretable PFA/BKT/IKT gates, deterministic tutor control, QLoRA plus GRPO tutor training, per-skill fairness audits, and queue-based LLM scaling. The proposal files supply product mechanisms and engineering designs. A requirement keeps its evidence label until the governance board approves a cited change.
 
@@ -1053,6 +1103,8 @@ flowchart TB
   RV --> GT
   GT --> OG
 ```
+
+NOTE: Mermaid diagram seems to be incorrect, make sure it renders correctly
 
 The web-first monorepo contains six Next.js and TypeScript applications, shared design and accessibility packages, generated Protobuf clients, policy fixtures, and end-to-end tests. FastAPI exposes model and research APIs. Go services own low-latency commands, leases, event ingestion, and assignment commits. Rust supplies WASM assessment renderers, AudioWorklet DSP, content verifiers, and security-sensitive gateways.
 
