@@ -1,0 +1,12 @@
+# CODEOWNERS — lane ownership. Every PR requires the relevant owner's review.
+# spinkicks is the repo owner. Add teammates + their lanes as the team grows.
+
+# Default owner for everything
+*                       @spinkicks @f15cubing
+
+# --- Lanes (uncomment / expand as code + teammates arrive) ---
+# /docs/                        @spinkicks
+# PRD.md                        @spinkicks
+# /packages/psychometrics/      @spinkicks
+# /packages/capability-gateway/ @spinkicks
+# /infra/                       @spinkicks
