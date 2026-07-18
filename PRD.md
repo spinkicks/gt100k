@@ -27,7 +27,7 @@
 - **Smaller fixes.** §8.7 appeal SLA reworded to "Accommodation or post-enrollment appeal" (admission/pre-enrollment appeals are admissions-owned); glossary adds Brainlift, BFF, IAM, MFA, RPO, RTO, SBOM, and SFU.
 - **Left open (by decision):** the eligibility→program-start boundary and age-range reconciliation with the admissions front door remain unspecified.
 
-**v1.3 (2026-07-18) — admissions reconciliation with the admissions team's MVP.** Reconciles this PRD with the admissions team's now-available plan (`GT_ADMISSIONS_APPLICATION_MVP_PRD.md`), which is treated as the authoritative admissions front door. Summary:
+**v1.3 (2026-07-18) — admissions reconciliation with the admissions team's MVP.** Reconciles this PRD with the admissions team's now-available plan (`ADMISSIONS_PRD.md`), which is treated as the authoritative admissions front door. Summary:
 
 - **Admissions model (§3.4, §3.5, §8.4).** The admissions front door is their **CogAT + Track A / Track B** eligibility process with a Talent Evidence Snapshot and independent blind rubric review. §3.4 now lists their actual surfaces and deferrals (financial aid `B-08`, seat allocation, evaluation, substantive appeals); §3.5 replaces the "pending their plan" placeholder with a concrete enrollment-handoff contract keyed to their eligibility determination; §8.4 is realigned from `ADMIT`/`VERIFY`/`ROUTE` to Track A / Track B states (`qualifies` / `does not currently qualify` / `pending correction`).
 - **Capabilities reassigned to this platform (§10, §11, RF-04).** The Cognitive Floor Engine, the compensated family trial / shadow enrollment and Household Schedule Compiler, and the family-execution model are **not** in the admissions MVP and are now owned by this platform. The CFE is repositioned from an admission gate to a readiness/placement assessment (outputs `CLEAR`/`INCONCLUSIVE`/`BELOW_THRESHOLD`, advisory only); the family trial becomes post-eligibility onboarding; the family-execution signal is advisory to guides for support/retention, never an admissions input.
@@ -48,7 +48,7 @@ Rights limits that did **not** move: child assent/veto, safeguarding override, n
 
 **In one sentence.** GT100K is the operating system for an intensive, in-person gifted academy: it takes an *already-admitted* child from daily academic mastery and passion discovery through to a portable, evidence-backed body of work.
 
-**What is in and out of scope.** This PRD covers the full post-admission program and its supporting infrastructure (mastery, tutoring, passion development, cohorts, projects, evidence, credentials, governance). The admission and selection pipeline — the family application, CogAT-based routing, the Track A / Track B eligibility decision, and the Talent Evidence Snapshot review — is **owned by a separate team** (documented in `GT_ADMISSIONS_APPLICATION_MVP_PRD.md`) and is integrated at the enrollment handoff; those boundaries are set out in §3.4 and §3.5, and the affected sections carry an ownership banner. The Cognitive Floor Engine (§11), the compensated family trial (§10), and the family-execution signal (RF-04) are **not** in that team's MVP and are owned by this platform (§3.4).
+**What is in and out of scope.** This PRD covers the full post-admission program and its supporting infrastructure (mastery, tutoring, passion development, cohorts, projects, evidence, credentials, governance). The admission and selection pipeline — the family application, CogAT-based routing, the Track A / Track B eligibility decision, and the Talent Evidence Snapshot review — is **owned by a separate team** (documented in `ADMISSIONS_PRD.md`) and is integrated at the enrollment handoff; those boundaries are set out in §3.4 and §3.5, and the affected sections carry an ownership banner. The Cognitive Floor Engine (§11), the compensated family trial (§10), and the family-execution signal (RF-04) are **not** in that team's MVP and are owned by this platform (§3.4).
 
 **What we are building (feature summary).**
 
@@ -178,7 +178,7 @@ Public-facing artifacts must not invoke third-party institutional brands. No stu
 
 ### 3.4 Admission process ownership
 
-The **admission process is owned and built by a separate team** (the "admissions team") and is not delivered by the program platform described in the rest of this PRD. That team's design is documented in **[`GT_ADMISSIONS_APPLICATION_MVP_PRD.md`](GT_ADMISSIONS_APPLICATION_MVP_PRD.md)** — a role-based web application (currently an approved **synthetic four-week prototype, not live admissions**) that guides families through the application, routes applicants after CogAT, supports independent Track B review, and produces an explainable eligibility record. This PRD treats that document as the **authoritative description of the admissions front door**; where our own admission-adjacent policies remain, they are implemented to work with it.
+The **admission process is owned and built by a separate team** (the "admissions team") and is not delivered by the program platform described in the rest of this PRD. That team's design is documented in **[`ADMISSIONS_PRD.md`](ADMISSIONS_PRD.md)** — a role-based web application (currently an approved **synthetic four-week prototype, not live admissions**) that guides families through the application, routes applicants after CogAT, supports independent Track B review, and produces an explainable eligibility record. This PRD treats that document as the **authoritative description of the admissions front door**; where our own admission-adjacent policies remain, they are implemented to work with it.
 
 The admissions team owns and builds:
 
@@ -205,7 +205,7 @@ The program platform in this PRD begins at the **enrollment handoff** (§3.5): o
 
 ### 3.5 Admissions integration and limits of scope
 
-The admissions team's plan is now available ([`GT_ADMISSIONS_APPLICATION_MVP_PRD.md`](GT_ADMISSIONS_APPLICATION_MVP_PRD.md)), so this section states the integration contract rather than a placeholder. The following remain **out of scope for this platform** and are the admissions team's responsibility:
+The admissions team's plan is now available ([`ADMISSIONS_PRD.md`](ADMISSIONS_PRD.md)), so this section states the integration contract rather than a placeholder. The following remain **out of scope for this platform** and are the admissions team's responsibility:
 
 - the design, rules, and decision policy of the admissions pipeline itself — the base application, CogAT routing, Track A / Track B rules, the Talent Evidence Snapshot, the review rubric, and reviewer adjudication;
 - storage and retention of pre-eligibility application, CogAT, Snapshot, and reviewer data;
@@ -422,7 +422,7 @@ GT100K supplies devices, connectivity, project equipment, and schedule alternati
 
 ### 8.4 Admission and route states
 
-> **Admissions-team ownership (§3.4).** This section describes the admissions front door, owned and built by the separate admissions team and documented in [`GT_ADMISSIONS_APPLICATION_MVP_PRD.md`](GT_ADMISSIONS_APPLICATION_MVP_PRD.md). The states below mirror that plan; this platform consumes the resulting eligibility determination at the enrollment handoff (§3.5) and does not set or enforce these rules.
+> **Admissions-team ownership (§3.4).** This section describes the admissions front door, owned and built by the separate admissions team and documented in [`ADMISSIONS_PRD.md`](ADMISSIONS_PRD.md). The states below mirror that plan; this platform consumes the resulting eligibility determination at the enrollment handoff (§3.5) and does not set or enforce these rules.
 
 The admissions pipeline routes each applicant after an externally-administered CogAT and, where applicable, an independent Track B review. The applicant-visible states are:
 
@@ -500,7 +500,7 @@ A project recording is not Sensitive Signal Lab collection. It follows a separat
 
 **Guide and Mentor Console.** Guides receive action queues, mastery evidence, child-raised concerns, passion hypotheses, cohort health, project blockers, and safeguarding workflows. Mentors receive assigned project context, critique tools, and communication controls. The console separates observations from model inferences, and separates the guide's whole-child view from a mentor's project-scoped view.
 
-**Admissions surfaces.** *(Admissions-team ownership — §3.4; see `GT_ADMISSIONS_APPLICATION_MVP_PRD.md`.)* The admissions team's Family Application Portal, Admissions Operations Dashboard, Track B Reviewer Workspace, and Configuration/Audit view manage the base application, CogAT routing, blind Track B rubric review and adjudication, corrections, and eligibility audit and replay. (The compensated family trial and readiness assessment are this platform's post-eligibility onboarding, §10–§11, surfaced through Family OS and Operations, not here.) These surfaces cannot view Sensitive Signal Lab features or outputs.
+**Admissions surfaces.** *(Admissions-team ownership — §3.4; see `ADMISSIONS_PRD.md`.)* The admissions team's Family Application Portal, Admissions Operations Dashboard, Track B Reviewer Workspace, and Configuration/Audit view manage the base application, CogAT routing, blind Track B rubric review and adjudication, corrections, and eligibility audit and replay. (The compensated family trial and readiness assessment are this platform's post-eligibility onboarding, §10–§11, surfaced through Family OS and Operations, not here.) These surfaces cannot view Sensitive Signal Lab features or outputs.
 
 **Operations and Governance Console.** Authorized staff manage item calibration, model releases, feature and policy versions, consent coverage, fairness audits, incidents, staffing, equipment, capacity, deletion, and service health. Four-eyes approval applies to production policy changes, public credential issuers, and high-stakes model promotion.
 
