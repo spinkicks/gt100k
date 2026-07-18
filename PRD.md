@@ -6,23 +6,33 @@
 |---|---|
 | Product | GT100K |
 | Document status | Implementation baseline |
-| Version | 1.3 |
+| Version | 1.4 |
 | Date | 2026-07-18 |
 | Initial market | United States, English-first |
 | Learner ages | 6 through 14 |
 | Month 3 build target | Feature-complete release candidate with all planned product paths implemented |
-| Month 4 validation target | Integrated testing, refinement, release rehearsal, and gated beta for 1,000 to 5,000 learners |
+| Month 4 validation target | Integrated testing, refinement, release rehearsal, and gated beta for 1,000 to 5,000 synthetic learners (live child enrollment out of scope; §32.4) |
 | Scale target | 100,000 enrolled learners |
 | Long-horizon goal | MIT-level academic readiness by the end of eighth grade, paired with a durable field of interest and an evidence-backed body of work |
 
 ## 0. Change log
+
+**v1.4 (2026-07-18) — consistency pass on the v1.3 admissions reconciliation.** Resolves inconsistencies and gaps left by the v1.3 edits; no new scope. Summary:
+
+- **Ownership fixes.** §3.2 no longer calls shadow/trial enrollment "owned by the admissions team" (it is this platform's, §3.4/§10). Recruitment and outreach are reassigned to a **separate recruitment/outreach team** — neither admissions nor this platform builds them (§3.4, §10 banner, change-log open items); RF-00b's neutral-positioning rule stays cross-cutting.
+- **CFE authority (§8.5, §11).** The fixed-rule Cognitive Floor Engine readiness result is stated consistently as **Advisory** (human-owned, placement only); only *learned* readiness models stay at Shadow. Clarified that empirical item-parameter calibration is governance-gated and applied via versioned releases, distinct from the fixed readiness decision rule that does not adapt online.
+- **`BELOW_THRESHOLD` (§11).** Its only effect is added placement support, scaffolding, and diagnostics for an already-admitted learner — never a status, route, or participation change.
+- **Motivation cap (§15).** Active comparison events draw against the daily two-token pressure cap across all classes (§33.1), not a comparison-specific sub-cap.
+- **Synthetic beta (header, §1, §3.2, §32.4).** The Month 4 beta operates on **synthetic learner populations**, consistent with the synthetic admissions prototype and load tests; live child enrollment is out of scope pending admissions go-live and privacy/legal sign-off.
+- **Smaller fixes.** §8.7 appeal SLA reworded to "Accommodation or post-enrollment appeal" (admission/pre-enrollment appeals are admissions-owned); glossary adds Brainlift, BFF, IAM, MFA, RPO, RTO, SBOM, and SFU.
+- **Left open (by decision):** the eligibility→program-start boundary and age-range reconciliation with the admissions front door remain unspecified.
 
 **v1.3 (2026-07-18) — admissions reconciliation with the admissions team's MVP.** Reconciles this PRD with the admissions team's now-available plan (`GT_ADMISSIONS_APPLICATION_MVP_PRD.md`), which is treated as the authoritative admissions front door. Summary:
 
 - **Admissions model (§3.4, §3.5, §8.4).** The admissions front door is their **CogAT + Track A / Track B** eligibility process with a Talent Evidence Snapshot and independent blind rubric review. §3.4 now lists their actual surfaces and deferrals (financial aid `B-08`, seat allocation, evaluation, substantive appeals); §3.5 replaces the "pending their plan" placeholder with a concrete enrollment-handoff contract keyed to their eligibility determination; §8.4 is realigned from `ADMIT`/`VERIFY`/`ROUTE` to Track A / Track B states (`qualifies` / `does not currently qualify` / `pending correction`).
 - **Capabilities reassigned to this platform (§10, §11, RF-04).** The Cognitive Floor Engine, the compensated family trial / shadow enrollment and Household Schedule Compiler, and the family-execution model are **not** in the admissions MVP and are now owned by this platform. The CFE is repositioned from an admission gate to a readiness/placement assessment (outputs `CLEAR`/`INCONCLUSIVE`/`BELOW_THRESHOLD`, advisory only); the family trial becomes post-eligibility onboarding; the family-execution signal is advisory to guides for support/retention, never an admissions input.
 - **Cross-references.** Updated §1, §6.5, §7 (system map), §9.1–§9.2, §26–§27, §32, §33.1, and §35 for internal consistency.
-- **Open items for review:** recruitment/outreach ownership (§10) is assumed here as this platform's pending confirmation; and whether a platform-built CFE is still wanted given the admissions front door already gates on external CogAT.
+- **Open items for review:** whether a platform-built CFE is still wanted given the admissions front door already gates on external CogAT. (Recruitment/outreach ownership is now resolved: a separate recruitment/outreach team owns it — see §3.4, §10.)
 
 **v1.2 (2026-07-17) — "max defensible intensity" revision.** Applies the decisions in `PRD-review.md` to raise program intensity to the strongest form that preserves the child-safety and legal rights limits (the `G`-class dials stay fixed). Summary of changes and residual risks:
 
@@ -69,7 +79,7 @@ The product runs high-intensity learning under explicit limits. Each machine-gen
 
 GT100K uses models to estimate, rank, summarize, and simulate. Humans retain authority over admission, intensity, specialization, safeguarding, discipline, public release, and route transitions. The Month 4 beta keeps irreversible, high-stakes learned policies in shadow mode, while reversible, fast-feedback models may act inside a bounded, human-vetoable envelope (§8.5). Staff can compare a model recommendation with the human decision, and no model can change a child’s admission, specialization, route, or credential status. The program promotes a model only after local validation, subgroup analysis, documented policy approval, and an appeal workflow.
 
-The first three months build the complete product. Month 1 establishes identity, consent, enrollment onboarding (integrating with the admissions team's pipeline at the enrollment handoff, §3.5), mastery, evidence capture, and the first end-to-end vertical slice. Month 2 adds passion inference, motivation limits, cohort formation, project agents, audio tooling, and proof records. Month 3 completes controlled external release, portable credentials, policy simulation, operations tooling, and every production integration. The team enters Month 4 with a feature-complete release candidate. Month 4 runs integrated testing, refinement, security and accessibility hardening, release rehearsal, 100,000-learner load tests, and gated enrollment at 1,000, 2,500, and 5,000 learners. The program will need years of outcome data to validate MIT readiness, durable passion, family continuation, and causal peer effects.
+The first three months build the complete product. Month 1 establishes identity, consent, enrollment onboarding (integrating with the admissions team's pipeline at the enrollment handoff, §3.5), mastery, evidence capture, and the first end-to-end vertical slice. Month 2 adds passion inference, motivation limits, cohort formation, project agents, audio tooling, and proof records. Month 3 completes controlled external release, portable credentials, policy simulation, operations tooling, and every production integration. The team enters Month 4 with a feature-complete release candidate. Month 4 runs integrated testing, refinement, security and accessibility hardening, release rehearsal, 100,000-learner load tests, and gated enrollment at 1,000, 2,500, and 5,000 synthetic learners (live child enrollment is out of scope; §32.4). The program will need years of outcome data to validate MIT readiness, durable passion, family continuation, and causal peer effects.
 
 ## 2. Product mission and success definition
 
@@ -156,7 +166,9 @@ Neither the Month 3 feature-complete release candidate nor the Month 4 beta clai
 - production authority for digital-twin or reinforcement-learning policies;
 - nationwide legal approval for biometric or home-signal collection.
 
-**Provisional and stretch features.** Some capabilities are deliberately not committed: **shadow (trial) enrollment** (§10) is a beta-only experiment, owned by the admissions team, that may not be implemented beyond the beta; the **Resonance Audio Studio** (§17) is a low-priority stretch feature built only if capacity allows. Neither is required for the Month 3 release candidate.
+The Month 4 beta itself operates on synthetic learner populations (§32.4); **live child enrollment is out of scope** for this PRD and depends on the admissions pipeline going live plus privacy and legal sign-off.
+
+**Provisional and stretch features.** Some capabilities are deliberately not committed: **shadow (trial) enrollment** (§10) is a beta-only experiment, owned by this platform (§3.4, §10) and run as post-eligibility onboarding, that may not be implemented beyond the beta; the **Resonance Audio Studio** (§17) is a low-priority stretch feature built only if capacity allows. Neither is required for the Month 3 release candidate.
 
 ### 3.3 Prohibited product behavior
 
@@ -187,7 +199,7 @@ Sections of this document that describe admission-owned areas carry an **ownersh
 - the **compensated family trial / shadow enrollment** and the **Household Schedule Compiler** (§10) — repositioned as a post-eligibility onboarding and feasibility experiment we run in the beta, not an admissions selection step;
 - the **interpretable family-execution model** (§10.1, RF-04) — an advisory support/retention signal for guides, never an admissions selection input.
 
-Recruitment and outreach (§10) are likewise not part of the admissions MVP; this PRD treats them as this platform's beta responsibility pending confirmation with the admissions team.
+Recruitment and outreach (§10) are likewise not part of the admissions MVP; they are owned by a **separate recruitment/outreach team** — neither the admissions team nor this platform builds them. That team feeds the top of the funnel (qualified, consented families who then enter the admissions front door); this platform's build scope begins at the post-eligibility onboarding described below.
 
 The program platform in this PRD begins at the **enrollment handoff** (§3.5): once an applicant is Track A / Track B **eligible** and a family has a start plan, this platform owns mastery, tutoring, passion development, cohorts, projects, evidence, credentials, and the supporting governance and infrastructure.
 
@@ -441,7 +453,7 @@ Each model has a declared authority level:
 | Bounded automation | Acts inside a narrow, reversible envelope with monitoring and a human kill switch |
 | Retired | Receives no new data and cannot serve decisions |
 
-The Month 4 beta permits bounded automation for low-risk scheduling, reminders, content routing, resource cleanup, and previously approved project actions. Beyond these, the beta promotes a model from Shadow to **Bounded automation** when its action is reversible, low-harm, human-kill-switched, and validated on a short-horizon proxy outcome — for example measured weekly skill gain, flow-band residence, or voluntary return — rather than the eight-year outcome. Under this rule the beta runs the following in bounded automation, each with a guide veto window and one-click revert: passion-probe selection (§14.4), cohort repair within the churn budget (§15), difficulty-and-friction titration within the rules-engine dose caps (§14.8), retrieval scheduling (§12), and mentor-attention allocation (§18). It keeps at Shadow every irreversible, identity-defining, or only-eight-year-verifiable decision: the platform's cognitive-readiness (Cognitive Floor Engine) cut, intensity ceilings, passion specialization commitment, cohort causal uplift, safeguarding, sensitive signals, authenticity anomalies, and public release. The platform's family-execution commitment signal (§10.1, RF-04) may run **Advisory** to guides for support and retention, never as an admissions input. The admissions decision itself is the admissions team's and is made by human reviewers on externally-administered CogAT and the anchored Track B rubric, not by any learned model here (§3.4, §8.4); this platform's fixed, validated psychometric scoring rules may at most supply supplementary readiness evidence and do not adapt online or issue the decision.
+The Month 4 beta permits bounded automation for low-risk scheduling, reminders, content routing, resource cleanup, and previously approved project actions. Beyond these, the beta promotes a model from Shadow to **Bounded automation** when its action is reversible, low-harm, human-kill-switched, and validated on a short-horizon proxy outcome — for example measured weekly skill gain, flow-band residence, or voluntary return — rather than the eight-year outcome. Under this rule the beta runs the following in bounded automation, each with a guide veto window and one-click revert: passion-probe selection (§14.4), cohort repair within the churn budget (§15), difficulty-and-friction titration within the rules-engine dose caps (§14.8), retrieval scheduling (§12), and mentor-attention allocation (§18). It keeps at Shadow every irreversible, identity-defining, or only-eight-year-verifiable decision: learned cognitive-readiness models, intensity ceilings, passion specialization commitment, cohort causal uplift, safeguarding, sensitive signals, authenticity anomalies, and public release. (The fixed-rule Cognitive Floor Engine readiness result itself runs **Advisory** and human-owned, informing placement only, §11; only learned readiness challengers stay at Shadow.) The platform's family-execution commitment signal (§10.1, RF-04) may run **Advisory** to guides for support and retention, never as an admissions input. The admissions decision itself is the admissions team's and is made by human reviewers on externally-administered CogAT and the anchored Track B rubric, not by any learned model here (§3.4, §8.4); this platform's readiness decision rule and cut are fixed and human-owned — they do not adapt online and do not issue the admission decision — and may at most supply supplementary readiness evidence. (Empirical item-parameter calibration under §11 is a separate, psychometric-governance-gated process applied through versioned parameter releases; it improves measurement but does not let the readiness decision rule change itself online.)
 
 The model governance board must approve a move between levels. The release packet includes the intended population, data lineage, feature list, evaluation protocol, subgroup results, calibration, known failure modes, abuse tests, privacy review, safety review, monitoring thresholds, rollback method, and owner. A model trained on adult learners, public emotion corpora, or synthetic students cannot receive child-facing authority from benchmark performance alone.
 
@@ -457,7 +469,7 @@ A project recording is not Sensitive Signal Lab collection. It follows a separat
 |---|---|
 | Safeguarding alert | Human acknowledgement within 15 minutes during program hours |
 | Child request for a different adult | Same-day private response |
-| Admission or accommodation appeal | Intake within 2 business days; decision target within 10 business days |
+| Accommodation or post-enrollment appeal | Intake within 2 business days; decision target within 10 business days |
 | Sensitive-data access request | Logged approval before access; quarterly entitlement review |
 | Public exposure emergency | Lease revocation under 5 seconds at p99; human incident response at once |
 | Project tool or spend escalation | Human decision before the current lease expires |
@@ -504,7 +516,7 @@ A project recording is not Sensitive Signal Lab collection. It follows a separat
 
 ## 10. Recruitment and family partnership
 
-> **Owned by this platform (reassigned from admissions, §3.4).** The admissions team's MVP does not include recruitment, the compensated family trial / shadow enrollment, the Household Schedule Compiler, or a family-execution model (their front door is the CogAT / Track A / Track B eligibility process, §3.4, §8.4). These are therefore owned and built by **this platform**. The family trial and Household Schedule Compiler run as a **post-eligibility onboarding and feasibility** experiment in the beta (§3.2) and are never an admissions selection step; the family-execution model (RF-04) is advisory to guides for support and retention only. Recruitment/outreach ownership is assumed here pending confirmation with the admissions team.
+> **Ownership (§3.4).** The admissions team's MVP does not include recruitment, the compensated family trial / shadow enrollment, the Household Schedule Compiler, or a family-execution model (their front door is the CogAT / Track A / Track B eligibility process, §3.4, §8.4). **Recruitment and outreach are owned by a separate recruitment/outreach team** — neither admissions nor this platform builds them — so the recruitment material below (ethical prospecting and RF-00) describes that team's responsibilities and is shown here for integration context (RF-00b's neutral-positioning rule is cross-cutting and also binds this platform's credentials and portfolios). The **family-partnership** capabilities — the compensated family trial / shadow enrollment, the Household Schedule Compiler, and the family-execution model — are owned and built by **this platform**. The family trial and Household Schedule Compiler run as a **post-eligibility onboarding and feasibility** experiment in the beta (§3.2) and are never an admissions selection step; the family-execution model (RF-04) is advisory to guides for support and retention only.
 
 Recruitment seeks families who can sustain the operating cadence after the program supplies reasonable support. The program must not use wealth, accent, employment type, family structure, a personality profile, or access to private household surveillance as a proxy for commitment. Outreach materials state the workload, the experimental status of the beta, selection rules, compensation, data use, and route options in plain language.
 
@@ -558,7 +570,7 @@ Credentialed psychometricians define the construct, validate item families, and 
 
 The Rust/WASM client delivers visual, verbal, quantitative, spatial, and approved auditory items with monotonic timing and offline recovery. The item service enforces exposure limits and streams signed attempts. A multidimensional Bayesian IRT (item response theory) model updates the readiness posterior. A boundary-focused CAT (computerized adaptive testing) or SPRT (sequential probability ratio test) policy selects items that reduce uncertainty near the configured floor and stops once the evidence enters a decision region or reaches the session burden cap.
 
-Item difficulty and discrimination parameters are not fixed at authoring time. They are empirically calibrated and refined from real student response data — online and field-test IRT calibration under psychometric governance — so measurement accuracy improves as more attempts accrue, with drift, leakage, ambiguity, and subgroup-DIF quarantine. This shares one calibration story with the Academic Mastery OS, which likewise calibrates difficulty after use (§12).
+Item difficulty and discrimination parameters are not fixed at authoring time. They are empirically calibrated and refined from real student response data — online and field-test IRT calibration under psychometric governance, applied through versioned parameter releases rather than live changes to the readiness decision rule (§8.5) — so measurement accuracy improves as more attempts accrue, with drift, leakage, ambiguity, and subgroup-DIF quarantine. This shares one calibration story with the Academic Mastery OS, which likewise calibrates difficulty after use (§12).
 
 Generative item families instantiate reviewed templates under content, difficulty, and scoring constraints. Psychometric information must remain adequate at the readiness boundary and through the extreme right tail so the engine can separate a clear boundary result from unresolved headroom without imposing a fixed ceiling. Exposure control applies across generated siblings, not only exact item IDs. Tail estimates remain construct-specific distributions and never become a public IQ label.
 
@@ -566,7 +578,7 @@ The engine returns a readiness posterior and one of three **advisory** results (
 
 - `CLEAR`: the validated evidence clears the configured readiness boundary with the required confidence and no unresolved validity issue.
 - `INCONCLUSIVE`: uncertainty, disagreement, device quality, language, health, accommodation, or exposure requires a parallel form, delayed check, or psychometric review.
-- `BELOW_THRESHOLD`: validated evidence sits below the readiness boundary after applicable verification; this carries no deficiency claim and is never an admission, rejection, or exit.
+- `BELOW_THRESHOLD`: validated evidence sits below the readiness boundary after applicable verification; this carries no deficiency claim and is never an admission, rejection, or exit. Its only operational effect is to trigger additional placement support, scaffolding, and diagnostics for an already-admitted learner — it never changes the learner's admitted status, route, or continued participation.
 
 The admissions team owns the admission decision; this engine supplies at most advisory readiness evidence and informs placement. The engine cannot combine family commitment, voice, gaze, emotion, or home behavior into the cognitive posterior, and it cannot issue or override an admission decision.
 
@@ -946,7 +958,7 @@ The Month 4 beta tests consented collection, limits, deletion, and isolation fro
 
 The program forms stable cohorts of six inside age, schedule, safeguarding, and level-plus-velocity calipers. During beta, deterministic rules value close pace, compatible intensity, role coverage, pair history, accommodations, rivalry dose, churn, and repeated pairings. A learned lower confidence bound on benefit is logged only after the assignment is locked. Cross-cohort *visible* standings are permitted, ranked on velocity, mastery-gain, and effort, refreshed and reset each sprint. Fixed-ability caste rankings, public tier names, and any standing derived from a protected attribute remain prohibited. Every child can hide their own standing without penalty, and per-pod belonging is monitored as a rollback gate.
 
-A passively-visible standing is governed by the child's one-time, per-sprint rivalry assent (§8.2) and its opt-out — not by per-view dosing. The MotivationDoseToken budget (§14.8, §33.1) instead meters **active comparison events** — a callout, notification, ranked challenge, or any push that surfaces a comparison to the child — which is what the two-per-day public-comparison cap counts. A passive standing the child has opted into does not draw down that budget; turning the standing off, or declining a push, never lowers status.
+A passively-visible standing is governed by the child's one-time, per-sprint rivalry assent (§8.2) and its opt-out — not by per-view dosing. The MotivationDoseToken budget (§14.8, §33.1) instead meters **active comparison events** — a callout, notification, ranked challenge, or any push that surfaces a comparison to the child — which draw against the daily pressure-token cap (at most two pressure tokens per day across all pressure classes, §33.1), not a comparison-specific limit. A passive standing the child has opted into does not draw down that budget; turning the standing off, or declining a push, never lowers status.
 
 HNSW (hierarchical navigable small world) candidate search limits the match space. CP-SAT (a constraint-programming satisfiability solver) or branch-and-price assigns cohorts under hard constraints and an individual non-harm floor. PostgreSQL commits a roster as one transaction and stores the prior snapshot for rollback. The beta starts with rule-based assignments. Cohort repair may auto-apply within the churn budget as bounded automation with a guide veto window and rollback (§8.5); peer-effect causal-uplift models remain Shadow until randomized neighbor swaps and solo checkpoints support credible estimates under network interference.
 
@@ -1432,6 +1444,8 @@ Month 3 construction gate: a feature-complete release candidate runs in a produc
 
 ### 32.4 Month 4: validation, refinement, and gated beta
 
+**The Month 4 beta operates on synthetic, simulated learner populations, not live children.** Consistent with the synthetic admissions prototype (§3.4) and the synthetic load tests (§26, §30), the 1,000 / 2,500 / 5,000-learner waves are synthetic fixtures that exercise the full operational, safeguarding, consent, privacy, and support machinery as an end-to-end rehearsal. Live child enrollment is out of scope for this PRD's Month 4 and remains gated behind the admissions team's pipeline going live and the required privacy and legal approvals (§3.4, §8.6, §29).
+
 Days 1 through 7 run the cross-system, accessibility, legal, psychometric, privacy, fairness, red-team, chaos, disaster-recovery, deletion, cross-tenant, 100,000-learner load, staff-simulation, incident, support-queue, release-rehearsal, and complete John-journey program. Teams fix blockers and rerun affected suites throughout the week. Enrollment begins only after the release board signs the threshold registry. Subject to every gate, Days 8 through 14 operate Wave 1 at 1,000 learners, Days 15 through 21 operate Wave 2 at 2,500 learners, and Days 22 through 28 operate Wave 3 at 5,000 learners. Engineering remains reserved for measured fixes, tuning, and regression throughout Month 4; no planned feature scope enters the month.
 
 This schedule assumes no pause. A sentinel event, failed threshold, incomplete review, or unresolved blocker pauses promotion and extends validation beyond Month 4. The program cannot waive a gate to reach 5,000 learners by a date.
@@ -1632,7 +1646,9 @@ Acronyms are expanded on first use within each major section; this index is the 
 | Term | Expansion / meaning |
 |---|---|
 | AP | Advanced Placement (College Board course/exam) |
+| BFF | Backend for Frontend — a per-client API composition layer |
 | BKT | Bayesian knowledge tracing — a mastery-estimation model |
+| Brainlift | Foundational source document capturing the program's originating design intent and intensity hypotheses; treated with the implementation blueprint as a foundation rather than a proposal (§35) |
 | C2PA | Coalition for Content Provenance and Authenticity — media provenance standard |
 | CAT | Computerized adaptive testing |
 | CI | Continuous integration |
@@ -1645,12 +1661,14 @@ Acronyms are expanded on first use within each major section; this index is the 
 | FSRS | Free spaced-repetition scheduler |
 | GRPO | Group relative policy optimization — a reinforcement-learning method |
 | HNSW | Hierarchical navigable small world — approximate nearest-neighbor index |
+| IAM | Identity and access management |
 | IDEA | Individuals with Disabilities Education Act (US) |
 | IKT | Item-response knowledge tracing |
 | in-toto | Supply-chain integrity attestation framework |
 | IRT | Item response theory — psychometric measurement model |
 | KEDA | Kubernetes event-driven autoscaling |
 | LUFS | Loudness units relative to full scale — loudness metering |
+| MFA | Multi-factor authentication |
 | MLflow | Open-source ML experiment/model lineage platform |
 | MPC | Model predictive control |
 | OPA / Rego | Open Policy Agent and its policy language |
@@ -1660,7 +1678,11 @@ Acronyms are expanded on first use within each major section; this index is the 
 | QLoRA | Quantized low-rank adaptation — parameter-efficient fine-tuning |
 | RAG | Retrieval-augmented generation |
 | rPPG | Remote photoplethysmography — camera-based pulse estimation |
+| RPO | Recovery Point Objective — maximum tolerable data-loss window in recovery |
+| RTO | Recovery Time Objective — target time to restore service after an outage |
 | SAT | Scholastic Assessment Test (College Board) |
+| SBOM | Software bill of materials |
+| SFU | Selective Forwarding Unit — media server that routes real-time audio/video streams |
 | SLO | Service Level Objective — target for a measured reliability/performance indicator |
 | SPRT | Sequential probability ratio test |
 | WASI / WASM | WebAssembly System Interface / WebAssembly |
