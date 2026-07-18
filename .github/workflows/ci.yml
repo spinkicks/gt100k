@@ -1,0 +1,45 @@
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+  merge_group:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Secret scan (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Block large files (>5MB)
+        run: |
+          large=$(find . -type f -not -path './.git/*' -size +5M)
+          if [ -n "$large" ]; then
+            echo "::error::Files larger than 5MB are not allowed:"; echo "$large"; exit 1
+          fi
+          echo "No oversized files."
+
+      - name: Repo hygiene
+        run: |
+          echo "Tracked files: $(git ls-files | wc -l)"
+          # Growable gatekeeper: add lint / type-check / test / build steps here as code lands
+          # (pnpm for JS/TS, uv for Python) per the §10.5 quality tiers.
+          echo "CI gatekeeper passed (docs-stage)."
