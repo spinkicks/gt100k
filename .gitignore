@@ -1,0 +1,49 @@
+# ===== Secrets / env (repo is PUBLIC — never commit) =====
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+*.p12
+.git-credentials
+
+# ===== Node / TypeScript =====
+node_modules/
+dist/
+build/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+.pnpm-store/
+*.log
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# ===== Rust / Go =====
+target/
+/bin/
+
+# ===== OS / editor =====
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+
+# ===== Agent/tool LOCAL config (share the rest of .claude/.cursor/.codex) =====
+.claude/settings.local.json
+.cursor/settings.local.json
+.codex/*.local.*
+
+# ===== Setup/planning docs (live in the private vault, not this public repo) =====
+/workflow*.md
+/workflowPlan.md
