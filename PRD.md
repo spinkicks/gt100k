@@ -62,7 +62,7 @@ The product runs high-intensity learning under explicit limits. Each machine-gen
 
 GT100K uses models to estimate, rank, summarize, and simulate. Humans retain authority over admission, intensity, specialization, safeguarding, discipline, public release, and route transitions. The Month 4 beta keeps irreversible, high-stakes learned policies in shadow mode, while reversible, fast-feedback models may act inside a bounded, human-vetoable envelope (§8.5). Staff can compare a model recommendation with the human decision, and no model can change a child’s admission, specialization, route, or credential status. The program promotes a model only after local validation, subgroup analysis, documented policy approval, and an appeal workflow.
 
-The first three months build the complete product. Month 1 establishes identity, consent, admissions, mastery, evidence capture, and the first end-to-end vertical slice. Month 2 adds passion inference, motivation limits, cohort formation, project agents, audio tooling, and proof records. Month 3 completes controlled external release, portable credentials, policy simulation, operations tooling, and every production integration. The team enters Month 4 with a feature-complete release candidate. Month 4 runs integrated testing, refinement, security and accessibility hardening, release rehearsal, 100,000-learner load tests, and gated enrollment at 1,000, 2,500, and 5,000 learners. The program will need years of outcome data to validate MIT readiness, durable passion, family continuation, and causal peer effects.
+The first three months build the complete product. Month 1 establishes identity, consent, enrollment onboarding (integrating with the admissions team's pipeline at the enrollment handoff, §3.5), mastery, evidence capture, and the first end-to-end vertical slice. Month 2 adds passion inference, motivation limits, cohort formation, project agents, audio tooling, and proof records. Month 3 completes controlled external release, portable credentials, policy simulation, operations tooling, and every production integration. The team enters Month 4 with a feature-complete release candidate. Month 4 runs integrated testing, refinement, security and accessibility hardening, release rehearsal, 100,000-learner load tests, and gated enrollment at 1,000, 2,500, and 5,000 learners. The program will need years of outcome data to validate MIT readiness, durable passion, family continuation, and causal peer effects.
 
 ## 2. Product mission and success definition
 
@@ -103,6 +103,8 @@ GT100K uses the phrase “MIT-level readiness” as an **internal operational ta
 
 The system tracks leading indicators before official tests become age-appropriate. These include mastery retention, far transfer, reasoning speed, writing quality, project complexity, revision quality, independent planning, and recovery after failure. Staff may not convert a leading indicator into a claim that the learner has achieved the long-horizon outcome.
 
+**Entry age and late entrants.** The age-14 targets above assume a full runway, so the program's primary intake focus is ages 6 to 8. The program itself ends at age 14; a child admitted at 12 or 13 therefore has only a compressed runway and may not reach the full age-14 standard. For such late entrants the program sets an **individualized target horizon** at enrollment (targets and interim goals scaled to the years actually available, agreed with the learner and the learner-plan panel) and measures progress against that personalized plan. A late entrant not reaching the full standard within the remaining time is expected by design and is never treated as a failure of the child; the age-14 targets remain the standard only for full-runway entrants.
+
 ### 2.6 Program success metrics
 
 The executive scorecard contains seven groups of measures.
@@ -123,17 +125,16 @@ No team may optimize a local metric without its paired guardrail. Faster mastery
 
 ### 3.1 In scope
 
-This PRD covers:
+This PRD covers the post-enrollment program and its supporting infrastructure. Admission and selection are owned and built by a separate team and are out of this platform's build scope (§3.4); this platform integrates with them at the enrollment handoff (§3.5). In scope:
 
-- family recruitment, qualification, support planning, shadow enrollment, and admissions;
-- cognitive and trainability assessment with psychometric governance;
 - the academic competency graph, practice supply, mastery verification, retrieval scheduling, and Socratic tutoring;
 - interest discovery, specialization, motivation management, and structured persistence;
 - cohort formation, live collaboration, short competition formats, and cohort health;
 - project planning, secure workspaces, creative and technical tools, mentors, equipment, and resource scheduling;
 - artifact provenance, evaluation, student defense, public release, outcomes, and portable credentials;
 - identity, consent, data, policy, model, security, reliability, simulation, and governance infrastructure;
-- staff workflows for admissions, psychometrics, guides, mentors, safeguarding, review, operations, and appeals.
+- integration with the separately-owned admission pipeline at the enrollment handoff (identity/consent, roster, accommodation profile, readiness-evidence reference, records portability) per §3.5;
+- staff workflows for guides, mentors, safeguarding, review, operations, and post-enrollment appeals.
 
 ### 3.2 Out of scope for the initial release candidate and beta
 
@@ -187,7 +188,7 @@ The following are the **anticipated integration points** we will need to agree w
 4. **Readiness evidence reference** — a reference (not raw responses) to the admissions decision and its construct-level evidence, for continuity and audit, respecting the data-separation rules (§4.8, §29).
 5. **Records portability & deletion** — a shared contract for a routed or withdrawing family's export and deletion rights spanning both systems (§8.4).
 
-**Assumptions to confirm with the admissions team:** that pre-enrollment data never flows into post-enrollment modeling except as an explicit, consented reference; that the no-home-data and school-only collection rules (§10.2, §14.11) hold across the boundary; and that the two systems present a single, coherent privacy and appeals story to families. Any of these may change once the admissions team's plan is reviewed.
+**Assumptions to confirm with the admissions team:** that pre-enrollment data never flows into post-enrollment modeling except as an explicit, consented reference; that the no-ambient-home-sensing rule and the school-only sensitive-signal collection rule (§10.2, §14.11) hold across the boundary; and that the two systems present a single, coherent privacy and appeals story to families. Any of these may change once the admissions team's plan is reviewed.
 
 ## 4. Product principles
 
@@ -281,7 +282,7 @@ Families provide agreed schedule windows, respond to safety and logistics reques
 
 The beta establishes five named bodies:
 
-- an admissions panel with psychometric and accommodation expertise;
+- an admissions panel with psychometric and accommodation expertise (operated by the admissions team, §3.4; this platform coordinates with it at the enrollment handoff);
 - a learner-plan panel for contested specialization or intensity decisions;
 - a safeguarding team with authority to pause any program action;
 - a model and data governance board that approves features, releases, and research use;
@@ -295,11 +296,14 @@ The learner-plan panel may mediate logistics and required academic routes. It ca
 
 ```mermaid
 flowchart TD
-    A["Family inquiry and support screening"] --> B["Shadow enrollment and household plan"]
-    B --> C["Cognitive readiness assessment"]
-    C --> D["Human admissions decision"]
-    D --> E["Academic Mastery OS"]
-    D --> F["Interest Lab"]
+    subgraph ADM["Admission pipeline — separate team (§3.4)"]
+      A["Family inquiry and support screening"] --> B["Shadow enrollment and household plan"]
+      B --> C["Cognitive readiness assessment"]
+      C --> D["Human admissions decision"]
+    end
+    D --> HO["Enrollment handoff (§3.5)"]
+    HO --> E["Academic Mastery OS"]
+    HO --> F["Interest Lab"]
     F --> G["Specialization Planner"]
     E --> H["Cohort Compiler"]
     G --> H
@@ -311,8 +315,7 @@ flowchart TD
     M --> F
     M --> H
     M --> I
-    N["Consent, policy, audit, event, and evidence spine"] --> B
-    N --> C
+    N["Consent, policy, audit, event, and evidence spine"] --> HO
     N --> E
     N --> F
     N --> H
@@ -323,7 +326,7 @@ flowchart TD
     O -. shadow evaluation .-> H
 ```
 
-The shared platform records each transition as a signed, versioned event. Product services own their operational state. The central event and evidence layers let authorized staff reconstruct a journey without creating a single unrestricted learner profile.
+The admission pipeline (grouped above) is owned and built by a separate team (§3.4) and connects to this platform at the enrollment handoff (§3.5). Downstream of that handoff, the shared platform records each transition as a signed, versioned event. Product services own their operational state. The central event and evidence layers let authorized staff reconstruct a journey without creating a single unrestricted learner profile.
 
 ## 8. Global policy and decision requirements
 
@@ -354,7 +357,9 @@ Parents provide legal consent where required. Children provide developmentally a
 - **specialization commitment depth** — how much time is committed to one interest spine before renewal (§14.7, §14.8);
 - **public-audience exposure** — whether work is shown beyond the cohort (§20).
 
-Each dial is bounded by the MotivationDose caps and guide veto (§8.5, §13). Assent is asked in language and controls appropriate to the child's age, is revocable at any time, and applies per dial. **Raising** any dial requires fresh assent for that dial; higher intensity is never inferred from prior compliance, good performance, or a guardian's wish. Lowering a dial never requires justification. The product asks for assent in language and controls appropriate to the child’s age. A checked guardian box cannot stand in for the child’s answer.
+Each dial is bounded by the MotivationDose caps and guide veto (§8.5, §13). Assent is asked in language and controls appropriate to the child's age, is revocable at any time, and applies per dial. **Raising** any dial requires fresh assent for that dial; higher intensity is never inferred from prior compliance, good performance, or a guardian's wish. Lowering a dial never requires justification.
+
+For the **difficulty-and-pace dial** specifically, the child assents to a difficulty *band* — a floor-to-ceiling range, not a single level. Adaptive, learned titration **within** that assented band and within the dose caps (for example the practice engine tracking the 70–85 percent success band, or the bounded-automation controller in §8.5/§14.8) is normal operation, not "raising the dial," and needs no new assent. Moving the band itself — raising the ceiling — is what requires fresh per-dial assent, and no learned model may move the band or the ceiling; that stays a human decision consistent with §14.9 ("zero learned-model outputs change an intensity ceiling"). The product asks for assent in language and controls appropriate to the child’s age. A checked guardian box cannot stand in for the child’s answer.
 
 A refusal during a hard task starts inquiry rather than punishment or trait inference. Closing one task does not change an agreed required academic goal by itself. The guide records the child's account, offers another route, and checks whether assent to the broader activity remains.
 
@@ -444,7 +449,7 @@ A project recording is not Sensitive Signal Lab collection. It follows a separat
 | Parent or caregiver | A feasible family plan, honest progress, clear responsibilities, and support before sanctions | Separate support needs from commitment, minimize data collection, and show the effect of requested changes |
 | Guide | A concise queue for academic, motivational, cohort, and safeguarding action | Rank by policy and evidence, expose uncertainty, and avoid opaque risk scores |
 | Domain mentor | Project context, student decisions, rubric evidence, and bounded communication | Limit access to assigned projects, record critique, and escalate safety issues |
-| Admissions reviewer | Valid assessment evidence, family-trial history, accommodations, policy, and appeals | Keep model estimates advisory and make each decision reproducible |
+| Admissions reviewer *(admissions team — §3.4)* | Valid assessment evidence, family-trial history, accommodations, policy, and appeals | Keep model estimates advisory and make each decision reproducible |
 | Operator or governor | Reliability, psychometrics, fairness, privacy, staffing, cost, incidents, and release state | Provide immutable audit, subgroup views with privacy thresholds, kill switches, and change approval |
 | External reviewer | A credible artifact, declared assistance, a usable rubric, and limited contact with minors | Reveal the minimum evidence required and route all contact through controlled channels |
 
@@ -507,7 +512,7 @@ Participation uses a renewable agreement, not an irrevocable eight-year contract
 - Staff can reproduce the exact evidence and policy behind a trial outcome.
 - The product reports subgroup false-decline rates and abstains when sample sizes cannot support a stable estimate.
 
-- No data is collected in the home at all. The program collects only strictly-necessary, purpose-scoped data, and only on school premises; every collection is explicitly communicated to the family and, in age-appropriate form, to the child (§4.8, §14.11). In particular the trial collects no ambient home audio, continuous screen capture, precise location history, or employer data, and no passive or ambient sensing of any kind outside school.
+- The program performs no passive, ambient, or sensitive collection in the home or anywhere outside school — no home audio, video, biometrics, location, or behavioral sensing, ever. Data collected on school premises is strictly necessary, purpose-scoped, and explicitly communicated to the family and, in age-appropriate form, to the child (§4.8, §14.11). The trial itself collects no ambient home audio, continuous screen capture, precise location history, or employer data. The only data that may originate outside school is the functional work a student actively creates or submits during optional remote or after-school work (§15), under explicit disclosure and consent — never ambient sensing.
 
 ### 10.3 Family Coach
 
@@ -596,11 +601,10 @@ The tutor helps the student think without seeing or generating the protected ans
 
 The interaction state machine requires an attempt before a content hint unless an accessibility or safety policy applies. It can ask the student to restate the problem, identify knowns, draw a representation, test a simpler case, compare two approaches, retrieve a prior concept, or explain a contradiction. Each escalation creates a `TutorAction` and `HelpReceipt`. After substantial help, the system schedules a different unassisted item.
 
-**Independence reward (non-punitive).** This works in three plain steps:
+**Independence reward (non-punitive, potential-based).** Two rules, one mechanism:
 
 1. **Asking for help costs nothing.** Requesting help never lowers a child's mastery credit, access, program standing, or any independence reward already earned. Accessibility and safety help are always exempt (§8.3).
-2. **The independence reward is earned separately.** On top of mastery credit, the platform grants a small, visible *independence reward* that a child earns only by (a) solving unaided on the first attempt and (b) later passing a delayed unassisted check. Only that delayed check unlocks the top independence tier.
-3. **Rushing after a rescue earns almost nothing — by design.** Because an attempt made right after an AI rescue barely moves the knowledge-tracing mastery estimate, the reward it can yield is near zero. So there is a natural, non-punitive nudge to try independently first: the child loses nothing by asking for help, but also gains little by shortcutting after a rescue. (This is the potential-based form of a friction tax; see Ng, Harada & Russell, 1999.)
+2. **The reward tracks how much the child's own work moved their mastery.** On top of mastery credit, the platform grants a visible *independence reward* proportional to the increase in the knowledge-tracing mastery estimate produced by the child's *unassisted* work. Unaided success moves the estimate substantially and earns a full reward; an attempt made right after an AI rescue barely moves the estimate and so earns almost nothing — near zero by construction. This is the potential-based form of a friction tax (Ng, Harada & Russell, 1999): the child loses nothing by asking for help and gains little by shortcutting after a rescue, with no punishment either way. A delayed unassisted check contributes its own mastery-estimate gain, so it carries the largest remaining reward — but the reward is always the mastery-delta of unassisted work, never a separate categorical bonus.
 
 The tutor and grader run in separate trust domains, service accounts, networks, and logs. The tutor uses a curated misconception library and evaluated retrieval. The team may QLoRA-tune (quantized low-rank adaptation) an open model on Socratic transcripts and test GRPO (group relative policy optimization) or related methods in an offline gym. Production policy, a solution-leakage classifier, deterministic output checks, and a red-team suite enforce the answer-blind contract.
 
@@ -838,7 +842,7 @@ The team parks or reopens a specialization after persistent child dissent or aft
 
 Sleep loss, broad distress across settings, injury, self-harm concern, abuse concern, or acute safeguarding risk bypasses the 14-day cycle. The guide stops pressure-bearing features, restores help, follows the safeguarding protocol, and involves qualified professionals where required. Product telemetry cannot diagnose depression, anxiety, burnout, or any medical condition.
 
-Every platform-generated deadline, rivalry escalation, public comparison, help refusal, or parent nudge requires a short-lived `MotivationDoseToken`. The token records source, purpose, dose class, expiry, cumulative budget, available help, child setting, guide authorization, and observed response. Accessibility support and safety help sit outside the dose economy. During beta, a rules engine enforces the caps; within those caps the model-predictive controller may titrate difficulty and friction as bounded automation (guide veto, one-click revert, §8.5). It cannot raise a cap, issue pressure beyond the rules-engine budget, or act during a protected rest window.
+Every platform-generated deadline, rivalry escalation, public comparison, help refusal, or parent nudge requires a short-lived `MotivationDoseToken`. Here "public comparison" means an **active comparison event** pushed to the child — a callout, notification, or ranked challenge; a passively-visible standing the child opted into (§15) is governed by per-sprint rivalry assent, not per-view dosing, and does not consume a token. The token records source, purpose, dose class, expiry, cumulative budget, available help, child setting, guide authorization, and observed response. Accessibility support and safety help sit outside the dose economy. During beta, a rules engine enforces the caps; within those caps the model-predictive controller may titrate difficulty and friction as bounded automation (guide veto, one-click revert, §8.5). It cannot raise a cap, issue pressure beyond the rules-engine budget, or act during a protected rest window.
 
 ### 14.9 Motivation and wellbeing measurement
 
@@ -856,7 +860,7 @@ The program separates autonomous motivation, learning, output, and wellbeing. A 
 | Rest and health | Protected rest kept, child or family report of sleep disruption, injury, or broad distress | Start human review; do not diagnose from telemetry |
 | Belonging and safety | Cohort inclusion, mentor trust, conflict, bullying, ability to ask for help | Safety reports override productivity goals |
 
-Operations dashboards shall report median and tail values by age band, accommodation status, device class, program site, and other approved audit groups where sample size protects privacy. Staff shall monitor missingness because children with the least access can look disengaged. Five-person cohort dashboards shall use the threshold secure-aggregation service in Section 29 and suppress incomplete or small-cell views.
+Operations dashboards shall report median and tail values by age band, accommodation status, device class, program site, and other approved audit groups where sample size protects privacy. Staff shall monitor missingness because children with the least access can look disengaged. Cohort wellbeing dashboards shall use the threshold secure-aggregation service in Section 29 (minimum five valid contributors); the six-member pod floor (§15) keeps a normal pod above that minimum even when one child abstains, and any view that still falls below it is suppressed.
 
 Beta acceptance criteria include:
 
@@ -891,7 +895,7 @@ The end-to-end test suite shall run each case with decision replay, consent with
 
 ### 14.11 Sensitive Signal Lab boundaries
 
-The Sensitive Signal Lab is a separate research surface that operates **only on school premises, under supervision**. No information is collected outside the school — there is no home or other out-of-school collection of any kind (§10.2). Within school, and only under purpose-specific consent, it may study voice prosody, gaze, remote photoplethysmography (rPPG), or interaction biometrics. These signals cannot establish truth, deception, commitment, passion, attention, mental state, diagnosis, or eligibility. Research on facial and vocal expression does not support universal one-to-one emotion decoding across people and contexts. **[E1]** See [Barrett et al., 2019](https://doi.org/10.1177/1529100619832930).
+The Sensitive Signal Lab is a separate research surface that operates **only on school premises, under supervision**. No sensitive-signal information is ever collected outside the school — there is no home or other out-of-school sensitive-signal collection of any kind, and none of these signals may be gathered during remote or after-school work (§10.2, §15). Within school, and only under purpose-specific consent, it may study voice prosody, gaze, remote photoplethysmography (rPPG), or interaction biometrics. These signals cannot establish truth, deception, commitment, passion, attention, mental state, diagnosis, or eligibility. Research on facial and vocal expression does not support universal one-to-one emotion decoding across people and contexts. **[E1]** See [Barrett et al., 2019](https://doi.org/10.1177/1529100619832930).
 
 Remote photoplethysmography can estimate pulse-related signals under controlled conditions, but device, lighting, motion, physiology, and skin appearance create error. **[R]** See [Wang et al., 2017](https://doi.org/10.1109/TBME.2016.2609282). GT100K treats such a technical pulse estimate as insufficient to validate any wellbeing inference; that constraint is program policy, not a claim of the cited paper.
 
@@ -915,17 +919,19 @@ The Month 4 beta tests consented collection, limits, deletion, and isolation fro
 
 ## 15. Cohort Compiler, Arena, and RivalryMix
 
-The program forms stable cohorts of five or six inside age, schedule, safeguarding, and level-plus-velocity calipers. During beta, deterministic rules value close pace, compatible intensity, role coverage, pair history, accommodations, rivalry dose, churn, and repeated pairings. A learned lower confidence bound on benefit is logged only after the assignment is locked. Cross-cohort *visible* standings are permitted, ranked on velocity, mastery-gain, and effort, refreshed and reset each sprint. Fixed-ability caste rankings, public tier names, and any standing derived from a protected attribute remain prohibited. Every child can hide their own standing without penalty, and per-pod belonging is monitored as a rollback gate.
+The program forms stable cohorts of six inside age, schedule, safeguarding, and level-plus-velocity calipers. During beta, deterministic rules value close pace, compatible intensity, role coverage, pair history, accommodations, rivalry dose, churn, and repeated pairings. A learned lower confidence bound on benefit is logged only after the assignment is locked. Cross-cohort *visible* standings are permitted, ranked on velocity, mastery-gain, and effort, refreshed and reset each sprint. Fixed-ability caste rankings, public tier names, and any standing derived from a protected attribute remain prohibited. Every child can hide their own standing without penalty, and per-pod belonging is monitored as a rollback gate.
+
+A passively-visible standing is governed by the child's one-time, per-sprint rivalry assent (§8.2) and its opt-out — not by per-view dosing. The MotivationDoseToken budget (§14.8, §33.1) instead meters **active comparison events** — a callout, notification, ranked challenge, or any push that surfaces a comparison to the child — which is what the two-per-day public-comparison cap counts. A passive standing the child has opted into does not draw down that budget; turning the standing off, or declining a push, never lowers status.
 
 HNSW (hierarchical navigable small world) candidate search limits the match space. CP-SAT (a constraint-programming satisfiability solver) or branch-and-price assigns cohorts under hard constraints and an individual non-harm floor. PostgreSQL commits a roster as one transaction and stores the prior snapshot for rollback. The beta starts with rule-based assignments. Cohort repair may auto-apply within the churn budget as bounded automation with a guide veto window and rollback (§8.5); peer-effect causal-uplift models remain Shadow until randomized neighbor swaps and solo checkpoints support credible estimates under network interference.
 
-**Face-to-face is primary.** The default and primary mode of learning and collaboration is in-person and in-school. Every digital tool in this section — cohort rooms, Arena, RivalryMix, and the collaboration media plane — exists to *support* face-to-face human interaction, never to replace it. Cohorts are built around students who share physical space and time, and the platform's job is to make that in-person work richer, not to substitute a screen for a peer or a guide.
+**Face-to-face is primary.** The default and primary mode of learning and collaboration is in-person and in-school. Every digital tool in this section — cohort rooms, Arena, RivalryMix, and the collaboration media plane — exists to *support* face-to-face human interaction, never to replace it. Cohorts are primarily built around students who share physical space and time, and the platform's job is to make that in-person work richer, not to substitute a screen for a peer or a guide. Cross-school collaboration (below) supplements that in-person base; it does not replace it.
 
 Arena sessions mix cooperative missions with short rivalry events. Private level and velocity ratings drive matchmaking so contests stay near-peer; visible standings rank gain and effort, never fixed ability, and do not define academic worth. A student can request a safety separation or cohort review. Guides approve moves that exceed the churn budget.
 
 RivalryMix runs on WebRTC. Each client extracts voice activity, overlap, response latency, turn duration, and audio quality through an AudioWorklet and Rust/WASM. Raw audio stays on the call path unless all required parties consent to recording. The service can identify observable patterns such as one speaker holding most turns or repeated interruption. It cannot infer honesty, emotion, personality, or motivation from a voice. Guides can start a rotating challenger, evidence round, silent-member entry, or pause.
 
-**Remote and cross-school work is also supported.** While face-to-face in school is primary, the platform must also support remote and after-school collaboration, including students working with peers from other schools, so cohorts and projects are not limited to one building's bell schedule. Remote sessions run under the same data rules as everything else: only strictly-necessary, disclosed interaction data is collected, and never through ambient home sensing or any out-of-school passive collection (§10.2, §14.11). Remote work supplements — it does not become the default substitute for — in-person interaction.
+**Remote and cross-school work is also supported.** While face-to-face in school is primary, the platform must also support remote and after-school collaboration, including students working with peers from other schools, so cohorts and projects are not limited to one building's bell schedule. Remote sessions collect only the **functional data a student actively creates or submits** — their project work, and messages they choose to send in a collaboration — under explicit disclosure and consent. They perform **no passive or ambient sensing of the home** and no sensitive-signal collection; the Sensitive Signal Lab stays school-only (§10.2, §14.11). For a remote session, RivalryMix turn analytics are off by default and require explicit opt-in, and refusing them never lowers status. Remote work supplements — it does not become the default substitute for — in-person interaction.
 
 The room displays an analytics indicator. A student may disable personal turn analytics without leaving the call. Missing or refused analytics cannot lower cohort status, trigger an intervention, or enter a motivation hypothesis.
 
@@ -933,7 +939,7 @@ The room displays an analytics indicator. A student may disable personal turn an
 
 Regional LiveKit SFUs on EKS use coturn fallback, expiring room tokens, DTLS-SRTP, tenant isolation, and consent-gated recording. Clients compute RivalryMix features on device. The service stores no raw media unless all required parties approve a named purpose and retention rule.
 
-The plane must support 20,000 synthetic five-person rooms, p95 join under five seconds, p95 reconnect under ten seconds, and usable audio under five percent packet loss. Chaos tests cover SFU loss, TURN exhaustion, region failure, token replay, unauthorized recording, room crossover, and immediate safeguarding shutdown.
+The plane must support 20,000 synthetic six-person rooms, p95 join under five seconds, p95 reconnect under ten seconds, and usable audio under five percent packet loss. Chaos tests cover SFU loss, TURN exhaustion, region failure, token replay, unauthorized recording, room crossover, and immediate safeguarding shutdown.
 
 ### 15.2 Acceptance criteria
 
@@ -1107,13 +1113,13 @@ The Month 4 beta does not claim that its short observation window causes MIT-lev
 
 ## 25. Architecture mandate
 
-GT100K uses one program platform across admission, mastery, passion discovery, cohorting, project production, proof, and controlled publication. The platform serves children ages 6 to 14, their families, guides, mentors, admissions staff, operators, and outside reviewers. It must reach feature completion in Month 3, support a live beta of 1,000 to 5,000 students in Month 4, and survive synthetic workloads that represent 100,000 registered learners.
+GT100K uses one program platform across the post-enrollment journey — mastery, passion discovery, cohorting, project production, proof, and controlled publication — and integrates with the separately-owned admission pipeline at the enrollment handoff (§3.4–§3.5). The platform serves children ages 6 to 14, their families, guides, mentors, operators, and outside reviewers. It must reach feature completion in Month 3, support a live beta of 1,000 to 5,000 students in Month 4, and survive synthetic workloads that represent 100,000 registered learners.
 
 Delivery assumes an AI-native engineering workflow using Codex, Claude, Cursor, and frontier reasoning models for parallel design, implementation, tests, migration, red-team generation, and documentation. The roadmap plans around a 50x velocity hypothesis and therefore preserves the broad scope. Generated changes still require owned contracts, review, automated evidence, security gates, and rollback; development speed grants no model child-facing authority.
 
 **Strict human review before any consumer-facing exposure.** No product surface, content, model behavior, or release reaches consumers — and above all children — without passing a strict, named human review gate. Child-facing surfaces receive the highest scrutiny. This gate is mandatory regardless of development velocity, sits with the public-release reviewer and safeguarding team (§6.5), and is enforced by the operations release process (§30). AI-native speed accelerates building, never the decision to put something in front of a child.
 
-The architecture assigns authority to deterministic services and named people. Statistical models estimate state, rank safe options, or render an action that a rules engine selected. Models cannot admit a child, remove a child, raise pressure, deny help, publish work, or issue a credential. OPA policies, workflow state machines, and authorized staff own those actions. During the Month 4 beta, learned admissions, wellbeing, biometric, and peer-effect models run in shadow mode; a learned motivation controller may act only within rules-engine dose caps as bounded automation with a guide veto and one-click revert (§8.5). Staff can compare shadow recommendations with outcomes without exposing children to model-driven decisions on any irreversible or identity-defining matter.
+The architecture assigns authority to deterministic services and named people. Statistical models estimate state, rank safe options, or render an action that a rules engine selected. Models cannot admit a child, remove a child, raise pressure, deny help, publish work, or issue a credential. OPA policies, workflow state machines, and authorized staff own those actions. During the Month 4 beta, learned wellbeing, biometric, and peer-effect models run in shadow mode (learned admissions models are the admissions team's responsibility, §3.4); a learned motivation controller may act only within rules-engine dose caps as bounded automation with a guide veto and one-click revert (§8.5). Staff can compare shadow recommendations with outcomes without exposing children to model-driven decisions on any irreversible or identity-defining matter.
 
 The architecture inherits the evidence classes in Section 5. Learning mechanisms with strong evidence use E1 or E2; less-settled transfers use E3; learned `InterestHypothesis` updates, learned MotivationDose control, causal cohort effects, and digital-twin policy evaluation use R until validated. Deterministic dose caps and vetoes use G/ENG. Rights and authority boundaries use G; transactional outboxes, multi-zone deployment, queue-depth autoscaling, and other production controls use ENG.
 
@@ -1129,13 +1135,13 @@ flowchart TB
     SC["Student Compass"]
     FO["Family OS"]
     GM["Guide and Mentor Console"]
-    AW["Admissions Workbench"]
+    AW["Admissions Workbench (admissions team, §3.4)"]
     OG["Operations and Governance"]
     PP["Public Portfolio and Passport"]
   end
   subgraph Control["Deterministic control plane"]
     IC["Identity, consent, and policy"]
-    AD["Admissions and appeals"]
+    AD["Admissions and appeals (admissions team, §3.4)"]
     MC["Mastery and tutor control"]
     MR["Motivation rate limiter"]
     CC["Cohort compiler"]
@@ -1172,7 +1178,7 @@ flowchart TB
   SI --> RV --> GT --> OG
 ```
 
-The web-first monorepo contains six Next.js and TypeScript applications, shared design and accessibility packages, generated Protobuf clients, policy fixtures, and end-to-end tests. FastAPI exposes model and research APIs. Go services own low-latency commands, leases, event ingestion, and assignment commits. Rust supplies WASM assessment renderers, AudioWorklet DSP, content verifiers, and security-sensitive gateways.
+The web-first monorepo contains the platform's Next.js and TypeScript applications (five owned by this platform; the Admissions Workbench is owned and built by the admissions team, §3.4, and is shown here only for integration context), shared design and accessibility packages, generated Protobuf clients, policy fixtures, and end-to-end tests. FastAPI exposes model and research APIs. Go services own low-latency commands, leases, event ingestion, and assignment commits. Rust supplies WASM assessment renderers, AudioWorklet DSP, content verifiers, and security-sensitive gateways.
 
 Protobuf over gRPC carries internal commands and queries. Redpanda carries immutable domain events. PostgreSQL owns transactional records, bitemporal projections, pgvector indexes, reservations, and decision ledgers. Redis serves revocation lists, session state, and low-latency mastery reads. Flink computes streaming features from versioned definitions; Feast serves the same definitions online and through point-in-time Iceberg joins. S3 stores encrypted artifacts and Iceberg tables. Temporal executes family trials, appeals, project milestones, credential issuance, and deletion workflows. OPA and Rego enforce policy at service and workload boundaries.
 
@@ -1189,7 +1195,7 @@ All applications use Next.js App Router, React, strict TypeScript, the kickoff N
 | Student Compass | Installable PWA with React Aria, TanStack Query, an encrypted IndexedDB outbox, LiveKit rooms, Yjs project state, and route-loaded Rust/WASM Resonance. Offline actions cannot finalize mastery, dose, milestones, or exposure. |
 | Family OS | Responsive low-bandwidth PWA for schedules, support, consent receipts, quiet hours, and coaching. |
 | Guide and Mentor | Staff origin with virtualized evidence queues, rubric and diff views, WebSocket updates, and assignment-scoped mentor sessions. |
-| Admissions | Separate short-session staff origin with replay, parallel forms, accommodations, four-eyes decisions, and no passion or sensitive-research access. |
+| Admissions *(admissions team — §3.4)* | Owned and built by the admissions team; shown for integration only. Separate short-session staff origin with replay, parallel forms, accommodations, four-eyes decisions, and no passion or sensitive-research access. |
 | Operations | Isolated admin origin for SRE, policy, models, psychometrics, privacy, staffing, equipment, incidents, and kill switches. |
 | Public Portfolio | Server-rendered public app in a separate AWS account; it calls only Reality Gateway and credential verification and has no route to private stores. |
 
@@ -1199,7 +1205,7 @@ Browsers call same-origin role BFFs. BFFs compose purpose-filtered views but own
 
 | Runtime | Owned work |
 |---|---|
-| Go | Identity and consent, admissions and family workflows, mastery and tutor control, motivation ledger, cohorts, Foundry resources, EvidenceGraph index, Reality Gateway, credentials, event relays, inference broker, and communications. |
+| Go | Identity and consent, enrollment-handoff integration and post-enrollment family workflows, mastery and tutor control, motivation ledger, cohorts, Foundry resources, EvidenceGraph index, Reality Gateway, credentials, event relays, inference broker, and communications. (Admission pipeline workflows are the admissions team's, §3.4.) |
 | Python | FastAPI model APIs, PyTorch/Pyro research, psychometrics, PFA/BKT/IKT challengers, OR-Tools optimization, comparative evaluation, GT-Twin, and offline policy analysis. |
 | Rust | Assessment WASM, Resonance DSP and workers, Firecracker supervisor, capability gateway, content parsers, deterministic verifiers, and WASI modules. |
 | Managed runtimes | LiveKit/coturn media, Temporal workflows, Redpanda, Flink/Feast, Triton/vLLM, PostgreSQL, Redis, S3/Iceberg, and MLflow behind owned contracts. |
@@ -1257,7 +1263,7 @@ Each service owns one decision domain and its authoritative tables. Other servic
 | Boundary | Owned state and responsibility |
 |---|---|
 | Identity and Consent | Legal identity crosswalk, guardian authority, child assent, consent purposes, retention clocks, account recovery, and revocation. |
-| Admissions | Family trial, schedule feasibility, support package, assessment session, human decision, override, retest, and appeal. |
+| Enrollment Integration *(admissions handoff, §3.5)* | Consumes the admissions team's decision at the enrollment handoff: admitted-learner provisioning, accommodation-profile intake, and readiness-evidence reference. The admission pipeline itself — family trial, schedule feasibility, support package, assessment session, human decision, override, retest, and appeal — is the admissions team's boundary (§3.4), not owned here. |
 | Learning | Competency graph, mastery projection, retrieval schedule, independent verification, and benchmark mapping. |
 | Tutor Control | Attempt state, approved pedagogical action, hint cap, help receipt, grader isolation, and later unassisted check. |
 | Passion and Specialization | Probe assignment, propensity, InterestHypothesis, exploration floor, student response, and renewable plan. |
@@ -1298,7 +1304,7 @@ All public contracts use Protobuf and JSON representations generated from one re
 | `InterestHypothesis` | hypothesis ID and version, learner reference, candidate domains, work-mode profile, lifecycle state, separated signal summary, evidence references, competing explanations, coverage gaps, uncertainty, next probe, child position, family context, guide review, model and policy versions, valid time, record time. | The record contains no scalar passion or drive score. Students can dispute evidence, reject language, request a probe, or request parking. Admissions, pressure, discipline, credentials, and public rankings cannot consume it. |
 | `SpecializationPlan` | primary spine, adjacent and wildcard allocation, child-authored goal, projects, prerequisites, pressure budget, rest windows, disconfirming evidence, exit conditions, child assent, family and guide acknowledgment, start and renewal. | Staff review at least quarterly. The plan preserves exploration and an exit path. The 14-day protocol cannot override assent withdrawal or safety deload. |
 | `MotivationDoseToken` | intervention type, issuer, learner or cohort scope, dose units, reason, budget before and after, child setting, guide authorization, observed response, issue and expiry, rest and help checks, policy result. | Deadlines, rivalry escalation, public comparison, help refusal, and parent nudges require a valid token. Tokens cannot transfer or renew themselves. Human veto and emergency deload revoke active tokens. |
-| `CohortAssignment` | snapshot, member references, role, level and velocity bands, candidate-set hash, objective terms, constraints, start and planned review, prior assignment, rollback reference. | Each learner has one active assignment per activity. Groups contain five or six unless staff approve a documented exception. Individual non-harm, safety separation, churn, schedule, and accommodation constraints act as hard constraints. |
+| `CohortAssignment` | snapshot, member references, role, level and velocity bands, candidate-set hash, objective terms, constraints, start and planned review, prior assignment, rollback reference. | Each learner has one active assignment per activity. Groups contain six unless staff approve a documented exception. Individual non-harm, safety separation, churn, schedule, and accommodation constraints act as hard constraints. |
 | `CohortHealthEvent` | assignment, reporter, event class, affected members, severity, evidence scope, immediate action, safeguarding link, follow-up owner. | Peer views receive aggregated health data only. Bullying or safeguarding events bypass optimization and route to humans. A health report cannot reduce a student's rating. |
 | `MasterpieceSpec` | owner and cohort, domain kind, purpose, target contract, milestone DAG, prerequisites, risk class, resource and assistance budgets, exposure intent, approval owners, version. | Students approve the initial specification and material agent changes. Controllers advance only after signed milestone evidence. Each version preserves prior intent and approvals. |
 | `MilestoneContract` | inputs, artifact type, verifier, rubric, pass threshold, evidence requirements, review role, retry and compensation policy, next-state rules. | The verifier version and input hashes bind each result. A failed verifier cannot erase an artifact. Human judgment records rubric and confidence. |
@@ -1314,7 +1320,7 @@ GT100K maintains seven data zones: identity, admissions, learning, wellbeing, se
 
 The US-first legal map covers COPPA, FERPA where GT100K acts for an educational institution or maintains education records, applicable state student-privacy and biometric laws, disability and accessibility duties, records-access rights, research review, and breach notice. A jurisdiction owner records applicability and approved data flow before a site or partner launches.
 
-Purpose-based authorization evaluates role, tenant, purpose, jurisdiction, consent, assent, record sensitivity, and requested fields. APIs return field-filtered views. Staff cannot export raw assessment responses, passion evidence, wellbeing notes, or private project traces through analytics tools. Cohort metrics use threshold secure aggregation with contribution clipping, ephemeral client keys, and a minimum of five valid contributors. The aggregation service receives encrypted shares, not individual values; missing shares abort the aggregate, and sparse results remain suppressed. A cohort member receives no individual wellbeing estimate about another child.
+Purpose-based authorization evaluates role, tenant, purpose, jurisdiction, consent, assent, record sensitivity, and requested fields. APIs return field-filtered views. Staff cannot export raw assessment responses, passion evidence, wellbeing notes, or private project traces through analytics tools. Cohort metrics use threshold secure aggregation with contribution clipping, ephemeral client keys, and a minimum of five valid contributors (the six-member pod floor in §15 keeps a normal pod above this minimum even if one child abstains). The aggregation service receives encrypted shares, not individual values; missing shares abort the aggregate, and sparse results remain suppressed. A cohort member receives no individual wellbeing estimate about another child.
 
 A packet-capture and compromised-aggregator test must prove that the central service cannot reconstruct one child's value from a valid, incomplete, replayed, or malicious five-person aggregation.
 
@@ -1340,14 +1346,14 @@ The Self-Play Gym tests curriculum sequences, tutor policies, passion probes, co
 
 ### 31.1 Radical-Dose R&D Track
 
-The Radical-Dose R&D Track is a quarantined research surface that studies the Brainlift's full-intensity design past today's defensible production line: stronger retrieval friction, ability-based and cross-cohort rivalry, a higher and harder selection bar, denser dosing, and faster specialization. It exists so the production program can stay at the max-defensible ceiling while the organization keeps learning where the true frontier is.
+The Radical-Dose R&D Track is a quarantined research surface that studies the Brainlift's full-intensity design past today's defensible production line: stronger retrieval friction, ability-stratified near-peer and cross-cohort rivalry *intensity*, a higher and harder selection bar, denser dosing, and faster specialization. "Ability-stratified" means matching contestants by ability so contests stay near-peer (as in §15) and studying how much rivalry intensity helps — never a fixed-ability caste ranking. It exists so the production program can stay at the max-defensible ceiling while the organization keeps learning where the true frontier is.
 
 The track operates under four hard rules:
 
 1. **Simulation first.** Radical policies run against GT-Twin populations (§31) with doubly robust off-policy evaluation, subgroup analysis, and high-confidence lower bounds before any human subject is involved.
 2. **Separate research consent.** Any study involving real children requires purpose-specific parent consent and child assent, an independent research-ethics review, and a no-participation path with no effect on the child's program status, admission, cohort, or credentials.
 3. **No live-status effect.** A radical-track output can never change a live child's admission, intensity, specialization, cohort, route, or credential. It produces evidence, not decisions.
-4. **Bounded by §23.** The track may vary intensity dials only. It may not use any mechanism prohibited in §23 — no surveillance, biometric-truth claims, irrevocable contracts, automated rejection, or single-signal decisions — even under research consent.
+4. **Bounded by §23.** The track may vary intensity dials only. It may not use any mechanism prohibited in §23 — no surveillance, biometric-truth claims, irrevocable contracts, automated rejection, or single-signal decisions — even under research consent. In particular, the ability-stratified rivalry it studies never becomes a fixed-ability caste leaderboard, public tier name, or protected-attribute ranking; that §23 prohibition holds in simulation as well as production.
 
 Validated findings feed a governance roadmap. The model and data governance board may, on the strength of that evidence plus legal, subgroup, and child-impact review, approve loosening a specific production control past the current defensible setting through the normal promotion process (§8.5). The roadmap is explicit that today's production ceiling is a starting line, not a permanent bound, and that every move past it must clear the same rights limits that constrain the current design.
 
@@ -1371,13 +1377,13 @@ Months 1 through 3 fund feature construction. Engineers still write unit, contra
 
 ### 32.1 Month 1: trustworthy end-to-end foundation
 
-Weeks 1 and 2 establish the monorepo, six application shells, identity vault, guardian consent and child assent, role and purpose authorization, contract registry, Redpanda, domain PostgreSQL instances, S3, Terraform, CI/CD, telemetry, and signed OPA bundles. The team implements `LearnerEvent`, consent, decision, override, appeal, and audit contracts first because all later work depends on them.
+Weeks 1 and 2 establish the monorepo, the platform application shells (the Admissions Workbench shell is the admissions team's, §3.4), identity vault, guardian consent and child assent, role and purpose authorization, contract registry, Redpanda, domain PostgreSQL instances, S3, Terraform, CI/CD, telemetry, and signed OPA bundles. The team implements `LearnerEvent`, consent, decision, override, appeal, and audit contracts first because all later work depends on them.
 
-Weeks 2 and 3 add Family OS onboarding, the 21-to-28-day trial workflow, schedule and support compiler, Admissions Workbench, an assessment simulator with Rust/WASM rendering, and rules-based `ADMIT`, `VERIFY`, or `ROUTE` recommendations for human review. The Month 4 beta will use fixed item parameters, deterministic posterior scoring rules, and human judgment. Learned psychometric models remain shadow through the beta; independent calibration review supports post-beta advisory consideration.
+Weeks 2 and 3 add the **enrollment-handoff integration** with the admissions team's pipeline (§3.5) — consuming the admitted-learner roster, identity and consent scope, accommodation profile, and a readiness-evidence reference — plus Family OS **post-enrollment** onboarding (household schedule, device and support requests, and consent management). The admission pipeline itself — recruitment, the 21-to-28-day trial workflow, the schedule and support compiler, the Admissions Workbench, cognitive-floor assessment, and the `ADMIT`/`VERIFY`/`ROUTE` decision — is built and owned by the admissions team (§3.4); this platform integrates with it against an agreed contract rather than building it. Against the beta timeline this integration runs against a stub of that contract until the admissions team's interface is available.
 
-Weeks 3 and 4 add the competency graph, PFA baseline, 90 percent independent gate, retrieval queue, separate tutor and grader services, attempt-before-hint controls, and help receipts. Student Compass receives the two-hour daily plan and an Interest Lab registry. Foundry receives a project registry, Temporal skeleton, capability-scoped MCP gateway, and one isolated workspace type. Resonance implements a speaker-and-filter quest with browser audio capture, FFT display, and saved evidence.
+Weeks 3 and 4 add the competency graph, PFA baseline, 90 percent independent gate, retrieval queue, separate tutor and grader services, attempt-before-hint controls, and help receipts. Student Compass receives the two-hour daily plan and an Interest Lab registry. Foundry receives a project registry, Temporal skeleton, capability-scoped MCP gateway, and one isolated workspace type. As a low-priority stretch item (§3.2, §17), and only if capacity allows, Resonance implements a speaker-and-filter quest with browser audio capture, FFT display, and saved evidence.
 
-Month 1 construction gate: a synthetic fixture family can grant and withdraw consent, complete intake, receive a replayable human decision, appeal it, start a mastery session, receive a policy-approved Socratic hint, complete an audio interest probe, and open an isolated project. Developers can trace each consequential action to consent, policy, evidence, software version, and authorized person. An automated deletion test removes the fixture learner across all Month 1 stores.
+Month 1 construction gate: a synthetic fixture family can grant and withdraw consent, arrive through the stubbed enrollment handoff (admitted-learner roster and accommodation profile from the admissions team's contract, §3.5), start a mastery session, receive a policy-approved Socratic hint, complete an audio interest probe, and open an isolated project. Developers can trace each consequential action to consent, policy, evidence, software version, and authorized person. An automated deletion test removes the fixture learner across all Month 1 stores.
 
 ### 32.2 Month 2: adaptation, passion, cohorts, and creation
 
@@ -1385,11 +1391,11 @@ The passion team implements balanced probe assignment, propensity logging, delay
 
 The motivation team implements the dose ledger and token gateway before any automated pressure feature. It encodes rest, help availability, weekly child pulse, veto, and deload rules. A conservative MPC produces shadow recommendations and counterfactual reports. The cohort team builds HNSW candidate generation, rule-based level and velocity bands, CP-SAT assignment, atomic commits, rollback, private ratings, WebRTC rooms, and RivalryMix turn-taking summaries. Learned peer effects remain shadow estimates.
 
-Foundry adds software, research, robotics, documentary, startup, and audio DAG adapters; Firecracker workspaces; resource and equipment leases; CRDT collaboration; expert matching; and student approval for agent actions. The Mentor Mesh adds producer, research, craft, technical-review, and red-team roles behind an answer-leakage firewall. Resonance adds multitrack editing, STFT, filters, crossovers, enclosure simulation, dynamics, LUFS measurement, and room-correction experiments.
+Foundry adds software, research, robotics, documentary, startup, and audio DAG adapters; Firecracker workspaces; resource and equipment leases; CRDT collaboration; expert matching; and student approval for agent actions. The Mentor Mesh adds producer, research, craft, technical-review, and red-team roles behind an answer-leakage firewall. As a low-priority stretch item (§3.2, §17), and only if capacity allows, Resonance adds multitrack editing, STFT, filters, crossovers, enclosure simulation, dynamics, LUFS measurement, and room-correction experiments.
 
 EvidenceGraph ingests content-addressed evidence, Merkle checkpoints, assistance and contribution lineage, deterministic WASI verifiers, comparative judgment, model-panel calibration, and a live authorship defense. Sensitive Signal Lab may run on-device research pipelines under separate consent. It discards source media, publishes no child-facing score, and supplies only shadow audit reports.
 
-Month 2 construction gate: synthetic learner fixtures can receive a reversible interest hypothesis, choose or reject a specialization, join a cohort of five or six, complete a project milestone, disclose help, receive review, and challenge the evidence. Developers can revert the cohort, restore help, revoke an agent capability, and replay the full path.
+Month 2 construction gate: synthetic learner fixtures can receive a reversible interest hypothesis, choose or reject a specialization, join a cohort of six, complete a project milestone, disclose help, receive review, and challenge the evidence. Developers can revert the cohort, restore help, revoke an agent capability, and replay the full path.
 
 ### 32.3 Month 3: feature completion and production integration
 
@@ -1417,15 +1423,17 @@ The program treats each enrollment wave as a release decision.
 
 | Enrollment | Guides, including 15% backup | Admissions reviewers | Psychometricians | Safeguarding on duty | Mentor operations | Credential issuers | SRE and security on call |
 |---:|---:|---:|---:|---:|---:|---:|---:|
-| 1,000 | 40 | 8 | 3 | 3 | 5 | 2 | 3 |
-| 2,500 | 97 | 18 | 6 | 6 | 12 | 4 | 5 |
-| 5,000 | 192 | 35 | 10 | 12 | 24 | 8 | 8 |
+| 1,000 | 50 | 8 | 3 | 3 | 5 | 2 | 3 |
+| 2,500 | 125 | 18 | 6 | 6 | 12 | 4 | 5 |
+| 5,000 | 250 | 35 | 10 | 12 | 24 | 8 | 8 |
 
-The release board counts trained, scheduled staff rather than offers or hires. It freezes enrollment when average guide caseload exceeds 30, backup coverage falls below 15 percent, safeguarding coverage falls below two staff, or a human-review queue breaches its SLO for two operating days.
+Guide counts plan to roughly one guide per 20 learners so that active caseload (net of the 15 percent backup) stays inside the §6.3 range of 15 to 25. Admissions reviewers and psychometricians are provided by the admissions team (§3.4) and are shown here only for total-beta capacity context, not as this platform's hires.
+
+The release board counts trained, scheduled staff rather than offers or hires. It freezes enrollment when average guide caseload exceeds 25 (the §6.3 ceiling), backup coverage falls below 15 percent, safeguarding coverage falls below two staff, or a human-review queue breaches its SLO for two operating days.
 
 Months 1 through 3 run smaller deterministic load and failure-injection checks in CI. The formal Month 4 release-readiness run uses 100,000 registered learners, school-bell traffic bursts, 10,000 events per second, concurrent cohort compilation, 10,000 queued workspace launches, tutor saturation, mass consent withdrawal, and emergency revocation. A synthetic result proves capacity behavior, not educational efficacy.
 
-Month 4 exit target: the 5,000-learner wave completes governance review with human-owned admissions, intensity, safeguarding, publication, and credential decisions. If a signed pause rule fires, the program ends the calendar month in a controlled hold at the current safe enrollment ceiling with named blockers, owners, and retest evidence; it does not declare beta completion. Irreversible and identity-defining learned models remain in shadow mode; reversible bounded-automation controllers stay within their signed caps. Operators can reconstruct historical state, revoke external exposure within the SLO, restore the platform from backups, and publish the signed validation report.
+Month 4 exit target: the 5,000-learner wave completes governance review with human-owned intensity, safeguarding, publication, and credential decisions (admissions decisions are human-owned by the admissions team, §3.4). If a signed pause rule fires, the program ends the calendar month in a controlled hold at the current safe enrollment ceiling with named blockers, owners, and retest evidence; it does not declare beta completion. Irreversible and identity-defining learned models remain in shadow mode; reversible bounded-automation controllers stay within their signed caps. Operators can reconstruct historical state, revoke external exposure within the SLO, restore the platform from backups, and publish the signed validation report.
 
 ## 33. Verification and success measures
 
@@ -1443,7 +1451,7 @@ Operations stores each threshold with ID, owner, value, unit, population, measur
 | Motivation dose | At most two pressure tokens per day, six per seven days, one parent nudge per day, and none during a ten-hour protected rest window. | Learner-plan panel rolling seven days; revoke, restore help, notify guide. |
 | Cohort compiler | 100,000-learner solve within 30 minutes; repair p95 within 60 seconds; zero hard-constraint breaches; weekly churn at most 10 percent. | Cohort owner per build and week; rollback or freeze. |
 | Rivalry visibility | Standings are gain-based and sprint-reset; zero standings derived from a protected attribute or fixed-ability caste; opt-out honored before the next session; per-pod belonging index holds within its signed band or visible rivalry auto-reverts to private. | Cohort and safeguarding owners; auto-revert to private and notify guide. |
-| Resonance | Declared minimum of four CPU cores, 8 GB RAM, current or prior supported browser; eight mono tracks at 48 kHz; fewer than one underrun per ten minutes; FFT error under 0.5 dB and LUFS error under 0.3 LU. | Audio owner per browser release; lower the profile or block. |
+| Resonance *(stretch — applies only if built, §3.2/§17)* | Declared minimum of four CPU cores, 8 GB RAM, current or prior supported browser; eight mono tracks at 48 kHz; fewer than one underrun per ten minutes; FFT error under 0.5 dB and LUFS error under 0.3 LU. | Audio owner per browser release; lower the profile or block. |
 | Mentor RAG | Citation support at least 98 percent, context precision at least 90 percent, and zero cross-project retrieval or target-deliverable generation in the security suite. | Mentor owner per corpus or model; disable failed version. |
 | Wave promotion | Availability at least 99.9 percent; no open critical safety, consent, or security incident; 99 percent of safeguarding alerts acknowledged within 15 minutes; guide queue p95 under one business day; appeals within SLO. | Beta release board over prior seven days; hold enrollment. |
 
@@ -1459,7 +1467,7 @@ Psychometric tests measure posterior coverage, information near the floor, test-
 
 Passion tests measure domain and work-mode coverage, voluntary return after incentives stop, self-authored scope, failure recovery, novelty decay, burden, student override, and foreclosure across untested interests. Motivation tests measure token bypass, dose caps, rest, help availability, veto, deload, pressure dependence, and controller shadow error. Cohort tests measure hard-constraint satisfaction, individual non-harm, churn, waiting time, belonging, bullying response, and rollback. Foundry and EvidenceGraph tests cover sandbox escape, capability escalation, reservation races, artifact tampering, replay, reproduction, assistance disclosure, contribution disputes, and poisoned files.
 
-The canonical end-to-end case follows John from parent onboarding through acoustics probes, a speaker-design specialization, a five-person cohort challenge, crossover and enclosure work in Resonance, a physical build, DSP measurement, expert critique, live defense, bounded audience test, public evidence page, and portable credential. Variants cover a borderline assessment, accommodation, parent-child disagreement, fading interest, temporary resistance, mentor mismatch, bullying, overwork, non-selection, appeal, consent withdrawal, and a humane route to another program.
+The canonical end-to-end case follows John from parent onboarding through acoustics probes, a speaker-design specialization, a six-person cohort challenge, crossover and enclosure work (in Resonance if that stretch feature is built, otherwise via standard Foundry tools; §17, §3.2), a physical build, DSP measurement, expert critique, live defense, bounded audience test, public evidence page, and portable credential. Variants cover a borderline assessment, accommodation, parent-child disagreement, fading interest, temporary resistance, mentor mismatch, bullying, overwork, non-selection, appeal, consent withdrawal, and a humane route to another program.
 
 | Outcome family | Beta measure |
 |---|---|
@@ -1491,6 +1499,8 @@ The brainlift and implementation blueprint are foundations rather than proposals
 
 `Split` means GT100K retains a safe mechanism while deferring or rejecting its proposed authority, sensing, or incentive design.
 
+> **Ownership and priority note (§3.4, §3.2).** This appendix records how source proposals were consolidated; it predates the admissions-ownership split. Rows about admission, intake, the family trial, and cognitive-floor assessment (e.g., HEADROOM, Gatehouse, Floor CAT and WASM Runtime, Cognitive Floor Assessment WASM, FloorGate, Covenant Ledger, CRUCIBLE, Cerberus) are now **owned by the admissions team (§3.4)**, and any month shown for them refers to that team's timeline, not this platform's delivery plan. Rows about Resonance / audio DSP (ATELIER DSP Studio, RESONANCE) are **low-priority stretch (§17, §3.2)** and are not committed to the release candidate.
+
 M1, M2, and M3 identify construction allocation, not live rollout. Month 4 validates the integrated retained system and is not repeated in every row.
 
 | Source | Idea | Disposition | PRD destination / build month | Rationale |
@@ -1500,7 +1510,7 @@ M1, M2, and M3 identify construction allocation, not live rollout. Month 4 valid
 | `claudeProposal.md` | DIVINER | Merged | §14 / M2 | Becomes shadow Passion Engine. |
 | `claudeProposal.md` | GOVERNOR | Merged | §14.8 / M2 | Rules ship; learned control titrates within caps as bounded automation (§8.5, v1.2). |
 | `claudeProposal.md` | PHALANX | Merged | §15 / M2 | Becomes constrained cohort compiler. |
-| `claudeProposal.md` | ATELIER DSP Studio | Merged | §17 / M1-M2 | Becomes Resonance Audio Studio. |
+| `claudeProposal.md` | ATELIER DSP Studio | Merged | §17 / stretch | Becomes Resonance Audio Studio; low-priority stretch (§3.2, §17). |
 | `claudeProposal.md` | PRAXIS | Merged | §18 / M2 | Becomes Socratic Mentor Mesh. |
 | `claudeWorkflowProposal.md` | Fidelity Survival Engine | Deferred→Advisory | §10 / M1 | Family-execution signal promoted to advisory after local validation (§10.1 RF-04, v1.2); never sole basis or automated rejection. |
 | `claudeWorkflowProposal.md` | Floor CAT and WASM Runtime | Retained | §11 / M1 | Core assessment delivery. |
@@ -1585,7 +1595,7 @@ M1, M2, and M3 identify construction allocation, not live rollout. Month 4 valid
 | `proposal4.md` | LODESTAR | Merged | §14 / M2 | Becomes Passion Engine. |
 | `proposal4.md` | FLOWSTATE | Split | §14.8 / M2 | Safety rules retained; learned control bounded within caps (§8.5, v1.2). |
 | `proposal4.md` | CRUCIBLE Cohort Engine | Merged | §15 / M2 | Becomes cohort compiler and Arena. |
-| `proposal4.md` | RESONANCE | Retained | §17 / M1-M2 | Canonical browser-native audio studio. |
+| `proposal4.md` | RESONANCE | Retained (stretch) | §17 / stretch | Canonical browser-native audio studio; low-priority stretch (§3.2, §17). |
 | `proposal4.md` | ATELIER Mentor Pipeline | Merged | §§16, 18 / M2 | Foundry agents and Mentor Mesh. |
 
 The consolidation rejects financial escrow and income-share underwriting for minors, public fixed-ability rankings, automatic expulsion, covert surveillance, biometric truth claims, and AI-authorship accusations across all sources. It preserves the proposals' strongest engineering work while placing child agency, human authority, evidence quality, and reversible release controls inside the architecture.
