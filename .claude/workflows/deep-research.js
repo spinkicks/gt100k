@@ -1,18 +1,82 @@
 export const meta = {
   name: 'deep-research',
-  description: 'Deep research harness — fan-out web searches, fetch sources, adversarially verify claims, synthesize a cited report.',
-  whenToUse: 'When the user wants a deep, multi-source, fact-checked research report on any topic. BEFORE invoking, check if the question is specific enough to research directly — if underspecified (e.g., "what car to buy" without budget/use-case/region), ask 2-3 clarifying questions to narrow scope. Then pass the refined question as args, weaving the answers in.',
-  phases: [{"title":"Scope","detail":"Decompose question (from args) into 5 search angles"},{"title":"Search","detail":"5 parallel WebSearch agents, one per angle"},{"title":"Fetch","detail":"URL-dedup, fetch top 15 sources, extract falsifiable claims"},{"title":"Verify","detail":"3-vote adversarial verification per claim (need 2/3 refutes to kill)"},{"title":"Synthesize","detail":"Merge semantic dupes, rank by confidence, cite sources"}],
+  description: 'Deep research harness — fan-out web searches, fetch sources, corroborate + adversarially verify claims across rounds, synthesize a cited report.',
+  whenToUse: 'When the user wants a deep, multi-source, fact-checked research report on any topic. BEFORE invoking, if the question is underspecified (e.g. "what car to buy" with no budget/use-case/region), ask 2-3 clarifying questions and weave the answers into the question. INVOKE with args as an object: {question: "<refined question>", today: "<YYYY-MM-DD>"} using today\'s actual date so recency handling works (a bare string still works but disables recency). AFTER it completes, use the Write tool to save result.reportMarkdown verbatim to result.suggestedFilename in the repo root, then give the user a short summary and the file path.',
+  phases: [
+    {"title":"Scope","detail":"Decompose question into ~5 search angles; flag time-sensitivity"},
+    {"title":"Search","detail":"Parallel WebSearch, one agent per angle"},
+    {"title":"Fetch","detail":"Barrier + global relevance rank, per-domain cap, fetch best N, extract claims"},
+    {"title":"Cluster","detail":"Group corroborating claims, flag contradictions"},
+    {"title":"Verify","detail":"3-vote diverse-lens verification per cluster representative"},
+    {"title":"Synthesize","detail":"Merge, rank by confidence, cite, assemble report markdown"},
+  ],
 }
 
-// deep-research: Scope → pipeline(Search → URL-dedup → Fetch+Extract) → 3-vote Verify → Synthesize
-// Ported from bughunter architecture. WebSearch/WebFetch instead of git/grep.
-// Question is passed via Workflow({name: 'deep-research', args: '<question>'}).
+// deep-research v2: Scope → Search →[barrier] Rank+Allocate → Fetch+Extract →[barrier]
+//   Cluster → Verify(diverse 3-vote), wrapped by a gap-driven round controller (max 2),
+//   then Synthesize + deterministic report-markdown assembly.
+// Universal: lives at ~/.claude/workflows/deep-research.js, no project coupling.
+// Question passed via args: {question, today} (or a bare string; today enables recency).
 
-const VOTES_PER_CLAIM = 3
-const REFUTATIONS_REQUIRED = 2
-const MAX_FETCH = 15
-const MAX_VERIFY_CLAIMS = 25
+// ─── Config (fixed guardrail caps; budget is a brake, not a throttle) ───
+const CFG = { angles: 5, fetch: 15, verifyClaims: 25, rounds: 2, perDomain: 3, votes: 3, refuteQuorum: 2 }
+const LOW_BUDGET_TOKENS = 60000
+const brakeEngaged = () => budget.total != null && budget.remaining() < LOW_BUDGET_TOKENS
+
+// ─── Input ───
+let QUESTION = "", TODAY = ""
+if (typeof args === "string") { QUESTION = args.trim() }
+else if (args && typeof args === "object") { QUESTION = String(args.question || "").trim(); TODAY = String(args.today || "").trim() }
+
+// ─── Sanitization (preserved verbatim from v1) ───
+// The workflow sandbox is a bare ECMAScript realm — no URL global — so
+// hostname/path come from a regex: captures (1) hostname (userinfo, www.,
+// and port stripped) and (2) pathname. Neither userinfo nor host admits
+// \: WHATWG URL treats \ as a path separator for http(s), so a laxer
+// class would label evil.com\@trusted.com as trusted.com while WebFetch
+// actually goes to evil.com. Userinfo DOES admit @ — WHATWG splits the
+// authority at the LAST @ before the host, so greedy matching must too;
+// stopping at the first @ would label x@trusted.com@evil.com as
+// trusted.com while the fetch contacts evil.com. The host class still
+// excludes @, so the userinfo group consumes every @ up to the last one.
+const URL_HOST_PATTERN = /^[a-z][a-z0-9+.-]*:\/\/(?:[^/?#\\]*@)?(?:www\.)?([^/:?#@\\]+)(?::\d+)?([^?#]*)/i
+const normURL = u => {
+  const m = String(u).match(URL_HOST_PATTERN)
+  return m ? (m[1] + m[2].replace(/\/$/, "")).toLowerCase() : String(u).toLowerCase()
+}
+// Host and title both come from web content and reach the terminal via the
+// progress label. Two hazards: forging a trusted hostname, and smuggling
+// terminal control sequences or invisible reordering chars. LABEL_STRIP
+// deletes what must never render — C0/C1 controls (incl. ESC/CSI, the ANSI
+// introducers), Unicode bidi overrides/isolates and zero-width format chars
+// (U+200B-200F, U+202A-202E, U+2066-2069, U+FEFF — they visually reorder or
+// hide label text), and the WHOLE double-quote lookalike family (ASCII " plus
+// U+201C-201F, U+2033, U+2036, U+275D, U+275E, U+301D, U+301E, U+FF02 — any of
+// which would visually close the quoted fallback early and forge host-shaped
+// text after it). STRICT_HOST is the strict registrable-hostname charset a
+// bare label must match (dot-separated LDH labels). normURL keeps the raw
+// capture: dedup keys are never rendered, and stripping there could collide
+// distinct URLs.
+const LABEL_CAP = 40
+const LABEL_STRIP = /[\x00-\x1f\x7f-\x9f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff\u0022\u201c-\u201f\u2033\u2036\u275d\u275e\u301d\u301e\uff02]/g
+const STRICT_HOST = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/
+const stripLabelChars = s => String(s).replace(LABEL_STRIP, "")
+// Render a web-controlled value as a clearly-untrusted quoted label: strip
+// dangerous chars, cap at LABEL_CAP code points (Array.from so a surrogate
+// pair never splits), and when the cap actually truncated the value, append …
+// INSIDE the quotes so a shortened string can never pass for the whole thing.
+const quotedLabel = s => {
+  const cps = Array.from(stripLabelChars(s))
+  return '"' + cps.slice(0, LABEL_CAP).join("").trim() + (cps.length > LABEL_CAP ? "…" : "") + '"'
+}
+const domainOf = u => { const m = String(u).match(URL_HOST_PATTERN); return m ? m[1].toLowerCase() : "" }
+
+// ─── Cross-round state + rank maps ───
+const seen = new Map()
+const relRank = { high: 0, medium: 1, low: 2 }
+const impRank = { central: 0, supporting: 1, tangential: 2 }
+const qualRank = { primary: 0, secondary: 1, blog: 2, forum: 3, unreliable: 4 }
+const confRank = { high: 0, medium: 1, low: 2 }
 
 // ─── Schemas ───
 const SCOPE_SCHEMA = {
@@ -20,6 +84,7 @@ const SCOPE_SCHEMA = {
   properties: {
     question: { type: "string" },
     summary: { type: "string" },
+    timeSensitive: { type: "boolean" },
     angles: { type: "array", minItems: 3, maxItems: 6, items: {
       type: "object", required: ["label", "query"],
       properties: {
@@ -59,12 +124,28 @@ const EXTRACT_SCHEMA = {
     }},
   },
 }
-const VERDICT_SCHEMA = {
-  type: "object", required: ["refuted", "evidence", "confidence"],
+const CLUSTER_SCHEMA = {
+  type: "object", required: ["clusters"],
   properties: {
-    refuted: { type: "boolean" },
-    evidence: { type: "string" },
+    clusters: { type: "array", items: {
+      type: "object", required: ["representative", "memberIndices"],
+      properties: {
+        representative: { type: "string" },
+        memberIndices: { type: "array", items: { type: "integer" } },
+      },
+    }},
+    conflicts: { type: "array", items: {
+      type: "object", required: ["a", "b", "note"],
+      properties: { a: { type: "integer" }, b: { type: "integer" }, note: { type: "string" } },
+    }},
+  },
+}
+const VERDICT_SCHEMA = {
+  type: "object", required: ["verdict", "evidence", "confidence"],
+  properties: {
+    verdict: { enum: ["supported", "contradicted", "unsupported", "uncertain"] },
     confidence: { enum: ["high", "medium", "low"] },
+    evidence: { type: "string" },
     counterSource: { type: "string" },
   },
 }
@@ -87,87 +168,73 @@ const REPORT_SCHEMA = {
   },
 }
 
-// ─── Phase 0: Scope — decompose question into search angles ───
+// ─── Phase 0: Scope ───
 phase("Scope")
-const QUESTION = (typeof args === "string" && args.trim()) || ""
 if (!QUESTION) {
-  return { error: "No research question provided. Pass it as args: Workflow({name: 'deep-research', args: '<question>'})." }
+  return { error: "No research question provided. Pass args: {question: '<q>', today: '<YYYY-MM-DD>'} or a bare question string." }
 }
-const scope = await agent(
-  "Decompose this research question into complementary search angles.\n\n" +
-  "## Question\n" + QUESTION + "\n\n" +
-  "## Task\n" +
-  "Generate 5 distinct web search queries that together cover the question from different angles. Pick angles that suit the question's domain. Examples:\n" +
-  "- broad/primary  · academic/technical  · recent news  · contrarian/skeptical  · practitioner/implementation\n" +
-  "- For medical: anatomy · common causes · serious differentials · authoritative refs · red flags\n" +
-  "- For tech: state-of-art · benchmarks · limitations · industry adoption · cost/tradeoffs\n\n" +
-  "Make queries specific enough to surface high-signal results. Avoid redundancy.\n" +
-  "Return: the question (verbatim or lightly normalized), a 1-2 sentence decomposition strategy, and the angles.\n\nStructured output only.",
-  { label: "scope", schema: SCOPE_SCHEMA }
-)
-if (!scope) {
-  return { error: "Scope agent returned no result — cannot decompose the research question." }
+
+async function scopeQuestion(extraContext) {
+  const recencyNote = TODAY ? ("\nToday's date is " + TODAY + ". Set timeSensitive=true if the answer depends on recent developments.") : ""
+  return agent(
+    "Decompose this research question into complementary web search angles.\n\n" +
+    "## Question\n" + QUESTION + "\n" + (extraContext || "") + "\n\n" +
+    "## Task\nGenerate " + CFG.angles + " distinct search queries covering different angles " +
+    "(e.g. broad/primary · academic/technical · recent · contrarian/skeptical · practitioner). " +
+    "Make them specific and non-redundant." + recencyNote + "\n" +
+    "Return the question, a 1-2 sentence strategy, timeSensitive, and the angles.\n\nStructured output only.",
+    { label: "scope", phase: "Scope", schema: SCOPE_SCHEMA }
+  )
 }
+const scope = await scopeQuestion()
+if (!scope) { return { error: "Scope agent returned no result — cannot decompose the research question." } }
 log("Q: " + QUESTION.slice(0, 80) + (QUESTION.length > 80 ? "…" : ""))
-log("Decomposed into " + scope.angles.length + " angles: " + scope.angles.map(a => a.label).join(", "))
+log("Angles: " + scope.angles.map(a => a.label).join(", ") + (scope.timeSensitive ? " [time-sensitive]" : ""))
+const TIME_SENSITIVE = !!scope.timeSensitive && !!TODAY
 
-// ─── Dedup state — accumulates across searchers as they complete ───
-// The workflow sandbox is a bare ECMAScript realm — no URL global — so
-// hostname/path come from a regex: captures (1) hostname (userinfo, www.,
-// and port stripped) and (2) pathname. Neither userinfo nor host admits
-// \: WHATWG URL treats \ as a path separator for http(s), so a laxer
-// class would label evil.com\@trusted.com as trusted.com while WebFetch
-// actually goes to evil.com. Userinfo DOES admit @ — WHATWG splits the
-// authority at the LAST @ before the host, so greedy matching must too;
-// stopping at the first @ would label x@trusted.com@evil.com as
-// trusted.com while the fetch contacts evil.com. The host class still
-// excludes @, so the userinfo group consumes every @ up to the last one.
-const URL_HOST_PATTERN = /^[a-z][a-z0-9+.-]*:\/\/(?:[^/?#\\]*@)?(?:www\.)?([^/:?#@\\]+)(?::\d+)?([^?#]*)/i
-const normURL = u => {
-  const m = String(u).match(URL_HOST_PATTERN)
-  return m ? (m[1] + m[2].replace(/\/$/, "")).toLowerCase() : String(u).toLowerCase()
-}
-// Host and title both come from web content and reach the terminal via the
-// progress label. Two hazards: forging a trusted hostname, and smuggling
-// terminal control sequences or invisible reordering chars. LABEL_STRIP
-// deletes what must never render — C0/C1 controls (incl. ESC/CSI, the ANSI
-// introducers), Unicode bidi overrides/isolates and zero-width format chars
-// (U+200B-200F, U+202A-202E, U+2066-2069, U+FEFF — they visually reorder or
-// hide label text), and the WHOLE double-quote lookalike family (ASCII " plus
-// U+201C-201F, U+2033, U+2036, U+275D, U+275E, U+301D, U+301E, U+FF02 — any of
-// which would visually close the quoted fallback early and forge host-shaped
-// text after it). STRICT_HOST is the strict registrable-hostname charset a
-// bare label must match (dot-separated LDH labels). normURL keeps the raw
-// capture: dedup keys are never rendered, and stripping there could collide
-// distinct URLs.
-const LABEL_CAP = 40
-const LABEL_STRIP = /[\x00-\x1f\x7f-\x9f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff\u0022\u201c-\u201f\u2033\u2036\u275d\u275e\u301d\u301e\uff02]/g
-const STRICT_HOST = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/
-const stripLabelChars = s => String(s).replace(LABEL_STRIP, "")
-// Render a web-controlled value as a clearly-untrusted quoted label: strip
-// dangerous chars, cap at LABEL_CAP code points (Array.from so a surrogate
-// pair never splits), and when the cap actually truncated the value, append …
-// INSIDE the quotes so a shortened string can never pass for the whole thing.
-const quotedLabel = s => {
-  const cps = Array.from(stripLabelChars(s))
-  return '"' + cps.slice(0, LABEL_CAP).join("").trim() + (cps.length > LABEL_CAP ? "\u2026" : "") + '"'
-}
-const seen = new Map()
-const dupes = []
-const budgetDropped = []
-const relRank = { high: 0, medium: 1, low: 2 }
-let fetchSlots = MAX_FETCH
-
-// ─── Prompts ───
+// ─── Search (parallel — barrier so all results pool before global ranking) ───
 const SEARCH_PROMPT = (angle) =>
   "## Web Searcher: " + angle.label + "\n\n" +
   "Research question: \"" + QUESTION + "\"\n\n" +
   "Your angle: **" + angle.label + "** — " + (angle.rationale || "") + "\n" +
-  "Search query: `" + angle.query + "`\n\n" +
-  "## Task\nUse WebSearch with the query above (or a refined version). Return the top 4-6 most relevant results.\n" +
-  "Rank by relevance to the ORIGINAL question, not just the search query. Skip obvious SEO spam/content farms.\n" +
-  "Include a short snippet capturing why each result is relevant.\n\nStructured output only."
+  "Search query: `" + angle.query + "`\n" +
+  (TIME_SENSITIVE ? "Today is " + TODAY + ". Prioritize sources from the last ~12 months.\n" : "") +
+  "\n## Task\nUse WebSearch with the query (or a refined version). Return the top 4-6 results, " +
+  "ranked by relevance to the ORIGINAL question. Skip SEO spam/content farms. Include a short snippet.\n\nStructured output only."
 
+async function runSearch(angles, roundIx) {
+  return (await parallel(
+    angles.map(angle => () =>
+      agent(SEARCH_PROMPT(angle), { label: "search:" + angle.label, phase: "Search", schema: SEARCH_SCHEMA })
+        .then(r => { if (!r) return null; log(angle.label + ": " + r.results.length + " results"); return { angle: angle.label, results: r.results } })
+    )
+  )).filter(Boolean)
+}
+
+// ─── Allocate: global relevance rank, URL dedup, per-domain cap, fetch budget ───
+function allocate(searchResults) {
+  const candidates = searchResults.flatMap(sr => sr.results.map(r => ({ ...r, angle: sr.angle })))
+  candidates.sort((a, b) => relRank[a.relevance] - relRank[b.relevance])
+  const picked = [], dupes = [], budgetDropped = [], domainDropped = []
+  const perDomain = new Map()
+  for (const c of candidates) {
+    const key = normURL(c.url)
+    if (seen.has(key)) { dupes.push(c); continue }
+    if (picked.length >= CFG.fetch) { budgetDropped.push(c); continue }
+    const dom = domainOf(c.url)
+    const dc = perDomain.get(dom) || 0
+    if (dom && dc >= CFG.perDomain) { domainDropped.push(c); continue }
+    seen.set(key, { angle: c.angle, title: c.title })
+    perDomain.set(dom, dc + 1)
+    picked.push(c)
+  }
+  if (dupes.length || budgetDropped.length || domainDropped.length) {
+    log("Allocate: " + picked.length + " picked (" + dupes.length + " dup, " + domainDropped.length + " domain-capped, " + budgetDropped.length + " over-budget)")
+  }
+  return { picked, dupes, budgetDropped, domainDropped }
+}
+
+// ─── Fetch + extract ───
 const FETCH_PROMPT = (source, angle) =>
   "## Source Extractor\n\n" +
   "Research question: \"" + QUESTION + "\"\n\n" +
@@ -182,246 +249,278 @@ const FETCH_PROMPT = (source, angle) =>
   "4. Note publish date if available.\n\n" +
   "If the fetch fails or the page is irrelevant/paywalled, return claims: [] and sourceQuality: \"unreliable\".\n\nStructured output only."
 
-const VERIFY_PROMPT = (claim, v) =>
-  "## Adversarial Claim Verifier (voter " + (v + 1) + "/" + VOTES_PER_CLAIM + ")\n\n" +
-  "Be SKEPTICAL. Try to REFUTE this claim. ≥" + REFUTATIONS_REQUIRED + "/" + VOTES_PER_CLAIM + " refutations kill it.\n\n" +
-  "## Research question\n" + QUESTION + "\n\n" +
-  "## Claim under review\n\"" + claim.claim + "\"\n\n" +
-  "**Source:** " + claim.sourceUrl + " (" + claim.sourceQuality + ")\n" +
-  "**Supporting quote:** \"" + claim.quote + "\"\n\n" +
-  "## Checklist\n" +
-  "1. Is the claim actually supported by the quote, or is it an overreach/misread?\n" +
-  "2. WebSearch for contradicting evidence — does any credible source dispute or heavily qualify this?\n" +
-  "3. Is the source quality sufficient for the claim's strength? (extraordinary claims need primary sources)\n" +
-  "4. Is the claim outdated? (check dates — old claims about fast-moving fields are suspect)\n" +
-  "5. Is this a marketing claim / press release / cherry-picked benchmark / forum speculation?\n\n" +
-  "**refuted=true** if: unsupported by quote / contradicted / low-quality source for strong claim / outdated / marketing fluff.\n" +
-  "**refuted=false** ONLY if: claim is well-supported, current, and source quality matches claim strength.\n" +
-  "Default to refuted=true if uncertain.\n\nStructured output only. Evidence MUST be specific."
-
-// ─── Pipeline: search → dedup → fetch+extract (no barrier) ───
-const searchResults = await pipeline(
-  scope.angles,
-
-  angle => agent(SEARCH_PROMPT(angle), {
-    label: "search:" + angle.label, phase: "Search", schema: SEARCH_SCHEMA
-  }).then(r => {
-    if (!r) return null
-    log(angle.label + ": " + r.results.length + " results")
-    return { angle: angle.label, results: r.results }
-  }),
-
-  searchResult => {
-    const sorted = [...searchResult.results].sort((a, b) => relRank[a.relevance] - relRank[b.relevance])
-    const novel = sorted.filter(r => {
-      const key = normURL(r.url)
-      if (seen.has(key)) {
-        dupes.push({ ...r, angle: searchResult.angle, dupOf: seen.get(key) })
-        return false
-      }
-      if (fetchSlots <= 0 && relRank[r.relevance] >= 1) {
-        budgetDropped.push({ ...r, angle: searchResult.angle })
-        return false
-      }
-      seen.set(key, { angle: searchResult.angle, title: r.title })
-      fetchSlots--
-      return true
-    })
-    if (novel.length < searchResult.results.length) {
-      log(searchResult.angle + ": " + novel.length + " novel (" + (searchResult.results.length - novel.length) + " filtered)")
-    }
-    return parallel(
-      novel.map(source => () => {
-        // A bare fetch:<host> label asserts the real fetch host, so emit it
-        // ONLY when the captured host is a verbatim, complete, un-truncated,
-        // strict-ASCII hostname that sanitization left untouched. Any
-        // deviation routes through the same quoted+ellipsis helper as the
-        // title fallback, so a lossy display value can never masquerade as the
-        // true host: non-ASCII (an IDN homograph like Cyrillic "аmazon.com",
-        // which WebFetch resolves via punycode unavailable in this realm),
-        // invalid host chars, a host long enough to need truncation (a bare
-        // prefix could show a trusted-looking domain while the real host
-        // differs), or a host sanitize altered (deleting a control char would
-        // turn exa<ctrl>mple.com into example.com, which is not the real host).
-        const capturedHost = String(source.url).match(URL_HOST_PATTERN)?.[1] ?? ""
-        const host = capturedHost.toLowerCase()
-        const cleanHost = stripLabelChars(host)
-        const isCleanBareHost = cleanHost === host && host !== "" && Array.from(host).length <= LABEL_CAP && STRICT_HOST.test(host)
-        const hostLabel = cleanHost === "" ? "" : isCleanBareHost ? host : quotedLabel(host)
-        const sourceLabel = hostLabel || (stripLabelChars(source.title).trim() && quotedLabel(source.title)) || "unknown"
-        return agent(FETCH_PROMPT(source, searchResult.angle), {
-          label: "fetch:" + sourceLabel,
-          phase: "Fetch",
-          schema: EXTRACT_SCHEMA,
-        }).then(ext => {
-          // User-skip → null; drop it (filtered by searchResults.flat().filter(Boolean))
-          // rather than throwing into .catch() and mislabeling it "unreliable".
+async function runFetch(picked) {
+  return (await parallel(
+    picked.map(source => () => {
+      // A bare fetch:<host> label asserts the real fetch host, so emit it ONLY
+      // when the captured host is a verbatim, complete, un-truncated, strict-ASCII
+      // hostname that sanitization left untouched. Any deviation routes through
+      // the quoted+ellipsis helper (preserved from v1).
+      const capturedHost = String(source.url).match(URL_HOST_PATTERN)?.[1] ?? ""
+      const host = capturedHost.toLowerCase()
+      const cleanHost = stripLabelChars(host)
+      const isCleanBareHost = cleanHost === host && host !== "" && Array.from(host).length <= LABEL_CAP && STRICT_HOST.test(host)
+      const hostLabel = cleanHost === "" ? "" : isCleanBareHost ? host : quotedLabel(host)
+      const sourceLabel = hostLabel || (stripLabelChars(source.title).trim() && quotedLabel(source.title)) || "unknown"
+      return agent(FETCH_PROMPT(source, source.angle), { label: "fetch:" + sourceLabel, phase: "Fetch", schema: EXTRACT_SCHEMA })
+        .then(ext => {
           if (!ext) return null
           return {
-            url: source.url, title: source.title, angle: searchResult.angle,
+            url: source.url, title: source.title, angle: source.angle,
             sourceQuality: ext.sourceQuality, publishDate: ext.publishDate,
-            claims: ext.claims.map(c => ({ ...c, sourceUrl: source.url, sourceQuality: ext.sourceQuality })),
+            claims: ext.claims.map(c => ({ ...c, sourceUrl: source.url, sourceQuality: ext.sourceQuality, publishDate: ext.publishDate })),
           }
-        }).catch(e => {
-          log("fetch failed: " + source.url + " — " + (e.message || e))
-          return { url: source.url, title: source.title, angle: searchResult.angle, sourceQuality: "unreliable", claims: [] }
         })
-      })
-    )
+        .catch(e => { log("fetch failed: " + source.url + " — " + (e.message || e)); return { url: source.url, title: source.title, angle: source.angle, sourceQuality: "unreliable", claims: [] } })
+    })
+  )).filter(Boolean)
+}
+
+// ─── Cluster: corroboration + contradiction detection ───
+async function runCluster(claims) {
+  if (claims.length === 0) return { clusters: [], conflicts: [] }
+  const numbered = claims.map((c, i) => "[" + i + "] " + c.claim + "  (src: " + c.sourceUrl + ", " + c.sourceQuality + ")").join("\n")
+  const res = await agent(
+    "## Claim Clustering\n\nResearch question: \"" + QUESTION + "\"\n\n" +
+    "Below are extracted claims, each with an index. Two jobs:\n" +
+    "1. CLUSTER: group claims that assert the SAME thing (paraphrases/duplicates). Each cluster has a clear representative wording and the member indices. A claim with no duplicates is its own single-member cluster.\n" +
+    "2. CONFLICTS: list index pairs where two claims DIRECTLY CONTRADICT each other (not merely different — opposing), with a one-line note.\n\n" +
+    "## Claims\n" + numbered + "\n\nStructured output only.",
+    { label: "cluster", phase: "Cluster", schema: CLUSTER_SCHEMA }
+  )
+  if (!res) {
+    return {
+      clusters: claims.map(c => ({ representativeClaim: c.claim, members: [c], sourceUrls: [c.sourceUrl], distinctSources: 1, rep: c })),
+      conflicts: [],
+    }
   }
-)
+  const clusters = res.clusters.map(cl => {
+    const members = cl.memberIndices.map(i => claims[i]).filter(Boolean)
+    if (members.length === 0) return null
+    const sourceUrls = [...new Set(members.map(m => m.sourceUrl))]
+    const rep = [...members].sort((a, b) => (impRank[a.importance] - impRank[b.importance]) || (qualRank[a.sourceQuality] - qualRank[b.sourceQuality]))[0]
+    return { representativeClaim: cl.representative || rep.claim, members, sourceUrls, distinctSources: sourceUrls.length, rep }
+  }).filter(Boolean)
+  const conflicts = (res.conflicts || []).map(cf => ({ a: claims[cf.a]?.claim, b: claims[cf.b]?.claim, note: cf.note })).filter(x => x.a && x.b)
+  log("Clustered " + claims.length + " claims → " + clusters.length + " clusters, " + conflicts.length + " conflicts")
+  return { clusters, conflicts }
+}
 
-const allSources = searchResults.flat().filter(Boolean)
-const allClaims = allSources.flatMap(s => s.claims)
-const impRank = { central: 0, supporting: 1, tangential: 2 }
-const qualRank = { primary: 0, secondary: 1, blog: 2, forum: 3, unreliable: 4 }
+// ─── Verify: diverse-lens 3-vote, confidence-not-kill, corroboration boost ───
+const LENSES = [
+  { key: "source-quality", instr: "Focus ONLY on source quality vs. claim strength. Is the source (primary/secondary/blog/forum) strong enough for a claim of this strength? Extraordinary claims need primary sources. If too weak, verdict=unsupported." },
+  { key: "contradicting-evidence", instr: "Focus ONLY on finding a rebuttal. WebSearch aggressively for credible sources that dispute or heavily qualify this claim. If you find a solid contradiction, verdict=contradicted and put the source in counterSource." },
+  { key: "logical-support", instr: "Focus ONLY on whether the supporting quote actually backs the claim. Is the claim an overreach, misread, or extrapolation beyond the quote? If the quote doesn't support it, verdict=unsupported." },
+]
+const VERIFY_PROMPT = (claim, lens, v) =>
+  "## Claim Verifier — lens: " + lens.key + " (voter " + (v + 1) + "/" + CFG.votes + ")\n\n" +
+  "Verify this claim through your assigned lens ONLY.\n\n" +
+  "## Research question\n" + QUESTION + "\n\n" +
+  "## Claim\n\"" + claim.claim + "\"\n" +
+  "**Source:** " + claim.sourceUrl + " (" + claim.sourceQuality + ")\n" +
+  "**Supporting quote:** \"" + claim.quote + "\"\n\n" +
+  "## Your lens\n" + lens.instr + "\n\n" +
+  "## Verdicts\n" +
+  "- supported: your lens finds no problem and the claim holds.\n" +
+  "- contradicted: credible evidence disputes it.\n" +
+  "- unsupported: the quote doesn't back it / source too weak for the claim's strength.\n" +
+  "- uncertain: you cannot determine through this lens. Use this when unsure — do NOT guess contradicted.\n\n" +
+  "Evidence MUST be specific. Structured output only."
 
-const rankedClaims = [...allClaims]
-  .sort((a, b) => (impRank[a.importance] - impRank[b.importance]) || (qualRank[a.sourceQuality] - qualRank[b.sourceQuality]))
-  .slice(0, MAX_VERIFY_CLAIMS)
-
-log("Fetched " + allSources.length + " sources → " + allClaims.length + " claims → verifying top " + rankedClaims.length)
-
-if (rankedClaims.length === 0) {
+async function runVerify(clusters) {
+  const reps = clusters.slice(0, CFG.verifyClaims)
+  log("Verifying " + reps.length + " cluster representatives (" + clusters.length + " total)")
+  const voted = (await parallel(
+    reps.map(cl => () => {
+      const claim = { ...cl.rep, claim: cl.representativeClaim }
+      return parallel(
+        LENSES.map((lens, v) => () =>
+          agent(VERIFY_PROMPT(claim, lens, v), { label: "v:" + lens.key.slice(0, 6) + ":" + claim.claim.slice(0, 30), phase: "Verify", schema: VERDICT_SCHEMA })
+        )
+      ).then(verdicts => {
+        const valid = verdicts.filter(Boolean)
+        const kills = valid.filter(x => x.verdict === "contradicted" || x.verdict === "unsupported").length
+        const supports = valid.filter(x => x.verdict === "supported").length
+        const errored = CFG.votes - valid.length
+        const isRefuted = kills >= CFG.refuteQuorum
+        const survives = valid.length >= CFG.refuteQuorum && !isRefuted
+        let conf = "low"
+        if (supports >= 2) conf = "medium"
+        if (supports === valid.length && valid.length >= CFG.refuteQuorum) conf = "high"
+        if (cl.distinctSources >= 2 && conf === "low") conf = "medium"
+        if (cl.distinctSources >= 3 && conf === "medium") conf = "high"
+        const best = valid.filter(x => x.verdict === "supported").sort((a, b) => confRank[a.confidence] - confRank[b.confidence])[0]
+        const mark = survives ? "✓" : isRefuted ? "✗" : "?"
+        log("\"" + claim.claim.slice(0, 48) + "…\": " + supports + "s/" + kills + "k" + (errored ? " (" + errored + " err)" : "") + " " + mark)
+        return {
+          claim: claim.claim, quote: cl.rep.quote, sourceUrls: cl.sourceUrls, distinctSources: cl.distinctSources,
+          sourceQuality: cl.rep.sourceQuality, confidence: conf, evidence: best ? best.evidence : (valid[0]?.evidence || ""),
+          supports, kills, errored, vote: supports + "-" + kills, survives, isRefuted,
+        }
+      })
+    })
+  )).filter(Boolean)
   return {
-    question: QUESTION,
-    summary: "No claims extracted. " + allSources.length + " sources fetched, all empty/failed. " + dupes.length + " URL dupes, " + budgetDropped.length + " budget-dropped.",
-    findings: [], refuted: [], unverified: [], sources: allSources.map(s => ({ url: s.url, quality: s.sourceQuality })),
-    stats: { angles: scope.angles.length, sources: allSources.length, claims: 0, dupes: dupes.length },
+    confirmed: voted.filter(c => c.survives),
+    killed: voted.filter(c => c.isRefuted),
+    unverified: voted.filter(c => !c.survives && !c.isRefuted),
   }
 }
 
-// ─── Verify: 3-vote adversarial ───
-// Barrier here is intentional — claim pool must be fully assembled before ranking/verification.
-phase("Verify")
-const voted = (await parallel(
-  rankedClaims.map(claim => () =>
-    parallel(
-      Array.from({ length: VOTES_PER_CLAIM }, (_, v) => () =>
-        agent(VERIFY_PROMPT(claim, v), {
-          label: "v" + v + ":" + claim.claim.slice(0, 40),
-          phase: "Verify",
-          schema: VERDICT_SCHEMA,
-        })
-      )
-    ).then(verdicts => {
-      // A vote can be null (user-skip or agent error) — treat as no vote cast.
-      // Three outcomes (go/ccissue/69883 — infra failure must not read as "refuted"):
-      //   survives  — quorum of valid votes AND fewer than REFUTATIONS_REQUIRED refuting
-      //   isRefuted — ≥REFUTATIONS_REQUIRED refute votes (adjudicated against on merit)
-      //   otherwise — unverified: too few valid votes to adjudicate (verifier agents errored)
-      const valid = verdicts.filter(Boolean)
-      const refuted = valid.filter(v => v.refuted).length
-      const errored = VOTES_PER_CLAIM - valid.length
-      const survives = valid.length >= REFUTATIONS_REQUIRED && refuted < REFUTATIONS_REQUIRED
-      const isRefuted = refuted >= REFUTATIONS_REQUIRED
-      const mark = survives ? "✓" : isRefuted ? "✗" : "?"
-      log("\"" + claim.claim.slice(0, 50) + "…\": " + (valid.length - refuted) + "-" + refuted + (errored > 0 ? " (" + errored + " errored)" : "") + " " + mark)
-      return { ...claim, verdicts: valid, refutedVotes: refuted, erroredVotes: errored, survives, isRefuted }
-    })
-  )
-)).filter(Boolean)
-
-const confirmed = voted.filter(c => c.survives)
-const killed = voted.filter(c => c.isRefuted)
-const unverified = voted.filter(c => !c.survives && !c.isRefuted)
-log("Verify done: " + voted.length + " claims → " + confirmed.length + " confirmed, " + killed.length + " refuted, " + unverified.length + " unverified")
-
-const toRefuted = c => ({ claim: c.claim, vote: (c.verdicts.length - c.refutedVotes) + "-" + c.refutedVotes, source: c.sourceUrl })
-const toUnverified = c => ({ claim: c.claim, erroredVotes: c.erroredVotes, validVotes: c.verdicts.length, source: c.sourceUrl })
-
-if (confirmed.length === 0) {
-  // Distinguish "refuted on merit" from "could not verify (infra error)". A run
-  // where every verifier agent failed (rate-limit / API error) is an infra
-  // failure, not a research finding — report it as such so the user knows to
-  // retry rather than concluding the research found nothing.
-  let summary
-  if (killed.length === 0 && unverified.length > 0) {
-    summary = "Could not verify any claims — all " + unverified.length + " verifier panels failed (likely rate-limiting or API errors). This is an infrastructure failure, not a research finding. Raw extracted claims returned below; retry or verify manually."
-  } else if (unverified.length > 0) {
-    summary = killed.length + " claims refuted by adversarial verification; " + unverified.length + " could not be verified (verifier agents failed). No claims survived. Research inconclusive."
-  } else {
-    summary = "All " + killed.length + " claims refuted by adversarial verification. Research inconclusive — sources may be low-quality or claims overstated."
-  }
+// ─── One full round: Search → Allocate → Fetch → Cluster → Verify ───
+async function runRound(angles, roundIx) {
+  const searchResults = await runSearch(angles, roundIx)
+  const alloc = allocate(searchResults)
+  const sources = await runFetch(alloc.picked)
+  const claims = sources.flatMap(s => s.claims)
+  const ranked = [...claims]
+    .sort((a, b) => (impRank[a.importance] - impRank[b.importance]) || (qualRank[a.sourceQuality] - qualRank[b.sourceQuality]))
+    .slice(0, CFG.verifyClaims)
+  const { clusters, conflicts } = await runCluster(ranked)
+  phase("Verify")
+  const verified = clusters.length ? await runVerify(clusters) : { confirmed: [], killed: [], unverified: [] }
   return {
-    question: QUESTION,
-    summary,
-    findings: [],
-    refuted: killed.map(toRefuted),
-    unverified: unverified.map(toUnverified),
-    sources: allSources.map(s => ({ url: s.url, quality: s.sourceQuality, claimCount: s.claims.length })),
-    stats: { angles: scope.angles.length, sources: allSources.length, claims: allClaims.length, verified: voted.length, confirmed: 0, killed: killed.length, unverified: unverified.length },
+    sources, claimsCount: claims.length,
+    confirmed: verified.confirmed, killed: verified.killed, unverified: verified.unverified, conflicts,
+    dropped: { dupes: alloc.dupes.length, domainDropped: alloc.domainDropped.length, budgetDropped: alloc.budgetDropped.length },
+  }
+}
+
+// ─── Gap-finder: propose new angles from unresolved gaps ───
+async function findGapAngles(confirmed, unverified, conflicts) {
+  const lowConf = confirmed.filter(c => c.confidence === "low").map(c => c.claim)
+  const gapLines = [
+    conflicts.length ? "Unresolved conflicts:\n" + conflicts.map(c => "- " + c.a + " VS " + c.b).join("\n") : "",
+    lowConf.length ? "Low-confidence findings needing corroboration:\n" + lowConf.map(c => "- " + c).join("\n") : "",
+    unverified.length ? "Could not verify:\n" + unverified.map(c => "- " + c.claim).join("\n") : "",
+  ].filter(Boolean).join("\n\n")
+  if (!gapLines) return []
+  const alreadyTried = scope.angles.map(a => a.query).join(" | ")
+  const s = await scopeQuestion(
+    "\n\n## This is round 2. Round 1 left these gaps — target them with NEW angles that dig deeper or corroborate, avoiding queries already tried (" + alreadyTried + "):\n" + gapLines
+  )
+  return s ? s.angles : []
+}
+
+// ─── Round controller ───
+const allSources = [], allConfirmed = [], allKilled = [], allUnverified = [], allConflicts = []
+let totalClaims = 0
+const totalDropped = { dupes: 0, domainDropped: 0, budgetDropped: 0 }
+let angles = scope.angles
+let roundsRun = 0
+for (let roundIx = 0; roundIx < CFG.rounds; roundIx++) {
+  if (roundIx > 0) {
+    if (brakeEngaged()) { log("Budget brake engaged — skipping round " + (roundIx + 1)); break }
+    angles = await findGapAngles(allConfirmed, allUnverified, allConflicts)
+    if (angles.length === 0) { log("No gaps to pursue — stopping after round " + roundIx); break }
+    log("Round " + (roundIx + 1) + ": " + angles.length + " gap-targeted angles")
+  }
+  roundsRun++
+  const r = await runRound(angles, roundIx)
+  allSources.push(...r.sources); allConfirmed.push(...r.confirmed); allKilled.push(...r.killed)
+  allUnverified.push(...r.unverified); allConflicts.push(...r.conflicts)
+  totalClaims += r.claimsCount
+  totalDropped.dupes += r.dropped.dupes; totalDropped.domainDropped += r.dropped.domainDropped; totalDropped.budgetDropped += r.dropped.budgetDropped
+}
+log("Rounds done: " + allConfirmed.length + " confirmed, " + allKilled.length + " refuted, " + allUnverified.length + " unverified, " + allConflicts.length + " conflicts")
+
+// ─── No-confirmed exits (preserve infra-vs-merit distinction) ───
+const slugBase = QUESTION.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 50) || "untitled"
+const suggestedFilename = "RESEARCH-" + slugBase + (TODAY ? "-" + TODAY : "") + ".md"
+
+if (allConfirmed.length === 0) {
+  let summary
+  if (allKilled.length === 0 && allUnverified.length > 0) {
+    summary = "Could not verify any claims — all verifier panels failed (likely rate-limiting/API errors). Infrastructure failure, not a research finding. Retry."
+  } else if (allUnverified.length > 0) {
+    summary = allKilled.length + " claims refuted; " + allUnverified.length + " unverifiable (verifier errors). No claims survived — inconclusive."
+  } else {
+    summary = "All " + allKilled.length + " claims refuted by adversarial verification. Inconclusive — sources weak or claims overstated."
+  }
+  const md = "# Research: " + QUESTION + "\n\n_" + summary + "_\n"
+  return {
+    question: QUESTION, summary, findings: [], conflicts: allConflicts,
+    refuted: allKilled.map(c => ({ claim: c.claim, vote: c.vote, sources: c.sourceUrls })),
+    unverified: allUnverified.map(c => ({ claim: c.claim, sources: c.sourceUrls })),
+    sources: allSources.map(s => ({ url: s.url, quality: s.sourceQuality })),
+    reportMarkdown: md, suggestedFilename,
+    stats: { sources: allSources.length, claims: totalClaims, confirmed: 0, killed: allKilled.length, unverified: allUnverified.length },
   }
 }
 
 // ─── Synthesize ───
 phase("Synthesize")
-const confRank = { high: 0, medium: 1, low: 2 }
-const block = confirmed.map((c, i) => {
-  const best = c.verdicts.filter(v => !v.refuted).sort((a, b) => confRank[a.confidence] - confRank[b.confidence])[0]
-  return "### [" + i + "] " + c.claim + "\n" +
-    "Vote: " + (c.verdicts.length - c.refutedVotes) + "-" + c.refutedVotes + " · Source: " + c.sourceUrl + " (" + c.sourceQuality + ")\n" +
-    "Quote: \"" + c.quote + "\"\nVerifier evidence (" + best.confidence + "): " + best.evidence + "\n"
-}).join("\n")
-
-const killedBlock = killed.length > 0
-  ? "\n## Refuted claims (for transparency)\n" +
-    killed.map(c => "- \"" + c.claim + "\" (" + c.sourceUrl + ", vote " + (c.verdicts.length - c.refutedVotes) + "-" + c.refutedVotes + ")").join("\n")
-  : ""
-
-const unverifiedBlock = unverified.length > 0
-  ? "\n## Unverified claims (" + unverified.length + " — verifier agents failed; neither confirmed nor refuted)\n" +
-    unverified.map(c => "- \"" + c.claim + "\" (" + c.sourceUrl + ", " + c.erroredVotes + "/" + VOTES_PER_CLAIM + " votes errored)").join("\n") +
-    "\n\nMention in caveats that " + unverified.length + " claim(s) could not be verified due to infrastructure errors."
-  : ""
+const block = allConfirmed.map((c, i) =>
+  "### [" + i + "] " + c.claim + "\n" +
+  "Confidence: " + c.confidence + " · Vote: " + c.vote + " · Sources (" + c.distinctSources + "): " + c.sourceUrls.join(", ") + "\n" +
+  "Quote: \"" + c.quote + "\"\nEvidence: " + c.evidence + "\n"
+).join("\n")
+const conflictBlock = allConflicts.length ? "\n## Conflicting evidence found\n" + allConflicts.map(c => "- \"" + c.a + "\" VS \"" + c.b + "\" — " + c.note).join("\n") : ""
+const killedBlock = allKilled.length ? "\n## Refuted (transparency)\n" + allKilled.map(c => "- \"" + c.claim + "\" (vote " + c.vote + ")").join("\n") : ""
+const unverifiedBlock = allUnverified.length ? "\n## Unverified (verifier errors)\n" + allUnverified.map(c => "- \"" + c.claim + "\"").join("\n") : ""
 
 const report = await agent(
-  "## Synthesis: research report\n\n" +
-  "**Question:** " + QUESTION + "\n\n" +
-  confirmed.length + " claims survived " + VOTES_PER_CLAIM + "-vote adversarial verification. Merge semantic duplicates and synthesize.\n\n" +
-  "## Confirmed claims\n" + block + "\n" + killedBlock + unverifiedBlock + "\n\n" +
+  "## Synthesis: research report\n\n**Question:** " + QUESTION + "\n\n" +
+  allConfirmed.length + " claims survived diverse-lens verification. Merge semantic duplicates and synthesize.\n\n" +
+  "## Confirmed claims\n" + block + conflictBlock + killedBlock + unverifiedBlock + "\n\n" +
   "## Instructions\n" +
-  "1. Identify claims that say the same thing — merge them, combine their sources.\n" +
-  "2. Group related claims into coherent findings. Each finding should directly address the research question.\n" +
-  "3. Assign confidence per finding: high (multiple primary sources, unanimous votes), medium (secondary sources or split votes), low (single source or blog-quality).\n" +
-  "4. Write a 3-5 sentence executive summary answering the research question.\n" +
-  "5. Note caveats: what's uncertain, what sources were weak, what time-sensitivity applies.\n" +
-  "6. List 2-4 open questions that emerged but weren't answered.\n\nStructured output only.",
-  { label: "synthesize", schema: REPORT_SCHEMA }
+  "1. Merge claims that say the same thing; combine their sources.\n" +
+  "2. Group into coherent findings, each addressing the question. Preserve the given confidence unless merging changes it.\n" +
+  "3. Write a 3-5 sentence executive summary answering the question.\n" +
+  "4. Note caveats (weak sources, time-sensitivity" + (allConflicts.length ? ", the conflicts above" : "") + ").\n" +
+  "5. List 2-4 open questions.\n\nStructured output only.",
+  { label: "synthesize", phase: "Synthesize", schema: REPORT_SCHEMA }
 )
 
 if (!report) {
-  // Synthesis skipped/errored — salvage the verified claims raw rather
-  // than throwing on report.findings and discarding the whole run.
+  const md = "# Research: " + QUESTION + "\n\n_Synthesis step failed — " + allConfirmed.length + " verified claims returned unmerged._\n\n" +
+    allConfirmed.map(c => "- **[" + c.confidence + "]** " + c.claim + " (" + c.sourceUrls.join(", ") + ")").join("\n") + "\n"
   return {
-    question: QUESTION,
-    summary: "Synthesis step was skipped or failed — returning " + confirmed.length + " verified claims unmerged.",
-    findings: [],
-    confirmed: confirmed.map(c => ({ claim: c.claim, source: c.sourceUrl, quote: c.quote, vote: (c.verdicts.length - c.refutedVotes) + "-" + c.refutedVotes })),
-    refuted: killed.map(toRefuted),
-    unverified: unverified.map(toUnverified),
-    sources: allSources.map(s => ({ url: s.url, quality: s.sourceQuality, claimCount: s.claims.length })),
-    stats: { angles: scope.angles.length, sources: allSources.length, claims: allClaims.length, verified: voted.length, confirmed: confirmed.length, killed: killed.length, unverified: unverified.length, afterSynthesis: 0 },
+    question: QUESTION, summary: "Synthesis failed — verified claims unmerged.", findings: [],
+    confirmed: allConfirmed.map(c => ({ claim: c.claim, confidence: c.confidence, sources: c.sourceUrls })),
+    conflicts: allConflicts, reportMarkdown: md, suggestedFilename,
+    stats: { sources: allSources.length, claims: totalClaims, confirmed: allConfirmed.length, killed: allKilled.length, unverified: allUnverified.length },
   }
 }
 
+// ─── Deterministic report-markdown assembly ───
+function assembleMarkdown(rep) {
+  const L = []
+  L.push("# Research: " + QUESTION)
+  if (TODAY) L.push("\n_" + TODAY + "_")
+  L.push("\n## Summary\n" + rep.summary)
+  L.push("\n## Findings")
+  rep.findings.forEach((f, i) => {
+    L.push("\n### " + (i + 1) + ". " + f.claim)
+    L.push("**Confidence:** " + f.confidence)
+    if (f.sources && f.sources.length) L.push("**Sources:** " + f.sources.map(s => "<" + s + ">").join(", "))
+    if (f.evidence) L.push("\n" + f.evidence)
+  })
+  if (allConflicts.length) { L.push("\n## Conflicting evidence"); allConflicts.forEach(c => L.push("- \"" + c.a + "\" **vs** \"" + c.b + "\" — " + c.note)) }
+  if (rep.caveats) L.push("\n## Caveats\n" + rep.caveats)
+  if (rep.openQuestions && rep.openQuestions.length) { L.push("\n## Open questions"); rep.openQuestions.forEach(q => L.push("- " + q)) }
+  if (allKilled.length) { L.push("\n## Refuted claims (transparency)"); allKilled.forEach(c => L.push("- \"" + c.claim + "\" (vote " + c.vote + ")")) }
+  if (allUnverified.length) { L.push("\n## Unverified (verifier errors)"); allUnverified.forEach(c => L.push("- \"" + c.claim + "\"")) }
+  L.push("\n## Sources")
+  const uniqSources = [...new Map(allSources.map(s => [s.url, s])).values()]
+  uniqSources.forEach(s => L.push("- <" + s.url + "> (" + s.sourceQuality + ")"))
+  L.push("\n---\n_Generated by deep-research v2 · " + rep.findings.length + " findings from " + uniqSources.length + " sources._")
+  return L.join("\n")
+}
+
+const reportMarkdown = assembleMarkdown(report)
 return {
   question: QUESTION,
   ...report,
-  refuted: killed.map(toRefuted),
-  unverified: unverified.map(toUnverified),
-  sources: allSources.map(s => ({ url: s.url, quality: s.sourceQuality, angle: s.angle, claimCount: s.claims.length })),
+  conflicts: allConflicts,
+  refuted: allKilled.map(c => ({ claim: c.claim, vote: c.vote, sources: c.sourceUrls })),
+  unverified: allUnverified.map(c => ({ claim: c.claim, sources: c.sourceUrls })),
+  sources: [...new Map(allSources.map(s => [s.url, s])).values()].map(s => ({ url: s.url, quality: s.sourceQuality, angle: s.angle })),
+  reportMarkdown, suggestedFilename,
   stats: {
-    angles: scope.angles.length,
-    sourcesFetched: allSources.length,
-    claimsExtracted: allClaims.length,
-    claimsVerified: voted.length,
-    confirmed: confirmed.length,
-    killed: killed.length,
-    unverified: unverified.length,
-    afterSynthesis: report.findings.length,
-    urlDupes: dupes.length,
-    budgetDropped: budgetDropped.length,
-    agentCalls: 1 + scope.angles.length + allSources.length + (voted.length * VOTES_PER_CLAIM) + 1,
+    rounds: roundsRun, sourcesFetched: allSources.length, claimsExtracted: totalClaims,
+    confirmed: allConfirmed.length, killed: allKilled.length, unverified: allUnverified.length,
+    conflicts: allConflicts.length, findings: report.findings.length,
+    dupes: totalDropped.dupes, domainDropped: totalDropped.domainDropped, budgetDropped: totalDropped.budgetDropped,
   },
 }
