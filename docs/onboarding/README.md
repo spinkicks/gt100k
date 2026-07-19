@@ -11,8 +11,8 @@ Or run it yourself: `bash docs/onboarding/teammate-setup.sh`
 
 ## What it installs
 - **Claude Code** + **superpowers** (methodology), **impeccable** (design enforcer), a **curated skill set**
-- **MCP servers**: context7 (live docs), fetch, sequential-thinking, serena (code nav), basic-memory (shared notes)
-- **basic-memory**, **uv**, **gh**, **node**
+- **MCP server**: context7 (live docs) — the only one we run (2026-07 audit; native reasoning/fetch + `gh` cover the rest)
+- **uv**, **gh**, **node**
 - Clones `spinkicks/gt100k` into `~/code`
 
 ## Secrets you provide (never commit)

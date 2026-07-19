@@ -40,15 +40,10 @@ anthropics/skills vercel/react-best-practices"
 npx -y skills@latest add anthropics/skills --copy -g || true
 npx -y impeccable install --providers=claude --scope=global || true
 
-echo "== 8/8 MCP servers (keyless/local) + basic-memory =="
-uv tool install basic-memory || true
+echo "== 8/8 MCP server (context7 only — audited 2026-07) =="
+# We run ONLY context7. serena / fetch / sequential-thinking / basic-memory / github were
+# removed as bloat/redundant at our scale (native reasoning + web fetch + gh CLI cover them).
 claude mcp add --scope user --transport http context7 https://mcp.context7.com/mcp || true
-claude mcp add --scope user fetch -- uvx mcp-server-fetch || true
-claude mcp add --scope user sequential-thinking -- npx -y @modelcontextprotocol/server-sequential-thinking || true
-claude mcp add --scope user serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant || true
-claude mcp add --scope user -e BASIC_MEMORY_HOME="$HOME/Obsidian/Brain" basic-memory -- "$HOME/.local/bin/basic-memory" mcp || true
-# GitHub MCP (optional): set GITHUB_TOKEN, then:
-# claude mcp add --scope user --transport http github https://api.githubcopilot.com/mcp/ --header "Authorization: Bearer $GITHUB_TOKEN"
 
 echo ""
 echo "== clone the repo =="
@@ -56,4 +51,4 @@ mkdir -p ~/code && cd ~/code && gh repo clone spinkicks/gt100k || true
 
 echo ""
 echo "DONE. Next: open ~/code/gt100k, read AGENTS.md, and run  claude  (or /speckit-specify to work the PRD)."
-echo "Verify:  claude mcp list   (expect several 'Connected')"
+echo "Verify:  claude mcp list   (expect context7 'Connected')"
