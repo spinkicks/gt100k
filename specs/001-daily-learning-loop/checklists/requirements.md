@@ -31,8 +31,7 @@
 
 ## Notes
 
-- One product decision is deliberately deferred to `/speckit-clarify`: whether the daily project-unlock
-  gate is **total-XP-based** (current assumption) or must **also require each section's per-section goal**.
-  It is captured in Assumptions rather than as a blocking [NEEDS CLARIFICATION] so planning can proceed;
-  clarify should resolve it before `/speckit-plan`.
+- **Resolved (`/speckit-clarify`, 2026-07-20):** the daily project-unlock gate is a **hybrid gate** —
+  daily total XP **and** a configurable per-section floor (FR-005). Per-section XP beyond the floor is
+  recorded as an early engagement/interest signal (FR-005b).
 - The GT daily-XP target (~180–240 range) is a tuning value, not fixed by this spec.
