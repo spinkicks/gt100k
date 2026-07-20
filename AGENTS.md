@@ -7,7 +7,7 @@
 
 ## Project
 - **GT100K** — `docs/prd/PRD.md` is the canonical product spec (see `README.md` for the full doc map); `docs/research/` + `docs/proposals/` hold background.
-- **Current stage: pre-code / PRD.** The repo is docs-only today. Code lands behind the workflow below as implementation begins.
+- **Current stage: active development.** PRD-driven implementation is underway; code ships behind the workflow below. `docs/prd/` remains the canonical spec.
 
 ## Branching
 - Trunk-based. Branch from latest `origin/main`. Name: `dev/<lane>/<slug>` (e.g. `dev/prd/citation-fixes`). Branches live < 1 day.
