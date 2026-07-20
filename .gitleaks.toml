@@ -1,0 +1,15 @@
+# gitleaks config for gt100k
+# Extends the default ruleset, then allowlists documented false positives so the
+# CI secret scan (gitleaks CLI, full working-tree scan) stays green on prose that
+# merely contains security vocabulary.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Docs-prose false positives (not real secrets)"
+regexTarget = "line"
+regexes = [
+  # workflowPlan.md §15: "...any verified secret, malicious/slopsquatted package..."
+  # generic-api-key trips on the phrase; it is documentation, not a credential.
+  '''malicious/slopsquatted''',
+]
