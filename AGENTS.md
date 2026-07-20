@@ -1,7 +1,9 @@
 # AGENTS.md — GT100K Team Golden Rules (ALL agents + humans MUST follow)
 
 > Single source of truth for how agents (Claude Code, Codex, Cursor) and humans work in this repo.
-> `CLAUDE.md` and tool configs point here. If any tool-specific file disagrees with this, **this wins**.
+> `CLAUDE.md` and tool configs point here. If any tool-specific file disagrees with this, **this wins** —
+> **except** that `.specify/memory/constitution.md` and `GOVERNANCE.md` (G-class rights/safety) supersede
+> this file; AGENTS.md governs workflow only (authority order in the Constitution's Governance section).
 
 ## Project
 - **GT100K** — `PRD.md` is the canonical product spec; `RESEARCH-*.md` + `gtBrainlift.md` + `proposals/` hold background.

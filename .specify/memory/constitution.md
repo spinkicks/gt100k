@@ -5,10 +5,12 @@
 > spec, plan, PRD section, or convenience conflicts with a principle here, **this document wins** for
 > rights/safety/authority limits (the `G`-class invariants).
 >
-> **Status: DRAFT — pending ratification.** Synthesized from `PRD.md` (v1.4) — specifically the
-> non-negotiables that the change log marks as *not moving* with scope: child rights, human authority,
-> privacy separation, evidence-class authority, and the prohibited-behavior list. Ratify (bump to
-> 1.0.0) once `@f15cubing` finalizes PRD scope. Product *scope* may grow; these invariants should not.
+> **Status: RATIFIED (1.0.0).** Synthesized from `PRD.md` v1.10 (Implementation baseline) and
+> `GOVERNANCE.md` G1–G8 — the non-negotiables the change log marks as *not moving* with scope (or
+> moving only in the more-protective direction): child rights, human authority, privacy separation,
+> evidence-class authority, and the prohibited-behavior list. Product *scope* may grow; these
+> invariants should not. Rights/authority content was extracted to `GOVERNANCE.md` in PRD v1.7 with
+> the original section numbers preserved, so a citation like "G3 §8.1" resolves inside `GOVERNANCE.md`.
 
 ## Core Principles
 
@@ -57,6 +59,9 @@ Every capability carries an **evidence class** (PRD §5) and every model a decla
   decisions stay Shadow/Advisory and human-owned.
 - `E3` runs shadow-mode or reversible pilot only; **`R`-class research gets no production authority** and
   cannot inform a live child's admission, intensity, specialization, cohort, route, or credential.
+- **No learned model may move a fixed, human-owned decision rule or cut online** (readiness or intensity):
+  the Cognitive Floor Engine may use adaptive item *selection*, but its decision cut is fixed and
+  human-owned, and online calibration never lets the rule change itself (PRD §11, §14.9; GOVERNANCE G3 §8.5).
 - **Software delivery speed never upgrades an evidence class or authority level.** Only the model & data
   governance board may promote a level, after local validation, subgroup analysis, calibration, safety,
   privacy, and abuse review. A model trained on adults/public corpora/synthetic students cannot gain
@@ -73,14 +78,19 @@ Every capability carries an **evidence class** (PRD §5) and every model a decla
 
 ### V. Privacy Follows Purpose
 
-- Seven separated data domains — identity, admissions, learning, wellbeing, sensitive research, private
-  project evidence, public portfolio — each with its own role, key hierarchy, retention, and audit
-  (PRD §4.8/§29). A cross-purpose read is denied even when a service has technical access.
+- Seven separated data domains — identity, **admissions-eligibility reference** (reference-only, not raw
+  admissions PII), learning, wellbeing, sensitive research, private project evidence, public portfolio —
+  each with its own role, key hierarchy, retention, and audit (GOVERNANCE G7; PRD §4.8). A cross-purpose
+  read is denied even when a service has technical access.
 - Every collection declares purpose, retention, allowed users, and model-training status. Sensitive
   features (voice/gaze/rPPG and the like) MUST NOT enter admissions or discipline, and raw sensitive
   media is discarded after local processing.
+- **No ambient, home, or continuous sensing, ever.** Sensitive-signal collection occurs **only on school
+  premises**, under a visible indicator, per-signal consent, fail-closed storage, and crypto-shred on
+  withdrawal (GOVERNANCE G5; PRD §10.2). No sensitive signal is the **sole basis** for any consequential
+  decision (GOVERNANCE G1/G6).
 - The beta operates on **synthetic learner populations only**; no live child data until the admissions
-  pipeline is live and privacy/legal sign-off is complete (PRD §3.2/§32.4).
+  pipeline is live, privacy/legal sign-off is complete, **and the §33 pre-live gates pass** (PRD §3.2/§32.4).
 
 ### VI. Accessibility and Non-Discrimination
 
@@ -101,22 +111,31 @@ Every capability carries an **evidence class** (PRD §5) and every model a decla
   credit (PRD §4.3).
 - Learning is measured by delayed retention and transfer, not in-session performance; a leading
   indicator may not be converted into a claim that a long-horizon outcome was achieved (PRD §2.5).
+- **Honest outcome reporting.** Yield uses an intent-to-treat denominator (all children ever enrolled;
+  routed-out learners counted as non-attainment, never silently excluded). No child is abandoned to
+  inflate results (PRD §2.6; PIPELINE-PRD §9).
 
 ### VIII. Bounded Motivational Pressure
 
 - Every machine-generated pressure action — deadline, rivalry escalation, public comparison, help
   refusal, parent nudge — spends a bounded **MotivationDose token** under a guide veto (PRD §8.5/§13).
 - Safety overrides performance goals; the system reduces load on sleep, health, distress, bullying, or
-  injury signals. **No fixed-ability caste rankings** in any form.
+  injury signals. **No fixed-ability caste rankings** in any form. Any comparative standing is **opt-in
+  (default off), near-peer-band, anonymized, and never surfaces a child's bottom-rank position**
+  (GOVERNANCE G6; PRD §15).
 
 ### IX. Prohibited Product Behavior (the hard "never" list — PRD §3.3)
 
 The platform will **never** implement: financial escrow, income-share agreements for minors,
-fixed-ability caste leaderboards, automatic expulsion, covert cameras or microphones, biometric
-truth claims, punishment for approved accommodations, or automated AI-authorship accusations.
+**irrevocable or multi-year binding participation contracts** (participation is renewable with
+penalty-free exit, PRD §10), fixed-ability caste leaderboards, automatic expulsion, **automated
+admission or rejection**, **single-signal or otherwise automated consequential decisions**, covert
+cameras or microphones, biometric truth claims, punishment for approved accommodations, or automated
+AI-authorship accusations.
 
 - A project agent MUST NOT contact an adult, spend money, publish work, change access, or deploy to a
-  public environment without an **approved capability and a named human action**.
+  public environment without an **approved capability and a named human action**, and MUST NOT be given
+  open-ended funds, unrestricted internet, cross-student data, or public-release authority (GOVERNANCE G6).
 - No student final project, credential, portfolio, public artifact, or marketing may invoke a
   third-party institution's brand; "MIT-level readiness" is an **internal** operational benchmark only
   and never appears in outward-facing materials (neutral language such as "elite academic preparation").
@@ -136,6 +155,8 @@ truth claims, punishment for approved accommodations, or automated AI-authorship
   exposure/capability/token revocation must propagate within seconds (PRD §30).
 - **Tests define done:** unit, contract, integration, migration, and security tests ship with each
   change; CI must be green before merge.
+- **Human review before child exposure:** no product surface, content, model behavior, or release
+  reaches a child without passing a named human review gate; development velocity never waives it (PRD §25).
 
 ## Governance
 
@@ -143,9 +164,10 @@ truth claims, punishment for approved accommodations, or automated AI-authorship
   CODEOWNERS (`@spinkicks` + `@f15cubing`), a version bump (semver), and a migration/impact note.
 - Every spec, plan, and PR MUST verify compliance with these principles (checked in `/speckit-plan`
   and human review). **Complexity must be justified** against them; an unjustified violation blocks merge.
-- **Authority order** (what wins when documents conflict): this Constitution (`G`-class rights/safety) →
-  `AGENTS.md` (workflow) → the decision log (latest non-superseded entry) → PRD/specs (product intent).
-  Where the PRD and this Constitution conflict on a rights/safety limit, the **stricter** rule wins.
+- **Authority order** (what wins when documents conflict): this Constitution **and `GOVERNANCE.md`**
+  (`G`-class rights/safety; the **stricter** rule wins) → `AGENTS.md` (workflow) → the decision log
+  (latest non-superseded entry) → PRD/specs (product intent). Where the PRD conflicts with either
+  rights doc on a rights/safety limit, the stricter rule wins.
 - Runtime, day-to-day guidance for agents lives in `AGENTS.md`, which points here.
 
-**Version**: 0.1.0-draft | **Ratified**: PENDING (awaiting CODEOWNER sign-off + PRD scope finalization) | **Last Amended**: 2026-07-19
+**Version**: 1.0.0 | **Ratified**: 2026-07-20 (requires both CODEOWNERS `@spinkicks` + `@f15cubing` to approve this PR) | **Last Amended**: 2026-07-20
