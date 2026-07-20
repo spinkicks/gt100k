@@ -6,8 +6,8 @@
 |---|---|
 | Product | GT100K |
 | Document status | Implementation baseline |
-| Version | 1.7 |
-| Date | 2026-07-18 |
+| Version | 1.10 |
+| Date | 2026-07-20 |
 | Initial market | United States, English-first |
 | Learner ages | 6 through 14 |
 | Month 3 build target | Feature-complete release candidate with all planned product paths implemented |
@@ -232,7 +232,7 @@ GT100K records how a learner built an artifact. The system stores attempts, bran
 
 ### 4.8 Privacy follows purpose
 
-Identity, admissions, learning, wellbeing, sensitive research, private project evidence, and public portfolio data occupy seven separate policy and encryption domains. Each collection names its purpose, retention, allowed users, and model-training status. The platform denies a cross-purpose read even when the requesting service has technical access to the same storage account.
+Identity, admissions-eligibility reference, learning, wellbeing, sensitive research, private project evidence, and public portfolio data occupy seven separate policy and encryption domains (the admissions-eligibility zone holds only the eligibility-evidence reference from the handoff, not raw admissions PII; `GOVERNANCE.md` G7, §3.5). Each collection names its purpose, retention, allowed users, and model-training status. The platform denies a cross-purpose read even when the requesting service has technical access to the same storage account.
 
 ## 5. Evidence classification
 
