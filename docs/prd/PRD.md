@@ -1056,7 +1056,7 @@ The architecture inherits the evidence classes in Section 5. Learning mechanisms
 
 The implementation blueprint is a downstream artifact kept in sync with this PRD: when a requirement here changes, the blueprint owner updates it before the affected work is built, and the governance board treats a divergence as a documentation defect.
 
-The [Implementation Blueprint](RESEARCH-implementation-blueprint.md) supplies the evidence basis for the inherited two-hour structure (which gt100k extends to a three-to-four-hour [E3] target, §6.1), interpretable PFA/BKT/IKT gates, deterministic tutor control, QLoRA plus GRPO tutor training, per-skill fairness audits, and queue-based LLM scaling. The proposal files supply product mechanisms and engineering designs. A requirement keeps its evidence label until the governance board approves a cited change.
+The [Implementation Blueprint](../research/RESEARCH-implementation-blueprint.md) supplies the evidence basis for the inherited two-hour structure (which gt100k extends to a three-to-four-hour [E3] target, §6.1), interpretable PFA/BKT/IKT gates, deterministic tutor control, QLoRA plus GRPO tutor training, per-skill fairness audits, and queue-based LLM scaling. The proposal files supply product mechanisms and engineering designs. A requirement keeps its evidence label until the governance board approves a cited change.
 
 ## 26. System map and technology stack
 

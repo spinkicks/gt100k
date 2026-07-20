@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Topic-ordered evidence record for product and policy decisions |
 | Date | 2026-07-17 |
-| Related product document | [PRD.md](PRD.md) |
+| Related product document | [PRD.md](../prd/PRD.md) |
 | Prior research synthesis | [RESEARCH-implementation-blueprint.md](RESEARCH-implementation-blueprint.md) |
 
 ## 1. Scope and provenance

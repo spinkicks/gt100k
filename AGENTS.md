@@ -6,7 +6,7 @@
 > this file; AGENTS.md governs workflow only (authority order in the Constitution's Governance section).
 
 ## Project
-- **GT100K** — `PRD.md` is the canonical product spec; `RESEARCH-*.md` + `gtBrainlift.md` + `proposals/` hold background.
+- **GT100K** — `docs/prd/PRD.md` is the canonical product spec (see `README.md` for the full doc map); `docs/research/` + `docs/proposals/` hold background.
 - **Current stage: pre-code / PRD.** The repo is docs-only today. Code lands behind the workflow below as implementation begins.
 
 ## Branching
@@ -35,4 +35,4 @@
 - Child-data / PII governance applies to product code per the PRD — never put real user data in fixtures.
 
 ## Definition of Done
-- Matches the relevant `PRD.md` section. Tests + docs updated. CI green. Reviewed (human or cross-model). Conventional Commit + `Closes #<id>`.
+- Matches the relevant `docs/prd/PRD.md` section. Tests + docs updated. CI green. Reviewed (human or cross-model). Conventional Commit + `Closes #<id>`.
