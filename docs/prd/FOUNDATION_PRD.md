@@ -526,7 +526,7 @@ Steps 1–3 are the literal "first because all later work depends on them" (pare
 
 ## 21. Definition of Done
 
-Per [`AGENTS.md`](AGENTS.md), this feature is done when:
+Per [`AGENTS.md`](../../AGENTS.md), this feature is done when:
 
 - The **construction gate (§17)** passes end-to-end on AWS infrastructure provisioned entirely by Terraform.
 - Every contract change passed the **Buf compatibility gate**; unit, contract, component, migration, and security tests are green (§18, parent §32).

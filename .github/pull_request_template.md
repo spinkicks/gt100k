@@ -9,4 +9,4 @@
 - [ ] Conventional Commit title (`feat:`/`fix:`/`docs:`/`chore:` …)
 - [ ] No secrets / machine paths / tokens (repo is **public**)
 - [ ] CI green
-- [ ] Matches `PRD.md`; docs updated
+- [ ] Matches `docs/prd/PRD.md`; docs updated

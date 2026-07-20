@@ -749,7 +749,7 @@ checks, and demo story.
   frontend surfaces remain target work outside the completed Milestone A
   onboarding slice.
 - Repository ownership, branch hierarchy, merge, and verification rules are
-  maintained in [`AGENTS.md`](../AGENTS.md) and are not duplicated here.
+  maintained in [`AGENTS.md`](../../AGENTS.md) and are not duplicated here.
 
 
 

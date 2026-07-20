@@ -2,7 +2,7 @@
 
 ### Portfolio-defining engineering projects to move 100,000 8th-graders to MIT-level readiness
 
-*A systems-architecture + AI-product proposal. Scope: the **non-core levers** — everything except the already-solved morning academic core. Every proposal names real algorithms/papers and maps to the [Engineering Skills & Project Matrix](impactful.md) by number `[n]`. Grounded in the five spiky positions of the [Brainlift](gtBrainlift.md).*
+*A systems-architecture + AI-product proposal. Scope: the **non-core levers** — everything except the already-solved morning academic core. Every proposal names real algorithms/papers and maps to the [Engineering Skills & Project Matrix](../research/impactful.md) by number `[n]`. Grounded in the five spiky positions of the [Brainlift](../research/gtBrainlift.md).*
 
 ---
 
@@ -358,4 +358,4 @@ Every one of the 12 stacks is exercised, most of them many times over.
 
 ---
 
-*Deliverable prepared as an architecture + product brainstorm. Every mechanism is grounded in real, named techniques and mapped to the [Engineering Matrix](impactful.md); the whole system is engineered around the five spiky positions of the [Brainlift](gtBrainlift.md). Reference documents read: `impactful.md`, `gtBrainlift.md` only.*
+*Deliverable prepared as an architecture + product brainstorm. Every mechanism is grounded in real, named techniques and mapped to the [Engineering Matrix](../research/impactful.md); the whole system is engineered around the five spiky positions of the [Brainlift](../research/gtBrainlift.md). Reference documents read: `impactful.md`, `gtBrainlift.md` only.*
