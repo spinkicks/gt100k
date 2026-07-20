@@ -6,9 +6,9 @@
 |---|---|
 | Product | GT100K (pipeline framing) |
 | Document status | Standalone reframe of the program operating model |
-| Version | 1.0 |
+| Version | 1.1 |
 | Date | 2026-07-20 |
-| Companion documents | `PRD.md` v1.7 (detailed program spec), `GOVERNANCE.md` (rights/consent/authority, G1–G8), `gtBrainlift.md` (originating thesis, SPOV 1–5) |
+| Companion documents | `PRD.md` v1.9 (detailed program spec), `GOVERNANCE.md` (rights/consent/authority, G1–G8), `gtBrainlift.md` (originating thesis, SPOV 1–5) |
 | Initial market | United States, English-first |
 | Feedstock ages | 6 through 14 (primary intake 6 to 8) |
 | Line output | A learner-owned, verifiable Mastery Passport backed by an evidence trail |
@@ -252,6 +252,8 @@ Every mechanic reinforces the mechanism:
 - **Spaced-retrieval strength.** Streak and "strength" meters track FSRS retrieval health, so the game rewards durable retention rather than cramming.
 - **Co-op & near-peer competition.** Cooperative missions plus sprint-reset, gain-based cohort standings (§7.3) turn the homogeneous batch into the motivational engine (SPOV 3) — rivalry between matched peers, not a caste ladder.
 - **Milestone quest-trees.** The competency graph and project ladders render as quest-trees; unlocking a node is a quest gated by the 90% mastery check, so progression is bought with real mastery, never with XP grinding.
+- **Experience, not just economy.** How a win and a failure *feel* is designed, not left to the economy. Error is framed as information, never as loss; praise attaches to process (the unassisted attempt, the recovery, the revision), never to fixed ability; the salient celebration is the independent unlock and the productive-struggle event, never time-in-app or completion; and the surface uses no loss-framed streaks and no engagement-timed notifications (`PRD.md` §14.12).
+- **Staged by age.** The same economy is rendered in three age-band vocabularies on the §14.7 bands. The raw mastery-delta number is never the headline currency for ages 6–8 (the program's primary intake); personal-progress display is the default at every age and cross-child comparison is opt-in, defaulting off for the youngest band (`PRD.md` §14.13).
 
 **Inherited substrate.** GT100K inherits Alpha's TimeBack XP/mastery gamification (1 focused minute = 1 XP) but **re-points the reward** from minutes-in-app to independence and mastery-delta (`PRD.md` §12, v1.5 note). Reconciling TimeBack's engagement-optimized extrinsic rewards with this deliberate-difficulty design is an explicit pre-cutover governance item.
 
