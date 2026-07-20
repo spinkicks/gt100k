@@ -17,6 +17,14 @@
 
 ## 0. Change log
 
+**v1.7 (2026-07-19) — software-focused refactor + Alpha/TimeBack scope correction.** No rights/safety change (those move verbatim to `GOVERNANCE.md`). Summary:
+
+- **Governance split.** The rights/policy/consent/legal content (§3.3, §6.5, §8, §14.9, §14.11, §23, §29, §31.1) is extracted verbatim to **[`GOVERNANCE.md`](GOVERNANCE.md)** (G1–G8) so this PRD stays software/product/engineering-focused; redirect stubs remain at each heading, and `.specify/memory/constitution.md` holds the supreme invariants.
+- **Alpha/TimeBack is the inherited substrate.** The "partner adaptive-learning provider" is Alpha's **TimeBack**; GT100K is Alpha's accelerated-gifted layer on it. Core academics — the four sections (math/reading/science/language), the XP/mastery engine, SAT/AP prep — are **inherited, not rebuilt** (the Phase-1 in-house-engine rebuild is dropped). The 2-hour model (30 XP × 4 = 120 XP/day; 1 focused min = 1 XP) is raised to a **3–4 hr / higher-XP** target for gifted learners.
+- **Our build.** A **TimeBack Integration Layer** (anti-corruption layer + `AcademicSignalEvent`, reading mastery/XP/velocity via OneRoster/Caliper/QTI/PowerPath); our own **passion-tailored answer-blind tutor** and **independence-reward** layers on TimeBack content; and the afternoon passion/cohort/Foundry/evidence layer + model plane.
+- **Gamification is first-class** — game-feel mechanics that reinforce the learning mechanism (independence reward as the score, predict-then-reveal, spaced-retrieval strength, co-op/near-peer cohorts, milestone quest-trees).
+- **Hosting = AWS (committed)** — §26.6 no longer frames the cloud as an open decision. §7 carries the refreshed architecture diagram.
+
 **v1.6 (2026-07-19) — EvidenceGraph provenance hardening (research-driven).** Applies a deep-research prior-art review of §19 (see `docs/superpowers/plans/2026-07-19-evidencegraph-prd-revision.md`). No new product scope; corrects the integrity architecture and defers the hard parts to a pre-live gate. Summary:
 
 - **§19 integrity backbone.** The tamper-evidence layer is now content-addressed DAG (SHA-256/BLAKE3) + in-toto attestation + append-only transparency-log anchor (SLSA-style). **C2PA is demoted** from integrity mechanism to optional public-artifact *export* only (§19, §21), following an independent security analysis that C2PA does not achieve its claimed security goals and the spec's own statement that provenance certifies history, not truth. Added an explicit **anchor-conditional** integrity statement (content-addressing alone is not self-securing).
@@ -71,7 +79,7 @@ Rights limits that did **not** move: child assent/veto, safeguarding override, n
 
 **What we are building (feature summary).**
 
-- **Academic Mastery OS (§12).** Adaptive daily practice, spaced retrieval, and a 90% independent-mastery gate over a quantitative and a verbal competency spine — delivered first via a partner adaptive-learning provider's two-hour learning engine (Phase 0), then built in-house and cut over (Phase 1, §12).
+- **Academic Mastery OS (§12).** Core academics ride **Alpha's TimeBack** engine (inherited, not rebuilt): four sections (math/reading/science/language), spaced retrieval, and the ~90% mastery gate — accelerated for gifted learners to a **3–4 hr / higher-XP** target. GT100K adds a **TimeBack Integration Layer** (`AcademicSignalEvent`) plus our own passion-tailored answer-blind tutor and independence-reward layers on top.
 - **Answer-Blind Socratic Tutor (§13).** A tutor that helps a child think without ever seeing or revealing the answer — available while learning a topic, disabled during mastery quizzes.
 - **Cognitive Floor Engine (§11) — platform-owned readiness assessment.** Adaptive, accommodation-aware psychometric readiness assessment. Repositioned from an admission gate (the admissions team gates on externally-administered CogAT, §3.4) to post-enrollment placement/diagnostics and advisory readiness evidence.
 - **Interest Lab & Passion Engine (§14).** Repeated, varied encounters with domains and work modes to find where a child *voluntarily returns*, tracked as mutable interest hypotheses with evidence and counter-evidence.
@@ -83,7 +91,7 @@ Rights limits that did **not** move: child assent/veto, safeguarding override, n
 - **Resonance Audio Studio (§17) — stretch.** Browser-native audio-engineering studio; low priority, built only if capacity allows.
 - **EvidenceGraph & evaluation (§19).** Content-addressed provenance of every artifact, attempt, and AI assist; humans issue all final grades.
 - **Reality Gateway & Portable Mastery Passport (§20–§21).** Governed public release and a portable, verifiable credential the child owns.
-- **Policy-as-code, consent & governance (§8, §29–§30).** Purpose-separated data domains, OPA policy enforcement, named human decision bodies, and appeals.
+- **Policy-as-code, consent & governance ([`GOVERNANCE.md`](GOVERNANCE.md), §30).** Rights, consent, and decision-authority now live in `GOVERNANCE.md` (extracted from the PRD); §26–§30 keep the purpose-separated data-domain and OPA enforcement architecture.
 - **GT-Twin & Self-Play Gym (§31) — research-only.** A simulation and R&D track with no production authority over any live child.
 
 GT100K serves children whose families choose an intensive program that can span up to eight years. The program has two daily halves. The morning block builds academic mastery through adaptive practice, independent verification, retrieval, and an answer-blind Socratic tutor. The afternoon block helps each child discover a durable interest and turn it into ambitious projects, peer collaboration, expert mentorship, and public evidence.
@@ -333,41 +341,52 @@ Families provide agreed schedule windows, respond to safety and logistics reques
 ## 7. System map
 
 ```mermaid
-flowchart TD
-    subgraph ADM["Admission pipeline — separate team (§3.4)"]
-      A["Family Application Portal"] --> B["Completeness review + CogAT import"]
-      B --> C["Track A / Track B routing"]
-      C --> D["Track B Talent Snapshot + blind review"]
-      D --> DE["Track A / Track B eligibility"]
+flowchart TB
+    ADM["Admissions pipeline<br/>(separate team, §3.4)"] -->|Track A/B eligibility| HO["Enrollment handoff (§3.5)"]
+
+    subgraph EXT["Inherited from Alpha — not built by us"]
+        TB["TimeBack engine<br/>4 sections: math · reading · science · language<br/>XP/mastery · SAT/AP prep"]
     end
-    DE --> HO["Enrollment handoff (§3.5)"]
-    HO --> OB["Onboarding: family trial + readiness (§10, §11) — this platform"]
-    OB --> E["Academic Mastery OS"]
-    HO --> E
-    HO --> F["Interest Lab"]
-    F --> G["Specialization Planner"]
-    E --> H["Cohort Compiler"]
-    G --> H
-    H --> I["Masterpiece Foundry and domain studios"]
-    I --> J["EvidenceGraph and live defense"]
-    J --> K["Reality Gateway"]
-    K --> L["Public Portfolio and Mastery Passport"]
-    M["Motivation Rate Limiter"] --> E
-    M --> F
-    M --> H
-    M --> I
-    N["Consent, policy, audit, event, and evidence spine"] --> HO
-    N --> E
-    N --> F
-    N --> H
-    N --> I
-    N --> J
-    O["GT-Twin and Self-Play Gym"] -. shadow evaluation .-> E
-    O -. shadow evaluation .-> F
-    O -. shadow evaluation .-> H
+
+    subgraph GT["GT100K — our build (accelerated GT layer)"]
+        IL["TimeBack Integration Layer<br/>OneRoster · Caliper · QTI · PowerPath → AcademicSignalEvent"]
+        ACC["Accelerated academics<br/>3–4 hr / higher-XP · passion-tailored answer-blind tutor · independence reward"]
+        subgraph AFT["Passion · projects · evidence"]
+            LAB["Interest Lab & Passion Engine"] --> SP["Specialization Planner"] --> CO["Cohort Compiler · Arena · RivalryMix"] --> MF["Masterpiece Foundry + workspaces"] --> EG["EvidenceGraph"] --> RG["Reality Gateway"] --> PP["Mastery Passport"]
+        end
+        MOT["Motivation limiter + gamification<br/>(cross-cutting)"]
+        MODEL["Model plane<br/>psychometrics · passion/peer-effect · GT-Twin (advisory/shadow)"]
+    end
+
+    subgraph AWS["Platform spine on AWS — EKS · RDS+pgvector · S3 · KMS · CloudFront · Terraform"]
+        SPINE["Event spine (Redpanda) · Temporal · OPA policy-as-code · purpose-separated data"]
+    end
+
+    GOV["GOVERNANCE.md<br/>rights · consent · decision authority"]
+
+    HO --> IL
+    TB --> IL
+    IL --> ACC
+    ACC --> AFT
+    MOT -.-> ACC
+    MOT -.-> AFT
+    MODEL -.-> ACC
+    MODEL -.-> AFT
+    ACC --> SPINE
+    AFT --> SPINE
+    SPINE -. enforces .- GOV
+
+    classDef ext fill:#3a2b16,stroke:#e0a458,color:#fff;
+    classDef gt fill:#1d3a1d,stroke:#5cb85c,color:#fff;
+    classDef aws fill:#16324f,stroke:#4a90d9,color:#fff;
+    classDef gov fill:#4f1d3a,stroke:#e91e8c,color:#fff;
+    class TB ext;
+    class IL,ACC,LAB,SP,CO,MF,EG,RG,PP,MOT,MODEL gt;
+    class SPINE aws;
+    class GOV gov;
 ```
 
-The admission pipeline (grouped above) is owned and built by a separate team (§3.4) and connects to this platform at the enrollment handoff (§3.5). Downstream of that handoff, the shared platform records each transition as a signed, versioned event. Product services own their operational state. The central event and evidence layers let authorized staff reconstruct a journey without creating a single unrestricted learner profile.
+**Reading the map:** admissions (a separate team, §3.4) hands an eligible learner to GT100K at the enrollment handoff (§3.5). Core academics are **inherited from Alpha's TimeBack** engine; the **TimeBack Integration Layer** reads mastery/XP/velocity out of it (`AcademicSignalEvent`) and feeds our accelerated-academics layer (3–4 hr, passion-tailored answer-blind tutor, independence reward) and the afternoon passion → projects → evidence flow. Everything runs on the **AWS** platform spine (event spine, purpose-separated data, policy-as-code); rights, consent, and decision authority are governed by [`GOVERNANCE.md`](GOVERNANCE.md). Each transition is recorded as a signed, versioned event so staff can reconstruct a journey without creating a single unrestricted learner profile.
 
 ## 8. Global policy and decision requirements
 
@@ -1141,7 +1160,7 @@ The detailed allocation adds five components that the earlier PRD implied but di
 
 ### 26.6 Open architecture decisions
 
-The recommended four-month default uses managed LiveKit, Redpanda, and Temporal in US regions under child-data processing agreements; a policy that requires self-hosting changes Month 1 staffing. The recommended launch matrix gives current Chrome and Edge on managed laptops the full Resonance tier, gives Safari and iPadOS a reduced audio tier, and supplies loaner hardware for WebUSB or fabrication quests. Product ownership must confirm both decisions at kickoff.
+**Cloud = AWS (committed).** All hosting runs on AWS (EKS, RDS + pgvector, S3, KMS, CloudFront, isolated workload accounts; Terraform for IaC) — this is no longer an open decision. Managed LiveKit, Redpanda, and Temporal run in US regions under child-data processing agreements (self-hosting any of them would change Month 1 staffing). The launch matrix gives current Chrome and Edge on managed laptops the full Resonance tier, Safari and iPadOS a reduced audio tier, and loaner hardware for WebUSB or fabrication quests; product ownership confirms the client-tier matrix at kickoff.
 
 ## 27. Service boundaries and data flow
 
