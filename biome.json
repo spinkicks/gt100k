@@ -16,6 +16,12 @@
     }
   },
   "files": {
-    "ignore": ["**/dist/**", "**/.next/**", "**/node_modules/**", "**/*.d.ts"]
+    "ignore": [
+      "**/dist/**",
+      "**/.next/**",
+      "**/node_modules/**",
+      "**/*.d.ts",
+      "apps/**/tsconfig.json"
+    ]
   }
 }
