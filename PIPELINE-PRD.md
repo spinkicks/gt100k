@@ -19,25 +19,25 @@
 
 ## 0. How to read this document
 
-This is a **standalone** PRD. It re-presents the entire GT100K program as a **deterministic manufacturing line** that takes in students and is engineered to produce MIT-level readiness. It is written to be read on its own; where a mechanism needs its full engineering or rights detail, it points to the authoritative spec in `PRD.md` or `GOVERNANCE.md`, but it does not require you to read them first.
+This **standalone** PRD re-presents the entire GT100K program as a **deterministic manufacturing line** engineered to take in students and produce MIT-level readiness. It reads on its own; where a mechanism needs full engineering or rights detail, it points to `PRD.md` or `GOVERNANCE.md` without requiring you to read them first.
 
 Three source documents sit underneath it:
 
-- **`gtBrainlift.md`** — the originating thesis and the five spiky points of view (SPOV 1–5). This is the *why*.
-- **`PRD.md` v1.7** — the full program operating system, section by section. This is the *what*, in engineering detail.
-- **`GOVERNANCE.md`** (G1–G8) — the rights, consent, safety, and decision-authority invariants. In this document those are the **plant safety system** (§4.3): hard interlocks that stop the line and can never be traded for throughput.
+- **`gtBrainlift.md`** — the originating thesis and five spiky points of view (SPOV 1–5): the *why*.
+- **`PRD.md` v1.7** — the full program operating system, section by section: the *what*, in engineering detail.
+- **`GOVERNANCE.md`** (G1–G8) — the rights, consent, safety, and decision-authority invariants. Here they are the **plant safety system** (§4.3): hard interlocks that stop the line and can never be traded for throughput.
 
-A crosswalk from every factory term used here to its `PRD.md` section and its SPOV is in §14.
+A crosswalk from every factory term to its `PRD.md` section and SPOV is in §14.
 
-**One caution up front.** The industrial voice in this document describes the *process*, which is deterministic and reproducible by design. It never describes the *outcome* as guaranteed. A factory that reliably applies a fixed process is not the same as a factory that promises a fixed result. The distinction is load-bearing and is stated formally in §2.3.
+**One caution up front.** The industrial voice describes the *process* — deterministic and reproducible by design — never the *outcome* as guaranteed. A factory that reliably applies a fixed process is not one that promises a fixed result. The distinction is load-bearing and stated formally in §2.3.
 
 ---
 
 ## 1. The Factory Thesis
 
-Better pedagogy is a solved problem. Direct instruction, worked examples, mastery gating, and step-based tutoring all work, all replicate, and any competent team can build them. Tuning the teaching *method* is polishing something already finished. So this program takes a proven mastery engine off the shelf and spends every saved hour on the constraints that actually bind elite outcomes: **dose, environment totality, peer composition, and the raw cognitive ceiling** (`gtBrainlift.md`).
+Better pedagogy is a solved problem. Direct instruction, worked examples, mastery gating, and step-based tutoring all work, all replicate, and are buildable by any competent team. Tuning the teaching *method* polishes something already finished. So this program takes a proven mastery engine off the shelf and spends every saved hour on the constraints that actually bind elite outcomes: **dose, environment totality, peer composition, and the raw cognitive ceiling** (`gtBrainlift.md`).
 
-Each of those constraints is manipulable, and each is normally left untouched at the intensity elite results demand. The bet of this document is that they can be manipulated **deterministically** — arranged into a fixed, instrumented, reproducible production line — rather than left to the accident of which family a gifted child is born into.
+Each constraint is manipulable, yet normally left untouched at the intensity elite results demand. This document's bet: they can be manipulated **deterministically** — arranged into a fixed, instrumented, reproducible production line — rather than left to the accident of which family a gifted child is born into.
 
 The line has three stations:
 
@@ -46,8 +46,6 @@ The line has three stations:
 3. **Readiness assessment.** Verify and ship: prove the age-14 tolerances against independent evidence, provenance every claim, and hand the learner a portable credential they own.
 
 Between and inside the stations are **rework loops** (repair, deload, re-explore, delayed re-check) and **line-stop interlocks** (the safety and rights system). A unit that fails a gate is routed to rework; it is **never scrapped** (§9).
-
-The rest of this document specifies the line.
 
 ---
 
@@ -122,7 +120,7 @@ flowchart TB
     class FS fs;
 ```
 
-**Reading the line.** Feedstock (a family with an eligible child) enters Station 1, where it is filtered on cognitive floor and — the higher-leverage filter — family fidelity. Selected units enter Station 2, the production core, which is not a conveyor but a **long-running loop** running for up to eight years: two parallel lines (academic mastery and passion/build) feeding each other, worked in homogeneous near-peer batches. Units that fail an in-line gate are routed to a rework loop, repaired, and re-enter the line. Station 3 is final QC and shipping: it tests the age-14 output tolerances against independent evidence, provenances the whole build, exposes the work through controlled rings, and ships a credential the learner owns. Overlaying everything is the plant safety system, whose interlocks can halt any station regardless of throughput.
+**Reading the line.** Feedstock (a family with an eligible child) enters Station 1, filtered on cognitive floor and — the higher-leverage filter — family fidelity. Selected units enter Station 2, the production core: not a conveyor but a **long-running loop** of up to eight years, two parallel lines (academic mastery and passion/build) feeding each other, worked in homogeneous near-peer batches. Units that fail an in-line gate route to a rework loop, get repaired, and re-enter. Station 3 is final QC and shipping: it tests the age-14 output tolerances against independent evidence, provenances the whole build, exposes the work through controlled rings, and ships a credential the learner owns. Overlaying everything is the plant safety system, whose interlocks halt any station regardless of throughput.
 
 ---
 
@@ -132,7 +130,7 @@ These hold at every station. They are the equivalent of a plant's electrical cod
 
 ### 4.1 The control plane is deterministic; models are instruments
 
-Authority lives in deterministic services and named people. Statistical models estimate state, rank safe options, or render an action that a rules engine already selected. **A model cannot admit a child, remove a child, raise pressure, deny help, publish work, or issue a credential** (`PRD.md` §25; `GOVERNANCE.md` G3 §8.1). During the beta, irreversible or identity-defining learned models run in **shadow** only; reversible, fast-feedback models may act inside a bounded, guide-vetoable, one-click-revertible envelope (`PRD.md` §8.5). This is what makes the line auditable and replayable — the property §2.1 calls process determinism.
+Authority lives in deterministic services and named people. Statistical models estimate state, rank safe options, or render an action a rules engine already selected. **A model cannot admit a child, remove a child, raise pressure, deny help, publish work, or issue a credential** (`PRD.md` §25; `GOVERNANCE.md` G3 §8.1). During the beta, irreversible or identity-defining learned models run in **shadow** only; reversible, fast-feedback models may act inside a bounded, guide-vetoable, one-click-revertible envelope (`PRD.md` §8.5). This makes the line auditable and replayable — the process determinism of §2.1.
 
 ### 4.2 Evidence classes gate authority, not build speed
 
@@ -149,7 +147,7 @@ The rights and safety rules are the plant's **interlocks**. Any one of them halt
 - **Human authority** over admission, intensity, specialization, safeguarding, discipline, public release, and route transitions (`GOVERNANCE.md` G2, G3).
 - **Strict human review before any child-facing exposure** of any surface, content, model behavior, or release — mandatory regardless of build velocity (`PRD.md` §25).
 
-The heavy industrial framing of this document stops at these interlocks. They are described in the manufacturing register (line-stop, tolerance, interlock) but their *content* is verbatim-faithful to `GOVERNANCE.md`; the register never softens them.
+The heavy industrial framing stops at these interlocks. They are described in the manufacturing register (line-stop, tolerance, interlock) but their *content* is verbatim-faithful to `GOVERNANCE.md`; the register never softens them.
 
 ### 4.4 Rated throughput and no-caste operation
 
@@ -157,15 +155,15 @@ The line is engineered for a rated throughput of **100,000 enrolled learners** w
 
 ### 4.5 The unit of production is the family, not the child
 
-The single most important design consequence of SPOV 1: the line does not process an isolated child. It processes a **household running an environment**. Selection screens the family (§6.3); development supplies the family a feasible operating plan and recovers it from disruption (§7.7); the family holds veto and consent throughout. A merely able child in a fanatical, supported home outperforms a gifted child in a lukewarm one — so the family is the feedstock the line is actually tuned around.
+The most important design consequence of SPOV 1: the line does not process an isolated child but a **household running an environment**. Selection screens the family (§6.3); development supplies a feasible operating plan and recovers it from disruption (§7.7); the family holds veto and consent throughout. A merely able child in a fanatical, supported home outperforms a gifted child in a lukewarm one — so the family is the feedstock the line is actually tuned around.
 
 ---
 
 ## 5. Feedstock & intake
 
-**What enters the line.** A family with a child aged 6 to 14 who has cleared the admissions front door. The line is tuned for maximum runway, so **primary intake is ages 6 to 8**; the program ends at age 14, so a unit entering at 12 or 13 has a compressed runway and is placed on an **individualized target horizon** rather than the full age-14 tolerance (§9.3; `PRD.md` §2.5).
+**What enters the line.** A family with a child aged 6 to 14 who has cleared the admissions front door. The line is tuned for maximum runway, so **primary intake is ages 6 to 8**; since the program ends at age 14, a unit entering at 12 or 13 has a compressed runway and is placed on an **individualized target horizon** rather than the full age-14 tolerance (§9.3; `PRD.md` §2.5).
 
-**Top of funnel (not built by this line).** Recruitment and outreach — sourcing qualified, consented families — are owned by a **separate recruitment/outreach team**, neither the admissions team nor this platform (`PRD.md` §3.4, §10). That team feeds the intake gate. It may optimize delivery and language fit but may never predict child ability, scrape minors, buy household-vulnerability data, or target protected-class proxies. Every source carries campaign, eligibility, and conversion metadata for audit, and a decline suppresses further contact.
+**Top of funnel (not built by this line).** Recruitment and outreach — sourcing qualified, consented families — are owned by a **separate recruitment/outreach team**, neither the admissions team nor this platform (`PRD.md` §3.4, §10); that team feeds the intake gate. It may optimize delivery and language fit but may never predict child ability, scrape minors, buy household-vulnerability data, or target protected-class proxies. Every source carries campaign, eligibility, and conversion metadata for audit, and a decline suppresses further contact.
 
 **What is explicitly *not* screened as a commitment proxy.** Wealth, accent, employment type, family structure, personality profile, or access to private household surveillance (`PRD.md` §10; `GOVERNANCE.md` G1). The intake gate measures declared availability and *recovery behavior*, not affluence or a perfect record.
 
@@ -175,13 +173,13 @@ The single most important design consequence of SPOV 1: the line does not proces
 
 **Purpose.** Admit feedstock that can run the eight-year dose, and route everyone else humanely. Two things are filtered: a cognitive floor (necessary) and family fidelity (the higher-leverage filter). Neither is a statement about a child's worth.
 
-**Ownership (marked, per design).** The admission *decision* is owned and built by a **separate admissions team**; the Cognitive Floor Engine, the compensated family trial, and the family-execution signal are **this platform's**, and run as post-eligibility onboarding — they inform placement and support, they do **not** gate admission (`PRD.md` §3.4). The stage is described end-to-end here for line coherence; the ownership boundary is called out at each sub-station.
+**Ownership (marked, per design).** The admission *decision* is owned and built by a **separate admissions team**; the Cognitive Floor Engine, the compensated family trial, and the family-execution signal are **this platform's**, and run as post-eligibility onboarding — they inform placement and support, they do **not** gate admission (`PRD.md` §3.4). The stage is described end-to-end for coherence, with the ownership boundary marked at each sub-station.
 
 ### 6.1 Sub-station 1a — Admissions front door *(admissions team)*
 
-CogAT is administered **outside** the product; results are imported and a configured rules engine routes each applicant to **Track A** (the existing gifted cutoff) or **Track B** (a below-cutoff talent pathway with an anchored Talent Evidence Snapshot and independent blind rubric review). The output is a `qualifies` / `does not currently qualify` / `pending correction` eligibility determination with reason codes, rule version, and audit history (`PRD.md` §3.4, §8.4; `GOVERNANCE.md` G3 §8.4). Prohibited eligibility inputs (income, ZIP, school/recommender prestige, paid enrichment, awards, disability/accommodation use, referral source, demographic identity) are excluded by their design and match this platform's non-discrimination rules.
+CogAT is administered **outside** the product; results are imported and a configured rules engine routes each applicant to **Track A** (the existing gifted cutoff) or **Track B** (a below-cutoff talent pathway with an anchored Talent Evidence Snapshot and independent blind rubric review). The output is a `qualifies` / `does not currently qualify` / `pending correction` eligibility determination with reason codes, rule version, and audit history (`PRD.md` §3.4, §8.4; `GOVERNANCE.md` G3 §8.4). Prohibited eligibility inputs (income, ZIP, school/recommender prestige, paid enrichment, awards, disability/accommodation use, referral source, demographic identity) are excluded by design, matching this platform's non-discrimination rules.
 
-**Handoff into the line.** At the enrollment handoff (`PRD.md` §3.5), the line consumes: verified identity + consent scope, the eligible-learner roster + start plan, the approved accommodation profile, and a reference to the eligibility-evidence record. The line does **not** re-collect these and does **not** ingest raw application, CogAT items, or Snapshot artifacts.
+**Handoff into the line.** At the enrollment handoff (`PRD.md` §3.5), the line consumes verified identity + consent scope, the eligible-learner roster + start plan, the approved accommodation profile, and a reference to the eligibility-evidence record. It does **not** re-collect these and does **not** ingest raw application, CogAT items, or Snapshot artifacts.
 
 ### 6.2 Sub-station 1b — Cognitive Floor QC *(platform, `PRD.md` §11)*
 
@@ -223,33 +221,33 @@ The morning line. Core academics ride **Alpha's TimeBack** engine (inherited, no
 
 - **Station QC = the 90% independent gate.** A node unlocks only on ≥ 90% performance on an **independent, unassisted** check; high-impact nodes may additionally require multiple item families, an explanation, or transfer evidence. Supported success never counts as independent proof — a `HelpReceipt` follows the work so it cannot be laundered into mastery credit (`PRD.md` §12.2).
 - **Friction is the product (SPOV 5).** The **Answer-Blind Socratic Tutor** (§13) helps a child think without ever seeing or revealing the answer; a separate grader owns the answer keys in a different trust domain. The tutor is available while *learning* a topic and **disabled during mastery quizzes**. It requires an attempt before a content hint.
-- **Independence reward (non-punitive, potential-based).** On top of mastery credit, a visible reward tracks the mastery-estimate gain from the child's *unassisted* work. Unaided success earns a full reward; an attempt right after an AI rescue moves the estimate ~0 and so earns ~0 — shortcutting is worthless by construction, **without any penalty for asking**. Asking for help never lowers access, mastery credit, or standing; accessibility/safety help is always exempt. This is the defensible form of the brainlift's "make help hurt to reach for" — a bonus for not needing help, never a punishment for asking (`PRD.md` §13; `PRD-review.md` Lever 1).
+- **Independence reward (non-punitive, potential-based).** On top of mastery credit, a visible reward tracks the mastery-estimate gain from the child's *unassisted* work. Unaided success earns a full reward; an attempt right after an AI rescue moves the estimate ~0 and so earns ~0 — shortcutting is worthless by construction, **without any penalty for asking**. Asking for help never lowers access, mastery credit, or standing; accessibility/safety help is always exempt. This is the defensible form of the brainlift's "make help hurt to reach for" (`PRD.md` §13; `PRD-review.md` Lever 1).
 - **Narrow spine, retrieval as rework (SPOV 4).** The competency graph runs two required spines — a quantitative spine (number sense → algebra → geometry → probability/statistics → precalculus → calculus → modeling) and a verbal spine (decoding → comprehension → vocabulary → composition → argument → research → rhetoric → literature). FSRS-style scheduling sends **later retrieval checks** back through the line so automaticity does not rot into gaps — a deliberate recirculation, not a defect (§9). An additive **advanced enrichment track** (olympiad math, competition science) extends the right tail without gating core progression.
 - **Two-phase delivery.** *Phase 0*: build the rest of the product on the partner engine's block, treating its ~90% gate as advisory. *Phase 1*: replace it with the in-house interpretable-KT engine (PFA/BKT/IKT) that carries the answer-blind tutor, help receipts, independence reward, and the per-skill DIF/reading-ability fairness audit, at a hard scheduled cutover (`PRD.md` §12, §32).
 
 ### 7.3 Batching — homogeneous near-peer cohorts *(`PRD.md` §15)*
 
-The afternoon and much of the social load run in **stable cohorts of six** matched on age, schedule, safeguarding, and level-plus-velocity calipers. This is SPOV 3 operationalized: matched pace and direct near-peer rivalry generate a pressure no one-on-one tutor can fake, and the matched pace removes the drag of a mixed-ability room.
+The afternoon and much of the social load run in **stable cohorts of six** matched on age, schedule, safeguarding, and level-plus-velocity calipers. This is SPOV 3 operationalized: matched pace and direct near-peer rivalry generate a pressure no one-on-one tutor can fake, while removing the drag of a mixed-ability room.
 
 - **Batching is the engine, bounded by interlocks.** Contests stay near-peer via private TrueSkill/Glicko-style matchmaking so rivalry motivates rather than demoralizes. Visible standings rank **velocity / mastery-gain / effort**, reset every sprint. **Fixed-ability caste ranks, public tier names, and any standing derived from a protected attribute are prohibited**; any child can hide their standing without penalty; per-pod **belonging** is a monitored rollback gate — if visible rivalry depresses belonging, it auto-reverts to private (`PRD.md` §15; `GOVERNANCE.md` G6).
-- **Face-to-face is primary.** Every digital surface (cohort rooms, Arena, RivalryMix on WebRTC/LiveKit) exists to enrich in-person work, never to replace it. Remote/cross-school collaboration is supported but supplements the in-person base and collects only functionally-submitted work — no ambient sensing (`PRD.md` §15, §15.1).
+- **Face-to-face is primary.** Every digital surface (cohort rooms, Arena, RivalryMix on WebRTC/LiveKit) exists to enrich in-person work, never to replace it. Remote/cross-school collaboration supplements the in-person base and collects only functionally-submitted work — no ambient sensing (`PRD.md` §15, §15.1).
 
 ### 7.4 Line B — Passion / Build *(`PRD.md` §14, §16, §18)*
 
-The afternoon line. It converts mastery into ambitious, self-owned work — and, critically, into a *durable reason to return* after adult pressure ends. Acceleration without durable interest produces a strong test-taker who stops when the pressure stops; this line is the countermeasure.
+The afternoon line. It converts mastery into ambitious, self-owned work — and, critically, into a *durable reason to return* after adult pressure ends. Acceleration without durable interest produces a test-taker who stops when the pressure stops; this line is the countermeasure.
 
 - **Interest Lab (intake for the passion line).** 18–24 micro-probes over 8–12 weeks across ≥ 6 domains and ≥ 6 work modes. The line looks for **voluntary, unprompted return after novelty, praise, and obligation fade** — measured at 7 and 30 days — not a five-star rating. Prompted return carries its intervention context and is not counted as a passion signal (`PRD.md` §14.4).
 - **Mutable `InterestHypothesis`, not a label.** A versioned evidence record with competing explanations, coverage gaps, uncertainty, and the child's own position. It steers planning; it never defines the child. The interface says "current evidence suggests," never "you are an audio person" (`PRD.md` §14.5).
-- **Specialization Planner (SPOV 4, bounded).** Turns a validated interest into a project spine with age-scaled allocation (primary spine / adjacent depth / wildcard exploration). It **never reduces** the mastery block, sleep, movement, family time, or recovery, always retains a wildcard/exit path, and every allocation change requires child assent (`PRD.md` §14.7). Early depth is the bet; breadth is cheap to bolt on later; but the wildcard floor and assent are the interlocks that keep "specialize brutally early" from becoming foreclosure.
+- **Specialization Planner (SPOV 4, bounded).** Turns a validated interest into a project spine with age-scaled allocation (primary spine / adjacent depth / wildcard exploration). It **never reduces** the mastery block, sleep, movement, family time, or recovery, always retains a wildcard/exit path, and every allocation change requires child assent (`PRD.md` §14.7). Early depth is the bet, breadth cheap to bolt on later; the wildcard floor and assent are the interlocks that keep "specialize brutally early" from becoming foreclosure.
 - **Masterpiece Foundry + Mentor Mesh.** Professional tools in isolated, capability-gated (Firecracker) workspaces; durable milestone workflows; a resource broker for compute/equipment/expert minutes. The **primary mentor is always a human**; the agent mesh is strictly assistive and answer-leakage-firewalled, and a human is always reachable (`PRD.md` §16, §18).
 
 ### 7.5 Gamification — the reward layer (first-class)
 
-Gamification is a **first-class subsystem of the line, not decoration** (`PRD.md` §1, and the "Motivation limiter + gamification" node in the §7 system map). Its design rule inverts the ed-tech default: the score rewards the *learning mechanism*, never time-in-app. In factory terms it is the line's **incentive controller** — it is tuned so the *rewarded* path is the *hard* path, which is exactly how SPOV 5 ("friction is the product") is made to feel good instead of punishing.
+Gamification is a **first-class subsystem of the line, not decoration** (`PRD.md` §1, and the "Motivation limiter + gamification" node in the §7 system map). Its design rule inverts the ed-tech default: the score rewards the *learning mechanism*, never time-in-app. In factory terms it is the line's **incentive controller**, tuned so the *rewarded* path is the *hard* path — how SPOV 5 ("friction is the product") is made to feel good instead of punishing.
 
 Every mechanic reinforces the mechanism:
 
-- **The independence reward is the score.** The headline currency is the potential-based independence reward (§7.2): points accrue from the mastery-estimate gain of the child's *unassisted* work, so the score literally measures learning. An attempt right after an AI rescue pays ≈ 0 — shortcutting is worthless — while asking for help never costs points, access, or standing.
+- **The independence reward is the score.** The headline currency is the potential-based independence reward (§7.2): points accrue from the mastery-estimate gain of *unassisted* work, so the score literally measures learning. An attempt right after an AI rescue pays ≈ 0 — shortcutting is worthless — while asking for help never costs points, access, or standing.
 - **Predict-then-reveal.** Committing a prediction before an outcome is shown earns reward, operationalizing productive failure and desirable difficulty (SPOV 5).
 - **Spaced-retrieval strength.** Streak and "strength" meters track FSRS retrieval health, so the game rewards durable retention rather than cramming.
 - **Co-op & near-peer competition.** Cooperative missions plus sprint-reset, gain-based cohort standings (§7.3) turn the homogeneous batch into the motivational engine (SPOV 3) — rivalry between matched peers, not a caste ladder.
@@ -350,15 +348,15 @@ One change at a time keeps rework evidence interpretable — standard practice f
 
 ## 10. Machines, instruments & the digital twin
 
-This section is the bill of materials: **where every engine, service, and machine-learning model actually sits on the line, and how much authority each one has.** It is the core of the build, so it is specified here rather than left to `PRD.md` §25–§30 (which stays authoritative for engineering detail).
+This section is the bill of materials: **where every engine, service, and machine-learning model sits on the line, and how much authority each has.** As the core of the build, it is specified here rather than left to `PRD.md` §25–§30 (which stays authoritative for engineering detail).
 
-Everything the program builds falls into one of three classes, and the class determines what it is allowed to do:
+Everything the program builds falls into one of three classes, which determines what it may do:
 
-- **Machines (deterministic services).** The line's PLCs — they *actuate*: unlock a node, issue a dose token, commit a cohort, sign a credential. Authority sits with a rules engine and named humans (`PRD.md` §25, §27). These make the moves.
+- **Machines (deterministic services).** The line's PLCs — they *actuate*: unlock a node, issue a dose token, commit a cohort, sign a credential. Authority sits with a rules engine and named humans (`PRD.md` §25, §27).
 - **Instruments (ML models).** The sensors, gauges, and inspection heads — they *estimate state, rank options, render a hint, or flag*. An instrument informs a machine or an operator; it does not pull a lever on its own, except within the tightly bounded rung below.
 - **The digital twin (GT-Twin & Self-Play Gym).** An offline simulation rig where process changes are tested against synthetic populations *before* touching a live line. It has **no production write credential**, ever (`PRD.md` §31).
 
-This is the same rule as `PRD.md` §4.1/§25 — authority to deterministic services and named people; models estimate, rank, or render — stated as a shop-floor layout.
+This is the same rule as `PRD.md` §4.1/§25, stated as a shop-floor layout.
 
 ### 10.1 The model-authority ladder
 
@@ -392,7 +390,7 @@ Every instrument sits on exactly one rung, gated by its evidence class (`PRD.md`
 
 ## 11. Instrumentation & process control
 
-The line is run to **tolerances**, and every throughput metric is paired with a guardrail so no station can optimize its local number by harming the child (`PRD.md` §2.6). The Release Threshold Registry (`PRD.md` §33.1) is the master tolerance sheet: each threshold carries an ID, owner, value, population, window, evidence class, and rollback action; CI rejects a policy bundle referencing an absent or expired threshold.
+The line is run to **tolerances**: every throughput metric is paired with a guardrail so no station can optimize its local number by harming the child (`PRD.md` §2.6). The Release Threshold Registry (`PRD.md` §33.1) is the master tolerance sheet: each threshold carries an ID, owner, value, population, window, evidence class, and rollback action; CI rejects a policy bundle referencing an absent or expired threshold.
 
 | Station / system | Key process tolerance | Paired guardrail | Fail action |
 |---|---|---|---|
@@ -420,7 +418,7 @@ The line is commissioned in four months (`PRD.md` §32); the roadmap plans aroun
 | **Month 3** | Final assembly + finish | Phase-1 in-house Academic Mastery OS + fairness audit, Reality Gateway rings, credentials/Passport, GT-Twin, ops/governance console — **feature-complete release candidate** |
 | **Month 4** | **Factory acceptance test** | Integrated testing, accessibility/legal/psychometric/privacy/security review, chaos/DR, 100k-learner load, and a gated beta at 1,000 / 2,500 / 5,000 **synthetic** learners |
 
-**Critical commissioning rule.** The Month 4 beta runs on **synthetic, simulated learners, not live children** — it is a factory acceptance test that exercises the full operational, safeguarding, consent, and support machinery end-to-end. Live feedstock is out of scope for this document and gated behind the admissions pipeline going live plus privacy/legal sign-off (`PRD.md` §32.4). Wave promotion is a release decision: any sentinel event, failed threshold, or unresolved blocker **pauses promotion**; the line cannot waive a gate to hit a number by a date.
+**Critical commissioning rule.** The Month 4 beta runs on **synthetic, simulated learners, not live children** — a factory acceptance test exercising the full operational, safeguarding, consent, and support machinery end-to-end. Live feedstock is out of scope here and gated behind the admissions pipeline going live plus privacy/legal sign-off (`PRD.md` §32.4). Wave promotion is a release decision: any sentinel event, failed threshold, or unresolved blocker **pauses promotion**; the line cannot waive a gate to hit a number by a date.
 
 ---
 
