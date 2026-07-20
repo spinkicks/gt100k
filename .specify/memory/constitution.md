@@ -17,7 +17,7 @@
 ### I. Human Authority Over Consequential Decisions (NON-NEGOTIABLE)
 
 A **consequential decision** changes access, intensity, cohort, specialization, privacy, public
-exposure, credential status, or program participation (PRD §8.1).
+exposure, credential status, or program participation (GOVERNANCE G3 §8.1).
 
 - Every consequential decision MUST name a human owner, policy version, evidence set, rationale,
   expiry, and appeal route (POL-001). No learned model issues a final consequential decision in the beta.
@@ -33,7 +33,7 @@ exposure, credential status, or program participation (PRD §8.1).
 
 ### II. Child Assent and Veto (NON-NEGOTIABLE)
 
-- Guardian consent does **not** substitute for child assent where the product can honor a refusal (PRD §8.2).
+- Guardian consent does **not** substitute for child assent where the product can honor a refusal (GOVERNANCE G3 §8.2).
 - Assent is captured **per intensity dial** — daily load, difficulty/pace, competition & rivalry
   exposure, specialization-commitment depth, public-audience exposure — is revocable at any time, and
   lowering a dial never requires justification.
@@ -50,7 +50,7 @@ exposure, credential status, or program participation (PRD §8.1).
 ### III. Evidence-Class Authority Ladder (NON-NEGOTIABLE)
 
 Every capability carries an **evidence class** (PRD §5) and every model a declared **authority level**
-(Lab → Shadow → Advisory → Bounded automation → Retired, PRD §8.5).
+(Lab → Shadow → Advisory → Bounded automation → Retired, GOVERNANCE G3 §8.5).
 
 - `G` (rights/safety/legal) and `ENG` (engineering controls) requirements are enforced as gates
   regardless of measured product lift.
@@ -61,7 +61,7 @@ Every capability carries an **evidence class** (PRD §5) and every model a decla
   cannot inform a live child's admission, intensity, specialization, cohort, route, or credential.
 - **No learned model may move a fixed, human-owned decision rule or cut online** (readiness or intensity):
   the Cognitive Floor Engine may use adaptive item *selection*, but its decision cut is fixed and
-  human-owned, and online calibration never lets the rule change itself (PRD §11, §14.9; GOVERNANCE G3 §8.5).
+  human-owned, and online calibration never lets the rule change itself (PRD §11; GOVERNANCE G4 and G3 §8.5).
 - **Software delivery speed never upgrades an evidence class or authority level.** Only the model & data
   governance board may promote a level, after local validation, subgroup analysis, calibration, safety,
   privacy, and abuse review. A model trained on adults/public corpora/synthetic students cannot gain
@@ -95,7 +95,7 @@ Every capability carries an **evidence class** (PRD §5) and every model a decla
 ### VI. Accessibility and Non-Discrimination
 
 - Twice-exceptional learners receive the **same acceleration and the same accommodations** as anyone
-  else; a support need is never a reason to slow a child down (PRD §8.3).
+  else; a support need is never a reason to slow a child down (GOVERNANCE G3 §8.3).
 - Approved support (screen reader, extended time, alternate input, sensory break, policy-permitted
   calculator, human reader, etc.) MUST NOT reduce mastery or independence credit — unless the construct
   being measured requires the excluded skill and a psychometrician approves that rule, recorded in the
@@ -118,13 +118,13 @@ Every capability carries an **evidence class** (PRD §5) and every model a decla
 ### VIII. Bounded Motivational Pressure
 
 - Every machine-generated pressure action — deadline, rivalry escalation, public comparison, help
-  refusal, parent nudge — spends a bounded **MotivationDose token** under a guide veto (PRD §8.5/§13).
+  refusal, parent nudge — spends a bounded **MotivationDose token** under a guide veto (GOVERNANCE G3 §8.5; PRD §13).
 - Safety overrides performance goals; the system reduces load on sleep, health, distress, bullying, or
   injury signals. **No fixed-ability caste rankings** in any form. Any comparative standing is **opt-in
   (default off), near-peer-band, anonymized, and never surfaces a child's bottom-rank position**
   (GOVERNANCE G6; PRD §15).
 
-### IX. Prohibited Product Behavior (the hard "never" list — PRD §3.3)
+### IX. Prohibited Product Behavior (the hard "never" list — GOVERNANCE G1)
 
 The platform will **never** implement: financial escrow, income-share agreements for minors,
 **irrevocable or multi-year binding participation contracts** (participation is renewable with
@@ -170,4 +170,6 @@ AI-authorship accusations.
   rights doc on a rights/safety limit, the stricter rule wins.
 - Runtime, day-to-day guidance for agents lives in `AGENTS.md`, which points here.
 
-**Version**: 1.0.0 | **Ratified**: 2026-07-20 (requires both CODEOWNERS `@spinkicks` + `@f15cubing` to approve this PR) | **Last Amended**: 2026-07-20
+**Version**: 1.0.1 | **Ratified**: 2026-07-20 (requires both CODEOWNERS `@spinkicks` + `@f15cubing` to approve this PR) | **Last Amended**: 2026-07-20
+
+> **1.0.1 (editorial, no invariant change):** corrected seven rights citations that still read `PRD §…` to point into `GOVERNANCE.md` (G1, G3 §8.1/§8.2/§8.3/§8.5, G4), consistent with the extraction convention noted above. No principle text changed.
