@@ -1,6 +1,6 @@
 # Architectural Foundations for Scalable Radical Educational Acceleration
 
-**Goal:** engineer MIT-level readiness (SAT 1570+, and 5s on AP Calculus BC, Physics C, and English Literature) by the end of 8th grade, for an enrolled population of 100,000 students.
+**Goal:** engineer MIT-level readiness (SAT 1570+, and 5s on AP Calculus BC, Physics C, and English Literature) by the end of 8th grade, for an enrolled population of 100,000 students, part of which is filtering and selecting from a pool of students to actually be chosen for GT school.
 
 **One line summary:** The most important factor for achieving excellence/giftedness/MIT-level preparation is the environment you learn in (family/peers/immersion).
 
