@@ -24,10 +24,20 @@ jobs:
         with:
           fetch-depth: 0
 
+      # gitleaks CLI (not gitleaks-action@v2): the action makes GitHub API calls
+      # (license-user lookup + PR-commits fetch) that hard-fail on any API
+      # degradation. The CLI scans the checked-out tree with zero API calls and
+      # auto-loads .gitleaks.toml (documented false-positive allowlist).
+      # Version + sha256 are pinned (supply-chain hardening); the binary is
+      # unpacked to RUNNER_TEMP so it is neither scanned nor tripping large-file.
       - name: Secret scan (gitleaks)
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VER=8.24.3
+          SHA=9991e0b2903da4c8f6122b5c3186448b927a5da4deef1fe45271c3793f4ee29c
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${VER}/gitleaks_${VER}_linux_x64.tar.gz" -o "$RUNNER_TEMP/gitleaks.tgz"
+          echo "${SHA}  ${RUNNER_TEMP}/gitleaks.tgz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/gitleaks.tgz" -C "$RUNNER_TEMP" gitleaks
+          "$RUNNER_TEMP/gitleaks" dir . --no-banner --redact --exit-code 1
 
       - name: Block large files (>5MB)
         run: |
