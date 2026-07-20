@@ -4,6 +4,8 @@
 **Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/learning-loop.md, quickstart.md
 **Tests**: INCLUDED — the constitution makes tests part of "done" and `contracts/learning-loop.md` defines explicit test obligations. Write tests first; ensure they fail before implementing.
 
+**Progress (2026-07-20)**: MVP core landed — Setup (workspace/TS/Vitest; Turborepo + lint deferred), Foundational (domain types/ports/config + in-memory repo), **US1** (XP accrual, tested), and **US2** (hybrid gate + rollover, tested) are **done and green (14 tests)**. Remaining: T004 lint, T013 TimeBack stub, **US3** (T019–T021 Next.js day view), and polish (T022–T025).
+
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: parallelizable (different files, no incomplete-task dependency)
