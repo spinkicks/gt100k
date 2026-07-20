@@ -8,9 +8,9 @@
 | Document status | Standalone reframe of the program operating model |
 | Version | 1.1 |
 | Date | 2026-07-20 |
-| Companion documents | `PRD.md` v1.9 (detailed program spec), `GOVERNANCE.md` (rights/consent/authority, G1–G8), `gtBrainlift.md` (originating thesis, SPOV 1–5) |
+| Companion documents | `PRD.md` v1.10 (detailed program spec), `GOVERNANCE.md` (rights/consent/authority, G1–G8), `gtBrainlift.md` (originating thesis, SPOV 1–5) |
 | Initial market | United States, English-first |
-| Feedstock ages | 6 through 14 (primary intake 6 to 8) |
+| Intake ages | 6 through 14 (primary intake 6 to 8) |
 | Line output | A learner-owned, verifiable Mastery Passport backed by an evidence trail |
 | Rated throughput | 100,000 enrolled learners |
 | Output tolerance (age 14) | SAT ≥ 1570; AP Calculus BC, AP Physics C, AP English Literature all scored 5; ≥ 1 defended masterpiece; demonstrated learning autonomy |
@@ -41,11 +41,11 @@ Each constraint is manipulable, yet normally left untouched at the intensity eli
 
 The line has three stations:
 
-1. **Selection (filtering).** Choose the feedstock: the right cognitive floor and, above all, the right *family* — the environment that will run the dose for eight years (SPOV 1, SPOV 2).
+1. **Selection (filtering).** Choose who enters: the right cognitive floor and, above all, the right *family* — the environment that will run the dose for eight years (SPOV 1, SPOV 2).
 2. **Development.** Run the dose: mastery-gated academics on a narrow early-specialized spine, in homogeneous peer batches, under engineered friction, with the answer withheld (SPOV 3, SPOV 4, SPOV 5).
 3. **Readiness assessment.** Verify and ship: prove the age-14 tolerances against independent evidence, provenance every claim, and hand the learner a portable credential they own.
 
-Between and inside the stations are **rework loops** (repair, deload, re-explore, delayed re-check) and **line-stop interlocks** (the safety and rights system). A unit that fails a gate is routed to rework; it is **never scrapped** (§9).
+Between and inside the stations are **rework loops** (repair, deload, re-explore, delayed re-check) and **line-stop interlocks** (the safety and rights system). A unit that fails a gate is routed to rework; it is **never abandoned** (§9).
 
 ---
 
@@ -74,7 +74,7 @@ This document, its credentials, and its metrics never claim that the line *cause
 
 ```mermaid
 flowchart TB
-    FS["FEEDSTOCK<br/>families with a child age 6–14<br/>(primary 6–8) · §5"]
+    FS["INTAKE<br/>families with a child age 6–14<br/>(primary 6–8) · §5"]
 
     subgraph S1["STATION 1 — SELECTION / FILTERING · §6"]
         A1["Admissions front door<br/>CogAT · Track A/B<br/>(admissions team)"]
@@ -104,7 +104,7 @@ flowchart TB
     REWORK["REWORK LOOPS · §9<br/>persistence protocol · deload · park/reopen · delayed re-check"]
     STOP["LINE-STOP INTERLOCKS · §4.3<br/>safeguarding · dose limiter · consent/assent · GOVERNANCE G1–G8"]
 
-    S2 -. "fail gate → route to rework (never scrap)" .- REWORK
+    S2 -. "fail gate → route to rework (never abandon)" .- REWORK
     REWORK -. "re-enter line" .- S2
     STOP -. "halts any station" .- S1
     STOP -. "halts any station" .- S2
@@ -120,7 +120,7 @@ flowchart TB
     class FS fs;
 ```
 
-**Reading the line.** Feedstock (a family with an eligible child) enters Station 1, filtered on cognitive floor and — the higher-leverage filter — family fidelity. Selected units enter Station 2, the production core: not a conveyor but a **long-running loop** of up to eight years, two parallel lines (academic mastery and passion/build) feeding each other, worked in homogeneous near-peer batches. Units that fail an in-line gate route to a rework loop, get repaired, and re-enter. Station 3 is final QC and shipping: it tests the age-14 output tolerances against independent evidence, provenances the whole build, exposes the work through controlled rings, and ships a credential the learner owns. Overlaying everything is the plant safety system, whose interlocks halt any station regardless of throughput.
+**Reading the line.** An enrolled family (with an eligible child) enters Station 1, filtered on cognitive floor and — the higher-leverage filter — family fidelity. Selected units enter Station 2, the production core: not a conveyor but a **long-running loop** of up to eight years, two parallel lines (academic mastery and passion/build) feeding each other, worked in homogeneous near-peer batches. Units that fail an in-line gate route to a rework loop, get repaired, and re-enter. Station 3 is final QC and shipping: it tests the age-14 output tolerances against independent evidence, provenances the whole build, exposes the work through controlled rings, and ships a credential the learner owns. Overlaying everything is the plant safety system, whose interlocks halt any station regardless of throughput.
 
 ---
 
@@ -142,7 +142,7 @@ The rights and safety rules are the plant's **interlocks**. Any one of them halt
 
 - **Child assent and veto** over identity-linked specialization and public exposure; refusal of optional sensors, display, or a project never lowers standing (`GOVERNANCE.md` G3 §8.2).
 - **Safeguarding override** — bullying, distress, injury, abuse concern, sleep loss, or acute risk bypasses every optimization and every rework timer and triggers immediate deload (`GOVERNANCE.md` G4; `PRD.md` §14.8).
-- **No scrap** — no automated rejection, no automated exit, no irrevocable contract; humane routing with real alternatives is always offered (§9; `GOVERNANCE.md` G3 §8.4).
+- **No abandonment** — no automated rejection, no automated exit, no irrevocable contract; humane routing with real alternatives is always offered (§9; `GOVERNANCE.md` G3 §8.4).
 - **No surveillance** — no ambient home audio, video, biometric, location, or behavioral sensing, ever; sensitive-signal work is school-only, separately consented, shadow-only, and never a selection input (`GOVERNANCE.md` G5, G7; `PRD.md` §10.2).
 - **Human authority** over admission, intensity, specialization, safeguarding, discipline, public release, and route transitions (`GOVERNANCE.md` G2, G3).
 - **Strict human review before any child-facing exposure** of any surface, content, model behavior, or release — mandatory regardless of build velocity (`PRD.md` §25).
@@ -155,11 +155,11 @@ The line is engineered for a rated throughput of **100,000 enrolled learners** w
 
 ### 4.5 The unit of production is the family, not the child
 
-The most important design consequence of SPOV 1: the line does not process an isolated child but a **household running an environment**. Selection screens the family (§6.3); development supplies a feasible operating plan and recovers it from disruption (§7.7); the family holds veto and consent throughout. A merely able child in a fanatical, supported home outperforms a gifted child in a lukewarm one — so the family is the feedstock the line is actually tuned around.
+The most important design consequence of SPOV 1: the line does not process an isolated child but a **household running an environment**. Selection screens the family (§6.3); development supplies a feasible operating plan and recovers it from disruption (§7.7); the family holds veto and consent throughout. A merely able child in a fanatical, supported home outperforms a gifted child in a lukewarm one — so the family is what the line is actually tuned around.
 
 ---
 
-## 5. Feedstock & intake
+## 5. Intake
 
 **What enters the line.** A family with a child aged 6 to 14 who has cleared the admissions front door. The line is tuned for maximum runway, so **primary intake is ages 6 to 8**; since the program ends at age 14, a unit entering at 12 or 13 has a compressed runway and is placed on an **individualized target horizon** rather than the full age-14 tolerance (§9.3; `PRD.md` §2.5).
 
@@ -171,7 +171,7 @@ The most important design consequence of SPOV 1: the line does not process an is
 
 ## 6. Station 1 — Selection / Filtering
 
-**Purpose.** Admit feedstock that can run the eight-year dose, and route everyone else humanely. Two things are filtered: a cognitive floor (necessary) and family fidelity (the higher-leverage filter). Neither is a statement about a child's worth.
+**Purpose.** Admit families who can run the eight-year dose, and route everyone else humanely. Two things are filtered: a cognitive floor (necessary) and family fidelity (the higher-leverage filter). Neither is a statement about a child's worth.
 
 **Ownership (marked, per design).** The admission *decision* is owned and built by a **separate admissions team**; the Cognitive Floor Engine, the compensated family trial, and the family-execution signal are **this platform's**, and run as post-eligibility onboarding — they inform placement and support, they do **not** gate admission (`PRD.md` §3.4). The stage is described end-to-end for coherence, with the ownership boundary marked at each sub-station.
 
@@ -187,7 +187,7 @@ This is the **cognitive tolerance band** (SPOV 2). The Cognitive Floor Engine es
 
 - **Tolerance.** The brainlift's hypothesized floor sits near an IQ-equivalent **120–125** — deliberately about a full standard deviation below the 130–145 line gifted programs draw, on the thesis that a totalizing home plus over-drilled retrieval converts that headroom into elite output (SPOV 2). The psychometric board must **validate, remap, raise, or reject** that band against licensed instruments and a representative sample before it governs anything (`PRD.md` §33.1).
 - **Gate output (advisory only).** `CLEAR` (evidence clears the boundary at the required confidence), `INCONCLUSIVE` (needs a parallel form, delayed check, or review), or `BELOW_THRESHOLD` (below boundary after verification). Confidence bands: `CLEAR` at `P(g ≥ floor) ≥ .95`, `BELOW_THRESHOLD` at `≤ .05`, else `INCONCLUSIVE`.
-- **No-scrap rule at this gate.** `BELOW_THRESHOLD` carries **no deficiency claim and is never an admission, rejection, or exit**. Its only effect is to trigger added placement support, scaffolding, and diagnostics for an already-admitted learner. The floor never becomes a public IQ label, and tail estimates stay construct-specific distributions.
+- **No-abandonment rule at this gate.** `BELOW_THRESHOLD` carries **no deficiency claim and is never an admission, rejection, or exit**. Its only effect is to trigger added placement support, scaffolding, and diagnostics for an already-admitted learner. The floor never becomes a public IQ label, and tail estimates stay construct-specific distributions.
 
 ### 6.3 Sub-station 1c — Family selection *(platform, `PRD.md` §10)*
 
@@ -260,7 +260,7 @@ Every mechanic reinforces the mechanism:
 **Interlocks on the reward layer** (the game can never override the safety system):
 
 - Every machine-generated pressure mechanic (deadlines, rivalry callouts, nudges) still spends a `MotivationDoseToken` under the §7.6 caps; a passively-visible standing the child opted into does not draw the budget, and turning it off never lowers standing.
-- No fixed-ability caste ranks and no standing derived from a protected attribute; opt-out is always penalty-free (§4.4).
+- No fixed-ability caste ranks and no standing derived from a protected attribute; cross-cohort standings are near-peer-band, anonymized, show no bottom-rank position, and are opt-in (default off); turning a standing off is always penalty-free (§4.4, `PRD.md` §15).
 - Extrinsic rewards can undermine intrinsic motivation when experienced as controlling (Deci, Koestner & Ryan, 1999), so the reward is bound to competence/mastery signals, metered by dose tokens, and gated by a monitored per-pod **belonging** index that auto-reverts a mechanic if it depresses belonging.
 
 ### 7.6 In-line safety interlocks *(the dose limiter)*
@@ -319,9 +319,9 @@ The shipped unit is a **learner-owned, standards-based credential** (1EdTech CAS
 
 ---
 
-## 9. Rework, the no-scrap policy & yield
+## 9. Rework, the no-abandonment commitment & yield
 
-The defining ethic of this line: **it reworks; it does not scrap.** No child is a defective unit. Every failure to pass a gate routes to a repair loop or a humane alternative, never to disposal.
+The defining ethic of this line: **it repairs and re-routes; it never abandons a child.** A child who does not pass a gate enters a repair loop or, if the program is no longer the right fit, moves to a humane alternative — never an automated exit, never framed as a defect in the child.
 
 ### 9.1 The rework loops (recirculation is designed, not exceptional)
 
@@ -335,15 +335,15 @@ The defining ethic of this line: **it reworks; it does not scrap.** No child is 
 
 One change at a time keeps rework evidence interpretable — standard practice for diagnosing a production line, applied to a child with the child's account recorded *first*.
 
-### 9.2 No-scrap policy
+### 9.2 No-abandonment commitment
 
 - **No automated rejection or exit** anywhere on the line; **no irrevocable contract**; **no home surveillance** (`GOVERNANCE.md` G1, G3 §8.4).
 - A non-select at Station 1 or a park/withdraw in Station 2 yields a **humane transition record and real route recommendations** to alternative excellent schooling.
-- The program deliberately **calibrates to the students who thrive at full intensity and routes the rest to ordinary excellent schooling** (`gtBrainlift.md` DOK 3) — but "routes," never "discards," and the routing is human-owned with alternatives.
+- The program holds intensity at the level its full-runway learners thrive under rather than diluting it (`gtBrainlift.md` DOK 3). For a child that intensity does not suit, the humane response is a different setting, not a lower standard imposed on everyone: with the family and the learner-plan panel, the child transitions to a reduced-intensity plan, a partner program, or other excellent schooling, keeping earned credentials and project work (`GOVERNANCE.md` §8.4). Leaving the line is never an automated decision and never a statement that the child fell short.
 
 ### 9.3 Yield
 
-- Yield is **measured, not guaranteed** (§2.3). The line reports coverage and uncertainty, never a promised future score.
+- Yield is **measured, not guaranteed** (§2.3), and it is measured **on an intent-to-treat basis: the denominator is every child ever enrolled, not only those still on the line at 14.** A child who transitions to other schooling before age 14 is counted as not having reached the age-14 tolerance and is never dropped from the count. A per-protocol figure (learners still active at 14) may be shown only alongside the intent-to-treat figure, never instead of it, so selection and attrition stay visible (`PRD.md` §2.6). The line reports coverage and uncertainty against this denominator, never a promised future score.
 - **Late entrants** (compressed runway) are placed on an **individualized target horizon** agreed with the learner and the learner-plan panel; not reaching the full age-14 tolerance in reduced time is expected by design and is never treated as a failure of the child (`PRD.md` §2.5).
 
 ---
@@ -401,7 +401,7 @@ The line is run to **tolerances**: every throughput metric is paired with a guar
 | S2 Mastery gate | 90% independent unlock; calibration | False-lockout gap ≤ 5 pts; DIF gap ≤ 10 pts | Freeze the gate |
 | S2 Tutor integrity | Leakage < 1% / 10k adversarial convos | Help always available; accessibility exempt | Block & restore |
 | S2 Dose limiter | ≤ 2 pressure tokens/day; 10-hr rest | Veto + emergency deload revoke tokens | Revoke, restore help, notify guide |
-| S2 Rivalry | Gain-based, sprint-reset standings | Per-pod belonging in band; opt-out honored | Auto-revert to private |
+| S2 Rivalry | Gain-based, sprint-reset, near-peer-band, anonymized, opt-in standings | Per-pod belonging in band; turn-off honored | Auto-revert to private |
 | S3 EvidenceGraph | 99.99% attestation durability; ≥95% reproduce | External inclusion proofs; crypto-shred verified | Block credential issuance |
 | Plant | ≥ 99.9% availability; p95 command < 300 ms | 99% safeguarding alerts ack ≤ 15 min | Hold enrollment (wave gate) |
 
@@ -420,7 +420,7 @@ The line is commissioned in four months (`PRD.md` §32); the roadmap plans aroun
 | **Month 3** | Final assembly + finish | Phase-1 in-house Academic Mastery OS + fairness audit, Reality Gateway rings, credentials/Passport, GT-Twin, ops/governance console — **feature-complete release candidate** |
 | **Month 4** | **Factory acceptance test** | Integrated testing, accessibility/legal/psychometric/privacy/security review, chaos/DR, 100k-learner load, and a gated beta at 1,000 / 2,500 / 5,000 **synthetic** learners |
 
-**Critical commissioning rule.** The Month 4 beta runs on **synthetic, simulated learners, not live children** — a factory acceptance test exercising the full operational, safeguarding, consent, and support machinery end-to-end. Live feedstock is out of scope here and gated behind the admissions pipeline going live plus privacy/legal sign-off (`PRD.md` §32.4). Wave promotion is a release decision: any sentinel event, failed threshold, or unresolved blocker **pauses promotion**; the line cannot waive a gate to hit a number by a date.
+**Critical commissioning rule.** The Month 4 beta runs on **synthetic, simulated learners, not live children** — a factory acceptance test exercising the full operational, safeguarding, consent, and support machinery end-to-end. Live enrollment is out of scope here and gated behind the admissions pipeline going live plus privacy/legal sign-off (`PRD.md` §32.4). Wave promotion is a release decision: any sentinel event, failed threshold, or unresolved blocker **pauses promotion**; the line cannot waive a gate to hit a number by a date.
 
 ---
 
@@ -460,15 +460,15 @@ Condensed from `PRD.md` §34.
 
 | Factory term (this doc) | Program term / spec |
 |---|---|
-| Feedstock / intake | Enrolled family + child; enrollment handoff (`PRD.md` §3.5, §5) |
+| Intake | Enrolled family + child; enrollment handoff (`PRD.md` §3.5, §5) |
 | Station 1 / filtering | Selection: admissions front door + Cognitive Floor + family trial (`PRD.md` §3.4, §10, §11) |
 | Station 2 / production core | Development: Academic Mastery OS, Passion/Specialization, Cohorts, Foundry, Mentor Mesh (`PRD.md` §12–§18) |
 | Station 3 / QC & shipping | Readiness: age-14 tolerance, EvidenceGraph, Reality Gateway, Passport (`PRD.md` §2.5, §19–§21) |
 | QC gate / station tolerance | Mastery gate, floor boundary, Release Threshold Registry (`PRD.md` §12, §11, §33.1) |
 | Rework loop / recirculation | Persistence protocol, park/reopen, delayed re-check, retrieval schedule (`PRD.md` §12, §14.8) |
 | Line-stop interlock | Safeguarding override, dose limiter, assent/consent, GOVERNANCE G1–G8 |
-| No-scrap policy | No automated rejection/exit, humane routing, individualized horizon (`PRD.md` §2.5, §10; `GOVERNANCE.md` G3 §8.4) |
-| Yield | Measured leading indicators + age-14 outcome; never a guarantee (`PRD.md` §2.5, §33) |
+| No-abandonment commitment | No automated rejection/exit, humane routing, individualized horizon (`PRD.md` §2.5, §10; `GOVERNANCE.md` G3 §8.4) |
+| Yield | Measured leading indicators + age-14 outcome on an intent-to-treat denominator (all children ever enrolled, routed-out counted as non-attainment); never a guarantee (`PRD.md` §2.5, §2.6, §33) |
 | Rated throughput | 100,000-learner scale target (`PRD.md` §22, §30) |
 | Plant systems / MES | Control plane, model plane, data plane, event spine (`PRD.md` §25–§30) |
 | Machines / instruments / digital twin | Deterministic services / ML models / GT-Twin + Self-Play Gym (§10; `PRD.md` §25, §26, §31) |
