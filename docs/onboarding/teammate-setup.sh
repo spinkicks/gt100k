@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # GT100K onboarding — sets up the same integrated factory the operator runs
-# (Claude Code + Codex, 3 MCPs, context hygiene, loop harness). Works on macOS or
-# Linux/WSL. Give it to your Claude Code agent ("run this step by step, stop if
+# (Claude Code + Codex, 3 MCPs, context hygiene, loop harness). Targets macOS.
+# Give it to your Claude Code agent ("run this step by step, stop if
 # anything errors") or run it yourself:  bash docs/onboarding/teammate-setup.sh
 #
 # SECRETS YOU PROVIDE (never commit):
@@ -9,25 +9,14 @@
 #   - Your OWN GitHub login (gh auth login)
 set -uo pipefail
 
-case "$(uname -s)" in
-  Darwin) OS=mac ;;
-  Linux)  OS=linux ;;
-  *)      OS=other ;;
-esac
-echo "== detected OS: $OS =="
+# Targets macOS. (The operator runs the Slack bridge on WSL; you don't need it —
+# you're in the shared Slack. Everything below runs natively on macOS.)
+[ "$(uname -s)" = "Darwin" ] || echo "NOTE: this script targets macOS; on other OSes install node/gh/git/uv yourself, then run steps 2-9."
 
-echo "== 1/9 base tools (node, gh, git, uv) =="
-if [ "$OS" = mac ]; then
-  command -v brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || true)"
-  brew install node gh git
-elif [ "$OS" = linux ]; then
-  sudo apt-get update -y && sudo apt-get install -y git curl
-  command -v gh >/dev/null || { curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg 2>/dev/null; \
-    echo "deb [signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null; \
-    sudo apt-get update -y && sudo apt-get install -y gh; }
-  command -v node >/dev/null || { curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash; export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh"; nvm install --lts; }
-fi
+echo "== 1/9 base tools (node, gh, git, uv) — Homebrew =="
+command -v brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || true)"
+brew install node gh git
 command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
 export PATH="$HOME/.local/bin:$PATH"
 

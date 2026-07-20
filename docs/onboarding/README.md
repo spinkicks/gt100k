@@ -5,13 +5,17 @@ same MCPs, same context-hygiene, same review gate, same branch/PR/CI rules. The
 goal is one shared pipeline — your work and the operator's flow through the same
 gates, so we stay tightly integrated.
 
-## 0. Platform
-- The **loop harness + review pipeline** are plain `bash` + `node` + `gh` +
-  `codex`/`claude` — they run on macOS or Linux/WSL.
-- The **Slack bridge / decision escalation** is a WSL + systemd daemon the
-  **operator hosts**. You do **not** run your own — you're in the shared Slack
-  workspace, get pinged there, and coordinate through GitHub PRs + Slack.
-- On Windows, work inside **WSL2 (Ubuntu)** to match the operator exactly.
+## 0. Platform — you're on macOS
+- You run everything on **macOS**. The **loop harness + review pipeline** are plain
+  `bash` + `node` + `gh` + `codex`/`claude` and run natively on macOS.
+- The **Slack bridge / decision escalation** is a WSL + systemd daemon the **operator
+  hosts** — you do **not** run your own. You're in the shared Slack workspace, get
+  pinged there, and coordinate through GitHub PRs + Slack.
+- **How we divide work:** split each effort into independent slices — one for you, one
+  for the operator — and each works their slice on `dev/<lane>/<slug>` branches → PRs →
+  CI → squash-merge into the same repos. Split by module/area so you don't edit the same
+  files (that's what keeps merges clean). Same models, MCPs, hygiene, and review gate on
+  both machines, so the two halves fit together.
 
 ## 1. Fastest path
 Hand `teammate-setup.sh` to your Claude Code agent:
