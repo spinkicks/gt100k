@@ -27,7 +27,7 @@ echo "== 3/9 Codex CLI (the loop's default agent) =="
 command -v codex >/dev/null || npm install -g @openai/codex || true
 
 echo "== 4/9 TrueFoundry auth (BOTH agents) =="
-echo "ACTION REQUIRED:"
+echo "AGENT: STOP HERE — ask the operator for their OWN TrueFoundry token; never guess. ACTION REQUIRED:"
 echo "  Claude — put YOUR token in ~/.claude/settings.json under env:"
 echo '    "ANTHROPIC_BASE_URL": "https://tfy.promptlens.trilogy.com",'
 echo '    "ANTHROPIC_AUTH_TOKEN": "<YOUR_OWN_TFY_TOKEN>"'
@@ -38,6 +38,7 @@ echo '    export TFY_API_KEY=<YOUR_OWN_TFY_TOKEN>'
 echo "  Verify:  claude -p 'pong'   and   codex --version"
 
 echo "== 5/9 GitHub auth =="
+echo "AGENT: if not already authed, this is interactive — hand control to the operator to log in."
 gh auth status 2>/dev/null || gh auth login
 
 echo "== 6/9 superpowers plugin (run inside Claude Code) =="
