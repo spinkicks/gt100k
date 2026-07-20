@@ -2,6 +2,8 @@
 
 **Goal:** engineer MIT-level readiness (SAT 1570+, and 5s on AP Calculus BC, Physics C, and English Literature) by the end of 8th grade, for an enrolled population of 100,000 students.
 
+**One line summary:** The most important factor for achieving excellence/giftedness/MIT-level preparation is the environment you learn in (family/peers/immersion).
+
 **Thesis.** I think better pedagogy is a solved problem and a dead end as a lever. Direct Instruction, worked examples, mastery gating, and step-based tutoring all work, they replicate, and any competent team can build them. Tuning teaching method now is polishing something already finished. The constraints that still bind are dose, environment totality, peer composition, and raw cognitive ceiling. I found that each one is manipulable, and each one is forbidden to touch at the intensity elite results demand. Nobody wants to say why out loud. The program I am laying out says it and does it.
 
 I picked the five positions below against one filter: each is false to current consensus, and each is true anyway. Where a claim was only edgy, or only true, I cut it.
