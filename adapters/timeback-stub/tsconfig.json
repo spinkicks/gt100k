@@ -4,5 +4,6 @@
     "rootDir": ".",
     "outDir": "dist"
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"]
+  "references": [{ "path": "../../packages/learning-loop" }],
+  "include": ["src/**/*.ts"]
 }

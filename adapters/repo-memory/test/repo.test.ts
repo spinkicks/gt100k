@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { STANDARD_CONFIG, applyFocusedTime, newDay } from "@gt100k/learning-loop";
+import { describe, expect, it } from "vitest";
 import { InMemoryDailyProgressRepository } from "../src/index";
 
 describe("InMemoryDailyProgressRepository", () => {

@@ -58,7 +58,12 @@ export function makeConfig(
       if (override !== undefined) floors[section] = override;
     }
   }
-  const config: LoopConfig = { cohort, dailyGoalXp, sectionGoalXp: { ...sectionGoalXp }, sectionFloorXp: floors };
+  const config: LoopConfig = {
+    cohort,
+    dailyGoalXp,
+    sectionGoalXp: { ...sectionGoalXp },
+    sectionFloorXp: floors,
+  };
   validateConfig(config);
   return config;
 }

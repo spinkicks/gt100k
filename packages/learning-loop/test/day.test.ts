@@ -1,15 +1,14 @@
 import { describe, expect, it } from "vitest";
-import {
-  GT_CONFIG,
-  STANDARD_CONFIG,
-  applyFocusedTime,
-  newDay,
-  rollToDay,
-} from "../src/index";
+import { GT_CONFIG, STANDARD_CONFIG, applyFocusedTime, newDay, rollToDay } from "../src/index";
 import type { DailyProgress, FocusedLearningRecord, Section } from "../src/index";
 
 let seq = 0;
-function add(progress: DailyProgress, section: Section, minutes: number, at = "2026-07-20T11:00:00Z"): DailyProgress {
+function add(
+  progress: DailyProgress,
+  section: Section,
+  minutes: number,
+  at = "2026-07-20T11:00:00Z",
+): DailyProgress {
   const record: FocusedLearningRecord = {
     id: `d${seq++}`,
     learnerRef: progress.learnerRef,
