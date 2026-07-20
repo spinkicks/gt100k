@@ -5,9 +5,16 @@
   "packageManager": "pnpm@9.15.9",
   "scripts": {
     "test": "vitest run",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "lint": "biome check packages adapters apps",
+    "lint:fix": "biome check --write packages adapters apps",
+    "demo": "pnpm --filter @gt100k/timeback-stub demo",
+    "build": "pnpm --filter @gt100k/student-compass build"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
     "typescript": "^5.6.3",
     "vitest": "^2.1.8"
   }

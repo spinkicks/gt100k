@@ -1,5 +1,5 @@
 {
-  "name": "@gt100k/learning-loop",
+  "name": "@gt100k/timeback-stub",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,6 +9,9 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run"
+    "demo": "tsx src/demo.ts"
+  },
+  "dependencies": {
+    "@gt100k/learning-loop": "workspace:*"
   }
 }

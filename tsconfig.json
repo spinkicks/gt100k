@@ -2,6 +2,7 @@
   "files": [],
   "references": [
     { "path": "packages/learning-loop" },
-    { "path": "adapters/repo-memory" }
+    { "path": "adapters/repo-memory" },
+    { "path": "adapters/timeback-stub" }
   ]
 }
