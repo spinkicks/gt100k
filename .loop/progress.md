@@ -69,3 +69,15 @@
 
 - T005 — Add `packages/cohort-compiler/test/candidates.test.ts` for the exact Fixture A candidate sets, exclusions, ordering, pinned FNV-1a hash, determinism, and absence of caste/full-field ranking fields.
 - Acceptance: the focused contract fails first because `src/candidates.ts` is absent, then the paired minimal T008 implementation makes it pass; exact Fixture A outputs and SC-001 are asserted, and the repository typecheck/test/lint gate remains green.
+
+## 2026-07-20 — P1 / T005 + T008
+
+- Added the FR-002/FR-003/FR-004/FR-006 and SC-001 contract suite for `generateCandidates`, covering Fixture A's exact candidate refs/distances, both caliper bounds, self/separation exclusions, the `L5` empty case, deterministic byte output, the independently computed pinned UTF-8 FNV-1a hash, post-sort `k` capping, and the exact rank-free output surface.
+- Implemented pure deterministic candidate generation in `packages/cohort-compiler/src/candidates.ts`: input-order subjects, within-caliper peer filtering, subject-owned separation exclusion, Manhattan-distance/ref ordering, `k` capping, and stable per-subject hashing.
+- TDD status: the focused suite first failed because `src/candidates.ts` was absent, then passed 5/5 after the minimal implementation; a strict TypeScript check scoped to the new module and contract also passes.
+- Gate status: `pnpm typecheck`, `pnpm test` (38/38), and `pnpm lint` pass. P1 remains in progress; SC-001's domain behavior is complete, while its `CandidateIndex` adapter seam and public entrypoint remain for T006/T009/T010. No blocker.
+
+## NEXT
+
+- T006 — Add the in-memory `CandidateIndex` adapter contract in `adapters/cohort-candidates-memory/test/index.test.ts`, then pair it with the minimal T009 adapter implementation to keep the tree green.
+- Acceptance: `candidatesFor` returns the same `CandidateSet` as `generateCandidates` for Fixture A; the HNSW production seam is clearly marked deferred/not implemented; the focused test first fails because the adapter is absent, then passes after T009; repository typecheck/test/lint remain green.
