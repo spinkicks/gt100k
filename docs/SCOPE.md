@@ -1,43 +1,35 @@
 # GT100K — Active build scope (re-scoped 2026-07-21)
 
-After an engineering review, the build focus narrowed to **developing a student's passion**
-(main) and **family selection / admissions** (side). The social/game layer is paused. This
-file is the source of truth for what the software factory works on; `docs/prd/` remains the
-canonical product spec.
+The build focus is **developing a student's passion**. The social/game layer is paused, and
+**admissions / family selection is a separate team's responsibility — out of this platform's build
+scope** (PRD §3.4/§3.5; owners: Tiffany + Aadi; `docs/prd/ADMISSIONS_PRD.md` is *their* PRD, kept here
+only as the enrollment-handoff integration reference). This file is the source of truth for what the
+software factory works on; `docs/prd/` remains the canonical product spec.
 
-**Structure:** the repo is being reorganized into **two products — `passion/` + `admissions/`** —
-per [`RESTRUCTURE-PLAN.md`](RESTRUCTURE-PLAN.md) (executes after the in-flight loop PRs land).
+**Structure:** the repo is being reorganized around the **`passion/`** product (+ `shared/` + `archive/`)
+— see [`RESTRUCTURE-PLAN.md`](RESTRUCTURE-PLAN.md) (executes after the in-flight loop PRs land).
 
-## Main focus — developing a student's passion
-- **002-evidence-graph** — content-addressed provenance of a student's passion work (PRD §19). **Active.**
-- **003-interest-lab** — the Passion / Interest Lab: repeated, varied encounters to find where a
-  child *voluntarily returns*, tracked as mutable interest hypotheses (PRD §14). **Active.**
-- **007-passion-tutor (NEW)** — a Socratic AI that *spontaneously interviews a student about their
-  own passion project* (what it is, why it matters to them, how it works, what's next) to build
-  ownership, metacognition, and evidence. Motivated by the finding that students often can't
-  articulate their own projects. Distinct from the academic answer-blind tutor (PRD §13).
-  **Spec ready:** `specs/007-passion-tutor/spec.md` — Socratic project-interview; loop starting.
+## Focus — developing a student's passion
+- **002-evidence-graph** — content-addressed provenance of a student's passion work (PRD §19). **Active** (chrome declutter in progress).
+- **003-interest-lab** — the Passion / Interest Lab: repeated, varied encounters to find where a child
+  *voluntarily returns*, tracked as mutable interest hypotheses (PRD §14). **Active** (production rebuild in progress).
+- **007-passion-tutor** — a Socratic AI that *spontaneously interviews a student about their own passion
+  project* to build ownership, metacognition, and evidence. Distinct from the academic answer-blind tutor
+  (PRD §13). **Building.**
 
-## Side focus — family selection (admissions)
-- **008-family-selection (NEW)** — choosing which families enter the GT100K program: family
-  application → CogAT routing → Track A/B eligibility → income-banded lottery. Source PRD:
-  `docs/prd/ADMISSIONS_PRD.md`. **Spec ready:** `specs/008-family-selection/spec.md` — full
-  pipeline (application → routing → snapshot → review → lottery); loop starting. Lower priority than passion work.
+## Out of scope — admissions / family selection (separate team)
+The admission + selection pipeline (family application → CogAT routing → Track A/B → Talent Snapshot →
+income-banded lottery) is **owned and built by the admissions team** (`ADMISSIONS_PRD.md`), NOT this
+platform (PRD §3.4/§3.5). Our `008-family-selection` spec + loop were **removed**; the engine the loop had
+built is **parked on the `loop/gt100k-family-selection` branch** if the admissions team ever wants it. We
+integrate only at the enrollment handoff.
 
-## Archived (out of focus — moved to `archive/`, work preserved)
-- **004-arena-game-world** — RPG/quest game-experience layer (PRD §15.3). Spec: `archive/specs/004-arena-game-world/`. No merged code (branch + **PR #62** preserved).
-- **006-cohort-compiler** — cohort solver + RivalryMix + viewer (PRD §15). Spec: `archive/specs/006-cohort-compiler/`; code at `archive/code/` (app + packages + adapters, removed from the pnpm workspace + tsconfig). **PR #66** preserved.
-- **pitch deck** — moved to `archive/pitch/index.html`.
-
-## Being archived (per `docs/RESTRUCTURE-PLAN.md` — neither passion nor admissions)
-- **001-daily-learning-loop** — academic mastery daily loop (`apps/student-compass`; rides on Alpha's TimeBack).
-- **005-foundation-spine** — platform infrastructure spine (revive when infra is back in scope).
+## Archived (out of focus — in `archive/`, work preserved)
+- **004-arena-game-world** — RPG/quest game layer (PRD §15.3). `archive/specs/004…`; PR #62 preserved.
+- **006-cohort-compiler** — cohort solver + RivalryMix + viewer (PRD §15). `archive/specs/006…` + `archive/code/`; PR #66 preserved.
+- **pitch deck** — `archive/pitch/index.html`.
+- **001-daily-learning-loop** + **005-foundation-spine** — neither passion nor admissions; to `archive/` per `RESTRUCTURE-PLAN.md`.
 
 ## Software-factory loop status
-- **Running:** evidence-graph UI (002), interest-lab (003, resumed with the simplicity mandate).
-- **Stopped:** arena (004), cohort (006) — deprioritized.
-- **Starting now:** passion-tutor (007), family-selection (008).
-
-Rationale: engineers endorsed the passion lab and evidence graph, added the passion-project
-Socratic tutor, and liked the family-selection idea from the brainlift; the arena/cohort social
-layer is set aside for now.
+- **Running:** interest-lab production rebuild (003), evidence-explorer declutter (002), passion-tutor (007). (Subwoofer is a separate repo.)
+- **Removed/archived:** family-selection (008) removed (separate team); arena (004) + cohort (006) archived.
