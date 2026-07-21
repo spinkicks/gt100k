@@ -21,7 +21,7 @@
       "**/.next/**",
       "**/node_modules/**",
       "**/*.d.ts",
-      "apps/**/tsconfig.json"
+      "passion/apps/**/tsconfig.json"
     ]
   }
 }

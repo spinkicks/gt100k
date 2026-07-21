@@ -6,10 +6,10 @@
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc -b",
-    "lint": "biome check packages adapters apps",
-    "lint:fix": "biome check --write packages adapters apps",
-    "demo": "pnpm --filter @gt100k/timeback-stub demo",
-    "build": "pnpm --filter @gt100k/student-compass build"
+    "lint": "biome check passion",
+    "lint:fix": "biome check --write passion",
+    "demo": "pnpm --filter @gt100k/evidence-repo-memory demo",
+    "build": "pnpm --filter @gt100k/evidence-explorer --filter @gt100k/interest-lab --filter @gt100k/passion-tutor build"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
