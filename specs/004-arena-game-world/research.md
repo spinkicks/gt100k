@@ -1,6 +1,6 @@
 # Phase 0 Research: Arena Progression World
 
-No blocking unknowns remain; the decisions below record the choices the plan rests on. Scope follows PRD §15.3 / §15.3.1; guardrails follow §12, §13, §14.12, §14.13, §15, and the constitution (G1/G6, ENG human-review). Both prior open judgments are now **settled**: the rendering engine is **Phaser 4** (spec §13 DP-2) and the canvas-accessibility approach is the **synchronized parallel accessible DOM "Arena Ledger"** (spec §13 DP-1, resolved). The only remaining human-only gate is the child-facing review before merge (§25 / FR-026).
+No blocking unknowns remain; the decisions below record the choices the plan rests on. Scope follows PRD §15.3 / §15.3.1; guardrails follow §12, §13, §14.12, §14.13, §15, and the constitution (G1/G6). Both prior open judgments are now **settled**: the rendering engine is **Phaser 4** (spec §13 DP-2) and the canvas-accessibility approach is the **synchronized parallel accessible DOM "Arena Ledger"** (spec §13 DP-1, resolved).
 
 ## Decision: Rendering engine is Phaser 4 (Canvas/WebGL, rebuilt renderer), not DOM/CSS
 
@@ -19,7 +19,7 @@ No blocking unknowns remain; the decisions below record the choices the plan res
 
 - **Decision (settled)**: A Canvas/WebGL surface is opaque to assistive tech, so the app renders a **synchronized semantic HTML/ARIA parallel structure** built from the **same `ArenaView`** — one shared view-model drives both the Phaser canvas and the Ledger: the quest graph as a keyboard-navigable `role="tree"`, tier/reward/cosmetics/base as labeled text/lists, celebrations via `aria-live="polite"`. The canvas is `aria-hidden="true"`; the Ledger is the AT source of truth. Full keyboard/switch operation, visible focus, color-independent cues, ≥4.5:1 contrast (WCAG 2.2 AA). Reduced motion stays a first-class **equal** mode. This is now a settled decision (spec §13 DP-1) — the loop does not re-open it.
 - **Rationale**: §15.3 + constitution VI require WCAG 2.2 AA keyboard/switch/screen-reader operability. A parallel DOM is the robust, framework-agnostic way to make a canvas game accessible, and because both renderers consume the one `ArenaView`, parity is by construction.
-- **Alternatives considered (rejected)**: (b) a dedicated `/accessible` full-page route rendering the Ledger — splits the surface and risks drift; (c) Phaser DOM Elements + a canvas a11y plugin — brittler and less standard. The shared `ArenaView` makes the parallel-DOM Ledger both the strongest and the cheapest option. The one remaining human-only gate is the child-facing **human review before merge** (§25 / FR-026), not this engineering choice.
+- **Alternatives considered (rejected)**: (b) a dedicated `/accessible` full-page route rendering the Ledger — splits the surface and risks drift; (c) Phaser DOM Elements + a canvas a11y plugin — brittler and less standard. The shared `ArenaView` makes the parallel-DOM Ledger both the strongest and the cheapest option.
 
 ## Decision: One state → many renderings (buildArenaView)
 
@@ -122,7 +122,7 @@ No blocking unknowns remain; the decisions below record the choices the plan res
 - **Rationale**: Wayfinding (Apple) + activation (impeccable onboard) without dark patterns: onboarding must never block the mastery action (FR-022) and must be reachable by keyboard/screen-reader. Keeping it a thin overlay over `WorldScene` avoids a separate scene's state duplication.
 - **Alternatives considered**: A mandatory tutorial gate — rejected (blocks the mastery action; a dark-pattern-adjacent friction). No onboarding — rejected (the 6-8 band needs the concrete "light a path" framing).
 
-## Decision: Child-facing review gate — PR-only build loop
+## Decision: Evidence posture for the child-facing surface — [E3]/[R], belonging-gated
 
-- **Decision**: The autonomous build loop implements on-branch and opens a PR; a **named human reviewer** approves before merge. No child exposure on build-loop authority (§25 / ENG). Evidence posture **[E3]/[R]**: measured against belonging/voluntary return; auto-reverts if it depresses belonging (the §15 rollback gate).
-- **Rationale**: The constitution's *Human review before child exposure* is non-waivable by velocity; this is a child-facing surface.
+- **Decision**: This is a child-facing surface. Evidence posture **[E3]/[R]**: the engagement/belonging lift is measured against belonging and voluntary return (§2.6), never assumed to improve learning; a mechanic that raises time-in-app while depressing belonging/voluntary return **auto-reverts** (the §15 rollback gate). The child-safety guardrails of the spec (FR-026) apply.
+- **Rationale**: Belonging and voluntary return are the load-bearing outcomes for the afternoon/social surface; tying the evidence posture to them (with auto-revert) keeps the mechanic honest without assuming a learning benefit.

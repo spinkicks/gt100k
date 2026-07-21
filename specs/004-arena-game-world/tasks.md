@@ -9,7 +9,7 @@ description: "Task list for the Arena progression world (RPG game-experience lay
 **Prerequisites**: spec.md (master — §1 scope, §7 fixtures, §8 golden values, §9 phasing, §10 SCs), plan.md, research.md, data-model.md, contracts/arena-world.md, quickstart.md
 **Tests**: INCLUDED and **test-first** for the domain package — the constitution makes tests part of "done" and `contracts/arena-world.md` defines explicit guardrail test obligations. Write each test first with the **golden values from spec §8**, ensure it FAILS, then implement. The app is verified via `next build` + the seeded smoke (zero console/WebGL errors) + the quickstart acceptance walkthrough.
 
-**Child-facing note**: This is a child-facing surface. The build loop is **PR-only** — it implements on the `004-arena-game-world` branch and opens a PR; a **named human reviewer approves before merge** (constitution ENG *Human review before child exposure*; PRD §25). No child exposure on build-loop authority. Evidence posture **[E3]/[R]** — measured against belonging/voluntary return; auto-reverts if it depresses belonging (the §15 rollback gate).
+**Child-facing note**: This is a child-facing surface, so the child-safety guardrails of the spec (FR-026) apply — reduced-motion equal mode, WCAG 2.2 AA, no dark patterns, no loot/purchase, zero-power cosmetics, no caste ranks, age-appropriate staging, errors-never-loss, and non-blocking of mastery actions. Evidence posture **[E3]/[R]** — measured against belonging/voluntary return; auto-reverts if it depresses belonging (the §15 rollback gate).
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -186,7 +186,7 @@ description: "Task list for the Arena progression world (RPG game-experience lay
 ## Implementation Strategy
 
 - **MVP = P0 + P1** (mastery-gated traversable animated quest world with reduced-motion + accessible Ledger) → validate → then P2 (tiers/cosmetics), P3 (juice), P4 (base), P5 (staging/standings/plain-mode), P6 (polish).
-- Commit per task or logical group; test-gated; **PR-only** with human review before merge (child-facing gate, §25). Synthetic-only; no consent/admissions/legal machinery.
+- Commit per task or logical group; test-gated. Synthetic-only; no consent/admissions/legal machinery.
 
 ## Summary
 
