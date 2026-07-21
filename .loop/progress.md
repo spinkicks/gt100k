@@ -502,3 +502,15 @@
 ## NEXT
 - Complete U019: implement `QuestLedger`, `QuestCard`, `Board2D`, and `QuestTray` from the existing `ProbePickerView` under `apps/interest-lab/app/child/`.
 - Acceptance: every quest is an accessible keyboard-operable card button with visible focus, hue plus icon/text cues, provenance/why/help copy, hover/press feedback, and an interruptible pick spring into the tray; reduced motion uses an equal crossfade with no state loss; focused tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and the Interest Lab production build remain green.
+
+## 2026-07-21 — P9 / U019
+- Added five app contracts for ordered domain constellations, semantic pressed card-buttons, accessible names, hue/glyph/cue/help rendering, idempotent pick state, reversible tray items, and the exact entrance/hover/press/pick/reduced-motion tokens.
+- Confirmed the genuine test-first red state: the focused suite failed to resolve all four absent child component modules, then passed after the minimal implementation.
+- Implemented `QuestLedger`, `Board2D`, `QuestCard`, and `QuestTray` from the existing `ProbePickerView`: the ledger owns focus and pick state, cards retain visible icon+text cues and native help disclosure, and the tray mirrors reversible picks without recomputing domain state.
+- Mapped the pinned CSS easing strings into Motion's typed bezier tuples at the app boundary; animated picks use the sole `pickSpring`, while reduced motion uses the exact 150ms linear crossfade and never `scale(0)`.
+- Corrected the only production-build warning (`align-items:end` compatibility) and verified app tests (15), `pnpm typecheck`, `pnpm test` (143 tests across 33 files), `pnpm lint` (116 files), `pnpm --filter @gt100k/interest-lab-app build`, and `pnpm build`; all pass without warnings.
+- Status: U019 complete; P9 remains in progress. SC-UI-01/02/08/09 remain green, and UI-FR-002/002b/003/012/013/015/017 now have their first operable 2D component boundary. No blocker.
+
+## NEXT
+- Complete U020: add `InterestLabClient` with the child view-model state, accessibility flags, age/surface/tier controls, and render the `board-2d` quest ledger from `app/page.tsx`.
+- Acceptance: the page uses the synthetic seed with no external fetch; OS reduced-motion and detected device caps flow into one rebuilt view; age-band and plain/tier controls change presentation only; the child quest ledger is the operable default; focused tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and the Interest Lab production build remain green.

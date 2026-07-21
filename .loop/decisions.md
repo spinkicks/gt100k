@@ -169,3 +169,8 @@
 - Chose: provide all nine pinned work-mode glyph keys plus ten reusable state shapes; titled glyphs expose `role="img"` and an accessible name, while untitled glyphs are decorative and hidden from assistive technology.
 - Why: the spec leaves state-glyph names unspecified but requires icon-plus-text, no emoji, and color-independent cues. A small typed inline-SVG set covers the current quest states and later coverage/lifecycle surfaces without adding an icon dependency or rendering text in graphics.
 - Rejected: emoji vary by platform and violate U018; external icon packages add bundle and naming drift; always announcing SVGs would duplicate adjacent visible text; color-only state markers violate the accessibility contract.
+
+## D035 — A pick is a reversible pressed state mirrored into the tray
+- Chose: keep a picked quest in its ordered board position with `aria-pressed="true"`, mirror it into the tray with the pinned spring/crossfade, and allow return from either the card or tray. Use a native sibling `<details>` disclosure for the always-present "Try a different way" help affordance.
+- Why: the spec does not require a pick to remove its source card. Retaining it preserves keyboard focus, choice context, and immediate reversibility while the animated tray item still communicates the spatial result; native disclosure stays operable without JavaScript-specific focus machinery and cannot create an invalid nested button.
+- Rejected: unmounting the selected card would require fragile focus transfer and hide an eligible choice; drag-to-tray would add an unpinned pointer-only gesture; nesting a help button inside the quest button would be invalid interactive markup.

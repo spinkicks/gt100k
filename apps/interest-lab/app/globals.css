@@ -354,6 +354,221 @@ footer {
   line-height: var(--type-label-line-height);
 }
 
+.quest-ledger {
+  display: grid;
+  gap: 2rem;
+}
+
+.quest-ledger-intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.quest-ledger-intro > p {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+.quest-board,
+.quest-constellation {
+  display: grid;
+  gap: 1rem;
+}
+
+.quest-constellation h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: var(--type-label-size);
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.quest-constellation h3 span {
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 2px solid var(--ink-hi);
+  border-radius: 50%;
+}
+
+.quest-card-list,
+.quest-tray-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quest-card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+}
+
+.quest-card-shell {
+  height: 100%;
+}
+
+.quest-card {
+  display: grid;
+  width: 100%;
+  min-height: var(--touch-target);
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--quest-hue) 58%, var(--line));
+  border-radius: 0.875rem;
+  background: color-mix(in srgb, var(--quest-hue) 13%, var(--night-raised));
+  color: var(--ink-hi);
+  font: inherit;
+  text-align: left;
+  transform-origin: center;
+}
+
+.quest-card[aria-pressed="true"] {
+  border-color: var(--quest-hue);
+  background: color-mix(in srgb, var(--quest-hue) 22%, var(--night-raised));
+}
+
+.quest-card-topline,
+.quest-cues,
+.quest-cue {
+  display: flex;
+  align-items: center;
+}
+
+.quest-card-topline {
+  gap: 0.625rem;
+}
+
+.quest-work-glyph {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--quest-hue);
+  color: var(--night-sunk);
+}
+
+.quest-domain,
+.quest-picked-state,
+.quest-provenance {
+  font-size: var(--type-label-size);
+  font-weight: 600;
+}
+
+.quest-domain {
+  text-transform: capitalize;
+}
+
+.quest-picked-state {
+  margin-left: auto;
+  color: var(--beacon);
+}
+
+.quest-title {
+  font-family: var(--font-display);
+  font-size: var(--type-h2-size);
+  line-height: var(--type-h2-line-height);
+}
+
+.quest-cues {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.quest-cue {
+  gap: 0.3rem;
+  color: var(--ink-muted);
+  font-size: var(--type-label-size);
+}
+
+.quest-provenance {
+  color: var(--spark-hi);
+}
+
+.quest-why {
+  color: var(--ink-muted);
+  font-family: var(--font-reading);
+}
+
+.quest-help {
+  margin: 0.625rem 0 0;
+  color: var(--ink-muted);
+}
+
+.quest-help summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  cursor: pointer;
+  font-size: var(--type-label-size);
+  font-weight: 600;
+}
+
+.quest-help p {
+  margin: 0 0 0.5rem;
+  font-size: var(--type-label-size);
+}
+
+.quest-tray {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.45fr) 1fr;
+  gap: 1.25rem;
+  align-items: center;
+  padding: 1.25rem;
+  border-radius: 0.875rem;
+  background: var(--night-sunk);
+}
+
+.quest-tray-empty {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+.quest-tray-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+}
+
+.quest-tray-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem;
+  border-radius: 0.75rem;
+  background: var(--night-raised);
+}
+
+.quest-tray-list button {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-hi);
+  font: inherit;
+  font-size: var(--type-label-size);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .quest-card,
+  .quest-tray-list button {
+    cursor: pointer;
+  }
+
+  .quest-card:hover {
+    box-shadow: 0 6px 8px rgb(18 11 30 / 34%);
+  }
+}
+
 .plain-mode {
   background: var(--night);
 }
@@ -387,6 +602,12 @@ footer {
 
   .world-preview {
     min-height: 27rem;
+  }
+
+  .quest-ledger-intro,
+  .quest-tray {
+    display: grid;
+    grid-template-columns: 1fr;
   }
 }
 
