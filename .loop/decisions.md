@@ -114,3 +114,8 @@
 - Chose: load the four real adapter entry points through typed, relative file-URL imports in `acceptance.test.ts` while keeping all domain calls on the package's public API.
 - Why: T033 fixes the acceptance-suite location inside the domain package, but the adapters already depend on that package. Runtime loading exercises the real adapters without creating a circular TypeScript project reference or widening the domain package's production dependencies.
 - Rejected: a domain-to-adapter workspace dependency would invert the architecture; static relative imports would pull adapter sources outside the package compiler's `rootDir`; duplicating adapter behavior as test fakes would not satisfy the end-to-end adapter requirement.
+
+## D024 — Adapter-owned demo with a public synthetic event fixture
+- Chose: keep the executable demo in `adapters/interest-probe-catalog`, expose `EVENTS_GOLDEN_V1` from the domain package, and preserve the original `test/fixtures/events.ts` path as a compatibility re-export.
+- Why: the catalog adapter already has the valid dependency direction for composing the golden catalog with domain APIs. One public synthetic event source lets the demo and later UI seed wiring consume the exact same fixture without duplicating data or making the domain depend on an adapter.
+- Rejected: a package-local example importing the catalog adapter would invert the dependency graph; copying the ten events into the adapter would create a second normative fixture; exporting production code directly from a test directory would blur the package boundary.

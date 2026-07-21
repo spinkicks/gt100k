@@ -73,6 +73,7 @@ export type {
   ShadowProvenance,
   TransitionVersions,
 } from "./state-machine";
+export { EVENTS_GOLDEN_V1 } from "./synthetic-fixtures";
 export {
   AUDIENCE_CONDITIONS,
   DIFFICULTY_BANDS,

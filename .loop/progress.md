@@ -300,3 +300,14 @@
 ## NEXT
 - Complete T036: add a deterministic synthetic demo under `adapters/interest-probe-catalog` or `packages/interest-lab` that exercises the public domain API.
 - Acceptance: the demo builds the golden Lab, summarizes `EVENTS_GOLDEN_V1`, and prints the coverage matrix plus a proposed-versus-guide-authored hypothesis transition; preserve a focused red run and keep package/adapter compilation, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-21 — P7 / T036
+- Added a deterministic `@gt100k/interest-probe-catalog` demo script that builds the 20-offer golden Lab, summarizes the exact ten-event G4 stream, and prints G2 coverage plus shadow-proposed versus guide-authored transition views as stable JSON.
+- Added two adapter contracts for the exact Lab, coverage, signal, lifecycle, and printable-output values; confirmed the focused red state on the absent demo module before the implementation made both tests pass.
+- Promoted `EVENTS_GOLDEN_V1` to the domain package's named public API while preserving its original package-local test-fixture import path, avoiding both fixture duplication and a reversed domain-to-adapter dependency.
+- Exercised `pnpm --filter @gt100k/interest-probe-catalog demo` successfully, forced both changed TypeScript projects to compile, and verified `pnpm typecheck`, `pnpm test` (110 tests across 24 files), and `pnpm lint` (76 files) all pass.
+- Status: T036 complete; P7 remains in progress pending the final shared-root reconciliation and verification tasks. All Part-I success criteria remain green. No blocker.
+
+## NEXT
+- Complete T037 as its own reviewable increment: add `packages/interest-lab` and all four `adapters/interest-*` projects to the root `tsconfig.json` references array, the one permitted shared-root edit.
+- Acceptance: `tsc -b` compiles all five feature projects through the root graph, with `pnpm typecheck`, `pnpm test`, and `pnpm lint` green; explicitly preserve the shared-file reconciliation note for the harness.
