@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" color="#4B5C72" fill="none">
+  <title>Confidence low</title>
+  <path d="M3 8.25c3-2.5 6-3.75 9-3.75s6 1.25 9 3.75v7.5c-3 2.5-6 3.75-9 3.75s-6-1.25-9-3.75v-7.5Z" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M5.5 10.25h13M5.5 13.75h13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.8"/>
+</svg>

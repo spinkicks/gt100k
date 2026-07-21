@@ -1,6 +1,5 @@
 # ===== Secrets / env (repo is PUBLIC — never commit) =====
 .env
-.env.local
 .env.*
 !.env.example
 secrets/
@@ -19,7 +18,6 @@ coverage/
 *.tsbuildinfo
 .pnpm-store/
 *.log
-
 # ===== Python =====
 __pycache__/
 *.py[cod]
@@ -29,38 +27,39 @@ venv/
 .mypy_cache/
 .ruff_cache/
 *.egg-info/
-
 # ===== Rust / Go =====
 target/
 /bin/
-
-# ===== Terraform local inputs / state =====
-**/terraform.tfvars
-**/*.tfstate*
-
 # ===== OS / editor =====
 .DS_Store
 Thumbs.db
 *.swp
 .idea/
-
 # ===== Agent/tool LOCAL config (share the rest of .claude/.cursor/.codex) =====
 .claude/settings.local.json
 .cursor/settings.local.json
 .codex/*.local.*
-
 # ===== Setup/planning docs (live in the private vault, not this public repo) =====
 /workflow*.md
 /workflowPlan.md
-
+# loop-harness scratch
+.loop/
+.loop-done
+.loop-stop
+.loop-blocked
+.env
+.env.local
+.env.*
+!.env.example
+secrets/
+/bin/
+# ===== Terraform local inputs / state =====
+**/terraform.tfvars
+**/*.tfstate*
+# ===== OS / editor =====
 # terraform provider binaries / state — never commit
 .terraform/
 **/.terraform/
 *.tfstate
 *.tfstate.*
-
 # loop-harness scratch — never commit
-.loop/
-.loop-done
-.loop-stop
-.loop-blocked

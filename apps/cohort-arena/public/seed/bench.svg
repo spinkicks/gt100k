@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" color="#A78BFA" fill="none">
+  <title>Still compiling</title>
+  <path d="M4 9.25h16v5.5H4v-5.5Z" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M6.5 14.75v4m11-4v4M3 18.75h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="8" cy="6" r="1" fill="currentColor"/>
+  <circle cx="12" cy="5" r="1" fill="currentColor"/>
+  <circle cx="16" cy="6" r="1" fill="currentColor"/>
+</svg>
