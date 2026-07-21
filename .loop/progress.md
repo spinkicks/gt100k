@@ -584,3 +584,16 @@
 ## NEXT
 - Complete U027: implement `Island.tsx`, `QuestMarker.tsx`, and `Motes.tsx` under `apps/interest-lab/app/child/world3d/` from the existing `SceneView` and halo texture.
 - Acceptance: islands use deterministic procedural low-poly geometry, domain hues, tier detail/shadow settings, and pinned idle float; markers render emissive forms plus additive halo sprites with hover/press/pick motion; motes use the quality-tier count and exact §U8.15 color/size/speed/scale; focused RED evidence and app tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.
+
+## 2026-07-21 — P10 / U027
+- Added deterministic full/lite procedural islands from three low-poly primitives, domain hues, tier-owned shadow/detail settings, and drei `Float` motion derived from the exact 6500ms token.
+- Added emissive icosahedron quest markers with caller-shared additive halo textures, pointer-fine hover lift/brightening, immediate 0.97 press feedback, DOM-focus brightness, and an interruptible damped pick hop derived from the reserved spring.
+- Added exact quality-tier ambient motes through drei `Sparkles`, including the pinned warm color, size, speed, scale, and board-tier off state.
+- Confirmed genuine test-first RED evidence on the three absent modules, then a second focused RED for touch/focus motion separation during motion review; all three U027 contracts pass after implementation.
+- Removed per-frame render-model allocation during motion review and corrected the production-only r3f mouse/pointer event typing exposed by `next build`.
+- Verified app tests (32 across 9 files), `pnpm typecheck`, `pnpm test` (159 across 35 files), `pnpm lint` (131 files), `pnpm --filter @gt100k/interest-lab-app build`, and `pnpm build`; all pass.
+- Status: U027 complete; P10 remains in progress. SC-UI-16's procedural scene objects, exact mote tiers, emissive-first glow, and pointer motion boundary are encoded; U028 owns camera motion and U029 owns live scene composition/browser smoke. No blocker.
+
+## NEXT
+- Complete U028: implement `apps/interest-lab/app/child/world3d/CameraRig.tsx` from the existing `SceneView`, `CAMERA3D`, motion tokens, and child staging mode.
+- Acceptance: tests first prove establishing `driftIn`, DOM-focus-driven `islandFocus` easing with reduced-motion cuts, exact pan/zoom/polar/azimuth/damping clamps, orbit only for `focus+orbit`, and the calm 6-8 auto-tour path; focused tests, app tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.
