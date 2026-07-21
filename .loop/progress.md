@@ -153,3 +153,16 @@
 ## NEXT
 - T011: add `packages/arena-world/test/layout.test.ts` for the exact §8.1 2D positions and two-run determinism, then make the minimal T014 layout implementation green in the same test-first increment.
 - Acceptance: all nine node positions match the golden table exactly, bounds remain 2048×2048, two identical inputs produce byte-identical layouts (SC-013), and direct package plus repository gates remain green.
+
+## 2026-07-20 — P1 / T011 + T014
+- Added `layout.test.ts` through the public package API, proving all nine exact §8.1 positions, fixed 2048×2048 bounds, and byte-identical repeated output.
+- Followed red-green TDD: the golden layout assertion failed against the P0 global-index stub for all six nodes outside Numbers Coast, while the determinism assertion passed; both tests passed after the minimal regional-grid implementation landed.
+- Replaced the stub with the specified pure layout formula: stable world-region order selects each 1024-unit 2×2 origin, and a per-region node index selects the 3-column 192-unit slot with a 96-unit offset.
+- Review status: checked T011/T014 line-by-line against spec §§5.2/8.1 and SC-013; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was intentionally not used because this loop prohibits unrequested subagents and all Git commands.
+- Gate status: Biome checked both changed feature files; direct arena-world TypeScript validation passed; focused layout tests passed (2 tests); `pnpm typecheck` passed; `pnpm test` passed (15 files, 48 tests). No app changed, so no Next.js build was required.
+- SC status: SC-013 is complete; the deterministic 3D-transform replay contract in SC-024 remains open for T011a/T014a.
+- Blockers: none.
+
+## NEXT
+- T011a: add `packages/arena-world/test/world-transform.test.ts` for the exact §8.23 3D positions, determinism, and replayability, then make the minimal T014a world-transform implementation green in the same test-first increment.
+- Acceptance: all nine 3D nodes match `WORLD_SCALE`, biome elevation, and `nodeLiftUnits=0.6` exactly; two identical inputs and replayed inputs are byte-identical (FR-042, SC-024); direct package plus repository gates remain green.
