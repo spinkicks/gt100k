@@ -24,36 +24,6 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.1)
 
-  adapters/cohort-benefit-shadow:
-    dependencies:
-      '@gt100k/cohort-compiler':
-        specifier: workspace:*
-        version: link:../../packages/cohort-compiler
-
-  adapters/cohort-candidates-memory:
-    dependencies:
-      '@gt100k/cohort-compiler':
-        specifier: workspace:*
-        version: link:../../packages/cohort-compiler
-
-  adapters/cohort-media-stub:
-    dependencies:
-      '@gt100k/cohort-compiler':
-        specifier: workspace:*
-        version: link:../../packages/cohort-compiler
-
-  adapters/cohort-repo-memory:
-    dependencies:
-      '@gt100k/cohort-compiler':
-        specifier: workspace:*
-        version: link:../../packages/cohort-compiler
-
-  adapters/cohort-safeguarding-memory:
-    dependencies:
-      '@gt100k/cohort-compiler':
-        specifier: workspace:*
-        version: link:../../packages/cohort-compiler
-
   adapters/evidence-deferred: {}
 
   adapters/evidence-hash-node: {}
@@ -61,6 +31,30 @@ importers:
   adapters/evidence-repo-memory: {}
 
   adapters/evidence-verifier-stub: {}
+
+  adapters/interest-artifact-stub:
+    dependencies:
+      '@gt100k/interest-lab':
+        specifier: workspace:*
+        version: link:../../packages/interest-lab
+
+  adapters/interest-assent-stub:
+    dependencies:
+      '@gt100k/interest-lab':
+        specifier: workspace:*
+        version: link:../../packages/interest-lab
+
+  adapters/interest-probe-catalog:
+    dependencies:
+      '@gt100k/interest-lab':
+        specifier: workspace:*
+        version: link:../../packages/interest-lab
+
+  adapters/interest-repo-memory:
+    dependencies:
+      '@gt100k/interest-lab':
+        specifier: workspace:*
+        version: link:../../packages/interest-lab
 
   adapters/repo-memory:
     dependencies:
@@ -73,49 +67,6 @@ importers:
       '@gt100k/learning-loop':
         specifier: workspace:*
         version: link:../../packages/learning-loop
-
-  apps/cohort-arena:
-    dependencies:
-      '@gt100k/cohort-arena-view':
-        specifier: workspace:*
-        version: link:../../packages/cohort-arena-view
-      '@react-three/drei':
-        specifier: ^9.114.0
-        version: 9.122.0(@react-three/fiber@8.18.0(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.169.0))(@types/react@18.3.31)(@types/three@0.169.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.169.0)(use-sync-external-store@1.6.0(react@18.3.1))
-      '@react-three/fiber':
-        specifier: ^8.17.10
-        version: 8.18.0(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.169.0)
-      '@react-three/postprocessing':
-        specifier: ^2.16.3
-        version: 2.19.1(@react-three/fiber@8.18.0(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.169.0))(@types/three@0.169.0)(react@18.3.1)(three@0.169.0)
-      motion:
-        specifier: ^12.42.0
-        version: 12.42.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      next:
-        specifier: ^14.2.15
-        version: 14.2.35(@playwright/test@1.61.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      react:
-        specifier: ^18.3.1
-        version: 18.3.1
-      react-dom:
-        specifier: ^18.3.1
-        version: 18.3.1(react@18.3.1)
-      three:
-        specifier: ^0.169.0
-        version: 0.169.0
-    devDependencies:
-      '@playwright/test':
-        specifier: ^1.61.1
-        version: 1.61.1
-      '@types/react':
-        specifier: ^18.3.12
-        version: 18.3.31
-      '@types/react-dom':
-        specifier: ^18.3.1
-        version: 18.3.7(@types/react@18.3.31)
-      '@types/three':
-        specifier: ^0.169.0
-        version: 0.169.0
 
   apps/evidence-explorer:
     dependencies:
@@ -148,9 +99,58 @@ importers:
         version: 12.42.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next:
         specifier: ^14.2.15
-        version: 14.2.35(@playwright/test@1.61.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       postprocessing:
         specifier: ^6.36.4
+        version: 6.39.3(three@0.169.0)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+      three:
+        specifier: ^0.169.0
+        version: 0.169.0
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.12
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: ^18.3.1
+        version: 18.3.7(@types/react@18.3.31)
+      '@types/three':
+        specifier: ^0.169.0
+        version: 0.169.0
+
+  apps/interest-lab:
+    dependencies:
+      '@gt100k/interest-lab':
+        specifier: workspace:*
+        version: link:../../packages/interest-lab
+      '@gt100k/interest-lab-view':
+        specifier: workspace:*
+        version: link:../../packages/interest-lab-view
+      '@gt100k/interest-probe-catalog':
+        specifier: workspace:*
+        version: link:../../adapters/interest-probe-catalog
+      '@react-three/drei':
+        specifier: ^9.114.0
+        version: 9.122.0(@react-three/fiber@8.18.0(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.169.0))(@types/react@18.3.31)(@types/three@0.169.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.169.0)(use-sync-external-store@1.6.0(react@18.3.1))
+      '@react-three/fiber':
+        specifier: ^8.17.10
+        version: 8.18.0(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.169.0)
+      '@react-three/postprocessing':
+        specifier: ^2.19.1
+        version: 2.19.1(@react-three/fiber@8.18.0(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.169.0))(@types/three@0.169.0)(react@18.3.1)(three@0.169.0)
+      motion:
+        specifier: ^12
+        version: 12.42.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next:
+        specifier: ^14.2.15
+        version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      postprocessing:
+        specifier: ^6.39.3
         version: 6.39.3(three@0.169.0)
       react:
         specifier: ^18.3.1
@@ -182,7 +182,7 @@ importers:
         version: link:../../adapters/timeback-stub
       next:
         specifier: ^14.2.15
-        version: 14.2.35(@playwright/test@1.61.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -196,14 +196,6 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.1
         version: 18.3.7(@types/react@18.3.31)
-
-  packages/cohort-arena-view:
-    dependencies:
-      '@gt100k/cohort-compiler':
-        specifier: workspace:*
-        version: link:../cohort-compiler
-
-  packages/cohort-compiler: {}
 
   packages/evidence-explorer-view:
     dependencies:
@@ -222,6 +214,18 @@ importers:
         version: link:../../adapters/evidence-verifier-stub
 
   packages/evidence-graph: {}
+
+  packages/interest-lab: {}
+
+  packages/interest-lab-view:
+    dependencies:
+      '@gt100k/interest-lab':
+        specifier: workspace:*
+        version: link:../interest-lab
+    devDependencies:
+      '@gt100k/interest-probe-catalog':
+        specifier: workspace:*
+        version: link:../../adapters/interest-probe-catalog
 
   packages/learning-loop: {}
 
@@ -646,11 +650,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@playwright/test@1.61.1':
-    resolution: {integrity: sha512-8nKv6+0RJSL9FE4jYOEGXnPeM/Hg12qZpmqzZjRh3qM0Y7c3z1mrOTfFLids72RDQYVh9WpLEfR5WdpNX4fkig==}
-    engines: {node: '>=18'}
-    hasBin: true
-
   '@react-spring/animated@9.7.5':
     resolution: {integrity: sha512-Tqrwz7pIlsSDITzxoLS3n/v/YCUHQdOIKtOJf4yL6kYVSDTSmVK1LI1Q3M/uu2Sx4X3pIWF3xLUhlsA6SPNTNg==}
     peerDependencies:
@@ -1047,11 +1046,6 @@ packages:
       react-dom:
         optional: true
 
-  fsevents@2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
-    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
-    os: [darwin]
-
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -1188,16 +1182,6 @@ packages:
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
-
-  playwright-core@1.61.1:
-    resolution: {integrity: sha512-h7Qlt6m4REp25qvIdvbDtVmD4LqVXfpRxhORv9L0jzETM05p4fuPJ3dKyuSXQxDSbXnmS79HAgi9589lGSpLkg==}
-    engines: {node: '>=18'}
-    hasBin: true
-
-  playwright@1.61.1:
-    resolution: {integrity: sha512-DWnY5o3YbLWK4GovuAVwpqL+1VwGNdUGrRr++8j8PtQQzvAVZUIMjKQ90fY689sEJZJBbZVw1rXaOKSTitkzPQ==}
-    engines: {node: '>=18'}
-    hasBin: true
 
   postcss@8.4.31:
     resolution: {integrity: sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==}
@@ -1736,10 +1720,6 @@ snapshots:
   '@next/swc-win32-x64-msvc@14.2.33':
     optional: true
 
-  '@playwright/test@1.61.1':
-    dependencies:
-      playwright: 1.61.1
-
   '@react-spring/animated@9.7.5(react@18.3.1)':
     dependencies:
       '@react-spring/shared': 9.7.5(react@18.3.1)
@@ -2153,9 +2133,6 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  fsevents@2.3.2:
-    optional: true
-
   fsevents@2.3.3:
     optional: true
 
@@ -2235,7 +2212,7 @@ snapshots:
 
   nanoid@3.3.16: {}
 
-  next@14.2.35(@playwright/test@1.61.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  next@14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@next/env': 14.2.35
       '@swc/helpers': 0.5.5
@@ -2256,7 +2233,6 @@ snapshots:
       '@next/swc-win32-arm64-msvc': 14.2.33
       '@next/swc-win32-ia32-msvc': 14.2.33
       '@next/swc-win32-x64-msvc': 14.2.33
-      '@playwright/test': 1.61.1
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
@@ -2270,14 +2246,6 @@ snapshots:
   pathval@2.0.1: {}
 
   picocolors@1.1.1: {}
-
-  playwright-core@1.61.1: {}
-
-  playwright@1.61.1:
-    dependencies:
-      playwright-core: 1.61.1
-    optionalDependencies:
-      fsevents: 2.3.2
 
   postcss@8.4.31:
     dependencies:

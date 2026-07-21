@@ -8,6 +8,7 @@
 ## Project
 - **GT100K** — `docs/prd/PRD.md` is the canonical product spec (see `README.md` for the full doc map); `docs/research/` + `docs/proposals/` hold background.
 - **Current stage: active development.** PRD-driven implementation is underway; code ships behind the workflow below. `docs/prd/` remains the canonical spec.
+- **Active scope: see [`docs/SCOPE.md`](docs/SCOPE.md).** Focus is passion development (evidence-graph, interest-lab, passion-tutor) + family selection; the arena/cohort social layer is paused.
 - **New here?** Start with `docs/onboarding/` (`README.md` + `teammate-setup.sh`). It sets up the **same factory the operator runs**: Claude Code (`claude-opus-4-8[1m]`) **+** Codex (`gpt-5.6-sol`), 3 MCPs (context7, aws-knowledge, terraform), context hygiene (auto-compaction ~40%), the loop harness, and the consensus + adversarial-QA review gate. One shared pipeline: everyone's work flows through the same gates below.
 
 ## Branching
