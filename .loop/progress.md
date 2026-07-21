@@ -253,3 +253,16 @@
 
 - T034 — Add `packages/cohort-compiler/README.md` documenting the public API, ports usage, and deferred production directions.
 - Acceptance: the README accurately documents the exported domain functions and five adapter seams; HNSW, CP-SAT, WebRTC/AudioWorklet/LiveKit, peer-effect causal uplift, and PostgreSQL are explicitly marked deferred/not production; synthetic-only and observable-only guardrails remain clear; repository typecheck/test/lint stay green.
+
+## 2026-07-21 — P6 / T034
+
+- Added `packages/cohort-compiler/README.md` with the complete named function surface, all five domain ports and buildable adapter packages, a typed `CandidateIndex` usage example, and the package verification commands.
+- Documented synthetic-only, observable-only, no-caste, hard-constraint, and safeguarding guardrails, plus an explicit deferred/not-production register for HNSW, CP-SAT/branch-and-price, WebRTC/AudioWorklet/LiveKit, peer-effect causal uplift, and PostgreSQL.
+- Added a README contract test so the required API, seam, deferral, and governance wording remains executable documentation.
+- TDD status: the focused suite first failed 4/4 because `README.md` was absent, then passed 4/4 after the documentation was added and its exact deferred-target wording was aligned with the spec.
+- Gate status: `pnpm typecheck`, `pnpm test` (112/112), and `pnpm lint` pass. P6 is in progress; SC-008's adapter/deferred-direction documentation checkpoint is complete. No blocker.
+
+## NEXT
+
+- T035 — Add the end-to-end synthetic demo at `adapters/cohort-repo-memory/src/demo.ts` mirroring `specs/006-cohort-compiler/quickstart.md`.
+- Acceptance: the runnable demo wires a synthetic pool through candidate generation, solve, atomic commit and rollback, in-budget repair, safeguarding bypass, post-lock shadow benefit logging, and RivalryMix analysis without live data or production I/O; focused RED/GREEN coverage and repository typecheck/test/lint remain green.
