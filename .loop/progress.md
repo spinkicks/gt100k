@@ -107,3 +107,16 @@
 
 - T011 — Add `packages/cohort-compiler/test/constraints.test.ts` for `isFeasibleCohort` and the default `benefitOf` formula.
 - Acceptance: the contract rejects each of the seven hard constraints independently; Fixture B4 pins `D1..D4 = 0.775`, `D5 = 0.700`, and `D6 = 0.430`, proves the per-member floor rejects D6 despite a passing mean, and accepts the `0.63` boundary control; Fixture B3 proves injected-map rejection at `0.45` and acceptance at `0.50`; the test first fails against the absent modules, then the paired T040/T019 implementations restore the focused and repository gates.
+
+## 2026-07-20 — P2 / T011 + T040 + T019
+
+- Added the FR-007/FR-008/FR-009 and SC-002 contract suite for all seven hard constraints, including independent age, schedule, safeguarding-separation, mutual-accommodation, caliper, per-member non-harm, and churn-budget failures.
+- Implemented the pure, caliper-independent default `benefitOf` composite and pinned Fixture B4 at `D1..D4 = 0.775`, `D5 = 0.700`, `D6 = 0.430`, mean `0.705`, and boundary control `D6 = 0.630`; Fixture B3 proves injected-map rejection at `0.45` and inclusive acceptance at `0.50`.
+- Implemented deterministic `isFeasibleCohort` checks with machine-readable violations, one-directional accommodation blocks remaining hard-feasible, per-member floor enforcement, and prior-cohort churn comparison.
+- TDD status: the focused suite first failed because `src/benefit.ts` was absent, then passed 11/11 after the minimal T040/T019 implementation; strict package TypeScript and focused Biome checks also pass.
+- Gate status: `pnpm typecheck`, `pnpm test` (53/53), and `pnpm lint` pass. P2/SC-002 remains in progress for objective scoring and cohort assignment; no blocker.
+
+## NEXT
+
+- T012 + T020 — Add the `scoreObjective` contract first, then implement the deterministic soft objective in `packages/cohort-compiler/src/objective.ts`.
+- Acceptance: feasible options receive deterministic `{ total, terms }` scores over the seven pinned objective terms; a higher score never promotes a hard-constraint-violating cohort; the focused test demonstrates RED before implementation, then the repository typecheck/test/lint gate returns green.

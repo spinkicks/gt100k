@@ -34,3 +34,9 @@
 - Chose explicit named value and type exports from `src/index.ts`. Rejected wildcard re-exports because later modules could leak into the public API, and rejected namespace exports because consumers need direct imports from `@gt100k/cohort-compiler`.
 - Kept the T009 adapter's source-relative imports during bootstrap. Package-name imports from the adapter fail without a workspace link, and updating the shared `pnpm-lock.yaml` is outside this feature increment's allowed files. The package contract still verifies package-name imports through its self-reference.
 - Widened only `boundaryBenefitByRef` to `Record<string, number>` so the strict declaration build permits lookup by `learnerRef`. Rejected casts or fixture-data changes because the existing map shape, values, and golden expectations are correct.
+
+## 2026-07-20 — T011/T019 feasibility details
+
+- Emit at most the first input-order offending pair for each pairwise hard constraint, while emitting every member below the non-harm floor. This keeps violations deterministic and machine-readable without flooding results with every transitive pair; rejected returning only a boolean or every duplicate pair.
+- For the cohort-local `prior?` seam, compute churn as the symmetric membership difference against the prior cohort with greatest overlap, then compare `used + delta` with `cap + recorded exception deltas`. Rejected requiring a complete next assignment that the `isFeasibleCohort(members, hard, prior?)` contract does not receive.
+- For a member with no peers, use neutral history `0.5` and full role/rhythm fit `1.0`, avoiding division by zero while preserving the formula's neutral/unique/compatible defaults. Rejected returning `NaN` or adding an unpinned minimum cohort-size rule to the seven-constraint predicate.
