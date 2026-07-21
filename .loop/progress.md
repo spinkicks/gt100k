@@ -218,3 +218,16 @@
 ## NEXT
 - T012c + the `resolveAvatarAnimation` slice of T016a: add `packages/arena-world/test/avatar.test.ts`, then implement and explicitly export the minimal pure avatar-animation resolver.
 - Acceptance: all seven intents match the exact §8.13 state/loop/duration/easing/amplitude table; reduced motion returns `loop:false`, `easing:"Linear"`, a `-static` state, and the exact reduced duration with `amplitudePx:0`; output is deterministic and never represents `scale(0)` (FR-032, SC-016); focused checks and repository gates remain green.
+
+## 2026-07-20 — P1 / T012c + T016a (`resolveAvatarAnimation` slice)
+- Added `avatar.test.ts` through the public package API, covering all seven exact §8.13 animated rows, every static reduced-motion equivalent, identical-input determinism, and an exact transform-free/start-free output shape.
+- Followed red-green TDD: all three acceptance tests failed with `resolveAvatarAnimation is not a function`, then passed after the minimal resolver and explicit package export landed.
+- Added a pure table-driven `resolveAvatarAnimation(intent, options)` implementation. Durations and easings derive from the existing `MOTION`/`EASINGS` registries; reduced motion emits `loop:false`, `Linear`, zero amplitude, and the exact `-static` state/duration without carrying scale or an absolute start.
+- Review status: checked T012c/T016a line-by-line against spec §§5.4/8.13/8.26, FR-032, SC-016, the data model, and the public contract; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused avatar/motion tests passed (7 tests); Biome checked all three changed feature files; direct arena-world TypeScript validation passed; `pnpm typecheck` passed; `pnpm test` passed (20 files, 65 tests). The domain purity scan passed. No app changed, so no Next.js build was required.
+- SC status: SC-016 is complete; the renderer's damped live-position application of the returned state remains scheduled for T020.
+- Blockers: none.
+
+## NEXT
+- T012d + the `resolveParallaxLayers`/`resolveLighting`/`resolveWater`/`resolvePostFx` slice of T016a: add `packages/arena-world/test/scene3d.test.ts`, then implement and explicitly export the minimal pure scene resolvers.
+- Acceptance: `CAMERA3D` remains exact; parallax resolves all seven layers back-to-front; lighting, water, and post-fx match every §8.20 quality-tier golden row; every camera motion has a reduced or instant equivalent and depth remains represented (FR-033, SC-018); focused checks and repository gates remain green.

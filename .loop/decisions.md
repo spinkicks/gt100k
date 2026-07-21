@@ -37,3 +37,7 @@
 
 ## 2026-07-20 — T012b biome resolver source
 - Made `BIOMES` the single lookup source for both `resolveBiome` and `resolveElevation`, and routed the world transform through `resolveElevation`. Rejected a parallel region/elevation map because duplicated golden values could drift from the canonical fixture.
+
+## 2026-07-20 — T012c avatar resolver source
+- Derived avatar durations and easing names from the existing `MOTION` and `EASINGS` registries while keeping only amplitudes and state mappings in the avatar table. Rejected duplicating the shared golden motion values because the registries could drift apart.
+- Kept `AvatarAnimationSpec` transform-free and start-position-free; reduced motion changes the same row to its `-static` state with zero amplitude. Rejected adding scale or absolute-start fields because the renderer must retarget from live state and must never receive a `scale(0)` instruction.

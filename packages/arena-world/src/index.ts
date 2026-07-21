@@ -52,6 +52,7 @@ export { TIERS } from "./tiers.fixture";
 
 export { PALETTE, TYPOGRAPHY, resolveBiome, resolveElevation } from "./art";
 export { ASSET_KEYS } from "./assets";
+export { resolveAvatarAnimation } from "./avatar";
 export { EASINGS, LAMBDAS, MOTION, resolveMotion } from "./motion";
 export { QUALITY_TIERS } from "./quality";
 export { CAMERA3D, LIGHTING, PARALLAX3D, POSTFX, WATER, WORLD_SCALE } from "./scene3d";
