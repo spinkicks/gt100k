@@ -388,3 +388,15 @@
 
 - T113 — Commit the typed V1 `view-cohort-12`, V2 `view-standings`, V3 `view-rivalry`, and V4 `motion-golden` fixtures under `packages/cohort-arena-view/test/fixtures/`, then add `test/smoke.test.ts` through the public entrypoint.
 - Acceptance: every fixture is typed against the domain and view contracts and preserves the pinned UI golden values; the smoke builds Fixture V1 through `@gt100k/cohort-arena-view`; forced feature TypeScript, the view package suite, and repository typecheck/test/lint remain green, completing the P7 checkpoint.
+
+## 2026-07-21 — P7 / T113
+
+- Added the typed V1 `view-cohort-12`, V2 `view-standings`, V3 `view-rivalry`, and V4 `motion-golden` fixture modules with the exact pinned cohort geometry/cards, gain-only standings, observable-only arena outputs, and all 19 animated/reduced motion rows.
+- Added a fixture contract suite for V2–V4 and a seeded smoke that imports `@gt100k/cohort-arena-view`, builds V1, and verifies the exact member positions/projections, role vector, seven satisfied badges, non-harm floor, zero churn, opt-out standings, and neutral safeguarding view.
+- TDD status: the smoke first failed because V1 was absent, then each V1 expansion and V2–V4 contract failed against its missing golden before the corresponding typed fixture made it pass.
+- Gate status: forced compiler/view composite TypeScript passes; the view package passes 31/31 tests; repository `pnpm typecheck`, `pnpm test` (144/144), and `pnpm lint` pass. No feature app exists yet, so no app build applies to T113. P7 and its pure-view checkpoint are complete; renderer-level a11y, reduced-motion parity, and graceful degradation remain scheduled in P8–P11. No blocker.
+
+## NEXT
+
+- T114 — Scaffold `apps/cohort-arena` as the pinned Next.js 14 / React 18 app without touching shared root files.
+- Acceptance: the app manifest contains the exact pinned Next/r3f/drei/three/postprocessing/motion/view dependencies; App Router layout, global accessibility/plain-mode CSS, `next.config.mjs`, app-local TypeScript configuration, placeholder-only env example, and gitignore exist; `pnpm --filter @gt100k/cohort-arena build`, repository typecheck/test/lint, and the existing P7 view package gate remain green.

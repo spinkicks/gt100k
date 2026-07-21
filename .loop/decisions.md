@@ -129,3 +129,7 @@
 ## 2026-07-21 — T108 structural guardrail scope
 
 - Treat `position` as prohibited specifically on the public `StandingsView` ranking surface, while retaining the spec-required camera and 3D geometry positions in `ConstellationView`. The guardrail contract imports the public entrypoint types, recursively checks output keys, and scans the owning standings/RivalryMix source modules for forbidden field declarations. Rejected a package-wide text ban on `position` because it would directly contradict FR-028/FR-031 and the pinned 3D layout contract.
+
+## 2026-07-21 — T113 fixture isolation
+
+- Build Fixture V1's input from the already-typed synthetic domain Fixture B and deterministic public domain functions, while pinning every asserted view value explicitly in the view fixture. Rejected copying a second learner/assignment dataset that could drift from Fixture B, and rejected generating expected view output through `buildCohortArenaView` because that would make the golden self-validating.
