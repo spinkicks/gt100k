@@ -784,3 +784,16 @@
 ## NEXT
 - T050: run the P7 accessibility and performance acceptance audit over `apps/arena`, adding or tightening focused automated coverage before any required in-scope fix.
 - Acceptance: explicitly verify reduced-motion Tier-C depth parity and all motion equivalents, reduced-transparency/contrast/focus styling, keyboard/switch/screen-reader Ledger behavior, color-independent cues, hidden canvas, muted audio, quality/context-loss fallback, and non-blocking mastery/onboarding; keep lint, typecheck, tests, root build, and Arena build green, and record any live-only walkthrough limitations without weakening SC-004/010/011/012/025/026.
+
+## 2026-07-21 — P7 / T050
+- Added an integrated P7 app acceptance suite covering the 6–8 interaction target, semantic Ledger tree/listbox, static-3D Tier C configuration with retained world transforms, no-WebGL Tier D fallback, hidden canvas, muted audio, preference/focus hooks, live-region presence, and non-canceling onboarding input.
+- Closed one real audit gap: the age-band touch-target token now propagates through shared HUD and Ledger CSS variables, so Home, Guide, Wardrobe/drawer actions, and Skip guide receive the same exact 44/48/56px band target as the presentation controls. Existing 56px Ledger rows remain unchanged.
+- Followed red-green TDD: the new T050 suite failed because the 6–8 HUD lacked the `56px` shared target, then all three acceptance groups passed after the minimal root-token wiring and descendant CSS updates.
+- Review status: audited T050 against P7, §12, the quickstart accessibility/performance checklist, FR-015/016/022/023/028/033/037/038/041/043, and SC-004/010/011/012/025/026. Supplemental review found two Important acceptance-test gaps; both were fixed by removing vacuous optional-import returns and asserting every HUD/Ledger target in its own CSS block. Static motion review found no feel-breaking, performance, or reduced-motion regression in the changed surface.
+- Gate status: focused app accessibility/P5/Ledger/onboarding/client/quality regressions passed (8 files, 33 tests); `pnpm lint` passed (138 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (59 files, 235 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 59.9 kB route, 147 kB first load).
+- SC status: T050 completes the automated accessibility/preference/non-blocking/fallback acceptance slices for SC-004/010/011/012/025/026. The real screen-reader, clean-console/WebGL, and managed-device 60fps observations remain live acceptance evidence and are not claimed from unit/build output.
+- Blockers: a live Playwright attempt reached the installed headless Chromium binary but could not launch because this host lacks `libnspr4.so`; managed-device and screen-reader hardware are also unavailable. No blocker affects the automated green gate or T051 quickstart audit.
+
+## NEXT
+- T051: run `specs/004-arena-game-world/quickstart.md` end-to-end and produce the final SC-001…SC-026 evidence map without overstating live-only acceptance.
+- Acceptance: the filtered domain test command, lint, Arena production build, and app smoke all pass; every SC maps to current automated or explicitly identified live evidence; any remaining issue is fixed test-first before proceeding to final T-ROOT.

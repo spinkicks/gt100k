@@ -155,6 +155,10 @@ export interface ArenaLedgerProps {
   standingsOptedIn?: boolean;
 }
 
+type ArenaTouchTargetStyle = React.CSSProperties & {
+  "--arena-touch-target": string;
+};
+
 export default function ArenaLedger({
   view,
   catalog = CATALOG,
@@ -168,6 +172,9 @@ export default function ArenaLedger({
   const baseEntries = buildLedgerBaseEntries(view);
   const cosmetics = buildHudCosmeticEntries(view, catalog);
   const ledgerFeedback = feedback ? resolveArenaFeedback(feedback.signal) : null;
+  const touchTargetStyle: ArenaTouchTargetStyle = {
+    "--arena-touch-target": `${view.presentation.visualBand.touchTargetPx}px`,
+  };
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [activeCosmeticIndex, setActiveCosmeticIndex] = React.useState(0);
   const itemRefs = React.useRef<Array<HTMLLIElement | null>>([]);
@@ -215,7 +222,7 @@ export default function ArenaLedger({
   };
 
   return (
-    <aside className={styles.ledger} aria-labelledby="arena-ledger-title">
+    <aside className={styles.ledger} aria-labelledby="arena-ledger-title" style={touchTargetStyle}>
       <header className={styles.header}>
         <h2 className={styles.title} id="arena-ledger-title">
           Arena Ledger

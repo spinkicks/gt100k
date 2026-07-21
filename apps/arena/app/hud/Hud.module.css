@@ -93,8 +93,8 @@
 .guideButton {
   position: absolute;
   top: 1rem;
-  min-width: 2.75rem;
-  min-height: 2.75rem;
+  min-width: var(--arena-touch-target, 2.75rem);
+  min-height: var(--arena-touch-target, 2.75rem);
   border: 1px solid var(--surface-border);
   border-radius: 12px;
   background: var(--surface);
@@ -214,7 +214,7 @@
 .wardrobeTrigger {
   display: flex;
   min-width: 9.5rem;
-  min-height: 2.75rem;
+  min-height: var(--arena-touch-target, 2.75rem);
   align-items: center;
   justify-content: space-between;
   padding: 0.65rem 0.75rem;
@@ -282,8 +282,8 @@
 
 .closeButton,
 .equipButton {
-  min-width: 2.75rem;
-  min-height: 2.75rem;
+  min-width: var(--arena-touch-target, 2.75rem);
+  min-height: var(--arena-touch-target, 2.75rem);
   border: 0;
   border-radius: 10px;
   background: rgb(245 249 252 / 12%);

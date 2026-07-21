@@ -117,6 +117,10 @@ export interface HudProps {
   standingsOptedIn?: boolean;
 }
 
+type ArenaTouchTargetStyle = React.CSSProperties & {
+  "--arena-touch-target": string;
+};
+
 export interface ArenaControlsProps {
   view: InitialArenaView;
   eventBus: Pick<ArenaEventBus, "emit">;
@@ -235,6 +239,9 @@ export default function Hud({
   const drawerToken = resolveMotion("drawerOpen", {
     reducedMotion: view.flags.reducedMotion,
   });
+  const touchTargetStyle: ArenaTouchTargetStyle = {
+    "--arena-touch-target": `${view.presentation.visualBand.touchTargetPx}px`,
+  };
   const availableCount = entries.filter(({ eligible }) => eligible).length;
   const closeDrawer = React.useCallback(() => {
     setDrawerOpen(false);
@@ -246,7 +253,7 @@ export default function Hud({
   }, [drawerOpen]);
 
   return (
-    <div className={styles.hud} data-arena-hud="ready">
+    <div className={styles.hud} data-arena-hud="ready" style={touchTargetStyle}>
       <div className={styles.quality} aria-label={`Quality tier ${view.presentation.qualityTier}`}>
         Quality {view.presentation.qualityTier}
       </div>
