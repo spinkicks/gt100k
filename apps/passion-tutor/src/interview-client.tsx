@@ -3,6 +3,8 @@
 import { type FormEventHandler, useState } from "react";
 
 import {
+  COVERED,
+  FACETS,
   type Facet,
   type InterviewSession,
   answerCurrentQuestion,
@@ -15,6 +17,15 @@ const FACET_LABELS: Record<Facet, string> = {
   challenge: "A challenge",
   next: "What comes next",
   audience: "Who it is for",
+};
+
+const GAP_LABELS: Record<Facet, string> = {
+  what: "what your project is",
+  why: "why it matters to you",
+  how: "how it works",
+  challenge: "what feels hard",
+  next: "your plans",
+  audience: "who it is for",
 };
 
 export interface InterviewViewProps {
@@ -54,6 +65,67 @@ export function InterviewClient({ initialSession }: InterviewClientProps) {
       onSubmit={handleSubmit}
       session={session}
     />
+  );
+}
+
+function UnderstandingMap({ session }: { readonly session: InterviewSession }) {
+  const exploredCount = FACETS.filter((facet) => session.coverageByFacet[facet] >= COVERED).length;
+
+  return (
+    <section className="understanding-map" aria-labelledby="understanding-map-title">
+      <div className="understanding-heading">
+        <h2 id="understanding-map-title">Your understanding map</h2>
+        <p aria-atomic="true" aria-live="polite">
+          {exploredCount} of {FACETS.length} explored
+        </p>
+      </div>
+
+      <ol>
+        {FACETS.map((facet) => {
+          const isCovered = session.coverageByFacet[facet] >= COVERED;
+
+          return (
+            <li data-understanding-facet={facet} data-covered={isCovered} key={facet}>
+              <div className="understanding-labels">
+                <span>{FACET_LABELS[facet]}</span>
+                <strong>{isCovered ? "Explored" : "Still exploring"}</strong>
+              </div>
+              <span className="understanding-track" aria-hidden="true">
+                <span className="understanding-fill" />
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  );
+}
+
+function CompletionSummary({ gaps }: { readonly gaps: readonly Facet[] }) {
+  const isAllCovered = gaps.length === 0;
+
+  return (
+    <section
+      className="reflection-summary"
+      data-outcome={isAllCovered ? "all-covered" : "revisit"}
+      aria-labelledby="reflection-summary-title"
+    >
+      <h2 id="reflection-summary-title">
+        {isAllCovered
+          ? "You found words for every part of your project."
+          : "These are good places to begin next time."}
+      </h2>
+
+      {isAllCovered ? (
+        <p>Your understanding map is full — keep building from here.</p>
+      ) : (
+        <ul>
+          {gaps.map((facet) => (
+            <li key={facet}>Let’s revisit {GAP_LABELS[facet]} next time.</li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 
@@ -118,6 +190,10 @@ export function InterviewView({ answer, onAnswerChange, onSubmit, session }: Int
             </div>
           </form>
         ) : null}
+
+        <UnderstandingMap session={session} />
+
+        {session.isComplete ? <CompletionSummary gaps={session.gaps} /> : null}
 
         {session.transcript.length > 0 ? (
           <section className="response-trail" aria-labelledby="response-trail-title">
