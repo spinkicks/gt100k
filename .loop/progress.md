@@ -63,3 +63,14 @@
 ## NEXT
 - Complete T007: export all T004–T006 foundational vocabularies, value types, and ports from `packages/interest-lab/src/index.ts`.
 - Acceptance: consumers can import the complete foundational public API from `@gt100k/interest-lab`; the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
+
+## 2026-07-20 — P1 / T007
+- Added explicit named value and type exports for every foundational probe, event, signal, hypothesis, coverage, purpose, and port contract.
+- Added a consumer-facing public-API test that imports all 11 runtime vocabularies and every T004–T006 type through `src/index.ts`.
+- Confirmed the test-first red state: the focused runtime test failed on undefined exports and the package compiler failed with TS2306 while the entry point was empty; both passed after implementation.
+- Verified the forced package compiler, `pnpm typecheck`, `pnpm test` (36 tests), and `pnpm lint` all pass.
+- Status: T007 complete; P1 complete; P2 is next. Behavioral success-criteria tests remain in their ordered later phases. No blocker.
+
+## NEXT
+- Complete T008: author the three normative probe-catalog fixtures in `adapters/interest-probe-catalog/src/index.ts` and their test-first catalog contracts.
+- Acceptance: the golden catalog contains all 24 pinned families with exactly 20 eligible rows and the G1 domain/work-mode tallies; the gappy catalog has exactly 8 eligible rows and the pinned gaps; the family fixture has 3 equivalent variants; adapter/package compilation, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
