@@ -254,3 +254,15 @@
 ## NEXT
 - Complete T031: export the hypothesis constructors/current-view helpers and state-machine API explicitly from `packages/interest-lab/src/index.ts`.
 - Acceptance: a consumer-facing test imports `createHypothesis`, `appendRevision`, `currentFor`, `evaluateCandidateGate`, `applyMissingData`, `proposeTransition`, and `authorRevision` from `@gt100k/interest-lab`; preserve a failing public-API red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-20 — P5 / T031
+- Added a consumer-facing public API contract for all seven hypothesis/lifecycle functions, the fixed legal-transition table, and their named parameter/return types.
+- Confirmed the test-first red state: the new P5 public API case failed while all four earlier API cases passed, then passed after the explicit entry-point exports were added.
+- Exported the hypothesis constructors/current-view helpers and complete state-machine surface without changing domain behavior or adding wildcard re-exports.
+- Reproduced and corrected the single Biome import-order finding, then reran the complete gate.
+- Verified the focused public API suite (5 tests), forced package compiler, `pnpm typecheck`, `pnpm test` (83 tests across 19 files), and `pnpm lint` (65 files) all pass.
+- Status: T031 and P5 complete. SC-003/004/009/010/011/013/014/016 remain green through the package public API. No blocker.
+
+## NEXT
+- Complete T032 and its minimal T034 guard/stub implementation in `packages/interest-lab/test/guards.test.ts`, `packages/interest-lab/src/guards.ts`, and the assent/artifact stub adapters.
+- Acceptance: tests first deny all five forbidden read purposes with an auditable denial, reject individual team-artifact credit without solo proof, reject raw artifact payloads while accepting coarse transitions, and cover assent withdrawal plus coarse-only artifact-source behavior; preserve focused red evidence and keep adapter/package compilation, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.

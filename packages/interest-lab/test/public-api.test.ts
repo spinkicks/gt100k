@@ -7,14 +7,22 @@ import {
   EVENT_TYPES,
   FORBIDDEN_PURPOSES,
   HYPOTHESIS_STATES,
+  LEGAL_TRANSITIONS,
   PROVENANCES,
   SAFETY_CLASSES,
   SIGNAL_FAMILIES,
   SOCIAL_MODES,
   WORK_MODES,
+  appendRevision,
+  applyMissingData,
+  authorRevision,
   buildCoverageMatrix,
   buildLab,
+  createHypothesis,
+  currentFor,
+  evaluateCandidateGate,
   isProbeEligible,
+  proposeTransition,
   recordEvent,
   rotateBySeed,
   selectEligibleFamilyVariants,
@@ -24,6 +32,7 @@ import type {
   ArtifactSignalSource,
   AssentRecordPort,
   AudienceCondition,
+  CandidateGateEvaluation,
   ChildPosition,
   Clock,
   CoverageConfig,
@@ -37,6 +46,7 @@ import type {
   GuideReview,
   HypothesisRevision,
   HypothesisState,
+  HypothesisViewTime,
   InterestHypothesis,
   InterestHypothesisRepository,
   InterventionContext,
@@ -53,9 +63,11 @@ import type {
   ProbeFamily,
   Provenance,
   SafetyClass,
+  ShadowProvenance,
   SignalFamily,
   SignalSummary,
   SocialMode,
+  TransitionVersions,
   Uncertainty,
   WorkMode,
 } from "../src/index";
@@ -95,6 +107,13 @@ type FoundationalTypeExports = [
 ];
 
 type OfferTypeExports = [CoverageConfig, CoverageItem, Lab, LabConfig, LearnerEligibility, Offer];
+
+type HypothesisStateMachineTypeExports = [
+  CandidateGateEvaluation,
+  HypothesisViewTime,
+  ShadowProvenance,
+  TransitionVersions,
+];
 
 describe("interest lab public API", () => {
   it("exports every foundational runtime vocabulary", () => {
@@ -141,5 +160,21 @@ describe("interest lab public API", () => {
   it("exports the complete P4 event and signal API", () => {
     expect(recordEvent).toBeTypeOf("function");
     expect(summarizeSignals).toBeTypeOf("function");
+  });
+
+  it("exports the complete P5 hypothesis and state-machine API", () => {
+    const functions = [
+      createHypothesis,
+      appendRevision,
+      currentFor,
+      evaluateCandidateGate,
+      applyMissingData,
+      proposeTransition,
+      authorRevision,
+    ];
+
+    expect(functions.every((exported) => typeof exported === "function")).toBe(true);
+    expect(LEGAL_TRANSITIONS).toHaveLength(19);
+    expectTypeOf<HypothesisStateMachineTypeExports>().toEqualTypeOf<HypothesisStateMachineTypeExports>();
   });
 });

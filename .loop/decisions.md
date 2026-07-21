@@ -99,3 +99,8 @@
 - Chose: make the adapter's `currentFor(learnerRef)` return the learner's complete deep-copied `InterestHypothesis` aggregate; callers use the pure domain `currentFor(hypothesis, view)` helper to select the highest visible operative revision. Deep-copy plain JSON data on append and every read boundary.
 - Why: the repository port explicitly returns `InterestHypothesis`, while the domain helper returns `HypothesisRevision`. Keeping the complete aggregate preserves append-only audit history and lets one bitemporal policy remain in the pure domain instead of being duplicated in persistence.
 - Rejected: returning a one-revision aggregate would silently discard replay history; duplicating bitemporal selection in the adapter would split domain rules; returning stored references would allow callers to overwrite prior evidence through mutation.
+
+## D021 — The P5 entry point exposes the complete named lifecycle surface
+- Chose: explicitly export the seven T031 functions, `LEGAL_TRANSITIONS`, and the public helper parameter/return types (`HypothesisViewTime`, `CandidateGateEvaluation`, `ShadowProvenance`, and `TransitionVersions`) from the package entry point.
+- Why: consumers need the named types to call and describe the exported functions without importing package internals, and the fixed transition table is the authoritative inspectable lifecycle graph implemented by T028.
+- Rejected: wildcard module re-exports would violate the repository's explicit-export convention and could expose future internals accidentally; exporting only the seven functions would leave their named supporting types inaccessible from the package boundary.

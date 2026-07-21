@@ -11,7 +11,14 @@ export type {
   SignalSummary,
 } from "./events";
 export { summarizeSignals } from "./signals";
-export { CHILD_POSITIONS, FORBIDDEN_PURPOSES, HYPOTHESIS_STATES } from "./hypothesis";
+export {
+  CHILD_POSITIONS,
+  FORBIDDEN_PURPOSES,
+  HYPOTHESIS_STATES,
+  appendRevision,
+  createHypothesis,
+  currentFor,
+} from "./hypothesis";
 export type {
   ChildPosition,
   CoverageMatrix,
@@ -19,6 +26,7 @@ export type {
   GuideReview,
   HypothesisRevision,
   HypothesisState,
+  HypothesisViewTime,
   InterestHypothesis,
   Uncertainty,
 } from "./hypothesis";
@@ -34,6 +42,18 @@ export type {
   OfferSelector,
   ProbeCatalog,
 } from "./ports";
+export {
+  LEGAL_TRANSITIONS,
+  applyMissingData,
+  authorRevision,
+  evaluateCandidateGate,
+  proposeTransition,
+} from "./state-machine";
+export type {
+  CandidateGateEvaluation,
+  ShadowProvenance,
+  TransitionVersions,
+} from "./state-machine";
 export {
   AUDIENCE_CONDITIONS,
   DIFFICULTY_BANDS,
