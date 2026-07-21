@@ -332,3 +332,14 @@
 ## NEXT
 - Complete U001: scaffold `packages/interest-lab-view/package.json` with the pinned ESM entry points, `vitest run` test script, and `@gt100k/interest-lab: workspace:*` dependency, mirroring the domain package.
 - Acceptance: the new GPU-free view package manifest contains no `three` or `react` dependency, resolves the Part-I workspace dependency, and leaves `pnpm typecheck` plus `pnpm test` green.
+
+## 2026-07-21 — P8 / U001
+- Scaffolded `@gt100k/interest-lab-view` with the pinned private ESM entry points, `vitest run` test script, and sole runtime dependency on `@gt100k/interest-lab: workspace:*`.
+- Confirmed the contract-first red state: the exact manifest assertion failed because `packages/interest-lab-view/package.json` was absent, then passed after the minimal manifest was added.
+- Resolved the domain workspace link via `pnpm install --lockfile=false`, preserving the shared root lockfile policy and adding no React, Three.js, or react-three dependencies.
+- Verified `pnpm typecheck`, `pnpm test` (110 tests across 24 files), and `pnpm lint` (77 files) all pass.
+- Status: U001 complete; P8 remains in progress. Part-I SC-001 through SC-016 remain green; Part-II success criteria are not yet started. No blocker.
+
+## NEXT
+- Complete U002: add `packages/interest-lab-view/tsconfig.json` extending `../../tsconfig.base.json` with `rootDir: "."`, `outDir: "dist"`, and includes for `src/**/*.ts` plus `test/**/*.ts`.
+- Acceptance: the view package TypeScript project compiles independently without a shared-root reference, and `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
