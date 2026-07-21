@@ -1050,3 +1050,38 @@
 - **BLOCKED/MANUAL (unchanged):** true screen-reader (VoiceOver/NVDA) + human contrast-ratio (≥4.5:1)
   verification is not doable headless in-lane → `manual:` per the loop's blocked-criterion rule; the
   machine-checkable contract for BOTH surfaces is now fully green and does not block the rest.
+
+## D-VP27 — Final spec sweep + full usability proof (both surfaces, headless Chromium) → `.loop-done`
+- **Decision:** the whole `specs/003-interest-lab` spec is implemented; all machine-checkable success
+  criteria pass and both surfaces are browser-verified usable → create `.loop-done`.
+- **Verification this turn (no product source changed — verification + done-signal increment):**
+  - Gate green: `tsc -b` 0 · root `pnpm test` **384/384** (82 files) · app vitest **142/142** (23 files)
+    · `next build` ✓ (route `/` static, 288 kB / 375 kB first-load).
+  - SC coverage: all 16 `SC-*` (Part I) + all 18 `SC-UI-*` (Part II) map to named tests per spec §U10 /
+    §14.4.3 and pass. tasks.md T001–T038 + U001–U051 all built (checkboxes were never ticked in prior
+    turns — documentation lag only; the DoD is SCs + green gate, both satisfied).
+  - **Drove BOTH surfaces headless (Playwright + swiftshader WebGL via uv), zero console/page errors:**
+    - CHILD `/`: renders full `quest-world-3d` tier (cinematic warm lighting, bloom on emissive quest
+      orbs, soft shadows, graded palette — clears the game-feel bar). Quest card-buttons operable by
+      click AND keyboard Enter; calm-mode toggle flips via keyboard Space; "How to explore" expander
+      opens; "See all islands" overview control correctly `disabled` at the home/archipelago state
+      (WorldWayfinding: enabled only when an island is focused — intentional, `world-wayfinding.test.ts`).
+    - GUIDE (`/?debug=1` → surface toggle): Hypothesis Console renders — semantic coverage `<table>`
+      (Domain × 7 work-modes, per-cell "Offered"/"Not yet offered" icon+text, color-independent), 5
+      timeline/lifecycle `<ol>`s, constellation `<canvas>` `aria-hidden="true"` (SC-UI-18 contract), and
+      a working "Author operative revision" button. Surface toggle Quests↔Guide works.
+  - Screenshots reviewed (`/tmp/il_shots/`): no placeholder/stub content shown as real; empty state
+    ("0/20 quests collected") + comfort controls + help affordance present.
+- **Known non-defect:** ~66 identical `console.warning` `glBlitFramebuffer: Read and write depth stencil
+  attachments cannot be the same image` on the child 3D surface. These are **swiftshader software-GL
+  emulation** artifacts from the `@react-three/postprocessing` EffectComposer depth-stencil blit under
+  headless ANGLE; they are WARNINGS not errors, and do not occur on real hardware GL. Not chased — silencing
+  a software-GL-only warning by altering a working postprocessing grade would risk regressing game-feel on
+  real GPUs. The adversarial gate keys on console **errors** (none).
+- **BLOCKED/MANUAL (carried, non-blocking per loop rule):** live screen-reader (VoiceOver/NVDA) walk +
+  human contrast-ratio (≥4.5:1) measurement are not doable headless in-lane → `manual:`. The
+  machine-checkable half of SC-UI-18 (canvas aria-hidden, DOM-as-AT-source, keyboard operable, focus-visible
+  rings, color-independent state, contrast tokens) is green + browser-verified on BOTH surfaces.
+- **Rejected:** (a) ticking all 90 tasks.md checkboxes — large spec-file churn for no DoD value; the SCs
+  are the contract. (b) looping a `recheck` marker on the manual SC-UI-18 items — forbidden by the loop's
+  blocked-criterion rule.

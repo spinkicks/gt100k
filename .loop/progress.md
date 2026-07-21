@@ -367,3 +367,26 @@ existing tests meaningful — update them as behavior changes; DO NOT weaken the
   board-reachable (D-VP19).
 - **CARRY-OVER lint debt (not mine):** pre-existing `pnpm lint`/biome nits in out-of-lane
   evidence-explorer-view + prior-turn interest-lab files; left untouched.
+
+- **Turn 10 (v2) — FINAL: spec sweep + full usability proof → `.loop-done`.** No product source changed
+  (verification + done-signal increment). Confirmed the whole `003-interest-lab` spec is implemented:
+  gate green (`tsc -b` 0 · root `pnpm test` **384/384** · app vitest **142/142** · `next build` ✓), all
+  16 SC-* + 18 SC-UI-* mapped to passing tests (§U10 / §14.4.3). Drove BOTH surfaces headless in Chromium
+  (Playwright + swiftshader WebGL): **zero console/page errors** on child + guide. Child renders full
+  `quest-world-3d` tier (bloom/shadows/graded palette); quest cards operable via click + keyboard Enter;
+  calm toggle + "How to explore" operable; "See all islands" correctly disabled at home (intentional
+  wayfinding). Guide renders Hypothesis Console — semantic coverage table, timeline/lifecycle `<ol>`s,
+  `aria-hidden` constellation canvas, working "Author operative revision" button; surface toggle works.
+  The ~66 warnings are swiftshader software-GL emulation noise (`glBlitFramebuffer` depth-stencil in the
+  postprocessing composer), not errors, absent on real GPUs. Created `.loop-done`. See D-VP27.
+
+## NEXT
+- **SPEC COMPLETE — `.loop-done` created.** `specs/003-interest-lab` is fully implemented: Part-I pure
+  domain + adapters, Part-II GPU-free view package (`plainViewEquals`/guardrails/synthetic all green),
+  and the Next.js app with the 3D quest world, 2D board, reduced-motion/plain tiers, age bands, child +
+  guide surfaces. Gate green; both surfaces browser-verified usable with zero errors.
+- **Only residual is MANUAL (does not block completion):** live screen-reader (VoiceOver/NVDA) + human
+  ≥4.5:1 contrast-ratio verification of SC-UI-18 — not doable headless in-lane; the machine-checkable
+  half is green + browser-verified on both surfaces. A human should do the final AT/contrast pass.
+- If the harness's adversarial usability gate returns findings, address them here; otherwise this spec
+  is done.
