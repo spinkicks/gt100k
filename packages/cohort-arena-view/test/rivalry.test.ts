@@ -38,6 +38,22 @@ const EMPTY = {
   suppressed: true,
 } satisfies TurnAnalysis;
 
+const ADVERSARIAL_LABELS = {
+  perSpeaker: {
+    emotion: { turnShare: 0.6, speakingTime: 30, interruptions: 0 },
+    personality: { turnShare: 0.4, speakingTime: 20, interruptions: 0 },
+  },
+  patterns: [
+    {
+      kind: "dominance",
+      subjects: ["personality"],
+      evidence: "honesty says motivation",
+    },
+  ],
+  confidence: 1,
+  suppressed: false,
+} satisfies TurnAnalysis;
+
 const PROHIBITED_FIELDS = ["honesty", "emotion", "personality", "motivation"] as const;
 
 describe("observable-only RivalryMix arena-room view", () => {
@@ -144,6 +160,22 @@ describe("observable-only RivalryMix arena-room view", () => {
       buildArenaRoomView(EMPTY),
     ]) {
       for (const field of PROHIBITED_FIELDS) expect(output).not.toHaveProperty(field);
+    }
+  });
+
+  it("does not carry prohibited trait-label text from untrusted speaker analysis", () => {
+    const output = buildArenaRoomView(ADVERSARIAL_LABELS);
+
+    expect(output.seats.map(({ speaker }) => speaker)).toEqual(["Speaker 1", "Speaker 2"]);
+    expect(output.patterns).toEqual([
+      {
+        kind: "dominance",
+        subjects: ["Speaker 2"],
+        evidence: "Speaker 2 met the observable turn-share threshold.",
+      },
+    ]);
+    for (const field of PROHIBITED_FIELDS) {
+      expect(JSON.stringify(output).toLowerCase()).not.toContain(field);
     }
   });
 });

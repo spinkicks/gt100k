@@ -217,3 +217,9 @@
 
 - Treat a null rivalry view or a zero-seat rivalry view as the same neutral `analytics off` presentation. Rejected adding an unpinned status field to `ArenaRoomView`, and rejected presenting an empty/refused input as low confidence because Fixture E and SC-013 require no status change for missing analytics.
 - For non-empty `suppressed:true` rooms, animate only the pinned 300ms `suppressVeil` fog uniforms through the existing demand frame loop, lower scene lighting/emissive energy, and retain exact icon/shape/text in both 3D and static tiers. Rejected a perpetual render loop, a new animation dependency, or any pattern geometry under suppression.
+
+## 2026-07-21 — T130 observable-only Ledger boundary
+
+- Keep active, suppressed, and analytics-off RivalryMix accessibility state inside the existing `LedgerView.rivalryList`, sourced from the shared pure view. Rejected renderer-side inference because it could diverge from the canvas/2D state, and rejected widening the settled Ledger contract with another status field.
+- Format confidence and turn share as deterministic percentages rounded to one decimal, preserve observable interruption counts and approved pattern evidence, retain speaker descriptors under suppression, and surface the exact neutral analytics-off text for null or zero-seat input. Rejected raw fractional shares because repeating decimals are poor screen-reader copy.
+- Treat speaker identifiers and evidence as untrusted at the pure view boundary: preserve safe opaque references, alias unsafe/prohibited references, admit only the two typed observable pattern kinds and their generated evidence grammars, and fall back to neutral threshold evidence. Reapply the sanitizer in public `buildLedger` for defense in depth. Rejected rendering arbitrary evidence because a structurally safe field can still carry a prohibited trait label as text.

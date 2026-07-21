@@ -1,17 +1,28 @@
 import type { CohortArenaView, LedgerView } from "./model.js";
+import { sanitizeArenaRoomView } from "./rivalry.js";
 
 type LedgerSource = Pick<CohortArenaView, "cohorts" | "standings" | "rivalry" | "safeguarding">;
 
 function buildRivalryList(view: LedgerSource): string[] {
-  if (!view.rivalry) return [];
-  if (view.rivalry.suppressed) return ["Confidence low — prompts suppressed."];
+  if (!view.rivalry || view.rivalry.seats.length === 0) {
+    return ["Analytics off — no turn-taking analytics were supplied."];
+  }
+
+  const rivalry = sanitizeArenaRoomView(view.rivalry);
+  const confidence = Number((rivalry.confidence * 100).toFixed(1));
+  const descriptors = rivalry.seats.map(({ speaker, turnShare, interruptions }) => {
+    const share = Number((turnShare * 100).toFixed(1));
+    return `${speaker}: turn share ${share}%; interruptions ${interruptions}.`;
+  });
+
+  if (rivalry.suppressed) {
+    return ["Confidence low — prompts suppressed.", `Confidence ${confidence}%.`, ...descriptors];
+  }
 
   return [
-    ...view.rivalry.seats.map(
-      ({ speaker, turnShare, interruptions }) =>
-        `${speaker}: turn share ${turnShare}; interruptions ${interruptions}.`,
-    ),
-    ...view.rivalry.patterns.map(
+    `Confidence ${confidence}%.`,
+    ...descriptors,
+    ...rivalry.patterns.map(
       ({ kind, subjects, evidence }) => `${kind}: ${subjects.join(", ")} — ${evidence}`,
     ),
   ];

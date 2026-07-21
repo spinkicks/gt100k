@@ -127,7 +127,9 @@ describe("the composed Cohort Arena view", () => {
       ]),
     );
     expect(first.ledger.standingsText).toBeNull();
-    expect(first.ledger.rivalryList).toEqual([]);
+    expect(first.ledger.rivalryList).toEqual([
+      "Analytics off — no turn-taking analytics were supplied.",
+    ]);
     expect(first.ledger.safeguardingAlert).toBeNull();
     expect(first.ledger.announce).toBe("Compiled 2 cohorts with 12 assigned learners.");
   });

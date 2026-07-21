@@ -609,3 +609,16 @@
 
 - T130 — Complete the RivalryMix entries in the Cohort Ledger from `view.ledger.rivalryList`.
 - Acceptance: observable speaker descriptors, detected-pattern evidence, the exact suppression-veil text, and neutral analytics-off state are available as semantic Ledger text; the canvas remains `aria-hidden`; no trait/emotion field can be rendered; focused RED/GREEN, app TypeScript/tests, both builds, seeded smoke, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P10 / T130
+
+- Completed `view.ledger.rivalryList` parity for all RivalryMix states: active analytics now includes confidence, readable per-speaker turn-share/interruption descriptors, and detected-pattern evidence; suppressed analytics retains descriptors and confidence while surfacing no pattern; null/zero-seat analytics exposes the neutral `Analytics off` state as semantic Ledger text.
+- Hardened the pure observable-only boundary against adversarial strings by aliasing unsafe speaker references, accepting only dominance/repeated-interruption pattern kinds and their generated evidence grammars, and substituting neutral observable-threshold evidence otherwise; direct `buildLedger` callers receive the same defense-in-depth sanitization.
+- Added an app-level semantic Ledger contract for active, suppressed, off, and adversarial states, tightened the Canvas accessibility assertion, and extended the pure RivalryMix contract with adversarial label coverage. Updated the earlier no-analytics golden from an empty list to the now-required neutral Ledger state.
+- TDD status: the initial T130 contract failed 3/4 against missing confidence/descriptors/off text, then passed after the minimal Ledger projection. Independent review exposed a trait-text injection path; adversarial pure-view and Ledger tests failed first, then passed after boundary sanitization. The follow-up review found no remaining Critical, Important, or Minor findings.
+- Gate status: view package tests pass (32/32), app tests pass (41/41), `pnpm typecheck`, `pnpm test` (145/145), and `pnpm lint` (142 files) pass; `pnpm --filter @gt100k/cohort-arena build`, root `pnpm build`, and the production Playwright WebGL smoke (2/2) pass. P10/SC-013 is complete; no blocker.
+
+## NEXT
+
+- T131 — Implement the safeguarding-bypass affordance in `apps/cohort-arena/components/hud/` from `view.safeguarding`.
+- Acceptance: a firm-but-not-alarm shield banner shows optimization bypassed and the safeguarding lane, freezes only conflicting cohort moves in the 3D presentation, and cannot mutate standings, ratings, objectives, or the domain result; focused RED/GREEN, app TypeScript/tests, both builds, seeded smoke, and repository typecheck/test/lint remain green.
