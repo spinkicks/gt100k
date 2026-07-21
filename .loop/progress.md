@@ -647,3 +647,15 @@
 ## NEXT
 - Complete U033: add `packages/interest-lab-view/test/coverage-view.test.ts` with the complete G2 and gappy G3 coverage-view goldens.
 - Acceptance: rows preserve catalog order and domain hues; columns contain all nine work modes with glyphs; cells are row-major with exact complete/gappy outcomes and gap strings; no `score` or `confidence` key exists at any depth; preserve focused RED evidence and keep `pnpm typecheck`, `pnpm test`, and `pnpm lint` green without beginning U034 implementation beyond the minimum green-only harness boundary.
+
+## 2026-07-21 — P12 / U033 + U034
+- Added three pure coverage-view acceptance contracts for the complete G2 and gappy G3 projections: catalog-ordered hue rows, all nine fixed glyph columns, exact row-major offered/empty cells, all six rail dimensions, exact ordered gap strings, and recursive absence of `score`/`confidence`.
+- Confirmed genuine test-first RED evidence: all three focused cases failed because `buildCoverageMatrixView` was absent, and the public-API contract independently reported the missing export before implementation.
+- Implemented and exported the GPU-free `buildCoverageMatrixView`, preserving Part-I coverage/order, explicit visible empty cells, provenance/reason inspection copy, D026-safe rail titles, and exact aggregate/dimension gaps without recomputing domain rules.
+- Recorded the input-truthful offered/empty projection default in D048; voluntary/prompted cell statuses remain unavailable until a history-bearing composition owns them.
+- Verified the forced view-package compiler, focused suite (5 tests), `pnpm typecheck`, `pnpm test` (166 tests across 37 files), and `pnpm lint` (141 files); all pass.
+- Status: U033 and U034 complete; P12 remains in progress pending U035. SC-UI-04 and UI-FR-006 are green at the pure coverage-view boundary. No blocker.
+
+## NEXT
+- Complete U035: implement the semantic animated guide coverage matrix and coverage rail in `apps/interest-lab/app/guide/CoverageMatrix.tsx` from the pure `CoverageMatrixView`.
+- Acceptance: the app renders row/column headers and every cell as an accessible table/grid; filled cells use the pinned `matrixCell` motion, reduced motion is instant, and named gaps remain calm, visible, color-independent, and never scalar; focused tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.

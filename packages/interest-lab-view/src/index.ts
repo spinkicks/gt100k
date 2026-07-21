@@ -1,4 +1,5 @@
 export { HUE_RAMP, PALETTE, TYPOGRAPHY, resolveDomainHue } from "./art";
+export { buildCoverageMatrixView } from "./coverage-view";
 export { WORK_MODE_GLYPHS } from "./glyphs";
 export { EASINGS, MOTION, resolveMotion } from "./motion";
 export { buildProbePickerView } from "./picker";

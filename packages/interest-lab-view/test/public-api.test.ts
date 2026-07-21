@@ -95,6 +95,7 @@ describe("interest lab view public API", () => {
       "SCENE3D",
       "TYPOGRAPHY",
       "WORK_MODE_GLYPHS",
+      "buildCoverageMatrixView",
       "buildInterestLabView",
       "buildProbePickerView",
       "buildSceneView",
