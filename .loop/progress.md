@@ -77,3 +77,13 @@
 
 ## NEXT
 - T009/T012: write the `addNode` content-addressing and idempotency contract test first, confirm RED on the missing graph API, then implement the minimal `addNode` in `packages/evidence-graph/src/graph.ts`; acceptance is id = hash of UTF-8 canonical content, identical content returns the same id without graph change, any field change returns a new id, a fake injected `Hasher` works unchanged, and the workspace gate stays green.
+
+## 2026-07-20 — P1 content-addressed node insertion (T009/T012)
+- Added the pure `addNode` graph transformation, hashing UTF-8 canonical content through the injected `Hasher`, storing new nodes by digest, and preserving the original graph on idempotent re-adds.
+- Added nine contract cases covering exact bytes delivered to a fake hasher, digest-keyed retrieval, input immutability, exact no-op identity, and id changes across every hashed top-level field. Confirmed RED on the missing graph module, then GREEN after the minimal implementation.
+- Gate evidence: package composite `tsc -b`, workspace `pnpm typecheck`, workspace `pnpm test` (42/42), and `pnpm exec biome check packages adapters apps` over 47 files all pass.
+- Phase status: P1 in progress; T008/T009 and T011/T012 are complete. SC-001 is passing, SC-006's fake-hasher seam is covered, and SC-009 remains passing. T010/T010a and T013/T014 remain.
+- Blockers: none.
+
+## NEXT
+- T010/T013: write the `addEdge` validation contract test first, confirm RED on the missing API, then implement immutable edge insertion in `packages/evidence-graph/src/graph.ts`; acceptance is rejection of dangling, self, and cyclic edges, all six edge types accepted, fuzzed inserts remain acyclic, and the workspace gate stays green.

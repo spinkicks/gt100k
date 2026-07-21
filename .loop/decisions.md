@@ -24,3 +24,8 @@
 - Decision: implement canonicalization as a small recursive stable-key normalizer followed by native minified JSON serialization, returning the canonical string for later explicit UTF-8 hashing. Treat undefined object fields as absent optional fields.
 - Why: the spec explicitly permits a stable-key encoder that reproduces the golden bytes, and the pinned fixture subset uses strings, arrays, and objects. Keeping the encoder local preserves the pure domain package and avoids adding a dependency for this settled subset.
 - Rejected: importing a general canonical-JSON package, which adds supply-chain and bundle surface without improving the pinned acceptance behavior; returning bytes directly, which would conflate serialization with the T012 hashing boundary.
+
+## 2026-07-20 — T009/T012 immutable node insertion
+- Decision: make `addNode` an immutable graph transformation: a new id produces a new nodes record while sharing the unchanged edges array, and an existing id returns the exact original graph object as the no-op result.
+- Why: the domain contract requires pure functions and an unchanged graph for idempotent content. Structural sharing makes both guarantees observable without copying unrelated graph state.
+- Rejected: mutating `graph.nodes` in place, which would violate the pure-domain contract; cloning the entire graph for either insertion or a duplicate, which would obscure the specified no-op and add unnecessary work.
