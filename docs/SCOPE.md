@@ -13,12 +13,13 @@ canonical product spec.
   own passion project* (what it is, why it matters to them, how it works, what's next) to build
   ownership, metacognition, and evidence. Motivated by the finding that students often can't
   articulate their own projects. Distinct from the academic answer-blind tutor (PRD §13).
-  **Planned — spec in progress.**
+  **Spec ready:** `specs/007-passion-tutor/spec.md` — Socratic project-interview; loop starting.
 
 ## Side focus — family selection (admissions)
 - **008-family-selection (NEW)** — choosing which families enter the GT100K program: family
   application → CogAT routing → Track A/B eligibility → income-banded lottery. Source PRD:
-  `docs/prd/ADMISSIONS_PRD.md`. **Planned — spec in progress.** Lower priority than passion work.
+  `docs/prd/ADMISSIONS_PRD.md`. **Spec ready:** `specs/008-family-selection/spec.md` — full
+  pipeline (application → routing → snapshot → review → lottery); loop starting. Lower priority than passion work.
 
 ## Deprioritized (paused, NOT deleted — work preserved)
 - **004-arena-game-world** — the RPG/quest game-experience layer (PRD §15.3). Paused; latest work in **PR #62**.
@@ -31,7 +32,7 @@ canonical product spec.
 ## Software-factory loop status
 - **Running:** evidence-graph UI (002), interest-lab (003, resumed with the simplicity mandate).
 - **Stopped:** arena (004), cohort (006) — deprioritized.
-- **To start once specs land:** passion-tutor (007), family-selection (008).
+- **Starting now:** passion-tutor (007), family-selection (008).
 
 Rationale: engineers endorsed the passion lab and evidence graph, added the passion-project
 Socratic tutor, and liked the family-selection idea from the brainlift; the arena/cohort social
