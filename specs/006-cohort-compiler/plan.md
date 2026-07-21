@@ -5,7 +5,7 @@
 **Input**: Feature specification from `specs/006-cohort-compiler/spec.md`
 
 > **Loop-readiness.** `spec.md` is the loop-ready source of truth: it carries the hard
-> [Scope Fence](./spec.md#scope-fence), the ordered [Phasing P0–P6](./spec.md#phasing-p0p6),
+> [Scope Fence](./spec.md#scope-fence), the ordered [Phasing P0–P11](./spec.md#phasing-p0p11),
 > machine-checkable [Success Criteria mapped to tests](./spec.md#success-criteria-mandatory), exact
 > [Golden Values & Seed Fixtures](./spec.md#golden-values--seed-fixtures), [Decisions Already
 > Made](./spec.md#decisions-already-made), the [Defaults for the Unspecified](./spec.md#defaults-for-the-unspecified)
@@ -16,11 +16,15 @@
 
 Build the code-first core of GT100K's **Cohort Compiler + RivalryMix** (PRD §15, §15.1, §15.2) as a **pure, framework-agnostic TypeScript domain package** (`packages/cohort-compiler`), mirroring `packages/learning-loop` / `packages/evidence-graph`. Three capabilities: (1) **near-peer candidate generation** by a level+velocity **caliper** (a pure-TS deterministic kNN/distance filter; **HNSW** deferred behind a port); (2) a **cohort-assignment solver** that forms stable **cohorts of six** under **hard constraints** — age, schedule, safeguarding separation, accommodations, level-velocity caliper, an **individual non-harm floor**, and a **churn budget** — via a pure-TS **greedy + local-search/repair** heuristic (**OR-Tools CP-SAT / branch-and-price** deferred), returning a `CohortAssignment` **snapshot** with **atomic in-memory commit + rollback**, **one active assignment per learner**, a **weekly churn cap**, and **cohort repair within the churn budget**; and (3) a pure-logic **RivalryMix turn-taking analysis** that detects **observable** patterns (dominance, repeated interruption) but **cannot** infer honesty/emotion/personality/motivation and **suppresses prompts** under low-quality input (**WebRTC/AudioWorklet + LiveKit** media plane deferred to a stub port). All I/O sits behind ports — `CandidateIndex`, `CohortRepository`, `SafeguardingSink`, plus deferred/shadow stub ports `MediaTurnSource` and `BenefitEstimator` — with in-memory/stub adapters under `adapters/cohort-*`, so the domain stays deterministic and 100% unit-testable. Guardrails are encoded, not asserted: **no fixed-ability caste ranks** (G6), **bullying/exclusion bypasses optimization to safeguarding**, **no learned model assigns**, **peer-effect causal uplift stays shadow**. Synthetic-only.
 
+**UI layer (this expansion — P7–P11).** On top of the finished domain, add a **beautiful, game-y, fully-animated, guide/ops-facing Cohort & Arena Viewer** (PRD §9.2 Guide/Ops consoles; §15/§15.3): a **pure view-model package** `packages/cohort-arena-view` (`@gt100k/cohort-arena-view`) that reads the committed `@gt100k/cohort-compiler` API read-only and composes a single deterministic **`CohortArenaView`**, plus a **Next.js App-Router app** `apps/cohort-arena` (`@gt100k/cohort-arena`) rendering it on **Pixi.js v8 (WebGL)** for the two spatial surfaces (an animated **cohort-formation constellation** and a **RivalryMix arena room**) and **DOM/SVG + Framer Motion** for the HUD (cohort cards with FLIP layout animation, satisfied-constraint badges, the non-harm floor line, the **opt-in gain-based standings**, the churn meter, rollback, and the **safeguarding-bypass** affordance) and the accessible **Cohort Ledger**. One view model drives every renderer (parity by construction); reduced motion is a first-class **equal** mode; WCAG 2.2 AA via the Ledger (canvas `aria-hidden`); **no caste/bottom-rank, no dark patterns, no emotion/trait labels** — guardrails structural, not asserted. The domain package is **not modified**. The view package is unit-tested (Vitest); the app is verified by `next build` + a seeded smoke.
+
 ## Technical Context
 
 **Language/Version**: TypeScript (strict), Node.js LTS (per PRD §26.1). `tsconfig.base.json` with `strict`, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`, `composite` (inherited).
 
-**Primary Dependencies**: None in the domain package (pure TS). pnpm workspaces + Vitest + Biome + `tsc -b` (existing factory gate). No OR-Tools, no HNSW library, no WebRTC/LiveKit — all deferred.
+**Primary Dependencies**: None in the domain package (pure TS). pnpm workspaces + Vitest + Biome + `tsc -b` (existing factory gate). No OR-Tools, no HNSW library, no WebRTC/LiveKit — all deferred. **UI layer**: `packages/cohort-arena-view` depends on `@gt100k/cohort-compiler` (`workspace:*`) only (pure TS); `apps/cohort-arena` adds **Next.js `^14.2.15`** + **React `^18.3.1`** (match `apps/student-compass`), **Pixi.js `^8.19.0`** (WebGL canvas, client-only), and **motion `^12.42.0`** (`motion/react`, HUD/FLIP animation). No other runtime deps; no media/WebRTC/network.
+
+**UI project type**: A pure view-model **package** (`packages/cohort-arena-view`, unit-tested by Vitest — the existing `packages/**/test` glob discovers it) + a **Next.js App-Router app** (`apps/cohort-arena`, verified by `next build` + a seeded smoke; **not** in the Vitest globs, mirroring feature 004). One `CohortArenaView` drives the Pixi canvas, the DOM/Framer-Motion HUD, the reduced-motion rendering, and the accessible Cohort Ledger.
 
 **Storage**: In-memory `CohortRepository` (atomic commit + prior-snapshot rollback) for the synthetic slice, behind a port so a real PostgreSQL store slots in later without touching domain logic (PRD §15).
 
@@ -54,6 +58,22 @@ Build the code-first core of GT100K's **Cohort Compiler + RivalryMix** (PRD §15
 
 **Result: PASS** — no violations, no Complexity Tracking needed. The deliberate deferrals (HNSW, CP-SAT, WebRTC+LiveKit media plane, causal-uplift) are the **production direction** (PRD §15/§15.1), not synthetic-beta requirements, and are represented by clearly-marked ports/stubs rather than silent omission.
 
+### Constitution re-check — UI layer (P7–P11)
+
+The Viewer is a **guide/ops observation surface** (PRD §9.2), not a new decision-maker; it re-uses the domain's guardrails and adds display-only ones. Re-checked:
+
+| Principle | Status | UI note |
+|---|---|---|
+| I. Human authority | ✅ Pass | The Viewer **observes**; it issues no consequential decision (FR-046). Churn/rollback/safeguarding are display of the domain's bounded-automation envelope (FR-034/FR-038). |
+| II. Child assent & veto | ✅ Aligned | Standings are **opt-in (default off)**; turning them off (or plain mode) changes nothing (FR-035/FR-036). |
+| V. Privacy follows purpose | ✅ Pass | Synthetic-only, pseudonymous refs, no PII/media/network; peers anonymized; app fetches nothing (FR-042). |
+| VI. Accessibility | ✅ Pass (enforced) | WCAG 2.2 AA via the Cohort Ledger; reduced motion a first-class **equal** mode; color never the sole cue (FR-039/FR-040/FR-045). |
+| VIII. Bounded motivational pressure | ✅ Pass (enforced) | **No caste rank, no bottom-rank** — structural: `StandingsView` cannot carry `rank`/`position`/`percentile`/`outOf` (FR-035, SC-012/SC-017). |
+| IX. Prohibited product behavior | ✅ Pass (enforced) | No purchase/gacha/loss/decay/FOMO/engagement-timer (FR-043); bullying/exclusion renders the **bypass-to-safeguarding** affordance, never mutating a standing/rating (FR-038); RivalryMix view cannot carry an emotion/trait label (FR-037, SC-013). |
+| ENG (tests-define-done, no secrets, isolation) | ✅ Pass | View unit-tested (Vitest); app `next build` + smoke; new dirs only (parallel-safe); no secrets/env/network. |
+
+No new violations; no Complexity Tracking needed.
+
 ## Project Structure
 
 ### Documentation (this feature)
@@ -65,10 +85,12 @@ specs/006-cohort-compiler/
 ├── data-model.md        # Phase 1 output
 ├── quickstart.md        # Phase 1 output
 ├── contracts/
-│   └── cohort-compiler.md   # Phase 1 output (domain API + ports + test obligations)
+│   ├── cohort-compiler.md      # domain API + ports + test obligations (P0–P6)
+│   └── cohort-arena-view.md    # UI view-model interface + app acceptance obligations (P7–P11)
 ├── checklists/
-│   └── requirements.md      # spec quality checklist
-└── tasks.md             # Phase 2 (/speckit-tasks)
+│   ├── requirements.md      # domain spec quality checklist
+│   └── ui.md                # UI quality checklist (P7–P11)
+└── tasks.md             # Phase 2 (/speckit-tasks) — domain P0–P6 + UI P7–P11
 ```
 
 ### Source Code (repository root)
@@ -116,21 +138,76 @@ adapters/
 └── cohort-benefit-shadow/           # BenefitEstimator SHADOW stub (peer-effect uplift deferred)
 ```
 
+### UI source code (P7–P11 — new dirs only)
+
+```text
+packages/
+└── cohort-arena-view/               # PURE view-model — reads @gt100k/cohort-compiler read-only
+    ├── src/
+    │   ├── model.ts                 # CohortArenaView, ConstellationView/MoteView/CohortHexView,
+    │   │                            #   CohortCardView, StandingsView (NO rank field),
+    │   │                            #   ArenaRoomView/SeatView/TurnPatternView (NO emotion/trait field),
+    │   │                            #   SafeguardingView, MotionSpec, PresentationView/VisualBand, LedgerView
+    │   ├── art.ts                   # PALETTE + TYPOGRAPHY (exact tokens)
+    │   ├── motion.ts                # MOTION + EASINGS + resolveMotion (reduced-motion table)
+    │   ├── layout.ts                # LAYOUT + layoutConstellation + layoutArenaRing (deterministic geometry)
+    │   ├── standings.ts             # deriveStandingsView (opt-in; gainToBandTop; no rank/bottom-rank)
+    │   ├── rivalry.ts               # buildArenaRoomView (observable-only; suppression veil)
+    │   ├── band.ts                  # resolveVisualBand (age band + plain mode; state-identical)
+    │   ├── ledger.ts                # buildLedger (accessible DOM structure spec)
+    │   ├── view.ts                  # buildCohortArenaView (composes all of the above) + plainViewEquals
+    │   └── index.ts                 # public surface
+    ├── test/                        # Vitest golden tests (view/layout/motion/standings/rivalry/art/guardrails)
+    │   ├── smoke.test.ts            # seeded smoke (green from first P7 increment)
+    │   └── fixtures/                # view golden fixtures (V1..V4)
+    ├── package.json                 # @gt100k/cohort-arena-view; type module; test: vitest run
+    ├── tsconfig.json                # extends ../../tsconfig.base.json (composite)
+    └── README.md
+apps/
+└── cohort-arena/                    # Next.js App Router — the ONLY place Pixi/React/DOM live
+    ├── app/
+    │   ├── layout.tsx               # root layout + metadata
+    │   ├── page.tsx                 # server shell → dynamic(ssr:false) import of the client Viewer
+    │   └── globals.css              # PALETTE/TYPOGRAPHY tokens + reduced-motion/-transparency + :focus-visible
+    ├── components/
+    │   ├── CohortArena.client.tsx   # client Viewer: mounts Pixi (useEffect, destroy on unmount) + HUD + Ledger
+    │   ├── constellation/           # Pixi Cohort Constellation (compile flow → crystallize; churn/rollback)
+    │   ├── arena/                   # Pixi RivalryMix arena room (seat ring; suppression veil)
+    │   ├── hud/                     # DOM/Framer-Motion: cohort cards (FLIP), badges, standings, churn, safeguarding
+    │   └── ledger/                  # accessible Cohort Ledger (role=tree; aria-live)
+    ├── public/seed/                 # committed inline SVGs (mote/seat/shield/icons); no external fetch
+    ├── next.config.mjs              # transpilePackages: [cohort-arena-view, cohort-compiler]
+    ├── tsconfig.json                # mirror apps/student-compass (jsx preserve, noEmit, DOM libs)
+    ├── package.json                 # @gt100k/cohort-arena; next/react/pixi.js/motion
+    ├── .env.local.example           # NEXT_PUBLIC_* placeholders (git-ignored .env.local)
+    └── README.md
+```
+
 **Structure Decision**: A TS monorepo library (per PRD §26.1) with all Cohort-Compiler rules quarantined in a **pure, side-effect-free `packages/cohort-compiler`** domain package, mirroring `packages/learning-loop`. All I/O (candidate indexing, persistence/commit, safeguarding routing, media capture, benefit estimation) is injected via ports so the core is deterministic and fully unit-testable, and real HNSW / CP-SAT / PostgreSQL / WebRTC+LiveKit / causal-uplift integrations replace the stubs later **without changing domain code**. Go/Rust services (PRD §26.2/§26.3), the media plane, and any app/UI are **not** part of this slice. Time is passed as explicit inputs (no `Clock` port needed) to keep the domain deterministic.
 
-**Parallel-safety**: all new code lives in `packages/cohort-compiler` and `adapters/cohort-*`. The root workspace glob (`packages/*`, `adapters/*`) and the Vitest include (`packages/**/test`, `adapters/**/test`) already discover them, so **no** shared root file (`package.json`, `pnpm-workspace.yaml`, `vitest.config.ts`, `biome.json`) is edited. The **only** shared-file touch is adding composite project references to the root `tsconfig.json`; that is the **final task** and is flagged as the single point a human reconciles at merge.
+**Parallel-safety**: all new code lives in `packages/cohort-compiler`, `adapters/cohort-*`, and the UI dirs `packages/cohort-arena-view` + `apps/cohort-arena`. The root workspace glob (`packages/*`, `adapters/*`, `apps/*`), the Vitest include (`packages/**/test`, `adapters/**/test`), and `biome check packages adapters apps` already discover the new dirs, so **no** shared root file (`package.json`, `pnpm-workspace.yaml`, `vitest.config.ts`, `biome.json`) is edited. The **only** shared-file touch is adding composite project references to the root `tsconfig.json` (domain dirs + `packages/cohort-arena-view`); that is the **final task** (P11) and is flagged as the single point a human reconciles at merge. `apps/cohort-arena` is a Next.js app (its own `tsconfig` with `composite:false`, `noEmit`), so it is not a `tsc -b` composite reference — it is verified by `next build`.
 
-## Phasing & gate (see spec.md § Phasing P0–P6)
+**UI structure decision**: mirror feature `004-arena-game-world` — a **pure view-model package** holds every display rule as a deterministic, unit-testable function (so the guardrails are structurally provable) and a **separate Next.js app** is the only place Pixi/React/DOM live. Rendering is split (D-UI-1): **Pixi.js v8** for the constellation + arena room (WebGL, best fit for a learner-mote field), **Framer Motion + DOM/SVG** for the HUD (FLIP layout animation on cohort membership) and the Ledger. One `CohortArenaView` drives all renderers (D-UI-3); the canvas is `aria-hidden` and the Cohort Ledger is the AT source of truth (D-UI-4).
 
-The build follows the ordered phases in [spec.md § Phasing](./spec.md#phasing-p0p6): **P0** Setup &
+## Phasing & gate (see spec.md § Phasing P0–P11)
+
+The build follows the ordered phases in [spec.md § Phasing](./spec.md#phasing-p0p11). **Domain:** **P0** Setup &
 Foundational (scaffold + types + ports + seed fixtures + seeded smoke test) → **P1** near-peer candidate
 generation (MVP) → **P2** solver & feasibility → **P3** commit/rollback/one-active/churn → **P4** repair +
-safeguarding bypass + shadow benefit → **P5** RivalryMix → **P6** polish + the single shared-file
-`tsconfig.json` touch. Each phase ends on a green gate and maps to specific SCs and golden fixtures.
+safeguarding bypass + shadow benefit → **P5** RivalryMix → **P6** polish. **UI:** **P7** view-model domain
+(the pure `cohort-arena-view` package: types + golden constants + `buildCohortArenaView` + presentation
+functions + view fixtures) → **P8** app shell + Cohort Constellation (UI MVP) → **P9** gain-based standings +
+churn/rollback → **P10** RivalryMix arena room → **P11** safeguarding affordance + a11y + perf + the single
+shared-file `tsconfig.json` touch (now also listing `packages/cohort-arena-view`). Each phase ends on a green
+gate and maps to specific SCs and golden fixtures.
 
-**Gate (pinned commands):** `pnpm install` → `pnpm typecheck` (`tsc -b`, strict) → `pnpm test` (Vitest) →
-`pnpm lint` (`biome check`). `build` (the `student-compass` app) is untouched by this slice, so the loop
-gate here is **typecheck + test** (+ lint). The seeded smoke test keeps `pnpm test` green from iteration 1.
+**Domain gate (pinned commands):** `pnpm install` → `pnpm typecheck` (`tsc -b`, strict) → `pnpm test`
+(Vitest) → `pnpm lint` (`biome check`). The seeded smoke test keeps `pnpm test` green from iteration 1.
+
+**UI gate:** the view package rides the same `pnpm typecheck` + `pnpm test` (Vitest globs discover
+`packages/cohort-arena-view/test`); the app adds **`pnpm --filter @gt100k/cohort-arena build`** (`next build`)
++ the seeded app smoke (zero console/WebGL errors; canvas mounted; Ledger focusable) + the quickstart
+walkthrough. The root `build` script (student-compass) is **not** modified.
 
 ## Deferred scope (production direction — described here, NOT built in this slice)
 

@@ -534,3 +534,554 @@ Where a real product judgment is unavoidable, the preferred answer is the **defa
 | D9 | **Never emit a scalar passion/drive score** (any collapse of coverage/signals into one number) | **forbidden — do not do it** | **critical** |
 | D10 | **Never let a rule/model-proposed transition become operative without `authorRevision`** | **forbidden — guide authors the operative record** | **critical** |
 | D11 | **Never export a hypothesis/probe result to a forbidden purpose** (admissions/discipline/family-fidelity/public-ranking/commercial) | **forbidden — `guardRead` denies by default** | **critical** |
+
+---
+---
+
+# Part II — Interest Lab UI Surfaces (Child Probe-Picker + Guide Hypothesis Console)
+
+**Status**: Loop-ready (UI expansion) · **Created**: 2026-07-20 · builds **on top of** the done Part I pure domain (`@gt100k/interest-lab`).
+
+**Input (Part II)**: "A BEAUTIFUL, game-y, impressive, fully-animated UI on top of the existing pure Interest-Lab domain — a **child probe-picker** (playful, quest-like) plus a **guide hypothesis console** — rendered from the domain outputs, with full art direction + a golden motion table, reduced-motion as a first-class equal mode, WCAG 2.2 AA, age-band staging, and no dark patterns. Synthetic learners only; the pure domain stays the unit-tested core."
+
+## §U0 · How to read Part II (for the build loop)
+
+Part I (above) is the **pure domain** and is *done* — Part II renders it; it never re-computes a learning rule and never re-opens a Part-I decision. This Part II is the single loop source-of-truth for the UI. It is large on purpose; read **only the section for the current phase** each turn (JIT), then the referenced golden values.
+
+- Build path is **§U9 Phasing (P8…P13)** — always work the lowest unfinished phase.
+- Every phase gate is **`pnpm typecheck` (`tsc -b`) + `pnpm test` (Vitest)** green for the pure **view package** `@gt100k/interest-lab-view`; the app phases add **`pnpm --filter @gt100k/interest-lab-app build`** (`next build`) + the **§U11 seeded smoke** + the **[quickstart](./quickstart.md) acceptance walkthrough**.
+- Machine-checkable acceptance lives in **§U10 Success Criteria** (each mapped to a named test) and **§U8 Golden values**.
+- Choices already settled are in **§U2 Decisions already made** — do not re-open them.
+- Anything not specified: follow **§U3 Defaults for the unspecified** (log it, continue).
+- Companion docs kept consistent with this file: [plan.md](./plan.md) *(Part II)*, [tasks.md](./tasks.md) *(P8…P13)*, [data-model.md](./data-model.md), [contracts/interest-lab-ui.md](./contracts/interest-lab-ui.md), [research.md](./research.md), [quickstart.md](./quickstart.md), [checklists/ui.md](./checklists/ui.md). **Where they disagree, this file wins.**
+
+## §U1 · Scope fence (in / out / non-goals)
+
+### In scope
+
+1. A **pure, deterministic presentation package `@gt100k/interest-lab-view` (`packages/interest-lab-view`)** that turns the Part-I domain outputs (`Lab`, `CoverageMatrix`, `SignalSummary`, `InterestHypothesis`/`HypothesisRevision`, `evaluateCandidateGate`) into **render-ready view models** for both surfaces, plus the exact constant registries (`PALETTE`, `TYPOGRAPHY`, `MOTION`, `EASINGS`, `HUE_RAMP`, `WORK_MODE_GLYPHS`) and their resolvers (`resolveMotion`, `resolveDomainHue`, `resolveChildStaging`). Depends only on `@gt100k/interest-lab` (`workspace:*`). No I/O, no wall-clock, **no `Math.random`**.
+2. A **new Next.js App-Router app `@gt100k/interest-lab-app` (`apps/interest-lab`)** rendering **two animated DOM/SVG surfaces** with React + a motion library (framer-motion): the **child Curiosity Quest Board** (probe-picker) and the **guide Hypothesis Console**.
+3. A **first-class, equal reduced-motion / plain rendering** of the identical view models, and **DOM-native WCAG 2.2 AA** (keyboard/switch/screen-reader operable by construction — no opaque canvas).
+4. **Age-band staging** on the child surface (6-8 / 9-11 / 12-14) per §14.13, resolved from `resolveChildStaging`.
+5. A **seed adapter wiring** in the app that feeds the Part-I fixtures (`CATALOG_GOLDEN_V1`, `EVENTS_GOLDEN_V1`) through the domain and view package so the app renders **with no external fetch**.
+
+### Out of scope (explicit)
+
+- Any change to **Part I** (`packages/interest-lab`, `adapters/interest-*`) beyond consuming its public API. The domain rules, the coverage matrix, the signal families, the hypothesis lifecycle, and the guardrails are **injected as inputs**, not recomputed.
+- The **learned Bayesian model** and the **contextual bandit** (still shadow/deferred in Part I). The console renders shadow **proposals as suggestions only**; it never makes them operative.
+- The **Specialization Planner** (`CANDIDATE_SPINE → ACTIVE` adoption, §14.7) — the console *visualizes* the lifecycle state and the transition guardrails; it does not author an adoption.
+- Real persistence, real consent/admissions/legal machinery, real device/artifact capture, sound-asset pipeline (cues are muted-by-default captions only), and cross-cohort standings (this is the exploration/scouting surface, not the Arena §15.3 social surface).
+
+### Non-goals (will not build, by principle)
+
+- **No** scalar passion/drive score, **no** confidence number that hides a coverage gap, and **no** verdict/label ("you are an X person") in **any** view model or on **any** surface (IL-005/IL-006; §14.5).
+- **No** dark patterns on the child surface: no countdown/urgency timers, manufactured scarcity, FOMO/guilt framing, loss-framed streaks, decaying/absence meters, or engagement-timed notifications (§14.12).
+- **No** admissions/discipline/family-fidelity/public-ranking/commercial framing: the view types are **structurally** free of `rank`/`percentile`/`score`/`price`/`verdict` fields (PASS-010, IL-013).
+- **No** motion-only affordance and **no** degraded accessibility fallback — reduced-motion and the full DOM are **equal** modes.
+- **No** game engine / Canvas / WebGL (see §U2 D-U1): the surfaces are card/grid/timeline/state-diagram based and are **DOM-native** for accessibility-by-construction.
+- **No** fixed identity/career taxonomy and **no** hardcoded domain list in the view package — domain hue is derived from **catalog order**, not a domain→hue table (constitution: no fixed labels; IL-001).
+
+## §U2 · Decisions already made (do not re-open)
+
+### D-U1 — Rendering: **React + framer-motion + SVG/DOM (no game engine) — SETTLED**
+
+The two surfaces are a **card/quest board**, a **coverage grid**, a **return timeline**, a **lifecycle state diagram**, and **evidence prose** — all inherently DOM/SVG. Building them in the DOM (not Canvas/Phaser) makes them **accessible by construction** (no `aria-hidden` canvas + parallel structure needed), lets us apply the Apple/Emil DOM-motion craft (springs, `@starting-style`, `clip-path`, `backdrop-filter`, origin-aware transforms), and keeps `next build` lean. **Motion library: `framer-motion@^11`** (a.k.a. Motion). Canvas/Phaser is rejected for these surfaces (recorded in [research.md](./research.md)). Reduced motion remains a first-class **equal** mode; WCAG 2.2 AA is a hard requirement (UI-FR-012/013).
+
+### D-U2 — Architecture: pure view package + separate Next.js app (mirror feature 001 / 004)
+
+`packages/interest-lab-view` is **pure** (no I/O, no wall-clock, **no `Math.random`**), framework-agnostic, and holds every render-shaping rule as a unit-testable function. `apps/interest-lab` is the only place React/framer-motion/DOM live. The **Part-I domain package stays the untouched, unit-tested core**; the view package builds *on top of it*, so both layers are Vitest-covered (the app is verified by `next build` + walkthrough). Parallel-safe (new dirs only).
+
+### D-U3 — One state → many renderings (parity by construction)
+
+The view package composes a single **`InterestLabView`** (`buildInterestLabView(...)`). The child probe-picker, the guide console, the reduced-motion/plain rendering, and every age-band rendering **all render from that same view**. Reduced-motion/plain/age-band **do not recompute** the domain state — they render the identical view with motion stripped and presentation swapped. `plainViewEquals` is a pure, testable guarantee (UI-FR-019, SC-UI-10).
+
+### D-U4 — Guardrails are structural
+
+View types carry **no** `score`/`confidence`/`passionScore`/`verdict`/`label`/`rank`/`percentile`/`price` field (grep-tested, SC-UI-11). Coverage **gaps are visible fields**, never collapsed to a number. Competing explanations are a **paired supporting+disconfirming** structure (never averaged). Prompted engagement and support (accessibility/safety) markers carry an explicit `lowersSignal: false`. Shadow proposals carry `operative: false` and the console has **no path** to make them operative — the guide authors the record (IL-011).
+
+### D-U5 — Art direction: **"The Curiosity Atelier" — dusk workshop, not cream, not golden-hour**
+
+Deliberately **not** the 2026 SaaS-cream/sand default (impeccable) and deliberately **distinct** from feature 004's golden-hour teal-navy sea. The identity is a **deep plum-indigo dusk workshop-atrium** where curiosities glow warm; the guide console is a calm **violet-tinted observatory desk / field notebook**. Full palette + type in **§U8.2/§U8.3** (golden). Fonts served by **system fallback stacks** (no external fetch); self-hosted `woff2` is an optional non-breaking upgrade (D-U8).
+
+### D-U6 — Data model, motion vocabulary, stack
+
+- **View data model** is fixed in [data-model.md](./data-model.md).
+- **Motion vocabulary** (Apple fluid-motion + Emil design-engineering) is fixed in **§U6** and **§U8.4**: eased `enter` (strong ease-out) on entrances, `move` (ease-in-out) for on-screen moves, `pop` (gentle overshoot ≤1.05, **never `scale(0)`**) for reveals, press feedback `scale 0.97` on pointer-down, one momentum **spring** reserved for the "pick" gesture, and a full reduced-motion equivalent for every row.
+- **Stack** pinned in **§U11**. Loop gate = `pnpm typecheck` + `pnpm test`; app phases add `next build` + smoke + walkthrough.
+
+## §U3 · Defaults for the unspecified
+
+> **For anything Part II doesn't specify, choose the simplest correct option, record it in `.loop/decisions.md`, and continue.**
+
+Escalate (append one line to `.loop/requests.jsonl`, then proceed on your recommendation) **only** for a genuine product/design choice with hard-to-reverse consequences you cannot defensibly default — e.g. a golden value you believe is wrong. Never escalate naming, formatting, copy wording, or anything this doc answers. The rendering approach (D-U1), the view-package architecture (D-U2), and the art direction (D-U5) are **settled** and MUST NOT be re-opened.
+
+## §U4 · User Scenarios & Testing *(mandatory)*
+
+Prioritized, independently testable slices. **UI-US1 alone is a viable MVP**: the child Curiosity Quest Board rendering the domain Lab with satisfying pick motion, age-band staging, and a reduced-motion equal mode.
+
+### UI-US1 — Pick a curiosity quest on a playful, animated board (P9) 🎯 MVP
+
+A synthetic learner opens the **Curiosity Quest Board**: the domain `Lab` (18–24 balanced probes) rendered as a warm, dusk-lit spread of **quest cards / curiosity islands**, clustered by domain constellation. Each card shows its **domain hue**, a **work-mode glyph** (build / investigate / compose / …), difficulty/social/audience cues (icon + text, never color-only), and **why it appears** (provenance: guide / rule / shadow-model). The child always has **≥2 eligible offers** at each choice point. Picking a quest plays a satisfying **momentum spring** into a "my quests" tray; press feedback is instant. `prefers-reduced-motion` conveys the identical state calmly.
+
+**Why this priority**: it is the atomic child-facing surface — the playful rendering of the balanced Lab. Everything else (the delight, the console) hangs off "the board renders the domain Lab with parity, staging, and reduced-motion" (UI-FR-002).
+
+**Independent Test**: feed `buildLab(CATALOG_GOLDEN_V1, freshLearner, {seed:42})` (Part-I **G1**) into `buildProbePickerView`; assert 20 quest cards, each `provenance:"RULE"` + non-empty `whyCopy`, `domainHue` = `HUE_RAMP[catalog-domain-index]`, `workModeGlyph` per **§U8.6**, `returnState:"new"`, ≥2 eligible at each choice point; render the board (DOM) and confirm each card state is conveyed color-independently, with a reduced-motion rendering that loses no state.
+
+**Acceptance Scenarios**:
+
+1. **Given** the golden Lab, **When** the board renders, **Then** every offer appears as a quest card with its domain hue, work-mode glyph, difficulty/social/audience cue (icon+text), and a `whyCopy`/provenance — and no card exposes a price/score/rank/label.
+2. **Given** any choice point, **When** the child views offers, **Then** ≥2 eligible offers are present and pickable by pointer **and** keyboard, with visible focus.
+3. **Given** a pick, **When** the child selects a quest, **Then** it animates into the tray with a momentum spring (interruptible), press feedback fired on pointer-down; under reduced motion it moves via a ≤150ms crossfade with no spring.
+4. **Given** `prefers-reduced-motion`, **When** the board renders, **Then** entrances become instant/short crossfades, no `scale(0)`, and every quest/state remains fully conveyed.
+
+### UI-US2 — "Come back later" delight for voluntary return (P10)
+
+When the child **voluntarily returns** to a quest they already explored (the domain's delayed voluntary-return signal at 7 / 30 days — the central passion signal), the quest renders a warm **welcome-back** state: a gentle `spark` bloom + concrete copy ("You came back to this one"). This is the **one delight reserved for voluntary return** — it celebrates the signal that survives the removal of pressure, **without** telling the child a fixed label and **without** any guilt/FOMO/urgency. Prompted returns get **no** such delight and visibly recede.
+
+**Why this priority**: voluntary return is the load-bearing passion signal (PASS-004/005). Making it *felt* — and making prompted return deliberately un-celebrated — encodes the whole thesis at the child surface without dark patterns.
+
+**Independent Test**: with a history marking a probe as voluntary-return @7 (and @30), `buildProbePickerView` yields that card's `returnState:"voluntary-return"` with a `welcomeBack` motion token and concrete (label-free) copy; a prompted-return probe yields `returnState:"prompted-return"` with a recessed tone and **no** delight; reduced-motion yields a static warm ring + text.
+
+**Acceptance Scenarios**:
+
+1. **Given** a voluntary return @7/@30, **When** the card renders, **Then** it shows a warm welcome-back state with concrete copy and **no** fixed label / no "you are an X".
+2. **Given** a prompted return (reminder/deadline/nudge), **When** the card renders, **Then** it recedes (`prompted` tone), carries its intervention context on inspect, and shows **no** celebration.
+3. **Given** the board, **When** inspected for dark patterns, **Then** there is no countdown, streak-break threat, scarcity, FOMO, or engagement-timed nudge anywhere.
+
+### UI-US3 — Guide console: the animated coverage matrix, gaps never hidden (P11)
+
+The guide opens the **Hypothesis Console** and sees the **coverage matrix**: domains (rows, catalog order, each with its hue) × the 9 work-modes (columns, each with its glyph). Each cell shows a **coverage status** (voluntary-explored / prompted-explored / offered / not-yet-offered). **Gaps are visible** (calm slate hollow cells + text), never hidden behind a score. A **coverage rail** summarizes each required dimension (`probeCount`, `domains`, `workModes`, `social`, `difficulty`, `audience`) as met / named-gap — the exact Part-I `CoverageMatrix` (**G2** complete, **G3** gappy). There is **no** scalar coverage/confidence anywhere.
+
+**Why this priority**: the console's first job is an honest, beautiful coverage picture — the thing §14.4.3 #3 forbids collapsing into a confidence number.
+
+**Independent Test**: `buildCoverageMatrixView(buildLab(CATALOG_GOLDEN_V1,…))` deep-equals the golden complete view (rail all met, `gaps: []`); the gappy catalog yields the golden gappy view (each dimension's exact gap string, `complete:false`); assert **no** `score`/`confidence` key exists on the view.
+
+**Acceptance Scenarios**:
+
+1. **Given** a complete Lab, **When** the matrix renders, **Then** the rail shows every dimension met, gaps empty, and the grid fills with a stagger (instant under reduced motion).
+2. **Given** a gappy Lab, **When** the matrix renders, **Then** each unmet dimension appears as a **named, visible gap** (calm slate, icon+text) and the aggregate `gaps` list is shown — never a single number.
+3. **Given** any matrix, **When** inspected, **Then** there is no scalar coverage/confidence field or element.
+
+### UI-US4 — Guide console: competing explanations, return timeline, lifecycle & authoring (P12)
+
+The console renders the mutable `InterestHypothesis` beautifully: (a) **competing explanations side-by-side** — the strongest **supporting** evidence beside the strongest **disconfirming** evidence, equal weight, never averaged, with uncertainty as an **evidence grade** (thin/moderate/strong) or interval — never a scalar passion score, never "you are an X"; (b) a **voluntary-vs-prompted return timeline** — voluntary returns @7/@30 bright and distinct, prompted returns recessed with their intervention context, and accessibility/safety events as **neutral care-markers that never lower a signal**; (c) an elegant **lifecycle state visual** (EXPLORING → EMERGING → CANDIDATE_SPINE → ACTIVE, with CONTESTED / PARKED / REOPENED branches) showing the current state, the legal transitions, and the **CANDIDATE_SPINE gate checklist** (≥3 families incl. ≥1 delayed-discretionary + ≥1 artifact/competence, from `evaluateCandidateGate`); (d) **authoring**: the guide authors the operative revision; a shadow rule/model proposal is shown as a **suggestion only** (`operative:false`, "a guide authors the record").
+
+**Why this priority**: this is the console's evidentiary heart — the §14.5 contract rendered as an honest, contestable, human-authored record.
+
+**Independent Test**: from a fixture revision + `EVENTS_GOLDEN_V1` + `evaluateCandidateGate`, assert: the explanations view always carries a `disconfirming` card whenever it carries a `supporting` card and exposes no scalar passion score; the timeline marks voluntary @7/@30 distinctly, marks the prompted return recessed with context `"reminder"`, and marks the assistive/safety events with `lowersSignal:false`; the lifecycle view's gate checklist matches **G5** (competence-only → `missing:["no delayed-discretionary signal"]`; the G4 summary → eligible) and any proposal is `operative:false`.
+
+**Acceptance Scenarios**:
+
+1. **Given** a hypothesis revision, **When** explanations render, **Then** supporting and disconfirming appear **side-by-side**, uncertainty is a grade/interval, and there is no scalar passion score or verdict.
+2. **Given** `EVENTS_GOLDEN_V1`, **When** the timeline renders, **Then** voluntary @7/@30 are distinct and bright, the prompted return recedes with its context, and assistive/safety markers never lower a signal (`lowersSignal:false`).
+3. **Given** the lifecycle visual, **When** a rule/model proposes a transition, **Then** it renders as a **suggestion** (`operative:false`) and only a guide-authored revision is shown as operative; the CANDIDATE_SPINE gate checklist matches `evaluateCandidateGate`.
+4. **Given** any console text, **When** reviewed, **Then** it uses "current evidence suggests" / "next test" and never "you are an X person".
+
+### UI-US5 — Reduced motion, plain mode, WCAG 2.2 AA & one-view parity (P13)
+
+Every animated affordance has a reduced-motion equal; a low-spectacle **plain mode** is state-identical to full; both surfaces are fully **keyboard/switch/screen-reader** operable with visible focus, color-independent cues, and ≥4.5:1 contrast. Age-band staging changes only presentation; the underlying view state is identical across bands/plain/reduced (`plainViewEquals`).
+
+**Independent Test**: `buildInterestLabView` + `plainViewEquals` confirm full/plain/reduced/age-band carry identical underlying state and differ only in `flags`+`presentation`; the a11y walkthrough confirms keyboard/screen-reader parity and contrast.
+
+**Acceptance Scenarios**:
+
+1. **Given** `prefers-reduced-motion` / plain mode, **When** either surface renders, **Then** every state/explanation/coverage-gap/timeline/lifecycle is fully conveyed without motion.
+2. **Given** keyboard-only + screen-reader, **When** operating either surface, **Then** every control is reachable/operable with visible `--focus` rings, color-independent state, ≥4.5:1 contrast; `prefers-reduced-transparency` → solid panels.
+3. **Given** an age-band switch, **When** the surfaces re-render, **Then** only presentation changes; `plainViewEquals` holds.
+
+### Edge cases (Part II)
+
+- **Fresh learner** (no history): every quest `returnState:"new"`; no welcome-back; the coverage matrix shows all gaps honestly.
+- **All-prompted history**: no voluntary delight fires; prompted markers recede; the gate stays un-met (no delayed-discretionary family).
+- **Coverage gap present**: the matrix shows the named gap (calm, never red, never a score) — parity with G3.
+- **Missing data / withdrawn reflection**: the timeline/console reflect the domain's exclusion (a withdrawn optional reflection is absent) and **never** worsen the lifecycle state on absence alone.
+- **Assistive input / safety rescue**: rendered as neutral care-markers; `lowersSignal:false`; identical interpretation to an unaided learner.
+- **Shadow proposal**: rendered as a suggestion (`operative:false`); no UI path makes it operative.
+- **Help affordance**: always present on the child surface; framed as "a different way", never as failure; never penalizes.
+- **Reduced-motion + reduced-transparency + high-contrast**: all three honored; depth/hierarchy kept, motion/translucency dropped.
+
+## §U5 · The two surfaces — the design bible
+
+This is the **design doc** the app must deliver. Machine-checkable values are pinned as golden constants in **§U8**; where §U5 describes and §U8 pins, **§U8 wins for values**. Everything is buildable in React + framer-motion + SVG/CSS and inside every guardrail (§U1 non-goals, §14.5, §14.12, §14.13).
+
+**Design pillars (five sentences everything answers to):**
+
+1. **Curiosity is the light.** The Interest Lab is a warm dusk **workshop-atrium** of glowing curiosities you wander; the passion signal — *returning after the pressure fades* — is literally the warmest light on the board. Exploration, not a test.
+2. **The board offers; it never verdicts.** The child picks among quests; the interface says "a new kind to try", never "you are an X". The *hypothesis* lives in the guide console, as evidence, always contestable.
+3. **Honesty over a number.** Coverage **gaps are shown**, competing explanations sit **side-by-side**, uncertainty is a **grade** — never a scalar passion score, never a confidence that hides a gap.
+4. **Calm by default, delight only at the return.** Ambient motion is sparse; the one reserved delight is the **voluntary "come back later"** moment. Frequency-appropriate motion (Emil): rare → delightful, occasional → standard, frequent → instant. No dark patterns, ever.
+5. **Reduced motion and the keyboard are equal citizens.** Every visual has a calm, non-vestibular equivalent; the DOM is the accessible surface by construction (no opaque canvas). Nothing beautiful is motion-only; nothing stateful is pointer-only.
+
+### 5.1 · Art direction & visual identity — "The Curiosity Atelier"
+
+**Style register.** A tactile, warm-dusk **illustrated workshop** — soft rounded forms, 2px hand-inked outlines, 16–20px card radii, a single soft shadow + a warm inner glow on "lit" (returned-to) quests. Warmth is carried by **light + accent + type**, not by a cream body (impeccable anti-slop): the canvas is a **deep plum-indigo dusk** so warm curiosities glow against it. The guide console is a calmer, brighter **violet-tinted observatory desk** — an evidence field-notebook, editorial and quiet.
+
+**Master palette (exact hex — golden in §U8.2).** OKLCH-reasoned, contrast-verified.
+
+| Role | Token | Hex | Use |
+|---|---|---|---|
+| Night (child canvas bg) | `--night` | `#181026` | dusk atrium backdrop |
+| Night raised (card/panel) | `--night-raised` | `#221A3D` | quest cards, panels |
+| Night sunk | `--night-sunk` | `#120B1E` | wells, insets |
+| Paper (guide surface) | `--paper-guide` | `#F6F3FB` | console light surface (violet-tinted off-white, **not** cream) |
+| Ink (on paper) | `--ink-guide` | `#241B3A` | console body text (≈13:1 on paper) |
+| Ink-hi (on night) | `--ink-hi` | `#F4F0FB` | primary text on night (≈14:1, AAA) |
+| Ink-muted (on night) | `--ink-muted` | `#C3B8D9` | secondary text on night (≥4.5:1) |
+| Spark (primary warm) | `--spark` | `#FF9E5E` | curiosity warmth; **voluntary-return glow** |
+| Spark-hi | `--spark-hi` | `#FFC08A` | highlight/hover |
+| Beacon (self-authored/challenge) | `--beacon` | `#FFD166` | chosen-challenge / scope-authored gold |
+| Tide (voluntary marker) | `--tide` | `#5EC8D8` | voluntary-return timeline marker (cool counterweight) |
+| Sprout (competence) | `--sprout` | `#7BD88F` | artifact/competence growth |
+| Met (coverage) | `--met` | `#7BD88F` | dimension met (paired with check glyph) |
+| Gap (coverage) | `--gap` | `#8FA6C9` | **calm slate** "still to explore" (paired with hollow-ring glyph) — deliberately **not** red |
+| Prompted (discount) | `--prompted` | `#9A8FB5` | prompted engagement (recedes) |
+| Support (help) | `--support` | `#5EC8D8` | accessibility/safety care marker (neutral/positive, **never** negative) |
+| Contested (lifecycle) | `--contested` | `#E0A458` | CONTESTED (amber caution, **not** red) |
+| Parked (lifecycle) | `--parked` | `#8B93A7` | PARKED (resting grey-blue) |
+| Focus ring | `--focus` | `#FFD166` | 3px ring, 2px offset — high-contrast on night **and** paper |
+
+**Per-domain hue** — **catalog-order-derived, not a fixed taxonomy.** `resolveDomainHue(catalogDomainsInOrder, domainId)` returns `HUE_RAMP[index % HUE_RAMP.length]` (12 curated accents, §U8.5). It tints only a domain's quest card / constellation node / matrix row header — **never** a state cue (state uses the semantic palette + glyph + text). This respects "no fixed labels" (the hue attaches to catalog *position*, not a hardcoded domain name).
+
+**Typography (tokens §U8.3).** A three-role, contrast-axis system: display = rounded (`Fredoka`) for the child's playful headings; reading = a **serif** (`Iowan Old Style`/`Georgia`) for the guide's evidence prose (field-notebook gravitas); body = humanist sans (`Inter`) for UI/labels. **No external fetch** — system fallback stacks by default; self-hosted `woff2` is an optional non-breaking upgrade (D-U8). Size-specific tracking (Apple): display tight (`-0.02em`), body `0`, labels `+0.01em`; leading inverse to size. The guide's counts use **tabular numbers**; the 6-8 child surface shows **no raw numbers** (§14.13).
+
+**Mood board, in words.** *A child's dusk workbench strewn with glowing curiosities — a jar of pinned constellations, tools that hum when you pick them up, a warm lantern that brightens for the things you keep coming back to. Beside it, a calm observatory desk with a field notebook open: a tide-chart of returns, two columns of evidence weighed against each other, a grid of little lit and unlit windows showing what's been explored and what's still dark. Studio-Ghibli-workshop warmth × a naturalist's honest field journal.*
+
+### 5.2 · Surface A — The Curiosity Quest Board (child probe-picker)
+
+The domain `Lab` rendered as a **quest board**: offers are **quest cards / curiosity islands** clustered into **domain constellations**. Each card carries its domain hue, a **work-mode glyph** (the process verb, §U8.6), difficulty/social/audience cues (icon + text), the **provenance + why** ("a new kind to try" / "you liked building" / "your guide picked this"), and an always-present **help affordance** ("try a different way" — never a failure). The child picks 1 of **≥2** eligible offers at each choice point.
+
+**Interactions & motion.** Cards enter with a staggered `enter` scale-in+fade (never `scale(0)`, 40ms stagger, §U8.4). Hover lift is `@media (hover:hover)`-gated; press feedback `scale 0.97` on pointer-down. **Pick** = a momentum **spring** (`bounce 0.2`, the one reserved bouncy gesture) into the "my quests" tray; interruptible from the live position. A muted-by-default captioned chime accompanies a pick.
+
+**"Come back later" delight (UI-US2).** A voluntary return warms the quest (`--spark` bloom, `welcomeBack`) with concrete copy — **the only reserved delight** — never a label, never guilt. Prompted return recedes (`--prompted`) and is never celebrated.
+
+**Age-band staging (§14.13, `resolveChildStaging`, §U8.7).**
+- **6-8** — concrete & story-framed: `showRawNumbers:false`, comparison **off**, `cardScale 1.25`, 56px targets, `maxVisibleQuests 3`, story labels ("A quest about building things"), a friendly one-line "why" (no guide/rule/model detail), celebration ceiling **medium**.
+- **9-11** — transitional: growth-vs-past ("you've explored 5 kinds of making"), `cardScale 1.1`, 48px, `maxVisibleQuests 6`, provenance detail shown, a personal **exploration map** (never a score).
+- **12-14** — full & strategic: the whole board + domain/work-mode filters, `cardScale 1.0`, 44px, all eligible visible, full provenance, exploration map with the child's own coverage (still never a verdict/score).
+
+**No dark patterns (UI-FR-014).** No countdowns, no streak-break threats, no scarcity/FOMO, no engagement-timed nudges. Always ≥2 offers and a "something else / a different way" route. Language is concrete and non-labeling ("current evidence suggests"/"a new kind to try"), never "you are an X" (§14.5).
+
+### 5.3 · Surface B — The Guide Hypothesis Console (staff-facing)
+
+An **observatory desk / field notebook** — calm, editorial, honest about gaps. Four components render the mutable `InterestHypothesis`:
+
+1. **Coverage matrix** (UI-US3). Domains (rows, catalog order + hue) × the 9 work-modes (columns + glyph). Cells show a coverage **status** (voluntary / prompted / offered / empty) with icon+text; **gaps are visible** calm slate cells. A **coverage rail** renders the exact Part-I `CoverageMatrix` per dimension (`probeCount`/`domains`/`workModes`/`social`/`difficulty`/`audience`) as met / named-gap. Cells fill with a stagger (instant under reduced motion). **No scalar coverage/confidence anywhere.**
+2. **Competing explanations, side-by-side** (UI-US4). Strongest **supporting** beside strongest **disconfirming**, equal columns, never averaged; each card lists its `evidenceRefs`; uncertainty is a **grade** (thin/moderate/strong) or interval. Never a scalar passion score; never a verdict.
+3. **Voluntary-vs-prompted return timeline** (UI-US4). A horizontal `dayOffset` axis; voluntary returns @7/@30 as bright `--tide`/`--spark` markers; prompted returns as recessed `--prompted` markers carrying their intervention context; assistive/safety events as neutral `--support` care-markers with `lowersSignal:false`. The line **draws in** (`timelineDraw`), markers **pop** on their day (static under reduced motion). This makes "returns that survived the removal of pressure" legible.
+4. **Lifecycle state visual + authoring** (UI-US4). EXPLORING → EMERGING → CANDIDATE_SPINE → ACTIVE with CONTESTED / PARKED / REOPENED branches as an elegant **tide-chart**; the current state highlighted; **legal transitions** shown; the **CANDIDATE_SPINE gate checklist** (from `evaluateCandidateGate`) checks in met families and names the missing prerequisite. A rule/model **proposal** renders as a dashed **suggestion** (`operative:false`, "a guide authors the record"); the **guide authors** the operative revision. A **version history rail** scrubs revisions (append-only, never overwritten; bitemporal).
+
+**Console language.** "current evidence suggests" / "next test" throughout; never "you are an X person" (§14.5). No scalar passion score; gaps and disconfirming evidence are always shown beside the supporting case.
+
+### 5.4 · HUD, materials & wayfinding
+
+Translucent `backdrop-filter` panels float over the night (Apple materials: chrome content flows under, not opaque bars); `prefers-reduced-transparency` → solid. Press feedback on every control; ≥44px targets (56px in the 6-8 band). A persistent surface switch (child ⇄ guide, staff-gated in a real build; here a synthetic toggle), a reduced-motion / plain-mode / age-band / audio (muted) control cluster, and a "?" help. Every screen answers Apple's four wayfinding questions (where am I / where can I go / what's here / how do I get out).
+
+### 5.5 · Motion principles (the rules every §U8.4 value obeys)
+
+- **Frequency-appropriate** (Emil): rare (welcome-back, tier-of-exploration reveal) → delight; occasional (pick, matrix fill, timeline draw) → standard eased; frequent (filters, toggles) → instant.
+- **Enter/exit `enter` (strong ease-out)**; on-screen moves `move` (ease-in-out); reveals `pop` (overshoot ≤1.05, never `scale(0)`); **never `ease-in` on entrances**.
+- **One reserved spring**: the **pick** gesture carries momentum (`bounce 0.2`); everything else is critically damped / duration-eased.
+- **Interruptible & velocity-aware** (Apple): a pick can be grabbed/redirected mid-flight; animate from the presentation (live) value.
+- **Only transform/opacity/filter** animate; no layout thrash; target 60fps.
+- **Every** animation has a reduced-motion equivalent (§U8.4) and works keyboard-only; reduced motion is *the same surfaces, conveyed calmly*.
+
+**Deliberately excluded** (would violate §14.12 / §14.5): `Shake`/`Wiggle` on a wrong/"not-yet" state (reads as rejection), any `scale(0)` entrance, `ease-in` entrances, countdown/urgency timers, decaying/absence meters, gacha "reroll" reveals, engagement-timed pop-ins, looping earworm audio, and any scalar-passion-score number or "you are an X" reveal.
+
+## §U6 · The master motion table (the heart)
+
+Every row derives from `resolveMotion(kind, { reducedMotion })` so the values are testable constants (SC-UI-08). Durations are named tokens (§U8.4 `MOTION`); easings are named (§U8.4 `EASINGS`); every row has a first-class reduced-motion equivalent (Emil/Apple: reduced motion = *gentler*, not *gone*).
+
+| Event | Named effect (vocabulary) | Easing | Duration (token) | Reduced-motion equivalent |
+|---|---|---|---|---|
+| Quest card appear | **Scale-in + Fade** (0.96→1, α0→1) + **Stagger** 40ms | `enter` | 260 (`cardEnter`) | instant show, no stagger |
+| Card hover (pointer-fine) | **Hover lift** (translateY -4px + shadow) | `enter` | 150 (`micro`) | none (no hover motion) |
+| Press feedback | **Press/Tap** scale 0.97 on pointer-*down* | `press` | 120 (`press`) | kept (non-vestibular) |
+| Pick a quest | **Momentum spring** into tray (origin-aware) | spring `bounce 0.2` | 420 (`pick`) | ≤150ms crossfade to tray |
+| Voluntary "come back later" | **Warm bloom + Glow** (`--spark`) + concrete copy | `pop` | 480 (`welcomeBack`) | static warm ring + text |
+| Prompted return | recede to `--prompted` (no celebration) | `enter` | 300 (`base`) | instant recede |
+| Tray item return | **Crossfade** back to board | `enter` | 320 (`tray`) | 150ms crossfade |
+| Filter / band / plain toggle | **Instant** (frequent → no animation) | — | 0 (`instant`) | instant |
+| Coverage cell fill | **Fill + Fade** + **Stagger** 40ms | `enter` | 260 (`matrixCell`) | instant fill, no stagger |
+| Coverage rail update | **Number ticker** (tabular; 9-11/12-14 only) | `enter` | 600 (`ticker`) | instant number |
+| Timeline draw | **Line-drawing** of the axis | `move` | 700 (`timelineDraw`) | static drawn line |
+| Timeline marker | **Pop** on its day (≤1.05) | `pop` | 260 (`markerPop`) | static marker |
+| Explanations reveal | **Fade + Blur-mask** crossfade of the two columns | `enter` | 300 (`base`) | instant |
+| Lifecycle state change | **Continuity morph** between states (shared element) | `move` | 360 (`stateMorph`) | instant state |
+| Gate checklist item | **Check pop** (≤1.05) | `pop` | 200 (`fast`) | instant check |
+| Drawer / popover | **Origin-aware Scale-in** (from trigger) | `drawer` | 220 (`drawer`) | instant / fade |
+| Tooltip (subsequent) | **Fade** (skip delay + animation once one is open) | `enter` | 150 (`tooltip`) | instant |
+| Ambient (lantern glow on lit quests) | **Glow pulse** (yoyo, low amplitude) | `linear` (loop) | 1600 (`glowLoop`) | off (static glow) |
+
+## §U7 · Requirements *(mandatory)*
+
+### Functional Requirements (UI-FR-xxx)
+
+**Two surfaces & parity**
+- **UI-FR-001**: The app MUST render **two** surfaces — the child Curiosity Quest Board and the guide Hypothesis Console — from a **single** `buildInterestLabView` view model; both surfaces (and reduced-motion/plain/age-band renderings) MUST render from that one view (parity by construction).
+- **UI-FR-019**: `buildInterestLabView` MUST compose one view; reduced-motion / plain / age-band MUST differ **only** in `flags` + the `presentation` derived from them; `plainViewEquals` MUST hold (no re-computation of domain state).
+
+**Child probe-picker**
+- **UI-FR-002**: The board MUST render the domain `Lab` as quest cards — each with its domain hue, work-mode glyph, difficulty/social/audience cue (icon+text, **never color-only**), provenance + `whyCopy`, and an always-present help affordance — preserving the domain's **≥2 eligible offers** at each choice point (PASS-003).
+- **UI-FR-003**: Pick/return motion MUST be satisfying and **interruptible**: press feedback on pointer-down, a momentum spring on pick, tray crossfade on return; **every** motion MUST have a reduced-motion equivalent and MUST NEVER animate from `scale(0)`.
+- **UI-FR-004**: A **voluntary return** (@7/@30) MUST render a warm "come back later" delight with **concrete, label-free** copy; a **prompted** return MUST recede and MUST NOT be celebrated; there MUST be **no** guilt/FOMO/countdown/scarcity anywhere (§14.12).
+- **UI-FR-005**: The child surface MUST resolve presentation from the age band (`resolveChildStaging`): 6-8 concrete/story/`showRawNumbers:false`/comparison-off/larger targets/celebration-ceiling `medium`; 9-11 transitional; 12-14 full. The **underlying view state MUST be identical across bands** (only presentation varies).
+- **UI-FR-017**: Each quest MUST surface **provenance** (PASS-001) — why it appears + whether a guide/rule/shadow-model proposed it — band-appropriately (6-8: a friendly one-liner; 9+: detail).
+
+**Guide console**
+- **UI-FR-006**: The coverage matrix MUST render **gaps visibly** (calm slate, icon+text) and MUST render the exact Part-I `CoverageMatrix` rail per dimension; **no** view model or element may express coverage as, or hide a gap behind, a scalar score/confidence (IL-005, §14.4.3 #3).
+- **UI-FR-007**: Competing explanations MUST render the strongest **supporting** beside the strongest **disconfirming**, equal weight, never averaged; uncertainty MUST be an evidence grade or interval, **never a scalar passion score**; the console MUST use "current evidence suggests"/"next test" and MUST NEVER render "you are an X" (§14.5, IL-006/012).
+- **UI-FR-008**: The return timeline MUST distinguish **voluntary** returns (@7/@30, bright) from **prompted** returns (recessed, carrying intervention context), and MUST render accessibility/safety events as **neutral care-markers with `lowersSignal:false`** (PASS-005/006).
+- **UI-FR-009**: The lifecycle visual MUST show the current state, the **legal transitions**, and the **CANDIDATE_SPINE gate checklist** (from `evaluateCandidateGate`); a rule/model **proposal** MUST render as a suggestion (`operative:false`) with **no UI path** to make it operative — the **guide authors** the operative revision (IL-011); the version history MUST be append-only/replayable (IL-006).
+
+**Motion, art & guardrails**
+- **UI-FR-010**: All interaction motion MUST derive from the deterministic `MOTION`/`EASINGS` registries via `resolveMotion`; **every** row of the §U6 master motion table MUST have a first-class reduced-motion equivalent; the excluded effects (§U5.5) MUST NOT appear.
+- **UI-FR-011**: The surfaces MUST render with the **Curiosity Atelier** identity — the exact `PALETTE` (hex) + `TYPOGRAPHY` tokens, per-domain hue via `resolveDomainHue` — using **no external fetch** (system-font fallback). **Color is never the sole state cue**: every state also carries icon/shape/text at ≥4.5:1 contrast (WCAG 2.2 AA).
+- **UI-FR-012**: Reduced motion MUST be a **first-class equal** mode (honored by default; overridable); `prefers-reduced-transparency` → solid panels; **no** feature may require motion.
+- **UI-FR-013**: Both surfaces MUST meet WCAG 2.2 AA **natively in the DOM** — keyboard/switch/screen-reader operable, visible `--focus` rings, color-independent, ≥4.5:1 contrast; there is **no** opaque canvas to shim.
+- **UI-FR-014**: The child surface MUST use **no dark patterns** — no loss-framed streaks, manufactured scarcity, FOMO/guilt, countdown/urgency timers, decaying/absence meters, or engagement-timed notifications.
+- **UI-FR-015**: The child surface MUST always present a **help / "a different way"** affordance that is **never** framed as failure and **never** penalizes; assistive/safety signals MUST NEVER lower any value in any view (PASS-006).
+- **UI-FR-016**: No probe-result or hypothesis view may be shaped for admissions/discipline/family-fidelity/public-ranking/commercial targeting: the view types MUST expose **no** `rank`/`percentile`/`score`/`confidence`/`passionScore`/`verdict`/`price` field (PASS-010, IL-013).
+- **UI-FR-020**: Domain hue MUST be **deterministic and catalog-order-derived** (`resolveDomainHue`), never a hardcoded domain→hue taxonomy, and never a state cue (IL-001).
+
+**Build-on / isolation & stack**
+- **UI-FR-018**: The view package MUST be pure (no I/O, no wall-clock, **no `Math.random`**) and depend only on `@gt100k/interest-lab`; the app MUST read `@gt100k/interest-lab` + `@gt100k/interest-lab-view`, build via `next build`, run **synthetic-only** (no consent/admissions/legal), and fetch nothing external; Part I MUST NOT be modified beyond consuming its public API.
+
+### Key Entities
+
+Full shapes in [data-model.md](./data-model.md). Summary: `AgeBand`, `MotionToken`, `PALETTE`/`TYPOGRAPHY`/`MOTION`/`EASINGS`/`HUE_RAMP`/`WORK_MODE_GLYPHS` (constant registries), `ChildStaging` *(derived)*, `ProbeCardView`, `ProbePickerView` *(derived)*, `CoverageMatrixView`/`DimensionRailItem`/`CellView` *(derived)*, `ExplanationsView`/`ExplanationCard` *(derived)*, `ReturnTimelineView`/`MarkerView` *(derived)*, `LifecycleStateView`/`GateChecklist` *(derived)*, `RevisionHistoryView` *(derived)*, and the composed **`InterestLabView`** with a `presentation` block + `flags`.
+
+## §U8 · Golden values + tolerances
+
+All view-package values below are **exact** (deterministic; tolerance = 0). App-only UX (frame rate, gesture feel) are acceptance targets verified via the walkthrough.
+
+### 8.1 Ordering conventions (so arrays are exactly reproducible)
+
+- Matrix **rows** = domains in **catalog order** (first-appearance in the injected catalog, as Part-I `coverage.domains.have`). Matrix **columns** = the fixed 9 work-modes in vocabulary order (`build, investigate, compose, explain, perform, debug, collaborate, care, persuade`).
+- `ProbePickerView.quests` = Part-I `Lab.offers` order. Timeline markers = event `occurredAtDayOffset` ascending, then fixture `ord`. Rail dimensions in dimension order (`probeCount, domains, workModes, social, difficulty, audience`).
+
+### 8.2 Palette (exact) — `PALETTE`
+
+`night:#181026`, `nightRaised:#221A3D`, `nightSunk:#120B1E`, `paperGuide:#F6F3FB`, `inkGuide:#241B3A`, `inkHi:#F4F0FB`, `inkMuted:#C3B8D9`, `spark:#FF9E5E`, `sparkHi:#FFC08A`, `beacon:#FFD166`, `tide:#5EC8D8`, `sprout:#7BD88F`, `met:#7BD88F`, `gap:#8FA6C9`, `prompted:#9A8FB5`, `support:#5EC8D8`, `contested:#E0A458`, `parked:#8B93A7`, `focus:#FFD166`.
+
+**Contrast guarantees (asserted):** `inkHi` on `night` ≥ 12:1 (AAA); `inkMuted` on `night` ≥ 4.5:1; `inkGuide` on `paperGuide` ≥ 12:1; text on `spark`/`beacon` uses `inkGuide` at ≥ 4.5:1. State color is **always** paired with an icon/shape + text (UI-FR-011).
+
+### 8.3 Typography (exact) — `TYPOGRAPHY`
+
+`fontDisplay:'"Fredoka","Baloo 2",ui-rounded,"Segoe UI Rounded",system-ui,sans-serif'`, `fontReading:'"Iowan Old Style","Palatino","Georgia",ui-serif,serif'`, `fontBody:'"Inter",ui-sans-serif,system-ui,"Segoe UI",sans-serif'`; scale `display{rem:2.5,lh:1.05,ls:-0.02,w:600}`, `h1{1.75,1.1,-0.01,600}`, `h2{1.25,1.2,0,600}`, `reading{1.0625,1.6,0,400}`, `body{1.0,1.5,0,400}`, `label{0.8125,1.4,0.01,500}`; `numeric:"tabular-nums"`.
+
+### 8.4 Motion tokens + easings (exact) — `MOTION`, `EASINGS`, `resolveMotion`
+
+`MOTION` (durations, ms — exact): `instant:0`, `press:120`, `micro:150`, `tooltip:150`, `fast:200`, `drawer:220`, `cardEnter:260`, `matrixCell:260`, `markerPop:260`, `base:300`, `tray:320`, `stateMorph:360`, `pick:420`, `welcomeBack:480`, `ticker:600`, `timelineDraw:700`, `stagger:40`, `glowLoop:1600`.
+
+`EASINGS` (CSS cubic-bézier / spring — exact): `enter:"cubic-bezier(0.23,1,0.32,1)"`; `move:"cubic-bezier(0.77,0,0.175,1)"`; `pop:"cubic-bezier(0.34,1.56,0.64,1)"` (overshoot peak ≤ 1.05 in use); `press:"cubic-bezier(0.5,0,0.5,1)"`; `drawer:"cubic-bezier(0.32,0.72,0,1)"`; `linear:"linear"`; `pickSpring:{ type:"spring", bounce:0.2, duration:0.42 }`.
+
+`resolveMotion(kind, { reducedMotion })` → `{ kind, mode, durationMs, easing }`. Animated table (exact); under `reducedMotion:true` → `mode:"reduced"`, `easing:"linear"`, `durationMs` from the reduced column:
+
+| kind | animated durationMs | animated easing | reduced durationMs | reduced note |
+|---|---|---|---|---|
+| `press` | 120 | press | 120 | kept (non-vestibular) |
+| `cardEnter` | 260 | enter | 0 | instant show |
+| `cardStagger` | 40 | enter | 0 | no stagger |
+| `hoverLift` | 150 | enter | 0 | none |
+| `pick` | 420 | pickSpring | 150 | crossfade to tray |
+| `welcomeBack` | 480 | pop | 0 | static warm ring + text |
+| `promptedRecede` | 300 | enter | 0 | instant recede |
+| `trayReturn` | 320 | enter | 150 | crossfade |
+| `matrixCell` | 260 | enter | 0 | instant fill |
+| `matrixStagger` | 40 | enter | 0 | none |
+| `ticker` | 600 | enter | 0 | instant number |
+| `timelineDraw` | 700 | move | 0 | static line |
+| `markerPop` | 260 | pop | 0 | static marker |
+| `explanationsReveal` | 300 | enter | 0 | instant |
+| `stateMorph` | 360 | move | 0 | instant state |
+| `gateCheck` | 200 | pop | 0 | instant check |
+| `drawerOpen` | 220 | drawer | 150 | fade |
+| `tooltip` | 150 | enter | 0 | instant |
+| `glowLoop` | 1600 | linear | 0 | static glow (off) |
+
+### 8.5 Domain hue ramp (exact) — `HUE_RAMP`, `resolveDomainHue`
+
+`HUE_RAMP` (12 curated accents, declaration order): `["#E8825A","#5FB98C","#6C8CE8","#C98BD9","#E8B84B","#E56B8C","#4FC0C7","#7E8CE0","#9CC65A","#E09E52","#6FD1B0","#D07AB0"]`.
+
+`resolveDomainHue(catalogDomainsInOrder, domainId)` = `HUE_RAMP[ catalogDomainsInOrder.indexOf(domainId) % 12 ]`; a domain absent from the list throws. **Golden** for `CATALOG_GOLDEN_V1` domain order `[making, living_systems, symbols_math, word_craft, sound_music, movement_body, visual_design, social_world]`: `making→#E8825A`, `living_systems→#5FB98C`, `symbols_math→#6C8CE8`, `word_craft→#C98BD9`, `sound_music→#E8B84B`, `movement_body→#E56B8C`, `visual_design→#4FC0C7`, `social_world→#7E8CE0`. (Catalog-order-derived — no hardcoded domain→hue taxonomy; never a state cue.)
+
+### 8.6 Work-mode glyphs (exact) — `WORK_MODE_GLYPHS`
+
+Fixed map (SVG icon keys — **no emoji**, ui-ux-pro-max): `build→"glyph-hammer"`, `investigate→"glyph-lens"`, `compose→"glyph-quill"`, `explain→"glyph-speech"`, `perform→"glyph-star-stage"`, `debug→"glyph-wrench-bug"`, `collaborate→"glyph-hands"`, `care→"glyph-heart"`, `persuade→"glyph-flag"`.
+
+### 8.7 Child staging (exact) — `resolveChildStaging(band)`
+
+| field | 6-8 | 9-11 | 12-14 |
+|---|---|---|---|
+| `showRawNumbers` | **false** | false | **true** |
+| `comparisonDefault` | **"off"** | "opt-in" | "opt-in" |
+| `labelStyle` | "story" | "growth" | "full" |
+| `cardScale` | 1.25 | 1.1 | 1.0 |
+| `touchTargetPx` | 56 | 48 | 44 |
+| `celebrationCeiling` | "medium" | "high" | "high" |
+| `maxVisibleQuests` | 3 | 6 | "all" |
+| `showProvenanceDetail` | false | true | true |
+| `showExplorationMap` | false | true | true |
+
+The underlying `ProbePickerView` state is **identical** across bands; only this presentation varies (UI-FR-005, `plainViewEquals`). 6-8 `showRawNumbers` MUST be `false` and `comparisonDefault` MUST be `"off"`.
+
+### 8.8 ProbePickerView (exact structural golden) — `buildProbePickerView(G1 Lab, {history:[], band:"9-11", flags:default})`
+
+- `quests.length === 20` (Part-I G1 Lab).
+- Every quest: `provenance === "RULE"`, non-empty `whyCopy`, `returnState === "new"` (fresh history), `helpAffordance === true`, `motion.kind === "cardEnter"`.
+- `quests[i].domainHue === resolveDomainHue(catalogDomainsInOrder, quests[i].domain)` (per §8.5).
+- `quests[i].workModeGlyph === WORK_MODE_GLYPHS[quests[i].workMode]` (per §8.6).
+- `choicePointsMinEligible >= 2` (from the domain Lab).
+- **No** `price`/`score`/`rank`/`percentile`/`verdict`/`label` key on any quest (guardrail).
+- With a history marking `p01` voluntary-return @7 → `quests[0].returnState === "voluntary-return"` and `quests[0].motion.kind === "welcomeBack"`; a prompted return on `p02` → `quests[1].returnState === "prompted-return"` with `tone:"prompted"` and **no** welcome-back motion.
+
+### 8.9 CoverageMatrixView (exact) — `buildCoverageMatrixView(coverage, offers)`
+
+- **Complete** (from Part-I **G2**): `rail` has all six dimensions `met:true`; `complete:true`; `gaps:[]`; `rows` = 8 domains (catalog order) each with `hue` from §8.5; `cols` = 9 work-modes with glyphs from §8.6.
+- **Gappy** (from Part-I **G3**): `rail` per dimension `met` mirrors G3 (`probeCount:false`, `domains:false`, `workModes:false`, `social:false`, `difficulty:false`, `audience:false`), each unmet carries the **exact** G3 gap string, `complete:false`, and top-level `gaps` = the exact G3 6-string list in dimension order.
+- **Guardrail**: the view object exposes **no** `score`/`confidence` key at any depth (SC-UI-04).
+
+### 8.10 ReturnTimelineView (exact) — `buildReturnTimelineView(EVENTS_GOLDEN_V1)`
+
+Markers (day-ascending): `e1`(voluntary, horizon 7, tone `tide`, `lowersSignal:false`), `e2`(voluntary, horizon 30, tone `tide`), `e3`(prompted, tone `prompted`, `interventionContext:"reminder"`, `provenanceRecedes:true`, contributes **0** to voluntary), `e4`(revision), `e5`(challenge, tone `beacon`), `e6`(recovery), `e7`(scope, tone `beacon`), `e8`(support/assistive, tone `support`, **`lowersSignal:false`**), `e9`(support/safety, tone `support`, **`lowersSignal:false`**), `e10`(artifact, tone `sprout`). Voluntary markers exist at day 7 **and** day 30; prompted at day 7 is visually recessed and never counted as voluntary (mirrors Part-I **G4** / SC-005/007).
+
+### 8.11 LifecycleStateView (exact) — `buildLifecycleStateView(state, gate)`
+
+- `states` main track `[EXPLORING, EMERGING, CANDIDATE_SPINE, ACTIVE]` + branches `[CONTESTED, PARKED, REOPENED]`; `legalTransitions` = the Part-I fixed set (Decision 3 / plan state-machine).
+- `gate` from `evaluateCandidateGate` (**G5**): for the G4 summary → `eligible:true`, `missing:[]`; for competence-only → `eligible:false`, `missing:["no delayed-discretionary signal"]`; the checklist lists the six gate families each `present:boolean`.
+- A rule/model `proposal` → `{ proposedBy, toState, operative:false, note }`; there is **no** field/path that sets `operative:true` from a proposal (guide authorship only — IL-011).
+- Tones: `contested→#E0A458`, `parked→#8B93A7`.
+
+### 8.12 ExplanationsView (exact structural golden)
+
+For any revision carrying ≥1 explanation: `supporting` present ⇒ `disconfirming` present (the side-by-side invariant); `uncertainty` is `{kind:"grade",grade:"thin"|"moderate"|"strong"}` or `{kind:"interval",lo,hi}`; the view exposes **no** `passionScore`/`score`/`confidence`/`verdict`/`label` key; no card text matches `/you are (a|an|the) /i` (no-fixed-label guardrail).
+
+### 8.13 InterestLabView + `plainViewEquals` (exact)
+
+`buildInterestLabView(inputs)` composes `{ surface, probePicker, guide:{ coverage, explanations, timeline, lifecycle, revisionHistory }, flags:{ reducedMotion, plainMode, ageBand, surface }, presentation:{ palette, typography, motionOf } }`. `plainViewEquals(a,b)` = the two views carry **identical** underlying domain-derived state (probePicker quests + returnStates, coverage, explanations, timeline markers, lifecycle+gate) and differ **only** in `flags` + the `presentation` derived from them (SC-UI-10).
+
+## §U9 · Phasing (P8…P13) — the UI build path
+
+Continues the Part-I build path (P0…P7 = the done domain). Work the lowest unfinished phase. Detailed tasks in [tasks.md](./tasks.md).
+
+### P8 — UI foundation & green-from-first-increment
+
+**Goal**: view package + app skeletons compile; the gate is green immediately.
+**Deliverables**: `packages/interest-lab-view` (`package.json` dep `@gt100k/interest-lab: workspace:*`, `tsconfig.json`, `src/index.ts`, `src/model.ts` view types, constant registries `art.ts` (`PALETTE`/`TYPOGRAPHY`/`HUE_RAMP`), `motion.ts` (`MOTION`/`EASINGS`), `glyphs.ts` (`WORK_MODE_GLYPHS`); a `test/smoke.test.ts` asserting the registries are non-empty). `apps/interest-lab` skeleton (`package.json`, `next.config.mjs` `transpilePackages:["@gt100k/interest-lab","@gt100k/interest-lab-view"]`, `tsconfig.json`, `app/layout.tsx`, `app/page.tsx` placeholder, `app/globals.css` with the §U8.2/§U8.3 tokens + `prefers-reduced-motion`/`prefers-reduced-transparency`/`.plain-mode`/`:focus-visible` rings, `.env.local.example`, `.gitignore`).
+**Gate**: `pnpm typecheck` + `pnpm test` green.
+
+### P9 — Child probe-picker + age-band staging (UI-US1) 🎯 MVP
+
+**View**: `resolveMotion`, `resolveDomainHue`, `resolveChildStaging`, `buildProbePickerView`, first `buildInterestLabView` (child surface). **App**: the Curiosity Quest Board rendering the domain Lab (quest cards w/ hue + glyph + provenance + help affordance), pick spring + press feedback + tray, age-band staging, reduced-motion path.
+**Gate**: P8 gate + view golden tests (§8.4–§8.8) + `next build` + smoke + walkthrough steps 1–3.
+
+### P10 — "Come back later" voluntary-return delight (UI-US2)
+
+**View**: `returnState` derivation (voluntary @7/@30 vs prompted) + `welcomeBack` motion. **App**: warm welcome-back state (reduced-motion static) + recessed prompted state; dark-pattern-free confirmation.
+**Gate**: P9 gate + walkthrough step 4.
+
+### P11 — Guide console: coverage matrix (UI-US3)
+
+**View**: `buildCoverageMatrixView` (rows/cols/cells/rail; gaps visible; no score). **App**: the animated coverage grid + coverage rail; gap cells calm/visible.
+**Gate**: P10 gate + coverage golden (§8.9) + walkthrough step 5.
+
+### P12 — Guide console: explanations + timeline + lifecycle + authoring (UI-US4)
+
+**View**: `buildExplanationsView`, `buildReturnTimelineView`, `buildLifecycleStateView`, `buildRevisionHistoryView`; finalize `buildInterestLabView` (guide surface). **App**: side-by-side explanations, voluntary/prompted timeline, lifecycle state visual + gate checklist + shadow-proposal-as-suggestion + guide authoring; version history rail.
+**Gate**: P11 gate + golden (§8.10–§8.12) + walkthrough steps 6–8.
+
+### P13 — Polish, accessibility, plain mode & one-view parity
+
+**Goal**: reduced-motion parity, plain mode, WCAG 2.2 AA (keyboard/switch/screen-reader, contrast, focus, color-independent), `plainViewEquals`, README + demo; the final root-`tsconfig` reference for `packages/interest-lab-view` (human-reconciled).
+**Gate**: all SC-UI map green; full quickstart validation.
+
+## §U10 · Success Criteria *(mandatory)* — each mapped to a test
+
+View-package SCs are Vitest tests in `packages/interest-lab-view/test/`; app SCs are verified via `next build` + the smoke + the [quickstart](./quickstart.md) walkthrough.
+
+- **SC-UI-01** — `buildProbePickerView` matches the §8.8 structural golden (20 cards, `provenance:"RULE"`, domain hue per catalog order, work-mode glyph, ≥2 eligible, help affordance, no forbidden field). → `test/probe-picker.test.ts`
+- **SC-UI-02** — `resolveChildStaging` matches §8.7; 6-8 `showRawNumbers:false` + `comparisonDefault:"off"`; underlying state identical across bands. → `test/staging.test.ts`
+- **SC-UI-03** — Voluntary return @7/@30 yields `returnState:"voluntary-return"` + `welcomeBack` motion with **label-free** copy; prompted yields a recessed state with no delight; reduced-motion static. → `test/return-delight.test.ts`
+- **SC-UI-04** — `buildCoverageMatrixView` matches §8.9 (complete from G2, gappy from G3, exact gap strings); **no** `score`/`confidence` key anywhere. → `test/coverage-view.test.ts`
+- **SC-UI-05** — `buildExplanationsView` always pairs `disconfirming` with `supporting`; uncertainty is grade/interval; no scalar passion score / verdict / fixed-label text. → `test/explanations.test.ts`
+- **SC-UI-06** — `buildReturnTimelineView` matches §8.10 (voluntary @7/@30 distinct; prompted recedes + carries context; support markers `lowersSignal:false`). → `test/timeline.test.ts`
+- **SC-UI-07** — `buildLifecycleStateView` matches §8.11 (gate checklist from G5; proposal `operative:false`; legal transitions present). → `test/lifecycle-view.test.ts`
+- **SC-UI-08** — `resolveMotion` matches the §8.4 golden table; every kind has a reduced-motion equivalent (`mode:"reduced"`, `easing:"linear"`). → `test/motion.test.ts`
+- **SC-UI-09** — `PALETTE`/`TYPOGRAPHY` exact (§8.2/§8.3) with the stated contrast guarantees; `resolveDomainHue` matches §8.5. → `test/art.test.ts`
+- **SC-UI-10** — `buildInterestLabView` + `plainViewEquals` (§8.13): full/plain/reduced/age-band carry identical underlying state, differ only in `flags`+`presentation`. → `test/view.test.ts`
+- **SC-UI-11** — Guardrails (static): no `Math.random` in `packages/interest-lab-view/src`; no `price|currency|score|confidence|passionScore|rank|percentile|verdict|outOf` field in any view type; no copy generator emits `/you are (a|an|the) /i`. → `test/guardrails.test.ts`
+- **SC-UI-12** — Synthetic-only: the whole view layer runs from the Part-I fixtures with **no** consent/admissions/legal input. → `test/synthetic.test.ts`
+- **SC-UI-13** — (app) `next build` succeeds; both surfaces mount; `prefers-reduced-motion` honored by default; DOM accessible surface present. → `next build` + smoke + walkthrough (§ Accessibility).
+- **SC-UI-14** — (app) No dark patterns present (no countdown/decay/FOMO/scarcity); help affordance present and non-penalizing; child copy passes the no-fixed-label check. → walkthrough + copy review.
+- **SC-UI-15** — (app) WCAG 2.2 AA on both surfaces: keyboard/switch/screen-reader operable, visible focus, color-independent, ≥4.5:1; `prefers-reduced-transparency` → solid. → a11y walkthrough.
+
+## §U11 · Stack, commands, env & seeded smoke (pinned)
+
+### Stack
+
+- **Package manager**: pnpm `9.15.9` (workspace).
+- **Language**: TypeScript `5.6.3`, strict (`tsconfig.base.json`), Node LTS.
+- **View package**: pure TS; dep `@gt100k/interest-lab` (`workspace:*`) only. **No `Math.random`.**
+- **App**: Next.js `^14.2.15` App Router + React `^18.3.1` (match `apps/student-compass`), **`framer-motion ^11.11.0`** (Motion), `transpilePackages` for the two workspace packages. DOM/SVG only — **no** Canvas/Phaser.
+- **Test**: Vitest (root `vitest.config.ts` already globs `packages/**/test/**/*.test.ts` — no root edit; the app is **not** in the Vitest glob and is verified by `next build`).
+
+### Commands
+
+```bash
+pnpm install                                        # bootstrap workspace
+pnpm typecheck                                      # tsc -b (green after the final root-tsconfig reference lands)
+pnpm test                                           # Vitest across the workspace (view package)
+pnpm --filter @gt100k/interest-lab-view test        # view package tests only
+pnpm lint                                           # biome check packages adapters apps (covers new dirs)
+pnpm --filter @gt100k/interest-lab-app dev          # run the two surfaces
+pnpm --filter @gt100k/interest-lab-app build        # next build — app acceptance gate
+```
+
+> Loop gate = `pnpm typecheck` + `pnpm test`. App phases additionally require `pnpm --filter @gt100k/interest-lab-app build` + the smoke + walkthrough. The root `build` script (student-compass) is **not** modified; the interest-lab app builds via its filter.
+
+### Env / secrets
+
+No secrets. Commit `apps/interest-lab/.env.local.example` with non-secret public placeholders; `.env.local` is git-ignored; the app reads only `NEXT_PUBLIC_*` with safe defaults so `build` never fails on missing env.
+
+```dotenv
+# apps/interest-lab/.env.local.example
+NEXT_PUBLIC_LAB_SEED=42
+NEXT_PUBLIC_REDUCED_MOTION_DEFAULT=system   # system | on | off
+NEXT_PUBLIC_DEFAULT_AGE_BAND=9-11           # 6-8 | 9-11 | 12-14
+NEXT_PUBLIC_DEFAULT_SURFACE=child           # child | guide
+```
+
+### Seeded smoke (green from iteration 1)
+
+- **View-package smoke** (`packages/interest-lab-view/test/smoke.test.ts`, part of P8): imports the package, asserts `PALETTE`/`MOTION`/`EASINGS`/`HUE_RAMP`/`WORK_MODE_GLYPHS` are non-empty and `resolveMotion("press",{reducedMotion:false}).durationMs === 120` — so `pnpm test` is green from the first increment.
+- **App smoke** (P9+, run in the review pipeline's Playwright pass): loads `/`, mounts the child board, asserts **zero console errors**, then toggles reduced-motion and confirms the accessible controls are present and focusable.
+
+## §U12 · Accessibility & reduced-motion equivalence (detail)
+
+- **Reduced motion** (`prefers-reduced-motion: reduce`, honored by default; overridable): entrances → instant or ≤150ms crossfade; the pick spring → crossfade-to-tray; welcome-back → static warm ring + text; timeline draws → static; ambient glow off. State/coverage/explanations/timeline/lifecycle remain fully conveyed (UI-FR-012, SC-UI-10).
+- **DOM-native accessibility** (UI-FR-013, SC-UI-15): both surfaces are semantic HTML — the quest board a keyboard-navigable list/`grid` of `button`/`option` cards with accessible names (title + work-mode + why + return-state); the coverage matrix a `table`/`grid` with row/column headers and per-cell status text; the timeline a labeled list of dated markers; the lifecycle a labeled state list with the gate checklist as text. Full keyboard/switch operation, visible `--focus` rings, color-independent state (icon + text), ≥4.5:1 contrast. There is **no** opaque canvas to shim.
+- **Plain mode**: a low-spectacle rendering (calm palette, minimal motion) that is state-identical to full (`plainViewEquals`, SC-UI-10).
+- **Reduced transparency / high contrast**: `prefers-reduced-transparency` → solid panels; `prefers-contrast: more` → near-solid surfaces with defined borders.
+- **Free opt-out**: plain mode / reduced motion / muted audio never change the underlying view state.
+
+## §U13 · Pre-marked decision points (defaults + severity)
+
+The loop proceeds on the **default**; it escalates only per §U3.
+
+- **DP-U1 — Rendering approach. ✅ SETTLED: React + framer-motion + SVG/DOM (no game engine).** Rejected: Canvas/Phaser (opaque to AT; the surfaces are card/grid/timeline/state-diagram DOM). Severity: low.
+- **DP-U2 — Motion library. ✅ Settled: `framer-motion ^11`** (Motion), with CSS transitions/`@starting-style` for the simple cases and springs/`AnimatePresence`/layout for gestures; `useReducedMotion` gates every motion. Severity: low.
+- **DP-U3 — View-layer location. ✅ Settled: a new pure package `packages/interest-lab-view`** (the Part-I domain core stays untouched and unit-tested). Severity: low.
+- **DP-U4 — Art direction. ✅ Settled: "The Curiosity Atelier"** — deep plum-indigo dusk workshop + curiosity-warm accents; deliberately **not** cream/sand (impeccable) and **not** feature-004 golden-hour. Severity: low.
+- **DP-U5 — Domain hue derivation. ✅ Settled: catalog-order `HUE_RAMP`** (no hardcoded domain→hue taxonomy; never a state cue). Severity: low.
+- **DP-U6 — Coverage-gap framing.** Default: gaps render as **calm "still to explore"** (slate `--gap` + hollow-ring + text), never red/error, never a score. Severity: normal.
+- **DP-U7 — Voluntary-return delight copy.** Default: concrete, label-free ("You came back to this one"); never "you are an X". Severity: normal.
+- **DP-U8 — Fonts (no-fetch constraint).** Default: system fallback stacks; self-hosted subset `woff2` under `public/fonts/` is an optional non-breaking upgrade keyed identically. Severity: low.
+
+## §U14 · Assumptions
+
+- **Builds on the done Part-I domain.** `@gt100k/interest-lab` (+ its `adapters/interest-*` and fixtures `CATALOG_GOLDEN_V1`/`CATALOG_GAPPY_V1`/`EVENTS_GOLDEN_V1`) is available and unchanged; the view package consumes its public API (`buildLab`, `buildCoverageMatrix`, `summarizeSignals`, hypothesis/`evaluateCandidateGate`).
+- **The view layer never re-computes a learning rule.** No scalar passion score, no coverage number, no verdict is introduced anywhere; the domain's honesty guarantees are rendered, not recomputed.
+- **Synthetic-only, governance stubbed.** No real learners/consent/admissions/legal; the app runs entirely on the Part-I fixtures.
+- **Child-facing surface.** The child Quest Board is a child-facing surface, so the buildable child-safety guardrails here apply (reduced-motion equal mode, WCAG 2.2 AA, age-band staging, no dark patterns, help-never-penalizes, no forbidden-purpose framing) — enforced as functional requirements + tests. Age-band defaults are **[E3]** operating defaults (§14.13), not research-validated optima.
+- **Performance is an acceptance target.** 60fps feel is validated via `next build` + the walkthrough, not a unit test (the pure view layer carries no rendering).
+- **New dirs only.** All code lives in `packages/interest-lab-view` + `apps/interest-lab`; the only shared-root edit is the final, human-reconciled root-`tsconfig` reference for the view package.

@@ -4,6 +4,10 @@
 **Created**: 2026-07-20
 **Feature**: [spec.md](../spec.md)
 
+> **Scope of this checklist**: the **domain** (P0–P6, `packages/cohort-compiler`). The **UI expansion**
+> (P7–P11, the Cohort & Arena Viewer — `packages/cohort-arena-view` + `apps/cohort-arena`) has its own
+> checklist at [checklists/ui.md](./ui.md).
+
 ## Content Quality
 
 - [x] No implementation details leak into the spec's requirements (the pure-TS/greedy/kNN choices live in plan.md/research.md as the chosen approach, not in the FRs)
@@ -64,7 +68,7 @@
 ## Loop-Readiness (per `gt100k-factory/docs/loop-ready-prd.md`)
 
 - [x] **Scope fence** — explicit in scope / out-of-scope (deferred, marked ports) / non-goals ([spec.md § Scope Fence](../spec.md#scope-fence))
-- [x] **Phasing (P0…P6)** — ordered build path, each phase gated and mapped to SCs + fixtures ([spec.md § Phasing](../spec.md#phasing-p0p6))
+- [x] **Phasing (P0…P6 domain; P7…P11 UI)** — ordered build path, each phase gated and mapped to SCs + fixtures ([spec.md § Phasing](../spec.md#phasing-p0p11))
 - [x] **Acceptance criteria = tests** — SC-001…SC-008 each mapped to a concrete test file ([spec.md § Success Criteria](../spec.md#success-criteria-mandatory))
 - [x] **Golden values + tolerances** — Fixtures A–E: exact candidate sets, forced cohort partition, exact per-member non-harm benefits (Fixture B4 default formula binds: `D1..D4=0.775`, `D5=0.700`, `D6=0.430`, mean `0.705 ≥ 0.5` → rejected on `D6`; ±1e-9), exact churn/rollback outcomes, exact turn-pattern detection ([spec.md § Golden Values](../spec.md#golden-values--seed-fixtures))
 - [x] **Decisions already made** — 14 pre-settled choices ([spec.md § Decisions Already Made](../spec.md#decisions-already-made))
