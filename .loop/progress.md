@@ -74,3 +74,14 @@
 ## NEXT
 - Complete T008: author the three normative probe-catalog fixtures in `adapters/interest-probe-catalog/src/index.ts` and their test-first catalog contracts.
 - Acceptance: the golden catalog contains all 24 pinned families with exactly 20 eligible rows and the G1 domain/work-mode tallies; the gappy catalog has exactly 8 eligible rows and the pinned gaps; the family fixture has 3 equivalent variants; adapter/package compilation, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
+
+## 2026-07-20 — P2 / T008
+- Added the three normative synthetic probe catalogs: 24-family golden (20 eligible plus four filtered controls), 8-family gappy, and one three-variant equivalent family.
+- Added five catalog acceptance tests that pin the eligible rows, G1 domain/work-mode/cross-cutting tallies, filtered controls, gappy dimensions, and equivalent-variant semantics.
+- Confirmed the test-first red state: the focused suite failed to resolve the absent adapter source, then passed all five tests after the minimal fixtures were implemented.
+- Verified the forced adapter compiler, focused catalog suite (5 tests), `pnpm typecheck`, `pnpm test` (41 tests), and `pnpm lint` all pass.
+- Status: T008 complete; P2 remains in progress; normative catalog inputs for SC-001/SC-002 and IL-002/IL-003 are now encoded. No blocker.
+
+## NEXT
+- Complete T009: add the normative ten-event `EVENTS_GOLDEN_V1` fixture under `packages/interest-lab/test/fixtures/events.ts` exactly as pinned in the P2 seed table.
+- Acceptance: tests first lock event ids/types/day offsets and intervention/assistive fields, including `e7.optionalReflection === true`; the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
