@@ -8,6 +8,7 @@ import {
   DOMAIN_MOTIF_SHAPES,
   type DomainMotif,
   resolveDomainMotif,
+  resolveMotifFocus,
 } from "../app/child/world3d/motif";
 
 // The eight seed domains (spec §"Probe taxonomy") — the world must read as eight distinct places.
@@ -127,5 +128,77 @@ describe("per-domain island motifs", () => {
     expect(motifEl).toBeDefined();
     // It carries this island's domain motif (making → the anvil silhouette).
     expect(motifEl?.props.motif).toEqual(resolveDomainMotif(island.domain));
+  });
+
+  describe("focus response (P1.6 — the landmark wakes up when its island is visited)", () => {
+    it("returns the idle base when unfocused", () => {
+      const motif = resolveDomainMotif("making");
+      const idle = resolveMotifFocus(motif, false);
+      expect(idle.emissiveIntensity).toBe(motif.emissiveIntensity);
+      expect(idle.spinSpeed).toBe(motif.spinSpeed);
+      expect(idle.lift).toBe(0);
+    });
+
+    it("brightens, rises, and spins faster when focused", () => {
+      const motif = resolveDomainMotif("making");
+      const active = resolveMotifFocus(motif, true);
+      expect(active.emissiveIntensity).toBeGreaterThan(motif.emissiveIntensity);
+      expect(active.spinSpeed).toBeGreaterThan(motif.spinSpeed);
+      expect(active.lift).toBeGreaterThan(0);
+    });
+
+    it("is pure, finite, and total for every domain in both focus states", () => {
+      for (const domain of [...SEED_DOMAINS, "an_unknown_future_domain"]) {
+        const motif = resolveDomainMotif(domain);
+        for (const focused of [false, true]) {
+          const r = resolveMotifFocus(motif, focused);
+          expect(Number.isFinite(r.emissiveIntensity)).toBe(true);
+          expect(Number.isFinite(r.spinSpeed)).toBe(true);
+          expect(Number.isFinite(r.lift)).toBe(true);
+          expect(r.emissiveIntensity).toBeGreaterThan(0);
+          expect(r.lift).toBeGreaterThanOrEqual(0);
+          // Deterministic — same inputs, deep-equal response.
+          expect(resolveMotifFocus(motif, focused)).toEqual(r);
+        }
+      }
+    });
+
+    it("Island forwards its focus to the motif so arrival reads on the landmark", () => {
+      const findMotif = (element: unknown) => {
+        const all: unknown[] = [];
+        const collect = (node: unknown) => {
+          if (Array.isArray(node)) {
+            for (const child of node) collect(child);
+          } else if (isValidElement(node)) {
+            all.push(node);
+            collect((node.props as { children?: unknown }).children);
+          }
+        };
+        collect(element);
+        return all.find(
+          (n): n is { props: { focused?: boolean } } => isValidElement(n) && n.type === IslandMotif,
+        );
+      };
+
+      const base = {
+        island,
+        quality: QUALITY_TIERS.full,
+        scene3d: SCENE3D,
+        haloTexture: new Texture(),
+        pickedProbeIds: new Set<string>(),
+        onPick: vi.fn(),
+      };
+
+      // Unfocused: no orb visited → motif stays idle.
+      expect(findMotif(Island(base))?.props.focused).toBe(false);
+
+      // Focusing one of this island's orbs (p1) wakes the motif.
+      expect(findMotif(Island({ ...base, focusedProbeId: "p1" }))?.props.focused).toBe(true);
+
+      // Focusing an orb on a *different* island leaves this motif idle.
+      expect(
+        findMotif(Island({ ...base, focusedProbeId: "other-island-orb" }))?.props.focused,
+      ).toBe(false);
+    });
   });
 });

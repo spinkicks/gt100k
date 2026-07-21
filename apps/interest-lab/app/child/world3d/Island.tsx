@@ -163,6 +163,7 @@ export function Island({
             hue={render.hue}
             scene3d={scene3d}
             shadows={render.shadows}
+            focused={focused}
           />
           {island.markers.map((marker) => (
             <QuestMarker

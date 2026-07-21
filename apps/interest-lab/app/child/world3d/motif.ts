@@ -224,3 +224,35 @@ export function resolveDomainMotif(domain: string): DomainMotif {
   const motif = MOTIFS[domain] ?? FALLBACK;
   return { domain, ...motif };
 }
+
+/**
+ * How the motif responds when its island is focused (the child is visiting one of its orbs). The
+ * static idle motif (D-VP21) then wakes up — it brightens, rises a touch, and spins a little faster —
+ * so arrival reads on the *landmark*, not just the orb. Pure so the mapping is unit-testable; the
+ * per-frame easing toward these targets lives in `IslandMotif`'s `useFrame` (P1.6).
+ */
+export interface MotifFocusResponse {
+  /** Target emissive intensity for the motif's materials. */
+  readonly emissiveIntensity: number;
+  /** Extra vertical lift (local units) added to the motif anchor while focused. */
+  readonly lift: number;
+  /** Target idle-spin speed (radians/second). */
+  readonly spinSpeed: number;
+}
+
+/** Focus gains — kept modest so the wake-up reads as "alive", not a strobe (§U8.4 motion restraint). */
+const FOCUS_EMISSIVE_GAIN = 1.7;
+const FOCUS_LIFT = 0.16;
+const FOCUS_SPIN_GAIN = 1.5;
+
+/** Resolve a motif's target visual state for the given focus. Pure: `focused=false` is the idle base. */
+export function resolveMotifFocus(motif: DomainMotif, focused: boolean): MotifFocusResponse {
+  if (!focused) {
+    return { emissiveIntensity: motif.emissiveIntensity, lift: 0, spinSpeed: motif.spinSpeed };
+  }
+  return {
+    emissiveIntensity: motif.emissiveIntensity * FOCUS_EMISSIVE_GAIN,
+    lift: FOCUS_LIFT,
+    spinSpeed: motif.spinSpeed * FOCUS_SPIN_GAIN,
+  };
+}
