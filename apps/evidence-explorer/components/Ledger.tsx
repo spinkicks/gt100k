@@ -14,11 +14,15 @@
 import type { LedgerView } from "@gt100k/evidence-explorer-view";
 import { useMemo } from "react";
 import type { JSX } from "react";
+import { useHud } from "./hud-state.js";
 import { actorChipView, consentLabel, headerBadge, payloadRows } from "./inspector-model.js";
 import { useSelection } from "./selection.js";
 
 export function Ledger({ ledger }: { ledger: LedgerView }): JSX.Element {
   const { select, selectedNodeId } = useSelection();
+  const { emphasisFor, hasTrace, allTypesActive } = useHud();
+  // Only the accessible "marked subset" note matters when a filter or trace is actually active.
+  const marking = hasTrace || !allTypesActive;
   const labelById = useMemo(
     () => new Map(ledger.tree.map((t) => [t.id, `${t.type} — ${t.label}`])),
     [ledger.tree],
@@ -37,13 +41,16 @@ export function Ledger({ ledger }: { ledger: LedgerView }): JSX.Element {
           const actor = actorChipView(item.panel.actor);
           const panelId = `ledger-panel-${item.id.slice(0, 12)}`;
           const selected = selectedNodeId === item.id;
+          const emphasis = emphasisFor(item.id);
+          // The Ledger marks the exact same subset the constellation highlights (SC-E10 parity).
+          const marked = marking && emphasis !== "dimmed";
           return (
             <li
               key={item.id}
               role="treeitem"
               aria-level={item.depthRank + 1}
               aria-selected={selected}
-              className={`ledger-node${selected ? " is-selected" : ""}`}
+              className={`ledger-node${selected ? " is-selected" : ""} ledger-node--${emphasis}`}
             >
               <button
                 type="button"
@@ -57,6 +64,11 @@ export function Ledger({ ledger }: { ledger: LedgerView }): JSX.Element {
                   aria-hidden="true"
                 />
                 <span className="ledger-name">{item.accessibleName}</span>
+                {marked ? (
+                  <span className="sr-only">
+                    {emphasis === "traced" ? " — in the traced lineage" : " — matches the filter"}
+                  </span>
+                ) : null}
               </button>
 
               {/* Described panel region — the parity content AT reads for this node (§U5.12). */}

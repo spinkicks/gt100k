@@ -24,12 +24,16 @@ function edgePath(from: NodeView, to: NodeView): string {
   return `M ${from.pos2d.x} ${from.pos2d.y} L ${to.pos2d.x} ${to.pos2d.y}`;
 }
 
+/** How a node reads under the HUD filters + trace (mirrors `hud-state`'s `NodeEmphasis`). */
+type NodeEmphasis = "normal" | "dimmed" | "traced";
+
 function NodeMark({
   node,
   index,
   focused,
   fractured,
   sealed,
+  emphasis,
   onSelect,
 }: {
   node: NodeView;
@@ -39,6 +43,8 @@ function NodeMark({
   fractured: boolean;
   /** Human-owned Outcome + a passing Verify → the gold seal ring reads as forged/locked. */
   sealed: boolean;
+  /** HUD filter/trace emphasis: dimmed = filtered out or off-lineage; traced = in the trace. */
+  emphasis: NodeEmphasis;
   /** Mouse affordance: click a body to inspect it (keyboard path is the Ledger tree). */
   onSelect?: (nodeId: string, origin: { readonly x: number; readonly y: number }) => void;
 }): JSX.Element {
@@ -53,9 +59,10 @@ function NodeMark({
       transform={`translate(${node.pos2d.x} ${node.pos2d.y})`}
       onClick={onSelect ? (e) => onSelect(node.id, { x: e.clientX, y: e.clientY }) : undefined}
       style={onSelect ? { cursor: "pointer" } : undefined}
+      opacity={emphasis === "dimmed" ? 0.2 : 1}
     >
       <g
-        className={`node-enter${focused ? " is-focused" : ""}${fractured ? " is-fractured" : ""}`}
+        className={`node-enter${focused ? " is-focused" : ""}${fractured ? " is-fractured" : ""}${emphasis === "traced" ? " is-traced" : ""}`}
         style={{ animationDelay: delay, transformBox: "fill-box", transformOrigin: "center" }}
       >
         {/* Selected-beat focus ring (calm-2D parity for the 3D fly-to). */}
@@ -178,6 +185,7 @@ export function Constellation2D({
   focusNodeId = null,
   waveOrder = [],
   verify,
+  emphasisFor,
   onSelect,
 }: {
   view: ExplorerView;
@@ -188,6 +196,8 @@ export function Constellation2D({
   waveOrder?: ReadonlyArray<{ readonly from: string; readonly to: string }>;
   /** Verify-sequence visual state (light-wave / seal / byte-fracture). */
   verify?: VerifyVisualState;
+  /** HUD filter/trace emphasis per node id; omitted = every node normal (SSR baseline). */
+  emphasisFor?: (nodeId: string) => NodeEmphasis;
   /** Mouse affordance: click a body to open its Inspector (keyboard path is the Ledger). */
   onSelect?: (nodeId: string, origin: { readonly x: number; readonly y: number }) => void;
 }): JSX.Element {
@@ -275,12 +285,23 @@ export function Constellation2D({
           const lit = litCount > 0 && isEdgeLit(waveOrder, litCount, e.from, e.to);
           // On a tamper mismatch, lineage touching the byte-body desaturates (dim — never red).
           const desaturated = fractureId !== null && (e.from === fractureId || e.to === fractureId);
+          // HUD filter/trace: an edge is dimmed when either endpoint is de-emphasised.
+          const eFrom = emphasisFor?.(e.from) ?? "normal";
+          const eTo = emphasisFor?.(e.to) ?? "normal";
+          const edgeDimmed = eFrom === "dimmed" || eTo === "dimmed";
           const stroke = lit
             ? "var(--verify)"
             : e.threadStyle === "frayed"
               ? "var(--tamper)"
               : "var(--line)";
           const baseOpacity = e.flow ? 0.85 : 0.55;
+          const opacity = lit
+            ? 1
+            : desaturated
+              ? baseOpacity * 0.3
+              : edgeDimmed
+                ? baseOpacity * 0.18
+                : baseOpacity;
           return (
             <path
               key={`${e.from}->${e.to}-${i}`}
@@ -290,7 +311,7 @@ export function Constellation2D({
               strokeWidth={(e.flow ? 1.8 : 1.2) * (lit ? 1.6 : 1)}
               strokeDasharray={DASH[e.threadStyle]}
               markerEnd={cap}
-              opacity={lit ? 1 : desaturated ? baseOpacity * 0.3 : baseOpacity}
+              opacity={opacity}
             />
           );
         })}
@@ -306,6 +327,7 @@ export function Constellation2D({
             focused={focusNodeId === n.id}
             fractured={fractureId === n.id}
             sealed={sealed && n.isHumanOwned}
+            emphasis={emphasisFor?.(n.id) ?? "normal"}
             onSelect={onSelect}
           />
         ))}

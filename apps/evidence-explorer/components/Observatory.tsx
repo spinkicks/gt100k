@@ -10,9 +10,10 @@
  */
 import { type ExplorerView, buildLedgerView } from "@gt100k/evidence-explorer-view";
 import type { JSX } from "react";
+import { Hud } from "./Hud.js";
 import { Ledger } from "./Ledger.js";
-import { Legend } from "./Legend.js";
 import { ObservatoryStage } from "./ObservatoryStage.js";
+import { HudProvider } from "./hud-state.js";
 import { SelectionProvider } from "./selection.js";
 import type { SyntheticVerification } from "./synthetic-view.js";
 
@@ -49,15 +50,17 @@ export function Observatory({
       </header>
 
       <SelectionProvider>
-        <div className="obs-grid">
-          <div className="panel stage" aria-label="Provenance constellation">
-            <ObservatoryStage view={view} verification={verification} ledger={ledger} />
+        <HudProvider view={view}>
+          <div className="obs-grid">
+            <div className="panel stage" aria-label="Provenance constellation">
+              <ObservatoryStage view={view} verification={verification} ledger={ledger} />
+            </div>
+            <div className="obs-side">
+              <Hud view={view} />
+              <Ledger ledger={ledger} />
+            </div>
           </div>
-          <div className="obs-side">
-            <Legend />
-            <Ledger ledger={ledger} />
-          </div>
-        </div>
+        </HudProvider>
       </SelectionProvider>
     </main>
   );

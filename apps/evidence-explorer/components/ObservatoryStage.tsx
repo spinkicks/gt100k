@@ -36,6 +36,7 @@ import { Inspector } from "./Inspector.js";
 import { TimeScrub } from "./TimeScrub.js";
 import { VerifyPanel } from "./VerifyPanel.js";
 import { Constellation2D } from "./constellation/Constellation2D.js";
+import { useHud } from "./hud-state.js";
 import { type SelectionOrigin, panelById } from "./inspector-model.js";
 import { effectiveFocusId, revealedNodeIds } from "./scrub.js";
 import { useSelection } from "./selection.js";
@@ -118,6 +119,9 @@ export function ObservatoryStage({
   // Shared selection (UX4): the selected node drives the Inspector, the camera fly-to, and the beat
   // highlight — one concept, whether it came from the Ledger, a scrub beat, or a pointer-pick.
   const { selectedNodeId, origin, select, clear } = useSelection();
+
+  // HUD filter/trace emphasis (UX5) — presentation-only per-node dim/highlight, shared with the Ledger.
+  const { emphasisFor } = useHud();
 
   // Time-scrub state (§U5.4) — presentation-only: it reveals a subset of the one `ExplorerView`,
   // never mutates it. Starts fully grown so the default view matches the calm baseline.
@@ -236,6 +240,7 @@ export function ObservatoryStage({
             focusNodeId={effFocus}
             waveOrder={waveOrder}
             verify={verifyVisual}
+            emphasisFor={emphasisFor}
             onSelect={selectNode}
           />
         )}
