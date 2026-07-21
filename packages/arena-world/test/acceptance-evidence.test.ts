@@ -32,14 +32,18 @@ describe("arena T051 acceptance evidence", () => {
     expect(new Set(mappedCriteria).size).toBe(26);
   });
 
-  it("keeps live-only limitations explicit instead of marking them green", () => {
+  it("records the verified WebGL smoke while keeping remaining live limitations explicit", () => {
     const acceptance = readAcceptance();
 
     expect(acceptance).toContain("## Live-only gaps");
     expect(acceptance).toContain("minimum managed device");
     expect(acceptance).toContain("real screen reader");
+    expect(acceptance).toContain("## 2026-07-21 live browser smoke");
+    expect(acceptance).toMatch(/WebGL2/i);
+    expect(acceptance).toMatch(/zero console/i);
+    expect(acceptance).toMatch(/Tier D[\s\S]{0,200}no canvas/i);
     expect(acceptance).toMatch(/^\| SC-010 \| Partial \|/m);
-    expect(acceptance).toMatch(/^\| SC-011 \| Partial \|/m);
+    expect(acceptance).toMatch(/^\| SC-011 \| Automated \+ live pass \|/m);
     expect(acceptance).toMatch(/^\| SC-012 \| Partial \|/m);
     expect(acceptance).toMatch(/^\| SC-025 \| Partial \|/m);
   });

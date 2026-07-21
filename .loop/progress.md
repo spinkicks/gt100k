@@ -824,3 +824,18 @@
 ## NEXT
 - Run the remaining live P7 acceptance on a browser/device/assistive-technology capable host and update `packages/arena-world/ACCEPTANCE.md` with observed evidence.
 - Acceptance: record the minimum-managed-device 60fps/non-blocking result (SC-010), clean real-WebGL mount/unmount plus forced Tier-D no-canvas result (SC-011/025), and keyboard/switch/screen-reader Ledger walkthrough (SC-012); rerun the full gate, then create `.loop-done` only if all SC-001…SC-026 are green.
+
+## 2026-07-21 — P7 live browser follow-up / SC-011
+- Recovered the cached Chromium runtime without a privileged or repository install by extracting its three missing Ubuntu libraries into a temporary user-space bundle. A real WebGL2 production page then mounted successfully.
+- The first smoke exposed one deterministic console failure: `/favicon.ico` returned 404. Added a focused failing asset contract first, then `apps/arena/app/icon.svg`; Next now generates `/icon.svg`, and the rebuilt page loads every request with zero console warnings/errors.
+- Completed a live auto-tier mount/interact/unmount pass: one WebGL2 canvas mounted `aria-hidden`, the parallel Ledger rendered, Arrow navigation and Enter activation worked with a visible 3px focus ring, ages 6–8 hid the raw reward and used 56px controls, plain mode retained calm Tier-C depth, standings showed only gain 300 and 40 to band top, and onboarding did not intercept actions. The full capture ended with zero console messages, page errors, or request failures.
+- Confirmed live automatic degradation under the headless software renderer: the app reached calm Tier C without blocking interaction. A two-second diagnostic sample measured about 56.9fps, so it is explicitly not treated as the minimum-managed-device acceptance result.
+- Built with `NEXT_PUBLIC_QUALITY_TIER=D` and completed the forced fallback smoke: Tier D mounted no canvas and rendered the identical four regions, seven paths, nine nodes, and three Base Camp features; Ledger Enter focus propagated to the fallback; mount/unmount again had zero console/page/request/HTTP errors. Restored the ordinary auto-tier production build afterward.
+- Updated `packages/arena-world/ACCEPTANCE.md`: SC-011 is now `Automated + live pass`; SC-010/012/025 remain Partial rather than overstating headless or keyboard-only evidence.
+- Gate status: `pnpm lint` passed (139 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (60 files, 243 tests); filtered Arena tests passed (56 files, 229 tests); root `pnpm build` passed; ordinary `pnpm --filter @gt100k/arena-world-app build` passed with `/icon.svg` generated.
+- SC status: SC-011 is complete. SC-010 and SC-025 still require the specified minimum managed-device 60fps/recovery observation; SC-012 still requires a real screen-reader and switch walkthrough. `.loop-done` remains absent.
+- Blockers: this host has no minimum managed-device profile, real screen reader, or switch hardware. The remaining live criteria cannot be honestly closed here.
+
+## NEXT
+- Run the remaining P7 acceptance on the specified minimum managed device and with a real screen-reader/switch setup, then update `packages/arena-world/ACCEPTANCE.md`.
+- Acceptance: observe sustained 60fps or graceful recovery to budget without blocking mastery on the Tier-A laptop/Tier-B iPad-Safari profile (SC-010/025), complete the full Ledger with screen-reader and switch input (SC-012), rerun the green gate, and create `.loop-done` only if all SC-001…SC-026 are green.

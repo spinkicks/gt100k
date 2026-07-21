@@ -43,6 +43,17 @@ interface ProceduralGeometryModule {
 }
 
 describe("arena committed seed asset kit", () => {
+  it("provides App Router icon metadata so the live root mount has no missing favicon", () => {
+    const source = readAppFile("app/icon.svg");
+
+    expect(source).toContain("<svg");
+    expect(source).toContain('viewBox="0 0 32 32"');
+    expect(source).toMatch(/<title>[^<]+<\/title>/);
+    expect(source).not.toMatch(
+      /<script|<foreignObject|(?:href|src)="https?:\/\/|url\(["']?https?:\/\//,
+    );
+  });
+
   it("commits accessible local SVG art for every Tier-D and UI registry key", () => {
     expect(COMMITTED_SVG_KEYS).toHaveLength(21);
 

@@ -195,3 +195,8 @@
 ## 2026-07-21 — T051 acceptance evidence posture
 - Mark SC-010, SC-011, SC-012, and SC-025 Partial while keeping their deterministic and structural evidence explicit. Rejected treating unit tests, source scans, or production builds as proof of minimum-device frame rate, a clean real-WebGL console/unmount, or actual screen-reader and switch behavior.
 - Keep the stable criterion-to-test map in `packages/arena-world/ACCEPTANCE.md` and the per-run command output in both that file and `.loop/progress.md`. Rejected changing the canonical spec or quickstart to fit this host's missing browser libraries because the live acceptance requirements remain valid.
+
+## 2026-07-21 — P7 live browser follow-up
+- Extract the three missing browser runtime packages into a temporary user-space library directory and launch the already-cached browser against them. Rejected a privileged system install, a repository dependency, or weakening the real-browser requirement because the missing libraries were an environmental launch issue rather than an app contract.
+- Mark SC-011 `Automated + live pass` only after a real WebGL2 canvas and the forced Tier-D no-canvas path both mounted, interacted, and unmounted with no console/page/request failures. Keep SC-010/012/025 Partial because a headless software renderer is not the minimum managed device and keyboard automation is not a real screen-reader/switch pass.
+- Add an App Router `icon.svg` after the smoke exposed a favicon 404. Rejected ignoring the browser's default favicon request because SC-011 requires a clean console and the local static icon removes the deterministic error without external fetches.
