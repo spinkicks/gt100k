@@ -839,3 +839,15 @@
 ## NEXT
 - Run the remaining P7 acceptance on the specified minimum managed device and with a real screen-reader/switch setup, then update `packages/arena-world/ACCEPTANCE.md`.
 - Acceptance: observe sustained 60fps or graceful recovery to budget without blocking mastery on the Tier-A laptop/Tier-B iPad-Safari profile (SC-010/025), complete the full Ledger with screen-reader and switch input (SC-012), rerun the green gate, and create `.loop-done` only if all SC-001…SC-026 are green.
+
+## 2026-07-21 — P7 live acceptance capability audit / SC-010, SC-012, SC-025
+- Re-read only the P7, quality-ladder, accessibility, and three remaining success-criterion sections, then audited this host for a genuine live-acceptance path.
+- Confirmed the runtime is WSL2 with no exposed GPU or input devices and no installed Safari, screen reader, switch stack, or managed-device profile. A headless browser or emulated device would not satisfy the spec's real hardware and assistive-technology observations.
+- Preserved the accurate `Partial` statuses in `packages/arena-world/ACCEPTANCE.md`, made no product or test change, and recorded one critical operator request in `.loop/requests.jsonl` recommending the specified live passes rather than weakening acceptance.
+- Gate status: `pnpm lint` passed (139 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (60 files, 243 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 59.9 kB route, 147 kB first load).
+- SC status: SC-010 and SC-025 remain Partial pending minimum-managed-device 60fps/recovery evidence; SC-012 remains Partial pending a real screen-reader and switch walkthrough. `.loop-done` remains absent.
+- Blocker: the required device and assistive-technology environments are external to this host; the operator escalation is now durable and no SC-invalidating assumption was made.
+
+## NEXT
+- On the specified minimum managed device and real screen-reader/switch setup, execute the remaining P7 acceptance and return the observed results for `packages/arena-world/ACCEPTANCE.md`.
+- Acceptance: sustain 60fps or demonstrate graceful recovery without blocking mastery on Tier-A laptop/Tier-B iPad-Safari (SC-010/025), complete every Ledger flow with the real screen reader and switch input (SC-012), rerun the full gate, and create `.loop-done` only after all SC-001…SC-026 are green.
