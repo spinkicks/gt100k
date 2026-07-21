@@ -94,3 +94,8 @@
 - Decision: make the `@gt100k/evidence-graph` test script set Vitest's root to the workspace and filter `packages/evidence-graph/test` explicitly. Preserve T031 as incomplete while the full Biome command reports only out-of-scope baseline diagnostics.
 - Why: the shared Vitest configuration uses workspace-relative include globs, so running it with the package directory as the implicit root discovers no files. An explicit workspace root makes the documented filtered command exercise only the intended domain suite without changing shared configuration. Keeping the full Biome criterion open respects both the acceptance test and the feature-isolation boundary.
 - Rejected: duplicating Vitest configuration inside the package, which creates drift; editing the shared root Vitest configuration, which is outside feature scope; treating scoped Biome success as equivalent to the explicitly required repository-wide command, which would weaken T031.
+
+## 2026-07-21 — T031 owning-lane baseline repair
+- Decision: follow the operator's option A response: keep T031's repository-wide Biome criterion unchanged and wait for the owning lane to repair the shared/root baseline before rerunning it.
+- Why: the failure is outside this feature's permitted paths, while every feature-owned and functional check is green. This preserves both the isolation fence and the explicit definition of done.
+- Rejected: option B, amending T031 to accept scoped lint, because that would weaken a settled acceptance criterion; editing shared/root files from this feature lane, because that would violate isolation.
