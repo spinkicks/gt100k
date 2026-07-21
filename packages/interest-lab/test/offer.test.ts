@@ -77,6 +77,33 @@ const CATALOG_GOLDEN_V1: ProbeFamily[] = [
 
 const FRESH_LEARNER = { metPrereqs: [], engagedDomains: [] } as const;
 
+const CATALOG_FAMILY_V1: ProbeFamily[] = [
+  {
+    familyId: "fam_A",
+    variants: ["fam_A_v1", "fam_A_v2", "fam_A_v3"].map((id) =>
+      makeProbe(GOLDEN_ROWS[0], { id, familyId: "fam_A" }),
+    ),
+  },
+];
+
+const makeSurplusFamily = (
+  familyId: string,
+  domain: string,
+  workMode: Probe["workMode"],
+  overrides: Partial<Probe> = {},
+): ProbeFamily => ({
+  familyId,
+  variants: [
+    makeProbe(GOLDEN_ROWS[0], {
+      id: familyId,
+      familyId,
+      domain,
+      workMode,
+      ...overrides,
+    }),
+  ],
+});
+
 const countBy = <T>(items: readonly T[], keyOf: (item: T) => string): Record<string, number> =>
   items.reduce<Record<string, number>>((counts, item) => {
     const key = keyOf(item);
@@ -139,5 +166,54 @@ describe("buildLab", () => {
     );
     expect(selectedIds[1]).toEqual(selectedIds[0]);
     expect(selectedIds[2]).toEqual(selectedIds[0]);
+  });
+
+  it("never offers safety or prerequisite controls to an ineligible learner", () => {
+    const lab = buildLab("synthetic-fresh-learner", CATALOG_GOLDEN_V1, FRESH_LEARNER);
+    const filteredControlIds = new Set(["p21", "p22", "p23", "p24"]);
+
+    expect(lab.offers.some(({ probeId }) => filteredControlIds.has(probeId))).toBe(false);
+  });
+
+  it("draws at most one equivalent variant from a family at a choice point", () => {
+    const lab = buildLab("synthetic-fresh-learner", CATALOG_FAMILY_V1, FRESH_LEARNER);
+
+    expect(lab.offers).toHaveLength(1);
+    expect(new Set(lab.offers.map(({ familyId }) => familyId))).toEqual(new Set(["fam_A"]));
+    expect(["fam_A_v1", "fam_A_v2", "fam_A_v3"]).toContain(lab.offers[0]?.probeId);
+  });
+
+  it("uses seeded family order and coverage gain to select a complete subset under surplus", () => {
+    const surplusCatalog = [
+      makeSurplusFamily("a", "domain_1", "build"),
+      makeSurplusFamily("b", "domain_1", "build"),
+      makeSurplusFamily("c", "domain_1", "build"),
+      makeSurplusFamily("d", "domain_2", "investigate"),
+      makeSurplusFamily("e", "domain_3", "compose", {
+        difficulty: "stretch",
+        social: "group",
+        audience: "audience",
+      }),
+      makeSurplusFamily("f", "domain_4", "explain", {
+        difficulty: "stretch",
+        social: "group",
+        audience: "audience",
+      }),
+    ];
+
+    const build = () =>
+      buildLab("synthetic-fresh-learner", surplusCatalog, FRESH_LEARNER, {
+        probeCountTarget: 4,
+        probeCountRange: { min: 4, max: 4 },
+        minDomains: 4,
+        minWorkModes: 4,
+        seed: 2,
+      });
+    const lab = build();
+
+    expect(lab.offers.map(({ probeId }) => probeId)).toEqual(["c", "e", "d", "f"]);
+    expect(lab.coverage.complete).toBe(true);
+    expect(lab.coverage.gaps).toEqual([]);
+    expect(JSON.stringify(build())).toBe(JSON.stringify(lab));
   });
 });

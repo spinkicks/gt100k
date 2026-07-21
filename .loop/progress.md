@@ -119,3 +119,15 @@
 ## NEXT
 - Complete T012: add the remaining offer contract tests for p21–p24 exclusion, at-most-one equivalent variant per family per choice point, and deterministic coverage-satisfying selection under catalog surplus.
 - Acceptance: the focused test first fails against the minimal G1 implementation for the documented `stableSort(familyId)` plus seeded-rotation surplus case; the later minimal catalog/selection implementation restores the focused suite and the full `pnpm typecheck`, `pnpm test`, and `pnpm lint` gate.
+
+## 2026-07-20 — P3 / T012 + T013 + partial T015
+- Added explicit offer contracts proving p21–p24 are never offered, one equivalent family contributes at most one variant per choice point, and a six-family surplus deterministically yields the exact coverage-complete subset `c,e,d,f`.
+- Confirmed the test-first red state: the existing take-first implementation returned incomplete subset `a,b,c,d`; the focused suite passed after the minimal catalog and surplus-selection implementation.
+- Added pure catalog eligibility, stable family-id ordering, one-variant selection, normalized seed rotation, and documented coverage-greedy tie breaking; preserved G1's seed-stable full eligible set when there is no surplus.
+- Strengthened self-review by checking every filtered control independently and rebuilding the surplus case byte-identically.
+- Verified the focused offer suite (5 tests), forced package compiler, `pnpm typecheck`, `pnpm test` (51 tests), and `pnpm lint` all pass.
+- Status: T012 and T013 complete; T015 remains partial pending its decision-log and optional-selector boundary. IL-002/IL-018 surplus-selection behavior is green; P3 remains in progress. No blocker.
+
+## NEXT
+- Complete T015: finalize `buildLab` with the `OfferDecisionLog` replay entry and optional deferred `OfferSelector` parameter while keeping the selector unused in the rules-engine MVP.
+- Acceptance: tests first pin the eligible-set ids, policy version, coverage-constraint log payload, and identical Lab output with the selector omitted; package compilation, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.

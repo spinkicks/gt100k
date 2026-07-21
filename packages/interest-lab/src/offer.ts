@@ -1,3 +1,4 @@
+import { rotateBySeed, selectEligibleFamilyVariants } from "./catalog";
 import { buildCoverageMatrix } from "./coverage";
 import type { CoverageMatrix } from "./hypothesis";
 import type {
@@ -66,10 +67,6 @@ export interface Lab {
   config: LabConfig;
 }
 
-const isEligible = (probe: Probe, metPrereqs: ReadonlySet<string>): boolean =>
-  probe.safetyClass === "cleared" &&
-  probe.prerequisites.every((prerequisite) => metPrereqs.has(prerequisite));
-
 const toOffer = (probe: Probe): Offer => ({
   probeId: probe.id,
   familyId: probe.familyId,
@@ -83,6 +80,61 @@ const toOffer = (probe: Probe): Offer => ({
   eligible: true,
 });
 
+const coverageGain = (
+  probe: Probe,
+  selected: readonly Probe[],
+  config: LabConfig,
+  engagedDomains: ReadonlySet<Domain>,
+): number => {
+  const domains = new Set(selected.map(({ domain }) => domain));
+  const workModes = new Set(selected.map(({ workMode }) => workMode));
+  const socialModes = new Set(selected.map(({ social }) => social));
+  const difficulties = new Set(selected.map(({ difficulty }) => difficulty));
+  const audiences = new Set(selected.map(({ audience }) => audience));
+  const dormantCount = selected.filter(({ domain }) => !engagedDomains.has(domain)).length;
+
+  return (
+    (domains.size < config.minDomains && !domains.has(probe.domain) ? 1 : 0) +
+    (workModes.size < config.minWorkModes && !workModes.has(probe.workMode) ? 1 : 0) +
+    (!socialModes.has(probe.social) ? 1 : 0) +
+    (!difficulties.has(probe.difficulty) ? 1 : 0) +
+    (!audiences.has(probe.audience) ? 1 : 0) +
+    (dormantCount < config.explorationFloor && !engagedDomains.has(probe.domain) ? 1 : 0)
+  );
+};
+
+/**
+ * Surplus selection uses the spec-pinned fixed order: stable family-id sort,
+ * then a seed rotation. At each step the candidate satisfying the most still-
+ * unmet coverage dimensions wins; ties retain that fixed order.
+ */
+const selectCoverageGreedy = (
+  candidates: readonly Probe[],
+  selectionLimit: number,
+  config: LabConfig,
+  engagedDomains: ReadonlySet<Domain>,
+): Probe[] => {
+  const remaining = rotateBySeed(candidates, config.seed);
+  const selected: Probe[] = [];
+
+  while (selected.length < selectionLimit && remaining.length > 0) {
+    let bestIndex = 0;
+    let bestGain = -1;
+
+    remaining.forEach((probe, index) => {
+      const gain = coverageGain(probe, selected, config, engagedDomains);
+      if (gain > bestGain) {
+        bestGain = gain;
+        bestIndex = index;
+      }
+    });
+
+    selected.push(...remaining.splice(bestIndex, 1));
+  }
+
+  return selected;
+};
+
 export const buildLab = (
   learnerRef: string,
   catalogView: readonly ProbeFamily[],
@@ -94,11 +146,12 @@ export const buildLab = (
   const engagedDomains = new Set(eligibility.engagedDomains);
   const selectionLimit = Math.min(config.probeCountTarget, config.probeCountRange.max);
 
-  const offers = catalogView
-    .map((family) => family.variants.find((probe) => isEligible(probe, metPrereqs)))
-    .filter((probe): probe is Probe => probe !== undefined)
-    .slice(0, selectionLimit)
-    .map(toOffer);
+  const eligible = selectEligibleFamilyVariants(catalogView, metPrereqs);
+  const selected =
+    eligible.length > selectionLimit
+      ? selectCoverageGreedy(eligible, selectionLimit, config, engagedDomains)
+      : eligible;
+  const offers = selected.map(toOffer);
 
   return {
     learnerRef,
