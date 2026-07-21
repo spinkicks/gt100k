@@ -1,6 +1,6 @@
 "use client";
 
-import type { DeviceCaps, InterestLabView, RenderTier } from "@gt100k/interest-lab-view";
+import type { DeviceCaps, InterestLabView } from "@gt100k/interest-lab-view";
 import { useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { QuestWorld } from "./child/QuestWorld";
@@ -21,6 +21,7 @@ import {
   resolveStaffDebugMode,
 } from "./ui/controls/settings";
 import { detectDeviceCaps } from "./ui/deviceCaps";
+import { resolveMastheadCopy } from "./ui/mastheadCopy";
 
 const DEFAULTS = readInterestLabClientDefaults({
   NEXT_PUBLIC_DEFAULT_AGE_BAND: process.env.NEXT_PUBLIC_DEFAULT_AGE_BAND,
@@ -30,12 +31,6 @@ const DEFAULTS = readInterestLabClientDefaults({
 });
 
 const SERVER_DEVICE_CAPS: DeviceCaps = { webglAvailable: false };
-
-const TIER_STATUS: Record<RenderTier, string> = {
-  "quest-world-3d": "Full 3D world",
-  "quest-world-3d-lite": "Lighter 3D world",
-  "board-2d": "Accessible 2D tier",
-};
 
 export interface InterestLabSurfaceProps {
   view: InterestLabView;
@@ -115,6 +110,11 @@ export function InterestLabClient() {
     [surface, ageBand, reducedMotion, plainMode, effectiveDeviceCaps, authoredReview],
   );
   const activeRenderTier = seed.view.presentation.renderTier;
+  const mastheadCopy = resolveMastheadCopy({
+    surface,
+    staffDebug,
+    renderTier: activeRenderTier,
+  });
   const handleContextLost = useCallback(() => setWebglContextLost(true), []);
   const handlePerformanceDecline = useCallback(
     () => setPerformanceStep((current) => (current === 0 ? 1 : 2)),
@@ -141,13 +141,13 @@ export function InterestLabClient() {
       >
         <header className="masthead">
           <div className="title-group">
-            <p className="context-line">Interest Lab · synthetic preview</p>
+            <p className="context-line">{mastheadCopy.contextLine}</p>
             <h1>The Curiosity Atelier</h1>
             <p className="lede">Try different kinds of work and notice what draws you back.</p>
           </div>
           <p className="status-pill">
             <span aria-hidden="true" className="status-mark" />
-            {surface === "guide" ? "Evidence console" : TIER_STATUS[activeRenderTier]}
+            {mastheadCopy.statusLabel}
           </p>
         </header>
 

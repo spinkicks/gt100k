@@ -1,3 +1,6 @@
+## REPO LAYOUT (restructured 2026-07-21)
+The repo is now passion-centric: ALL code lives under `passion/apps/`, `passion/packages/`, `passion/adapters/`. There is NO `apps/`, `packages/`, or `adapters/` at the repo root anymore. Work under `passion/`; pnpm-workspace globs are `passion/*`.
+
 # Loop progress — interest-lab (003) · PRODUCTION REBUILD of the child experience (claude)
 
 ## Verdict driving this work
@@ -239,17 +242,49 @@ existing tests meaningful — update them as behavior changes; DO NOT weaken the
     collected label incl. singular; overview-available iff focused; empty-world guard; DOM chip reflects
     picks + overview enable/disable.
 
+- **Turn 7 (v2) — P1 item 8 (child copy pass, SC-UI-17 copy criterion) DONE.** Fold the last two
+  child-facing dev-tells out of the shared masthead: the "· synthetic preview" eyebrow and the render-
+  tier status pill ("Accessible 2D tier"). Gate green: `tsc -b` 0 · root `pnpm test` **384/384** · app
+  vitest **131/131** (+8) · `next build` ✓ (route `/` static, 288 kB) · biome clean on my files.
+  **Browser-verified** (chromium+swiftshader, prod `next start :3131`): child `/` (tier quest-world-3d)
+  → eyebrow **"Explore freely — nothing here is a test."**, pill **"Exploring"**; child + Calm mode ON
+  (tier board-2d) → same eyebrow, pill **"Calm view"**; `/?debug` (staff) → eyebrow **"Interest Lab ·
+  synthetic preview"**, pill **"Full 3D world"**. **ZERO console/page errors** on all three. Screenshot
+  self-review: eyebrow in warm spark accent, pill top-right w/ green dot, no dev jargon in child chrome.
+  See D-VP24.
+  - **Pure `resolveMastheadCopy({ surface, staffDebug, renderTier })`** (`app/ui/mastheadCopy.ts`) →
+    `{ contextLine, statusLabel }`; replaced the inline `TIER_STATUS` map + hardcoded eyebrow in
+    `InterestLabClient`. Staff UNCHANGED (synthetic-preview eyebrow + tier name / "Evidence console").
+    Child: no-test eyebrow + "Calm view"(board-2d)/"Exploring"(3D). Guide non-staff: "Interest Lab" +
+    "Evidence console". Child eyebrow is about STAKES (no test/score — §U8.1, IL-005/6), not the lede's
+    activity framing; the pill reflects the child's own calm choice truthfully.
+  - Tests: `test/masthead-copy.test.ts` (8) — staff diagnostic copy per tier; child no-test eyebrow;
+    calm/exploring pill per tier; a forbidden-substring guard (no synthetic/preview/tier/2D/3D/WebGL/
+    board in any child string); guide non-staff copy; totality over surface×debug×tier.
+
+- **STATE NOTE (reconciled this turn).** P1 item 7 (motif responds to focus) was already implemented +
+  committed at HEAD (`resolveMotifFocus` in `world3d/motif.ts` + eased `useFrame` in `IslandMotif.tsx`,
+  covered by `test/domain-motif.test.ts`) — its progress note wasn't recorded. Verified done; no rework.
+  A merge from origin/main also landed the passion-centric repo restructure (all code under `passion/`);
+  root `pnpm test` now globs `passion/{packages,adapters}/**` only (384). The interest-lab **app** tests
+  run under the app's own vitest (`passion/apps/interest-lab`, 131) — run them separately; `tsc -b`
+  covers the app.
+
 ## NEXT
-- **P1 item 7 — motif responds to focus (was the P1.6 candidate, now unblocked).** The per-domain island
-  motif (P1.5) sits static+spinning regardless of focus. Brighten/raise the focused island's motif so
-  arrival has physical weight (reuse the `focused` signal already computed in `Island`). Keep the pure
-  descriptor unit-testable — put the pure focus→intensity mapping in a resolver (e.g. extend `motif.ts`
-  or a new `motif-focus.ts`), and the per-frame response in `IslandMotif`'s `useFrame`, NOT in `Island`.
-  Acceptance: a pure `resolveMotifFocusEmphasis(focused)` (unit-tested: focused > unfocused, finite,
-  clamped) drives `IslandMotif`; keep `tsc`/`test`/`build`/biome green. Best-effort browser-verify the
-  focused motif visibly lifts.
-- **THEN P1 item 8 — child copy pass.** Fold child-appropriate copy for the masthead "· synthetic
-  preview" context-line + the "Accessible 2D tier" status pill (tier jargon leaks into child chrome).
+- **App-polish items P1 5–8 are all DONE** (harness gate off the child build, wayfinding, motif focus,
+  child copy). The 3D world is mature: 8 distinct island motifs w/ focus emphasis, wayfinding HUD,
+  welcome-back bloom, and a full `@react-three/postprocessing` grade (`world3d/WorldPostFX.tsx` —
+  Bloom/ToneMapping/Vignette). Remaining spec surface is mostly the app-level walkthrough SCs.
+- **NEXT candidate — SC-UI-18 automated a11y walkthrough (child + guide).** Drive the app headless
+  (Playwright, Chromium installed) and assert the DOM-as-AT-source contract that IS machine-checkable:
+  (a) the 3D `<Canvas>` carries `aria-hidden="true"`; (b) the child **quest ledger** is a keyboard-
+  navigable ordered list of card-buttons with accessible names (title + work-mode + why + return-state)
+  and visible `--focus` rings on Tab; (c) picking a quest is operable via keyboard (Enter/Space), not
+  pointer-only; (d) state is color-independent (icon + text). Encode as an app-level test where possible
+  (jsdom render + role/aria assertions) + a browser walkthrough for focus/keyboard. Keep the gate green.
+- **BLOCKED/MANUAL (SC-UI-18 remainder):** true screen-reader (VoiceOver/NVDA) + human contrast/AT
+  verification is not doable headless in-lane — treat as `manual:` per the loop's blocked-criterion rule;
+  it does not block the rest. Record findings; do not loop on a recheck marker.
 - **CARRY-OVER P1.7 caveat (unchanged):** when the WORLD is later staged by age band (reducing world
   markers below `quests.length`), keep world-reachable == board-reachable by staging the BOARD's
   `revealAll` baseline to the same set (D-VP19).

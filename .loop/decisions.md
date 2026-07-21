@@ -960,3 +960,29 @@
   overview disabled at the archipelago → focus a quest (banner "Visiting Making", count→1) → overview
   ENABLED → click it → `data-focused-probe` cleared to null, overview disabled again. Zero console/page
   errors. Gate: `tsc -b` 0 · root `pnpm test` 362/362 · app 123/123 (+8) · `next build` ✓ · biome clean.
+
+## D-VP24 — Child copy pass: masthead eyebrow + status pill (P1 item 8)
+- Chose: a pure `resolveMastheadCopy({ surface, staffDebug, renderTier })` → `{ contextLine, statusLabel }`
+  (`app/ui/mastheadCopy.ts`), replacing the inline `TIER_STATUS` map + hardcoded eyebrow in
+  `InterestLabClient`. Staff (`?debug`) is UNCHANGED — eyebrow "Interest Lab · synthetic preview", pill =
+  render-tier name ("Full 3D world" / "Lighter 3D world" / "Accessible 2D tier") or "Evidence console"
+  for guide. Child build (no debug): eyebrow "Explore freely — nothing here is a test.", pill "Calm view"
+  for `board-2d` / "Exploring" for the 3D tiers. Guide non-staff: "Interest Lab" + "Evidence console".
+- Why: the masthead is shared by every surface, so its dev-useful eyebrow ("synthetic preview") and
+  status pill (render-tier jargon) leaked build/tier machinery into what a CHILD reads — the last two
+  child-facing dev-tells flagged after the harness gate (P1 items 5/6 NEXT block). The child eyebrow is
+  about STAKES (no test / no score — §U8.1, IL-005/IL-006), deliberately not echoing the lede's activity
+  framing; the pill reflects the child's own calm choice ("Calm view") or their motion world ("Exploring")
+  — both truthful, neither exposing "2D/3D/tier/WebGL". A copy test asserts no child string contains
+  synthetic/preview/tier/2D/3D/WebGL/board.
+- Rejected: (a) hiding the eyebrow for children — leaves an empty kicker gap and drops a chance to
+  reassure; a warm no-test line reads better. (b) a single fixed child pill regardless of tier — loses the
+  truthful calm-mode confirmation the child gets back after toggling Calm mode. (c) inventing a warm word
+  INSIDE the WebGL canvas — text stays in the DOM (accessibility, no-font-fetch, §U8.14).
+- Browser-verified (chromium+swiftshader, prod `next start :3131`): child `/` (tier quest-world-3d) →
+  eyebrow "Explore freely — nothing here is a test.", pill "Exploring"; child + Calm mode ON (tier
+  board-2d) → same eyebrow, pill "Calm view"; `/?debug` (staff) → eyebrow "Interest Lab · synthetic
+  preview", pill "Full 3D world". ZERO console/page errors on all three. Screenshot self-review: eyebrow
+  in warm spark accent, pill top-right with green dot, no dev jargon anywhere in child chrome.
+- Gate: `tsc -b` 0 · root `pnpm test` 384/384 · app vitest 131/131 (+8: `test/masthead-copy.test.ts`) ·
+  `next build` ✓ (route `/` static, 288 kB) · biome clean on my files.
