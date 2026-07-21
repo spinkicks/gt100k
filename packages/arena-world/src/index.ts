@@ -52,7 +52,7 @@ export { TIERS } from "./tiers.fixture";
 
 export { PALETTE, TYPOGRAPHY } from "./art";
 export { ASSET_KEYS } from "./assets";
-export { EASINGS, LAMBDAS, MOTION } from "./motion";
+export { EASINGS, LAMBDAS, MOTION, resolveMotion } from "./motion";
 export { QUALITY_TIERS } from "./quality";
 export { CAMERA3D, LIGHTING, PARALLAX3D, POSTFX, WATER, WORLD_SCALE } from "./scene3d";
 export { SOUND_CUES } from "./sound";

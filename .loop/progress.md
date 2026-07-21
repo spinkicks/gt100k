@@ -192,3 +192,16 @@
 ## NEXT
 - T012a + the `resolveMotion` slice of T016a: add `packages/arena-world/test/motion-tokens.test.ts`, then implement and explicitly export the minimal pure motion-token resolver.
 - Acceptance: exact `MOTION`/`EASINGS`/`LAMBDAS` golden values remain stable; every motion kind has a reduced equivalent; `reducedMotion:true` returns `mode:"reduced"`, `easing:"Linear"`, and the exact reduced durations from §§8.10/8.21 (FR-034, SC-015); focused checks and repository gates remain green.
+
+## 2026-07-20 — P1 / T012a + T016a (`resolveMotion` slice)
+- Added `motion-tokens.test.ts` through the public package API, covering the exact `MOTION`, `EASINGS`, and `LAMBDAS` registries plus all 16 animated and reduced-motion resolver rows.
+- Followed red-green TDD: the registry assertion passed while three resolver tests failed with `resolveMotion is not a function`; all four tests passed after the minimal implementation and explicit package export landed.
+- Added a pure table-driven `resolveMotion(kind, options)` implementation. It derives durations and easings from the existing registries, preserves 120ms non-vestibular press feedback, and maps every other reduced mode to the exact 0ms or 150ms spec value with `Linear` easing.
+- Review status: checked the implementation line-by-line against spec §§5.6/8.10/8.21, FR-034, SC-015, the data model, and the public contract; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused motion tests passed (4 tests); Biome checked all three changed feature files; direct arena-world TypeScript validation passed; `pnpm typecheck` passed; `pnpm test` passed (18 files, 58 tests). No app changed, so no Next.js build was required.
+- SC status: the domain golden-table and reduced-equivalence portion of SC-015 is complete; DOM/HUD `motion@^12` consumption remains open for the scheduled app tasks.
+- Blockers: none.
+
+## NEXT
+- T012b + the `resolveBiome`/`resolveElevation` slice of T016a: add `packages/arena-world/test/art.test.ts`, then implement and explicitly export the minimal pure biome resolvers.
+- Acceptance: exact `PALETTE`/`TYPOGRAPHY` tokens remain stable; every canonical region resolves to its exact §8.12 biome and elevation row; an unknown region throws (FR-031, SC-017); focused checks and repository gates remain green.

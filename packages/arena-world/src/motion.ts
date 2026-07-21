@@ -1,3 +1,5 @@
+import type { MotionToken } from "./model";
+
 export const MOTION = {
   instant: 0,
   press: 120,
@@ -40,3 +42,109 @@ export const LAMBDAS = {
   bloomPulse: 5,
   orbit: 0.08,
 } as const;
+
+const MOTION_RESOLUTIONS = {
+  press: {
+    durationMs: MOTION.press,
+    easing: EASINGS.press,
+    reducedDurationMs: MOTION.press,
+  },
+  nodeReveal: {
+    durationMs: MOTION.reveal,
+    easing: EASINGS.pop,
+    reducedDurationMs: MOTION.instant,
+  },
+  traverse: {
+    durationMs: MOTION.move,
+    easing: EASINGS.enter.three,
+    reducedDurationMs: MOTION.micro,
+  },
+  run: {
+    durationMs: MOTION.runSeg,
+    easing: EASINGS.enter.three,
+    reducedDurationMs: MOTION.micro,
+  },
+  regionZoom: {
+    durationMs: MOTION.zoom,
+    easing: EASINGS.enter.three,
+    reducedDurationMs: MOTION.instant,
+  },
+  intro: {
+    durationMs: MOTION.intro,
+    easing: EASINGS.intro,
+    reducedDurationMs: MOTION.instant,
+  },
+  availableGlow: {
+    durationMs: MOTION.glowLoop,
+    easing: EASINGS.loop,
+    reducedDurationMs: MOTION.instant,
+  },
+  tierAdvance: {
+    durationMs: MOTION.celebrateMed,
+    easing: EASINGS.enter.three,
+    reducedDurationMs: MOTION.instant,
+  },
+  equip: {
+    durationMs: MOTION.equip,
+    easing: EASINGS.enter.three,
+    reducedDurationMs: MOTION.instant,
+  },
+  drawerOpen: {
+    durationMs: MOTION.fast,
+    easing: EASINGS.enter.three,
+    reducedDurationMs: MOTION.micro,
+  },
+  sceneTransition: {
+    durationMs: MOTION.sceneFade,
+    easing: EASINGS.enter.three,
+    reducedDurationMs: MOTION.micro,
+  },
+  baseAccretion: {
+    durationMs: MOTION.base,
+    easing: EASINGS.pop,
+    reducedDurationMs: MOTION.instant,
+  },
+  standingsExpand: {
+    durationMs: MOTION.fast,
+    easing: EASINGS.enter.three,
+    reducedDurationMs: MOTION.instant,
+  },
+  onboardBeat: {
+    durationMs: MOTION.base,
+    easing: EASINGS.enter.three,
+    reducedDurationMs: MOTION.instant,
+  },
+  islandFloat: {
+    durationMs: MOTION.islandFloat,
+    easing: EASINGS.loop,
+    reducedDurationMs: MOTION.instant,
+  },
+  sunDrift: {
+    durationMs: MOTION.sunDrift,
+    easing: EASINGS.linear,
+    reducedDurationMs: MOTION.instant,
+  },
+} as const;
+
+export function resolveMotion(
+  kind: keyof typeof MOTION_RESOLUTIONS,
+  options: { readonly reducedMotion: boolean },
+): MotionToken {
+  const resolution = MOTION_RESOLUTIONS[kind];
+
+  if (options.reducedMotion) {
+    return {
+      kind,
+      mode: "reduced",
+      durationMs: resolution.reducedDurationMs,
+      easing: EASINGS.linear,
+    };
+  }
+
+  return {
+    kind,
+    mode: "animated",
+    durationMs: resolution.durationMs,
+    easing: resolution.easing,
+  };
+}
