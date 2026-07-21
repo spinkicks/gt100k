@@ -1,4 +1,5 @@
 import type { SignalSummary } from "./events";
+import type { HypothesisRevision } from "./hypothesis";
 
 export interface CandidateGateEvaluation {
   eligible: boolean;
@@ -22,5 +23,12 @@ export function evaluateCandidateGate(summary: SignalSummary): CandidateGateEval
   return {
     eligible: missing.length === 0,
     missing,
+  };
+}
+
+export function applyMissingData(current: HypothesisRevision): HypothesisRevision {
+  return {
+    ...current,
+    version: current.version + 1,
   };
 }

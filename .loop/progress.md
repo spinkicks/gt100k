@@ -207,3 +207,15 @@
 ## NEXT
 - Complete T024 and the minimal `applyMissingData` portion of T028 in `packages/interest-lab/test/state-machine.test.ts` and `packages/interest-lab/src/state-machine.ts`.
 - Acceptance: a missing-data window appends a versioned recorded no-op with state and uncertainty unchanged, and low-interest inference is refused unless a human has ruled out access, health, schedule, equipment, and consent causes per G6/IL-009; preserve a focused red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-20 — P5 / T024 + partial T028
+- Added the exact G6 missing-data contract over an operative synthetic `EMERGING` revision, proving a new version is recorded while state and moderate-grade uncertainty remain unchanged and no `PARKED` inference occurs.
+- Confirmed the test-first red state: the five existing candidate-gate cases passed while the new case failed because `applyMissingData` was absent, then all six focused cases passed after implementation.
+- Implemented `applyMissingData` as a pure versioned no-op with no wall-clock read, mutation, low-interest inference, or new unpinned rule-out payload.
+- Corrected the synthetic test fixture to use the fixed `build` work-mode verb after the package compiler rejected a domain label in `workModeProfile`.
+- Verified the forced package compiler, `pnpm typecheck`, `pnpm test` (70 tests), and `pnpm lint` all pass.
+- Status: T024 complete; T028 remains partial; P5 remains in progress. SC-010's exact G6 missing-data prohibition is green. No blocker.
+
+## NEXT
+- Complete T025 and the remaining lifecycle portion of T028 in `packages/interest-lab/test/state-machine.test.ts` and `packages/interest-lab/src/state-machine.ts`.
+- Acceptance: `proposeTransition` produces a RULE shadow proposal with `guideReview:null` and `operative:false`; `authorRevision` produces an operative guide-authored version increment; illegal transitions name the rejected pair; `CONTESTED→PARKED→REOPENED` remains legal; preserve a focused red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.

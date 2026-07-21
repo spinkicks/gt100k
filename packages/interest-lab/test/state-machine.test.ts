@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { SignalFamily, SignalSummary } from "../src/events";
+import type { HypothesisRevision } from "../src/hypothesis";
 import { summarizeSignals } from "../src/signals";
-import { evaluateCandidateGate } from "../src/state-machine";
+import { applyMissingData, evaluateCandidateGate } from "../src/state-machine";
 import { EVENTS_GOLDEN_V1 } from "./fixtures/events";
 
 const summaryWithFamilies = (familiesPresent: SignalFamily[]): SignalSummary => ({
@@ -16,6 +17,34 @@ const summaryWithFamilies = (familiesPresent: SignalFamily[]): SignalSummary => 
   contextEffects: [],
   familiesPresent,
 });
+
+const EMERGING_REVISION: HypothesisRevision = {
+  hypothesisId: "synthetic-hypothesis-001",
+  learnerRef: "synthetic-learner-001",
+  version: 4,
+  candidateDomains: ["making"],
+  workModeProfile: { build: 1 },
+  state: "EMERGING",
+  evidenceRefs: ["synthetic-event-001"],
+  signalSummary: summaryWithFamilies(["chosen_challenge"]),
+  competingExplanations: ["resource access"],
+  coverageGaps: ["no delayed-discretionary signal"],
+  uncertainty: { kind: "grade", grade: "moderate" },
+  nextProbe: "synthetic-probe-002",
+  childPosition: "UNSURE",
+  guideReview: {
+    guide: "synthetic-guide-001",
+    decision: "retain emerging hypothesis",
+    rationale: "evidence remains incomplete",
+    reviewedAtDayOffset: 6,
+  },
+  proposedBy: "GUIDE",
+  operative: true,
+  modelVersion: "rules-only-v1",
+  policyVersion: "rules-engine-v1",
+  validFromDayOffset: 6,
+  recordedAtDayOffset: 6,
+};
 
 describe("evaluateCandidateGate", () => {
   it.each([
@@ -63,5 +92,20 @@ describe("evaluateCandidateGate", () => {
     },
   ])("returns the exact G5 outcome for $name", ({ summary, expected }) => {
     expect(evaluateCandidateGate(summary)).toEqual(expected);
+  });
+});
+
+describe("applyMissingData", () => {
+  it("records the exact G6 no-op without inferring low interest", () => {
+    const nextRevision = applyMissingData(EMERGING_REVISION);
+
+    expect(nextRevision).not.toBe(EMERGING_REVISION);
+    expect(nextRevision).toEqual({
+      ...EMERGING_REVISION,
+      version: 5,
+      state: "EMERGING",
+      uncertainty: { kind: "grade", grade: "moderate" },
+    });
+    expect(nextRevision.state).not.toBe("PARKED");
   });
 });
