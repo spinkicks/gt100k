@@ -597,3 +597,15 @@
 ## NEXT
 - Complete U028: implement `apps/interest-lab/app/child/world3d/CameraRig.tsx` from the existing `SceneView`, `CAMERA3D`, motion tokens, and child staging mode.
 - Acceptance: tests first prove establishing `driftIn`, DOM-focus-driven `islandFocus` easing with reduced-motion cuts, exact pan/zoom/polar/azimuth/damping clamps, orbit only for `focus+orbit`, and the calm 6-8 auto-tour path; focused tests, app tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.
+
+## 2026-07-21 — P10 / U028
+- Added a frame-driven r3f camera rig with the exact 1400ms establishing drift, live-pose 520ms island retargeting, reduced-motion cuts, and synchronized OrbitControls targets so focus motion stays interruptible without per-frame React state.
+- Added exact no-pan/no-zoom, polar, azimuth, and damping clamps for the 9-11/12-14 `focus+orbit` bands, plus a deterministic catalog-order 8-second auto-tour with no free orbit for 6-8; DOM focus always overrides the tour.
+- Added six camera contracts covering the establishing pose, first-frame `focusLerp`, continuous settling, focused/stale targets, reduced cuts including a live preference change, auto-tour cadence/precedence, and every orbit clamp.
+- Confirmed genuine RED evidence against the absent module and intentional scaffolds, then separate focused RED regressions for the raw-damping endpoint discontinuity and the live reduced-motion retarget identity. Independent review found the latter Important issue; the mode-aware target key now cancels an in-flight move into the required cut.
+- Verified app tests (38 across 10 files), `pnpm typecheck`, `pnpm test` (159 across 35 files), `pnpm lint` (133 files), `pnpm --filter @gt100k/interest-lab-app build`, and `pnpm build`; all pass. The mounted WebGL/browser smoke remains correctly assigned to U029's tier wiring.
+- Status: U028 complete; P10 remains in progress. Camera motion, age-band control, reduced-motion interruption, and exact orbit constraints are green; U029 owns live world composition, fallback, and browser verification. No blocker.
+
+## NEXT
+- Complete U029: add `QuestWorld.tsx` and wire the three-tier child renderer through `InterestLabClient.tsx`, with the DOM `QuestLedger` driving 3D focus and picks.
+- Acceptance: full/lite tiers compose `World3D`, islands, markers, motes, the camera rig, and the always-operable DOM ledger from one view; `board-2d`, no-WebGL, lost-context, and reduced-motion fallbacks preserve identical quest state; focused tests, app tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, both production builds, and the P10 mounted-canvas smoke remain green.
