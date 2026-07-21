@@ -759,22 +759,25 @@ footer {
   gap: 1rem;
 }
 
+/* Each constellation is titled with the shared HUD eyebrow + lit glow-dot. */
 .quest-constellation h3 {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: 0.5rem;
   margin: 0;
-  color: var(--ink-muted);
+  color: var(--spark-hi);
   font-size: var(--type-label-size);
   font-weight: 600;
-  text-transform: capitalize;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .quest-constellation h3 span {
-  width: 0.75rem;
-  height: 0.75rem;
-  border: 2px solid var(--ink-hi);
+  width: 0.5rem;
+  height: 0.5rem;
   border-radius: 50%;
+  background: var(--domain-hue);
+  box-shadow: 0 0 0.6rem color-mix(in srgb, var(--domain-hue) 78%, transparent);
 }
 
 .quest-card-list,
@@ -795,34 +798,103 @@ footer {
 }
 
 .quest-card {
+  /* Match the deck's motion ease so the 2D board reads as one crafted world. */
+  --card-ease: cubic-bezier(0.23, 1, 0.32, 1);
+
+  position: relative;
   display: grid;
   width: 100%;
   min-height: var(--touch-target);
   gap: 0.75rem;
   padding: 1rem;
+  overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--quest-hue) 58%, var(--line));
   border-radius: 0.875rem;
-  background: color-mix(in srgb, var(--quest-hue) 13%, var(--night-raised));
+  background: radial-gradient(
+      130% 120% at 0% 0%,
+      color-mix(in srgb, var(--quest-hue) 20%, transparent),
+      transparent 54%
+    ),
+    color-mix(in srgb, var(--quest-hue) 13%, var(--night-raised));
   color: var(--ink-hi);
   font: inherit;
   text-align: left;
   transform-origin: center;
+  /* Lit top inner highlight + ambient drop so the card lifts off the dark board. */
+  box-shadow: 0 1px 0 rgb(244 240 251 / 12%) inset, 0 14px 30px -22px rgb(0 0 0 / 78%);
+  transition: box-shadow 200ms var(--card-ease), border-color 200ms var(--card-ease),
+    background 200ms var(--card-ease);
+}
+
+/* Per-card lit top edge — the deck's signature rail, tinted to the domain hue. */
+.quest-card::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--quest-hue) 82%, white),
+    var(--spark-hi) 72%,
+    transparent
+  );
+  opacity: 0.62;
+  transition: opacity 200ms var(--card-ease);
+  content: "";
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .quest-card:hover {
+    border-color: color-mix(in srgb, var(--quest-hue) 80%, var(--line));
+    box-shadow: 0 1px 0 rgb(244 240 251 / 20%) inset, 0 24px 46px -20px rgb(0 0 0 / 82%),
+      0 0 32px -12px color-mix(in srgb, var(--quest-hue) 72%, transparent);
+  }
+
+  .quest-card:hover::before {
+    opacity: 1;
+  }
 }
 
 .quest-card[aria-pressed="true"] {
   border-color: var(--quest-hue);
-  background: color-mix(in srgb, var(--quest-hue) 22%, var(--night-raised));
+  background: radial-gradient(
+      130% 120% at 0% 0%,
+      color-mix(in srgb, var(--quest-hue) 30%, transparent),
+      transparent 54%
+    ),
+    color-mix(in srgb, var(--quest-hue) 22%, var(--night-raised));
+  /* Chosen quests read as lit up — an emissive glow ring in the domain hue. */
+  box-shadow: 0 1px 0 rgb(244 240 251 / 18%) inset, 0 14px 30px -22px rgb(0 0 0 / 78%),
+    0 0 24px -8px color-mix(in srgb, var(--quest-hue) 66%, transparent);
+}
+
+.quest-card[aria-pressed="true"]::before {
+  opacity: 1;
 }
 
 .quest-card--spark {
   border-color: var(--spark);
   background: radial-gradient(circle at 2.125rem 2.125rem, rgb(255 158 94 / 24%), transparent 5rem),
     color-mix(in srgb, var(--spark) 12%, var(--night-raised));
+  /* The recommended quest genuinely glows warm (2D stand-in for bloom). */
+  box-shadow: 0 1px 0 rgb(244 240 251 / 16%) inset, 0 14px 30px -22px rgb(0 0 0 / 78%),
+    0 0 28px -10px color-mix(in srgb, var(--spark) 58%, transparent);
+}
+
+.quest-card--spark::before {
+  background: linear-gradient(90deg, transparent, var(--spark) 28%, var(--beacon) 62%, transparent);
+  opacity: 0.9;
 }
 
 .quest-card--prompted {
   border-color: color-mix(in srgb, var(--prompted) 62%, var(--line));
   background: color-mix(in srgb, var(--prompted) 9%, var(--night-sunk));
+}
+
+/* A settled return quest stays calm — a muted rail, no warm glow. */
+.quest-card--prompted::before {
+  background: linear-gradient(90deg, transparent, var(--prompted) 42%, transparent);
+  opacity: 0.5;
 }
 
 .quest-card--prompted .quest-work-glyph {

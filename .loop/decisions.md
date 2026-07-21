@@ -469,3 +469,40 @@
   a box-shadow focus **ring** on the inputs (would double the global `:focus-visible` outline — used an
   inset glow + border-color shift instead so the a11y outline stays the primary indicator); rotating the
   native disclosure marker (inconsistent cross-browser — drew a custom chevron and hid the native one).
+
+## D-VP8 — 2D quest board: crafted lit-card material + HUD eyebrows (Turn 6)
+- What: A pure-CSS material pass on the WebGL-fallback board (`Board2D.tsx` + `.quest-card*` /
+  `.quest-constellation h3` in `globals.css`), plus one tiny markup tweak (domain hue passed as a
+  `--domain-hue` CSS var instead of an inline `background`, so the header dot can glow in-hue).
+  (1) `.quest-card` gains the deck's committed material language, scaled to a card: a **layered depth
+  shadow** (`0 1px 0 …/12% inset` top highlight + `0 14px 30px -22px …/78%` ambient drop) so it lifts
+  off the dark board; a **hue-baked corner glow** radial layered over the existing color-mix fill; and
+  a per-card **lit top rail** (`::before`, 2px, domain-hue→spark-hi gradient) — the card-scale echo of
+  the deck's signature rail (D-VP1/D-VP6). `overflow:hidden` clips the rail to the 0.875rem radius.
+  (2) **Hover** (behind `@media (hover:hover) and (pointer:fine)`): shadow blooms wider + a hue glow
+  ring + border warms toward the hue + the rail brightens to full — the depth that makes motion's
+  existing `translateY(-4px)` read as *lifting*, not sliding. (3) **Picked** (`[aria-pressed="true"]`):
+  an **emissive hue glow ring** + brighter fill + full rail, so a chosen quest reads as lit up. (4)
+  **Spark** (recommended) card: warm spark→beacon rail + a warm outer glow (2D stand-in for Bloom).
+  (5) **Prompted-return** card stays calm: a muted `--prompted` rail at 0.5 opacity, no warm glow.
+  (6) `.quest-constellation h3` upgraded from a muted capitalized label + hollow ring to the shared
+  **HUD eyebrow** (uppercase, `0.08em` tracking, `--spark-hi`) + a **lit glow-dot** (0.5rem, hue fill,
+  hue box-shadow glow) — identical idiom to `.hud-eyebrow` / `.hud-eyebrow-dot`.
+- Why: game-feel **#3 (materials, never flat primitives)** + **#9 (cohesion)**. The QuestCard *motion*
+  was already fully juiced (stagger enter + hover-lift + press + pick-spring via `motion/react`), so the
+  progress-note assumption "board pops in flat" was wrong — `find-animation-opportunities` confirmed the
+  real gap was **material/surface**, not motion. The cards were flat CSS rectangles (hairline border +
+  flat fill, zero depth) sitting on the dark board like a generic dashboard list, while the child HUD
+  deck and guide light-table deck both carry lit rails + layered shadow + emissive glow. This closes the
+  last surface that broke cohesion. Motion owns transform/opacity/filter (inline, JS-driven); CSS owns
+  box-shadow/border/background — no conflict. Reduced-motion is auto-neutralized by the global
+  `transition-duration:0.01ms !important` block (the resting depth shadow + rail persist, which is
+  correct — they're static material, not movement). a11y outline untouched (`:focus-visible` uses
+  `outline`, which `overflow:hidden` does not clip).
+- Rejected: adding a JS/`motion/react` layer for the surface (CSS `:hover`/`:active` is off-main-thread
+  and the transform juice already exists — emil's "CSS beats JS under load"); a bespoke card easing
+  (used the deck's `cubic-bezier(0.23,1,0.32,1)` as a local `--card-ease` to stay cohesive —
+  `--hud-ease` is scoped under `.control-panel.hud-deck`, not global, so it can't be referenced here);
+  a box-shadow focus ring (would fight the global `:focus-visible` outline — left the outline as the
+  a11y indicator); animating the hue-corner glow / adding particles (violates game-feel #1 "subtract
+  first / keep it calm" — the board is dense content, so material depth, not extra motion, is the win).

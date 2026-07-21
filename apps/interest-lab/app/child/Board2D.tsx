@@ -1,5 +1,5 @@
 import type { ProbeCardView } from "@gt100k/interest-lab-view";
-import type { KeyboardEventHandler } from "react";
+import type { CSSProperties, KeyboardEventHandler } from "react";
 import { QuestCard } from "./QuestCard";
 
 export interface Board2DProps {
@@ -68,7 +68,10 @@ export function Board2D({ quests, pickedProbeIds, onPick, onFocus, touchTargetPx
           aria-label={`${displayDomain(domain)} constellation`}
         >
           <h3>
-            <span style={{ background: domainQuests[0]?.domainHue }} aria-hidden="true" />
+            <span
+              style={{ "--domain-hue": domainQuests[0]?.domainHue } as CSSProperties}
+              aria-hidden="true"
+            />
             {displayDomain(domain)}
           </h3>
           <ol className="quest-card-list">

@@ -75,6 +75,24 @@ emissive glow, spring/ease-out motion. Display font Fredoka; reading serif Iowan
   construction. No markup change → every pinned guide/coverage test + CSS regex untouched. Gate green:
   tsc + 212 tests + `next build`. See D-VP7.
 
+- **Turn 6 (this):** Closed the **last cohesion gap (#9)** on the board-2d fallback — killed its worst
+  tell, which was *material*, not motion. Critic finding via `find-animation-opportunities`: the
+  `QuestCard` was **already fully juiced** (stagger enter + hover-lift + press + pick-spring via
+  `motion/react`) — the stale note's "board pops in flat" was wrong. The real tell was that the cards
+  were **flat CSS rectangles** (hairline border + flat fill, zero depth) sitting on the dark board like a
+  generic dashboard list, while the child HUD deck + guide light-table deck both carry lit rails +
+  layered shadow + emissive glow. Pure-CSS material pass on `.quest-card*` + `.quest-constellation h3`
+  (+ one tiny markup tweak: domain hue → `--domain-hue` var): (1) cards get the deck's **layered depth
+  shadow** + a **hue-baked corner glow** + a per-card **lit top rail** (`::before`, hue→spark-hi); (2)
+  **hover** blooms the shadow + a hue glow ring + warms the border (so motion's existing `translateY(-4px)`
+  reads as *lifting*); (3) **picked** cards get an **emissive hue glow ring** + full rail; (4) the **spark**
+  recommendation card glows warm (spark→beacon rail — 2D stand-in for Bloom); (5) **prompted-return** stays
+  calm (muted rail, no glow); (6) domain headers upgraded to the shared **HUD eyebrow + lit glow-dot**
+  (identical idiom to `.hud-eyebrow`/`.hud-eyebrow-dot`). Motion owns transform/opacity/filter; CSS owns
+  shadow/border/bg — no conflict. Reduced-motion auto-neutralized (resting depth persists as static
+  material, correct); `:focus-visible` outline untouched (not clipped by `overflow:hidden`). Gate green:
+  tsc + 212 tests + `next build`. See D-VP8.
+
 ## Verification note (honest)
 The grade only mounts client-side on the WebGL full tier, so it can't be pixel-verified in this
 headless / GPU-less env (swiftshader would fall to board-2d and never exercise the composer).
@@ -84,33 +102,35 @@ real module), tsc + tests + build all green, and the tone-mapping chain is corre
 why the ACES ToneMapping effect is present. A GPU screenshot pass is the ideal next confirmation.
 
 ## What still reads generic (candidates for next turns)
-- **Board-2d juice (now the highest-leverage remaining tell).** The child fallback cards (`Board2D.tsx`)
-  and its container likely still pop in flat with no stagger-enter and no spring hover/press feedback (#6),
-  so the D057 perf floor / no-WebGL path feels like a plain list next to the fully-juiced 3D world + HUD.
-  Verify against the child deck's `--hud-ease` idiom and add stagger-enter + tactile hover/press.
-- **Deeper guide trenching (optional polish):** the explanation columns + lifecycle tracks + revision rail
-  could take the same inset-trench treatment as the two scroll instruments for even more instrument depth.
-- **Deeper guide trenching (optional polish):** the explanation columns + lifecycle tracks + revision rail
-  could take the same inset-trench treatment as the two scroll instruments for even more instrument depth.
+- **All primary surfaces are now crafted + cohesive** (3D world, child HUD deck, guide light-table deck,
+  board-2d fallback). Remaining items are AAA-grade *polish*, not auto-fail tells:
 - **SSAO / ambient occlusion (part of #4)** — deferred (needs a normal pass; riskiest to tune blind).
   A subtle N8AO pass + optional shallow depth-of-field would finish the AAA grade.
+- **Quest-tray + welcome-back surfaces:** the tray chips (`.quest-tray*`) and the tray container are the
+  next-most-generic surface — flat `--night-sunk`/`--night-raised` fills, no lit rail, no depth. Give them
+  the same lit-card material as the board (they already share the palette) for full board↔tray cohesion.
+- **Deeper guide trenching (optional polish):** the explanation columns + lifecycle tracks + revision rail
+  could take the same inset-trench treatment as the two scroll instruments for even more instrument depth.
+- **GPU/browser screenshot pass:** tune Bloom/Vignette + idle-breath amplitude + the new board glow/rail
+  amounts to taste (can't be pixel-verified headless — see note below).
 
 ## Non-negotiable scorecard (vs game-feel.md)
 1 committed world ✓ · 2 lighting rig ✓ · 3 materials ✓ (no bare primitives remain) ·
 4 post-FX grade ✓ (SSAO/DoF still open) · 5 camera cinematography ✓ (idle breath, Turn 3) ·
-6 motion/juice ✓ world + child HUD + guide (enter motion + Turn 5 pointer feedback);
-  **board-2d fallback still likely flat (next target)** ·
+6 motion/juice ✓ world + child HUD + guide + **board-2d (motion was already there; Turn 6 added the
+  crafted material so the lift reads as depth)** ·
 7 HUD not forms ✓ (child deck + guide deck, Turn 4) · 8 type+icons ✓ ·
-**9 cohesion ✓ — both sides now read as one crafted world (Turn 4).**
+**9 cohesion ✓ — 3D world, child deck, guide deck, AND board-2d fallback now read as one crafted world
+  (Turns 4 + 6).** Every non-negotiable is met and no auto-fail anti-pattern remains; what's left is
+  AAA-grade polish (SSAO/DoF, tray material, GPU-tuning), not a redo.
 
 ## NEXT
-1. **Board-2d juice (#6).** Read `app/child/Board2D.tsx` + its CSS: give the fallback quest cards a
-   staggered enter (30–80ms cascade, `translateY`+opacity from a *visible* start — never `scale(0)`) and
-   tactile hover-lift + `scale(0.97)` press feedback, reusing the child deck's `--hud-ease` /
-   `cubic-bezier(0.23,1,0.32,1)`. This is the last surface that likely still pops in flat. Keep it calm
-   (game-feel #1 — subtract first) and respect `reducedMotion`. Use `find-animation-opportunities` +
-   `emil-design-eng` + `improve-animations`; gate it first (the enter motion may already partly exist).
-2. Optionally: SSAO + shallow DoF to close #4; a GPU/browser screenshot pass to tune the guide deck's
-   glow + Bloom/Vignette + idle-breath amplitude + the new button/chevron feel to taste; deeper
-   guide-panel trenching (explanation columns / lifecycle tracks / revision rail).
+1. **Quest-tray + welcome-back material (#3/#9 polish).** Read `.quest-tray*` in `globals.css`: the tray
+   container + chips are the next-most-generic surface (flat `--night-sunk`/`--night-raised`, no rail, no
+   depth). Give them the board's lit-card idiom (layered shadow + a lit rail + tactile hover/press via the
+   local `--card-ease` = `cubic-bezier(0.23,1,0.32,1)`) so board↔tray read as one. Keep it calm (game-feel
+   #1); respect reduced-motion (auto via the global block). Pure CSS if possible → pinned tray tests
+   (`data-quest-tray-item`) stay untouched; gate first.
+2. Optionally: SSAO + shallow DoF to close #4; a GPU/browser screenshot pass to tune Bloom/Vignette +
+   idle-breath + the new board glow/rail amounts; deeper guide-panel trenching.
 Keep the gate green (tsc + test + `next build`); write `.loop/commit-msg`; keep the art direction cohesive.
