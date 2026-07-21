@@ -17,7 +17,7 @@
 | Document | What it is | Authoritative for |
 |---|---|---|
 | [`PRD.md`](docs/prd/PRD.md) | Full-program operating system (the canonical product spec) | Product scope, requirements, architecture, delivery plan |
-| [`GOVERNANCE.md`](docs/prd/GOVERNANCE.md) | Rights, consent, safety, decision-authority invariants (G1–G8) | `G`-class rights/safety rules (stricter rule wins) |
+| [`GOVERNANCE.md`](docs/prd/GOVERNANCE.md) | Rights, consent, safety, decision-authority invariants (G1–G9) | `G`-class rights/safety rules (stricter rule wins) |
 | [`FOUNDATION_PRD.md`](docs/prd/FOUNDATION_PRD.md) | Baby PRD #1 — AWS-hosted platform foundation spine | The first buildable slice (identity/consent, event spine, contracts, OPA, data plane) |
 | [`PIPELINE-PRD.md`](docs/prd/PIPELINE-PRD.md) | Standalone reframe of the program as a deterministic student pipeline | The station/pipeline view of the same program |
 | [`ADMISSIONS_PRD.md`](docs/prd/ADMISSIONS_PRD.md) | Admissions front door (owned by a separate admissions team) | The CogAT / Track A·B eligibility process (integrated at the enrollment handoff) |

@@ -6,7 +6,7 @@
 |---|---|
 | Product | GT100K |
 | Document status | Implementation baseline |
-| Version | 1.12 |
+| Version | 1.13 |
 | Date | 2026-07-20 |
 | Initial market | United States, English-first |
 | Learner ages | 6 through 14 |
@@ -21,6 +21,7 @@ Terse index; git history holds the full detail. `G`-class rights/safety dials we
 
 | Version | Date | Summary |
 |---|---|---|
+| 1.13 | 2026-07-20 | Brainlift-fidelity reconciliation + gap-closing pass (from [`SYNTHESIS-prd-refinement.md`](../research/SYNTHESIS-prd-refinement.md)), layered on the v1.12 game-experience layer. **Honesty:** environment thesis rescoped to *school + peer + culture* (home-totality declined on rights grounds, §1, §2.1); the morning mastery block named as the narrow quant+verbal spine, required breadth labelled a compliance floor (§2.1). **New gap-closing sections:** exit ladder & college bridge (§2.7), legal operating model as a required decision (§3.7), staffing pipeline / guide tiers / standing enrollment governor / staff-wellbeing (§6.6), content supply & authoring — spine-only generation with a review-throughput cap (§12.4), twice-exceptional *intensity accommodation* distinct from access accommodation (§14.14), cost model & sustainability + breach liability (§22.1), longitudinal evaluation & falsifiability incl. the Track A/B regression-discontinuity design (§33.3). **Protective clarifications:** felt friction is delivered by effort-gates + reward salience, not reward sign, plus a help-seeking-suppression guardrail (§13.1); the wildcard floor decays with age/spine-confidence (§14.7). **Ops/risk:** safeguarding-at-scale + breach incident-response requirements (§30), five new risk rows (§34), a Workforce scorecard group + 2e / no-durable-spine equity subgroups (§2.6), and a new GOVERNANCE **G9** (safeguarding operations & mandatory reporting; *disclosure ≠ sensing*). G-class dials moved only in the more-protective direction. |
 | 1.12 | 2026-07-20 | Social/competitive layer expanded into a production-quality **RPG-style game-experience layer** (new **§15.3** + acceptance criteria §15.3.1): learner avatars, a traversable animated **quest-world** over the competency graph, gain-based **levels/tiers**, competence-earned **cosmetics** (no loot boxes, no purchase, zero power), a **persistent cohort base**, and a **live animated Arena**. Layered strictly on the existing guardrails — reduced motion is a first-class equal mode, no dark patterns (§14.12), developmental staging by age (§14.13), dose-metered pushes (§14.8), near-peer/anonymized/opt-in/no-bottom-rank standings and no caste ranks (§15). Framed **[E3]/[R]**: measured against belonging/voluntary-return, never assumed to lift learning, auto-reverts if it depresses belonging. |
 | 1.11 | 2026-07-20 | TimeBack dependency confirmed. New **§3.6** records access to Alpha's TimeBack platform and its core-curriculum learning apps (four sections, standard courses, SAT/AP) as an accepted planning assumption (was "access TBD"); documents the inherited mechanics (2 hr/day, 1 min = 1 XP, 120 XP = 4×30 across math/science/reading/language, XP-gate-then-projects) and GT100K's 3–4 hr / higher-XP modification; the integration mode (direct incorporation vs. assumed-available) remains open pending the TimeBack engineering discussion. No scope or rights change beyond making the substrate assumption explicit. |
 | 1.10 | 2026-07-20 | Reconciliation + safety pass. **Dose:** academic block set to a 3–4 hr / higher-XP target everywhere ([E3] operating default; the partner TimeBack 2-hr baseline is kept as the substrate it extends, §6.1, §12). **Contradictions reconciled:** CFE stated as adaptive item selection with a fixed, human-owned decision cut (§1, §11; `GOVERNANCE.md` G3 §8.5); the platform's admissions data zone clarified as an eligibility-*reference* zone, not admissions PII (`GOVERNANCE.md` G7); the weekly wellbeing pulse separated from the monthly/six-week specialization-plan reviews (§14.7); §9.2 marked as five platform-built surfaces plus the admissions-team surface; guide vs. mentor content-help boundary clarified (§6.3). **Standings (answers `PRD-review.md` Q3 on the record):** cross-cohort visible standings retained but tightened to near-peer-band, anonymized, no-bottom-rank, and opt-in (default off); the G7 gap on cross-cohort academic-gain exposure is closed (§15, §9.2, §15.2; `GOVERNANCE.md` G6, G7). The prior pod-only recommendation was considered and overridden in favor of guarded cross-cohort visibility, weighing the long-term-psychology evidence on competitive social comparison as an explicit values trade. **Yield honesty:** "no-scrap" renamed to no-abandonment; "route the rest" reframed as a change-of-fit; an intent-to-treat yield denominator is committed (all children ever enrolled; routed-out counted as non-attainment) with a matching age-14 attainment metric added to the §2.6 scorecard (`PIPELINE-PRD.md` §9). G-class dials moved only in the more-protective direction (standings opt-in, ITT honesty). |
@@ -62,11 +63,15 @@ Readiness is a benchmark portfolio, not a single score: the age-14 targets are S
 
 High intensity runs under explicit limits: every machine-generated pressure action spends a `MotivationDoseToken` under a guide veto, safety overrides performance, and a 14-day protocol distinguishes a hard step from a bad context or a fading interest (§14.8). Models estimate, rank, and simulate; humans retain authority over admission, intensity, specialization, safeguarding, discipline, release, and route transitions, with irreversible learned policies kept in shadow and only reversible, fast-feedback models in a bounded, vetoable envelope (§8.5). The first three months build the complete product; Month 4 is integrated validation and a gated **synthetic** beta (§32). Validating actual MIT readiness, durable passion, and family continuation needs years of outcome data.
 
+**Environment thesis — scope honesty.** The Brainlift's originating claim is that the total learning *environment* (family, peers, immersion) is the dominant lever. GT100K deliberately declines *home totality*: it performs no home sensing of any kind (§10.2, `GOVERNANCE.md` G5/G6) and touches only the school day, so the program bets on the **school + peer + culture** environment it can ethically deliver — homogeneous near-peer cohorts (§15), a portable field culture and child-owned record (§21), and *self-authored* (never sensed, never scored) family support (§10). The far-tail-of-obsession home environment the Brainlift admired (the Polgar case) is reachable only by selecting for it or by sensing/controlling the home, both of which the rights dials forbid; where the Brainlift's spiky bets exceed this defensible line they are studied only in the quarantined, consented Radical-Dose R&D track (§31.1, `GOVERNANCE.md` G8), never asserted in the mainline program.
+
 ## 2. Product mission and success definition
 
 ### 2.1 Mission
 
 GT100K gives selected children the foundations, environment, peers, tools, and support to reach advanced academic readiness by age 14 and build work in a field they choose to pursue, while keeping strong foundations across the other fields the state/federal curriculum requires. The program must preserve the child’s desire to return to that field after novelty, rewards, and adult prompts fade.
+
+The morning mastery block **is** that narrow spine — a heavy quantitative track and one deep verbal track (§12), mastery-gated — because the automaticity built in these years is the program's scarcest, non-recoverable input. The required breadth across the other state/federal-curriculum subjects is therefore a **compliance floor**, scheduled outside the automaticity-critical drill hours, not a co-equal mastery target; and *exploration* breadth (the Interest Lab and the wildcard allocation, §14.4, §14.7) is option-value scouting to find the **right** spine — front-loaded and taper-bounded, not a permanent enrichment buffet. This keeps faith with the Brainlift's early-specialization thesis while the rights dials (assent-gated specialization, no model-driven foreclosure, non-penalized accommodations) prevent narrowing a child before their own validated evidence and assent allow it.
 
 ### 2.2 Product promise to the child
 
@@ -105,7 +110,7 @@ The system tracks leading indicators before official tests become age-appropriat
 
 ### 2.6 Program success metrics
 
-The executive scorecard contains seven groups of measures.
+The executive scorecard contains eight groups of measures.
 
 | Group | Primary measures |
 |---|---|
@@ -114,10 +119,23 @@ The executive scorecard contains seven groups of measures.
 | Motivation | Autonomous reasons for work, pressure and tension, healthy recovery, sleep protection, prompt dependence |
 | Social | Belonging, solo progress after cohort work, cohort stability, role balance, bullying and safeguarding reports |
 | Masterpiece | Verified milestones, revision depth, reproducibility, expert review, real user or audience outcomes |
-| Equity | Subgroup error, access to costly domains, accommodations, appeal outcomes, support allocation, family burden |
+| Equity | Subgroup error, access to costly domains, accommodations, appeal outcomes, support allocation, family burden, 2e/disability and no-durable-spine subgroup attainment (§14.14, §14.7), scarce-opportunity (enrichment / mentor-minutes / compute) allocation share by subgroup (§16, §18) |
 | Operations | Availability, latency, event durability, workspace startup, incident response, cost per learner, staff queue age |
+| Workforce | Guide fill rate, attrition, alumni-conversion rate, active caseload vs. ceiling, safeguarding-disclosure load per guide, staff protected-rest and wellbeing pulse (self-report), backup coverage (§6.6) |
 
-No team may optimize a local metric without its paired guardrail. Faster mastery pairs with retention and false unlocks. More project time pairs with sleep and voluntary return. Stronger rivalry pairs with belonging and individual non-harm. More public exposure pairs with privacy incidents and child consent.
+No team may optimize a local metric without its paired guardrail. Faster mastery pairs with retention and false unlocks. More project time pairs with sleep and voluntary return. Stronger rivalry pairs with belonging and individual non-harm. More public exposure pairs with privacy incidents and child consent. Lower cost per learner pairs with staff wellbeing and support allocation, so cost reduction can never degrade the Workforce or Equity groups.
+
+### 2.7 Exit ladder and college bridge
+
+The program ends at age 14 (§2.5), but a learner who reaches the age-14 targets (SAT ≥ 1570, AP 5s, a defended masterpiece) is years from college and has no high school — so the program must own an institutional off-ramp, not only the portable Passport (§21). This is also a fidelity requirement: the early-specialization thesis (§2.1) bets on a payoff *after* 14, so ending at 14 with no bridge strands the graduate at the moment the payoff arrives.
+
+GT100K commits an exit ladder keyed to §2.5 attainment:
+
+- **Early college / dual enrollment.** Named articulation partnerships that consume the Mastery Passport (§21) so a ready 14-year-old can move into college-level coursework; the Passport's university-verifier path (§21) is the technical enabler.
+- **Optional GT bridge cohort.** A 1-to-2-year continuation for radical-acceleration candidates (SMPY-modeled; §24 [SRC-05]), reconciled with the renewable-agreement rule (§10) so it *extends* rather than violates the age-14 boundary, and requiring fresh child assent (§14.7.1).
+- **Conventional re-entry.** A documented transition back to conventional schooling with a credit-mapping record for families who opt out.
+
+The exit path a learner can actually use depends on the legal operating model (§3.7): only an accredited school can issue a portable diploma; a microschool / homeschool-support model makes the Passport the sole credential, which raises the stakes on early-college articulation. Exit-outcome measures (placement rate, credential-acceptance rate) join the §2.6 scorecard. No exit path is forced, and none conditions release on extra performance (§14.8).
 
 ## 3. Scope
 
@@ -212,6 +230,18 @@ GT100K is Alpha's accelerated-gifted layer (GT school — the subset of Alpha Sc
 
 Legacy references in this document to "a partner adaptive-learning provider" (e.g., the Phase-0 language in §12) denote TimeBack under this assumption.
 
+### 3.7 Legal operating model (required decision)
+
+The full-day, two-halves structure (§6.1) — a 3–4 hr morning mastery block plus a 2–4 hr afternoon studio — occupies the school day, so GT100K functionally **replaces** conventional schooling for enrolled children rather than supplementing it. The PRD must therefore declare, per operating jurisdiction, which legal model applies; the choice is a **keystone dependency** that determines the mandatory-reporter framework (`GOVERNANCE.md` G9), special-education duties, breach-notification obligations (§30), diploma authority (§2.7), and which funding models are permissible (§22.1).
+
+| Model | What it entails | Consequences |
+|---|---|---|
+| (i) Full-time school | Private-school registration/licensure, teacher-of-record and certification, accreditation and diploma authority, IDEA/§504 child-find + IEP obligations | Can issue a portable diploma; carries the full special-education and compulsory-schooling duty set |
+| (ii) Supplement / enrichment | An after-school / tutoring provider alongside an enrolled school | **Not viable** — the full-day structure leaves no room for conventional school |
+| (iii) Microschool / homeschool-support / hybrid | Parents remain the legal educators; GT100K supplies curriculum and supervision under per-state home-education statutes | Offloads compulsory-attendance and diploma duties to families; the Passport (§21) becomes the sole credential |
+
+Because model (ii) is internally inconsistent with the daily structure, GT100K operates as **(i) or (iii)** and must pick per jurisdiction before live enrollment. The choice is recorded here and made policy-as-code-visible (§29). Under model (i), the accreditation, teacher-of-record, and **IDEA/§504 child-find + IEP** commitments are in scope (today IDEA and FERPA appear only in the glossary, §36); under model (iii), the parent-as-legal-educator structure and per-state registration duties are documented at onboarding (§10). This decision is currently **open** and is tracked as a pre-live gate (§34).
+
 ## 4. Product principles
 
 ### 4.1 Evidence before authority
@@ -303,6 +333,23 @@ Families provide agreed schedule windows, respond to safety and logistics reques
 ### 6.5 Human decision bodies
 
 > **Moved to [`GOVERNANCE.md`](GOVERNANCE.md) (G2).** Rights/policy content now lives in the governance doc; the PRD keeps only software/product/engineering scope.
+
+### 6.6 Staffing pipeline, guide tiers, and workforce protection
+
+At the §6.3 planning ratio, 100,000 learners implies on the order of ~5,000 guides plus safeguarding, psychometrics, and mentor-operations staff — expert-generalists who are safeguarding-trained and available in person. Recruiting and retaining that workforce is as load-bearing as any software system here: every consequential decision requires a *named human* (`GOVERNANCE.md` G2), so the rights guarantees are only as real as the humans available to exercise them. This section makes the pipeline explicit rather than assumed.
+
+**Guide tiers (a grow-your-own ladder, aligned to the near-peer thesis).** Because the mastery engine teaches and cohorts do the peer work (§6.3, §15), most guide labor is coaching and facilitation, which a tiered ladder can supply:
+
+- **Tier 0 — near-peer cohort tutor** (an advanced learner one to two levels ahead): retrieval drilling, worked-example walkthroughs, first-line "stuck" triage, and belonging. Facilitation only.
+- **Tier 1 — graduate apprentice guide** (18+ program alumni on a training track).
+- **Tier 2 — guide** (the §6.3 role): safeguarding-cleared, named, and the holder of decision authority.
+- **Tier 3 — lead / senior guide plus scoped external mentors** (§18.1).
+
+**Authority floor.** A near-peer (a minor, or an uncleared junior) may own facilitation and encouragement only — **never** the 90% mastery gate (§12), dose (§14.8), safeguarding, or interventions. Every cohort always has a reachable cleared **adult** Tier-2 guide; near-peers extend reach, never replace the named-human floor. Minors mentoring minors run on-platform-only channels, a bounded age-gap cap, two-adult supervision, and a logged assignment record (§18.1 EM-04), and a near-peer's own teaching load counts against their dose budget (§14.8).
+
+**Ratios and the standing enrollment governor.** Adult-guide ratios vary by band — roughly 1:12 (ages 6–8), 1:18 (9–11), 1:22 (12–14), with active-intervention learners double-weighted (§6.3). The Month-4 enrollment freeze (§32.4.1) becomes a **standing enrollment governor at all scales**: when active caseload exceeds the ceiling, backup coverage falls below target, safeguarding coverage falls below its floor, or a human-review queue breaches SLO, the program pauses *new-cohort formation first* and never abandons active learners (the no-abandonment commitment, §0). Guide-pipeline health (fill rate, attrition, alumni-conversion) is a Release-Threshold row (§33.1) owned by workforce operations.
+
+**Workforce protection.** Burnout is endogenous to a max-intensity program and is the mechanism that would otherwise drive the attrition that hollows out the named-human floor, so staff wellbeing is measured as the adult analogue of the child pulse (`GOVERNANCE.md` G4): protected rest, a caseload / safeguarding-exposure monitor, and a self-reported wellbeing pulse (self-report only, never diagnosed from telemetry; a declined pulse is missing data, never adverse). Staff wellbeing is the §2.6 Workforce scorecard group with a paired guardrail, which makes the guide ratio a non-cuttable cost floor (§22.1) rather than an optimization target.
 
 ## 7. System map
 
@@ -518,6 +565,12 @@ PFA (performance factors analysis) is the **Phase-1 in-house** gating baseline; 
 - A student who uses approved text-to-speech or motor assistance receives no help penalty when the tool does not solve the tested construct.
 - A guide can explain every task in the daily plan through a prerequisite, retrieval, repair, transfer, or student-goal link.
 
+### 12.4 Content supply and authoring
+
+The Practice-Item Foundry's generative approach (reviewed templates, human sampling, calibration-after-use, §12) covers the **academic spine only**, because §12.3 fails closed without a verifier, rubric, or calibration record and the spine's items have answer keys, measurable DIF, and post-hoc difficulty calibration. The **afternoon layer has none of those preconditions**: Interest Lab probes (§14.4) measure work-mode preference and voluntary return, not correctness; projects (§16) yield open-ended artifacts; the enrichment / olympiad track needs expert proof-judgment. That content — on the order of hundreds-to-thousands of safety-classed probe variants across domains × work modes × difficulty × age bands, plus the per-domain project ladders and the six Foundry adapters — is **human-authored and human-safety-reviewed**, with a named accountable owner (the Learning Measurement owner, §12.1).
+
+Two capacity lines are tracked separately: **generation velocity** (candidate content produced, where the 50x-velocity thesis applies) and **review throughput** (candidates cleared by human safety review). Because nothing child-facing ships until review clears it (§14.4.1 safety-class, §16 approval owners, §12.3 fail-closed), **review throughput — not generation velocity — caps the live content supply**, and the release process reports it as a first-class constraint.
+
 ## 13. Answer-Blind Socratic Tutor
 
 The tutor helps the student think without seeing or generating the protected answer. A separate grader service owns answer keys and correctness checks. The tutor receives the problem, the student's attempt, a misconception code or bounded diagnostic, permitted context, and the next allowed action. It never receives the final answer for an active mastery item.
@@ -545,6 +598,8 @@ The tutor and grader run in separate trust domains, service accounts, networks, 
 - The student can inspect the help receipt and challenge an incorrect classification.
 - Grader downtime cannot cause the tutor to invent a correctness judgment.
 - A post-AI-rescue attempt yields near-zero independence reward, while help access, mastery credit, and previously earned independence standing are unchanged; accessibility and safety help never affect the reward.
+- Felt friction is delivered by effort/process gates (attempt-before-hint, the restate / simpler-case / retrieve ladder) and reward *salience* (§14.12), never by reward sign or a loss frame; no release may reintroduce a points penalty, a decaying meter, or any cost for asking for help (§14.12.5). A short reflective speed-bump ("what have you tried?") before escalation is permitted; a countdown timer is not, and neither ever gates accessibility or safety help. *(The potential-based independence reward preserves the optimal "solve unassisted" policy; the behavioral deterrent load is carried here and in §14.12/§14.13, not by the reward math alone.)*
+- A help-seeking-suppression guardrail monitors help-seeking rate: a sustained *drop* (a child avoiding help to protect a reward) is a failure signal routed to guide review, not a success — operationalizing the difference between this non-punitive design and a punitive friction tax.
 
 ## 14. Child Experience, Passion Development, and Sustainable Specialization
 
@@ -733,7 +788,7 @@ The planner allocates the afternoon passion and project block. It does not reduc
 
 The percentage splits and review cadences are [E3] operating defaults, not research-validated optima. These horizons govern specialization-plan review only; the weekly child wellbeing pulse (§6.2, GOVERNANCE G4) runs throughout and is separate from these planning cadences. Any allocation change requires child assent. The fourteen-day and four-to-six-week thresholds are [E3]; assent, veto, and immediate safety deload are [G].
 
-The primary spine develops depth. Adjacent work supplies prerequisites and neighboring practices. Wildcard exploration protects option value and gives the child a low-stakes route toward change. Percentages serve as defaults, not earned privileges. A guide may vary an allocation by ten percentage points for access, season, project stage, health, or a child’s request. Larger changes require a recorded review and child assent.
+The primary spine develops depth. Adjacent work supplies prerequisites and neighboring practices. Wildcard exploration protects option value and gives the child a low-stakes route toward change. The wildcard floor is **option-value scouting, not foundational breadth**: it is front-loaded (the Interest Lab, §14.4, scouts first), its share **decays with age and spine-confidence** — the 20%→15%→10% taper above — and spine-*adjacent* wildcards are preferred so exploration compounds the spine rather than competing with it; a permanent equal-weight enrichment buffet is not the intent (§2.1). Percentages serve as defaults, not earned privileges. A guide may vary an allocation by ten percentage points for access, season, project stage, health, or a child’s request. Larger changes require a recorded review and child assent.
 
 Each `SpecializationPlan` shall include the active hypothesis version, child-authored goal, allocation, prerequisite map, project ladder, mentor and cohort needs, pressure budget, rest windows, wildcard offers, review date, disconfirming evidence, and exit conditions. The planner shall retain at least one adjacent path and one wildcard path. It shall support two co-primary interests by alternating sprints or choosing a broader spine when that arrangement fits the child’s evidence.
 
@@ -835,6 +890,20 @@ The reward economy (§13) is computed identically at every age, but its *represe
 - The child-facing reward surface resolves its representation from the learner's age band; a 6-to-8 learner is never shown the raw mastery-delta number as the headline currency.
 - Cross-child comparative standings default off for ages 6 to 8 and are opt-in for every band, with personal progress as the default primary display.
 - A configuration test confirms the same independence-reward event renders in the correct band vocabulary for a synthetic learner in each band.
+
+### 14.14 Twice-exceptional (2e) learners and intensity accommodation
+
+A twice-exceptional learner (§36) is gifted *and* has a co-occurring disability. Every accommodation elsewhere in this PRD is an **access accommodation** (§8.3, CF-03): it changes *how* work is received or answered (large print, screen reader, extended time, motor, language, quiet environment) but leaves the *load* fixed. When the **dose** — not the content or the channel — is the barrier for a floor-clearing gifted child (an autistic child harmed by rivalry-dose or churn, an ADHD child ill-served by longer blocks, an anxious child colliding with the friction design, a dyslexic child at full verbal-spine pace), access accommodation is mute, and the child can be lost by *attrition* rather than at the gate — a back-door exclusion the DIF audits (§12.1) do not catch, because dose-intolerance is not a measurement error.
+
+Serving 2e learners well **is** the cognitive-floor thesis, not a concession to it: the floor gates on ability, not on presentation-polish, and the "route the rest" guardrail is scoped to those *below* the ability frontier — a 2e child is *at* the frontier with an orthogonal dose barrier, so routing them out conflates dose-intolerance with ability-deficit.
+
+GT100K therefore defines an **intensity accommodation** distinct from access accommodation: an individualized, human-owned **dose ceiling** recorded as a first-class field on the accommodation profile — a reduced focus-block count, a capped rivalry-dose, reduced churn, a slowed escalation cadence, or extended 14-day windows. It is implemented as a per-learner override of the §33.1 population dose caps and as a cohort hard constraint alongside the individual-non-harm floor (§15). A dose reduction taken as an intensity accommodation never lowers mastery credit, standing, independence reward, or ITT attainment classification (parallel to access help being exempt, §13). Full intensity remains the default and the population optimization target; the intensity accommodation is a strictly more-protective *individualized floor* for children who clear the cognitive floor but not the dose default (consistent with §0's rule that G-class dials move only in the more-protective direction).
+
+#### 14.14.1 Acceptance criteria
+
+- 2e / disability is an approved subgroup in the CF-05 and §12.1 fairness audits, the §2.6 Equity row, and the age-14 ITT attainment metric, so 2e attrition and under-attainment surface by name rather than dissolving into the routed-out pool.
+- For a floor-clearing 2e learner, a route-out (change-of-fit, §14.10) requires recorded evidence that a *reduced-dose configuration was offered and failed on its own terms*, and remains human-owned (never automated, RF-04).
+- An intensity accommodation applied to dose, rivalry, churn, or escalation produces no reduction in mastery credit, independence reward, standing, or attainment classification in a replayed audit.
 
 ## 15. Cohort Compiler, Arena, and RivalryMix
 
@@ -1062,6 +1131,14 @@ The student selects disclosures, and the caregiver supplies consent where law re
 - **Accessibility and localization:** User interfaces meet WCAG 2.2 AA (Web Content Accessibility Guidelines), support assistive technology, separate tested construct from access method, and externalize language and locale formats. English-first content must not create an English-only architecture.
 - **Model governance:** MLflow records data, code, feature, model, evaluation, approver, and rollback lineage. A model release needs offline evaluation, subgroup review, red-team results, shadow comparison, and signed approval. Irreversible, high-stakes models remain shadow-only during the beta; reversible, fast-feedback models may be promoted to bounded automation under §8.5.
 - **Cost:** Operators can attribute compute, storage, model inference, mentor time, equipment, and external spend by program, cohort, and project without exposing student-level cost as a pressure mechanism.
+
+### 22.1 Cost model and sustainability
+
+§22 attributes cost; this subsection states what the cost *is* and how it is funded, because a 100,000-learner in-person program is dominated by human labor. A first-cut per-learner-year stack (order-of-magnitude, to be validated): guides ~$4,500–6,500; other staff (safeguarding, psychometrics, mentor-ops, SRE, credential) ~$1,200–1,800; human expert minutes (§18) ~$500–3,000; LLM inference ~$150–600; compute / workspaces + storage ~$100–350; equipment leases ~$100–500; family-trial compensation (§10, provisional) ~$150–400 amortized — roughly **$7,000–12,000 / learner-year ex-facilities (~$0.7–1.2B/yr at 100K)**, with physical facilities plausibly adding $2,000–5,000. **Labor is ~75–85% of the base**, so the 50x-velocity thesis (§25) is a *build*-cost lever, not an operating-cost lever: it cannot reduce guides (ratio capped, §6.3, §6.6) or expert minutes (§18 requires a human), and the only software path to lower unit cost (AI absorbing guide queue load) is the lever §18 forbids. Unit economics are therefore governed by two human knobs — guide ratio and expert-minute intensity — treated here as design variables, not free parameters.
+
+**Cost as a paired-guardrail metric.** Cost-per-learner is a first-class §2.6 measure paired with the Workforce and Equity groups, so cost reduction can never degrade staff wellbeing (§6.6) or support allocation. A per-learner cost envelope with sensitivity analysis on the two dominant knobs joins the release board's gates (§32.4.1). **Breach liability and cyber-insurance** are line items here (a mass breach of 100K children's records is plausibly the program's single largest liability, §30) rather than absent from the stack.
+
+**Funding.** The beta runs on founder / philanthropic capital, which keeps the program free to families and equity-compatible. Per-family tuition and public/charter funding are excluded: tuition reintroduces a wealth filter that §10 forbids and conflicts with paying families, and public funding generally requires non-selective admission incompatible with the cognitive floor (§11) and the ITT route-out (§2.6). Income-share finance for minors is prohibited (§23, `GOVERNANCE.md` G6). Funding choice *determines* the legal operating model (§3.7), which *determines* whether the selection design is permissible — an explicit dependency chain, not three separate questions.
 
 ## 23. Global exclusions
 
@@ -1306,6 +1383,10 @@ Security uses passkeys or phishing-resistant MFA for staff, short-lived workload
 
 Red teams test prompt injection, answer extraction, grader leakage, tool escalation, cross-tenant access, artifact poisoning, replay, resource exhaustion, and portfolio deanonymization. A child-safety incident commander can freeze a cohort room, disable contact, revoke a release, or restore help. Models and detectors produce review signals. Staff cannot use them as proof of cheating, intent, emotion, or truth.
 
+**Safeguarding operations at scale.** Across 100,000 children, baseline maltreatment and youth-suicidality rates imply a large absolute disclosure volume (order ~3,000–12,000 disclosures/year, ~10–40/day; estimate), requiring a dedicated safeguarding organization in the low hundreds — far above the Month-4 beta staffing (§32.4.1) — plus mandated-reporter certification and personal legal duty for all guides and mentors, a triage → CPS / law-enforcement workflow with jurisdiction-resolved statutory deadlines, contemporaneous documentation on a legal-hold path distinct from routine crypto-shred (§29), and auto-escalation to the child-safety incident commander. This is specified as a rights/safety matter in `GOVERNANCE.md` G9; the *disclosure ≠ sensing* distinction there reconciles it with the no-home-sensing rule (a child's account is voice, not surveillance).
+
+**Data-breach incident response.** The identity/consent account is the single re-identification point for the entire pseudonymous population and (today) also holds the per-subject crypto-shred keys, so its compromise would collapse zone separation *and* encryption at once — and crypto-shred, an erasure control, gives no protection against a live-key breach. Before live enrollment the program adds: a data-breach incident commander and runbook distinct from the child-safety incident commander; Identity-SPOF hardening (split the pseudonym↔identity crosswalk from the crypto-shred key admins, HSM/quorum keys, break-glass four-eyes, rate-limited and anomaly-detected bulk re-identification reads, and no bulk-export path from the vault); a child-data breach-notification workflow mapping COPPA/FERPA/state deadlines; and a population-scale breach red-team (aggregate exfil, Identity-compromise tabletop, key-compromise recovery and re-pseudonymization) as a pre-live gate (§33.1, §34).
+
 ## 31. GT-Twin and Self-Play Gym
 
 GT-Twin builds synthetic learner trajectories from deidentified, consent-compatible event views. A twin includes mastery transitions, response timing, forgetting, probe choices, workload, intervention exposure, and cohort context. It excludes legal identity and raw sensitive media. Researchers validate each simulator against held-out trajectory distributions, calibration curves, subgroup error, and failure cases. They publish a simulator card with supported decisions and extrapolation limits.
@@ -1446,6 +1527,15 @@ The canonical end-to-end case follows John from parent onboarding through acoust
 
 MIT-level readiness remains an eight-year outcome. The Month 4 beta can validate program operations, measurement quality, safety, agency, learning leading indicators, and system capacity. It cannot claim that the initial build or Month 4 beta caused an age-14 outcome.
 
+### 33.3 Longitudinal evaluation and falsifiability
+
+The program's design bets — the originating spiky points of view — are empirical claims about an eight-year outcome, and by §5's own taxonomy most are E3/R, which carry *no production authority*; yet the program applies them at intensity to real children. §32.4/§33.2 honestly concede the synthetic beta cannot show causation. This subsection commits the design that eventually *tests* the bets, so intensity is earned by accruing evidence rather than assumed indefinitely.
+
+- **Pre-registered predictions with stopping rules.** Each design bet is registered in the Release Threshold Registry (§33.1) as an operational claim, an outcome metric (§2.6), a predicted band, and a change-the-program rule if the prediction fails (mirroring the §33.1 cognitive-floor "validate, remap, raise, or reject" language). Bets that cannot be tested internally — the family-environment causal claim, and early-specialization vs. breadth (there is no in-program breadth arm) — are flagged as **assumptions, not findings**.
+- **Regression-discontinuity at the Track A/B cutoff.** Because admissions routes at a sharp CogAT cutoff and *both* tracks are enrolled and receive the program (§3.4), comparing age-14 outcomes just above vs. just below the cutoff is a clean causal test of the cognitive-floor bet **with no child withheld**. It requires only a data-sharing addendum (§3.5) to retain the running variable and outcomes.
+- **Within-program randomization** of reversible design choices (reward framing, cohort composition, in-cap dose titration) under the §8.5 bounded-automation envelope — never the intensity floor itself — plus staggered-enrollment and matched-cohort comparisons for the cross-program bets.
+- **Independent evaluation body** (analogous to the psychometric board, §33.1, and independent of the decision owners) empowered to pre-register, hold data, and trigger stopping rules, so the design bets cannot ossify into unfalsifiable dogma. The GT-Twin gym (§31) is simulation and cannot substitute for this real-world evidence.
+
 ## 34. Principal risks and controls
 
 | Risk | Control and release response |
@@ -1461,6 +1551,12 @@ MIT-level readiness remains an eight-year outcome. The Month 4 beta can validate
 | Provenance integrity is over-trusted, or C2PA is relied on as the integrity layer. | Anchor Merkle roots in a monitored, externally verifiable transparency log (§19.2 D1); forbid SHA-1/MD5; treat C2PA as export-only (§19, §21); before live enrollment verify roots via independent inclusion proofs; fail closed and block credential issuance when anchoring or monitoring is unavailable. |
 | Immutable provenance blocks a child's right to erasure. | Apply the EDPB three-part pattern — anonymize on-graph fields by design, erase off-graph identifiers, and crypto-shred per-subject keys with keyref tombstones (§19, §29) — treating crypto-shredding as a supplement, not a standalone guarantee; complete and adversarially test the full verifiable-deletion workflow before live PII exists (§19.2 D2). |
 | Declared AI collaboration is disputed or forged. | Bind each AI-tool invocation to a signed in-toto attestation over the artifact content digest (§19, §19.2 D6); `Assistance` nodes and §13 HelpReceipts reference the attestation; unsigned or altered assistance claims fail the security suite. |
+| Guide/staff supply or burnout breaks the named-human authority floor. | Grow-your-own near-peer guide ladder with authority reserved to cleared adults; age-band ratios; a standing enrollment governor that pauses new-cohort formation first; staff-wellbeing measurement and a Workforce scorecard guardrail (§6.6, §2.6, §33.1). |
+| A data breach exposes 100,000 children's records. | Identity-SPOF hardening (split crosswalk from crypto-shred keys, HSM/quorum, anomaly-detected bulk reads, no bulk export), a data-breach incident commander and runbook, a child-data breach-notification workflow, and a population-scale breach red-team as a pre-live gate; breach liability insured (§30, §22.1). |
+| The TimeBack partner engine (sole academic substrate) changes, degrades, or is unavailable; or the Phase-0→1 cutover fails. | A child-data DPA as a blocking condition for live use, version-pinning, an availability degraded-mode, a data-egress exit plan, and a second-source / in-house-accelerate trigger; replace the date-driven cutover with a gate-driven one (dual-run + mastery-state reconciliation + rollback; the near-90% gate stays advisory until the fairness audit and reconciliation both pass) (§3.6, §12, §32.4). |
+| Public/regulatory backlash ("stolen childhood") or a disparate-impact challenge to the IQ gate closes the program. | A separate external-affairs / political-risk function: proactive transparency (honest ITT + rescoped thesis), a standing subgroup adverse-impact audit of the admissions gate, an evidence-grounded narrative library (SMPY, §24 [SRC-05]), community/regulator engagement, and a crisis-comms playbook; neutral positioning, no MIT-brand claims (RF-00b). |
+| Scarce opportunity goods (enrichment, mentor minutes, compute) rebuild a de-facto caste through access. | An opportunity-allocation equity audit (cumulative allocation share by subgroup) with a fairness constraint on the §16/§18 allocators that auto-demotes to Advisory on breach; equalize by supply (loaners, remote labs, regional partners), never by rationing; enrichment stays additive/non-gating (§2.6, `GOVERNANCE.md` G6). |
+| A child never lands a durable passion (perpetually parked). | A guided-generalist afternoon default (built from adjacent + wildcard paths) instead of an empty Build line; an alternative masterpiece route (guide-scaffolded generalist capstone or a portfolio of smaller defended works) satisfying §2.5's construct; "no-durable-spine" tracked as a named subgroup; never automatic route-out or forced continuation (§14.7, §14.10, §2.6). |
 
 ## 35. Proposal traceability appendix and consolidated index
 
