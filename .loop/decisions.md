@@ -99,3 +99,8 @@
 - Decision: follow the operator's option A response: keep T031's repository-wide Biome criterion unchanged and wait for the owning lane to repair the shared/root baseline before rerunning it.
 - Why: the failure is outside this feature's permitted paths, while every feature-owned and functional check is green. This preserves both the isolation fence and the explicit definition of done.
 - Rejected: option B, amending T031 to accept scoped lint, because that would weaken a settled acceptance criterion; editing shared/root files from this feature lane, because that would violate isolation.
+
+## 2026-07-21 — T031 unchanged-fingerprint backoff
+- Decision: after 27 identical full quickstart retries, re-run only `pnpm exec biome check .` until its out-of-scope failure fingerprint changes; always run the required fresh workspace typecheck and test gate before handoff.
+- Why: the repository-wide Biome criterion is the sole blocker and still reports the same 33 shared/root diagnostics. A cheap probe detects the owning-lane repair without repeatedly spending a full increment on already-proven package checks, while the workspace gate continues to protect feature behavior.
+- Rejected: another complete quickstart retry while the fingerprint is unchanged, which adds no evidence; starting T032 despite incomplete T031, which violates task order; modifying prohibited shared/root files, which violates feature isolation.

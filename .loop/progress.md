@@ -498,3 +498,12 @@
 
 ## NEXT
 - T031: rerun the complete Part I quickstart after the shared/root Biome baseline is repaired; acceptance is zero diagnostics from `pnpm exec biome check .` with the typecheck, 64 domain tests, 94 workspace tests, exact golden root, and synthetic demo still green. Do not begin T032 until T031 passes.
+
+## 2026-07-21 — P4 quickstart baseline fingerprint recheck (T031 partial, twenty-eighth attempt)
+- Applied the recorded external-gate backoff after 27 identical full retries: re-ran only `pnpm exec biome check .` to detect an owning-lane repair. Its fingerprint is unchanged at 33 errors in prohibited shared/root paths (CRLF/formatting plus `.claude/workflows/deep-research.js` diagnostics), so the complete quickstart was not redundantly repeated.
+- Fresh required gate evidence: `pnpm typecheck` passes and workspace Vitest passes 94/94 tests across 24 files. No feature source or shared file was modified.
+- Phase status: P4 remains in progress. T031 is still incomplete, T032 remains untouched and final, and SC-001–SC-012 remain green in the feature suites.
+- Blocker: repository owners must complete the existing operator-approved owning-lane baseline repair; the active critical request remains current and was not duplicated.
+
+## NEXT
+- T031: probe `pnpm exec biome check .`; if the shared/root failure fingerprint changes or clears, run the complete Part I quickstart. Acceptance remains zero Biome diagnostics with typecheck, 64 domain tests, 94 workspace tests, exact golden root, and synthetic demo green. Do not begin T032 until T031 passes.
