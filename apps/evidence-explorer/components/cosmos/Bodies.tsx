@@ -158,26 +158,46 @@ function BodyMesh({ node, star }: { node: NodeView; star: THREE.ExtrudeGeometry 
   }
 }
 
+/** §U8.5 `bodyReveal` = 520ms Pop (0.95→1.0) — the time-scrub `scrubStep` ignite when a body is born. */
+const IGNITE_MS = 520;
+
 function Body({
   node,
   star,
   animate,
 }: { node: NodeView; star: THREE.ExtrudeGeometry; animate: boolean }): JSX.Element {
   const ref = useRef<THREE.Group>(null);
+  const inner = useRef<THREE.Group>(null);
   // Deterministic per-node phase so floats are varied but not random.
   const phase = ((node.birthOrder ?? 0) % 12) * 0.5;
   const [bx, by, bz] = node.pos3d;
+  // Mount time is stamped on the first frame so a body born mid-scrub pops in (never on the server).
+  const born = useRef<number | null>(null);
 
   useFrame((state) => {
-    if (!animate || !ref.current) return;
     const t = state.clock.elapsedTime;
+    // Scale-in Pop on birth; instant full scale under standard3d (no ignite).
+    if (inner.current) {
+      if (!animate) {
+        inner.current.scale.setScalar(1);
+      } else {
+        if (born.current === null) born.current = t;
+        const p = Math.min((t - born.current) / (IGNITE_MS / 1000), 1);
+        // Overshoot-eased pop toward 1.0 (peaks ~1.04 near p≈0.7).
+        const eased = 1 - (1 - p) ** 3;
+        inner.current.scale.setScalar(0.95 + eased * 0.05 + Math.sin(p * Math.PI) * 0.04);
+      }
+    }
+    if (!animate || !ref.current) return;
     ref.current.position.y = by + Math.sin(t * 0.6 + phase) * 0.12;
     ref.current.rotation.y = t * 0.15 + phase;
   });
 
   return (
     <group ref={ref} position={[bx, by, bz]}>
-      <BodyMesh node={node} star={star} />
+      <group ref={inner}>
+        <BodyMesh node={node} star={star} />
+      </group>
     </group>
   );
 }

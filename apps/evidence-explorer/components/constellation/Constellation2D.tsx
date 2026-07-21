@@ -23,7 +23,11 @@ function edgePath(from: NodeView, to: NodeView): string {
   return `M ${from.pos2d.x} ${from.pos2d.y} L ${to.pos2d.x} ${to.pos2d.y}`;
 }
 
-function NodeMark({ node, index }: { node: NodeView; index: number }): JSX.Element {
+function NodeMark({
+  node,
+  index,
+  focused,
+}: { node: NodeView; index: number; focused: boolean }): JSX.Element {
   const color = `var(--${node.colorRole})`;
   // Staggered entrance keyed to provenance depth so the DAG "ignites" front-to-back. Positioning
   // lives on the outer group; the CSS scale animation runs on an inner group with `fill-box` origin
@@ -32,9 +36,19 @@ function NodeMark({ node, index }: { node: NodeView; index: number }): JSX.Eleme
   return (
     <g transform={`translate(${node.pos2d.x} ${node.pos2d.y})`}>
       <g
-        className="node-enter"
+        className={`node-enter${focused ? " is-focused" : ""}`}
         style={{ animationDelay: delay, transformBox: "fill-box", transformOrigin: "center" }}
       >
+        {/* Selected-beat focus ring (calm-2D parity for the 3D fly-to). */}
+        {focused ? (
+          <circle
+            className="node-focus-ring"
+            r={NODE_R + 12}
+            fill="none"
+            stroke="var(--focus)"
+            strokeWidth={2}
+          />
+        ) : null}
         {/* Emissive halo. */}
         <circle
           r={NODE_R * 1.9}
@@ -98,8 +112,18 @@ function NodeMark({ node, index }: { node: NodeView; index: number }): JSX.Eleme
   );
 }
 
-export function Constellation2D({ view }: { view: ExplorerView }): JSX.Element {
-  const byId = new Map(view.nodes.map((n) => [n.id, n]));
+export function Constellation2D({
+  view,
+  revealed,
+  focusNodeId = null,
+}: {
+  view: ExplorerView;
+  /** When present (time-scrub), only these node ids render; omitted = fully grown (SSR baseline). */
+  revealed?: ReadonlySet<string>;
+  focusNodeId?: string | null;
+}): JSX.Element {
+  const visibleNodes = revealed ? view.nodes.filter((n) => revealed.has(n.id)) : view.nodes;
+  const byId = new Map(visibleNodes.map((n) => [n.id, n]));
   const structuralEdges = view.edges.filter(
     (e) => e.isNodeEdge && byId.has(e.from) && byId.has(e.to),
   );
@@ -109,7 +133,7 @@ export function Constellation2D({ view }: { view: ExplorerView }): JSX.Element {
       className="constellation"
       viewBox={`0 0 ${view.bounds2d.width} ${view.bounds2d.height}`}
       role="img"
-      aria-label={`Provenance constellation for milestone ${view.milestoneRef}: ${view.nodes.length} evidence nodes linked by ${structuralEdges.length} provenance threads.`}
+      aria-label={`Provenance constellation for milestone ${view.milestoneRef}: ${visibleNodes.length} evidence nodes linked by ${structuralEdges.length} provenance threads.`}
       preserveAspectRatio="xMidYMid meet"
     >
       <defs>
@@ -193,8 +217,8 @@ export function Constellation2D({ view }: { view: ExplorerView }): JSX.Element {
 
       {/* Bodies. */}
       <g>
-        {view.nodes.map((n, i) => (
-          <NodeMark key={n.id} node={n} index={i} />
+        {visibleNodes.map((n, i) => (
+          <NodeMark key={n.id} node={n} index={i} focused={focusNodeId === n.id} />
         ))}
       </g>
     </svg>

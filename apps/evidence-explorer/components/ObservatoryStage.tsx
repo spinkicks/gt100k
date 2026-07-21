@@ -30,7 +30,9 @@ import {
   useState,
 } from "react";
 import type { JSX } from "react";
+import { TimeScrub } from "./TimeScrub.js";
 import { Constellation2D } from "./constellation/Constellation2D.js";
+import { effectiveFocusId, revealedNodeIds } from "./scrub.js";
 
 // 3D is client-only: it must never be server-rendered (no WebGL on the server).
 const Cosmos3D = dynamic(() => import("./cosmos/Cosmos3D.js").then((m) => m.Cosmos3D), {
@@ -97,6 +99,14 @@ export function ObservatoryStage({ view }: { view: ExplorerView }): JSX.Element 
   const [degradedTo, setDegradedTo] = useState<RenderTier | null>(null);
   const [webglFailed, setWebglFailed] = useState(false);
 
+  // Time-scrub state (§U5.4) — presentation-only: it reveals a subset of the one `ExplorerView`,
+  // never mutates it. Starts fully grown so the default view matches the calm baseline.
+  const [revealedCount, setRevealedCount] = useState(() => view.growthTimeline.count);
+  const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
+
+  const revealed = useMemo(() => revealedNodeIds(view, revealedCount), [view, revealedCount]);
+  const effFocus = effectiveFocusId(focusNodeId, revealed);
+
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     const read = (): void => {
@@ -157,12 +167,26 @@ export function ObservatoryStage({ view }: { view: ExplorerView }): JSX.Element 
       {is3D ? (
         <div className="cosmos-viewport">
           <CanvasBoundary onError={() => setWebglFailed(true)}>
-            <Cosmos3D view={view} tier={activeTier} onDegrade={onDegrade} />
+            <Cosmos3D
+              view={view}
+              tier={activeTier}
+              onDegrade={onDegrade}
+              revealed={revealed}
+              focusNodeId={effFocus}
+            />
           </CanvasBoundary>
         </div>
       ) : (
-        <Constellation2D view={view} />
+        <Constellation2D view={view} revealed={revealed} focusNodeId={effFocus} />
       )}
+
+      <TimeScrub
+        view={view}
+        revealedCount={revealedCount}
+        onScrub={setRevealedCount}
+        focusNodeId={focusNodeId}
+        onSelectBeat={setFocusNodeId}
+      />
     </div>
   );
 }
