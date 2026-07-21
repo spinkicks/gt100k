@@ -266,3 +266,15 @@
 ## NEXT
 - Complete T032 and its minimal T034 guard/stub implementation in `packages/interest-lab/test/guards.test.ts`, `packages/interest-lab/src/guards.ts`, and the assent/artifact stub adapters.
 - Acceptance: tests first deny all five forbidden read purposes with an auditable denial, reject individual team-artifact credit without solo proof, reject raw artifact payloads while accepting coarse transitions, and cover assent withdrawal plus coarse-only artifact-source behavior; preserve focused red evidence and keep adapter/package compilation, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-20 — P6 / T032 + T034
+- Added 18 guard and adapter contracts covering all five auditable forbidden-purpose denials, all three accepted solo-proof paths, no-proof refusal, three prohibited raw artifact fields, exact coarse-transition acceptance, learner-scoped withdrawal, and validated finite artifact emission.
+- Confirmed the test-first red state: the guard suite failed on absent public exports and both adapter suites failed to resolve their absent source modules, then all focused contracts passed after the minimal implementation.
+- Implemented the pure fail-closed guard layer, structured errors/audit data, strict artifact-transition allowlist, idempotent synthetic assent-withdrawal stub, and coarse-only artifact source; exported the complete guard API explicitly.
+- Self-reviewed every T032/T034 clause and corrected the two formatter-only findings from the first lint pass; no critical or important issue remained.
+- Verified the forced package/adapter compiler, `pnpm typecheck`, `pnpm test` (101 tests across 22 files), and `pnpm lint` (71 files) all pass.
+- Status: T032 and T034 complete; P6 remains in progress pending T033. SC-008, SC-012, PASS-007, and the PASS-008 withdrawal port boundary are green. No blocker.
+
+## NEXT
+- Complete T033: add `packages/interest-lab/test/acceptance.test.ts` mapping spec §14.4.3 #1–#7 end-to-end over the in-memory and stub adapters.
+- Acceptance: all seven scenarios pass through public APIs/adapters, including withdrawn `e7` disappearing from both the next signal summary and replay; preserve a focused red run and keep package/adapter compilation, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.

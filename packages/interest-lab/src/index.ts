@@ -10,6 +10,25 @@ export type {
   SignalFamily,
   SignalSummary,
 } from "./events";
+export {
+  ARTIFACT_TRANSITION_KINDS,
+  SOLO_PROOF_KINDS,
+  ArtifactSignalRejectedError,
+  PurposeGuardDeniedError,
+  TeamArtifactProofRequiredError,
+  acceptArtifactSignal,
+  guardRead,
+  promoteTeamArtifact,
+} from "./guards";
+export type {
+  ArtifactTransition,
+  ArtifactTransitionKind,
+  IndividualArtifactEvidence,
+  PurposeGuardAudit,
+  SoloProof,
+  SoloProofKind,
+  TeamArtifactEvidence,
+} from "./guards";
 export { summarizeSignals } from "./signals";
 export {
   CHILD_POSITIONS,
