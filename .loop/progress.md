@@ -33,7 +33,7 @@ emissive glow, spring/ease-out motion. Display font Fredoka; reading serif Iowan
   model's `bloomPeak`/emissive markers, so the plum night stays matte and only the warm cores glow.
   Because `<EffectComposer>` disables the renderer tone-map while mounted, ACES is re-applied in-chain
   to stay cohesive across tiers. Gate green: tsc + 73 tests + `next build`. See D-VP4.
-- **Turn 3 (this):** Finished **camera cinematography (#5)** — killed the last camera tell, the
+- **Turn 3:** Finished **camera cinematography (#5)** — killed the last camera tell, the
   *frozen settled shot*. The rig already had intro drift-in + eased island focus + welcome-back +
   auto-tour + damped orbit, but went dead-still the instant a transition settled (worst during the 8s
   auto-tour dwells → lifeless diorama). Added a pure, tested `sampleIdleDrift()`/`IDLE_DRIFT` in
@@ -42,6 +42,20 @@ emissive glow, spring/ease-out motion. Display font Fredoka; reading serif Iowan
   = 0 at t=0), never touches the byte-exact transition math, skipped in focus+orbit (user's damped
   orbit owns the camera) and under reduced motion. Gate green: tsc + 74 tests (camera-rig 6→7) +
   `next build`. See D-VP5.
+- **Turn 4 (this):** Closed the **cohesion gap (#9)** + finished **HUD-not-forms on the guide side
+  (#7)** — killed the worst remaining tell, the guide reading as a *flat "dashboard" paper card* while
+  the child world was fully graded/lit/HUD'd. Kept the deliberate warm paper reading surface (right for
+  dense adult evidence; apple-design §12 — a heavier *opaque structural* material vs. the child's
+  floating translucent HUD), but reframed `.guide-console` as a crafted **lit atelier light-table deck**:
+  the **signature top rail** (identical spark→beacon→tide gradient to the child deck — the strongest
+  shared cohesion mark), layered depth shadow (deep ambient + contact + top inner highlight so the slab
+  lifts off the dark desk), warm/tide corner glows baked into the vellum, a bright hairline lip; the two
+  console eyebrows upgraded to the **HUD eyebrow** with a lit **spark glow-dot**; and the coverage map +
+  return timeline recessed into **inset trenches** (matching the child controls' recessed instruments).
+  Nested `.coverage-console` now paints transparent so the lit surface stays continuous. All additive on
+  an opaque surface — no color inversion, no `backdrop-filter` — so a11y media queries + the two pinned
+  coverage CSS regexes are untouched. Pure DOM/CSS (no GPU), so the build's CSS compile + the pinned
+  guide/coverage markup tests actually verify it. Gate green: tsc + 74 tests + `next build`. See D-VP6.
 
 ## Verification note (honest)
 The grade only mounts client-side on the WebGL full tier, so it can't be pixel-verified in this
@@ -52,27 +66,33 @@ real module), tsc + tests + build all green, and the tone-mapping chain is corre
 why the ACES ToneMapping effect is present. A GPU screenshot pass is the ideal next confirmation.
 
 ## What still reads generic (candidates for next turns)
-- **Guide console chrome** still uses plainer paper cards; give it the HUD material language (frosted
-  glass + lit top rail + inset trenches from D-VP2) for cohesion with the child control deck. This is
-  now the **highest-leverage remaining tell** — the child world is graded/lit/moving but the guide
-  side is still "dashboard."
+- **Guide sub-panels still lack motion/juice (#6 on the guide side).** The guide chrome now reads as one
+  crafted deck (Turn 4), but its interior is static: the coverage cells, explanation columns, timeline
+  markers and lifecycle states don't stagger-enter, and there's no hover/press feedback on the interactive
+  guide controls (author form, revision scrubber, `<details>` disclosures). This is now the highest-
+  leverage remaining tell — the guide *looks* crafted but doesn't *feel* alive.
+- **Board-2d juice:** the child fallback cards could use stagger-enter + spring hover (#6) so the perf
+  floor still feels alive.
+- **Deeper guide trenching (optional polish):** the explanation columns + lifecycle tracks + revision rail
+  could take the same inset-trench treatment as the two scroll instruments for even more instrument depth.
 - **SSAO / ambient occlusion (part of #4)** — deferred (needs a normal pass; riskiest to tune blind).
   A subtle N8AO pass + optional shallow depth-of-field would finish the AAA grade.
-- The child board-2d fallback cards could use more juice (stagger enter, spring hover).
 
 ## Non-negotiable scorecard (vs game-feel.md)
-1 committed world ✓ · 2 lighting rig ✓ · 3 materials ✓ (verify no bare primitives remain) ·
-4 post-FX grade ✓ (SSAO/DoF still open) · **5 camera cinematography ✓ (idle breath landed Turn 3)** ·
-6 motion/juice ✓ (world + HUD; board-2d cards still flat) · 7 HUD not forms ✓ (child deck; guide
-console still paper) · 8 type+icons ✓ · 9 cohesion — child side cohesive, guide side lags.
+1 committed world ✓ · 2 lighting rig ✓ · 3 materials ✓ (no bare primitives remain) ·
+4 post-FX grade ✓ (SSAO/DoF still open) · 5 camera cinematography ✓ (idle breath, Turn 3) ·
+6 motion/juice ✓ world + child HUD; **guide interior still static (next target)** ·
+7 HUD not forms ✓ (child deck + guide deck, Turn 4) · 8 type+icons ✓ ·
+**9 cohesion ✓ — both sides now read as one crafted world (Turn 4).**
 
 ## NEXT
-1. **Guide console → HUD material language.** Bring D-VP2's frosted-glass / lit-top-rail / inset-trench
-   chrome + Fredoka display headings + lucide icons to the guide console + evidence constellation panels
-   so both sides read as one crafted world (game-feel #7/#9). Use `impeccable` + `ui-ux-pro-max` +
-   `apple-design`; subtract words first (game-feel "simplicity" #1) before restyling.
-2. **Board-2d juice:** stagger-enter + spring hover on the fallback cards (game-feel #6) so the perf
-   floor still feels alive.
-3. Optionally: SSAO + shallow DoF to close #4, and a GPU screenshot pass to tune Bloom/Vignette + the
-   new idle-breath amplitude to taste.
+1. **Guide-interior motion/juice (#6).** Make the now-crafted guide deck *feel* alive: staggered enter on
+   the coverage cells + timeline markers + lifecycle states (respecting the existing pure `matrixStagger`
+   / `ticker` motion tokens and `reducedMotion`), and tactile hover/press feedback on the guide's
+   interactive controls (author-revision form buttons, revision scrubber, `<details>` summaries) matching
+   the child deck's `cubic-bezier(0.23,1,0.32,1)` ease-out + `scale(0.97)` press. Use `emil-design-eng` +
+   `find-animation-opportunities` + `improve-animations`. Keep it calm (game-feel #1 — subtract first).
+2. **Board-2d juice:** stagger-enter + spring hover on the fallback cards (#6) so the perf floor feels alive.
+3. Optionally: SSAO + shallow DoF to close #4; a GPU/browser screenshot pass to tune the guide deck's
+   glow + Bloom/Vignette + idle-breath amplitude to taste; deeper guide-panel trenching.
 Keep the gate green (tsc + test + `next build`); write `.loop/commit-msg`; keep the art direction cohesive.

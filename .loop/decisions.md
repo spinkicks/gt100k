@@ -402,3 +402,35 @@
   Driving idle motion under **reduced motion** — off by contract (returns zeros), consistent with the
   rig cutting all motion for that setting. Adding the constant to the view package's typed `CAMERA3D`
   model — kept app-local (like `AUTO_TOUR_DWELL_MS`) to avoid touching the view package's pinned tests.
+
+## D-VP6 — Guide console becomes the crafted "atelier light-table deck" (Turn 4 · cohesion #9)
+- Chose: give the guide surface (`.guide-console`, and its nested `.coverage-console`) the child HUD's
+  **material language** without inverting its colours. Kept the warm opaque `--paper-guide` reading
+  surface + dark `--ink-guide` text, but reframed the shell as a lit slab: the **signature top rail**
+  (`::before`, the exact spark→beacon→tide gradient as the child deck), a **layered depth shadow**
+  (deep ambient + short contact + a top inner highlight so the deck lifts off the dark desk), warm/tide
+  **corner glows baked into the paper** (lit vellum, not flat card), and a bright hairline lip. Upgraded
+  the two console eyebrows (`guide-console-intro` / `coverage-console-header` `.surface-name`) to the HUD
+  eyebrow — uppercase, tracked, with a small lit **spark glow-dot** `::before`. Recessed the two
+  horizontal scroll instruments (`.coverage-table-scroll`, `.timeline-scroll`) into **inset trenches**
+  (inset shadow + top highlight + hairline) so the map and timeline read as recessed instruments. The
+  nested `.coverage-console` now paints `background: transparent` so the deck's lit surface stays
+  continuous beneath the coverage map instead of masking it with a flat rectangle.
+- Why: game-feel **#9 (cohesion)** + **#7 (HUD not a form)** — the child side was fully graded/lit/HUD'd
+  while the guide read as a flat "dashboard" paper card (the worst remaining tell per Turn 3's NEXT). Per
+  **apple-design §12**, material weight encodes hierarchy: the guide is a *structural, dense, adult
+  reading region*, so it should be a **heavier opaque material** than the child's floating translucent
+  HUD — keeping paper (dark text on light for dense evidence) is the correct call, and inverting to dark
+  glass would both hurt readability and cascade-break every `color-mix(... --paper-guide)` tinted cell
+  (coverage cells, explanation columns, lifecycle states). The lit top rail is apple-design's "bright top
+  edge = light catching the material" and is the single strongest cohesion signal shared with the child
+  deck. All changes are additive framing on an opaque surface (no `backdrop-filter`), so plain-mode,
+  reduced-transparency, reduced-motion, and high-contrast are unaffected. The two pinned coverage CSS
+  regexes (`.coverage-cell--empty`, `.coverage-rail-item--gap .coverage-state-glyph`) were left untouched.
+- Rejected: **inverting the guide to dark frosted glass** (the literal reading of Turn 3's NEXT) — breaks
+  readability of dense evidence and cascade-breaks every tinted guide cell; the crafted-lit-vellum path
+  achieves the same "one world" cohesion at a fraction of the risk. Adding the rail to the nested
+  `.coverage-console` too — would draw a second rail mid-console; the rail belongs to the outer deck only.
+  A slow shimmer on the rail — rejected for calm/static parity with the child deck's static rail.
+  Trenching every sub-panel (explanation columns, lifecycle tracks) this turn — deferred to keep the turn
+  a single cohesive change; the two scroll instruments are the highest-value recesses.

@@ -1028,8 +1028,14 @@ footer {
 
 .coverage-table-scroll {
   max-width: 100%;
+  padding: 0.85rem;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
+  border: 1px solid color-mix(in srgb, var(--ink-guide) 10%, transparent);
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--ink-guide) 5%, var(--paper-guide));
+  box-shadow: 0 1px 0 rgb(255 255 255 / 55%) inset,
+    inset 0 2px 8px -4px rgb(36 27 58 / 42%);
 }
 
 .coverage-table-scroll:focus-visible {
@@ -1249,13 +1255,41 @@ footer {
   color: color-mix(in srgb, var(--met) 66%, var(--ink-guide));
 }
 
+/* ---- Guide surface: the atelier "light-table" deck -------------------- */
+/* Same crafted material family as the child HUD deck, expressed as an
+   opaque warm vellum slab lit from within — a heavier structural reading
+   surface (apple-design §12), not a flat dashboard card. */
 .guide-console {
+  position: relative;
   display: grid;
   gap: 2rem;
-  padding: clamp(1.25rem, 3vw, 2rem);
-  border-radius: 1rem;
-  background: var(--paper-guide);
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 60%);
+  border-radius: 1.15rem;
+  background: radial-gradient(120% 90% at 0% -12%, rgb(255 158 94 / 13%), transparent 46%),
+    radial-gradient(120% 90% at 100% -12%, rgb(94 200 216 / 10%), transparent 42%),
+    var(--paper-guide);
   color: var(--ink-guide);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 65%) inset, 0 2px 10px -4px rgb(0 0 0 / 40%),
+    0 28px 60px -32px rgb(0 0 0 / 72%);
+}
+
+/* The signature lit top rail — the exact cohesion mark of the child deck. */
+.guide-console::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--spark) 22%,
+    var(--beacon) 50%,
+    var(--tide) 78%,
+    transparent
+  );
+  opacity: 0.9;
+  content: "";
 }
 
 .guide-console-intro,
@@ -1278,9 +1312,35 @@ footer {
   color: color-mix(in srgb, var(--spark) 58%, var(--ink-guide));
 }
 
+/* HUD eyebrow: a small lit spark dot before each console section label,
+   matching the child deck's eyebrow so both surfaces read as one world. */
+.guide-console-intro .surface-name,
+.coverage-console-header .surface-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.guide-console-intro .surface-name::before,
+.coverage-console-header .surface-name::before {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--spark);
+  box-shadow: 0 0 0.7rem color-mix(in srgb, var(--spark) 80%, transparent);
+  content: "";
+}
+
+/* Nested inside the deck: drop the card frame and let the lit vellum
+   surface show through continuously beneath the coverage map. */
 .guide-console > .coverage-console {
   padding: 0;
   border-radius: 0;
+  background: transparent;
 }
 
 .guide-section {
@@ -1389,8 +1449,14 @@ footer {
 
 .timeline-scroll {
   max-width: 100%;
+  padding: 0.85rem;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
+  border: 1px solid color-mix(in srgb, var(--ink-guide) 10%, transparent);
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--ink-guide) 5%, var(--paper-guide));
+  box-shadow: 0 1px 0 rgb(255 255 255 / 55%) inset,
+    inset 0 2px 8px -4px rgb(36 27 58 / 42%);
 }
 
 .timeline-scroll:focus-visible {
