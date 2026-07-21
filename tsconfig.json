@@ -4,6 +4,7 @@
     { "path": "packages/learning-loop" },
     { "path": "packages/cohort-compiler" },
     { "path": "packages/cohort-arena-view" },
+    { "path": "packages/evidence-explorer-view" },
     { "path": "adapters/cohort-benefit-shadow" },
     { "path": "adapters/cohort-candidates-memory" },
     { "path": "adapters/cohort-media-stub" },

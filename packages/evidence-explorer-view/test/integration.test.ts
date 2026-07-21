@@ -66,7 +66,7 @@ function topology(view: ReturnType<typeof buildExplorerView>) {
     bounds3d: view.bounds3d,
     center3d: view.center3d,
     edgeStyles: view.edges.map((e) => [e.type, e.threadStyle, e.flow] as const),
-    beats: view.growthTimeline.beats.map((b) => [b.phase, b.birthOrder] as const),
+    beats: view.growthTimeline.beats.map((b) => [b.group, b.birthOrder] as const),
   };
 }
 
