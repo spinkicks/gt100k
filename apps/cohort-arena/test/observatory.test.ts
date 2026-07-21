@@ -94,6 +94,12 @@ describe("the 3D Compiler Observatory", () => {
 
     expect(resolveObservatoryMotion(view)).toEqual({
       compile: { kind: "compile", mode: "animated", durationMs: 900, easing: "settle" },
+      rollback: {
+        kind: "rollback",
+        mode: "animated",
+        durationMs: 600,
+        easing: "rollback",
+      },
       drift: {
         kind: "ambientDrift",
         mode: "animated",
@@ -140,7 +146,7 @@ describe("the 3D Compiler Observatory", () => {
     expect(sceneSource).toContain("dispose");
     expect(sceneSource).not.toContain("Math.random");
     expect(sceneSource).not.toContain("OrbitControls");
-    expect(shellSource).toContain("<ObservatoryScene view={view}");
+    expect(shellSource).toMatch(/<ObservatoryScene[\s\S]*?view=\{view\}/);
     expect(shellSource).toMatch(/tier2D\.active[\s\S]*?<CohortTier2D/);
     expect(shellSource).toMatch(/tier2D\.active[\s\S]*?<Canvas/);
     expect(shellSource).toMatch(/<Canvas[\s\S]*?aria-hidden="true"/);

@@ -542,3 +542,17 @@
 
 - T125 — Implement the rollback control and 3D reverse-choreography in `apps/cohort-arena`, returning learner stars to the prior snapshot positions and exposing the existing Ledger diff.
 - Acceptance: rollback uses `useFrame` interpolation keyed only to `resolveMotion("rollback", ...)`, restores the prior snapshot presentation without mutating the domain result, exposes the removed/added Ledger diff, and remains interruptible; focused RED/GREEN, app TypeScript/tests, both builds, seeded smoke, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P9 / T125
+
+- Added immutable synthetic current/prior snapshots for the pinned A6→A7 change and a conventional ≥44px rollback-preview control that keeps the active domain assignment untouched while the shared rendered view, HUD, 2D tier, and Ledger switch snapshots together.
+- Extended the r3f Observatory with the exact `resolveMotion("rollback", ...)` token: star instances retarget from their live presentation transforms through `useFrame`, stay mounted in one instanced carrier across A6/A7 state changes, and can be reversed again before the 600ms choreography settles.
+- Preserved accessible/display-only truth with exact forward and reverse Ledger diffs, explicit assignment IDs, the exact churn delta 2, a polite snapshot announcement, and a 0ms reduced/plain rollback resolution.
+- TDD status: the focused suite first failed because `components/RollbackControl.tsx` was absent, then passed 3/3 after the minimal snapshot/control/scene implementation. App-local TypeScript exposed the pre-existing empty-array `never[]` inference on the synthetic churn budget; annotating it with the existing domain budget type made the already-present recorded-exception contract compile without changing runtime data.
+- Review status: the production UI was inspected at 1440×1000; the motion review found no blocking issue because the spec-pinned 600ms movement is rare spatial rollback, updates only instanced transforms, starts from live positions, never locks input, and has an instant equivalent.
+- Gate status: app tests (29/29), `pnpm typecheck`, `pnpm test` (144/144), `pnpm lint` (137 files), root `pnpm build`, `pnpm --filter @gt100k/cohort-arena build`, and the seeded production WebGL smoke (1/1) pass. The smoke used the existing local Chromium library bundle through ephemeral `LD_LIBRARY_PATH`; no repo or host package state changed. T125 completes animated rollback for FR-034/SC-016; P9 remains in progress for the consolidated reduced-motion checkpoint. No blocker.
+
+## NEXT
+
+- T126 — Consolidate and verify the reduced-motion equivalents for standings, churn, and rollback.
+- Acceptance: reduced/plain presentation shows the final standings bar and number instantly, keeps the churn meter state-identical, restores the prior snapshot instantly with the Ledger diff, loses no state or control, and keeps focused tests, app TypeScript/build, seeded smoke, and repository typecheck/test/lint green.

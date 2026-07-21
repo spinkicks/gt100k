@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 
+import { RollbackControl } from "./RollbackControl";
 import { StandingsToggle } from "./StandingsToggle";
 import { ChurnBudgetMeter } from "./hud/ChurnBudgetMeter";
 import { CohortRosterHud } from "./hud/CohortRosterHud";
@@ -12,28 +13,35 @@ import { StandingsPanel } from "./hud/StandingsPanel";
 import { toMotionEasing } from "./hud/motion-transition";
 import { CohortLedger } from "./ledger/CohortLedger";
 import { ObservatoryScene } from "./observatory/ObservatoryScene";
-import { SYNTHETIC_CHURN_BUDGET, buildSyntheticCohortView } from "./synthetic-view";
+import {
+  SYNTHETIC_CHURN_BUDGET,
+  SYNTHETIC_ROLLBACK_ASSIGNMENTS,
+  buildSyntheticRollbackViews,
+} from "./synthetic-view";
 import { CohortTier2D } from "./tier2d/CohortTier2D";
 import { resolveTier2DMode } from "./tier2d/mode";
 
 export default function CohortArenaClient() {
   const systemReducedMotion = useReducedMotion();
   const [plainMode, setPlainMode] = useState(false);
+  const [rolledBack, setRolledBack] = useState(false);
+  const [hasSnapshotTransition, setHasSnapshotTransition] = useState(false);
   const [standingsOptIn, setStandingsOptIn] = useState(false);
   const tier2D = resolveTier2DMode({
     configuredDefault: process.env.NEXT_PUBLIC_REDUCED_MOTION_DEFAULT,
     systemReducedMotion,
     plainMode,
   });
-  const view = useMemo(
+  const snapshotViews = useMemo(
     () =>
-      buildSyntheticCohortView({
+      buildSyntheticRollbackViews({
         plain: plainMode,
         reducedMotion: tier2D.active,
         standingsOptIn,
       }),
     [plainMode, standingsOptIn, tier2D.active],
   );
+  const view = rolledBack ? snapshotViews.prior : snapshotViews.current;
   const camera = view.constellation.camera;
   const press = resolveMotion("press", { reducedMotion: tier2D.active });
 
@@ -94,7 +102,9 @@ export default function CohortArenaClient() {
             <div className="region-heading">
               <div>
                 <p className="region-label">Compiler field</p>
-                <h2 id="scene-heading">Two cohorts settled</h2>
+                <h2 id="scene-heading">
+                  {rolledBack ? "Prior snapshot settled" : "Current snapshot settled"}
+                </h2>
               </div>
               <span className="status-chip">12 assigned</span>
             </div>
@@ -114,7 +124,10 @@ export default function CohortArenaClient() {
                 onCreated={({ gl }) => gl.domElement.setAttribute("aria-hidden", "true")}
               >
                 <color attach="background" args={[view.presentation.palette.deck]} />
-                <ObservatoryScene view={view} />
+                <ObservatoryScene
+                  view={view}
+                  transitionKind={hasSnapshotTransition ? "rollback" : "compile"}
+                />
               </Canvas>
             </div>
           </section>
@@ -130,6 +143,16 @@ export default function CohortArenaClient() {
           </div>
           <CohortRosterHud view={view} reducedMotion={tier2D.active} />
           <ChurnBudgetMeter budget={SYNTHETIC_CHURN_BUDGET} cohorts={view.cohorts} />
+          <RollbackControl
+            currentAssignmentId={SYNTHETIC_ROLLBACK_ASSIGNMENTS.current.id}
+            priorAssignmentId={SYNTHETIC_ROLLBACK_ASSIGNMENTS.prior.id}
+            reducedMotion={tier2D.active}
+            rolledBack={rolledBack}
+            onToggle={() => {
+              setHasSnapshotTransition(true);
+              setRolledBack((current) => !current);
+            }}
+          />
           <StandingsPanel standings={view.standings} reducedMotion={tier2D.active} />
         </aside>
       </div>

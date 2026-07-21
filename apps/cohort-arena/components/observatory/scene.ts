@@ -39,6 +39,7 @@ export interface ObservatorySceneModel {
 
 export interface ObservatoryMotion {
   readonly compile: MotionSpec;
+  readonly rollback: MotionSpec;
   readonly drift: MotionSpec;
   readonly camera: MotionSpec;
 }
@@ -123,6 +124,7 @@ export function resolveObservatoryMotion(view: CohortArenaView): ObservatoryMoti
   const reducedMotion = view.motion.compile.mode === "reduced";
   return {
     compile: resolveMotion("compile", { reducedMotion }),
+    rollback: resolveMotion("rollback", { reducedMotion }),
     drift: resolveMotion("ambientDrift", { reducedMotion }),
     camera: resolveMotion("cameraEase", { reducedMotion }),
   };

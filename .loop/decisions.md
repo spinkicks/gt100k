@@ -197,3 +197,8 @@
 
 - Read the base cap and already-used membership changes only from the injected domain `ChurnBudget`; derive remaining capacity as `max(0, cap - used)`. Sum the existing `view.cohorts[].churnDelta` carriers only for a separately labeled `display only` readout. Rejected subtracting the view delta from remaining capacity or re-deriving membership churn in the renderer because either would let an uncommitted visualization impersonate domain budget consumption.
 - Bound the visual and ARIA meter at the base cap while retaining the exact used value in text and `aria-valuetext`; when domain exceptions permit used churn above the base cap, label that state `Recorded exception`. Rejected an overflowing meter or a hard-coded within-budget label because both would misrepresent a valid recorded-exception path.
+
+## 2026-07-21 — T125 immutable rollback presentation
+
+- Build the current A7 and prior A6 snapshots independently from immutable domain assignments, then select one shared `CohortArenaView` for every renderer during rollback. Rejected mutating the current assignment or retargeting only the canvas because either would violate SC-016 or desynchronize the HUD/2D/Ledger presentation.
+- Keep both snapshot members in one stable instanced star carrier and animate each new target from its live transform. Rejected separate assigned/pending instance groups because A6/A7 would remount when their snapshot state changes, discarding the presentation position needed for an interruptible reversal.

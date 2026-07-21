@@ -574,6 +574,63 @@ html[data-reduced-motion="true"] *::after {
   font-weight: 500;
 }
 
+.rollback-control {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid var(--locked);
+}
+
+.rollback-control h3,
+.rollback-control p {
+  padding: 0;
+  margin: 0;
+}
+
+.rollback-control h3 {
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+}
+
+.rollback-control p {
+  max-width: 62ch;
+  margin-top: 0.2rem;
+  color: var(--ink-muted);
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+}
+
+.rollback-control strong {
+  color: var(--ink-hi);
+  font-weight: 600;
+}
+
+.rollback-control button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  gap: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  color: var(--ink-hi);
+  background: var(--deck);
+  border: 1px solid var(--churn);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.rollback-control button:hover,
+.rollback-control button[aria-pressed="true"] {
+  background: var(--deck-3);
+}
+
+.rollback-control button > span {
+  color: var(--churn);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+
 .standings-panel {
   padding-top: 1rem;
   margin-top: 1rem;

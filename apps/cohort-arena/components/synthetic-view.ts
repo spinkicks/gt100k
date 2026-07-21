@@ -7,12 +7,12 @@ import {
 
 type SyntheticLearner = NonNullable<BuildCohortArenaViewInput["pool"]>[number];
 
-export const SYNTHETIC_CHURN_BUDGET = {
+export const SYNTHETIC_CHURN_BUDGET: BuildCohortArenaViewInput["churn"] = {
   weekKey: "2026-W30",
   cap: 4,
   used: 0,
   exceptions: [],
-} satisfies BuildCohortArenaViewInput["churn"];
+};
 
 const HARD = {
   age: true,
@@ -103,6 +103,29 @@ const ASSIGNMENT = {
   sizeExceptions: [],
 } satisfies BuildCohortArenaViewInput["assignment"];
 
+const ROLLBACK_POOL = [
+  ...POOL,
+  learner("A7", "a9_11", 12, 11),
+] satisfies readonly SyntheticLearner[];
+
+const ROLLBACK_CURRENT_ASSIGNMENT = {
+  ...ASSIGNMENT,
+  id: "asg-view-v2",
+  cohorts: ASSIGNMENT.cohorts.map((existingCohort, cohortIndex) => ({
+    members: existingCohort.members.map((member) =>
+      cohortIndex === 0 && member.ref === "A6" ? { ...member, ref: "A7" } : { ...member },
+    ),
+  })),
+  memberRefs: ASSIGNMENT.memberRefs.map((ref) => (ref === "A6" ? "A7" : ref)),
+  priorAssignmentId: ASSIGNMENT.id,
+  rollbackRef: ASSIGNMENT.id,
+} satisfies BuildCohortArenaViewInput["assignment"];
+
+export const SYNTHETIC_ROLLBACK_ASSIGNMENTS = {
+  current: ROLLBACK_CURRENT_ASSIGNMENT,
+  prior: ASSIGNMENT,
+} as const;
+
 const INPUT = {
   assignment: ASSIGNMENT,
   priorAssignment: null,
@@ -123,4 +146,28 @@ export function buildSyntheticCohortView(flags: Partial<ViewFlags> = {}): Cohort
     ...INPUT,
     flags: { ...INPUT.flags, ...flags },
   });
+}
+
+export function buildSyntheticRollbackViews(flags: Partial<ViewFlags> = {}): {
+  readonly current: CohortArenaView;
+  readonly prior: CohortArenaView;
+} {
+  const mergedFlags = { ...INPUT.flags, ...flags };
+
+  return {
+    current: buildCohortArenaView({
+      ...INPUT,
+      assignment: ROLLBACK_CURRENT_ASSIGNMENT,
+      priorAssignment: ASSIGNMENT,
+      pool: ROLLBACK_POOL,
+      flags: mergedFlags,
+    }),
+    prior: buildCohortArenaView({
+      ...INPUT,
+      assignment: ASSIGNMENT,
+      priorAssignment: ROLLBACK_CURRENT_ASSIGNMENT,
+      pool: ROLLBACK_POOL,
+      flags: mergedFlags,
+    }),
+  };
 }

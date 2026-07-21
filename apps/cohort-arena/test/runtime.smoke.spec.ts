@@ -76,15 +76,17 @@ test("mounts and disposes WebGL while preserving the seeded view in the reduced-
   await expect(page.getByRole("heading", { name: "Growth standing" })).toHaveCount(0);
 
   const before = await compiledState(page);
-  expect(before.churn).toEqual(["2026-W30:4:0:4:0"]);
+  expect(before.churn).toEqual(["2026-W30:4:0:4:2"]);
   await expect(page.getByRole("meter", { name: "Weekly churn used" })).toHaveAttribute(
     "aria-valuetext",
     "0 of 4 membership changes used; 4 remaining",
   );
   await expect(page.locator('[data-churn-meter="weekly-budget"]')).toContainText(
-    "0 members · display only",
+    "2 members · display only",
   );
   expect(before.roster).toHaveLength(12);
+  expect(before.roster).toContain("A7:scribe");
+  expect(before.roster).not.toContain("A6:scribe");
   expect(before.constraints).toHaveLength(14);
   expect(before.floorReadouts).toEqual([
     "◎Non-harm floor 0.825 ≥ 0.5",
@@ -109,6 +111,33 @@ test("mounts and disposes WebGL while preserving the seeded view in the reduced-
   await expect(standingsToggle).toHaveAttribute("aria-pressed", "false");
   await expect(standingsPanel).toHaveCount(0);
   await expect(page.locator("#ledger-standings-state")).toHaveCount(0);
+  expect(await compiledState(page)).toEqual(before);
+
+  const rollback = page.locator('[data-motion-kind="rollback"]');
+  const ledgerAnnouncement = page.locator('[data-region="ledger"] output');
+  await expect(rollback).toHaveAttribute("aria-pressed", "false");
+  await expect(rollback).toHaveAttribute("data-motion-duration", "600");
+  await expect(rollback).toHaveAccessibleName("Preview rollback to asg-view-v1");
+  await expect(ledgerAnnouncement).toHaveText("Assignment changed — removed:[A6]; added:[A7].");
+
+  await rollback.click();
+  await expect(rollback).toHaveAttribute("aria-pressed", "true");
+  await expect(rollback).toHaveAccessibleName("Return to current snapshot asg-view-v2");
+  await expect(page.getByRole("heading", { name: "Prior snapshot settled" })).toBeVisible();
+  await expect(ledgerAnnouncement).toHaveText("Assignment changed — removed:[A7]; added:[A6].");
+  const prior = await compiledState(page);
+  expect(prior.churn).toEqual(before.churn);
+  expect(prior.constraints).toEqual(before.constraints);
+  expect(prior.floorReadouts).toEqual(before.floorReadouts);
+  expect(prior.roster).toContain("A6:scribe");
+  expect(prior.roster).not.toContain("A7:scribe");
+
+  await rollback.click();
+  await rollback.click();
+  await rollback.click();
+  await expect(rollback).toHaveAttribute("aria-pressed", "false");
+  await expect(page.getByRole("heading", { name: "Current snapshot settled" })).toBeVisible();
+  await expect(ledgerAnnouncement).toHaveText("Assignment changed — removed:[A6]; added:[A7].");
   expect(await compiledState(page)).toEqual(before);
 
   await page.getByRole("button", { name: "Plain mode off" }).click();

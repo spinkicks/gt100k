@@ -17,12 +17,12 @@ import { buildObservatoryScene, easeSceneProgress, resolveObservatoryMotion } fr
 
 interface ObservatorySceneProps {
   readonly view: CohortArenaView;
+  readonly transitionKind?: "compile" | "rollback";
 }
 
 interface SceneResources {
   readonly starGeometry: IcosahedronGeometry;
   readonly starMaterial: MeshStandardMaterial;
-  readonly pendingMaterial: MeshStandardMaterial;
   readonly badgeGeometry: OctahedronGeometry;
   readonly badgeMaterial: MeshStandardMaterial;
 }
@@ -31,12 +31,13 @@ function toTuple(position: Vec3): [number, number, number] {
   return [position.x, position.y, position.z];
 }
 
-export function ObservatoryScene({ view }: ObservatorySceneProps) {
+export function ObservatoryScene({ view, transitionKind = "compile" }: ObservatorySceneProps) {
   const scene = useMemo(() => buildObservatoryScene(view), [view]);
   const motion = useMemo(() => resolveObservatoryMotion(view), [view]);
   const starRefs = useRef(new Map<string, Group>());
+  const initialStarPositions = useRef(new Map<string, [number, number, number]>());
   const animationStarts = useRef(new Map<string, Vector3>());
-  const compileStartedAt = useRef<number | null>(null);
+  const transitionStartedAt = useRef<number | null>(null);
   const cameraStartedAt = useRef<number | null>(null);
   const cameraStart = useMemo(
     () =>
@@ -76,14 +77,6 @@ export function ObservatoryScene({ view }: ObservatorySceneProps) {
         roughness: 0.32,
         toneMapped: false,
       }),
-      pendingMaterial: new MeshStandardMaterial({
-        color: view.presentation.palette.pending,
-        emissive: view.presentation.palette.pending,
-        emissiveIntensity: 0.62,
-        metalness: 0.04,
-        roughness: 0.4,
-        toneMapped: false,
-      }),
       badgeGeometry: new OctahedronGeometry(0.32 * view.presentation.markerScale, 0),
       badgeMaterial: new MeshStandardMaterial({
         color: view.presentation.palette.form,
@@ -94,7 +87,7 @@ export function ObservatoryScene({ view }: ObservatorySceneProps) {
         toneMapped: false,
       }),
     }),
-    [view],
+    [view.presentation.markerScale, view.presentation.palette],
   );
 
   const registerStar = useCallback(
@@ -104,6 +97,14 @@ export function ObservatoryScene({ view }: ObservatorySceneProps) {
     },
     [],
   );
+
+  const initialStarPosition = useCallback((star: (typeof scene.stars)[number]) => {
+    const existing = initialStarPositions.current.get(star.ref);
+    if (existing) return existing;
+    const initial = toTuple(star.start);
+    initialStarPositions.current.set(star.ref, initial);
+    return initial;
+  }, []);
 
   useEffect(() => {
     const nextStarts = new Map<string, Vector3>();
@@ -115,14 +116,13 @@ export function ObservatoryScene({ view }: ObservatorySceneProps) {
       );
     }
     animationStarts.current = nextStarts;
-    compileStartedAt.current = null;
+    transitionStartedAt.current = null;
   }, [scene.stars]);
 
   useEffect(
     () => () => {
       resources.starGeometry.dispose();
       resources.starMaterial.dispose();
-      resources.pendingMaterial.dispose();
       resources.badgeGeometry.dispose();
       resources.badgeMaterial.dispose();
     },
@@ -131,14 +131,16 @@ export function ObservatoryScene({ view }: ObservatorySceneProps) {
 
   useFrame(({ camera, clock }) => {
     const elapsedMs = clock.elapsedTime * 1_000;
-    compileStartedAt.current ??= elapsedMs;
+    transitionStartedAt.current ??= elapsedMs;
     cameraStartedAt.current ??= elapsedMs;
 
-    const compileProgress =
-      motion.compile.durationMs === 0
+    const transitionMotion = transitionKind === "rollback" ? motion.rollback : motion.compile;
+
+    const transitionProgress =
+      transitionMotion.durationMs === 0
         ? 1
-        : Math.min(1, (elapsedMs - compileStartedAt.current) / motion.compile.durationMs);
-    const compileEased = easeSceneProgress(motion.compile.easing, compileProgress);
+        : Math.min(1, (elapsedMs - transitionStartedAt.current) / transitionMotion.durationMs);
+    const transitionEased = easeSceneProgress(transitionMotion.easing, transitionProgress);
     const driftPeriod = Math.max(1, motion.drift.durationMs);
 
     for (const [index, star] of scene.stars.entries()) {
@@ -146,13 +148,13 @@ export function ObservatoryScene({ view }: ObservatorySceneProps) {
       if (!instance) continue;
       const start = animationStarts.current.get(star.ref) ?? new Vector3(...toTuple(star.start));
       const drift =
-        compileProgress === 1 && motion.drift.durationMs > 0
+        transitionProgress === 1 && motion.drift.durationMs > 0
           ? Math.sin((elapsedMs / driftPeriod) * Math.PI * 2 + index * 0.62) * 0.14
           : 0;
       instance.position.set(
-        start.x + (star.settled.x - start.x) * compileEased,
-        start.y + (star.settled.y - start.y) * compileEased + drift,
-        start.z + (star.settled.z - start.z) * compileEased,
+        start.x + (star.settled.x - start.x) * transitionEased,
+        start.y + (star.settled.y - start.y) * transitionEased + drift,
+        start.z + (star.settled.z - start.z) * transitionEased,
       );
       instance.rotation.y = (elapsedMs / driftPeriod) * Math.PI * 2 + index * 0.08;
     }
@@ -168,9 +170,6 @@ export function ObservatoryScene({ view }: ObservatorySceneProps) {
     );
     camera.lookAt(cameraTarget);
   });
-
-  const assignedStars = scene.stars.filter(({ state }) => state !== "unassigned");
-  const pendingStars = scene.stars.filter(({ state }) => state === "unassigned");
 
   return (
     <>
@@ -243,28 +242,23 @@ export function ObservatoryScene({ view }: ObservatorySceneProps) {
       <Instances
         geometry={resources.starGeometry}
         material={resources.starMaterial}
-        limit={assignedStars.length}
-        range={assignedStars.length}
+        limit={scene.stars.length}
+        range={scene.stars.length}
         dispose={null}
       >
-        {assignedStars.map((star) => (
-          <Instance key={star.ref} ref={registerStar(star.ref)} position={toTuple(star.start)} />
+        {scene.stars.map((star) => (
+          <Instance
+            key={star.ref}
+            ref={registerStar(star.ref)}
+            color={
+              star.state === "unassigned"
+                ? view.presentation.palette.pending
+                : view.presentation.palette.peerHi
+            }
+            position={initialStarPosition(star)}
+          />
         ))}
       </Instances>
-
-      {pendingStars.length > 0 ? (
-        <Instances
-          geometry={resources.starGeometry}
-          material={resources.pendingMaterial}
-          limit={pendingStars.length}
-          range={pendingStars.length}
-          dispose={null}
-        >
-          {pendingStars.map((star) => (
-            <Instance key={star.ref} ref={registerStar(star.ref)} position={toTuple(star.start)} />
-          ))}
-        </Instances>
-      ) : null}
 
       <Instances
         geometry={resources.badgeGeometry}
