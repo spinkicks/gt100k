@@ -154,6 +154,19 @@ html[data-reduced-motion="true"] *::after {
     background: var(--deck-2);
     backdrop-filter: none;
   }
+
+  .scene-panel,
+  .hud-panel,
+  .tier-panel,
+  .ledger-panel {
+    background: var(--deck-2);
+    backdrop-filter: none;
+  }
+
+  .cohort-roster-card {
+    background: var(--deck-3);
+    backdrop-filter: none;
+  }
 }
 
 @media (forced-colors: active) {
@@ -389,15 +402,27 @@ html[data-reduced-motion="true"] *::after {
   margin-top: 1rem;
 }
 
+/* Content panels wear the same frosted instrument bezel as the view-controls deck
+   (layered glass, inset cyan light-line, machined ground shadow, peer-tinted hairline)
+   so the shell reads as one crafted instrument around the canvas — not a flat dashboard
+   parked next to it. Calm depth: one gradient, one highlight, one shadow, one border. */
 .scene-panel,
 .hud-panel,
 .tier-panel,
 .ledger-panel {
   min-width: 0;
   padding: 1rem;
-  background: var(--deck-2);
-  border: 1px solid var(--deck-3);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--deck-3) 58%, transparent),
+    color-mix(in srgb, var(--deck-2) 84%, transparent)
+  );
+  border: 1px solid color-mix(in srgb, var(--peer) 15%, var(--deck-3));
   border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--peer-hi) 14%, transparent),
+    0 22px 46px -30px rgb(0 0 0 / 0.85);
+  backdrop-filter: blur(14px) saturate(1.1);
 }
 
 .region-heading h2,
@@ -406,13 +431,20 @@ html[data-reduced-motion="true"] *::after {
   line-height: var(--text-h2-line);
 }
 
+/* Machined readout pills — the same bezel language at chip scale. */
 .status-chip,
 .ledger-count {
   flex: none;
   padding: 0.35rem 0.65rem;
   color: var(--ink-hi);
-  background: var(--deck-3);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--deck-3) 96%, transparent),
+    color-mix(in srgb, var(--deck-2) 96%, transparent)
+  );
+  border: 1px solid color-mix(in srgb, var(--peer) 16%, var(--locked));
   border-radius: 999px;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--peer-hi) 12%, transparent);
   font-family: var(--font-mono);
   font-size: var(--text-label-size);
   font-variant-numeric: tabular-nums;
@@ -427,13 +459,19 @@ html[data-reduced-motion="true"] *::after {
   outline: 2px solid var(--form);
 }
 
+/* The canvas reads as a screen recessed into the panel bezel: a hairline frame and
+   an inner shadow set it below the surface, so the 3D world sits inside the instrument. */
 .canvas-shell {
   height: clamp(20rem, 52vw, 38rem);
   max-height: 62svh;
   margin-top: 1rem;
   overflow: hidden;
   background: var(--deck);
+  border: 1px solid color-mix(in srgb, var(--peer) 12%, var(--ink));
   border-radius: 10px;
+  box-shadow:
+    inset 0 2px 10px -2px rgb(0 0 0 / 0.7),
+    inset 0 0 0 1px color-mix(in srgb, var(--peer-hi) 6%, transparent);
 }
 
 .cohort-roster {
@@ -447,8 +485,11 @@ html[data-reduced-motion="true"] *::after {
   min-width: 0;
   padding: 0.875rem;
   background: color-mix(in srgb, var(--deck-3) 88%, transparent);
-  border: 1px solid var(--locked);
+  border: 1px solid color-mix(in srgb, var(--peer) 12%, var(--locked));
   border-radius: 12px;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--peer-hi) 10%, transparent),
+    0 12px 26px -22px rgb(0 0 0 / 0.7);
   backdrop-filter: blur(10px);
 }
 
