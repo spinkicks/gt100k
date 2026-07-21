@@ -552,3 +552,17 @@
 ## NEXT
 - T035: add `packages/arena-world/test/base.test.ts` first for the three-mission cohort-base sequence, then implement the minimal `applyCohortContribution` slice needed to keep the tree green.
 - Acceptance: exact append-only `unlockedFeatures=["campfire","banner","garden"]`; prior contributions preserved; byte-identical replay; base state confers no gameplay power (spec §8.8, FR-011, SC-003); focused and repository gates remain green.
+
+## 2026-07-21 — P4 / T035 + T036 (`applyCohortContribution` slice)
+- Added `base.test.ts` through the public package API, covering the exact three-mission §8.8 sequence, attributable append-only contribution order, first-seen distinct feature order, frozen-input preservation, byte-identical replay, and the exact zero-power base/API boundary.
+- Followed red-green TDD: all three focused tests failed because `applyCohortContribution` was absent, then passed after the minimal resolver and explicit package export landed.
+- Added a pure `applyCohortContribution(base, missionResult)` implementation that returns fresh state, appends a copied attributable contribution, and recomputes `unlockedFeatures` from the complete contribution log in stable first-seen order.
+- Direct package validation exposed a stale strict-null error in the prior onboarding test: an optional dynamic-module property was invoked inside a callback after a non-persistent narrowing. Captured the already-guarded function in a stable local binding; onboarding behavior is unchanged and its five tests remain green.
+- Review status: checked T035/T036 against spec §§5.8/8.8/P4, the CohortBase data model, FR-011, and SC-003; no Critical, Important, or Minor issues remain. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused base tests passed (3 tests); direct arena-world TypeScript validation and focused Biome checks passed; `pnpm lint` passed (117 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (44 files, 177 tests). No app file changed, so no Next.js build was required.
+- SC status: the deterministic accretion, attributable history, replay, and zero-power domain slice of FR-011/SC-003 is complete. P4 remains in progress for deterministic base placement, ArenaView composition, and the Base Camp renderer.
+- Blockers: none.
+
+## NEXT
+- T035a + the `resolveBaseLayout` slice of T036: add `packages/arena-world/test/base-layout.test.ts` first, then implement and explicitly export the minimal pure base-layout resolver.
+- Acceptance: the §8.8 base resolves exact stable placements `campfire`(hearth,1024,1024,kestrel), `banner`(gateway,1024,928,otter), and `garden`(grove,944,1088,kestrel); `by` remains attributable; unknown features use the deterministic `outskirts` fallback; replay is byte-identical and placement confers no power (FR-036, SC-019); focused and repository gates remain green.

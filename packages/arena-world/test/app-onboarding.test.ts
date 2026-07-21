@@ -230,6 +230,7 @@ describe("arena P3 first-run onboarding", () => {
     expect(onboarding.hasShownOnboarding).toBeTypeOf("function");
     expect(onboarding.markOnboardingShown).toBeTypeOf("function");
     if (!onboarding.hasShownOnboarding || !onboarding.markOnboardingShown) return;
+    const markOnboardingShown = onboarding.markOnboardingShown;
 
     const values = new Map<string, string>();
     const storage: OnboardingStorage = {
@@ -255,7 +256,7 @@ describe("arena P3 first-run onboarding", () => {
       },
     };
     expect(onboarding.hasShownOnboarding(unavailable)).toBe(false);
-    expect(() => onboarding.markOnboardingShown(unavailable)).not.toThrow();
+    expect(() => markOnboardingShown(unavailable)).not.toThrow();
   });
 
   it("renders non-modal token-driven coach marks with a static reduced-motion equivalent", async () => {
