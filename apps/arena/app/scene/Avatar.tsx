@@ -1,0 +1,178 @@
+"use client";
+
+import { type AvatarAnimationSpec, type InitialArenaView, LAMBDAS } from "@gt100k/arena-world";
+import { useFrame } from "@react-three/fiber";
+import { type MutableRefObject, useMemo, useRef } from "react";
+import { type Group, type MeshStandardMaterial, Vector3 } from "three";
+
+type VectorLike = { x: number; y: number; z: number };
+
+export function damp3<T extends VectorLike>(
+  current: T,
+  target: VectorLike,
+  lambda: number,
+  delta: number,
+): T {
+  const alpha = 1 - Math.exp(-lambda * delta);
+  current.x += (target.x - current.x) * alpha;
+  current.y += (target.y - current.y) * alpha;
+  current.z += (target.z - current.z) * alpha;
+  return current;
+}
+
+function celebrationPeak(amplitudePx: number): number {
+  if (amplitudePx >= 16) return 1;
+  if (amplitudePx >= 12) return 0.9;
+  return 0.7;
+}
+
+export function resolveAvatarPose(
+  animation: AvatarAnimationSpec,
+  elapsedMs: number,
+): { offsetY: number; scaleY: number; lanternIntensity: number } {
+  if (animation.state.endsWith("-static") || animation.durationMs === 0) {
+    return { offsetY: 0, scaleY: 1, lanternIntensity: 1 };
+  }
+
+  const phase = ((elapsedMs % animation.durationMs) / animation.durationMs) * Math.PI * 2;
+  if (animation.state === "idle") {
+    const wave = Math.sin(phase);
+    return { offsetY: wave * 0.12, scaleY: 1, lanternIntensity: 1 + wave * 0.2 };
+  }
+  if (animation.state === "celebrate") {
+    const progress = Math.min(1, elapsedMs / animation.durationMs);
+    const scaleY = progress <= 0.5 ? 0.92 + progress * 0.32 : 1.16 - progress * 0.16;
+    return {
+      offsetY: Math.sin(Math.PI * progress) * celebrationPeak(animation.amplitudePx),
+      scaleY,
+      lanternIntensity: 1 + Math.sin(Math.PI * progress) * 0.6,
+    };
+  }
+  if (animation.state === "think") {
+    const wave = Math.sin(phase);
+    return { offsetY: wave * 0.04, scaleY: 1, lanternIntensity: 1.05 + wave * 0.12 };
+  }
+  const stride = Math.sin(phase) * (animation.state === "run" ? 0.09 : 0.06);
+  return { offsetY: Math.abs(stride), scaleY: 1 - Math.abs(stride) * 0.3, lanternIntensity: 1.05 };
+}
+
+export function resolveAvatarTarget(
+  view: InitialArenaView,
+  targetNodeId?: string,
+): { x: number; y: number; z: number } {
+  const target =
+    view.presentation.worldTransform.nodes.find(({ nodeId }) => nodeId === targetNodeId) ??
+    view.presentation.worldTransform.nodes[0];
+  if (!target) throw new Error("Arena world has no avatar target");
+  return { x: target.x, y: target.y, z: target.z };
+}
+
+function dampAngle(current: number, target: number, lambda: number, delta: number): number {
+  const difference = Math.atan2(Math.sin(target - current), Math.cos(target - current));
+  return current + difference * (1 - Math.exp(-lambda * delta));
+}
+
+export interface AvatarProps {
+  view: InitialArenaView;
+  targetNodeId?: string;
+  avatarRef?: MutableRefObject<Group | null>;
+}
+
+export default function Avatar({ view, targetNodeId, avatarRef }: AvatarProps) {
+  const target = useMemo(() => resolveAvatarTarget(view, targetNodeId), [targetNodeId, view]);
+  const livePosition = useRef(new Vector3(target.x, target.y + 0.55, target.z));
+  const destination = useMemo(() => new Vector3(), []);
+  const internalAvatarRef = useRef<Group>(null);
+  const avatar = avatarRef ?? internalAvatarRef;
+  const body = useRef<Group>(null);
+  const lantern = useRef<MeshStandardMaterial>(null);
+  const animationElapsedMs = useRef(0);
+  const animation = view.presentation.avatarAnim;
+  const animationKey = `${animation.state}:${animation.durationMs}:${animation.amplitudePx}`;
+  const previousAnimationKey = useRef(animationKey);
+
+  useFrame((_, delta) => {
+    const avatarGroup = avatar.current;
+    if (!avatarGroup) return;
+
+    destination.set(target.x, target.y + 0.55, target.z);
+    const deltaX = destination.x - livePosition.current.x;
+    const deltaZ = destination.z - livePosition.current.z;
+    const moving = Math.hypot(deltaX, deltaZ) > 0.001;
+
+    if (view.flags.reducedMotion) {
+      livePosition.current.copy(destination);
+    } else {
+      const moveLambda = animation.state === "run" ? LAMBDAS.avatarMove * 1.35 : LAMBDAS.avatarMove;
+      damp3(livePosition.current, destination, moveLambda, delta);
+      if (moving) {
+        avatarGroup.rotation.y = dampAngle(
+          avatarGroup.rotation.y,
+          Math.atan2(deltaX, deltaZ),
+          LAMBDAS.avatarTurn,
+          delta,
+        );
+      }
+    }
+
+    if (previousAnimationKey.current !== animationKey) {
+      previousAnimationKey.current = animationKey;
+      animationElapsedMs.current = 0;
+    } else {
+      animationElapsedMs.current += delta * 1_000;
+    }
+    const pose = resolveAvatarPose(animation, animationElapsedMs.current);
+    avatarGroup.position.set(
+      livePosition.current.x,
+      livePosition.current.y + pose.offsetY,
+      livePosition.current.z,
+    );
+    if (body.current) {
+      body.current.scale.set(1, pose.scaleY, 1);
+      body.current.rotation.x = animation.state === "run" && !view.flags.reducedMotion ? -0.12 : 0;
+    }
+    if (lantern.current) lantern.current.emissiveIntensity = pose.lanternIntensity;
+  });
+
+  return (
+    <group
+      ref={avatar}
+      name="pseudonymous-lantern-avatar"
+      position={[target.x, target.y + 0.55, target.z]}
+    >
+      <group ref={body}>
+        <mesh castShadow name="spark-body">
+          <icosahedronGeometry args={[0.58, 1]} />
+          <meshStandardMaterial
+            color={view.presentation.palette.sunHi}
+            flatShading
+            roughness={0.76}
+          />
+        </mesh>
+        <mesh castShadow name="spark-hood" position={[0, 0.58, 0]}>
+          <coneGeometry args={[0.42, 0.58, 7]} />
+          <meshStandardMaterial
+            color={view.presentation.palette.seaMid}
+            flatShading
+            roughness={0.82}
+          />
+        </mesh>
+        <mesh castShadow name="lantern" position={[0.58, -0.05, 0.18]}>
+          <octahedronGeometry args={[0.24, 0]} />
+          <meshStandardMaterial
+            ref={lantern}
+            color={view.presentation.palette.gold}
+            emissive={view.presentation.palette.gold}
+            emissiveIntensity={1}
+            flatShading
+            toneMapped={false}
+          />
+        </mesh>
+        <mesh position={[0, -0.48, 0.18]}>
+          <cylinderGeometry args={[0.38, 0.44, 0.22, 7]} />
+          <meshStandardMaterial color={view.presentation.palette.ink} flatShading roughness={0.9} />
+        </mesh>
+      </group>
+    </group>
+  );
+}

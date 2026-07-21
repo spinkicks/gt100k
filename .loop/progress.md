@@ -339,3 +339,19 @@
 ## NEXT
 - T020: add focused tests first, then implement `WorldRoot.tsx`, `Avatar.tsx`, and `CameraRig.tsx` from the resolved `InitialArenaView` presentation.
 - Acceptance: render deterministic floating biome islands, color-independent node markers/landmarks, paths/bridges, capped beacon lights with emissive fallback, the interruptible lantern-avatar, and the bounded follow/orbit/dolly camera; reduced motion uses static island/avatar/camera equivalents while retaining depth; focused checks and all repository/app gates remain green.
+
+## 2026-07-21 — P1 / T020
+- Added `WorldRoot` with a deterministic renderer plan, four instanced faceted biome islands at exact elevations, phase-offset island float, all nine landmark markers, seven lit paths including two cross-island bridges, and declaration-stable node-state presentation.
+- Paired every node state with its domain icon/shape/light contract: closed padlock/closed marker/no light, start pennant/open ring/available glow, and filled star/raised beacon. Dynamic point lights obey A=8/B=3/C=0 caps; over-cap and calm-tier nodes retain emissive state.
+- Added transition-aware 0.95→1.05→1.0 node reveal, with no initial-mount replay and an instant reduced-motion equivalent. Visible drei labels carry every canonical landmark while remaining hidden from assistive technology pending the T021 Ledger source of truth.
+- Added the pseudonymous low-poly lantern avatar with exact idle/celebrate pose mappings, steady reduced-motion poses, frame-rate-independent live-position/facing damping, no `scale(0)`, and an optional shared live ref for camera following.
+- Added the bounded perspective follow/orbit camera with the exact deadzone, look-ahead, damping, yaw/pitch/distance bounds, and token-driven 90→32 establishing dolly. Reduced motion cuts to the rest pose; retargeting follows the avatar's live position without resetting or bypassing damping.
+- Followed red-green TDD: the initial ten tests failed on the missing modules, then passed after implementation. Additional review-driven RED passes caught initial-mount reveal replay, global-clock one-shot animation, camera-reset/damping bypass, and destination-only camera following before their fixes landed.
+- Review status: motion review approved after the lifecycle fixes; motion is justified, interruptible, frame-rate-independent, reduced-motion complete, and free of per-frame geometry/resource allocation. Subagent/Git-SHA review was intentionally not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused T020 tests passed (10 tests); `pnpm lint` passed (86 files); `pnpm typecheck` passed; `pnpm test` passed (29 files, 115 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 138 B route, 87.4 kB first load).
+- SC status: concrete app rendering advances SC-004, SC-016, SC-017, SC-018, and SC-026; P1 remains in progress until the Ledger, Tier-D fallback, client composition, and mounted smoke/walkthrough tasks land.
+- Blockers: none.
+
+## NEXT
+- T021: add focused tests first, then implement `apps/arena/app/ledger/ArenaLedger.tsx` as the accessible DOM parallel of the same `InitialArenaView`.
+- Acceptance: expose the quest as `role="tree"` with every node as a `treeitem` named by title + state + region, support Tab/Arrow/Enter keyboard navigation with visible focus, keep the canvas `aria-hidden`, and keep focused checks plus all repository/app gates green.
