@@ -52,3 +52,14 @@
 ## NEXT
 - Complete T006: define event, signal, hypothesis, coverage, purpose, and guide-review types in `packages/interest-lab/src/events.ts` and `packages/interest-lab/src/hypothesis.ts` exactly as specified in the P1 data model.
 - Acceptance: tests first encode `EventType` (including `ARTIFACT_COMPETENCE`), `EngagementEvent`, `SignalFamily`, `SignalSummary`, `HypothesisState`, `ChildPosition`, `InterestHypothesis`, `HypothesisRevision`, `CoverageMatrix`, `ForbiddenPurpose`, and `GuideReview`; the package compiler, `pnpm typecheck`, and `pnpm test` remain green.
+
+## 2026-07-20 — P1 / T006
+- Added exact runtime vocabularies and string-literal types for engagement events, the six promotion-gate signal families, lifecycle states, child positions, and all five forbidden purposes.
+- Defined the complete plain-data contracts for `EngagementEvent`, G4-shaped `SignalSummary`, G2-shaped `CoverageMatrix`, non-scalar uncertainty, accountable `GuideReview`, append-only `HypothesisRevision`, and the `InterestHypothesis` aggregate.
+- Confirmed the test-first red state: both focused suites failed to resolve the absent `events.ts` and `hypothesis.ts`, then passed all 10 contract tests after the minimal implementation.
+- Verified the package suite (20 tests), forced package compiler, `pnpm typecheck`, `pnpm test` (34 tests), and `pnpm lint` all pass.
+- Status: T006 complete; P1 remains in progress; the structural contracts for IL-005/006/007/012/013/020 are encoded, while their behavioral success-criteria tests remain in later phases. No blocker.
+
+## NEXT
+- Complete T007: export all T004–T006 foundational vocabularies, value types, and ports from `packages/interest-lab/src/index.ts`.
+- Acceptance: consumers can import the complete foundational public API from `@gt100k/interest-lab`; the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
