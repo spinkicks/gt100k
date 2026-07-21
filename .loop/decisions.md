@@ -177,3 +177,6 @@
 ## 2026-07-21 — T046b Tier-D seed-art and focus boundary
 - Map every canonical Base Camp feature to a committed flat SVG named after its stable `prop-*` asset key, with one committed generic SVG for deterministic unknown-feature fallback. Rejected retaining anonymous circles because the settled seed-asset contract requires Tier-D base art, and rejected runtime-generated art because the fallback must stay static, text-diffable, and fetch-free.
 - Preserve first-contribution mission attribution in the Tier-D plan and mirror Ledger node/base focus as a static focus ring while keeping the SVG `aria-hidden` and pointer-transparent. Rejected a second interactive SVG tree because the adjacent HUD and Ledger remain the single keyboard and semantic surfaces.
+
+## 2026-07-21 — T047 synthetic acceptance boundary
+- Keep T047 as acceptance coverage over the existing public functions, with the end-to-end scenario composed locally in the test. Rejected adding a production `runSyntheticScenario` helper because the spec requires proof that injected fixtures traverse the whole domain, not a second orchestration API beside `buildArenaView`.

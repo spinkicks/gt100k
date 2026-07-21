@@ -744,3 +744,16 @@
 ## NEXT
 - T047: add `packages/arena-world/test/synthetic.test.ts` first for the complete synthetic-only domain surface.
 - Acceptance: the public domain API runs end-to-end from the committed fixtures without consent, admissions, legal, live-user, network, time, or external-data inputs; FR-024/SC-008 are explicit and focused plus repository gates remain green.
+
+## 2026-07-21 — P7 / T047
+- Added `synthetic.test.ts` through the public package API. One synthetic scenario executes every exported runtime domain function from the committed world/feed/tier/catalog fixtures plus pseudonymous mission, avatar, and near-peer inputs, then proves fresh deterministic replay and the exact S1 300-reward composed view.
+- Added structural acceptance for the complete composer/options/near-peer and identity-bearing input shapes, making consent/admissions/legal/governance workflow inputs and sensitive identity fields absent at the type boundary. A source-level guard also excludes live-data, network, wall-clock, environment, and governance machinery from the pure domain.
+- Followed test-first mutation verification for this acceptance-only task: a temporary S1 reward mutation from 110 to 109 failed on the intended golden 300→299 regression and standing gap 40→41; the canonical fixture was restored before GREEN. No production behavior or public API expansion was required.
+- Review status: checked T047 against D2, §1 synthetic scope, §14 assumptions, FR-024, SC-008, and every public runtime export. Self-review tightened nested `options`/near-peer shapes and source purity; no Critical, Important, or Minor issues remain. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: direct arena-world TypeScript validation passed; `pnpm lint` passed (135 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (56 files, 223 tests). No app file changed, so no Next.js build was required.
+- SC status: T047 supplies the explicit automated synthetic-only domain acceptance for FR-024/SC-008. SC-008's final app/quickstart confirmation remains scheduled for T051.
+- Blockers: none.
+
+## NEXT
+- T048: add `packages/arena-world/README.md` documenting the package's public API, inputs/ports, guardrails, relationship to `@gt100k/learning-loop`, and renderer-free boundary.
+- Acceptance: the README accurately states that the package builds on `@gt100k/learning-loop`, has no 3D dependency and exposes configuration only, explains the synthetic deterministic quickstart and safety boundaries, and keeps focused plus repository gates green.
