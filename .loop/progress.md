@@ -560,3 +560,15 @@
 ## NEXT
 - Complete U025: add `apps/interest-lab/app/child/world3d/glow-texture.ts` for the deterministic in-app additive radial-gradient marker halo.
 - Acceptance: tests first prove the helper creates a repeatable `THREE.CanvasTexture` from an in-memory canvas with the pinned warm radial gradient and no external fetch; `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.
+
+## 2026-07-21 — P10 / U025
+- Added a deterministic in-app glow-texture helper that draws the canonical warm `sparkHi→spark→transparent` radial halo into an injected 128×128 canvas and returns an sRGB, linear-filtered `THREE.CanvasTexture` with mipmaps disabled.
+- Added two app contracts covering exact repeatable drawing commands, palette stops, texture configuration, no-fetch behavior, and a clear failure when Canvas 2D is unavailable.
+- Confirmed genuine test-first RED evidence after correcting the initial missing-module discovery error: both focused assertions failed on the intentional stub, then passed after the minimal implementation.
+- Recorded the unspecified raster/stop default in D041 and reviewed the helper against §U8.15; additive sprite-material blending remains correctly deferred to U027.
+- Verified the app suite (25 tests across 7 files), `pnpm typecheck`, `pnpm test` (159 tests across 35 files), `pnpm lint` (124 files), `pnpm build`, and the warning-free Interest Lab production build; all pass.
+- Status: U025 complete; P10 remains in progress. The deterministic no-fetch halo primitive is ready for the U027 marker, while the client-only Canvas host remains with U026. No blocker.
+
+## NEXT
+- Complete U026: add the client-only `World3D` host under `apps/interest-lab/app/child/world3d/` using `next/dynamic(..., {ssr:false})` and an `aria-hidden` react-three-fiber Canvas.
+- Acceptance: the host applies exact `SCENE3D` fog, lights, ACES tone mapping, exposure, and camera values; caps DPR through drei `AdaptiveDpr`; renders the supplied scene graph; disposes the renderer on unmount with zero console/WebGL errors; preserves a focused RED run; and keeps app tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds green.

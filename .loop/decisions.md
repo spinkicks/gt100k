@@ -199,3 +199,8 @@
 - Chose: add the deterministic `scene` to `ChildInterestLabView`, keep the guide block absent until its owning phase, and source presentation `renderTier` and `quality` directly from the composed scene.
 - Why: U024 completes the P9b child composition, while U041 owns the full guide composition. Reusing the scene's resolved tier values prevents presentation drift and preserves a truthful phased public type.
 - Rejected: returning the full `InterestLabView` now would require invented guide data; independently re-resolving tier values in `view.ts` would duplicate the scene policy and could diverge.
+
+## D041 — The in-app halo uses a small canonical palette gradient
+- Chose: draw a centered 128×128 radial texture with stops `0:PALETTE.sparkHi`, `0.35:PALETTE.spark`, and `1:transparent spark`; accept an injected canvas factory, use sRGB linear sampling, and disable mipmaps.
+- Why: §U8.15 pins a deterministic warm additive halo but not its raster size or stop positions. A 128px power-of-two texture is sufficient for a soft sprite, the existing exact palette prevents color drift, and factory injection makes the helper testable and SSR-safe without introducing a canvas package or network path.
+- Rejected: an external image or texture loader violates the no-fetch requirement; a larger procedural texture adds memory without visible value; module-time DOM access would break server evaluation; random or extra color stops would add unpinned behavior.
