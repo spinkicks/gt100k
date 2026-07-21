@@ -4,6 +4,7 @@ import {
   type InitialArenaView,
   type NodeLightContribution,
   type NodeState,
+  type VisualBand,
   resolveMotion,
   resolveNodeLightContributions,
 } from "@gt100k/arena-world";
@@ -32,6 +33,10 @@ interface IslandPlan {
 
 interface NodePlan extends NodeLightContribution {
   landmark: string;
+  label: string;
+  markerScale: number;
+  touchTargetPx: number;
+  showCanvasNumbers: boolean;
   position: Position3D;
   transferCritical: boolean;
 }
@@ -48,11 +53,23 @@ export interface WorldRenderPlan {
   islands: IslandPlan[];
   nodes: NodePlan[];
   paths: PathPlan[];
+  rewardLabel: string | null;
 }
 
 function required<T>(value: T | undefined, message: string): T {
   if (value === undefined) throw new Error(message);
   return value;
+}
+
+export function resolveNodePresentationLabel(
+  landmark: string,
+  state: NodeState,
+  visualBand: VisualBand,
+): string {
+  if (visualBand.labelStyle !== "story") return landmark;
+  if (state === "unlocked") return `You lit ${landmark}!`;
+  if (state === "available") return `${landmark} is ready to light.`;
+  return `${landmark} is waiting.`;
 }
 
 export function buildWorldRenderPlan(view: InitialArenaView): WorldRenderPlan {
@@ -107,12 +124,23 @@ export function buildWorldRenderPlan(view: InitialArenaView): WorldRenderPlan {
     };
   });
 
-  const nodes = view.world.nodes.map((node) => ({
-    ...required(contributions.get(node.id), `Missing light contribution for ${node.id}`),
-    landmark: node.landmark,
-    position: { ...required(transforms.get(node.id), `Missing transform for ${node.id}`) },
-    transferCritical: node.transferCritical,
-  }));
+  const nodes = view.world.nodes.map((node) => {
+    const contribution = required(
+      contributions.get(node.id),
+      `Missing light contribution for ${node.id}`,
+    );
+    const visualBand = view.presentation.visualBand;
+    return {
+      ...contribution,
+      landmark: node.landmark,
+      label: resolveNodePresentationLabel(node.landmark, contribution.state, visualBand),
+      markerScale: visualBand.markerScale,
+      touchTargetPx: visualBand.touchTargetPx,
+      showCanvasNumbers: visualBand.showCanvasNumbers,
+      position: { ...required(transforms.get(node.id), `Missing transform for ${node.id}`) },
+      transferCritical: node.transferCritical,
+    };
+  });
 
   const paths = view.world.edges.map(({ from, to }) => {
     const fromNode = required(nodesById.get(from), `Missing node ${from}`);
@@ -138,7 +166,14 @@ export function buildWorldRenderPlan(view: InitialArenaView): WorldRenderPlan {
     };
   });
 
-  return { islands, nodes, paths };
+  return {
+    islands,
+    nodes,
+    paths,
+    rewardLabel: view.presentation.visualBand.showCanvasNumbers
+      ? `${view.representation.currencyLabel}: ${view.progression.cumulativeIndependenceReward}`
+      : null,
+  };
 }
 
 export function resolveIslandFloatOffset(
@@ -257,18 +292,20 @@ function NodeMarker({ node, reducedMotion }: { node: NodePlan; reducedMotion: bo
     if (unlockedNow && !reducedMotion) {
       elapsedMs.current = 0;
       revealing.current = true;
-      marker.current?.scale.setScalar(resolveNodeRevealScale(0, false));
+      marker.current?.scale.setScalar(node.markerScale * resolveNodeRevealScale(0, false));
     } else if (reducedMotion || node.state !== "unlocked") {
       revealing.current = false;
-      marker.current?.scale.setScalar(1);
+      marker.current?.scale.setScalar(node.markerScale);
     }
     previousState.current = node.state;
-  }, [node.state, reducedMotion]);
+  }, [node.markerScale, node.state, reducedMotion]);
 
   useFrame((_, delta) => {
     if (!revealing.current) return;
     elapsedMs.current += delta * 1_000;
-    marker.current?.scale.setScalar(resolveNodeRevealScale(elapsedMs.current, reducedMotion));
+    marker.current?.scale.setScalar(
+      node.markerScale * resolveNodeRevealScale(elapsedMs.current, reducedMotion),
+    );
     if (elapsedMs.current >= NODE_REVEAL_MOTION.durationMs) revealing.current = false;
   });
 
@@ -277,7 +314,7 @@ function NodeMarker({ node, reducedMotion }: { node: NodePlan; reducedMotion: bo
       ref={marker}
       name={`arena-node:${node.nodeId}:${node.icon}:${node.shape}`}
       position={[node.position.x, node.position.y, node.position.z]}
-      scale={1}
+      scale={node.markerScale}
     >
       <mesh castShadow receiveShadow>
         <cylinderGeometry args={[0.72, 0.88, 0.42, 8]} />
@@ -314,12 +351,16 @@ function NodeMarker({ node, reducedMotion }: { node: NodePlan; reducedMotion: bo
             fontFamily: "var(--font-body)",
             fontSize: "0.75rem",
             fontWeight: 700,
+            display: "grid",
+            minHeight: `${node.touchTargetPx}px`,
+            minWidth: `${node.touchTargetPx}px`,
+            placeItems: "center",
             pointerEvents: "none",
             textShadow: "0 1px 3px #0E2A3B",
             whiteSpace: "nowrap",
           }}
         >
-          {node.landmark}
+          {node.label}
         </span>
       </Html>
     </group>
@@ -335,6 +376,32 @@ export default function WorldRoot({ view }: WorldRootProps) {
 
   return (
     <group name="independence-isles">
+      {plan.rewardLabel ? (
+        <Html
+          center
+          position={[
+            view.presentation.camera.restTarget.x,
+            6,
+            view.presentation.camera.restTarget.z,
+          ]}
+        >
+          <span
+            aria-hidden="true"
+            className="arena-world-reward"
+            style={{
+              color: "#FFC66B",
+              fontFamily: "var(--font-body)",
+              fontVariantNumeric: "tabular-nums",
+              fontWeight: 900,
+              pointerEvents: "none",
+              textShadow: "0 1px 3px #0E2A3B",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {plan.rewardLabel}
+          </span>
+        </Html>
+      ) : null}
       <FloatingIslands islands={plan.islands} reducedMotion={view.flags.reducedMotion} />
       <group name="arena-paths-and-bridges">
         {plan.paths.map((path) => (

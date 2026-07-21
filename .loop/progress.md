@@ -675,3 +675,17 @@
 ## NEXT
 - T045: add focused app tests first, then extend `Hud.tsx`, `ArenaClient.tsx`, and the Arena Ledger with age-band, plain-mode, muted-audio, and opt-in standings controls.
 - Acceptance: the 6-8 switch applies the exact story/no-canvas-number/1.25 marker/56px/medium-celebration presentation; standings default off and opted-in display only own gain versus band top; all controls are keyboard-operable, mirrored in the Ledger, and use `motion@^12`; lint, typecheck, tests, root build, and Arena app build remain green.
+
+## 2026-07-21 — P5 / T045
+- Added one client-owned presentation-preference state for age band, plain mode, muted-by-default audio, and opt-in standings, with exact typed event-bus updates shared by the HUD and Ledger. Ages 6–8 force comparison off; opt-in 12–14 standings show only own gain and distance to the band top.
+- Added the same keyboard-native age-band select and pressed-state controls to both semantic surfaces with Motion press/standing transitions, exact 44/48/56px band targets, reduced-transparency/contrast handling, and no rank-like vocabulary. The 6–8 HUD replaces the raw ticker with the story-framed growing-light message.
+- Applied the visual-band tokens to the scene: exact story labels, marker scale, target sizing, numeric world-label suppression/display, and celebration intensity ceiling. Plain mode selects the calm Tier-C motion-equivalent renderer while leaving the underlying world/progression/eligibility/base/standing state byte-identical.
+- Followed red-green TDD: the new P5 acceptance suite and expanded event registry failed on all missing behaviors before implementation, then passed. Tightened the older Ledger focus test to assert one roving tab stop inside each composite widget rather than counting the newly required native control tab stops.
+- Review status: checked T045 against US5, §§5.12–5.14/8.6/8.7/8.18/8.19/P5, FR-017/018/019/020/029/040, and SC-005/006/009/012/014/020; no Critical, Important, or Minor issues remain. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused P5/app regression tests passed (7 files, 37 tests); `pnpm lint` passed (131 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (53 files, 211 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 59.6 kB route, 147 kB first load).
+- SC status: P5 implementation is complete. T045 closes the automated app-control and renderer slices of SC-005/006/009/012/014/020; the final keyboard/screen-reader and visual walkthrough remains scheduled for P7.
+- Blockers: browser automation remains unavailable in this workspace, so the interactive P5 walkthrough is deferred; static accessibility markup, deterministic behavior, type checks, tests, and production builds are green.
+
+## NEXT
+- T046: audit and finish `qualityBudget` wiring across `apps/arena/app/scene/*` for the P6 quality ladder.
+- Acceptance: renderer DPR, shadows, water, post-fx, ambient motion, particles, and the global nearest-to-camera-target dynamic-light cap follow the exact A/B/C/D budgets; over-cap beacons remain emissive, Tier C keeps depth with all motion stripped, and focused tests plus lint/typecheck/tests/root build/Arena build remain green (spec §8.22/§8.24, FR-043, SC-025).

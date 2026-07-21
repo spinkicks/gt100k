@@ -8,6 +8,8 @@ import type {
 export const ARENA_EVENT_NAMES = [
   "set-band",
   "toggle-plain",
+  "toggle-audio",
+  "toggle-standings",
   "equip-cosmetic",
   "advance-feed",
   "learning-moment",
@@ -24,6 +26,8 @@ export type ArenaEventName = (typeof ARENA_EVENT_NAMES)[number];
 export interface ArenaEventMap {
   "set-band": { ageBand: AgeBand };
   "toggle-plain": { enabled: boolean };
+  "toggle-audio": { enabled: boolean };
+  "toggle-standings": { enabled: boolean };
   "equip-cosmetic": { cosmeticId: string };
   "advance-feed": undefined;
   "learning-moment": LearningMomentSignal;

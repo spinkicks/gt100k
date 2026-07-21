@@ -58,6 +58,13 @@ export interface ArenaPublicConfig {
   qualityTier: QualityPreference;
 }
 
+export interface ArenaPreferences {
+  ageBand: AgeBand;
+  plainMode: boolean;
+  audioEnabled: boolean;
+  standingsOptedIn: boolean;
+}
+
 export interface BrowserCapabilityProbe {
   getContext(kind: "webgl2" | "webgl"): unknown;
   matches(query: "(prefers-reduced-motion: reduce)" | "(pointer: coarse)"): boolean;
@@ -200,8 +207,15 @@ export function createArenaClientSnapshot(
   config: ArenaPublicConfig,
   runtimeTier?: QualityTier,
   avatar: AvatarState = DEFAULT_AVATAR,
+  preferences: ArenaPreferences = {
+    ageBand: config.ageBand,
+    plainMode: false,
+    audioEnabled: false,
+    standingsOptedIn: false,
+  },
 ) {
   const effective = resolveEffectiveCaps(caps, config, runtimeTier);
+  const reducedMotion = effective.reducedMotion || preferences.plainMode;
   const view = buildArenaView({
     world: FIXTURE,
     signals: createSyntheticMasteryFeed(),
@@ -210,12 +224,12 @@ export function createArenaClientSnapshot(
     avatar,
     base: DEFAULT_BASE,
     nearPeers: DEFAULT_NEAR_PEERS,
-    caps: effective.caps,
+    caps: { ...effective.caps, prefersReducedMotion: reducedMotion },
     options: {
-      ageBand: config.ageBand,
-      reducedMotion: effective.reducedMotion,
-      plainMode: false,
-      standingsOptedIn: false,
+      ageBand: preferences.ageBand,
+      reducedMotion,
+      plainMode: preferences.plainMode,
+      standingsOptedIn: preferences.ageBand !== "6-8" && preferences.standingsOptedIn,
     },
   });
 
@@ -224,6 +238,7 @@ export function createArenaClientSnapshot(
     renderer: view.presentation.qualityBudget.canvas
       ? ("canvas" as const)
       : ("fallback-2d" as const),
+    audioMuted: !preferences.audioEnabled,
   };
 }
 
@@ -249,6 +264,12 @@ export default function ArenaClient() {
   const [homeFocused, setHomeFocused] = React.useState(true);
   const [focusedBaseFeature, setFocusedBaseFeature] = React.useState<string>();
   const [feedback, setFeedback] = React.useState<SequencedArenaFeedback>();
+  const [preferences, setPreferences] = React.useState<ArenaPreferences>(() => ({
+    ageBand: PUBLIC_CONFIG.ageBand,
+    plainMode: false,
+    audioEnabled: false,
+    standingsOptedIn: false,
+  }));
   const feedbackSequence = React.useRef(0);
   const [avatar, setAvatar] = React.useState<AvatarState>(() => ({
     learnerRef: DEFAULT_AVATAR.learnerRef,
@@ -264,6 +285,22 @@ export default function ArenaClient() {
       setFocusedBaseFeature(undefined);
       setHomeFocused(false);
       setTargetNodeId(nodeId);
+    });
+    const stopBand = eventBus.subscribe("set-band", ({ ageBand }) => {
+      setPreferences((current) => ({
+        ...current,
+        ageBand,
+        standingsOptedIn: ageBand === "6-8" ? false : current.standingsOptedIn,
+      }));
+    });
+    const stopPlain = eventBus.subscribe("toggle-plain", ({ enabled }) => {
+      setPreferences((current) => ({ ...current, plainMode: enabled }));
+    });
+    const stopAudio = eventBus.subscribe("toggle-audio", ({ enabled }) => {
+      setPreferences((current) => ({ ...current, audioEnabled: enabled }));
+    });
+    const stopStandings = eventBus.subscribe("toggle-standings", ({ enabled }) => {
+      setPreferences((current) => ({ ...current, standingsOptedIn: enabled }));
     });
     const stopHome = eventBus.subscribe("focus-home", () => {
       setFocusedBaseFeature(undefined);
@@ -283,6 +320,10 @@ export default function ArenaClient() {
 
     return () => {
       stopFocus();
+      stopBand();
+      stopPlain();
+      stopAudio();
+      stopStandings();
       stopHome();
       stopBaseFeature();
       stopTier();
@@ -292,10 +333,10 @@ export default function ArenaClient() {
   }, [eventBus]);
 
   const snapshot = React.useMemo(
-    () => createArenaClientSnapshot(caps, PUBLIC_CONFIG, runtimeTier, avatar),
-    [avatar, caps, runtimeTier],
+    () => createArenaClientSnapshot(caps, PUBLIC_CONFIG, runtimeTier, avatar, preferences),
+    [avatar, caps, preferences, runtimeTier],
   );
-  const { renderer, view } = snapshot;
+  const { audioMuted, renderer, view } = snapshot;
   const handleCanvasFallback = React.useCallback(() => setRuntimeTier("D"), []);
 
   React.useEffect(
@@ -309,10 +350,15 @@ export default function ArenaClient() {
 
   return (
     <section
-      className="arena-client"
+      className={`arena-client${view.flags.plainMode ? " plain-mode" : ""}`}
+      data-age-band={view.flags.ageBand}
       data-arena-client="ready"
+      data-audio-muted={audioMuted ? "true" : "false"}
+      data-label-style={view.presentation.visualBand.labelStyle}
+      data-plain-mode={view.flags.plainMode ? "true" : "false"}
       data-quality-tier={view.presentation.qualityTier}
       data-reduced-motion={view.flags.reducedMotion ? "true" : "false"}
+      data-standings={view.standing ? "on" : "off"}
     >
       <div className="arena-stage">
         <div className="arena-visual">
@@ -335,13 +381,22 @@ export default function ArenaClient() {
           onAdvance={onboarding.advance}
           reducedMotion={view.flags.reducedMotion}
         />
-        <Hud catalog={CATALOG} eventBus={eventBus} onOpenOnboarding={onboarding.open} view={view} />
+        <Hud
+          audioEnabled={!audioMuted}
+          catalog={CATALOG}
+          eventBus={eventBus}
+          onOpenOnboarding={onboarding.open}
+          standingsOptedIn={preferences.standingsOptedIn}
+          view={view}
+        />
       </div>
       <ArenaLedger
         eventBus={eventBus}
         feedback={feedback}
         onboarding={onboarding.ledgerState}
         view={view}
+        audioEnabled={!audioMuted}
+        standingsOptedIn={preferences.standingsOptedIn}
         catalog={CATALOG}
       />
     </section>

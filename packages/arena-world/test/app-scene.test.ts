@@ -87,6 +87,8 @@ interface GeometryModule {
 const EVENT_NAMES = [
   "set-band",
   "toggle-plain",
+  "toggle-audio",
+  "toggle-standings",
   "equip-cosmetic",
   "advance-feed",
   "learning-moment",

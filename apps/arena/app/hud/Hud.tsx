@@ -1,6 +1,12 @@
 "use client";
 
-import { type Cosmetic, type InitialArenaView, TIERS, resolveMotion } from "@gt100k/arena-world";
+import {
+  type AgeBand,
+  type Cosmetic,
+  type InitialArenaView,
+  TIERS,
+  resolveMotion,
+} from "@gt100k/arena-world";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
 import type { ArenaEventBus } from "../scene/eventBus";
@@ -107,9 +113,121 @@ export interface HudProps {
   catalog: readonly Cosmetic[];
   eventBus: Pick<ArenaEventBus, "emit">;
   onOpenOnboarding(): void;
+  audioEnabled?: boolean;
+  standingsOptedIn?: boolean;
 }
 
-export default function Hud({ view, catalog, eventBus, onOpenOnboarding }: HudProps) {
+export interface ArenaControlsProps {
+  view: InitialArenaView;
+  eventBus: Pick<ArenaEventBus, "emit">;
+  audioEnabled: boolean;
+  standingsOptedIn: boolean;
+  placement: "hud" | "ledger";
+}
+
+export function ArenaControls({
+  view,
+  eventBus,
+  audioEnabled,
+  standingsOptedIn,
+  placement,
+}: ArenaControlsProps) {
+  const visualBand = view.presentation.visualBand;
+  const standingsAvailable = view.representation.comparisonDefault === "opt-in";
+  const standingsMotion = resolveMotion("standingsExpand", {
+    reducedMotion: view.flags.reducedMotion,
+  });
+  const targetStyle = { minHeight: visualBand.touchTargetPx };
+
+  return (
+    <motion.section
+      animate={{ opacity: 1, transform: "scale(1)" }}
+      aria-label={`${placement === "hud" ? "Arena" : "Ledger"} presentation controls`}
+      className={styles.controls}
+      data-arena-controls="ready"
+      data-control-target={visualBand.touchTargetPx}
+      data-placement={placement}
+      initial={false}
+    >
+      <label className={styles.bandControl}>
+        <span>Age band</span>
+        <select
+          aria-label="Age band"
+          onChange={(event) =>
+            eventBus.emit("set-band", { ageBand: event.currentTarget.value as AgeBand })
+          }
+          style={targetStyle}
+          value={view.flags.ageBand}
+        >
+          <option value="6-8">Ages 6–8</option>
+          <option value="9-11">Ages 9–11</option>
+          <option value="12-14">Ages 12–14</option>
+        </select>
+      </label>
+      <div className={styles.controlButtons}>
+        <motion.button
+          aria-pressed={view.flags.plainMode}
+          onClick={() => eventBus.emit("toggle-plain", { enabled: !view.flags.plainMode })}
+          style={targetStyle}
+          type="button"
+          whileTap={{ transform: "scale(0.97)" }}
+        >
+          Plain mode {view.flags.plainMode ? "on" : "off"}
+        </motion.button>
+        <motion.button
+          aria-pressed={audioEnabled}
+          onClick={() => eventBus.emit("toggle-audio", { enabled: !audioEnabled })}
+          style={targetStyle}
+          type="button"
+          whileTap={{ transform: "scale(0.97)" }}
+        >
+          {audioEnabled ? "Audio on" : "Audio muted"}
+        </motion.button>
+        <motion.button
+          aria-pressed={standingsAvailable && standingsOptedIn}
+          disabled={!standingsAvailable}
+          onClick={() => eventBus.emit("toggle-standings", { enabled: !standingsOptedIn })}
+          style={targetStyle}
+          type="button"
+          whileTap={{ transform: "scale(0.97)" }}
+        >
+          {standingsAvailable
+            ? `Standings ${standingsOptedIn ? "on" : "off"}`
+            : "Standings unavailable for ages 6–8"}
+        </motion.button>
+      </div>
+      <AnimatePresence initial={false}>
+        {view.standing ? (
+          <motion.dl
+            animate={{ opacity: 1, transform: "translateY(0)" }}
+            className={styles.standing}
+            exit={{ opacity: 0, transform: "translateY(-0.25rem)" }}
+            initial={{ opacity: 0, transform: "translateY(-0.25rem)" }}
+            transition={{ duration: standingsMotion.durationMs / 1_000 }}
+          >
+            <div>
+              <dt>Your gain</dt>
+              <dd>{view.standing.selfGain}</dd>
+            </div>
+            <div>
+              <dt>To band top</dt>
+              <dd>{view.standing.gainToBandTop}</dd>
+            </div>
+          </motion.dl>
+        ) : null}
+      </AnimatePresence>
+    </motion.section>
+  );
+}
+
+export default function Hud({
+  view,
+  catalog,
+  eventBus,
+  onOpenOnboarding,
+  audioEnabled = false,
+  standingsOptedIn = false,
+}: HudProps) {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const wardrobeTrigger = React.useRef<HTMLButtonElement>(null);
   const closeButton = React.useRef<HTMLButtonElement>(null);
@@ -154,15 +272,31 @@ export default function Hud({ view, catalog, eventBus, onOpenOnboarding }: HudPr
         ?
       </motion.button>
 
+      <ArenaControls
+        audioEnabled={audioEnabled}
+        eventBus={eventBus}
+        placement="hud"
+        standingsOptedIn={standingsOptedIn}
+        view={view}
+      />
+
       <section className={styles.progress} aria-labelledby="arena-growth-title">
         <div>
           <p className={styles.progressLabel} id="arena-growth-title">
             {view.representation.currencyLabel}
           </p>
-          <NumberTicker
-            reducedMotion={view.flags.reducedMotion}
-            value={view.progression.growthVsPast.delta}
-          />
+          {view.flags.ageBand === "6-8" ? (
+            <strong className={styles.storyProgress}>Your light is growing</strong>
+          ) : (
+            <NumberTicker
+              reducedMotion={view.flags.reducedMotion}
+              value={
+                view.representation.headline === "mastery-delta"
+                  ? view.progression.cumulativeIndependenceReward
+                  : view.progression.growthVsPast.delta
+              }
+            />
+          )}
         </div>
         <div className={styles.tier}>
           <span className={styles.tierLabel}>Current light</span>

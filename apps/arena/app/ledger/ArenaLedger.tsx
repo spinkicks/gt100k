@@ -2,7 +2,7 @@
 
 import { CATALOG, type Cosmetic, type InitialArenaView, type NodeState } from "@gt100k/arena-world";
 import * as React from "react";
-import { buildHudCosmeticEntries } from "../hud/Hud";
+import { ArenaControls, buildHudCosmeticEntries } from "../hud/Hud";
 import type { OnboardingLedgerState } from "../hud/Onboarding";
 import type { ArenaEventBus } from "../scene/eventBus";
 import {
@@ -151,6 +151,8 @@ export interface ArenaLedgerProps {
   eventBus: Pick<ArenaEventBus, "emit">;
   feedback?: SequencedArenaFeedback;
   onboarding?: OnboardingLedgerState;
+  audioEnabled?: boolean;
+  standingsOptedIn?: boolean;
 }
 
 export default function ArenaLedger({
@@ -159,6 +161,8 @@ export default function ArenaLedger({
   eventBus,
   feedback,
   onboarding,
+  audioEnabled = false,
+  standingsOptedIn = false,
 }: ArenaLedgerProps) {
   const entries = buildLedgerEntries(view);
   const baseEntries = buildLedgerBaseEntries(view);
@@ -220,6 +224,14 @@ export default function ArenaLedger({
           Use Arrow keys to explore the landmarks. Press Enter to focus one in the world.
         </p>
       </header>
+
+      <ArenaControls
+        audioEnabled={audioEnabled}
+        eventBus={eventBus}
+        placement="ledger"
+        standingsOptedIn={standingsOptedIn}
+        view={view}
+      />
 
       <section
         aria-atomic="true"

@@ -9,7 +9,8 @@
 .progress,
 .wardrobe,
 .homeButton,
-.guideButton {
+.guideButton,
+.controls {
   pointer-events: auto;
 }
 
@@ -111,6 +112,103 @@
 .homeButton {
   right: 14.75rem;
   min-width: 4.5rem;
+}
+
+.controls {
+  padding: 0.75rem;
+  border: 1px solid var(--surface-border);
+  background: var(--surface);
+  color: var(--ink-hi);
+  backdrop-filter: var(--surface-backdrop);
+}
+
+.controls[data-placement="hud"] {
+  position: absolute;
+  top: 4.5rem;
+  right: 1rem;
+  width: min(24rem, calc(100% - 2rem));
+  border-radius: 14px;
+}
+
+.controls[data-placement="ledger"] {
+  border-width: 0 0 1px;
+}
+
+.bandControl {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--text-label-size);
+  font-weight: 800;
+  gap: 0.75rem;
+}
+
+.bandControl select,
+.controlButtons button {
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  background: rgb(245 249 252 / 12%);
+  color: var(--ink-hi);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.bandControl select {
+  padding: 0.45rem 0.6rem;
+}
+
+.controlButtons {
+  display: grid;
+  margin-top: 0.65rem;
+  gap: 0.4rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.controlButtons button {
+  padding: 0.45rem;
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line-height);
+}
+
+.controlButtons button:disabled {
+  color: rgb(245 249 252 / 68%);
+  cursor: not-allowed;
+}
+
+.standing {
+  display: grid;
+  padding: 0.65rem 0 0;
+  margin: 0.65rem 0 0;
+  border-top: 1px solid var(--surface-border);
+  gap: 0.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.standing div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.standing dt {
+  color: rgb(245 249 252 / 82%);
+  font-size: var(--text-label-size);
+}
+
+.standing dd {
+  margin: 0;
+  color: var(--sun-hi);
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+}
+
+.storyProgress {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--sun-hi);
+  font-family: var(--font-display);
+  line-height: 1.2;
 }
 
 .wardrobeTrigger {
@@ -256,6 +354,8 @@
 .wardrobeTrigger:hover,
 .homeButton:hover,
 .guideButton:hover,
+.bandControl select:hover,
+.controlButtons button:hover:not(:disabled),
 .closeButton:hover:not(:disabled) {
   background: rgb(245 249 252 / 16%);
 }
@@ -263,6 +363,8 @@
 .wardrobeTrigger:focus-visible,
 .homeButton:focus-visible,
 .guideButton:focus-visible,
+.bandControl select:focus-visible,
+.controlButtons button:focus-visible,
 .closeButton:focus-visible,
 .equipButton:focus-visible {
   outline: 3px solid var(--focus);
@@ -273,6 +375,7 @@
   .wardrobeTrigger,
   .homeButton,
   .guideButton,
+  .controlButtons button,
   .closeButton,
   .equipButton {
     transform: none !important;
@@ -285,6 +388,7 @@
   .progress,
   .homeButton,
   .guideButton,
+  .controls,
   .wardrobeTrigger,
   .drawer,
   .drawerHeader {
@@ -298,6 +402,7 @@
   .progress,
   .homeButton,
   .guideButton,
+  .controls,
   .wardrobeTrigger,
   .drawer {
     border: 2px solid var(--ink-hi);
@@ -324,6 +429,12 @@
   .guideButton {
     top: 0.75rem;
     right: 11rem;
+  }
+
+  .controls[data-placement="hud"] {
+    top: 7.5rem;
+    right: 0.75rem;
+    width: calc(100% - 1.5rem);
   }
 
   .homeButton {

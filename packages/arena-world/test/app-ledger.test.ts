@@ -147,8 +147,10 @@ describe("arena P1 accessible Ledger", () => {
 
     expect(markup).toContain('role="tree"');
     expect(markup.match(/role="treeitem"/g)).toHaveLength(9);
-    expect(markup.match(/tabindex="0"/g)).toHaveLength(2);
-    expect(markup.match(/tabindex="-1"/g)).toHaveLength(17);
+    expect(markup.match(/<li[^>]*role="treeitem"[^>]*tabindex="0"/g)).toHaveLength(1);
+    expect(markup.match(/<li[^>]*role="treeitem"[^>]*tabindex="-1"/g)).toHaveLength(8);
+    expect(markup.match(/<div[^>]*role="option"[^>]*tabindex="0"/g)).toHaveLength(1);
+    expect(markup.match(/<div[^>]*role="option"[^>]*tabindex="-1"/g)).toHaveLength(8);
     expect(markup).toContain('aria-label="The Spelling Spires, locked, Wordwind Reach"');
     expect(markup).toContain("Unlocked");
     expect(markup).toContain("Available");

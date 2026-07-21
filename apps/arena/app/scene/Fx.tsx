@@ -32,6 +32,16 @@ const CAMERA_PUNCH_BACK_MS = 180;
 const CAMERA_PUNCH_DISTANCE = -2;
 const CAMERA_PUNCH_FOV = 1.5;
 const BEACON_LIFT = 1.2;
+const INTENSITY_ORDER = ["low", "medium", "high"] as const;
+
+export function limitCelebrationIntensity(
+  intensity: (typeof INTENSITY_ORDER)[number],
+  ceiling: (typeof INTENSITY_ORDER)[number],
+): (typeof INTENSITY_ORDER)[number] {
+  return INTENSITY_ORDER[
+    Math.min(INTENSITY_ORDER.indexOf(intensity), INTENSITY_ORDER.indexOf(ceiling))
+  ] as (typeof INTENSITY_ORDER)[number];
+}
 
 export interface ParticleSeed {
   x: number;
@@ -154,14 +164,23 @@ export function buildFxPlan(
     };
   }
 
-  const motion = celebrationMotionSpec(event, { reducedMotion: view.flags.reducedMotion });
+  const effectiveEvent = {
+    ...event,
+    intensity: limitCelebrationIntensity(
+      event.intensity,
+      view.presentation.visualBand.celebrationCeiling,
+    ),
+  };
+  const motion = celebrationMotionSpec(effectiveEvent, {
+    reducedMotion: view.flags.reducedMotion,
+  });
   const beaconMotion = resolveMotion("nodeReveal", {
     reducedMotion: view.flags.reducedMotion,
   });
   const independentUnlock = event.type === "independent-unlock";
   const staticBadge = independentUnlock ? "beacon-lit" : "effort-honored";
   const orchestratedHigh =
-    motion.mode === "animated" && independentUnlock && event.intensity === "high";
+    motion.mode === "animated" && independentUnlock && effectiveEvent.intensity === "high";
 
   return {
     sequence: feedbackInput.sequence,
@@ -465,9 +484,12 @@ export default function Fx({ view, feedback, targetNodeId, eventBus }: FxProps) 
     emittedSequence.current = feedback.sequence;
     eventBus?.emit("unlock-celebrated", {
       nodeId: feedback.signal.nodeId,
-      intensity: feedback.signal.transferCritical ? "high" : "medium",
+      intensity: limitCelebrationIntensity(
+        feedback.signal.transferCritical ? "high" : "medium",
+        view.presentation.visualBand.celebrationCeiling,
+      ),
     });
-  }, [eventBus, feedback, plan]);
+  }, [eventBus, feedback, plan, view.presentation.visualBand.celebrationCeiling]);
 
   if (!plan) return null;
   if (plan.kind === "static-badge") {
