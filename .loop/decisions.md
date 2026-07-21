@@ -49,6 +49,30 @@
   glyphs live in `components/icons.tsx` (all `aria-hidden`, matching the a11y SVG audit); the header
   lives in the server component `Observatory.tsx` (no client hooks added).
 
+## EE-003 — the cosmos is grounded by procedural IBL + AO, not by floor shadows (Turn 3)
+- Chose: add real image-based ambient via a drei `<Environment>` built entirely from `<Lightformer>`
+  area lights (cool key / warm rim / overhead fill / void floor), baked once (`frames={1}`,
+  `resolution={64}`, `background={false}`), plus `<N8AO>` as the first `EffectComposer` effect
+  (void-tinted, `halfRes`). Softened `ambientLight` 0.35→0.22 on spectacle so the IBL carries contrast.
+  All three ride the existing `spectacle` gate (cinematic && !plainMode) — standard3d / plain / calm-2D
+  are untouched.
+- Why: game-feel.md's visual non-negotiables #2 (image-based ambient / `<Environment>`) and #4 (subtle
+  SSAO in the composer) were the two missing pieces after the scene already had a 3-light rig, emissive
+  PBR, Bloom/DOF/Vignette and a damped cinematic camera. IBL is *the* change that removes the "flat
+  primitive" tell; N8AO adds crevice grounding on the multi-part bodies. N8AO is postprocessing's modern
+  SSAO successor (better quality/perf) and ships transitively (`n8ao@1.10`), so no new dependency.
+- Rejected: (a) a drei `<Environment preset=…>` HDRI — it fetches from a CDN, which violates FR-E19
+  ("no external fetch, ever") and dies headless; the Lightformer-baked env is fully procedural and
+  deterministic. (b) `<ContactShadows>` / a floor plane — the bodies are a constellation floating at
+  varied depths, so a ground plane implies a floor that fights the "worlds suspended in space" concept;
+  grounding via IBL + AO is truer to EE-ART. Revisit only if a subtle grounded *glow-plane* (not a hard
+  shadow catcher) is prototyped and clearly reads better. (c) legacy `SSAO` effect — needs an explicit
+  normal pass and looks noisier than N8AO at equal cost.
+- Kept green: no domain/logic/geometry touch (SC-E14 presentation-only holds); the `<Canvas aria-hidden>`
+  attr is unchanged and still the first attribute (a11y source-scan test passes); IBL/AO only activate on
+  the cinematic spectacle tier, so the perf-monitor self-heal ladder (SC-E21) is unaffected. Verified live
+  in Chromium (swiftshader): cinematic renders the graded scene, zero console errors, all controls work.
+
 ---
 _Legacy scratch below (prior interest-lab loop — not applicable to evidence-explorer):_
 

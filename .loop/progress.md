@@ -53,11 +53,38 @@ Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ok · rendered `index
 badges/`obs-sub`/`obs-badges`/`.badge` classes absent from the DOM; the only remaining "…evidence DAG…"
 string is the `<meta name=description>` SEO tag in `layout.tsx`, not visible chrome).
 
+## Done this turn (Turn 3 — 3D craft: image-based ambient + cinematic AO grade)
+The worst remaining *visual* tell (chrome now reads calm) was the cosmos missing two of game-feel.md's
+non-negotiables: **#2 image-based ambient light** and **#4 subtle SSAO** in the composer — bodies were
+lit only by a 3-light rig with no real ambient reflections, so their non-emissive faces read flat.
+Rebuilt the lighting in `components/cosmos/Cosmos3D.tsx`:
+- **Procedural IBL** — a new `CosmosEnvironment` builds a drei `<Environment>` from four `<Lightformer>`
+  area lights (cool focus-cyan key ↑right · warm human-gold rim ↙back · dim model-violet overhead ring ·
+  a near-black void floor for contrast). `frames={1}` bakes the cubemap **once** (static → cheap),
+  `resolution={64}`, `background={false}` (keeps our `<color>` void + starfield as the visible backdrop).
+  **No HDRI preset / no fetch** — fully procedural, honours FR-E19 ("no external fetch, ever") and stays
+  headless-safe. Feeds real ambient + soft reflections into the emissive PBR bodies so they seat in the
+  volume instead of floating shadeless.
+- **Cinematic AO** — added `<N8AO>` (postprocessing's modern SSAO successor; n8ao 1.10 ships transitively)
+  as the **first** effect in the `EffectComposer`, void-tinted, `halfRes` + `aoRadius 1.6` — subtle
+  crevice shading on the multi-part bodies (world+ring, blueprint shell+core, seal-sun+seal) before Bloom.
+- **Ambient rebalanced** — dropped `ambientLight` 0.35→0.22 **on spectacle only** so the IBL + key/rim
+  carry the contrast rather than a flat wash (standard3d keeps 0.35; calm2d unchanged).
+- Both IBL + N8AO ride the existing **`spectacle` gate** (cinematic && !plainMode), exactly like Bloom /
+  DOF / Vignette — so standard3d, plain mode, and calm-2D are byte-for-byte unaffected.
+
+Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ok. **Live Playwright walkthrough** (swiftshader
+WebGL, 1440×900): cinematic 3D mounts + renders the graded scene (glowing bodies, bloom/DOF/vignette,
+new IBL/AO — no artifacts, no dark halos), **zero console/page errors**, 13-item Ledger, Trace lineage +
+ledger fly-to + Verify seal + Filters/Display drawers all work. Under *software* WebGL the pre-existing
+`PerformanceMonitor` self-heals cinematic→standard3d→calm2d (SC-E21) — expected; on real GPU it holds
+cinematic (captured in the load screenshot before degrade). Every tier is a usable, polished state.
+
 ## Still generic / next targets (judged vs game-feel.md)
-- The **3D cosmos itself** is now the biggest remaining tell to *polish* (it already has a lighting rig,
-  emissive PBR materials, Bloom/DOF/Vignette, damped cinematic camera). Missing vs game-feel.md: drei
-  `<Environment>` image-based ambient, soft `<ContactShadows>`/grounding, and **SSAO** in the composer —
-  add these to lift it from "good r3f scene" to "AAA grade".
+- The cosmos now has IBL + AO + bloom/DOF/vignette + rig + damped cinematic camera. Remaining 3D polish:
+  soft `<ContactShadows>` was **deliberately deferred** — a floor plane implies ground that fights the
+  floating-constellation concept (see EE-003); revisit only if a subtle grounded glow-plane reads right.
+  Could also add per-material `envMapIntensity` tuning + a faint fresnel rim to make the IBL read stronger.
 - **Inspector** still fairly wordy — move inputs/consent/payload behind a single "Details" expander so
   the default popover shows only label/actor/hash/time (progressive disclosure, not yet done).
 - **Ledger** panel is a dense scrolling list — could gain more rhythm/whitespace.
@@ -65,10 +92,14 @@ string is the `<meta name=description>` SEO tag in `layout.tsx`, not visible chr
   rail gets tall on small viewports.
 
 ## NEXT
-- Turn 3: **pivot to the 3D visual-craft pass** now that all chrome (HUD rail + header) reads calm.
-  Add drei `<Environment>` (subtle studio/night IBL for real ambient reflections on the emissive
-  bodies) + soft `<ContactShadows>` (or a grounded glow plane) so bodies don't float shadeless, and add
-  **SSAO** to the `EffectComposer` (cinematic tier only, behind the same `spectacle` gate as Bloom/DOF).
-  Keep it cohesive to EE-ART (cinematic dark cosmos, focus-cyan/verify-teal). Verify perf still self-heals
-  via `PerformanceMonitor`. Keep the gate green (tsc + test + build); write `.loop/commit-msg`.
-  (Inspector "Details" expander is the fallback simplicity task if the 3D pass proves too heavy headless.)
+- Turn 4: **make the new IBL read stronger + finish the material pass.** The env is baked but the bodies
+  are so emissive the ambient reflection is subtle. Add per-role `envMapIntensity` (~0.6–1.0) to the
+  `meshStandardMaterial`s in `Bodies.tsx` and a faint **fresnel rim** (thin additive shell or
+  `onBeforeCompile`) so silhouettes catch the cool key — this is the cheapest lift from "good scene" to
+  "AAA". Keep it behind the `spectacle`/animate flags; don't touch geometry or domain logic. Gate green.
+- Fallback simplicity task (if the material pass proves fiddly headless): the **Inspector "Details"
+  expander** — the popover still shows inputs/consent/payload inline (see the calm-2D fly-to screenshot,
+  quite wordy); move those behind a single "Details" disclosure so the default shows only
+  label/actor/hash/time (progressive disclosure, matches the HUD/header declutter already shipped).
+- Do NOT add `<ContactShadows>` (EE-003: a floor fights the floating cosmos) unless a grounded glow-plane
+  variant is prototyped and clearly reads better.
