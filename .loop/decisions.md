@@ -19,3 +19,8 @@
 - Decision: represent `syntheticMilestone` as declarative node content plus stable fixture keys, with edges referencing those keys or pseudonymous actor/tool refs. Callers resolve node keys to content hashes after `addNode` exists. Use the unrelated `Claim` island to cover the eighth node type without joining the milestone.
 - Why: P0 intentionally precedes canonicalization and `addNode`, so a pure fixture cannot derive content-addressed ids yet. Stable keys keep the seed deterministic and reusable by later graph, packet, demo, and explorer builders without embedding ids that violate the hash invariant.
 - Rejected: a prebuilt `EvidenceGraph` with fake ids, which would contradict content addressing; a runtime fixture builder that imports crypto or performs I/O, which would violate the pure-fixture requirement; moving test seeds into the domain source API, which would broaden production scope.
+
+## 2026-07-20 — T008/T011 dependency-free canonical encoder
+- Decision: implement canonicalization as a small recursive stable-key normalizer followed by native minified JSON serialization, returning the canonical string for later explicit UTF-8 hashing. Treat undefined object fields as absent optional fields.
+- Why: the spec explicitly permits a stable-key encoder that reproduces the golden bytes, and the pinned fixture subset uses strings, arrays, and objects. Keeping the encoder local preserves the pure domain package and avoids adding a dependency for this settled subset.
+- Rejected: importing a general canonical-JSON package, which adds supply-chain and bundle surface without improving the pinned acceptance behavior; returning bytes directly, which would conflate serialization with the T012 hashing boundary.

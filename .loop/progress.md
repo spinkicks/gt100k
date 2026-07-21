@@ -67,3 +67,13 @@
 
 ## NEXT
 - T008/T011: write the canonical serialization contract test first, confirm RED on the missing `canonicalize`, then implement the minimal stable-key encoder in `packages/evidence-graph/src/canonicalize.ts`; acceptance is key-order/formatting invariance and the exact G1 canonical string, with a green workspace gate.
+
+## 2026-07-20 — P1 canonical serialization (T008/T011)
+- Added the pure `canonicalize` domain function with recursive UTF-16 key ordering, minified JSON output, and omission of undefined optional object fields.
+- Added two canonicalization contract tests covering the exact G1 canonical string, nested key-order invariance, and insignificant source-formatting invariance. Confirmed RED on the missing canonicalization module, then GREEN after the minimal implementation.
+- Gate evidence: workspace `pnpm typecheck`, workspace `pnpm test` (33/33), and `pnpm exec biome check packages adapters apps` over 45 files all pass.
+- Phase status: P1 in progress; T008 and T011 are complete. SC-009 is passing, while T009/T010/T010a and T012–T014 remain.
+- Blockers: none.
+
+## NEXT
+- T009/T012: write the `addNode` content-addressing and idempotency contract test first, confirm RED on the missing graph API, then implement the minimal `addNode` in `packages/evidence-graph/src/graph.ts`; acceptance is id = hash of UTF-8 canonical content, identical content returns the same id without graph change, any field change returns a new id, a fake injected `Hasher` works unchanged, and the workspace gate stays green.
