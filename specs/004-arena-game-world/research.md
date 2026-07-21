@@ -1,6 +1,40 @@
 # Phase 0 Research: Arena Progression World
 
-No blocking unknowns remain; the decisions below record the choices the plan rests on. Scope follows PRD §15.3 / §15.3.1; guardrails follow §12, §13, §14.12, §14.13, §15, and the constitution (G1/G6, ENG human-review).
+No blocking unknowns remain; the decisions below record the choices the plan rests on. Scope follows PRD §15.3 / §15.3.1; guardrails follow §12, §13, §14.12, §14.13, §15, and the constitution (G1/G6, ENG human-review). The one open product judgment is the canvas-accessibility approach — recorded below with a defensible default and flagged for human confirmation (spec §13 DP-1).
+
+## Decision: Rendering engine is Phaser 3 (Canvas/WebGL), not DOM/CSS
+
+- **Decision**: The Arena is a **real 2D game** on **Phaser 3** (`phaser@^3.90.0`), the last stable 3.x and the engine the official `phaserjs/template-nextjs` targets (TS types bundled). Pixi.js is acceptable only with a documented reason. Phaser 4 (4.2.x, new WebGL renderer) is an acceptable forward upgrade if a Phaser-3 WebGL/context-loss blocker appears (spec §13 DP-2).
+- **Rationale**: §15.3 demands "the polish, motion, and progression feel of a real game" — an avatar, a traversable animated world, a follow-camera, particle celebrations, and scenes. Phaser gives all of these as first-class primitives; a DOM/CSS dashboard cannot. Real sprites + tweens + camera + particles are what make it read as a game rather than a progress screen.
+- **Alternatives considered**: DOM/CSS/SVG "map" — rejected (reads as a dashboard, no camera/particles/scene graph, poor at 60fps with many animated nodes). Pixi.js — capable but lower-level (no built-in scenes/camera/tween/particle manager), so more app code for the same result; allowed only with a recorded reason. Three.js/WebGL 3D — over-scoped for a 2D overworld.
+
+## Decision: Next.js + Phaser integration is client-only (no SSR)
+
+- **Decision**: Phaser references `window`/`document`, so the game mount is loaded via `next/dynamic(() => import("./game/ArenaGame"), { ssr: false })`, the `Phaser.Game` is created in a `useEffect`, and destroyed on unmount (`game.destroy(true)`). `next.config.mjs` sets `transpilePackages: ["@gt100k/arena-world","@gt100k/learning-loop"]`. The build must have zero console/WebGL errors (the review smoke asserts this).
+- **Rationale**: A naive Phaser import crashes SSR with `ReferenceError: window is not defined`; `ssr:false` + `useEffect` is the standard, reliable pattern. Clean unmount prevents duplicate canvases / leaked WebGL contexts under React strict-mode remounts.
+- **Alternatives considered**: A separate Vite app outside Next — rejected (diverges from the repo's Next-based `apps/*` convention and the root build/lint globs). Rendering Phaser server-side — impossible.
+
+## Decision: Canvas accessibility via a parallel accessible DOM ("Arena Ledger") — DP-1, flagged
+
+- **Decision (default, flagged for human review)**: A Canvas/WebGL surface is opaque to assistive tech, so the app renders a **synchronized semantic HTML/ARIA parallel structure** built from the same `ArenaView`: the quest graph as a keyboard-navigable `role="tree"`, tier/reward/cosmetics/base as labeled text/lists, celebrations via `aria-live="polite"`. The canvas is `aria-hidden="true"`; the Ledger is the AT source of truth. Full keyboard/switch operation, visible focus, color-independent cues, ≥4.5:1 contrast (WCAG 2.2 AA).
+- **Rationale**: §15.3 + constitution VI require WCAG 2.2 AA keyboard/switch/screen-reader operability. A parallel DOM is the robust, framework-agnostic way to make a canvas game accessible, and because both renderers consume the one `ArenaView`, parity is by construction.
+- **Alternatives considered**: (b) a dedicated `/accessible` full-page route rendering the Ledger — viable, but splits the surface; (c) Phaser DOM Elements + a canvas a11y plugin — brittler and less standard. **Escalated (spec §13 DP-1, severity normal)** for human confirmation before child exposure; the default is defensible and cheap to change given the shared `ArenaView`.
+
+## Decision: One state → many renderings (buildArenaView)
+
+- **Decision**: The domain composes a single `ArenaView` via `buildArenaView(...)`. The Phaser scene, the reduced-motion/plain rendering, and the accessible Ledger all render from it; reduced-motion/plain differs only in `flags` and does not recompute state. `plainViewEquals` proves the parity.
+- **Rationale**: §15.3 requires reduced motion be a *first-class equal mode*, not a degraded fallback, and requires an accessible equivalent. Modeling one state → many renderings guarantees parity by construction and makes FR-015/016/020/029 (SC-004/006/012/014) testable in the pure layer.
+
+## Decision: Deterministic overworld layout in the domain
+
+- **Decision**: `layoutQuestWorld(world)` is a pure function producing exact node positions (spec §8.1) via a region-grid. Layout lives in the domain, not the app, so it is deterministic and unit-testable.
+- **Rationale**: A game needs stable spatial structure; putting it in the pure layer makes camera/avatar behavior reproducible and lets the accessible Ledger and the canvas agree on structure. Golden positions remove "where does this node go?" ambiguity.
+
+## Decision: Seed assets committed in-repo (SVG) + procedural fallback
+
+- **Decision**: Placeholder art is committed as small hand-authored SVGs under `apps/arena/public/seed/`, with a deterministic procedural texture generator (`Graphics.generateTexture`, seeded, no `Math.random`) as fallback. No external fetch/CDN.
+- **Rationale**: The loop must build with no network and the public repo must stay free of binary bloat; SVGs are tiny and text-diffable, and the procedural fallback keeps the game rendering even with a missing asset. Satisfies FR-030 and keeps the seeded smoke green.
+- **Alternatives considered**: Binary sprite-sheet PNGs — rejected (bloat + not diffable in a public governed repo). Runtime download of art — rejected (external fetch, offline-fragile).
 
 ## Decision: Split into a pure domain package + a new Next.js app
 

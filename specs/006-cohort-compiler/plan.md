@@ -4,6 +4,14 @@
 
 **Input**: Feature specification from `specs/006-cohort-compiler/spec.md`
 
+> **Loop-readiness.** `spec.md` is the loop-ready source of truth: it carries the hard
+> [Scope Fence](./spec.md#scope-fence), the ordered [Phasing P0–P6](./spec.md#phasing-p0p6),
+> machine-checkable [Success Criteria mapped to tests](./spec.md#success-criteria-mandatory), exact
+> [Golden Values & Seed Fixtures](./spec.md#golden-values--seed-fixtures), [Decisions Already
+> Made](./spec.md#decisions-already-made), the [Defaults for the Unspecified](./spec.md#defaults-for-the-unspecified)
+> rule, [pinned Stack & Commands](./spec.md#stack--commands-pinned), and [Pre-marked Decision
+> Points](./spec.md#pre-marked-decision-points). This plan and `tasks.md` stay consistent with it.
+
 ## Summary
 
 Build the code-first core of GT100K's **Cohort Compiler + RivalryMix** (PRD §15, §15.1, §15.2) as a **pure, framework-agnostic TypeScript domain package** (`packages/cohort-compiler`), mirroring `packages/learning-loop` / `packages/evidence-graph`. Three capabilities: (1) **near-peer candidate generation** by a level+velocity **caliper** (a pure-TS deterministic kNN/distance filter; **HNSW** deferred behind a port); (2) a **cohort-assignment solver** that forms stable **cohorts of six** under **hard constraints** — age, schedule, safeguarding separation, accommodations, level-velocity caliper, an **individual non-harm floor**, and a **churn budget** — via a pure-TS **greedy + local-search/repair** heuristic (**OR-Tools CP-SAT / branch-and-price** deferred), returning a `CohortAssignment` **snapshot** with **atomic in-memory commit + rollback**, **one active assignment per learner**, a **weekly churn cap**, and **cohort repair within the churn budget**; and (3) a pure-logic **RivalryMix turn-taking analysis** that detects **observable** patterns (dominance, repeated interruption) but **cannot** infer honesty/emotion/personality/motivation and **suppresses prompts** under low-quality input (**WebRTC/AudioWorklet + LiveKit** media plane deferred to a stub port). All I/O sits behind ports — `CandidateIndex`, `CohortRepository`, `SafeguardingSink`, plus deferred/shadow stub ports `MediaTurnSource` and `BenefitEstimator` — with in-memory/stub adapters under `adapters/cohort-*`, so the domain stays deterministic and 100% unit-testable. Guardrails are encoded, not asserted: **no fixed-ability caste ranks** (G6), **bullying/exclusion bypasses optimization to safeguarding**, **no learned model assigns**, **peer-effect causal uplift stays shadow**. Synthetic-only.
@@ -88,6 +96,13 @@ packages/
     │   │                            #   + deferred/shadow stubs MediaTurnSource, BenefitEstimator
     │   └── index.ts                 # public surface
     ├── test/                        # Vitest unit + contract tests (mirror FR/SC + contracts/)
+    │   ├── smoke.test.ts            # seeded smoke test (green from iteration 1; P0)
+    │   └── fixtures/                # in-repo seed fixtures + golden values (P0)
+    │       ├── caliper-8.ts         # Fixture A (US1)
+    │       ├── cohort-12.ts         # Fixtures B / B2 / B3 (US2)
+    │       ├── churn-rollback.ts    # Fixture C (US2)
+    │       ├── safeguarding-shadow.ts # Fixture D (US2)
+    │       └── turns.ts             # Fixture E turns-* (US3)
     ├── package.json                 # @gt100k/cohort-compiler; type module; test: vitest run
     ├── tsconfig.json                # extends ../../tsconfig.base.json (composite)
     └── README.md
@@ -102,6 +117,18 @@ adapters/
 **Structure Decision**: A TS monorepo library (per PRD §26.1) with all Cohort-Compiler rules quarantined in a **pure, side-effect-free `packages/cohort-compiler`** domain package, mirroring `packages/learning-loop`. All I/O (candidate indexing, persistence/commit, safeguarding routing, media capture, benefit estimation) is injected via ports so the core is deterministic and fully unit-testable, and real HNSW / CP-SAT / PostgreSQL / WebRTC+LiveKit / causal-uplift integrations replace the stubs later **without changing domain code**. Go/Rust services (PRD §26.2/§26.3), the media plane, and any app/UI are **not** part of this slice. Time is passed as explicit inputs (no `Clock` port needed) to keep the domain deterministic.
 
 **Parallel-safety**: all new code lives in `packages/cohort-compiler` and `adapters/cohort-*`. The root workspace glob (`packages/*`, `adapters/*`) and the Vitest include (`packages/**/test`, `adapters/**/test`) already discover them, so **no** shared root file (`package.json`, `pnpm-workspace.yaml`, `vitest.config.ts`, `biome.json`) is edited. The **only** shared-file touch is adding composite project references to the root `tsconfig.json`; that is the **final task** and is flagged as the single point a human reconciles at merge.
+
+## Phasing & gate (see spec.md § Phasing P0–P6)
+
+The build follows the ordered phases in [spec.md § Phasing](./spec.md#phasing-p0p6): **P0** Setup &
+Foundational (scaffold + types + ports + seed fixtures + seeded smoke test) → **P1** near-peer candidate
+generation (MVP) → **P2** solver & feasibility → **P3** commit/rollback/one-active/churn → **P4** repair +
+safeguarding bypass + shadow benefit → **P5** RivalryMix → **P6** polish + the single shared-file
+`tsconfig.json` touch. Each phase ends on a green gate and maps to specific SCs and golden fixtures.
+
+**Gate (pinned commands):** `pnpm install` → `pnpm typecheck` (`tsc -b`, strict) → `pnpm test` (Vitest) →
+`pnpm lint` (`biome check`). `build` (the `student-compass` app) is untouched by this slice, so the loop
+gate here is **typecheck + test** (+ lint). The seeded smoke test keeps `pnpm test` green from iteration 1.
 
 ## Deferred scope (production direction — described here, NOT built in this slice)
 

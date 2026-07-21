@@ -22,7 +22,7 @@ No blocking unknowns remain. The decisions below record the choices the plan res
 
 ## Decision: Deterministic Merkle root with domain separation
 
-- **Decision**: Compute the per-packet Merkle root over the node content hashes sorted lexicographically; hash leaves with a `0x00` prefix and interior nodes with a `0x01` prefix; on an odd count, promote/duplicate the last node at that level. Single-node packets are valid; empty packets are rejected.
+- **Decision**: Compute the per-packet Merkle root over the node content-hash **hex strings** sorted ascending; `leaf(h) = hash("00" + h)` and `interior(l, r) = hash("01" + l + r)` where the `"00"`/`"01"` prefixes are ASCII characters and `+` is string concatenation (domain separation without raw-byte handling); on an odd count, promote/duplicate the last node at that level. Single-node packets are valid (root = leaf digest); empty packets are rejected. The exact golden roots are pinned in spec.md **Golden Values** and are the arbiter.
 - **Rationale**: Canonical ordering + a defined odd-count rule make the root byte-deterministic (FR-011, SC-004); domain separation prevents second-preimage/leaf-as-interior attacks (spec edge case). This follows the SLSA/in-toto pattern of a hash-over-materials root.
 - **Alternatives considered**: Insertion-order Merkle trees — rejected (non-deterministic across callers). No domain separation — rejected (second-preimage weakness).
 

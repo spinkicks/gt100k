@@ -59,4 +59,18 @@
 - **Level/velocity bands are inputs**: how the private ratings are computed (from mastery/velocity signals, PRD §12/§15) is external to this feature; the slice consumes them.
 - **Individual non-harm floor is deterministic here**: modeled as a per-learner compatibility/benefit threshold from observable features — **not** a learned causal-uplift estimate (which stays shadow, FR-019). The floor formula is an implementation detail; its invariant (hard, per-learner) is fixed.
 - **Standings display is elsewhere**: the near-peer/opt-in/no-bottom-rank *visible standings* surface lives in the Arena feature (`004-arena-game-world`); this feature owns the private matchmaking ratings and the compiler, and must not emit a caste rank (G6).
-- **Open question (non-blocking)**: exact caliper tolerances, churn cap, objective weights, and RivalryMix thresholds are tunable config with documented synthetic defaults; any values satisfy the FRs as long as the invariants hold and behavior is deterministic.
+- **Open question (non-blocking)**: exact caliper tolerances, churn cap, objective weights, and RivalryMix thresholds are tunable config with documented synthetic defaults; any values satisfy the FRs as long as the invariants hold and behavior is deterministic. These are now pre-marked with defaults + severity in [spec.md § Pre-marked Decision Points](../spec.md#pre-marked-decision-points) (DP-1…DP-7).
+
+## Loop-Readiness (per `gt100k-factory/docs/loop-ready-prd.md`)
+
+- [x] **Scope fence** — explicit in scope / out-of-scope (deferred, marked ports) / non-goals ([spec.md § Scope Fence](../spec.md#scope-fence))
+- [x] **Phasing (P0…P6)** — ordered build path, each phase gated and mapped to SCs + fixtures ([spec.md § Phasing](../spec.md#phasing-p0p6))
+- [x] **Acceptance criteria = tests** — SC-001…SC-008 each mapped to a concrete test file ([spec.md § Success Criteria](../spec.md#success-criteria-mandatory))
+- [x] **Golden values + tolerances** — Fixtures A–E: exact candidate sets, forced cohort partition, exact churn/rollback outcomes, exact turn-pattern detection ([spec.md § Golden Values](../spec.md#golden-values--seed-fixtures))
+- [x] **Decisions already made** — 14 pre-settled choices ([spec.md § Decisions Already Made](../spec.md#decisions-already-made))
+- [x] **Defaults for the unspecified** — the verbatim "simplest correct option → log in `.loop/decisions.md` → continue" rule ([spec.md § Defaults](../spec.md#defaults-for-the-unspecified))
+- [x] **Stack + commands pinned** — pnpm@9.15.9, `pnpm typecheck`/`test`/`lint`, seeded smoke test green from iteration 1 ([spec.md § Stack & Commands](../spec.md#stack--commands-pinned))
+- [x] **Seed data / fixtures in-repo** — `test/fixtures/*.ts` committed in P0, no external fetch
+- [x] **Navigable structure** — per-phase headers with cross-links so the loop reads one section per turn
+- [x] **Pre-marked decision points** — DP-1…DP-7 with defaults + severity ([spec.md § Pre-marked Decision Points](../spec.md#pre-marked-decision-points))
+- [x] **Env/secrets handled** — synthetic-only, no env/secrets/network; `.env.*` git-ignored; build never fails on missing env ([spec.md § Environment & Secrets](../spec.md#environment--secrets))

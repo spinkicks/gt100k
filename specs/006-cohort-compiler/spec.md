@@ -4,9 +4,106 @@
 
 **Created**: 2026-07-20
 
-**Status**: Draft
+**Status**: Loop-ready (Draft)
 
 **Input**: User description: "A code-first, framework-agnostic core for GT100K's Cohort Compiler + RivalryMix (PRD §15, §15.1, §15.2): near-peer candidate generation by a level+velocity caliper (pure-TS kNN; HNSW deferred); a cohort-assignment solver that forms stable cohorts of six under HARD constraints (age, schedule, safeguarding separation, accommodations, level-velocity caliper, an individual non-harm floor, and a churn budget) via a pure-TS greedy + local-search/repair algorithm (CP-SAT/branch-and-price deferred), returning a `CohortAssignment` snapshot with atomic in-memory commit + rollback, one active assignment per learner, a weekly churn cap, and cohort repair within the churn budget; and a pure-logic RivalryMix turn-taking analysis that detects observable patterns (dominance, repeated interruption) but cannot infer honesty/emotion/personality/motivation and suppresses prompts under low-quality input (WebRTC/AudioWorklet capture + LiveKit media plane deferred to an interface stub). Guardrails: gain/velocity/effort-based, sprint-reset, near-peer standings and no fixed-ability caste ranks (G6); bullying/exclusion reports bypass optimization to safeguarding; peer-effect causal-uplift models stay shadow/deferred. Synthetic-only."
+
+> **How to read this spec (JIT).** The loop reads *one section at a time*. Each phase in
+> [§ Phasing](#phasing-p0p6) links to the requirements, success criteria, and golden fixtures it needs.
+> Start at [§ Scope Fence](#scope-fence), then work [§ Phasing](#phasing-p0p6) top to bottom, gating each
+> phase on the [§ Success Criteria](#success-criteria-mandatory) that map to it. When anything is
+> unspecified, apply [§ Defaults for the Unspecified](#defaults-for-the-unspecified) — do not ask, log
+> and continue.
+
+---
+
+## Scope Fence
+
+The loop builds the **whole** spec, so the boundary is explicit. Anything not listed **In scope** is
+either **Out of scope (deferred)** — a production direction represented by a marked port/stub, no tasks —
+or a **Non-goal** — never built here.
+
+### In scope (build these, with tests)
+
+1. **Near-peer candidate generation** — a pure, deterministic level+velocity **caliper** filter / kNN over
+   an in-memory synthetic pool, behind a `CandidateIndex` port (US1).
+2. **Cohort-of-six solver** — deterministic **greedy construction + bounded local-search/repair** producing
+   feasible cohorts under the full **hard-constraint set** (age, schedule, safeguarding separation,
+   accommodations, level-velocity caliper, **individual non-harm floor**, **churn budget**) with a
+   **deterministic soft objective** that only ranks *feasible* options (US2).
+3. **Assignment lifecycle** — a `CohortAssignment` **snapshot**, **atomic in-memory commit + rollback**,
+   **one active assignment per learner**, a **weekly churn cap**, and **cohort repair within the churn
+   budget** (bounded automation: guide-veto window + one-click rollback) (US2).
+4. **Safeguarding bypass** — `CohortHealthEvent` (bullying/coercion/exclusion) routes straight to a
+   `SafeguardingSink`, **bypassing optimization**, pausing conflicting moves (POL-007), never lowering a
+   rating (US2).
+5. **No-learned-model discipline** — the solve is fully rule-based; a `BenefitEstimator` **shadow** stub may
+   log a peer-effect causal-uplift LCB **post-lock only**, never read during a solve/repair (US2).
+6. **RivalryMix turn-taking analysis** — pure-logic detection of **observable** patterns (dominance,
+   repeated interruption) with triggering evidence, **confidence-gated suppression** under low-quality
+   input, **no trait inference**, fed by a `MediaTurnSource` **stub** (US3).
+7. **Ports + in-memory/stub adapters** — `CandidateIndex`, `CohortRepository`, `SafeguardingSink`,
+   `MediaTurnSource` (stub), `BenefitEstimator` (shadow); a **pure** domain package with **no I/O, no
+   wall-clock, no randomness**.
+8. **In-repo seed fixtures** (synthetic learner population + turn arrays) and their **golden expected
+   outputs** ([§ Golden Values & Seed Fixtures](#golden-values--seed-fixtures)).
+
+### Out of scope — deferred (production direction; marked port/stub; **no tasks**)
+
+| Deferred item | PRD ref | Represented in this slice by |
+|---|---|---|
+| **HNSW** ANN candidate index | §15 | `CandidateIndex` port; MVP adapter is the pure kNN/caliper filter |
+| **OR-Tools CP-SAT / branch-and-price** optimizer | §15 | pure-TS greedy + local-search/repair stands in |
+| **PostgreSQL** single-transaction roster commit | §15 | in-memory `CohortRepository` (atomic commit + rollback) |
+| **WebRTC/AudioWorklet + LiveKit** media plane (EKS/coturn/DTLS-SRTP) | §15.1 | `MediaTurnSource` **stub** fed by synthetic turn arrays |
+| RivalryMix latency/scale SLOs (<250 ms p95 to guide; 20k rooms; join <5 s/reconnect <10 s p95; 5% loss) | §15.1/§15.2 | documented **production targets**, not MVP gates (pure logic is not latency-bound) |
+| **Peer-effect causal-uplift** learned model | §15 | `BenefitEstimator` **shadow** stub (post-lock log only) |
+
+### Non-goals (never built here, not even a stub)
+
+- **No fixed-ability caste rank, public tier name, or full-field program ranking** derived from the private
+  level/velocity bands (G6; Constitution VIII/IX). This feature owns the private matchmaking ratings and the
+  compiler; the visible near-peer/opt-in standings surface lives in feature `004-arena-game-world`.
+- **No learned model issues an assignment** (Constitution III).
+- **No trait/behavioral inference** (honesty, emotion, personality, motivation) from turns (G5/G6).
+- **No computation of the level/velocity bands** — they are synthetic *inputs* here (produced externally by
+  PRD §12/§15 mastery/velocity signals).
+- **No real PII/consent/media/safeguarding case management** — synthetic-only; governance stubbed.
+- **No app/UI/frontend, no Go/Rust service, no media/infra** in this slice (PRD §26.2/§26.3).
+
+---
+
+## Phasing (P0–P6)
+
+An ordered build path. Each phase ends at a **green gate** (`typecheck + test + build` all pass) and a
+demonstrable checkpoint. The loop's "next task" is always the first unchecked task in the lowest-numbered
+incomplete phase. Phase → task mapping lives in [tasks.md](./tasks.md); phase → SC mapping is in
+[§ Success Criteria](#success-criteria-mandatory).
+
+- **P0 — Setup & Foundational.** Scaffold `packages/cohort-compiler` + `adapters/cohort-*`; define all
+  domain types (`model.ts`) and ports (`ports.ts`); commit the in-repo **seed fixtures**; a **seeded smoke
+  test** turns the gate green from iteration 1. → SC-008 (seam shape).
+- **P1 — Near-peer candidate generation (US1). 🎯 MVP.** `withinCaliper`, `generateCandidates`, the
+  in-memory `CandidateIndex` adapter. → SC-001. Golden: [Fixture A `caliper-8`](#fixture-a-caliper-8-us1).
+- **P2 — Solver & feasibility (US2 core).** `isFeasibleCohort` (7 hard constraints + non-harm floor),
+  `scoreObjective` (feasible-only ranking), `assignCohorts` (greedy + local-search/repair; `unassigned`
+  reporting). → SC-002, SC-006 (no learned model). Golden:
+  [Fixture B `cohort-12`](#fixture-b-cohort-12-us2) + [`cohort-13-infeasible`](#fixture-b2-cohort-13-infeasible-us2).
+- **P3 — Commit / rollback / one-active / churn (US2 lifecycle).** in-memory `CohortRepository`,
+  `commit`, `rollback`. → SC-003, SC-004 (cap enforcement). Golden:
+  [Fixture C `churn-rollback`](#fixture-c-churn-rollback-us2).
+- **P4 — Repair, safeguarding bypass, shadow benefit (US2 governance).** `repairCohort`, `routeHealthEvent`
+  + `SafeguardingSink`, `BenefitEstimator` shadow. → SC-004 (repair), SC-005, SC-006 (post-lock only).
+  Golden: [Fixture D `safeguarding-shadow`](#fixture-d-safeguarding-shadow-us2).
+- **P5 — RivalryMix turn analysis (US3).** `analyzeTurns` + `MediaTurnSource` stub. → SC-007. Golden:
+  [Fixture E `turns-*`](#fixture-e-turns--us3).
+- **P6 — Polish & the single shared-file touch.** README, end-to-end demo, quickstart validation, and the
+  **final** task: add composite project references to the root `tsconfig.json`. → SC-008.
+
+**MVP = P0 + P1.** Each later phase is independently demonstrable against synthetic inputs (US2 and US3 do
+not require US1 to have run — feed them synthetic candidate sets / turn arrays directly).
+
+---
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -24,7 +121,7 @@ Before any cohort is formed, the match space must be limited to **near-peer** le
 
 **Why this priority**: Candidate generation is the atomic substrate of the whole feature — the solver reads candidate sets, and the near-peer caliper is the first guardrail that keeps matchmaking fair. It is the smallest thing that is independently demonstrable ("near-peer candidate sets are correctly and deterministically computed") and everything downstream builds on it. HNSW is deferred; the caliper filter is the buildable slice.
 
-**Independent Test**: Build a synthetic pool, run candidate generation, and confirm every learner's candidate set contains **only** peers within the level and velocity caliper, excludes the learner themselves and every safeguarding-separated peer, is deterministically ordered, and yields a stable candidate-set hash across repeated runs.
+**Independent Test**: Build a synthetic pool, run candidate generation, and confirm every learner's candidate set contains **only** peers within the level and velocity caliper, excludes the learner themselves and every safeguarding-separated peer, is deterministically ordered, and yields a stable candidate-set hash across repeated runs. (Golden: [Fixture A `caliper-8`](#fixture-a-caliper-8-us1).)
 
 **Acceptance Scenarios**:
 
@@ -40,7 +137,7 @@ The compiler assigns learners into **stable cohorts of six** that honor a set of
 
 **Why this priority**: This is the core value of the "Cohort Compiler" — the feasibility engine, the atomic snapshot/rollback lifecycle, the churn discipline, and the non-negotiable safeguarding bypass. It composes US1's candidate sets but is independently testable by feeding it synthetic candidate sets directly. It is the largest chunk, so it ranks after the substrate while completing the compile.
 
-**Independent Test**: Feed a synthetic pool (or pre-built candidate sets) to the solver, confirm every accepted cohort has exactly six members and violates zero hard constraints, commit a snapshot and confirm no learner holds two active assignments, roll back and confirm the exact prior snapshot returns, attempt a change beyond the churn budget and confirm it is refused without a recorded exception, and submit a bullying report and confirm it bypasses the optimizer to the human sink without changing any rating.
+**Independent Test**: Feed a synthetic pool (or pre-built candidate sets) to the solver, confirm every accepted cohort has exactly six members and violates zero hard constraints, commit a snapshot and confirm no learner holds two active assignments, roll back and confirm the exact prior snapshot returns, attempt a change beyond the churn budget and confirm it is refused without a recorded exception, and submit a bullying report and confirm it bypasses the optimizer to the human sink without changing any rating. (Golden: Fixtures [B](#fixture-b-cohort-12-us2), [B2](#fixture-b2-cohort-13-infeasible-us2), [C](#fixture-c-churn-rollback-us2), [D](#fixture-d-safeguarding-shadow-us2).)
 
 **Acceptance Scenarios**:
 
@@ -58,7 +155,7 @@ Given a stream/array of **turn events** (speaker, start, duration, overlap) from
 
 **Why this priority**: RivalryMix turn analysis is a separable pure-logic slice that carries a sharp rights guardrail (observable-only, confidence-gated, no trait inference). It depends on none of the solver machinery and can ship independently, so it ranks last while completing the §15 feature surface.
 
-**Independent Test**: Feed synthetic turn arrays and confirm dominance and repeated-interruption patterns are detected with their triggering evidence; confirm no output ever contains an honesty/emotion/personality/motivation label; feed a degraded/sparse array and confirm confidence drops and prompts are suppressed (no pattern surfaced below threshold); confirm a refused/missing analytics case produces no status change; confirm the `MediaTurnSource` stub is invocable and marked deferred.
+**Independent Test**: Feed synthetic turn arrays and confirm dominance and repeated-interruption patterns are detected with their triggering evidence; confirm no output ever contains an honesty/emotion/personality/motivation label; feed a degraded/sparse array and confirm confidence drops and prompts are suppressed (no pattern surfaced below threshold); confirm a refused/missing analytics case produces no status change; confirm the `MediaTurnSource` stub is invocable and marked deferred. (Golden: [Fixture E `turns-*`](#fixture-e-turns--us3).)
 
 **Acceptance Scenarios**:
 
@@ -71,15 +168,15 @@ Given a stream/array of **turn events** (speaker, start, duration, overlap) from
 
 ### Edge Cases
 
-- **Pool not divisible by six**: a leftover of fewer than six learners cannot form a full cohort; the compiler either leaves them unassigned (reported) or records a staff-approved size exception — it never silently emits a cohort of the wrong size.
-- **Infeasible learner**: a learner whose hard constraints (e.g. schedule, safeguarding separations, empty caliper) admit no feasible cohort is reported as unassigned with the binding constraint(s), never force-placed in violation.
-- **Individual non-harm floor vs. group score**: a placement that raises the *group* objective but drops one learner below their individual non-harm floor is rejected — the floor is a hard per-learner constraint, not averaged away (§15.2).
-- **Churn budget boundary**: a change that exactly meets the budget is allowed; one that exceeds it by any amount is refused without a recorded exception.
-- **Atomic commit failure**: if any member of a roster fails to commit, the whole commit aborts and the prior snapshot remains active (no partial roster).
-- **Safeguarding during a solve**: a `CohortHealthEvent` (bullying/exclusion) arriving mid-process bypasses optimization, and any conflicting cohort move is paused (POL-007), regardless of objective score.
-- **RivalryMix with zero/one turn**: too few turns to establish a pattern → confidence is low and nothing is surfaced (never a spurious dominance flag).
-- **Overlap without a clear initiator**: an overlap that cannot be attributed to an interrupting speaker lowers confidence rather than inventing an interruption pattern.
-- **Shadow benefit estimate present**: a logged post-lock benefit LCB is never read back into a solve or a repair (shadow-only; Constitution III).
+- **Pool not divisible by six**: a leftover of fewer than six learners cannot form a full cohort; the compiler either leaves them unassigned (reported) or records a staff-approved size exception — it never silently emits a cohort of the wrong size. (Golden: [`cohort-13-infeasible`](#fixture-b2-cohort-13-infeasible-us2).)
+- **Infeasible learner**: a learner whose hard constraints (e.g. schedule, safeguarding separations, empty caliper) admit no feasible cohort is reported as unassigned with the binding constraint(s), never force-placed in violation. (Golden: [`cohort-13-infeasible`](#fixture-b2-cohort-13-infeasible-us2); empty-caliper learner `L5` in [`caliper-8`](#fixture-a-caliper-8-us1).)
+- **Individual non-harm floor vs. group score**: a placement that raises the *group* objective but drops one learner below their individual non-harm floor is rejected — the floor is a hard per-learner constraint, not averaged away (§15.2). (Golden: [`nonharm-reject`](#fixture-b3-nonharm-reject-us2): mean benefit 0.708 ≥ floor 0.5 but one member at 0.45 → rejected.)
+- **Churn budget boundary**: a change that exactly meets the budget is allowed; one that exceeds it by any amount is refused without a recorded exception. (Golden: [`churn-rollback`](#fixture-c-churn-rollback-us2): churn = 2, allowed at cap 2, refused at cap 1.)
+- **Atomic commit failure**: if any member of a roster fails to commit, the whole commit aborts and the prior snapshot remains active (no partial roster). (Golden: [`churn-rollback`](#fixture-c-churn-rollback-us2) duplicate-active case.)
+- **Safeguarding during a solve**: a `CohortHealthEvent` (bullying/exclusion) arriving mid-process bypasses optimization, and any conflicting cohort move is paused (POL-007), regardless of objective score. (Golden: [`safeguarding-shadow`](#fixture-d-safeguarding-shadow-us2).)
+- **RivalryMix with zero/one turn**: too few turns to establish a pattern → confidence is low and nothing is surfaced (never a spurious dominance flag). (Golden: [`turns-sparse`](#fixture-e-turns--us3), [`turns-empty`](#fixture-e-turns--us3).)
+- **Overlap without a clear initiator**: an overlap that cannot be attributed to an interrupting speaker (low-quality overlap turn) is not counted as an interruption and lowers confidence rather than inventing an interruption pattern. (Golden: [`turns-ambiguous`](#fixture-e-turns--us3).)
+- **Shadow benefit estimate present**: a logged post-lock benefit LCB is never read back into a solve or a repair (shadow-only; Constitution III). (Golden: [`safeguarding-shadow`](#fixture-d-safeguarding-shadow-us2).)
 
 ## Requirements *(mandatory)*
 
@@ -98,15 +195,15 @@ Given a stream/array of **turn events** (speaker, start, duration, overlap) from
 
 - **FR-007**: The solver MUST assemble stable cohorts of **exactly six** members honoring **all** hard constraints: matching age band, compatible schedule, safeguarding separation, compatible accommodations, the level-velocity caliper, the **individual non-harm floor**, and the **churn budget** (§28 `CohortAssignment`).
 - **FR-008**: Hard constraints are **inviolable** — no accepted cohort may violate any of them; the solver MUST repair or report infeasibility rather than emit a violating assignment (§15.2).
-- **FR-009**: The **individual non-harm floor** MUST be enforced as a **hard per-learner** constraint — a learner is never placed where their individual compatibility/benefit falls below the floor, and a shadow forecast MUST NOT override a child report (§15.2).
+- **FR-009**: The **individual non-harm floor** MUST be enforced as a **hard per-learner** constraint — a learner is never placed where their individual compatibility/benefit falls below the floor, and it MUST NOT be averaged away across the cohort; a shadow forecast MUST NOT override a child report (§15.2).
 - **FR-010**: A cohort MUST contain **six** members unless a **staff exception is explicitly recorded** on the assignment (§28 `CohortAssignment` invariant).
 - **FR-011**: The system MUST enforce **one active `CohortAssignment` per learner** per activity; a new commit supersedes the prior and the prior snapshot is retained (§28).
 - **FR-012**: The solver MUST run as a **pure, deterministic** greedy construction + bounded local-search / repair; **OR-Tools CP-SAT / branch-and-price** is the **deferred** production optimizer and MUST NOT be a dependency of the buildable slice.
 - **FR-013**: A **deterministic soft objective** (close pace, compatible intensity, role coverage, pair history, rivalry dose, churn, repeated pairings) MUST be used **only** to rank *feasible* assignments; it MUST NEVER promote an assignment that violates a hard constraint (§15 beta deterministic rules).
 - **FR-014**: The solver MUST produce a `CohortAssignment` **snapshot** carrying members, roles, level/velocity bands, candidate-set hash, objective terms, constraints, start, planned review, prior-assignment reference, and rollback reference (§28).
 - **FR-015**: Commit MUST be **atomic** (whole roster or nothing) and MUST retain the exact **prior snapshot** for **rollback** (in-memory); rollback MUST restore that prior snapshot (§15).
-- **FR-016**: The system MUST enforce a **weekly churn budget** — weekly membership changes stay within the cap unless a **safety owner records an exception** (§15.2); no silent over-budget commit is permitted.
-- **FR-017**: The system MUST support **cohort repair within the churn budget** as bounded automation with a **guide-veto window** and **one-click rollback**; a repair that would **exceed** the churn budget requires a recorded staff exception and MUST NOT auto-apply (§8.5, §15; Constitution III bounded-automation envelope).
+- **FR-016**: The system MUST enforce a **weekly churn budget** — weekly membership changes stay within the cap unless a **safety owner records an exception** (§15.2); no silent over-budget commit is permitted. Churn is measured as the count of learners whose cohort membership differs from the prior snapshot (a swap of one member for another counts as 2).
+- **FR-017**: The system MUST support **cohort repair within the churn budget** as bounded automation with a **guide-veto window** and **one-click rollback**; a repair that would **exceed** the churn budget or change a group size requires a recorded staff exception and MUST NOT auto-apply (§8.5, §15; Constitution III bounded-automation envelope).
 - **FR-018**: Reports of **bullying, coercion, or exclusion** (`CohortHealthEvent`) MUST **bypass optimization** and route to a **human safeguarding sink**; a safeguarding hold MUST pause any conflicting cohort move (POL-007); a health report MUST NOT reduce a learner's rating; peer views receive **aggregated** health data only (§15.2, §28 `CohortHealthEvent`, G7).
 - **FR-019**: **No learned model** may issue an assignment; **peer-effect causal-uplift** benefit estimation stays **shadow/deferred** — a benefit lower-confidence-bound MAY be logged **only after** the assignment is locked and MUST NOT influence any solve or repair (§15; Constitution III).
 
@@ -114,7 +211,7 @@ Given a stream/array of **turn events** (speaker, start, duration, overlap) from
 
 - **FR-020**: Given an array of turn events (`speaker`, `start`, `duration`, `overlap`), the system MUST compute observable turn-taking descriptors: per-speaker turn share, total speaking time, and interruption/overlap counts — **observable only**.
 - **FR-021**: The system MUST detect the observable patterns **dominance** (one speaker holding most turns) and **repeated interruption**, each carrying the observable evidence that triggered it.
-- **FR-022**: The analysis MUST NOT infer **honesty, emotion, personality, or motivation**; it MUST emit only observable turn-taking descriptors and MUST NEVER emit a trait or behavioral label (§15; G5/G6).
+- **FR-022**: The analysis MUST NOT infer **honesty, emotion, personality, or motivation**; it MUST emit only observable turn-taking descriptors and MUST NEVER emit a trait or behavioral label (§15; G5/G6). The `TurnAnalysis` type MUST have no field capable of carrying such a label.
 - **FR-023**: Missing or low-quality input MUST **lower a confidence value and suppress pattern prompts** rather than produce a false label; below a confidence threshold **no** pattern is surfaced (§15.2).
 - **FR-024**: Refused or missing turn analytics MUST NOT lower cohort status, trigger an intervention, or enter a motivation hypothesis (§15; G4).
 - **FR-025**: The real-time capture (WebRTC / AudioWorklet) and the **LiveKit media plane** (§15.1) MUST be **deferred** and represented by a `MediaTurnSource` **stub port** (interface only), fed by synthetic turn arrays in the MVP; no media/infra is provisioned.
@@ -136,7 +233,7 @@ Given a stream/array of **turn events** (speaker, start, duration, overlap) from
 - **ChurnBudget**: The weekly cap on membership changes, with a recorded-exception path for a safety owner.
 - **CommitResult / RollbackRef**: The atomic-commit outcome and the retained prior-snapshot reference.
 - **CohortHealthEvent**: A bullying/coercion/exclusion report — assignment, reporter, event class, affected members, severity, evidence scope, immediate action, safeguarding link, follow-up owner. Bypasses optimization; cannot reduce a rating; peers see aggregates only (§28).
-- **TurnEvent**: One observable speaking turn: speaker, start, duration, overlap.
+- **TurnEvent**: One observable speaking turn: speaker, start, duration, overlap, optional quality.
 - **TurnAnalysis**: The observable result — per-speaker descriptors, detected patterns (with evidence), a confidence value, and a `suppressed` flag; carries **no** trait/behavioral label.
 - **BenefitLCB (shadow)**: A peer-effect causal-uplift lower-confidence-bound, logged **after lock only**, never consumed by a solve (deferred/shadow).
 
@@ -144,14 +241,268 @@ Given a stream/array of **turn events** (speaker, start, duration, overlap) from
 
 ### Measurable Outcomes
 
-- **SC-001**: For every learner, the candidate set contains **only** within-caliper peers and excludes the learner and all safeguarding-separated peers, and repeated runs on the same pool produce **byte-identical** candidate sets and an identical candidate-set hash — in **100%** of runs.
-- **SC-002**: Every accepted cohort has **exactly six** members (or a recorded staff exception) and violates **zero** hard constraints across the synthetic pool — **0** hard-constraint violations.
-- **SC-003**: No learner ever holds **two** active assignments; a commit supersedes the prior and rollback restores the **exact** prior snapshot in **100%** of cases; a partial-roster commit **never** persists.
-- **SC-004**: Weekly membership changes **never** exceed the churn budget except where a staff exception is recorded — **0** silent over-budget commits; an in-budget repair applies with a guide-veto window and reversible rollback.
-- **SC-005**: **100%** of bullying/coercion/exclusion reports bypass the optimizer and appear in the human safeguarding sink; **0** such reports alter a learner's rating or an assignment objective; a safeguarding hold pauses conflicting moves.
-- **SC-006**: **0** assignments are produced or altered by a learned model; any benefit LCB is logged **strictly after** lock and is **absent** from the pre-lock solve/repair inputs.
-- **SC-007**: RivalryMix produces **0** honesty/emotion/personality/motivation labels; low-quality input lowers confidence and suppresses prompts (**0** patterns surfaced below threshold); refused/missing analytics produce **0** status changes, interventions, or motivation hypotheses.
-- **SC-008**: Swapping any adapter (`CandidateIndex`, `CohortRepository`, `SafeguardingSink`, `MediaTurnSource`, `BenefitEstimator`) requires **no** change to the domain package; the deferred HNSW / CP-SAT / WebRTC+LiveKit / causal-uplift targets are **absent** from the buildable slice and represented as clearly-marked seams.
+Each SC is machine-checkable and maps to a concrete test file and (where computed) a golden fixture. "Done"
+for a phase = its SCs' tests pass under the pinned gate.
+
+- **SC-001** *(P1)*: For every learner, the candidate set contains **only** within-caliper peers and excludes the learner and all safeguarding-separated peers, and repeated runs on the same pool produce **byte-identical** candidate sets and an identical candidate-set hash — in **100%** of runs.
+  → `packages/cohort-compiler/test/candidates.test.ts` + `caliper.test.ts`; golden [Fixture A](#fixture-a-caliper-8-us1).
+- **SC-002** *(P2)*: Every accepted cohort has **exactly six** members (or a recorded staff exception) and violates **zero** hard constraints across the synthetic pool — **0** hard-constraint violations; the individual non-harm floor is per-member and never averaged away.
+  → `constraints.test.ts` + `objective.test.ts` + `solver.test.ts`; golden [Fixtures B](#fixture-b-cohort-12-us2)/[B2](#fixture-b2-cohort-13-infeasible-us2)/[B3](#fixture-b3-nonharm-reject-us2).
+- **SC-003** *(P3)*: No learner ever holds **two** active assignments; a commit supersedes the prior and rollback restores the **exact** prior snapshot in **100%** of cases; a partial-roster commit **never** persists.
+  → `commit.test.ts` + `adapters/cohort-repo-memory/test/index.test.ts`; golden [Fixture C](#fixture-c-churn-rollback-us2).
+- **SC-004** *(P3/P4)*: Weekly membership changes **never** exceed the churn budget except where a staff exception is recorded — **0** silent over-budget commits; an in-budget repair applies with a guide-veto window and reversible rollback; an over-budget or size-changing repair returns `staffExceptionRequired`.
+  → `commit.test.ts` + `repair.test.ts`; golden [Fixture C](#fixture-c-churn-rollback-us2).
+- **SC-005** *(P4)*: **100%** of bullying/coercion/exclusion reports bypass the optimizer and appear in the human safeguarding sink; **0** such reports alter a learner's rating or an assignment objective; a safeguarding hold pauses conflicting moves.
+  → `safeguarding` test in `adapters/cohort-safeguarding-memory/test/index.test.ts`; golden [Fixture D](#fixture-d-safeguarding-shadow-us2).
+- **SC-006** *(P2/P4)*: **0** assignments are produced or altered by a learned model; any benefit LCB is logged **strictly after** lock and is **absent** from the pre-lock solve/repair inputs.
+  → `solver.test.ts` + `adapters/cohort-benefit-shadow/test/index.test.ts`; golden [Fixture D](#fixture-d-safeguarding-shadow-us2).
+- **SC-007** *(P5)*: RivalryMix produces **0** honesty/emotion/personality/motivation labels; low-quality input lowers confidence and suppresses prompts (**0** patterns surfaced below threshold); refused/missing analytics produce **0** status changes, interventions, or motivation hypotheses.
+  → `rivalrymix.test.ts` + `adapters/cohort-media-stub/test/index.test.ts`; golden [Fixture E](#fixture-e-turns--us3).
+- **SC-008** *(P0/P6)*: Swapping any adapter (`CandidateIndex`, `CohortRepository`, `SafeguardingSink`, `MediaTurnSource`, `BenefitEstimator`) requires **no** change to the domain package; the deferred HNSW / CP-SAT / WebRTC+LiveKit / causal-uplift targets are **absent** from the buildable slice and represented as clearly-marked seams.
+  → adapter tests across `adapters/cohort-*/test/`; the seeded smoke test proves the seam shape from iteration 1.
+
+---
+
+## Golden Values & Seed Fixtures
+
+These are the **acceptance data**: fixed synthetic inputs with **exact** expected outputs. They live in-repo
+as literal fixtures (`packages/cohort-compiler/test/fixtures/*.ts`, committed in P0) and drive the contract
+tests. No external fetch. Tolerances are stated per fixture; where "byte-identical" / "exact" is used,
+tolerance is **0**.
+
+### Pinned formulas (used by the golden fixtures)
+
+These reference formulas make the golden outputs exact. They are the **MVP defaults**; the caliper
+tolerances, churn cap, objective weights, non-harm floor, and RivalryMix thresholds are all configurable
+inputs (see [§ Pre-marked Decision Points](#pre-marked-decision-points)).
+
+- **Within-caliper (per-dimension, inclusive):** `withinCaliper(a,b,c) = (|a.level−b.level| ≤ c.levelTolerance) AND (|a.velocity−b.velocity| ≤ c.velocityTolerance)`. Boundary (`==` tolerance) is **within**; `>` is out.
+- **Candidate ordering distance (Manhattan):** `dist(a,b) = |a.level−b.level| + |a.velocity−b.velocity|`. Candidates are sorted by `dist` ascending, then `learnerRef` ascending (lexicographic). Cap at `caliper.k`.
+- **Candidate-set hash (deterministic, pinned recipe):** `hash = fnv1a32hex(preimage)` where `preimage = subjectRef + ">" + orderedCandidateRefs.join(",")` (UTF-8), and `fnv1a32hex` is 32-bit FNV-1a rendered as 8-char lowercase hex. The test asserts (a) `run1.hash === run2.hash` and (b) `hash === fnv1a32hex(preimage)`; the literal hex is derived by the pinned recipe, not hand-copied.
+- **Churn metric:** `churn(prev,next) = |{ ref : cohortIndexOf(prev, ref) ≠ cohortIndexOf(next, ref) }|`, where an unassigned learner has a distinct sentinel cohort index. A swap = 2.
+- **Individual non-harm benefit (injected, default reference):** the constraint reads a per-member benefit via an **injected** `benefitOf(member, cohort) → number` supplied on `HardConstraints`; the MVP default is `benefitOf(m,C) = 1 − (Σ_{p∈C, p≠m} chebyshev(m,p)) / ((|C|−1) × (levelTolerance + velocityTolerance))` with `chebyshev(x,y) = max(|Δlevel|,|Δvelocity|)`. The floor default is **0.5**. The constraint is `∀ m ∈ C: benefitOf(m,C) ≥ nonHarmFloor` — **per member, never averaged**. (Golden [Fixture B3](#fixture-b3-nonharm-reject-us2) injects an explicit benefit map to isolate the floor from the caliper.)
+- **Role vector (deterministic):** members sorted by `learnerRef` ascending receive roles from the fixed 6-slot vector `["anchor","scout","builder","builder","challenger","scribe"]` by index.
+- **Cohort ordering (deterministic):** cohorts in an assignment are ordered by their lexicographically-smallest member `learnerRef`.
+- **RivalryMix thresholds (default):** `{ dominanceTurnShare: 0.5, interruptionThreshold: 3, confidenceFloor: 0.5, minTurns: 4, qualityFloor: 0.5 }`. Dominance fires when a speaker's turn share is **strictly greater than** `dominanceTurnShare`. An overlap turn is an **attributable** interruption iff `overlap === true AND (quality ?? 1) ≥ qualityFloor`. `meanQuality = mean(quality ?? 1)`, `coverage = min(1, totalTurns / minTurns)`, `confidence = meanQuality × coverage`, and `suppressed = (totalTurns < 2) OR (confidence < confidenceFloor)`. When `suppressed`, **no** patterns are surfaced. Floating-point tolerance: **±1e-9**.
+
+### Fixture A: `caliper-8` (US1)
+
+**Config:** `caliper = { levelTolerance: 2, velocityTolerance: 2, k: 10 }`.
+
+**Pool** (`level`, `velocity`, `separations`; all `ageBand: a9_11`, `schedule: ["mon-pm","wed-am"]`, `accommodations: { needs: [], conflicts: [] }`, `priorAssignmentRef: null`):
+
+| ref | level | velocity | separations |
+|---|---|---|---|
+| L1 | 10 | 10 | `["L8"]` |
+| L2 | 11 | 9  | `[]` |
+| L3 | 12 | 12 | `[]` |
+| L4 | 9  | 11 | `[]` |
+| L5 | 20 | 20 | `[]` |
+| L6 | 10 | 8  | `[]` |
+| L7 | 13 | 10 | `[]` |
+| L8 | 11 | 11 | `["L1"]` |
+
+**Expected candidate sets** (ordered candidate refs; self + own separations excluded; out-of-caliper excluded):
+
+| subject | expected candidates (in order) | preimage |
+|---|---|---|
+| L1 | `["L2","L4","L6","L3"]` | `L1>L2,L4,L6,L3` |
+| L2 | `["L1","L6","L8","L7","L4"]` | `L2>L1,L6,L8,L7,L4` |
+| L3 | `["L8","L7","L1"]` | `L3>L8,L7,L1` |
+| L4 | `["L1","L8","L2"]` | `L4>L1,L8,L2` |
+| L5 | `[]` | `L5>` |
+| L6 | `["L1","L2"]` | `L6>L1,L2` |
+| L7 | `["L2","L3","L8"]` | `L7>L2,L3,L8` |
+| L8 | `["L2","L3","L4","L7"]` | `L8>L2,L3,L4,L7` |
+
+**Asserted:** exact candidate lists above (tolerance 0); `L5` empty (empty-caliper case); `L8` never in `L1`'s set and vice-versa (separation); no output field encodes a caste rank or full-field ranking (FR-006); `run1 === run2` for every set and hash.
+
+### Fixture B: `cohort-12` (US2)
+
+**Config:** caliper as Fixture A; `hard = { age, schedule, separations, accommodations, caliper, nonHarmFloor: 0.5, churn }`; `churn = { weekKey: "2026-W30", cap: 4, used: 0, exceptions: [] }`; `weights = default`; `prior = null`. Under the default `benefitOf`, every member's benefit is ≥ 0.60 (the minimum in each group is 0.60), so the floor (0.5) does not bind here.
+
+**Pool** (all `schedule: ["mon-pm","wed-am"]`, no accommodations conflicts, no separations):
+
+| ref | ageBand | level | velocity |
+|---|---|---|---|
+| A1 | a9_11 | 10 | 10 |
+| A2 | a9_11 | 11 | 10 |
+| A3 | a9_11 | 10 | 11 |
+| A4 | a9_11 | 12 | 10 |
+| A5 | a9_11 | 11 | 12 |
+| A6 | a9_11 | 12 | 11 |
+| B1 | a12_14 | 20 | 20 |
+| B2 | a12_14 | 21 | 20 |
+| B3 | a12_14 | 20 | 21 |
+| B4 | a12_14 | 22 | 20 |
+| B5 | a12_14 | 21 | 22 |
+| B6 | a12_14 | 22 | 21 |
+
+**Expected `assignCohorts` output** (the age constraint forces the partition; the only feasible split into cohorts of six is by age band):
+
+- `assignment.cohorts.length === 2`.
+- `cohorts[0].members` (by ref) `= [A1, A2, A3, A4, A5, A6]` with roles `[anchor, scout, builder, builder, challenger, scribe]`.
+- `cohorts[1].members` (by ref) `= [B1, B2, B3, B4, B5, B6]` with roles `[anchor, scout, builder, builder, challenger, scribe]`.
+- `unassigned === []`.
+- **0** hard-constraint violations; deterministic across runs (byte-identical `assignment`).
+- No learned model consulted (FR-019): the solve inputs contain no benefit/LCB field.
+
+### Fixture B2: `cohort-13-infeasible` (US2)
+
+`cohort-12` **plus** `C1 = { ref: "C1", ageBand: "a6_8", level: 5, velocity: 5, schedule: ["mon-pm","wed-am"], separations: [] }`.
+
+**Expected:** `cohorts` unchanged (the two full cohorts above); `unassigned = [{ ref: "C1", binding: ["age: fewer than six near-peers in age band a6_8"] }]`. `C1` is **never** force-placed into an `a9_11`/`a12_14` cohort (age is a hard constraint). Tolerance 0 on membership; `binding` is a machine-readable, non-empty reason list.
+
+### Fixture B3: `nonharm-reject` (US2)
+
+A single candidate cohort with an **injected** benefit map to isolate the non-harm floor from the caliper.
+
+- `members = [M1, M2, M3, M4, M5, M6]` (all within caliper, same age/schedule, no separations — so age/schedule/caliper/accommodations/separation all pass).
+- `benefitOf` returns `{ M1: 0.90, M2: 0.80, M3: 0.70, M4: 0.60, M5: 0.45, M6: 0.80 }`; `nonHarmFloor = 0.5`.
+
+**Expected `isFeasibleCohort` output:** `{ ok: false, violations: [{ constraint: "individual_non_harm_floor", member: "M5", value: 0.45, floor: 0.5 }] }`. Note the mean benefit is `0.708 ≥ 0.5` — rejection proves the floor is **per-member and not averaged away** (FR-009). A control run with `M5 = 0.50` returns `{ ok: true, violations: [] }` (boundary inclusive).
+
+### Fixture C: `churn-rollback` (US2)
+
+Uses the `cohort-12` A-group plus one bench learner `A7 = { ref: "A7", ageBand: "a9_11", level: 11, velocity: 11, schedule: ["mon-pm","wed-am"], separations: [] }` (within caliper of the A-group).
+
+1. **Commit asg-1** (`cohorts[0] = [A1..A6]`, `A7` unassigned; `prior = null`): `CommitResult = { ok: true, assignmentId: "asg-1", priorAssignmentId: null, reasons: [] }`. `repo.activeFor("A1") === "asg-1"`.
+2. **Swap A6→A7** into asg-2 (`cohorts[0] = [A1,A2,A3,A4,A5,A7]`): `churn(asg-1, asg-2) === 2` (A6 removed, A7 added).
+   - With `churn.cap = 2`: `commit(asg-2)` → `{ ok: true, assignmentId: "asg-2", priorAssignmentId: "asg-1", reasons: [] }` (boundary allowed).
+   - With `churn.cap = 1` and no exception: `commit(asg-2)` → `{ ok: false, assignmentId: null, reasons: ["churn-exceeded"] }`; **nothing persisted** (asg-1 still active).
+   - With `churn.cap = 1` **plus** a recorded exception `{ approvedBy: "safety-owner-1", reason: "reunite split friends", delta: 1 }`: `commit(asg-2)` → `{ ok: true, ... }`.
+3. **Rollback:** after asg-2 commits, `rollback(repo, "asg-2")` restores asg-1 **byte-identical** (`cohorts[0] = [A1..A6]`, `A7` unassigned). Tolerance 0.
+4. **Duplicate-active (atomic failure):** with asg-1 active, `commit(asg-dup)` where `asg-dup` contains `A1` and `asg-dup.priorAssignmentId !== "asg-1"` → `{ ok: false, reasons: ["duplicate-active-assignment"] }`; repo unchanged (no partial roster).
+
+### Fixture D: `safeguarding-shadow` (US2)
+
+- **Health event:** `{ assignmentId: "asg-1", reporterRef: "A2", eventClass: "bullying", affectedMembers: ["A3"], severity: "high", evidenceScope: "session-notes", immediateAction: "paused move", safeguardingLink: "sg-queue-1", followUpOwner: "guide-1" }`.
+- **Active moves in flight:** `[{ moveId: "mv-1", touches: ["A3","A5"] }, { moveId: "mv-2", touches: ["A1"] }]`.
+- **Expected `routeHealthEvent`:** `sink.pending()` contains exactly the event; the move touching `A3` (`mv-1`) is returned as **paused** (POL-007); `mv-2` is untouched; the event is **never** passed to `assignCohorts`/`scoreObjective`/`repairCohort` (no rating/objective field is mutated). Return type is `void`/`Promise<void>`.
+- **Shadow benefit:** `BenefitEstimator.logAfterLock("asg-1", "2026-07-20T12:00:00Z")` → `{ assignmentId: "asg-1", lcb: 0.0, loggedAt: "2026-07-20T12:00:00Z", shadow: true }`. **Property:** the returned `BenefitLCB` is absent from every solve/repair input (asserted by type + a test that scans solve inputs); calling `logAfterLock` before lock is a no-op/error (never produced pre-lock).
+
+### Fixture E: `turns-*` (US3)
+
+Thresholds = the RivalryMix defaults pinned above. Each `TurnEvent` is `{ speaker, start, duration, overlap, quality? }`.
+
+**`turns-dominance`** — `[ {S1,0,10,false}, {S2,10,5,false}, {S1,15,10,false}, {S1,25,10,false}, {S3,35,5,false}, {S1,40,10,false} ]`
+Expected: `perSpeaker.S1.turnShare ≈ 0.6667`; `confidence = 1.0`; `suppressed = false`; `patterns = [{ kind: "dominance", subjects: ["S1"], evidence: "S1 holds 4/6 turns (66.7%) > 50%" }]`.
+
+**`turns-interruption`** — `[ {S1,0,10,false}, {S2,8,6,true}, {S1,14,10,false}, {S2,20,5,true}, {S3,25,8,false}, {S2,30,5,true}, {S1,35,8,false}, {S3,43,7,false} ]`
+Expected: no dominance (max turn share 0.375); `S2` attributable interruptions `= 3`; `confidence = 1.0`; `suppressed = false`; `patterns = [{ kind: "repeated_interruption", subjects: ["S2"], evidence: "S2 initiated 3 overlapping turns ≥ 3" }]`.
+
+**`turns-lowquality`** — `[ {S1,0,10,false,quality:0.3}, {S2,10,10,false,quality:0.3}, {S1,20,10,false,quality:0.3} ]`
+Expected: `meanQuality = 0.3`, `coverage = 0.75`, `confidence = 0.225`; `suppressed = true`; `patterns = []` (nothing surfaced despite S1's 0.667 share). Tolerance ±1e-9.
+
+**`turns-sparse`** — `[ {S1,0,10,false} ]`
+Expected: `suppressed = true` (totalTurns < 2); `patterns = []`; no spurious dominance.
+
+**`turns-empty`** — `[]`
+Expected: `suppressed = true`; `patterns = []`; `perSpeaker = {}`; `confidence = 0`. Models a refused/missing case → **no** status change, intervention, or motivation hypothesis (FR-024).
+
+**`turns-ambiguous`** — `[ {S1,0,10,false}, {S2,8,5,true,quality:0.2}, {S1,13,10,false}, {S2,20,5,true}, {S1,27,10,false}, {S2,33,5,true} ]`
+Expected: the `quality:0.2` overlap is **not** attributable (below `qualityFloor`), so `S2` attributable interruptions `= 2 < 3` → **no** `repeated_interruption`; turn shares are `S1 = S2 = 0.5` (not `> 0.5`) → **no** dominance; `meanQuality ≈ 0.8667`, `confidence ≈ 0.8667`, `suppressed = false`; `patterns = []`. Demonstrates "ambiguous overlap → no invented pattern" (FR-023, edge case).
+
+**Universal assertion (all `turns-*`):** `TurnAnalysis` carries **no** honesty/emotion/personality/motivation field, in **100%** of outputs (FR-022, SC-007).
+
+---
+
+## Decisions Already Made
+
+These are settled — do **not** re-open them.
+
+1. **Stack:** TypeScript (strict) monorepo; **pnpm** workspaces; **Vitest**; **Biome**; `tsc -b`. Mirrors `packages/learning-loop` and `packages/evidence-graph`. (See [§ Stack & Commands](#stack--commands-pinned).)
+2. **Pure domain, ports for all I/O:** `packages/cohort-compiler` is side-effect-free — **no I/O, no wall-clock reads, no `Math.random`**. Time (start/review timestamps, week keys) is passed in. I/O sits behind `CandidateIndex`, `CohortRepository`, `SafeguardingSink`, plus stub ports `MediaTurnSource` and `BenefitEstimator`.
+3. **Candidate generation = pure kNN/caliper filter now; HNSW deferred** behind `CandidateIndex` (no HNSW library, no ANN in this slice).
+4. **Solver = deterministic greedy construction + bounded local-search/repair now; CP-SAT/branch-and-price deferred.** "Correct" for this slice = **feasible + all hard constraints honored + deterministic**, *not* provably optimal. No native/OR-Tools dependency.
+5. **Solver determinism:** no randomness anywhere; ties broken by `learnerRef` ascending; cohorts ordered by smallest member ref; roles assigned by the fixed role vector. Same inputs → byte-identical output.
+6. **Hard vs. soft strictly separated:** the seven hard constraints gate feasibility as boolean predicates; the soft objective only ranks *feasible* options and can never make an infeasible assignment feasible or trade away a hard constraint.
+7. **Individual non-harm floor is hard, per-member, never averaged.** The benefit function is injected/configurable (default reference formula pinned above); the invariant is fixed.
+8. **Atomic commit + rollback in-memory; PostgreSQL deferred.** One active assignment per learner; whole-roster-or-nothing commit; prior snapshot retained for rollback.
+9. **Bounded automation envelope:** in-budget repair auto-applies with a guide-veto window + one-click rollback; over-budget or size changes require a recorded staff exception.
+10. **Safeguarding bypass is non-optimizable:** `CohortHealthEvent` routes straight to the sink, pauses conflicting moves (POL-007), never lowers a rating; it is never a negative objective term.
+11. **No learned model assigns; causal uplift stays shadow** (`BenefitEstimator`, post-lock log only, never read in a solve/repair).
+12. **RivalryMix is observable-only, confidence-gated pure logic;** WebRTC/AudioWorklet + LiveKit media plane deferred to `MediaTurnSource` stub. Suppress under low quality — never mislabel.
+13. **No caste ranks (G6):** private level/velocity bands are matchmaking inputs only; no derived tier name / full-field ranking. Visible standings live in feature `004`.
+14. **Parallel-safety:** all code in **new** dirs (`packages/cohort-compiler`, `adapters/cohort-*`); the only shared-file edit is the root `tsconfig.json` `references`, isolated as the **final** task.
+
+## Defaults for the Unspecified
+
+> **For anything this spec doesn't specify, choose the simplest correct option, record it in
+> `.loop/decisions.md`, and continue.**
+
+Apply this rule instead of asking. Typical unspecified-but-safe choices: exact TypeScript field names and file
+splits within a module, internal helper names, the precise local-search neighborhood order (as long as it is
+deterministic and ties break by `learnerRef`), the exact wording of machine-readable reason/evidence strings
+(as long as they are stable and assertable), and README phrasing. Anything that would change a golden value,
+weaken a hard constraint, or touch a shared root file is **not** a free default — see
+[§ Pre-marked Decision Points](#pre-marked-decision-points).
+
+## Stack & Commands (pinned)
+
+- **Package manager:** `pnpm@9.15.9` (root `packageManager`; the harness auto-detects the lockfile). Node.js LTS.
+- **Workspace globs** (already present — do **not** edit): `packages/*`, `adapters/*`, `apps/*` (`pnpm-workspace.yaml`).
+- **Vitest include** (already present — do **not** edit): `packages/**/test/**/*.test.ts`, `adapters/**/test/**/*.test.ts` (`vitest.config.ts`).
+- **TS base** (already present): `tsconfig.base.json` — `strict`, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`, `composite`, `module: ESNext`, `moduleResolution: Bundler`. New packages `extends "../../tsconfig.base.json"` with `rootDir: "."`, `outDir: "dist"`, `include: ["src/**/*.ts","test/**/*.ts"]`.
+- **Package manifest shape** (mirror `@gt100k/learning-loop`): `{ "name": "@gt100k/cohort-compiler", "version": "0.1.0", "private": true, "type": "module", "main": "./src/index.ts", "types": "./src/index.ts", "exports": { ".": "./src/index.ts" }, "scripts": { "test": "vitest run" } }`.
+
+**Commands (the gate):**
+
+```bash
+pnpm install                                   # bootstrap the workspace
+pnpm typecheck                                 # tsc -b   (strict; must be clean)
+pnpm test                                      # vitest run across the workspace
+pnpm lint                                      # biome check packages adapters apps
+pnpm --filter @gt100k/cohort-compiler test     # this package's unit + contract tests
+```
+
+`build` in this repo means the app build (`pnpm build` → `@gt100k/student-compass`), which this slice does
+not touch; the loop gate for this feature is **`pnpm typecheck` + `pnpm test`** (+ `pnpm lint`).
+
+**Seeded smoke test (green from iteration 1).** As the first deliverable of P0, add
+`packages/cohort-compiler/test/smoke.test.ts` importing the package entrypoint and asserting the module loads
+and the seed fixtures are well-formed, e.g.:
+
+```ts
+import { describe, expect, it } from "vitest";
+import * as cohort from "../src/index";
+import { caliper8 } from "./fixtures/caliper-8";
+
+describe("smoke", () => {
+  it("package entrypoint loads", () => {
+    expect(cohort).toBeTypeOf("object");
+  });
+  it("seed fixture caliper-8 has 8 learners with unique refs", () => {
+    expect(caliper8.pool).toHaveLength(8);
+    expect(new Set(caliper8.pool.map((l) => l.learnerRef)).size).toBe(8);
+  });
+});
+```
+
+This keeps `pnpm test` green before any feature logic exists, so the gate never blocks the loop on an empty
+package.
+
+## Environment & Secrets
+
+- **No secrets, no env vars, no network, no external services.** The slice is synthetic-only and pure
+  in-memory; nothing reads `process.env`, a clock, or `Math.random`.
+- The repo is **public**; `.env`/`.env.*` are git-ignored (`!.env.example`). This feature needs **no**
+  `.env.local` — `pnpm typecheck`/`pnpm test` succeed with an empty environment. Do not add env-dependent
+  code paths.
+- No machine-specific absolute paths in code or fixtures (ENG rule).
+
+## Pre-marked Decision Points
+
+Where a real product judgment is unavoidable, the **default** is stated inline. `severity: critical` marks
+choices that would invalidate an SC or touch something irreversible/shared; the loop escalates only those.
+
+- **DP-1 — Caliper tolerances (`levelTolerance`, `velocityTolerance`, `k`).** *Default:* `{ 2, 2, 10 }` (Fixture A). `severity: low` — tunable config; any values satisfy the FRs as long as behavior is deterministic and the caliper is a hard near-peer bound. Changing them changes golden Fixture A, so keep them for the golden tests.
+- **DP-2 — Churn cap.** *Default:* `4` per week for a normal compile; `2` in the churn boundary golden. `severity: normal` — tunable; the invariant (never silently exceed; swap = 2) is fixed.
+- **DP-3 — Objective weights.** *Default:* churn-dominant with all terms present; the only pinned golden property is monotonicity (lower churn ranks higher) and determinism. `severity: low` — tunable; must never override a hard constraint.
+- **DP-4 — Individual non-harm floor value + benefit formula.** *Default:* floor `0.5` with the pinned reference `benefitOf`; the benefit function is injectable. `severity: normal` — the *invariant* (hard, per-member, never averaged) is **critical** and fixed; the numeric floor is tunable.
+- **DP-5 — RivalryMix thresholds.** *Default:* `{ dominanceTurnShare: 0.5, interruptionThreshold: 3, confidenceFloor: 0.5, minTurns: 4, qualityFloor: 0.5 }`. `severity: low` — tunable; the *rule* (suppress under low quality, never mislabel, no trait field) is **critical** and fixed.
+- **DP-6 — Root `tsconfig.json` references (the single shared-file touch).** *Default:* add `packages/cohort-compiler` and each `adapters/cohort-*` to the `references` array as the **final** task, in its own commit. `severity: critical` — it is the only shared-file edit and the merge-reconciliation point; keep it isolated.
+- **DP-7 — Non-six cohort handling.** *Default:* leave leftover (<6) learners **unassigned** with a binding reason; a staff `sizeException` is the only path to a non-six cohort. `severity: normal` — never silently emit a wrong-size cohort.
 
 ## Assumptions
 
@@ -159,7 +510,7 @@ Given a stream/array of **turn events** (speaker, start, duration, overlap) from
 - **Pure-TS caliper filter for the MVP**: candidate generation is a deterministic level+velocity distance filter / kNN over the in-memory pool. **HNSW** (the production ANN) is deferred behind the `CandidateIndex` port (PRD §15).
 - **Media plane deferred to a stub**: RivalryMix operates on arrays of already-extracted turn events. Real-time capture (WebRTC/AudioWorklet/Rust-WASM) and the **LiveKit** SFU media plane (§15.1) are **deferred** to a `MediaTurnSource` stub port; the §15.1/§15.2 latency and scale SLOs (feature-to-guide-screen <250 ms p95; 20,000 rooms; join/reconnect budgets) are **production targets**, not MVP gates (pure logic is not latency-bound).
 - **Level/velocity bands are given**: the private ratings that drive matchmaking are synthetic inputs to this slice; how they are computed (from mastery/velocity signals) is external (PRD §12/§15). This feature consumes them, it does not compute them.
-- **Individual non-harm floor is a modeled per-learner threshold**: for the synthetic slice it is a deterministic per-learner compatibility/benefit floor computed from observable pairing/accommodation/pace features — **not** a learned causal-uplift estimate (which stays shadow, FR-019). The exact floor formula is an implementation detail documented in code; its *invariant* (hard, per-learner, never averaged away) is fixed here.
+- **Individual non-harm floor is a modeled per-learner threshold**: for the synthetic slice it is a deterministic per-learner compatibility/benefit floor computed from observable pairing/accommodation/pace features (default reference formula pinned above; injectable) — **not** a learned causal-uplift estimate (which stays shadow, FR-019). The exact floor formula is an implementation detail; its *invariant* (hard, per-learner, never averaged away) is fixed here.
 - **Bounded automation envelope**: an in-budget cohort repair may auto-apply (bounded automation, §8.5) but always with a guide-veto window and one-click rollback; anything beyond the churn budget or a group-size change requires a recorded human exception. No irreversible, identity-defining move is automated.
 - **Shadow causal-uplift**: the `BenefitEstimator` port exists only to prove the seam and the post-lock-only logging discipline; it returns a placeholder LCB and is never read during a solve/repair (Constitution III; §15).
 - **Synthetic-only, governance stubbed**: no real learners, consent, media, or safeguarding case management; the safeguarding sink is an in-memory human-queue stub. Rights/authority limits still bind (Constitution I/III/V/VIII/IX; G4/G6/G7): no caste ranks, safeguarding bypass, one active assignment, aggregated peer views, no learned-model assignment.

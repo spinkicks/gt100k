@@ -81,6 +81,8 @@ The inviolable set the solver checks (FR-007/FR-008).
 | individual non-harm floor | **every** member's individual compatibility/benefit ≥ the per-learner floor (hard, per-learner; never averaged, FR-009) |
 | churn budget | membership changes vs. prior snapshot ≤ the weekly `ChurnBudget.cap` (FR-016) |
 
+**Config carriers** (fields on `HardConstraints`): `nonHarmFloor: number` (default `0.5`) and an **injected** `benefitOf(member, cohort) => number` used by the non-harm-floor check (MVP default reference formula and churn metric are pinned in [spec.md § Golden Values → Pinned formulas](./spec.md#pinned-formulas-used-by-the-golden-fixtures)). Injecting `benefitOf` keeps the floor independent of the caliper and lets the golden [Fixture B3](./spec.md#fixture-b3-nonharm-reject-us2) assert an exact rejection.
+
 ## ObjectiveWeights / ObjectiveTerms (value)
 
 Deterministic **soft** scoring that ranks *feasible* assignments only (FR-013). Never overrides a hard constraint.
