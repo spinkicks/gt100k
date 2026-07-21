@@ -373,7 +373,11 @@ export default function ArenaClient() {
               view={view}
             />
           ) : (
-            <Fallback2D view={view} focusedFeature={focusedBaseFeature} />
+            <Fallback2D
+              view={view}
+              focusedFeature={focusedBaseFeature}
+              focusedNodeId={targetNodeId}
+            />
           )}
         </div>
         <Onboarding

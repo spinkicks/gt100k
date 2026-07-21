@@ -237,7 +237,9 @@ describe("arena P1 client composition", () => {
     expect(client).toMatch(
       /dynamic\(\(\)\s*=>\s*import\("\.\/scene\/ArenaCanvas"\)[\s\S]*?ssr:\s*false/,
     );
-    expect(client).toContain("<Fallback2D view={view}");
+    expect(client).toMatch(
+      /<Fallback2D\s+view=\{view\}\s+focusedFeature=\{focusedBaseFeature\}\s+focusedNodeId=\{targetNodeId\}\s*\/>/,
+    );
     expect(client).toMatch(
       /<ArenaLedger\s+eventBus=\{eventBus\}\s+feedback=\{feedback\}\s+onboarding=\{onboarding\.ledgerState\}\s+view=\{view\}/,
     );

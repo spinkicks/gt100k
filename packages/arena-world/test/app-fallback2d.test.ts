@@ -67,10 +67,23 @@ interface Fallback2DPlan {
     assetHref: string;
   }>;
   paths: Array<{ from: string; to: string }>;
+  baseFeatures: Array<{
+    feature: string;
+    zone: string;
+    x: number;
+    y: number;
+    by: string;
+    missionId: string;
+    assetHref: string;
+  }>;
 }
 
 interface Fallback2DModule {
-  default: (props: { view: InitialArenaView }) => unknown;
+  default: (props: {
+    view: InitialArenaView;
+    focusedFeature?: string;
+    focusedNodeId?: string;
+  }) => unknown;
   buildFallback2DPlan(view: InitialArenaView): Fallback2DPlan;
 }
 
@@ -185,9 +198,38 @@ describe("arena P1 Tier-D static fallback", () => {
       },
     ]);
     expect(plan.paths).toEqual(buildTierDView().world.edges);
+    expect(plan.baseFeatures).toEqual([
+      {
+        feature: "campfire",
+        zone: "hearth",
+        x: 1_024,
+        y: 1_024,
+        by: "kestrel",
+        missionId: "m1",
+        assetHref: "/seed/prop-campfire.svg",
+      },
+      {
+        feature: "banner",
+        zone: "gateway",
+        x: 1_024,
+        y: 928,
+        by: "otter",
+        missionId: "m2",
+        assetHref: "/seed/prop-banner.svg",
+      },
+      {
+        feature: "garden",
+        zone: "grove",
+        x: 944,
+        y: 1_088,
+        by: "kestrel",
+        missionId: "m3",
+        assetHref: "/seed/prop-garden.svg",
+      },
+    ]);
   });
 
-  it("renders a visual-only static SVG without a canvas or duplicate semantic tree", async () => {
+  it("renders every path and Base Camp placement without a canvas or duplicate semantic tree", async () => {
     const module = await importAppModule<Fallback2DModule>("app/scene/Fallback2D.tsx");
     expect(module.default).toBeTypeOf("function");
     if (!module.default) return;
@@ -216,10 +258,47 @@ describe("arena P1 Tier-D static fallback", () => {
     expect(markup.match(/data-state="unlocked"/g)).toHaveLength(4);
     expect(markup.match(/data-state="available"/g)).toHaveLength(3);
     expect(markup.match(/data-state="locked"/g)).toHaveLength(2);
+    expect(markup.match(/data-path-from=/g)).toHaveLength(7);
+    expect(markup.match(/data-base-feature=/g)).toHaveLength(3);
+    expect(markup).toContain('href="/seed/prop-campfire.svg"');
+    expect(markup).toContain('href="/seed/prop-banner.svg"');
+    expect(markup).toContain('href="/seed/prop-garden.svg"');
     expect(markup).toContain("Counting Lighthouse");
     expect(markup).toContain("The Spelling Spires");
     expect(markup).not.toContain("<canvas");
     expect(markup).not.toContain('role="tree"');
+  });
+
+  it("mirrors Ledger focus and attributable Base Camp details in the static visual", async () => {
+    const module = await importAppModule<Fallback2DModule>("app/scene/Fallback2D.tsx");
+    expect(module.default).toBeTypeOf("function");
+    if (!module.default) return;
+
+    const [{ createElement }, { renderToStaticMarkup }] = await Promise.all([
+      importAppDependency<{
+        createElement(
+          type: Fallback2DModule["default"],
+          props: Parameters<Fallback2DModule["default"]>[0],
+        ): unknown;
+      }>("react/index.js"),
+      importAppDependency<{ renderToStaticMarkup(element: unknown): string }>(
+        "react-dom/server.node.js",
+      ),
+    ]);
+
+    const markup = renderToStaticMarkup(
+      createElement(module.default, {
+        view: buildTierDView(),
+        focusedFeature: "banner",
+        focusedNodeId: "letter-landing",
+      }),
+    );
+
+    expect(markup).toMatch(
+      /data-base-feature="banner"[^>]*data-focused="true"[^>]*data-mission-id="m2"/,
+    );
+    expect(markup).toMatch(/data-node-id="letter-landing"[^>]*data-focused="true"/);
+    expect(markup).toContain("otter · mission m2");
   });
 
   it("commits every region and state SVG used by the fallback with no external source", () => {
@@ -231,6 +310,13 @@ describe("arena P1 Tier-D static fallback", () => {
       "node-locked",
       "node-available",
       "node-unlocked",
+      "prop-campfire",
+      "prop-banner",
+      "prop-garden",
+      "prop-dock",
+      "prop-workshop",
+      "prop-lookout",
+      "prop-generic",
     ];
 
     for (const asset of assets) {
@@ -247,5 +333,9 @@ describe("arena P1 Tier-D static fallback", () => {
     expect(source).not.toContain('"use client"');
     expect(source).not.toMatch(/@react-three|from "three"|<Canvas|<canvas|useEffect|useFrame/);
     expect(source).toContain('aria-hidden="true"');
+
+    const client = readAppFile("app/ArenaClient.tsx");
+    expect(client).toContain("focusedNodeId={targetNodeId}");
+    expect(client).not.toMatch(/import\s+[^;]*ArenaCanvas[^;]*from/);
   });
 });

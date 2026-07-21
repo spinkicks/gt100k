@@ -98,7 +98,15 @@ interface LedgerModule {
 interface FallbackModule {
   default: (props: { view: InitialArenaView }) => unknown;
   buildFallback2DPlan(view: InitialArenaView): {
-    baseFeatures: Array<{ feature: string; zone: string; x: number; y: number; by: string }>;
+    baseFeatures: Array<{
+      feature: string;
+      zone: string;
+      x: number;
+      y: number;
+      by: string;
+      missionId: string;
+      assetHref: string;
+    }>;
   };
 }
 
@@ -184,9 +192,33 @@ describe("arena P4 Base Camp", () => {
     }
 
     expect(fallback.buildFallback2DPlan(buildView("D")).baseFeatures).toEqual([
-      { feature: "campfire", zone: "hearth", x: 1024, y: 1024, by: "kestrel" },
-      { feature: "banner", zone: "gateway", x: 1024, y: 928, by: "otter" },
-      { feature: "garden", zone: "grove", x: 944, y: 1088, by: "kestrel" },
+      {
+        feature: "campfire",
+        zone: "hearth",
+        x: 1024,
+        y: 1024,
+        by: "kestrel",
+        missionId: "m1",
+        assetHref: "/seed/prop-campfire.svg",
+      },
+      {
+        feature: "banner",
+        zone: "gateway",
+        x: 1024,
+        y: 928,
+        by: "otter",
+        missionId: "m2",
+        assetHref: "/seed/prop-banner.svg",
+      },
+      {
+        feature: "garden",
+        zone: "grove",
+        x: 944,
+        y: 1088,
+        by: "kestrel",
+        missionId: "m3",
+        assetHref: "/seed/prop-garden.svg",
+      },
     ]);
     expect(ledger.buildLedgerBaseEntries(buildView())).toEqual([
       {

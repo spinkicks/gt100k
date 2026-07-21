@@ -173,3 +173,7 @@
 ## 2026-07-21 — T046a frame-monitor lifecycle
 - Keep one O(1) 90-sample circular window inside the live r3f canvas and compare its exact average strictly against 18ms. Rejected interval-based FPS polling because it would sample outside the render loop, add timer lifecycle state, and drift from the spec's frame-time window.
 - Latch after one `nextLowerTier` event and reset only when the parent supplies the newly rendered tier. Rejected repeated events from the same over-budget window and rejected keying/remounting the canvas because either could cascade directly to Tier D or introduce a visible flash; the existing typed event subscriber recomposes the view in place.
+
+## 2026-07-21 — T046b Tier-D seed-art and focus boundary
+- Map every canonical Base Camp feature to a committed flat SVG named after its stable `prop-*` asset key, with one committed generic SVG for deterministic unknown-feature fallback. Rejected retaining anonymous circles because the settled seed-asset contract requires Tier-D base art, and rejected runtime-generated art because the fallback must stay static, text-diffable, and fetch-free.
+- Preserve first-contribution mission attribution in the Tier-D plan and mirror Ledger node/base focus as a static focus ring while keeping the SVG `aria-hidden` and pointer-transparent. Rejected a second interactive SVG tree because the adjacent HUD and Ledger remain the single keyboard and semantic surfaces.

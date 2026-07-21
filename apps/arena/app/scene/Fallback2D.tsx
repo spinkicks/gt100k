@@ -15,6 +15,17 @@ const STATE_ASSET: Readonly<Record<NodeState, string>> = {
   unlocked: "/seed/node-unlocked.svg",
 };
 
+const BASE_ASSET: Readonly<Record<string, string>> = {
+  campfire: "/seed/prop-campfire.svg",
+  banner: "/seed/prop-banner.svg",
+  garden: "/seed/prop-garden.svg",
+  dock: "/seed/prop-dock.svg",
+  workshop: "/seed/prop-workshop.svg",
+  lookout: "/seed/prop-lookout.svg",
+};
+
+const GENERIC_BASE_ASSET = "/seed/prop-generic.svg";
+
 interface FallbackRegion {
   region: string;
   assetHref: string;
@@ -41,6 +52,8 @@ interface FallbackBaseFeature {
   x: number;
   y: number;
   by: string;
+  missionId: string;
+  assetHref: string;
 }
 
 export interface Fallback2DPlan {
@@ -61,6 +74,12 @@ export function buildFallback2DPlan(view: InitialArenaView): Fallback2DPlan {
     view.layout.positions.map((position) => [position.nodeId, position] as const),
   );
   const stateByNode = new Map(view.nodeStates.map(({ nodeId, state }) => [nodeId, state] as const));
+  const firstContributionByFeature = new Map<string, (typeof view.base.contributions)[number]>();
+  for (const contribution of view.base.contributions) {
+    if (!firstContributionByFeature.has(contribution.feature)) {
+      firstContributionByFeature.set(contribution.feature, contribution);
+    }
+  }
 
   return {
     bounds: { ...view.layout.bounds },
@@ -86,13 +105,22 @@ export function buildFallback2DPlan(view: InitialArenaView): Fallback2DPlan {
       };
     }),
     paths: view.world.edges.map(({ from, to }) => ({ from, to })),
-    baseFeatures: view.presentation.basePlacements.map((placement) => ({
-      feature: placement.feature,
-      zone: placement.zone,
-      x: placement.x,
-      y: placement.y,
-      by: placement.by,
-    })),
+    baseFeatures: view.presentation.basePlacements.map((placement) => {
+      const contribution = required(
+        firstContributionByFeature.get(placement.feature),
+        `Missing Tier-D Base Camp contribution: ${placement.feature}`,
+      );
+
+      return {
+        feature: placement.feature,
+        zone: placement.zone,
+        x: placement.x,
+        y: placement.y,
+        by: placement.by,
+        missionId: contribution.missionId,
+        assetHref: BASE_ASSET[placement.feature] ?? GENERIC_BASE_ASSET,
+      };
+    }),
   };
 }
 
@@ -121,9 +149,10 @@ function stateLabel(state: NodeState): string {
 export interface Fallback2DProps {
   view: InitialArenaView;
   focusedFeature?: string;
+  focusedNodeId?: string;
 }
 
-export default function Fallback2D({ view, focusedFeature }: Fallback2DProps) {
+export default function Fallback2D({ view, focusedFeature, focusedNodeId }: Fallback2DProps) {
   const plan = buildFallback2DPlan(view);
   const nodeById = new Map(plan.nodes.map((node) => [node.nodeId, node] as const));
 
@@ -163,6 +192,8 @@ export default function Fallback2D({ view, focusedFeature }: Fallback2DProps) {
           return (
             <line
               className={styles.path}
+              data-path-from={from}
+              data-path-to={to}
               key={`${from}:${to}`}
               x1={start.x}
               x2={end.x}
@@ -177,23 +208,41 @@ export default function Fallback2D({ view, focusedFeature }: Fallback2DProps) {
             <g
               data-base-feature={feature.feature}
               data-focused={focusedFeature === feature.feature ? "true" : "false"}
+              data-mission-id={feature.missionId}
+              data-zone={feature.zone}
               key={feature.feature}
               transform={`translate(${feature.x} ${feature.y})`}
             >
-              <circle className={styles.baseFeature} r="38" />
+              <circle className={styles.focusRing} r="58" />
+              <image
+                className={styles.baseFeatureArt}
+                height="96"
+                href={feature.assetHref}
+                preserveAspectRatio="xMidYMid meet"
+                width="96"
+                x="-48"
+                y="-48"
+              />
               <text className={styles.baseFeatureLabel} y="68">
                 {feature.feature}
               </text>
+              {focusedFeature === feature.feature ? (
+                <text className={styles.attribution} y="98">
+                  {feature.by} · mission {feature.missionId}
+                </text>
+              ) : null}
             </g>
           ))}
         </g>
         {plan.nodes.map((node) => (
           <g
             data-node-id={node.nodeId}
+            data-focused={focusedNodeId === node.nodeId ? "true" : "false"}
             data-state={node.state}
             key={node.nodeId}
             transform={`translate(${node.x} ${node.y})`}
           >
+            <circle className={styles.focusRing} r="52" />
             <image
               className={styles.nodeArt}
               height="80"

@@ -717,3 +717,17 @@
 ## NEXT
 - T046b: finish `apps/arena/app/scene/Fallback2D.tsx` as the complete Tier-D DOM/SVG rendering of the identical `ArenaView`.
 - Acceptance: every island, node/state, edge/path, and Base Camp placement comes from the shared layout/view; the Ledger and HUD remain functional; Tier D never imports or mounts canvas/Three/r3f code; focused tests plus lint/typecheck/tests/root build/Arena build remain green.
+
+## 2026-07-21 — P6 / T046b
+- Completed the Tier-D renderer from the single shared `ArenaView`: all four islands, nine stateful landmark nodes, seven prerequisite paths, and every deterministic Base Camp placement are derived from the view/layout with no parallel state computation.
+- Added committed flat SVG seed art for all six canonical Base Camp props plus a deterministic generic fallback. The fallback plan now carries the stable first-contribution mission attribution and exact committed asset descriptor for each placement.
+- Mirrored Ledger focus into the static map for nodes and base features, including attributable contributor/mission detail, while keeping the visual SVG `aria-hidden`, pointer-transparent, and free of client effects, Canvas, Three, and r3f imports. The HUD and semantic Ledger remain mounted beside the fallback.
+- Followed red-green TDD: five T046b acceptance tests failed on the missing base assets/descriptors, path metadata, focus wiring, and committed files, then passed after the minimal implementation. The full gate caught two older exact-shape/source assertions; both were strengthened to include the new focus/asset/mission contract rather than weakened or removed.
+- Review status: checked T046b against US6, D2/D6, §§5.5/P6, FR-023/029/030/036/043, SC-011/012/019/023/025, the existing Arena tokens, and React bundle boundaries; no Critical, Important, or Minor issues remain. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused Tier-D/client/Ledger/Base Camp regressions passed (4 files, 23 tests); `pnpm lint` passed (134 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (55 files, 219 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 59.9 kB route, 147 kB first load).
+- SC status: T046b completes the automated full Tier-D/no-WebGL renderer slices of SC-011/012/019/023/025. P6 remains in progress for T046c's final quality/degradation acceptance audit; the P7 browser walkthrough remains open.
+- Blockers: `playwright-cli` and a local Playwright executable remain unavailable, so the live forced-Tier-D/no-canvas walkthrough is deferred; static rendering tests, dependency scans, accessibility composition tests, and both production builds are green.
+
+## NEXT
+- T046c: audit and finalize the quality-ladder acceptance coverage in `packages/arena-world/test/quality.test.ts` and the existing frame-monitor tests.
+- Acceptance: the exact A/B/C/D capability mapping, full budget/beacon-cap table, A→B→C→D→D degradation path, strict 90-frame `>18ms` trigger, one-step/reset behavior, and context-loss-to-D path are all explicitly covered without weakening existing tests; lint, typecheck, tests, root build, and Arena build remain green (FR-043, SC-025).

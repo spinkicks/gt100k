@@ -4,6 +4,7 @@
   border: 1px solid var(--surface-border);
   border-radius: 16px;
   background: var(--sea-deep);
+  pointer-events: none;
 }
 
 .map {
@@ -34,21 +35,25 @@
   stroke-width: 12;
 }
 
-.baseFeature {
-  fill: var(--gold);
-  stroke: var(--sea-deep);
-  stroke-width: 8;
+.baseFeatureArt {
+  filter: drop-shadow(0 4px 4px rgb(14 42 59 / 55%));
 }
 
-[data-base-feature][data-focused="true"] .baseFeature {
-  fill: var(--sun-hi);
+.focusRing {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 0;
+}
+
+[data-focused="true"] .focusRing {
   stroke: var(--focus);
-  stroke-width: 14;
+  stroke-width: 12;
 }
 
 .landmark,
 .state,
-.baseFeatureLabel {
+.baseFeatureLabel,
+.attribution {
   fill: var(--ink-hi);
   font-family: var(--font-body);
   paint-order: stroke;
@@ -73,6 +78,12 @@
   font-size: 22px;
   font-weight: 800;
   stroke-width: 6px;
+}
+
+.attribution {
+  font-size: 18px;
+  font-weight: 700;
+  stroke-width: 5px;
 }
 
 @media (prefers-contrast: more) {

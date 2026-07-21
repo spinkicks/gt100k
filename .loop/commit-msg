@@ -1,1 +1,1 @@
-feat: auto-degrade arena rendering under sustained load
+feat(arena): complete tier-d fallback renderer
