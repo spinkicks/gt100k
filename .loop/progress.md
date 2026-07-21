@@ -37,3 +37,16 @@
 ## NEXT
 - T004: add `packages/arena-world/src/graph.fixture.ts`, `tiers.fixture.ts`, and `catalog.fixture.ts` from spec §§7.1–7.3 and §8.15.
 - Acceptance: tests fail first, then prove the exact synthetic 9-node/4-region DAG with a landmark on every node, tier thresholds `0/100/250/500/900/1500`, and the nine-item catalog in declaration order with deterministic eligibility plus stable `look`/`equipEffect`; region order is `[numbers-coast, tinker-bluffs, story-vale, wordwind-reach]`, guardrail fields remain absent, and repository gates stay green.
+
+## 2026-07-20 — P0 / T004
+- Added the canonical synthetic `FIXTURE`, `TIERS`, and `CATALOG` modules with the exact 9-node/4-region graph, seven derived edges, landmark on every node, six gain thresholds, and nine competence-earned cosmetics in declaration order.
+- Preserved the cosmetic guardrails by construction: every item has only deterministic eligibility plus stable `look`/`equipEffect` descriptors (including reduced-motion behavior), with no price/currency/drop/drop-rate/rarity data.
+- Added three fixture acceptance tests first. The RED run failed on the missing fixture modules; the GREEN run verifies exact values/order, unique and non-dangling nodes, an order-independent acyclic graph check, every landmark, all thresholds, and exact cosmetic keys.
+- Independent review found no Critical or Important issues; its one Minor note about the order-dependent cycle check was addressed before the final gate.
+- Gate status: direct arena-world TypeScript validation passed; Biome checked all four changed feature files; `pnpm typecheck` passed; `pnpm test` passed (7 files, 24 tests).
+- SC status: the fixture half of SC-002 and the stable-descriptor/structural-guardrail half of SC-022 are present; resolver determinism and zero-power acceptance remain open for P2.
+- Blockers: none.
+
+## NEXT
+- T004a: add `packages/arena-world/src/biomes.fixture.ts` and `packages/arena-world/src/baseLayout.fixture.ts` from spec §§8.12, 8.16, and 8.20.
+- Acceptance: tests fail first, then prove the exact four-region biome rows in canonical region order (including elevation and stable landmarks) and the exact base feature-to-zone/coordinate table; fixtures remain pure/synthetic and package plus repository gates stay green.
