@@ -25,6 +25,16 @@ export function createWorld3DRendererLifecycle(): World3DRendererLifecycle {
   let renderer: World3DRenderer | null = null;
   let detachContextLost: (() => void) | null = null;
 
+  const disposeRenderer = () => {
+    detachContextLost?.();
+    detachContextLost = null;
+    if (!renderer) return;
+    const currentRenderer = renderer;
+    renderer = null;
+    currentRenderer.renderLists.dispose();
+    currentRenderer.dispose();
+  };
+
   return {
     attach(nextRenderer, onContextLost) {
       detachContextLost?.();
@@ -32,6 +42,7 @@ export function createWorld3DRendererLifecycle(): World3DRendererLifecycle {
       if (nextRenderer.domElement && onContextLost) {
         const listener: EventListener = (event) => {
           event.preventDefault();
+          disposeRenderer();
           onContextLost();
         };
         nextRenderer.domElement.addEventListener("webglcontextlost", listener);
@@ -40,12 +51,7 @@ export function createWorld3DRendererLifecycle(): World3DRendererLifecycle {
       }
     },
     dispose() {
-      detachContextLost?.();
-      detachContextLost = null;
-      if (!renderer) return;
-      renderer.renderLists.dispose();
-      renderer.dispose();
-      renderer = null;
+      disposeRenderer();
     },
   };
 }

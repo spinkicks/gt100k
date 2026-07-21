@@ -765,3 +765,15 @@
 ## NEXT
 - Complete U045: run the performance/degradation walkthrough against the production Interest Lab app.
 - Acceptance: verify the 60fps target on a mid-capability device, simulate sustained decline through full → lite → board-2d, confirm Save-Data/low-memory/context-loss fallbacks, and prove a picked quest survives every transition; keep the Interest Lab production build and full gate green.
+
+## 2026-07-21 — P14 / U045
+- Ran the production app through a real browser walkthrough. A 4× CPU-throttled strong-capability session stepped `quest-world-3d → quest-world-3d-lite → board-2d`; `p01` remained pressed, the picked count stayed 1, and all six DOM quests survived both transitions.
+- Confirmed the direct capability floors in separate hydrated browser contexts: `deviceMemory=3` and `Save-Data=true` each rendered `board-2d`, mounted no Canvas, retained all six quests, and accepted a pick.
+- The first real `WEBGL_lose_context` run exposed a Three.js restoration race that blanked the app. Added a failing renderer-lifecycle regression, then disposed renderer ownership before the fallback callback; the rebuilt production app now reaches `board-2d` with zero console errors, no Canvas, all six quests, and the existing pick intact.
+- The browser host has no GPU render device and reports SwiftShader. Its loaded 3D tiers measured below the 55fps floor and correctly degraded, while the settled DOM tier sampled 60.4fps; a physical mid-GPU 3D 60fps measurement is therefore an environment validation gap, not evidence of an application regression.
+- Verified the app suite (72 tests across 14 files), Interest Lab production build, `pnpm typecheck`, `pnpm test` (191 tests across 42 files), `pnpm lint` (162 files), and `pnpm build`; all pass.
+- Status: U045 and P14 complete under the spec's best-effort 3D rule. SC-UI-16's runtime step-down, capability fallback, context-loss, state-preservation, client-only Canvas, and production-build paths are green; physical mid-GPU throughput remains for operator hardware validation. No implementation blocker.
+
+## NEXT
+- Complete U046: extend `packages/interest-lab-view/test/view.test.ts` with the exhaustive one-view parity matrix.
+- Acceptance: `buildInterestLabView` composes both surfaces plus the scene, and `plainViewEquals` holds across full 3D, 3D-lite, 2D, plain, reduced-motion, and every age band while all domain-derived state remains identical; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.

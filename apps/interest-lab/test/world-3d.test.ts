@@ -249,18 +249,21 @@ describe("World3D host", () => {
     expect(rendererDispose).toHaveBeenCalledTimes(1);
   });
 
-  it("reports WebGL context loss and detaches the listener during disposal", () => {
+  it("disposes the renderer before reporting WebGL context loss", () => {
     const addEventListener = vi.fn();
     const removeEventListener = vi.fn();
-    const onContextLost = vi.fn();
+    const calls: string[] = [];
+    const renderListsDispose = vi.fn(() => calls.push("render-lists"));
+    const rendererDispose = vi.fn(() => calls.push("renderer"));
+    const onContextLost = vi.fn(() => calls.push("fallback"));
     const preventDefault = vi.fn();
     const lifecycle = createRendererLifecycle?.();
 
     lifecycle?.attach(
       {
         domElement: { addEventListener, removeEventListener },
-        renderLists: { dispose: vi.fn() },
-        dispose: vi.fn(),
+        renderLists: { dispose: renderListsDispose },
+        dispose: rendererDispose,
       },
       onContextLost,
     );
@@ -270,8 +273,11 @@ describe("World3D host", () => {
     listener?.({ preventDefault } as unknown as Event);
     expect(preventDefault).toHaveBeenCalledOnce();
     expect(onContextLost).toHaveBeenCalledOnce();
+    expect(calls).toEqual(["render-lists", "renderer", "fallback"]);
+    expect(removeEventListener).toHaveBeenCalledWith("webglcontextlost", listener);
 
     lifecycle?.dispose();
-    expect(removeEventListener).toHaveBeenCalledWith("webglcontextlost", listener);
+    expect(renderListsDispose).toHaveBeenCalledTimes(1);
+    expect(rendererDispose).toHaveBeenCalledTimes(1);
   });
 });
