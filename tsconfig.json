@@ -5,6 +5,8 @@
     { "path": "packages/evidence-explorer-view" },
     { "path": "packages/interest-lab" },
     { "path": "packages/interest-lab-view" },
+    { "path": "packages/passion-tutor" },
+    { "path": "adapters/passion-tutor-memory" },
     { "path": "adapters/repo-memory" },
     { "path": "adapters/timeback-stub" },
     { "path": "adapters/interest-repo-memory" },
