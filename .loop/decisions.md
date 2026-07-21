@@ -1014,3 +1014,39 @@
   - **BLOCKED/MANUAL (unchanged):** true screen-reader (VoiceOver/NVDA) + human contrast-ratio
     verification is not doable headless in-lane — treated as `manual:` per the loop's blocked-criterion
     rule; the machine-checkable contract above is fully green and does not block the rest.
+
+## D-VP26 — SC-UI-18 second surface: the guide Hypothesis Console DOM-as-AT-source walkthrough (Turn 9 v2)
+- **Context:** D-VP25 landed the CHILD half of SC-UI-18 as a consolidated machine-checkable walkthrough
+  (`test/a11y-walkthrough.test.ts`). The spec's SC-UI-18 covers BOTH surfaces (spec §14 "AT source of
+  truth", line 1188). The guide console's a11y facts were scattered across `coverage-matrix.test`
+  (scope counts) + `guide-console.test` (functional render) but no test asserted the GUIDE
+  **DOM-as-AT-source contract** as one SC-UI-18 story.
+- **Decision:** extend the single SC-UI-18 walkthrough file with a `guide Hypothesis Console` describe
+  block (5 tests, jsdom-free `renderToStaticMarkup` — matches the repo pattern) asserting the guide
+  contract, NOT the counts the other tests already own:
+  (a) **coverage matrix = semantic table** — `<caption>` accessible name, `scope="col"` + `scope="row"`
+      header semantics, per-cell status carried in **text** (Offered / Not yet offered / Voluntary…),
+      decorative state-glyph + row-hue swatch `aria-hidden`;
+  (b) **return timeline = ordered list of dated text markers** — `<ol class="timeline-markers">`, each
+      marker a self-contained dated label ("Day 7 · returned by choice · 7-day horizon"), care markers
+      neutral text ("never lowers a signal", `data-lowers-signal="false"`), drawn axis + marker glyphs
+      + legend swatches `aria-hidden`;
+  (c) **lifecycle = labelled state list + textual gate** — current state announced via `aria-current="step"`
+      (not tone/glow alone), main + branch tracks as labelled `<ol>`s, each gate family a text verdict
+      ("Present"), check glyph `aria-hidden`, legal transitions enumerable as text;
+  (d) **evidence constellation `aria-hidden` + DOM equivalent present WITH the canvas** — the depth figure
+      is `aria-hidden` AND the side-by-side explanations + timeline render alongside it;
+  (e) **fully readable with ZERO canvas + no scalar score** — under reduced-motion the constellation drops
+      entirely yet every stateful panel (table, explanation pair incl. disconfirming, timeline, lifecycle)
+      is still present in the DOM, and the surface exposes no passion-score/confidence/verdict/rank and no
+      "you are a/an/the" fixed-label copy.
+- **Why:** proves the SC-UI-18 invariant "no state or affordance is reachable only via the canvas" for the
+  guide surface, and that the beautiful depth viz is a pure elevation over an always-present DOM equivalent.
+- **Result:** the guide components already satisfied the contract — this is a codification turn (no product
+  source changed), so the browser walkthrough from D-VP25 (child surface) stands; no runtime surface changed
+  here to re-drive. Gate: `tsc -b` 0 · root `pnpm test` 384/384 · app vitest **142/142** (+5) · `next build`
+  ✓ (route `/` static, 288 kB) · touched file biome-clean (ran `biome format --write`, which also wrapped
+  two pre-existing long lines in the child section — formatting only).
+- **BLOCKED/MANUAL (unchanged):** true screen-reader (VoiceOver/NVDA) + human contrast-ratio (≥4.5:1)
+  verification is not doable headless in-lane → `manual:` per the loop's blocked-criterion rule; the
+  machine-checkable contract for BOTH surfaces is now fully green and does not block the rest.

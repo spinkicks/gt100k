@@ -328,3 +328,42 @@ existing tests meaningful — update them as behavior changes; DO NOT weaken the
   pure view-package acceptance SCs that finalize the spec's parity/guardrail claims.
 - **CARRY-OVER lint debt (not mine):** pre-existing `pnpm lint`/biome nits in out-of-lane
   evidence-explorer-view + prior-turn interest-lab files; left untouched.
+
+- **Turn 9 (v2) — SC-UI-18 SECOND surface DONE: the guide Hypothesis Console DOM-as-AT-source
+  walkthrough.** Extended the single SC-UI-18 file (`test/a11y-walkthrough.test.ts`, +5 → 11) with a
+  `guide Hypothesis Console` describe block asserting the guide contract via jsdom-free
+  `renderToStaticMarkup` (matches repo pattern): (a) coverage = semantic `<table>` w/ `<caption>` +
+  `scope=col/row` + per-cell **text** status + decorative glyphs `aria-hidden`; (b) return timeline =
+  `<ol>` of dated text markers, care markers "never lowers a signal", axis/glyphs/legend `aria-hidden`;
+  (c) lifecycle = labelled state `<ol>`s w/ `aria-current="step"` + textual gate ("Present") + legal
+  transitions text; (d) evidence constellation `aria-hidden` w/ side-by-side explanations + timeline DOM
+  equivalent present WITH the canvas; (e) under reduced-motion the constellation drops yet every stateful
+  panel is still readable from the DOM alone + no scalar score / no "you are a/an/the" label. Guide
+  components already conformed → codification turn, no product source changed. See D-VP26.
+  Gate green: `tsc -b` 0 · root `pnpm test` **384/384** · app vitest **142/142** · `next build` ✓
+  (route `/` static, 288 kB) · touched file biome-clean.
+
+## NEXT
+- **SC-UI-18 is now DONE for BOTH surfaces (machine-checkable half) + child browser-verified (D-VP25).**
+  Remaining SC-UI-18 surface is **BLOCKED/MANUAL:** true screen-reader (VoiceOver/NVDA) + human
+  contrast-ratio (≥4.5:1) verification is not doable headless in-lane → `manual:` per the loop's
+  blocked-criterion rule; it does not block the rest. Do NOT loop a recheck marker on it.
+- **NEXT candidate — U046/U047/U048 view-package guardrails (spec §U9 P15, SC-UI-10/11/12).** These are
+  the pure `interest-lab-view` acceptance SCs that finalize the spec's parity/guardrail claims:
+  (1) `plainViewEquals` across full-3D / 3D-lite / 2D / plain / reduced / age-band — identical underlying
+  state, differ only in `flags`+`presentation` (spec line 711 / SC-UI-19);
+  (2) static guardrails — the view package must not import `three`/`react`, and no view field named
+  `score`/`rank`/`verdict`/`passionScore`/`confidence`, and no "you are a/an/the" copy (line 1015);
+  (3) `resolveQualityTier`/`resolveRenderTier` match the §U8.16 golden table.
+  Encode in `passion/packages/interest-lab-view/test/` (the package already has `test/smoke.test.ts`).
+  Synthetic-only from Part-I fixtures. Keep the gate green.
+- **THEN — final spec sweep before `.loop-done`:** re-read `specs/003-interest-lab/spec.md` success-
+  criteria list (SC-UI-1..19 + IL-*/G*) and `tasks.md`, mark each Done/Partial/manual, and — per the
+  loop's "PROVE it's usable" bar — drive BOTH surfaces (child `/` + guide) headless in Chromium
+  (webapp-testing/playwright): every control operable, zero console errors, no dead affordances, empty/
+  loading/error states. Only then create `.loop-done`.
+- **CARRY-OVER P1.7 caveat (unchanged):** if the WORLD is later staged by age band (world markers below
+  `quests.length`), stage the BOARD `revealAll` baseline to the same set so world-reachable ==
+  board-reachable (D-VP19).
+- **CARRY-OVER lint debt (not mine):** pre-existing `pnpm lint`/biome nits in out-of-lane
+  evidence-explorer-view + prior-turn interest-lab files; left untouched.

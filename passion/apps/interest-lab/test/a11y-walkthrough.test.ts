@@ -6,6 +6,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { InterestLabClient } from "../app/InterestLabClient";
 import { QuestWorld } from "../app/child/QuestWorld";
+import { GuideConsole } from "../app/guide/GuideConsole";
 import { buildSyntheticInterestLabSeed } from "../app/seed";
 
 // SC-UI-18 (spec §U9 P15): both surfaces meet WCAG 2.2 AA natively in the DOM —
@@ -41,7 +42,9 @@ const titleCase = (value: string) =>
 
 const questWorld3dMarkup = () =>
   renderToStaticMarkup(
-    createElement(QuestWorld, { view: buildSyntheticInterestLabSeed({ deviceCaps: FULL_CAPS }).view }),
+    createElement(QuestWorld, {
+      view: buildSyntheticInterestLabSeed({ deviceCaps: FULL_CAPS }).view,
+    }),
   );
 
 /** Pull one quest card's opening <button> tag by probe id (attribute order agnostic). */
@@ -76,7 +79,9 @@ describe("SC-UI-18 · DOM-as-AT-source a11y walkthrough", () => {
 
     // The 3D world is decorative: its host is aria-hidden and the real quests still render as DOM.
     expect(markup).toContain('data-world-3d-host="true"');
-    expect(markup).toMatch(/data-world-3d-host="true"[^>]*aria-hidden="true"|aria-hidden="true"[^>]*data-world-3d-host="true"/);
+    expect(markup).toMatch(
+      /data-world-3d-host="true"[^>]*aria-hidden="true"|aria-hidden="true"[^>]*data-world-3d-host="true"/,
+    );
 
     // The ledger is a labelled landmark region of card-buttons — present WITH the canvas.
     expect(markup).toContain('aria-labelledby="quest-ledger-title"');
@@ -153,5 +158,107 @@ describe("SC-UI-18 · DOM-as-AT-source a11y walkthrough", () => {
     // (the only child chrome) stay glassy when the user asks for reduced transparency.
     expect(block).toMatch(/\.control-panel\.hud-deck\b/);
     expect(block).toContain("background-image: none");
+  });
+});
+
+// The guide "Hypothesis Console" is the OTHER surface SC-UI-18 covers (spec §14 "AT source of
+// truth"): the coverage matrix is a DOM table with row/column headers + per-cell status *text*;
+// the return timeline a labelled list of dated markers; the lifecycle a labelled state list with
+// the gate checklist as text; the evidence constellation is decorative (aria-hidden) with the
+// side-by-side explanations + timeline as its DOM equivalent, always present. No state or
+// affordance is reachable only via the canvas, and no scalar score appears in the AT surface.
+const guideMarkup = (reducedMotion = false) =>
+  renderToStaticMarkup(
+    createElement(GuideConsole, {
+      view: buildSyntheticInterestLabSeed({
+        surface: "guide",
+        reducedMotion,
+        deviceCaps: FULL_CAPS,
+      }).view,
+    }),
+  );
+
+describe("SC-UI-18 · guide Hypothesis Console DOM-as-AT-source walkthrough", () => {
+  it("exposes coverage as a semantic table: caption name, col/row header scopes, text-only cell status", () => {
+    const markup = guideMarkup();
+
+    // A real <table> with a <caption> gives AT users a named, navigable grid.
+    expect(markup).toContain("<table");
+    expect(markup).toContain("<caption>Coverage across domains and work modes");
+    // Both axes use header scope so a screen-reader announces domain + work-mode per cell.
+    expect(markup).toMatch(/scope="col"/);
+    expect(markup).toMatch(/scope="row"/);
+    // Status is carried in TEXT (not hue/glyph): the meaning survives color-blindness + AT.
+    expect(markup).toMatch(/Offered|Not yet offered|Voluntary exploration|Prompted exploration/);
+    // The state glyph + row hue swatch are decorative duplicates, hidden from AT.
+    expect(markup).toMatch(/class="coverage-state-glyph"[^>]*aria-hidden="true"/);
+    expect(markup).toMatch(/class="coverage-row-hue" aria-hidden="true"/);
+  });
+
+  it("exposes the return timeline as an ordered list of dated text markers with decorative visuals", () => {
+    const markup = guideMarkup();
+
+    // Markers live in an <ol>; each carries a self-contained dated text label.
+    expect(markup).toContain('class="timeline-markers"');
+    expect(markup).toMatch(/data-timeline-marker="true"/);
+    expect(markup).toContain("Day 7 · returned by choice · 7-day horizon");
+    expect(markup).toContain("Day 7 · prompted return · reminder");
+    // A care/support marker is neutral text and NEVER reads as a penalty (color-independent).
+    expect(markup).toContain("never lowers a signal");
+    expect(markup).toMatch(/data-lowers-signal="false"/);
+    // The drawn axis, marker glyphs, and legend swatches are decorative — hidden from AT.
+    expect(markup).toMatch(
+      /class="timeline-axis"[^>]*aria-hidden="true"|aria-hidden="true"[^>]*class="timeline-axis"/,
+    );
+    expect(markup).toMatch(/class="timeline-marker-glyph" aria-hidden="true"/);
+  });
+
+  it("exposes the lifecycle as a labelled state list with an aria-current step and textual gate", () => {
+    const markup = guideMarkup();
+
+    // The current state is announced to AT via aria-current — not by tone/glow alone.
+    expect(markup).toContain('data-current-lifecycle-state="EMERGING"');
+    expect(markup).toContain('aria-current="step"');
+    // Both tracks are labelled ordered lists so the branch is not a color-only distinction.
+    expect(markup).toContain('aria-label="Main lifecycle track"');
+    expect(markup).toContain('aria-label="Alternative lifecycle branch"');
+    // Each gate family carries a text present/absent verdict; the check glyph is decorative.
+    expect(markup).toMatch(/data-gate-family="/);
+    expect(markup).toContain("Present");
+    expect(markup).toMatch(/class="gate-family-glyph" aria-hidden="true"/);
+    // Legal transitions are enumerable as text (the arrow is decorative).
+    expect(markup).toContain("legal transitions");
+  });
+
+  it("keeps the evidence constellation aria-hidden with its DOM equivalent present WITH the canvas", () => {
+    const markup = guideMarkup();
+
+    // The optional depth viz is decorative and hidden from AT.
+    expect(markup).toContain('data-evidence-constellation="depth"');
+    expect(markup).toMatch(
+      /data-evidence-constellation="depth"[^>]*aria-hidden="true"|aria-hidden="true"[^>]*data-evidence-constellation="depth"/,
+    );
+    // Its DOM equivalent — the side-by-side explanations + the timeline — is present ALONGSIDE it.
+    expect(markup).toContain('class="explanation-pair"');
+    expect(markup).toContain('data-explanation-role="supporting"');
+    expect(markup).toContain('data-explanation-role="disconfirming"');
+    expect(markup).toContain('class="timeline-markers"');
+  });
+
+  it("stays fully readable with ZERO canvas and exposes no scalar score (constellation dropped)", () => {
+    const reduced = guideMarkup(true);
+
+    // Reduced-motion drops the constellation entirely — proving nothing is canvas-only.
+    expect(reduced).not.toContain("data-evidence-constellation");
+    // Every stateful panel is still present and readable from the DOM alone.
+    expect(reduced).toContain('data-guide-console="true"');
+    expect(reduced).toContain("<table");
+    expect(reduced).toContain('class="explanation-pair"');
+    expect(reduced).toContain('data-explanation-role="disconfirming"');
+    expect(reduced).toContain('class="timeline-markers"');
+    expect(reduced).toContain('data-current-lifecycle-state="EMERGING"');
+    // The guide surface never reduces a person to a scalar or a fixed label.
+    expect(reduced).not.toMatch(/passion score|confidence|verdict|percentile|\brank\b/i);
+    expect(reduced).not.toMatch(/you are (a|an|the) /i);
   });
 });
