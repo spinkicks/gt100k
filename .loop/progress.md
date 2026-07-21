@@ -219,3 +219,14 @@
 ## NEXT
 - Complete T025 and the remaining lifecycle portion of T028 in `packages/interest-lab/test/state-machine.test.ts` and `packages/interest-lab/src/state-machine.ts`.
 - Acceptance: `proposeTransition` produces a RULE shadow proposal with `guideReview:null` and `operative:false`; `authorRevision` produces an operative guide-authored version increment; illegal transitions name the rejected pair; `CONTESTED→PARKED→REOPENED` remains legal; preserve a focused red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-20 — P5 / T025 + T028
+- Added four lifecycle acceptance contracts covering exact shadow proposal fields, guide-authored operative versioning, named illegal-pair rejection, candidate-gate enforcement on authorship, and the legal `CONTESTED→PARKED→REOPENED` branch.
+- Confirmed the test-first red states: the focused suite first failed on the absent proposal/authorship functions, then the strengthened branch test failed at `CONTESTED→CANDIDATE_SPINE` until explicit legal targets were supported.
+- Implemented the complete fixed 19-pair transition table, shadow-only RULE/SHADOW_MODEL proposals, guide-only operative authorship, G5 revalidation for candidate promotion, and version/provenance-preserving branch traversal.
+- Verified the focused lifecycle suite (10 tests), forced package compiler, `pnpm typecheck`, `pnpm test` (74 tests across 17 files), and `pnpm lint` (62 files) all pass.
+- Status: T025 and T028 complete; P5 remains in progress. SC-009 is green, and SC-016's legal lifecycle path is green while append-only repository replay remains with T027/T030. No blocker.
+
+## NEXT
+- Complete T026 and its minimal T029 implementation in `packages/interest-lab/test/hypothesis.test.ts` and `packages/interest-lab/src/hypothesis.ts`.
+- Acceptance: tests first prove append-only versioned and bitemporal current-view behavior, interval/grade uncertainty without a scalar, paired supporting/disconfirming evidence, valid co-primary candidate domains, and retention of both `DISAGREE` child position and model evidence; preserve a focused red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.

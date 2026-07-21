@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 import type { SignalFamily, SignalSummary } from "../src/events";
-import type { HypothesisRevision } from "../src/hypothesis";
+import type { GuideReview, HypothesisRevision } from "../src/hypothesis";
 import { summarizeSignals } from "../src/signals";
-import { applyMissingData, evaluateCandidateGate } from "../src/state-machine";
+import {
+  applyMissingData,
+  authorRevision,
+  evaluateCandidateGate,
+  proposeTransition,
+} from "../src/state-machine";
 import { EVENTS_GOLDEN_V1 } from "./fixtures/events";
 
 const summaryWithFamilies = (familiesPresent: SignalFamily[]): SignalSummary => ({
@@ -44,6 +49,20 @@ const EMERGING_REVISION: HypothesisRevision = {
   policyVersion: "rules-engine-v1",
   validFromDayOffset: 6,
   recordedAtDayOffset: 6,
+};
+
+const GUIDE_REVIEW: GuideReview = {
+  guide: "synthetic-guide-002",
+  decision: "author lifecycle transition",
+  rationale: "the evidence and child position support the reviewed transition",
+  reviewedAtDayOffset: 8,
+};
+
+const TRANSITION_VERSIONS = {
+  modelVersion: "rules-only-v2",
+  policyVersion: "rules-engine-v2",
+  validFromDayOffset: 7,
+  recordedAtDayOffset: 7,
 };
 
 describe("evaluateCandidateGate", () => {
@@ -107,5 +126,97 @@ describe("applyMissingData", () => {
       uncertainty: { kind: "grade", grade: "moderate" },
     });
     expect(nextRevision.state).not.toBe("PARKED");
+  });
+});
+
+describe("proposal vs authorship", () => {
+  it("keeps a rule proposal shadow-only until a guide authors the next version", () => {
+    const summary = summaryWithFamilies([
+      "voluntary_return",
+      "artifact_competence",
+      "chosen_challenge",
+    ]);
+
+    const proposed = proposeTransition(EMERGING_REVISION, summary, "RULE", TRANSITION_VERSIONS);
+
+    expect(proposed).toEqual({
+      ...EMERGING_REVISION,
+      state: "CANDIDATE_SPINE",
+      signalSummary: summary,
+      guideReview: null,
+      proposedBy: "RULE",
+      operative: false,
+      ...TRANSITION_VERSIONS,
+    });
+
+    expect(authorRevision(EMERGING_REVISION, proposed, GUIDE_REVIEW)).toEqual({
+      ...proposed,
+      version: 5,
+      guideReview: GUIDE_REVIEW,
+      operative: true,
+    });
+  });
+
+  it("rejects an illegal transition and names the rejected pair", () => {
+    const exploring = { ...EMERGING_REVISION, state: "EXPLORING" } as const;
+    const illegalProposal = {
+      ...exploring,
+      state: "ACTIVE",
+      guideReview: null,
+      proposedBy: "RULE",
+      operative: false,
+    } as const;
+
+    expect(() => authorRevision(exploring, illegalProposal, GUIDE_REVIEW)).toThrow(
+      "Illegal hypothesis transition: EXPLORING -> ACTIVE",
+    );
+  });
+
+  it("refuses guide authorship when a CANDIDATE_SPINE proposal misses the gate", () => {
+    const incompleteProposal = {
+      ...EMERGING_REVISION,
+      state: "CANDIDATE_SPINE",
+      signalSummary: summaryWithFamilies([
+        "artifact_competence",
+        "chosen_challenge",
+        "unrequired_revision",
+      ]),
+      guideReview: null,
+      proposedBy: "RULE",
+      operative: false,
+    } as const;
+
+    expect(() => authorRevision(EMERGING_REVISION, incompleteProposal, GUIDE_REVIEW)).toThrow(
+      "Cannot author EMERGING -> CANDIDATE_SPINE: no delayed-discretionary signal",
+    );
+  });
+
+  it("allows the exact CONTESTED to PARKED to REOPENED path", () => {
+    const contested = { ...EMERGING_REVISION, state: "CONTESTED" } as const;
+    const parkedProposal = proposeTransition(
+      contested,
+      contested.signalSummary,
+      "RULE",
+      TRANSITION_VERSIONS,
+      "PARKED",
+    );
+    const parked = authorRevision(contested, parkedProposal, GUIDE_REVIEW);
+
+    const reopenedProposal = proposeTransition(
+      parked,
+      parked.signalSummary,
+      "RULE",
+      { ...TRANSITION_VERSIONS, validFromDayOffset: 8, recordedAtDayOffset: 8 },
+      "REOPENED",
+    );
+    const reopened = authorRevision(parked, reopenedProposal, {
+      ...GUIDE_REVIEW,
+      reviewedAtDayOffset: 9,
+    });
+
+    expect(parkedProposal).toMatchObject({ state: "PARKED", version: 4, operative: false });
+    expect(parked).toMatchObject({ state: "PARKED", version: 5, operative: true });
+    expect(reopenedProposal).toMatchObject({ state: "REOPENED", version: 5, operative: false });
+    expect(reopened).toMatchObject({ state: "REOPENED", version: 6, operative: true });
   });
 });
