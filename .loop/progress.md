@@ -108,3 +108,14 @@
 ## NEXT
 - Complete T011: add the `buildLab` G1 golden and determinism tests in `packages/interest-lab/test/offer.test.ts`.
 - Acceptance: the golden catalog yields 20 RULE-provenance offers with non-empty reasons, exact G1 domain/work-mode/cross-cutting counts, `explorationReserved === 20`, at least two eligible choices, and byte-identical Lab output for seeds `{1, 42, 999}`; preserve a focused red run and the full green gate.
+
+## 2026-07-20 — P3 / T011 + partial T015
+- Added the exact G1 `buildLab` acceptance suite for 20 offers, domain/work-mode/cross-cutting tallies, RULE provenance, non-empty reasons, exploration reservation, eligible-choice floor, same-input byte determinism, and seed-invariant full-set probe ids.
+- Confirmed the test-first red state: the focused suite failed to resolve the absent `src/offer.ts`, then passed both tests after the minimal implementation.
+- Added the pure Lab/config/offer contracts and the minimum catalog-order assembly needed for G1: cleared/prerequisite-valid filtering, one eligible variant per family, coverage composition, dormant-domain exploration count, and replayable effective config. Surplus coverage-greedy rotation and decision logging remain for ordered implementation tasks.
+- Verified the forced package compiler, `pnpm typecheck`, `pnpm test` (48 tests), and `pnpm lint` all pass.
+- Status: T011 complete; T015 is intentionally partial; P3 remains in progress. SC-001's exact G1 balance and full-catalog determinism are green, while T012/T013 still own explicit filter, family-variant, and selection-under-surplus contracts. No blocker.
+
+## NEXT
+- Complete T012: add the remaining offer contract tests for p21–p24 exclusion, at-most-one equivalent variant per family per choice point, and deterministic coverage-satisfying selection under catalog surplus.
+- Acceptance: the focused test first fails against the minimal G1 implementation for the documented `stableSort(familyId)` plus seeded-rotation surplus case; the later minimal catalog/selection implementation restores the focused suite and the full `pnpm typecheck`, `pnpm test`, and `pnpm lint` gate.
