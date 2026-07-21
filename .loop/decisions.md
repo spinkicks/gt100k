@@ -194,3 +194,8 @@
 - Chose: let the first `buildSceneView` emit the full tier only for strong, motion-enabled caps and otherwise conservatively emit the existing 2D fallback; do not export the dedicated tier resolvers until U022 adds their complete golden case table.
 - Why: U021 owns layout, camera, scene parity, and a full-cap scene, while the next ordered U022 task explicitly owns full/lite/board tier behavior. This preserves a truthful safe fallback and a genuine future red boundary instead of implementing untested lite behavior early.
 - Rejected: optimistic full 3D on unknown or weak caps violates graceful degradation; adding all tier behavior before U022's failing tests violates the ordered test-first path; returning an unmodeled placeholder tier would break `SceneView`.
+
+## D040 — Grow the phased child view without fabricating guide state
+- Chose: add the deterministic `scene` to `ChildInterestLabView`, keep the guide block absent until its owning phase, and source presentation `renderTier` and `quality` directly from the composed scene.
+- Why: U024 completes the P9b child composition, while U041 owns the full guide composition. Reusing the scene's resolved tier values prevents presentation drift and preserves a truthful phased public type.
+- Rejected: returning the full `InterestLabView` now would require invented guide data; independently re-resolving tier values in `view.ts` would duplicate the scene policy and could diverge.

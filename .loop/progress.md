@@ -549,3 +549,14 @@
 ## NEXT
 - Complete U024: extend `buildInterestLabView` in `packages/interest-lab-view/src/view.ts` to compose the deterministic scene and complete presentation blocks.
 - Acceptance: tests first prove the child view includes `scene` plus derived `scene3d`, `camera3d`, `renderTier`, `quality`, and `motionOf` presentation values while underlying quest state remains unchanged; preserve focused red evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and the Interest Lab production build green.
+
+## 2026-07-21 — P9b / U024
+- Extended the phased child `buildInterestLabView` composition with the deterministic `SceneView`, while keeping the guide block deferred to its owning phase.
+- Confirmed the genuine test-first red state: the focused child-view suite received the temporary `board-2d`/board-quality presentation instead of the full tier and had no scene before the minimal implementation.
+- Derived presentation `renderTier` and `quality` from the composed scene, preserving the shared Lab/history source, exact picker/scene parity, reduced-motion delegation, and immutable input Lab.
+- Verified the view package suite (49 tests across 11 files), forced package compiler, `pnpm typecheck`, `pnpm test` (159 tests across 35 files), `pnpm lint` (122 files), `pnpm build`, and the warning-free Interest Lab production build; all pass.
+- Status: U024 and P9b complete. SC-UI-13/14 and the scene/picker composition boundary are green; full cross-mode `plainViewEquals` remains assigned to U041/U046. No blocker.
+
+## NEXT
+- Complete U025: add `apps/interest-lab/app/child/world3d/glow-texture.ts` for the deterministic in-app additive radial-gradient marker halo.
+- Acceptance: tests first prove the helper creates a repeatable `THREE.CanvasTexture` from an in-memory canvas with the pinned warm radial gradient and no external fetch; `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.

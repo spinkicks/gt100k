@@ -9,6 +9,7 @@ import {
   TYPOGRAPHY,
   buildInterestLabView,
   buildProbePickerView,
+  buildSceneView,
   resolveMotion,
 } from "../src/index";
 
@@ -72,7 +73,7 @@ const makeLab = () =>
   );
 
 describe("buildInterestLabView child composition", () => {
-  it("composes the picker, caller flags, and board presentation without a scene", () => {
+  it("composes the picker, deterministic scene, caller flags, and derived presentation", () => {
     const lab = makeLab();
     const deviceCaps = {
       webglAvailable: true,
@@ -86,8 +87,8 @@ describe("buildInterestLabView child composition", () => {
       options: {
         surface: "child",
         ageBand: "6-8",
-        reducedMotion: true,
-        plainMode: true,
+        reducedMotion: false,
+        plainMode: false,
         deviceCaps,
         history: [],
       },
@@ -96,8 +97,8 @@ describe("buildInterestLabView child composition", () => {
     expect(view).toMatchObject({
       surface: "child",
       flags: {
-        reducedMotion: true,
-        plainMode: true,
+        reducedMotion: false,
+        plainMode: false,
         ageBand: "6-8",
         surface: "child",
         deviceCaps,
@@ -107,21 +108,31 @@ describe("buildInterestLabView child composition", () => {
         typography: TYPOGRAPHY,
         scene3d: SCENE3D,
         camera3d: CAMERA3D,
-        renderTier: "board-2d",
-        quality: QUALITY_TIERS.board2d,
+        renderTier: "quest-world-3d",
+        quality: QUALITY_TIERS.full,
       },
     });
     expect(view.probePicker).toEqual(
       buildProbePickerView(lab, {
         history: [],
         band: "6-8",
-        flags: { reducedMotion: true },
+        flags: { reducedMotion: false },
       }),
     );
-    expect(view.presentation.motionOf("pick")).toEqual(
-      resolveMotion("pick", { reducedMotion: true }),
+    expect(view.scene).toEqual(
+      buildSceneView(lab, {
+        history: [],
+        ageBand: "6-8",
+        reducedMotion: false,
+        plainMode: false,
+        deviceCaps,
+      }),
     );
-    expect("scene" in view).toBe(false);
+    expect(view.presentation.renderTier).toBe(view.scene.renderTier);
+    expect(view.presentation.quality).toEqual(view.scene.quality);
+    expect(view.presentation.motionOf("pick")).toEqual(
+      resolveMotion("pick", { reducedMotion: false }),
+    );
     expect("guide" in view).toBe(false);
   });
 
