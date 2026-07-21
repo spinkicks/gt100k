@@ -2,7 +2,12 @@
   "files": [],
   "references": [
     { "path": "packages/learning-loop" },
+    { "path": "packages/interest-lab" },
     { "path": "adapters/repo-memory" },
-    { "path": "adapters/timeback-stub" }
+    { "path": "adapters/timeback-stub" },
+    { "path": "adapters/interest-repo-memory" },
+    { "path": "adapters/interest-probe-catalog" },
+    { "path": "adapters/interest-assent-stub" },
+    { "path": "adapters/interest-artifact-stub" }
   ]
 }

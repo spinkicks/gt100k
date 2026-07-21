@@ -311,3 +311,14 @@
 ## NEXT
 - Complete T037 as its own reviewable increment: add `packages/interest-lab` and all four `adapters/interest-*` projects to the root `tsconfig.json` references array, the one permitted shared-root edit.
 - Acceptance: `tsc -b` compiles all five feature projects through the root graph, with `pnpm typecheck`, `pnpm test`, and `pnpm lint` green; explicitly preserve the shared-file reconciliation note for the harness.
+
+## 2026-07-21 — P7 / T037
+- Added `packages/interest-lab` and the four `adapters/interest-*` projects to the root TypeScript project-reference graph in the task's only permitted shared-root edit.
+- Confirmed the configuration contract's red state first: all five exact paths were reported missing, then the same assertion passed with each path present exactly once after the edit.
+- Forced the complete graph through `pnpm exec tsc -b --force`, then verified `pnpm typecheck`, `pnpm test` (110 tests across 24 files), and `pnpm lint` (76 files) all pass.
+- Human reconciliation flag: `tsconfig.json` is the expected shared-file merge point; preserve all concurrent project references when reconciling this increment.
+- Status: T037 complete; P7 remains in progress pending T038's final Part-I verification. All Part-I success criteria remain green. No blocker.
+
+## NEXT
+- Complete T038: run the final Part-I verification exactly as ordered after the root project references landed.
+- Acceptance: `pnpm --filter @gt100k/interest-lab test`, `pnpm test`, `pnpm typecheck`, and `pnpm lint` all pass from the repository root; record the final Part-I SC status without beginning Part II in the same increment.
