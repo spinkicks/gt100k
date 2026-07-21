@@ -377,3 +377,14 @@
 ## NEXT
 - Complete U005: replace the module-only `packages/interest-lab-view/src/index.ts` scaffold with explicit named exports for the complete U003 type surface and all U004 registries added so far.
 - Acceptance: a consumer-facing test imports all public view types and ten registries through `@gt100k/interest-lab-view`, with no wildcard exports or premature resolver exports; the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
+
+## 2026-07-21 — P8 / U005
+- Added a consumer-facing entry-point contract covering all 35 U003 view-model types and the exact ten U004 runtime registries.
+- Confirmed the test-first red state at both boundaries: the focused runtime test received an empty export set, and the package compiler reported every missing type export before implementation.
+- Replaced the module-only entry point with explicit named value and type exports, without wildcard exports or premature resolver behavior.
+- Verified the focused public API suite (2 tests), forced view-package compiler, `pnpm typecheck`, `pnpm test` (122 tests across 27 files), and `pnpm lint` (87 files) all pass.
+- Status: U005 complete; P8 remains in progress. Part-I SC-001 through SC-016 remain green; Part-II success-criteria behavior begins in later phases. No blocker.
+
+## NEXT
+- Complete U006: add the seeded package smoke in `packages/interest-lab-view/test/smoke.test.ts` and the smallest temporary `resolveMotion` implementation needed for the green-only harness boundary.
+- Acceptance: package imports expose non-empty `PALETTE`, `MOTION`, `EASINGS`, `HUE_RAMP`, `WORK_MODE_GLYPHS`, `SCENE3D`, `CAMERA3D`, and `QUALITY_TIERS`, while `resolveMotion("press", { reducedMotion: false }).durationMs === 120`; preserve a focused red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.

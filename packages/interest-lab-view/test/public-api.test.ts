@@ -1,0 +1,98 @@
+import { describe, expect, expectTypeOf, it } from "vitest";
+import * as viewApi from "../src/index";
+import type {
+  AgeBand,
+  Camera3DView,
+  CameraView,
+  CellView,
+  ChildStaging,
+  ConstellationStar,
+  CoverageDimension,
+  CoverageMatrixView,
+  DeviceCaps,
+  DimensionRailItem,
+  EvidenceConstellationView,
+  ExplanationCard,
+  ExplanationsView,
+  GateChecklist,
+  InterestLabView,
+  IslandView,
+  LifecycleStateView,
+  MarkerView,
+  MotionToken,
+  PaletteView,
+  ProbeCardView,
+  ProbePickerView,
+  QualityTier,
+  QuestMarkerView,
+  QuestReturnState,
+  QuestTone,
+  RenderTier,
+  ReturnTimelineView,
+  RevisionHistoryView,
+  Scene3DView,
+  SceneView,
+  TimelineMarkerKind,
+  TimelineTone,
+  TypographyView,
+  Vector3,
+} from "../src/index";
+
+type PublicViewTypeExports = [
+  AgeBand,
+  Camera3DView,
+  CameraView,
+  CellView,
+  ChildStaging,
+  ConstellationStar,
+  CoverageDimension,
+  CoverageMatrixView,
+  DeviceCaps,
+  DimensionRailItem,
+  EvidenceConstellationView,
+  ExplanationCard,
+  ExplanationsView,
+  GateChecklist,
+  InterestLabView,
+  IslandView,
+  LifecycleStateView,
+  MarkerView,
+  MotionToken,
+  PaletteView,
+  ProbeCardView,
+  ProbePickerView,
+  QualityTier,
+  QuestMarkerView,
+  QuestReturnState,
+  QuestTone,
+  RenderTier,
+  ReturnTimelineView,
+  RevisionHistoryView,
+  Scene3DView,
+  SceneView,
+  TimelineMarkerKind,
+  TimelineTone,
+  TypographyView,
+  Vector3,
+];
+
+describe("interest lab view public API", () => {
+  it("exports only the ten P8 registries as runtime values", () => {
+    expect(Object.keys(viewApi).sort()).toEqual([
+      "CAMERA3D",
+      "EASINGS",
+      "HUE_RAMP",
+      "MOTION",
+      "PALETTE",
+      "QUALITY_TIERS",
+      "RENDER_TIERS",
+      "SCENE3D",
+      "TYPOGRAPHY",
+      "WORK_MODE_GLYPHS",
+    ]);
+  });
+
+  it("exports the complete P8 view-model type surface", () => {
+    expectTypeOf<PublicViewTypeExports>().toEqualTypeOf<PublicViewTypeExports>();
+  });
+});
