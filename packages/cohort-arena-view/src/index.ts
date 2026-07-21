@@ -1,5 +1,5 @@
-export { PALETTE, STATE_CUES, TYPOGRAPHY } from "./art.js";
-export { resolveVisualBand } from "./band.js";
+export { PALETTE, STATE_CUES, TYPOGRAPHY } from "./art";
+export { resolveVisualBand } from "./band";
 export {
   LAYOUT,
   benchSlot,
@@ -9,7 +9,7 @@ export {
   layoutField,
   project2D,
   vertexLocal,
-} from "./layout.js";
+} from "./layout";
 export type {
   CohortHexView,
   ConstellationView,
@@ -17,8 +17,8 @@ export type {
   SeatLayout,
   Vec2,
   Vec3,
-} from "./layout.js";
-export { buildLedger } from "./ledger.js";
+} from "./layout";
+export { buildLedger } from "./ledger";
 export type {
   BuildCohortArenaViewInput,
   CohortArenaView,
@@ -29,11 +29,11 @@ export type {
   ViewBand,
   ViewFlags,
   VisualBand,
-} from "./model.js";
-export { EASINGS, MOTION, MOTION_KINDS, resolveMotion } from "./motion.js";
-export type { MotionKind, MotionSpec } from "./motion.js";
-export { buildArenaRoomView } from "./rivalry.js";
-export type { ArenaRoomView, SeatView, TurnPatternView } from "./rivalry.js";
-export { deriveStandingsView } from "./standings.js";
-export type { AnonymizedPeer, StandingSelf, StandingsView } from "./standings.js";
-export { buildCohortArenaView, plainViewEquals } from "./view.js";
+} from "./model";
+export { EASINGS, MOTION, MOTION_KINDS, resolveMotion } from "./motion";
+export type { MotionKind, MotionSpec } from "./motion";
+export { buildArenaRoomView } from "./rivalry";
+export type { ArenaRoomView, SeatView, TurnPatternView } from "./rivalry";
+export { deriveStandingsView } from "./standings";
+export type { AnonymizedPeer, StandingSelf, StandingsView } from "./standings";
+export { buildCohortArenaView, plainViewEquals } from "./view";

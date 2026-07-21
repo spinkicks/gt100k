@@ -412,3 +412,17 @@
 
 - T115 — Add the server `app/page.tsx` shell and client-only `components/CohortArena.client.tsx` composition from a synthetic assignment and pool.
 - Acceptance: the server route uses `next/dynamic` with `ssr: false`; the client component builds one deterministic `CohortArenaView` from synthetic-only domain inputs and exposes the 3D scene, HUD, 2D-tier, and Ledger regions for the dedicated T116–T119 renderers; the app build and repository typecheck/test/lint gates remain green.
+
+## 2026-07-21 — P8 / T115
+
+- Added the `/` server shell with `next/dynamic(..., { ssr: false })` and a client-only `CohortArena` composition that renders one shared view into explicit 3D scene, HUD, 2D-tier, and Cohort Ledger regions.
+- Added a pure in-app synthetic Fixture V1-shaped view factory: two exact six-member cohorts, the pinned role vector, seven satisfied hard constraints, `0.825 >= 0.5` non-harm floors, no standings, no rivalry, no live data, and no I/O, time, network, or randomness.
+- Added an app-local Vitest configuration and focused composition contract so app tests execute without widening the shared root Vitest globs. The contract proves byte-identical repeated views and the exact cohort/floor/constraint surface.
+- Corrected the source-workspace Next boundary: app-local `.js` extension aliases resolve the ESM TypeScript implementation imports, while the view package public entrypoint now uses the repository's extensionless source re-export pattern so webpack can analyze its named exports without warnings.
+- TDD status: the focused test first failed because `components/synthetic-view.ts` was absent, then passed 1/1 after the minimal factory. The production build reproduced the workspace-export integration failure before the narrow resolver/entrypoint correction made it compile warning-free.
+- Gate status: app-local TypeScript and the focused app test pass; `pnpm typecheck`, `pnpm test` (144/144), and `pnpm lint` (115 files) pass; `pnpm --filter @gt100k/cohort-arena build` succeeds and prerenders `/` with no build warnings. P8/SC-014 now has its client-only composition and build foundation; runtime WebGL smoke/disposal, the full accessible Ledger, equal 2D tier, and richer renderers remain scheduled. No blocker.
+
+## NEXT
+
+- T118 — Implement the accessible Cohort Ledger in `apps/cohort-arena/components/ledger/` from the already-shared `view.ledger`, ahead of richer 3D work under the explicit MVP-first accessible-tier rule (T116–T119 are parallel after T115).
+- Acceptance: cohorts render as a keyboard-focusable `role="tree"` with stateful accessible names; the live region conveys the same compiled state; the 3D canvas remains `aria-hidden="true"`; satisfied state is communicated by icon, shape, and text with visible focus and >=4.5:1 contrast; focused RED/GREEN, app build, app-local TypeScript, and repository typecheck/test/lint remain green.

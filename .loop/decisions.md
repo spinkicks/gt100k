@@ -137,3 +137,10 @@
 ## 2026-07-21 — T114 accessibility media hook
 
 - Keep the spec-required `prefers-reduced-transparency` media query and suppress Biome's `noUnknownMediaFeatureName` diagnostic only on that at-rule. Rejected removing the accessibility preference or disabling the rule globally; Biome 1.9's CSS registry lags the Safari-exposed preference, while the fallback declaration remains harmless in browsers that do not support it.
+
+## 2026-07-21 — T115 synthetic client composition
+
+- Construct the synthetic assignment and pool in an app-owned pure factory, then build the single `CohortArenaView` once at module scope for every renderer region. Rejected importing test fixtures into production or recomputing separate 3D, HUD, 2D, and Ledger state because both would weaken the one-view parity boundary.
+- Add an app-local `vitest.config.mts` for focused app contracts. Rejected changing the shared root Vitest include, accepting a no-tests run, or leaving the deterministic app composition without a RED/GREEN contract.
+- Preserve the view package's emitted-ESM `.js` implementation specifiers through an app-local Next extension alias, but use extensionless re-exports at its public source entrypoint so webpack can statically discover named exports. Rejected suppressing the warning, relying on generated `dist`, or reaching into the package through an app-relative private source import.
+- Schedule T118 and T119 before the richer T116 3D choreography because the operator explicitly requires the accessible/2D tier before 3D polish and `tasks.md` marks T116–T119 parallel once T115 exists. Rejected treating numeric task order as stronger than the stated MVP-first build order.
