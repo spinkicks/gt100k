@@ -1,8 +1,6 @@
 # Design: Family-Selection Brainlift ("Select the Family, Not the Child")
 
-**Date:** 2026-07-21
-**Status:** Draft for review
-**Owner:** [fill in]
+**Owner:** David & Felipe
 
 ## Context
 
@@ -13,13 +11,7 @@ admissions should screen for family commitment over the child's early test score
 
 This design covers a second, narrower brainlift built around that one bet. It goes
 deeper on family selection, adds fresh evidence, and reads through to what the bet
-means for GT 100k admissions. It stays a research document. It does not rewrite
-`docs/prd/ADMISSIONS_PRD.md`.
-
-The current admissions PRD walls family and household factors out of eligibility
-and keeps selection capability-first on the child. That collides head-on with
-"select the family." The brainlift names the collision as an open question and
-does not resolve it in the PRD.
+means for GT 100k admissions. It stays a research document.
 
 ## Goal
 
@@ -37,12 +29,11 @@ In scope:
 - Fresh web research for each claim, plus reuse of relevant gt100k docs.
 - Real, verifiable citations. No fabricated sources. Weak or unverifiable claims
   get flagged, not dressed up.
-- A principles-level admissions section that names the tension with the current
-  capability-firewall PRD.
+- A principles-level admissions section.
 
 Out of scope:
 
-- Editing `ADMISSIONS_PRD.md` or proposing concrete admissions mechanisms.
+- Proposing concrete admissions mechanisms.
 - Product or code changes.
 - Live-policy claims for GT.
 
@@ -144,8 +135,7 @@ Synthesis (done by the lead, not a subagent):
 - Reconcile the parent doc's existing SPOV 1 sources (Polderman et al. 2015;
   Bouchard & McGue 1981; Polgar; SMPY via Lubinski & Benbow) with the new finds,
   and dedupe.
-- Write the admissions-principles part of DOK 3, naming the tension with the
-  capability-firewall PRD.
+- Write the admissions-principles part of DOK 3.
 - Run the stop-slop skill over the whole document.
 
 ## Output and logistics
