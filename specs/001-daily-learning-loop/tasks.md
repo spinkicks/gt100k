@@ -4,7 +4,7 @@
 **Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/learning-loop.md, quickstart.md
 **Tests**: INCLUDED — the constitution makes tests part of "done" and `contracts/learning-loop.md` defines explicit test obligations. Write tests first; ensure they fail before implementing.
 
-**Progress (2026-07-20)**: MVP core landed — Setup (workspace/TS/Vitest; Turborepo + lint deferred), Foundational (domain types/ports/config + in-memory repo), **US1** (XP accrual, tested), and **US2** (hybrid gate + rollover, tested) are **done and green (14 tests)**. Remaining: T004 lint, T013 TimeBack stub, **US3** (T019–T021 Next.js day view), and polish (T022–T025).
+**Progress (2026-07-20) — FEATURE COMPLETE.** All user stories done and verified green: **US1** (XP accrual), **US2** (hybrid gate + rollover), **US3** (Next.js day view). Setup (pnpm workspace, TS strict, Vitest, **Biome lint**), Foundational (domain types/ports/config + in-memory repo), the **TimeBack stub + `demo` script**, and the package **README** are all in. Verification: `tsc -b` clean · **14 Vitest tests pass** · `biome check` clean · `next build` succeeds · `pnpm demo` unlocks for both standard (120 XP) and GT (200 XP) cohorts. *Turborepo (part of T001) intentionally deferred — pnpm workspace scripts suffice at this scale; add later if build orchestration is needed.*
 
 ## Format: `[ID] [P?] [Story] Description`
 

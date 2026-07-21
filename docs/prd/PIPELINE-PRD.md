@@ -8,7 +8,7 @@
 | Document status | Standalone reframe of the program operating model |
 | Version | 1.1 |
 | Date | 2026-07-20 |
-| Companion documents | `PRD.md` v1.12 (detailed program spec), `GOVERNANCE.md` (rights/consent/authority, G1–G9), `gtBrainlift.md` (originating thesis, SPOV 1–5) |
+| Companion documents | `PRD.md` v1.13 (detailed program spec), `GOVERNANCE.md` (rights/consent/authority, G1–G9), `gtBrainlift.md` (originating thesis, SPOV 1–5) |
 | Initial market | United States, English-first |
 | Intake ages | 6 through 14 (primary intake 6 to 8) |
 | Line output | A learner-owned, verifiable Mastery Passport backed by an evidence trail |

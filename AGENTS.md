@@ -7,7 +7,8 @@
 
 ## Project
 - **GT100K** — `docs/prd/PRD.md` is the canonical product spec (see `README.md` for the full doc map); `docs/research/` + `docs/proposals/` hold background.
-- **Current stage: pre-code / PRD.** The repo is docs-only today. Code lands behind the workflow below as implementation begins.
+- **Current stage: active development.** PRD-driven implementation is underway; code ships behind the workflow below. `docs/prd/` remains the canonical spec.
+- **New here?** Start with `docs/onboarding/` (`README.md` + `teammate-setup.sh`). It sets up the **same factory the operator runs**: Claude Code (`claude-opus-4-8[1m]`) **+** Codex (`gpt-5.6-sol`), 3 MCPs (context7, aws-knowledge, terraform), context hygiene (auto-compaction ~40%), the loop harness, and the consensus + adversarial-QA review gate. One shared pipeline: everyone's work flows through the same gates below.
 
 ## Branching
 - Trunk-based. Branch from latest `origin/main`. Name: `dev/<lane>/<slug>` (e.g. `dev/prd/citation-fixes`). Branches live < 1 day.
@@ -19,7 +20,7 @@
 
 ## Worktrees & runtime
 - One worktree per agent. NEVER open another dev's worktree. `.env.local` is **COPIED**, never symlinked.
-- Repos live on **ext4** (`~/code/...`), never `/mnt/*`. Run the agent CLI fleet in **WSL2**.
+- Runtime is **macOS**: the agent CLIs (`claude` + `codex`), the loop harness, and the review gate all run natively. Repos live under `~/code/...`. (The Slack bridge / decision-escalation daemon is a WSL + systemd service the **operator hosts**; teammates use the shared Slack, not their own bridge.)
 - **pnpm** (not npm/yarn) for JS/TS. **uv** for Python.
 
 ## Merging & pushing

@@ -239,7 +239,7 @@ Validated findings feed a governance roadmap. The model and data governance boar
 
 ## G9. Safeguarding operations and mandatory reporting
 
-*(new in PRD v1.12 — the rights/legal-class companion to the PRD §30 safeguarding-operations requirement and the §3.7 legal-operating-model decision.)*
+*(new in PRD v1.13 — the rights/legal-class companion to the PRD §30 safeguarding-operations requirement and the §3.7 legal-operating-model decision.)*
 
 At 100,000 children the program carries a large absolute volume of safeguarding disclosures (abuse, neglect, self-harm, bullying), and every guide and mentor is a **mandated reporter** whose legal duty attaches personally and cannot be discharged by the platform. The program operates under these hard rules:
 
