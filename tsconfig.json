@@ -2,16 +2,16 @@
   "files": [],
   "references": [
     { "path": "packages/learning-loop" },
-    { "path": "packages/cohort-compiler" },
-    { "path": "packages/cohort-arena-view" },
+    { "path": "packages/evidence-explorer-view" },
+    { "path": "packages/interest-lab" },
+    { "path": "packages/interest-lab-view" },
     { "path": "packages/passion-tutor" },
-    { "path": "adapters/cohort-benefit-shadow" },
-    { "path": "adapters/cohort-candidates-memory" },
-    { "path": "adapters/cohort-media-stub" },
-    { "path": "adapters/cohort-repo-memory" },
-    { "path": "adapters/cohort-safeguarding-memory" },
     { "path": "adapters/passion-tutor-memory" },
     { "path": "adapters/repo-memory" },
-    { "path": "adapters/timeback-stub" }
+    { "path": "adapters/timeback-stub" },
+    { "path": "adapters/interest-repo-memory" },
+    { "path": "adapters/interest-probe-catalog" },
+    { "path": "adapters/interest-assent-stub" },
+    { "path": "adapters/interest-artifact-stub" }
   ]
 }

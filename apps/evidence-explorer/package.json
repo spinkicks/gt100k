@@ -1,0 +1,32 @@
+{
+  "name": "@gt100k/evidence-explorer",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "vitest run --config vitest.config.mts"
+  },
+  "dependencies": {
+    "@gt100k/evidence-deferred": "workspace:*",
+    "@gt100k/evidence-explorer-view": "workspace:*",
+    "@gt100k/evidence-graph": "workspace:*",
+    "@gt100k/evidence-hash-node": "workspace:*",
+    "@gt100k/evidence-verifier-stub": "workspace:*",
+    "@react-three/drei": "^9.114.0",
+    "@react-three/fiber": "^8.17.10",
+    "@react-three/postprocessing": "^2.16.3",
+    "motion": "^12.42.0",
+    "next": "^14.2.15",
+    "postprocessing": "^6.36.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/three": "^0.169.0"
+  }
+}
