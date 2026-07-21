@@ -278,3 +278,13 @@
 
 ## NEXT
 - T031: rerun the complete Part I quickstart after the shared/root Biome baseline is repaired; acceptance is zero diagnostics from `pnpm exec biome check .` with the typecheck, 64 domain tests, 94 workspace tests, exact golden root, and synthetic demo still green. Do not begin T032 until T031 passes.
+
+## 2026-07-20 — P4 quickstart baseline recheck (T031 partial, sixth attempt)
+- Re-ran the complete Part I quickstart. `pnpm exec tsc -b` and the required `pnpm typecheck` wrapper pass; the filtered domain suite passes 64/64, workspace Vitest passes 94/94, the synthetic demo verifies, and the exact G2 command returns `dd67a4e94fcb4fff954bcb093257364a5b5d0832bda9ffb7a5b6340e45ca647b`.
+- Confirmed both the five feature-owned EvidenceGraph directories (45 files) and the standard `pnpm lint` scope (70 files) are clean.
+- `pnpm exec biome check .` still exits 1 with 33 errors exclusively in out-of-scope shared/root files: CRLF/formatting in root configuration, formatting under `.specify`, and parse/lint diagnostics in `.claude/workflows/deep-research.js`. No shared or feature source file was modified.
+- Phase status: P4 remains in progress. T031 is still incomplete, T032 remains untouched and final, and the existing critical operator request remains current.
+- Blocker: repository owners must repair the shared/root full-Biome baseline before T031 can complete.
+
+## NEXT
+- T031: rerun the complete Part I quickstart after the shared/root Biome baseline is repaired; acceptance is zero diagnostics from `pnpm exec biome check .` with the typecheck, 64 domain tests, 94 workspace tests, exact golden root, and synthetic demo still green. Do not begin T032 until T031 passes.
