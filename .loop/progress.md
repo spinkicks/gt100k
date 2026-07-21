@@ -671,3 +671,15 @@
 ## NEXT
 - Complete U036: add `packages/interest-lab-view/test/explanations.test.ts` for the exact §U8.12 competing-explanations contract, paired with only the minimal implementation needed to preserve the green-only harness boundary.
 - Acceptance: supporting evidence always has a side-by-side disconfirming counterpart; uncertainty preserves grade/interval; no `passionScore`, `score`, `verdict`, or `label` key exists; no card copy matches `/you are (a|an|the) /i`; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-21 — P13 / U036 + partial U040
+- Added five pure `buildExplanationsView` contracts covering ordered supporting/disconfirming/other cards, the single-explanation `Next test` counterpart, grade and interval uncertainty, recursive forbidden-field absence, fixed-label fail-closed behavior, and validation of rendered copy only.
+- Confirmed genuine test-first RED evidence: after the initial missing-module discovery error, all four original assertions failed against a non-behavioral null scaffold; a self-review regression then independently failed because unused fallback copy was validated before its branch.
+- Implemented the minimum GPU-free explanation projection with immutable evidence/uncertainty copies, paired cards, deterministic semantic tones, no scalar derivation, and no framework, I/O, wall-clock, or random dependency. Public export and full guide composition remain with U040/U041.
+- Recorded the unspecified ordered-string, shared-reference, single-card fallback, and interval-strength defaults in D050.
+- Verified the view package suite (61 tests across 14 files), `pnpm typecheck`, `pnpm test` (171 tests across 38 files), and `pnpm lint` (145 files); all pass.
+- Status: U036 complete; U040 is partial; P13 remains in progress. SC-UI-05 and UI-FR-007 are green at the pure direct-module boundary. No blocker.
+
+## NEXT
+- Complete U037 with the minimal timeline portion of U040: add `packages/interest-lab-view/test/timeline.test.ts` and implement `buildReturnTimelineView` from `EVENTS_GOLDEN_V1`.
+- Acceptance: voluntary returns at day 7 and 30 are distinct; prompted return is recessed with `interventionContext:"reminder"` and contributes zero voluntary signal; every accessibility/safety support marker has `lowersSignal:false`; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
