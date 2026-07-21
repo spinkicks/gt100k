@@ -75,3 +75,15 @@
 ## NEXT
 - T005: add `packages/arena-world/src/index.ts` as the package public entrypoint with explicit named exports for the completed types, fixtures, and constant registries (avoid wildcard/barrel-style exports).
 - Acceptance: a package-entrypoint test fails first, then imports the full completed P0 surface through `@gt100k/arena-world`; direct package checks and repository `pnpm typecheck`/`pnpm test` remain green.
+
+## 2026-07-20 — P0 / T005
+- Added `packages/arena-world/src/index.ts` with explicit named value and type exports for the complete P0 model, fixtures, and constant registries; no wildcard re-export was introduced.
+- Added a package-entrypoint acceptance test first. The RED run failed because `@gt100k/arena-world` had no resolvable entrypoint; the GREEN run imports all 20 runtime values and the complete domain type surface through the package name.
+- Biome and direct arena-world TypeScript validation passed. Direct repository-root arena-world tests passed (5 files, 21 tests); `pnpm typecheck` passed; `pnpm test` passed (9 files, 35 tests). No app changed, so no Next.js build was required.
+- Gate caveat: the previously pinned package-local `test: vitest run` script finds no tests when `pnpm --filter` changes the working directory because the shared Vitest include globs are repository-root-relative. The canonical root gate and direct feature test selection are green; this pre-existing quickstart incompatibility remains to be reconciled before P7/T051.
+- SC status: P0's public package boundary is now available; no feature-level success criterion is newly claimed by this API-surface-only increment.
+- Blockers: none for T005.
+
+## NEXT
+- T006: add `packages/arena-world/test/smoke.test.ts` and only the minimal pure deterministic resolver stubs required for the P0 seeded smoke.
+- Acceptance: the smoke fails first, then imports `@gt100k/arena-world`, proves `buildQuestWorld(FIXTURE)` has 9 nodes and 4 regions, `layoutQuestWorld` returns non-empty positions, `resolveWorldTransform` returns 9 3D nodes, and `PALETTE`/`MOTION`/`CAMERA3D`/`QUALITY_TIERS`/`ASSET_KEYS` are non-empty; direct package checks and repository gates remain green.
