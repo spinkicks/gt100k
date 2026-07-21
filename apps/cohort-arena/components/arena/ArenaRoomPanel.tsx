@@ -204,7 +204,7 @@ export function ArenaRoomPanel({
             onCreated={({ gl }) => gl.domElement.setAttribute("aria-hidden", "true")}
           >
             <color attach="background" args={[view.presentation.palette.deck]} />
-            <ArenaRoomScene view={view} />
+            <ArenaRoomScene view={view} renderTier={renderTier} />
             <WebGLRuntimeProbe onContextLost={onContextLost} />
           </Canvas>
           {scene.suppressed ? <SuppressionNotice overlay /> : null}

@@ -1,20 +1,29 @@
 "use client";
 
 import type { CohortArenaView, MotionSpec, Vec3 } from "@gt100k/cohort-arena-view";
-import { Line } from "@react-three/drei";
+import { Environment, Lightformer, Line, Sparkles } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
+import {
+  Bloom,
+  BrightnessContrast,
+  EffectComposer,
+  HueSaturation,
+  Noise,
+  Vignette,
+} from "@react-three/postprocessing";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   type Fog,
   type Mesh,
   MeshBasicMaterial,
-  type MeshStandardMaterial,
+  type MeshPhysicalMaterial,
   QuadraticBezierCurve3,
   Vector3,
 } from "three";
 import type { Line2 } from "three/examples/jsm/lines/Line2.js";
 import type { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 
+import { type RenderTier3D, resolveRenderSettings } from "../performance/runtime";
 import {
   type DominanceRingScene,
   type InterruptionArcScene,
@@ -26,6 +35,7 @@ import {
 
 interface ArenaRoomSceneProps {
   readonly view: CohortArenaView;
+  readonly renderTier?: RenderTier3D;
 }
 
 function toTuple(position: Vec3): [number, number, number] {
@@ -187,17 +197,18 @@ function InterruptionArc({
   );
 }
 
-export function ArenaRoomScene({ view }: ArenaRoomSceneProps) {
+export function ArenaRoomScene({ view, renderTier = "full-3d" }: ArenaRoomSceneProps) {
   const scene = useMemo(() => buildArenaRoomScene(view), [view]);
   const motion = useMemo(() => resolveArenaRoomMotion(view), [view]);
   const evidenceMotion = useMemo(() => resolveArenaEvidenceMotion(view), [view]);
   const suppressionMotion = useMemo(() => resolveArenaSuppressionMotion(view), [view]);
+  const renderSettings = resolveRenderSettings(renderTier);
   const camera = useThree(({ camera: activeCamera }) => activeCamera);
-  const seatMaterials = useRef(new Map<string, MeshStandardMaterial>());
+  const seatMaterials = useRef(new Map<string, MeshPhysicalMaterial>());
   const lightColumns = useRef(new Map<string, Mesh>());
 
   const registerSeatMaterial = useCallback(
-    (speaker: string) => (material: MeshStandardMaterial | null) => {
+    (speaker: string) => (material: MeshPhysicalMaterial | null) => {
       if (material) seatMaterials.current.set(speaker, material);
       else seatMaterials.current.delete(speaker);
     },
@@ -265,6 +276,61 @@ export function ArenaRoomScene({ view }: ArenaRoomSceneProps) {
         distance={45}
         position={[0, 12, 4]}
       />
+      {/* Cool rim/back light so the seat ring separates from the deck as silhouettes. */}
+      <directionalLight
+        color={view.presentation.palette.peerHi}
+        intensity={scene.suppressed ? 0.24 : 0.7}
+        position={[-8, 16, -20]}
+      />
+
+      {/* Crafted image-based ambient — no HDRI fetch; art-directed to the palette so the
+          seats, backboards and floor ring catch real reflections off the room's rig. The
+          arena's key is the warm floor-holder gainHi (its own hue within the world), lifted
+          by cyan/teal peer fills and a violet accent, then cooled to a veil when suppressed. */}
+      <Environment resolution={192} frames={1}>
+        <Lightformer
+          form="ring"
+          intensity={scene.suppressed ? 0.7 : 2.1}
+          color={view.presentation.palette.gainHi}
+          position={[0, 18, 0]}
+          rotation={[Math.PI / 2, 0, 0]}
+          scale={[16, 16, 1]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={scene.suppressed ? 0.4 : 1.1}
+          color={view.presentation.palette.peer}
+          position={[-16, 7, 10]}
+          scale={[10, 12, 1]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={scene.suppressed ? 0.4 : 0.9}
+          color={view.presentation.palette.floor}
+          position={[16, 6, -8]}
+          scale={[10, 12, 1]}
+        />
+        <Lightformer
+          form="circle"
+          intensity={scene.suppressed ? 0.5 : 0.75}
+          color={scene.suppressed ? view.presentation.palette.locked : view.presentation.palette.form}
+          position={[0, -8, 0]}
+          scale={[26, 26, 1]}
+        />
+      </Environment>
+
+      {/* Faint drifting dust so the room breathes; skipped on the degraded tier / suppressed. */}
+      {renderTier === "full-3d" && !scene.suppressed ? (
+        <Sparkles
+          count={36}
+          scale={[26, 12, 26]}
+          size={1.8}
+          speed={0.22}
+          opacity={0.4}
+          noise={1.2}
+          color={view.presentation.palette.peerHi}
+        />
+      ) : null}
 
       {scene.dominanceRings.map((ring) => (
         <DominanceRing
@@ -297,7 +363,10 @@ export function ArenaRoomScene({ view }: ArenaRoomSceneProps) {
         <group key={seat.speaker} position={toTuple(seat.pos)}>
           <mesh name={`arena-seat-${seat.speaker}`} position={[0, 0.22, 0]}>
             <cylinderGeometry args={[1.2, 1.42, 0.44, 32]} />
-            <meshStandardMaterial
+            {/* Seat podium: a polished clearcoat gem, not flat plastic. The lit core still
+                feeds Bloom (emissive animation is driven per-frame), but the read now comes
+                from a wet clearcoat fresnel + a peerHi sheen catching the IBL rig. */}
+            <meshPhysicalMaterial
               ref={registerSeatMaterial(seat.speaker)}
               color={
                 seat.holdingFloor
@@ -312,22 +381,32 @@ export function ArenaRoomScene({ view }: ArenaRoomSceneProps) {
                     : view.presentation.palette.peer
               }
               emissiveIntensity={scene.suppressed ? 0.025 : seat.holdingFloor ? 1.22 : 0.1}
-              metalness={0.08}
-              roughness={0.34}
+              metalness={0.12}
+              roughness={0.24}
+              clearcoat={0.9}
+              clearcoatRoughness={0.22}
+              sheen={0.35}
+              sheenColor={view.presentation.palette.peerHi}
+              envMapIntensity={1.4}
               toneMapped={false}
             />
           </mesh>
 
           <mesh position={[0, 0.52, -0.28]} rotation={[-0.12, 0, 0]}>
             <boxGeometry args={[1.65, 1.15, 0.3]} />
-            <meshStandardMaterial
+            {/* Backboard: a dark brushed-metal panel that catches cyan/teal reflections off
+                the rig, grounding each seat with depth instead of a matte grey box. */}
+            <meshPhysicalMaterial
               color={view.presentation.palette.deck3}
               emissive={
                 scene.suppressed ? view.presentation.palette.locked : view.presentation.palette.peer
               }
               emissiveIntensity={scene.suppressed ? 0.02 : seat.holdingFloor ? 0.34 : 0.06}
-              metalness={0.06}
-              roughness={0.42}
+              metalness={0.35}
+              roughness={0.3}
+              clearcoat={0.6}
+              clearcoatRoughness={0.32}
+              envMapIntensity={1.6}
             />
           </mesh>
 
@@ -357,6 +436,24 @@ export function ArenaRoomScene({ view }: ArenaRoomSceneProps) {
           ) : null}
         </group>
       ))}
+
+      {/* Cinematic grade (full-3d only; the degraded tier skips post for frame budget) —
+          the same chain as the observatory so the two scenes read as one graded world:
+          glow -> saturation lift -> filmic contrast -> vignette framing -> fine grain. */}
+      {renderSettings.bloom ? (
+        <EffectComposer multisampling={renderSettings.antialias ? 4 : 0} enableNormalPass={false}>
+          <Bloom
+            intensity={scene.suppressed ? 0.32 : 0.5}
+            luminanceThreshold={0.55}
+            luminanceSmoothing={0.7}
+            mipmapBlur
+          />
+          <HueSaturation saturation={0.1} />
+          <BrightnessContrast brightness={0.01} contrast={0.13} />
+          <Vignette offset={0.26} darkness={scene.suppressed ? 0.78 : 0.62} />
+          <Noise premultiply opacity={0.04} />
+        </EffectComposer>
+      ) : null}
     </>
   );
 }
