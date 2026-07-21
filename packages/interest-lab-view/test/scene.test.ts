@@ -204,4 +204,23 @@ describe("buildSceneView", () => {
     const allKeys = JSON.stringify(scene, (_key, value) => value).match(/"[^"]+"(?=:)/g) ?? [];
     expect(allKeys.map((key) => key.slice(1, -1)).filter((key) => forbidden.test(key))).toEqual([]);
   });
+
+  it("keeps world and board on one truth: markers ⊆ quests and every quest is reachable", () => {
+    const lab = makeLab();
+    const picker = buildProbePickerView(lab, { history: [], band: "9-11" });
+    const scene = buildSceneView(lab, FULL_SCENE_OPTIONS);
+    const markerIds = scene.islands.flatMap(({ markers }) => markers.map((m) => m.probeId));
+    const questIds = new Set(picker.quests.map((quest) => quest.probeId));
+
+    // No orb picks a probe that has no matching quest (markers ⊆ quests).
+    for (const id of markerIds) {
+      expect(questIds.has(id)).toBe(true);
+    }
+    // Every quest is reachable as exactly one marker — no quest is board-only décor,
+    // and no island is unreachable décor.
+    expect(new Set(markerIds)).toEqual(questIds);
+    expect(markerIds).toHaveLength(picker.quests.length);
+    // The board stages fewer quests than the world at once, so this parity is load-bearing.
+    expect(picker.quests.length).toBeGreaterThan(picker.visibleQuests.length);
+  });
 });

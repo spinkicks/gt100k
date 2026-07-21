@@ -76,11 +76,33 @@ existing tests meaningful — update them as behavior changes; DO NOT weaken the
   - CAVEAT: WebGL interaction not pixel/click-verified (headless GPU-less → swiftshader → board-2d).
     Structurally sound + unit-tested; a GPU-browser pass is the ideal final taste-tune, blocks nothing.
 
+- **Turn 2 (v2) — P0.3 DONE.** World↔board parity ("one truth"). Gate green: `tsc -b` 0 · view pkg
+  103/103 · app 88/88 · `next build` ✓ (route `/` static, 285 kB). **Browser-verified** (chromium via
+  swiftshader resolved `quest-world-3d-lite`, so the 3D world actually mounted): board shows 6 staged
+  cards → click **"See all 20 quests"** → 20 cards (== the 20 world markers) → **"Show fewer"** → 6;
+  **zero console/page errors** on load + interaction.
+  - Root cause: the world renders a marker for EVERY quest (20), but the ledger only rendered
+    `picker.visibleQuests` (6, band 9-11 `maxVisibleQuests`) with no way to reach the rest → 14 orbs
+    picked probeIds with no matching board card (tray-only, unreachable from the board). The view-pkg
+    invariant (markers == quests) already held; the break was purely app composition.
+  - Fix (`QuestLedger.tsx`): the board now reaches every quest. `boardQuests = revealAll ? quests :
+    visibleQuests`, where `revealAll = showAll || focusOffStage || pickOffStage`. Any quest focused or
+    picked FROM THE WORLD (QuestWorld threads `focusedProbeId`/`pickedProbeIds`) auto-reveals its card;
+    a crafted **"See all N quests"** disclosure (aria-expanded, lit-pill material, `--card-ease`,
+    `scale(0.97)` press) exposes the rest on demand. Age-band staging is preserved (6 by default). See
+    D-VP19.
+  - Tests: `apps/interest-lab/test/world-board-parity.test.ts` (5) — markers ⊆ quests, every quest
+    reachable, off-stage focus reveals its card, off-stage pick reveals its card, see-all present +
+    staged-by-default. Explicit view-pkg invariant added to `scene.test.ts` (markers == quests,
+    load-bearing since `quests > visibleQuests`).
+
 ## NEXT
-- **P0.3 — world↔board parity ("one truth").** `picker.ts` slices `visibleQuests` (6) but `scene.ts`
-  builds markers from ALL quests → the 3D world shows 8 islands / 20 markers while the ledger shows
-  only 6 cards, so most orbs pick probeIds with no matching card and 6 of 8 islands are unreachable
-  décor. Make EVERY domain/quest reachable + pickable with parity between world and board, plus a
-  "next island / see all" affordance. Acceptance: the set of pickable marker probeIds == the set of
-  ledger-reachable quest probeIds (add a test asserting `scene.islands` markers ⊆ `picker.quests`
-  and that every quest is reachable); keep `tsc`/`test`/`build` green.
+- **P0.4 — give "visit" a payoff.** Add the my-quests **beacon** as a real scene/HUD target and make a
+  pick a **hop-travel** to it with the spark-trail (`QuestMarker` `PICK_HOP_HEIGHT`/
+  `createPickHopSpring` already exist; beacon lives in `QuestWorld.tsx`). Focusing an island should
+  surface its quests + give arrival meaning (island rises/opens + a DOM island-name banner). Acceptance:
+  picking an orb visibly hops to a beacon target (unit-test the hop spring + beacon target wiring);
+  focusing an island shows a DOM island-name banner (assert the banner renders for the focused domain);
+  keep `tsc`/`test`/`build` green. NOTE: P1.7 (stage the WORLD by age band) will later reduce world
+  markers below `quests.length` — when that lands, keep parity by staging the BOARD's `revealAll`
+  baseline to the same set, so world-reachable == board-reachable stays true (see the D-VP19 caveat).

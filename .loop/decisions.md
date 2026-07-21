@@ -787,3 +787,41 @@
   GPU-less env (SSR + swiftshader → `board-2d`); confirmed via unit tests (onPick threaded to all 8
   islands; boundary behavior) + `next build` + a 200 SSR load. A GPU browser pass remains the ideal
   final taste-tune but blocks no non-negotiable.
+
+## D-VP19 — Board reaches every quest so world↔board is "one truth" (interest-lab-v2 Turn 2 · P0.3)
+- Context: the 3D world builds one marker per quest (`buildSceneView` → `picker.quests`, 20 markers),
+  but `QuestLedger` rendered only `picker.visibleQuests` (6, band 9-11 `maxVisibleQuests`) with no
+  affordance to reach the rest. So 14 of 20 orbs picked probeIds that had NO board card — the pick
+  landed only in the tray (looked up from `picker.quests`) and could never be toggled/focused from the
+  board. World and board disagreed on which quests exist. The view-package invariant already held
+  (existing `scene.test.ts` proves markers keyed-equal picker.quests); the break was purely at app
+  composition (which set the board renders).
+- Chose: make the BOARD the equal of the WORLD (reach all quests), not shrink the world. In
+  `QuestLedger`, `boardQuests = revealAll ? picker.quests : picker.visibleQuests`, with
+  `revealAll = showAll || focusOffStage || pickOffStage`. (a) Any quest focused or picked from the
+  world auto-reveals its card — QuestWorld already threads `focusedProbeId`/`pickedProbeIds` into the
+  controlled ledger (D-VP18), so tapping an orb surfaces its board card with no extra wiring. (b) A
+  `<button class="quest-see-all" aria-expanded>` disclosure ("See all N quests" / "Show fewer quests")
+  exposes the rest on demand. Age-band staging is preserved: the board still shows only
+  `maxVisibleQuests` by default (6/3), so the youngest bands stay calm — staging now means "how many
+  show at once," with a real path to the rest, not "which quests exist."
+- Why: P0.3's "one truth" — the set of pickable marker probeIds == the set of board-reachable quest
+  probeIds. Expanding the board (rather than truncating the world to `visibleQuests`) keeps every
+  island/orb a live, meaningful target (the hero objects) while honoring the staging tokens for
+  cognitive load. `aria-expanded` (NOT `aria-pressed`) keeps the disclosure from reading as a 7th
+  pickable quest to assistive tech and preserves the pinned `aria-pressed` card counts. CSS-only
+  styling reuses the committed lit-pill idiom (`--card-ease`, `scale(0.97)` press, spark hover) for
+  cohesion (game-feel #9) and is auto-neutralized under reduced motion by the global transition kill.
+- Verified: browser (chromium/swiftshader → `quest-world-3d-lite`, so the 3D world genuinely mounted):
+  6 → "See all 20 quests" → 20 (== 20 markers) → "Show fewer" → 6; ZERO console/page errors on load +
+  interaction. Plus `world-board-parity.test.ts` (5 deterministic renderToStaticMarkup assertions) and
+  an explicit view-pkg parity invariant. Gate: tsc 0 · view 103 · app 88 · next build OK.
+- Rejected: (a) truncating world markers to `visibleQuests` — makes 14 islands/orbs dead décor, the
+  opposite of the payoff P0.4 wants; (b) removing the staging slice entirely — dumps 20 cards on a
+  6-year-old, violating the age-band cognitive-load contract; (c) a JS-animated height reveal — a plain
+  re-render is honest + testable (emil "CSS beats JS under load"); (d) aria-pressed on the disclosure —
+  would inflate the pinned pressed-card counts and mislead AT.
+- CAVEAT for P1.7: when the WORLD is later staged by age band (`buildSceneView` consuming
+  `maxVisibleQuests`), world markers will drop below `quests.length`. To keep parity then, the board's
+  `revealAll` baseline must stage to the SAME set the world shows — world-reachable == board-reachable
+  must remain the invariant. Flagged in progress NEXT so P1.7 doesn't silently re-break parity.

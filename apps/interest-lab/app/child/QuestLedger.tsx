@@ -46,6 +46,8 @@ export function QuestLedger({
   const pickedProbeIds = controlledPickedProbeIds ?? internalPickedProbeIds;
   const focusedProbeId = controlled ? (controlledFocusedProbeId ?? null) : internalFocusedProbeId;
 
+  const [showAll, setShowAll] = useState(false);
+
   const questById = useMemo(
     () => new Map(picker.quests.map((quest) => [quest.probeId, quest] as const)),
     [picker.quests],
@@ -54,6 +56,20 @@ export function QuestLedger({
     .map((probeId) => questById.get(probeId))
     .filter((quest): quest is ProbeCardView => quest !== undefined);
   const reducedMotion = picker.quests[0]?.motion.mode === "reduced";
+
+  // "One truth": the 3D world shows every quest as a pickable orb, so the board must be able
+  // to reach every quest too. The age band still stages how many show at once, but any quest
+  // focused or picked from the world auto-reveals its card, and a see-all disclosure exposes
+  // the rest — so no orb can pick a quest the board can't also surface.
+  const visibleProbeIds = useMemo(
+    () => new Set(picker.visibleQuests.map((quest) => quest.probeId)),
+    [picker.visibleQuests],
+  );
+  const hasStagedQuests = picker.quests.length > picker.visibleQuests.length;
+  const focusOffStage = focusedProbeId !== null && !visibleProbeIds.has(focusedProbeId);
+  const pickOffStage = pickedProbeIds.some((probeId) => !visibleProbeIds.has(probeId));
+  const revealAll = showAll || focusOffStage || pickOffStage;
+  const boardQuests = revealAll ? picker.quests : picker.visibleQuests;
 
   const pick = (probeId: string) => {
     if (controlled) {
@@ -92,12 +108,24 @@ export function QuestLedger({
       </div>
       <LayoutGroup id="interest-lab-quest-picks">
         <Board2D
-          quests={picker.visibleQuests}
+          quests={boardQuests}
           pickedProbeIds={pickedProbeIds}
           onPick={pick}
           onFocus={focus}
           touchTargetPx={picker.staging.touchTargetPx}
         />
+        {hasStagedQuests ? (
+          <button
+            type="button"
+            className="quest-see-all"
+            aria-expanded={revealAll}
+            onClick={() => setShowAll((current) => !current)}
+          >
+            {revealAll
+              ? "Show fewer quests"
+              : `See all ${picker.quests.length} quests`}
+          </button>
+        ) : null}
         <QuestTray quests={pickedQuests} reducedMotion={reducedMotion} onReturn={returnQuest} />
       </LayoutGroup>
     </section>
