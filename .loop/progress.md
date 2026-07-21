@@ -41,3 +41,14 @@
 ## NEXT
 - Complete T005: define all injected domain ports and the deferred `OfferSelector` shape in `packages/interest-lab/src/ports.ts` per the plan's Domain Contracts.
 - Acceptance: compile-time tests encode `InterestHypothesisRepository`, `ProbeCatalog`, `AssentRecordPort`, `ArtifactSignalSource`, `OfferDecisionLog`, `Clock`, and the non-implemented forward-compatible `OfferSelector`; the package-local compiler, `pnpm typecheck`, and `pnpm test` remain green.
+
+## 2026-07-20 — P1 / T005
+- Added four compile-time contract tests covering append-only hypothesis replay, injected catalog/assent/artifact/clock boundaries, rules-engine decision logging, and the deferred selector shape.
+- Confirmed the test-first red state: the package compiler failed with TS2307 for the absent `src/ports.ts`, then passed after the minimal port interfaces were added.
+- Kept T005 independent of later record-definition tasks through typed payload parameters; no bandit implementation, wall-clock read, I/O implementation, or raw artifact shape was introduced.
+- Corrected feature-local formatter findings and verified `pnpm typecheck`, `pnpm test` (24 tests), and `pnpm lint` all pass.
+- Status: T005 complete; P1 remains in progress; injected-boundary contracts for IL-014/IL-016/IL-021 are encoded. No blocker.
+
+## NEXT
+- Complete T006: define event, signal, hypothesis, coverage, purpose, and guide-review types in `packages/interest-lab/src/events.ts` and `packages/interest-lab/src/hypothesis.ts` exactly as specified in the P1 data model.
+- Acceptance: tests first encode `EventType` (including `ARTIFACT_COMPETENCE`), `EngagementEvent`, `SignalFamily`, `SignalSummary`, `HypothesisState`, `ChildPosition`, `InterestHypothesis`, `HypothesisRevision`, `CoverageMatrix`, `ForbiddenPurpose`, and `GuideReview`; the package compiler, `pnpm typecheck`, and `pnpm test` remain green.
