@@ -861,3 +861,13 @@
 ## NEXT
 - Complete U-ROOT: add `{ "path": "packages/interest-lab-view" }` to the root `tsconfig.json` project references as the one final shared-root/human-reconcile edit.
 - Acceptance: the new reference appears exactly once without changing other root configuration; `pnpm typecheck`, `pnpm test`, `pnpm lint`, `pnpm --filter @gt100k/interest-lab-app build`, and `pnpm build` remain green. If the whole spec is then satisfied, create `.loop-done`.
+
+## 2026-07-21 — P15 / U-ROOT
+- Added the final human-reconcile root TypeScript project reference for `packages/interest-lab-view`, adjacent to the Part-I domain package reference and without changing any other root configuration.
+- Confirmed genuine RED/GREEN evidence with an exact-once structural assertion: it first failed with `found 0`, then passed after the single-line reference edit; the root `tsc -b` graph also compiled cleanly with the view package included.
+- Verified `pnpm --filter @gt100k/interest-lab-view test` (102 tests across 22 files), `pnpm typecheck`, `pnpm test` (212 tests across 46 files), `pnpm lint` (166 files), the Interest Lab production build, and the root production build; all pass.
+- Status: U-ROOT and P15 complete. Every Part-I and Part-II task and success criterion recorded in this loop is green; the previously documented physical mid-GPU throughput check remains an environment-only validation gap, not an implementation blocker. Created `.loop-done`.
+
+## NEXT
+- Harness handoff: commit this final green increment and reconcile the flagged shared-root `tsconfig.json` line when merging.
+- Acceptance: `.loop-done` and the one-line Conventional Commit message are present, and the exact-once view-package reference remains green through the full gate.
