@@ -279,23 +279,4 @@ export async function explorerFixture(hasher: Hasher): Promise<ExplorerFixture> 
   return { ...bundle, verifierResult };
 }
 
-/**
- * Deterministically tamper the released byte-body's payload. The committed packet is unchanged, so
- * the mismatch surfaces at verify time when node hashes are re-derived from content (§U8.8, U3).
- */
-export function applyTamper(bundle: FixtureBundle): FixtureBundle {
-  const targetId = bundle.ids["released-artifact"];
-  const target = bundle.graph.nodes[targetId];
-  const tamperedNodes = { ...bundle.graph.nodes };
-  if (target !== undefined) {
-    tamperedNodes[targetId] = {
-      ...target,
-      payload: { ...target.payload, title: "Tampered released artifact", tampered: true },
-    };
-  }
-  return {
-    graph: { nodes: tamperedNodes, edges: bundle.graph.edges },
-    packet: bundle.packet,
-    ids: bundle.ids,
-  };
-}
+// `applyTamper` now lives with the verification builder in `../verify.ts` (U3, §U8.8).

@@ -14,5 +14,6 @@ export * from "./ranks.js";
 export * from "./layout2d.js";
 export * from "./layout3d.js";
 export * from "./timeline.js";
+export * from "./verify.js";
 export * from "./view.js";
 export * from "./fixtures/explorer.fixture.js";
