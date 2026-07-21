@@ -1,4 +1,4 @@
-import { type CoverageMatrix, type Offer, WORK_MODES } from "@gt100k/interest-lab";
+import { type CoverageMatrix, type Offer, WORK_MODES } from "@gt100k/interest-lab-domain";
 import { resolveDomainHue } from "./art";
 import { WORK_MODE_GLYPHS } from "./glyphs";
 import type { CoverageDimension, CoverageMatrixView, DimensionRailItem } from "./model";

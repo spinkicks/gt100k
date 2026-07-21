@@ -1,4 +1,4 @@
-import type { EngagementEvent, EventType } from "@gt100k/interest-lab";
+import type { EngagementEvent, EventType } from "@gt100k/interest-lab-domain";
 import type { MarkerView, ReturnTimelineView } from "./model";
 import { resolveMotion } from "./motion";
 

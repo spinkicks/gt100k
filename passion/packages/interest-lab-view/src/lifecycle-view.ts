@@ -6,7 +6,7 @@ import {
   LEGAL_TRANSITIONS,
   SIGNAL_FAMILIES,
   type SignalFamily,
-} from "@gt100k/interest-lab";
+} from "@gt100k/interest-lab-domain";
 import { PALETTE } from "./art";
 import type { LifecycleStateView, RevisionHistoryView } from "./model";
 

@@ -1,4 +1,4 @@
-import { EVENTS_GOLDEN_V1 } from "@gt100k/interest-lab";
+import { EVENTS_GOLDEN_V1 } from "@gt100k/interest-lab-domain";
 import { describe, expect, it } from "vitest";
 import { resolveMotion } from "../src/motion";
 import { buildReturnTimelineView } from "../src/timeline";

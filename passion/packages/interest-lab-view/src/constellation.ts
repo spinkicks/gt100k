@@ -1,4 +1,4 @@
-import { type HypothesisRevision, SIGNAL_FAMILIES, type SignalFamily } from "@gt100k/interest-lab";
+import { type HypothesisRevision, SIGNAL_FAMILIES, type SignalFamily } from "@gt100k/interest-lab-domain";
 import type { ConstellationStar, EvidenceConstellationView, ReturnTimelineView } from "./model";
 
 const brightnessFor = (family: SignalFamily, present: ReadonlySet<SignalFamily>): number => {

@@ -1,4 +1,4 @@
-import type { WorkMode } from "@gt100k/interest-lab";
+import type { WorkMode } from "@gt100k/interest-lab-domain";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { HUE_RAMP, PALETTE, TYPOGRAPHY } from "../src/art";
 import { WORK_MODE_GLYPHS } from "../src/glyphs";

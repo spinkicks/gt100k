@@ -1085,3 +1085,26 @@
 - **Rejected:** (a) ticking all 90 tasks.md checkboxes — large spec-file churn for no DoD value; the SCs
   are the contract. (b) looping a `recheck` marker on the manual SC-UI-18 items — forbidden by the loop's
   blocked-criterion rule.
+
+## D-VP28 — App/domain package rename to satisfy the harness serve convention (Turn 11)
+- Chose: rename the **app** `@gt100k/interest-lab-app` → **`@gt100k/interest-lab`**, and the **domain**
+  package `@gt100k/interest-lab` → **`@gt100k/interest-lab-domain`**.
+- Why: the adversarial-usability QA gate serves the app via a fixed harness convention
+  `pnpm --filter @gt100k/interest-lab exec next dev -p <PORT>` (the bare feature slug). Because the app
+  was misnamed `-app` and the bare name belonged to the domain package, the filter resolved the *domain*
+  (no `next` binary) → `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL Command "next" not found` → the app never
+  came up → QA rejected the `.loop-done`. The rename is not a workaround but the repo's actual
+  convention: the two sibling apps are `@gt100k/evidence-explorer` and `@gt100k/passion-tutor` (bare
+  slug), and passion-tutor's domain is `@gt100k/passion-tutor-domain`. It is further corroborated by the
+  **root `build` script**, which already filters `@gt100k/interest-lab` expecting the *app* to own that
+  name. interest-lab was the sole deviation; this aligns it.
+- Scope of change: package `name` fields (2) + all quote-delimited import specifiers / dependency keys
+  for the domain (`@gt100k/interest-lab` → `-domain`, 53 refs) across view/app/adapters + `pnpm-lock.yaml`
+  (regenerated via `pnpm install`). Quote-delimited replace never touched `-view`/`-app`; verified no
+  subpath imports exist. Root `tsconfig.json` project references are by **directory path**, unchanged (no
+  directories moved). Updated 14 runnable `-app` command refs in the spec docs; left deep Part-I
+  domain-name prose as historical record. **No product/runtime code changed** — the built bundle behaves
+  identically to the Turn-10 verified-usable state.
+- Rejected: (a) keeping `-app` and asking the harness to change its filter — the harness is out-of-lane
+  and the convention is fixed; (b) two packages sharing `@gt100k/interest-lab` — impossible in a pnpm
+  workspace; (c) adding a `next`-running script to the domain package — nonsensical.

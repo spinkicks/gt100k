@@ -42,9 +42,9 @@ pnpm lint         # biome check packages adapters apps  (already covers packages
 ## View it (the two surfaces, UI-US1–US5)
 
 ```bash
-pnpm --filter @gt100k/interest-lab-app dev     # apps/interest-lab — the 3D child world + guide console
+pnpm --filter @gt100k/interest-lab dev     # apps/interest-lab — the 3D child world + guide console
 # then build to validate the acceptance target:
-pnpm --filter @gt100k/interest-lab-app build   # next build
+pnpm --filter @gt100k/interest-lab build   # next build
 ```
 
 **Stack notes**: React `^18.3.1` + Next `^14.2.15` App Router + **`motion ^12`** (`motion/react`, DOM motion) + **`three ^0.169.0` / `@react-three/fiber ^8.17.10` / `@react-three/drei ^9.114.0`** (the 3D world; React-18 line). The r3f `<Canvas>` mounts **client-only** (`next/dynamic`, `ssr:false`) and is `aria-hidden`. The app reads `@gt100k/interest-lab` (domain) + `@gt100k/interest-lab-view` (view) and feeds the Part-I fixtures — **no external fetch** (procedural 3D geometry + in-app textures; fonts are system fallback stacks). No `.env` is required; `apps/interest-lab/.env.local.example` documents the non-secret `NEXT_PUBLIC_*` defaults (incl. `NEXT_PUBLIC_RENDER_TIER=auto`).

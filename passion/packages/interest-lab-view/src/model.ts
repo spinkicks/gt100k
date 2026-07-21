@@ -7,7 +7,7 @@ import type {
   SocialMode,
   Uncertainty,
   WorkMode,
-} from "@gt100k/interest-lab";
+} from "@gt100k/interest-lab-domain";
 
 export type AgeBand = "6-8" | "9-11" | "12-14";
 

@@ -4,7 +4,7 @@ import {
   SIGNAL_FAMILIES,
   type SignalFamily,
   summarizeSignals,
-} from "@gt100k/interest-lab";
+} from "@gt100k/interest-lab-domain";
 import { describe, expect, it } from "vitest";
 import { buildEvidenceConstellationView } from "../src/constellation";
 import { buildReturnTimelineView } from "../src/timeline";

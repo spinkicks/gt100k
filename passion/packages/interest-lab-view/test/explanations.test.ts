@@ -1,4 +1,4 @@
-import type { HypothesisRevision, SignalSummary } from "@gt100k/interest-lab";
+import type { HypothesisRevision, SignalSummary } from "@gt100k/interest-lab-domain";
 import { describe, expect, it } from "vitest";
 import { buildExplanationsView } from "../src/explanations";
 

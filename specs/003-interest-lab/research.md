@@ -27,7 +27,7 @@ This records the decisions behind the UI surfaces so the loop does not re-open t
 
 ## R2 — Architecture: a new pure view package + a separate app
 
-**Decision.** A new pure, **GPU-free** package **`packages/interest-lab-view` (`@gt100k/interest-lab-view`)** holds all render-shaping logic + constant registries + the deterministic 3D scene numbers (it imports no `three`/`react`); **`apps/interest-lab` (`@gt100k/interest-lab-app`)** is the only place React / `motion@^12` (DOM) / react-three-fiber+drei+three (3D) live. The **Part-I domain package is not modified** beyond consuming its public API.
+**Decision.** A new pure, **GPU-free** package **`packages/interest-lab-view` (`@gt100k/interest-lab-view`)** holds all render-shaping logic + constant registries + the deterministic 3D scene numbers (it imports no `three`/`react`); **`apps/interest-lab` (`@gt100k/interest-lab`)** is the only place React / `motion@^12` (DOM) / react-three-fiber+drei+three (3D) live. The **Part-I domain package is not modified** beyond consuming its public API.
 
 **Why.**
 - Mirrors the proven 001/004 split (pure package + app) and keeps every render rule **Vitest-covered** — the root `vitest.config.ts` globs `packages/**/test`, **not** `apps/**`, so any logic that needs a unit test must live in a package.

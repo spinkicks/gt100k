@@ -1,5 +1,5 @@
-import { buildLab } from "@gt100k/interest-lab";
-import type { ProbeFamily, WorkMode } from "@gt100k/interest-lab";
+import { buildLab } from "@gt100k/interest-lab-domain";
+import type { ProbeFamily, WorkMode } from "@gt100k/interest-lab-domain";
 import { describe, expect, it } from "vitest";
 import {
   CAMERA3D,

@@ -1,4 +1,4 @@
-import type { WorkMode } from "@gt100k/interest-lab";
+import type { WorkMode } from "@gt100k/interest-lab-domain";
 
 export const WORK_MODE_GLYPHS = {
   build: "glyph-hammer",

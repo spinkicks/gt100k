@@ -1,4 +1,4 @@
-import type { HypothesisRevision, HypothesisState, SignalSummary } from "@gt100k/interest-lab";
+import type { HypothesisRevision, HypothesisState, SignalSummary } from "@gt100k/interest-lab-domain";
 import { describe, expect, it } from "vitest";
 import { InMemoryInterestHypothesisRepository } from "../src/index";
 

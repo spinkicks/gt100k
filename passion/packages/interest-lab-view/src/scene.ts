@@ -1,4 +1,4 @@
-import type { Lab } from "@gt100k/interest-lab";
+import type { Lab } from "@gt100k/interest-lab-domain";
 import { resolveDomainHue } from "./art";
 import type {
   AgeBand,

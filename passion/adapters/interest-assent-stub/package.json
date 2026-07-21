@@ -9,6 +9,6 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@gt100k/interest-lab": "workspace:*"
+    "@gt100k/interest-lab-domain": "workspace:*"
   }
 }

@@ -1,11 +1,11 @@
-import { buildLab } from "@gt100k/interest-lab";
+import { buildLab } from "@gt100k/interest-lab-domain";
 import type {
   AudienceCondition,
   DifficultyBand,
   ProbeFamily,
   SocialMode,
   WorkMode,
-} from "@gt100k/interest-lab";
+} from "@gt100k/interest-lab-domain";
 import { describe, expect, it } from "vitest";
 import {
   WORK_MODE_GLYPHS,

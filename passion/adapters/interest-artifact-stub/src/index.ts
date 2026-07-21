@@ -1,5 +1,5 @@
-import { acceptArtifactSignal } from "@gt100k/interest-lab";
-import type { ArtifactSignalSource, ArtifactTransition } from "@gt100k/interest-lab";
+import { acceptArtifactSignal } from "@gt100k/interest-lab-domain";
+import type { ArtifactSignalSource, ArtifactTransition } from "@gt100k/interest-lab-domain";
 
 /** Finite synthetic source that validates every payload before it can enter the queue. */
 export class StubArtifactSignalSource implements ArtifactSignalSource<ArtifactTransition> {

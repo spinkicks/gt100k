@@ -3,8 +3,8 @@ import {
   buildLab,
   evaluateCandidateGate,
   summarizeSignals,
-} from "@gt100k/interest-lab";
-import type { HypothesisRevision, Lab, ProbeFamily } from "@gt100k/interest-lab";
+} from "@gt100k/interest-lab-domain";
+import type { HypothesisRevision, Lab, ProbeFamily } from "@gt100k/interest-lab-domain";
 import { describe, expect, it } from "vitest";
 import {
   CAMERA3D,

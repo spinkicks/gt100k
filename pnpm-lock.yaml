@@ -34,25 +34,25 @@ importers:
 
   passion/adapters/interest-artifact-stub:
     dependencies:
-      '@gt100k/interest-lab':
+      '@gt100k/interest-lab-domain':
         specifier: workspace:*
         version: link:../../packages/interest-lab
 
   passion/adapters/interest-assent-stub:
     dependencies:
-      '@gt100k/interest-lab':
+      '@gt100k/interest-lab-domain':
         specifier: workspace:*
         version: link:../../packages/interest-lab
 
   passion/adapters/interest-probe-catalog:
     dependencies:
-      '@gt100k/interest-lab':
+      '@gt100k/interest-lab-domain':
         specifier: workspace:*
         version: link:../../packages/interest-lab
 
   passion/adapters/interest-repo-memory:
     dependencies:
-      '@gt100k/interest-lab':
+      '@gt100k/interest-lab-domain':
         specifier: workspace:*
         version: link:../../packages/interest-lab
 
@@ -115,7 +115,7 @@ importers:
 
   passion/apps/interest-lab:
     dependencies:
-      '@gt100k/interest-lab':
+      '@gt100k/interest-lab-domain':
         specifier: workspace:*
         version: link:../../packages/interest-lab
       '@gt100k/interest-lab-view':
@@ -206,7 +206,7 @@ importers:
 
   passion/packages/interest-lab-view:
     dependencies:
-      '@gt100k/interest-lab':
+      '@gt100k/interest-lab-domain':
         specifier: workspace:*
         version: link:../interest-lab
     devDependencies:

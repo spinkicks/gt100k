@@ -1,4 +1,4 @@
-import type { AssentRecordPort } from "@gt100k/interest-lab";
+import type { AssentRecordPort } from "@gt100k/interest-lab-domain";
 
 /** Synthetic, learner-scoped withdrawal record; it has no program-access capability. */
 export class StubAssentRecord implements AssentRecordPort {

@@ -1,5 +1,5 @@
-import { buildLab } from "@gt100k/interest-lab";
-import type { ProbeFamily } from "@gt100k/interest-lab";
+import { buildLab } from "@gt100k/interest-lab-domain";
+import type { ProbeFamily } from "@gt100k/interest-lab-domain";
 import { describe, expect, it } from "vitest";
 import { QUALITY_TIERS, buildSceneView, resolveQualityTier, resolveRenderTier } from "../src/index";
 import type { DeviceCaps, RenderTier } from "../src/index";

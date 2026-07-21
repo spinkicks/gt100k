@@ -4,13 +4,13 @@ import {
   buildLab,
   proposeTransition,
   summarizeSignals,
-} from "@gt100k/interest-lab";
+} from "@gt100k/interest-lab-domain";
 import type {
   CoverageMatrix,
   GuideReview,
   HypothesisRevision,
   SignalSummary,
-} from "@gt100k/interest-lab";
+} from "@gt100k/interest-lab-domain";
 import { CATALOG_GOLDEN_V1 } from "./index";
 
 const SYNTHETIC_LEARNER = "synthetic-learner-001";

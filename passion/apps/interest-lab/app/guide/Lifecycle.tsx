@@ -1,6 +1,6 @@
 "use client";
 
-import type { HypothesisState } from "@gt100k/interest-lab";
+import type { HypothesisState } from "@gt100k/interest-lab-domain";
 import type { LifecycleStateView } from "@gt100k/interest-lab-view";
 import { motion } from "motion/react";
 import type { CSSProperties } from "react";

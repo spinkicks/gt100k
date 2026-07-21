@@ -1,5 +1,5 @@
 {
-  "name": "@gt100k/interest-lab-app",
+  "name": "@gt100k/interest-lab",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@gt100k/interest-lab": "workspace:*",
+    "@gt100k/interest-lab-domain": "workspace:*",
     "@gt100k/interest-lab-view": "workspace:*",
     "@gt100k/interest-probe-catalog": "workspace:*",
     "@react-three/drei": "^9.114.0",

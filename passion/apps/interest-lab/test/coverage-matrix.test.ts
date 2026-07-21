@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { buildLab } from "@gt100k/interest-lab";
+import { buildLab } from "@gt100k/interest-lab-domain";
 import { buildCoverageMatrixView } from "@gt100k/interest-lab-view";
 import { CATALOG_GAPPY_V1, CATALOG_GOLDEN_V1 } from "@gt100k/interest-probe-catalog";
 import { createElement } from "react";

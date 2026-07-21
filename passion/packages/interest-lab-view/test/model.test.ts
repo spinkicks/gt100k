@@ -4,7 +4,7 @@ import type {
   SignalFamily,
   Uncertainty,
   WorkMode,
-} from "@gt100k/interest-lab";
+} from "@gt100k/interest-lab-domain";
 import { describe, expectTypeOf, test } from "vitest";
 import type {
   AgeBand,

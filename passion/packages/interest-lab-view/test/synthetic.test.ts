@@ -4,8 +4,8 @@ import {
   createHypothesis,
   evaluateCandidateGate,
   summarizeSignals,
-} from "@gt100k/interest-lab";
-import type { HypothesisRevision } from "@gt100k/interest-lab";
+} from "@gt100k/interest-lab-domain";
+import type { HypothesisRevision } from "@gt100k/interest-lab-domain";
 import { CATALOG_GOLDEN_V1 } from "@gt100k/interest-probe-catalog";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import {

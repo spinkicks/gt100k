@@ -5,7 +5,7 @@ import {
   type InterestHypothesis,
   type Lab,
   currentFor,
-} from "@gt100k/interest-lab";
+} from "@gt100k/interest-lab-domain";
 import { PALETTE, TYPOGRAPHY } from "./art";
 import { buildEvidenceConstellationView } from "./constellation";
 import { buildCoverageMatrixView } from "./coverage-view";

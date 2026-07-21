@@ -4,13 +4,13 @@ import {
   SIGNAL_FAMILIES,
   evaluateCandidateGate,
   summarizeSignals,
-} from "@gt100k/interest-lab";
+} from "@gt100k/interest-lab-domain";
 import type {
   HypothesisRevision,
   InterestHypothesis,
   SignalFamily,
   SignalSummary,
-} from "@gt100k/interest-lab";
+} from "@gt100k/interest-lab-domain";
 import { describe, expect, it } from "vitest";
 import { PALETTE } from "../src/art";
 import { buildLifecycleStateView, buildRevisionHistoryView } from "../src/lifecycle-view";

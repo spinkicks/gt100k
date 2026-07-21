@@ -549,7 +549,7 @@ Where a real product judgment is unavoidable, the preferred answer is the **defa
 Part I (above) is the **pure domain** and is *done* — Part II renders it; it never re-computes a learning rule and never re-opens a Part-I decision. This Part II is the single loop source-of-truth for the UI. It is large on purpose; read **only the section for the current phase** each turn (JIT), then the referenced golden values.
 
 - Build path is **§U9 Phasing (P8…P15)** — always work the lowest unfinished phase. The 3D world is staged across dedicated **3D-UI phases** (P10 world, P11 delight, P14 quality-tiers/degradation) so the gate is never blocked on WebGL.
-- Every phase gate is **`pnpm typecheck` (`tsc -b`) + `pnpm test` (Vitest)** green for the pure **view package** `@gt100k/interest-lab-view`; the app phases add **`pnpm --filter @gt100k/interest-lab-app build`** (`next build`) + the **§U11 seeded smoke** + the **[quickstart](./quickstart.md) acceptance walkthrough**.
+- Every phase gate is **`pnpm typecheck` (`tsc -b`) + `pnpm test` (Vitest)** green for the pure **view package** `@gt100k/interest-lab-view`; the app phases add **`pnpm --filter @gt100k/interest-lab build`** (`next build`) + the **§U11 seeded smoke** + the **[quickstart](./quickstart.md) acceptance walkthrough**.
 - Machine-checkable acceptance lives in **§U10 Success Criteria** (each mapped to a named test) and **§U8 Golden values**. The view package holds **all** deterministic view-models + golden motion/palette/**scene** constants + `plainViewEquals` — so the 3D scene is testable *without* a GPU (the view emits positions/params; the app's r3f consumes them).
 - Choices already settled are in **§U2 Decisions already made** — do not re-open them (rendering approach D-U1, motion library D-U2, architecture D-U3, art direction D-U5).
 - Anything not specified: follow **§U3 Defaults for the unspecified** (log it, continue).
@@ -560,7 +560,7 @@ Part I (above) is the **pure domain** and is *done* — Part II renders it; it n
 ### In scope
 
 1. A **pure, deterministic presentation package `@gt100k/interest-lab-view` (`packages/interest-lab-view`)** that turns the Part-I domain outputs (`Lab`, `CoverageMatrix`, `SignalSummary`, `InterestHypothesis`/`HypothesisRevision`, `evaluateCandidateGate`) into **render-ready view models** for both surfaces — including the **3D scene view model** (deterministic island layout, quest-marker placements, camera framing, quality/render tiers, evidence-constellation positions) — plus the exact constant registries (`PALETTE`, `TYPOGRAPHY`, `MOTION`, `EASINGS`, `HUE_RAMP`, `WORK_MODE_GLYPHS`, `SCENE3D`, `CAMERA3D`, `QUALITY_TIERS`) and their resolvers (`resolveMotion`, `resolveDomainHue`, `resolveChildStaging`, `resolveIslandLayout`, `resolveQuestPlacement`, `resolveCamera3D`, `resolveQualityTier`, `resolveRenderTier`). Depends only on `@gt100k/interest-lab` (`workspace:*`). **No I/O, no wall-clock, no `Math.random`, and no `three`/`react`/`@react-three/*` import** — the view stays framework-agnostic and GPU-free so every value is Vitest-testable.
-2. A **new Next.js App-Router app `@gt100k/interest-lab-app` (`apps/interest-lab`)** rendering **two surfaces**:
+2. A **new Next.js App-Router app `@gt100k/interest-lab` (`apps/interest-lab`)** rendering **two surfaces**:
    - the child **Curiosity Quest World** — a **react-three-fiber + drei + three.js** 3D scene of **floating interest islands** (one per domain), glowing quest-markers, warm dusk atmosphere, gentle idle motion, a camera that drifts/focuses between islands, and the reserved **"come back later"** bloom on voluntary return; and
    - the guide **Hypothesis Console** — animated DOM/SVG analyst cockpit (coverage matrix, competing explanations, return timeline, lifecycle state visual, authoring) with an **optional, tasteful 3D "evidence constellation"** depth view.
 3. A **three-tier rendering model, all from one view model** (parity by construction): **(A)** the full **3D tier** (WebGL), **(B)** a **degraded 3D-lite tier** (fewer effects, capped DPR) auto-selected on weak devices / low FPS, and **(C)** a **2D DOM tier** — a calm card-constellation board — that is simultaneously the **reduced-motion equal mode**, the **plain mode**, the **no-WebGL / context-lost fallback**, and (always present) the **accessible operable surface**. The 3D `<Canvas>` is `aria-hidden="true"`; real interaction is on **semantic DOM controls** operable by keyboard/switch/screen-reader.
@@ -1158,11 +1158,11 @@ pnpm typecheck                                      # tsc -b (green after the fi
 pnpm test                                           # Vitest across the workspace (view package)
 pnpm --filter @gt100k/interest-lab-view test        # view package tests only
 pnpm lint                                           # biome check packages adapters apps (covers new dirs)
-pnpm --filter @gt100k/interest-lab-app dev          # run the two surfaces (3D world + guide console)
-pnpm --filter @gt100k/interest-lab-app build        # next build — app acceptance gate
+pnpm --filter @gt100k/interest-lab dev          # run the two surfaces (3D world + guide console)
+pnpm --filter @gt100k/interest-lab build        # next build — app acceptance gate
 ```
 
-> Loop gate = `pnpm typecheck` + `pnpm test`. App phases additionally require `pnpm --filter @gt100k/interest-lab-app build` + the smoke + walkthrough. The root `build` script (student-compass) is **not** modified; the interest-lab app builds via its filter.
+> Loop gate = `pnpm typecheck` + `pnpm test`. App phases additionally require `pnpm --filter @gt100k/interest-lab build` + the smoke + walkthrough. The root `build` script (student-compass) is **not** modified; the interest-lab app builds via its filter.
 
 ### Env / secrets
 

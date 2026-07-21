@@ -6,7 +6,7 @@ import {
   type SocialMode,
   type WorkMode,
   buildCoverageMatrix,
-} from "@gt100k/interest-lab";
+} from "@gt100k/interest-lab-domain";
 import { describe, expect, it } from "vitest";
 import { WORK_MODE_GLYPHS, buildCoverageMatrixView, resolveDomainHue } from "../src/index";
 

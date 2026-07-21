@@ -14,8 +14,10 @@ emil-design-eng, ui-ux-pro-max) AND webapp-testing/playwright to **screenshot + 
 (chromium works now — run the app and confirm interactions actually do something).
 
 ## Gate
-`pnpm exec tsc -b` + `pnpm test` (+ `pnpm --filter @gt100k/interest-lab-app build`). Keep the
+`pnpm exec tsc -b` + `pnpm test` (+ `pnpm --filter @gt100k/interest-lab build`). Keep the
 existing tests meaningful — update them as behavior changes; DO NOT weaken them to pass.
+NOTE (Turn 11): the app package is now `@gt100k/interest-lab` (was `-app`); the domain package
+is `@gt100k/interest-lab-domain` (was `@gt100k/interest-lab`). See D-VP28.
 
 ## P0 — make it actually work (highest priority)
 1. **Fix the crash.** On load the app throws `TypeError: Cannot read properties of undefined
@@ -390,3 +392,33 @@ existing tests meaningful — update them as behavior changes; DO NOT weaken the
   half is green + browser-verified on both surfaces. A human should do the final AT/contrast pass.
 - If the harness's adversarial usability gate returns findings, address them here; otherwise this spec
   is done.
+
+- **Turn 11 (v2) — FIX the adversarial-QA rejection: app was unservable under the harness filter.**
+  The QA gate serves via **`pnpm --filter @gt100k/interest-lab exec next dev`** (a fixed harness
+  convention — the bare feature slug), but our app was misnamed **`@gt100k/interest-lab-app`** while the
+  bare name `@gt100k/interest-lab` was taken by the **domain** package. So the filter resolved the
+  *domain* pkg (no `next` bin) → `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL Command "next" not found` → app
+  never came up → QA FAILED. This was the ONLY defect; the app itself was verified usable at Turn 10.
+  - **Root cause + fix:** aligned interest-lab with the repo convention proven by the two sibling apps
+    (`evidence-explorer` → `@gt100k/evidence-explorer`, `passion-tutor` → `@gt100k/passion-tutor` with
+    its domain as `@gt100k/passion-tutor-domain`) AND corroborated by the **root `build` script**, which
+    already filters `@gt100k/interest-lab` expecting *the app* to carry that name. Renamed **app**
+    `@gt100k/interest-lab-app` → **`@gt100k/interest-lab`** and **domain** `@gt100k/interest-lab` →
+    **`@gt100k/interest-lab-domain`**. No product/runtime code changed — only package `name` fields +
+    import specifiers (quote-delimited replace, `-view`/`-app` untouched, no subpath imports) + the
+    lockfile. Root `tsconfig` references are by directory path (unchanged). See D-VP28.
+  - **Verified:** the exact harness command `pnpm --filter @gt100k/interest-lab exec next dev -p 3779`
+    now brings Next.js up (Ready ~3s, **HTTP 200**, child surface renders "Explore freely"/quest cards).
+    Gate green: `tsc -b` **0** · root `pnpm test` **384/384** · app vitest (`--filter @gt100k/interest-lab
+    test`) **142/142** · `pnpm --filter @gt100k/interest-lab build` ✓ (route `/` static, 288 kB / 375 kB
+    first load). **Browser-verified** (Chromium headless via the running dev server): child `/` +
+    `/?debug` both load with **ZERO real console/page errors** (only swiftshader software-GL warnings),
+    quest cards well-formed (full aria-label), world renders. Updated the 14 runnable `-app` command refs
+    across the spec docs + the progress gate header. Re-created `.loop-done`.
+
+## NEXT
+- **SPEC COMPLETE — packaging bug fixed, `.loop-done` re-created.** The app is now servable under the
+  harness convention and both surfaces are browser-verified usable with zero errors.
+- **Residual MANUAL (unchanged, non-blocking):** live screen-reader (VoiceOver/NVDA) + human ≥4.5:1
+  contrast-ratio verification of SC-UI-18 — not doable headless in-lane.
+- If the harness's adversarial usability gate returns further findings, address them here.

@@ -1,4 +1,4 @@
-import type { Lab, Offer } from "@gt100k/interest-lab";
+import type { Lab, Offer } from "@gt100k/interest-lab-domain";
 import { resolveDomainHue } from "./art";
 import { WORK_MODE_GLYPHS } from "./glyphs";
 import type { AgeBand, ProbeCardView, ProbePickerView } from "./model";

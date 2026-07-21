@@ -2,7 +2,7 @@ import type {
   HypothesisRevision,
   InterestHypothesis,
   InterestHypothesisRepository,
-} from "@gt100k/interest-lab";
+} from "@gt100k/interest-lab-domain";
 
 function deepCopy<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;

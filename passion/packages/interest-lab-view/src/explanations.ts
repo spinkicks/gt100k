@@ -1,4 +1,4 @@
-import type { HypothesisRevision } from "@gt100k/interest-lab";
+import type { HypothesisRevision } from "@gt100k/interest-lab-domain";
 import type { ExplanationCard, ExplanationsView } from "./model";
 
 const FIXED_LABEL = /you are (a|an|the) /i;

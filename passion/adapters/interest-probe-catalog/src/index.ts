@@ -6,7 +6,7 @@ import type {
   SafetyClass,
   SocialMode,
   WorkMode,
-} from "@gt100k/interest-lab";
+} from "@gt100k/interest-lab-domain";
 
 interface CatalogFixtureProbe extends Probe {
   ord: number;
