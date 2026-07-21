@@ -202,3 +202,8 @@
 
 - Build the current A7 and prior A6 snapshots independently from immutable domain assignments, then select one shared `CohortArenaView` for every renderer during rollback. Rejected mutating the current assignment or retargeting only the canvas because either would violate SC-016 or desynchronize the HUD/2D/Ledger presentation.
 - Keep both snapshot members in one stable instanced star carrier and animate each new target from its live transform. Rejected separate assigned/pending instance groups because A6/A7 would remount when their snapshot state changes, discarding the presentation position needed for an interruptible reversal.
+
+## 2026-07-21 — T127 truthful arena pulse and frame ownership
+
+- Reused the T106 aggregate-truth decision: the Fixture V3 `TurnAnalysis` supplies exact seats, descriptors, patterns, and confidence but no current-speaker carrier, so the production summary renders all `holdingFloor` flags false. The 3D and 2D renderers activate their pulse/static highlight only when a truthful `SeatView.holdingFloor` marker is supplied; rejected treating dominance or highest historical turn share as a live floor holder.
+- Use an on-demand r3f frame loop for an absent/static floor holder and switch to `always` only while a truthful holder needs the pinned 1200ms pulse. Rejected continuously rendering the otherwise static second Canvas because the production smoke showed it could exhaust the 30s behavioral-test budget under software WebGL.

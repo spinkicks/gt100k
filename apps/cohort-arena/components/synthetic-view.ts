@@ -37,6 +37,23 @@ const STANDINGS = {
   optedIn: true,
 } satisfies NonNullable<BuildCohortArenaViewInput["standings"]>;
 
+const RIVALRY = {
+  perSpeaker: {
+    S1: { turnShare: 4 / 6, speakingTime: 40, interruptions: 0 },
+    S2: { turnShare: 1 / 6, speakingTime: 5, interruptions: 0 },
+    S3: { turnShare: 1 / 6, speakingTime: 5, interruptions: 0 },
+  },
+  patterns: [
+    {
+      kind: "dominance",
+      subjects: ["S1"],
+      evidence: "S1 holds 4/6 turns (66.7%) > 50%",
+    },
+  ],
+  confidence: 1,
+  suppressed: false,
+} satisfies NonNullable<BuildCohortArenaViewInput["rivalry"]>;
+
 function learner(
   learnerRef: string,
   ageBand: SyntheticLearner["ageBand"],
@@ -133,6 +150,7 @@ const INPUT = {
   hard: HARD,
   churn: SYNTHETIC_CHURN_BUDGET,
   standings: STANDINGS,
+  rivalry: RIVALRY,
   flags: {
     reducedMotion: false,
     plain: false,

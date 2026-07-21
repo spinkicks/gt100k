@@ -27,7 +27,25 @@ describe("the synthetic Cohort Arena shell view", () => {
     }
 
     expect(first.standings).toBeNull();
-    expect(first.rivalry).toBeNull();
+    expect(first.rivalry).toMatchObject({
+      confidence: 1,
+      suppressed: false,
+      patterns: [
+        {
+          kind: "dominance",
+          subjects: ["S1"],
+          evidence: "S1 holds 4/6 turns (66.7%) > 50%",
+        },
+      ],
+    });
+    expect(
+      first.rivalry?.seats.map(({ speaker, holdingFloor }) => ({ speaker, holdingFloor })),
+    ).toEqual([
+      { speaker: "S1", holdingFloor: false },
+      { speaker: "S2", holdingFloor: false },
+      { speaker: "S3", holdingFloor: false },
+    ]);
     expect(first.ledger.cohortTree).toHaveLength(2);
+    expect(first.ledger.rivalryList).toContain("dominance: S1 — S1 holds 4/6 turns (66.7%) > 50%");
   });
 });

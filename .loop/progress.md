@@ -568,3 +568,17 @@
 
 - T127 — Implement the 3D RivalryMix arena room in `apps/cohort-arena/components/arena/` from `view.rivalry`.
 - Acceptance: seats use the exact `layoutArenaRing` 3D positions; the observable turn holder receives an emissive seat pulse and soft vertical light column driven only by `resolveMotion("turnPulse", ...)`; reduced/plain presentation uses the static `project2D` highlight plus Ledger text; no trait/emotion field is introduced; focused RED/GREEN, app tests/TypeScript, both builds, seeded smoke, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P10 / T127
+
+- Added the RivalryMix arena surface from the one shared `CohortArenaView`: Fixture V3 renders the exact three-seat 3D ring in a hidden r3f Canvas, while reduced/plain mode renders the exact `(800,210)`, `(1008,570)`, and `(592,570)` `project2D` seats beside the existing accessible Ledger evidence.
+- Implemented the conditional turn-holder affordance entirely through `useFrame` and the pinned `resolveMotion("turnPulse", ...)` token: a truthful holder receives emissive seat modulation plus a soft vertical light column, and the reduced form becomes an instant static highlight. The approved aggregate Fixture V3 invents no live holder from dominance history.
+- Wired the exact synthetic dominance analysis into the app view, exposing confidence `1.0`, three observable speaker descriptors, and the pinned `S1 holds 4/6 turns (66.7%) > 50%` evidence with no trait/emotion carrier.
+- TDD status: the focused contract first failed because `components/arena/ArenaRoomPanel.tsx` was absent and the synthetic rivalry view was `null`, then passed after the minimal scene/panel integration. A fresh production smoke exposed idle `frameloop="always"` as a 36s software-WebGL budget regression; a second failing contract pinned `demand` for static rooms and `always` only for a truthful live holder before the unchanged 30s smoke returned green.
+- Review status: desktop and reduced-motion production renders were inspected at 1440×1000. The motion review approved the spec-pinned continuous state pulse: it is conditional, transform/uniform-only, non-blocking, and replaced by the static projected tier under reduced motion.
+- Gate status: app tests pass (33/33); `pnpm typecheck`, `pnpm test` (144/144), `pnpm lint` (141 files), `pnpm --filter @gt100k/cohort-arena build`, root `pnpm build`, and the production Playwright smoke (2/2) pass. T127 completes the seat-ring and turn-pulse slice of FR-037/SC-013; interruption arcs, dominance ring, and suppression behavior remain T128/T129. No blocker.
+
+## NEXT
+
+- T128 — Add the 3D interruption arc darts and dominance share ring in `apps/cohort-arena/components/arena/`.
+- Acceptance: repeated-interruption evidence produces raised bezier arcs from the interrupter toward the floor holder through `resolveMotion("interruptionArc", ...)`; the dominance pattern renders a torus share ring filled to S1's exact `4/6` turn share through `resolveMotion("dominanceRing", ...)`; reduced/plain mode keeps the instant ring and accessible interruption tally/evidence with no motion-only state; focused RED/GREEN, app TypeScript/tests, both builds, seeded smoke, and repository typecheck/test/lint remain green.

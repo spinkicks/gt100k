@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { RollbackControl } from "./RollbackControl";
 import { StandingsToggle } from "./StandingsToggle";
+import { ArenaRoomPanel } from "./arena/ArenaRoomPanel";
 import { ChurnBudgetMeter } from "./hud/ChurnBudgetMeter";
 import { CohortRosterHud } from "./hud/CohortRosterHud";
 import { StandingsPanel } from "./hud/StandingsPanel";
@@ -157,7 +158,8 @@ export default function CohortArenaClient() {
         </aside>
       </div>
 
-      <div className="arena-secondary-grid arena-ledger-grid">
+      <div className="arena-secondary-grid">
+        <ArenaRoomPanel view={view} reducedMotion={tier2D.active} />
         <section className="ledger-panel" aria-labelledby="ledger-heading" data-region="ledger">
           <div className="region-heading">
             <div>

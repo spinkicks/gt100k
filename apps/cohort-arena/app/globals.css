@@ -247,10 +247,6 @@ html[data-reduced-motion="true"] *::after {
   margin-top: 1rem;
 }
 
-.arena-ledger-grid {
-  grid-template-columns: 1fr;
-}
-
 .scene-panel,
 .hud-panel,
 .tier-panel,
@@ -868,6 +864,63 @@ html[data-reduced-motion="true"] *::after {
   border: 1px solid currentColor;
   border-radius: 3px;
   font-weight: 700;
+}
+
+.arena-room-canvas-shell,
+.arena-room-map {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  overflow: hidden;
+  background: var(--deck);
+  border-radius: 10px;
+}
+
+.arena-room-canvas-shell {
+  height: min(23rem, 48svh);
+}
+
+.arena-room-map {
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
+.arena-room-static {
+  margin: 0;
+}
+
+.arena-room-ring {
+  fill: none;
+  stroke: var(--locked);
+  stroke-width: 6;
+}
+
+.arena-room-seat {
+  fill: var(--deck-3);
+  stroke: var(--peer-hi);
+  stroke-width: 7;
+}
+
+.arena-room-seat-active {
+  fill: color-mix(in srgb, var(--gain) 24%, var(--deck-3));
+  stroke: var(--gain-hi);
+  stroke-width: 10;
+}
+
+.arena-room-seat-label {
+  fill: var(--ink-hi);
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.arena-room-static figcaption {
+  max-width: 65ch;
+  margin-top: 0.75rem;
+  color: var(--ink-muted);
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
 }
 
 .cohort-ledger-tree,
