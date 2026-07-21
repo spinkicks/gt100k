@@ -92,6 +92,36 @@ No blocking unknowns remain; the decisions below record the choices the plan res
 - **Decision**: Vitest contract/unit tests are written first (must fail) for every domain function and every guardrail. The `apps/arena` UI is validated by `next build` and the quickstart acceptance walkthrough (frame budget is an acceptance target, not a unit test).
 - **Rationale**: The constitution makes tests part of "done"; the domain carries the enforceable guarantees, and the UI's value (motion, feel, 60 fps) is verified experientially per §15.3.1.
 
+## Decision: Art direction — "Independence Isles", golden-hour cartography (not the SaaS-cream default)
+
+- **Decision**: A warm, hand-drawn storybook-atlas archipelago on a **deep teal-navy sea** so warm islands glow; a tactile, claymorphic-adjacent illustration register (soft 3-D, 3px ink outlines, rounded UI). Warmth is carried by **light + accent + typography**, not a cream body bg. Exact palette, per-biome hues, and typography tokens are golden constants (spec §8.11/§8.12); the visual identity is spec §5.1–§5.2.
+- **Rationale**: §15.3 demands "the polish, motion, and progression feel of a real game," and the surface is the *afternoon/social* time — perpetual golden hour. Applying the impeccable register discipline avoids the 2026 AI-cream monoculture; a deep-sea canvas makes mastery-as-light legible (locked = cool/dim, unlocked = warm/lit), tying art directly to the §12 mechanic. State is always paired with icon/shape so color is never the sole cue (WCAG 2.2 AA).
+- **Alternatives considered**: A cream/sand editorial palette — rejected (AI default; and it can't carry the mastery-as-light metaphor). A neon/dark-game look — rejected (too cold for a warmth/belonging surface and harder for the 6-8 band). Fonts via Google Fonts CDN — **rejected** (violates no-external-fetch); default is a system-rounded fallback stack, with optional committed subset `woff2` as a non-breaking upgrade (spec §13 DP-6).
+
+## Decision: One deterministic motion-token registry drives all motion (and all reduced-motion equivalents)
+
+- **Decision**: `MOTION` (durations) + `EASINGS` (named curves) are exact exported constants; `resolveMotion(kind, { reducedMotion })` returns a `MotionToken` per the golden §8.10 table, with a first-class reduced column for every kind. The master motion table (spec §5.6) names each effect (from the animation-vocabulary glossary), its easing, duration token, particles, camera/screen feedback, sound cue, and reduced-motion equivalent.
+- **Rationale**: Emil/Apple: motion is designed, frequency-appropriate, interruptible, and reduced-motion is *gentler not gone*. Putting durations/easings in the pure layer makes them testable constants (SC-015) and makes reduced-motion parity provable rather than asserted. It also enforces the exclusions (no shake/wiggle-on-error, no `scale(0)`, no `ease-in` entrances, no gacha reveal, no decay meter, no engagement-timed pop-in, no looping audio) by giving the app a single sanctioned source of motion.
+- **Alternatives considered**: Ad-hoc per-scene tween literals — rejected (drifts, untestable, easy to violate reduced-motion parity). A CSS-only motion system — rejected (the canvas is Phaser; CSS covers only the HUD/Ledger, which reuse the same tokens).
+
+## Decision: Deterministic avatar animation states + camera/parallax config in the pure layer
+
+- **Decision**: `resolveAvatarAnimation(intent, options)` returns exact `{state,loop,durationMs,easing,amplitudePx}` (spec §8.13) for `idle/walk/run/think/celebrate-*`, never `scale(0)`, with reduced-motion equivalents; camera (`CAMERA`) + `resolveParallaxLayers()` are exact config (spec §8.14). The pseudonymous lantern-avatar is expressive-only (no ability signal, §29).
+- **Rationale**: A game reads as a game because of a living avatar, a follow-camera with deadzone/look-ahead/establishing shot, and layered parallax. Keeping the *specs* pure makes them deterministic/testable (SC-016/018) while the app applies them via Phaser-4 tweens/camera APIs (spec §2 D1). Interruptibility is guaranteed by construction (the spec carries no absolute start; the app tweens from the live position — Apple's "animate from the presentation value").
+- **Alternatives considered**: Hard-coded avatar tweens in `WorldScene` — rejected (untestable, drifts from reduced-motion parity). A physics/spring avatar — over-scoped for a tile-to-tile traversal; Phaser tweens with the named easings suffice.
+
+## Decision: Cohort-base layout, cosmetic looks, sound cues, visual bands, and asset keys are all deterministic domain data
+
+- **Decision**: `resolveBaseLayout` (zones/slots §8.16), cosmetic `look`/`equipEffect` (§8.15), `resolveSoundCue`/`SOUND_CUES` (muted-by-default, neutral error, §8.18), `resolveVisualBand` (age-band canvas presentation §8.19), and the `ASSET_KEYS` registry (§8.17, atlas→SVG→procedural) all live in the pure package as golden constants/functions; the app renders them.
+- **Rationale**: Every visual/audio/asset decision the guardrails care about (attributable + zero-power base; no price/rarity on cosmetics; neutral non-looping muted audio; 6-8 no-canvas-number; missing-asset still renders) becomes a testable structural guarantee (SC-019/020/021/022/023) rather than a rendering convention. Sound has **no asset pipeline** this slice (spec §13 DP-7) — cue ids + captions only.
+- **Alternatives considered**: Placing these in the app — rejected (loses determinism/testability and risks guardrail drift). A real audio sample set now — deferred (out of scope; committed non-fetched samples are a later non-breaking add).
+
+## Decision: First-run onboarding as a skippable, non-blocking, Ledger-mirrored overlay
+
+- **Decision**: A 3-beat coach-mark sequence (this-is-you → light-a-path → your-way: plain-mode/Ledger/standings-off) shown once, dismissible on any input, never gating a mastery action, fully mirrored in the Ledger, honoring reduced motion (spec §5.5 / FR-038).
+- **Rationale**: Wayfinding (Apple) + activation (impeccable onboard) without dark patterns: onboarding must never block the mastery action (FR-022) and must be reachable by keyboard/screen-reader. Keeping it a thin overlay over `WorldScene` avoids a separate scene's state duplication.
+- **Alternatives considered**: A mandatory tutorial gate — rejected (blocks the mastery action; a dark-pattern-adjacent friction). No onboarding — rejected (the 6-8 band needs the concrete "light a path" framing).
+
 ## Decision: Child-facing review gate — PR-only build loop
 
 - **Decision**: The autonomous build loop implements on-branch and opens a PR; a **named human reviewer** approves before merge. No child exposure on build-loop authority (§25 / ENG). Evidence posture **[E3]/[R]**: measured against belonging/voluntary return; auto-reverts if it depresses belonging (the §15 rollback gate).

@@ -33,7 +33,7 @@
 
 - [x] Scope fence: explicit in-scope / out-of-scope / non-goals (spec §1)
 - [x] Phasing P0…P6, ordered, each with a goal + gate (spec §9)
-- [x] Acceptance criteria = tests: SC-001…SC-014, each mapped to a named test (spec §10)
+- [x] Acceptance criteria = tests: SC-001…SC-023, each mapped to a named test (spec §10)
 - [x] Golden values + tolerances: layout, node states, tiers, cosmetics, motion, staging, standings, base (spec §7–§8)
 - [x] Decisions already made: Phaser 4, architecture, integration, view model, a11y (settled parallel-DOM Ledger), seed assets, data model, UX/motion, stack (spec §2)
 - [x] "Defaults for the unspecified" rule present verbatim (spec §3)
@@ -46,12 +46,27 @@
 
 - [x] Real 2D game engine on Canvas/WebGL — Phaser 4 default `^4.2.1` (rebuilt WebGL renderer; Phaser-4 APIs only) (spec §2 D1, FR-028)
 - [x] Rich overworld: regions, quest nodes, edge paths, follow-camera (spec §5, FR-001)
-- [x] Avatar + tweened movement + equippable cosmetics on canvas (spec §5.3, US2)
-- [x] Cohort base scene co-built from cooperative missions (spec §5.5, US4)
-- [x] Celebration/juice on independent-unlock, deterministic motion spec (spec §5.4/§8.5, US3)
+- [x] Avatar + tweened movement + equippable cosmetics on canvas (spec §5.4, US2)
+- [x] Cohort base scene co-built from cooperative missions (spec §5.8, US4)
+- [x] Celebration/juice on independent-unlock, deterministic motion spec (spec §5.6/§5.7/§8.5, US3)
 - [x] Scene/asset pipeline with committed SEED SVGs + procedural fallback, no external fetch (spec §2 D6, FR-030)
 - [x] Client-only mount (ssr:false), clean unmount, zero console/WebGL errors (spec §2 D3, FR-028, SC-011)
-- [x] One `ArenaView` drives Phaser + reduced-motion + accessible Ledger (spec §2 D4, FR-029, SC-014)
+- [x] One `ArenaView` (with derived `presentation` block) drives Phaser + reduced-motion + accessible Ledger (spec §2 D4, FR-029, SC-014)
+
+## Game-design depth (AAA design bible — spec §5, golden §8.10–§8.19)
+
+- [x] Art direction: Independence Isles identity, exact palette hex + typography tokens, per-biome region identities, lighting/atmosphere, mood board (spec §5.1/§5.2, §8.11/§8.12, FR-031, SC-017)
+- [x] World & level design: 4 biome islands, named landmarks/POIs per node, paths + cross-island bridges, Base Camp, wayfinding (spec §5.2, §7.1)
+- [x] Camera system: follow + deadzone + look-ahead + establishing dolly-in + region zoom + 7 parallax layers, all with reduced-motion cuts (spec §5.3, §8.14, FR-033, SC-018)
+- [x] Avatar: pseudonymous lantern-explorer + customization + idle/walk/run/think/celebrate states with exact tween/easing/duration + reduced-motion (spec §5.4, §8.13, FR-032, SC-016)
+- [x] Motion & juice: master motion table (event→named effect→easing→duration→particles→camera→sound→reduced-motion) as testable tokens (spec §5.6/§5.7, §8.10, FR-034, SC-015)
+- [x] Cosmetics catalog: 9 items with `look`/`equipEffect` visuals, competence-earned, deterministic, zero-power, never purchasable (spec §5.9, §8.15, FR-035, SC-022)
+- [x] Cohort base: rich co-built Base Camp with deterministic zones/slots + attributable lantern-marks, grows over time (spec §5.8, §8.16, FR-036, SC-019)
+- [x] Sound design cues: muted-by-default, captioned, non-looping, neutral error cue, deterministic (spec §5.10, §8.18, FR-037, SC-021)
+- [x] Scene-by-scene UX incl. onboarding (Boot/Preload/World/Base/Fx/Onboard) (spec §5.5, FR-038)
+- [x] Age-band visual variants: 6-8 concrete/no-canvas-number; 12-14 full, via `resolveVisualBand` (spec §5.13, §8.19, FR-040, SC-020)
+- [x] Asset pipeline: `ASSET_KEYS` registry, atlas→SVG→procedural, non-breaking richer-art + font upgrade path, no external fetch (spec §5.11, §8.17, FR-039, SC-023)
+- [x] HUD + Ledger visual/semantic design (translucent materials; role=tree with landmark names; captions) (spec §5.12)
 
 ## Accessibility (canvas)
 

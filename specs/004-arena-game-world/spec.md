@@ -192,62 +192,241 @@ The same computed economy (§13) is **represented** differently by age band (§1
 
 ---
 
-## §5 · The game design (what the Arena *is*)
+## §5 · The game design — "Independence Isles" (the full design doc)
 
-This section is the game-design doc. It defines the experience the app must deliver; §8 pins the exact numeric values.
+This section is the **game-design bible**. It defines the experience the app must deliver — art direction, world, camera, avatar, motion, cosmetics, base, sound, onboarding, and age-band variants. Everything here that a machine can check is pinned as an exact, **testable golden constant** in **§8** (motion tokens, palette, biome identity, avatar animation, camera/parallax, base layout, visual band, sound cues, asset keys). Where §5 describes and §8 pins, **§8 wins for values**. Everything stays **buildable in Phaser 4** and inside every guardrail (§1 non-goals, §6, §12).
 
-### 5.1 World — "Independence Isles"
+**Design pillars (the five sentences everything answers to):**
 
-A 2×2 archipelago overworld, **2048×2048** world units. Four **region islands**, one per learning-loop `Section`:
+1. **Golden-hour cartography.** The Arena is a warm, hand-drawn *storybook atlas* you traverse — an illustrated archipelago bathed in perpetual late-afternoon light (this is the *afternoon* social surface). Cozy exploration, not a dashboard.
+2. **Mastery is the only currency of light.** The world is literally lit by independent mastery: locked places are dim and cool; clearing a node's 90% gate *lights a beacon* and warms the path onward. Progress you can *see* is progress you *earned* (§12) — never time-in-app.
+3. **Calm by default, loud only at the learning moment.** Ambient motion is gentle and sparse; the loudest juice is reserved for the rare independent unlock and productive struggle (§14.12). Frequency-appropriate motion (Emil): rare → delightful, occasional → standard, frequent → instant.
+4. **Reduced motion and the Ledger are equal citizens.** Every visual has a calm, non-vestibular equivalent and a semantic DOM twin (§5.12, §12). Nothing beautiful is motion-only; nothing stateful is canvas-only.
+5. **Warmth is earned, never sold, never ranked.** Cosmetics are competence-earned, deterministic, zero-power, un-buyable (§7.3, §8.15). No caste, no loot, no bottom-rank (§1, §6).
 
-| Region id | Section | Theme | Region origin (x,y) |
+### 5.1 · Art direction & visual identity
+
+**Style register.** A tactile, chunky, *claymorphic-adjacent* illustration style — soft 3-D forms, thick 3px hand-inked outlines, rounded 16–24px corners on UI, double soft shadows — reading as friendly-but-not-babyish across ages 6–14. The register is *editorial-warm exploration game*, deliberately **not** the SaaS-cream default (see §13 DP-6): warmth is carried by **light, accent, and typography**, and the sea/canvas is a **deep teal-navy** so the warm islands glow against it.
+
+**Master palette (exact hex — golden in §8.11).** OKLCH-reasoned, contrast-verified.
+
+| Role | Token | Hex | Use |
 |---|---|---|---|
-| `numbers-coast` | math | shorelines, tide pools | (0, 0) |
-| `tinker-bluffs` | science | workshop cliffs, gadgets | (1024, 0) |
-| `story-vale` | reading | book-forest valley | (0, 1024) |
-| `wordwind-reach` | language | windmill highlands | (1024, 1024) |
+| Sea (canvas bg) | `--sea-deep` | `#0E2A3B` | the ocean between islands; app/canvas backdrop |
+| Sea mid | `--sea-mid` | `#14384C` | water plane, panel base |
+| Sky dawn | `--sky-dawn` | `#F4C77B` | warm horizon band / sun glow |
+| Ink | `--ink` | `#14202B` | text on light props |
+| Ink-hi (HUD) | `--ink-hi` | `#F5F9FC` | HUD/Ledger text on sea (≈13:1 on `--sea-deep`, AAA) |
+| Sun (primary warm) | `--sun` | `#F6A23A` | primary accent; the "independence" warmth; `available` glow |
+| Sun-hi | `--sun-hi` | `#FFC66B` | highlights, hover |
+| Gold (reward/tier) | `--gold` | `#F2C14E` | tiers, `unlocked` beacons, reward counter |
+| Ember (high celebrate) | `--ember` | `#E8623B` | loudest-moment particles/bloom (rare) |
+| Locked | `--locked` | `#5A6B78` | muted slate — dim nodes/paths (paired with padlock glyph) |
+| Not-yet (error) | `--notyet` | `#7FB6D6` | **calm cool blue** wisp — deliberately NOT red (error ≠ loss) |
+| Focus ring | `--focus` | `#FFD166` | 3px ring, 2px offset — high-contrast on light *and* dark |
 
-A central **Base Camp** island (the cohort base, §5.5) sits over the shared seam and is reachable from any region. Nodes are quest markers; edges (derived from prerequisites) are lit paths between them. Cross-section edges (e.g. `measure-mesa` needs `add-atoll`) draw as bridges between islands.
+**Biome signature hues** (one per island; full identity §8.12): Numbers Coast `#2EC4B6` (turquoise tide-pools), Tinker Bluffs `#C77D3A` (copper/brass), Story Vale `#3E9B5F` (mossy book-forest), Wordwind Reach `#5AA9E6` (windswept sky). Each hue tints only its island's terrain/props/ambient — never a state cue.
 
-### 5.2 Scenes (Phaser)
+**Typography (tokens §8.11).** Display/headings **Fredoka** (rounded, friendly), body/Ledger **Nunito** — a contrast-axis pairing (geometric-rounded display + humanist body), not two look-alikes. **No external fetch** (§1): the default is a **system-rounded fallback stack** (`--font-display: "Fredoka","Baloo 2",ui-rounded,"Segoe UI Rounded",system-ui,sans-serif`; `--font-body: "Nunito",ui-rounded,system-ui,sans-serif`); self-hosted subset `woff2` under `public/fonts/` is an **optional, non-breaking** enhancement (§13 DP-6). Size-specific tracking (Apple): display tight (`-0.02em`), body `0`, small labels `+0.01em`; leading inverse to size. Reward/growth counters use **tabular numbers** so digits don't shuffle.
 
-| Scene | Role |
+| Role | Family | rem | line-height | tracking | weight |
+|---|---|---|---|---|---|
+| Display (tier reveal) | display | 2.5 | 1.05 | -0.02em | 700 |
+| H1 (region name) | display | 1.75 | 1.10 | -0.01em | 600 |
+| H2 (panel title) | display | 1.25 | 1.20 | 0 | 600 |
+| Body (Ledger) | body | 1.0 | 1.5 | 0 | 400 |
+| Label / caption | body | 0.8125 | 1.4 | +0.01em | 500 |
+
+**Lighting & atmosphere.** A single warm **key light from top-left** (consistent everywhere); islands cast soft long shadows to the bottom-right. A slow **water shimmer** (gradient-mask sweep ~6s, `Alternate`), **cloud drift** (slow parallax `Marquee`), drifting **ambient motes** (very low count, additive), and a subtle **vignette** focus the center. The world is perpetual **golden hour** — the thematic "afternoon" surface. **All ambient motion is OFF** under reduced-motion and the degraded tier; depth (parallax layers) is retained.
+
+**Mood board, in words.** *A weathered explorer's atlas left open on a windowsill at 5 p.m.; toy-diorama islands you could pick up; lanterns and lighthouses warming to life one by one; turquoise tide-pools and copper gears; the hush of a book-forest; kites over windmills; a campfire on the home island where six small lantern-marks gather. Studio Ghibli warmth × a cozy board-game map × the calm confidence of a well-made reading app.*
+
+### 5.2 · World & level design
+
+A **2×2 archipelago**, **2048×2048** world units. Four **region islands**, one per learning-loop `Section`; a central **Base Camp** island over the seam (§5.8), reachable from every region.
+
+| Region id | Section | Biome identity | Origin (x,y) | Signature |
+|---|---|---|---|---|
+| `numbers-coast` | math | shorelines, tide-pools, a counting lighthouse | (0, 0) | `#2EC4B6` |
+| `tinker-bluffs` | science | workshop cliffs, gears, copper kilns | (1024, 0) | `#C77D3A` |
+| `story-vale` | reading | book-root forest valley, whispering falls | (0, 1024) | `#3E9B5F` |
+| `wordwind-reach` | language | windmill highlands, letter-kites, spelling spires | (1024, 1024) | `#5AA9E6` |
+
+**Nodes are places; edges are lit paths; cross-island edges are bridges.** Each fixture node maps to a **named landmark (point of interest)** so the world reads as a place, not a graph:
+
+| Node | Region | Landmark (POI) | Role |
+|---|---|---|---|
+| `count-cove` | Numbers Coast | **Counting Lighthouse** | first beacon; the tutorial start |
+| `add-atoll` | Numbers Coast | **Abacus Jetty** | hub; bridges to Tinker Bluffs |
+| `place-value-point` | Numbers Coast | **Tide-Pool Terraces** | transfer-critical (high celebrate) |
+| `observe-overlook` | Tinker Bluffs | **Gear Overlook** | science entry |
+| `measure-mesa` | Tinker Bluffs | **Gadget Workshop** | cross-island (needs Abacus Jetty); transfer-critical |
+| `phoneme-falls` | Story Vale | **Whispering Falls** | reading entry |
+| `blend-bay` | Story Vale | **Book-Root Forest** | bridges to Wordwind Reach |
+| `letter-landing` | Wordwind Reach | **Letter Landing Field** | language entry |
+| `sentence-summit` | Wordwind Reach | **The Spelling Spires** | summit; transfer-critical |
+
+**State reads as light + form (never color alone — §6 FR-031).** `locked` = dim, cool `--locked`, a *closed padlock* glyph, path unlit; `available` = warm `--sun` **Glow Pulse** ring + an *open path* + a "start here" pennant; `unlocked` = a **lit beacon/flag** in `--gold`, filled star, warm path to the next node. Transfer-critical nodes wear a subtle laurel ring so their high-intensity celebration is legible in advance.
+
+**Landmarks & wayfinding.** Every screen answers Apple's four wayfinding questions: region banners name *where you are*; lit paths show *where you can go*; node pennants/labels show *what's there*; a persistent "Home" affordance (to Base Camp) shows *how to get out*. Regions have a stable spatial identity so the learner builds a mental map (spatial consistency).
+
+### 5.3 · Camera system (config §8.14)
+
+- **Follow-camera** on the avatar: lerp `0.08` x/y, `roundPixels`, `setBounds(0,0,2048,2048)`, base zoom `1.0`. A **central deadzone** (30%×30%) so idle bob never scrolls the world.
+- **Look-ahead** (Apple "hint in the direction of the gesture"): during traversal the camera leads the avatar by `64px` toward the target, so intent is telegraphed.
+- **Establishing dolly-in** on world enter: camera opens at zoom `0.6` showing the whole archipelago, then eases to the avatar over `1200ms` `Cubic.InOut` — a cinematic *Continuity zoom*. Reduced-motion: instant cut to `1.0` on the avatar (150ms fade).
+- **Region focus**: zoom `1.0 → 1.25` over `300ms` `Cubic.Out`, parallax deepening. Reduced-motion: instant.
+- **Celebration punch** (high intensity only): a one-shot zoom `+0.03` in `120ms` then back `180ms` — a felt *impact*, never nausea-inducing. Off under reduced motion.
+- **Parallax** (7 layers, back→front, §8.14): sky+sun `0.0`, far clouds `0.15`, horizon/far-islands `0.30`, sea+shimmer `0.60`, **world (islands/nodes/avatar) `1.0`**, foreground fronds `1.20`, ambient motes `1.05` (additive). Depth is kept under reduced motion; only the *motion* of ambient layers stops.
+
+### 5.4 · Avatar — design, customization, animation (specs §8.13)
+
+**Design.** A small, round-bodied **pseudonymous lantern-explorer** ("a Spark") — expressive-only, carrying a warm lantern (the lantern is the *warmth/independence* motif, never an ability signal). No face detail that could encode identity or advantage (§6 FR-010, §29). Built from layered SVG parts (`body`, `lantern`, plus cosmetic slots `hat`/`cape`/`badge`/`trail`) so cosmetics swap frames only.
+
+**Customization.** Equipped `avatar-item` cosmetics (§7.3/§8.15) overlay/swap the corresponding slot sprite — appearance only, deterministic, zero-power, earned. Equip is a `Crossfade` with a 2px `Blur` bridge (Emil "blur masks an imperfect crossfade"), `200ms`; instant swap under reduced motion.
+
+**Animation states** (`resolveAvatarAnimation(intent, {reducedMotion})`, golden §8.13). Never `scale(0)`; idle bob amplitude `4px`; landing from a celebrate-jump gets a `scaleY 0.92→1.0` **follow-through** (squash-&-stretch). Movement is **interruptible** — re-targeting reads the avatar's live position (Apple: animate from the presentation value).
+
+| Intent | State | Effect (named) | Loop | Duration | Easing | Reduced-motion |
+|---|---|---|---|---|---|---|
+| idle | `idle` | `Float` bob + lantern flicker | yes (yoyo) | 1600ms | Sine.InOut | static pose, steady lantern |
+| walk | `walk` | step cycle + path tween (≤1 seg) | during move | 600ms/seg | Cubic.Out | 150ms crossfade reposition |
+| run | `run` | faster steps + forward lean + speed streak (≥2 seg / fast re-target) | during move | 380ms/seg | Cubic.Out | 150ms crossfade |
+| think | `think` | head-tilt + "?" thought-mote + lantern pulse (on `available` focus / struggle) | 2× then idle | 900ms | Sine.InOut | static think pose |
+| celebrate | `celebrate` | `Pop` jump + arms-up + lantern flare (on unlock) | one-shot | 400/600/800ms (low/med/high) | Back.Out | static celebrate pose + badge |
+
+### 5.5 · Scenes & scene-by-scene UX (Phaser)
+
+| Scene | Role & UX |
 |---|---|
-| `BootScene` | Create the game, read config/flags (reduced-motion, plain, band, seed), register the deterministic procedural texture generator. |
-| `PreloadScene` | Load committed seed SVGs from `/seed/`; on any miss, generate the procedural fallback texture. Never fetches externally. |
-| `WorldScene` | The overworld: region tilesets, node markers (locked/available/unlocked visuals), edge paths, avatar sprite, follow-camera. Owns traversal + unlock reveals. |
-| `BaseScene` | The cohort Base Camp: renders `unlockedFeatures` as placed props; attributable on focus. |
-| `FxScene` | Celebration overlay: particle bursts, node bloom, path light-up. Reads the `celebrationMotionSpec`; a no-op (or single static frame) under reduced motion. |
+| `BootScene` | Create the game; read flags (reduced-motion, plain, band, seed); register the deterministic procedural texture generator; resolve `ASSET_KEYS` (§8.17). No visible UI beyond a warm loading field. |
+| `PreloadScene` | Load committed seed SVGs from `/seed/` (atlas → SVG → procedural fallback, §5.11); a calm progress "lantern filling" indicator (state, not a spinner-earworm). **Never** fetches externally. |
+| `WorldScene` | The overworld: parallax biomes, node markers per state, lit edge paths & bridges, the avatar, follow-camera + establishing dolly-in, traversal, and unlock reveals. Owns the map. |
+| `BaseScene` | The cohort **Base Camp** (§5.8): renders `unlockedFeatures` into deterministic zones/slots (§8.16); focus shows the attributable pseudonymous contributor + mission. The "home" surface. |
+| `FxScene` | Celebration overlay above the world: particle bursts, node bloom, path light-up, camera punch — all driven by `celebrationMotionSpec` + `resolveMotion` (§8.5/§8.10). A no-op / single static frame under reduced motion. |
 
-React owns the surrounding HUD + the accessible Ledger (DOM), not the canvas. A tiny event bus bridges React → Phaser (set band / toggle plain / equip cosmetic / advance the synthetic feed) and Phaser → React (node focused / unlock celebrated) so the DOM Ledger and the canvas stay in sync from the one `ArenaView`.
+**Onboarding (first-run, `OnboardScene` overlay / coach-marks — §6 FR-038).** A 3-beat, skippable, non-blocking sequence at the Counting Lighthouse: (1) *"This is you"* — the avatar idles, lantern glimmers; (2) *"Light a path"* — a pointer to the first `available` node, "clear its gate to light the beacon"; (3) *"Your way"* — surfaces plain-mode + the Ledger + standings-off. Any input advances/dismisses; it **never** gates a mastery action, is fully mirrored in the Ledger, and each beat honors reduced motion (`Fade`, no slide). Shown once (a local flag); re-openable from the HUD "?".
 
-### 5.3 Avatar + movement
+**React owns the HUD + Ledger (DOM), Phaser owns the canvas.** A typed event bus bridges React → Phaser (set band / toggle plain / equip cosmetic / advance the synthetic feed / focus node) and Phaser → React (node focused / unlock celebrated / scene changed), so the Ledger and canvas stay in lock-step from the one `ArenaView` (§2 D4).
 
-- A **pseudonymous** avatar sprite (expressive-only; no name/likeness/biometric; encodes no ability signal).
-- **Idle**: subtle 2-frame bob (disabled under reduced motion).
-- **Traverse**: when the learner selects a reachable node, the avatar **tweens along the edge path** to it (`Cubic.Out`, per-segment duration in §8), camera follows. Movement is **interruptible** — selecting another node re-targets from the avatar's current position (no hard jump).
-- **Cosmetics**: equipped `avatar-item` cosmetics swap/overlay sprite frames only.
-- **Reduced motion**: traversal becomes a ≤150ms cross-fade reposition; idle bob off.
+### 5.6 · Motion & juice — the master motion table (the heart)
 
-### 5.4 Camera & juice
+Motion is designed, not decorated (Apple §17: interaction and visuals together). Durations are **named tokens** (§8.10 `MOTION`); easings are **named** (§8.10 `EASINGS`); every row has a first-class reduced-motion equivalent (Emil/Apple: reduced motion = *gentler*, not *gone*). All entries derive from `resolveMotion(kind, {reducedMotion})` so the values are testable constants (SC-015).
 
-- **Follow-camera** with lerp `0.08` on both axes; world-bounded. On region focus, zoom `1.0 → 1.25` over 300ms `Cubic.Out`.
-- **Node reveal (unlock)**: marker scales `0.95 → 1.0` + alpha `0 → 1` over 220ms with a subtle `Back.Out` overshoot (peak ~1.05); the path to the next node lights up; a particle burst fires (count/lifespan per `celebrationMotionSpec`); a gentle one-shot camera "punch" on `high` intensity only. **Never** scale from 0.
-- **Available highlight**: a low-amplitude glow pulse (1200ms loop); **off** under reduced motion / degraded tier.
-- **Press feedback**: any pressable marker/button scales to `0.97` for 120ms `ease-out`.
-- **Error moment**: a warm, brief "not yet" wisp near the node — **no** loss visual, **no** removal, node unchanged; copy is process-praise.
-- **Degraded tier** (low-end / Safari / iPadOS / WebGL pressure): particle counts halved, glow off, drop-shadows off, still 60fps; the accessible Ledger + reduced-motion path are unaffected.
+| Event | Named effect (vocabulary) | Easing | Duration (token) | Particles | Camera/screen | Sound cue | Reduced-motion equivalent |
+|---|---|---|---|---|---|---|---|
+| World enter | Establishing **dolly-in** + scene **Crossfade** | Cubic.InOut | 1200 (`intro`) | — | zoom 0.6→1.0 to avatar | boot chime | instant cut to 1.0 + 150ms fade |
+| Node reveal (unlock) | **Scale-in + Pop** (0.95→1.0, α0→1, peak ~1.05) + path **Line-drawing** | Back.Out | 220 (`reveal`) | per intensity | punch (high only) | unlock chord | instant show + static "unlocked" badge |
+| Independent-unlock **high** (transfer-critical) | **Burst + Bloom + Camera-punch** (ember→gold radial) | Back.Out | 800 (`celebrateHigh`) | 24 | punch +0.03 (120/180ms) | beacon arpeggio | static starburst badge + `aria-live` announce (150ms) |
+| Unlock **medium** | Burst + Bloom | Back.Out | 600 (`celebrateMed`) | 12 | none | bloom chord | static badge + announce |
+| Productive-struggle **low** | **Warm Pulse** + rising motes + avatar `think→nod` | Sine.InOut | 400 (`celebrateLow`) | 6 | none | encouraging tone | static "effort honored" chip |
+| Error / "not yet" | Calm **Float** wisp (`--notyet` blue), node steadies | Cubic.Out | 300 (`base`) | 0 | none | **neutral soft tap** | static "not yet" text, no motion |
+| Available highlight | **Glow Pulse** ring (yoyo, low amplitude) | Sine.InOut | 1200 (`glowLoop`) | — | none | (silent) | static ring/outline, no pulse |
+| Avatar traverse | **Tween along path** + camera follow + look-ahead | Cubic.Out | 600 (`move`)/380 (`run`) | — | follow lerp 0.08 | footfall tick | 150ms crossfade reposition |
+| Press feedback | **Press/Tap** scale 0.97 (on pointer-*down*) | Quad.Out | 120 (`press`) | — | none | (silent) | kept (non-vestibular) |
+| Region focus | **Continuity zoom** 1.0→1.25 + parallax deepen | Cubic.Out | 300 (`zoom`) | — | zoom | (silent) | instant zoom |
+| Tier advance | **Number ticker** (tabular) + tier badge **Pop** + gold sweep | Cubic.Out | 600 (`celebrateMed`) | — | none | rising sweep | instant number + static badge |
+| Cosmetic equip | **Crossfade + Blur mask** sprite swap | Cubic.Out | 200 (`equip`) | — | none | cloth whoosh | instant swap |
+| Cosmetic drawer | **Origin-aware Scale-in** (from trigger) + item **Stagger** 40ms | Cubic.Out | 220 (`fast`) | — | none | (silent) | instant/fade |
+| Scene → Base | **Direction-aware** slide toward Base Camp + Crossfade | Cubic.Out | 350 (`sceneFade`) | — | none | (silent) | 150ms crossfade |
+| Base accretion | **Pop-in place** (0.9→1.0) + dust motes; label **Fade-in** | Back.Out | 300 (`base`) | small | none | place click + murmur | instant place + list update |
+| Standings open (opt-in) | **Accordion** expand + own-gain bar **grow** L→R | Cubic.Out | 220 (`fast`) | — | none | (silent) | instant |
+| Ambient world | Water **shimmer**, cloud **drift** (Marquee), **motes Float** | Linear/Sine | 6000 loop | low | none | (silent) | **all off**; depth kept |
+| HUD toggle (band/plain/standings) | **Instant** (frequent action → no animation) | — | 0 (`instant`) | — | none | (silent) | instant |
+| Onboarding beat | **Fade** + gentle pointer | Cubic.Out | 300 (`base`) | — | none | (silent) | static, no slide |
 
-### 5.5 Cohort base scene
+**Deliberately excluded** (would violate §14.12 / this design): `Shake`/`Wiggle` on error (reads as rejection/loss — errors use a *calm* wisp), any `scale(0)` entrance, `ease-in` on entrances, gacha "reroll" reveal animation, loss/decay meters, engagement-timed pop-ins, and any looping earworm audio.
 
-The Base Camp renders the cohort's `unlockedFeatures` (campfire, banner, garden, …) as placed props in a stable order; focusing a prop shows its attributable contributor (pseudonymous) and mission. It is the "home" surface — the default landing when standings/competition are off. Zero power.
+### 5.7 · Celebration sequences (orchestration — the loudest moments, §14.12)
 
-### 5.6 Motion principles (applied)
+The two loudest sequences are **orchestrated** (multi-property motion timed to feel like one gesture), reserved for the mechanism, never for minutes:
 
-- Celebration is a **rare** event → delight is warranted there; traversal is **occasional** → standard eased motion; HUD toggles are **frequent** → minimal/instant. (Frequency-appropriate motion.)
-- Enter/exit use **`Cubic.Out`** (responsive); on-screen moves use ease-in-out; never `ease-in` on entrances.
-- **Every** animation has a reduced-motion equivalent (§8); reduced motion is not "less game" — it is the same state, conveyed calmly.
-- Only transform/alpha/particles animate; no layout thrash. Target 60fps with graceful degradation.
+**A. Independent-unlock (high / transfer-critical) — "Light the beacon."** On `masteryCleared` for a transfer-critical node with prereqs met: (t=0) neutral avatar `celebrate` **Pop** jump begins; (t=60ms) the node marker **Scale-in + Pop** to lit `--gold` beacon; (t=120ms) a 24-particle ember→gold **Burst** with `800ms` lifespan + a bloom **Ripple** ring; (t=120ms) the camera **punch** (+0.03, 120ms out / 180ms back); (t=200ms) the **path Line-draws** to the next node and warms; `aria-live` announces "You lit The Spelling Spires — you did it yourself." Sound: beacon arpeggio (muted default, captioned). **Reduced-motion:** a single static starburst badge appears on the now-lit node + the announce; **nothing is required to be motion to be understood.** With `celebration-aurora` equipped (§8.15), the burst becomes aurora ribbons + a one-shot sky shimmer — the rarest look.
+
+**B. Productive-struggle — "Struggle honored."** On an extra unassisted attempt / self-correction / return-after-fail: the avatar plays `think→nod`, a gentle 6-particle **Warm Pulse** rises from the node, and a Ledger `aria-live` chip reads process-praise ("You kept going after a tricky one — that's the work."). No node state change, nothing removed. Reduced-motion: the static chip alone.
+
+Both derive from `classifyCelebration` + `celebrationMotionSpec` (§8.5) so intensity, particle count, duration, and the reduced equivalent are deterministic and testable.
+
+### 5.8 · Cohort Base Camp — the co-built home (layout §8.16)
+
+The central island is a cozy **harbor camp** the stable cohort of six co-builds. It is the default landing when standings/competition are off — the belonging surface (§15.2 rollback gate). It **grows visibly warmer and more populated** as cooperative missions accrete features into stable **zones/slots** (deterministic, `resolveBaseLayout`):
+
+| Feature | Zone | Slot origin (x,y) | Look |
+|---|---|---|---|
+| `campfire` | hearth | (1024, 1024) | central warm fire; gathering point; lantern-marks circle it |
+| `banner` | gateway | (1024, 928) | a co-signed cohort banner over the camp gate |
+| `garden` | grove | (944, 1088) | a small shared planter that fills in with growth |
+| `dock` | harbor | (1104, 1120) | a jetty where arrivals land |
+| `workshop` | yard | (944, 960) | a shared bench with in-progress projects |
+| `lookout` | ridge | (1104, 944) | a spyglass platform over the isles |
+
+Each contribution is **attributable** — a small pseudonymous **lantern-mark** with the contributor's ref + mission id appears beside its prop (on focus / in the Ledger list). Features place in **contribution order** into their zone; unknown feature ids get a deterministic grid-fallback slot (still replayable). The base confers **zero power** (§6 FR-011). New arrivals `Pop-in place` (reduced-motion: instant). Over time the camp reads as *"we made this together."*
+
+### 5.9 · Cosmetics — the catalog, how they *look* (visuals §8.15)
+
+Cosmetics are competence-earned, deterministic, **zero-power**, and **never purchasable** (§7.3 rules; structurally no price/rarity field, §6 FR-008/009). Each carries a deterministic text `look` + `equipEffect` descriptor (testable it exists and is stable, SC-022) and a reduced-motion form. Nine fixture cosmetics:
+
+| id | kind | look | equip / effect | reduced-motion |
+|---|---|---|---|---|
+| `avatar-hat-explorer` | avatar-item | soft tan felt explorer's cap | tilts slightly on walk | static tilt |
+| `avatar-cape-aurora` | avatar-item | teal→plum aurora-gradient cape | trails on `run` | static cape, no trail |
+| `avatar-badge-firstlight` | avatar-item | small gold "first light" star pin | glints on idle | static pin |
+| `world-theme-dawn` | world-theme | rosier dawn sky + softer light | recolors sky/sea on equip | instant recolor |
+| `world-theme-dusk` | world-theme | deep-indigo dusk; brighter lanterns; stars | stars twinkle | static stars |
+| `base-banner-unity` | base-theme | co-signed unity banner at Base gate | shows contributor marks | static banner |
+| `base-lantern-warm` | base-theme | warm lantern strings around camp | gentle sway | static strings |
+| `celebration-bloom` | celebration-effect | unlock burst → flower-petal bloom | changes particle shape | static petal badge |
+| `celebration-aurora` | celebration-effect | unlock burst → aurora ribbons + sky shimmer | rarest; sky one-shot | static ribbon badge |
+
+A cosmetic drawer shows **eligible** items (equippable) and **locked** items *with their earn rule shown as a goal* ("Light 3 beacons", "Reach Beacon tier") — never a price, never a "buy/roll" button.
+
+### 5.10 · Sound design cues (muted by default, captioned — §6 FR-037; registry §8.18)
+
+Audio is **muted by default** with a single toggle and **captions** in the Ledger; no cue loops, none is engagement-timed, and the error cue is **neutral** (never an alarm/buzzer — an error is not a loss). Character: warm, soft, short. `resolveSoundCue(event)` is deterministic.
+
+| Event | Cue id | Caption | Character |
+|---|---|---|---|
+| boot ready | `boot-chime` | [warm chime] | rising 3-note |
+| traverse step | `footfall` | [soft step] | very low tick |
+| node available | `ready-shimmer` | [ready shimmer] | gentle |
+| unlock medium | `bloom-chord` | [unlock chime] | warm chord |
+| unlock high | `beacon-arpeggio` | [beacon lights up] | ascending arpeggio + soft wordless cheer |
+| productive-struggle | `encourage-tone` | [keep-going tone] | low "mm-yes" |
+| error / not-yet | `soft-tap` | [soft tap] | **neutral**, not negative |
+| cosmetic equip | `cloth-whoosh` | [cloth whoosh] | light |
+| tier advance | `rising-sweep` | [tier up] | warm sweep |
+| base accretion | `place-murmur` | [placed + soft cheer] | click + tiny community murmur |
+
+### 5.11 · Asset pipeline (§6 FR-039; keys §8.17)
+
+- **Committed seed SVGs** under `apps/arena/public/seed/`, grouped: `avatar/` (body, lantern, hat, cape, badge), `nodes/` (marker-locked, marker-available, marker-unlocked, beacon), `regions/` (4 island tiles + water + bridge), `base/` (props per zone), `fx/` (mote, petal, ribbon, star), `ui/` (icons). Small, text-diffable, public-repo-safe; **no external fetch**.
+- **Deterministic key registry** `ASSET_KEYS` in the domain (§8.17) so canvas + Ledger + procedural fallback agree on every key by construction.
+- **Load order per key: atlas → SVG → procedural.** `PreloadScene` prefers a packed atlas (`public/atlas/isles.json`, the non-breaking richer-art path) if present, else the seed SVG, else a **deterministic procedural texture** (`Graphics.generateTexture`, seeded, no `Math.random`) — a tinted shape keyed to the biome/state — so a missing asset **still renders** (FR-030/039). Determinism proven in `assets.test.ts`.
+- **Path to richer art (non-breaking):** replace/augment seed SVGs with a TexturePacker hash atlas under `public/atlas/` keyed identically; no code change beyond the loader's atlas branch. Optional self-hosted subset fonts (§13 DP-6) follow the same "committed, no-fetch, non-breaking" rule.
+
+### 5.12 · HUD & the accessible Ledger — visual + semantic design
+
+**HUD (Phaser-adjacent DOM overlay).** Translucent, `backdrop-filter` frosted panels floating over the sea (Apple materials: chrome that content scrolls under, not opaque bars) — a top region banner, a bottom growth/tier panel, a right cosmetic drawer, and a "?" / Home / audio / plain-mode / band / standings control cluster. Panels `Materialize` (blur + scale on enter) rather than hard-fade; press feedback on every control (scale 0.97); ≥44px targets (56px in the 6-8 band). Reduced-transparency → solid panels.
+
+**The Arena Ledger (the equal, semantic twin — §12, D5).** Built from the same `ArenaView`: the quest graph as a keyboard-navigable `role="tree"` (each node a `treeitem` whose accessible name = *landmark title + state + region*, e.g. "The Spelling Spires, unlocked, Wordwind Reach"); tier/growth as band-appropriate text; cosmetics as a labeled `listbox` (eligible = equippable, locked = with its earn-goal); the base as a list of features + contributors; celebrations via `aria-live="polite"`; captions for sound cues. Full keyboard/switch operation, visible `--focus` rings, color-independent state (icon + text), ≥4.5:1 contrast. Canvas is `aria-hidden="true"`. Because both renderers consume the one view model, they never drift (parity by construction).
+
+### 5.13 · Age-band visual variants (§14.13; tokens §8.19)
+
+Identical underlying economy (§13), **different presentation** via `resolveVisualBand(band)`:
+
+- **6-8** — concrete & story-framed. **No raw number on the canvas** (`showCanvasNumbers=false`); tier is a *growing light*, not a digit; labels are story sentences ("You lit the Counting Lighthouse!"); comparison **off**; larger markers (`×1.25`) and 56px targets; more avatar idle personality; celebration ceiling capped at **medium** (warm, not overwhelming).
+- **9-11** — transitional. Growth-vs-past bar is primary ("past-you vs you"); simplified tier badge + quest-tree; standings **opt-in** but muted; 48px targets; full celebration ceiling.
+- **12-14** — full & strategic. Full map, numeric independence reward (tabular), tier ladder, quest graph, **opt-in** near-peer standings, dusk theme available; 44px targets; full celebration ceiling.
+
+The variant is a **render layer over identical state** (a flag on `buildArenaView`); `plainViewEquals` still holds — only presentation and `flags` differ (SC-006/014/020).
+
+### 5.14 · Motion principles (the rules every value above obeys)
+
+- **Frequency-appropriate** (Emil): rare (celebration) → delight; occasional (traverse) → standard eased; frequent (HUD toggles) → instant.
+- **Enter/exit `Cubic.Out`** (responsive), on-screen moves `Sine.InOut`, reveals `Back.Out` (overshoot ≤1.05, never `scale(0)`); **never `ease-in` on entrances**.
+- **Interruptible & velocity-aware** (Apple): traversal re-targets from the live position; nothing locks out input.
+- **Only transform/alpha/particles** animate on canvas; no layout thrash; target **60fps** with the degraded tier (halved particles, glow/shadow/ambient off) holding the budget.
+- **Every** animation has a reduced-motion equivalent (§8) and a Ledger equivalent (§12); reduced motion is *the same game, conveyed calmly.*
 
 ---
 
@@ -318,15 +497,28 @@ The Base Camp renders the cohort's `unlockedFeatures` (campfire, banner, garden,
 - **FR-029**: The Phaser scene, the reduced-motion/plain rendering, and the accessible Ledger MUST all render from the **single `ArenaView`** produced by `buildArenaView`; reduced-motion/plain MUST NOT recompute state (parity by construction).
 - **FR-030**: Seed assets MUST be committed in-repo (small SVGs) with a deterministic procedural fallback; the game MUST build and run with **no external fetch**.
 
+**Art direction, motion system, avatar, camera, sound, onboarding & assets**
+
+- **FR-031**: The world MUST render with the **Independence Isles** visual identity — the golden-hour master palette (§8.11), per-biome region identity (§8.12), a consistent top-left key light, and the typography tokens (§8.11) — using **no external fetch** (system-rounded font fallback by default). **Color is never the sole state cue**: every node/tier/standing state MUST also be conveyed by icon/shape/text, at ≥4.5:1 text contrast (WCAG 2.2 AA, FR-016).
+- **FR-032**: The avatar MUST support the animation states `idle | walk | run | think | celebrate` via the deterministic `resolveAvatarAnimation(intent, { reducedMotion })` (§8.13); movement MUST be **interruptible** (re-target from the live position), MUST NEVER animate from `scale(0)`, and every state MUST have a reduced-motion equivalent.
+- **FR-033**: The camera MUST be a bounded follow-camera with a central deadzone, directional look-ahead, an establishing dolly-in on world enter, region focus zoom, and layered parallax per the golden camera config (§8.14); **every camera motion MUST have a reduced-motion cut/instant equivalent** and the game MUST keep depth (parallax layers) while stopping ambient motion under reduced motion / the degraded tier.
+- **FR-034**: All interaction motion MUST derive from the deterministic motion-token registry (`MOTION`/`EASINGS`, §8.10) via `resolveMotion(kind, { reducedMotion })`; **every** entry in the master motion table (§5.6) MUST have a first-class reduced-motion equivalent, and the excluded effects (§5.6: shake/wiggle-on-error, `scale(0)`, `ease-in` entrances, gacha reveals, decay meters, engagement-timed pop-ins, looping audio) MUST NOT appear.
+- **FR-035**: Each cosmetic MUST carry a deterministic text `look`/`equipEffect` visual descriptor and a reduced-motion form (§8.15); cosmetic visuals MUST remain **zero-power** and the type MUST still expose **no** `price`/`currency`/`dropRate`/`rarity` field (FR-008/009).
+- **FR-036**: Cohort-base features MUST place into deterministic zones/slots via `resolveBaseLayout(base)` (§8.16), remain **attributable** (pseudonymous contributor + mission) and **zero-power**, and place in contribution order with a deterministic fallback slot for unknown features (replayable).
+- **FR-037**: Sound MUST be **muted by default**, captioned in the Ledger, non-looping, and never engagement-timed; cue selection MUST be deterministic via `resolveSoundCue(event)` (§8.18); the **error/"not-yet" cue MUST be neutral** (never an alarm/negative sound — an error is not a loss).
+- **FR-038**: A **first-run onboarding** sequence (coach-marks/`OnboardScene`) MUST convey traverse → unlock → plain-mode/Ledger/standings-off, MUST be skippable and dismissible on any input, MUST NEVER block/delay a mastery action (FR-022), MUST be fully mirrored in the Ledger, and MUST honor reduced motion.
+- **FR-039**: A deterministic `ASSET_KEYS` registry (§8.17) MUST key every asset; the loader MUST try **atlas → committed SVG → procedural fallback** so a missing asset still renders, with **no external fetch** (FR-030); procedural fallbacks MUST be seeded (no `Math.random`).
+- **FR-040**: Canvas presentation MUST resolve per age band via `resolveVisualBand(band)` (§8.19); the **6-8 band MUST show no raw number on the canvas** (`showCanvasNumbers=false`) and cap the celebration ceiling; the underlying state MUST be identical across bands (`plainViewEquals`, FR-029).
+
 ### Key Entities
 
-Full shapes in [data-model.md](./data-model.md). Summary: `AgeBand`, `CompetencyNode`, `QuestWorld`, `NodePosition`/`WorldLayout`, `NodeMasterySignal` *(synthetic input)*, `NodeState` *(derived)*, `ProgressionState` *(derived)*, `Tier`, `Cosmetic` *(no price/rarity field)*, `CosmeticEligibility` *(derived)*, `AvatarState`, `CohortBase`, `CooperativeMissionResult` *(input)*, `CelebrationEvent`, `MotionSpec` *(derived)*, `RewardRepresentation` *(derived, age-band)*, `NearPeerStanding` *(derived, opt-in; no rank field)*, and the composed **`ArenaView`** that drives every renderer.
+Full shapes in [data-model.md](./data-model.md). Summary: `AgeBand`, `CompetencyNode`, `QuestWorld`, `NodePosition`/`WorldLayout`, `NodeMasterySignal` *(synthetic input)*, `NodeState` *(derived)*, `ProgressionState` *(derived)*, `Tier`, `Cosmetic` *(no price/rarity field; adds `look`/`equipEffect`)*, `CosmeticEligibility` *(derived)*, `AvatarState`, `AvatarAnimationSpec` *(derived)*, `CohortBase`, `CooperativeMissionResult` *(input)*, `BasePlacement` *(derived)*, `CelebrationEvent`, `MotionSpec` *(derived)*, `MotionToken` *(derived)*, `RewardRepresentation` *(derived, age-band)*, `VisualBand` *(derived, age-band)*, `BiomeIdentity`, `WorldTheme`, `CameraConfig`/`ParallaxLayer`, `SoundCue` *(derived)*, `AssetKeyRegistry`, `NearPeerStanding` *(derived, opt-in; no rank field)*, the composed **`ArenaView`** (with a derived `presentation` block) that drives every renderer, and the golden constant registries `PALETTE`/`TYPOGRAPHY`/`MOTION`/`EASINGS`.
 
 ---
 
 ## §7 · Golden fixtures (the canonical synthetic world)
 
-The domain ships a fixed fixture (`graph.fixture.ts`, `catalog.fixture.ts`, `tiers.fixture.ts`) so golden values are exact and stable.
+The domain ships fixed fixtures so golden values are exact and stable: `graph.fixture.ts` (world + landmark POIs), `tiers.fixture.ts`, `catalog.fixture.ts` (cosmetics + `look`/`equipEffect`), `biomes.fixture.ts` (§8.12), and `baseLayout.fixture.ts` (§8.16). Constant registries (`PALETTE`, `TYPOGRAPHY`, `MOTION`, `EASINGS`, `CAMERA`, `PARALLAX`, `ASSET_KEYS`, `SOUND_CUES`) live in their modules (§8.10–§8.18) and are exercised by golden tests.
 
 ### 7.1 Fixture graph (9 nodes, 4 regions)
 
@@ -343,6 +535,8 @@ The domain ships a fixed fixture (`graph.fixture.ts`, `catalog.fixture.ts`, `tie
 | `sentence-summit` | wordwind-reach | [language, reading] | [letter-landing, blend-bay] | true |
 
 Derived edges (from = prereq → to = node): `count-cove→add-atoll`, `add-atoll→place-value-point`, `observe-overlook→measure-mesa`, `add-atoll→measure-mesa`, `phoneme-falls→blend-bay`, `letter-landing→sentence-summit`, `blend-bay→sentence-summit`. Regions (stable order): `[numbers-coast, tinker-bluffs, story-vale, wordwind-reach]`.
+
+Each node additionally carries a **`landmark`** (its point-of-interest name, §5.2), used as the primary label on canvas and in the Ledger accessible name: `count-cove`→"Counting Lighthouse", `add-atoll`→"Abacus Jetty", `place-value-point`→"Tide-Pool Terraces", `observe-overlook`→"Gear Overlook", `measure-mesa`→"Gadget Workshop", `phoneme-falls`→"Whispering Falls", `blend-bay`→"Book-Root Forest", `letter-landing`→"Letter Landing Field", `sentence-summit`→"The Spelling Spires".
 
 ### 7.2 Tier table (`tiers.fixture.ts`)
 
@@ -371,7 +565,7 @@ Labels are band-neutral and non-caste (not public ranks). `tierForReward(r)` = h
 | `celebration-bloom` | celebration-effect | `{ type:"min-unlocks", count:1 }` |
 | `celebration-aurora` | celebration-effect | `{ type:"min-tier", tierIndex:5 }` |
 
-A region is **complete** ⇔ every node with that `region` is `unlocked`.
+A region is **complete** ⇔ every node with that `region` is `unlocked`. Each catalog entry also carries the deterministic `look` + `equipEffect` visual descriptors of **§8.15** (present and stable; still **no** `price`/`currency`/`dropRate`/`rarity` field).
 
 ---
 
@@ -459,7 +653,98 @@ Fixture: `self.selfGain = 300`; `nearPeers = [{pseudonym:"kestrel", gain:260},{p
 
 ### 8.9 UX / motion (acceptance targets, tolerance in parentheses)
 
-Avatar path segment 600ms `Cubic.Out` (±50ms) · node reveal 220ms `Back.Out` peak ~1.05 (±30ms) · available glow pulse 1200ms loop (±100ms; off in reduced/degraded) · camera lerp 0.08 (±0.02) · region zoom 1.0→1.25 over 300ms (±50ms) · press feedback scale 0.97 for 120ms (±20ms) · particle lifespan 800ms (±100ms) · target 60fps, degraded tier halves particle count and disables glow/shadow. Reduced motion: all transforms ≤150ms opacity crossfade or instant; particles off; camera cuts; avatar cross-fades.
+Avatar path segment 600ms `Cubic.Out` (±50ms) · node reveal 220ms `Back.Out` peak ~1.05 (±30ms) · available glow pulse 1200ms loop (±100ms; off in reduced/degraded) · camera lerp 0.08 (±0.02) · region zoom 1.0→1.25 over 300ms (±50ms) · press feedback scale 0.97 for 120ms (±20ms) · particle lifespan 800ms (±100ms) · target 60fps, degraded tier halves particle count and disables glow/shadow. Reduced motion: all transforms ≤150ms opacity crossfade or instant; particles off; camera cuts; avatar cross-fades. These acceptance targets are the **exact** tokens of §8.10 (the domain now derives them as testable constants).
+
+### 8.10 Motion tokens + easings (exact) — `MOTION`, `EASINGS`, `resolveMotion`
+
+`MOTION` (durations, ms — exact): `instant:0`, `press:120`, `micro:150`, `fast:220`, `reveal:220`, `base:300`, `zoom:300`, `sceneFade:350`, `runSeg:380`, `celebrateLow:400`, `move:600`, `celebrateMed:600`, `equip:200`, `celebrateHigh:800`, `lantern:900`, `glowLoop:1200`, `intro:1200`, `idleBob:1600`, `particleLife:800`.
+
+`EASINGS` (Phaser string / CSS cubic-bézier — exact): `enter:"Cubic.Out"` / `cubic-bezier(0.23,1,0.32,1)`; `move:"Sine.InOut"` / `cubic-bezier(0.77,0,0.175,1)`; `pop:"Back.Out"`; `press:"Quad.Out"`; `loop:"Sine.InOut"`; `intro:"Cubic.InOut"`; `linear:"Linear"`.
+
+`resolveMotion(kind, { reducedMotion })` → `{ kind, mode, durationMs, easing }`. Animated table (exact); under `reducedMotion:true` → `mode:"reduced"`, `easing:"Linear"`, and `durationMs` from the reduced column:
+
+| kind | animated durationMs | animated easing | reduced durationMs | reduced note |
+|---|---|---|---|---|
+| `press` | 120 | Quad.Out | 120 | kept (non-vestibular) |
+| `nodeReveal` | 220 | Back.Out | 0 | instant show |
+| `traverse` | 600 | Cubic.Out | 150 | crossfade reposition |
+| `run` | 380 | Cubic.Out | 150 | crossfade |
+| `regionZoom` | 300 | Cubic.Out | 0 | cut |
+| `intro` | 1200 | Cubic.InOut | 0 | cut to avatar |
+| `availableGlow` | 1200 | Sine.InOut | 0 | static ring |
+| `tierAdvance` | 600 | Cubic.Out | 0 | instant number |
+| `equip` | 200 | Cubic.Out | 0 | instant swap |
+| `drawerOpen` | 220 | Cubic.Out | 150 | fade |
+| `sceneTransition` | 350 | Cubic.Out | 150 | crossfade |
+| `baseAccretion` | 300 | Back.Out | 0 | instant place |
+| `standingsExpand` | 220 | Cubic.Out | 0 | instant |
+| `onboardBeat` | 300 | Cubic.Out | 0 | static |
+
+### 8.11 Palette + typography tokens (exact) — `PALETTE`, `TYPOGRAPHY`
+
+`PALETTE` (exact hex): `seaDeep:#0E2A3B`, `seaMid:#14384C`, `skyDawn:#F4C77B`, `ink:#14202B`, `inkHi:#F5F9FC`, `sun:#F6A23A`, `sunHi:#FFC66B`, `gold:#F2C14E`, `ember:#E8623B`, `locked:#5A6B78`, `notYet:#7FB6D6`, `focus:#FFD166`. Contrast: `inkHi` on `seaDeep` ≈ 13:1 (AAA); `ink` on `skyDawn` ≥ 4.5:1. State color is always paired with an icon/shape (FR-031).
+
+`TYPOGRAPHY` (exact): `fontDisplay:'"Fredoka","Baloo 2",ui-rounded,"Segoe UI Rounded",system-ui,sans-serif'`, `fontBody:'"Nunito",ui-rounded,system-ui,sans-serif'`; scale `display{rem:2.5,lh:1.05,ls:-0.02}`, `h1{1.75,1.10,-0.01}`, `h2{1.25,1.20,0}`, `body{1.0,1.5,0}`, `label{0.8125,1.4,0.01}`; `numeric:"tabular-nums"`.
+
+### 8.12 Biome identity (exact) — `biomes.fixture.ts`, `resolveBiome(region)`
+
+| region | name | signatureHex | terrainHex | ambientHex | landmarks (stable order) |
+|---|---|---|---|---|---|
+| `numbers-coast` | Numbers Coast | #2EC4B6 | #E9D9A8 | #BFE9E3 | Counting Lighthouse, Abacus Jetty, Tide-Pool Terraces |
+| `tinker-bluffs` | Tinker Bluffs | #C77D3A | #8A6B4F | #E7C9A0 | Gear Overlook, Gadget Workshop, Copper Kilns |
+| `story-vale` | Story Vale | #3E9B5F | #6E8E5A | #CDE3B8 | Whispering Falls, Book-Root Forest, The Open Page |
+| `wordwind-reach` | Wordwind Reach | #5AA9E6 | #C9B27E | #DCE9F5 | Letter Landing Field, Windmill Highlands, The Spelling Spires |
+
+`resolveBiome(region)` returns the row; an unknown region throws (world validation guarantees membership).
+
+### 8.13 Avatar animation (exact) — `resolveAvatarAnimation(intent, { reducedMotion })`
+
+Returns `{ state, loop, durationMs, easing, amplitudePx }`. Under `reducedMotion:true` → `loop:false`, `easing:"Linear"`, `state` suffixed `-static`, `durationMs`/`amplitudePx` from the reduced columns.
+
+| intent | state | loop | durationMs | easing | amplitudePx | reduced dur | reduced amp |
+|---|---|---|---|---|---|---|---|
+| `idle` | idle | true | 1600 | Sine.InOut | 4 | 0 | 0 |
+| `walk` | walk | true | 600 | Cubic.Out | 0 | 150 | 0 |
+| `run` | run | true | 380 | Cubic.Out | 0 | 150 | 0 |
+| `think` | think | false | 900 | Sine.InOut | 3 | 0 | 0 |
+| `celebrate-low` | celebrate | false | 400 | Back.Out | 8 | 150 | 0 |
+| `celebrate-med` | celebrate | false | 600 | Back.Out | 12 | 150 | 0 |
+| `celebrate-high` | celebrate | false | 800 | Back.Out | 16 | 150 | 0 |
+
+### 8.14 Camera + parallax (exact) — `CAMERA`, `PARALLAX`, `resolveParallaxLayers`
+
+`CAMERA` (exact): `lerpX:0.08`, `lerpY:0.08`, `roundPixels:true`, `zoomBase:1.0`, `zoomRegion:1.25`, `zoomIntroStart:0.6`, `deadzoneW:0.3`, `deadzoneH:0.3`, `lookAheadPx:64`, `punchZoomDelta:0.03`, `punchOutMs:120`, `punchBackMs:180`, `bounds:{x:0,y:0,width:2048,height:2048}`.
+
+`PARALLAX` / `resolveParallaxLayers()` (exact, back→front): `sky:0.0`, `clouds-far:0.15`, `horizon:0.30`, `sea:0.60`, `world:1.0`, `motes:1.05`, `foreground:1.20`. Under reduced motion / degraded tier the ambient layers (`clouds-far`, `sea` shimmer, `motes`) stop moving but still render (depth kept).
+
+### 8.15 Cosmetic visual descriptors (exact) — extends `catalog.fixture.ts`
+
+Each cosmetic gains `look` + `equipEffect` strings (present, stable; **no** price/rarity). Golden `look` values (catalog order): `avatar-hat-explorer`→"soft tan felt explorer's cap"; `avatar-cape-aurora`→"teal-to-plum aurora-gradient cape"; `avatar-badge-firstlight`→"small gold first-light star pin"; `world-theme-dawn`→"rosier dawn sky and softer light"; `world-theme-dusk`→"deep-indigo dusk with brighter lanterns and stars"; `base-banner-unity`→"co-signed cohort unity banner"; `base-lantern-warm`→"warm lantern strings around camp"; `celebration-bloom`→"unlock burst as flower-petal bloom"; `celebration-aurora`→"unlock burst as aurora ribbons with sky shimmer". `equipEffect` per §5.9. Eligibility/ordering are unchanged from §8.4 (a `look` field never affects eligibility — zero power).
+
+### 8.16 Cohort base layout (exact) — `baseLayout.fixture.ts`, `resolveBaseLayout(base)`
+
+Feature → `{ zone, x, y }` (exact): `campfire`→(hearth, 1024, 1024); `banner`→(gateway, 1024, 928); `garden`→(grove, 944, 1088); `dock`→(harbor, 1104, 1120); `workshop`→(yard, 944, 960); `lookout`→(ridge, 1104, 944). `resolveBaseLayout(base)` returns a `BasePlacement[]` (one per `unlockedFeatures`, stable order) each `{ feature, zone, x, y, by }` where `by` is the attributable contributor from `contributions`. An **unknown** feature id gets a deterministic fallback: `zone:"outskirts"`, `x = 1024 + ((i % 4) - 2) * 80`, `y = 1200 + floor(i/4) * 80` (i = index in `unlockedFeatures`) — replayable. For the §8.8 golden base, placements are `campfire`(hearth,1024,1024,kestrel), `banner`(gateway,1024,928,otter), `garden`(grove,944,1088,kestrel).
+
+### 8.17 Asset key registry (exact) — `ASSET_KEYS`
+
+Stable grouped keys (declaration order): `avatar:["av-body","av-lantern","av-hat","av-cape","av-badge"]`; `nodes:["node-locked","node-available","node-unlocked","node-beacon"]`; `regions:["isle-numbers-coast","isle-tinker-bluffs","isle-story-vale","isle-wordwind-reach","water","bridge"]`; `base:["prop-campfire","prop-banner","prop-garden","prop-dock","prop-workshop","prop-lookout"]`; `fx:["fx-mote","fx-petal","fx-ribbon","fx-star"]`; `ui:["ui-lock","ui-star","ui-home","ui-audio","ui-help"]`. Every key MUST have a deterministic procedural fallback (seeded `Graphics.generateTexture`); load order per key = atlas → SVG → procedural (FR-039).
+
+### 8.18 Sound cues (exact) — `SOUND_CUES`, `resolveSoundCue(event)`
+
+`resolveSoundCue(event)` → `{ cueId, caption, mutedByDefault:true }` (exact): `boot`→(`boot-chime`,"[warm chime]"); `traverse`→(`footfall`,"[soft step]"); `nodeAvailable`→(`ready-shimmer`,"[ready shimmer]"); `unlockMedium`→(`bloom-chord`,"[unlock chime]"); `unlockHigh`→(`beacon-arpeggio`,"[beacon lights up]"); `productiveStruggle`→(`encourage-tone`,"[keep-going tone]"); `notYet`→(`soft-tap`,"[soft tap]"); `equip`→(`cloth-whoosh`,"[cloth whoosh]"); `tierAdvance`→(`rising-sweep`,"[tier up]"); `baseAccretion`→(`place-murmur`,"[placed]"). Guardrail: the `notYet` cue MUST be neutral (no cue is flagged negative/alarm), all `mutedByDefault:true`, none looping.
+
+### 8.19 Age-band visual variant (exact) — `resolveVisualBand(band)`
+
+| field | 6-8 | 9-11 | 12-14 |
+|---|---|---|---|
+| `showCanvasNumbers` | **false** | false | **true** |
+| `labelStyle` | "story" | "growth" | "numeric" |
+| `markerScale` | 1.25 | 1.1 | 1.0 |
+| `touchTargetPx` | 56 | 48 | 44 |
+| `celebrationCeiling` | "medium" | "high" | "high" |
+| `comparisonVisibleDefault` | false | false | false |
+
+`comparisonVisibleDefault` mirrors `representation.comparisonDefault` (6-8 hard `off`; others opt-in, default off). The underlying `ProgressionState` is identical across bands; only this presentation varies (FR-040, `plainViewEquals`).
 
 ---
 
@@ -470,33 +755,33 @@ Each phase is independently valuable and gated. Work the lowest unfinished phase
 ### P0 — Foundation & green-from-iteration-1
 
 **Goal**: package + app skeletons compile; the gate is green immediately.
-**Deliverables**: `packages/arena-world` (`package.json`, `tsconfig.json`, `src/index.ts`, `src/model.ts` types, `graph.fixture.ts`, `tiers.fixture.ts`, `catalog.fixture.ts`); `apps/arena` skeleton (`package.json`, `next.config.mjs`, `tsconfig.json`, `app/layout.tsx`, `app/page.tsx` placeholder, `app/globals.css` with reduced-motion + plain-mode hooks, `.env.local.example`, `.gitignore`); a **seeded smoke test** (`test/smoke.test.ts`) that imports the package and asserts the fixture builds.
+**Deliverables**: `packages/arena-world` (`package.json`, `tsconfig.json`, `src/index.ts`, `src/model.ts` types incl. the new art/motion/avatar/camera/base/sound/visual-band types, fixtures `graph.fixture.ts` (with `landmark`), `tiers.fixture.ts`, `catalog.fixture.ts` (with `look`/`equipEffect`), `biomes.fixture.ts`, `baseLayout.fixture.ts`, and the constant registries `PALETTE`/`TYPOGRAPHY` (`art.ts`), `MOTION`/`EASINGS` (`motion.ts`), `CAMERA`/`PARALLAX` (`camera.ts`), `ASSET_KEYS` (`assets.ts`), `SOUND_CUES` (`sound.ts`)); `apps/arena` skeleton (`package.json`, `next.config.mjs`, `tsconfig.json`, `app/layout.tsx`, `app/page.tsx` placeholder, `app/globals.css` with the §8.11 palette/typography tokens + reduced-motion/reduced-transparency + plain-mode hooks + `:focus-visible` rings, `.env.local.example`, `.gitignore`); a **seeded smoke test** (`test/smoke.test.ts`) that imports the package and asserts the fixture builds.
 **Gate**: `pnpm typecheck` + `pnpm test` green.
 
 ### P1 — Quest-world map + mastery gate (US1) 🎯 MVP
 
-**Goal**: the graph renders as a traversable animated overworld; nodes unlock ONLY via gate + prereqs; deterministic layout; reduced-motion + accessible Ledger convey identical states.
-**Domain**: `buildQuestWorld`, `layoutQuestWorld`, `deriveNodeStates`, initial `buildArenaView` (map + states + layout). **App**: `BootScene`/`PreloadScene`/`WorldScene` render nodes/edges/regions + tweened avatar + follow-camera; reduced-motion path; the accessible Ledger tree; synthetic mastery-signal feed driving it.
+**Goal**: the graph renders as a traversable animated overworld with the Independence Isles art direction; nodes unlock ONLY via gate + prereqs; deterministic layout; reduced-motion + accessible Ledger convey identical states.
+**Domain**: `buildQuestWorld` (+landmarks), `layoutQuestWorld`, `deriveNodeStates`, `resolveBiome`, `resolveMotion`, `resolveAvatarAnimation`, `resolveParallaxLayers`, initial `buildArenaView` (map + states + layout + `presentation` block: biomes, camera, parallax, avatar anim, asset keys). **App**: `BootScene`/`PreloadScene` (atlas→SVG→procedural loader) / `WorldScene` render parallax biomes + node markers per state (color-independent) + lit edge paths/bridges + the pseudonymous lantern-avatar with idle/walk/run states + follow-camera with deadzone/look-ahead + establishing dolly-in + unlock reveal; reduced-motion path; the accessible Ledger tree (landmark names); synthetic mastery-signal feed driving it.
 **Gate**: P0 gate + `next build` + smoke (zero console/WebGL errors) + walkthrough steps 1–2, 5.
 
 ### P2 — Tiers + deterministic cosmetics + avatar (US2)
 
-**Domain**: `computeProgression`, `tierForReward`, `deriveCosmeticEligibility`, `equipCosmetic`; extend `buildArenaView`. **App**: tier/growth panel + cosmetic drawer (equip eligible only; **no** purchase/roll UI) + avatar cosmetic swap on canvas.
+**Domain**: `computeProgression`, `tierForReward`, `deriveCosmeticEligibility` (+`look`/`equipEffect`), `equipCosmetic`; extend `buildArenaView`. **App**: tier/growth panel (tabular ticker) + cosmetic drawer (equip eligible only; locked shows the **earn goal**, never a price/roll) + avatar cosmetic swap on canvas (`Crossfade + Blur`), world/base theme cosmetics recolor.
 **Gate**: P1 gate + walkthrough steps 3–4.
 
 ### P3 — Juice + errors-never-loss (US3)
 
-**Domain**: `classifyCelebration`, `celebrationMotionSpec`. **App**: `FxScene` particle bursts / node bloom on unlock/struggle; warm process-praise "not yet" on error (no loss visual); reduced-motion equivalents.
+**Domain**: `classifyCelebration`, `celebrationMotionSpec`, `resolveSoundCue`. **App**: `FxScene` orchestrated celebration sequences (§5.7: Burst+Bloom+Camera-punch on high; Warm-Pulse on struggle) driven by `celebrationMotionSpec`+`resolveMotion`; the calm `--notyet` wisp on error (no loss visual/shake, node unchanged); muted-by-default captioned sound cues; first-run onboarding coach-marks (`FR-038`); reduced-motion equivalents throughout.
 **Gate**: P2 gate + walkthrough step 6.
 
 ### P4 — Persistent cohort base (US4)
 
-**Domain**: `applyCohortContribution` + `unlockedFeatures`. **App**: `BaseScene` renders co-built features with attributable contributions.
+**Domain**: `applyCohortContribution` + `unlockedFeatures` + `resolveBaseLayout`. **App**: `BaseScene` renders the co-built Base Camp into deterministic zones/slots (§8.16) with attributable pseudonymous lantern-marks; `Pop-in place` accretion; the "home" landing when standings are off.
 **Gate**: P3 gate + walkthrough step 5 (base).
 
 ### P5 — Age-band staging + plain mode + near-peer standings (US5)
 
-**Domain**: `resolveRewardRepresentation`, `deriveStanding`, `plainViewEquals`. **App**: age-band switch + plain-mode toggle + opt-in standings panel (default off; 6-8 concrete/comparison-off).
+**Domain**: `resolveRewardRepresentation`, `resolveVisualBand`, `deriveStanding`, `plainViewEquals` (state-identical across bands/plain/reduced). **App**: age-band switch (re-renders canvas presentation: 6-8 no canvas numbers / story labels / larger markers / medium celebration ceiling) + plain-mode toggle + opt-in standings panel (default off; own-gain-vs-band-top, never a rank).
 **Gate**: P4 gate + walkthrough steps 7–8.
 
 ### P6 — Polish, accessibility & performance acceptance
@@ -524,6 +809,15 @@ Domain SCs are Vitest tests in `packages/arena-world/test/`; UI SCs are verified
 - **SC-012** — The accessible DOM Ledger conveys every state to keyboard/switch/screen-reader; canvas is `aria-hidden`; all interactive controls are keyboard-operable with visible focus and ≥4.5:1 contrast. → walkthrough a11y pass + `test/view.test.ts` (Ledger view model completeness) .
 - **SC-013** — Layout is deterministic and matches the golden positions (§8.1). → `test/layout.test.ts`.
 - **SC-014** — `buildArenaView` composes one view that drives every renderer; reduced-motion/plain does not recompute state (parity by construction). → `test/view.test.ts` (`plainViewEquals`, same underlying state).
+- **SC-015** — Every interaction-motion value derives from the deterministic token registry and each has a reduced-motion equivalent (§8.10). → `test/motion-tokens.test.ts` (`MOTION`/`EASINGS`/`resolveMotion` golden table + reduced-motion mode).
+- **SC-016** — Avatar animation states resolve deterministically with reduced-motion equivalents; never `scale(0)`; interruptible-by-construction (state carries no absolute start). → `test/avatar.test.ts` (§8.13 golden).
+- **SC-017** — Biome identity + palette/typography tokens are exact and stable; state color is paired with icon/shape (not color-only). → `test/art.test.ts` (§8.11/§8.12 golden; `resolveBiome`).
+- **SC-018** — Camera + parallax config are exact; every camera motion has a reduced/instant equivalent; depth retained under reduced motion. → `test/camera.test.ts` (§8.14 golden).
+- **SC-019** — Cohort-base features place into deterministic zones/slots, attributable and replayable; unknown-feature fallback is deterministic; zero power. → `test/base-layout.test.ts` (§8.16 golden).
+- **SC-020** — Canvas presentation resolves per age band; 6-8 `showCanvasNumbers=false` + medium celebration ceiling; underlying state identical across bands. → `test/visual-band.test.ts` (§8.19 golden) + `test/view.test.ts`.
+- **SC-021** — Sound-cue selection is deterministic, muted-by-default, non-looping; the error/"not-yet" cue is neutral (no alarm/negative cue exists). → `test/sound.test.ts` (§8.18 golden).
+- **SC-022** — Every cosmetic carries a stable `look`/`equipEffect` descriptor and the type still exposes no `price`/`currency`/`dropRate`/`rarity`; `look` never affects eligibility (zero power). → `test/cosmetics.test.ts` (§8.15) + `test/guardrails.test.ts`.
+- **SC-023** — `ASSET_KEYS` is stable and every key has a deterministic procedural fallback (seeded, no `Math.random`); loader order atlas→SVG→procedural; no external fetch. → `test/assets.test.ts` (§8.17) + app smoke (no network) .
 
 ---
 
@@ -587,6 +881,8 @@ The loop proceeds on the **default**; it escalates only per §3.
 - **DP-3 — Seed art fidelity.** Default **tiny committed SVGs + procedural fallback** (D6). Upgrading to a richer sprite atlas later is non-breaking. **Severity: low.**
 - **DP-4 — Cohort-base feature vocabulary.** Default the fixture set (`campfire`, `banner`, `garden`, …) mapped deterministically from `missionId`. **Severity: low.**
 - **DP-5 — Standings peer-band construction (synthetic).** Default: near-peers are a fixed synthetic set; `gainToBandTop` = `max(gain) − selfGain`. Real pace-band matchmaking is out of scope. **Severity: low.**
+- **DP-6 — Art direction & fonts (no-fetch constraint).** Default: the **Independence Isles** identity of §5.1/§8.11 — deep-sea canvas, golden-hour warmth, claymorphic-adjacent illustration, per-biome hues — with typography served by a **system-rounded fallback stack** (no external fetch, no committed binary). Self-hosted subset `woff2` (`Fredoka`/`Nunito`) under `public/fonts/` and a packed texture atlas under `public/atlas/` are **optional, non-breaking** upgrades keyed identically to the seed SVGs. The deliberate rejection of a cream/sand body bg (the 2026 AI default) is intentional (impeccable). **Severity: low.**
+- **DP-7 — Sound assets.** Default this slice: **no audio asset pipeline** — `resolveSoundCue` returns deterministic cue ids + captions only, muted by default; a real (committed, non-fetched) sample set is a later non-breaking addition. The error cue MUST stay neutral. **Severity: low.**
 
 ---
 

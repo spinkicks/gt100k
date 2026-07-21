@@ -42,19 +42,20 @@ pnpm --filter @gt100k/arena-world-app build
 **Engine notes**: the game runs on **Phaser 4** (`^4.2.1`, latest stable 4.x; rebuilt WebGL renderer with GPU context-loss/restore handling) loaded **client-only** (`next/dynamic` `ssr:false`, created in `useEffect`, destroyed on unmount), using **Phaser-4 APIs only** (particles via `this.add.particles(x,y,key,config)`, tweens via `this.tweens.add`, camera `startFollow`, etc. — no removed Phaser-3-only APIs). Seed art is committed under `apps/arena/public/seed/` (small SVGs) with a deterministic procedural fallback — **no external fetch**. The app must produce **zero console/WebGL errors** (SC-011). No `.env` is required; `apps/arena/.env.local.example` documents non-secret `NEXT_PUBLIC_*` defaults.
 
 **Expected walkthrough** (driven by the synthetic mastery-signal feed):
-1. The competency graph renders as a **traversable overworld** ("Independence Isles"): four region islands, quest nodes, lit edge paths, a **pseudonymous avatar**, and a **follow-camera**. Locked/available/unlocked nodes are visually distinct and color-independent.
-2. Selecting a reachable node **tweens the avatar** along the path; clearing a node's synthetic gate (with prerequisites mastered) flips it to **unlocked** with a celebratory reveal (node bloom + particle burst). No amount of clicking/time unlocks a node whose gate is uncleared.
-3. Cumulative independence reward advances a **gain-based tier**, shown first as growth vs. the learner's own past.
-4. Reaching competence thresholds makes **cosmetics** eligible; equipping them changes only the avatar's look on the canvas — never mastery/standing/access. There is **no** purchase button and **no** loot/roll anywhere.
-5. Cooperative-mission results accrete the **persistent cohort base** (the Base Camp scene), with attributable contributors.
-6. An incorrect attempt shows a warm, process-praise "not yet" — **never** a loss, a lost item, or a decaying meter.
-7. Toggling **plain mode** / setting `prefers-reduced-motion` conveys the identical state, progression, and celebrations without motion; toggling standings off changes nothing in learning/access/standing.
-8. Switching the synthetic learner's **age band** re-renders representation (6-8 concrete/story-framed, comparison off, no raw number; 12-14 full map/tiers/standings).
+1. The competency graph renders as the **Independence Isles** overworld (spec §5): a deep-sea archipelago in golden-hour light with **parallax** layers (sky/clouds/horizon/sea/world/foreground/motes), four biome islands (Numbers Coast, Tinker Bluffs, Story Vale, Wordwind Reach), quest **landmarks** (Counting Lighthouse, Abacus Jetty, …), lit edge paths + cross-island bridges, a **pseudonymous lantern-avatar** (idle bob), and a **follow-camera** with an establishing **dolly-in**. Locked/available/unlocked nodes are visually distinct **and color-independent** (icon + shape + label).
+2. Selecting a reachable node **tweens the avatar** along the path (walk/run states, look-ahead camera); clearing a node's synthetic gate (with prerequisites mastered) flips it to **unlocked** with the celebration sequence (spec §5.7: node bloom + particle burst + path light-up; a camera punch + aurora on high/transfer-critical). No amount of clicking/time unlocks a node whose gate is uncleared.
+3. Cumulative independence reward advances a **gain-based tier** (tabular ticker), shown first as growth vs. the learner's own past.
+4. Reaching competence thresholds makes **cosmetics** eligible; equipping them changes only the look (avatar `Crossfade+Blur`, world/base recolor) — never mastery/standing/access. Locked cosmetics show an **earn goal**, never a price; there is **no** purchase button and **no** loot/roll anywhere.
+5. Cooperative-mission results accrete the **persistent Base Camp** into deterministic zones/slots (campfire/banner/garden/…), each with an attributable pseudonymous **lantern-mark**. It is the "home" landing when standings are off.
+6. An incorrect attempt shows a calm `--notyet` **wisp** + process-praise "not yet" — **never** a loss, a shake, a lost item, or a decaying meter; the sound cue is a neutral soft tap.
+7. Toggling **plain mode** / setting `prefers-reduced-motion` conveys the identical state, progression, and celebrations without motion (ambient off, depth kept; particles → static badges; camera cuts); toggling standings off, or muting audio, changes nothing in learning/access/standing.
+8. Switching the synthetic learner's **age band** re-renders canvas presentation (`resolveVisualBand`): 6-8 concrete/story-framed, **no raw number on canvas**, larger markers, comparison off, celebration capped at medium; 12-14 full map/tiers/standings with the numeric reward.
+9. First run shows a skippable **onboarding** (this-is-you → light-a-path → your-way); it never blocks a mastery action and is mirrored in the Ledger.
 
 ## Accessibility & performance acceptance (§15.3.1)
 
-- With `prefers-reduced-motion` set, verify no state/progression/celebration is unreachable — tweens become instant/crossfade, particles off, camera cuts (FR-015, SC-004).
-- **Accessible Ledger**: keyboard-only + screen-reader pass over the parallel DOM (quest `role="tree"`, tiers, cosmetics listbox, base list, `aria-live` celebrations); the canvas is `aria-hidden`; visible focus rings; color-independent cues; ≥4.5:1 contrast (WCAG 2.2 AA, FR-016, SC-012).
+- With `prefers-reduced-motion` set, verify no state/progression/celebration is unreachable — tweens become instant/crossfade, particles → static badges, camera cuts, ambient motion off (depth kept) (FR-015/033/034, SC-004/015/018). With `prefers-reduced-transparency`, panels become solid.
+- **Accessible Ledger**: keyboard-only + screen-reader pass over the parallel DOM (quest `role="tree"` with **landmark** accessible names, tiers, cosmetics listbox with `look`+earn-goal, base list with contributors, `aria-live` celebrations + **sound captions**); the canvas is `aria-hidden`; audio is **muted by default**; onboarding is mirrored + non-blocking; visible `--focus` rings; color-independent cues; ≥4.5:1 contrast (WCAG 2.2 AA, FR-016/037/038, SC-012).
 - **Client-only Phaser**: confirm zero console/WebGL errors and a clean unmount (no duplicate canvas / leaked context) (FR-028, SC-011).
 - On the minimum supported device profile (and the degraded tier: halved particles, glow/shadow off), confirm the client holds its frame budget / degrades gracefully and never blocks a mastery action (FR-022/23, SC-010).
 
@@ -74,3 +75,12 @@ pnpm --filter @gt100k/arena-world-app build
 - SC-012 accessible Ledger parity (WCAG 2.2 AA) → `view.test.ts` + a11y walkthrough.
 - SC-013 deterministic layout → `layout.test.ts` (golden positions §8.1).
 - SC-014 one `ArenaView` drives every renderer → `view.test.ts` (`plainViewEquals`).
+- SC-015 motion-token system + reduced-motion equivalents → `motion-tokens.test.ts` (§8.10).
+- SC-016 avatar animation states + reduced-motion → `avatar.test.ts` (§8.13).
+- SC-017 art direction (palette/typography/biome) → `art.test.ts` (§8.11/§8.12).
+- SC-018 camera + parallax config → `camera.test.ts` (§8.14).
+- SC-019 deterministic base layout → `base-layout.test.ts` (§8.16).
+- SC-020 age-band canvas presentation → `visual-band.test.ts` (§8.19) + walkthrough step 8.
+- SC-021 deterministic muted/neutral sound cues → `sound.test.ts` (§8.18).
+- SC-022 cosmetic `look`/`equipEffect` present + still no price/rarity → `cosmetics.test.ts` (§8.15) + `guardrails.test.ts`.
+- SC-023 asset-key registry + procedural fallback, no fetch → `assets.test.ts` (§8.17) + app smoke.

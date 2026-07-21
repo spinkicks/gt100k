@@ -17,6 +17,7 @@ A node in the competency graph (§12), rendered as a map location/quest.
 | `sections` | Section[] | one or more of `math \| science \| reading \| language` (cross-links allowed, §12) |
 | `prerequisites` | string[] | node ids that must be **mastered** before this node is `available` |
 | `region` | string | quest region (world grouping); one of the four fixture regions |
+| `landmark` | string | point-of-interest name (spec §5.2 / §7.1); primary canvas + Ledger label |
 | `transferCritical` | boolean | high-impact node (§12.3); drives celebration intensity `high` |
 
 ## QuestWorld
@@ -97,6 +98,10 @@ A purely expressive unlock. **No price field. No random/drop mechanic. Zero powe
 | `id` | string | stable id |
 | `kind` | `"avatar-item" \| "world-theme" \| "base-theme" \| "celebration-effect"` | expressive category |
 | `eligibility` | CosmeticRule | deterministic competence rule (below) |
+| `look` | string | deterministic text visual descriptor (spec §8.15); expressive-only |
+| `equipEffect` | string | deterministic text description of the equip/effect motion (spec §5.9) |
+
+`look`/`equipEffect` are purely descriptive strings; they MUST NOT affect eligibility, mastery, matchmaking, standing, or access (zero power). They never introduce a `price`/`rarity`/`dropRate` field.
 
 **CosmeticRule** (one of, all deterministic):
 - `{ type: "min-tier"; tierIndex: number }`
@@ -125,6 +130,20 @@ A pseudonymous, expressive-only avatar (§15.3, §29).
 
 **Invariant**: equipping requires eligibility; the avatar encodes **no** ability signal and confers **no** advantage (FR-010).
 
+## AvatarAnimationSpec *(derived)*
+
+Deterministic animation hint for the avatar. `resolveAvatarAnimation(intent, { reducedMotion })`; golden §8.13.
+
+| Field | Type | Notes |
+|---|---|---|
+| `state` | `"idle" \| "walk" \| "run" \| "think" \| "celebrate"` (+ `-static` under reduced motion) | sprite/anim state |
+| `loop` | boolean | `false` under reduced motion |
+| `durationMs` | int ≥ 0 | per §8.13 (reduced column when reduced) |
+| `easing` | string | Phaser ease string; `"Linear"` under reduced motion |
+| `amplitudePx` | int ≥ 0 | idle/celebrate bob amplitude; `0` under reduced motion; never `scale(0)` |
+
+`intent`: `idle | walk | run | think | celebrate-low | celebrate-med | celebrate-high`.
+
 ## CooperativeMissionResult *(synthetic input)*
 
 | Field | Type | Notes |
@@ -144,6 +163,20 @@ The persistent, co-built shared space (§15.3 "guild hall" / "Base Camp"). Deter
 | `unlockedFeatures` | string[] | derived distinct set of base features/rooms/themes present, stable order |
 
 **Derivation**: `applyCohortContribution(base, missionResult)` appends the contribution and recomputes `unlockedFeatures`. Same input sequence → identical base (replayable). Golden in spec §8.8.
+
+## BasePlacement *(derived)*
+
+Deterministic Base Camp layout. `resolveBaseLayout(base)` → `BasePlacement[]` (one per `unlockedFeatures`, stable order). Golden zones/slots in spec §8.16.
+
+| Field | Type | Notes |
+|---|---|---|
+| `feature` | string | the unlocked feature id |
+| `zone` | string | named zone (`hearth`/`gateway`/`grove`/`harbor`/`yard`/`ridge`/`outskirts`) |
+| `x` | number | world x (integer) |
+| `y` | number | world y (integer) |
+| `by` | string | attributable pseudonymous contributor (from `contributions`) |
+
+Unknown features fall back to a deterministic `outskirts` grid slot (§8.16). Placement confers **no** power.
 
 ## CelebrationEvent *(value object; not persisted)*
 
@@ -170,6 +203,80 @@ Deterministic rendering hints; the same for Phaser and any renderer, and strippe
 | `cameraPunch` | boolean | `true` only for `high` intensity with motion on |
 
 `celebrationMotionSpec(event, { reducedMotion })` → MotionSpec.
+
+## MotionToken *(derived)*
+
+A resolved motion value from the deterministic `MOTION`/`EASINGS` registries (spec §8.10). `resolveMotion(kind, { reducedMotion })` → MotionToken. Every interaction motion is one of these; each has a reduced-motion equivalent.
+
+| Field | Type | Notes |
+|---|---|---|
+| `kind` | string | motion kind (spec §8.10 table) |
+| `mode` | `"animated" \| "reduced"` | `reduced` under `prefers-reduced-motion` |
+| `durationMs` | int ≥ 0 | animated or reduced column |
+| `easing` | string | Phaser ease string; `"Linear"` when reduced |
+
+`MOTION` (durations) and `EASINGS` are exported constant maps (golden §8.10). `PALETTE`/`TYPOGRAPHY` (§8.11), `CAMERA`/`PARALLAX` (§8.14), `ASSET_KEYS` (§8.17), and `SOUND_CUES` (§8.18) are likewise exported constant registries.
+
+## BiomeIdentity / WorldTheme
+
+Per-region art identity (spec §8.12). `resolveBiome(region)` → BiomeIdentity; a `WorldTheme` (from a `world-theme` cosmetic) recolors sky/sea globally without touching state.
+
+| BiomeIdentity field | Type | Notes |
+|---|---|---|
+| `region` | string | one of the four fixture regions |
+| `name` | string | display name (e.g. "Numbers Coast") |
+| `signatureHex` | string | biome accent (never a state cue) |
+| `terrainHex` | string | island terrain fill |
+| `ambientHex` | string | ambient/atmosphere tint |
+| `landmarks` | string[] | POI names, stable order |
+
+## CameraConfig / ParallaxLayer *(constants + derived)*
+
+`CAMERA` config + `resolveParallaxLayers()` (spec §8.14). `CameraConfig` carries `lerpX/lerpY`, `roundPixels`, `zoomBase/zoomRegion/zoomIntroStart`, `deadzoneW/deadzoneH`, `lookAheadPx`, `punchZoomDelta/punchOutMs/punchBackMs`, `bounds`. `ParallaxLayer = { id: string; scrollFactor: number }` (back→front). Under reduced motion / degraded tier, ambient layers stop moving but still render (depth kept).
+
+## SoundCue *(derived)*
+
+`resolveSoundCue(event)` → SoundCue (spec §8.18). Muted by default; captioned; non-looping; the `notYet` cue is neutral.
+
+| Field | Type | Notes |
+|---|---|---|
+| `cueId` | string | stable cue id |
+| `caption` | string | Ledger caption (e.g. "[unlock chime]") |
+| `mutedByDefault` | `true` | always muted by default |
+
+**Prohibited by construction**: no cue carries a `negative`/`alarm`/`loop` flag; error is never an alarm (FR-037).
+
+## VisualBand *(derived, age-band)*
+
+Canvas presentation per band (spec §8.19). `resolveVisualBand(band)`; underlying economy identical across bands.
+
+| Field | Type | 6-8 | 9-11 | 12-14 |
+|---|---|---|---|---|
+| `showCanvasNumbers` | boolean | **false** | false | **true** |
+| `labelStyle` | `"story" \| "growth" \| "numeric"` | story | growth | numeric |
+| `markerScale` | number | 1.25 | 1.1 | 1.0 |
+| `touchTargetPx` | int | 56 | 48 | 44 |
+| `celebrationCeiling` | `"low" \| "medium" \| "high"` | medium | high | high |
+| `comparisonVisibleDefault` | boolean | false | false | false |
+
+## AssetKeyRegistry
+
+`ASSET_KEYS` (spec §8.17): grouped stable keys (`avatar`/`nodes`/`regions`/`base`/`fx`/`ui`). Every key resolves via **atlas → SVG → procedural fallback** (seeded, no `Math.random`); no external fetch (FR-039).
+
+## Presentation *(derived, composed)*
+
+The render-only block on `ArenaView`, all derived from `flags` + fixtures (never recomputes learning state):
+
+| Field | Type | Notes |
+|---|---|---|
+| `biomes` | BiomeIdentity[] | per region, stable order |
+| `camera` | CameraConfig | golden §8.14 |
+| `parallax` | ParallaxLayer[] | back→front |
+| `avatarAnim` | AvatarAnimationSpec | for the avatar's current intent |
+| `visualBand` | VisualBand | age-band presentation |
+| `assetKeys` | AssetKeyRegistry | keys for the renderer |
+| `basePlacements` | BasePlacement[] | Base Camp layout |
+| `palette` | typeof PALETTE | exact tokens |
 
 ## RewardRepresentation *(derived, age-band resolved)*
 
@@ -212,11 +319,12 @@ The single composed view model produced by `buildArenaView(inputs)`. The Phaser 
 | `eligibility` | CosmeticEligibility | eligible/locked sets |
 | `base` | CohortBase | co-built features |
 | `standing` | NearPeerStanding \| null | null unless opted in |
+| `presentation` | Presentation | render-only block (biomes/camera/parallax/avatarAnim/visualBand/assetKeys/basePlacements/palette) derived from `flags` + fixtures |
 | `flags` | `{ reducedMotion: boolean; plainMode: boolean; ageBand: AgeBand }` | render flags |
 
-`buildArenaView` inputs: `{ world, signals, tierTable, catalog, avatar, base, nearPeers, options }` where `options = { ageBand, reducedMotion, plainMode, standingsOptedIn, previousReward? }`.
+`buildArenaView` inputs: `{ world, signals, tierTable, catalog, avatar, base, nearPeers, options }` where `options = { ageBand, reducedMotion, plainMode, standingsOptedIn, previousReward?, avatarIntent? }`.
 
-`plainViewEquals(full, plain)` → boolean: the two `ArenaView`s carry **identical** underlying state (world, layout, nodeStates, progression, eligibility, base, standing) and differ **only** in `flags` — proving reduced-motion/plain does not recompute state (FR-020/029, SC-006/014).
+`plainViewEquals(full, plain)` → boolean: the two `ArenaView`s carry **identical** underlying **state** (world, layout, nodeStates, progression, eligibility, base, standing) and differ **only** in `flags` and the `presentation` derived from those flags — proving reduced-motion/plain/age-band does not recompute learning state (FR-020/029/040, SC-006/014/020). The comparison is over the state fields; the `presentation` block is a render concern (motion mode, visual-band, etc.) that is *expected* to vary with flags.
 
 ## State transitions (quest world)
 
