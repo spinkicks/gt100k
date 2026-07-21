@@ -140,3 +140,16 @@
 ## NEXT
 - T010: add `packages/arena-world/test/world.test.ts` for the exact fixture world contract before replacing the P0 world-builder stub in T013.
 - Acceptance: `buildQuestWorld(FIXTURE)` derives the seven stable prerequisite edges and four canonical regions; cyclic and dangling-prerequisite definitions throw; the new tests fail for the missing validation behavior while the existing P0 smoke and repository gate stay green.
+
+## 2026-07-20 — P1 / T010 + T013
+- Added `world.test.ts` through the public package API, proving the exact seven prerequisite-derived edges, the four first-seen canonical regions, cycle rejection, and dangling-prerequisite rejection.
+- Followed red-green TDD: all three tests failed against the P0 copy-only stub for the intended missing behaviors, then passed after the minimal world-builder implementation landed.
+- Replaced the stub with a pure linear graph normalization: prerequisite validation, DFS cycle detection, stable derived edges, and stable distinct regions. Caller-supplied derived arrays are ignored so they cannot drift from node declarations.
+- Review status: checked the implementation line-by-line against T010/T013, data-model `QuestWorld`, and the public contract; no Critical, Important, or Minor issues found. Git-SHA/subagent review was not used because this loop prohibits Git commands and unrequested subagents.
+- Gate status: Biome checked both changed feature files; direct arena-world TypeScript validation passed; `pnpm typecheck` passed; `pnpm test` passed (14 files, 46 tests). No app changed, so no Next.js build was required.
+- SC status: the P1 quest-world construction/validation contract is complete; P1 remains in progress, with SC-013 and SC-024 still open until the scheduled layout and 3D-transform golden tasks land.
+- Blockers: none.
+
+## NEXT
+- T011: add `packages/arena-world/test/layout.test.ts` for the exact §8.1 2D positions and two-run determinism, then make the minimal T014 layout implementation green in the same test-first increment.
+- Acceptance: all nine node positions match the golden table exactly, bounds remain 2048×2048, two identical inputs produce byte-identical layouts (SC-013), and direct package plus repository gates remain green.

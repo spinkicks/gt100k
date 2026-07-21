@@ -26,3 +26,7 @@
 - Mapped the exact art registry to stable kebab-case CSS palette variables and role/property typography variables, with `--font-display`, `--font-body`, and `--numeric` retaining their explicit spec names. Rejected importing runtime TypeScript into global CSS because the P0 shell must remain static and server-rendered.
 - Modeled reduced motion, reduced transparency, increased contrast, and plain mode as independent inherited custom-property hooks. Rejected merging them into one low-effects mode because the accessibility preferences are orthogonal and later renderers must be able to compose them.
 - Added `!.env.local.example` to the app ignore file because the repository-wide `.env.*` rule otherwise suppresses the required public-only example. Rejected weakening the root secret rule or renaming the spec-pinned example.
+
+## 2026-07-20 — T010/T013 green test-first increment
+- Derived edges and regions only from node declaration order: edges preserve each node's prerequisite order, and regions preserve first appearance. Rejected trusting caller-supplied derived arrays because that would permit them to disagree with the prerequisite graph.
+- Coupled T010's verified failing acceptance tests with the minimal T013 implementation in one increment because the loop requires every committed tree to remain green. Rejected leaving active tests failing or weakening them with skip/todo markers.
