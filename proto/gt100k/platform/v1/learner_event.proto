@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package gt100k.platform.v1;
+
+import "gt100k/platform/v1/envelope.proto";
+
+option go_package = "github.com/gt100k/platform/proto/gen/go/gt100k/platform/v1;platformv1";
+
+message EventContext {
+  string session_ref = 1;
+  string cohort_ref = 2;
+  string project_ref = 3;
+}
+
+message LearnerEvent {
+  Envelope header = 1;
+  string event_type = 2;
+  string learner_ref = 3;
+  string source = 4;
+  EventContext context = 5;
+  string payload_schema = 6;
+  repeated string evidence_refs = 7;
+}

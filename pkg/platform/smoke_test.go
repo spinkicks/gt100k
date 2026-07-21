@@ -1,0 +1,9 @@
+package platform
+
+import "testing"
+
+func TestSmoke(t *testing.T) {
+	if 1+1 != 2 {
+		t.Fatal("go test lane not wired")
+	}
+}
