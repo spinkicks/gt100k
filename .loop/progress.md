@@ -810,3 +810,14 @@
 ## NEXT
 - Complete U049: add `packages/interest-lab-view/README.md` documenting the public view API, inputs, scene/tier resolvers, and guardrails.
 - Acceptance: the README states that the GPU-free package renders `@gt100k/interest-lab` without recomputing rules, documents the complete public entry points and inputs, and explicitly forbids scalar passion scores, fixed labels, and floating world scores; the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
+
+## 2026-07-21 — P15 / U049
+- Added the `@gt100k/interest-lab-view` README with the composed domain-input contract, presentation options, every public runtime entry point, exported view-model families, scene/tier resolvers, structural guardrails, and development commands.
+- Added a three-case documentation contract that checks every runtime export remains documented, locks the required input and option names, and requires the GPU-free/no-recomputation/no-score/no-fixed-label boundary. Confirmed genuine test-first RED evidence when the suite failed on the absent README, then passed after the document landed.
+- Reviewed the example against source signatures and corrected two pre-gate inaccuracies in `DeviceCaps` names and lifecycle-gate ownership. Recorded the optional-demo decision in D061.
+- Verified the view-package suite (102 tests across 22 files), forced package compiler, `pnpm typecheck`, `pnpm test` (212 tests across 46 files), and `pnpm lint` (166 files); all pass. No app file changed, so the production-build gate was not triggered this increment.
+- Status: U049 complete; P15 remains in progress. The package's public contract and SC-UI-10/11/12 boundaries now have a consumer-facing guide. No blocker.
+
+## NEXT
+- Complete U050: run the full accessibility and acceptance pass on `apps/interest-lab` per `specs/003-interest-lab/quickstart.md` and correct any feature-local failures.
+- Acceptance: both surfaces preserve reduced-motion/2D equality, semantic DOM operability, solid reduced-transparency panels, keyboard/switch/screen-reader access, color-independent cues, WCAG contrast/focus, no dark patterns or floating scores, and a non-penalizing help affordance; focused acceptance evidence, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.

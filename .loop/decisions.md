@@ -299,3 +299,8 @@
 - Chose: link `@gt100k/interest-probe-catalog` as a development dependency of the view package solely for U048 acceptance coverage; keep `@gt100k/interest-lab` as the view runtime's only dependency and install the workspace link with lockfile writes disabled.
 - Why: SC-UI-12 requires the complete view to run from the canonical Part-I catalog and event fixtures. A declared test-only link exercises those exact shared inputs without copying them, widening the production boundary, modifying completed Part I, or touching the shared lockfile.
 - Rejected: copying the golden catalog into the view tests could drift; reaching into adapter source by relative path would cross project roots without a declared package edge; making the catalog adapter a runtime dependency would violate the GPU-free view package's narrow domain-only boundary.
+
+## D061 — U049 documents the package without a second demo entry point
+- Chose: complete U049 with the required package README and a documentation contract; defer its optional `src/demo.ts` because the existing synthetic app seed and U050 walkthrough exercise the composed view.
+- Why: one authoritative usage example documents the input boundary without adding a runtime module or duplicating fixture orchestration. The next ordered task validates both rendered surfaces.
+- Rejected: a second demo would repeat the app seed path and enlarge an optional documentation increment without strengthening a success criterion.
