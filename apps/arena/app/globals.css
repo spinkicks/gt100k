@@ -1,0 +1,171 @@
+:root {
+  color-scheme: dark;
+  --sea-deep: #0e2a3b;
+  --sea-mid: #14384c;
+  --sky-dawn: #f4c77b;
+  --ink: #14202b;
+  --ink-hi: #f5f9fc;
+  --sun: #f6a23a;
+  --sun-hi: #ffc66b;
+  --gold: #f2c14e;
+  --ember: #e8623b;
+  --locked: #5a6b78;
+  --not-yet: #7fb6d6;
+  --focus: #ffd166;
+
+  --font-display: "Fredoka", "Baloo 2", ui-rounded, "Segoe UI Rounded", system-ui, sans-serif;
+  --font-body: "Nunito", ui-rounded, system-ui, sans-serif;
+  --text-display-size: 2.5rem;
+  --text-display-line-height: 1.05;
+  --text-display-letter-spacing: -0.02em;
+  --text-h1-size: 1.75rem;
+  --text-h1-line-height: 1.1;
+  --text-h1-letter-spacing: -0.01em;
+  --text-h2-size: 1.25rem;
+  --text-h2-line-height: 1.2;
+  --text-h2-letter-spacing: 0;
+  --text-body-size: 1rem;
+  --text-body-line-height: 1.5;
+  --text-body-letter-spacing: 0;
+  --text-label-size: 0.8125rem;
+  --text-label-line-height: 1.4;
+  --text-label-letter-spacing: 0.01em;
+  --numeric: tabular-nums;
+
+  --surface: rgb(20 56 76 / 86%);
+  --surface-border: rgb(245 249 252 / 24%);
+  --surface-backdrop: blur(18px) saturate(140%);
+  --motion-duration: 300ms;
+  --ambient-motion-play-state: running;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--sea-deep);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--sea-deep);
+  color: var(--ink-hi);
+  font-family: var(--font-body);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line-height);
+  letter-spacing: var(--text-body-letter-spacing);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.arena-shell {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 2rem;
+}
+
+.arena-placeholder {
+  width: min(100%, 42rem);
+  padding: 2.5rem;
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
+  background: var(--surface);
+  backdrop-filter: var(--surface-backdrop);
+}
+
+.arena-placeholder h1 {
+  margin: 0;
+  color: var(--ink-hi);
+  font-family: var(--font-display);
+  font-size: var(--text-display-size);
+  font-weight: 700;
+  letter-spacing: var(--text-display-letter-spacing);
+  line-height: var(--text-display-line-height);
+  text-wrap: balance;
+}
+
+.arena-intro {
+  max-width: 60ch;
+  margin: 1rem 0 0;
+  color: var(--ink-hi);
+  text-wrap: pretty;
+}
+
+.arena-status {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 1.5rem 0 0;
+  color: var(--sun-hi);
+  font-size: var(--text-label-size);
+  font-variant-numeric: var(--numeric);
+  font-weight: 700;
+  letter-spacing: var(--text-label-letter-spacing);
+  line-height: var(--text-label-line-height);
+}
+
+.status-light {
+  width: 0.75rem;
+  height: 0.75rem;
+  flex: 0 0 auto;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.plain-mode {
+  --surface: var(--sea-deep);
+  --surface-backdrop: none;
+  --motion-duration: 0ms;
+  --ambient-motion-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration: 0ms;
+    --ambient-motion-play-state: paused;
+  }
+}
+
+/* biome-ignore lint/correctness/noUnknownMediaFeatureName: WebKit accessibility preference required by the Arena spec. */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --surface: var(--sea-deep);
+    --surface-backdrop: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --surface: var(--sea-deep);
+    --surface-border: var(--ink-hi);
+  }
+
+  .arena-placeholder {
+    border-width: 2px;
+  }
+}
+
+@media (max-width: 36rem) {
+  .arena-shell {
+    padding: 1rem;
+  }
+
+  .arena-placeholder {
+    padding: 1.5rem;
+  }
+}

@@ -21,3 +21,8 @@
 
 ## 2026-07-20 — T007 app type dependency alignment
 - Chose `@types/three: ^0.169.0` to align its minor with the pinned `three: ^0.169.0` runtime, and mirrored the existing student-compass React type ranges. Rejected an unbounded latest type dependency because it could drift beyond the React-18-compatible app stack.
+
+## 2026-07-20 — T009 shell token and preference hooks
+- Mapped the exact art registry to stable kebab-case CSS palette variables and role/property typography variables, with `--font-display`, `--font-body`, and `--numeric` retaining their explicit spec names. Rejected importing runtime TypeScript into global CSS because the P0 shell must remain static and server-rendered.
+- Modeled reduced motion, reduced transparency, increased contrast, and plain mode as independent inherited custom-property hooks. Rejected merging them into one low-effects mode because the accessibility preferences are orthogonal and later renderers must be able to compose them.
+- Added `!.env.local.example` to the app ignore file because the repository-wide `.env.*` rule otherwise suppresses the required public-only example. Rejected weakening the root secret rule or renaming the spec-pinned example.

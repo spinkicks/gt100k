@@ -126,3 +126,17 @@
 ## NEXT
 - T009: add the Arena App Router placeholder shell, tokenized global CSS/accessibility preference hooks, synthetic public-env example, and app-local ignore rules exactly as specified.
 - Acceptance: tests fail first, then verify the layout/page shell, §8.11 palette and typography variables, reduced-motion/reduced-transparency/increased-contrast/plain-mode/focus-visible hooks, exact `NEXT_PUBLIC_*` placeholders including `NEXT_PUBLIC_QUALITY_TIER`, and `.env.local`/`.next` ignores; direct feature checks, `pnpm typecheck`, `pnpm test`, root `pnpm build`, and `pnpm --filter @gt100k/arena-world-app build` remain green.
+
+## 2026-07-20 — P0 / T009
+- Added the server-rendered Arena App Router layout and placeholder page with synthetic-only copy, document metadata, and native status semantics; no client boundary or P1 scene behavior was pulled forward.
+- Added the complete §8.11 palette and typography CSS custom-property registry, high-contrast body pairing, visible `--focus` rings, and independent reduced-motion, reduced-transparency, increased-contrast, and `.plain-mode` hooks.
+- Added the four exact public-only environment placeholders plus local ignore rules. Explicitly unignored `.env.local.example` so the repository's protective `.env.*` rule does not suppress the required example; `.env.local`, `.next`, and generated TypeScript build state remain ignored.
+- Added four acceptance tests first. The initial RED run failed on all absent shell files; a later regression RED run caught the root-ignore interaction before the app ignore fix. The final focused run passes all four tests.
+- Review status: checked T009 against tasks.md, spec §§8.11/9/11/12, existing app conventions, React/Next server-rendering guidance, and the accessibility preference contract. Biome is clean with one narrow documented suppression for the spec-required WebKit reduced-transparency media feature.
+- Gate status: direct Arena TypeScript validation passed; `pnpm typecheck` passed; `pnpm test` passed (13 files, 43 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 138 B route, 87.4 kB first load). The standard Next-generated `apps/arena/next-env.d.ts` now matches the existing app scaffold.
+- SC status: P0 is complete and its package/app-smoke gate is green. Accessibility and motion-preference groundwork for SC-004/SC-012/SC-015 is present; feature-level criteria remain open until the P1 renderers and Ledger consume these hooks.
+- Blockers: none.
+
+## NEXT
+- T010: add `packages/arena-world/test/world.test.ts` for the exact fixture world contract before replacing the P0 world-builder stub in T013.
+- Acceptance: `buildQuestWorld(FIXTURE)` derives the seven stable prerequisite edges and four canonical regions; cyclic and dangling-prerequisite definitions throw; the new tests fail for the missing validation behavior while the existing P0 smoke and repository gate stay green.
