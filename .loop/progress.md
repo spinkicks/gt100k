@@ -278,3 +278,14 @@
 ## NEXT
 - Complete T033: add `packages/interest-lab/test/acceptance.test.ts` mapping spec §14.4.3 #1–#7 end-to-end over the in-memory and stub adapters.
 - Acceptance: all seven scenarios pass through public APIs/adapters, including withdrawn `e7` disappearing from both the next signal summary and replay; preserve a focused red run and keep package/adapter compilation, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-20 — P6 / T033
+- Added seven independently named §14.4.3 acceptance scenarios spanning the public domain API and all four synthetic adapters: novelty gating, low-skill recovery, explicit gaps, prompted/discretionary separation, rules-only balance, withdrawal/replay, and accessibility equivalence.
+- Proved the new suite's failure sensitivity with a controlled withdrawal-guard mutation: scenario #6 failed with `scopeAuthorship: 1`, then all seven tests passed after restoration; no production change was required.
+- Kept the domain project graph acyclic by runtime-loading typed adapter entry points from relative file URLs in the integration test only.
+- Verified the five feature projects compile, then ran `pnpm typecheck`, `pnpm test` (108 tests across 23 files), and `pnpm lint` (72 files); all pass.
+- Status: T033 and P6 complete. SC-001 through SC-007 are now covered together at the acceptance boundary; all Part-I SC contracts remain green. No blocker.
+
+## NEXT
+- Complete T035: add `packages/interest-lab/README.md` documenting the public API and injected ports, mirroring `packages/learning-loop/README.md`.
+- Acceptance: the README clearly states rules-engine-only MVP, deferred bandit/Bayesian components, synthetic-only operation, and the prohibition on scalar passion scores; `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
