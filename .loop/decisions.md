@@ -102,3 +102,8 @@
 ## 2026-07-21 — T026 zero-power proof boundary
 - Prove zero power directly with exact outcome-function signatures plus the exhaustive six-tier by 512-equipped-set matrix. Matchmaking is out of scope as a service, so the acceptance snapshot uses fixed synthetic near-peer matching and a non-null standing derived only from unchanged learning state. Rejected a production `isZeroPower()` boolean because it would restate the invariant without preventing appearance inputs from reaching outcomes.
 - Keep T026 acceptance-only because the tests passed immediately against the already-separated domain APIs. Rejected manufacturing a production change solely to force a RED run; frozen-input and exact-key assertions already prove `equipCosmetic` changes only appearance state and preserves the pseudonymous learner reference.
+
+## 2026-07-21 — T029 staged P2 ArenaView composition
+- Require callers to supply the tier table, cosmetic catalog, and pseudonymous avatar instead of importing canonical fixtures inside `buildArenaView`. Rejected hidden fixture coupling because the composed view must remain deterministic for any valid injected synthetic scenario and T030 needs an explicit avatar state to equip.
+- Use a deliberately conservative P2 representation stub for every band: growth-vs-past framing, hidden raw numbers, comparison off, and neutral "not yet" copy. Rejected pulling the exact age-band resolver forward from P5 because T029 explicitly schedules a stub and T038/T042 own the pinned band-specific strings.
+- Export the exact P2 return type as `ProgressionArenaView` while retaining `InitialArenaView` as a compatibility alias for the existing P1 renderers. Rejected claiming the final `ArenaView` type because base and standing remain absent until T036/T044.

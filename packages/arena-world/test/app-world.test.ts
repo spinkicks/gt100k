@@ -1,9 +1,11 @@
 import { existsSync, readFileSync } from "node:fs";
 import {
   CAMERA3D,
+  CATALOG,
   FIXTURE,
   type InitialArenaView,
   type QualityTier,
+  TIERS,
   buildArenaView,
   createSyntheticMasteryFeed,
   resolveAvatarAnimation,
@@ -27,6 +29,9 @@ function buildView(tier: QualityTier = "A", reducedMotion = false): InitialArena
   return buildArenaView({
     world: FIXTURE,
     signals: createSyntheticMasteryFeed(),
+    tierTable: TIERS,
+    catalog: CATALOG,
+    avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
     caps: {
       webgl2: tier !== "D",
       webgl1: tier !== "D",

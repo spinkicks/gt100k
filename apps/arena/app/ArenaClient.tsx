@@ -2,9 +2,11 @@
 
 import {
   type AgeBand,
+  CATALOG,
   type DeviceCaps,
   FIXTURE,
   type QualityTier,
+  TIERS,
   buildArenaView,
   createSyntheticMasteryFeed,
 } from "@gt100k/arena-world";
@@ -178,6 +180,9 @@ export function createArenaClientSnapshot(
   const view = buildArenaView({
     world: FIXTURE,
     signals: createSyntheticMasteryFeed(),
+    tierTable: TIERS,
+    catalog: CATALOG,
+    avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
     caps: effective.caps,
     options: {
       ageBand: config.ageBand,

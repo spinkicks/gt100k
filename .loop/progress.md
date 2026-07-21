@@ -453,3 +453,17 @@
 ## NEXT
 - T029: extend `packages/arena-world/src/view.ts` and the public entrypoint with the P2 composed view fields: progression, a staged representation stub, avatar, and cosmetic eligibility.
 - Acceptance: tests fail first, then prove one deterministic view composes the unchanged P1 world/layout/node/presentation state with exact S1 progression and eligibility plus a pseudonymous equipped avatar; no later-phase base/standing behavior is invented, public types remain honest, and focused plus repository gates stay green.
+
+## 2026-07-21 — P2 / T029
+- Extended `buildArenaView` with explicit injected tier-table, catalog, avatar, and optional personal-baseline inputs. It derives exact S1 progression and cosmetic eligibility from the same canonical world/signals, copies the pseudonymous equipped avatar, and preserves every P1 world/layout/node/presentation field.
+- Added a conservative staged reward representation for P2 with growth-vs-past framing, hidden raw numbers, comparison off, and neutral retry copy. Base and standing remain absent rather than receiving premature placeholders.
+- Exported the exact staged return type as `ProgressionArenaView` and retained `InitialArenaView` as a compatibility alias for existing renderers; updated every feature-owned app/test call site to supply the canonical fixtures and a synthetic avatar.
+- Followed red-green TDD: both focused tests failed on the four absent P2 fields, then passed after the minimal composer extension. Acceptance covers exact S1 values/order, previous-reward growth, byte-identical replay, fresh containers, pseudonym preservation, and the absence of later-phase fields.
+- Review status: checked T029 line-by-line against the task, P2, §§7.2–7.3/8.2–8.4, the data model, domain contract, and React/Next performance guidance; no Critical or Important issues found. Removed one unused type import found during the local review. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: `pnpm lint` passed (101 files); `pnpm typecheck` passed; `pnpm test` passed (37 files, 149 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 10.8 kB route, 98.2 kB first load).
+- SC status: T029 completes the P2 domain-view composition needed for one-view parity and advances SC-014; SC-002/SC-003/SC-022 remain protected by the existing deterministic/zero-power suites. P2 remains in progress for T030 HUD/equip wiring.
+- Blockers: none.
+
+## NEXT
+- T030: add focused app tests first, then implement `apps/arena/app/hud/Hud.tsx` and wire deterministic cosmetic equip through the existing event bus, avatar child-mesh crossfade, world/base-theme appearance, and the accessible Ledger.
+- Acceptance: tier/growth uses a tabular Motion number ticker; the origin-aware drawer staggers items by 40ms, equips eligible cosmetics only, and shows locked earn goals with no purchase/roll UI; avatar/world/base appearance changes remain zero-power and reduced-motion-safe; the Ledger exposes a labeled keyboard-operable cosmetics listbox; lint, typecheck, tests, root build, and Arena app build stay green.

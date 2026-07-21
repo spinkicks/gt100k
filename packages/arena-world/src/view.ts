@@ -1,9 +1,20 @@
 import { PALETTE, resolveBiome } from "./art";
 import { ASSET_KEYS } from "./assets";
 import { resolveAvatarAnimation } from "./avatar";
+import { deriveCosmeticEligibility } from "./cosmetics";
 import { layoutQuestWorld } from "./layout";
-import type { AgeBand, DeviceCaps, NodeMasterySignal, QuestWorld } from "./model";
+import type {
+  AgeBand,
+  AvatarState,
+  Cosmetic,
+  DeviceCaps,
+  NodeMasterySignal,
+  QuestWorld,
+  RewardRepresentation,
+  Tier,
+} from "./model";
 import { deriveNodeStates } from "./nodes";
+import { computeProgression } from "./progression";
 import { QUALITY_TIERS, resolveQualityTier } from "./quality";
 import {
   CAMERA3D,
@@ -18,11 +29,15 @@ import { resolveWorldTransform } from "./worldTransform";
 export interface BuildArenaViewInputs {
   readonly world: QuestWorld;
   readonly signals: readonly NodeMasterySignal[];
+  readonly tierTable: readonly Tier[];
+  readonly catalog: readonly Cosmetic[];
+  readonly avatar: AvatarState;
   readonly caps: DeviceCaps;
   readonly options: {
     readonly ageBand: AgeBand;
     readonly reducedMotion: boolean;
     readonly plainMode: boolean;
+    readonly previousReward?: number;
     readonly avatarIntent?: Parameters<typeof resolveAvatarAnimation>[0];
   };
 }
@@ -30,6 +45,14 @@ export interface BuildArenaViewInputs {
 export function buildArenaView(inputs: BuildArenaViewInputs) {
   const world = buildQuestWorld(inputs.world);
   const layout = layoutQuestWorld(world);
+  const nodeStateMap = deriveNodeStates(world, inputs.signals);
+  const progression = computeProgression(
+    world,
+    inputs.signals,
+    inputs.tierTable,
+    inputs.options.previousReward,
+  );
+  const eligibility = deriveCosmeticEligibility(inputs.catalog, progression, nodeStateMap, world);
   const reducedMotion = inputs.options.reducedMotion || inputs.caps.prefersReducedMotion;
   const qualityTier = resolveQualityTier({
     ...inputs.caps,
@@ -39,10 +62,17 @@ export function buildArenaView(inputs: BuildArenaViewInputs) {
   return {
     world,
     layout,
-    nodeStates: [...deriveNodeStates(world, inputs.signals)].map(([nodeId, state]) => ({
+    nodeStates: [...nodeStateMap].map(([nodeId, state]) => ({
       nodeId,
       state,
     })),
+    progression,
+    representation: buildProgressionRepresentation(inputs.options.ageBand),
+    avatar: {
+      learnerRef: inputs.avatar.learnerRef,
+      equipped: [...inputs.avatar.equipped],
+    },
+    eligibility,
     presentation: {
       biomes: world.regions.map((region) => {
         const biome = resolveBiome(region);
@@ -77,4 +107,16 @@ export function buildArenaView(inputs: BuildArenaViewInputs) {
   };
 }
 
-export type InitialArenaView = ReturnType<typeof buildArenaView>;
+function buildProgressionRepresentation(ageBand: AgeBand): RewardRepresentation {
+  return {
+    band: ageBand,
+    headline: "growth-vs-past",
+    currencyLabel: "Growth from your past",
+    showRawNumber: false,
+    comparisonDefault: "off",
+    failureCopy: "Not yet — keep trying a strategy.",
+  };
+}
+
+export type ProgressionArenaView = ReturnType<typeof buildArenaView>;
+export type InitialArenaView = ProgressionArenaView;

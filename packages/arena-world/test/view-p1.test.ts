@@ -3,12 +3,16 @@ import {
   type AgeBand,
   BIOMES,
   CAMERA3D,
+  CATALOG,
+  type Cosmetic,
   type DeviceCaps,
   FIXTURE,
   type NodeMasterySignal,
   PALETTE,
   QUALITY_TIERS,
   type QuestWorld,
+  TIERS,
+  type Tier,
   buildQuestWorld,
   createSyntheticMasteryFeed,
   layoutQuestWorld,
@@ -25,6 +29,9 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 type BuildArenaViewInputs = {
   world: QuestWorld;
   signals: readonly NodeMasterySignal[];
+  tierTable: readonly Tier[];
+  catalog: readonly Cosmetic[];
+  avatar: { learnerRef: string; equipped: string[] };
   caps: DeviceCaps;
   options: {
     ageBand: AgeBand;
@@ -83,6 +90,9 @@ describe("buildArenaView P1 composition", () => {
     const view = buildArenaView({
       world: FIXTURE,
       signals: createSyntheticMasteryFeed(),
+      tierTable: TIERS,
+      catalog: CATALOG,
+      avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
       caps: FULL_CAPS,
       options: {
         ageBand: "9-11",
@@ -92,7 +102,17 @@ describe("buildArenaView P1 composition", () => {
       },
     });
 
-    expect(Object.keys(view)).toEqual(["world", "layout", "nodeStates", "presentation", "flags"]);
+    expect(Object.keys(view)).toEqual([
+      "world",
+      "layout",
+      "nodeStates",
+      "progression",
+      "representation",
+      "avatar",
+      "eligibility",
+      "presentation",
+      "flags",
+    ]);
     expect(view.world).toEqual(world);
     expect(view.layout).toEqual(layout);
     expect(view.nodeStates).toEqual([
@@ -145,6 +165,9 @@ describe("buildArenaView P1 composition", () => {
     const view = buildArenaView({
       world: FIXTURE,
       signals: createSyntheticMasteryFeed(),
+      tierTable: TIERS,
+      catalog: CATALOG,
+      avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
       caps: FULL_CAPS,
       options: { ageBand: "6-8", reducedMotion: true, plainMode: true },
     });
@@ -167,6 +190,9 @@ describe("buildArenaView P1 composition", () => {
     const inputs = {
       world: FIXTURE,
       signals: createSyntheticMasteryFeed(),
+      tierTable: TIERS,
+      catalog: CATALOG,
+      avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
       caps: FULL_CAPS,
       options: { ageBand: "12-14", reducedMotion: false, plainMode: false },
     } as const satisfies BuildArenaViewInputs;

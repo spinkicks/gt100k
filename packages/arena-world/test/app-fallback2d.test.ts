@@ -1,7 +1,9 @@
 import { existsSync, readFileSync } from "node:fs";
 import {
+  CATALOG,
   FIXTURE,
   type InitialArenaView,
+  TIERS,
   buildArenaView,
   createSyntheticMasteryFeed,
 } from "@gt100k/arena-world";
@@ -32,6 +34,9 @@ function buildTierDView(): InitialArenaView {
   return buildArenaView({
     world: FIXTURE,
     signals: createSyntheticMasteryFeed(),
+    tierTable: TIERS,
+    catalog: CATALOG,
+    avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
     caps: {
       webgl2: false,
       webgl1: false,
