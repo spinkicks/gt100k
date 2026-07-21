@@ -113,3 +113,16 @@
 ## NEXT
 - T008: add `apps/arena/next.config.mjs` with exact `transpilePackages` entries for `@gt100k/arena-world` and `@gt100k/learning-loop`, plus `apps/arena/tsconfig.json` mirroring the student-compass app TypeScript contract.
 - Acceptance: configuration contract tests fail first, then verify the exact transpilation list and strict no-emit/DOM/JSX settings; dependency resolution, direct feature checks, `pnpm typecheck`, `pnpm test`, and the required root `pnpm build` remain green.
+
+## 2026-07-20 — P0 / T008
+- Added `apps/arena/next.config.mjs` with the exact ordered transpilation targets for `@gt100k/arena-world` and `@gt100k/learning-loop`.
+- Added `apps/arena/tsconfig.json`, mirroring the established strict Next.js app contract with DOM libraries, preserved JSX, bundler resolution, no emit, and Next's plugin/include settings.
+- Added two focused configuration contract tests first. The RED run failed only because both config files were absent; the GREEN run verifies the complete exported Next config and full parsed TypeScript config.
+- Review status: checked T008 line-by-line against `tasks.md`, spec D3/§9/§11, and the student-compass reference; no Critical, Important, or Minor issues found.
+- Gate status: Biome passed; direct arena-world TypeScript validation passed; Arena resolved Next.js v14.2.35; `pnpm typecheck` passed; `pnpm test` passed (12 files, 39 tests); required root `pnpm build` passed. The Arena-specific build remains scheduled after T009 adds its App Router shell.
+- SC status: P0 app configuration groundwork is complete; no feature-level success criterion is claimed by this configuration-only increment.
+- Blockers: none.
+
+## NEXT
+- T009: add the Arena App Router placeholder shell, tokenized global CSS/accessibility preference hooks, synthetic public-env example, and app-local ignore rules exactly as specified.
+- Acceptance: tests fail first, then verify the layout/page shell, §8.11 palette and typography variables, reduced-motion/reduced-transparency/increased-contrast/plain-mode/focus-visible hooks, exact `NEXT_PUBLIC_*` placeholders including `NEXT_PUBLIC_QUALITY_TIER`, and `.env.local`/`.next` ignores; direct feature checks, `pnpm typecheck`, `pnpm test`, root `pnpm build`, and `pnpm --filter @gt100k/arena-world-app build` remain green.
