@@ -1,1 +1,1 @@
-feat: add evidence graph synthetic demo
+fix(evidence-graph): run package tests from workspace root

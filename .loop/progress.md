@@ -226,3 +226,14 @@
 
 ## NEXT
 - T031: run the complete Part I quickstart validation end-to-end; acceptance is clean `pnpm exec tsc -b`, full `pnpm exec biome check .`, `pnpm --filter @gt100k/evidence-graph test`, workspace `pnpm test`, and the documented synthetic demo, resolving only feature-owned failures while preserving the T032 root-reference change as the final isolated task.
+
+## 2026-07-20 — P4 quickstart validation and package-test fix (T031 partial)
+- Ran the complete Part I quickstart. `pnpm exec tsc -b`, the documented golden-value command, the synthetic demo, and workspace Vitest all pass; workspace Vitest reports 94/94 tests across 24 files.
+- Confirmed RED for the documented package-only command: `pnpm --filter @gt100k/evidence-graph test` found no tests because root-relative Vitest include globs were evaluated from the package directory. Updated the package-local script to run Vitest from the workspace root and filter the domain test directory; confirmed GREEN with 64/64 domain tests across 14 files.
+- Feature-owned Biome validation passes across all five EvidenceGraph package/adapter directories (45 files).
+- `pnpm exec biome check .` remains red exclusively on pre-existing out-of-scope files: CRLF formatting in shared root configuration, formatting under `.specify`, and parse/lint diagnostics in `.claude/workflows/deep-research.js`. The feature isolation rules forbid editing those files, so T031 is not marked complete and T032 has not started.
+- Phase status: P4 remains in progress; T027–T030 plus T029a are complete. T031 is feature-clean but blocked on the repository-wide Biome baseline; T032 remains final.
+- Blocker: repository-owned `biome check .` failures outside `packages/evidence-graph` and `adapters/evidence-*`.
+
+## NEXT
+- T031: rerun the complete Part I quickstart after the shared/root Biome baseline is repaired by its owners; acceptance is a zero-diagnostic `pnpm exec biome check .` alongside the already-green typecheck, 64 domain tests, 94 workspace tests, golden value, and synthetic demo. Do not begin T032 until this passes.
