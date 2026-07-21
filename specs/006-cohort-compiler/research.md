@@ -1,0 +1,57 @@
+# Phase 0 Research: Cohort Compiler + RivalryMix
+
+No blocking unknowns remain. The decisions below record the choices the plan rests on and why the genuinely-hard parts (HNSW, CP-SAT, the WebRTC/LiveKit media plane, peer-effect causal uplift) are the deferred production direction (PRD §15/§15.1) while the buildable slice is pure TS.
+
+## Decision: Pure TypeScript domain package, I/O behind ports
+
+- **Decision**: Implement the Cohort-Compiler core as a pure, framework-agnostic `packages/cohort-compiler` (strict TS, no I/O, no wall-clock, **no randomness**), mirroring `packages/learning-loop` and `packages/evidence-graph`. All I/O sits behind ports (`CandidateIndex`, `CohortRepository`, `SafeguardingSink`, plus deferred/shadow stubs `MediaTurnSource`, `BenefitEstimator`) with in-memory/stub adapters under `adapters/cohort-*`.
+- **Rationale**: Candidate filtering, feasibility, the objective, and the turn-taking analysis are deterministic computations; keeping them pure makes them fully unit-testable and replay-safe, matches the PRD "deterministic services" invariant, and satisfies the factory's `tsc -b` + Vitest definition of done. Time is passed as explicit inputs (start/review timestamps, week keys) rather than read from a clock, so runs are reproducible.
+- **Alternatives considered**: A Go/Rust service (PRD §26.2/§26.3) — deferred; unnecessary weight for a synthetic slice with no latency/scale needs. Embedding logic in an app/UI — rejected; entangles rules with a framework and hurts testability.
+
+## Decision: Near-peer candidate generation as a pure kNN/caliper filter; HNSW deferred
+
+- **Decision**: For the MVP, generate candidates with a deterministic **level+velocity caliper** — a bounded distance in both dimensions — over the in-memory pool, excluding self and safeguarding-separated peers, ordered by distance then `learnerRef`, with a stable candidate-set hash. Keep it behind a `CandidateIndex` port so the production **HNSW** ANN index slots in later.
+- **Rationale**: PRD §15 uses HNSW to *limit the match space* at 100k scale; the semantic contract the solver depends on is "return near-peer candidates within a caliper," which a pure distance filter satisfies exactly and deterministically at slice scale. Determinism (stable ordering + hash) makes the whole downstream solve reproducible and testable.
+- **Alternatives considered**: Implementing HNSW in TS now — rejected (genuinely hard, no scale driver in a synthetic slice, non-deterministic recall complicates tests). No caliper (full pairwise) — rejected (loses the near-peer guardrail that keeps contests fair, G6/§15).
+
+## Decision: Cohort solver = greedy construction + bounded local-search/repair; CP-SAT deferred
+
+- **Decision**: Solve with a deterministic **greedy construction** (seed cohorts from candidate sets, fill to six while every hard constraint holds) followed by a **bounded local-search / repair** pass (swap/move members to raise the soft objective without breaking any hard constraint). Hard constraints are checked as inviolable predicates; the soft objective only ranks *feasible* options. **OR-Tools CP-SAT / branch-and-price** is the deferred production optimizer.
+- **Rationale**: The build-loop gate is `tsc -b` + Vitest, so the solver must be pure TS with no native/OR-Tools dependency. A greedy + repair heuristic reliably produces *feasible, hard-constraint-honoring* cohorts of six on synthetic pools; "correct" for this slice is **feasible + all hard constraints honored + deterministic**, not provably optimal. Separating hard predicates from the soft objective makes both exhaustively testable and guarantees the objective can never trade away a hard constraint (§15.2).
+- **Alternatives considered**: A full ILP/CP-SAT solve now — rejected (native dependency, out of the pure-TS gate, deferred by the PRD). A pure random/greedy with no repair — rejected (misses easy feasible improvements and would be non-deterministic if randomized; randomness is banned in the domain).
+
+## Decision: Hard constraints vs. soft objective are strictly separated
+
+- **Decision**: Encode age, schedule, safeguarding separation, accommodations, the level-velocity caliper, the **individual non-harm floor**, and the **churn budget** as **hard** boolean predicates that gate feasibility; encode close pace, compatible intensity, role coverage, pair history, rivalry dose, churn, and repeated pairings as a **soft** deterministic score that ranks feasible assignments only.
+- **Rationale**: PRD §15.2 requires that no accepted cohort violates any hard constraint and that the individual non-harm floor and churn are hard. Keeping the objective purely a *tie-breaker over feasible sets* makes the acceptance criteria ("0 hard-constraint violations") provable and prevents a high group score from harming an individual (the non-harm floor is per-learner, never averaged, §15.2).
+- **Alternatives considered**: Folding everything into one weighted objective with penalties — rejected (a large penalty is not a guarantee; a hard constraint could still be violated for a big enough gain, which §15.2 forbids).
+
+## Decision: Atomic in-memory commit + rollback; one active assignment per learner
+
+- **Decision**: `CohortRepository` commits a whole roster **atomically** (all members or none) and **retains the exact prior snapshot** for rollback; the domain enforces **one active `CohortAssignment` per learner** and a **weekly churn budget** with a recorded-exception path. In-budget **repair** is bounded automation (guide-veto window + one-click rollback); over-budget or size changes require a staff exception.
+- **Rationale**: PRD §15 has PostgreSQL commit a roster as one transaction and store the prior snapshot for rollback; the port models exactly that transactionality in-memory so the real Postgres adapter is a drop-in later. The one-active-assignment and churn invariants come straight from the §28 `CohortAssignment` contract, and the bounded-automation envelope for in-budget repair comes from §8.5.
+- **Alternatives considered**: Per-member commit — rejected (a partial roster violates atomicity and could leave inconsistent cohorts). Unlimited auto-repair — rejected (exceeds the bounded-automation envelope; churn/size changes must stay human-owned, §8.5/§15).
+
+## Decision: Bullying/exclusion bypasses optimization to a human safeguarding sink
+
+- **Decision**: A `CohortHealthEvent` (bullying, coercion, exclusion) is routed by `routeHealthEvent` **directly to a `SafeguardingSink`**, bypassing the optimizer; it pauses any conflicting cohort move (POL-007), never reduces a learner's rating, and peers see only aggregated health data. This is a hard, non-optimizable path.
+- **Rationale**: PRD §15.2 and the §28 `CohortHealthEvent` invariants make this non-negotiable (Constitution I/IX; POL-007; G7). Encoding it as a separate, non-optimizable route means the optimizer can never "weigh" a safety report against an objective term.
+- **Alternatives considered**: Treating a health event as a strong negative objective term — rejected (it must *bypass* optimization entirely, not be balanced against it).
+
+## Decision: No learned model assigns; peer-effect causal uplift stays shadow
+
+- **Decision**: The solver is fully deterministic and rule-based; **no learned model** issues an assignment. A `BenefitEstimator` **shadow stub** may log a peer-effect causal-uplift lower-confidence-bound **only after** an assignment is locked, and its output is never read during a solve or repair.
+- **Rationale**: PRD §15 keeps peer-effect causal-uplift models at **Shadow** until randomized neighbor swaps and solo checkpoints support credible estimates under network interference; Constitution III forbids a learned model from making this consequential decision. The stub proves the seam and the post-lock-only discipline without granting authority.
+- **Alternatives considered**: Using an uplift estimate to seed/rank the solve — rejected (grants shadow-class output live authority, prohibited by Constitution III and §15).
+
+## Decision: RivalryMix is observable-only, confidence-gated pure logic; media plane deferred
+
+- **Decision**: `analyzeTurns` consumes an array of `TurnEvent`s (speaker, start, duration, overlap) and emits observable descriptors (turn share, speaking time, interruption counts) and the patterns **dominance** and **repeated interruption** with their triggering evidence. It emits **no** honesty/emotion/personality/motivation label. Missing/low-quality input **lowers confidence and suppresses** prompts (nothing surfaced below threshold). Refused/missing analytics change no status. The WebRTC/AudioWorklet capture and the **LiveKit** media plane (§15.1) are a `MediaTurnSource` **stub port**.
+- **Rationale**: PRD §15/§15.2 state the service can identify observable patterns (one speaker holding most turns, repeated interruption) but **cannot** infer honesty/emotion/personality/motivation, and that packet loss / audio noise must **lower confidence and suppress intervention prompts rather than create a false behavioral label**. Encoding confidence gating as a pure function makes the "suppress, don't mislabel" rule testable. The media plane is heavy infra (LiveKit/EKS/coturn) and is deferred by the plan's no-infra constraint.
+- **Alternatives considered**: Emitting a "confidence-adjusted" behavioral label under noise — rejected (still a false label; the rule is suppression). Building even a minimal WebRTC capture — rejected (out of the pure-TS, no-infra slice).
+
+## Decision: Defer HNSW, CP-SAT, media plane, causal uplift to marked ports/stubs (not silent omission)
+
+- **Decision**: Ship the production-direction items as clearly-marked seams: HNSW behind `CandidateIndex`, CP-SAT as the documented production optimizer the greedy heuristic stands in for, the media plane behind the `MediaTurnSource` stub, and causal uplift behind the `BenefitEstimator` shadow stub. PostgreSQL is behind `CohortRepository`.
+- **Rationale**: PRD §15/§15.1 are explicit that these are the production targets; the synthetic beta carries no live child data, so real implementations must not block the slice but must not be silently dropped either — the ports/stubs mark the seams and keep the deferral honest.
+- **Alternatives considered**: Implementing any of them now — rejected (out of scope, genuinely hard, no live-data/scale driver). Omitting them entirely — rejected (loses the explicit deferral seam the PRD requires).
