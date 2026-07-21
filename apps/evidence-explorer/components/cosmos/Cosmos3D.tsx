@@ -64,6 +64,7 @@ const DOF = { focalLength: 0.02, bokehScale: 2.4 } as const;
 export function Cosmos3D({
   view,
   tier,
+  plainMode = false,
   onDegrade,
   revealed,
   focusNodeId = null,
@@ -73,6 +74,8 @@ export function Cosmos3D({
 }: {
   view: ExplorerView;
   tier: RenderTier;
+  /** Plain mode (§U12): low-spectacle — no starfield / bloom / DOF grade, even on cinematic. */
+  plainMode?: boolean;
   onDegrade?: () => void;
   /** Time-scrub reveal set; omitted = fully grown. */
   revealed?: ReadonlySet<string>;
@@ -84,7 +87,10 @@ export function Cosmos3D({
   /** Pointer-pick a body → open its Inspector (carrying the screen point for origin-aware scale-in). */
   onPick?: (nodeId: string, origin: { readonly x: number; readonly y: number }) => void;
 }): JSX.Element {
+  // Plain mode drops the spectacle (starfield / postprocessing grade) but keeps the readable bodies +
+  // threads — distinct from reduced motion, which stills the animation (§U12). State never changes.
   const cinematic = tier === "cinematic";
+  const spectacle = cinematic && !plainMode;
   const [cx, cy, cz] = view.center3d;
   const { overview } = CAMERA.keyframes;
   const { clamps } = CAMERA;
@@ -119,9 +125,9 @@ export function Cosmos3D({
       <directionalLight position={[18, 30, 26]} intensity={1.15} color={COSMOS.focus} />
       <pointLight position={[-10, -6, -18]} intensity={0.7} color={COSMOS.human} distance={140} />
 
-      <Starfield animate={cinematic} />
+      {plainMode ? null : <Starfield animate={cinematic} />}
       <Threads edges={visibleEdges} nodes={visibleNodes} waveOrder={waveOrder} verify={verify} />
-      <Bodies nodes={visibleNodes} animate={cinematic} verify={verify} onPick={onPick} />
+      <Bodies nodes={visibleNodes} animate={spectacle} verify={verify} onPick={onPick} />
 
       <OrbitControls
         makeDefault
@@ -133,14 +139,14 @@ export function Cosmos3D({
         maxDistance={clamps.dollyMax}
         minPolarAngle={clamps.orbitPolarMin * DEG}
         maxPolarAngle={clamps.orbitPolarMax * DEG}
-        autoRotate={cinematic}
+        autoRotate={spectacle}
         autoRotateSpeed={0.35}
       />
       <CameraRig focus={focusPos} fallback={[cx, cy, cz]} />
 
       {onDegrade ? <PerformanceMonitor onDecline={() => onDegrade()} /> : null}
 
-      {cinematic ? (
+      {spectacle ? (
         <EffectComposer>
           <Bloom
             intensity={BLOOM.intensity}

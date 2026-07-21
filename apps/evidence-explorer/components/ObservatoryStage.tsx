@@ -17,7 +17,6 @@ import {
   type RenderCaps,
   type RenderTier,
   TIER_LADDER,
-  type TierOverride,
   resolveRenderTier,
 } from "@gt100k/evidence-explorer-view";
 import { AnimatePresence } from "motion/react";
@@ -53,13 +52,6 @@ const TIER_LABEL: Record<RenderTier, string> = {
   standard3d: "Standard 3D",
   calm2d: "Calm 2D",
 };
-
-const MODES: readonly { readonly value: TierOverride; readonly label: string }[] = [
-  { value: "auto", label: "Auto" },
-  { value: "cinematic", label: "Cinematic" },
-  { value: "standard3d", label: "Standard" },
-  { value: "calm2d", label: "Calm 2D" },
-];
 
 /** Probe for a usable WebGL context (guarded — some environments throw on `getContext`). */
 function detectWebGL(): boolean {
@@ -111,8 +103,10 @@ export function ObservatoryStage({
   ledger: LedgerView;
 }): JSX.Element {
   const [mounted, setMounted] = useState(false);
-  const [caps, setCaps] = useState<RenderCaps | null>(null);
-  const [override, setOverride] = useState<TierOverride>("auto");
+  const [device, setDevice] = useState<{
+    readonly gpuTier: RenderCaps["gpuTier"];
+    readonly webglAvailable: boolean;
+  } | null>(null);
   const [degradedTo, setDegradedTo] = useState<RenderTier | null>(null);
   const [webglFailed, setWebglFailed] = useState(false);
 
@@ -120,8 +114,9 @@ export function ObservatoryStage({
   // highlight — one concept, whether it came from the Ledger, a scrub beat, or a pointer-pick.
   const { selectedNodeId, origin, select, clear } = useSelection();
 
-  // HUD filter/trace emphasis (UX5) — presentation-only per-node dim/highlight, shared with the Ledger.
-  const { emphasisFor } = useHud();
+  // HUD presentation state (UX5, UE044–UE045) — filter/trace emphasis + the display toggles
+  // (tier / reduced-motion / plain / captions). All presentation-only; the `ExplorerView` never changes.
+  const { emphasisFor, tierOverride, reducedMotion, plainMode, audioCaptions } = useHud();
 
   // Time-scrub state (§U5.4) — presentation-only: it reveals a subset of the one `ExplorerView`,
   // never mutates it. Starts fully grown so the default view matches the calm baseline.
@@ -161,36 +156,38 @@ export function ObservatoryStage({
   const waveOrder = verification.verified.verifyWaveOrder;
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const read = (): void => {
-      setCaps({
-        // No reliable headless GPU-tier signal — assume capable and let PerformanceMonitor demote.
-        gpuTier: 2,
-        prefersReducedMotion: mq.matches,
-        webglAvailable: detectWebGL(),
-      });
-    };
-    read();
+    setDevice({
+      // No reliable headless GPU-tier signal — assume capable and let PerformanceMonitor demote.
+      gpuTier: 2,
+      webglAvailable: detectWebGL(),
+    });
     setMounted(true);
-    mq.addEventListener?.("change", read);
-    return () => mq.removeEventListener?.("change", read);
   }, []);
 
   const activeTier: RenderTier = useMemo(() => {
-    if (!mounted || caps === null || webglFailed) return "calm2d";
-    let tier = resolveRenderTier({ ...caps, override });
+    if (!mounted || device === null || webglFailed) return "calm2d";
+    // Reduced-motion (system/on/off) is owned by the HUD tri-state; it feeds the tier decision so
+    // "on" forces the calm-2D equal mode just as the OS preference would.
+    let tier = resolveRenderTier({
+      gpuTier: device.gpuTier,
+      webglAvailable: device.webglAvailable,
+      prefersReducedMotion: reducedMotion,
+      override: tierOverride,
+    });
     if (degradedTo) tier = lowerTier(tier, degradedTo);
     return tier;
-  }, [mounted, caps, override, degradedTo, webglFailed]);
+  }, [mounted, device, reducedMotion, tierOverride, degradedTo, webglFailed]);
+
+  // An explicit tier choice (or reduced-motion change) clears an auto-degrade / WebGL-failure latch so
+  // the user can climb back up the ladder.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset the degrade latch whenever the user changes the tier/reduced-motion intent.
+  useEffect(() => {
+    setDegradedTo(null);
+    setWebglFailed(false);
+  }, [tierOverride, reducedMotion]);
 
   const onDegrade = useCallback(() => {
     setDegradedTo((prev) => stepDown(prev ?? "cinematic"));
-  }, []);
-
-  const chooseMode = useCallback((mode: TierOverride) => {
-    setOverride(mode);
-    setDegradedTo(null); // an explicit choice clears an auto-degrade so the user can climb back up.
-    setWebglFailed(false);
   }, []);
 
   const is3D = activeTier !== "calm2d";
@@ -200,21 +197,8 @@ export function ObservatoryStage({
       <div className="obs-stage-bar">
         <span className="obs-stage-mode" aria-live="polite">
           Rendering: <strong>{TIER_LABEL[activeTier]}</strong>
+          {plainMode ? <span className="obs-stage-tag"> · plain</span> : null}
         </span>
-        <fieldset className="obs-tier-control">
-          <legend className="sr-only">Render tier</legend>
-          {MODES.map((m) => (
-            <button
-              key={m.value}
-              type="button"
-              className={`obs-tier-btn${override === m.value ? " is-active" : ""}`}
-              aria-pressed={override === m.value}
-              onClick={() => chooseMode(m.value)}
-            >
-              {m.label}
-            </button>
-          ))}
-        </fieldset>
       </div>
 
       <div className="obs-viewport">
@@ -224,6 +208,7 @@ export function ObservatoryStage({
               <Cosmos3D
                 view={view}
                 tier={activeTier}
+                plainMode={plainMode}
                 onDegrade={onDegrade}
                 revealed={revealed}
                 focusNodeId={effFocus}
@@ -241,6 +226,7 @@ export function ObservatoryStage({
             waveOrder={waveOrder}
             verify={verifyVisual}
             emphasisFor={emphasisFor}
+            plainMode={plainMode}
             onSelect={selectNode}
           />
         )}
@@ -254,6 +240,8 @@ export function ObservatoryStage({
               node={selectedNode}
               origin={origin}
               labelFor={labelFor}
+              plainMode={plainMode}
+              reducedMotion={reducedMotion}
               onSelectInput={selectNode}
               onClose={clear}
             />
@@ -271,7 +259,8 @@ export function ObservatoryStage({
 
       <VerifyPanel
         verification={verification}
-        reducedMotion={caps?.prefersReducedMotion ?? false}
+        reducedMotion={reducedMotion}
+        audioCaptions={audioCaptions}
         onVisualChange={setVerifyVisual}
       />
     </div>

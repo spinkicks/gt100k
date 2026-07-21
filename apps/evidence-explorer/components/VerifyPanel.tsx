@@ -20,6 +20,7 @@
 import { MOTION, type VerificationView } from "@gt100k/evidence-explorer-view";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { JSX } from "react";
+import { sealCaption } from "./plain.js";
 import type { SyntheticVerification } from "./synthetic-view.js";
 import {
   IDLE_VISUAL,
@@ -54,10 +55,13 @@ function viewFor(run: VerifyRun, v: SyntheticVerification): VerificationView | n
 export function VerifyPanel({
   verification,
   reducedMotion,
+  audioCaptions = false,
   onVisualChange,
 }: {
   verification: SyntheticVerification;
   reducedMotion: boolean;
+  /** Audio captions (§U5.10, muted default): prefix the spoken seal with its neutral caption id. */
+  audioCaptions?: boolean;
   onVisualChange?: (state: VerifyVisualState) => void;
 }): JSX.Element {
   const [playback, setPlayback] = useState<Playback>(IDLE_PLAYBACK);
@@ -126,7 +130,10 @@ export function VerifyPanel({
   const sealState = view?.sealState ?? "unverified";
   const committedRoot = view ? merkleRootOf(view) : null;
   const recomputedRoot = view ? recomputedRootOf(view) : null;
-  const announce = view && playback.done ? sealAnnouncement(view) : "";
+  const baseAnnounce = view && playback.done ? sealAnnouncement(view) : "";
+  // Audio captions (muted default, §U5.10): when on, lead the spoken seal with its neutral caption id.
+  const caption = audioCaptions ? sealCaption(sealState) : null;
+  const announce = baseAnnounce && caption ? `${caption} ${baseAnnounce}` : baseAnnounce;
 
   return (
     <section className={`verify${isTamper ? " verify--tamper" : ""}`} aria-label="Verify milestone">

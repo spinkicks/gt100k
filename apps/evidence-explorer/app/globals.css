@@ -1286,6 +1286,104 @@ button {
   outline-offset: 2px;
 }
 
+/* ── Display controls: segmented tier / reduced-motion (UE045) ──────────────── */
+.hud-segment {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.hud-seg-legend {
+  padding: 0;
+  margin-bottom: 6px;
+  font-size: var(--text-label);
+  color: var(--ink-muted);
+}
+.hud-seg-row {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--void) 60%, transparent);
+}
+.hud-seg-btn {
+  min-height: 38px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: var(--text-label);
+  line-height: 1;
+  cursor: pointer;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+.hud-seg-btn:hover {
+  color: var(--ink);
+}
+.hud-seg-btn:active {
+  transform: scale(0.97);
+}
+.hud-seg-btn.is-active {
+  background: color-mix(in oklab, var(--focus) 22%, transparent);
+  color: var(--ink);
+}
+.hud-seg-btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.obs-stage-tag {
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+
+/* Plain mode (§U12): drop the emissive halo on the calm-2D constellation — low-spectacle. */
+.constellation.is-plain .node-halo {
+  display: none;
+}
+
+/* ── Accessible verification status (Ledger parallel of the Verify seal, SC-E10) ── */
+.ledger-verify {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--panel-2) 40%, transparent);
+}
+.ledger-verify-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ledger-verify-step {
+  display: flex;
+  gap: 8px;
+  font-size: var(--text-label);
+  color: var(--ink-muted);
+}
+.ledger-verify-mark {
+  flex: none;
+}
+.ledger-verify-step--pass .ledger-verify-mark {
+  color: var(--verify);
+}
+.ledger-verify-step--fail .ledger-verify-mark {
+  color: var(--tamper);
+}
+.ledger-seal {
+  margin: 8px 0 0;
+  font-size: var(--text-label);
+  color: var(--ink);
+}
+.ledger-caption {
+  color: var(--verify);
+}
+
 /* HUD filter/trace emphasis on the accessible Ledger rows (parity with the constellation). */
 .ledger-node--dimmed {
   opacity: 0.42;

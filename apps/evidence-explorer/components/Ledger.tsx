@@ -16,17 +16,21 @@ import { useMemo } from "react";
 import type { JSX } from "react";
 import { useHud } from "./hud-state.js";
 import { actorChipView, consentLabel, headerBadge, payloadRows } from "./inspector-model.js";
+import { panelCopy, sealCaption } from "./plain.js";
 import { useSelection } from "./selection.js";
 
 export function Ledger({ ledger }: { ledger: LedgerView }): JSX.Element {
   const { select, selectedNodeId } = useSelection();
-  const { emphasisFor, hasTrace, allTypesActive } = useHud();
+  const { emphasisFor, hasTrace, allTypesActive, plainMode, audioCaptions } = useHud();
+  const copy = panelCopy(plainMode);
   // Only the accessible "marked subset" note matters when a filter or trace is actually active.
   const marking = hasTrace || !allTypesActive;
   const labelById = useMemo(
     () => new Map(ledger.tree.map((t) => [t.id, `${t.type} — ${t.label}`])),
     [ledger.tree],
   );
+  const verification = ledger.verification;
+  const caption = verification && audioCaptions ? sealCaption(verification.sealState) : null;
 
   return (
     <section className="panel ledger" aria-label="Provenance ledger">
@@ -35,6 +39,30 @@ export function Ledger({ ledger }: { ledger: LedgerView }): JSX.Element {
         Every evidence node, in provenance order. Select a row to inspect it — the same view the
         constellation shows.
       </p>
+
+      {/* Verification status — the accessible parallel of the Verify seal (§U12, SC-E10): a status
+          list + a polite live region so AT hears the outcome. Captions (muted default) prefix the id. */}
+      {verification ? (
+        <div className="ledger-verify" aria-label="Verification status">
+          <ul className="ledger-verify-steps">
+            {verification.steps.map((s) => (
+              <li key={s.id} className={`ledger-verify-step ledger-verify-step--${s.status}`}>
+                <span className="ledger-verify-mark" aria-hidden="true">
+                  {s.status === "pass" ? "✓" : s.status === "fail" ? "✕" : "◔"}
+                </span>
+                <span>
+                  {s.label} — {s.statusText}
+                  {s.nonProduction ? " (non-production)" : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="ledger-seal" aria-live="polite">
+            {caption ? <span className="ledger-caption mono">{caption} </span> : null}
+            {verification.sealText}
+          </p>
+        </div>
+      ) : null}
       <ul className="ledger-tree" role="tree" aria-label="Evidence nodes in provenance order">
         {ledger.tree.map((item) => {
           const badge = headerBadge(item.panel);
@@ -81,7 +109,7 @@ export function Ledger({ ledger }: { ledger: LedgerView }): JSX.Element {
                   </p>
                 ) : null}
                 <dl className="ledger-panel-fields">
-                  <dt>Content-address</dt>
+                  <dt>{copy.addressLabel}</dt>
                   <dd>
                     <code className="mono">{item.panel.id}</code>
                   </dd>
@@ -100,7 +128,7 @@ export function Ledger({ ledger }: { ledger: LedgerView }): JSX.Element {
                   <dt>Inputs</dt>
                   <dd>
                     {item.panel.inputs.length === 0
-                      ? "None (a source of the milestone)"
+                      ? copy.inputsEmpty
                       : item.panel.inputs.map((id) => labelById.get(id) ?? id).join("; ")}
                   </dd>
                   <dt>Timestamp</dt>

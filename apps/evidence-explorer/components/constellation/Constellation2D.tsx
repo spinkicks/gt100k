@@ -86,8 +86,9 @@ function NodeMark({
             opacity={0.9}
           />
         ) : null}
-        {/* Emissive halo. */}
+        {/* Emissive halo (dropped in plain mode — low-spectacle). */}
         <circle
+          className="node-halo"
           r={NODE_R * 1.9}
           fill={color}
           opacity={node.isIsland ? 0.05 : 0.14}
@@ -186,6 +187,7 @@ export function Constellation2D({
   waveOrder = [],
   verify,
   emphasisFor,
+  plainMode = false,
   onSelect,
 }: {
   view: ExplorerView;
@@ -198,6 +200,8 @@ export function Constellation2D({
   verify?: VerifyVisualState;
   /** HUD filter/trace emphasis per node id; omitted = every node normal (SSR baseline). */
   emphasisFor?: (nodeId: string) => NodeEmphasis;
+  /** Plain mode (§U12): low-spectacle — drop the body glow (presentation-only, state unchanged). */
+  plainMode?: boolean;
   /** Mouse affordance: click a body to open its Inspector (keyboard path is the Ledger). */
   onSelect?: (nodeId: string, origin: { readonly x: number; readonly y: number }) => void;
 }): JSX.Element {
@@ -212,7 +216,7 @@ export function Constellation2D({
 
   return (
     <svg
-      className="constellation"
+      className={`constellation${plainMode ? " is-plain" : ""}`}
       viewBox={`0 0 ${view.bounds2d.width} ${view.bounds2d.height}`}
       role="img"
       aria-label={`Provenance constellation for milestone ${view.milestoneRef}: ${visibleNodes.length} evidence nodes linked by ${structuralEdges.length} provenance threads.`}

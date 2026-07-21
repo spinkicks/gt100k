@@ -13,6 +13,7 @@ import {
   type ExplorerView,
   NODE_COLOR_ROLES,
   NODE_GLYPHS,
+  type TierOverride,
 } from "@gt100k/evidence-explorer-view";
 import { EDGE_TYPES, NODE_TYPES } from "@gt100k/evidence-graph";
 import type { EdgeType, NodeType } from "@gt100k/evidence-graph";
@@ -20,11 +21,24 @@ import { type FormEvent, useId, useState } from "react";
 import type { JSX } from "react";
 import { Glyph } from "./constellation/glyphs.js";
 import { firstSearchMatch, searchMatches } from "./filters.js";
-import { useHud } from "./hud-state.js";
+import { type ReducedMotionMode, useHud } from "./hud-state.js";
 import { useSelection } from "./selection.js";
 
 const NODE_TYPE_LIST = NODE_TYPES as readonly NodeType[];
 const EDGE_TYPE_LIST = EDGE_TYPES as readonly EdgeType[];
+
+const TIER_MODES: readonly { readonly value: TierOverride; readonly label: string }[] = [
+  { value: "auto", label: "Auto" },
+  { value: "cinematic", label: "Cinematic" },
+  { value: "standard3d", label: "Standard" },
+  { value: "calm2d", label: "Calm 2D" },
+];
+
+const RM_MODES: readonly { readonly value: ReducedMotionMode; readonly label: string }[] = [
+  { value: "system", label: "System" },
+  { value: "on", label: "On" },
+  { value: "off", label: "Off" },
+];
 
 function threadDash(style: (typeof EDGE_THREADS)[EdgeType]["threadStyle"]): string | undefined {
   return style === "dotted"
@@ -45,6 +59,15 @@ export function Hud({ view }: { view: ExplorerView }): JSX.Element {
     traceActive,
     toggleTrace,
     hasTrace,
+    plainMode,
+    togglePlain,
+    reducedMotionMode,
+    setReducedMotionMode,
+    systemReducedMotion,
+    tierOverride,
+    setTierOverride,
+    audioCaptions,
+    toggleAudioCaptions,
   } = useHud();
   const { select } = useSelection();
   const [query, setQuery] = useState("");
@@ -168,6 +191,71 @@ export function Hud({ view }: { view: ExplorerView }): JSX.Element {
               : `${matchCount} match${matchCount === 1 ? "" : "es"}`}
           </p>
         </form>
+      </div>
+
+      {/* ── Display controls (UE045, §U5.9) — all presentation-only, state unchanged ───────── */}
+      <div className="hud-section">
+        <h2 className="hud-title">Display</h2>
+        <p className="hud-hint">Presentation only — the evidence and its state never change.</p>
+
+        <fieldset className="hud-segment">
+          <legend className="hud-seg-legend">Render tier</legend>
+          <div className="hud-seg-row">
+            {TIER_MODES.map((m) => (
+              <button
+                key={m.value}
+                type="button"
+                className={`hud-seg-btn${tierOverride === m.value ? " is-active" : ""}`}
+                aria-pressed={tierOverride === m.value}
+                onClick={() => setTierOverride(m.value)}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset className="hud-segment">
+          <legend className="hud-seg-legend">Reduced motion</legend>
+          <div className="hud-seg-row">
+            {RM_MODES.map((m) => (
+              <button
+                key={m.value}
+                type="button"
+                className={`hud-seg-btn${reducedMotionMode === m.value ? " is-active" : ""}`}
+                aria-pressed={reducedMotionMode === m.value}
+                onClick={() => setReducedMotionMode(m.value)}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+          <p className="hud-hint">
+            System is currently <strong>{systemReducedMotion ? "reduced" : "full motion"}</strong>.
+          </p>
+        </fieldset>
+
+        <button
+          type="button"
+          className={`hud-toggle${plainMode ? " is-active" : ""}`}
+          aria-pressed={plainMode}
+          onClick={togglePlain}
+        >
+          Plain mode
+        </button>
+        <p className="hud-hint">Low-spectacle: no starfield or glow, plain wording. Same facts.</p>
+
+        <button
+          type="button"
+          className={`hud-toggle${audioCaptions ? " is-active" : ""}`}
+          aria-pressed={audioCaptions}
+          onClick={toggleAudioCaptions}
+        >
+          Audio captions
+        </button>
+        <p className="hud-hint">
+          Muted by default. When on, the verify seal shows its caption id (no sound this build).
+        </p>
       </div>
     </aside>
   );

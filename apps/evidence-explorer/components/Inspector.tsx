@@ -13,7 +13,7 @@
  */
 import type { LedgerPanel, NodeView } from "@gt100k/evidence-explorer-view";
 import { MOTION, SPRINGS } from "@gt100k/evidence-explorer-view";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import { useLayoutEffect, useRef, useState } from "react";
 import type { JSX } from "react";
 import { Glyph } from "./constellation/glyphs.js";
@@ -25,12 +25,15 @@ import {
   payloadRows,
   transformOriginFor,
 } from "./inspector-model.js";
+import { panelCopy } from "./plain.js";
 
 export function Inspector({
   panel,
   node,
   origin,
   labelFor,
+  plainMode = false,
+  reducedMotion = false,
   onSelectInput,
   onClose,
 }: {
@@ -40,10 +43,15 @@ export function Inspector({
   origin: SelectionOrigin | null;
   /** Readable label for an input node id (fly-to link text). */
   labelFor: (id: string) => string;
+  /** Plain mode (§U12): swap jargon for plain sentences (presentation-only, state unchanged). */
+  plainMode?: boolean;
+  /** Effective reduced-motion (HUD tri-state) — fade-only entrance when set. */
+  reducedMotion?: boolean;
   onSelectInput: (id: string) => void;
   onClose: () => void;
 }): JSX.Element {
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = reducedMotion;
+  const copy = panelCopy(plainMode);
   const ref = useRef<HTMLDivElement>(null);
   const [originCss, setOriginCss] = useState("50% 50%");
   const [copied, setCopied] = useState(false);
@@ -127,13 +135,13 @@ export function Inspector({
 
       <dl className="insp-fields">
         <div className="insp-field insp-field--address">
-          <dt>Content-address</dt>
+          <dt>{copy.addressLabel}</dt>
           <dd>
             <code className="mono insp-hash">{panel.id}</code>
             <button type="button" className="insp-copy" onClick={copyId}>
               {copied ? "Copied" : "Copy"}
             </button>
-            <span className="insp-note">content-addressed — the id is the hash of the content</span>
+            <span className="insp-note">{copy.addressNote}</span>
           </dd>
         </div>
 
@@ -159,7 +167,7 @@ export function Inspector({
           <dt>Inputs</dt>
           <dd>
             {panel.inputs.length === 0 ? (
-              <span className="insp-empty">No upstream inputs (a source of the milestone).</span>
+              <span className="insp-empty">{copy.inputsEmpty}</span>
             ) : (
               <ul className="insp-inputs">
                 {panel.inputs.map((id) => (
