@@ -257,3 +257,16 @@
 ## NEXT
 - T012f + the `resolveQualityTier`/`nextLowerTier` slice of T016a: add `packages/arena-world/test/quality.test.ts`, then implement and explicitly export the minimal pure quality resolvers.
 - Acceptance: exact capability profiles map to A/B/C/D, reduced motion and low power force C, `nextLowerTier` follows A→B→C→D→D, and the exact budget/beacon-cap table remains stable (FR-043, SC-025); focused checks and repository gates remain green.
+
+## 2026-07-20 — P1 / T012f + T016a (quality resolver slice)
+- Added `quality.test.ts` through the public package API, covering the exact A/B/C/D budget table, beacon-light caps, ordered capability-profile precedence, pinned weak-device defaults/boundaries, deterministic replay, and the full degradation path.
+- Followed red-green TDD: the existing budget assertion passed while all ten resolver/path cases failed because the functions were absent; all eleven tests passed after the minimal implementation and explicit exports landed.
+- Added pure `resolveQualityTier(caps)` and `nextLowerTier(tier)` implementations. No-WebGL resolves before reduced-motion/low-power, which resolves before Safari/coarse-pointer/weak/WebGL1-only signals; Tier D degradation is idempotent.
+- Review status: checked T012f/T016a line-by-line against spec §§8.22/8.24, FR-043, SC-025, the data model, and the public contract; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused quality tests passed (11 tests); Biome checked all three changed feature files; direct arena-world TypeScript validation passed; `pnpm typecheck` passed; `pnpm test` passed (23 files, 87 tests). No app changed, so no Next.js build was required.
+- SC status: SC-025's deterministic domain resolver, degradation path, exact budgets, and beacon-cap contract are complete; renderer wiring and sustained-frame auto-degrade remain scheduled for P6.
+- Blockers: none.
+
+## NEXT
+- T012g: add `packages/arena-world/test/lighting.test.ts` for exact per-tier/world-theme rigs, mastery-state light contributions, and paired non-color state cues.
+- Acceptance: `resolveLighting` retains its exact per-tier/default/dawn/dusk rigs; unlocked nodes contribute beacon lights, available nodes contribute warm glows, locked nodes contribute none; contributions respect the A=8/B=3/C=0 dynamic-light caps and expose icon/shape cues so light is never the sole state signal (FR-041, SC-026); focused checks and repository gates remain green.

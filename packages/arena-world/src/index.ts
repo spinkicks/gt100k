@@ -56,7 +56,7 @@ export { PALETTE, TYPOGRAPHY, resolveBiome, resolveElevation } from "./art";
 export { ASSET_KEYS, resolveAssetFallback } from "./assets";
 export { resolveAvatarAnimation } from "./avatar";
 export { EASINGS, LAMBDAS, MOTION, resolveMotion } from "./motion";
-export { QUALITY_TIERS } from "./quality";
+export { QUALITY_TIERS, nextLowerTier, resolveQualityTier } from "./quality";
 export {
   CAMERA3D,
   LIGHTING,

@@ -1,4 +1,4 @@
-import type { QualityBudget, QualityTier } from "./model";
+import type { DeviceCaps, QualityBudget, QualityTier } from "./model";
 
 export const QUALITY_TIERS = {
   A: {
@@ -50,3 +50,30 @@ export const QUALITY_TIERS = {
     canvas: false,
   },
 } satisfies Record<QualityTier, QualityBudget>;
+
+export function resolveQualityTier(caps: DeviceCaps): QualityTier {
+  if (!caps.webgl2 && !caps.webgl1) return "D";
+  if (caps.prefersReducedMotion || caps.savePower === true) return "C";
+  if (
+    caps.isSafari ||
+    caps.coarsePointer ||
+    (caps.deviceMemoryGB ?? 8) <= 4 ||
+    (caps.hardwareConcurrency ?? 8) <= 4 ||
+    !caps.webgl2
+  ) {
+    return "B";
+  }
+  return "A";
+}
+
+export function nextLowerTier(tier: QualityTier): QualityTier {
+  switch (tier) {
+    case "A":
+      return "B";
+    case "B":
+      return "C";
+    case "C":
+    case "D":
+      return "D";
+  }
+}
