@@ -89,3 +89,9 @@
 ## 2026-07-21 — T034 executable documentation contract
 
 - Encoded the README acceptance surface in a focused Vitest contract covering every public function, all five ports and buildable adapters, every deferred production direction, and the synthetic/observable guardrails. Rejected an untested prose-only README because the loop requires a test-first increment and later public-surface changes could otherwise silently make the documentation stale.
+
+## 2026-07-21 — T035 testable synthetic demo
+
+- Exposed the demo orchestration as `runCohortCompilerDemo()` returning a deterministic JSON-safe summary, with the package `demo` command responsible only for printing it. Rejected a console-only script because its end-to-end quickstart claims would not be directly contract-testable.
+- Reused the typed golden fixtures and added Fixture C's synthetic A7 to Fixture B's pool, producing two feasible cohorts, one deterministic unassigned learner, and a meaningful two-member in-budget repair that can be committed and rolled back. Rejected live/generated data and a zero-churn repair because neither would make the governance path as legible.
+- Imported the sibling safeguarding and shadow adapters through feature-local source paths and added adapter-local TypeScript project references. Rejected adding undeclared package-name imports or updating the shared lockfile, which is outside this feature's allowed shared-file surface.

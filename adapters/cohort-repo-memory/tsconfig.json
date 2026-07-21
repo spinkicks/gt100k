@@ -4,6 +4,10 @@
     "rootDir": ".",
     "outDir": "dist"
   },
-  "references": [{ "path": "../../packages/cohort-compiler" }],
+  "references": [
+    { "path": "../../packages/cohort-compiler" },
+    { "path": "../cohort-benefit-shadow" },
+    { "path": "../cohort-safeguarding-memory" }
+  ],
   "include": ["src/**/*.ts", "test/**/*.ts"]
 }

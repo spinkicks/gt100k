@@ -266,3 +266,15 @@
 
 - T035 — Add the end-to-end synthetic demo at `adapters/cohort-repo-memory/src/demo.ts` mirroring `specs/006-cohort-compiler/quickstart.md`.
 - Acceptance: the runnable demo wires a synthetic pool through candidate generation, solve, atomic commit and rollback, in-budget repair, safeguarding bypass, post-lock shadow benefit logging, and RivalryMix analysis without live data or production I/O; focused RED/GREEN coverage and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P6 / T035
+
+- Added a runnable `@gt100k/cohort-repo-memory` demo command and exported testable orchestration that walks a typed synthetic pool through deterministic candidates, feasible solve, atomic initial/repair commits, a two-member bounded repair, exact rollback, safeguarding bypass, post-lock shadow benefit logging, and observable-only RivalryMix analysis.
+- Added an end-to-end contract pinning the exact assignment/cohort result, unassigned learner, commit and guide-veto carriers, rollback restoration, safeguarding hold and assignment isolation, shadow output, RivalryMix golden, and absence of rank/trait fields.
+- TDD status: the focused suite first failed because `src/demo.ts` was absent, then passed after implementation; a safeguarding-isolation refinement separately failed before the unchanged-assignment evidence was added and passed afterward.
+- Gate status: standalone adapter project-reference TypeScript passes; `pnpm typecheck`, `pnpm test` (113/113), `pnpm lint`, and `pnpm --filter @gt100k/cohort-repo-memory demo` all pass. P6 remains in progress only for T036 quickstart validation; no blocker.
+
+## NEXT
+
+- T036 — Run `specs/006-cohort-compiler/quickstart.md` validation end-to-end with the pinned domain gate commands.
+- Acceptance: `pnpm typecheck` and `pnpm lint` are clean; `pnpm --filter @gt100k/cohort-compiler test` and workspace `pnpm test` are green; the quickstart obligations for Fixtures A–E and SC-001 through SC-008 remain satisfied without touching the deferred final root reference task.

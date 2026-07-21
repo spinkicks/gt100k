@@ -8,6 +8,9 @@
   "exports": {
     ".": "./src/index.ts"
   },
+  "scripts": {
+    "demo": "tsx src/demo.ts"
+  },
   "dependencies": {
     "@gt100k/cohort-compiler": "workspace:*"
   }
