@@ -439,3 +439,17 @@
 ## NEXT
 - T026: add `packages/arena-world/test/zero-power.test.ts` as the next ordered P2 acceptance task.
 - Acceptance: mastery, node-state, matchmaking, and standing outcomes are byte-identical across cosmetic/tier states; `equipCosmetic` changes only cosmetic fields; world-theme lighting cannot reach any outcome function; avatars remain pseudonymous; focused and repository gates remain green (FR-009/010, SC-003).
+
+## 2026-07-21 — P2 / T026
+- Added `zero-power.test.ts` through the public package API, covering an exhaustive 6-tier × 512-equipped-set matrix (3,072 appearance states) against one byte-identical mastery, node-state, progression, matchmaking, non-null standing, and access snapshot.
+- Locked the architectural boundary with exact `deriveNodeStates`/`computeProgression` parameter types: neither function can receive cosmetic, equipped-avatar, selected-tier, or world-theme state. The synthetic matching/standing snapshot remains input-only because live matching infrastructure is explicitly out of scope.
+- Froze the input avatar and proved `equipCosmetic` returns only the exact `learnerRef`/`equipped` shape, preserves the pseudonymous learner reference, changes only the equipped set, and does not mutate its caller. Dawn/dusk variants change lighting while every domain outcome stays byte-identical.
+- TDD status: the focused acceptance suite passed on its first run because T003/T023/T024 had already enforced separation by construction; no production change or vacuous guardrail helper was manufactured. A local requirements review strengthened the original default-off standing check to exercise a non-null synthetic standing.
+- Review status: checked T026 line-by-line against US2 scenario 2, FR-006/009/010, SC-003, the research decision, and the domain contract; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused zero-power tests passed (4 tests); direct arena-world TypeScript validation and Biome passed; `pnpm lint` passed (100 files); `pnpm typecheck` passed; `pnpm test` passed (36 files, 147 tests). No app changed, so no Next.js build was required.
+- SC status: T026 completes the cosmetic/tier/avatar portion of SC-003; its cohort-base zero-power half remains scheduled for T035/T036. P2 remains in progress for the composed view and HUD.
+- Blockers: none.
+
+## NEXT
+- T029: extend `packages/arena-world/src/view.ts` and the public entrypoint with the P2 composed view fields: progression, a staged representation stub, avatar, and cosmetic eligibility.
+- Acceptance: tests fail first, then prove one deterministic view composes the unchanged P1 world/layout/node/presentation state with exact S1 progression and eligibility plus a pseudonymous equipped avatar; no later-phase base/standing behavior is invented, public types remain honest, and focused plus repository gates stay green.

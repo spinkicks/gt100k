@@ -98,3 +98,7 @@
 ## 2026-07-21 — T024/T028 cosmetic resolver defaults
 - Evaluate `min-unlocks` and `region-complete` against the supplied canonical world/node-state pair, while `min-tier` reads the resolved progression tier. Rejected trusting duplicated `masteredCount`/`regionsComplete` summaries for every rule because the public contract deliberately supplies node states and world membership as the competence source.
 - Treat equipping an already-equipped eligible cosmetic as an idempotent operation that returns a fresh avatar with stable order. Rejected appending duplicate IDs because `equipped` represents a set of active cosmetic IDs and repeated UI activation must not accumulate duplicate appearance state.
+
+## 2026-07-21 — T026 zero-power proof boundary
+- Prove zero power directly with exact outcome-function signatures plus the exhaustive six-tier by 512-equipped-set matrix. Matchmaking is out of scope as a service, so the acceptance snapshot uses fixed synthetic near-peer matching and a non-null standing derived only from unchanged learning state. Rejected a production `isZeroPower()` boolean because it would restate the invariant without preventing appearance inputs from reaching outcomes.
+- Keep T026 acceptance-only because the tests passed immediately against the already-separated domain APIs. Rejected manufacturing a production change solely to force a RED run; frozen-input and exact-key assertions already prove `equipCosmetic` changes only appearance state and preserves the pseudonymous learner reference.
