@@ -514,3 +514,15 @@
 ## NEXT
 - Complete U020: add `InterestLabClient` with the child view-model state, accessibility flags, age/surface/tier controls, and render the `board-2d` quest ledger from `app/page.tsx`.
 - Acceptance: the page uses the synthetic seed with no external fetch; OS reduced-motion and detected device caps flow into one rebuilt view; age-band and plain/tier controls change presentation only; the child quest ledger is the operable default; focused tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and the Interest Lab production build remain green.
+
+## 2026-07-21 — P9 / U020
+- Added eight client-shell contracts covering fail-closed public defaults, OS/environment reduced-motion resolution, all required semantic controls, the exact 56/48/44px staged targets, child/2D default rendering, and App Router wiring.
+- Confirmed two genuine red states: the focused suite first failed on the absent client/control modules, then the staged-target table failed for all three age bands before the controls consumed `resolveChildStaging`.
+- Implemented `InterestLabClient` as the sole presentation-state owner: it detects client device capabilities, combines Motion's OS preference with the public default and user setting, rebuilds the synthetic child view for flag changes, and renders the existing operable ledger from `page.tsx`.
+- Added responsive plain/age/surface/tier controls with truthful requested-versus-active tier status. The P9 renderer remains `board-2d`; future guide/3D requests do not fabricate state owned by U021–U024/U029/U042.
+- Verified app tests (23), `pnpm typecheck`, `pnpm test` (143 tests across 33 files), `pnpm lint` (120 files), `pnpm build`, and the warning-free Interest Lab production build. A production-server smoke returned HTTP 200 with child/2D/auto flags and exactly six quest cards. No Playwright runtime is installed, so a real-browser walkthrough was unavailable; no code or dependency was changed to bypass that environment limitation.
+- Status: U020 and P9 complete. SC-UI-01/02/08/09 remain green, and the accessible 2D MVP floor is now the app default. No implementation blocker.
+
+## NEXT
+- Complete U021 with the minimal U023 scene implementation needed to preserve the green-only harness boundary: add pure scene-layout, quest-placement, camera, and marker/card parity goldens in `packages/interest-lab-view/test/scene.test.ts`.
+- Acceptance: the eight seed domains match §U8.13 positions within ±0.001 in catalog order; making's marker positions and §U8.14 home/focused camera modes match exactly; `buildSceneView` preserves marker/card parity by `probeId`; scene views expose no score/rank/price fields; focused red evidence and the complete green gate are preserved.
