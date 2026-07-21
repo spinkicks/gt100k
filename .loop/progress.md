@@ -1,3 +1,6 @@
+## REPO LAYOUT (restructured 2026-07-21)
+The repo is now passion-centric: ALL code lives under `passion/apps/`, `passion/packages/`, `passion/adapters/`. There is NO `apps/`, `packages/`, or `adapters/` at the repo root anymore. Work under `passion/`; pnpm-workspace globs are `passion/*`.
+
 # Loop progress — evidence-explorer (002) · DECLUTTER / simplicity pass → 3D craft (claude)
 
 ## Task
@@ -169,6 +172,40 @@ not white); row-click selects + opens the Inspector; **Trace / Filters / Display
 Inspector Details all fire — every control does something, 0 console + 0 page errors** across the whole
 walkthrough. Screenshots `/tmp/ee-ledger-{rest,selected,scrolled}.png` confirm the calm HUD read.
 
+## Done this turn (Turn 7 — RESET: deliberate "Provenance Instrument" design-token system)
+**The escalated brief matters more than T6's "done" marker.** The operator re-reviewed after T1–T6 and
+rejected the *look itself*: "still looks a bit cluttered; the **dark gradients, curved edges, and font**
+give an overall impression of vibe-coded." T1–T6 decluttered + lit the scene but kept the vibe-coded VISUAL
+STACK. This turn is a foundational **chrome-token rewrite** (not a decoration turn — a genuine response to a
+stronger verdict), targeting exactly the three named tells + the brief's "extract a token system for
+PassionLab" requirement. The 3D cosmos stays dark (it's space; game-feel commits it) — the fix is making the
+chrome a *deliberate* matte instrument, not default blue-black glassmorphism.
+- **Typography (tell #1) — discovered `layout.tsx` loaded NO real typeface** (system-ui fallback = the
+  "generic font" the operator saw). Now loads real self-hosted faces via `next/font` (build-time, no runtime
+  fetch → FR-E19): **Fraunces** (optical serif → archival authority) + **IBM Plex Sans** (technical body) +
+  **IBM Plex Mono** (hashes). Wired into `--font-*` tokens w/ fallback stacks; optical sizing + serif
+  tracking on headings. Verified live: computed `body`=IBM Plex Sans, `h1`=Fraunces (really applied).
+- **Geometry (tell #2)** — a deliberate radius scale (`--r-lg 8 / --r-md 6 / --r-sm 4 / --r-pill`) replaces
+  the scattered 16/14/13/12/11/10/9/8/7/6px literals, applied consistently; pills reserved for genuine pills
+  (segmented tracks, status chip, badges, dots); the two pill-buttons (verify/scrub-play) de-pilled to `-md`.
+- **Surfaces/color ("dark gradients")** — dropped every decorative `radial-gradient` glow (body, stage,
+  cosmos-viewport, inspector) + all `backdrop-filter` frosted glass → matte graphite steps + hairline +
+  restrained shadow tokens; re-pitched palette off blue-black `#0a0e17` → neutral graphite `#0c0d11`; single
+  monochrome page depth (not a rainbow); de-neoned the focus accent, single-hue slider fill, killed chrome
+  bloom halos (kept transient state-feedback glows). Removed the now-dead `--surface-alpha` + 3 obsolete
+  `prefers-reduced-transparency` blocks; refreshed the stale file-header + comment.
+- **Token system for PassionLab (§6)** — color/type/geometry/space/elevation authored cleanly in `:root`;
+  components reference tokens, never literals.
+- **Kept green / invariants:** `--focus` + `:focus-visible` ring, semantic state + node-type hues (FR-E04
+  grayscale-safe), the reduced-motion global block (motion-budget `prefers-reduced-motion` index intact,
+  keyframes still transform/opacity/filter only, no layout-prop transitions — `border-radius` isn't one),
+  no domain/state/3D-geometry touch (SC-E14). Pure chrome refactor.
+
+Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ✓ (next/font self-hosted). **Live Playwright**
+(Chromium, 1440×900, production `next start`): **0 page + 0 console errors** across load → Trace → Filters →
+Display → search (1 match / 0-match empty state) → ledger→Inspector→Details → Verify (Verified) → tamper
+(MISMATCH) → calm-2D tier. Every control functional; real empty/error states. Screenshots `/tmp/ee7-*.png`.
+
 ## Still generic / next targets (judged vs game-feel.md)
 - The cosmos now has IBL + AO + bloom/DOF/vignette + rig + damped cinematic camera + a **per-body material
   language** (distinct substances + envMap specular + fresnel rim, T5). The scene meets game-feel §1–§9.
@@ -188,22 +225,23 @@ Cinematic 3D), but final pixel taste-tuning of bloom/rim balance is ideal on a r
 non-negotiable.
 
 ## NEXT
-- **DONE this session — `.loop-done` created (Turn 6).** All six lifts landed: HUD declutter (T1) · header
-  telemetry readout (T2) · IBL+N8AO grade (T3) · Inspector summary+Details (T4) · full per-body material
-  language (T5) · Ledger HUD-panel depth pass (T6). The app meets **every** game-feel non-negotiable
-  (real lighting+AO+IBL, PBR material language, bloom/DOF/vignette grade, damped cinematic camera, pervasive
-  motion/juice, a minimal game-HUD — cohesive to the committed "cinematic dark cosmos" art direction) with
-  **none** of the auto-fail anti-patterns, verified by a whole-app Playwright walkthrough (0 console + 0 page
-  errors; every control functional; no dead affordances). No load-bearing subtraction and no non-generic
-  chrome candidate remains.
-- **If the loop re-invokes** (`.loop-done` is gitignored, so the marker is wiped between sessions — it is
-  NOT a signal that work was left): do NOT invent a decoration turn. game-feel #1 forbids over-decorating an
-  already-calm, cohesive world ("subtract, don't add; density reads as AI"). Instead re-run the gate + a
-  fresh adversarial critic sweep (actually *inspect* surfaces, per the D-VP11 "a scorecard can lie" lesson),
-  confirm nothing regressed, and re-create `.loop-done`.
-- The only genuinely remaining items are **GPU-eyes taste-tunes** that cannot be verified in this GPU-less
-  headless env (swiftshader): bloom/rim/vignette balance, a shallow DoF nudge, per-body `envMapIntensity`
-  warmth. They block **no** non-negotiable; force them blind and you risk the exact over-decoration the doc
-  warns against. Defer to a real-GPU screenshot pass.
+- **DONE this session — Turn 7 landed the design RESET; `.loop-done` re-created.** The operator's escalated
+  verdict (dark gradients / curved edges / font = vibe-coded) is directly addressed by a real, extractable
+  **design-token system**: real self-hosted type (Fraunces + IBM Plex Sans/Mono), a deliberate radius scale,
+  matte-graphite surfaces with no rainbow gradients / no frosted glass, de-neoned restrained accent. Verified
+  usable end-to-end in Chromium (0 console + 0 page errors; every control functional; real empty/error
+  states). The chrome now reads as a deliberate "Provenance Instrument," not an AI dashboard.
+- **If the loop re-invokes:** do NOT invent a decoration turn (game-feel #1 forbids over-decorating a
+  now-calm, cohesive world). Re-run the gate + a fresh adversarial critic sweep (actually *inspect* the
+  rendered surfaces — a scorecard can lie), confirm nothing regressed, re-create `.loop-done`. The token
+  system is the leverage point — any further chrome change should go THROUGH the tokens, never hardcode.
+- **Genuine candidates for a future turn (not blockers):**
+  1. **3D bodies vs the new chrome:** the glowing planet/star primitives read a touch toy-like against the
+     serious matte-instrument chrome. A *scene* taste-tune (glowing-nodes is the committed concept; changing
+     node representation is larger scope + GPU-eyes work) — do it deliberately, not blind.
+  2. **GPU-eyes taste-tunes** (unchanged): bloom/rim/vignette/DoF balance, per-body `envMapIntensity` — need
+     a real GPU; block no non-negotiable; forcing them blind risks over-decoration.
 - Do NOT add `<ContactShadows>` (EE-003: a floor fights the floating cosmos) unless a grounded glow-plane
   variant is prototyped and clearly reads better.
+- Do NOT revert to blue-black + neon-glow + frosted-glass chrome (EE-007): that is the exact vibe-coded look
+  the operator rejected. The matte-graphite instrument palette is the committed direction now.

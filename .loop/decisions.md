@@ -921,3 +921,57 @@ _Legacy scratch below (prior interest-lab loop — not applicable to evidence-ex
   `glBlitFramebuffer` GL warnings and `PerformanceMonitor` may self-heal cinematic→lower on a slow frame —
   pre-existing + environmental. Final bloom/rim/DoF pixel taste-tuning is ideal on a real GPU; blocks no
   non-negotiable.
+
+## EE-007 — RESET: chrome becomes a deliberate "Provenance Instrument" token system (Turn 7, escalated brief)
+> **This supersedes EE-ART's chrome aesthetic.** The operator re-reviewed after T1–T6 and rejected the
+> *look itself*: "still looks a bit cluttered; the **dark gradients, curved edges, and font** give an
+> overall impression of vibe-coded." T1–T6 decluttered + lit the scene but kept the vibe-coded VISUAL
+> STACK: neon radial gradients on blue-black, 14px frosted-glass panels, scattered radii (16/14/13/12/
+> 11/10/9/8/7/6/999), cyan/teal glow box-shadows — and (discovered this turn) **no real typeface loaded
+> at all** (layout.tsx has no next/font → the app renders in system-ui fallback = the generic "font"
+> the operator saw). The escalated brief demands a real, extractable design-token system for PassionLab.
+
+- **Dark vs light (brief asked to actively reconsider):** KEEP dark, but make it *deliberate*, not default.
+  Rationale: the hero is a cinematic dark **cosmos** (game-feel commits the 3D scene to space; brief item 5
+  keeps it). A light page framing a dark space-canvas fights the concept. So the fix is not light-mode —
+  it's replacing *default blue-black + neon glow + frosted glass* with a **matte graphite instrument**:
+  flat surfaces (no rainbow radial glows), crisp intentional geometry, a real typeface, restrained accent.
+- **Typography (operator tell #1) — CHOSEN, load real self-hosted faces via `next/font`:**
+  - **Display: Fraunces** (optical-size old-style serif). A serif on a provenance/records tool = archival
+    *authority* (certificate / journal / museum catalog) — the deliberate opposite of the geometric-sans
+    AI-default. Optical sizing + tight negative tracking at large sizes reads crafted, not wonky.
+  - **Body: IBM Plex Sans** — a technical grotesque with real character (explicitly NOT Inter), reads
+    "engineered instrument / records system."
+  - **Mono: IBM Plex Mono** — purpose-built for the content-address/hash display, cohesive w/ Plex Sans.
+  - Rationale: each face chosen for a defensible reason (authority / instrument / hashes); decisively not
+    Space-Grotesk+Inter. All OFL + on Google Fonts → `next/font` self-hosts at build (no RUNTIME fetch →
+    honours FR-E19). Fallback if build-time fetch flakes: `next/font/local` with committed woff2.
+- **Geometry (tell #2) — a deliberate radius scale as tokens, applied consistently:** `--r-lg 8px`
+  (structural cards/panels, was 16), `--r-md 6px` (controls/tiles/drawers), `--r-sm 4px` (chips/insets),
+  `--r-pill 999px` used ONLY for genuine pills (segmented toggle tracks, status dot). Crisp/instrument, not
+  default-soft; kills "scattered random rounded-*". `border-radius` is not a layout-animated prop (safe vs
+  motion-budget test).
+- **Surfaces/color (tell "dark gradients" + glow):** drop every decorative `radial-gradient` glow (body,
+  .stage, .cosmos-viewport, inspector) → flat matte graphite steps + hairline structure. Re-pitch the
+  surface palette off blue-black `#0a0e17` to a deliberate neutral graphite so it doesn't read as default
+  slate. Drop/þin the `backdrop-filter: blur(14px)` frosted-glass to a matte panel + hairline + restrained
+  shadow. Keep the accent HUE family but stop using it as bloom halos on chrome (accent = ink/border/fill).
+- **Load-bearing invariants kept:** `--focus` token stays (a11y test asserts it + the `:focus-visible`
+  outline uses it); semantic state tokens (`--verify/--tamper/--human/--model`) + node-type hues stay
+  (FR-E04 / grayscale-safe, and colour is never the sole cue); reduced-motion global block untouched
+  (motion-budget `prefers-reduced-motion` index + only transform/opacity/filter in keyframes); no
+  domain/state/geometry(3D) touch (SC-E14 presentation-only). This is a pure chrome-token refactor.
+- **Extractable for PassionLab:** the token block (color/type/geometry/space/motion) is authored as a
+  self-contained `:root` system so PassionLab inherits it (§6 of the plan) — no hardcoded values in
+  components; components reference tokens only.
+- **Verification (evidence, not assertion):** `tsc -b` exit 0 · 66/66 vitest · `next build` ✓ (next/font
+  fetched + self-hosted Fraunces/IBM Plex at build; no runtime fetch). Live Chromium Playwright (1440×900,
+  production `next start`): computed `body` font = `__IBM_Plex_Sans…`, `h1` = `__Fraunces…` (faces really
+  applied, not fallback). **0 page errors · 0 console errors** across: load → Trace lineage → Filters →
+  Display → search ("plan" → 1 match; "crystal" → 0 matches empty state) → ledger row → Inspector →
+  Details → Verify (Verified seal) → Run tamper demo (`verify-seal--mismatch`, "✕ MISMATCH") → Calm-2D
+  tier. Screenshots `/tmp/ee7-0{1..9}.png` + `-10-tamper.png` confirm the crafted matte-instrument read.
+- **Deferred (not blockers, no regression):** the 3D bodies still read a touch toy-like (glowing planet/
+  star primitives) against the now-serious instrument chrome — a *scene* taste-tune (glowing-nodes is the
+  committed concept; changing node representation is larger scope + GPU-eyes work). Accent usage (cyan
+  eyebrow/labels) kept for restrained life in the palette — judged tasteful, not accent-spam.
