@@ -166,3 +166,16 @@
 ## NEXT
 - T011a: add `packages/arena-world/test/world-transform.test.ts` for the exact §8.23 3D positions, determinism, and replayability, then make the minimal T014a world-transform implementation green in the same test-first increment.
 - Acceptance: all nine 3D nodes match `WORLD_SCALE`, biome elevation, and `nodeLiftUnits=0.6` exactly; two identical inputs and replayed inputs are byte-identical (FR-042, SC-024); direct package plus repository gates remain green.
+
+## 2026-07-20 — P1 / T011a + T014a
+- Added `world-transform.test.ts` through the public package API, proving all nine exact §8.23 node coordinates, the 64-unit 3D bounds centered at `(32,0,32)`, `WORLD_SCALE=0.03125`, `seaLevel=-3`, two-run determinism, and serialized-layout replayability.
+- Followed red-green TDD: the golden test failed against the P0 flat-elevation stub for the six nodes outside Numbers Coast, while its existing deterministic/replay behavior passed; all three tests passed after the minimal elevation-aware implementation landed.
+- Replaced the flat transform with pure canonical 2×2 region-grid biome resolution and exact decimal normalization for elevation plus `nodeLiftUnits=0.6`; no framework, renderer, I/O, time, or randomness dependency entered the domain.
+- Review status: checked T011a/T014a line-by-line against spec §§8.12/8.20/8.23, FR-042, SC-024, and the exact data-model shape; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was intentionally not used because this loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused transform tests passed (3 tests); Biome checked both changed feature files; direct arena-world TypeScript validation passed; `pnpm typecheck` passed; `pnpm test` passed (16 files, 51 tests). No app changed, so no Next.js build was required.
+- SC status: SC-024 is complete; P1 remains in progress with node-state, presentation-resolver, and renderer/Ledger tasks still open.
+- Blockers: none.
+
+## NEXT
+- T012 + T015: add `packages/arena-world/test/nodes.test.ts` for scenario S1, then implement the minimal pure `deriveNodeStates(world, signals)` resolver in `packages/arena-world/src/nodes.ts` and export it explicitly.
+- Acceptance: the test fails first, then proves `blend-bay` remains locked while `place-value-point` is available; a node is `unlocked` iff every prerequisite is mastered and its own gate is cleared; output is deterministic and the API has no time/visit input (FR-002/003/004, SC-001); direct package and repository gates remain green.

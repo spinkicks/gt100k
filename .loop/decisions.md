@@ -30,3 +30,7 @@
 ## 2026-07-20 — T010/T013 green test-first increment
 - Derived edges and regions only from node declaration order: edges preserve each node's prerequisite order, and regions preserve first appearance. Rejected trusting caller-supplied derived arrays because that would permit them to disagree with the prerequisite graph.
 - Coupled T010's verified failing acceptance tests with the minimal T013 implementation in one increment because the loop requires every committed tree to remain green. Rejected leaving active tests failing or weakening them with skip/todo markers.
+
+## 2026-07-20 — T011a/T014a transform resolution
+- Derived each node's canonical biome from its position in the specified 2×2 region grid, using `BIOMES` declaration order, because the exact `WorldLayout` contract intentionally carries only `nodeId`, `x`, and `y`. Rejected fixture-specific node-id lookup because it would make the public transform resolver fail for compatible synthetic worlds, and rejected adding region metadata because it would violate the exact §8.1 layout shape.
+- Normalized elevation-plus-lift arithmetic to a stable decimal before returning it. Rejected approximate golden assertions because §8.23 marks positions exact and ordinary binary addition would expose values such as `0.09999999999999998` instead of `0.1`.
