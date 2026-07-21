@@ -313,3 +313,15 @@
 
 - T103 + motion portion of T109 — Add `packages/cohort-arena-view/test/motion.test.ts`, then implement the exact `MOTION`, `EASINGS`, and `resolveMotion` registries in `src/motion.ts`.
 - Acceptance: all 19 motion kinds match Fixture V4 in animated and reduced modes; exact durations/easings are pinned; every reduced result uses `mode: "reduced"` and `easing: "linear"`; the focused test demonstrates RED before implementation and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P7 / T103 + motion portion of T109
+
+- Added the exact Compiler Observatory `MOTION` and `EASINGS` registries plus the pure `resolveMotion` resolver and its `MotionKind`/`MotionSpec` contracts.
+- Added the Fixture V4 golden suite covering the exact 19-kind union, every animated duration/easing row, and every first-class reduced-motion row, including retained non-vestibular press feedback and the static suppression veil.
+- TDD status: the focused suite first failed because `src/motion.ts` was absent, then passed 3/3 after the minimal implementation; package-local strict TypeScript and focused Biome checks also pass.
+- Gate status: `pnpm typecheck`, `pnpm test` (120/120), and `pnpm lint` pass. P7/SC-011 is complete at the pure motion-token layer; renderer-level reduced-motion parity remains scheduled for P8/P11. No blocker.
+
+## NEXT
+
+- T104 + T110 — Add the exact 3D/2D layout golden contract first, then implement `LAYOUT`, `layoutConstellation`, `layoutField`, `layoutArenaRing`, and `project2D` in `packages/cohort-arena-view/src/layout.ts`.
+- Acceptance: Fixture V1 pins both cohort centers, all six-member hex vertices, floor halos, empty bench, field-position examples, and exact `project2D` coordinates; Fixture V3 pins the seat ring and projections; outputs are deterministic with 3D values rounded to 3 decimals and projected pixels integer-rounded; focused RED/GREEN and repository typecheck/test/lint remain green.
