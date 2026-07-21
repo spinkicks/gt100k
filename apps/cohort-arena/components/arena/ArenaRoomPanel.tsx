@@ -4,7 +4,12 @@ import type { CohortArenaView } from "@gt100k/cohort-arena-view";
 import { Canvas } from "@react-three/fiber";
 
 import { ArenaRoomScene } from "./ArenaRoomScene";
-import { buildArenaRoomScene, resolveArenaFrameLoop, resolveArenaRoomMotion } from "./scene";
+import {
+  buildArenaRoomScene,
+  resolveArenaEvidenceMotion,
+  resolveArenaFrameLoop,
+  resolveArenaRoomMotion,
+} from "./scene";
 
 interface ArenaRoomPanelProps {
   readonly view: CohortArenaView;
@@ -16,6 +21,7 @@ export function ArenaRoomPanel({ view, reducedMotion }: ArenaRoomPanelProps) {
   if (!scene) return null;
 
   const motion = resolveArenaRoomMotion(view);
+  const evidenceMotion = resolveArenaEvidenceMotion(view);
   const floorHolder = scene.seats.find(({ holdingFloor }) => holdingFloor);
   const confidencePercent = Math.round(scene.confidence * 100);
   const world = view.constellation.world;
@@ -54,6 +60,28 @@ export function ArenaRoomPanel({ view, reducedMotion }: ArenaRoomPanelProps) {
               cy={world.height / 2}
               r="240"
             />
+            {scene.dominanceRings.map((ring) => {
+              const seat = scene.seats.find(({ speaker }) => speaker === ring.speaker);
+              if (!seat) return null;
+
+              return (
+                <circle
+                  key={ring.speaker}
+                  data-dominance-ring="true"
+                  data-speaker={ring.speaker}
+                  data-share={ring.share}
+                  data-motion-kind={evidenceMotion.dominanceRing.kind}
+                  data-motion-duration={evidenceMotion.dominanceRing.durationMs}
+                  className="arena-room-dominance-ring"
+                  cx={seat.pos2d.x}
+                  cy={seat.pos2d.y}
+                  r="62"
+                  pathLength="1"
+                  strokeDasharray={`${ring.share} ${1 - ring.share}`}
+                  transform={`rotate(-90 ${seat.pos2d.x} ${seat.pos2d.y})`}
+                />
+              );
+            })}
             {scene.seats.map((seat) => (
               <g
                 key={seat.speaker}
@@ -62,6 +90,7 @@ export function ArenaRoomPanel({ view, reducedMotion }: ArenaRoomPanelProps) {
                 data-x={seat.pos2d.x}
                 data-y={seat.pos2d.y}
                 data-holding-floor={seat.holdingFloor}
+                data-interruptions={seat.interruptions}
                 transform={`translate(${seat.pos2d.x} ${seat.pos2d.y})`}
               >
                 <circle

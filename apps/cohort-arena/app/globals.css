@@ -895,6 +895,13 @@ html[data-reduced-motion="true"] *::after {
   stroke-width: 6;
 }
 
+.arena-room-dominance-ring {
+  fill: none;
+  stroke: var(--gain-hi);
+  stroke-linecap: round;
+  stroke-width: 12;
+}
+
 .arena-room-seat {
   fill: var(--deck-3);
   stroke: var(--peer-hi);

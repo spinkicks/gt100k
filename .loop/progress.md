@@ -582,3 +582,17 @@
 
 - T128 — Add the 3D interruption arc darts and dominance share ring in `apps/cohort-arena/components/arena/`.
 - Acceptance: repeated-interruption evidence produces raised bezier arcs from the interrupter toward the floor holder through `resolveMotion("interruptionArc", ...)`; the dominance pattern renders a torus share ring filled to S1's exact `4/6` turn share through `resolveMotion("dominanceRing", ...)`; reduced/plain mode keeps the instant ring and accessible interruption tally/evidence with no motion-only state; focused RED/GREEN, app TypeScript/tests, both builds, seeded smoke, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P10 / T128
+
+- Added an observable-only arena scene projection for evidence geometry: Fixture V3's dominance pattern produces one exact `4/6` partial torus around S1, while a repeated-interruption pattern produces a raised quadratic bezier from its subject to a distinct, explicitly marked floor holder and carries the exact interruption count/evidence.
+- Added one-shot r3f share-ring line-draw and interruption-arc dart motion through the pinned `resolveMotion("dominanceRing"/"interruptionArc", ...)` tokens. Both run through demand-loop invalidation and settle after 420ms/200ms; the existing continuous loop remains limited to a truthful live holder.
+- Added the reduced/plain static share ring at the exact `project2D` seat, with the interruption tally/evidence retained in the adjacent accessible Ledger. No dominance/highest-share speaker is reinterpreted as a live holder or interruption target, and no trait/emotion carrier was introduced.
+- TDD status: the focused six-test arena contract first failed in five expected places because evidence geometry, motion resolution, SVG parity, and r3f renderers were absent, then passed 6/6 after the minimal implementation. The complete app suite passes 35/35.
+- Review status: the motion review rejected a 2.4-world-unit line as visually oversized; the corrected 2.4px dart keeps the rare, state-driven motion restrained. A production render at 1440×1000 confirms the exact amber `4/6` arc is visible around S1 and subordinate to the Ledger evidence.
+- Gate status: app-local TypeScript, `pnpm typecheck`, `pnpm test` (144/144), `pnpm lint` (141 files), root `pnpm build`, `pnpm --filter @gt100k/cohort-arena build`, and the production Playwright WebGL smoke (2/2) pass. The first smoke launch used the library bundle root and failed before browser startup; pointing ephemeral `LD_LIBRARY_PATH` at its verified extracted library directory made the unchanged smoke pass. T128 completes the interruption/dominance slice of FR-037/SC-013; suppression remains T129. No blocker.
+
+## NEXT
+
+- T129 — Implement the low-quality suppression veil and neutral refused/missing analytics state in `apps/cohort-arena/components/arena/`.
+- Acceptance: `suppressed:true` dims the 3D room with restrained fog and shows the exact `confidence low — prompts suppressed` message with `patterns:[]`; refused/missing analytics renders a neutral `analytics off` state and changes nothing else; no false label or trait/emotion field is possible; focused RED/GREEN, app TypeScript/tests, both builds, seeded smoke, and repository typecheck/test/lint remain green.

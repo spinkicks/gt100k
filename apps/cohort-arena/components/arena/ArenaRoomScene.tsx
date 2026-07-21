@@ -1,11 +1,26 @@
 "use client";
 
-import type { CohortArenaView, Vec3 } from "@gt100k/cohort-arena-view";
+import type { CohortArenaView, MotionSpec, Vec3 } from "@gt100k/cohort-arena-view";
+import { Line } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { type Mesh, MeshBasicMaterial, type MeshStandardMaterial } from "three";
+import {
+  type Mesh,
+  MeshBasicMaterial,
+  type MeshStandardMaterial,
+  QuadraticBezierCurve3,
+  Vector3,
+} from "three";
+import type { Line2 } from "three/examples/jsm/lines/Line2.js";
+import type { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 
-import { buildArenaRoomScene, resolveArenaRoomMotion } from "./scene";
+import {
+  type DominanceRingScene,
+  type InterruptionArcScene,
+  buildArenaRoomScene,
+  resolveArenaEvidenceMotion,
+  resolveArenaRoomMotion,
+} from "./scene";
 
 interface ArenaRoomSceneProps {
   readonly view: CohortArenaView;
@@ -15,9 +30,137 @@ function toTuple(position: Vec3): [number, number, number] {
   return [position.x, position.y, position.z];
 }
 
+function progressFor(motion: MotionSpec, elapsedMs: number): number {
+  if (motion.durationMs === 0) return 1;
+
+  const linear = Math.min(1, elapsedMs / motion.durationMs);
+  if (motion.easing === "enter") return 1 - (1 - linear) ** 4;
+  if (motion.easing === "move") {
+    return linear < 0.5 ? 2 * linear * linear : 1 - (-2 * linear + 2) ** 2 / 2;
+  }
+  return linear;
+}
+
+function DominanceRing({
+  ring,
+  motion,
+  color,
+}: {
+  readonly ring: DominanceRingScene;
+  readonly motion: MotionSpec;
+  readonly color: string;
+}) {
+  const mesh = useRef<Mesh>(null);
+  const startedAt = useRef<number | null>(null);
+  const invalidate = useThree(({ invalidate: requestFrame }) => requestFrame);
+
+  useEffect(() => {
+    startedAt.current = null;
+    invalidate();
+  }, [invalidate]);
+
+  useFrame(({ clock }) => {
+    if (!mesh.current) return;
+
+    startedAt.current ??= clock.elapsedTime;
+    const elapsedMs = (clock.elapsedTime - startedAt.current) * 1_000;
+    const progress = progressFor(motion, elapsedMs);
+    const geometry = mesh.current.geometry;
+    const indexCount = geometry.index?.count ?? geometry.attributes.position?.count ?? 0;
+    geometry.setDrawRange(0, Math.ceil((indexCount * progress) / 3) * 3);
+
+    if (progress < 1) invalidate();
+  });
+
+  return (
+    <mesh
+      ref={mesh}
+      name={`dominance-share-ring-${ring.speaker}`}
+      position={[ring.pos.x, ring.pos.y + 0.35, ring.pos.z]}
+      rotation={[Math.PI / 2, 0, -Math.PI / 2]}
+      userData={{ evidence: ring.evidence, share: ring.share }}
+    >
+      <torusGeometry args={[1.76, 0.12, 8, 72, ring.arcRadians]} />
+      <meshBasicMaterial color={color} depthWrite={false} toneMapped={false} />
+    </mesh>
+  );
+}
+
+function InterruptionArc({
+  arc,
+  motion,
+  color,
+}: {
+  readonly arc: InterruptionArcScene;
+  readonly motion: MotionSpec;
+  readonly color: string;
+}) {
+  const line = useRef<Line2 | LineSegments2>(null);
+  const spark = useRef<Mesh>(null);
+  const startedAt = useRef<number | null>(null);
+  const invalidate = useThree(({ invalidate: requestFrame }) => requestFrame);
+  const curve = useMemo(
+    () =>
+      new QuadraticBezierCurve3(
+        new Vector3(arc.from.x, arc.from.y, arc.from.z),
+        new Vector3(arc.control.x, arc.control.y, arc.control.z),
+        new Vector3(arc.to.x, arc.to.y, arc.to.z),
+      ),
+    [arc],
+  );
+  const points = useMemo(
+    () => curve.getPoints(32).map(({ x, y, z }) => [x, y, z] as [number, number, number]),
+    [curve],
+  );
+
+  useEffect(() => {
+    startedAt.current = null;
+    invalidate();
+  }, [invalidate]);
+
+  useFrame(({ clock }) => {
+    startedAt.current ??= clock.elapsedTime;
+    const elapsedMs = (clock.elapsedTime - startedAt.current) * 1_000;
+    const progress = progressFor(motion, elapsedMs);
+
+    if (line.current) {
+      line.current.material.dashOffset = -progress * 2.4;
+      line.current.material.opacity = 0.32 + progress * 0.5;
+    }
+    if (spark.current) spark.current.position.copy(curve.getPoint(progress));
+
+    if (progress < 1) invalidate();
+  });
+
+  return (
+    <group
+      name={`interruption-arc-${arc.speaker}-to-${arc.floorHolder}`}
+      userData={{ count: arc.count, evidence: arc.evidence }}
+    >
+      <Line
+        ref={line}
+        color={color}
+        dashSize={0.55}
+        dashed
+        depthWrite={false}
+        gapSize={0.22}
+        lineWidth={2.4}
+        opacity={0.82}
+        points={points}
+        transparent
+      />
+      <mesh ref={spark} position={toTuple(arc.from)}>
+        <sphereGeometry args={[0.18, 12, 12]} />
+        <meshBasicMaterial color={color} toneMapped={false} />
+      </mesh>
+    </group>
+  );
+}
+
 export function ArenaRoomScene({ view }: ArenaRoomSceneProps) {
   const scene = useMemo(() => buildArenaRoomScene(view), [view]);
   const motion = useMemo(() => resolveArenaRoomMotion(view), [view]);
+  const evidenceMotion = useMemo(() => resolveArenaEvidenceMotion(view), [view]);
   const camera = useThree(({ camera: activeCamera }) => activeCamera);
   const seatMaterials = useRef(new Map<string, MeshStandardMaterial>());
   const lightColumns = useRef(new Map<string, Mesh>());
@@ -77,6 +220,23 @@ export function ArenaRoomScene({ view }: ArenaRoomSceneProps) {
         distance={45}
         position={[0, 12, 4]}
       />
+
+      {scene.dominanceRings.map((ring) => (
+        <DominanceRing
+          key={`${ring.speaker}-${ring.share}-${ring.evidence}`}
+          ring={ring}
+          motion={evidenceMotion.dominanceRing}
+          color={view.presentation.palette.gainHi}
+        />
+      ))}
+      {scene.interruptionArcs.map((arc) => (
+        <InterruptionArc
+          key={`${arc.speaker}-${arc.floorHolder}-${arc.count}-${arc.evidence}`}
+          arc={arc}
+          motion={evidenceMotion.interruptionArc}
+          color={view.presentation.palette.churn}
+        />
+      ))}
 
       <mesh position={[0, -0.24, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[10, 0.045, 8, 128]} />

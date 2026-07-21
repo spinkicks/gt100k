@@ -207,3 +207,8 @@
 
 - Reused the T106 aggregate-truth decision: the Fixture V3 `TurnAnalysis` supplies exact seats, descriptors, patterns, and confidence but no current-speaker carrier, so the production summary renders all `holdingFloor` flags false. The 3D and 2D renderers activate their pulse/static highlight only when a truthful `SeatView.holdingFloor` marker is supplied; rejected treating dominance or highest historical turn share as a live floor holder.
 - Use an on-demand r3f frame loop for an absent/static floor holder and switch to `always` only while a truthful holder needs the pinned 1200ms pulse. Rejected continuously rendering the otherwise static second Canvas because the production smoke showed it could exhaust the 30s behavioral-test budget under software WebGL.
+
+## 2026-07-21 — T128 observable evidence geometry
+
+- Derive a dominance ring only from an observable `dominance` pattern and that subject seat's exact turn share. Derive an interruption arc only when a `repeated_interruption` subject and a distinct truthful `holdingFloor` seat both exist; rejected aiming an aggregate interruption at the dominant/highest-share speaker because `TurnAnalysis` does not identify the interrupted floor holder and the UI must not invent one.
+- Animate the exact partial torus and raised bezier once through the pinned `dominanceRing`/`interruptionArc` tokens, requesting demand-loop frames only until each entrance settles. Keep continuous frames owned solely by the already-truthful turn-holder pulse; rejected looping historical evidence indefinitely and rejected a 2.4-world-unit arc in favor of a restrained 2.4px line.
