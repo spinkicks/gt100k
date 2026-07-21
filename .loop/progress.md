@@ -57,3 +57,15 @@
 
 - T004 — Add `packages/cohort-compiler/test/caliper.test.ts` with the contract tests for `withinCaliper` (FR-002).
 - Acceptance: tests prove both level and velocity tolerances are enforced independently, equality at either tolerance is inside the caliper, and any value above either tolerance is outside; the new test first fails because `src/caliper.ts` is absent, while the existing repository gate remains green until the paired implementation task.
+
+## 2026-07-20 — P1 / T004 + T007
+
+- Added the FR-002 contract suite for `withinCaliper`, covering both dimensions independently, inclusive equality at each tolerance boundary, and rejection above either bound; also pinned the T007 Manhattan distance helper.
+- Implemented pure `withinCaliper` and `caliperDistance` functions in `packages/cohort-compiler/src/caliper.ts` with no randomness, time, or I/O.
+- TDD status: the focused suite first failed because `src/caliper.ts` was absent, then passed 3/3 after the minimal implementation.
+- Gate status: `pnpm typecheck`, `pnpm test` (33/33), and `pnpm lint` pass. P1 is in progress; FR-002's caliper predicate is complete, while SC-001 still requires candidate generation. No blocker.
+
+## NEXT
+
+- T005 — Add `packages/cohort-compiler/test/candidates.test.ts` for the exact Fixture A candidate sets, exclusions, ordering, pinned FNV-1a hash, determinism, and absence of caste/full-field ranking fields.
+- Acceptance: the focused contract fails first because `src/candidates.ts` is absent, then the paired minimal T008 implementation makes it pass; exact Fixture A outputs and SC-001 are asserted, and the repository typecheck/test/lint gate remains green.
