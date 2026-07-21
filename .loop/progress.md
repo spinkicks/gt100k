@@ -244,3 +244,16 @@
 ## NEXT
 - T012e + the procedural-fallback slice of T016a: add `packages/arena-world/test/assets.test.ts`, then implement and explicitly export the minimal pure asset fallback descriptor helper.
 - Acceptance: `ASSET_KEYS` stays in exact grouped declaration order; every key resolves deterministically to a seeded procedural fallback with committed-model/SVG before procedural load order and no `Math.random` (FR-039, SC-023); focused checks and repository gates remain green.
+
+## 2026-07-20 — P1 / T012e + T016a (asset-fallback slice)
+- Added `assets.test.ts` through the public package API, covering the exact grouped registry/order, all 30 deterministic per-key fallbacks, unique stable seeds, committed-source-first resolution, unknown-key rejection, and the absence of randomness/external-fetch escape hatches.
+- Followed red-green TDD: the registry and source guard passed while both resolver behaviors failed because `resolveAssetFallback` was absent; all four tests passed after the minimal helper and explicit type/value exports landed.
+- Added pure renderer-neutral asset descriptors. Non-UI keys prefer a committed model/atlas, UI keys prefer a committed SVG, and both fall back to a seeded procedural mesh/material descriptor without paths, I/O, or network access.
+- Review status: checked T012e/T016a line-by-line against spec §§5.11/8.17/8.25, FR-039, SC-023, and the data model; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused asset tests passed (4 tests); direct package TypeScript validation passed; domain purity scan passed; `pnpm lint` passed (68 files); `pnpm typecheck` passed; `pnpm test` passed (22 files, 76 tests). No app changed, so no Next.js build was required.
+- SC status: SC-023's stable registry and deterministic domain-fallback contract are complete; the no-network app smoke and concrete procedural renderer remain scheduled for T018/P7.
+- Blockers: none.
+
+## NEXT
+- T012f + the `resolveQualityTier`/`nextLowerTier` slice of T016a: add `packages/arena-world/test/quality.test.ts`, then implement and explicitly export the minimal pure quality resolvers.
+- Acceptance: exact capability profiles map to A/B/C/D, reduced motion and low power force C, `nextLowerTier` follows A→B→C→D→D, and the exact budget/beacon-cap table remains stable (FR-043, SC-025); focused checks and repository gates remain green.

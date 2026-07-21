@@ -47,3 +47,7 @@
 - Kept reduced-motion water/post-fx behavior tier-driven: the quality resolver forces reduced motion to Tier C, so `resolveWater` and `resolvePostFx` retain their specified tier-only signatures. Rejected a second reduced-motion input that could disagree with the selected quality tier.
 - Applied dawn/dusk only to fields represented by the settled `LightingConfig`; the dusk star-card toggle remains a renderer concern. Rejected widening the domain model with an unlisted flag during this resolver task.
 - Returned fresh nested scene values from every resolver so a renderer cannot mutate the exported golden registries and make later identical inputs non-deterministic. Rejected exposing the mutable registry objects directly.
+
+## 2026-07-20 — T012e asset-fallback descriptor boundary
+- Chose one renderer-neutral descriptor per key: group, committed-source-first load order, and a procedural mesh/material seed. UI keys prefer committed SVG while all other groups prefer committed model/atlas. Rejected embedding app paths or loader I/O in the pure domain because the renderer owns file availability and loading.
+- Derived a stable unsigned 32-bit seed from each key with FNV-1a arithmetic and rejected a shared constant or runtime randomness so every fallback is key-specific and replay-identical.
