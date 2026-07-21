@@ -1,6 +1,9 @@
 export { HUE_RAMP, PALETTE, TYPOGRAPHY, resolveDomainHue } from "./art";
+export { buildEvidenceConstellationView } from "./constellation";
 export { buildCoverageMatrixView } from "./coverage-view";
+export { buildExplanationsView } from "./explanations";
 export { WORK_MODE_GLYPHS } from "./glyphs";
+export { buildLifecycleStateView, buildRevisionHistoryView } from "./lifecycle-view";
 export { EASINGS, MOTION, resolveMotion } from "./motion";
 export { buildProbePickerView } from "./picker";
 export {
@@ -16,6 +19,7 @@ export {
   resolveRenderTier,
 } from "./scene";
 export { resolveChildStaging } from "./staging";
+export { buildReturnTimelineView } from "./timeline";
 export { buildInterestLabView } from "./view";
 export type {
   BuildInterestLabViewInputs,

@@ -707,3 +707,15 @@
 ## NEXT
 - Complete U039 with the minimal constellation portion of U040: add `packages/interest-lab-view/test/constellation.test.ts` and implement `buildEvidenceConstellationView`.
 - Acceptance: the six family stars follow gate order; voluntary return has brightness `1.0`, other present families `0.7`, and absent families `0.18`; supporting/disconfirming anchors are `[2.4,0.4,0]` and `[-2.4,0.4,0]`; `domEquivalent:true`; no scalar score; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-21 — P13 / U039 + U040
+- Added four pure evidence-constellation contracts covering the exact six-star G4 geometry/order, present/absent brightness values, pinned supporting/disconfirming anchors, DOM equivalence, conservative polarity behavior, and recursive absence of scalar score fields.
+- Confirmed genuine test-first RED evidence: the focused suite failed on the absent constellation module, then the U040 public-API contract failed on all five missing guide-builder exports before their minimal implementations were exposed.
+- Implemented the GPU-free `buildEvidenceConstellationView` from the fixed signal-family vocabulary and authoritative revision summary, with integer-tenths geometry to avoid floating drift and the D053 fail-closed neutral pull until a typed polarity mapping exists.
+- Completed U040 by publicly exporting the explanation, timeline, lifecycle, revision-history, and constellation builders. Independent review found the missing export and the upstream polarity-model gap; the export was fixed test-first, while the schema expansion was rejected as unpinned scope.
+- Verified the focused constellation/public-API suites (6 tests), forced view-package compiler, `pnpm typecheck`, `pnpm test` (185 tests across 41 files), and `pnpm lint` (151 files); all pass.
+- Status: U039 and U040 complete; P13 remains in progress. SC-UI-05/06/07/15 and the complete P13 pure-builder public boundary are green. No implementation blocker; D053 records the reversible neutral-pull limitation.
+
+## NEXT
+- Complete U041: finalize `buildInterestLabView` and add `plainViewEquals` in `packages/interest-lab-view/src/view.ts`, composing the full guide block plus existing scene from one domain state.
+- Acceptance: tests first prove guide composition includes coverage, explanations, timeline, lifecycle, revision history, and constellation; `plainViewEquals` compares all domain-derived state including marker parity and constellation stars while allowing flags/presentation/tier/camera to differ; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and Interest Lab production build green.
