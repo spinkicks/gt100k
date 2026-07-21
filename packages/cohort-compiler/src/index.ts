@@ -30,7 +30,12 @@ export type {
 } from "./model";
 export { scoreObjective } from "./objective";
 export type { ObjectiveScore } from "./objective";
-export type { BenefitEstimator, CohortRepository, SafeguardingSink } from "./ports";
+export type {
+  BenefitEstimator,
+  CohortRepository,
+  MediaTurnSource,
+  SafeguardingSink,
+} from "./ports";
 export { repairCohort } from "./repair";
 export type {
   RepairAccepted,
@@ -39,5 +44,7 @@ export type {
 } from "./repair";
 export { routeHealthEvent } from "./safeguarding";
 export type { ActiveCohortMove } from "./safeguarding";
+export { analyzeTurns } from "./rivalrymix";
+export type { RivalryMixThresholds } from "./rivalrymix";
 export { assignCohorts } from "./solver";
 export type { SolveResult, UnassignedLearner } from "./solver";

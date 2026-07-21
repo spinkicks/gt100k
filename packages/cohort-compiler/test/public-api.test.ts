@@ -1,4 +1,5 @@
 import {
+  analyzeTurns,
   assignCohorts,
   benefitOf,
   caliperDistance,
@@ -31,6 +32,7 @@ import type {
   HardConstraints,
   LearnerProfile,
   LevelBand,
+  MediaTurnSource,
   ObjectiveScore,
   ObjectiveTerms,
   ObjectiveWeights,
@@ -38,6 +40,7 @@ import type {
   RepairAccepted,
   RepairRequiresStaffException,
   RepairResult,
+  RivalryMixThresholds,
   Role,
   SafeguardingSink,
   ScheduleAvailability,
@@ -89,6 +92,11 @@ type PublicUs2Surface = {
   safeguardingSink: SafeguardingSink;
   solveResult: SolveResult;
   unassignedLearner: UnassignedLearner;
+};
+
+type PublicUs3Surface = {
+  mediaTurnSource: MediaTurnSource;
+  thresholds: RivalryMixThresholds;
 };
 
 describe("public package API (T010)", () => {
@@ -191,6 +199,22 @@ describe("public package API (T028)", () => {
         event: CohortHealthEvent,
         activeMoves?: ActiveCohortMove[],
       ) => Promise<void>
+    >();
+  });
+});
+
+describe("public package API (T033)", () => {
+  it("publishes the RivalryMix threshold and deferred media port types", () => {
+    expectTypeOf<PublicUs3Surface>().toBeObject();
+    expectTypeOf<MediaTurnSource["turns"]>().toEqualTypeOf<
+      (roomRef: string) => Promise<TurnEvent[]>
+    >();
+  });
+
+  it("publishes the exact observable-only RivalryMix analysis signature", () => {
+    expect(analyzeTurns).toBeTypeOf("function");
+    expectTypeOf(analyzeTurns).toEqualTypeOf<
+      (turns: readonly TurnEvent[], thresholds: RivalryMixThresholds) => TurnAnalysis
     >();
   });
 });

@@ -241,3 +241,15 @@
 
 - T033 — Export the RivalryMix API and `MediaTurnSource` port from `packages/cohort-compiler/src/index.ts` using explicit named exports.
 - Acceptance: consumers can import `analyzeTurns`, its threshold type, and `MediaTurnSource` through `@gt100k/cohort-compiler`; the public API contract proves the exact observable-only signatures; the standalone feature project-reference build and repository typecheck/test/lint gate remain green; P5/SC-007 reaches its checkpoint.
+
+## 2026-07-21 — P5 / T033
+
+- Published `analyzeTurns`, `RivalryMixThresholds`, and the deferred `MediaTurnSource` port type through the explicit `@gt100k/cohort-compiler` entrypoint without widening the learned-model or media implementation boundary.
+- Extended the package-name public API contract with a runtime export check and exact compile-time signatures for observable-only turn analysis and synthetic turn retrieval.
+- TDD status: the focused public API suite first failed because `analyzeTurns` resolved as `undefined`, then passed 6/6 after the minimal entrypoint exports were added.
+- Gate status: the standalone package/media-adapter project-reference build passes; repository `pnpm typecheck`, `pnpm test` (108/108), and `pnpm lint` pass. Inline completion review found no Critical, Important, or Minor issues. P5 and SC-007 are complete; no blocker.
+
+## NEXT
+
+- T034 — Add `packages/cohort-compiler/README.md` documenting the public API, ports usage, and deferred production directions.
+- Acceptance: the README accurately documents the exported domain functions and five adapter seams; HNSW, CP-SAT, WebRTC/AudioWorklet/LiveKit, peer-effect causal uplift, and PostgreSQL are explicitly marked deferred/not production; synthetic-only and observable-only guardrails remain clear; repository typecheck/test/lint stay green.
