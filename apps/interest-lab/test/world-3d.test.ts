@@ -1,4 +1,4 @@
-import { CAMERA3D, SCENE3D } from "@gt100k/interest-lab-view";
+import { CAMERA3D, QUALITY_TIERS, SCENE3D } from "@gt100k/interest-lab-view";
 import { AdaptiveDpr } from "@react-three/drei";
 import {
   Children,
@@ -48,6 +48,16 @@ const fullScene = buildSyntheticInterestLabSeed({
   deviceCaps: {
     webglAvailable: true,
     deviceMemoryGB: 8,
+    hardwareConcurrency: 8,
+    coarsePointer: false,
+    saveData: false,
+  },
+}).view.scene;
+
+const liteScene = buildSyntheticInterestLabSeed({
+  deviceCaps: {
+    webglAvailable: true,
+    deviceMemoryGB: 6,
     hardwareConcurrency: 8,
     coarsePointer: false,
     saveData: false,
@@ -104,26 +114,33 @@ describe("World3D host", () => {
     expect(captures.dynamicProps).toMatchObject({ scene: fullScene, children: suppliedScene });
   });
 
-  it("mounts an accessibility-hidden Canvas with the pinned camera and DPR cap", () => {
-    renderToStaticMarkup(createElement(World3DCanvas, { scene: fullScene }));
+  it.each([
+    ["full", fullScene, QUALITY_TIERS.full],
+    ["lite", liteScene, QUALITY_TIERS.lite],
+  ] as const)(
+    "mounts the %s Canvas with its exact DPR and shadow quality",
+    (_name, scene, quality) => {
+      renderToStaticMarkup(createElement(World3DCanvas, { scene }));
 
-    expect(readCanvasProps()).toMatchObject({
-      "aria-hidden": "true",
-      camera: {
-        position: fullScene.camera.pos,
-        fov: CAMERA3D.fov,
-        near: CAMERA3D.near,
-        far: CAMERA3D.far,
-      },
-      dpr: [1, fullScene.quality.dprCap],
-      shadows: fullScene.quality.shadows,
-      gl: {
-        alpha: false,
-        antialias: true,
-        powerPreference: "high-performance",
-      },
-    });
-  });
+      expect(scene.quality).toEqual(quality);
+      expect(readCanvasProps()).toMatchObject({
+        "aria-hidden": "true",
+        camera: {
+          position: scene.camera.pos,
+          fov: CAMERA3D.fov,
+          near: CAMERA3D.near,
+          far: CAMERA3D.far,
+        },
+        dpr: [1, quality.dprCap],
+        shadows: quality.shadows,
+        gl: {
+          alpha: false,
+          antialias: true,
+          powerPreference: "high-performance",
+        },
+      });
+    },
+  );
 
   it("marks the renderer-owned canvas accessibility-hidden after creation", () => {
     renderToStaticMarkup(createElement(World3DCanvas, { scene: fullScene }));

@@ -7,8 +7,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { nextQuestFocusIndex } from "../app/child/Board2D";
 import { QuestWorld, buildQuestWorldSceneGraph } from "../app/child/QuestWorld";
 import { CameraRig } from "../app/child/world3d/CameraRig";
-import { Island } from "../app/child/world3d/Island";
-import { Motes } from "../app/child/world3d/Motes";
+import { Island, resolveIslandRender } from "../app/child/world3d/Island";
+import { Motes, resolveMotesProps } from "../app/child/world3d/Motes";
 import { buildSyntheticInterestLabSeed } from "../app/seed";
 import {
   applyRenderTierOverride,
@@ -48,6 +48,21 @@ const LITE_CAPS: DeviceCaps = {
 };
 
 const viewFor = (deviceCaps: DeviceCaps) => buildSyntheticInterestLabSeed({ deviceCaps }).view;
+
+const QUALITY_CASES = [
+  {
+    name: "full",
+    caps: FULL_CAPS,
+    quality: QUALITY_TIERS.full,
+    islandSegments: 10,
+  },
+  {
+    name: "lite",
+    caps: LITE_CAPS,
+    quality: QUALITY_TIERS.lite,
+    islandSegments: 6,
+  },
+] as const;
 
 describe("QuestWorld tier switch", () => {
   beforeEach(() => {
@@ -159,6 +174,33 @@ describe("QuestWorld tier switch", () => {
     expect(performanceMonitor?.props.onDecline).toBe(onPerformanceDecline);
     expect(performanceMonitor?.props.bounds(120)).toEqual([55, 120]);
   });
+
+  it.each(QUALITY_CASES)(
+    "threads the composed $name quality through motes and every island",
+    ({ caps, quality, islandSegments }) => {
+      const view = viewFor(caps);
+      const graph = buildQuestWorldSceneGraph({
+        view,
+        focusedProbeId: null,
+        pickedProbeIds: new Set(),
+        haloTexture: new Texture(),
+      });
+      const islands = graph.filter((element) => element.type === Island);
+      const motes = graph.find((element) => element.type === Motes);
+
+      expect(view.scene.quality).toEqual(quality);
+      expect(islands).toHaveLength(view.scene.islands.length);
+      expect(islands.every((element) => element.props.quality === view.scene.quality)).toBe(true);
+      expect(motes?.props.quality).toBe(view.scene.quality);
+      expect(resolveMotesProps(motes?.props.quality).count).toBe(quality.motes);
+
+      for (const element of islands) {
+        const render = resolveIslandRender(element.props.island, element.props.quality);
+        expect(render?.shadows).toBe(quality.shadows);
+        expect(render?.geometry.cap.args[3]).toBe(islandSegments);
+      }
+    },
+  );
 
   it("moves arrow focus deterministically while native Tab remains available", () => {
     expect(nextQuestFocusIndex(0, "ArrowRight", 6)).toBe(1);

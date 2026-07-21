@@ -742,3 +742,14 @@
 ## NEXT
 - Complete U043: wire every `resolveQualityTier` parameter into the existing 3D scene, preserving the green accessible floor.
 - Acceptance: tests first prove full/lite quality drives DPR caps, motes, shadows, and high/low island detail from the composed view; `board-2d` mounts no canvas; optional post-processing bloom stays behind `QUALITY_TIERS.full.bloom` and is not added unless it remains non-breaking; focused tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.
+
+## 2026-07-21 — P14 / U043
+- Added integrated full/lite quality-tier regressions proving the composed view drives the exact Canvas DPR cap and shadow mode, then threads the same quality object through ambient motes and every high/low-detail island.
+- Confirmed failure sensitivity with a controlled regression that replaced view-derived island quality with the full-tier constant: both new composed-quality cases failed, including the lite geometry path, then all 16 focused world tests passed after restoration.
+- Reused the existing board-tier contract proving `board-2d` mounts no Canvas and preserves the same operable quest ids; kept the optional post-processing packages absent under the emissive-first §U8.15 default recorded in D056.
+- Verified the app suite (68 tests across 14 files), `pnpm typecheck`, `pnpm test` (191 tests across 42 files), `pnpm lint` (162 files), the warning-free Interest Lab production build, and `pnpm build`; all pass.
+- Status: U043 complete; P14 remains in progress. SC-UI-14's quality values are now locked through the pure resolver, composed view, Canvas, and scene-object boundaries. No blocker.
+
+## NEXT
+- Complete U044: harden runtime degradation so repeated sustained low-FPS events step `full → lite → board-2d`, while WebGL context loss, Save-Data, and device memory below 4 GB fail directly to `board-2d` without losing a pick or quest.
+- Acceptance: tests first prove both sequential performance steps and every capability fallback, plus quest-state parity across tier changes; focused app tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.
