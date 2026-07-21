@@ -366,3 +366,14 @@
 ## NEXT
 - Complete U004: add the exact value-only `PALETTE`, `TYPOGRAPHY`, `HUE_RAMP`, `MOTION`, `EASINGS`, `WORK_MODE_GLYPHS`, `SCENE3D`, `CAMERA3D`, `QUALITY_TIERS`, and `RENDER_TIERS` registries in their four specified modules.
 - Acceptance: registry tests first pin every §U8.2–§U8.6, §U8.14, and §U8.16 value without implementing later resolvers; the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
+
+## 2026-07-21 — P8 / U004
+- Added the ten exact §U8 value registries across the four responsibility-focused modules: art, motion, glyphs, and GPU-free scene constants.
+- Added six registry contracts pinning every palette, typography, hue, duration, easing, work-mode glyph, scene, camera, render-tier, and quality-tier value; confirmed the focused red state on the absent modules before implementation.
+- Kept the increment value-only: no resolver behavior or public entry-point export was pulled forward from U005/U014/U023.
+- Verified the focused suite (6 tests), forced view-package compiler, `pnpm typecheck`, `pnpm test` (120 tests across 26 files), and `pnpm lint` (86 files) all pass.
+- Status: U004 complete; P8 remains in progress. Part-I SC-001 through SC-016 remain green; Part-II golden registry inputs are encoded, while SC-UI behavior remains with later phases. No blocker.
+
+## NEXT
+- Complete U005: replace the module-only `packages/interest-lab-view/src/index.ts` scaffold with explicit named exports for the complete U003 type surface and all U004 registries added so far.
+- Acceptance: a consumer-facing test imports all public view types and ten registries through `@gt100k/interest-lab-view`, with no wildcard exports or premature resolver exports; the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
