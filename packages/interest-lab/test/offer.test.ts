@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildLab } from "../src/offer";
+import type { OfferSelector } from "../src/ports";
 import type { Probe, ProbeFamily } from "../src/probe";
 
 const GOLDEN_ROWS = [
@@ -166,6 +167,54 @@ describe("buildLab", () => {
     );
     expect(selectedIds[1]).toEqual(selectedIds[0]);
     expect(selectedIds[2]).toEqual(selectedIds[0]);
+  });
+
+  it("emits the rules-engine inputs needed to replay the offer decision", () => {
+    const lab = buildLab("synthetic-fresh-learner", CATALOG_GOLDEN_V1, FRESH_LEARNER, {
+      seed: 42,
+    });
+
+    expect(lab.decisionLogEntry).toEqual({
+      eligibleSet: GOLDEN_ROWS.map(([id]) => id),
+      policyVersion: "rules-engine-v1",
+      coverageConstraints: [
+        "probe-count:18-24;target=20",
+        "domains:min=6",
+        "work-modes:min=6",
+        "social:solo+group",
+        "difficulty:foundational+stretch",
+        "audience:audience+no_audience",
+        "exploration-floor:min=4",
+      ],
+    });
+  });
+
+  it("accepts but does not invoke the deferred selector in the rules-engine MVP", () => {
+    let selectorCalled = false;
+    const selector: OfferSelector<unknown> = {
+      pick: () => {
+        selectorCalled = true;
+        return [];
+      },
+    };
+    const overrides = { seed: 42 };
+
+    const rulesOnly = buildLab(
+      "synthetic-fresh-learner",
+      CATALOG_GOLDEN_V1,
+      FRESH_LEARNER,
+      overrides,
+    );
+    const withDeferredSelector = buildLab(
+      "synthetic-fresh-learner",
+      CATALOG_GOLDEN_V1,
+      FRESH_LEARNER,
+      overrides,
+      selector,
+    );
+
+    expect(selectorCalled).toBe(false);
+    expect(withDeferredSelector).toEqual(rulesOnly);
   });
 
   it("never offers safety or prerequisite controls to an ineligible learner", () => {

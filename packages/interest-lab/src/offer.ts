@@ -1,6 +1,7 @@
 import { rotateBySeed, selectEligibleFamilyVariants } from "./catalog";
 import { buildCoverageMatrix } from "./coverage";
 import type { CoverageMatrix } from "./hypothesis";
+import type { OfferDecisionLogEntry, OfferSelector } from "./ports";
 import type {
   AudienceCondition,
   DifficultyBand,
@@ -64,8 +65,21 @@ export interface Lab {
   coverage: CoverageMatrix;
   explorationReserved: number;
   choicePointsMinEligible: number;
+  decisionLogEntry: OfferDecisionLogEntry;
   config: LabConfig;
 }
+
+const RULES_ENGINE_POLICY_VERSION = "rules-engine-v1";
+
+const describeCoverageConstraints = (config: LabConfig): string[] => [
+  `probe-count:${config.probeCountRange.min}-${config.probeCountRange.max};target=${config.probeCountTarget}`,
+  `domains:min=${config.minDomains}`,
+  `work-modes:min=${config.minWorkModes}`,
+  "social:solo+group",
+  "difficulty:foundational+stretch",
+  "audience:audience+no_audience",
+  `exploration-floor:min=${config.explorationFloor}`,
+];
 
 const toOffer = (probe: Probe): Offer => ({
   probeId: probe.id,
@@ -140,6 +154,7 @@ export const buildLab = (
   catalogView: readonly ProbeFamily[],
   eligibility: LearnerEligibility,
   overrides: Partial<LabConfig> = {},
+  _selector?: OfferSelector<unknown>,
 ): Lab => {
   const config = { ...DEFAULT_LAB_CONFIG, ...overrides };
   const metPrereqs = new Set(eligibility.metPrereqs);
@@ -159,6 +174,11 @@ export const buildLab = (
     coverage: buildCoverageMatrix(offers, config),
     explorationReserved: offers.filter(({ domain }) => !engagedDomains.has(domain)).length,
     choicePointsMinEligible: offers.length,
+    decisionLogEntry: {
+      eligibleSet: eligible.map(({ id }) => id),
+      policyVersion: RULES_ENGINE_POLICY_VERSION,
+      coverageConstraints: describeCoverageConstraints(config),
+    },
     config,
   };
 };

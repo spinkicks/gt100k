@@ -131,3 +131,14 @@
 ## NEXT
 - Complete T015: finalize `buildLab` with the `OfferDecisionLog` replay entry and optional deferred `OfferSelector` parameter while keeping the selector unused in the rules-engine MVP.
 - Acceptance: tests first pin the eligible-set ids, policy version, coverage-constraint log payload, and identical Lab output with the selector omitted; package compilation, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
+
+## 2026-07-20 — P3 / T015
+- Added a pure `decisionLogEntry` to each Lab with the pre-selection eligible probe ids, `rules-engine-v1` policy version, and exact effective coverage/exploration constraints for replay through an `OfferDecisionLog` adapter.
+- Added the optional fifth `OfferSelector` parameter while proving the rules-engine MVP never invokes it and produces the same operative Lab with or without the deferred selector.
+- Confirmed both test-first red states: the focused suite failed on the absent replay entry, and the package compiler failed with TS2554 before the selector parameter existed.
+- Verified the focused offer suite (7 tests), forced package compiler, `pnpm typecheck`, `pnpm test` (53 tests), and `pnpm lint` all pass.
+- Status: T015 complete; P3 remains in progress. SC-001 remains green, and the PASS-009/IL-016/IL-021 forward-compatible audit boundary is now encoded. No blocker.
+
+## NEXT
+- Complete T016: upgrade `packages/interest-lab/test/smoke.test.ts` from the P0 arithmetic smoke to the seeded G1 determinism guard.
+- Acceptance: the smoke test builds the golden Lab, asserts 20 offers, identical selected probe ids across seeds `{1, 42, 999}`, and coverage deep-equal to G2; preserve a failing red run before implementation and keep `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
