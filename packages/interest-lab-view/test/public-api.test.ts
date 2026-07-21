@@ -2,9 +2,12 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 import * as viewApi from "../src/index";
 import type {
   AgeBand,
+  BuildInterestLabViewInputs,
+  BuildInterestLabViewOptions,
   Camera3DView,
   CameraView,
   CellView,
+  ChildInterestLabView,
   ChildStaging,
   ConstellationStar,
   CoverageDimension,
@@ -40,10 +43,13 @@ import type {
 
 type PublicViewTypeExports = [
   AgeBand,
+  BuildInterestLabViewInputs,
+  BuildInterestLabViewOptions,
   Camera3DView,
   CameraView,
   CellView,
   ChildStaging,
+  ChildInterestLabView,
   ConstellationStar,
   CoverageDimension,
   CoverageMatrixView,
@@ -89,6 +95,7 @@ describe("interest lab view public API", () => {
       "SCENE3D",
       "TYPOGRAPHY",
       "WORK_MODE_GLYPHS",
+      "buildInterestLabView",
       "buildProbePickerView",
       "resolveChildStaging",
       "resolveDomainHue",

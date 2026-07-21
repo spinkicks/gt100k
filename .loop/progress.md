@@ -479,3 +479,14 @@
 ## NEXT
 - Complete U017: add the first pure `buildInterestLabView` child-surface composition in `packages/interest-lab-view/src/view.ts` and export it.
 - Acceptance: tests first prove the builder composes the child `ProbePickerView` with `surface:"child"`, caller flags, and derived presentation without recomputing domain state; the scene block remains deferred to P9b, and the view package compiler, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and Interest Lab app build remain green.
+
+## 2026-07-21 — P9 / U017
+- Added focused child-view and public-API contracts proving exact child surface/flag composition, `board-2d` presentation tokens, reduced motion delegation, picker reuse, absence of premature scene/guide blocks, and an unchanged input Lab.
+- Confirmed the test-first red state: both child cases failed because `buildInterestLabView` was absent, and the public-API suite independently reported its missing runtime export before implementation.
+- Implemented and exported the pure phased child builder plus named input/output types; it delegates domain projection to `buildProbePickerView`, derives motion from caller flags, and keeps P9b/P13 scene and guide work deferred.
+- Verified the view package suite (33 tests across 9 files), forced view-package compiler, `pnpm typecheck`, `pnpm test` (143 tests across 33 files), `pnpm lint` (102 files), and the Interest Lab production build; all pass.
+- Status: U017 complete; P9 remains in progress. SC-UI-01/02/08/09 remain green, and UI-FR-001/019 now have their first child-only composition boundary; final cross-tier/guide parity remains with U024/U041/U046. No blocker.
+
+## NEXT
+- Complete U018: add the synthetic app seed, Motion token hook, inline SVG glyph component, and client device-capability detector under `apps/interest-lab/app/`.
+- Acceptance: the seed feeds `CATALOG_GOLDEN_V1` through Part-I `buildLab` and public `buildInterestLabView` with no external fetch; `useMotionToken` bridges `resolveMotion` with `motion/react` reduced-motion preference; `Glyph` renders work-mode/state SVGs without emoji; `deviceCaps` feature-detects client capabilities; `pnpm typecheck`, `pnpm test`, `pnpm lint`, and the Interest Lab production build remain green.

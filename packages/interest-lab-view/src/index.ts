@@ -4,6 +4,12 @@ export { EASINGS, MOTION, resolveMotion } from "./motion";
 export { buildProbePickerView } from "./picker";
 export { CAMERA3D, QUALITY_TIERS, RENDER_TIERS, SCENE3D } from "./scene";
 export { resolveChildStaging } from "./staging";
+export { buildInterestLabView } from "./view";
+export type {
+  BuildInterestLabViewInputs,
+  BuildInterestLabViewOptions,
+  ChildInterestLabView,
+} from "./view";
 export type {
   AgeBand,
   Camera3DView,
