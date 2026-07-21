@@ -1,1 +1,1 @@
-feat(evidence-graph): add content-addressed node insertion
+feat: enforce evidence graph edge invariants

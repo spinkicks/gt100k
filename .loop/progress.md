@@ -87,3 +87,13 @@
 
 ## NEXT
 - T010/T013: write the `addEdge` validation contract test first, confirm RED on the missing API, then implement immutable edge insertion in `packages/evidence-graph/src/graph.ts`; acceptance is rejection of dangling, self, and cyclic edges, all six edge types accepted, fuzzed inserts remain acyclic, and the workspace gate stays green.
+
+## 2026-07-20 — P1 validated edge insertion (T010/T013)
+- Added the pure, immutable `addEdge` graph transformation with source/target resolution, stable `DANGLING_REF`/`CYCLE` errors, and path-based cycle prevention.
+- Added 11 contract cases covering all six edge types, declared actor/tool targets, missing endpoints, self-edges, transitive cycles, input immutability, and 300 deterministic fuzzed insert attempts. Confirmed RED on the missing API, then GREEN after the minimal implementation.
+- Gate evidence: package composite `tsc -b`, workspace `pnpm typecheck`, workspace `pnpm test` (53/53), and `pnpm exec biome check packages adapters apps` over 48 files all pass.
+- Phase status: P1 in progress; T008–T013 are complete except the separately ordered T010a golden test. SC-001, SC-002, SC-006's fake-hasher seam, and SC-009 are passing; T010a/T014 remain before the P1 checkpoint.
+- Blockers: none.
+
+## NEXT
+- T010a/T014: write the public-entrypoint golden Artifact test first, confirm RED while the package barrel is still empty, then export the model, canonicalize, and graph APIs from `packages/evidence-graph/src/index.ts`; acceptance is the exact `facecf25460fedd81070a1194f25639af9561cd6190d829739f4af21568a9039` id through the public API and a green workspace gate.

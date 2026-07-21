@@ -29,3 +29,8 @@
 - Decision: make `addNode` an immutable graph transformation: a new id produces a new nodes record while sharing the unchanged edges array, and an existing id returns the exact original graph object as the no-op result.
 - Why: the domain contract requires pure functions and an unchanged graph for idempotent content. Structural sharing makes both guarantees observable without copying unrelated graph state.
 - Rejected: mutating `graph.nodes` in place, which would violate the pure-domain contract; cloning the entire graph for either insertion or a duplicate, which would obscure the specified no-op and add unnecessary work.
+
+## 2026-07-20 — T010/T013 external provenance endpoints
+- Decision: require every edge source to be a graph node; resolve a target as either a graph node, an `authored_by` actor ref declared by a node, or a `used_tool` tool name declared by a node. Only node-to-node edges participate in cycle traversal.
+- Why: the settled data model makes `from` a node id while permitting `to` to be a node id or actor ref, and the synthetic seed also uses declared tool refs. Actor/tool records are terminal provenance references rather than graph vertices, so they cannot close a directed node cycle.
+- Rejected: treating all non-node targets as dangling, which would reject the committed seed; accepting arbitrary external refs for every edge type, which would weaken dangling validation; adding actor/tool refs to the node adjacency map, which would invent vertices absent from `EvidenceGraph`.
