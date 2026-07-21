@@ -647,3 +647,17 @@
 ## NEXT
 - T040 + the `plainViewEquals` slice of T044: add `packages/arena-world/test/plain-mode.test.ts` first, then implement the minimal pure state-parity comparison needed to restore the green gate.
 - Acceptance: reduced-motion, plain, lower-tier, and standings-off variants preserve byte-identical world/layout/node/progression/eligibility/base/standing state while only flags and presentation may differ; learning/access/standing remain unchanged and focused plus repository gates stay green (FR-020/029, SC-006/014).
+
+## 2026-07-21 — P5 / T040 + T044 (`plainViewEquals` slice)
+- Added `plain-mode.test.ts` through the public package API, proving one underlying state across plain, reduced-motion Tier C, lower-quality Tier B, and standings-off renderings.
+- Added and explicitly exported the pure two-input `plainViewEquals` comparator over the exact fixed state projection: world, layout, node states, progression, eligibility, base, and standing. Flags and renderer presentation are intentionally excluded.
+- Added negative acceptance coverage for every compared field so the comparator cannot pass vacuously, plus exact signature and boolean-return type assertions.
+- Followed red-green TDD: all four tests failed because `plainViewEquals` was absent, then passed after the minimal comparator and entrypoint export landed. Direct static validation caught two incorrect negative-fixture field assumptions; both were traced to the fixed model and corrected without weakening the assertions.
+- Review status: checked T040/T044's comparator slice against D4, US5, the fixed `ArenaView` state list, FR-020/029, and SC-006/014; no Critical, Important, or Minor issues remain. The final standings/visual-band view composition remains in its ordered T041/T044 increment.
+- Gate status: focused plain-mode tests passed (4 tests); direct arena-world TypeScript validation and focused Biome checks passed; `pnpm lint` passed (129 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (51 files, 205 tests). No app file changed, so no Next.js build was required.
+- SC status: T040 completes the pure state-parity comparator slice of SC-006/014. P5 remains in progress for the final composed-view acceptance and app controls.
+- Blockers: none.
+
+## NEXT
+- T041 + the remaining T044 final-composer work: add `packages/arena-world/test/view.test.ts` first, then finalize `buildArenaView` with exact reward representation, opt-in standing, and the complete presentation block including `visualBand`.
+- Acceptance: one full synthetic scenario composes every `ArenaView` field from injected inputs; standings default off and resolve exactly when opted in; age-band/plain/reduced/lower-tier variants retain `plainViewEquals` state parity; presentation carries exact visual-band/quality/lighting/water/post-fx values; Ledger-facing state is complete; focused and repository gates, plus builds for any changed app callers, remain green (SC-012/014/020).

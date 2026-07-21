@@ -6,6 +6,7 @@ import { deriveCosmeticEligibility } from "./cosmetics";
 import { layoutQuestWorld } from "./layout";
 import type {
   AgeBand,
+  ArenaView,
   AvatarState,
   CohortBase,
   Cosmetic,
@@ -117,6 +118,27 @@ export function buildArenaView(inputs: BuildArenaViewInputs) {
       ageBand: inputs.options.ageBand,
     },
   };
+}
+
+type ComparableArenaState = Pick<
+  ArenaView,
+  "world" | "layout" | "nodeStates" | "progression" | "eligibility" | "base" | "standing"
+>;
+
+export function plainViewEquals(full: ComparableArenaState, plain: ComparableArenaState): boolean {
+  return stateFingerprint(full) === stateFingerprint(plain);
+}
+
+function stateFingerprint(view: ComparableArenaState): string {
+  return JSON.stringify([
+    view.world,
+    view.layout,
+    view.nodeStates,
+    view.progression,
+    view.eligibility,
+    view.base,
+    view.standing,
+  ]);
 }
 
 const WORLD_THEME_BY_COSMETIC_ID: Readonly<Record<string, WorldTheme>> = {

@@ -149,3 +149,7 @@
 ## 2026-07-21 — T039 standing derivation boundary
 - Include the learner's own gain when finding the band top, so an empty peer set or a learner above every peer produces `gainToBandTop=0` rather than a negative or undefined gap. Rejected taking the maximum of peers alone because the data model requires a non-negative own-gain comparison.
 - Preserve the caller-supplied near-peer order while copying each pseudonymous gain record. Rejected sorting by gain because the resolver must not manufacture a rank-like ordering, and rejected returning caller-owned records because later mutation could break deterministic replay.
+
+## 2026-07-21 — T040 staged state-parity boundary
+- Compare exactly the fixed data-model state projection: world, layout, node states, progression, eligibility, base, and standing. Rejected whole-view equality because flags, quality/motion presentation, and later age-band representation are expected to vary without changing underlying state.
+- Accept that state projection directly instead of pulling the final T044 `buildArenaView` inputs and presentation fields into T040. This keeps the ordered test-first path honest while allowing the final composed `ArenaView` to satisfy the same comparator structurally once T044 lands.

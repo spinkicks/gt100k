@@ -95,4 +95,4 @@ export { layoutQuestWorld } from "./layout";
 export { deriveNodeStates } from "./nodes";
 export { buildQuestWorld } from "./world";
 export { resolveWorldTransform } from "./worldTransform";
-export { buildArenaView } from "./view";
+export { buildArenaView, plainViewEquals } from "./view";
