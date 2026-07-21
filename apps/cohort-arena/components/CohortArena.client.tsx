@@ -6,12 +6,13 @@ import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 
 import { StandingsToggle } from "./StandingsToggle";
+import { ChurnBudgetMeter } from "./hud/ChurnBudgetMeter";
 import { CohortRosterHud } from "./hud/CohortRosterHud";
 import { StandingsPanel } from "./hud/StandingsPanel";
 import { toMotionEasing } from "./hud/motion-transition";
 import { CohortLedger } from "./ledger/CohortLedger";
 import { ObservatoryScene } from "./observatory/ObservatoryScene";
-import { buildSyntheticCohortView } from "./synthetic-view";
+import { SYNTHETIC_CHURN_BUDGET, buildSyntheticCohortView } from "./synthetic-view";
 import { CohortTier2D } from "./tier2d/CohortTier2D";
 import { resolveTier2DMode } from "./tier2d/mode";
 
@@ -128,6 +129,7 @@ export default function CohortArenaClient() {
             <span className="status-dot" aria-label="All hard constraints satisfied" />
           </div>
           <CohortRosterHud view={view} reducedMotion={tier2D.active} />
+          <ChurnBudgetMeter budget={SYNTHETIC_CHURN_BUDGET} cohorts={view.cohorts} />
           <StandingsPanel standings={view.standings} reducedMotion={tier2D.active} />
         </aside>
       </div>

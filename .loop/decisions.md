@@ -192,3 +192,8 @@
 
 - Recompose and memoize one `CohortArenaView` from the three primitive runtime preferences (`plainMode`, the resolved reduced-motion tier, and `standingsOptIn`), then pass that same object to every renderer and the Ledger. This supersedes only the module-scoped-view portion of the T115/T119 decisions now that a spec-required flag is interactive; rejected local panel-only state or independently rebuilt renderer projections because either would let the visual and accessible standings surfaces diverge.
 - Keep the standings control as a conventional pressed button whose visible name changes between `Standings off` and `Standings on`, with `aria-controls` referencing both conditional outputs. Rejected a custom switch or animated reveal because the pinned frequent-action token is instant and the product surface benefits from a familiar, keyboard-native affordance.
+
+## 2026-07-21 — T124 domain-authoritative churn presentation
+
+- Read the base cap and already-used membership changes only from the injected domain `ChurnBudget`; derive remaining capacity as `max(0, cap - used)`. Sum the existing `view.cohorts[].churnDelta` carriers only for a separately labeled `display only` readout. Rejected subtracting the view delta from remaining capacity or re-deriving membership churn in the renderer because either would let an uncommitted visualization impersonate domain budget consumption.
+- Bound the visual and ARIA meter at the base cap while retaining the exact used value in text and `aria-valuetext`; when domain exceptions permit used churn above the base cap, label that state `Recorded exception`. Rejected an overflowing meter or a hard-coded within-budget label because both would misrepresent a valid recorded-exception path.

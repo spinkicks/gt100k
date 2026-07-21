@@ -7,7 +7,7 @@ import {
 
 type SyntheticLearner = NonNullable<BuildCohortArenaViewInput["pool"]>[number];
 
-const CHURN = {
+export const SYNTHETIC_CHURN_BUDGET = {
   weekKey: "2026-W30",
   cap: 4,
   used: 0,
@@ -22,7 +22,7 @@ const HARD = {
   caliper: { levelTolerance: 2, velocityTolerance: 2, k: 10 },
   nonHarmFloor: 0.5,
   benefitOf: () => 0.825,
-  churn: CHURN,
+  churn: SYNTHETIC_CHURN_BUDGET,
 } satisfies BuildCohortArenaViewInput["hard"];
 
 const ROLE_VECTOR = ["anchor", "scout", "builder", "builder", "challenger", "scribe"] as const;
@@ -108,7 +108,7 @@ const INPUT = {
   priorAssignment: null,
   pool: POOL,
   hard: HARD,
-  churn: CHURN,
+  churn: SYNTHETIC_CHURN_BUDGET,
   standings: STANDINGS,
   flags: {
     reducedMotion: false,

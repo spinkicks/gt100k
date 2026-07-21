@@ -1,6 +1,7 @@
 import { type Page, expect, test } from "@playwright/test";
 
 interface CompiledState {
+  readonly churn: readonly string[];
   readonly constraints: readonly string[];
   readonly floorReadouts: readonly string[];
   readonly ledgerItems: readonly string[];
@@ -9,6 +10,14 @@ interface CompiledState {
 
 async function compiledState(page: Page): Promise<CompiledState> {
   return {
+    churn: await page
+      .locator('[data-churn-meter="weekly-budget"]')
+      .evaluateAll((meters) =>
+        meters.map(
+          (meter) =>
+            `${meter.getAttribute("data-week-key")}:${meter.getAttribute("data-base-cap")}:${meter.getAttribute("data-used")}:${meter.getAttribute("data-remaining")}:${meter.getAttribute("data-current-delta")}`,
+        ),
+      ),
     constraints: await page
       .locator('[data-region="hud"] [data-constraint-state="satisfied"]')
       .allTextContents(),
@@ -67,6 +76,14 @@ test("mounts and disposes WebGL while preserving the seeded view in the reduced-
   await expect(page.getByRole("heading", { name: "Growth standing" })).toHaveCount(0);
 
   const before = await compiledState(page);
+  expect(before.churn).toEqual(["2026-W30:4:0:4:0"]);
+  await expect(page.getByRole("meter", { name: "Weekly churn used" })).toHaveAttribute(
+    "aria-valuetext",
+    "0 of 4 membership changes used; 4 remaining",
+  );
+  await expect(page.locator('[data-churn-meter="weekly-budget"]')).toContainText(
+    "0 members · display only",
+  );
   expect(before.roster).toHaveLength(12);
   expect(before.constraints).toHaveLength(14);
   expect(before.floorReadouts).toEqual([

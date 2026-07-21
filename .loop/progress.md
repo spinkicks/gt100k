@@ -528,3 +528,17 @@
 
 - T124 — Implement the churn-budget meter in `apps/cohort-arena/components/hud/` from the domain `ChurnBudget` and `view.cohorts[].churnDelta`.
 - Acceptance: the HUD shows the exact base cap, used churn, remaining capacity, and current display-only cohort delta without recomputing or mutating the domain result; state is text- and color-independent with a reduced/plain equivalent; focused RED/GREEN, app TypeScript/tests, both builds, seeded smoke, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P9 / T124
+
+- Added a color-independent churn-capacity meter to the operations HUD, sourced from the exact synthetic domain `ChurnBudget`: week `2026-W30`, base cap `4`, used `0`, and remaining `4`, with a bounded accessible `role="meter"`, tabular readouts, and the pinned churn color paired with symbol and text.
+- Kept the summed `view.cohorts[].churnDelta` in a separate `display only` row and proved the renderer does not mutate or apply the domain budget/view. Plain and reduced-motion presentations render byte-identical meter state.
+- Hardened the recorded-exception path: used churn above the base cap fills only to the cap and truthfully reports `Recorded exception` while retaining the exact used/remaining values for assistive technology.
+- Extended the production Playwright smoke so the exact meter state remains unchanged through standings opt-in/out, plain 2D, WebGL disposal/remount, and system reduced motion.
+- TDD status: the focused suite first failed because `ChurnBudgetMeter` was absent, then passed after the minimal implementation; completion review added an over-base recorded-exception regression that failed on the hard-coded within-budget label before the derived status made all 5 tests pass.
+- Gate status: app-local TypeScript and app tests (26/26), `pnpm typecheck`, `pnpm test` (144/144), `pnpm lint` (135 files), `pnpm --filter @gt100k/cohort-arena build`, root `pnpm build`, and the seeded Playwright production smoke (1/1) pass. T124 completes the churn-meter portion of FR-034/SC-016; P9 remains in progress for rollback and its reduced-motion equivalence. No blocker.
+
+## NEXT
+
+- T125 — Implement the rollback control and 3D reverse-choreography in `apps/cohort-arena`, returning learner stars to the prior snapshot positions and exposing the existing Ledger diff.
+- Acceptance: rollback uses `useFrame` interpolation keyed only to `resolveMotion("rollback", ...)`, restores the prior snapshot presentation without mutating the domain result, exposes the removed/added Ledger diff, and remains interruptible; focused RED/GREEN, app TypeScript/tests, both builds, seeded smoke, and repository typecheck/test/lint remain green.
