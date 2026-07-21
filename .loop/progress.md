@@ -120,3 +120,15 @@
 
 - T012 + T020 — Add the `scoreObjective` contract first, then implement the deterministic soft objective in `packages/cohort-compiler/src/objective.ts`.
 - Acceptance: feasible options receive deterministic `{ total, terms }` scores over the seven pinned objective terms; a higher score never promotes a hard-constraint-violating cohort; the focused test demonstrates RED before implementation, then the repository typecheck/test/lint gate returns green.
+
+## 2026-07-20 — P2 / T012 + T020
+
+- Added the FR-013 objective contract over all seven normalized terms, exact weighted-total arithmetic, input-order independence, pair-history direction, lower-churn monotonicity, and hard-gate-before-ranking behavior even when an infeasible option has the higher soft score.
+- Implemented pure deterministic `scoreObjective` in `packages/cohort-compiler/src/objective.ts` using only approved `LearnerProfile` and optional prior-assignment state; the fixed six-slot role vector receives full coverage and no I/O, time, randomness, or learned model is consulted.
+- TDD status: the corrected focused run first failed because `src/objective.ts` was absent, then passed 5/5 after implementation; a self-review refinement first failed at the pinned two-builder role vector, then passed after role coverage was aligned with that vector.
+- Gate status: `pnpm typecheck`, `pnpm test` (58/58), and `pnpm lint` pass. P2/SC-002 now has hard feasibility and feasible-only soft scoring; cohort construction remains for T013/T021. No blocker.
+
+## NEXT
+
+- T013 + T021 — Add the `assignCohorts` golden solver contract first, then implement deterministic greedy construction plus bounded feasible repair in `packages/cohort-compiler/src/solver.ts`.
+- Acceptance: Fixture B yields byte-identical cohorts `[A1..A6]` and `[B1..B6]` with the pinned role vector and no unassigned learners; Fixture B2 leaves `C1` unassigned with its binding age reason; every accepted cohort has six members and zero hard violations; no learned model is consulted; the focused RED/GREEN cycle and repository typecheck/test/lint gate pass.
