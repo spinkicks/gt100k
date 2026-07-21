@@ -12,6 +12,7 @@ import {
   type InterestLabSurface as InterestLabSurfaceName,
   type MotionPreference,
   type RenderTierOverride,
+  type SustainedPerformanceStep,
   applyRenderTierOverride,
   applySustainedPerformanceFloor,
   readInterestLabClientDefaults,
@@ -72,7 +73,7 @@ export function InterestLabClient() {
   const [clientReady, setClientReady] = useState(false);
   const [deviceCaps, setDeviceCaps] = useState<DeviceCaps>(SERVER_DEVICE_CAPS);
   const [webglContextLost, setWebglContextLost] = useState(false);
-  const [performanceDegraded, setPerformanceDegraded] = useState(false);
+  const [performanceStep, setPerformanceStep] = useState<SustainedPerformanceStep>(0);
   const [authoredReview, setAuthoredReview] = useState<GuideAuthoringInput | null>(null);
 
   useEffect(() => {
@@ -90,11 +91,11 @@ export function InterestLabClient() {
       applyRenderTierOverride(
         applySustainedPerformanceFloor(
           webglContextLost ? { ...deviceCaps, webglAvailable: false } : deviceCaps,
-          performanceDegraded,
+          performanceStep,
         ),
         renderTierOverride,
       ),
-    [deviceCaps, performanceDegraded, renderTierOverride, webglContextLost],
+    [deviceCaps, performanceStep, renderTierOverride, webglContextLost],
   );
   const seed = useMemo(
     () =>
@@ -111,7 +112,10 @@ export function InterestLabClient() {
   );
   const activeRenderTier = seed.view.presentation.renderTier;
   const handleContextLost = useCallback(() => setWebglContextLost(true), []);
-  const handlePerformanceDecline = useCallback(() => setPerformanceDegraded(true), []);
+  const handlePerformanceDecline = useCallback(
+    () => setPerformanceStep((current) => (current === 0 ? 1 : 2)),
+    [],
+  );
   const handleAuthorRevision = useCallback(
     (review: GuideAuthoringInput) => setAuthoredReview(review),
     [],

@@ -8,6 +8,7 @@ import {
 export type MotionPreference = "system" | "on" | "off";
 export type InterestLabSurface = "child" | "guide";
 export type RenderTierOverride = "auto" | RenderTier;
+export type SustainedPerformanceStep = 0 | 1 | 2;
 
 export interface InterestLabClientDefaults {
   ageBand: AgeBand;
@@ -72,12 +73,16 @@ const TIER_FIDELITY: Record<RenderTier, number> = {
   "board-2d": 2,
 };
 
-/** Applies the P10 sustained-performance floor without changing domain or quest state. */
+/** Applies the runtime presentation floor without changing domain or quest state. */
 export function applySustainedPerformanceFloor(
   caps: Readonly<DeviceCaps>,
-  performanceDegraded: boolean,
+  step: SustainedPerformanceStep,
 ): DeviceCaps {
-  if (!performanceDegraded) return { ...caps };
+  if (step === 0) return { ...caps };
+
+  if (step === 2) {
+    return { ...caps, webglAvailable: false };
+  }
 
   return {
     ...caps,

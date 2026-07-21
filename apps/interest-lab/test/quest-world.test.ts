@@ -4,7 +4,8 @@ import { type ReactNode, createElement, isValidElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Texture } from "three";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { nextQuestFocusIndex } from "../app/child/Board2D";
+import { Board2D, nextQuestFocusIndex } from "../app/child/Board2D";
+import { updatePickedProbeIds } from "../app/child/QuestLedger";
 import { QuestWorld, buildQuestWorldSceneGraph } from "../app/child/QuestWorld";
 import { CameraRig } from "../app/child/world3d/CameraRig";
 import { Island, resolveIslandRender } from "../app/child/world3d/Island";
@@ -88,14 +89,71 @@ describe("QuestWorld tier switch", () => {
     }
   });
 
-  it("steps a full-capability world down to lite after sustained low frame rate", () => {
-    expect(viewFor(applySustainedPerformanceFloor(FULL_CAPS, false)).scene.renderTier).toBe(
+  it("steps repeated sustained low frame rate from full to lite to board-2d", () => {
+    expect(viewFor(applySustainedPerformanceFloor(FULL_CAPS, 0)).scene.renderTier).toBe(
       "quest-world-3d",
     );
-    expect(viewFor(applySustainedPerformanceFloor(FULL_CAPS, true)).scene).toMatchObject({
+    expect(viewFor(applySustainedPerformanceFloor(FULL_CAPS, 1)).scene).toMatchObject({
       renderTier: "quest-world-3d-lite",
       quality: QUALITY_TIERS.lite,
     });
+    expect(viewFor(applySustainedPerformanceFloor(FULL_CAPS, 2)).scene).toMatchObject({
+      renderTier: "board-2d",
+      quality: QUALITY_TIERS.board2d,
+    });
+  });
+
+  it.each([
+    ["Save-Data", { ...FULL_CAPS, saveData: true }],
+    ["device memory below 4 GB", { ...FULL_CAPS, deviceMemoryGB: 3 }],
+    ["unavailable WebGL", { ...FULL_CAPS, webglAvailable: false }],
+  ] as const)("falls directly to board-2d for %s without losing a quest", (_reason, caps) => {
+    const fullView = viewFor(FULL_CAPS);
+    const fallbackView = viewFor(caps);
+    const fullProbeIds = fullView.probePicker.visibleQuests.map(({ probeId }) => probeId);
+    const fallbackProbeIds = fallbackView.probePicker.visibleQuests.map(({ probeId }) => probeId);
+    const pickedProbeId = fullProbeIds[0] ?? "missing";
+    const pickedProbeIds = updatePickedProbeIds([], { type: "pick", probeId: pickedProbeId });
+    const markup = renderToStaticMarkup(
+      createElement(Board2D, {
+        quests: fallbackView.probePicker.visibleQuests,
+        pickedProbeIds,
+        onPick: vi.fn(),
+        onFocus: vi.fn(),
+        touchTargetPx: fallbackView.probePicker.staging.touchTargetPx,
+      }),
+    );
+
+    expect(fallbackView.scene.renderTier).toBe("board-2d");
+    expect(fallbackProbeIds).toEqual(fullProbeIds);
+    expect(pickedProbeIds).toEqual([pickedProbeId]);
+    expect(markup).toContain(`data-probe-id="${pickedProbeId}"`);
+    expect(markup).toContain('aria-pressed="true"');
+    expect(markup).toContain("In your tray");
+  });
+
+  it("keeps the same picked quest through every runtime performance tier", () => {
+    const pickedProbeId = viewFor(FULL_CAPS).probePicker.visibleQuests[0]?.probeId ?? "missing";
+    const pickedProbeIds = updatePickedProbeIds([], { type: "pick", probeId: pickedProbeId });
+
+    for (const step of [0, 1, 2] as const) {
+      const view = viewFor(applySustainedPerformanceFloor(FULL_CAPS, step));
+      const markup = renderToStaticMarkup(
+        createElement(Board2D, {
+          quests: view.probePicker.visibleQuests,
+          pickedProbeIds,
+          onPick: vi.fn(),
+          onFocus: vi.fn(),
+          touchTargetPx: view.probePicker.staging.touchTargetPx,
+        }),
+      );
+
+      expect(view.probePicker.visibleQuests.some(({ probeId }) => probeId === pickedProbeId)).toBe(
+        true,
+      );
+      expect(markup).toContain(`data-probe-id="${pickedProbeId}"`);
+      expect(markup).toContain('aria-pressed="true"');
+    }
   });
 
   it.each([

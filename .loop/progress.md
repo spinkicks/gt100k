@@ -753,3 +753,15 @@
 ## NEXT
 - Complete U044: harden runtime degradation so repeated sustained low-FPS events step `full → lite → board-2d`, while WebGL context loss, Save-Data, and device memory below 4 GB fail directly to `board-2d` without losing a pick or quest.
 - Acceptance: tests first prove both sequential performance steps and every capability fallback, plus quest-state parity across tier changes; focused app tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.
+
+## 2026-07-21 — P14 / U044
+- Replaced the one-shot performance boolean with a capped three-step presentation floor so repeated sustained `<55fps` monitor declines resolve `quest-world-3d → quest-world-3d-lite → board-2d` through the canonical view builder.
+- Added five U044 contracts covering the exact sequential downgrade, direct Save-Data/device-memory/WebGL fallbacks, unchanged probe ids, and preservation of a picked quest through every tier.
+- Confirmed genuine test-first RED evidence: 12 of 13 focused tests passed while the second decline incorrectly remained 3D-lite; the focused suite passed after the minimal runtime-floor implementation.
+- Kept the client callback stable with a functional state update and retained focus/pick ownership in the always-mounted DOM ledger; explicit render requests and context loss cannot bypass the computed capability floor.
+- Verified the app suite (72 tests across 14 files), `pnpm typecheck`, `pnpm test` (191 tests across 42 files), `pnpm lint` (162 files), the warning-free Interest Lab production build, and `pnpm build`; all pass.
+- Status: U044 complete; P14 remains in progress pending U045. SC-UI-16's deterministic runtime and capability degradation boundaries are green; the physical performance/degradation walkthrough remains next. No blocker.
+
+## NEXT
+- Complete U045: run the performance/degradation walkthrough against the production Interest Lab app.
+- Acceptance: verify the 60fps target on a mid-capability device, simulate sustained decline through full → lite → board-2d, confirm Save-Data/low-memory/context-loss fallbacks, and prove a picked quest survives every transition; keep the Interest Lab production build and full gate green.
