@@ -12,3 +12,14 @@
 
 ## NEXT
 - T002: define the EvidenceGraph domain types and PROV mapping in `packages/evidence-graph/src/model.ts` per `data-model.md`; acceptance is a strict, framework-agnostic type surface covering every type named by T002 without adding runtime or adapter dependencies.
+
+## 2026-07-20 — P0 domain model (T002)
+- Added the complete `EvidenceGraph` domain type surface in `model.ts`, including all node/edge/actor taxonomies, graph and packet records, typed in-toto attestation fields, and `VerificationResult`.
+- Added exhaustive W3C PROV base/relation mappings and compile-time coverage so taxonomy omissions fail typechecking.
+- Added four focused model acceptance tests. Confirmed RED on the missing model module, then GREEN after the minimal implementation.
+- Gate evidence: package composite `tsc -b`, workspace `pnpm typecheck`, workspace `pnpm test` (19/19), and focused Biome check pass.
+- Phase status: P0 in progress; T001, T001a, and T002 complete. SC-011 remains passing; T002 supplies the typed foundation for later SCs.
+- Blockers: none.
+
+## NEXT
+- T003: define `Hasher`, `Verifier`, `EvidenceRepository`, `TransparencyLog`, and `ErasureService` plus the two deferred stub value types in `packages/evidence-graph/src/ports.ts`; acceptance is an exact sync/async port surface per `contracts/evidence-graph.md`, type-tested first, with no adapter or runtime dependencies.
