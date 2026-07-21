@@ -69,3 +69,8 @@
 - Chose: extract the package-local G1 catalog mirror and learner eligibility into `test/fixtures/catalog.ts`, then reuse it from both the offer contract suite and the seeded smoke.
 - Why: the pure domain package cannot depend on its adapter, while a single package-local mirror prevents the two domain test suites from drifting apart and preserves the adapter fixture as the normative integration input.
 - Rejected: importing `@gt100k/interest-probe-catalog` would invert the dependency graph; duplicating all 24 families inside the smoke would create a second domain-test copy that could silently diverge.
+
+## D015 — First-write-wins event idempotency
+- Chose: treat a repeated event id as a no-op that preserves the first recorded payload and returns an immutable copy of the event list.
+- Why: event ids are idempotency keys and the later evidence record is append-only; silently replacing an earlier event under the same id would turn retry handling into an untracked correction path.
+- Rejected: last-write-wins replacement would mutate replay meaning; appending both payloads would violate idempotency.

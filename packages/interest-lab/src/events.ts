@@ -33,6 +33,21 @@ export interface EngagementEvent {
   withdrawn: boolean;
 }
 
+export function recordEvent(
+  events: readonly EngagementEvent[],
+  event: EngagementEvent,
+): EngagementEvent[] {
+  if (event.type === "PROMPTED_RETURN" && event.interventionContext === undefined) {
+    throw new Error("PROMPTED_RETURN requires interventionContext");
+  }
+
+  if (events.some(({ id }) => id === event.id)) {
+    return [...events];
+  }
+
+  return [...events, event];
+}
+
 export const SIGNAL_FAMILIES = [
   "voluntary_return",
   "unrequired_revision",

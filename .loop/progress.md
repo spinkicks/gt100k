@@ -164,3 +164,14 @@
 ## NEXT
 - Complete T018: add the `recordEvent` contract suite in `packages/interest-lab/test/events.test.ts` and pair it with the minimal implementation needed to preserve the green-only harness boundary.
 - Acceptance: event recording is idempotent by id; `PROMPTED_RETURN` requires `interventionContext` and never contributes to voluntary return; voluntary-return 7-day and 30-day horizons are represented correctly; preserve a focused red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-20 — P4 / T018 + T020
+- Added four `recordEvent` contracts covering immutable append, first-write-wins idempotency, prompted-return context enforcement and non-voluntary typing, exact 7/30-day voluntary horizons, and preservation of assistive/safety/withdrawal tags.
+- Confirmed the test-first red state: the focused suite failed all four contracts because `recordEvent` was absent, then passed after the minimal implementation.
+- Implemented the pure event recorder with no wall-clock access or signal computation; prompted returns without `interventionContext` are rejected before storage.
+- Verified the focused suite (4 tests), forced package compiler, `pnpm typecheck`, `pnpm test` (58 tests), and `pnpm lint` all pass.
+- Status: T018 and T020 complete; P4 remains in progress. The SC-005 recording boundary is encoded; exact G4 signal computation and accessibility/withdrawal behavior remain with T019/T021. No blocker.
+
+## NEXT
+- Complete T019 and its minimal T021 implementation: add the exact G4 `summarizeSignals` golden and safety/withdrawal contracts, then implement the pure separated-signal projection.
+- Acceptance: G4 deep-equals exactly; prompted return adds zero voluntary signal; prompt/context values never enter `familiesPresent`; assistive retagging is identical; `familyContext` contributes zero; withdrawn `e7` removes scope authorship; package compilation, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
