@@ -237,3 +237,13 @@
 
 ## NEXT
 - T031: rerun the complete Part I quickstart after the shared/root Biome baseline is repaired by its owners; acceptance is a zero-diagnostic `pnpm exec biome check .` alongside the already-green typecheck, 64 domain tests, 94 workspace tests, golden value, and synthetic demo. Do not begin T032 until this passes.
+
+## 2026-07-20 — P4 quickstart baseline recheck (T031 partial)
+- Re-ran the complete Part I quickstart without changing feature code. `pnpm exec tsc -b`, the filtered domain suite (64/64), workspace Vitest (94/94), the exact G2 golden-value command, and the synthetic demo all pass.
+- Confirmed both feature-owned Biome validation (45 files) and the standard `pnpm lint` scope (70 files) are clean.
+- `pnpm exec biome check .` still fails only outside the feature-owned directories: CRLF/formatting in shared root configuration and `.specify`, plus parse/lint diagnostics in `.claude/workflows/deep-research.js`. Per the isolation fence, none of those files were modified.
+- Phase status: P4 remains in progress; T031 is feature-clean but cannot satisfy its explicit repository-wide Biome criterion. T032 remains untouched and final.
+- Blocker: repository owners must repair the shared/root full-Biome baseline before T031 can complete.
+
+## NEXT
+- T031: rerun the complete Part I quickstart after the shared/root Biome baseline is repaired; acceptance is zero diagnostics from `pnpm exec biome check .` with the typecheck, 64 domain tests, 94 workspace tests, exact golden root, and synthetic demo still green. Do not begin T032 until T031 passes.
