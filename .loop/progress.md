@@ -676,3 +676,15 @@
 
 - T135 — Run the Cohort & Arena Viewer quickstart validation end-to-end.
 - Acceptance: repository typecheck/test/lint, the view-package golden suite, app production build, and seeded production smoke all pass; the reduced-motion, WebGL-loss, keyboard/switch, screen-reader, color-independent, and synthetic/no-network walkthrough obligations for SC-009 through SC-018 remain satisfied without touching the final root reference task.
+
+## 2026-07-21 — P11 / T135
+
+- Ran the complete Cohort & Arena Viewer quickstart gate without changing product code or the deferred root project references: repository TypeScript, Biome, the 151-test workspace suite, the 38-test focused view golden suite, the 62-test app suite, the root production build, and the Cohort Arena production build all pass.
+- Ran the seeded production Playwright walkthrough against `next start`; all five paths pass with zero reported console/WebGL errors: WebGL mount and clean disposal with reduced-motion parity, standings/churn/rollback across reduced and plain modes, the complete Tab/Arrow/Enter/Escape Ledger path, context-loss fallback with state and controls retained, and WebGL2-unavailable startup in the complete 2D tier.
+- SC status: SC-009 through SC-018 retain fresh automated evidence. Exact art/contrast and color-independent icon/shape/text obligations remain covered by the focused view/app suites, while the production smoke exercises the reduced-motion, keyboard/switch, state-preserving fallback, and synthetic no-network surfaces. No blocker.
+- Gate status: `pnpm typecheck`, `pnpm test` (151/151), `pnpm lint` (152 files), `pnpm --filter @gt100k/cohort-arena-view test` (38/38), `pnpm --filter @gt100k/cohort-arena test` (62/62), root `pnpm build`, `pnpm --filter @gt100k/cohort-arena build`, and the production Playwright smoke (5/5) pass.
+
+## NEXT
+
+- T136 — Make the feature's single final shared-file touch by adding all Cohort Compiler package/adapter references and `packages/cohort-arena-view` to the root `tsconfig.json` composite references; do not reference the non-composite Next.js app.
+- Acceptance: the reference list includes `packages/cohort-compiler`, every `adapters/cohort-*` package, and `packages/cohort-arena-view` exactly once; `apps/cohort-arena` remains absent; fresh repository typecheck/test/lint, both production builds, and the seeded production smoke remain green; then create `.loop-done` only if every feature task and SC is complete.
