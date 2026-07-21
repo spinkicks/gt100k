@@ -1,0 +1,15 @@
+{
+  "name": "@gt100k/passion-tutor-memory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/public.ts",
+  "types": "./src/public.ts",
+  "exports": {
+    ".": "./src/public.ts"
+  },
+  "scripts": {
+    "test": "vitest run --root ../.. adapters/passion-tutor-memory/test",
+    "typecheck": "tsc -b --pretty false"
+  }
+}
