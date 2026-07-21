@@ -1,13 +1,15 @@
 "use client";
 
-import type { DeviceCaps, RenderTier } from "@gt100k/interest-lab-view";
+import type { DeviceCaps, InterestLabView, RenderTier } from "@gt100k/interest-lab-view";
 import { useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { QuestWorld } from "./child/QuestWorld";
+import { GuideConsole } from "./guide/GuideConsole";
+import type { GuideAuthoringInput } from "./guide/authoring";
 import { SYNTHETIC_RETURN_HISTORY, buildSyntheticInterestLabSeed } from "./seed";
 import { InterestLabControls } from "./ui/controls/InterestLabControls";
 import {
-  type InterestLabSurface,
+  type InterestLabSurface as InterestLabSurfaceName,
   type MotionPreference,
   type RenderTierOverride,
   applyRenderTierOverride,
@@ -32,6 +34,30 @@ const TIER_STATUS: Record<RenderTier, string> = {
   "board-2d": "Accessible 2D tier",
 };
 
+export interface InterestLabSurfaceProps {
+  view: InterestLabView;
+  onContextLost?: () => void;
+  onPerformanceDecline?: () => void;
+  onAuthorRevision?: (input: GuideAuthoringInput) => void;
+}
+
+export function InterestLabSurface({
+  view,
+  onContextLost,
+  onPerformanceDecline,
+  onAuthorRevision,
+}: InterestLabSurfaceProps) {
+  return view.surface === "child" ? (
+    <QuestWorld
+      view={view}
+      onContextLost={onContextLost}
+      onPerformanceDecline={onPerformanceDecline}
+    />
+  ) : (
+    <GuideConsole view={view} onAuthorRevision={onAuthorRevision} />
+  );
+}
+
 export function InterestLabClient() {
   const osPrefersReducedMotion = useReducedMotion();
   const [ageBand, setAgeBand] = useState(DEFAULTS.ageBand);
@@ -39,7 +65,7 @@ export function InterestLabClient() {
     DEFAULTS.motionPreference,
   );
   const [plainMode, setPlainMode] = useState(false);
-  const [surface, setSurface] = useState<InterestLabSurface>(DEFAULTS.surface);
+  const [surface, setSurface] = useState<InterestLabSurfaceName>(DEFAULTS.surface);
   const [renderTierOverride, setRenderTierOverride] = useState<RenderTierOverride>(
     DEFAULTS.renderTierOverride,
   );
@@ -47,6 +73,7 @@ export function InterestLabClient() {
   const [deviceCaps, setDeviceCaps] = useState<DeviceCaps>(SERVER_DEVICE_CAPS);
   const [webglContextLost, setWebglContextLost] = useState(false);
   const [performanceDegraded, setPerformanceDegraded] = useState(false);
+  const [authoredReview, setAuthoredReview] = useState<GuideAuthoringInput | null>(null);
 
   useEffect(() => {
     setDeviceCaps(detectDeviceCaps());
@@ -72,17 +99,23 @@ export function InterestLabClient() {
   const seed = useMemo(
     () =>
       buildSyntheticInterestLabSeed({
+        surface,
         ageBand,
         reducedMotion,
         plainMode,
         deviceCaps: effectiveDeviceCaps,
         history: SYNTHETIC_RETURN_HISTORY,
+        ...(authoredReview ? { authoredReview } : {}),
       }),
-    [ageBand, reducedMotion, plainMode, effectiveDeviceCaps],
+    [surface, ageBand, reducedMotion, plainMode, effectiveDeviceCaps, authoredReview],
   );
   const activeRenderTier = seed.view.presentation.renderTier;
   const handleContextLost = useCallback(() => setWebglContextLost(true), []);
   const handlePerformanceDecline = useCallback(() => setPerformanceDegraded(true), []);
+  const handleAuthorRevision = useCallback(
+    (review: GuideAuthoringInput) => setAuthoredReview(review),
+    [],
+  );
 
   return (
     <>
@@ -108,7 +141,7 @@ export function InterestLabClient() {
           </div>
           <p className="status-pill">
             <span aria-hidden="true" className="status-mark" />
-            {TIER_STATUS[activeRenderTier]}
+            {surface === "guide" ? "Evidence console" : TIER_STATUS[activeRenderTier]}
           </p>
         </header>
 
@@ -128,22 +161,12 @@ export function InterestLabClient() {
         />
 
         <section className="quest-workspace material" id="interest-lab-content">
-          {surface === "child" ? (
-            <QuestWorld
-              view={seed.view}
-              onContextLost={handleContextLost}
-              onPerformanceDecline={handlePerformanceDecline}
-            />
-          ) : (
-            <section className="surface-placeholder" aria-live="polite">
-              <p className="surface-name">Guide surface</p>
-              <h2>The guide console is not active in this child MVP.</h2>
-              <p>
-                Switch back to Child quests to keep exploring. The guide surface will use the same
-                synthetic Lab state when its evidence views arrive.
-              </p>
-            </section>
-          )}
+          <InterestLabSurface
+            view={seed.view}
+            onContextLost={handleContextLost}
+            onPerformanceDecline={handlePerformanceDecline}
+            onAuthorRevision={handleAuthorRevision}
+          />
         </section>
 
         <footer>

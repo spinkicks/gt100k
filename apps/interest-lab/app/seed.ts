@@ -1,6 +1,9 @@
 import {
   EVENTS_GOLDEN_V1,
+  appendRevision,
+  authorRevision,
   buildLab,
+  createHypothesis,
   evaluateCandidateGate,
   summarizeSignals,
 } from "@gt100k/interest-lab";
@@ -11,6 +14,7 @@ import {
   buildInterestLabView,
 } from "@gt100k/interest-lab-view";
 import { CATALOG_GOLDEN_V1 } from "@gt100k/interest-probe-catalog";
+import type { GuideAuthoringInput } from "./guide/authoring";
 
 const SYNTHETIC_LEARNER_REF = "synthetic-interest-lab-preview";
 
@@ -20,11 +24,13 @@ export const SYNTHETIC_RETURN_HISTORY = [
 ] as const satisfies NonNullable<BuildInterestLabViewOptions["history"]>;
 
 export interface SyntheticInterestLabSeedOptions {
+  surface?: BuildInterestLabViewOptions["surface"];
   ageBand?: BuildInterestLabViewOptions["ageBand"];
   reducedMotion?: boolean;
   plainMode?: boolean;
   deviceCaps?: DeviceCaps;
   history?: BuildInterestLabViewOptions["history"];
+  authoredReview?: GuideAuthoringInput;
 }
 
 export function buildSyntheticInterestLabSeed(
@@ -67,21 +73,44 @@ export function buildSyntheticInterestLabSeed(
     validFromDayOffset: 30,
     recordedAtDayOffset: 30,
   } satisfies HypothesisRevision;
+  const proposal = {
+    ...revision,
+    state: "CANDIDATE_SPINE",
+    guideReview: null,
+    proposedBy: "RULE",
+    operative: false,
+    validFromDayOffset: 31,
+    recordedAtDayOffset: 31,
+  } satisfies HypothesisRevision;
+  let hypothesis = appendRevision(createHypothesis(revision), proposal);
+  let activeProposal: HypothesisRevision | undefined = proposal;
+
+  if (options.authoredReview) {
+    const authored = authorRevision(
+      revision,
+      { ...proposal, recordedAtDayOffset: 32 },
+      {
+        guide: "synthetic-guide-preview",
+        decision: options.authoredReview.decision.trim(),
+        rationale: options.authoredReview.rationale.trim(),
+        reviewedAtDayOffset: 32,
+      },
+    );
+    hypothesis = appendRevision(hypothesis, authored);
+    activeProposal = undefined;
+  }
   const view = buildInterestLabView({
     lab,
     coverage: lab.coverage,
-    hypothesis: {
-      hypothesisId: revision.hypothesisId,
-      learnerRef: revision.learnerRef,
-      revisions: [revision],
-    },
+    hypothesis,
     events: EVENTS_GOLDEN_V1,
     gate: {
       ...evaluateCandidateGate(summary),
       familiesPresent: summary.familiesPresent,
     },
+    ...(activeProposal ? { proposal: activeProposal } : {}),
     options: {
-      surface: "child",
+      surface: options.surface ?? "child",
       ageBand: options.ageBand ?? "9-11",
       reducedMotion: options.reducedMotion ?? false,
       plainMode: options.plainMode ?? false,

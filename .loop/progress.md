@@ -730,3 +730,15 @@
 ## NEXT
 - Complete U042: implement the guide console components under `apps/interest-lab/app/guide/` and mount the guide surface behind the existing `InterestLabClient` surface toggle.
 - Acceptance: supporting and disconfirming explanations render side-by-side; the return timeline distinguishes voluntary, prompted, and support markers; lifecycle proposals remain non-operative suggestions with guide-authoring affordance; revision history stays append-only; the optional constellation is `aria-hidden` with a DOM equal and degrades off under reduced motion/no WebGL; focused tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.
+
+## 2026-07-21 — P13 / U042
+- Replaced the guide placeholder with the composed Hypothesis Console: the existing coverage field map now sits with equal supporting/disconfirming evidence columns, uncertainty copy, a dated four-lane return timeline, lifecycle and six-family gate views, a non-operative dashed shadow suggestion, and a selectable append-only revision rail.
+- Added a real synthetic-local guide-authoring path. The form records decision and rationale through app state, rebuilds the aggregate through the domain hypothesis APIs, appends an operative version 2, preserves the operative version 1 and shadow proposal in history, and removes the active suggestion without persistence or live child data.
+- Added the optional client-only r3f evidence constellation as an `aria-hidden` decorative layer. The DOM evidence remains authoritative, and the canvas is not loaded for reduced motion, plain mode, `board-2d`, or unavailable WebGL.
+- Added exact guide motion and reduced-motion contracts, responsive/color-independent styling, deterministic four-lane marker placement, and eight focused U042 acceptance tests. Independent review findings for timeline overlap, placeholder authoring/history, and the alternative-branch accessible name were corrected before the final gate.
+- Verified the focused guide suite (8 tests), `pnpm typecheck`, `pnpm test` (191 tests across 42 files), `pnpm lint` (162 files), the Interest Lab production build, and `pnpm build`; all pass. A browser walkthrough could not run because neither the Playwright CLI nor a local Playwright dependency is available on this host; no dependency was installed to bypass that environment limitation.
+- Status: U042 and P13 complete. SC-UI-05/06/07/15 and UI-US5 are green at the pure view, semantic app-render, motion, authoring/history, degradation, typecheck, test, lint, and production-build boundaries. No implementation blocker.
+
+## NEXT
+- Complete U043: wire every `resolveQualityTier` parameter into the existing 3D scene, preserving the green accessible floor.
+- Acceptance: tests first prove full/lite quality drives DPR caps, motes, shadows, and high/low island detail from the composed view; `board-2d` mounts no canvas; optional post-processing bloom stays behind `QUALITY_TIERS.full.bloom` and is not added unless it remains non-breaking; focused tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.

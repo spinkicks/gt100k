@@ -1,6 +1,6 @@
 "use client";
 
-import type { ChildInterestLabView } from "@gt100k/interest-lab-view";
+import type { InterestLabView } from "@gt100k/interest-lab-view";
 import { PerformanceMonitor } from "@react-three/drei";
 import { type ReactElement, useCallback, useEffect, useMemo, useState } from "react";
 import type { Texture } from "three";
@@ -15,7 +15,7 @@ const EMPTY_PICKED_PROBE_IDS: ReadonlySet<string> = new Set();
 export const PERFORMANCE_FPS_FLOOR = 55;
 
 export interface BuildQuestWorldSceneGraphOptions {
-  view: ChildInterestLabView;
+  view: InterestLabView;
   focusedProbeId: string | null;
   pickedProbeIds: ReadonlySet<string>;
   haloTexture: Texture;
@@ -62,7 +62,7 @@ export function buildQuestWorldSceneGraph({
 }
 
 interface QuestWorldSceneProps {
-  view: ChildInterestLabView;
+  view: InterestLabView;
   focusedProbeId: string | null;
   pickedProbeIds: ReadonlySet<string>;
   onPerformanceDecline?: () => void;
@@ -87,7 +87,7 @@ function QuestWorldScene({
 }
 
 export interface QuestWorldProps {
-  view: ChildInterestLabView;
+  view: InterestLabView;
   onContextLost?: () => void;
   onPerformanceDecline?: () => void;
 }
