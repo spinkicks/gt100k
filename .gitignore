@@ -58,3 +58,9 @@ Thumbs.db
 **/.terraform/
 *.tfstate
 *.tfstate.*
+
+# loop-harness scratch — never commit
+.loop/
+.loop-done
+.loop-stop
+.loop-blocked
