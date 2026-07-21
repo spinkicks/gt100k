@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package gt100k.platform.v1;
+
+import "google/protobuf/timestamp.proto";
+import "gt100k/platform/v1/envelope.proto";
+
+option go_package = "github.com/gt100k/platform/proto/gen/go/gt100k/platform/v1;platformv1";
+
+enum AssentResponse {
+  ASSENT_RESPONSE_UNSPECIFIED = 0;
+  ASSENT = 1;
+  REFUSAL = 2;
+  DISSENT = 3;
+}
+
+message AssentRecord {
+  Envelope header = 1;
+  string child_ref = 2;
+  string age_band = 3;
+  string notice_version = 4;
+  repeated string choices_shown = 5;
+  AssentResponse response = 6;
+  ActorRef facilitator = 7;
+  google.protobuf.Timestamp recorded_at = 8;
+  google.protobuf.Timestamp renewal_at = 9;
+  bool honorable = 10;
+}
