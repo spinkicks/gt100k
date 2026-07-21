@@ -203,9 +203,14 @@ export function ArenaRoomScene({ view, renderTier = "full-3d" }: ArenaRoomSceneP
   const evidenceMotion = useMemo(() => resolveArenaEvidenceMotion(view), [view]);
   const suppressionMotion = useMemo(() => resolveArenaSuppressionMotion(view), [view]);
   const renderSettings = resolveRenderSettings(renderTier);
-  const camera = useThree(({ camera: activeCamera }) => activeCamera);
+  const invalidate = useThree(({ invalidate: requestFrame }) => requestFrame);
   const seatMaterials = useRef(new Map<string, MeshPhysicalMaterial>());
   const lightColumns = useRef(new Map<string, Mesh>());
+  const cameraStartedAt = useRef<number | null>(null);
+  const restPosition = useRef<Vector3 | null>(null);
+  // Instant when reduced motion is active (the 3D scene only mounts outside the
+  // 2D fallback, but keep it honest); a crafted crane duration otherwise.
+  const introDurationMs = motion.mode === "reduced" ? 0 : 1_400;
 
   const registerSeatMaterial = useCallback(
     (speaker: string) => (material: MeshPhysicalMaterial | null) => {
@@ -222,14 +227,19 @@ export function ArenaRoomScene({ view, renderTier = "full-3d" }: ArenaRoomSceneP
     [],
   );
 
+  // Kick a first frame so the establishing crane plays even on the demand loop
+  // (aggregate/off rooms only render on request). The intro then self-schedules
+  // frames until it lands; idle breathing is confined to live "always" rooms,
+  // so the demand/always frame-loop contract is left intact.
   useEffect(() => {
-    camera.lookAt(0, 0, 0);
-  }, [camera]);
+    invalidate();
+  }, [invalidate]);
 
-  useFrame(({ clock }) => {
+  useFrame(({ camera, clock }) => {
     if (!scene) return;
 
     const elapsedMs = clock.elapsedTime * 1_000;
+    const hasFloorHolder = scene.seats.some(({ holdingFloor }) => holdingFloor);
     const phase =
       motion.durationMs === 0
         ? 1
@@ -252,6 +262,43 @@ export function ArenaRoomScene({ view, renderTier = "full-3d" }: ArenaRoomSceneP
         column.material.opacity = 0.1 + phase * 0.12;
       }
     }
+
+    // ── Cinematography (game-feel #5) ──────────────────────────────────────
+    // The room used to snap to a static `lookAt` while the observatory glided
+    // in and breathed. Give it the same treatment: an eased establishing crane
+    // (higher + pulled back, swinging into frame → settling on the seat ring)
+    // and, only while a live floor holder holds the loop "always", a slow damped
+    // orbital breath. Anchored to the panel's resting camera, captured once.
+    restPosition.current ??= camera.position.clone();
+    cameraStartedAt.current ??= elapsedMs;
+    const rest = restPosition.current;
+
+    const introLinear =
+      introDurationMs === 0
+        ? 1
+        : Math.min(1, (elapsedMs - cameraStartedAt.current) / introDurationMs);
+    const introEased = 1 - (1 - introLinear) ** 4; // ease-out, mirrors progressFor("enter")
+    const settle = 1 - introEased; // 1 → 0 as the crane lands
+
+    // Idle breath: a gentle azimuthal orbit + vertical bob, damped, ONLY when a
+    // floor-holder pulse already runs frameloop="always" — so the demand-loop
+    // aggregate/off rooms fall idle after the intro (frame-loop contract intact).
+    const idleAzimuth = hasFloorHolder ? Math.sin((elapsedMs / 9_000) * Math.PI * 2) * 0.05 : 0;
+    const idleLift = hasFloorHolder ? Math.sin((elapsedMs / 7_000) * Math.PI * 2) * 0.55 : 0;
+
+    const azimuth = 0.16 * settle + idleAzimuth; // swing-in fades into the idle orbit
+    const cos = Math.cos(azimuth);
+    const sin = Math.sin(azimuth);
+    camera.position.set(
+      rest.x * cos - rest.z * sin,
+      rest.y + 7 * settle + idleLift,
+      rest.x * sin + rest.z * cos + 9 * settle,
+    );
+    camera.lookAt(0, 1.2, 0);
+
+    // Self-schedule through the intro so it plays on the demand loop too; idle
+    // breathing needs no invalidate (a live pulse already runs the loop).
+    if (introLinear < 1) invalidate();
   });
 
   if (!scene) return null;
