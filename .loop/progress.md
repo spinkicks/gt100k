@@ -216,3 +216,15 @@
 
 - T029 + T031 — Add the Fixture E `analyzeTurns` contract first, then implement pure observable-only RivalryMix analysis in `packages/cohort-compiler/src/rivalrymix.ts`.
 - Acceptance: dominance flags S1 at confidence 1.0; repeated interruption flags S2; low-quality input yields confidence 0.225 and suppresses all patterns; sparse, empty, and ambiguous inputs surface no invented pattern; every output contains no honesty, emotion, personality, or motivation field; focused RED/GREEN and repository typecheck/test/lint remain green.
+
+## 2026-07-20 — P5 / T029 + T031
+
+- Added the complete Fixture E contract for `analyzeTurns`, covering exact per-speaker descriptors, dominance and repeated-interruption evidence, quality-qualified overlaps, all confidence goldens, suppression for low-quality/sparse/missing input, ambiguous-boundary non-attribution, and the exact observable-only output surface.
+- Implemented pure deterministic RivalryMix analysis in `packages/cohort-compiler/src/rivalrymix.ts` with the pinned confidence formula, strict dominance cut, inclusive interruption cut, lexical output ordering, and zero surfaced patterns whenever confidence or turn-count suppression applies.
+- TDD status: the focused suite first failed because `src/rivalrymix.ts` was absent, then passed 15/15 after the minimal implementation; strict package TypeScript and focused Biome checks pass.
+- Gate status: repository `pnpm typecheck`, `pnpm test` (102/102), and `pnpm lint` pass. Local completion review found no Critical or Important issues. P5/SC-007's pure analysis behavior is complete; the deferred synthetic media stub and public export remain. No blocker.
+
+## NEXT
+
+- T030 + T032 — Add the `MediaTurnSource` stub adapter contract first, then scaffold and implement `adapters/cohort-media-stub`.
+- Acceptance: `turns` yields a deep-copy-isolated synthetic `TurnEvent[]`; the adapter is explicitly marked non-production with WebRTC/AudioWorklet/LiveKit deferred; the focused RED/GREEN cycle and repository typecheck/test/lint gate remain green.
