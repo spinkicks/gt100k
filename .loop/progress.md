@@ -388,3 +388,14 @@
 ## NEXT
 - Complete U006: add the seeded package smoke in `packages/interest-lab-view/test/smoke.test.ts` and the smallest temporary `resolveMotion` implementation needed for the green-only harness boundary.
 - Acceptance: package imports expose non-empty `PALETTE`, `MOTION`, `EASINGS`, `HUE_RAMP`, `WORK_MODE_GLYPHS`, `SCENE3D`, `CAMERA3D`, and `QUALITY_TIERS`, while `resolveMotion("press", { reducedMotion: false }).durationMs === 120`; preserve a focused red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-21 — P8 / U006
+- Added the seeded package smoke covering all eight required public registries and the exact 120 ms animated press duration.
+- Confirmed the test-first red state from the repository Vitest root: the smoke and public-API contract both failed because `resolveMotion` was absent, then passed after the minimal press-row implementation and explicit export.
+- Kept the temporary resolver honest and narrow: it accepts only the U006-pinned `press` plus `reducedMotion:false` case; U010/U014 remain responsible for widening it to the complete animated/reduced motion table.
+- Verified the focused suite (3 tests), forced view-package compiler, `pnpm typecheck`, `pnpm test` (123 tests across 28 files), and `pnpm lint` (88 files) all pass.
+- Status: U006 complete; P8 remains in progress. Part-I SC-001 through SC-016 remain green; Part-II motion acceptance SC-UI-08 remains assigned to U010/U014. No blocker.
+
+## NEXT
+- Complete U007: scaffold `apps/interest-lab/package.json` with the pinned Next 14, React 18, Motion 12, Three.js, react-three-fiber 8, and drei 9 dependency lines plus both Interest Lab workspace packages.
+- Acceptance: the manifest mirrors the existing Next app scripts and exact pinned dependency ranges, both workspace dependencies resolve, no optional post-processing dependency is added early, and the repository `pnpm typecheck`, `pnpm test`, and `pnpm lint` gate remains green.

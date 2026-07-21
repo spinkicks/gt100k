@@ -134,3 +134,8 @@
 - Chose: represent each typography scale row's §U8.3 shorthand `w` as the companion model's `weight` property, and represent `RENDER_TIERS` as a readonly tuple in the `RenderTier` declaration order.
 - Why: `data-model.md` and the already-landed U003 `TypographyView` explicitly name `weight`, while §U8.16 calls `RENDER_TIERS` a literal set without assigning an object-key shape. The tuple preserves all three literals, gives consumers deterministic order, and derives the exact union without adding mappings that later resolvers own.
 - Rejected: using an unmodeled `w` field would break the composed view contract; an object map would invent unspecified keys or duplicate values; a mutable array would weaken the fixed-registry guarantee.
+
+## D028 — Keep the seeded motion stub narrower than the future resolver
+- Chose: expose `resolveMotion` for only the U006-pinned `press` with `reducedMotion:false` call, returning the exact animated press row; widen the kind and option types when U010/U014 land the complete golden table.
+- Why: U006 explicitly permits a temporary stub and tests only that seeded call. A narrow signature states the currently supported behavior truthfully while preserving a source-compatible widening path.
+- Rejected: implementing the full §U8.4 table would pull P9 acceptance behavior into P8; accepting arbitrary kinds or `reducedMotion:true` while returning press/animated defaults would advertise incorrect behavior.

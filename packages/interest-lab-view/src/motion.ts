@@ -36,3 +36,12 @@ export const EASINGS = {
     duration: 0.42,
   },
 } as const;
+
+export function resolveMotion(kind: "press", _options: Readonly<{ reducedMotion: false }>) {
+  return {
+    kind,
+    mode: "animated" as const,
+    durationMs: MOTION.press,
+    easing: EASINGS.press,
+  };
+}

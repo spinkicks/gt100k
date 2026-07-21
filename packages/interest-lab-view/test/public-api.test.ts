@@ -77,7 +77,7 @@ type PublicViewTypeExports = [
 ];
 
 describe("interest lab view public API", () => {
-  it("exports only the ten P8 registries as runtime values", () => {
+  it("exports the P8 registries and seeded motion resolver", () => {
     expect(Object.keys(viewApi).sort()).toEqual([
       "CAMERA3D",
       "EASINGS",
@@ -89,6 +89,7 @@ describe("interest lab view public API", () => {
       "SCENE3D",
       "TYPOGRAPHY",
       "WORK_MODE_GLYPHS",
+      "resolveMotion",
     ]);
   });
 
