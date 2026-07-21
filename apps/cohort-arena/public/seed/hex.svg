@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" color="#34D399" fill="none">
+  <title>Cohort hex</title>
+  <path d="m12 2.5 8.25 4.75v9.5L12 21.5l-8.25-4.75v-9.5L12 2.5Z" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+  <circle cx="12" cy="6.75" r="1" fill="currentColor"/>
+  <circle cx="16.5" cy="9.25" r="1" fill="currentColor"/>
+  <circle cx="16.5" cy="14.75" r="1" fill="currentColor"/>
+  <circle cx="12" cy="17.25" r="1" fill="currentColor"/>
+  <circle cx="7.5" cy="14.75" r="1" fill="currentColor"/>
+  <circle cx="7.5" cy="9.25" r="1" fill="currentColor"/>
+</svg>

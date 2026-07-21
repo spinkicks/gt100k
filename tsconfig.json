@@ -2,6 +2,13 @@
   "files": [],
   "references": [
     { "path": "packages/learning-loop" },
+    { "path": "packages/cohort-compiler" },
+    { "path": "packages/cohort-arena-view" },
+    { "path": "adapters/cohort-benefit-shadow" },
+    { "path": "adapters/cohort-candidates-memory" },
+    { "path": "adapters/cohort-media-stub" },
+    { "path": "adapters/cohort-repo-memory" },
+    { "path": "adapters/cohort-safeguarding-memory" },
     { "path": "adapters/repo-memory" },
     { "path": "adapters/timeback-stub" }
   ]
