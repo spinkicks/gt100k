@@ -175,3 +175,14 @@
 ## NEXT
 - Complete T019 and its minimal T021 implementation: add the exact G4 `summarizeSignals` golden and safety/withdrawal contracts, then implement the pure separated-signal projection.
 - Acceptance: G4 deep-equals exactly; prompted return adds zero voluntary signal; prompt/context values never enter `familiesPresent`; assistive retagging is identical; `familyContext` contributes zero; withdrawn `e7` removes scope authorship; package compilation, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
+
+## 2026-07-20 — P4 / T019 + T021
+- Added five `summarizeSignals` contracts covering exact G4 equality, prompted/context isolation, paired assistive equivalence, withdrawn optional-reflection exclusion, and the event-only parent-context boundary.
+- Confirmed the test-first red state: the focused suite failed to resolve the absent `src/signals.ts`, then passed all five tests after the minimal implementation.
+- Implemented one-pass separated signal projection with exact 7/30-day voluntary horizons, fixed family ordering, prompted context as a non-family discount, accessibility-neutral evidence tags, and withdrawn-event exclusion.
+- Verified the focused suite (5 tests), package suite (44 tests), forced package compiler, `pnpm typecheck`, `pnpm test` (63 tests), and `pnpm lint` all pass.
+- Status: T019 and T021 complete; P4 remains in progress pending the public API export. SC-005, SC-006, SC-007, and SC-015 signal-summary contracts are green. No blocker.
+
+## NEXT
+- Complete T022: export `recordEvent` and `summarizeSignals` explicitly from `packages/interest-lab/src/index.ts` and extend the consumer-facing public API test.
+- Acceptance: consumers can import both P4 functions from `@gt100k/interest-lab`; preserve a failing public-API red run before the minimal export change, and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
