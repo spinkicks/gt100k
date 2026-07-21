@@ -22,3 +22,15 @@
 
 - T003 — Define the domain ports in `packages/cohort-compiler/src/ports.ts`: `CandidateIndex`, `CohortRepository`, `SafeguardingSink`, deferred `MediaTurnSource`, and shadow `BenefitEstimator` per `contracts/cohort-compiler.md`.
 - Acceptance: compile-time contract coverage proves the exact async port methods and model types; the deferred/shadow seams contain no production I/O implementation; focused package typecheck and the repository typecheck/test/lint gate remain green.
+
+## 2026-07-20 — P0 / T003
+
+- Defined the exact asynchronous `CandidateIndex`, `CohortRepository`, `SafeguardingSink`, deferred `MediaTurnSource`, and post-lock shadow `BenefitEstimator` interfaces in `packages/cohort-compiler/src/ports.ts` using type-only model imports and no I/O implementation.
+- Added compile-time contract coverage for every method, parameter, return promise, and domain model type in `packages/cohort-compiler/test/ports.test.ts`.
+- TDD status: Vitest alone erased the type-only import, so the strict package compiler supplied the meaningful RED (`TS2307` for the absent port module); after implementation, both the strict compiler and the focused five-test suite passed.
+- Gate status: `pnpm typecheck`, `pnpm test` (24/24), and `pnpm lint` pass. P0 remains in progress; no blocker.
+
+## NEXT
+
+- T038 — Commit the exact synthetic seed fixtures and golden expected values under `packages/cohort-compiler/test/fixtures/`: Fixture A (`caliper-8`), Fixtures B/B2/B3/B4 (`cohort-12`), Fixture C (`churn-rollback`), Fixture D (`safeguarding-shadow`), and Fixture E (`turns`).
+- Acceptance: fixtures match the spec tables exactly, including D1–D6 benefit inputs and expected values; every fixture is typed against `model.ts`; no live or child data is present; focused package typecheck and the repository typecheck/test/lint gate remain green.
