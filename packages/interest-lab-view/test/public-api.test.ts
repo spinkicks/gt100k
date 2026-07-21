@@ -97,9 +97,13 @@ describe("interest lab view public API", () => {
       "WORK_MODE_GLYPHS",
       "buildInterestLabView",
       "buildProbePickerView",
+      "buildSceneView",
+      "resolveCamera3D",
       "resolveChildStaging",
       "resolveDomainHue",
+      "resolveIslandLayout",
       "resolveMotion",
+      "resolveQuestPlacement",
     ]);
   });
 

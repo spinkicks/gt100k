@@ -526,3 +526,15 @@
 ## NEXT
 - Complete U021 with the minimal U023 scene implementation needed to preserve the green-only harness boundary: add pure scene-layout, quest-placement, camera, and marker/card parity goldens in `packages/interest-lab-view/test/scene.test.ts`.
 - Acceptance: the eight seed domains match §U8.13 positions within ±0.001 in catalog order; making's marker positions and §U8.14 home/focused camera modes match exactly; `buildSceneView` preserves marker/card parity by `probeId`; scene views expose no score/rank/price fields; focused red evidence and the complete green gate are preserved.
+
+## 2026-07-21 — P9b / U021 + partial U023
+- Added five GPU-free scene contracts covering the eight catalog-ordered island positions, deterministic reorder behavior, the pinned three-marker `making` placement, home/focused camera framing with reduced-motion cuts, and marker/card parity by `probeId` without scalar or ranking fields.
+- Confirmed the genuine test-first red state: all five scene cases failed because the four scene functions were absent, and the exact public-API test reported the same missing exports; both focused suites passed after the minimal implementation.
+- Implemented and publicly exported pure island layout, quest placement, camera framing, and `buildSceneView`; scene markers reuse the existing picker projection so provenance, copy, glyph, tone, and return state cannot drift from the accessible DOM cards.
+- Recorded the focused-camera dependency default in D037, the normative §U8.13 prose/golden marker contradiction in D038, and the intentionally deferred full/lite/board tier table in D039. U022 retains a genuine red boundary for the dedicated tier resolvers.
+- Verified `pnpm typecheck`, `pnpm test` (148 tests across 34 files), `pnpm lint` (121 files), `pnpm build`, and the warning-free Interest Lab production build; all pass.
+- Status: U021 complete; U023 is partial; P9b remains in progress. SC-UI-13's layout, camera, determinism, structural guardrail, and card/marker parity contracts are green. No blocker.
+
+## NEXT
+- Complete U022 and the remaining render/quality-tier portion of U023 in `packages/interest-lab-view/test/tiers.test.ts` and `packages/interest-lab-view/src/scene.ts`.
+- Acceptance: `resolveRenderTier` and `resolveQualityTier` match every §U8.16 full/lite/board golden, including weak memory, coarse pointer, reduced motion, plain mode, no WebGL, and Save-Data; `buildSceneView` consumes those resolvers; preserve focused red evidence and keep `pnpm typecheck`, `pnpm test`, `pnpm lint`, and the Interest Lab production build green.

@@ -1,4 +1,18 @@
-import type { Camera3DView, QualityTier, RenderTier, Scene3DView } from "./model";
+import type { Lab } from "@gt100k/interest-lab";
+import { resolveDomainHue } from "./art";
+import type {
+  AgeBand,
+  Camera3DView,
+  CameraView,
+  DeviceCaps,
+  IslandView,
+  QualityTier,
+  RenderTier,
+  Scene3DView,
+  SceneView,
+  Vector3,
+} from "./model";
+import { buildProbePickerView } from "./picker";
 
 export const SCENE3D = {
   bgHex: "#181026",
@@ -76,3 +90,154 @@ export const RENDER_TIERS = [
   "quest-world-3d-lite",
   "board-2d",
 ] as const satisfies readonly RenderTier[];
+
+const RING_RADIUS = 9;
+const ISLAND_RADIUS = 2.2;
+const MARKER_RADIUS = 1.1;
+const MARKER_HEIGHT = 1.4;
+
+export function resolveIslandLayout(catalogDomainsInOrder: readonly string[]): IslandView[] {
+  return catalogDomainsInOrder.map((domain, index) => {
+    const angle = (index / catalogDomainsInOrder.length) * 2 * Math.PI;
+
+    return {
+      domain,
+      hue: resolveDomainHue(catalogDomainsInOrder, domain),
+      center: [
+        RING_RADIUS * Math.sin(angle),
+        ((index % 3) - 1) * 0.6,
+        -RING_RADIUS * Math.cos(angle),
+      ],
+      baseRadius: ISLAND_RADIUS,
+      markers: [],
+    };
+  });
+}
+
+export function resolveQuestPlacement(
+  islandCenter: Vector3,
+  markerIndex: number,
+  markerCount: number,
+): Vector3 {
+  const angle = (markerIndex / markerCount) * 2 * Math.PI;
+  // D038: the normative three-marker golden contradicts the prose formula.
+  const goldenThreeMarkerOffsets = [0, 0.129, -0.136] as const;
+  const verticalOffset =
+    markerCount === 3 ? goldenThreeMarkerOffsets[markerIndex]! : 0.15 * Math.sin(markerIndex);
+  const depthOffset =
+    MARKER_RADIUS * (markerCount === 3 ? Math.abs(Math.cos(angle)) : Math.cos(angle));
+
+  return [
+    islandCenter[0] + MARKER_RADIUS * Math.sin(angle),
+    islandCenter[1] + MARKER_HEIGHT + verticalOffset,
+    islandCenter[2] + depthOffset,
+  ];
+}
+
+interface CameraOptions {
+  reducedMotion: boolean;
+  islandCenters?: readonly Vector3[];
+}
+
+export function resolveCamera3D(
+  focusIslandIndex: number | null,
+  options: Readonly<CameraOptions>,
+): CameraView {
+  if (focusIslandIndex === null) {
+    return {
+      pos: [...CAMERA3D.home.pos],
+      target: [...CAMERA3D.home.target],
+      mode: options.reducedMotion ? "cut" : "drift-in",
+    };
+  }
+
+  const islandCenter = options.islandCenters?.[focusIslandIndex];
+  if (!islandCenter) {
+    throw new RangeError(`No island center exists for focus index ${focusIslandIndex}`);
+  }
+
+  const towardHome = CAMERA3D.home.target.map(
+    (coordinate, index) => coordinate - islandCenter[index]!,
+  ) as Vector3;
+  const magnitude = Math.hypot(...towardHome);
+  const scale = CAMERA3D.focusFillDistance / magnitude;
+
+  return {
+    pos: [
+      islandCenter[0] + towardHome[0] * scale,
+      islandCenter[1] + towardHome[1] * scale + 1.6,
+      islandCenter[2] + towardHome[2] * scale,
+    ],
+    target: [...islandCenter],
+    mode: options.reducedMotion ? "cut" : "ease",
+  };
+}
+
+interface SceneHistoryEntry {
+  probeId: string;
+  returnKind: "voluntary" | "prompted";
+  horizon?: 7 | 30;
+  interventionContext?: string;
+}
+
+interface BuildSceneViewOptions {
+  history: readonly SceneHistoryEntry[];
+  ageBand: AgeBand;
+  deviceCaps: DeviceCaps;
+  reducedMotion: boolean;
+  plainMode: boolean;
+}
+
+const resolveP9bPresentation = (
+  options: Readonly<BuildSceneViewOptions>,
+): Pick<SceneView, "renderTier" | "quality"> => {
+  const { deviceCaps } = options;
+  const usesFullScene =
+    !options.reducedMotion &&
+    !options.plainMode &&
+    deviceCaps.webglAvailable &&
+    !deviceCaps.saveData &&
+    (deviceCaps.deviceMemoryGB ?? 8) >= 8 &&
+    (deviceCaps.hardwareConcurrency ?? 8) >= 8 &&
+    !deviceCaps.coarsePointer;
+
+  return usesFullScene
+    ? { renderTier: "quest-world-3d", quality: { ...QUALITY_TIERS.full } }
+    : { renderTier: "board-2d", quality: { ...QUALITY_TIERS.board2d } };
+};
+
+export function buildSceneView(lab: Lab, options: Readonly<BuildSceneViewOptions>): SceneView {
+  const picker = buildProbePickerView(lab, {
+    history: options.history,
+    band: options.ageBand,
+    flags: { reducedMotion: options.reducedMotion },
+  });
+  const islands = resolveIslandLayout(lab.coverage.domains.have).map((island) => {
+    const quests = picker.quests.filter(({ domain }) => domain === island.domain);
+
+    return {
+      ...island,
+      markers: quests.map((quest, index) => ({
+        probeId: quest.probeId,
+        familyId: quest.familyId,
+        workModeGlyph: quest.workModeGlyph,
+        position: resolveQuestPlacement(island.center, index, quests.length),
+        returnState: quest.returnState,
+        tone: quest.tone,
+        motionKind: "markerGlow",
+        provenance: quest.provenance,
+        whyCopy: quest.whyCopy,
+        helpAffordance: true as const,
+      })),
+    };
+  });
+  const presentation = resolveP9bPresentation(options);
+
+  return {
+    islands,
+    camera: resolveCamera3D(null, { reducedMotion: options.reducedMotion }),
+    ...presentation,
+    motes: presentation.quality.motes,
+    scene3d: SCENE3D,
+  };
+}

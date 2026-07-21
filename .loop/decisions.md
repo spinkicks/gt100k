@@ -179,3 +179,18 @@
 - Chose: let the U020 surface and render-tier controls retain every documented public option, while keeping the operative P9 renderer on `board-2d`; a guide selection renders an honest unavailable-state message, and a future 3D tier request is reported beside the active 2D tier. Derive control target sizes from `resolveChildStaging` rather than duplicating the 56/48/44px table.
 - Why: U021–U024 own scene/tier resolution, U029 owns the 3D tier switch, and U042 owns guide composition. U020 still needs forward-compatible controls, but inventing scene or guide state here would violate the ordered test-first plan. Explicit requested-versus-active status keeps the preview truthful while the same synthetic child view remains the source of quest state.
 - Rejected: enabling a fake 3D renderer or placeholder guide view model would preempt their owning phases; hiding the documented options would force later control churn; duplicating age-band target values in app CSS could drift from the pure staging contract.
+
+## D037 — Focused camera receives resolved island centers
+- Chose: keep home `resolveCamera3D(null, { reducedMotion })` self-contained, and require focused calls to supply the catalog-derived `islandCenters` in the options object.
+- Why: §U8.14 defines focused framing from `islandCenter[i]`, but its shorthand signature supplies only the index and motion flag. Passing the already-resolved centers preserves the specified two-argument API shape while keeping arbitrary catalog sizes correct and the function pure.
+- Rejected: a hidden golden-domain list or fixed eight-island map would violate catalog-derived layout; module-global scene state would make the resolver order-dependent; recomputing from an index alone cannot know the catalog length.
+
+## D038 — Marker-position goldens override the contradictory prose formula
+- Chose: preserve the three pinned `making` marker positions at ±0.001, using deterministic three-marker vertical and depth profiles while retaining the stated formulas for other marker counts.
+- Why: the §U8.13 formula yields y values `0.926` and `0.936` rather than the normative `0.929` and `0.664`, and yields z `-9.550` for k1/k2 rather than `-8.450`. All differences exceed tolerance. The loop instructions make explicit golden values acceptance truth and require recording rather than changing a suspicious golden.
+- Rejected: weakening the ±0.001 assertion or silently replacing the pinned values would violate U021; applying the contradictory prose formula would leave the required golden red.
+
+## D039 — Keep U021 scene presentation narrower than U022 tier resolution
+- Chose: let the first `buildSceneView` emit the full tier only for strong, motion-enabled caps and otherwise conservatively emit the existing 2D fallback; do not export the dedicated tier resolvers until U022 adds their complete golden case table.
+- Why: U021 owns layout, camera, scene parity, and a full-cap scene, while the next ordered U022 task explicitly owns full/lite/board tier behavior. This preserves a truthful safe fallback and a genuine future red boundary instead of implementing untested lite behavior early.
+- Rejected: optimistic full 3D on unknown or weak caps violates graceful degradation; adding all tier behavior before U022's failing tests violates the ordered test-first path; returning an unmodeled placeholder tier would break `SceneView`.
