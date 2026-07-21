@@ -149,3 +149,14 @@
 
 ## NEXT
 - T020/T024: write the `assembleEvidencePacket` and `traceEvidence` contract tests first, confirm RED on the missing packet module, then implement the pure packet assembly and supporting-only trace; acceptance is deterministic assembly with the exact G3 two-node root, empty/invariant-invalid refusal, synthetic milestone Outcome tracing that excludes the island, and a green workspace gate.
+
+## 2026-07-20 — P3 packet assembly and evidence trace (T020/T024)
+- Added pure `assembleEvidencePacket` with canonical node-set ordering, selected-subgraph authority validation before hashing, the exact G3 Merkle root, typed ledger/material derivation, and unsigned in-toto attestation assembly.
+- Added pure `traceEvidence` over node-to-node provenance adjacency, returning deterministic supporting-only ids while excluding the selected Outcome, terminal actor/tool refs, and the unrelated island.
+- Added six contract tests for order-invariant packet equality, exact `3c7f4d3c2a824ad9df7bbf211d8ebd3f1e2086ce2f5b0aea27f8bc994dea441c` G3 output, every packet ledger, empty/missing selection errors, pre-hash invariant refusal, and SC-012 fixture tracing. Confirmed RED on the missing packet module, then GREEN after the minimal implementation.
+- Gate evidence: package composite `tsc -b`, focused packet tests (6/6), workspace `pnpm typecheck`, workspace `pnpm test` (80/80), and `pnpm lint` over 57 files all pass.
+- Phase status: P3 in progress; T018–T020, T022–T024, and T018a are complete. FR-010/FR-014 and SC-012 are passing; the exact G3 packet root is covered. T021/T025 and T026 remain before the P3 checkpoint.
+- Blockers: none.
+
+## NEXT
+- T021/T025: write the deterministic stub `Verifier` contract test first, confirm RED on the missing adapter, then implement `adapters/evidence-verifier-stub`; acceptance is pass for an untampered packet, `MERKLE_MISMATCH` after any selected node alteration, `SUBJECT_DIGEST_MISMATCH` for an attestation subject mismatch, and a green workspace gate.
