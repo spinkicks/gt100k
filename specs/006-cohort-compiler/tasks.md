@@ -1,15 +1,18 @@
 # Tasks: Cohort Compiler + RivalryMix
 
 **Input**: Design documents from `specs/006-cohort-compiler/`
-**Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/cohort-compiler.md, quickstart.md
-**Tests**: INCLUDED — the constitution makes tests part of "done" and `contracts/cohort-compiler.md` defines explicit test obligations. Write tests first; ensure they fail before implementing.
+**Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/cohort-compiler.md, contracts/cohort-arena-view.md, quickstart.md
+**Tests**: INCLUDED — the constitution makes tests part of "done" and `contracts/*.md` define explicit test obligations. Write tests first; ensure they fail before implementing.
 
-**Phase ↔ P-number mapping** (from [spec.md § Phasing P0–P6](./spec.md#phasing-p0p6)): **P0** = Phase 1
+**Phase ↔ P-number mapping** (from [spec.md § Phasing P0–P11](./spec.md#phasing-p0p11)). **Domain:** **P0** = Phase 1
 Setup + Phase 2 Foundational; **P1** = Phase 3 (US1, MVP); **P2** = US2 solver/feasibility (T011–T013,
 T019–T021, T040); **P3** = US2 commit/rollback/churn (T014–T015, T022–T023); **P4** = US2 repair/safeguarding/
-shadow (T016–T018, T024–T027); **P5** = Phase 5 (US3); **P6** = Phase 6 Polish + the single `tsconfig.json`
-touch. Golden fixtures the tests assert against live in
-[spec.md § Golden Values](./spec.md#golden-values--seed-fixtures).
+shadow (T016–T018, T024–T027); **P5** = Phase 5 (US3); **P6** = Phase 6 Polish (domain). **UI:** **P7** =
+Phase 7 view-model domain (T101–T113); **P8** = Phase 8 app shell + Cohort Constellation, UI MVP (T114–T121);
+**P9** = Phase 9 standings + churn/rollback (T122–T126); **P10** = Phase 10 RivalryMix arena room
+(T127–T130); **P11** = Phase 11 safeguarding + a11y + perf + the single `tsconfig.json` touch (T131–T136).
+Golden fixtures the tests assert against live in [spec.md § Golden Values](./spec.md#golden-values--seed-fixtures)
+(domain) and [spec.md § UI Golden Values](./spec.md#ui-golden-values--constants) (UI, Fixtures V1–V4).
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -130,18 +133,111 @@ All work lives in **new** directories (`packages/cohort-compiler`, `adapters/coh
 - [ ] T034 [P] Add `packages/cohort-compiler/README.md` (public API + ports usage + explicit "deferred / not production" section for HNSW, CP-SAT, WebRTC+LiveKit media plane, peer-effect causal uplift, PostgreSQL)
 - [ ] T035 [P] Add an end-to-end `demo` script in `adapters/cohort-repo-memory/src/demo.ts` wiring a synthetic pool → candidate generation → solve → atomic commit + rollback → in-budget repair → safeguarding bypass → post-lock shadow benefit log → RivalryMix analysis (mirrors `quickstart.md`)
 - [ ] T036 Run the `quickstart.md` validation end-to-end with the pinned gate commands ([spec.md § Stack & Commands](./spec.md#stack--commands-pinned)): `pnpm typecheck` (`tsc -b`) clean, `pnpm lint` (`biome check`) clean, `pnpm --filter @gt100k/cohort-compiler test` and `pnpm test` (workspace Vitest) green
-- [ ] T037 **[FINAL — the single shared-file touch]** Add composite project references for `packages/cohort-compiler` and each `adapters/cohort-*` package to the root `tsconfig.json` `references` array. ⚠️ This is the **only** shared-file edit in the feature; keep it isolated in its own commit so a human reconciles it at merge (parallel-safety flag).
+- [ ] T037 **[SUPERSEDED → performed once as T136 in P11]** The single shared-file touch (root `tsconfig.json` `references` for `packages/cohort-compiler`, each `adapters/cohort-*`, **and** `packages/cohort-arena-view`) is deferred to the **final** UI task **T136** so it happens exactly once after both the domain and the UI land (DP-UI-7 supersedes DP-6's scope). *Fallback:* if building the domain in isolation without the UI, add only the domain references here instead; otherwise leave this to T136.
+
+---
+
+## Phase 7 — P7: UI view-model domain (pure) — the Cohort & Arena Viewer foundation 🎯 UI foundation
+
+**Goal**: a pure, deterministic `packages/cohort-arena-view` that reads the committed `@gt100k/cohort-compiler` API read-only and composes a single `CohortArenaView`, with the pinned golden constants (`PALETTE`/`TYPOGRAPHY`/`MOTION`/`EASINGS`/`LAYOUT`) and every presentation function. New dir only; unit-tested by the existing Vitest globs. No `Math.random`, no I/O, no wall-clock.
+
+**Independent Test**: feed synthetic `CohortAssignment`/`TurnAnalysis`/standings → the view is byte-identical across runs; `plainViewEquals` holds across reduced-motion/plain/band; layout/motion/standings/rivalry match Fixtures V1–V4; guardrail scan finds no rank/emotion field and no `Math.random`.
+
+- [ ] T101 Scaffold `@gt100k/cohort-arena-view`: `packages/cohort-arena-view/package.json` (name `@gt100k/cohort-arena-view`, `type: module`, `main`/`types` → `./src/index.ts`, `test: vitest run`, dep `@gt100k/cohort-compiler` `workspace:*`), `tsconfig.json` (extends `../../tsconfig.base.json`, `rootDir: .`, `outDir: dist`, include `src`/`test`), empty `src/index.ts`. Do not touch any shared root file.
+
+### Tests (write first, ensure they fail)
+
+- [ ] T102 [P] [UI-US1] Golden test for `PALETTE`/`TYPOGRAPHY`/`LAYOUT` (exact tokens; state-color-paired-with-icon assertion; contrast pairs ≥4.5:1) in `packages/cohort-arena-view/test/art.test.ts` (FR-045, SC-018)
+- [ ] T103 [P] [UI-US1] Golden test for `MOTION`/`EASINGS`/`resolveMotion` asserting [Fixture V4 `motion-golden`](./spec.md#fixture-v4-motion-golden-ui-us1) (every kind has an animated + reduced form; exact durations/easings; reduced → `mode:"reduced"`, `easing:"linear"`) in `packages/cohort-arena-view/test/motion.test.ts` (FR-039, SC-011)
+- [ ] T104 [P] [UI-US1] Golden test for `layoutConstellation`/`layoutArenaRing` asserting the exact positions of [Fixture V1](./spec.md#fixture-v1-view-cohort-12-ui-us1) (cohort hex centers + six vertices, empty bench) and [Fixture V3](./spec.md#fixture-v3-view-rivalry-ui-us3) (3-seat ring) in `packages/cohort-arena-view/test/layout.test.ts` (FR-031, SC-010)
+- [ ] T105 [P] [UI-US2] Golden test for `deriveStandingsView` asserting [Fixture V2 `view-standings`](./spec.md#fixture-v2-view-standings-ui-us2) (`optedIn:false`→`null`; `optedIn:true`→`gainToBandTop = 40`; **no** rank/position/percentile/outOf field) in `packages/cohort-arena-view/test/standings.test.ts` (FR-035, SC-012)
+- [ ] T106 [P] [UI-US3] Golden test for `buildArenaRoomView` asserting [Fixture V3 `view-rivalry`](./spec.md#fixture-v3-view-rivalry-ui-us3) (`turns-dominance`→3 seats + dominance S1 + conf 1.0 + suppressed false; `turns-lowquality`→suppressed veil + `patterns:[]`; **no** honesty/emotion/personality/motivation field in 100% of outputs) in `packages/cohort-arena-view/test/rivalry.test.ts` (FR-037, SC-013)
+- [ ] T107 [P] [UI-US1] Golden test for `buildCohortArenaView` + `plainViewEquals` asserting [Fixture V1 `view-cohort-12`](./spec.md#fixture-v1-view-cohort-12-ui-us1) (2 hexes with six members + role vector; all seven badges `satisfied:true`; non-harm floor `minBenefit 0.825 ≥ 0.5`; churn delta 0; standings `null`; byte-identical across runs; `plainViewEquals` across reduced-motion/plain/band) + the rollback diff (`A6→A7` → churn delta 2, Ledger diff removed:[A6]/added:[A7], domain unchanged) in `packages/cohort-arena-view/test/view.test.ts` (FR-028/FR-029/FR-032/FR-034/FR-044, SC-009/SC-014/SC-016)
+- [ ] T108 [P] Guardrail scan test in `packages/cohort-arena-view/test/guardrails.test.ts`: no `Math.random` in the package source; the view types expose **no** `price`/`currency`/`rank`/`position`/`percentile`/`outOf` field and **no** honesty/emotion/personality/motivation field; no loss/decay/gacha/purchase/engagement-timer construct (FR-043, SC-017)
+
+### Implementation
+
+- [ ] T109 [UI] Implement `PALETTE`+`TYPOGRAPHY` in `src/art.ts` and `MOTION`+`EASINGS`+`resolveMotion` in `src/motion.ts` (exact registries; reduced-motion table) (depends on T101)
+- [ ] T110 [UI] Implement `LAYOUT`+`layoutConstellation`+`layoutArenaRing` in `src/layout.ts` (deterministic geometry; integer-rounded vertices/seats) (depends on T101)
+- [ ] T111 [UI] Implement `deriveStandingsView` (`src/standings.ts`), `buildArenaRoomView` (`src/rivalry.ts`), `resolveVisualBand` (`src/band.ts`), and `buildLedger` (`src/ledger.ts`) — pure; structural guardrails (no rank field, no emotion field) (depends on T101, T110)
+- [ ] T112 [UI] Implement `buildCohortArenaView` + `plainViewEquals` in `src/view.ts` (compose constellation/cohorts/standings/rivalry/safeguarding/motion/presentation/ledger; read domain values read-only; flags affect only motion+presentation) and export the public surface from `src/index.ts` (depends on T109, T110, T111)
+- [ ] T113 Commit the view golden fixtures `packages/cohort-arena-view/test/fixtures/` (V1 `view-cohort-12`, V2 `view-standings`, V3 `view-rivalry`, V4 `motion-golden`) typed against the domain + view types, and add the seeded smoke `test/smoke.test.ts` (imports the entrypoint; asserts Fixture V1 builds) so `pnpm test` is green from the first UI increment (depends on T101, T112)
+
+**Checkpoint**: the pure view model + golden constants exist and are unit-tested — every UI guardrail is structurally provable before any pixel renders.
+
+---
+
+## Phase 8 — P8: App shell + Cohort Constellation (UI MVP)
+
+**Goal**: `apps/cohort-arena` renders the animated compile constellation (Pixi WebGL) + the DOM/Framer-Motion HUD (cohort cards with FLIP, satisfied badges, non-harm floor line) + the reduced-motion path + the accessible Cohort Ledger, all from one `CohortArenaView`. Verified by `next build` + seeded smoke.
+
+**Independent Test**: `next build` succeeds with empty env; the Pixi canvas mounts client-only with zero console/WebGL errors and destroys on unmount; the constellation shows six-member hexes with satisfied badges + floor line; reduced-motion toggles to the static equivalent; the Cohort Ledger tree is focusable and conveys the same state.
+
+- [ ] T114 Scaffold `apps/cohort-arena` (Next.js App Router): `package.json` (`@gt100k/cohort-arena`; deps `next@^14.2.15`, `react@^18.3.1`, `react-dom@^18.3.1`, `pixi.js@^8.19.0`, `motion@^12.42.0`, `@gt100k/cohort-arena-view` `workspace:*`; devDeps `@types/react`/`@types/react-dom`; scripts `dev`/`build`/`start`), `next.config.mjs` (`transpilePackages: ["@gt100k/cohort-arena-view","@gt100k/cohort-compiler"]`), `tsconfig.json` (mirror `apps/student-compass`), `app/layout.tsx`, `app/globals.css` (PALETTE/TYPOGRAPHY tokens + `prefers-reduced-motion`/`prefers-reduced-transparency` + `:focus-visible` rings + plain-mode hooks), `.env.local.example`, `.gitignore`. New dir only.
+- [ ] T115 [UI-US2] `app/page.tsx` server shell → `next/dynamic(() => import("../components/CohortArena.client"), { ssr: false })`; `components/CohortArena.client.tsx` builds the `CohortArenaView` from a synthetic in-app `CohortAssignment` (Fixture B shape) and lays out the canvas + HUD + Ledger regions.
+- [ ] T116 [UI-US2] Pixi Cohort Constellation in `components/constellation/`: create a `PIXI.Application` in `useEffect` (client-only; `destroy(true)` on unmount), render learner motes at the `view.constellation` positions, animate the **compile** (motes flow → crystallize into hexes) via `resolveMotion("compile", …)`, draw caliper rings + the non-harm floor line; reduced-motion → instant snap to settled + `aria-live` announce (FR-031/FR-032/FR-039/FR-041).
+- [ ] T117 [UI-US2] DOM/Framer-Motion cohort roster cards in `components/hud/`: one card per cohort (members+roles, the seven satisfied badges with icon+text, the floor readout), **FLIP layout animation** (`motion` `layout`) on membership change; press feedback (scale 0.97); ≥44px targets (FR-032/FR-033).
+- [ ] T118 [UI-US2] Accessible Cohort Ledger in `components/ledger/` from `view.ledger` (cohorts as `role="tree"` with stateful accessible names, `aria-live` region); canvas `aria-hidden="true"`; visible focus; color-independent state; ≥4.5:1 contrast (FR-040, SC-014).
+- [ ] T119 [UI-US2] Reduced-motion + plain-mode wiring: `useReducedMotion` (and the `NEXT_PUBLIC_REDUCED_MOTION_DEFAULT` override) select the reduced `MotionSpec`; plain mode renders the low-spectacle path; both are state-identical (`plainViewEquals`) (FR-039/FR-044, SC-015).
+- [ ] T120 [UI-US2] Commit seed inline SVGs under `apps/cohort-arena/public/seed/` (mote, hex, badge, floor-line, icons) + a deterministic procedural fallback so the canvas renders with **no external fetch** (FR-042).
+- [ ] T121 [UI-US2] Add the seeded app smoke (Playwright or an HTML/JS check) asserting `/` mounts a `<canvas>`, **zero** console/WebGL errors, reduced-motion toggle works, and the Ledger is present + focusable (FR-041, SC-014/SC-015).
+
+**Checkpoint**: the Cohort Constellation renders and compiles beautifully, with a reduced-motion equal mode and an accessible Ledger — **UI MVP demonstrable** via `pnpm --filter @gt100k/cohort-arena build` + smoke.
+
+---
+
+## Phase 9 — P9: Gain-based standings + churn/rollback
+
+**Goal**: the opt-in near-peer standings panel (own-growth bar + ticker; no rank/bottom-rank), the churn-budget meter, and the rollback control with its reverse-settle animation + Ledger diff.
+
+- [ ] T122 [UI-US2] Standings panel in `components/hud/` from `view.standings` (opt-in, default off): amber **bar grow** L→R + **number ticker** (tabular) via `resolveMotion("standingsBar"/"gainCelebrate", …)`; anonymized peers; `gainToBandTop`; **no** rank/bottom-rank possible; reduced-motion → instant filled bar + final number (FR-035/FR-036, SC-012).
+- [ ] T123 [UI-US2] Standings opt-in toggle (default off) — turning it off leaves everything unchanged; wire to `standingsOptIn` flag (FR-036).
+- [ ] T124 [UI-US2] Churn-budget meter in `components/hud/` from the domain `ChurnBudget` + `view.cohorts[].churnDelta`.
+- [ ] T125 [UI-US2] Rollback control + Pixi **reverse-settle** animation (`resolveMotion("rollback", …)`) restoring the prior snapshot positions; Ledger shows the diff; **display-only** (never mutates the domain result) (FR-034, SC-016).
+- [ ] T126 [UI-US2] Reduced-motion equivalents for standings/churn/rollback (instant bar, instant restore, Ledger diff) (FR-039, SC-015).
+
+**Checkpoint**: standings celebrate own-growth without any caste/bottom-rank, and churn/rollback are visible and reversible in the view.
+
+---
+
+## Phase 10 — P10: RivalryMix arena room
+
+**Goal**: the seat-ring arena room from `TurnAnalysis` — turn-holding pulse, interruption arcs, dominance share arc, and the low-quality suppression veil — observable-only, no trait/emotion field.
+
+- [ ] T127 [UI-US3] Pixi arena room in `components/arena/` from `view.rivalry`: seats at the `layoutArenaRing` positions; turn-holder **seat pulse** (`resolveMotion("turnPulse", …)`); reduced-motion → static highlight + Ledger text (FR-037).
+- [ ] T128 [UI-US3] Interruption **arc darts** (interrupter→floor-holder, `resolveMotion("interruptionArc", …)`) + dominance **share arc grow** (`resolveMotion("dominanceArc", …)`) with the observable evidence text; reduced-motion → tallies/text in the Ledger (FR-037, SC-013).
+- [ ] T129 [UI-US3] Low-quality **suppression veil** (`suppressed:true` → dim + "confidence low — prompts suppressed"), and a neutral "analytics off" state for refused/missing — **never** a false label; the arena view carries no emotion/trait field (FR-037, SC-013).
+- [ ] T130 [UI-US3] Rivalry entries in the Cohort Ledger (`view.ledger.rivalryList`) — observable descriptors + patterns + veil text; canvas `aria-hidden` (FR-040, SC-014).
+
+**Checkpoint**: the arena room shows *only* observable turn-taking, suppresses under noise, and is incapable of rendering a trait/emotion label.
+
+---
+
+## Phase 11 — P11: Safeguarding affordance, a11y, perf & the single shared-file touch
+
+**Goal**: the safeguarding-bypass affordance; a WCAG 2.2 AA pass over the Ledger; reduced-motion parity; 60fps + graceful degradation; app README; and the single root-`tsconfig.json` touch.
+
+- [ ] T131 [UI-US4] Safeguarding affordance in `components/hud/` from `view.safeguarding`: a **firm-but-not-alarm** banner (shield glyph + `--safeguard`, never alarm-red flash) that shows optimization **bypassed**, freezes conflicting cohort moves in the constellation, and routes to a safeguarding **lane**; **never** mutates a standing/rating/objective (FR-038, SC-016).
+- [ ] T132 [UI] WCAG 2.2 AA pass over the Cohort Ledger: full keyboard/switch operation (Tab/Arrow/Enter/Escape), visible `--focus` rings, color-independent state (icon+shape+text), captions where sound exists, ≥4.5:1 contrast; canvas `aria-hidden` (FR-040/FR-045, SC-014/SC-018).
+- [ ] T133 [UI] Performance + graceful degradation: target 60fps with a degraded tier (halved particles, glow off); WebGL context-loss / unavailability falls back to the reduced-motion DOM/SVG + Ledger (never depends on WebGL); no action blocked (FR-041).
+- [ ] T134 [P] [UI] `apps/cohort-arena/README.md` (run/build, the one-view-drives-all architecture, reduced-motion + Ledger, the guardrails, and a "no live media / no network / synthetic-only" note) + `packages/cohort-arena-view/README.md` (public API + golden constants).
+- [ ] T135 [UI] Run the [quickstart](./quickstart.md) UI validation end-to-end: `pnpm typecheck` clean, `pnpm lint` clean, `pnpm --filter @gt100k/cohort-arena-view test` green, `pnpm --filter @gt100k/cohort-arena build` succeeds, the seeded app smoke passes (zero console/WebGL errors), and the reduced-motion + a11y + color-independence walkthrough passes.
+- [ ] T136 **[FINAL — the single shared-file touch]** Add composite project references for `packages/cohort-compiler`, each `adapters/cohort-*` package, **and** `packages/cohort-arena-view` to the root `tsconfig.json` `references` array. ⚠️ This is the **only** shared-file edit in the whole feature; keep it isolated in its own commit so a human reconciles it at merge (parallel-safety flag; DP-UI-7). *(`apps/cohort-arena` is a Next.js app with its own non-composite `tsconfig` and is **not** added as a `tsc -b` reference — it is verified by `next build`.)*
+
+**Checkpoint**: the full Cohort & Arena Viewer is beautiful, animated, accessible, reduced-motion-equal, guardrail-clean, and build-verified; the single shared-file touch is applied last.
 
 ---
 
 ## Dependencies & Execution Order
 
-- **P0: Setup (T001) → Foundational (T002–T003, T038 fixtures, T039 smoke test — blocks all stories)** → **P1: US1 (T004–T010)** → **P2/P3/P4: US2 (T011–T028)** → **P5: US3 (T029–T033)** → **P6: Polish (T034–T037)**.
+- **Domain:** **P0: Setup (T001) → Foundational (T002–T003, T038 fixtures, T039 smoke test — blocks all stories)** → **P1: US1 (T004–T010)** → **P2/P3/P4: US2 (T011–T028, T040)** → **P5: US3 (T029–T033)** → **P6: Polish (T034–T036; T037 superseded by T136)**.
+- **UI:** **P7: view-model domain (T101 → tests T102–T108 → impl T109–T113)** → **P8: app shell + Cohort Constellation MVP (T114–T121)** → **P9: standings + churn/rollback (T122–T126)** → **P10: RivalryMix arena room (T127–T130)** → **P11: safeguarding + a11y + perf + final tsconfig (T131–T136)**.
 - T038 (seed fixtures) depends on T002 (types); T039 (smoke test) depends on T001 + T038 and must be green before any story work begins.
 - US2 consumes US1's `generateCandidates` output but is independently testable by feeding synthetic candidate sets directly.
 - US3 depends on none of the solver machinery (independent).
 - Within US2: `benefit` (T040) before `constraints` (T019); `constraints`/`objective` (T019/T020) before `solver` (T021); `repo-memory` (T022) before `commit`/`rollback` (T023); `commit` before `repair` (T024).
-- T037 (root `tsconfig.json`) runs **last**; it is the sole shared-file change.
+- **UI depends on the committed domain public API (P0–P5 types/functions), read-only.** Within P7: T101 (scaffold) → tests T102–T108 → impl T109–T112 → fixtures+smoke T113. The app (P8+) depends on the view package (P7). Each UI phase feeds **synthetic** `CohortAssignment`/`TurnAnalysis` values directly, so a UI phase never requires a live solve. **UI MVP = P7 + P8.**
+- T136 (root `tsconfig.json`) runs **last** across the whole feature; it is the sole shared-file change (T037 is folded into it).
 
 ## Parallel Opportunities
 
@@ -150,6 +246,8 @@ All work lives in **new** directories (`packages/cohort-compiler`, `adapters/coh
 - US2: T011–T018 (tests) in parallel before the implementation tasks; adapter impls T022/T026/T027 are in different dirs and parallelizable once ports exist.
 - US3: T029/T030 (tests) in parallel before implementation.
 - Polish: T034, T035 in parallel.
+- **UI P7**: T102–T108 (golden + guardrail tests) in parallel before the impl tasks T109–T112.
+- **UI P8+**: constellation (T116), roster cards (T117), and Ledger (T118) live in different `components/` dirs and are parallelizable once the shell (T114/T115) exists; README tasks T134 are parallel.
 
 ## Implementation Strategy
 
@@ -158,8 +256,9 @@ All work lives in **new** directories (`packages/cohort-compiler`, `adapters/coh
 
 ## Summary
 
-- **Total tasks**: 40 (T001–T040)
-- **US1**: 7 (T004–T010) · **US2**: 19 (T011–T028, T040) · **US3**: 5 (T029–T033) · Setup 1 (T001) · Foundational 4 (T002–T003, T038 fixtures, T039 smoke) · Polish 4 (T034–T037)
-- **Phasing**: P0 (T001–T003, T038–T039) · P1/MVP (T004–T010) · P2/P3/P4 (T011–T028, T040) · P5 (T029–T033) · P6 (T034–T037).
-- **MVP scope**: P0 (Setup + Foundational + seed fixtures + smoke test) + P1 (near-peer candidate generation).
-- **Shared-file touches**: exactly one — T037 (root `tsconfig.json` references), flagged for human merge reconciliation (DP-6, `severity: critical`).
+- **Total tasks**: 76 — domain 40 (T001–T040) + UI 36 (T101–T136).
+- **Domain** — **US1**: 7 (T004–T010) · **US2**: 19 (T011–T028, T040) · **US3**: 5 (T029–T033) · Setup 1 (T001) · Foundational 4 (T002–T003, T038, T039) · Polish 3 (T034–T036; T037 superseded).
+- **UI** — **P7 view domain**: 13 (T101–T113) · **P8 app + constellation (UI MVP)**: 8 (T114–T121) · **P9 standings/churn/rollback**: 5 (T122–T126) · **P10 RivalryMix room**: 4 (T127–T130) · **P11 safeguarding/a11y/perf/final**: 6 (T131–T136).
+- **Phasing**: P0 (T001–T003, T038–T039) · P1/MVP (T004–T010) · P2/P3/P4 (T011–T028, T040) · P5 (T029–T033) · P6 (T034–T036) · **P7 (T101–T113) · P8/UI-MVP (T114–T121) · P9 (T122–T126) · P10 (T127–T130) · P11 (T131–T136)**.
+- **MVP scope**: domain MVP = P0 + P1 (near-peer candidate generation); **UI MVP = P7 + P8** (the animated cohort-formation constellation + reduced-motion + accessible Ledger).
+- **Shared-file touches**: exactly one — **T136** (root `tsconfig.json` references for the domain dirs + `packages/cohort-arena-view`), flagged for human merge reconciliation (DP-UI-7, `severity: critical`). `apps/cohort-arena` is not a `tsc -b` reference (verified by `next build`).

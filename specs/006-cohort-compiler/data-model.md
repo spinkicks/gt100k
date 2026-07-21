@@ -255,3 +255,183 @@ TURN EVENTS (TurnEvent[])
 - **`MediaTurnSource`** (behind the stub port, §15.1): yields synthetic `TurnEvent[]`; real WebRTC/AudioWorklet/LiveKit capture deferred.
 - **`BenefitEstimator`** (shadow, §15): returns a placeholder `BenefitLCB`; real causal-uplift under network interference deferred.
 - **PostgreSQL commit** (behind `CohortRepository`, §15): in-memory atomic commit + rollback stands in.
+
+---
+
+# UI View Model — `packages/cohort-arena-view` (P7–P11)
+
+The Viewer's view types live in `packages/cohort-arena-view`, computed by **pure, deterministic** functions
+that read the committed `@gt100k/cohort-compiler` types **read-only** (no I/O, no wall-clock, **no
+`Math.random`**). One `CohortArenaView` drives the Pixi canvas, the DOM/Framer-Motion HUD, the reduced-motion
+rendering, and the accessible Cohort Ledger (parity by construction). Guardrails are **structural** — the
+types below cannot represent a caste/bottom-rank or an emotion/trait label. Golden constants + fixtures are
+pinned in [spec.md § UI Golden Values](./spec.md#ui-golden-values--constants).
+
+## CohortArenaView (composed — the one view)
+
+Output of `buildCohortArenaView(input) → CohortArenaView`, where
+`input = { assignment: CohortAssignment; priorAssignment?: CohortAssignment | null; candidateSets?: CandidateSet[]; hard: HardConstraints; churn: ChurnBudget; standings?: { self: { selfGain: number }; nearPeers: { pseudonym: string; gain: number }[]; optedIn: boolean }; rivalry?: TurnAnalysis | null; flags: ViewFlags }`.
+
+| Field | Type | Notes |
+|---|---|---|
+| `constellation` | ConstellationView | mote + hex + bench layout (deterministic) |
+| `cohorts` | CohortCardView[] | one per cohort; members, satisfied badges, floor readout, churn delta |
+| `standings` | StandingsView \| null | opt-in; `null` when `optedIn:false` (default) |
+| `rivalry` | ArenaRoomView \| null | `null` when no turn analysis supplied |
+| `safeguarding` | SafeguardingView | pending events + paused moves (display only) |
+| `motion` | Record<MotionKind, MotionSpec> | resolved per event via `resolveMotion` (honors `flags.reducedMotion`) |
+| `presentation` | PresentationView | palette/type tokens + resolved age-band variant + plain flag |
+| `ledger` | LedgerView | accessible DOM structure spec (AT source of truth) |
+
+**Invariants**: identical inputs → **byte-identical** view (FR-029); `flags` only affect `motion` +
+`presentation` — `constellation`/`cohorts`/`standings`/`rivalry`/`safeguarding` are **identical** across
+reduced-motion/plain/band (`plainViewEquals`, FR-028/FR-044, SC-009).
+
+## ViewFlags (value)
+
+| Field | Type | Notes |
+|---|---|---|
+| `reducedMotion` | boolean | first-class equal mode; strips motion, keeps state (FR-039) |
+| `plain` | boolean | low-spectacle mode; state-identical (FR-044) |
+| `band` | `"6-8" \| "9-11" \| "12-14"` | age-band presentation (FR-044) |
+| `standingsOptIn` | boolean | default **false**; gates the standings view (FR-035) |
+
+## ConstellationView / MoteView / CohortHexView
+
+Deterministic layout (`layoutConstellation`, geometry pinned in `LAYOUT`).
+
+| Type | Field | Type | Notes |
+|---|---|---|---|
+| ConstellationView | `world` | `{ width: number; height: number }` | `1600×900` |
+| | `hexes` | CohortHexView[] | one per cohort |
+| | `bench` | MoteView[] | unassigned learners (calm "still compiling") |
+| | `caliperRings` | number[] | display radii `[140,220,300]` (never gate anything) |
+| CohortHexView | `cohortIndex` | number | order = domain cohort order |
+| | `center` | `{ x: number; y: number }` | `center(i)` per `LAYOUT` |
+| | `members` | MoteView[] | six, at the hex vertices |
+| MoteView | `ref` | string | learner ref |
+| | `pos` | `{ x: number; y: number }` | settled position (integer, rounded) |
+| | `state` | `"assigned" \| "unassigned" \| "candidate"` | color+icon+text (never color alone) |
+| | `role` | Role \| null | assigned role for a cohort member |
+
+## CohortCardView
+
+| Field | Type | Notes |
+|---|---|---|
+| `cohortIndex` | number | matches the hex |
+| `members` | `{ ref: string; role: Role }[]` | six, role vector order |
+| `badges` | `{ constraint: string; satisfied: boolean }[]` | the **seven** hard constraints; all `true` for an accepted cohort |
+| `nonHarmFloor` | `{ minBenefit: number; floor: number; allAbove: boolean }` | from the domain; `allAbove = minBenefit ≥ floor` (display only, never re-derived) |
+| `churnDelta` | number | churn vs. prior snapshot (0 when `prior = null`) |
+
+## StandingsView (opt-in; nullable) — **structural guardrail**
+
+`deriveStandingsView(self, nearPeers, { optedIn }) → StandingsView | null`. Returns `null` when
+`optedIn:false` (default). When opted in:
+
+| Field | Type | Notes |
+|---|---|---|
+| `band` | string | near-peer band label (anonymized) |
+| `anonymizedPeers` | `{ pseudonym: string; gain: number }[]` | pseudonymous; near-peer only |
+| `selfGain` | number | the learner's own gain |
+| `gainToBandTop` | number | `max(all gains) − selfGain` (own-growth headroom) |
+
+> **Prohibited by construction**: `StandingsView` has **no** `rank`, `position`, `percentile`, `outOf`, or
+> any bottom-rank/"last of N" field, and none may be added (FR-035; G6; SC-012/SC-017). Gain-based,
+> sprint-reset, near-peer, anonymized, opt-in — never a fixed-ability caste rank or full-field ranking.
+
+## ArenaRoomView / SeatView / TurnPatternView (RivalryMix) — **structural guardrail**
+
+`buildArenaRoomView(analysis: TurnAnalysis) → ArenaRoomView` (layout via `layoutArenaRing`).
+
+| Type | Field | Type | Notes |
+|---|---|---|---|
+| ArenaRoomView | `seats` | SeatView[] | one per observed speaker, sorted by ref |
+| | `patterns` | TurnPatternView[] | `dominance` / `repeated_interruption` with evidence (from the domain) |
+| | `confidence` | number | from `TurnAnalysis` |
+| | `suppressed` | boolean | true → render the "confidence low — prompts suppressed" veil; **0** patterns surfaced |
+| SeatView | `speaker` | string | pseudonymous ref |
+| | `pos` | `{ x: number; y: number }` | ring position (`RING_R=240`, center `(800,450)`) |
+| | `turnShare` | number | observable descriptor |
+| | `interruptions` | number | observable descriptor |
+| | `holdingFloor` | boolean | current turn-holder (pulse) |
+| TurnPatternView | `kind` | `"dominance" \| "repeated_interruption"` | observable only |
+| | `subjects` | string[] | seat refs |
+| | `evidence` | string | the observable triggering evidence text |
+
+> **Prohibited by construction**: `ArenaRoomView`/`SeatView`/`TurnPatternView` have **no** honesty, emotion,
+> personality, or motivation field, and none may be added (FR-037; G5/G6; SC-013). Low-quality/sparse input
+> sets `suppressed:true` and surfaces no pattern (suppress, never mislabel). A refused/missing analytics case
+> renders a neutral "analytics off" state and changes nothing.
+
+## SafeguardingView (display only)
+
+| Field | Type | Notes |
+|---|---|---|
+| `pending` | CohortHealthEvent[] | routed to the safeguarding lane (bypass optimization) |
+| `pausedMoves` | `{ moveId: string; touches: string[] }[]` | conflicting moves frozen (POL-007) |
+| `optimizationBypassed` | boolean | true when a health event is present |
+
+> **Invariant**: display only — never mutates a standing, rating, or objective in the view (FR-038;
+> SC-016). Rendered as a firm-but-not-alarm banner + a routed lane, never an alarm/red-flash.
+
+## MotionSpec / MotionKind
+
+`resolveMotion(kind: MotionKind, { reducedMotion }) → MotionSpec`.
+
+| Field | Type | Notes |
+|---|---|---|
+| `kind` | MotionKind | e.g. `compile`, `rollback`, `turnPulse`, `standingsBar`, `press`, `hudToggle` |
+| `mode` | `"animated" \| "reduced"` | `reduced` when `reducedMotion:true` |
+| `durationMs` | number | from `MOTION` (animated) or the reduced column |
+| `easing` | string | from `EASINGS` (animated) or `"linear"` (reduced) |
+
+Exact table in [spec.md § UI Golden Values](./spec.md#ui-golden-values--constants) (Fixture V4). Every
+`MotionKind` has both an animated and a reduced form (FR-039, SC-011).
+
+## PresentationView / VisualBand
+
+`resolveVisualBand(band) → VisualBand`.
+
+| Field | Type | Notes |
+|---|---|---|
+| `palette` | typeof PALETTE | exact tokens |
+| `typography` | typeof TYPOGRAPHY | exact tokens |
+| `band` | AgeBand-like `"6-8" \| "9-11" \| "12-14"` | resolved band |
+| `labelStyle` | `"story" \| "growth" \| "numeric"` | 6-8 story / 9-11 growth / 12-14 numeric |
+| `markerScale` | number | `1.25 / 1.1 / 1.0` |
+| `celebrationCeiling` | `"gentle" \| "standard"` | 6-8 gentle; others standard |
+| `plain` | boolean | plain-mode flag |
+
+The underlying `CohortArenaView` state is **identical** across bands/plain (`plainViewEquals`); only this
+presentation varies (FR-044, SC-009/SC-015).
+
+## LedgerView (accessible twin)
+
+| Field | Type | Notes |
+|---|---|---|
+| `cohortTree` | `{ label: string; children: { label: string }[] }[]` | `role="tree"`; each node's accessible name = cohort + member + role + satisfied state |
+| `standingsText` | string \| null | band-appropriate own-growth text (or `null` when off) |
+| `rivalryList` | string[] | observable descriptors + patterns as text; veil text when suppressed |
+| `safeguardingAlert` | string \| null | firm-not-alarm text when a health event is present |
+| `announce` | string \| null | `aria-live="polite"` message (compile/rollback) |
+
+Built by `buildLedger(view)` from the same `CohortArenaView`; the canvas is `aria-hidden` and the Ledger is
+the AT source of truth (FR-040, SC-014).
+
+## Golden constant registries (exact — unit-tested)
+
+`PALETTE`, `TYPOGRAPHY`, `MOTION`, `EASINGS`, `LAYOUT` — the exact values are pinned in
+[spec.md § UI Golden Values](./spec.md#ui-golden-values--constants) and asserted by `art.test.ts` /
+`motion.test.ts` / `layout.test.ts`.
+
+## UI view state transitions
+
+```text
+DOMAIN OUTPUT (CohortAssignment, CandidateSet[], TurnAnalysis, CohortHealthEvent — all synthetic/injected)
+  -- buildCohortArenaView(input) --> CohortArenaView            (P7; pure, deterministic, one view)
+       * plainViewEquals(view, reducedMotion|plain|band) holds  (state-identical; presentation varies)
+  -- Pixi renderer <-- view.constellation / view.rivalry        (P8/P10; canvas, aria-hidden)
+  -- DOM/Framer-Motion HUD <-- view.cohorts / standings / safeguarding  (P8/P9)
+  -- buildLedger(view) --> LedgerView                           (P8; accessible twin, AT truth)
+```

@@ -14,6 +14,14 @@
 > catch-all rule for anything left unsaid (see **Defaults for the Unspecified**). Sections are ordered so the
 > agent can read only the phase it is on. **No live child data — SYNTHETIC ONLY.**
 
+> **UI expansion (read if building the interface).** The **Provenance Explorer** — a beautiful,
+> animated Next.js app (`apps/evidence-explorer`) that *reads* this pure domain (an interactive
+> evidence-DAG constellation, a build timeline, a satisfying verify → *Verified ✓* seal + tamper demo,
+> and drill-down panels where declared AI-assistance is cited evidence, never an accusation) — is
+> specified separately in [`explorer/spec.md`](./explorer/spec.md) (+ its plan/tasks/data-model/
+> contracts/quickstart/checklist under [`explorer/`](./explorer/)). That expansion **does not modify
+> this domain**; this file and its companions remain the completed, unit-tested core.
+
 ---
 
 ## Scope Fence *(hard — the loop builds the whole spec; anything vague becomes scope creep)*
