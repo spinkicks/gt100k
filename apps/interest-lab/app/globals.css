@@ -1432,10 +1432,62 @@ footer {
 .explanation-evidence summary,
 .other-explanations summary,
 .legal-transitions summary {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
   min-height: 2.75rem;
+  margin-inline: -0.5rem;
+  padding-inline: 0.5rem;
+  border-radius: 0.5rem;
   cursor: pointer;
   font-weight: 600;
-  line-height: 2.75rem;
+  list-style: none;
+  transition: background 160ms var(--hud-ease), color 160ms var(--hud-ease),
+    transform 140ms var(--hud-ease);
+}
+
+.explanation-evidence summary::-webkit-details-marker,
+.other-explanations summary::-webkit-details-marker,
+.legal-transitions summary::-webkit-details-marker {
+  display: none;
+}
+
+.explanation-evidence summary::after,
+.other-explanations summary::after,
+.legal-transitions summary::after {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  border-radius: 1px;
+  opacity: 0.6;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 200ms var(--hud-ease), opacity 160ms var(--hud-ease);
+  content: "";
+}
+
+.explanation-evidence[open] > summary::after,
+.other-explanations[open] > summary::after,
+.legal-transitions[open] > summary::after {
+  opacity: 1;
+  transform: translateY(1px) rotate(-135deg);
+}
+
+.explanation-evidence summary:active,
+.other-explanations summary:active,
+.legal-transitions summary:active {
+  transform: scale(0.985);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .explanation-evidence summary:hover,
+  .other-explanations summary:hover,
+  .legal-transitions summary:hover {
+    background: color-mix(in srgb, var(--ink-guide) 7%, transparent);
+    color: color-mix(in srgb, var(--spark) 42%, var(--ink-guide));
+  }
 }
 
 .explanation-evidence ul,
@@ -1780,6 +1832,18 @@ footer {
   background: var(--paper-guide);
   color: var(--ink-guide);
   font: inherit;
+  transition: border-color 160ms var(--hud-ease), box-shadow 160ms var(--hud-ease);
+}
+
+.guide-authoring input:hover,
+.guide-authoring textarea:hover {
+  border-color: color-mix(in srgb, var(--ink-guide) 48%, transparent);
+}
+
+.guide-authoring input:focus-visible,
+.guide-authoring textarea:focus-visible {
+  border-color: color-mix(in srgb, var(--spark) 58%, var(--ink-guide));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--spark) 34%, transparent) inset;
 }
 
 .guide-authoring textarea {
@@ -1797,11 +1861,27 @@ footer {
   cursor: pointer;
   font: inherit;
   font-weight: 700;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 16%) inset, 0 8px 18px -11px rgb(24 16 38 / 85%);
+  transition: transform 140ms var(--hud-ease), background 180ms var(--hud-ease),
+    box-shadow 180ms var(--hud-ease);
+}
+
+.guide-authoring button:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .guide-authoring button:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--spark) 24%, var(--ink-guide));
+    box-shadow: 0 1px 0 rgb(255 255 255 / 22%) inset, 0 13px 24px -11px rgb(255 158 94 / 48%);
+    transform: translateY(-1px);
+  }
 }
 
 .guide-authoring button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
+  box-shadow: none;
 }
 
 .authoring-boundary,
@@ -1843,6 +1923,8 @@ footer {
   min-height: 6.5rem;
   padding: 0 0 1.25rem;
   font-size: var(--type-label-size);
+  border-radius: 0.6rem;
+  transition: background 220ms var(--hud-ease);
 }
 
 .revision-entry:not(:last-child)::after {
@@ -1863,6 +1945,21 @@ footer {
   align-items: center;
   min-height: 2.75rem;
   cursor: pointer;
+  transition: transform 140ms var(--hud-ease);
+}
+
+.revision-entry label:active {
+  transform: scale(0.99);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .revision-entry label:hover .revision-title {
+    color: color-mix(in srgb, var(--spark) 40%, var(--ink-guide));
+  }
+
+  .revision-entry label:hover .revision-mark {
+    transform: scale(1.06);
+  }
 }
 
 .revision-entry input {
@@ -1884,10 +1981,16 @@ footer {
   place-items: center;
   border-radius: 50%;
   background: var(--paper-guide);
+  transition: transform 160ms var(--hud-ease), background 160ms var(--hud-ease),
+    box-shadow 160ms var(--hud-ease);
 }
 
 .revision-entry--current .revision-mark {
   background: color-mix(in srgb, var(--met) 22%, var(--paper-guide));
+}
+
+.revision-entry--selected .revision-mark {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--spark) 42%, transparent);
 }
 
 .revision-entry--selected {
@@ -1896,6 +1999,7 @@ footer {
 
 .revision-title {
   font-weight: 700;
+  transition: color 160ms var(--hud-ease);
 }
 
 .revision-detail {

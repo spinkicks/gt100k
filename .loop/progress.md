@@ -57,6 +57,24 @@ emissive glow, spring/ease-out motion. Display font Fredoka; reading serif Iowan
   coverage CSS regexes are untouched. Pure DOM/CSS (no GPU), so the build's CSS compile + the pinned
   guide/coverage markup tests actually verify it. Gate green: tsc + 74 tests + `next build`. See D-VP6.
 
+- **Turn 5 (this):** Made the crafted guide deck *feel alive under the pointer* — killed the highest-
+  leverage remaining tell (#6 guide side): the guide's **directly-interacted controls had zero press /
+  hover / focus feedback** (dead-feeling), even though every guide *enter* animation (coverage stagger,
+  explanations reveal, timeline draw, marker/gate pops, lifecycle state-morph) already existed via
+  `motion/react`. Applied a **pure-CSS feedback pass** reusing the child deck's exact idiom (the shared
+  `--hud-ease` = `cubic-bezier(0.23,1,0.32,1)`, `scale(0.97)` press, 140–180ms, hover behind
+  `@media (hover:hover) and (pointer:fine)`): (a) the primary **"Author operative revision" button** now
+  lifts + warms toward spark on hover and presses to `scale(0.97)` with a depth shadow; (b) the three
+  guide **`<details>` disclosures** (linked evidence, other explanations, legal transitions) got a
+  hover tint + spark text shift + press scale + a **rotating custom chevron** (native marker hidden) so
+  the open/closed state reads; (c) the **revision-scrubber** rows tint + press-scale, the selected row's
+  background now *fades* in (220ms) instead of snapping, and the selected/hovered **revision mark** gets a
+  spark focus ring + scale; (d) the **authoring inputs** brighten their border toward spark on
+  hover/focus. Animates only transform/background/box-shadow/border/color; reduced-motion is auto-
+  neutralized by the global `transition-duration:0.01ms !important` block, so it's a11y-safe by
+  construction. No markup change → every pinned guide/coverage test + CSS regex untouched. Gate green:
+  tsc + 212 tests + `next build`. See D-VP7.
+
 ## Verification note (honest)
 The grade only mounts client-side on the WebGL full tier, so it can't be pixel-verified in this
 headless / GPU-less env (swiftshader would fall to board-2d and never exercise the composer).
@@ -66,13 +84,12 @@ real module), tsc + tests + build all green, and the tone-mapping chain is corre
 why the ACES ToneMapping effect is present. A GPU screenshot pass is the ideal next confirmation.
 
 ## What still reads generic (candidates for next turns)
-- **Guide sub-panels still lack motion/juice (#6 on the guide side).** The guide chrome now reads as one
-  crafted deck (Turn 4), but its interior is static: the coverage cells, explanation columns, timeline
-  markers and lifecycle states don't stagger-enter, and there's no hover/press feedback on the interactive
-  guide controls (author form, revision scrubber, `<details>` disclosures). This is now the highest-
-  leverage remaining tell — the guide *looks* crafted but doesn't *feel* alive.
-- **Board-2d juice:** the child fallback cards could use stagger-enter + spring hover (#6) so the perf
-  floor still feels alive.
+- **Board-2d juice (now the highest-leverage remaining tell).** The child fallback cards (`Board2D.tsx`)
+  and its container likely still pop in flat with no stagger-enter and no spring hover/press feedback (#6),
+  so the D057 perf floor / no-WebGL path feels like a plain list next to the fully-juiced 3D world + HUD.
+  Verify against the child deck's `--hud-ease` idiom and add stagger-enter + tactile hover/press.
+- **Deeper guide trenching (optional polish):** the explanation columns + lifecycle tracks + revision rail
+  could take the same inset-trench treatment as the two scroll instruments for even more instrument depth.
 - **Deeper guide trenching (optional polish):** the explanation columns + lifecycle tracks + revision rail
   could take the same inset-trench treatment as the two scroll instruments for even more instrument depth.
 - **SSAO / ambient occlusion (part of #4)** — deferred (needs a normal pass; riskiest to tune blind).
@@ -81,18 +98,19 @@ why the ACES ToneMapping effect is present. A GPU screenshot pass is the ideal n
 ## Non-negotiable scorecard (vs game-feel.md)
 1 committed world ✓ · 2 lighting rig ✓ · 3 materials ✓ (no bare primitives remain) ·
 4 post-FX grade ✓ (SSAO/DoF still open) · 5 camera cinematography ✓ (idle breath, Turn 3) ·
-6 motion/juice ✓ world + child HUD; **guide interior still static (next target)** ·
+6 motion/juice ✓ world + child HUD + guide (enter motion + Turn 5 pointer feedback);
+  **board-2d fallback still likely flat (next target)** ·
 7 HUD not forms ✓ (child deck + guide deck, Turn 4) · 8 type+icons ✓ ·
 **9 cohesion ✓ — both sides now read as one crafted world (Turn 4).**
 
 ## NEXT
-1. **Guide-interior motion/juice (#6).** Make the now-crafted guide deck *feel* alive: staggered enter on
-   the coverage cells + timeline markers + lifecycle states (respecting the existing pure `matrixStagger`
-   / `ticker` motion tokens and `reducedMotion`), and tactile hover/press feedback on the guide's
-   interactive controls (author-revision form buttons, revision scrubber, `<details>` summaries) matching
-   the child deck's `cubic-bezier(0.23,1,0.32,1)` ease-out + `scale(0.97)` press. Use `emil-design-eng` +
-   `find-animation-opportunities` + `improve-animations`. Keep it calm (game-feel #1 — subtract first).
-2. **Board-2d juice:** stagger-enter + spring hover on the fallback cards (#6) so the perf floor feels alive.
-3. Optionally: SSAO + shallow DoF to close #4; a GPU/browser screenshot pass to tune the guide deck's
-   glow + Bloom/Vignette + idle-breath amplitude to taste; deeper guide-panel trenching.
+1. **Board-2d juice (#6).** Read `app/child/Board2D.tsx` + its CSS: give the fallback quest cards a
+   staggered enter (30–80ms cascade, `translateY`+opacity from a *visible* start — never `scale(0)`) and
+   tactile hover-lift + `scale(0.97)` press feedback, reusing the child deck's `--hud-ease` /
+   `cubic-bezier(0.23,1,0.32,1)`. This is the last surface that likely still pops in flat. Keep it calm
+   (game-feel #1 — subtract first) and respect `reducedMotion`. Use `find-animation-opportunities` +
+   `emil-design-eng` + `improve-animations`; gate it first (the enter motion may already partly exist).
+2. Optionally: SSAO + shallow DoF to close #4; a GPU/browser screenshot pass to tune the guide deck's
+   glow + Bloom/Vignette + idle-breath amplitude + the new button/chevron feel to taste; deeper
+   guide-panel trenching (explanation columns / lifecycle tracks / revision rail).
 Keep the gate green (tsc + test + `next build`); write `.loop/commit-msg`; keep the art direction cohesive.

@@ -434,3 +434,38 @@
   A slow shimmer on the rail — rejected for calm/static parity with the child deck's static rail.
   Trenching every sub-panel (explanation columns, lifecycle tracks) this turn — deferred to keep the turn
   a single cohesive change; the two scroll instruments are the highest-value recesses.
+
+## D-VP7 — Guide controls get the child deck's tactile feedback idiom (Turn 5 · motion/juice #6)
+- Chose: a **pure-CSS press/hover/focus feedback pass** on the guide's directly-interacted controls,
+  reusing the child HUD deck's exact motion idiom rather than inventing a second one:
+  the shared **`--hud-ease` = `cubic-bezier(0.23,1,0.32,1)`**, `transform: scale(0.97)` on `:active`,
+  140–180ms durations, and every hover rule gated behind `@media (hover: hover) and (pointer: fine)`.
+  Specifically: (1) `.guide-authoring button` — depth shadow at rest, hover lifts `translateY(-1px)` and
+  warms `background` toward `--spark` (`color-mix … 24% --spark`), press `scale(0.97)`, `box-shadow: none`
+  when `:disabled`. (2) The three guide `<details> summary`s (`.explanation-evidence`,
+  `.other-explanations`, `.legal-transitions`) — became `display:flex` with a **custom border-drawn
+  chevron `::after`** (native `::-webkit-details-marker` hidden, `list-style:none`) that rotates 45°→−135°
+  on `[open]`; hover tints `background` + shifts text toward `--spark`; `:active` `scale(0.985)`; a
+  `-0.5rem` inline margin/padding pair keeps the text position identical while letting the hover bg
+  breathe. (3) `.revision-entry` — the selected-row `background` now transitions over 220ms (was a snap),
+  the label presses `scale(0.99)`, and the `.revision-mark` gains a `--spark` ring when selected + scales
+  on hover. (4) `.guide-authoring input/textarea` — border-color transitions toward `--spark` on
+  hover/focus with a subtle inset glow.
+- Why: game-feel **#6** (juice everywhere) — after Turn 4 the guide *looked* crafted but its interactive
+  controls were dead under the pointer, the highest-leverage remaining tell. The guide's *enter* motion
+  already existed (coverage stagger, explanations reveal, timeline draw, marker/gate pops, lifecycle
+  state-morph via `motion/react`), so the honest gap was **interaction feedback**, not entrance animation —
+  which `find-animation-opportunities` gates as the top "feedback" opportunity class on occasional-use
+  surfaces. Reusing `--hud-ease` + `scale(0.97)` keeps it cohesive with the child deck (game-feel #9); the
+  spark-warm hover/focus accents tie the feedback to the committed palette + the shared top-rail gradient
+  (D-VP1/D-VP6). CSS-only means the pinned guide/coverage markup tests + CSS regexes are untouched and the
+  build's CSS compile actually verifies it, and the global `transition-duration:0.01ms !important`
+  reduced-motion block neutralizes all of it automatically — a11y-safe by construction (per apple-design /
+  emil: reduced motion = gentler, and here the feedback degrades to instant state change, never movement).
+- Rejected: a JS/`motion/react` feedback layer (heavier, adds re-renders, and CSS `:active`/`:hover`
+  already off the main thread — emil's "CSS beats JS under load"); a bespoke easing/duration for the guide
+  (would fracture cohesion with the child deck); adding *more* enter animation to the already-animated
+  interior (the enter motion is not the gap; over-animating violates game-feel #1 "subtract first");
+  a box-shadow focus **ring** on the inputs (would double the global `:focus-visible` outline — used an
+  inset glow + border-color shift instead so the a11y outline stays the primary indicator); rotating the
+  native disclosure marker (inconsistent cross-browser — drew a custom chevron and hid the native one).
