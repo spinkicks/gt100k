@@ -864,3 +864,36 @@
   break world↔board parity (D-VP19: markers==quests); (c) a canvas-drawn island label — invisible to
   AT and gone on board-2d; (d) animating the island lift inside `Island` — breaks the hook-free
   direct-call unit test.
+
+## D-VP21 — Per-domain island motifs: eight distinct silhouettes (interest-lab-v2 Turn 4 · P1.5)
+- Context: every island was the same low-poly cap+cone+rim in a domain hue, so the world read as one
+  primitive recolored eight times, not eight *places*. P1.5 asks for a distinct silhouette per domain.
+- Chose: a pure `resolveDomainMotif(domain)` (`world3d/motif.ts`) maps each of the 8 seed domains →
+  a `DomainMotif` descriptor: a `shape` label + low-poly `props` (tagged geometry kind + args + local
+  transform) + `emissiveIntensity` + idle `spinSpeed`. The eight silhouettes: making->anvil (stacked
+  boxes), living_systems->sprout (trunk cylinder + icosahedron canopy), symbols_math->prism
+  (octahedron), word_craft->quill (leaning cone + page box), sound_music->chime (two concentric
+  tori), movement_body->arch (upright hoop torus), visual_design->easel (tilted canvas boxes),
+  social_world->cluster (three linked spheres). Rendered by `IslandMotif.tsx` (its own component so
+  the idle-spin `useFrame` runs in a real R3F render — `Island` stays a hook-free direct-call fn, the
+  IslandLift lesson D-VP20), anchored atop the cap inside the ring of quest orbs, emissive-keyed to
+  `scene3d.markerEmissiveHex` over the island hue.
+- Why pure/total: the descriptors are just numbers, so 8-distinctness + finiteness + determinism are
+  unit-tested without a GPU. `resolveDomainMotif` is total — an unknown catalog domain falls back to
+  the abstract prism rather than throwing, so a catalog that grows new domains never blanks/crashes the
+  world (mirrors the `resolveDomainHue % ramp` wrap).
+- Gotcha: react-three-fiber's JSX geometry `args` prop rejects readonly tuples, so `MotifGeometry.args`
+  are mutable tuples and `MOTIFS` drops `as const` (the `Readonly<Record<…, Omit<DomainMotif,…>>>`
+  annotation still validates the kind/shape literals). `tsc -b` didn't catch it — only `next build`'s
+  own type pass did.
+- Verified: `test/domain-motif.test.ts` (6) — 8 distinct shapes + 8 distinct full descriptors, every
+  descriptor finite/renderable, deterministic, unknown-domain fallback, IslandMotif is a component,
+  Island's element tree carries the wired motif. Browser (chromium+swiftshader, full quest-world-3d):
+  the anvil renders centered atop the making island inside its orb ring, ZERO console/page errors on
+  load + interaction, card click -> "Visiting Making" + data-picked-count->1. Gate: tsc 0 · full test
+  362 · app test 104 (+6) · next build OK (route / static, 287 kB) · biome clean (my files; the 19 repo
+  lint errors are pre-existing, all in out-of-lane evidence-explorer-view + prior-turn files).
+- Rejected: (a) motif in the view package art.ts beside resolveDomainHue — kept it app-side with the
+  other 3D resolvers since it's geometry, not a token; (b) the useFrame spin in Island — breaks the
+  hook-free direct-call unit test; (c) throwing on unknown domain — a child-facing world must never
+  blank out as the catalog grows.

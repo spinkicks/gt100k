@@ -10,8 +10,10 @@ import {
 import { Float } from "@react-three/drei";
 import type { Texture } from "three";
 import { IslandLift } from "./IslandLift";
+import { IslandMotif } from "./IslandMotif";
 import { QuestMarker } from "./QuestMarker";
 import { BEACON_TARGET } from "./beacon";
+import { resolveDomainMotif } from "./motif";
 
 const FULL_SEGMENTS = 10;
 const LITE_SEGMENTS = 6;
@@ -156,6 +158,12 @@ export function Island({
               roughness={0.45}
             />
           </mesh>
+          <IslandMotif
+            motif={resolveDomainMotif(island.domain)}
+            hue={render.hue}
+            scene3d={scene3d}
+            shadows={render.shadows}
+          />
           {island.markers.map((marker) => (
             <QuestMarker
               key={marker.probeId}

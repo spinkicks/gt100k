@@ -140,3 +140,40 @@ existing tests meaningful — update them as behavior changes; DO NOT weaken the
   domains → a distinct motif descriptor (assert 8 distinct); the Island renders the motif; keep
   `tsc`/`test`/`build`/biome green. (P1.7 later stages the WORLD by age band — when it lands, keep
   world-reachable == board-reachable per the D-VP19 caveat.)
+
+- **Turn 4 (v2) — P1.5 DONE.** Give each domain a distinct silhouette so the world reads as eight
+  *places*, not one primitive in eight hues. Gate green: `tsc -b` 0 · full `pnpm test` **362/362** ·
+  app **104/104** (+6) · `next build` ✓ (route `/` static, 287 kB) · biome clean on my files.
+  **Browser-verified** (chromium+swiftshader → full `quest-world-3d` mounted): the making island's
+  **anvil** motif renders centered atop its cap inside the orb ring, **zero console/page errors** on
+  load + interaction; card click → DOM banner **"Visiting Making"** + `data-picked-count`→1.
+  - **Pure `resolveDomainMotif(domain)`** (`world3d/motif.ts`): maps each of the 8 seed domains → a
+    `DomainMotif` (a `shape` label + low-poly `props` = tagged geometry kind + args + local transform,
+    `emissiveIntensity`, idle `spinSpeed`). Eight silhouettes — making=anvil, living_systems=sprout,
+    symbols_math=prism, word_craft=quill, sound_music=chime, movement_body=arch, visual_design=easel,
+    social_world=cluster. **Total**: unknown domain → prism fallback (never throws / never blanks the
+    world as the catalog grows). See D-VP21.
+  - **`IslandMotif.tsx`**: renders the motif props as emissive low-poly meshes atop the island cap,
+    with a gentle idle-spin `useFrame`. Its own component (not inlined in `Island`) so `Island` stays
+    a hook-free function the `world-objects`/`domain-motif` unit tests call directly.
+  - Wired in `Island.tsx` inside the `IslandLift` group: `<IslandMotif motif={resolveDomainMotif(
+    island.domain)} hue={render.hue} scene3d={scene3d} shadows={render.shadows} />`.
+  - Gotcha recorded: R3F JSX geometry `args` rejects readonly tuples → mutable tuples + no `as const`
+    on `MOTIFS`; caught only by `next build`, not `tsc -b`.
+  - Tests: `test/domain-motif.test.ts` (6) — 8 distinct shapes + 8 distinct descriptors, finiteness,
+    determinism, unknown-domain fallback, component-not-called-directly, motif wired into Island's tree.
+
+## NEXT
+- **P1.6 (candidate) — motif responds to state / camera-facing legibility.** The motif currently sits
+  static+spinning regardless of focus; consider (a) brightening/raising the motif when its island is
+  focused (reuse the `focused` signal already computed in `Island`), and/or (b) ensuring each
+  silhouette reads from the ring's default camera angle (some tori/panels foreshorten). Keep the pure
+  descriptor unit-testable; put any per-frame response in `IslandMotif`'s `useFrame`, not in `Island`.
+  Acceptance: a focused island's motif visibly responds (unit-test the pure focus→intensity mapping);
+  keep `tsc`/`test`/`build` green.
+- **CARRY-OVER P1.7 caveat (unchanged):** when the WORLD is later staged by age band (reducing world
+  markers below `quests.length`), keep world-reachable == board-reachable by staging the BOARD's
+  `revealAll` baseline to the same set (D-VP19).
+- **CARRY-OVER lint debt (not mine):** `pnpm lint` reports 19 pre-existing errors in out-of-lane
+  `evidence-explorer-view` + prior-turn interest-lab files (QuestLedger/CameraRig/World3DCanvas/
+  InterestLabControls/world-3d.test.ts). Outside this feature's lane; left untouched.
