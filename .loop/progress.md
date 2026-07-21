@@ -343,3 +343,14 @@
 ## NEXT
 - Complete U002: add `packages/interest-lab-view/tsconfig.json` extending `../../tsconfig.base.json` with `rootDir: "."`, `outDir: "dist"`, and includes for `src/**/*.ts` plus `test/**/*.ts`.
 - Acceptance: the view package TypeScript project compiles independently without a shared-root reference, and `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
+
+## 2026-07-21 — P8 / U002
+- Added `packages/interest-lab-view/tsconfig.json` with the exact pinned base config, root/output directories, and source/test includes.
+- Confirmed the contract-first red state: the independent build first failed with TS5083 while the config was absent, then exposed TS18003 because U001 had created no included TypeScript input.
+- Added a module-only `src/index.ts` scaffold so the package compiles without preempting U003's types or U005's explicit public exports; recorded the sequencing choice in D025.
+- Verified the forced package-local compiler, `pnpm typecheck`, `pnpm test` (110 tests across 24 files), and `pnpm lint` (79 files) all pass.
+- Status: U002 complete; P8 remains in progress. Part-I SC-001 through SC-016 remain green; Part-II success criteria are not yet started. No blocker.
+
+## NEXT
+- Complete U003: define all DOM, 3D scene, evidence-constellation, and composed view types in `packages/interest-lab-view/src/model.ts` exactly as specified by the Part-II data model.
+- Acceptance: compile-time tests encode the complete U003 type surface while forbidding `score`, `confidence`, `passionScore`, `verdict`, `label`, `rank`, `percentile`, `outOf`, and `price` fields; the package-local compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
