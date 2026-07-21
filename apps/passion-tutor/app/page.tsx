@@ -16,8 +16,8 @@ export default async function Page() {
         </div>
 
         <div className="project-context">
-          <p>Your project</p>
-          <h2>{project.title}</h2>
+          <p className="project-kicker">Your project</p>
+          <p className="project-title">{project.title}</p>
           <span>{project.domain}</span>
         </div>
 

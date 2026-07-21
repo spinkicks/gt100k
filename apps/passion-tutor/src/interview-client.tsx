@@ -131,10 +131,16 @@ function CompletionSummary({ gaps }: { readonly gaps: readonly Facet[] }) {
 
 export function InterviewView({ answer, onAnswerChange, onSubmit, session }: InterviewViewProps) {
   const question = session.currentQuestion;
+  const interviewState = session.isComplete
+    ? "complete"
+    : session.transcript.length === 0
+      ? "first-run"
+      : "in-progress";
 
   return (
     <section
       className="question-stage"
+      data-interview-state={interviewState}
       aria-labelledby={question ? "current-question" : "session-complete"}
     >
       <div className="question-copy">
