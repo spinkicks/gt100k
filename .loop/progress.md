@@ -566,3 +566,16 @@
 ## NEXT
 - T035a + the `resolveBaseLayout` slice of T036: add `packages/arena-world/test/base-layout.test.ts` first, then implement and explicitly export the minimal pure base-layout resolver.
 - Acceptance: the §8.8 base resolves exact stable placements `campfire`(hearth,1024,1024,kestrel), `banner`(gateway,1024,928,otter), and `garden`(grove,944,1088,kestrel); `by` remains attributable; unknown features use the deterministic `outskirts` fallback; replay is byte-identical and placement confers no power (FR-036, SC-019); focused and repository gates remain green.
+
+## 2026-07-21 — P4 / T035a + T036 (`resolveBaseLayout` slice)
+- Added `base-layout.test.ts` through the public package API, covering the exact three-feature §8.8/§8.16 placements, every canonical slot, stable first-contributor attribution, frozen-input replay, the complete outskirts-grid formula, exact one-input/output shape, and placement-only zero-power fields.
+- Followed red-green TDD: all five acceptance tests first failed because `resolveBaseLayout` was absent, then passed after the minimal resolver and explicit package export landed. A review-driven regression case independently failed for the inherited key `toString` before the own-key lookup fix.
+- Added a pure `resolveBaseLayout(base)` implementation backed by `BASE_LAYOUT`. It preserves `unlockedFeatures` order, attributes each feature to its first append-only contribution, applies the exact index-based fallback for unknown features, returns fresh records, and rejects internally inconsistent unattributed unlocks.
+- Review status: checked T035a/T036 against spec §§5.8/8.8/8.16, the domain contract, data model, FR-036, and SC-019; no Critical, Important, or Minor issues remain. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused base tests passed (8 tests); direct arena-world TypeScript validation passed; `pnpm lint` passed (119 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (45 files, 182 tests). No app file changed, so no Next.js build was required.
+- SC status: SC-019's deterministic, attributable, replayable, zero-power domain-layout contract is complete. P4 remains in progress for composed-view integration and the Base Camp renderer.
+- Blockers: none.
+
+## NEXT
+- Complete the remaining T036 composed-view slice: add a P4 view acceptance test first, then extend `buildArenaView` and its public staged type with injected `base`, returned `base`, and `presentation.basePlacements = resolveBaseLayout(base)`.
+- Acceptance: the exact three-feature synthetic base and placements compose into the existing P2 view without changing world/layout/node/progression/eligibility state; replay and zero-power parity remain intact; all feature-owned app/test call sites supply the synthetic base; lint, typecheck, tests, root build, and Arena app build remain green.
