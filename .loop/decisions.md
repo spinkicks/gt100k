@@ -687,3 +687,38 @@
   animating the glow (the `<Float>` drift is enough ambient motion; a pulsing halo would over-decorate
   a background figure — game-feel #1 restraint); touching `glow-texture.ts` (warm-only + pinned test —
   added a sibling factory instead).
+
+## D-VP14 — Declare done after a disciplined, surface-by-surface critic sweep (Turn 12)
+- What: No code change. This turn honored the Turn-11 lesson — "a scorecard can lie" — by running the
+  end-to-end critic sweep the NEXT block demanded, *inspecting* each surface rather than trusting the
+  scorecard, then declaring `.loop-done`.
+- Sweep result (all clean, actually inspected):
+  (a) **Guide non-3D panels** — grep over the whole app for any 3D primitive
+      (`mesh*Material`/`<Line>`/`*Geometry`/`pointsMaterial`) returns exactly 4 files: the child world
+      (`World3DCanvas`, `QuestMarker`, `Island`) and the guide constellation
+      (`EvidenceConstellationCanvas`, crafted Turn 11). `Lifecycle`, `RevisionHistory`, `ReturnTimeline`,
+      `CoverageMatrix` are **DOM/SVG** — confirmed not flat 3D.
+  (b) **Fallbacks** — `board-2d` renders the Turn-6 crafted `QuestCard` board (lit rails + layered
+      shadow + hue glow), not a stripped list. `plainMode` forces `board-2d` (scene.ts:107) and
+      `.plain-mode` flattens only the glass `.material` panels (intentional low-stimulation calm) while
+      the crafted cards persist. `EvidenceConstellation` returns `null` under
+      reducedMotion/plainMode/board-2d — no flat DOM stand-in is left behind; the crafted light-table
+      deck stands alone.
+  (c) **Child 3D materials** — `QuestMarker` = PBR `meshStandardMaterial` (emissive + metalness/roughness)
+      + additive halo sprite + `WelcomeBloom`; `Island` = PBR cap/underside/emissive-rim-torus with
+      deliberate `flatShading` faceting; `Motes` = drei `<Sparkles>`. No bare primitives anywhere.
+- Why declare done (not add more): every game-feel non-negotiable is met and no auto-fail anti-pattern
+  remains, now verified by inspection. game-feel **#1** ("Subtract every turn … guard hard against
+  over-decorating an already calm world; simplicity reads as premium, density reads as AI") makes the
+  correct art-director move *restraint* — the two optional items left (shallow DoF, deeper guide
+  trenching) are AAA polish best tuned eyes-on in a GPU screenshot pass, and forcing them blind would
+  risk the exact over-decoration the doc warns against. The masthead/footer copy is already at its
+  load-bearing core (D-VP12), so there is no honest subtraction left either.
+- Verification (evidence, not assertion): `tsc -b` exit 0; root `vitest run` = 212 passed;
+  `@gt100k/interest-lab-app test` = 80 passed; `@gt100k/interest-lab-app build` = compiled successfully
+  (route `/` prerendered static). Gate green.
+- Honest caveat (unchanged from D-VP4/D-VP13): the WebGL full tier (composer: N8AO→Bloom→grade→ACES→
+  Vignette, and the constellation halos) can't be pixel-verified in this GPU-less headless env
+  (swiftshader falls to board-2d and never runs the composer). Correctness is by construction +
+  green gate; a GPU/browser screenshot pass remains the ideal final visual confirmation and taste-tune,
+  but it is not a blocker for any non-negotiable.

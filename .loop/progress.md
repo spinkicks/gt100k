@@ -167,6 +167,20 @@ emissive glow, spring/ease-out motion. Display font Fredoka; reading serif Iowan
   pin (`<Canvas aria-hidden>`) is preserved; new `constellation-node.test.ts` adds 6 pure tests. Gate
   green: tsc + app 80 tests (74→80) + root 212 tests + `next build`. See D-VP13.
 
+- **Turn 12 (this) — DONE.** No code change. Honored the Turn-11 lesson ("a scorecard can lie") by
+  running the disciplined, surface-by-surface critic sweep the NEXT block demanded — *inspecting* each
+  surface, not trusting the scorecard — then declaring `.loop-done`. Sweep (all clean, actually
+  inspected): (a) a whole-app grep for any 3D primitive returns exactly 4 files — the child world
+  (`World3DCanvas`/`QuestMarker`/`Island`) + the guide constellation (crafted Turn 11); the guide's
+  `Lifecycle`/`RevisionHistory`/`ReturnTimeline`/`CoverageMatrix` are DOM/SVG, not flat 3D. (b) `board-2d`
+  renders the Turn-6 crafted `QuestCard` board; `plainMode` forces `board-2d` and flattens only the glass
+  `.material` panels (intentional calm) while crafted cards persist; `EvidenceConstellation` returns
+  `null` under the fallbacks (no flat DOM stand-in). (c) `QuestMarker`/`Island` are PBR + emissive +
+  halo + rim torus (no bare primitives); `Motes` = drei `<Sparkles>`. Every non-negotiable met, no
+  auto-fail remains — verified by inspection + green gate: **tsc exit 0 · root 212 · app 80 · build ✓**.
+  Declined the two optional items (shallow DoF, deeper guide trenching) — game-feel #1 forbids
+  over-decorating an already-calm world; both are eyes-on GPU-tune polish, not blockers. See D-VP14.
+
 ## Verification note (honest)
 The grade only mounts client-side on the WebGL full tier, so it can't be pixel-verified in this
 headless / GPU-less env (swiftshader would fall to board-2d and never exercise the composer).
@@ -206,7 +220,22 @@ why the ACES ToneMapping effect is present. A GPU screenshot pass is the ideal n
   evidence constellation now read as one crafted world.** Every non-negotiable is met and no auto-fail
   anti-pattern remains; what's left is AAA-grade polish (DoF, guide trenching, GPU-tuning), not a redo.
 
-## NEXT
+## NEXT — DONE (`.loop-done` created Turn 12)
+The app meets **every** game-feel non-negotiable with **none** of the auto-fail anti-patterns, verified
+by a surface-by-surface critic sweep (not a scorecard read) + a green gate (tsc · root 212 · app 80 ·
+build). `.loop-done` is created. Any future turn should NOT re-open this to add decoration (game-feel #1:
+subtract, don't over-decorate). The only remaining work is **optional, eyes-on GPU polish** that cannot
+be done in this headless GPU-less env and is not a blocker for any requirement:
+1. **GPU/browser screenshot pass** — tune Bloom / Vignette / N8AO amounts, idle-breath amplitude, the
+   board-2d glow/rail amounts, and the guide constellation's halo/core scale + opacity to taste. This is
+   the highest-value remaining *visual* confirmation (swiftshader falls to board-2d headless, so the
+   composer + constellation halos never rasterize here).
+2. **Shallow depth-of-field** (last optional #4 item) — only after eyes-on; higher blind-tuning risk.
+3. **Deeper guide trenching** (optional polish) — explanation columns + lifecycle tracks + revision rail
+   could take the two scroll instruments' inset-trench treatment for more instrument depth.
+If reopening for polish, keep the gate green and keep the committed art direction cohesive (D-VP1).
+
+## NEXT (historical — Turn 11's guidance, now satisfied)
 Turn 11 was the payoff for NOT rubber-stamping `.loop-done`: the fresh critic pass caught the guide's 3D
 evidence constellation still rendering **flat `meshBasicMaterial` spheres on black** — a verbatim #1
 auto-fail the prior scorecard had wrongly marked closed ("no bare primitives remain"). It is now lit as
