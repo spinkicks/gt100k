@@ -355,3 +355,28 @@
   risking a red gate by combining a dependency install with the HUD work.
 - Rejected: bundling the package install into Turn 1 (couples two unrelated risks); permanently
   honoring D056 (would leave a named non-negotiable unmet).
+
+## D-VP4 — Cinematic post-processing grade lands (Turn 2 · supersedes D056 & fulfils D-VP3)
+- Chose: add `@react-three/postprocessing@^2.19.1` + `postprocessing@^6.39.3` (both peer-compatible
+  with our r3f v8.18 / three 0.169 / React 18 stack; the v3 line needs r3f v9, so pinned to v2) and
+  mount a dedicated `WorldPostFX` inside the Canvas, gated on the model's existing
+  `quality.postprocessing` (full tier only). Chain, in deliberate order:
+  **Bloom → HueSaturation(+0.08) → BrightnessContrast(-0.015 / +0.07) → ToneMapping(ACES_FILMIC) →
+  Vignette(offset 0.32 / darkness 0.55)**. Bloom is `mipmapBlur`, `intensity = bloomPeak * 0.55`
+  (~0.77), `luminanceThreshold 0.6`, `radius 0.72` — it feeds on the already-emissive quest markers
+  + additive welcome halos, so the plum night stays matte and only the warm cores glow.
+- Why: this is game-feel non-negotiable **#4** ("~half of AAA feel"), the single worst remaining
+  AI-demo tell once the lighting rig landed (the app had ACES on the renderer but no grade — the
+  "three.js starter" look). The view model was *pre-wired* for exactly this: `bloomPeak`,
+  `markerEmissive*`, and per-tier `bloom`/`postprocessing` flags already existed and were unused, so
+  consuming them adds the grade without inventing new data or touching domain/logic. `<EffectComposer>`
+  forces `gl.toneMapping = NoToneMapping` while mounted and renders linearly into an HDR HalfFloat
+  buffer (verified in the installed dist), so re-applying **ACES** via the ToneMapping effect is
+  required and keeps the look cohesive with the renderer-ACES on the lite/board tiers. Values are
+  restrained per apple-design craft (every value defensible) and game-feel's "tasteful / subtract"
+  bar. `multisampling={4}` restores edge AA the composer would otherwise bypass.
+- Rejected: **SSAO/N8AO** this turn — it needs a normal/depth pass, is the costliest + riskiest
+  effect to tune blind (headless, no GPU to verify it isn't crushing the scene), and the floating-
+  island-over-misty-sea composition gains little from contact AO the ContactShadows already imply;
+  recorded as a candidate next turn. AgX tone-map (the lib default) — rejected for ACES to match the
+  other tiers exactly. Enabling the grade on lite/board — rejected; it would break the D057 perf floor.

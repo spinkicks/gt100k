@@ -5,6 +5,7 @@ import { AdaptiveDpr, ContactShadows, Environment, Lightformer } from "@react-th
 import { Canvas } from "@react-three/fiber";
 import { type ReactNode, useEffect, useMemo } from "react";
 import { ACESFilmicToneMapping } from "three";
+import { WorldPostFX } from "./WorldPostFX";
 
 // Grounding + rig constants for the "Curiosity Quest World" dusk atelier (see .loop/decisions.md D-VP1).
 // The islands float above this notional sea; shadows land on it to anchor them.
@@ -189,6 +190,8 @@ export function World3DCanvas({ scene, children, onContextLost }: World3DCanvasP
       ) : null}
       <AdaptiveDpr />
       {children}
+      {/* Cinematic grade sits on top of the composed scene graph; full tier only (see WorldPostFX). */}
+      <WorldPostFX scene3d={scene.scene3d} quality={scene.quality} />
     </Canvas>
   );
 }
