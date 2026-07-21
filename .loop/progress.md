@@ -242,3 +242,15 @@
 ## NEXT
 - Complete T027 and its minimal T030 implementation in `adapters/interest-repo-memory/test/repo.test.ts` and `adapters/interest-repo-memory/src/index.ts`.
 - Acceptance: tests first prove append-only deep-copy-on-write storage, `load`/`currentFor` isolation, full revision replay by version, and the operative `CONTESTED→PARKED→REOPENED` chain with no overwritten revision; preserve a focused red run and keep adapter/package compilation, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-20 — P5 / T027 + T030
+- Added three repository contracts covering empty reads, full version replay for the operative `CONTESTED→PARKED→REOPENED` chain, and nested mutation isolation across append, `load`, `currentFor`, and `revisions` boundaries.
+- Confirmed the test-first red state: the focused adapter suite failed to resolve the absent `src/index.ts`, then passed all three contracts after the minimal implementation.
+- Implemented `InMemoryInterestHypothesisRepository` as append-only revision storage with deterministic learner lookup and deep copies on every write/read; bitemporal current-revision selection remains in the pure domain helper.
+- Corrected the single formatter-reported import layout and reran the complete gate.
+- Verified the forced adapter compiler, focused suite (3 tests), `pnpm typecheck`, `pnpm test` (82 tests across 19 files), and `pnpm lint` (65 files) all pass.
+- Status: T027 and T030 complete; P5 remains in progress pending T031. SC-016's lifecycle traversal and repository replay are green. No blocker.
+
+## NEXT
+- Complete T031: export the hypothesis constructors/current-view helpers and state-machine API explicitly from `packages/interest-lab/src/index.ts`.
+- Acceptance: a consumer-facing test imports `createHypothesis`, `appendRevision`, `currentFor`, `evaluateCandidateGate`, `applyMissingData`, `proposeTransition`, and `authorRevision` from `@gt100k/interest-lab`; preserve a failing public-API red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
