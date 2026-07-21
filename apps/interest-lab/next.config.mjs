@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // The domain + view are TypeScript-source workspace packages; let Next transpile them.
-  transpilePackages: ["@gt100k/interest-lab", "@gt100k/interest-lab-view"],
+  // The domain, view, and synthetic catalog are TypeScript-source workspace packages.
+  transpilePackages: [
+    "@gt100k/interest-lab",
+    "@gt100k/interest-lab-view",
+    "@gt100k/interest-probe-catalog",
+  ],
 };
 
 export default nextConfig;

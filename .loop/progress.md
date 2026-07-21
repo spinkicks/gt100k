@@ -490,3 +490,15 @@
 ## NEXT
 - Complete U018: add the synthetic app seed, Motion token hook, inline SVG glyph component, and client device-capability detector under `apps/interest-lab/app/`.
 - Acceptance: the seed feeds `CATALOG_GOLDEN_V1` through Part-I `buildLab` and public `buildInterestLabView` with no external fetch; `useMotionToken` bridges `resolveMotion` with `motion/react` reduced-motion preference; `Glyph` renders work-mode/state SVGs without emoji; `deviceCaps` feature-detects client capabilities; `pnpm typecheck`, `pnpm test`, `pnpm lint`, and the Interest Lab production build remain green.
+
+## 2026-07-21 — P9 / U018
+- Added a deterministic synthetic seed factory that composes the normative catalog adapter, Part-I `buildLab`, and the public child-view builder with fresh-learner, seed-42, accessible `board-2d` defaults and no external fetch.
+- Added the client-only `useMotionToken` bridge to `motion/react` reduced-motion preference, a typed inline-SVG library for all nine work modes plus reusable state cues, and fail-closed browser capability detection for WebGL, device memory, hardware concurrency, coarse pointer, and Save-Data.
+- Added an app-local Vitest gate with ten contracts; confirmed the genuine red state on all four absent modules, then corrected the standalone TSX transform after its isolated classic-runtime failure.
+- Added the catalog adapter as an explicit app workspace dependency/transpilation target rather than copying the normative fixture.
+- Verified app tests (10), `pnpm typecheck`, `pnpm test` (143 tests across 33 files), `pnpm lint` (111 files), and `pnpm --filter @gt100k/interest-lab-app build`; all pass.
+- Status: U018 complete; P9 remains in progress. SC-UI-01/02/08/09 and the synthetic-only UI boundary remain green; U019 owns the first operable 2D quest components. No blocker.
+
+## NEXT
+- Complete U019: implement `QuestLedger`, `QuestCard`, `Board2D`, and `QuestTray` from the existing `ProbePickerView` under `apps/interest-lab/app/child/`.
+- Acceptance: every quest is an accessible keyboard-operable card button with visible focus, hue plus icon/text cues, provenance/why/help copy, hover/press feedback, and an interruptible pick spring into the tray; reduced motion uses an equal crossfade with no state loss; focused tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and the Interest Lab production build remain green.

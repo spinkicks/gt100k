@@ -159,3 +159,13 @@
 - Chose: return a named `ChildInterestLabView` containing only `surface`, `probePicker`, `flags`, and the complete presentation block, fixed to the P9 `board-2d`/`board2d` tier. Keep the final `InterestLabView` type strict rather than making its future `scene` and `guide` blocks optional; U024 and U041 will widen composition in their ordered phases.
 - Why: U017 explicitly defers `scene` to P9b and guide composition to P13, while P9 requires a usable board presentation now. A phased return type makes the current absence structural, reuses the exact registries and picker projection, and prevents placeholder state or premature scene/tier rules.
 - Rejected: optional `scene`/`guide` fields would weaken the settled final contract; null placeholders would invent unrenderable state; implementing tier resolvers or scene/guide projections early would violate the test-first task order.
+
+## D033 — Reuse the catalog adapter at the synthetic app boundary
+- Chose: make the app depend on and transpile `@gt100k/interest-probe-catalog`, then build a fresh `seed:42` Lab and child view on demand with conservative `board-2d` defaults.
+- Why: U018 requires the normative `CATALOG_GOLDEN_V1` without an external fetch. The app is the valid composition boundary for domain, view, and adapter packages; reusing the adapter prevents fixture drift, while `webglAvailable:false` keeps the accessible MVP floor until client detection runs.
+- Rejected: copying the 24-family fixture into the app would create a second normative source; a relative cross-package source import would bypass workspace boundaries; assuming WebGL during server rendering would make presentation capability optimistic and hydration-sensitive.
+
+## D034 — Inline glyphs are semantic shapes with explicit accessibility modes
+- Chose: provide all nine pinned work-mode glyph keys plus ten reusable state shapes; titled glyphs expose `role="img"` and an accessible name, while untitled glyphs are decorative and hidden from assistive technology.
+- Why: the spec leaves state-glyph names unspecified but requires icon-plus-text, no emoji, and color-independent cues. A small typed inline-SVG set covers the current quest states and later coverage/lifecycle surfaces without adding an icon dependency or rendering text in graphics.
+- Rejected: emoji vary by platform and violate U018; external icon packages add bundle and naming drift; always announcing SVGs would duplicate adjacent visible text; color-only state markers violate the accessibility contract.
