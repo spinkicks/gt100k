@@ -777,3 +777,14 @@
 ## NEXT
 - Complete U046: extend `packages/interest-lab-view/test/view.test.ts` with the exhaustive one-view parity matrix.
 - Acceptance: `buildInterestLabView` composes both surfaces plus the scene, and `plainViewEquals` holds across full 3D, 3D-lite, 2D, plain, reduced-motion, and every age band while all domain-derived state remains identical; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-21 — P15 / U046
+- Added the exhaustive one-view matrix across child and guide surfaces, full 3D, 3D-lite, 2D fallback, plain mode, reduced motion, and all three age bands; every pair preserves the same domain state while emitting its pinned presentation tier.
+- Locked card-to-scene parity by probe id for return state, tone, provenance, reason copy, and work-mode glyph, while confirming both surfaces compose the complete guide and deterministic scene from one input.
+- Confirmed genuine test-first RED evidence: nine of ten focused tests passed, while `plainViewEquals` incorrectly accepted card-only `whyCopy` and glyph drift; the minimal comparator correction now includes those fields and still excludes age-specific copy across different bands.
+- Verified the forced view-package compiler, focused suite (10 tests), `pnpm typecheck`, `pnpm test` (201 tests across 43 files), and `pnpm lint` (163 files); all pass.
+- Status: U046 complete; P15 remains in progress. SC-UI-10 is green across the exhaustive pure view matrix and rejects unilateral 2D/scene parity drift. No blocker.
+
+## NEXT
+- Complete U047: add the static view-package guardrail suite in `packages/interest-lab-view/test/guardrails.test.ts`.
+- Acceptance: prove `packages/interest-lab-view/src` contains no `Math.random` or `three`/`react`/`@react-three/*` import; no view type exposes `price`, `currency`, `score`, `confidence`, `passionScore`, `rank`, `percentile`, `verdict`, or `outOf`; and no copy generator emits `/you are (a|an|the) /i`; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.

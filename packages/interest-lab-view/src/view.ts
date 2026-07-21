@@ -125,17 +125,19 @@ export function buildInterestLabView(
   };
 }
 
-const questState = (view: InterestLabView) => ({
+const questState = (view: InterestLabView, includeAgeSpecificCopy: boolean) => ({
   quests: view.probePicker.quests.map(
     ({
       probeId,
       familyId,
       domain,
       workMode,
+      workModeGlyph,
       difficulty,
       social,
       audience,
       provenance,
+      whyCopy,
       returnState,
       tone,
       helpAffordance,
@@ -144,10 +146,12 @@ const questState = (view: InterestLabView) => ({
       familyId,
       domain,
       workMode,
+      workModeGlyph,
       difficulty,
       social,
       audience,
       provenance,
+      ...(includeAgeSpecificCopy ? { whyCopy } : {}),
       returnState,
       tone,
       helpAffordance,
@@ -186,7 +190,7 @@ const markerState = (view: InterestLabView, includeAgeSpecificCopy: boolean) =>
     .sort((left, right) => left.probeId.localeCompare(right.probeId));
 
 const domainState = (view: InterestLabView, includeAgeSpecificCopy: boolean) => ({
-  probePicker: questState(view),
+  probePicker: questState(view, includeAgeSpecificCopy),
   sceneMarkers: markerState(view, includeAgeSpecificCopy),
   coverage: view.guide.coverage,
   explanations: view.guide.explanations,
