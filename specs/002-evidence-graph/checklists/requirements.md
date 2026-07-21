@@ -54,8 +54,8 @@
 - [x] **Scope fence**: explicit in-scope / out-of-scope (marked stubs) / non-goals (no interface).
 - [x] **Phasing P0…P4**: ordered build path with per-phase SC coverage and navigable headers.
 - [x] **Acceptance criteria = tests**: SC-001…SC-012, each mapped to a named test file + assertion.
-- [x] **Golden values + tolerances**: exact SHA-256 node ids (idA `facecf25…`) and Merkle roots (3-leaf `0360836a…`, packet `df1f000d…`); tolerance = exact `===` (zero).
-- [x] **Decisions already made**: SHA-256, RFC 8785 JCS canonicalization, hex-string Merkle scheme, port shapes.
+- [x] **Golden values + tolerances**: exact SHA-256 node ids (idA `facecf25…`) and Merkle roots (3-leaf `dd67a4e9…`, packet `3c7f4d3c…`); tolerance = exact `===` (zero).
+- [x] **Decisions already made**: SHA-256, RFC 8785 JCS canonicalization, RFC-6962 raw-byte Merkle scheme, port shapes.
 - [x] **Defaults for the unspecified**: the catch-all rule recorded verbatim.
 - [x] **Stack + commands pinned**: pnpm; `tsc -b` / `vitest` / `biome`; seeded smoke test (SC-011).
 - [x] **Seed fixtures in-repo**; **env/secrets** note (none needed); **pre-marked decision defaults** with severity.

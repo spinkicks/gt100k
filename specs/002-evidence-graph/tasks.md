@@ -6,7 +6,7 @@
 
 **Loop gate**: `pnpm exec tsc -b` + `pnpm test` (Biome clean is part of done). Phases map to the **Build Phasing** section of [spec.md](./spec.md): **P0** = Setup+Foundational (T001–T007), **P1** = US1 (T008–T014), **P2** = US2 (T015–T017), **P3** = US3 (T018–T026), **P4** = deferred stubs + polish + the single shared-file touch (T027–T032).
 
-**Golden values (deterministic acceptance targets)**: the exact SHA-256 node ids and Merkle roots are pinned in spec.md **Golden Values** (G1 idA `facecf25…`, G2 3-leaf root `0360836a…`, G3 packet root `df1f000d…`). `golden.test.ts` asserts them with `===` (zero tolerance). Do **not** change the code to new values — match the spec.
+**Golden values (deterministic acceptance targets)**: the exact SHA-256 node ids and Merkle roots (RFC-6962 raw-byte scheme) are pinned in spec.md **Golden Values** (G1 idA `facecf25…`, G2 3-leaf root `dd67a4e9…`, G3 packet root `3c7f4d3c…`). `golden.test.ts` asserts them with `===` (zero tolerance). Do **not** change the code to new values — match the spec.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -98,15 +98,15 @@ All work lives in **new** directories (`packages/evidence-graph`, `adapters/evid
 
 ### Tests (write first, ensure they fail)
 
-- [ ] T018 [P] [US3] Contract test for `merkleRoot` (determinism across runs; single-node = leaf digest; odd-count duplicate-last rule; **second-preimage domain separation** `leaf(x) !== interior(x,x)`; permutation-independence) in `packages/evidence-graph/test/merkle.test.ts` (FR-011/FR-021, SC-004/SC-010)
-- [ ] T018a [P] [US3] **Golden** Merkle test in `packages/evidence-graph/test/golden.test.ts`: `merkleRoot([ha])` === `53ff9798…`, `merkleRoot([ha,hb])` === `c48424e0…`, `merkleRoot([ha,hb,hc])` === `0360836a…`, and a shuffled input yields the identical 3-leaf root (FR-020, SC-008). ha/hb/hc = `sha256("a"|"b"|"c")` from `goldenLeaves`.
+- [ ] T018 [P] [US3] Contract test for `merkleRoot` (determinism across runs; single-node = leaf digest; **RFC-6962 odd-count rule** — lone right-most node promoted unchanged, not duplicated; **second-preimage domain separation** `leaf(x) !== interior(x,x)`; permutation-independence) in `packages/evidence-graph/test/merkle.test.ts` (FR-011/FR-021, SC-004/SC-010)
+- [ ] T018a [P] [US3] **Golden** Merkle test in `packages/evidence-graph/test/golden.test.ts`: `merkleRoot([ha])` === `a23bd5b0…`, `merkleRoot([ha,hb])` === `73a57aee…`, `merkleRoot([ha,hb,hc])` === `dd67a4e9…`, and a shuffled input yields the identical 3-leaf root (FR-020, SC-008). ha/hb/hc = `sha256("a"|"b"|"c")` from `goldenLeaves`.
 - [ ] T019 [P] [US3] Contract test for `buildAttestation` (in-toto Statement shape binds `subject.digest.sha256` to `predicate.merkleRoot`; golden subject digest `fa6cc759…` for `sha256("gt100k-artifact-v1")`) in `packages/evidence-graph/test/attestation.test.ts` (FR-012)
-- [ ] T020 [P] [US3] Contract test for `assembleEvidencePacket` + `traceEvidence` (deterministic packet for a fixed node set; **golden two-node packet root `df1f000d…`**; empty set rejected; invariant-violating subgraph refused; trace of the `syntheticMilestone` `Outcome` returns supporting-only nodes and **excludes the unrelated island node**) in `packages/evidence-graph/test/packet.test.ts` (FR-010/FR-014/FR-019, SC-008/SC-012)
+- [ ] T020 [P] [US3] Contract test for `assembleEvidencePacket` + `traceEvidence` (deterministic packet for a fixed node set; **golden two-node packet root `3c7f4d3c…`**; empty set rejected; invariant-violating subgraph refused; trace of the `syntheticMilestone` `Outcome` returns supporting-only nodes and **excludes the unrelated island node**) in `packages/evidence-graph/test/packet.test.ts` (FR-010/FR-014/FR-019, SC-008/SC-012)
 - [ ] T021 [P] [US3] Contract test for the stub `Verifier` (pass untampered packet; fail after any single node alteration → `MERKLE_MISMATCH`; fail on subject-digest mismatch → `SUBJECT_DIGEST_MISMATCH`) in `adapters/evidence-verifier-stub/test/verify.test.ts` (FR-013/FR-015, SC-004)
 
 ### Implementation
 
-- [ ] T022 [US3] Implement `merkleRoot(hashes, hasher)` over lowercase-hex strings (ascending sort; `leaf(h)=hash("00"+h)`, `interior(l,r)=hash("01"+l+r)` with ASCII prefixes + string concat; odd-count duplicate-last; single leaf → its leaf digest) in `packages/evidence-graph/src/merkle.ts` — MUST reproduce spec Golden Values (depends on T003)
+- [ ] T022 [US3] Implement `merkleRoot(hashes, hasher)` using the **RFC-6962 raw-byte scheme**: decode each hex content hash to its 32 digest bytes, sort ascending by bytes; `leaf=hash(0x00 || digestBytes)`, `interior=hash(0x01 || leftHashBytes || rightHashBytes)` (single prefix bytes, raw-byte concat); odd level promotes the lone right-most node **unchanged** (RFC-6962, never duplicated); single leaf → its leaf digest) in `packages/evidence-graph/src/merkle.ts` — MUST reproduce spec Golden Values (depends on T003)
 - [ ] T023 [US3] Implement `buildAttestation(...)` (in-toto Statement shape; unsigned in this slice, §19.2 D6) in `packages/evidence-graph/src/attestation.ts` (depends on T002)
 - [ ] T024 [US3] Implement `assembleEvidencePacket(...)` + `traceEvidence(...)` (Merkle root + ledgers + attestation; runs `assertHumanAuthority`, rejects empty set) in `packages/evidence-graph/src/packet.ts` (depends on T012, T016, T022, T023)
 - [ ] T025 [US3] Implement the deterministic stub `Verifier` (re-derive Merkle root, check attestation subject digest) in `adapters/evidence-verifier-stub/` (`package.json`, `tsconfig.json`, `src/index.ts`) (depends on T022, T024)

@@ -27,8 +27,26 @@ Private, ordinal matchmaking inputs (PRD §15). Represented as integers (e.g. `0
 
 | Field | Type | Notes |
 |---|---|---|
-| `needs` | string[] | accommodation tags (synthetic); stored separately from performance evidence (Constitution VI) |
-| `conflicts` | string[] | optional incompatible-setting tags used only to test compatibility (never a protected-class proxy) |
+| `needs` | string[] | accommodation tags (synthetic); stored separately from performance evidence (Constitution VI). Also the input to the benefit **accommodation-compatibility** factor: a need is *met* iff no peer conflicts with it |
+| `conflicts` | string[] | optional incompatible-setting tags used only to test compatibility (never a protected-class proxy). The hard accommodations constraint rejects only a **mutual** block; a one-directional block is hard-feasible but lowers benefit |
+
+## PairFlag (value) — prior-pairing history
+
+One flagged prior pairing outcome for the benefit **prior-pairing-history** factor. Distinct from the hard
+safeguarding `separations` (which is an inviolable keep-apart, not a soft friction signal).
+
+| Field | Type | Notes |
+|---|---|---|
+| `ref` | string | the other learner's `learnerRef` in the prior pairing |
+| `flag` | `positive \| negative` | reward a positive prior pairing; penalize a previously-flagged negative one |
+
+## Role / WorkingRhythm (enums) — pace/role fit inputs
+
+- **Role** (`preferredRole`): `anchor \| scout \| builder \| challenger \| scribe` — a learner's preferred
+  working role (a working-style attribute, **independent of level/velocity**). Distinct from the assigned
+  output role vector on `Cohort`.
+- **WorkingRhythm** (`workingRhythm`): `steady \| burst \| flex` — working rhythm. Compatibility:
+  `compatible(a,b) = a === "flex" OR b === "flex" OR a === b` (absent → treated as `flex`).
 
 ## LearnerProfile
 
@@ -44,6 +62,9 @@ Input to candidate generation and the solver (FR-001).
 | `velocity` | number | private velocity band (matchmaking input) |
 | `separations` | string[] | safeguarding-separation `learnerRef`s to keep apart (hard) |
 | `priorAssignmentRef` | string \| null | prior `CohortAssignment` id (for churn/rollback) |
+| `pairHistory` | PairFlag[]? | prior-flagged `positive`/`negative` pairings (default `[]`); benefit **prior-pairing-history** input, **caliper-independent** |
+| `preferredRole` | Role? | preferred working role (default: absent → treated as unique); benefit **pace/role-fit** input, **caliper-independent** |
+| `workingRhythm` | WorkingRhythm? | working rhythm (default: absent → treated as `flex`); benefit **pace/role-fit** input, **caliper-independent** |
 
 ## Caliper (value)
 
@@ -78,10 +99,20 @@ The inviolable set the solver checks (FR-007/FR-008).
 | safeguarding separation | no two members are in each other's `separations` (§15.2) |
 | accommodations | no incompatible accommodation settings within a cohort |
 | level-velocity caliper | all members pairwise within the `Caliper` (near-peer) |
-| individual non-harm floor | **every** member's individual compatibility/benefit ≥ the per-learner floor (hard, per-learner; never averaged, FR-009) |
+| individual non-harm floor | **every** member's individual benefit ≥ the per-learner floor (hard, per-learner; **never averaged**, FR-009); benefit is a **real, caliper-independent** composite |
 | churn budget | membership changes vs. prior snapshot ≤ the weekly `ChurnBudget.cap` (FR-016) |
 
-**Config carriers** (fields on `HardConstraints`): `nonHarmFloor: number` (default `0.5`) and an **injected** `benefitOf(member, cohort) => number` used by the non-harm-floor check (MVP default reference formula and churn metric are pinned in [spec.md § Golden Values → Pinned formulas](./spec.md#pinned-formulas-used-by-the-golden-fixtures)). Injecting `benefitOf` keeps the floor independent of the caliper and lets the golden [Fixture B3](./spec.md#fixture-b3-nonharm-reject-us2) assert an exact rejection.
+**Config carriers** (fields on `HardConstraints`): `nonHarmFloor: number` (default `0.5`) and an **injected** `benefitOf(member, cohort) => number` used by the non-harm-floor check.
+
+The floor rule is fixed: **reject the cohort if ANY member's `benefitOf(m,C) < nonHarmFloor`**, never averaged; the boundary is **inclusive**. `benefitOf` is **injectable** (production may supply a richer signal), and the MVP ships a concrete **default** — a deterministic composite of three factors **independent of the level/velocity caliper** (so the floor is not toothless):
+
+`benefitOf(m,C) = 0.40·acc(m,C) + 0.35·hist(m,C) + 0.25·pace(m,C) ∈ [0,1]`
+
+- `acc` — accommodation compatibility (fraction of `m.accommodations.needs` not blocked by a peer conflict; `1.0` if no needs).
+- `hist` — prior-pairing history: `clamp01(0.5 + 0.5·pos/P − 1.0·neg/P)` over `m.pairHistory` restricted to peers (`P = |C|−1`; negatives penalized twice as hard as positives reward).
+- `pace` — pace/role fit: `0.5·roleFit + 0.5·rhythmFit`, `roleFit = 1 − dupRole/P`, `rhythmFit = compatiblePeers/P`.
+
+Full definitions and the derivation live in [spec.md § Golden Values → Pinned formulas](./spec.md#pinned-formulas-used-by-the-golden-fixtures). Golden [Fixture B4](./spec.md#fixture-b4-nonharm-default-bind-us2) asserts the **default** formula binds (mean `0.705 ≥ 0.5`, `D6 = 0.43` → rejected); [Fixture B3](./spec.md#fixture-b3-nonharm-reject-us2) injects an explicit map to assert the same per-member rule independent of the formula. The default `benefitOf` is implemented in `packages/cohort-compiler/src/benefit.ts`.
 
 ## ObjectiveWeights / ObjectiveTerms (value)
 

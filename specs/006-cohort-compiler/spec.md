@@ -88,7 +88,8 @@ incomplete phase. Phase → task mapping lives in [tasks.md](./tasks.md); phase 
 - **P2 — Solver & feasibility (US2 core).** `isFeasibleCohort` (7 hard constraints + non-harm floor),
   `scoreObjective` (feasible-only ranking), `assignCohorts` (greedy + local-search/repair; `unassigned`
   reporting). → SC-002, SC-006 (no learned model). Golden:
-  [Fixture B `cohort-12`](#fixture-b-cohort-12-us2) + [`cohort-13-infeasible`](#fixture-b2-cohort-13-infeasible-us2).
+  [Fixture B `cohort-12`](#fixture-b-cohort-12-us2) + [`cohort-13-infeasible`](#fixture-b2-cohort-13-infeasible-us2)
+  + [`nonharm-reject`](#fixture-b3-nonharm-reject-us2) + [`nonharm-default-bind`](#fixture-b4-nonharm-default-bind-us2).
 - **P3 — Commit / rollback / one-active / churn (US2 lifecycle).** in-memory `CohortRepository`,
   `commit`, `rollback`. → SC-003, SC-004 (cap enforcement). Golden:
   [Fixture C `churn-rollback`](#fixture-c-churn-rollback-us2).
@@ -170,7 +171,7 @@ Given a stream/array of **turn events** (speaker, start, duration, overlap) from
 
 - **Pool not divisible by six**: a leftover of fewer than six learners cannot form a full cohort; the compiler either leaves them unassigned (reported) or records a staff-approved size exception — it never silently emits a cohort of the wrong size. (Golden: [`cohort-13-infeasible`](#fixture-b2-cohort-13-infeasible-us2).)
 - **Infeasible learner**: a learner whose hard constraints (e.g. schedule, safeguarding separations, empty caliper) admit no feasible cohort is reported as unassigned with the binding constraint(s), never force-placed in violation. (Golden: [`cohort-13-infeasible`](#fixture-b2-cohort-13-infeasible-us2); empty-caliper learner `L5` in [`caliper-8`](#fixture-a-caliper-8-us1).)
-- **Individual non-harm floor vs. group score**: a placement that raises the *group* objective but drops one learner below their individual non-harm floor is rejected — the floor is a hard per-learner constraint, not averaged away (§15.2). (Golden: [`nonharm-reject`](#fixture-b3-nonharm-reject-us2): mean benefit 0.708 ≥ floor 0.5 but one member at 0.45 → rejected.)
+- **Individual non-harm floor vs. group score**: a placement that raises the *group* objective but drops one learner below their individual non-harm floor is rejected — the floor is a hard per-learner constraint on a **real, caliper-independent** benefit signal (accommodation compatibility + prior-pairing history + pace/role fit), not averaged away (§15.2). (Golden: [`nonharm-default-bind`](#fixture-b4-nonharm-default-bind-us2): the **default** formula yields mean benefit `0.705 ≥ floor 0.5` but member `D6` at `0.43 < 0.5` → rejected; [`nonharm-reject`](#fixture-b3-nonharm-reject-us2) proves the same per-member rule via an injected map, mean `0.708 ≥ 0.5`, `M5` at `0.45` → rejected.)
 - **Churn budget boundary**: a change that exactly meets the budget is allowed; one that exceeds it by any amount is refused without a recorded exception. (Golden: [`churn-rollback`](#fixture-c-churn-rollback-us2): churn = 2, allowed at cap 2, refused at cap 1.)
 - **Atomic commit failure**: if any member of a roster fails to commit, the whole commit aborts and the prior snapshot remains active (no partial roster). (Golden: [`churn-rollback`](#fixture-c-churn-rollback-us2) duplicate-active case.)
 - **Safeguarding during a solve**: a `CohortHealthEvent` (bullying/exclusion) arriving mid-process bypasses optimization, and any conflicting cohort move is paused (POL-007), regardless of objective score. (Golden: [`safeguarding-shadow`](#fixture-d-safeguarding-shadow-us2).)
@@ -223,10 +224,10 @@ Given a stream/array of **turn events** (speaker, start, duration, overlap) from
 
 ### Key Entities *(include if feature involves data)*
 
-- **LearnerProfile**: A synthetic, pseudonymous learner: `learnerRef`, age band, schedule, accommodations, private level band, private velocity band, safeguarding-separation refs, prior-assignment ref. Inputs to candidate generation and the solver.
+- **LearnerProfile**: A synthetic, pseudonymous learner: `learnerRef`, age band, schedule, accommodations (`needs`/`conflicts`), private level band, private velocity band, safeguarding-separation refs, prior-assignment ref, plus the **caliper-independent non-harm inputs** — `pairHistory` (prior-flagged `positive`/`negative` pairings), `preferredRole`, and `workingRhythm`. Inputs to candidate generation, the solver, and the default `benefitOf`.
 - **Caliper**: The near-peer bound — a level tolerance and a velocity tolerance (plus `k`) defining "within caliper."
 - **CandidateSet**: For one learner, the ordered set of within-caliper candidate `learnerRef`s (with distances) and a stable candidate-set hash.
-- **HardConstraints**: The inviolable set applied by the solver — age, schedule, safeguarding separation, accommodations, level-velocity caliper, individual non-harm floor, churn budget.
+- **HardConstraints**: The inviolable set applied by the solver — age, schedule, safeguarding separation, accommodations, level-velocity caliper, individual non-harm floor, churn budget. Carries `nonHarmFloor` (default `0.5`) and the **injected** `benefitOf(member, cohort) → number` (default = the pinned caliper-independent composite) used only by the non-harm-floor check.
 - **ObjectiveWeights / ObjectiveTerms**: The deterministic soft-scoring terms (close pace, compatible intensity, role coverage, pair history, rivalry dose, churn, repeated pairings) that rank feasible assignments only.
 - **Cohort**: A stable group of six members with per-member roles.
 - **CohortAssignment**: The committed **snapshot** — members, roles, level/velocity bands, candidate-set hash, objective terms, constraints, start, planned review, prior assignment, rollback reference. One active per learner; six unless a staff exception (§28).
@@ -247,7 +248,7 @@ for a phase = its SCs' tests pass under the pinned gate.
 - **SC-001** *(P1)*: For every learner, the candidate set contains **only** within-caliper peers and excludes the learner and all safeguarding-separated peers, and repeated runs on the same pool produce **byte-identical** candidate sets and an identical candidate-set hash — in **100%** of runs.
   → `packages/cohort-compiler/test/candidates.test.ts` + `caliper.test.ts`; golden [Fixture A](#fixture-a-caliper-8-us1).
 - **SC-002** *(P2)*: Every accepted cohort has **exactly six** members (or a recorded staff exception) and violates **zero** hard constraints across the synthetic pool — **0** hard-constraint violations; the individual non-harm floor is per-member and never averaged away.
-  → `constraints.test.ts` + `objective.test.ts` + `solver.test.ts`; golden [Fixtures B](#fixture-b-cohort-12-us2)/[B2](#fixture-b2-cohort-13-infeasible-us2)/[B3](#fixture-b3-nonharm-reject-us2).
+  → `constraints.test.ts` + `objective.test.ts` + `solver.test.ts`; golden [Fixtures B](#fixture-b-cohort-12-us2)/[B2](#fixture-b2-cohort-13-infeasible-us2)/[B3](#fixture-b3-nonharm-reject-us2)/[B4](#fixture-b4-nonharm-default-bind-us2).
 - **SC-003** *(P3)*: No learner ever holds **two** active assignments; a commit supersedes the prior and rollback restores the **exact** prior snapshot in **100%** of cases; a partial-roster commit **never** persists.
   → `commit.test.ts` + `adapters/cohort-repo-memory/test/index.test.ts`; golden [Fixture C](#fixture-c-churn-rollback-us2).
 - **SC-004** *(P3/P4)*: Weekly membership changes **never** exceed the churn budget except where a staff exception is recorded — **0** silent over-budget commits; an in-budget repair applies with a guide-veto window and reversible rollback; an over-budget or size-changing repair returns `staffExceptionRequired`.
@@ -280,7 +281,35 @@ inputs (see [§ Pre-marked Decision Points](#pre-marked-decision-points)).
 - **Candidate ordering distance (Manhattan):** `dist(a,b) = |a.level−b.level| + |a.velocity−b.velocity|`. Candidates are sorted by `dist` ascending, then `learnerRef` ascending (lexicographic). Cap at `caliper.k`.
 - **Candidate-set hash (deterministic, pinned recipe):** `hash = fnv1a32hex(preimage)` where `preimage = subjectRef + ">" + orderedCandidateRefs.join(",")` (UTF-8), and `fnv1a32hex` is 32-bit FNV-1a rendered as 8-char lowercase hex. The test asserts (a) `run1.hash === run2.hash` and (b) `hash === fnv1a32hex(preimage)`; the literal hex is derived by the pinned recipe, not hand-copied.
 - **Churn metric:** `churn(prev,next) = |{ ref : cohortIndexOf(prev, ref) ≠ cohortIndexOf(next, ref) }|`, where an unassigned learner has a distinct sentinel cohort index. A swap = 2.
-- **Individual non-harm benefit (injected, default reference):** the constraint reads a per-member benefit via an **injected** `benefitOf(member, cohort) → number` supplied on `HardConstraints`; the MVP default is `benefitOf(m,C) = 1 − (Σ_{p∈C, p≠m} chebyshev(m,p)) / ((|C|−1) × (levelTolerance + velocityTolerance))` with `chebyshev(x,y) = max(|Δlevel|,|Δvelocity|)`. The floor default is **0.5**. The constraint is `∀ m ∈ C: benefitOf(m,C) ≥ nonHarmFloor` — **per member, never averaged**. (Golden [Fixture B3](#fixture-b3-nonharm-reject-us2) injects an explicit benefit map to isolate the floor from the caliper.)
+- **Individual non-harm benefit (real, caliper-independent; injected with a pinned default):** the floor
+  constraint reads a per-member benefit via an **injected** `benefitOf(member, cohort) → number` on
+  `HardConstraints`. Production may supply a richer signal; the shipped **default** is a deterministic
+  composite of **three factors that are independent of the level/velocity caliper** (so the floor is *not*
+  toothless — the caliper already bounds level/velocity, so a level/velocity-derived floor could never
+  bind). For member `m` in cohort `C`, let `peers = C \ {m}` and `P = |peers|` (`P = 5` for a full cohort of
+  six). Each factor is normalized to `[0,1]`:
+  - **Accommodation compatibility** `acc(m,C) = needs.length === 0 ? 1 : metCount / needs.length`, where
+    `needs = m.accommodations.needs` and a need `n` is *met* iff **no** peer lists `n` in its
+    `accommodations.conflicts`. (Distinct from the hard accommodations constraint, which rejects only a
+    **mutual** block; a one-directional unmet need is hard-feasible but lowers benefit.)
+  - **Prior-pairing history** `hist(m,C) = clamp01( 0.5 + 0.5·(pos/P) − 1.0·(neg/P) )`, where, over
+    `m.pairHistory` restricted to refs in `peers`, `pos` counts `flag:"positive"` and `neg` counts
+    `flag:"negative"`. Neutral is `0.5`; a prior-flagged **negative** pairing is penalized **twice** as
+    hard as a positive pairing rewards. (This is a *friction* history, separate from the hard safeguarding
+    `separations` constraint.)
+  - **Pace/role fit** `pace(m,C) = 0.5·roleFit + 0.5·rhythmFit`, where
+    `roleFit = 1 − (# peers with preferredRole === m.preferredRole) / P` (a unique/absent role → `1.0`) and
+    `rhythmFit = (# peers whose workingRhythm is compatible with m.workingRhythm) / P` with
+    `compatible(a,b) = (a === "flex") OR (b === "flex") OR (a === b)` (absent rhythm → treated as `"flex"`).
+  - **Composite (pinned weights, sum to 1):**
+    `benefitOf(m,C) = 0.40·acc(m,C) + 0.35·hist(m,C) + 0.25·pace(m,C) ∈ [0,1]`.
+  - **Floor rule (hard, per-member, NEVER averaged):** `nonHarmFloor` default **0.5**. The constraint is
+    `∀ m ∈ C: benefitOf(m,C) ≥ nonHarmFloor`; the cohort is **rejected if ANY** member's benefit `<`
+    floor. The benefit is **never** averaged, summed, or otherwise aggregated across the cohort. The
+    boundary is **inclusive** (`=== floor` passes). Floating-point tolerance on benefit values: **±1e-9**.
+  Golden [Fixture B4](#fixture-b4-nonharm-default-bind-us2) exercises this **default** formula end-to-end
+  (mean above floor, one member below → rejected); [Fixture B3](#fixture-b3-nonharm-reject-us2) injects an
+  explicit benefit map to prove the floor is per-member and the signal is injectable.
 - **Role vector (deterministic):** members sorted by `learnerRef` ascending receive roles from the fixed 6-slot vector `["anchor","scout","builder","builder","challenger","scribe"]` by index.
 - **Cohort ordering (deterministic):** cohorts in an assignment are ordered by their lexicographically-smallest member `learnerRef`.
 - **RivalryMix thresholds (default):** `{ dominanceTurnShare: 0.5, interruptionThreshold: 3, confidenceFloor: 0.5, minTurns: 4, qualityFloor: 0.5 }`. Dominance fires when a speaker's turn share is **strictly greater than** `dominanceTurnShare`. An overlap turn is an **attributable** interruption iff `overlap === true AND (quality ?? 1) ≥ qualityFloor`. `meanQuality = mean(quality ?? 1)`, `coverage = min(1, totalTurns / minTurns)`, `confidence = meanQuality × coverage`, and `suppressed = (totalTurns < 2) OR (confidence < confidenceFloor)`. When `suppressed`, **no** patterns are surfaced. Floating-point tolerance: **±1e-9**.
@@ -319,7 +348,7 @@ inputs (see [§ Pre-marked Decision Points](#pre-marked-decision-points)).
 
 ### Fixture B: `cohort-12` (US2)
 
-**Config:** caliper as Fixture A; `hard = { age, schedule, separations, accommodations, caliper, nonHarmFloor: 0.5, churn }`; `churn = { weekKey: "2026-W30", cap: 4, used: 0, exceptions: [] }`; `weights = default`; `prior = null`. Under the default `benefitOf`, every member's benefit is ≥ 0.60 (the minimum in each group is 0.60), so the floor (0.5) does not bind here.
+**Config:** caliper as Fixture A; `hard = { age, schedule, separations, accommodations, caliper, nonHarmFloor: 0.5, churn }`; `churn = { weekKey: "2026-W30", cap: 4, used: 0, exceptions: [] }`; `weights = default`; `prior = null`. The `cohort-12` learners carry **no** benefit-relevant attributes (`accommodations.needs = []`, `pairHistory = []`, no `preferredRole`, no `workingRhythm`), so under the default `benefitOf` every member scores `acc = 1.0`, `hist = 0.5`, `pace = 1.0` → **benefit `= 0.40·1.0 + 0.35·0.5 + 0.25·1.0 = 0.825`** uniformly. The floor (0.5) does not bind here; the binding case is [Fixture B4](#fixture-b4-nonharm-default-bind-us2).
 
 **Pool** (all `schedule: ["mon-pm","wed-am"]`, no accommodations conflicts, no separations):
 
@@ -355,12 +384,50 @@ inputs (see [§ Pre-marked Decision Points](#pre-marked-decision-points)).
 
 ### Fixture B3: `nonharm-reject` (US2)
 
-A single candidate cohort with an **injected** benefit map to isolate the non-harm floor from the caliper.
+**(Injected-map isolation.)** A single candidate cohort with an **injected** `benefitOf` map. Purpose: prove the port is **injectable** and
+the floor is enforced **per-member, never averaged** — independent of any formula. (The **default formula**
+binding case is [Fixture B4](#fixture-b4-nonharm-default-bind-us2).)
 
 - `members = [M1, M2, M3, M4, M5, M6]` (all within caliper, same age/schedule, no separations — so age/schedule/caliper/accommodations/separation all pass).
 - `benefitOf` returns `{ M1: 0.90, M2: 0.80, M3: 0.70, M4: 0.60, M5: 0.45, M6: 0.80 }`; `nonHarmFloor = 0.5`.
 
-**Expected `isFeasibleCohort` output:** `{ ok: false, violations: [{ constraint: "individual_non_harm_floor", member: "M5", value: 0.45, floor: 0.5 }] }`. Note the mean benefit is `0.708 ≥ 0.5` — rejection proves the floor is **per-member and not averaged away** (FR-009). A control run with `M5 = 0.50` returns `{ ok: true, violations: [] }` (boundary inclusive).
+**Expected `isFeasibleCohort` output:** `{ ok: false, violations: [{ constraint: "individual_non_harm_floor", member: "M5", value: 0.45, floor: 0.5 }] }`. The mean benefit is `(0.90+0.80+0.70+0.60+0.45+0.80)/6 = 0.708333… ≥ 0.5` — rejection proves the floor is **per-member and not averaged away** (FR-009). A control run with `M5 = 0.50` returns `{ ok: true, violations: [] }` (boundary inclusive).
+
+### Fixture B4: `nonharm-default-bind` (US2)
+
+**(Default formula binds.)** The **default** `benefitOf` (pinned composite above, weights `0.40/0.35/0.25`, floor `0.5`) applied
+end-to-end to a single hard-feasible cohort of six — **no injected map**. This is the fixture where the
+default floor **genuinely binds**: the cohort's mean benefit is **above** the floor but the cohort is
+**rejected** because one member is **below** it.
+
+All six share `ageBand: a9_11`, `schedule: ["mon-pm","wed-am"]`, and levels/velocities inside the caliper
+(e.g. all `level`/`velocity` in `10..12`), with **no** safeguarding separations and **no** *mutual*
+accommodation block — so age, schedule, caliper, separation, and the hard accommodations constraint all
+pass, isolating the non-harm floor. Benefit-relevant attributes:
+
+| ref | accommodations.needs | accommodations.conflicts | pairHistory | preferredRole | workingRhythm |
+|---|---|---|---|---|---|
+| D1 | `[]` | `[]` | `[]` | `anchor` | `steady` |
+| D2 | `[]` | `[]` | `[]` | `scout` | `steady` |
+| D3 | `[]` | `["low-stim"]` | `[]` | `challenger` | `steady` |
+| D4 | `[]` | `[]` | `[]` | `builder` | `flex` |
+| D5 | `[]` | `[]` | `[]` | `builder` | `burst` |
+| D6 | `["quiet","low-stim"]` | `[]` | `[{ ref: "D2", flag: "negative" }]` | `builder` | `burst` |
+
+**Exact per-member benefit** (`benefit = 0.40·acc + 0.35·hist + 0.25·pace`; `P = 5`):
+
+| ref | acc | hist | pace (`0.5·roleFit + 0.5·rhythmFit`) | **benefit** |
+|---|---|---|---|---|
+| D1 | `1.0` (no needs) | `0.5` (no history) | `0.5·1.0 + 0.5·0.6 = 0.8` (anchor unique; 3/5 rhythm-compatible) | **`0.775`** |
+| D2 | `1.0` | `0.5` | `0.5·1.0 + 0.5·0.6 = 0.8` (scout unique; 3/5) | **`0.775`** |
+| D3 | `1.0` | `0.5` | `0.5·1.0 + 0.5·0.6 = 0.8` (challenger unique; 3/5) | **`0.775`** |
+| D4 | `1.0` | `0.5` | `0.5·0.6 + 0.5·1.0 = 0.8` (builder dup=2 → 0.6; flex 5/5) | **`0.775`** |
+| D5 | `1.0` | `0.5` | `0.5·0.6 + 0.5·0.4 = 0.5` (builder dup=2; burst 2/5) | **`0.700`** |
+| D6 | `0.5` (`low-stim` blocked by D3; `quiet` met) | `0.3` (`0.5 − 1.0·(1/5)`; D2 negative) | `0.5·0.6 + 0.5·0.4 = 0.5` (builder dup=2; burst 2/5) | **`0.430`** |
+
+**Expected `isFeasibleCohort` output:** `{ ok: false, violations: [{ constraint: "individual_non_harm_floor", member: "D6", value: 0.43, floor: 0.5 }] }`. The **mean** benefit is `(0.775·4 + 0.700 + 0.430)/6 = 4.23/6 = 0.705 ≥ 0.5`, yet the cohort is **rejected** because `D6 = 0.43 < 0.5` — the floor binds **per-member** on the real default signal, **never averaged** (FR-009). Only `D6` is below the floor; `D5 = 0.700 ≥ 0.5` and the rest at `0.775 ≥ 0.5`. Tolerance on benefit values: **±1e-9**.
+
+**Control (boundary inclusive):** if `D3.accommodations.conflicts = []` (so `D6`'s `low-stim` need is met → `acc(D6) = 1.0`), then `benefit(D6) = 0.40·1.0 + 0.35·0.3 + 0.25·0.5 = 0.630 ≥ 0.5`, all six pass, and `isFeasibleCohort` returns `{ ok: true, violations: [] }`.
 
 ### Fixture C: `churn-rollback` (US2)
 
@@ -417,7 +484,7 @@ These are settled — do **not** re-open them.
 4. **Solver = deterministic greedy construction + bounded local-search/repair now; CP-SAT/branch-and-price deferred.** "Correct" for this slice = **feasible + all hard constraints honored + deterministic**, *not* provably optimal. No native/OR-Tools dependency.
 5. **Solver determinism:** no randomness anywhere; ties broken by `learnerRef` ascending; cohorts ordered by smallest member ref; roles assigned by the fixed role vector. Same inputs → byte-identical output.
 6. **Hard vs. soft strictly separated:** the seven hard constraints gate feasibility as boolean predicates; the soft objective only ranks *feasible* options and can never make an infeasible assignment feasible or trade away a hard constraint.
-7. **Individual non-harm floor is hard, per-member, never averaged.** The benefit function is injected/configurable (default reference formula pinned above); the invariant is fixed.
+7. **Individual non-harm floor is hard, per-member, never averaged — over a REAL, caliper-independent benefit signal.** The per-member benefit is a **deterministic composite** of three factors **independent of the level/velocity caliper** — accommodation compatibility (`0.40`), prior-pairing history (`0.35`), and pace/role fit (`0.25`) — pinned exactly in [§ Golden Values → Pinned formulas](#pinned-formulas-used-by-the-golden-fixtures). It is deliberately **not** derived from level/velocity (the caliper already bounds those, so a level/velocity-derived floor would never bind). The signal is **injectable** via `benefitOf` on `HardConstraints` (production may supply a richer estimate), but the concrete default formula + weights above are the pinned decision. The floor rule is fixed: **reject the cohort if ANY member's `benefitOf(m,C) < nonHarmFloor`** (default `0.5`), **never** averaged. This is a **deterministic rule**, not a learned causal-uplift estimate (which stays shadow, FR-019).
 8. **Atomic commit + rollback in-memory; PostgreSQL deferred.** One active assignment per learner; whole-roster-or-nothing commit; prior snapshot retained for rollback.
 9. **Bounded automation envelope:** in-budget repair auto-applies with a guide-veto window + one-click rollback; over-budget or size changes require a recorded staff exception.
 10. **Safeguarding bypass is non-optimizable:** `CohortHealthEvent` routes straight to the sink, pauses conflicting moves (POL-007), never lowers a rating; it is never a negative objective term.
@@ -499,7 +566,7 @@ choices that would invalidate an SC or touch something irreversible/shared; the 
 - **DP-1 — Caliper tolerances (`levelTolerance`, `velocityTolerance`, `k`).** *Default:* `{ 2, 2, 10 }` (Fixture A). `severity: low` — tunable config; any values satisfy the FRs as long as behavior is deterministic and the caliper is a hard near-peer bound. Changing them changes golden Fixture A, so keep them for the golden tests.
 - **DP-2 — Churn cap.** *Default:* `4` per week for a normal compile; `2` in the churn boundary golden. `severity: normal` — tunable; the invariant (never silently exceed; swap = 2) is fixed.
 - **DP-3 — Objective weights.** *Default:* churn-dominant with all terms present; the only pinned golden property is monotonicity (lower churn ranks higher) and determinism. `severity: low` — tunable; must never override a hard constraint.
-- **DP-4 — Individual non-harm floor value + benefit formula.** *Default:* floor `0.5` with the pinned reference `benefitOf`; the benefit function is injectable. `severity: normal` — the *invariant* (hard, per-member, never averaged) is **critical** and fixed; the numeric floor is tunable.
+- **DP-4 — Individual non-harm floor value + benefit formula.** *Default:* floor `0.5` with the pinned **real, caliper-independent** composite `benefitOf` = `0.40·acc + 0.35·hist + 0.25·pace` (accommodation compatibility, prior-pairing history, pace/role fit); the benefit function is **injectable** via `HardConstraints` so production can swap in a richer signal. `severity: normal` — the *invariant* (hard, per-member, never averaged; the signal is **independent of the caliper** so the floor can actually bind) is **critical** and fixed; the numeric floor value and the three weights are tunable config (changing them changes golden [Fixture B4](#fixture-b4-nonharm-default-bind-us2), so keep them for the golden tests).
 - **DP-5 — RivalryMix thresholds.** *Default:* `{ dominanceTurnShare: 0.5, interruptionThreshold: 3, confidenceFloor: 0.5, minTurns: 4, qualityFloor: 0.5 }`. `severity: low` — tunable; the *rule* (suppress under low quality, never mislabel, no trait field) is **critical** and fixed.
 - **DP-6 — Root `tsconfig.json` references (the single shared-file touch).** *Default:* add `packages/cohort-compiler` and each `adapters/cohort-*` to the `references` array as the **final** task, in its own commit. `severity: critical` — it is the only shared-file edit and the merge-reconciliation point; keep it isolated.
 - **DP-7 — Non-six cohort handling.** *Default:* leave leftover (<6) learners **unassigned** with a binding reason; a staff `sizeException` is the only path to a non-six cohort. `severity: normal` — never silently emit a wrong-size cohort.
@@ -510,7 +577,7 @@ choices that would invalidate an SC or touch something irreversible/shared; the 
 - **Pure-TS caliper filter for the MVP**: candidate generation is a deterministic level+velocity distance filter / kNN over the in-memory pool. **HNSW** (the production ANN) is deferred behind the `CandidateIndex` port (PRD §15).
 - **Media plane deferred to a stub**: RivalryMix operates on arrays of already-extracted turn events. Real-time capture (WebRTC/AudioWorklet/Rust-WASM) and the **LiveKit** SFU media plane (§15.1) are **deferred** to a `MediaTurnSource` stub port; the §15.1/§15.2 latency and scale SLOs (feature-to-guide-screen <250 ms p95; 20,000 rooms; join/reconnect budgets) are **production targets**, not MVP gates (pure logic is not latency-bound).
 - **Level/velocity bands are given**: the private ratings that drive matchmaking are synthetic inputs to this slice; how they are computed (from mastery/velocity signals) is external (PRD §12/§15). This feature consumes them, it does not compute them.
-- **Individual non-harm floor is a modeled per-learner threshold**: for the synthetic slice it is a deterministic per-learner compatibility/benefit floor computed from observable pairing/accommodation/pace features (default reference formula pinned above; injectable) — **not** a learned causal-uplift estimate (which stays shadow, FR-019). The exact floor formula is an implementation detail; its *invariant* (hard, per-learner, never averaged away) is fixed here.
+- **Individual non-harm floor is a modeled per-learner threshold over a REAL, caliper-independent signal**: for the synthetic slice the per-learner benefit is a **deterministic composite** of accommodation compatibility, prior-pairing history, and pace/role fit (pinned formula + weights above; **injectable** via `benefitOf`) — chosen precisely because these factors are **independent of the level/velocity caliper**, so the floor can actually bind (a level/velocity-derived floor never would, since the caliper already bounds those dimensions). It is **not** a learned causal-uplift estimate (which stays shadow, FR-019). The weights/floor value are tunable config; the *invariant* (hard, per-learner, never averaged away; signal independent of the caliper) is fixed here.
 - **Bounded automation envelope**: an in-budget cohort repair may auto-apply (bounded automation, §8.5) but always with a guide-veto window and one-click rollback; anything beyond the churn budget or a group-size change requires a recorded human exception. No irreversible, identity-defining move is automated.
 - **Shadow causal-uplift**: the `BenefitEstimator` port exists only to prove the seam and the post-lock-only logging discipline; it returns a placeholder LCB and is never read during a solve/repair (Constitution III; §15).
 - **Synthetic-only, governance stubbed**: no real learners, consent, media, or safeguarding case management; the safeguarding sink is an in-memory human-queue stub. Rights/authority limits still bind (Constitution I/III/V/VIII/IX; G4/G6/G7): no caste ranks, safeguarding bypass, one active assignment, aggregated peer views, no learned-model assignment.

@@ -35,7 +35,7 @@ touched by this slice, so the loop gate here is **typecheck + test** (+ lint).
 The demo/tests build a synthetic learner pool and exercise the full path:
 
 1. **Generate candidates (US1)**: build a pool of synthetic `LearnerProfile`s with level/velocity bands, age bands, schedules, accommodations, and safeguarding separations; run `generateCandidates(pool, caliper)`. Every candidate is within the level+velocity caliper; self and separated peers are excluded; re-running yields byte-identical sets and the same candidate-set hash. No caste rank / full-field ranking is produced.
-2. **Compile cohorts (US2)**: run `assignCohorts(...)` → cohorts of exactly six, each honoring **all** hard constraints (age, schedule, safeguarding separation, accommodations, caliper, individual non-harm floor, churn). Infeasible learners come back as `unassigned` with the binding constraint, never force-placed. The soft objective only ranks feasible options.
+2. **Compile cohorts (US2)**: run `assignCohorts(...)` → cohorts of exactly six, each honoring **all** hard constraints (age, schedule, safeguarding separation, accommodations, caliper, individual non-harm floor, churn). The **individual non-harm floor** reads a per-member benefit via an injected `benefitOf` — the default is a real, **caliper-independent** composite (`0.40·` accommodation compatibility `+ 0.35·` prior-pairing history `+ 0.25·` pace/role fit); a cohort is **rejected if ANY** member's benefit `< nonHarmFloor` (default `0.5`), **never** averaged (golden [Fixture B4](./spec.md#fixture-b4-nonharm-default-bind-us2): mean `0.705 ≥ 0.5` but `D6 = 0.43` → rejected). Infeasible learners come back as `unassigned` with the binding constraint, never force-placed. The soft objective only ranks feasible options.
 3. **Commit + rollback (US2)**: `commit(repo, assignment, churn)` commits the whole roster atomically, retains the prior snapshot, and enforces one active assignment per learner; `rollback(repo, id)` restores the exact prior snapshot. A change beyond the churn budget is refused unless a safety-owner exception is recorded.
 4. **Repair (US2)**: `repairCohort(...)` applies an in-budget repair as bounded automation (guide-veto window + one-click rollback); a repair that would exceed the churn budget returns `staffExceptionRequired` and does not auto-apply.
 5. **Safeguarding bypass (US2)**: submit a `CohortHealthEvent` (bullying/exclusion) → it bypasses the optimizer, lands in the human `SafeguardingSink`, pauses any conflicting cohort move, and changes no rating.
@@ -46,7 +46,7 @@ The demo/tests build a synthetic learner pool and exercise the full path:
 ## Success criteria mapping
 
 - SC-001 within-caliper, self/separation-excluded, deterministic candidates + stable hash → `candidates`/`caliper` tests (step 1).
-- SC-002 six-member cohorts, zero hard-constraint violations, non-harm floor per-learner → `constraints`/`solver` tests (step 2).
+- SC-002 six-member cohorts, zero hard-constraint violations, non-harm floor per-learner over a caliper-independent benefit (default formula binds in Fixture B4; injected map in B3) → `constraints`/`solver` tests (step 2).
 - SC-003 one active assignment; atomic commit; exact rollback; no partial roster → `commit`/`rollback` tests (step 3).
 - SC-004 churn budget never silently exceeded; in-budget repair reversible → `commit`/`repair` tests (steps 3–4).
 - SC-005 safeguarding bypass to human sink; no rating change → `safeguarding` tests (step 5).

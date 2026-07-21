@@ -140,7 +140,7 @@ At a milestone, the system assembles an `EvidencePacket` from the milestone's no
 3. **Given** an assembled packet, **When** any node's content is altered after assembly, **Then** re-verification fails (tamper-evident relative to the committed root).
 4. **Given** a milestone whose graph violates the human-authority invariant (US2), **When** packet assembly runs, **Then** assembly refuses to produce a packet.
 5. **Given** the deferred transparency-log and erasure capabilities, **When** their stub ports are invoked, **Then** they return deterministic placeholder results and are clearly marked not-production (pre-live gate, §19.2 D1/D2).
-6. **Given** the fixed **golden leaf set** `{sha256("a"), sha256("b"), sha256("c")}`, **When** the Merkle root is computed, **Then** it equals the golden value `0360836a…6008976e`, and computing over any permutation of the same set yields the identical root (canonical ordering).
+6. **Given** the fixed **golden leaf set** `{sha256("a"), sha256("b"), sha256("c")}`, **When** the Merkle root is computed, **Then** it equals the golden value `dd67a4e9…45ca647b`, and computing over any permutation of the same set yields the identical root (canonical ordering).
 
 ### Edge Cases
 
@@ -149,9 +149,9 @@ At a milestone, the system assembles an `EvidencePacket` from the milestone's no
 - **Dangling reference**: an edge (or a node `inputs[]` entry) pointing at an id not in the graph is rejected at insert time.
 - **Cycle**: any edge whose addition would make the directed graph cyclic is rejected at insert time; the graph is never allowed to enter a cyclic state.
 - **Self-edge**: an edge whose `from` equals `to` is a trivial cycle and is rejected.
-- **Odd node counts in the Merkle tree**: on an odd number of leaves at any level, the last node is **promoted/duplicated** (`interior(last, last)`) so the root is well-defined for any node count, including a single-node packet (root = that node's leaf digest).
+- **Odd node counts in the Merkle tree**: the tree follows the **RFC-6962** rule — when a level has an odd number of nodes, the lone right-most node is **promoted unchanged** to the next level (it is **NOT** duplicated). The root is well-defined for any node count, including a single-node packet (root = that node's leaf digest).
 - **Empty packet**: assembling a packet from zero nodes is rejected (a milestone must bind at least one node).
-- **Second-preimage separation**: leaf and interior Merkle hashing use domain separation (leaf prefix `00`, interior prefix `01`) so a leaf digest can never be reinterpreted as an interior digest for the same input.
+- **Second-preimage separation**: leaf and interior Merkle hashing use RFC-6962 domain separation over **raw bytes** (leaf prefix byte `0x00`, interior prefix byte `0x01`) so a leaf digest can never be reinterpreted as an interior digest for the same input.
 - **Tamper detection**: altering any bound node's content after assembly changes its content hash, so the re-derived Merkle root no longer matches the committed root and verification fails.
 - **Consent scope (stubbed)**: nodes carry a consent-scope field, but no real consent/legal workflow is evaluated in this slice; synthetic values only.
 - **Erasure vs. integrity (deferred)**: the crypto-shred workflow is a stub; the slice only asserts the *shape* that a future shred must preserve (hashes/roots stay verifiable), not the real key lifecycle (§19.2 D2).
@@ -170,7 +170,7 @@ At a milestone, the system assembles an `EvidencePacket` from the milestone's no
 - **FR-008**: The system MUST enforce the **human-authority invariant**: every `Outcome` representing a final grade or non-deterministic judgment MUST be attributed (`authored_by`) to a **named human** actor; no `model` actor may own a grade or judgment (Constitution I/IV; PRD §19).
 - **FR-009**: A `model` actor's output MUST be admissible only as an `Assistance` or `Review` node (cited supporting evidence); the system MUST NOT record any node or edge that constitutes an automated **AI-authorship accusation** (Constitution IX; PRD §4.7/§19).
 - **FR-010**: The system MUST assemble an `EvidencePacket` for a milestone containing artifact/source hashes, a **Merkle root** over its node hashes, failed branches, an assistance ledger, a contribution map, review anchors, and outcomes (PRD §19, §28 `EvidencePacket`).
-- **FR-011**: The Merkle root MUST be computed **deterministically** — canonical node ordering (ascending lexicographic over the lowercase-hex content hashes), a defined odd-count rule (promote/duplicate the last node), and domain-separated leaf/interior hashing — so the same node set always yields the same root regardless of input order.
+- **FR-011**: The Merkle root MUST be computed **deterministically** using the **RFC-6962 raw-byte scheme**: leaves are the per-node 32-byte SHA-256 content-hash digests (raw bytes), ordered by ascending byte value of the digest (equivalently, ascending lexicographic over the lowercase-hex ids); `leaf = SHA-256(0x00 || digestBytes)` and `interior = SHA-256(0x01 || leftHashBytes || rightHashBytes)`; and the RFC-6962 odd-count rule (promote the lone right-most node **unchanged** up a level, never duplicate it) — so the same node set always yields the same root regardless of input order.
 - **FR-012**: The system MUST emit an **in-toto-style attestation** as a typed record that binds the packet subject (released artifact digest) to the Merkle root and predicate metadata (builder, materials, milestone) (PRD §19, STD-05).
 - **FR-013**: Verification MUST occur behind a `Verifier` **port**; a **deterministic stub adapter** MUST re-derive the Merkle root and check the attestation subject digest, returning a pass/fail result (real WASI verifier deferred, §19.2).
 - **FR-014**: Packet assembly MUST refuse to produce a packet when the milestone graph violates the human-authority invariant (FR-008/FR-009), and MUST reject an empty node set.
@@ -180,7 +180,7 @@ At a milestone, the system assembles an `EvidencePacket` from the milestone's no
 - **FR-018**: The feature MUST be exercisable end-to-end with **synthetic data only**; no real consent, legal, admissions, or PII workflow is implemented (consent scope is a stubbed field), and none is required to run the slice.
 - **FR-019**: The system MUST expose enough of the packet/attestation/graph that a reviewer can trace a public `Claim`/`Outcome` back to its supporting private nodes via edges, without the domain exposing unrelated nodes (reviewer-traceability shape; PRD §19.1).
 - **FR-020**: The domain MUST reproduce the **golden values** pinned in this spec (node ids and Merkle roots) **byte-for-byte**; a golden-value test file asserts each. These are the loop's deterministic acceptance targets (any deviation is a build failure, not a judgment call).
-- **FR-021**: Leaf and interior Merkle hashing MUST be **domain-separated** such that, for any input string `x`, `leaf(x) ≠ interior(x, x')` for all `x'` (no second-preimage collision between tree levels).
+- **FR-021**: Leaf and interior Merkle hashing MUST be **domain-separated** via the RFC-6962 prefix bytes (`0x00` for leaves, `0x01` for interior nodes) such that, for any input `x`, `leaf(x) ≠ interior(x, x')` for all `x'` (no second-preimage collision between tree levels).
 
 ### Key Entities *(include if feature involves data)*
 
@@ -220,10 +220,12 @@ these tests present and passing. Tolerance for all hash/root comparisons is **ex
 ## Golden Values *(deterministic acceptance targets — exact, zero tolerance)*
 
 These are the loop's ground truth. They were computed from the **pinned scheme** (see Decisions Already
-Made): node id = `sha256_hex(utf8(JCS(content)))`; Merkle over lowercase-hex strings with
-`leaf(h) = sha256_hex("00" + h)` and `interior(l, r) = sha256_hex("01" + l + r)`, inputs sorted ascending,
-odd level duplicates the last node. **`+` is string concatenation; the `00`/`01` prefixes are the two ASCII
-characters, not raw bytes.** All hex is lowercase. Reproduce these before trusting an implementation.
+Made): node id = `sha256_hex(utf8(JCS(content)))`; Merkle via the **RFC-6962 raw-byte scheme** over the
+per-node 32-byte SHA-256 digests (decode the hex ids to bytes), leaves ordered by ascending digest bytes:
+`leaf = sha256(0x00 || digestBytes)` and `interior = sha256(0x01 || leftHashBytes || rightHashBytes)`, where
+`||` is **raw-byte concatenation** and `0x00`/`0x01` are single prefix **bytes** (not ASCII characters). On an
+odd count at any level the lone right-most node is **promoted unchanged** (RFC-6962; never duplicated). All hex
+is lowercase. Reproduce these before trusting an implementation.
 
 ### G1 — Golden Artifact node id (canonicalization + content-addressing)
 
@@ -248,28 +250,30 @@ Leaves are the SHA-256 of the single ASCII letters `"a"`, `"b"`, `"c"` (standard
 | `hb = sha256("b")` | `3e23e8160039594a33894f6564e1b1348bbd7a0088d42c4acb73eeaed59c009d` |
 | `hc = sha256("c")` | `2e7d2c03a9507ae265ecf5b5356885a53393a2029d241394997265a1a25aefc6` |
 
-Leaf digests (`leaf(h) = sha256_hex("00" + h)`):
+Leaf digests (`leaf(h) = sha256(0x00 || bytes(h))`, i.e. hash of the `0x00` byte followed by the 32 raw
+digest bytes of `h`):
 
 | Symbol | Value |
 |---|---|
-| `leaf(ha)` | `53ff9798fea2e1c2388e093e4627bd4536e3b394ff2b7bb84e98e53ea3af60b3` |
-| `leaf(hb)` | `0983f29dcaf5a882a072534e012f22604466d7155a12e27465645eae0b604c7d` |
-| `leaf(hc)` | `9514707212cc5f6ea445c3661082ff5ce1f0fdc91d3d9240ab86dab37f0f49f4` |
+| `leaf(ha)` | `a23bd5b06da9048238a65b3f1d9d0b9e15fae3dde262688e6489aa4c763d1820` |
+| `leaf(hb)` | `a0d9f0a50b35b9f7d7edc57fb64f4771ddef0fefeaca4e6f949a1514db5b136d` |
+| `leaf(hc)` | `6a3fc11b79f836bda340e75c8906e961b8adf4d6a08a2b992e3f38cd6ff38ebf` |
 
 Roots (inputs are sorted ascending **inside** `merkleRoot`, so input order does not matter):
 
 | Case | Sorted order used | Root |
 |---|---|---|
-| **1 leaf** `[ha]` | `[ha]` → root = `leaf(ha)` | `53ff9798fea2e1c2388e093e4627bd4536e3b394ff2b7bb84e98e53ea3af60b3` |
-| **2 leaves** `[ha,hb]` | `[hb, ha]` (3e… < ca…) | `c48424e03c16ad6790022c616eaa9a745c68dca8c8ff841c6741d517488c9080` |
-| **3 leaves** `[ha,hb,hc]` | `[hc, hb, ha]` (2e… < 3e… < ca…) | `0360836aef719087a43bc5fe34ebace193a6ea761b65a316dbb2845e6008976e` |
-| **3 leaves, shuffled** `[hc,hb,ha]` | same sorted `[hc, hb, ha]` | `0360836aef719087a43bc5fe34ebace193a6ea761b65a316dbb2845e6008976e` (identical → SC-008) |
+| **1 leaf** `[ha]` | `[ha]` → root = `leaf(ha)` | `a23bd5b06da9048238a65b3f1d9d0b9e15fae3dde262688e6489aa4c763d1820` |
+| **2 leaves** `[ha,hb]` | `[hb, ha]` (3e… < ca…) | `73a57aee9ae28c072b7e0ed9b56a57a69cc6fb048a723d7f052177084d1250ee` |
+| **3 leaves** `[ha,hb,hc]` | `[hc, hb, ha]` (2e… < 3e… < ca…) | `dd67a4e94fcb4fff954bcb093257364a5b5d0832bda9ffb7a5b6340e45ca647b` |
+| **3 leaves, shuffled** `[hc,hb,ha]` | same sorted `[hc, hb, ha]` | `dd67a4e94fcb4fff954bcb093257364a5b5d0832bda9ffb7a5b6340e45ca647b` (identical → SC-008) |
 
-Worked 3-leaf derivation (odd count → last node duplicated):
+Worked 3-leaf derivation (RFC-6962: `k` = largest power of two `< n`; for `n=3`, `k=2`, so the left subtree
+covers the first two leaves and the lone third leaf is **promoted unchanged**, not duplicated):
 
-- `L = interior(leaf(hc), leaf(hb))` = `098bcf5b5be3608da163ae6aeed84d0e457bc6d0cd2743f0e22fd0db25453904`
-- `R = interior(leaf(ha), leaf(ha))` = `ed470a92745ab3a21a6cdeff44c44fd6bc183346b43e38e070b2cc33cf299384`
-- `root = interior(L, R)` = `0360836aef719087a43bc5fe34ebace193a6ea761b65a316dbb2845e6008976e`
+- `L = interior(leaf(hc), leaf(hb))` = `291208811668f898eaaa99780c66db0f4cfd2e5b36f6c03fdca445fdec208cf0`
+- `R = leaf(ha)` (promoted unchanged — **not** `interior(leaf(ha), leaf(ha))`) = `a23bd5b06da9048238a65b3f1d9d0b9e15fae3dde262688e6489aa4c763d1820`
+- `root = interior(L, R)` = `dd67a4e94fcb4fff954bcb093257364a5b5d0832bda9ffb7a5b6340e45ca647b`
 
 ### G3 — Golden two-node packet (end-to-end sanity)
 
@@ -280,8 +284,9 @@ Worked 3-leaf derivation (odd count → last node duplicated):
 ```
 
 - **idB** = `41168c66e8c868b8cf6e8eed82b49c17e32572143cbfdfe526e0f8a166a23f34`
-- **Packet Merkle root** over `{idA, idB}` (sorted `[idB, idA]`, since `4116…` < `face…`) =
-  `df1f000dd9b96ff8dfd0347af7da31970f6de93cd6b5aaec44a1394a4f7ec433`
+- **Packet Merkle root** over `{idA, idB}` (sorted `[idB, idA]`, since `4116…` < `face…`; RFC-6962 raw-byte
+  scheme = `interior(leaf(bytes(idB)), leaf(bytes(idA)))`) =
+  `3c7f4d3c2a824ad9df7bbf211d8ebd3f1e2086ce2f5b0aea27f8bc994dea441c`
 - **Golden subject digest** (attestation subject; `sha256("gt100k-artifact-v1")`) =
   `fa6cc759cb3564394df561e6d4d2e9fe9ad76568ee10e37d22a83539bc3f6958`
 
@@ -303,9 +308,17 @@ scheme and MUST be fixed to match these values (the values are the spec, not the
   optional fields are omitted** (never serialized as `null`). Fixtures use only strings/arrays/objects (no
   numbers/booleans/null) so the canonical form is unambiguous and matches the golden bytes above.
 - **Node id**: `id = hasher.hash(utf8Bytes(JCS(contentWithoutId)))`.
-- **Merkle scheme** (operates on lowercase-hex strings, not raw bytes): `leaf(h)=hash("00"+h)`,
-  `interior(l,r)=hash("01"+l+r)` where `+` is string concatenation and `"00"/"01"` are ASCII prefixes;
-  inputs sorted ascending; single leaf → its leaf digest is the root; odd level → duplicate the last node.
+- **Merkle scheme**: **RFC-6962 (Certificate Transparency) raw-byte scheme** — operates on **raw bytes**, not
+  hex strings. Leaves are the per-node 32-byte SHA-256 content-hash digests (decode the hex node-ids to bytes),
+  sorted ascending by digest bytes. `leaf = sha256(0x00 || digestBytes)` and
+  `interior = sha256(0x01 || leftHashBytes || rightHashBytes)`, where `||` is raw-byte concatenation and
+  `0x00`/`0x01` are single prefix **bytes**. Single leaf → its leaf digest is the root; on an odd count at any
+  level the lone right-most node is **promoted unchanged** (RFC-6962 rule: `k` = largest power of two `< n`),
+  **never duplicated**. *Interop rationale*: RFC-6962 is the industry-standard Merkle construction used by
+  Certificate Transparency, Trillian, and the sigstore/Rekor transparency logs that §19.2 D1 will anchor to;
+  adopting it now (instead of the earlier homemade hex-string-concatenation scheme) means the deferred
+  transparency-log integration and any external verifier can re-derive and check our roots with off-the-shelf
+  tooling, with no bespoke re-implementation. The node-id computation is unchanged (RFC-8785/JCS → SHA-256).
 - **Attestation**: in-toto **Statement** shape (`_type`, `predicateType`, `subject[].digest.sha256`,
   `predicate{builder, materials[], merkleRoot, milestoneRef}`) as a typed record. **Unsigned** in this slice
   (signing deferred, §19.2 D6). The stub verifier checks structure + subject digest + Merkle re-derivation
@@ -393,11 +406,13 @@ Where a genuine judgment is unavoidable, the default is stated so the loop proce
 - **Canonical encoder** — *default*: RFC 8785 JCS (or a stable-key encoder that reproduces the golden bytes).
   *severity: normal* — any encoder that matches the golden canonical strings is acceptable; the golden values
   are the arbiter.
-- **Merkle input granularity** — *default*: hash over the **content-hash hex strings** (as pinned), not raw
-  digest bytes. *severity: critical* — changing this invalidates every golden root; do not deviate.
-- **Odd-count rule** — *default*: duplicate/promote the **last** node (`interior(last,last)`). *severity:
-  critical* — the alternative (promote unpaired node unchanged to the next level) yields different roots; the
-  golden 3-leaf value assumes duplicate-last.
+- **Merkle input granularity** — *default*: RFC-6962 raw-byte scheme over the **32-byte content-hash digests**
+  (decode the hex ids to bytes), not over the hex strings. *severity: critical* — changing this invalidates
+  every golden root; do not deviate.
+- **Odd-count rule** — *default*: RFC-6962 — **promote the lone right-most node unchanged** to the next level
+  (`k` = largest power of two `< n`); do **not** duplicate it. *severity: critical* — the alternative
+  (duplicate-last, `interior(last,last)`) yields different roots; the golden 3-leaf value assumes RFC-6962
+  promote-unchanged.
 - **`inputs[]` vs. explicit edges** — *default*: a node's `inputs[]` ids are validated for existence like an
   edge endpoint (no dangling), and provenance `derived_from` edges are added explicitly. *severity: normal*.
 - **Attestation `predicateType` / `builder` string values** — *default*: fixed synthetic constants (e.g.

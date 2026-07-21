@@ -6,7 +6,7 @@
 
 **Phase ↔ P-number mapping** (from [spec.md § Phasing P0–P6](./spec.md#phasing-p0p6)): **P0** = Phase 1
 Setup + Phase 2 Foundational; **P1** = Phase 3 (US1, MVP); **P2** = US2 solver/feasibility (T011–T013,
-T019–T021); **P3** = US2 commit/rollback/churn (T014–T015, T022–T023); **P4** = US2 repair/safeguarding/
+T019–T021, T040); **P3** = US2 commit/rollback/churn (T014–T015, T022–T023); **P4** = US2 repair/safeguarding/
 shadow (T016–T018, T024–T027); **P5** = Phase 5 (US3); **P6** = Phase 6 Polish + the single `tsconfig.json`
 touch. Golden fixtures the tests assert against live in
 [spec.md § Golden Values](./spec.md#golden-values--seed-fixtures).
@@ -37,9 +37,9 @@ All work lives in **new** directories (`packages/cohort-compiler`, `adapters/coh
 
 **⚠️ CRITICAL**: no user-story work begins until this phase is complete.
 
-- [ ] T002 [P] Define all domain types in `packages/cohort-compiler/src/model.ts` (`AgeBand`, `LevelBand`/`VelocityBand` fields, `ScheduleAvailability`, `Accommodations`, `LearnerProfile`, `Caliper`, `CandidateSet`, `HardConstraints`, `ObjectiveWeights`, `ObjectiveTerms`, `Cohort`, `CohortAssignment`, `ChurnBudget`, `CommitResult`, `CohortHealthEvent`, `TurnEvent`, `TurnAnalysis`, `BenefitLCB`) per `data-model.md`. `TurnAnalysis` MUST have no field for honesty/emotion/personality/motivation (FR-022).
+- [ ] T002 [P] Define all domain types in `packages/cohort-compiler/src/model.ts` (`AgeBand`, `LevelBand`/`VelocityBand` fields, `ScheduleAvailability`, `Accommodations`, `PairFlag`, `Role`, `WorkingRhythm`, `LearnerProfile` [incl. the caliper-independent benefit inputs `pairHistory`, `preferredRole`, `workingRhythm`], `Caliper`, `CandidateSet`, `HardConstraints` [incl. `nonHarmFloor` + injected `benefitOf`], `ObjectiveWeights`, `ObjectiveTerms`, `Cohort`, `CohortAssignment`, `ChurnBudget`, `CommitResult`, `CohortHealthEvent`, `TurnEvent`, `TurnAnalysis`, `BenefitLCB`) per `data-model.md`. `TurnAnalysis` MUST have no field for honesty/emotion/personality/motivation (FR-022).
 - [ ] T003 [P] Define ports in `packages/cohort-compiler/src/ports.ts` (`CandidateIndex`, `CohortRepository`, `SafeguardingSink`, plus **deferred/shadow stub ports** `MediaTurnSource` [§15.1 media plane deferred] and `BenefitEstimator` [shadow, post-lock only]) per `contracts/cohort-compiler.md`.
-- [ ] T038 [P] Commit the in-repo **seed fixtures** with their golden expected values in `packages/cohort-compiler/test/fixtures/` — `caliper-8.ts` (Fixture A), `cohort-12.ts` (Fixtures B/B2/B3), `churn-rollback.ts` (Fixture C), `safeguarding-shadow.ts` (Fixture D), `turns.ts` (Fixture E), exactly as tabulated in [spec.md § Golden Values](./spec.md#golden-values--seed-fixtures). Typed against `model.ts` (depends on T002).
+- [ ] T038 [P] Commit the in-repo **seed fixtures** with their golden expected values in `packages/cohort-compiler/test/fixtures/` — `caliper-8.ts` (Fixture A), `cohort-12.ts` (Fixtures B/B2/B3/**B4 `nonharm-default-bind`**, incl. the `D1..D6` benefit attributes: `accommodations.needs/conflicts`, `pairHistory`, `preferredRole`, `workingRhythm`), `churn-rollback.ts` (Fixture C), `safeguarding-shadow.ts` (Fixture D), `turns.ts` (Fixture E), exactly as tabulated in [spec.md § Golden Values](./spec.md#golden-values--seed-fixtures). Typed against `model.ts` (depends on T002).
 - [ ] T039 Add the **seeded smoke test** `packages/cohort-compiler/test/smoke.test.ts` (imports the package entrypoint; asserts the module loads and `caliper-8` has 8 learners with unique refs) so `pnpm test` is green from iteration 1 (depends on T001, T038).
 
 **Checkpoint**: domain types, ports, seed fixtures, and a green smoke test exist — stories can begin.
@@ -77,7 +77,7 @@ All work lives in **new** directories (`packages/cohort-compiler`, `adapters/coh
 
 ### Tests (write first, ensure they fail)
 
-- [ ] T011 [P] [US2] Contract test for `isFeasibleCohort` (each of the 7 hard constraints rejected independently; the non-harm floor golden [Fixture B3 `nonharm-reject`](./spec.md#fixture-b3-nonharm-reject-us2): mean 0.708 ≥ floor 0.5 but `M5` at 0.45 → rejected, proving per-member/never-averaged; boundary `0.50` → feasible) in `packages/cohort-compiler/test/constraints.test.ts` (FR-007/FR-008/FR-009, SC-002)
+- [ ] T011 [P] [US2] Contract test for `isFeasibleCohort` + the default `benefitOf` (each of the 7 hard constraints rejected independently). Assert the **default-formula** binding golden [Fixture B4 `nonharm-default-bind`](./spec.md#fixture-b4-nonharm-default-bind-us2): exact per-member benefits `D1..D4 = 0.775`, `D5 = 0.700`, `D6 = 0.430` (±1e-9), mean `0.705 ≥ floor 0.5` but `D6 = 0.43 < 0.5` → rejected (`{ constraint: "individual_non_harm_floor", member: "D6", value: 0.43, floor: 0.5 }`), proving per-member/never-averaged over a **caliper-independent** signal; boundary control (D6 → `0.63`) → feasible. Also assert the injected-map golden [Fixture B3 `nonharm-reject`](./spec.md#fixture-b3-nonharm-reject-us2): mean `0.708 ≥ 0.5` but `M5` at `0.45` → rejected; boundary `0.50` → feasible (proves `benefitOf` is injectable). In `packages/cohort-compiler/test/constraints.test.ts` (FR-007/FR-008/FR-009, SC-002)
 - [ ] T012 [P] [US2] Contract test for `scoreObjective` (deterministic soft score ranks feasible options; a higher score never promotes a hard-constraint-violating assignment) in `packages/cohort-compiler/test/objective.test.ts` (FR-013, SC-002)
 - [ ] T013 [P] [US2] Contract test for `assignCohorts` asserting the golden partition of [Fixture B `cohort-12`](./spec.md#fixture-b-cohort-12-us2) (age forces `cohorts[0]=[A1..A6]`, `cohorts[1]=[B1..B6]` with the pinned role vector; `unassigned=[]`; deterministic/byte-identical) and [Fixture B2 `cohort-13-infeasible`](./spec.md#fixture-b2-cohort-13-infeasible-us2) (`C1` returned as `unassigned` with binding constraint, never force-placed); zero hard-constraint violations; no learned model consulted in `packages/cohort-compiler/test/solver.test.ts` (FR-007/FR-010/FR-012/FR-019, SC-002/SC-006)
 - [ ] T014 [P] [US2] Contract test for the in-memory `CohortRepository` adapter (`commitAtomic` is whole-roster-or-nothing; `activeFor` enforces one-active-per-learner; `restore` returns the exact prior snapshot; deep-copy isolation) in `adapters/cohort-repo-memory/test/index.test.ts` (FR-011/FR-015) *(write first, ensure it fails)*
@@ -88,7 +88,8 @@ All work lives in **new** directories (`packages/cohort-compiler`, `adapters/coh
 
 ### Implementation
 
-- [ ] T019 [US2] Implement the hard-constraint predicates `isFeasibleCohort(members, hard, prior?)` (age, schedule, safeguarding separation, accommodations, level-velocity caliper, individual non-harm floor [per-member], churn budget) in `packages/cohort-compiler/src/constraints.ts` (depends on T002, T007)
+- [ ] T040 [US2] Implement the default `benefitOf(m, C)` in `packages/cohort-compiler/src/benefit.ts` — the real, **caliper-independent** composite `0.40·acc + 0.35·hist + 0.25·pace` (accommodation compatibility; prior-pairing history `clamp01(0.5 + 0.5·pos/P − neg/P)`; pace/role fit `0.5·roleFit + 0.5·rhythmFit`), returning a value in `[0,1]`; pure and deterministic (no randomness, no caliper terms). Exact formula + weights in [spec.md § Pinned formulas](./spec.md#pinned-formulas-used-by-the-golden-fixtures) (depends on T002)
+- [ ] T019 [US2] Implement the hard-constraint predicates `isFeasibleCohort(members, hard, prior?)` (age, schedule, safeguarding separation, accommodations [reject only a **mutual** block], level-velocity caliper, individual non-harm floor [reject if **any** member's injected `hard.benefitOf(m,C) < hard.nonHarmFloor`; **never averaged**; boundary inclusive; default `benefitOf` from T040], churn budget) in `packages/cohort-compiler/src/constraints.ts` (depends on T002, T007, T040)
 - [ ] T020 [US2] Implement `scoreObjective(members, weights, prior?)` (deterministic soft terms; ranks feasible only) in `packages/cohort-compiler/src/objective.ts` (depends on T002)
 - [ ] T021 [US2] Implement `assignCohorts(pool, candidates, hard, weights, churn, prior?)` (greedy construction + bounded local-search/repair; feasibility-gated; `unassigned` reporting; deterministic; no randomness) in `packages/cohort-compiler/src/solver.ts` (depends on T008, T019, T020)
 - [ ] T022 [US2] Implement the in-memory `CohortRepository` adapter (atomic whole-roster `commitAtomic`; `activeFor`; `getSnapshot`; `restore`; deep-copy isolation; PostgreSQL deferred, PRD §15) in `adapters/cohort-repo-memory/` (`package.json`, `tsconfig.json`, `src/index.ts`) (depends on T002, T003)
@@ -97,7 +98,7 @@ All work lives in **new** directories (`packages/cohort-compiler`, `adapters/coh
 - [ ] T025 [US2] Implement `routeHealthEvent(sink, event, activeMoves?)` (bypass optimization → sink; pause conflicting moves POL-007; never alter a rating/objective) in `packages/cohort-compiler/src/safeguarding.ts` (depends on T002, T003)
 - [ ] T026 [US2] Implement the in-memory `SafeguardingSink` adapter (human queue stub: `submit`/`pending`) in `adapters/cohort-safeguarding-memory/` (`package.json`, `tsconfig.json`, `src/index.ts`) (depends on T003)
 - [ ] T027 [US2] Implement the `BenefitEstimator` shadow adapter (`logAfterLock` returns a placeholder `BenefitLCB` marked `shadow: true`; never consumed by a solve; causal uplift deferred, PRD §15) in `adapters/cohort-benefit-shadow/` (`package.json`, `tsconfig.json`, `src/index.ts`) (depends on T003)
-- [ ] T028 [US2] Export `constraints`, `objective`, `solver`, `commit`, `repair`, and `safeguarding` APIs from `packages/cohort-compiler/src/index.ts`
+- [ ] T028 [US2] Export `benefit`, `constraints`, `objective`, `solver`, `commit`, `repair`, and `safeguarding` APIs from `packages/cohort-compiler/src/index.ts`
 
 **Checkpoint**: the compiler forms feasible cohorts, commits/rolls back atomically, honors churn + one-active-per-learner, routes safeguarding around the optimizer, and never lets a learned model assign — tested end-to-end.
 
@@ -139,7 +140,7 @@ All work lives in **new** directories (`packages/cohort-compiler`, `adapters/coh
 - T038 (seed fixtures) depends on T002 (types); T039 (smoke test) depends on T001 + T038 and must be green before any story work begins.
 - US2 consumes US1's `generateCandidates` output but is independently testable by feeding synthetic candidate sets directly.
 - US3 depends on none of the solver machinery (independent).
-- Within US2: `constraints`/`objective` (T019/T020) before `solver` (T021); `repo-memory` (T022) before `commit`/`rollback` (T023); `commit` before `repair` (T024).
+- Within US2: `benefit` (T040) before `constraints` (T019); `constraints`/`objective` (T019/T020) before `solver` (T021); `repo-memory` (T022) before `commit`/`rollback` (T023); `commit` before `repair` (T024).
 - T037 (root `tsconfig.json`) runs **last**; it is the sole shared-file change.
 
 ## Parallel Opportunities
@@ -157,8 +158,8 @@ All work lives in **new** directories (`packages/cohort-compiler`, `adapters/coh
 
 ## Summary
 
-- **Total tasks**: 39 (T001–T039)
-- **US1**: 7 (T004–T010) · **US2**: 18 (T011–T028) · **US3**: 5 (T029–T033) · Setup 1 (T001) · Foundational 4 (T002–T003, T038 fixtures, T039 smoke) · Polish 4 (T034–T037)
-- **Phasing**: P0 (T001–T003, T038–T039) · P1/MVP (T004–T010) · P2/P3/P4 (T011–T028) · P5 (T029–T033) · P6 (T034–T037).
+- **Total tasks**: 40 (T001–T040)
+- **US1**: 7 (T004–T010) · **US2**: 19 (T011–T028, T040) · **US3**: 5 (T029–T033) · Setup 1 (T001) · Foundational 4 (T002–T003, T038 fixtures, T039 smoke) · Polish 4 (T034–T037)
+- **Phasing**: P0 (T001–T003, T038–T039) · P1/MVP (T004–T010) · P2/P3/P4 (T011–T028, T040) · P5 (T029–T033) · P6 (T034–T037).
 - **MVP scope**: P0 (Setup + Foundational + seed fixtures + smoke test) + P1 (near-peer candidate generation).
 - **Shared-file touches**: exactly one — T037 (root `tsconfig.json` references), flagged for human merge reconciliation (DP-6, `severity: critical`).

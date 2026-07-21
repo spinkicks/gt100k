@@ -28,7 +28,7 @@ This is the **single loop source-of-truth** for the feature. It is large on purp
 ### In scope
 
 1. A **pure, deterministic domain package `@gt100k/arena-world`** (`packages/arena-world`) holding every rule: quest-world build + deterministic layout; node lock/unlock from the §12 gate + prerequisites; gain-based tier/progression from the §13 independence reward; deterministic zero-power cosmetic eligibility + equip; persistent co-built cohort-base accretion; celebration classification + motion-spec derivation; age-band representation; near-peer/anonymized/opt-in/no-bottom-rank standings; and a single composed **ArenaView** view model that drives every renderer.
-2. A **new Next.js App-Router app `@gt100k/arena-world-app`** (`apps/arena`) rendering a **real 2D game** on **Phaser 3** (Canvas/WebGL): an animated overworld quest-map, a tweened avatar traversing paths, a follow-camera, a co-built cohort **base scene**, particle/celebration **juice**, an equippable cosmetic drawer, and an age-band/plain-mode/standings HUD.
+2. A **new Next.js App-Router app `@gt100k/arena-world-app`** (`apps/arena`) rendering a **real 2D game** on **Phaser 4** (Canvas/WebGL, rebuilt WebGL renderer): an animated overworld quest-map, a tweened avatar traversing paths, a follow-camera, a co-built cohort **base scene**, particle/celebration **juice**, an equippable cosmetic drawer, and an age-band/plain-mode/standings HUD.
 3. A **first-class, equal reduced-motion / plain rendering** of the identical ArenaView, and an **accessible DOM/ARIA parallel structure** (the "Arena Ledger") that conveys the same state and progression to keyboard / switch / screen-reader users (WCAG 2.2 AA).
 4. A **seed asset kit in-repo** (small hand-authored SVGs + a deterministic procedural texture fallback) so the game builds and runs with **no external fetch**.
 5. A **synthetic mastery-signal feed** (stub/simulator) that supplies the §12/§13 signals as `NodeMasterySignal` records.
@@ -55,9 +55,18 @@ This is the **single loop source-of-truth** for the feature. It is large on purp
 
 ## §2 · Decisions already made (do not re-open)
 
-### D1 — Rendering engine: **Phaser 3 (default `phaser@^3.90.0`)** on Canvas/WebGL
+### D1 — Rendering engine: **Phaser 4 (default `phaser@^4.2.1`)** on Canvas/WebGL
 
-The Arena is a **real 2D game engine on a Canvas/WebGL surface**, not a DOM/CSS dashboard. Default engine is **Phaser 3**, pinned `^3.90.0` (last stable 3.x; the engine the official `phaserjs/template-nextjs` targets, TS types bundled). **Pixi.js is acceptable only with a documented reason** recorded in `.loop/decisions.md`; do not switch on a whim. **Phaser 4** (4.2.x, new WebGL renderer with graceful context-loss handling) is an **acceptable forward-compatible upgrade** if a turn hits a Phaser-3 WebGL blocker — record the bump and re-run the smoke; the public scene API used here is 3/4-compatible. Phaser gives real sprites, tweened movement, a follow-camera, scenes, and a particle system — the primitives that make this read like a game.
+The Arena is a **real 2D game engine on a Canvas/WebGL surface**, not a DOM/CSS dashboard. Default engine is **Phaser 4**, pinned `^4.2.1` (latest stable 4.x; TS types bundled). Phaser 4 ships a **rebuilt WebGL renderer** with a redesigned pipeline and **first-class GPU context-loss/restore handling** — directly load-bearing for the 60fps + graceful-degradation criterion (SC-010) and the WebGL-context-loss edge case (§4): the renderer can lose and restore the GPU context without tearing down the game, and the reduced-motion path + accessible Ledger never depend on WebGL at all. **Pixi.js is acceptable only with a documented reason** recorded in `.loop/decisions.md`; do not switch on a whim. Phaser gives real sprites, tweened movement, a follow-camera, scenes, and a modern particle system — the primitives that make this read like a game.
+
+**Phaser-4 API notes the loop MUST honor (avoid Phaser-3-only APIs):**
+- **Particles**: use the unified emitter API `this.add.particles(x, y, textureKey, emitterConfig)` (returns a `ParticleEmitter`). Do **not** use the removed Phaser-3.55 `this.add.particles(key).createEmitter(config)` / `ParticleEmitterManager` pattern.
+- **Tweens**: `this.tweens.add({...})` and `this.tweens.chain({...})`; ease strings (`"Cubic.Out"`, `"Back.Out"`) are unchanged. Prefer the tween-manager API over per-object legacy helpers.
+- **Scenes**: standard `Scene` lifecycle (`init`/`preload`/`create`/`update`), `this.scene.add/start/launch/stop`, and the `ScenePlugin` are 4.x-stable; register scenes via the `scene` array in the game config.
+- **Camera**: `this.cameras.main.startFollow(target, roundPixels, lerpX, lerpY)`, `setLerp`, `setZoom`, `setBounds` are unchanged; the follow-camera lerp `0.08` and region zoom `1.0→1.25` (§8.9) map directly.
+- **Input**: `gameObject.setInteractive()` + `this.input.on("pointerdown", …)` is unchanged; keep keyboard/switch operation in the DOM Ledger, not on the canvas.
+- **Textures**: `Phaser.GameObjects.Graphics.generateTexture(key, w, h)` (seeded, no `Math.random`) for the procedural fallback is 4.x-stable.
+- **Renderer/context loss**: listen for the renderer's WebGL context-lost/restored events to re-upload textures and resume; on unrecoverable loss, fall back to the reduced-motion/Ledger path (never block a mastery action).
 
 ### D2 — Architecture: pure domain package + separate Next.js app (mirror feature 001)
 
@@ -71,9 +80,9 @@ Phaser references `window`/`document`; it MUST NOT run in SSR. The Phaser mount 
 
 The domain composes a single **`ArenaView`** (`buildArenaView(...)`). The Phaser scene, the reduced-motion/plain rendering, and the accessible DOM Ledger **all render from that same `ArenaView`**. Reduced-motion/plain does not recompute state — it renders the identical view with motion stripped. This makes reduced-motion an *equal* mode and makes `plainViewEquals` a pure, testable guarantee.
 
-### D5 — Accessibility approach for a canvas game: **parallel accessible DOM ("Arena Ledger")**
+### D5 — Accessibility approach for a canvas game: **synchronized parallel accessible DOM ("Arena Ledger") — SETTLED**
 
-Because a Canvas/WebGL surface is opaque to assistive tech, the app renders a **synchronized, semantic HTML/ARIA parallel structure** adjacent to the canvas, built from the same `ArenaView`: the quest graph as a keyboard-navigable list/tree (`role="tree"`, nodes as `treeitem` with `aria-expanded`/state in text), tier/reward as text, cosmetics as a labeled listbox, the base as a list, and celebrations announced via an `aria-live="polite"` region. Full keyboard/switch operation (Tab/Arrow/Enter/Escape), visible focus rings, color-independent state cues, and 4.5:1 contrast. The canvas is `aria-hidden="true"`; the Ledger is the source of truth for AT. **This is a real product decision with alternatives — see §13 DP-1 (flagged for human review).**
+Because a Canvas/WebGL surface is opaque to assistive tech, the app renders a **synchronized, semantic HTML/ARIA parallel structure** adjacent to the canvas, built from the same `ArenaView`: the quest graph as a keyboard-navigable list/tree (`role="tree"`, nodes as `treeitem` with `aria-expanded`/state in text), tier/reward as text, cosmetics as a labeled listbox, the base as a list, and celebrations announced via an `aria-live="polite"` region. **One shared view-model drives both the Phaser canvas and the Ledger** (D4), so the two stay in lock-step by construction. Full keyboard/switch operation (Tab/Arrow/Enter/Escape), visible focus rings, color-independent state cues, and 4.5:1 contrast. The canvas is `aria-hidden="true"`; the Ledger is the source of truth for AT. **This decision is settled (see §13 DP-1, resolved) — the loop does not re-open it.** Reduced motion remains a first-class **equal** mode (not a degraded fallback) and WCAG 2.2 AA is a hard requirement (FR-015/FR-016, SC-004/SC-012).
 
 ### D6 — Seed assets: **committed tiny SVGs + deterministic procedural fallback**
 
@@ -94,7 +103,7 @@ pnpm workspace (`pnpm@9.15.9`). Domain gate = `tsc -b` + Vitest, **test-first**.
 
 > **For anything this PRD doesn't specify, choose the simplest correct option, record it in `.loop/decisions.md`, and continue.**
 
-Escalate (append one line to `.loop/requests.jsonl`, then proceed on your recommendation) **only** for a genuine product/design choice with hard-to-reverse consequences you cannot defensibly default — e.g. the canvas-accessibility approach (§13 DP-1) or a golden value you believe is wrong. Never escalate naming, formatting, or anything this doc/PRD answers. Overnight, only `severity: critical` reaches the operator; the rest are recorded to `.loop/deferred-decisions.jsonl`.
+Escalate (append one line to `.loop/requests.jsonl`, then proceed on your recommendation) **only** for a genuine product/design choice with hard-to-reverse consequences you cannot defensibly default — e.g. a golden value you believe is wrong. Never escalate naming, formatting, or anything this doc/PRD answers; the canvas-accessibility approach and the engine choice are **settled** (§13 DP-1/DP-2 resolved) and MUST NOT be re-opened. Overnight, only `severity: critical` reaches the operator; the rest are recorded to `.loop/deferred-decisions.jsonl`.
 
 ---
 
@@ -179,7 +188,7 @@ The same computed economy (§13) is **represented** differently by age band (§1
 - **Standings floor**: never "last of N" — a would-be bottom learner sees own gain vs. band, not a rank (FR-019).
 - **Bullying/exclusion**: a report routes to safeguarding and bypasses optimization; the game never suppresses/gamifies it (FR-025, fail-closed hook this slice).
 - **Mastery action never blocked**: the game surface never blocks/delays/gates a mastery action, even under load / low-end hardware (FR-022/23).
-- **WebGL context loss**: the canvas recovers or degrades gracefully; the accessible Ledger + reduced-motion path never depend on WebGL.
+- **WebGL context loss**: Phaser 4's rebuilt WebGL renderer loses/restores the GPU context and re-uploads textures without tearing down the game; on unrecoverable loss the canvas degrades gracefully and the accessible Ledger + reduced-motion path (which never depend on WebGL) still convey every state.
 
 ---
 
@@ -294,7 +303,7 @@ The Base Camp renders the cohort's `unlockedFeatures` (campfire, banner, garden,
 
 - **FR-021**: The reward surface MUST use no loss-framed streaks, manufactured scarcity, FOMO, gacha/loot randomness, or engagement-timed notifications (§14.12 item 5).
 - **FR-022**: The game surface MUST never block, delay, or gate a mastery action.
-- **FR-023**: The real-time client MUST target 60fps on the minimum supported device with a reduced tier and graceful degradation under load / low-end hardware / WebGL context loss; game-feel MUST NOT become engagement-maxxing.
+- **FR-023**: The real-time client MUST target 60fps on the minimum supported device with a reduced tier and graceful degradation under load / low-end hardware / WebGL context loss, leveraging **Phaser 4's rebuilt WebGL renderer and its GPU context-loss/restore handling**; game-feel MUST NOT become engagement-maxxing.
 
 **Privacy, synthetic scope & review**
 
@@ -305,7 +314,7 @@ The Base Camp renders the cohort's `unlockedFeatures` (campfire, banner, garden,
 **Build-on / isolation & engine**
 
 - **FR-027**: The feature MUST build on `@gt100k/learning-loop` (`Section`/`SECTIONS`, mastery-gate/`evaluateGate` concept, XP, beyond-floor signal) and MUST NOT modify `packages/learning-loop`, `apps/student-compass`, or shared root config except the single final human-reconciled root-tsconfig task.
-- **FR-028**: The app MUST render the game on **Phaser 3** (Canvas/WebGL) loaded **client-only** (no SSR), with the Phaser instance destroyed on unmount and **zero console/WebGL errors** in the smoke run.
+- **FR-028**: The app MUST render the game on **Phaser 4** (`^4.2.1`, Canvas/WebGL with the rebuilt WebGL renderer) loaded **client-only** (no SSR), using Phaser-4 APIs only (no removed Phaser-3-only APIs — §2 D1), with the Phaser instance destroyed on unmount and **zero console/WebGL errors** in the smoke run.
 - **FR-029**: The Phaser scene, the reduced-motion/plain rendering, and the accessible Ledger MUST all render from the **single `ArenaView`** produced by `buildArenaView`; reduced-motion/plain MUST NOT recompute state (parity by construction).
 - **FR-030**: Seed assets MUST be committed in-repo (small SVGs) with a deterministic procedural fallback; the game MUST build and run with **no external fetch**.
 
@@ -525,7 +534,7 @@ Domain SCs are Vitest tests in `packages/arena-world/test/`; UI SCs are verified
 - **Package manager**: pnpm `9.15.9` (workspace; lockfile auto-detected by the harness).
 - **Language**: TypeScript `5.6.3`, strict (`tsconfig.base.json`: `strict`, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`, `composite`), Node LTS.
 - **Domain**: pure TS, dep `@gt100k/learning-loop` (`workspace:*`) only.
-- **App**: Next.js `^14.2.15` App Router + React `^18.3.1` (match `apps/student-compass`), **Phaser `^3.90.0`**, `transpilePackages` for the two workspace packages, Phaser mounted client-only (`ssr:false`).
+- **App**: Next.js `^14.2.15` App Router + React `^18.3.1` (match `apps/student-compass`), **Phaser `^4.2.1`** (latest stable 4.x; rebuilt WebGL renderer; TS types bundled; use Phaser-4 APIs only — §2 D1), `transpilePackages` for the two workspace packages, Phaser mounted client-only (`ssr:false`).
 - **Test**: Vitest (root `vitest.config.ts` already globs `packages/**/test/**/*.test.ts` — no root edit).
 
 ### Commands
@@ -573,8 +582,8 @@ NEXT_PUBLIC_DEFAULT_AGE_BAND=9-11           # 6-8 | 9-11 | 12-14
 
 The loop proceeds on the **default**; it escalates only per §3.
 
-- **DP-1 — Canvas accessibility approach.** **Default: a synchronized parallel accessible DOM ("Arena Ledger")** adjacent to the canvas, built from the same `ArenaView`, with the canvas `aria-hidden` (D5). Alternatives: (b) a separate `/accessible` route rendering the Ledger full-page; (c) Phaser DOM Elements + a canvas a11y plugin (e.g. rex plugins). **Severity: normal** (a real product decision, but the default is defensible and reversible; the domain `ArenaView` makes any of the three cheap). **RAISED for the human** — confirm the parallel-DOM approach vs. a dedicated accessible route before child exposure.
-- **DP-2 — Engine major version.** Default **Phaser 3 `^3.90.0`**. If a Phaser-3 WebGL/context-loss blocker appears, **Phaser 4 (`^4.2.0`)** is an acceptable upgrade (better context-loss handling aids SC-010). **Severity: low** (API-compatible for the surface used; record the bump).
+- **DP-1 — Canvas accessibility approach. ✅ RESOLVED (settled decision).** **Chosen: a synchronized parallel accessible DOM ("Arena Ledger")** adjacent to the canvas, built from the **same `ArenaView`** (one shared view-model drives both the Phaser canvas and the Ledger), with the canvas `aria-hidden="true"` (D5). Rejected alternatives: (b) a separate `/accessible` route rendering the Ledger full-page (splits the surface, drifts out of sync); (c) Phaser DOM Elements + a canvas a11y plugin (e.g. rex plugins) (brittle, non-standard). This is now a settled decision — the loop **does not re-open it**. The reduced-motion first-class **equal** mode and WCAG 2.2 AA requirements (and their acceptance criteria SC-004/SC-012) are unchanged. *(The remaining human-only gate is the child-facing "human review before merge" of FR-026 / §25 — not this engineering choice.)*
+- **DP-2 — Engine major version. ✅ Settled: Phaser 4 `^4.2.1`.** The engine is **Phaser 4** (latest stable 4.x), chosen for best performance/visuals: its rebuilt WebGL renderer and GPU context-loss/restore handling directly serve the 60fps + graceful-degradation criterion (SC-010) and the WebGL-context-loss edge case. Use **Phaser-4 APIs only** (particles/tweens/scenes/camera/input per §2 D1). Pixi.js remains acceptable only with a documented reason. **Severity: low** (settled; no bump expected).
 - **DP-3 — Seed art fidelity.** Default **tiny committed SVGs + procedural fallback** (D6). Upgrading to a richer sprite atlas later is non-breaking. **Severity: low.**
 - **DP-4 — Cohort-base feature vocabulary.** Default the fixture set (`campfire`, `banner`, `garden`, …) mapped deterministically from `missionId`. **Severity: low.**
 - **DP-5 — Standings peer-band construction (synthetic).** Default: near-peers are a fixed synthetic set; `gainToBandTop` = `max(gain) − selfGain`. Real pace-band matchmaking is out of scope. **Severity: low.**
