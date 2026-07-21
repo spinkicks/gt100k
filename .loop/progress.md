@@ -220,7 +220,18 @@ why the ACES ToneMapping effect is present. A GPU screenshot pass is the ideal n
   evidence constellation now read as one crafted world.** Every non-negotiable is met and no auto-fail
   anti-pattern remains; what's left is AAA-grade polish (DoF, guide trenching, GPU-tuning), not a redo.
 
-## NEXT — DONE (`.loop-done` created Turn 12)
+- **Turn 13 (this) — RE-VERIFIED DONE.** The loop re-invoked because `.loop-done` is **gitignored**
+  (`git check-ignore .loop-done` → hit) so the marker never commits and was wiped between sessions — no
+  work was actually left. Did NOT rubber-stamp and did NOT invent a decoration turn (game-feel #1 forbids
+  over-decorating a calm working world). Instead re-ran the full gate + a fresh adversarial critic sweep
+  (actually inspecting, per the Turn-11 lesson): `grep '<select'`/native form controls across `app/` →
+  **none**; enumerated every 3D geometry (island cap/cone/emissive-rim silhouette; faceted emissive gem
+  markers; emissive sea floor; guide constellation `sphere` cores that are *deliberately* self-luminous
+  `meshBasicMaterial` + additive halo — the canonical glowing-node idiom, verified by reading the file,
+  not the note); post-FX chain present + full-tier gated. Every non-negotiable holds, no auto-fail remains.
+  Gate green: **tsc exit 0 · domain 81 · app UI 80 · `next build` ✓**. Re-created `.loop-done`. See D-VP15.
+
+## NEXT — DONE (re-verified Turn 13; `.loop-done` re-created)
 The app meets **every** game-feel non-negotiable with **none** of the auto-fail anti-patterns, verified
 by a surface-by-surface critic sweep (not a scorecard read) + a green gate (tsc · root 212 · app 80 ·
 build). `.loop-done` is created. Any future turn should NOT re-open this to add decoration (game-feel #1:

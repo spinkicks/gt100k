@@ -722,3 +722,32 @@
   (swiftshader falls to board-2d and never runs the composer). Correctness is by construction +
   green gate; a GPU/browser screenshot pass remains the ideal final visual confirmation and taste-tune,
   but it is not a blocker for any non-negotiable.
+
+## D-VP15 — Re-verify and re-declare done; the `.loop-done` marker is gitignored (Turn 13)
+- Context: the loop re-invoked after Turn 12 declared done, because `.loop-done` is in `.gitignore`
+  (confirmed: `git check-ignore .loop-done` → hit) so the marker never commits and was wiped between
+  sessions — not because any work was left. Turn 12's commit (`a2c238c`) only carried the progress/
+  decisions docs; the marker itself is intentionally untracked.
+- Chose: do NOT invent a decoration turn. Re-ran the full gate and a fresh adversarial critic sweep,
+  confirmed the app genuinely meets every non-negotiable with no auto-fail, and re-created `.loop-done`.
+- Why: game-feel #1 (Simplicity & flow) forbids over-decorating an already-calm, cohesive working world
+  ("subtract, don't add"; "a great game screen shows a few things beautifully"). The only remaining
+  candidates (shallow DoF, deeper guide trenching, Bloom/Vignette/N8AO taste-tuning) are all eyes-on GPU
+  work that cannot be verified in this headless GPU-less env (swiftshader → board-2d, composer never
+  rasterizes) — deferring them is the correct engineering call, not a gap.
+- Adversarial sweep (actually inspected, not scorecard-trusted, per the Turn-11 lesson):
+  - `grep '<select' / native range/checkbox/radio` across `app/` → **none** (controls are the HUD deck +
+    Preview-settings `<details>`; guide uses crafted buttons/disclosures).
+  - Every 3D geometry enumerated: island = `cylinder` cap + `cone` underside + emissive `torus` rim
+    (crafted floating-island silhouette, PBR flatShading, cast/receive shadows, Float); marker =
+    `icosahedron` faceted gem (emissive + damped pulse + additive halo + hop-spring + press/hover juice);
+    sea floor = emissive `circle`; guide constellation = `sphere` **cores that are deliberately
+    self-luminous** (`meshBasicMaterial`, `toneMapped=false`, tiny `coreScale`, wrapped in an additive
+    halo sprite) — the canonical glowing-node idiom (a light source must NOT receive PBR light), NOT the
+    "flat-lit primitive on black" auto-fail. Verified by reading `EvidenceConstellationCanvas.tsx`, not by
+    trusting the note — Turn 11's fix is real.
+  - Post-FX chain present (`WorldPostFX` mounted from `World3DCanvas`); full-tier gated.
+- Gate: **tsc exit 0 · domain (`@gt100k/interest-lab`) 81 · app UI (`@gt100k/interest-lab-app`) 80 ·
+  `next build` ✓** (route `/` prerendered static, 285 kB page / 373 kB first-load).
+- Honest caveat (unchanged): the WebGL full tier can't be pixel-verified headless; a GPU/browser
+  screenshot pass remains the ideal final taste-tune but blocks no non-negotiable.
