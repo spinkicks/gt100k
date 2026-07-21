@@ -54,3 +54,8 @@
 - Decision: drive the G2 golden test with a test-local, fail-closed hasher that maps only the exact prefixed raw-byte inputs to the pinned leaf, interior, and root digests. Keep `merkleRoot` internal until its ordered T026 public export.
 - Why: this asserts every pinned G2 root and makes incorrect ordering, prefixes, concatenation, or odd-node promotion fail without introducing a domain-to-Node-adapter dependency or another `node:crypto` import.
 - Rejected: importing `NodeCryptoHasher` into the domain project, which would reverse the project-reference direction; importing `node:crypto` directly in the domain test, which would violate the adapter-only crypto boundary; exporting Merkle early, which would preempt T026; an unconditional constant hasher, which would not validate the bytes supplied by the Merkle algorithm.
+
+## 2026-07-20 — T019/T023 synthetic attestation constants
+- Decision: emit `_type: "https://in-toto.io/Statement/v1"`, `predicateType: "https://gt100k.dev/attestations/evidence/v1"`, and the fixed subject name `"artifact"`; use `builder.id: "gt100k-evidence-graph"` in the synthetic packet flow. Keep the builder and materials caller-supplied and copy them into the returned Statement.
+- Why: these values follow the spec's defaults, produce a deterministic unsigned in-toto shape, and keep packet assembly responsible for the concrete builder and material provenance. Copying nested inputs prevents later caller mutation from changing an already-built attestation.
+- Rejected: deriving the predicate URI or subject name from milestone data, which adds an unpinned convention; signing the Statement, which is explicitly deferred under D6; exporting the module early, which belongs to ordered task T026.

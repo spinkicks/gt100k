@@ -139,3 +139,13 @@
 
 ## NEXT
 - T019/T023: write the `buildAttestation` contract test first, confirm RED on the missing API, then implement the minimal in-toto Statement builder in `packages/evidence-graph/src/attestation.ts`; acceptance is subject `digest.sha256` bound to the artifact digest, predicate `merkleRoot` bound to the supplied root, the exact `fa6cc759…f6958` golden subject digest, and a green workspace gate.
+
+## 2026-07-20 — P3 in-toto attestation builder (T019/T023)
+- Added the pure `buildAttestation` domain function with the settled unsigned in-toto Statement type, synthetic GT100K predicate URI, artifact subject, copied builder/material provenance, Merkle root, and milestone reference.
+- Added the FR-012 contract test covering the complete Statement shape and exact G3 subject digest `fa6cc759cb3564394df561e6d4d2e9fe9ad76568ee10e37d22a83539bc3f6958`. Confirmed RED on the missing attestation module, then GREEN after the minimal implementation.
+- Gate evidence: package composite `tsc -b`, workspace `pnpm typecheck`, workspace `pnpm test` (74/74), and `pnpm lint` over 55 files all pass.
+- Phase status: P3 in progress; T018, T018a, T019, T022, and T023 are complete. FR-012 is passing; SC-008/SC-010 and the Merkle portion of SC-004 remain passing. T020/T021 and T024–T026 remain.
+- Blockers: none.
+
+## NEXT
+- T020/T024: write the `assembleEvidencePacket` and `traceEvidence` contract tests first, confirm RED on the missing packet module, then implement the pure packet assembly and supporting-only trace; acceptance is deterministic assembly with the exact G3 two-node root, empty/invariant-invalid refusal, synthetic milestone Outcome tracing that excludes the island, and a green workspace gate.
