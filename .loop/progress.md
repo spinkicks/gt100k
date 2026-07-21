@@ -445,3 +445,14 @@
 ## NEXT
 - Complete U011: add `packages/interest-lab-view/test/art.test.ts` for the exact §U8.2/§U8.3 palette/typography and §U8.5 catalog-order hue behavior before completing U014.
 - Acceptance: tests pin all contrast guarantees, the eight golden seed-domain hues, deterministic catalog-order derivation, and an unknown-domain throw; preserve a genuine focused red run, then implement/export only the minimal `resolveDomainHue` needed to restore the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` gate.
+
+## 2026-07-21 — P9 / U011 + U014
+- Added six art acceptance contracts pinning the exact palette and typography registries, all five WCAG contrast guarantees, the eight seed-domain hues, catalog reordering, 12-color wraparound, and unknown-domain rejection.
+- Confirmed the test-first red state at both boundaries: the focused art and public-API suites failed on the absent resolver/export, then an intermediate catalog-order implementation left only the unknown-domain rejection red before the final guard.
+- Implemented and exported pure `resolveDomainHue` with catalog-order lookup, modulo ramp selection, and an explicit absent-domain error; no fixed domain taxonomy or state semantics were introduced.
+- Verified the focused art/public-API suites (8 tests), forced view-package compiler, `pnpm typecheck`, `pnpm test` (133 tests across 30 files), and `pnpm lint` (95 files) all pass.
+- Status: U011 and U014 complete; P9 remains in progress. SC-UI-08, SC-UI-09, UI-FR-010, UI-FR-011, and UI-FR-020 are green at the pure view-package boundary. No blocker.
+
+## NEXT
+- Complete U012 and its minimal U015 implementation: add the exact child-staging golden contracts in `packages/interest-lab-view/test/staging.test.ts`, then implement and export `resolveChildStaging`.
+- Acceptance: all three age bands match §U8.7 including `worldCameraMode`; the 6-8 band has `showRawNumbers:false`, `comparisonDefault:"off"`, and `worldCameraMode:"auto-tour"`; presentation changes do not alter underlying state; preserve a genuine focused red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.

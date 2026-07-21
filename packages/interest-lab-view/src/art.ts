@@ -51,3 +51,16 @@ export const HUE_RAMP = [
   "#6FD1B0",
   "#D07AB0",
 ] as const;
+
+export function resolveDomainHue(
+  catalogDomainsInOrder: readonly string[],
+  domainId: string,
+): string {
+  const domainIndex = catalogDomainsInOrder.indexOf(domainId);
+
+  if (domainIndex === -1) {
+    throw new Error(`Domain is absent from catalog order: ${domainId}`);
+  }
+
+  return HUE_RAMP[domainIndex % HUE_RAMP.length]!;
+}

@@ -1,4 +1,4 @@
-export { HUE_RAMP, PALETTE, TYPOGRAPHY } from "./art";
+export { HUE_RAMP, PALETTE, TYPOGRAPHY, resolveDomainHue } from "./art";
 export { WORK_MODE_GLYPHS } from "./glyphs";
 export { EASINGS, MOTION, resolveMotion } from "./motion";
 export { CAMERA3D, QUALITY_TIERS, RENDER_TIERS, SCENE3D } from "./scene";
