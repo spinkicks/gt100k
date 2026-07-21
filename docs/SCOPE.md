@@ -5,6 +5,9 @@ After an engineering review, the build focus narrowed to **developing a student'
 file is the source of truth for what the software factory works on; `docs/prd/` remains the
 canonical product spec.
 
+**Structure:** the repo is being reorganized into **two products — `passion/` + `admissions/`** —
+per [`RESTRUCTURE-PLAN.md`](RESTRUCTURE-PLAN.md) (executes after the in-flight loop PRs land).
+
 ## Main focus — developing a student's passion
 - **002-evidence-graph** — content-addressed provenance of a student's passion work (PRD §19). **Active.**
 - **003-interest-lab** — the Passion / Interest Lab: repeated, varied encounters to find where a
@@ -26,9 +29,9 @@ canonical product spec.
 - **006-cohort-compiler** — cohort solver + RivalryMix + viewer (PRD §15). Spec: `archive/specs/006-cohort-compiler/`; code at `archive/code/` (app + packages + adapters, removed from the pnpm workspace + tsconfig). **PR #66** preserved.
 - **pitch deck** — moved to `archive/pitch/index.html`.
 
-## Unchanged
-- **001-daily-learning-loop** — academic mastery daily loop (merged; `apps/student-compass`).
-- **005-foundation-spine** — platform infrastructure spine (foundational; built when needed).
+## Being archived (per `docs/RESTRUCTURE-PLAN.md` — neither passion nor admissions)
+- **001-daily-learning-loop** — academic mastery daily loop (`apps/student-compass`; rides on Alpha's TimeBack).
+- **005-foundation-spine** — platform infrastructure spine (revive when infra is back in scope).
 
 ## Software-factory loop status
 - **Running:** evidence-graph UI (002), interest-lab (003, resumed with the simplicity mandate).
