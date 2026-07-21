@@ -3,6 +3,8 @@
 import { type CohortArenaView, STATE_CUES } from "@gt100k/cohort-arena-view";
 import { Canvas } from "@react-three/fiber";
 
+import { WebGLRuntimeProbe } from "../performance/RuntimeProbes";
+import { type RenderTier3D, resolveRenderSettings } from "../performance/runtime";
 import { ArenaRoomScene } from "./ArenaRoomScene";
 import {
   buildArenaRoomScene,
@@ -15,7 +17,11 @@ import {
 interface ArenaRoomPanelProps {
   readonly view: CohortArenaView;
   readonly reducedMotion: boolean;
+  readonly renderTier?: RenderTier3D;
+  readonly onContextLost?: () => void;
 }
+
+const ignoreContextLoss = () => undefined;
 
 function SuppressionNotice({ overlay = false }: { readonly overlay?: boolean }) {
   return (
@@ -54,7 +60,12 @@ function AnalyticsOffState() {
   );
 }
 
-export function ArenaRoomPanel({ view, reducedMotion }: ArenaRoomPanelProps) {
+export function ArenaRoomPanel({
+  view,
+  reducedMotion,
+  renderTier = "full-3d",
+  onContextLost = ignoreContextLoss,
+}: ArenaRoomPanelProps) {
   const scene = buildArenaRoomScene(view);
   const analyticsOff = !scene || scene.seats.length === 0;
 
@@ -85,6 +96,7 @@ export function ArenaRoomPanel({ view, reducedMotion }: ArenaRoomPanelProps) {
   const floorHolder = scene.seats.find(({ holdingFloor }) => holdingFloor);
   const confidencePercent = Math.round(scene.confidence * 100);
   const world = view.constellation.world;
+  const renderSettings = resolveRenderSettings(renderTier);
 
   return (
     <section
@@ -97,6 +109,7 @@ export function ArenaRoomPanel({ view, reducedMotion }: ArenaRoomPanelProps) {
       data-rivalry-confidence={scene.confidence}
       data-rivalry-suppressed={scene.suppressed}
       data-rivalry-state={scene.suppressed ? "suppressed" : "active"}
+      data-render-tier={reducedMotion ? "tier-2d" : renderTier}
     >
       <div className="region-heading">
         <div>
@@ -181,14 +194,18 @@ export function ArenaRoomPanel({ view, reducedMotion }: ArenaRoomPanelProps) {
           <Canvas
             aria-hidden="true"
             camera={{ position: [0, 18, 25], fov: 42, near: 0.1, far: 100 }}
-            dpr={[1, 1.5]}
+            dpr={renderSettings.dpr}
             frameloop={resolveArenaFrameLoop(scene)}
-            gl={{ antialias: true, powerPreference: "high-performance" }}
-            shadows={false}
+            gl={{
+              antialias: renderSettings.antialias,
+              powerPreference: "high-performance",
+            }}
+            shadows={renderSettings.shadows}
             onCreated={({ gl }) => gl.domElement.setAttribute("aria-hidden", "true")}
           >
             <color attach="background" args={[view.presentation.palette.deck]} />
             <ArenaRoomScene view={view} />
+            <WebGLRuntimeProbe onContextLost={onContextLost} />
           </Canvas>
           {scene.suppressed ? <SuppressionNotice overlay /> : null}
         </div>

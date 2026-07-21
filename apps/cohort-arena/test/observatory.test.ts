@@ -89,6 +89,19 @@ describe("the 3D Compiler Observatory", () => {
     });
   });
 
+  it("halves learner-star instances in degraded 3D while retaining paused safeguards", () => {
+    const view = buildSyntheticCohortView();
+    const degraded = buildObservatoryScene(view, "degraded-3d");
+
+    expect(degraded.stars).toHaveLength(6);
+    expect(degraded.stars.filter(({ paused }) => paused).map(({ ref }) => ref)).toEqual([
+      "A3",
+      "A5",
+    ]);
+    expect(degraded.badges).toHaveLength(14);
+    expect(degraded.floorHalos).toHaveLength(2);
+  });
+
   it("derives compile, drift, and camera timing from the golden motion registry", () => {
     const view = buildSyntheticCohortView();
 

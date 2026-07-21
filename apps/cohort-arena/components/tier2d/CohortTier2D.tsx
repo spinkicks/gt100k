@@ -8,7 +8,11 @@ interface CohortTier2DProps {
 }
 
 function reasonLabel(reason: Tier2DReason): string {
-  return reason === "plain" ? "Plain mode" : "Reduced motion";
+  if (reason === "plain") return "Plain mode";
+  if (reason === "reduced-motion") return "Reduced motion";
+  if (reason === "frame-budget") return "Performance fallback";
+  if (reason === "context-lost") return "WebGL context lost";
+  return "WebGL unavailable";
 }
 
 export function CohortTier2D({ view, reason }: CohortTier2DProps) {

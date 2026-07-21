@@ -648,3 +648,17 @@
 
 - T133 — Implement performance monitoring and graceful degradation for `apps/cohort-arena`.
 - Acceptance: the 3D scene targets 60fps and degrades first to a halved-star/no-bloom/no-shadow 3D tier, then to the state-identical `project2D` tier on WebGL2 unavailability, context loss, or sustained frame-budget misses; no state or action is lost; focused RED/GREEN, app TypeScript/tests, both builds, production smoke, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P11 / T133
+
+- Added a pure 60fps render-budget policy and one synchronized app runtime: a 360-frame sustained-miss window moves full 3D to degraded 3D, a second moves to the complete 2D tier, and WebGL2 absence or context loss from either canvas falls back immediately.
+- Added the degraded 3D renderer with deterministic half-count learner instances that retain safeguarding-paused A3/A5, DPR 1, antialiasing off, bloom/postprocessing off, and shadows off; the full HUD, guarantee geometry, Ledger, and shared `CohortArenaView` remain unchanged.
+- Extended the existing static tier with explicit performance/WebGL reasons and preserved every control through fallback. Production smoke proves context loss and WebGL2 unavailability each retain all 12 projected learners, preserve the compiled state, and keep standings and rollback operable with zero console/WebGL errors.
+- TDD status: the focused contract first failed because `components/performance/runtime.ts` was absent, degraded projection still had 12 stars, and runtime reasons were ignored; the render-settings refinement independently failed because `resolveRenderSettings` was absent. The completed app suite passes 58/58.
+- Measurement/review status: the pre-change SwiftShader baseline averaged 62.89ms/frame (p95 66.8ms; 47/48 frames over 25ms). A requirement-by-requirement self-review found no remaining Critical, Important, or Minor issue; the generic subagent review was not dispatched because this loop prohibits unrequested subagents.
+- Gate status: `pnpm typecheck`, `pnpm test` (147/147), `pnpm lint` (150 files), root `pnpm build`, `pnpm --filter @gt100k/cohort-arena build`, app tests (58/58), and the production Playwright smoke (5/5) pass. T133 completes the performance/WebGL-loss portion of FR-041/SC-014; P11 remains in progress. No blocker.
+
+## NEXT
+
+- T134 — Add `apps/cohort-arena/README.md` and `packages/cohort-arena-view/README.md`.
+- Acceptance: document run/build commands, the one-view-drives-all 3D/2D/Ledger architecture, reduced-motion and accessibility behavior, public view API and golden constants, guardrails, and the synthetic-only/no-live-media/no-network boundary; repository typecheck/test/lint and both builds remain green.

@@ -313,3 +313,85 @@ test("operates the Cohort Ledger with Tab, arrows, Enter, and Escape", async ({ 
   await expect(page.getByRole("heading", { name: "Observable turn-taking" })).toBeVisible();
   await expect(page.locator("audio")).toHaveCount(0);
 });
+
+test("falls back on WebGL context loss without losing state or controls", async ({ page }) => {
+  const runtimeErrors: string[] = [];
+
+  page.on("console", (message) => {
+    if (message.type() === "error") runtimeErrors.push(`console: ${message.text()}`);
+  });
+  page.on("pageerror", (error) => runtimeErrors.push(`page: ${error.message}`));
+
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/", { waitUntil: "networkidle" });
+
+  const before = await compiledState(page);
+  const canvas = page.locator('[data-region="scene-3d"] canvas');
+  await expect(canvas).toBeVisible();
+
+  await canvas.evaluate((element) => {
+    const event = new Event("webglcontextlost", { cancelable: true });
+    element.dispatchEvent(event);
+  });
+
+  const tier2D = page.locator('[data-region="tier-2d"]');
+  await expect(tier2D).toBeVisible();
+  await expect(tier2D).toHaveAttribute("data-static-reason", "context-lost");
+  await expect(tier2D.locator('[data-learner-state="assigned"]')).toHaveCount(12);
+  await expect(page.locator('[data-region="scene-3d"] canvas')).toHaveCount(0);
+  await expect(page.getByRole("tree", { name: "Compiled cohort details" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Preview rollback to asg-view-v1" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Standings off" })).toBeVisible();
+  expect(await compiledState(page)).toEqual(before);
+
+  await page.getByRole("button", { name: "Standings off" }).click();
+  await expect(page.getByRole("button", { name: "Standings on" })).toBeVisible();
+  await expect(page.locator('[data-standings-panel="own-growth"]')).toBeVisible();
+  await page.getByRole("button", { name: "Preview rollback to asg-view-v1" }).click();
+  await expect(tier2D.locator('[data-learner-ref="A6"]')).toHaveAttribute(
+    "data-learner-state",
+    "assigned",
+  );
+  await expect(tier2D.locator('[data-learner-ref="A7"]')).toHaveAttribute(
+    "data-learner-state",
+    "unassigned",
+  );
+  expect(runtimeErrors).toEqual([]);
+});
+
+test("starts in the complete 2D tier when WebGL2 is unavailable", async ({ page }) => {
+  const runtimeErrors: string[] = [];
+
+  page.on("console", (message) => {
+    if (message.type() === "error") runtimeErrors.push(`console: ${message.text()}`);
+  });
+  page.on("pageerror", (error) => runtimeErrors.push(`page: ${error.message}`));
+
+  await page.addInitScript(() => {
+    const getContext = HTMLCanvasElement.prototype.getContext;
+    Object.defineProperty(HTMLCanvasElement.prototype, "getContext", {
+      configurable: true,
+      value(this: HTMLCanvasElement, contextId: string, ...attributes: unknown[]) {
+        if (contextId === "webgl2") return null;
+        return Reflect.apply(getContext, this, [contextId, ...attributes]);
+      },
+    });
+  });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/", { waitUntil: "networkidle" });
+
+  const tier2D = page.locator('[data-region="tier-2d"]');
+  await expect(tier2D).toBeVisible();
+  await expect(tier2D).toHaveAttribute("data-static-reason", "webgl-unavailable");
+  await expect(tier2D.locator('[data-learner-state="assigned"]')).toHaveCount(12);
+  await expect(page.locator("canvas")).toHaveCount(0);
+  await expect(page.getByRole("tree", { name: "Compiled cohort details" })).toBeVisible();
+  await page.getByRole("button", { name: "Standings off" }).click();
+  await expect(page.locator('[data-standings-panel="own-growth"]')).toBeVisible();
+  await page.getByRole("button", { name: "Preview rollback to asg-view-v1" }).click();
+  await expect(tier2D.locator('[data-learner-ref="A6"]')).toHaveAttribute(
+    "data-learner-state",
+    "assigned",
+  );
+  expect(runtimeErrors).toEqual([]);
+});

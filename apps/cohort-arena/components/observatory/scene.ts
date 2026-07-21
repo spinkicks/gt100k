@@ -6,6 +6,8 @@ import {
   resolveMotion,
 } from "@gt100k/cohort-arena-view";
 
+import type { RenderTier3D } from "../performance/runtime.js";
+
 export interface ObservatoryStar {
   readonly ref: string;
   readonly cohortIndex: number | null;
@@ -131,7 +133,10 @@ export function resolveObservatoryMotion(view: CohortArenaView): ObservatoryMoti
   };
 }
 
-export function buildObservatoryScene(view: CohortArenaView): ObservatorySceneModel {
+export function buildObservatoryScene(
+  view: CohortArenaView,
+  renderTier: RenderTier3D = "full-3d",
+): ObservatorySceneModel {
   const pausedRefs = new Set(view.safeguarding.pausedMoves.flatMap((move) => move.touches));
   const assignedStars = view.constellation.hexes.flatMap((hex) =>
     hex.members.map(
@@ -191,8 +196,27 @@ export function buildObservatoryScene(view: CohortArenaView): ObservatorySceneMo
     ];
   });
 
+  const allStars = [...assignedStars, ...benchStars];
+  const degradedStarRefs = new Set(allStars.filter(({ paused }) => paused).map(({ ref }) => ref));
+  const degradedLimit = Math.ceil(allStars.length / 2);
+  for (
+    let index = 0;
+    index < allStars.length && degradedStarRefs.size < degradedLimit;
+    index += 2
+  ) {
+    const star = allStars[index];
+    if (star) degradedStarRefs.add(star.ref);
+  }
+  for (const star of allStars) {
+    if (degradedStarRefs.size >= degradedLimit) break;
+    degradedStarRefs.add(star.ref);
+  }
+
   return {
-    stars: [...assignedStars, ...benchStars],
+    stars:
+      renderTier === "degraded-3d"
+        ? allStars.filter(({ ref }) => degradedStarRefs.has(ref))
+        : allStars,
     badges,
     floorHalos,
     caliperRadii: [...view.constellation.caliperRadii],

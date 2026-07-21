@@ -57,6 +57,26 @@ describe("the equal 2D cohort tier", () => {
         plainMode: false,
       }),
     ).toEqual({ active: true, reason: "reduced-motion" });
+    expect(
+      resolveTier2DMode({
+        configuredDefault: "system",
+        systemReducedMotion: false,
+        plainMode: false,
+        runtimeFallback: "context-lost",
+      }),
+    ).toEqual({ active: true, reason: "context-lost" });
+  });
+
+  it("names a runtime fallback without changing the compiled state", () => {
+    const view = buildSyntheticCohortView();
+    const markup = renderToStaticMarkup(
+      createElement(CohortTier2D, { view, reason: "frame-budget" }),
+    );
+
+    expect(markup).toContain('data-static-reason="frame-budget"');
+    expect(markup).toContain("Performance fallback");
+    expect(occurrences(markup, 'data-learner-state="assigned"')).toBe(12);
+    expect(markup).toContain("Static compiled state. 2 cohorts and 12 assigned learners.");
   });
 
   it("renders the exact project2D positions with every compiled state and no motion", () => {

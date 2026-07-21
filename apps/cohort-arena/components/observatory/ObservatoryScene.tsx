@@ -13,11 +13,14 @@ import {
   Vector3,
 } from "three";
 
+import type { RenderTier3D } from "../performance/runtime.js";
+import { resolveRenderSettings } from "../performance/runtime.js";
 import { buildObservatoryScene, easeSceneProgress, resolveObservatoryMotion } from "./scene";
 
 interface ObservatorySceneProps {
   readonly view: CohortArenaView;
   readonly transitionKind?: "compile" | "rollback";
+  readonly renderTier?: RenderTier3D;
 }
 
 interface SceneResources {
@@ -31,8 +34,13 @@ function toTuple(position: Vec3): [number, number, number] {
   return [position.x, position.y, position.z];
 }
 
-export function ObservatoryScene({ view, transitionKind = "compile" }: ObservatorySceneProps) {
-  const scene = useMemo(() => buildObservatoryScene(view), [view]);
+export function ObservatoryScene({
+  view,
+  transitionKind = "compile",
+  renderTier = "full-3d",
+}: ObservatorySceneProps) {
+  const scene = useMemo(() => buildObservatoryScene(view, renderTier), [renderTier, view]);
+  const renderSettings = resolveRenderSettings(renderTier);
   const motion = useMemo(() => resolveObservatoryMotion(view), [view]);
   const starRefs = useRef(new Map<string, Group>());
   const initialStarPositions = useRef(new Map<string, [number, number, number]>());
@@ -278,9 +286,11 @@ export function ObservatoryScene({ view, transitionKind = "compile" }: Observato
         ))}
       </Instances>
 
-      <EffectComposer multisampling={0} enableNormalPass={false}>
-        <Bloom intensity={0.42} luminanceThreshold={0.54} luminanceSmoothing={0.72} mipmapBlur />
-      </EffectComposer>
+      {renderSettings.bloom ? (
+        <EffectComposer multisampling={0} enableNormalPass={false}>
+          <Bloom intensity={0.42} luminanceThreshold={0.54} luminanceSmoothing={0.72} mipmapBlur />
+        </EffectComposer>
+      ) : null}
     </>
   );
 }

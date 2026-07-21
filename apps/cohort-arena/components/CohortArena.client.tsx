@@ -3,7 +3,7 @@
 import { resolveMotion } from "@gt100k/cohort-arena-view";
 import { Canvas } from "@react-three/fiber";
 import { motion, useReducedMotion } from "motion/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { RollbackControl } from "./RollbackControl";
 import { StandingsToggle } from "./StandingsToggle";
@@ -15,6 +15,13 @@ import { StandingsPanel } from "./hud/StandingsPanel";
 import { toMotionEasing } from "./hud/motion-transition";
 import { CohortLedger } from "./ledger/CohortLedger";
 import { ObservatoryScene } from "./observatory/ObservatoryScene";
+import { FrameBudgetProbe, WebGLRuntimeProbe } from "./performance/RuntimeProbes";
+import {
+  createRenderRuntime,
+  detectWebGL2,
+  resolveRenderSettings,
+  transitionRenderRuntime,
+} from "./performance/runtime";
 import {
   SYNTHETIC_CHURN_BUDGET,
   SYNTHETIC_ROLLBACK_ASSIGNMENTS,
@@ -29,11 +36,23 @@ export default function CohortArenaClient() {
   const [rolledBack, setRolledBack] = useState(false);
   const [hasSnapshotTransition, setHasSnapshotTransition] = useState(false);
   const [standingsOptIn, setStandingsOptIn] = useState(false);
+  const [renderRuntime, setRenderRuntime] = useState(() => createRenderRuntime(detectWebGL2()));
+  const handleSustainedFrameMiss = useCallback(() => {
+    setRenderRuntime((runtime) =>
+      transitionRenderRuntime(runtime, { type: "sustained-frame-miss" }),
+    );
+  }, []);
+  const handleContextLost = useCallback(() => {
+    setRenderRuntime((runtime) => transitionRenderRuntime(runtime, { type: "context-lost" }));
+  }, []);
   const tier2D = resolveTier2DMode({
     configuredDefault: process.env.NEXT_PUBLIC_REDUCED_MOTION_DEFAULT,
     systemReducedMotion,
     plainMode,
+    runtimeFallback: renderRuntime.tier === "tier-2d" ? renderRuntime.reason : null,
   });
+  const renderTier3D = renderRuntime.tier === "degraded-3d" ? "degraded-3d" : "full-3d";
+  const renderSettings = resolveRenderSettings(renderTier3D);
   const snapshotViews = useMemo(
     () =>
       buildSyntheticRollbackViews({
@@ -100,7 +119,12 @@ export default function CohortArenaClient() {
         {tier2D.active && tier2D.reason ? (
           <CohortTier2D view={view} reason={tier2D.reason} />
         ) : (
-          <section className="scene-panel" aria-labelledby="scene-heading" data-region="scene-3d">
+          <section
+            className="scene-panel"
+            aria-labelledby="scene-heading"
+            data-region="scene-3d"
+            data-render-tier={renderTier3D}
+          >
             <div className="region-heading">
               <div>
                 <p className="region-label">Compiler field</p>
@@ -108,7 +132,9 @@ export default function CohortArenaClient() {
                   {rolledBack ? "Prior snapshot settled" : "Current snapshot settled"}
                 </h2>
               </div>
-              <span className="status-chip">12 assigned</span>
+              <span className="status-chip" data-render-quality={renderTier3D}>
+                {renderTier3D === "degraded-3d" ? "Degraded 3D · " : ""}12 assigned
+              </span>
             </div>
             <div className="canvas-shell" data-spectacle>
               <Canvas
@@ -119,17 +145,23 @@ export default function CohortArenaClient() {
                   near: camera.near,
                   far: camera.far,
                 }}
-                dpr={[1, 1.5]}
+                dpr={renderSettings.dpr}
                 frameloop="always"
-                gl={{ antialias: true, powerPreference: "high-performance" }}
-                shadows={false}
+                gl={{
+                  antialias: renderSettings.antialias,
+                  powerPreference: "high-performance",
+                }}
+                shadows={renderSettings.shadows}
                 onCreated={({ gl }) => gl.domElement.setAttribute("aria-hidden", "true")}
               >
                 <color attach="background" args={[view.presentation.palette.deck]} />
                 <ObservatoryScene
                   view={view}
                   transitionKind={hasSnapshotTransition ? "rollback" : "compile"}
+                  renderTier={renderTier3D}
                 />
+                <FrameBudgetProbe key={renderTier3D} onSustainedMiss={handleSustainedFrameMiss} />
+                <WebGLRuntimeProbe onContextLost={handleContextLost} />
               </Canvas>
             </div>
           </section>
@@ -161,7 +193,12 @@ export default function CohortArenaClient() {
       </div>
 
       <div className="arena-secondary-grid">
-        <ArenaRoomPanel view={view} reducedMotion={tier2D.active} />
+        <ArenaRoomPanel
+          view={view}
+          reducedMotion={tier2D.active}
+          renderTier={renderTier3D}
+          onContextLost={handleContextLost}
+        />
         <section className="ledger-panel" aria-labelledby="ledger-heading" data-region="ledger">
           <div className="region-heading">
             <div>
