@@ -70,10 +70,46 @@ deriveStanding(self, nearPeers, options) -> NearPeerStanding | null
              gainToBandTop = max(all gains) - selfGain.
   Guarantee: return type cannot express a rank/position/percentile/outOf/caste — bottom-rank unrepresentable.
 
+resolveMotion(kind, options) -> MotionToken
+  Behavior:  looks up MOTION/EASINGS for `kind` (spec §8.10); options.reducedMotion === true ->
+             mode "reduced", easing "Linear", durationMs from the reduced column.
+  Guarantee: pure; every kind has a reduced-motion equivalent. MOTION/EASINGS are exact constant maps.
+
+resolveAvatarAnimation(intent, options) -> AvatarAnimationSpec
+  Behavior:  maps intent (idle|walk|run|think|celebrate-low|-med|-high) to {state,loop,durationMs,
+             easing,amplitudePx} (spec §8.13); options.reducedMotion -> loop false, easing "Linear",
+             state "-static", reduced dur/amp.
+  Guarantee: pure; never emits scale(0); amplitude 0 under reduced motion; interruptible by construction
+             (spec carries no absolute start position).
+
+resolveBiome(region) -> BiomeIdentity
+  Behavior:  returns the biome identity row (spec §8.12) for a known region; throws on unknown region.
+  Guarantee: pure/deterministic.
+
+resolveParallaxLayers() -> ParallaxLayer[]
+  Behavior:  returns the 7 layers back->front with exact scrollFactors (spec §8.14).
+  Guarantee: pure; ambient layers still render under reduced motion (only their motion stops).
+
+resolveBaseLayout(base) -> BasePlacement[]
+  Behavior:  one placement per unlockedFeatures (stable order); zone/x/y from baseLayout.fixture (spec §8.16);
+             `by` from contributions; unknown features -> deterministic outskirts grid slot.
+  Guarantee: pure/replayable; placement confers no gameplay power.
+
+resolveSoundCue(event) -> SoundCue
+  Behavior:  maps event -> { cueId, caption, mutedByDefault:true } (spec §8.18).
+  Guarantee: pure; the notYet cue is neutral; no cue is flagged negative/alarm/loop.
+
+resolveVisualBand(band) -> VisualBand
+  Behavior:  band -> canvas presentation tokens (spec §8.19); 6-8 showCanvasNumbers=false, ceiling "medium".
+  Guarantee: underlying economy unchanged across bands; only presentation varies.
+
 buildArenaView(inputs) -> ArenaView
   Behavior:  composes world, layout, nodeStates, progression, representation, avatar, eligibility,
-             base, standing, and flags into ONE view model that drives every renderer.
-  Guarantee: reduced-motion/plain differs ONLY in `flags`; underlying state is recomputed once, not per-mode.
+             base, standing, a derived `presentation` block (biomes/camera/parallax/avatarAnim/
+             visualBand/assetKeys/basePlacements/palette), and flags into ONE view model that drives
+             every renderer.
+  Guarantee: reduced-motion/plain/age-band differs ONLY in `flags` + the `presentation` derived from
+             them; underlying learning state is recomputed once, not per-mode.
 ```
 
 ## Guardrail predicates (helpers, also tested directly)
@@ -111,6 +147,17 @@ Tests are **written first and must fail** before implementation (constitution: t
 - `resolveRewardRepresentation`: exact band strings (spec §8.6); 6-8 `showRawNumber=false`, comparison off (FR-017/18, SC-005).
 - `deriveStanding`: returns null when not opted in (default off); when opted in, S1 golden `selfGain 300`, `gainToBandTop 40`, exposes no bottom-rank; rank/position/percentile/outOf unrepresentable (FR-019, SC-009).
 - `buildArenaView` + `plainViewEquals`: reduced-motion/plain views carry identical underlying state, differ only in flags (FR-020/029, SC-006/014).
+
+**Art / motion / avatar / camera / sound / assets (US1–US5 + cross-cutting)**
+- `resolveMotion`: golden table (spec §8.10); every kind has a reduced-motion equivalent; `MOTION`/`EASINGS` exact (FR-034, SC-015).
+- `resolveAvatarAnimation`: golden table (spec §8.13); reduced-motion loop=false/easing Linear/amp 0; never scale(0) (FR-032, SC-016).
+- `resolveBiome` + `PALETTE`/`TYPOGRAPHY`: exact biome rows + palette/type tokens; unknown region throws (FR-031, SC-017).
+- `CAMERA`/`resolveParallaxLayers`: exact config + 7 layers back→front; reduced-motion keeps depth (FR-033, SC-018).
+- `resolveBaseLayout`: golden zones/slots (spec §8.16); attributable; replayable; deterministic unknown-feature fallback; zero power (FR-036, SC-019).
+- `resolveVisualBand`: exact band tokens (spec §8.19); 6-8 `showCanvasNumbers=false`, ceiling `medium`; state identical across bands (FR-040, SC-020).
+- `resolveSoundCue`/`SOUND_CUES`: golden cues (spec §8.18); muted-by-default; neutral error cue; no negative/alarm/loop flag (FR-037, SC-021).
+- Cosmetic `look`/`equipEffect`: present + stable (spec §8.15); still **no** price/currency/dropRate/rarity; `look` never changes eligibility (FR-035, SC-022).
+- `ASSET_KEYS`: stable grouped keys (spec §8.17); every key has a deterministic procedural fallback (seeded, no `Math.random`); loader atlas→SVG→procedural; no external fetch (FR-039, SC-023).
 
 **Cross-cutting**
 - Synthetic-only: the whole surface runs with no consent/admissions/legal input (FR-024, SC-008).

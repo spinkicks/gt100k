@@ -1,126 +1,163 @@
-# Phase 0 Research: Platform Foundation Spine
+# Phase 0 Research: Platform Foundation Spine (Real Production Stack)
 
-The feature is scoped from a detailed baby-PRD ([FOUNDATION_PRD.md](../../docs/prd/FOUNDATION_PRD.md))
-and the parent PRD §26–§28, §30, §32.1. The decisions below record the choices the plan rests on —
-chiefly *what is built in TypeScript now vs. what is the deferred production target*. The one genuinely
-open design point is the **enrollment-handoff eligibility-contract shape** (owned by the admissions team);
-it is pre-answered with a reference-only default and marked `severity: normal` for human confirmation
-([spec.md → DP-1](./spec.md#pre-marked-decision-points-preferred-default-stated-inline-severity-noted)).
-Because it sits behind the `EnrollmentHandoffSource` port, cutover to the real shape is a config change.
+The feature is scoped from [FOUNDATION_PRD.md](../../docs/prd/FOUNDATION_PRD.md) and parent PRD §26 (stack),
+§26.2 (language ownership), §26.4 (repo/delivery), §27 (boundaries + command path), §28 (contracts),
+§29 → [GOVERNANCE.md](../../docs/prd/GOVERNANCE.md) G7, §30 (reliability/security), §32.1 (Month-1 gate).
+Unlike the prior TypeScript-reference draft, **this slice targets the real production stack** (Go, buf, OPA,
+Terraform, Redpanda, Temporal, PostgreSQL) and defines its **own build gate** — it is a **separate track**
+from the TypeScript overnight loops. The decisions below record what is **buildable now** (proven with the
+real tools, hermetically) vs. the **deferred production direction** (needs credentials or a hosted runtime).
 
-## Decision: Build the spine's core **logic** in TypeScript; defer the runtime
+The two genuinely open design points, pre-answered here and flagged for human confirmation, are the
+**enrollment-handoff eligibility-contract shape** ([spec.md → DP-1](./spec.md#pre-marked-decision-points-preferred-default-stated-inline-severity-noted))
+and **whether the local spine is tested via testcontainers or in-memory fakes**
+([spec.md → DP-2](./spec.md#pre-marked-decision-points-preferred-default-stated-inline-severity-noted)).
 
-- **Decision**: Implement a pure-TS, locally-testable reference of the spine — the contract envelope +
-  six contracts + invariants, the consent/assent/identity domain, the purpose-authorization
-  predicate, and the outbox + idempotent-consumer pattern — as `packages/platform-contracts` and
-  `packages/platform-spine` with in-memory adapters. The definition of done is **`tsc -b` + Vitest**.
-- **Rationale**: The correctness that matters most in the spine is *rules*, not infrastructure:
-  "no machine decides," "append-only," "deny-by-default," "exactly-once projection under at-least-once
-  delivery," "withdrawal blocks new processing." Those are provable in pure TypeScript and are exactly
-  what an autonomous build loop can verify. Infrastructure (Redpanda/Temporal/OPA/PostgreSQL/AWS)
-  proves *operational* properties that a typecheck+unit gate cannot, so it is the deferred target.
-- **Alternatives considered**: Building against the real Go/Redpanda/Temporal/OPA stack — rejected for
-  this slice: it cannot be exercised by a `tsc -b` + Vitest loop and front-loads infra before the
-  invariants are even locked. Skipping the TS reference and going straight to production — rejected:
-  it inverts "implement the contracts first" (parent §32.1) and risks baking a defective invariant
-  into every consumer.
+## Decision: Target the real production stack now; defer only cloud apply + managed-runtime ops
 
-## Decision: Two pure packages — `platform-contracts` and `platform-spine`
+- **Decision**: Build the spine with its **real tools** — `buf` Protobuf contracts + generated Go, Go
+  domain/services, OPA/Rego policy-as-code, a transactional outbox + idempotent consumers over a real
+  Redpanda client, a Temporal deletion workflow, and Terraform modules — with a gate of `buf lint` +
+  `buf breaking`, pinned `go vet`/`build`/`test`, `opa test`, and `terraform validate`/`fmt -check`. Defer
+  **only** what a hermetic gate cannot exercise: `terraform apply` (needs an AWS org + creds), managed
+  Redpanda/Temporal runtime ops, real KMS crypto-shred, bundle/image signing, and mTLS/observability wiring.
+- **Rationale**: The prior draft proved the *rules* in TypeScript but left the *real substrate* (buf, Go,
+  OPA, Temporal, Terraform) unbuilt, so a defective invariant could still be baked into every consumer at
+  cutover. Building on the real stack now locks the invariants **in the tools that will carry them** while
+  keeping the gate buildable: `buf breaking` is the real compatibility guarantee (parent §28); `opa test`
+  is the real policy-as-code guarantee (GOVERNANCE G7); the Temporal test suite is the real workflow
+  guarantee (§13); `terraform validate` is the real IaC guarantee (§4). Everything deferred is precisely the
+  set that requires a credential or a hosted runtime — not logic.
+- **Alternatives considered**: (a) The TS reference (prior draft) — rejected: it cannot be exercised by the
+  real gate and risks re-work at cutover. (b) Going straight to a live AWS deploy — rejected: it front-loads
+  credentials/org/apply before the invariants are locked and cannot run in a hermetic gate. (c) Building Go
+  but skipping OPA/Temporal/Terraform — rejected: it drops three of the substrate's defining guarantees the
+  Month-1 gate names (§17: policy enforcement, deletion, AWS provenance).
 
-- **Decision**: `platform-contracts` holds the envelope + `LearnerEvent`/`ConsentGrant`/`AssentRecord`/
-  `DecisionRecord`/`OverrideRecord`/`Appeal` types, validators, and encoded invariants (append-only,
-  model-cannot-fill-human, active-consent, refusal-honored, four-eyes override, appeal reviewer
-  independence). `platform-spine` depends on it and holds the identity/consent/assent domain, the
-  authorization predicate, and the event-bus + outbox logic.
-- **Rationale**: Contracts are the thing "all later work depends on" (parent §32.1); isolating them in
-  a dependency-free package lets consumers (and later the real wire types) import just the contracts.
-  The spine's behavior sits one layer up and injects all I/O via ports, mirroring
-  `packages/learning-loop` (pure domain + ports + adapters).
-- **Alternatives considered**: One combined package — rejected; muddies the "contracts first, depended
-  on by everything" boundary. Per-contract packages — rejected as over-fragmented at slice scale.
+## Decision: A SEPARATE build track from the TypeScript overnight loops
 
-## Decision: Ports for every I/O + the deferred production seams
+- **Decision**: This feature is **not** gated by `tsc -b`/`vitest` and **must not** be enqueued in the TS
+  loop batch. It ships its own `Makefile` `gate` target and a dedicated GitHub Actions workflow
+  (`.github/workflows/foundation-spine.yml`) on a Go + buf + OPA + Terraform-capable runner (+ Docker for
+  the optional integration lane).
+- **Rationale**: The factory loop harness (`harness/run-loop.sh`) auto-detects a JS/TS lockfile and gates on
+  `pnpm typecheck` + `vitest`; it has no Go/buf/OPA/Terraform toolchain and would mis-gate this feature
+  (green on an unrelated TS check, or red because the Go code isn't TS). The clean separation keeps each
+  track's gate meaningful. If the only available runner is TS-only, a Go/infra-capable runner is required —
+  this is called out prominently at the top of the spec and plan (FR-020).
+- **Alternatives considered**: (a) Shoe-horning a `pnpm`-invoked wrapper that shells out to `go`/`buf` so
+  the TS loop "runs" it — rejected: it hides a Go build behind a JS gate, gives false signal, and needs the
+  Go toolchain on the TS runner anyway. (b) Rewriting the loop harness to be polyglot — out of scope for
+  this feature (a factory change), noted as a follow-up.
 
-- **Decision**: Define ports for persistence (identity/consent/assent/decision/audit + outbox store),
-  the event bus, the clock, the id generator, the enrollment-handoff source, and a **deletion-workflow
-  stub**. Ship in-memory / stub adapters now.
-- **Rationale**: Injecting I/O and time keeps the core deterministic and replay-safe (FR-016), and each
-  port is the exact seam where a production adapter (PostgreSQL repo, Redpanda producer/consumer,
-  Temporal deletion workflow, real admissions interface) slots in later with **zero domain change**.
-  The ports *are* the "cutover is config, not rewrite" guarantee (FOUNDATION_PRD §7.3).
-- **Alternatives considered**: Direct in-memory maps in the domain — rejected; breaks determinism and
-  the later-cutover story.
+## Decision: `buf` owns the contract schema; commit generated Go
 
-## Decision: Bring `OverrideRecord` + `Appeal` into scope as contracts
+- **Decision**: One `proto/` registry (`buf.yaml`, `buf.gen.yaml`, `buf.lock`) with proto package
+  `gt100k.platform.v1`. `buf lint` (STANDARD) + `buf breaking` (against `.git#branch=main`) are the
+  compatibility gate; new fields take new tags, removals/renames/tag-reuse are forbidden. **Commit** the
+  `buf generate` Go under `proto/gen/go/` and add a CI freshness check (`buf generate` +
+  `git diff --exit-code`) so `go build` needs no `buf` yet the schema and code never drift (DP-7).
+- **Rationale**: `buf breaking` is exactly the parent §28 "no breaking changes outside a deprecation window"
+  guarantee, enforced by the real tool. Committing generated code keeps the Go gate independent of a `buf`
+  install while the freshness check keeps it honest.
+- **Alternatives considered**: Generate-in-CI only (don't commit) — rejected: makes `go build ./...` depend
+  on `buf` being present and complicates the hermetic Go lane. Hand-written wire types — rejected: violates
+  §26.4 "no service hand-writes a wire type."
 
-- **Decision**: Build all **six** foundation contracts named in parent §32.1 ("`LearnerEvent`, consent,
-  decision, **override, appeal**, and audit contracts first") in this slice — including `OverrideRecord`
-  (with the **four-eyes** invariant for override classes) and `Appeal` (with the **independent-reviewer**
-  invariant). Only the *human workflows* (four-eyes approval routing/notifications, appeal SLA timers,
-  remedy execution) are deferred.
-- **Rationale**: These two contracts are pure TS types + validators whose correctness is *rules*, exactly
-  what the `tsc -b` + Vitest gate proves, and they complete the contract set every later feature binds to.
-  Deferring them would leave the "override, appeal" half of the parent's explicit "contracts first" list
-  unbuilt while the cheaper contracts shipped — inverting the priority. Their invariants (no single actor
-  can supersede a decision; an appeal reviewer cannot be the original owner) are Constitution I/IX gates
-  worth locking now.
-- **Alternatives considered**: Deferring both entirely (the prior draft) — rejected; they are low-cost,
-  high-value, and named first-class in §32.1. Building their full approval/SLA workflows now — rejected;
-  those are infrastructure/process, not logic, and belong with the deferred production runtime.
+## Decision: OPA/Rego is the authorization mechanism (not a hand-rolled predicate)
 
-## Decision: Fixed authorization reason-code precedence
+- **Decision**: Purpose authorization is **Rego** in `policies/` (package `gt100k.authz`), deny-by-default,
+  keyed on role + purpose + active consent + jurisdiction, returning `{allow, reason, policy_version}` with
+  the fixed reason-code precedence in [G-AUTH](./spec.md#g-auth--authorization-decisions). It is proven by
+  `opa test policies/` (decision table + deny-by-default + subgroup fixtures) **and** exercised on the Go
+  command path via the OPA Go SDK against the compiled bundle. Four-eyes and reviewer-independence are
+  mirrored in `gt100k.override`/`gt100k.appeal`. `opa build` produces the bundle artifact; **cosign
+  signing** of the bundle is deferred (GOVERNANCE G7).
+- **Rationale**: This is the real §11 "signed OPA bundles evaluated on every command" mechanism, minus only
+  the signing step (which needs a key). Putting the decision in Rego (not Go `if` branches) keeps
+  deny-by-default honest and makes CI decision-table testing (GOVERNANCE G7) first-class.
+- **Decision (input shape)**: pre-filter *active* consents in Go (`IsConsentActive`) and pass them to Rego,
+  so "active" has one home (Go) and Rego owns purpose/jurisdiction/rule matching. The `at` timestamp and raw
+  consents are still available to Rego for defense-in-depth tests.
+- **Alternatives considered**: A pure-Go predicate (prior draft) — rejected: it is not policy-as-code and
+  can't be CI-tested as a signed bundle. Embedding a WASM-compiled bundle only — deferred as an optimization.
 
-- **Decision**: `authorize` evaluates in a fixed order so reason codes are deterministic:
-  (1) filter to active consents matching the purpose — none ⇒ `no_active_consent`;
-  (2) require one of those to match the request jurisdiction — none ⇒ `jurisdiction_mismatch`;
-  (3) require a `PolicyRule` matching role + purpose + jurisdiction — none ⇒ `deny_by_default`;
-  (4) otherwise `allow`. Every path returns `policySet.policy_version`.
-- **Rationale**: A single fixed order makes every deny reason a golden value
-  ([spec.md → G-AUTH](./spec.md#g-auth--authorization-decisions)) rather than an implementation detail, so
-  tests assert exact reasons and the loop never has to guess precedence.
-- **Alternatives considered**: Returning the first failing check in arbitrary order — rejected; makes
-  reason codes non-deterministic and un-testable.
+## Decision: Local event spine tested BOTH ways — in-memory fakes (default) + testcontainers (integration) — DP-2
 
-## Decision: Purpose authorization as a deterministic predicate (local OPA analogue)
+- **Decision**: Model the outbox as interfaces with **in-memory fakes** as the default `go test ./...` lane
+  (fast, hermetic, no Docker), **and** provide **testcontainers-backed** Redpanda + PostgreSQL integration
+  tests behind `//go:build integration` (`go test -tags=integration ./...`) that exercise the real broker +
+  a real transactional outbox. Temporal uses the SDK in-memory `TestWorkflowEnvironment` by default; a
+  `temporal` dev-server testcontainer is an optional integration extra.
+- **Rationale**: The SC-005 property (no loss / exactly-once under at-least-once + out-of-order) is *logic*,
+  provable with fakes — so the **mandatory** gate stays hermetic and runs on any Go runner, including CI
+  without Docker. But real broker semantics (partition ordering, offset commit, at-least-once redelivery)
+  and a real PostgreSQL transaction deserve a real exercise; the `-tags=integration` split gives that where
+  Docker exists **without** making the mandatory gate depend on Docker. This is the safest of both worlds
+  and directly answers the DP-2 open question.
+- **Alternatives considered**: (a) testcontainers-only — rejected: makes the mandatory gate require Docker,
+  which the factory's Go/CI runner may lack and slows every iteration. (b) in-memory-only — rejected: never
+  exercises the real Redpanda/PostgreSQL semantics the production adapter depends on, weakening confidence
+  at cutover. (c) mocking the broker with a Go double — rejected: a fake is fine for logic but a real broker
+  test is worth having behind a tag. **Recommendation to the human: keep both; make the integration lane a
+  separate, Docker-capable CI job that is required-on-`proto/`/`pkg/spine`-changes but not on every commit.**
 
-- **Decision**: Model the OPA/Rego decision as a pure TS function `authorize(request, consents, policy)
-  -> { allow, reason, policy_version }`, **deny-by-default**, keyed on role + purpose + active consent +
-  jurisdiction. The `policy` is a versioned, data-driven rule set (an allow-list), not code branches.
-- **Rationale**: A pure predicate over explicit inputs is trivially testable across allow, deny,
-  unknown-role/purpose (deny-by-default), expired/withdrawn consent, and jurisdiction mismatch. It
-  emits a `policy_version` for the envelope/audit exactly as the real sidecar would. The real signed
-  Rego bundle + local sidecar is the deferred production form of *the same decision*.
-- **Alternatives considered**: Embedding an actual OPA/WASM evaluator — rejected for this slice
-  (infra + bundle signing, not logic); it is the deferred target. Hard-coded `if` branches — rejected;
-  a data-driven allow-list is closer to policy-as-code and keeps deny-by-default honest.
+## Decision: Temporal for durable deletion; SDK test suite as the proof
 
-## Decision: Transactional outbox + idempotent consumers as pure logic
+- **Decision**: The consent-withdrawal deletion is a **Temporal** workflow (`workflows/deletion`) with
+  idempotent, compensating activities (`ErasePostgres`, `DeleteS3Objects`, `ClearRedis`, `CryptoShred`
+  [KMS stub], `RecordDeletionAudit`), proven with `testsuite.TestWorkflowEnvironment` (runs to `Completed`;
+  an injected activity failure triggers retry/compensation). `WithdrawConsent` calls a `DeletionStarter`
+  seam exactly once.
+- **Rationale**: This is the real §13 mechanism (durable workflow, idempotent activities, compensation),
+  provable hermetically via the SDK test suite — no managed Temporal cluster needed for the gate. The KMS
+  crypto-shred is the only piece that needs a real key, so it is a clearly-marked stub (DP-6).
+- **Alternatives considered**: A synchronous in-process deletion — rejected: doesn't model the durable,
+  compensating, cross-store reality §13 requires. A managed Temporal dependency in the gate — rejected: the
+  test suite proves the logic without it.
 
-- **Decision**: Model the outbox as: a `UnitOfWork` that stages business state + an outbox row together
-  (atomic commit or nothing), a `relay` that publishes staged rows with an idempotency key
-  (at-least-once, retry-safe), and consumers that dedupe on `contract_id` and keep the first result.
-- **Rationale**: The outbox's whole point is removing the DB-vs-log dual-write race; that property is
-  logic and can be proven in-memory (partial-commit rejected; replayed `contract_id` applied once;
-  synthetic burst loses nothing). Redpanda is the deferred transport, but the *pattern*'s correctness
-  does not depend on it.
-- **Alternatives considered**: Publishing directly from the command handler (no outbox) — rejected;
-  reintroduces the dual-write race the parent PRD calls out (§9, §19.3). A real broker — deferred.
+## Decision: Terraform is validate-only in this slice
 
-## Decision: Contracts are append-only; corrections are new records
+- **Decision**: Express the AWS runtime (§4) as Terraform modules (`bootstrap-org`, `network-vpc`, `eks`,
+  `rds`, `s3-kms`, `iam`, `event-runtime`) that pass `terraform init -backend=false && terraform validate &&
+  terraform fmt -check`. Core + Identity are modeled; Public/Sandbox/Sensitive are reserved (empty boundary
+  modules). **No** `apply`, backend, or credentials.
+- **Rationale**: `terraform validate` proves the IaC is well-formed and reviewable (a reviewer can read
+  `infra/` and know the footprint, §4.4) **without** an AWS org or creds, which the buildable gate must not
+  require. `apply` is the deferred production step (§4.1 requires an ADR + org sign-off anyway).
+- **Alternatives considered**: `terraform plan` against a real account — rejected: needs credentials.
+  Skipping IaC entirely — rejected: §17 gate item 8 (AWS provenance) and §4 make the Terraform footprint
+  part of the substrate; validate-only is the buildable subset.
 
-- **Decision**: A contract is immutable once recorded; the store rejects re-writing an existing
-  `contract_id`; a correction is a new record whose `causation_id` references the prior.
-- **Rationale**: Satisfies POL-006 / parent §28 "append-only, corrections attach never overwrite" and
-  makes decision replay meaningful (FR-011). It is enforceable as a repository + validator rule.
-- **Alternatives considered**: Mutable records with version columns — rejected; violates the append-only
-  invariant and complicates replay.
+## Decision: Single Go module now; per-service split deferred
 
-## Decision: Synthetic-only, mechanical legal layer
+- **Decision**: Ship the slice as one Go module (`github.com/gt100k/platform`) so
+  `go vet ./... && go build ./... && go test ./...` works verbatim from repo root. Keep clean package
+  boundaries (`pkg/platform`, `pkg/spine`, `services/identity-consent`, `workflows/deletion`) so the
+  per-deployable module split + `go.work` (parent §26.2) is a mechanical later refactor.
+- **Rationale**: A `go.work` multi-module layout complicates `go build ./...` (it only builds the current
+  module) and needs a script to walk modules — unjustified complexity for the buildable slice. The package
+  boundaries already encode the eventual service ownership.
+- **Alternatives considered**: Multi-module `go.work` now — rejected as premature; single module with the
+  right package seams gives the same eventual split at lower cost.
 
-- **Decision**: All learners/actors are pseudonymous synthetic refs; consent/assent legal artifacts
-  (document hash, signature, legal validity) are placeholder strings; the enrollment handoff is a stub.
-- **Rationale**: Constitution V (synthetic-only until pre-live gates) and FOUNDATION_PRD §3.3/§19.2.
-  Modeling the *mechanics* (purpose/expiry/withdrawal/refusal/deny-by-default) is the buildable,
-  testable part; real legal semantics are explicitly not this slice's job.
-- **Alternatives considered**: Faking real legal validity — rejected; would misrepresent a stub as a
-  legal control (Constitution IX intent).
+## Decision: Synthetic-only, mechanical legal layer; append-only everywhere; injected clock/ids
+
+- **Decision**: All actors/learners are pseudonymous synthetic refs; consent/assent legal artifacts
+  (document hash, signature) are placeholder strings; enrollment is a stub; contracts are append-only
+  (corrections are new records linked by `causation_id`; the store rejects re-writing a `contract_id`); the
+  invariant core reads no wall-clock and generates no random ids (clock + id injected), and the Temporal
+  workflow uses deterministic APIs.
+- **Rationale**: Constitution V (synthetic-only until pre-live gates), POL-004/006 (replayable, append-only),
+  and FR-016 (determinism). Modeling the *mechanics* is the buildable, testable part; real legal semantics
+  are explicitly not this slice's job.
+- **Alternatives considered**: Faking real legal validity — rejected; would misrepresent a stub as a legal
+  control (Constitution IX intent). Mutable records with version columns — rejected; violates append-only.
+
+## Pinned toolchain (rationale)
+
+See [spec.md → Build gate + pinned toolchain](./spec.md#build-gate--pinned-toolchain) for the table. Versions
+were pinned to recent stable releases current as of the 2026-07 build window (Go 1.25.5, buf 1.50.0,
+protoc-gen-go 1.36.5, protoc-gen-go-grpc 1.5.1, OPA 1.4.0, Terraform 1.11.4, Temporal SDK 1.34.0,
+testcontainers-go 0.35.0, franz-go 1.18.1, pgx 5.7.2). Pinning in `go.mod` + the CI setup actions makes the
+gate reproducible; the `buf.gen.yaml` plugin pins make code generation reproducible.

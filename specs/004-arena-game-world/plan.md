@@ -85,12 +85,21 @@ packages/
     │   ├── cosmetics.ts     # deriveCosmeticEligibility() + equipCosmetic() — deterministic, no $, zero-power
     │   ├── base.ts          # applyCohortContribution() — deterministic co-built base accretion
     │   ├── celebrate.ts     # classifyCelebration() + celebrationMotionSpec() — unlock/struggle only, never loss
-    │   ├── staging.ts       # resolveRewardRepresentation(ageBand,...) — §14.13 vocabulary
+    │   ├── staging.ts       # resolveRewardRepresentation() + resolveVisualBand() — §14.13 vocabulary + canvas presentation (§8.19)
     │   ├── standings.ts     # deriveStanding() — near-peer/anon/opt-in/no-bottom-rank/gain-based (no rank field)
-    │   ├── view.ts          # buildArenaView() + plainViewEquals() — one state → every renderer (D4)
-    │   ├── graph.fixture.ts # 9-node / 4-region synthetic competency-graph fixture (built on learning-loop Sections)
+    │   ├── art.ts           # PALETTE, TYPOGRAPHY, resolveBiome() — Independence Isles identity (§8.11/§8.12)
+    │   ├── motion.ts        # MOTION, EASINGS, resolveMotion() — deterministic motion tokens (§8.10)
+    │   ├── avatar.ts        # resolveAvatarAnimation() — idle/walk/run/think/celebrate (§8.13)
+    │   ├── camera.ts        # CAMERA, PARALLAX, resolveParallaxLayers() — follow/deadzone/parallax (§8.14)
+    │   ├── baseLayout.ts    # resolveBaseLayout() — deterministic Base Camp zones/slots (§8.16)
+    │   ├── sound.ts         # SOUND_CUES, resolveSoundCue() — muted-by-default, neutral error (§8.18)
+    │   ├── assets.ts        # ASSET_KEYS registry — atlas→SVG→procedural keys (§8.17)
+    │   ├── view.ts          # buildArenaView() (+ presentation block) + plainViewEquals() — one state → every renderer (D4)
+    │   ├── graph.fixture.ts # 9-node / 4-region synthetic competency-graph fixture (+landmarks; built on learning-loop Sections)
     │   ├── tiers.fixture.ts # tier table (spec §7.2)
-    │   ├── catalog.fixture.ts # cosmetic catalog (spec §7.3)
+    │   ├── catalog.fixture.ts # cosmetic catalog + look/equipEffect (spec §7.3/§8.15)
+    │   ├── biomes.fixture.ts  # per-region biome identity (spec §8.12)
+    │   ├── baseLayout.fixture.ts # base zone/slot table (spec §8.16)
     │   ├── feed.ts          # synthetic NodeMasterySignal feed/simulator (deterministic, seeded)
     │   └── index.ts         # public surface
     ├── test/                # Vitest unit + contract tests (mirror FR/SC; guardrails first) + smoke.test.ts
@@ -110,16 +119,19 @@ apps/
     │   │   ├── config.ts        # Phaser.Types.Core.GameConfig (scenes, scale, WebGL, reduced-tier)
     │   │   ├── eventBus.ts      # React ↔ Phaser bridge (set band/plain/equip/feed; emit focus/celebrate)
     │   │   └── scenes/
-    │   │       ├── BootScene.ts     # read flags/seed; register procedural texture generator
-    │   │       ├── PreloadScene.ts  # load committed seed SVGs; procedural fallback; no external fetch
-    │   │       ├── WorldScene.ts    # overworld: regions/nodes/edges/avatar/follow-camera/traversal/reveal
-    │   │       ├── BaseScene.ts     # cohort Base Camp: co-built features + attributable contributors
-    │   │       └── FxScene.ts       # celebration overlay from celebrationMotionSpec (no-op under reduced motion)
+    │   │       ├── BootScene.ts     # read flags/seed; register procedural texture generator; resolve ASSET_KEYS
+    │   │       ├── PreloadScene.ts  # atlas→SVG→procedural loader; no external fetch; "lantern filling" progress
+    │   │       ├── WorldScene.ts    # overworld: parallax biomes/nodes/edges/bridges/avatar(idle/walk/run)/follow-camera(deadzone/look-ahead/dolly-in)/traversal/reveal
+    │   │       ├── BaseScene.ts     # cohort Base Camp: co-built features into zones/slots + attributable lantern-marks
+    │   │       ├── FxScene.ts       # orchestrated celebration sequences from celebrationMotionSpec+resolveMotion (no-op under reduced motion)
+    │   │       └── OnboardScene.ts  # first-run coach-marks (skippable, non-blocking, Ledger-mirrored, reduced-motion)
     │   ├── ledger/
-    │   │   └── ArenaLedger.tsx  # accessible DOM parallel (role=tree, listbox, aria-live) from ArenaView
+    │   │   └── ArenaLedger.tsx  # accessible DOM parallel (role=tree w/ landmark names, listbox, aria-live, captions) from ArenaView
     │   └── hud/
-    │       └── Hud.tsx          # tier/growth panel, cosmetic drawer, band switch, plain/standings toggles
-    ├── public/seed/         # committed tiny SVG seed assets (avatar parts, node markers, region tiles, base props)
+    │       └── Hud.tsx          # tier/growth panel, cosmetic drawer (earn-goal not price), band switch, plain/standings/audio toggles, Home/? controls
+    ├── public/seed/         # committed tiny SVG seed assets (avatar/ nodes/ regions/ base/ fx/ ui/)
+    ├── public/atlas/        # OPTIONAL packed texture atlas (non-breaking richer-art path; keyed identically)
+    ├── public/fonts/        # OPTIONAL self-hosted subset woff2 (non-breaking; system-rounded fallback by default)
     ├── .env.local.example   # NEXT_PUBLIC_* placeholders (spec §11); .env.local git-ignored
     ├── .gitignore           # ignores .env.local, .next
     ├── package.json         # deps: @gt100k/arena-world, @gt100k/learning-loop, next, react, phaser
