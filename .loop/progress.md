@@ -231,3 +231,16 @@
 ## NEXT
 - T012d + the `resolveParallaxLayers`/`resolveLighting`/`resolveWater`/`resolvePostFx` slice of T016a: add `packages/arena-world/test/scene3d.test.ts`, then implement and explicitly export the minimal pure scene resolvers.
 - Acceptance: `CAMERA3D` remains exact; parallax resolves all seven layers back-to-front; lighting, water, and post-fx match every §8.20 quality-tier golden row; every camera motion has a reduced or instant equivalent and depth remains represented (FR-033, SC-018); focused checks and repository gates remain green.
+
+## 2026-07-20 — P1 / T012d + T016a (scene resolver slice)
+- Added `scene3d.test.ts` through the public package API, covering the exact bounded camera, all seven back-to-front parallax layers, Tier A/B/C/D lighting/water/post-fx rows, dawn/dusk appearance variants, reduced intro/region-focus motion, retained depth, deterministic replay, and registry-mutation isolation.
+- Followed red-green TDD: the camera constant assertion passed while six resolver behaviors failed with missing-function errors; all seven tests passed after the minimal implementations and explicit exports landed.
+- Added pure `resolveParallaxLayers`, `resolveLighting`, `resolveWater`, and `resolvePostFx` implementations. Tier B lowers shadow quality and post-fx; Tier C/D stop sun drift and realtime shadows; water and post-fx degrade exactly by tier; every call returns fresh renderer-agnostic values.
+- Review status: checked T012d/T016a line-by-line against spec §§5.3/5.6/8.20, FR-033, SC-018, the data model, and the public contract; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused scene tests passed (7 tests); direct package TypeScript validation passed; domain purity scan passed; full Biome lint passed (67 files); `pnpm typecheck` passed; `pnpm test` passed (21 files, 72 tests). No app changed, so no Next.js build was required.
+- SC status: SC-018's deterministic camera/parallax/lighting configuration and reduced-motion depth contract is complete; mastery-state light contributions and the beacon cap remain scheduled for T012g.
+- Blockers: none.
+
+## NEXT
+- T012e + the procedural-fallback slice of T016a: add `packages/arena-world/test/assets.test.ts`, then implement and explicitly export the minimal pure asset fallback descriptor helper.
+- Acceptance: `ASSET_KEYS` stays in exact grouped declaration order; every key resolves deterministically to a seeded procedural fallback with committed-model/SVG before procedural load order and no `Math.random` (FR-039, SC-023); focused checks and repository gates remain green.

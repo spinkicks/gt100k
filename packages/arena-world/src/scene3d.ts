@@ -3,7 +3,9 @@ import type {
   LightingConfig,
   ParallaxLayer,
   PostFxConfig,
+  QualityTier,
   WaterConfig,
+  WorldTheme,
 } from "./model";
 
 export const WORLD_SCALE = 0.03125;
@@ -79,3 +81,76 @@ export const POSTFX = {
   vignette: { offset: 0.3, darkness: 0.5 },
   smaa: true,
 } satisfies PostFxConfig;
+
+export function resolveParallaxLayers(): ParallaxLayer[] {
+  return PARALLAX3D.map((layer) => ({ ...layer }));
+}
+
+export function resolveLighting(tier: QualityTier, worldTheme: WorldTheme): LightingConfig {
+  const lighting: LightingConfig = {
+    key: { ...LIGHTING.key, dir: { ...LIGHTING.key.dir } },
+    hemi: { ...LIGHTING.hemi },
+    ambient: { ...LIGHTING.ambient },
+    rim: { ...LIGHTING.rim, dir: { ...LIGHTING.rim.dir } },
+    sunDriftDeg: LIGHTING.sunDriftDeg,
+    sunDriftMs: LIGHTING.sunDriftMs,
+    shadow: { ...LIGHTING.shadow },
+    beacon: { ...LIGHTING.beacon },
+    beaconTransfer: { ...LIGHTING.beaconTransfer },
+    availableGlow: { ...LIGHTING.availableGlow },
+  };
+
+  if (worldTheme === "dawn") {
+    lighting.key.colorHex = "#FFCDB0";
+    lighting.key.intensity = 2.2;
+    lighting.hemi.skyHex = "#FBD9C0";
+  } else if (worldTheme === "dusk") {
+    lighting.key.intensity = 1.6;
+    lighting.ambient.colorHex = "#1B2A4A";
+    lighting.ambient.intensity = 0.35;
+    lighting.beacon.intensity += 0.4;
+    lighting.beaconTransfer.intensity += 0.4;
+  }
+
+  if (tier === "B") {
+    lighting.shadow.mapSize = 1024;
+    lighting.shadow.soft = false;
+  } else if (tier === "C" || tier === "D") {
+    lighting.key.castShadow = false;
+    lighting.sunDriftDeg = 0;
+    lighting.sunDriftMs = 0;
+  }
+
+  return lighting;
+}
+
+export function resolveWater(tier: QualityTier): WaterConfig {
+  const modeByTier = {
+    A: "shader",
+    B: "cheap",
+    C: "static",
+    D: "none",
+  } as const satisfies Record<QualityTier, WaterConfig["mode"]>;
+
+  return { ...WATER, mode: modeByTier[tier] };
+}
+
+export function resolvePostFx(tier: QualityTier): PostFxConfig {
+  if (tier === "A") {
+    return {
+      bloom: POSTFX.bloom ? { ...POSTFX.bloom } : null,
+      vignette: POSTFX.vignette ? { ...POSTFX.vignette } : null,
+      smaa: POSTFX.smaa,
+    };
+  }
+
+  if (tier === "B") {
+    return {
+      bloom: POSTFX.bloom ? { ...POSTFX.bloom, mipmapBlur: false } : null,
+      vignette: null,
+      smaa: false,
+    };
+  }
+
+  return { bloom: null, vignette: null, smaa: false };
+}

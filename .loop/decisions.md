@@ -41,3 +41,9 @@
 ## 2026-07-20 — T012c avatar resolver source
 - Derived avatar durations and easing names from the existing `MOTION` and `EASINGS` registries while keeping only amplitudes and state mappings in the avatar table. Rejected duplicating the shared golden motion values because the registries could drift apart.
 - Kept `AvatarAnimationSpec` transform-free and start-position-free; reduced motion changes the same row to its `-static` state with zero amplitude. Rejected adding scale or absolute-start fields because the renderer must retarget from live state and must never receive a `scale(0)` instruction.
+
+## 2026-07-20 — T012d scene resolver boundaries
+- Resolved Tier D lighting with the same static, shadowless, no-sun-drift clamp as Tier C because Tier D never mounts WebGL while the settled `resolveLighting` contract still returns a non-null `LightingConfig`. Rejected inventing a separate unpinned rig or returning `null` outside the public type.
+- Kept reduced-motion water/post-fx behavior tier-driven: the quality resolver forces reduced motion to Tier C, so `resolveWater` and `resolvePostFx` retain their specified tier-only signatures. Rejected a second reduced-motion input that could disagree with the selected quality tier.
+- Applied dawn/dusk only to fields represented by the settled `LightingConfig`; the dusk star-card toggle remains a renderer concern. Rejected widening the domain model with an unlisted flag during this resolver task.
+- Returned fresh nested scene values from every resolver so a renderer cannot mutate the exported golden registries and make later identical inputs non-deterministic. Rejected exposing the mutable registry objects directly.

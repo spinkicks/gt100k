@@ -55,7 +55,18 @@ export { ASSET_KEYS } from "./assets";
 export { resolveAvatarAnimation } from "./avatar";
 export { EASINGS, LAMBDAS, MOTION, resolveMotion } from "./motion";
 export { QUALITY_TIERS } from "./quality";
-export { CAMERA3D, LIGHTING, PARALLAX3D, POSTFX, WATER, WORLD_SCALE } from "./scene3d";
+export {
+  CAMERA3D,
+  LIGHTING,
+  PARALLAX3D,
+  POSTFX,
+  WATER,
+  WORLD_SCALE,
+  resolveLighting,
+  resolveParallaxLayers,
+  resolvePostFx,
+  resolveWater,
+} from "./scene3d";
 export { SOUND_CUES } from "./sound";
 export { layoutQuestWorld } from "./layout";
 export { deriveNodeStates } from "./nodes";
