@@ -1,0 +1,247 @@
+:root {
+  --background: oklch(1 0 0);
+  --surface: oklch(0.975 0.008 140);
+  --ink: oklch(0.23 0.025 145);
+  --muted-ink: oklch(0.43 0.03 145);
+  --canopy: oklch(0.75 0.09 140);
+  --canopy-deep: oklch(0.39 0.09 140);
+  --canopy-soft: oklch(0.94 0.04 140);
+  --sunset: oklch(0.58 0.16 35);
+  --line: oklch(0.86 0.025 140);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--background);
+}
+
+body {
+  min-width: 20rem;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--background);
+  color: var(--ink);
+  font-family: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+}
+
+.interview-shell {
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(16rem, 31%) minmax(0, 1fr);
+}
+
+.project-panel {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 2rem;
+  background: var(--canopy-soft);
+  color: var(--canopy-deep);
+}
+
+.project-panel::before,
+.project-panel::after {
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  content: "";
+}
+
+.project-panel::before {
+  width: 24rem;
+  height: 24rem;
+  right: -13rem;
+  top: -9rem;
+  border: 4rem solid color-mix(in oklch, var(--canopy) 32%, transparent);
+}
+
+.project-panel::after {
+  width: 8rem;
+  height: 8rem;
+  right: 2rem;
+  bottom: 7rem;
+  background: color-mix(in oklch, var(--sunset) 13%, transparent);
+}
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 720;
+  letter-spacing: -0.01em;
+}
+
+.mark {
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  overflow: visible;
+  fill: var(--sunset);
+  stroke: var(--canopy-deep);
+  stroke-linecap: round;
+  stroke-width: 1.7;
+}
+
+.project-context {
+  max-width: 17rem;
+}
+
+.project-context p,
+.synthetic-note,
+.question-cue,
+.take-time {
+  margin: 0;
+  color: var(--muted-ink);
+}
+
+.project-context p {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.project-context h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 720;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.project-context span {
+  display: block;
+  margin-top: 0.75rem;
+  color: var(--muted-ink);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.synthetic-note {
+  width: fit-content;
+  border: 1px solid color-mix(in oklch, var(--canopy-deep) 22%, transparent);
+  border-radius: 999px;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.question-stage {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  padding: max(2rem, 7vw);
+  background: linear-gradient(var(--line), var(--line)) left 14% top 0 / 1px 100% no-repeat,
+    var(--background);
+}
+
+.question-copy {
+  width: min(100%, 45rem);
+  margin-inline: auto;
+  padding-inline-start: 2rem;
+}
+
+.question-cue {
+  margin-bottom: 1.5rem;
+  color: var(--sunset);
+  font-size: 0.9375rem;
+  font-weight: 720;
+}
+
+.question-copy h1 {
+  max-width: 22ch;
+  margin: 0;
+  color: var(--ink);
+  font-size: 2.75rem;
+  font-weight: 680;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.take-time {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+}
+
+@media (max-width: 46rem) {
+  .interview-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .project-panel {
+    min-height: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem;
+  }
+
+  .project-panel::before {
+    width: 16rem;
+    height: 16rem;
+    right: -9rem;
+    top: -8rem;
+    border-width: 3rem;
+  }
+
+  .project-panel::after,
+  .project-context p,
+  .project-context span,
+  .synthetic-note {
+    display: none;
+  }
+
+  .project-context {
+    min-width: 0;
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .project-context h2 {
+    overflow: hidden;
+    font-size: 1rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .question-stage {
+    min-height: 30rem;
+    padding: 3rem 1.5rem;
+    background: var(--background);
+  }
+
+  .question-copy {
+    padding-inline-start: 0;
+  }
+
+  .question-copy h1 {
+    font-size: 2rem;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .project-panel {
+    border-right: 1px solid var(--canopy-deep);
+  }
+
+  .synthetic-note {
+    border-color: var(--canopy-deep);
+  }
+}
