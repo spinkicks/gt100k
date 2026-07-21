@@ -695,3 +695,15 @@
 ## NEXT
 - Complete U038 with the minimal lifecycle/history portion of U040: add `packages/interest-lab-view/test/lifecycle-view.test.ts` and implement `buildLifecycleStateView` plus `buildRevisionHistoryView`.
 - Acceptance: the lifecycle gate checklist matches `evaluateCandidateGate` G5, shadow proposals remain suggestions with `operative:false`, all fixed legal transitions are present with no proposal path to operative authorship, and revision history is append-only and monotonic; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-21 — P13 / U038 + partial U040
+- Added seven pure lifecycle/history contracts covering the exact main/branch tracks, authoritative legal transitions, complete and competence-only G5 checklists, both shadow provenances, fail-closed operative proposals, bitemporal append order, and monotonic history validation.
+- Confirmed genuine test-first RED evidence: the suite first failed to resolve the absent lifecycle module, then all seven focused cases failed against typed null scaffolds before the minimal implementation made them green.
+- Implemented the GPU-free lifecycle projection from domain constants and evidence-carrying gate input, with exact contested/parked tones, non-operative suggestion copy, separate guide-authoring affordance, and an append-preserving revision rail whose current version is the highest operative revision.
+- Recorded the underdetermined gate-input boundary and authorship/history defaults in D052. One formatter-only gate failure was reproduced in isolation and corrected with the exact Biome-prescribed import order and wrapping.
+- Verified the focused lifecycle suite (7 tests), forced view-package compiler, view-package suite (71 tests across 16 files), `pnpm typecheck`, `pnpm test` (181 tests across 40 files), and `pnpm lint` (149 files); all pass.
+- Status: U038 complete; U040 remains partial; P13 remains in progress. SC-UI-07 and IL-006's revision-history projection are green at the pure direct-module boundary. No blocker.
+
+## NEXT
+- Complete U039 with the minimal constellation portion of U040: add `packages/interest-lab-view/test/constellation.test.ts` and implement `buildEvidenceConstellationView`.
+- Acceptance: the six family stars follow gate order; voluntary return has brightness `1.0`, other present families `0.7`, and absent families `0.18`; supporting/disconfirming anchors are `[2.4,0.4,0]` and `[-2.4,0.4,0]`; `domEquivalent:true`; no scalar score; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
