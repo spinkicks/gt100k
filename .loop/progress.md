@@ -593,3 +593,18 @@
 ## NEXT
 - T037: add focused app tests first, then implement `apps/arena/app/scene/BaseCamp.tsx` and wire it into the canvas, Tier-D fallback, and Arena Ledger.
 - Acceptance: render the deterministic Base Camp zones/slots and attributable pseudonymous lantern-marks from `view.base`/`presentation.basePlacements`; new features use `resolveMotion("baseAccretion")` with an instant reduced-motion equivalent; standings-off home navigation lands at Base Camp; the Ledger mirrors the base as a list; lint, typecheck, tests, root build, and Arena app build remain green.
+
+## 2026-07-21 — P4 / T037
+- Added `BaseCamp.tsx` with a pure deterministic render plan for the central elevation-0.8 island, exact WORLD_SCALE placements, first-contribution mission attribution, pseudonymous lantern-marks, all six canonical low-poly feature looks, and a deterministic unknown-feature mesh fallback.
+- Added token-driven `baseAccretion` Pop-in placement with Back.Out and an instant reduced-motion equivalent. The campfire uses one dynamic light only when capacity remains after mastery lights; all lower/capped tiers preserve it emissively.
+- Wired the shared view through r3f, the Tier-D SVG, and a labeled Arena Ledger feature list. Ledger/canvas feature focus uses typed events and exposes contributor plus mission without adding any power or identity data.
+- Added the persistent Home HUD affordance and made Base Camp the initial standings-off landing. Home/world retargeting captures the live camera presentation value, follows the exact 350ms scene-transition curve, remains interruptible, and cuts instantly under reduced motion.
+- Followed red-green TDD: four acceptance groups failed on the missing Base Camp/Ledger/camera APIs; a second RED locked actual Tier-D SVG rendering; a third RED caught the missing canonical dock/workshop/lookout looks before their implementations landed.
+- Review status: checked T037 against US4, §§5.3/5.5/5.6/5.8/5.12/8.8/8.10/8.16/8.20/P4, FR-011/015/016/024/029, SC-003/004/012/014/015/019, React/r3f performance guidance, and the reduced-motion/spatial-consistency rules; no Critical, Important, or Minor issues remain. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused Base Camp tests passed (4 tests); app regression tests passed (13 files, 57 tests); `pnpm lint` passed (123 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (47 files, 188 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 58.1 kB route, 146 kB first load).
+- SC status: P4 implementation is complete. T037 completes the concrete one-view Base Camp/Ledger/Tier-D/home-navigation slices of SC-003/004/012/014/015/019; the final browser accessibility/performance walkthrough remains scheduled for P7.
+- Blockers: browser automation remains unavailable in this workspace, so the interactive P4 walkthrough is deferred; deterministic behavior tests, static accessibility markup, type checks, and production builds are green.
+
+## NEXT
+- T038: add `packages/arena-world/test/staging.test.ts` first for the exact §8.6 age-band reward representations, then implement only the minimal `resolveRewardRepresentation` slice needed to restore the green gate.
+- Acceptance: all exact 6-8, 9-11, and 12-14 strings resolve deterministically; 6-8 has `showRawNumber=false` and `comparisonDefault="off"`; the underlying progression/economy remains unchanged (FR-017/018, SC-005); focused and repository gates remain green.

@@ -134,6 +134,16 @@ export default function Hud({ view, catalog, eventBus, onOpenOnboarding }: HudPr
       </div>
 
       <motion.button
+        aria-label="Return home to Base Camp"
+        className={styles.homeButton}
+        onClick={() => eventBus.emit("focus-home", undefined)}
+        type="button"
+        whileTap={{ transform: "scale(0.97)" }}
+      >
+        Home
+      </motion.button>
+
+      <motion.button
         aria-label="Open arena guide"
         className={styles.guideButton}
         onClick={onOpenOnboarding}

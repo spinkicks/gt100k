@@ -239,6 +239,8 @@ export default function ArenaClient() {
   const [caps, setCaps] = React.useState<DeviceCaps>(SERVER_SAFE_CAPS);
   const [runtimeTier, setRuntimeTier] = React.useState<QualityTier>();
   const [targetNodeId, setTargetNodeId] = React.useState<string>();
+  const [homeFocused, setHomeFocused] = React.useState(true);
+  const [focusedBaseFeature, setFocusedBaseFeature] = React.useState<string>();
   const [feedback, setFeedback] = React.useState<SequencedArenaFeedback>();
   const feedbackSequence = React.useRef(0);
   const [avatar, setAvatar] = React.useState<AvatarState>(() => ({
@@ -251,7 +253,21 @@ export default function ArenaClient() {
   }, []);
 
   React.useEffect(() => {
-    const stopFocus = eventBus.subscribe("focus-node", ({ nodeId }) => setTargetNodeId(nodeId));
+    const stopFocus = eventBus.subscribe("focus-node", ({ nodeId }) => {
+      setFocusedBaseFeature(undefined);
+      setHomeFocused(false);
+      setTargetNodeId(nodeId);
+    });
+    const stopHome = eventBus.subscribe("focus-home", () => {
+      setFocusedBaseFeature(undefined);
+      setHomeFocused(true);
+      setTargetNodeId(undefined);
+    });
+    const stopBaseFeature = eventBus.subscribe("focus-base-feature", ({ feature }) => {
+      setFocusedBaseFeature(feature);
+      setHomeFocused(true);
+      setTargetNodeId(undefined);
+    });
     const stopTier = eventBus.subscribe("tier-degraded", ({ to }) => setRuntimeTier(to));
     const stopFeedback = eventBus.subscribe("learning-moment", (signal) => {
       feedbackSequence.current += 1;
@@ -260,6 +276,8 @@ export default function ArenaClient() {
 
     return () => {
       stopFocus();
+      stopHome();
+      stopBaseFeature();
       stopTier();
       stopFeedback();
       eventBus.clear();
@@ -295,12 +313,14 @@ export default function ArenaClient() {
             <DynamicArenaCanvas
               eventBus={eventBus}
               feedback={feedback}
+              focusedBaseFeature={focusedBaseFeature}
+              homeFocused={homeFocused}
               onFallback={handleCanvasFallback}
               targetNodeId={targetNodeId}
               view={view}
             />
           ) : (
-            <Fallback2D view={view} />
+            <Fallback2D view={view} focusedFeature={focusedBaseFeature} />
           )}
         </div>
         <Onboarding

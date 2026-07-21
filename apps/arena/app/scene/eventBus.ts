@@ -12,6 +12,8 @@ export const ARENA_EVENT_NAMES = [
   "advance-feed",
   "learning-moment",
   "focus-node",
+  "focus-home",
+  "focus-base-feature",
   "node-focused",
   "unlock-celebrated",
   "tier-degraded",
@@ -26,6 +28,8 @@ export interface ArenaEventMap {
   "advance-feed": undefined;
   "learning-moment": LearningMomentSignal;
   "focus-node": { nodeId: string };
+  "focus-home": undefined;
+  "focus-base-feature": { feature: string };
   "node-focused": { nodeId: string };
   "unlock-celebrated": { nodeId: string; intensity: CelebrationEvent["intensity"] };
   "tier-degraded": {

@@ -28,8 +28,27 @@
   filter: drop-shadow(0 4px 4px rgb(14 42 59 / 55%));
 }
 
+.baseIsland {
+  fill: #c9b27e;
+  stroke: var(--sea-deep);
+  stroke-width: 12;
+}
+
+.baseFeature {
+  fill: var(--gold);
+  stroke: var(--sea-deep);
+  stroke-width: 8;
+}
+
+[data-base-feature][data-focused="true"] .baseFeature {
+  fill: var(--sun-hi);
+  stroke: var(--focus);
+  stroke-width: 14;
+}
+
 .landmark,
-.state {
+.state,
+.baseFeatureLabel {
   fill: var(--ink-hi);
   font-family: var(--font-body);
   paint-order: stroke;
@@ -47,6 +66,12 @@
 .state {
   font-size: 22px;
   font-weight: 700;
+  stroke-width: 6px;
+}
+
+.baseFeatureLabel {
+  font-size: 22px;
+  font-weight: 800;
   stroke-width: 6px;
 }
 

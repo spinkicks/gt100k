@@ -35,11 +35,20 @@ interface FallbackPath {
   to: string;
 }
 
+interface FallbackBaseFeature {
+  feature: string;
+  zone: string;
+  x: number;
+  y: number;
+  by: string;
+}
+
 export interface Fallback2DPlan {
   bounds: InitialArenaView["layout"]["bounds"];
   regions: FallbackRegion[];
   nodes: FallbackNode[];
   paths: FallbackPath[];
+  baseFeatures: FallbackBaseFeature[];
 }
 
 function required<T>(value: T | undefined, message: string): T {
@@ -77,6 +86,13 @@ export function buildFallback2DPlan(view: InitialArenaView): Fallback2DPlan {
       };
     }),
     paths: view.world.edges.map(({ from, to }) => ({ from, to })),
+    baseFeatures: view.presentation.basePlacements.map((placement) => ({
+      feature: placement.feature,
+      zone: placement.zone,
+      x: placement.x,
+      y: placement.y,
+      by: placement.by,
+    })),
   };
 }
 
@@ -104,9 +120,10 @@ function stateLabel(state: NodeState): string {
 
 export interface Fallback2DProps {
   view: InitialArenaView;
+  focusedFeature?: string;
 }
 
-export default function Fallback2D({ view }: Fallback2DProps) {
+export default function Fallback2D({ view, focusedFeature }: Fallback2DProps) {
   const plan = buildFallback2DPlan(view);
   const nodeById = new Map(plan.nodes.map((node) => [node.nodeId, node] as const));
 
@@ -154,6 +171,22 @@ export default function Fallback2D({ view }: Fallback2DProps) {
             />
           );
         })}
+        <g data-base-camp="true">
+          <ellipse className={styles.baseIsland} cx="1024" cy="1024" rx="224" ry="176" />
+          {plan.baseFeatures.map((feature) => (
+            <g
+              data-base-feature={feature.feature}
+              data-focused={focusedFeature === feature.feature ? "true" : "false"}
+              key={feature.feature}
+              transform={`translate(${feature.x} ${feature.y})`}
+            >
+              <circle className={styles.baseFeature} r="38" />
+              <text className={styles.baseFeatureLabel} y="68">
+                {feature.feature}
+              </text>
+            </g>
+          ))}
+        </g>
         {plan.nodes.map((node) => (
           <g
             data-node-id={node.nodeId}

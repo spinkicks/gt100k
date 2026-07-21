@@ -91,6 +91,8 @@ const EVENT_NAMES = [
   "advance-feed",
   "learning-moment",
   "focus-node",
+  "focus-home",
+  "focus-base-feature",
   "node-focused",
   "unlock-celebrated",
   "tier-degraded",

@@ -37,6 +37,14 @@ export interface LedgerEntry {
   icon: string;
 }
 
+export interface LedgerBaseEntry {
+  feature: string;
+  zone: string;
+  by: string;
+  missionId: string;
+  accessibleName: string;
+}
+
 export interface LedgerTreeCommand {
   nextIndex: number;
   activate: boolean;
@@ -70,6 +78,27 @@ export function buildLedgerEntries(view: InitialArenaView): LedgerEntry[] {
       regionLabel,
       accessibleName: `${node.landmark}, ${state}, ${regionLabel}`,
       icon: STATE_ICON[state],
+    };
+  });
+}
+
+export function buildLedgerBaseEntries(view: InitialArenaView): LedgerBaseEntry[] {
+  return view.presentation.basePlacements.map((placement) => {
+    const contribution = view.base.contributions.find(
+      ({ feature }) => feature === placement.feature,
+    );
+    if (!contribution) {
+      throw new Error(`Arena Ledger is missing Base Camp attribution: ${placement.feature}`);
+    }
+    const featureLabel = labelRegion(placement.feature);
+    const zoneLabel = labelRegion(placement.zone);
+
+    return {
+      feature: placement.feature,
+      zone: placement.zone,
+      by: placement.by,
+      missionId: contribution.missionId,
+      accessibleName: `${featureLabel} in ${zoneLabel}, contributed by ${placement.by} for mission ${contribution.missionId}`,
     };
   });
 }
@@ -132,6 +161,7 @@ export default function ArenaLedger({
   onboarding,
 }: ArenaLedgerProps) {
   const entries = buildLedgerEntries(view);
+  const baseEntries = buildLedgerBaseEntries(view);
   const cosmetics = buildHudCosmeticEntries(view, catalog);
   const ledgerFeedback = feedback ? resolveArenaFeedback(feedback.signal) : null;
   const [activeIndex, setActiveIndex] = React.useState(0);
@@ -254,6 +284,37 @@ export default function ArenaLedger({
           </li>
         ))}
       </ul>
+
+      <section className={styles.base} aria-labelledby="arena-ledger-base-title">
+        <header className={styles.baseHeader}>
+          <h3 id="arena-ledger-base-title">Base Camp</h3>
+          <p>Visit the shared features your cohort built together.</p>
+        </header>
+        <ul className={styles.baseList}>
+          {baseEntries.map((entry) => (
+            <li key={entry.feature}>
+              <button
+                aria-label={entry.accessibleName}
+                data-base-feature={entry.feature}
+                onClick={() => eventBus.emit("focus-base-feature", { feature: entry.feature })}
+                onFocus={() => eventBus.emit("focus-base-feature", { feature: entry.feature })}
+                type="button"
+              >
+                <span aria-hidden="true" className={styles.baseIcon}>
+                  ◉
+                </span>
+                <span className={styles.baseCopy}>
+                  <strong>{labelRegion(entry.feature)}</strong>
+                  <span>{labelRegion(entry.zone)}</span>
+                  <span>
+                    {entry.by} · mission {entry.missionId}
+                  </span>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <section className={styles.cosmetics} aria-labelledby="arena-ledger-cosmetics-title">
         <header className={styles.cosmeticsHeader}>

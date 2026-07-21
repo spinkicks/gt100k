@@ -5,6 +5,7 @@ import { Canvas, type RootState, useThree } from "@react-three/fiber";
 import { type ReactNode, useEffect, useRef } from "react";
 import { ACESFilmicToneMapping, ColorManagement, type Group, SRGBColorSpace } from "three";
 import Avatar from "./Avatar";
+import BaseCamp, { BASE_CAMP_TARGET } from "./BaseCamp";
 import CameraRig from "./CameraRig";
 import Fx from "./Fx";
 import LightingRig from "./LightingRig";
@@ -116,6 +117,8 @@ export interface ArenaCanvasProps {
   children?: ReactNode;
   feedback?: SequencedArenaFeedback;
   targetNodeId?: string;
+  focusedBaseFeature?: string;
+  homeFocused?: boolean;
   onFallback?: (reason: ContextFailureReason) => void;
 }
 
@@ -125,6 +128,8 @@ export default function ArenaCanvas({
   children,
   feedback,
   targetNodeId,
+  focusedBaseFeature,
+  homeFocused = true,
   onFallback,
 }: ArenaCanvasProps) {
   const { qualityBudget, qualityTier } = view.presentation;
@@ -163,8 +168,18 @@ export default function ArenaCanvas({
             water={view.presentation.water}
           />
           <WorldRoot view={view} />
+          <BaseCamp
+            focusedFeature={focusedBaseFeature}
+            onFocusFeature={(feature) => eventBus.emit("focus-base-feature", { feature })}
+            view={view}
+          />
           <Avatar avatarRef={avatarRef} targetNodeId={targetNodeId} view={view} />
-          <CameraRig followRef={avatarRef} view={view} />
+          <CameraRig
+            followRef={homeFocused ? undefined : avatarRef}
+            homeFocused={homeFocused}
+            target={homeFocused ? BASE_CAMP_TARGET : undefined}
+            view={view}
+          />
           <Fx eventBus={eventBus} feedback={feedback} targetNodeId={targetNodeId} view={view} />
           <PostFx feedback={feedback} view={view} />
         </>

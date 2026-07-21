@@ -8,6 +8,7 @@
 .quality,
 .progress,
 .wardrobe,
+.homeButton,
 .guideButton {
   pointer-events: auto;
 }
@@ -87,10 +88,10 @@
   right: 1rem;
 }
 
+.homeButton,
 .guideButton {
   position: absolute;
   top: 1rem;
-  right: 11.25rem;
   min-width: 2.75rem;
   min-height: 2.75rem;
   border: 1px solid var(--surface-border);
@@ -101,6 +102,15 @@
   font-size: 1.125rem;
   font-weight: 900;
   backdrop-filter: var(--surface-backdrop);
+}
+
+.guideButton {
+  right: 11.25rem;
+}
+
+.homeButton {
+  right: 14.75rem;
+  min-width: 4.5rem;
 }
 
 .wardrobeTrigger {
@@ -244,12 +254,14 @@
 }
 
 .wardrobeTrigger:hover,
+.homeButton:hover,
 .guideButton:hover,
 .closeButton:hover:not(:disabled) {
   background: rgb(245 249 252 / 16%);
 }
 
 .wardrobeTrigger:focus-visible,
+.homeButton:focus-visible,
 .guideButton:focus-visible,
 .closeButton:focus-visible,
 .equipButton:focus-visible {
@@ -259,6 +271,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .wardrobeTrigger,
+  .homeButton,
   .guideButton,
   .closeButton,
   .equipButton {
@@ -270,6 +283,7 @@
 @media (prefers-reduced-transparency: reduce) {
   .quality,
   .progress,
+  .homeButton,
   .guideButton,
   .wardrobeTrigger,
   .drawer,
@@ -282,6 +296,7 @@
 @media (prefers-contrast: more) {
   .quality,
   .progress,
+  .homeButton,
   .guideButton,
   .wardrobeTrigger,
   .drawer {
@@ -309,6 +324,12 @@
   .guideButton {
     top: 0.75rem;
     right: 11rem;
+  }
+
+  .homeButton {
+    top: 4.25rem;
+    right: auto;
+    left: 0.75rem;
   }
 
   .progress {

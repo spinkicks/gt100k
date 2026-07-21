@@ -14,6 +14,7 @@ import { damp3 } from "./Avatar";
 
 const DEG_TO_RAD = Math.PI / 180;
 const INTRO_MOTION = resolveMotion("intro", { reducedMotion: false });
+const SCENE_TRANSITION_MOTION = resolveMotion("sceneTransition", { reducedMotion: false });
 
 export function resolveCameraPlan(config: CameraConfig3D, reducedMotion: boolean) {
   return {
@@ -45,11 +46,18 @@ export function resolveIntroDistance(
   );
 }
 
+export function resolveSceneTransitionProgress(elapsedMs: number, reducedMotion: boolean): number {
+  if (reducedMotion) return 1;
+  const progress = Math.min(1, Math.max(0, elapsedMs / SCENE_TRANSITION_MOTION.durationMs));
+  return 1 - (1 - progress) ** 3;
+}
+
 export interface CameraRigProps {
   view: InitialArenaView;
   target?: readonly [number, number, number];
   lookDirection?: readonly [number, number, number];
   followRef?: RefObject<Object3D>;
+  homeFocused?: boolean;
 }
 
 export default function CameraRig({
@@ -57,6 +65,7 @@ export default function CameraRig({
   target,
   lookDirection = [0, 0, 0],
   followRef,
+  homeFocused = false,
 }: CameraRigProps) {
   const config = view.presentation.camera;
   const plan = resolveCameraPlan(config, view.flags.reducedMotion);
@@ -70,11 +79,14 @@ export default function CameraRig({
   const desiredTarget = useMemo(() => new Vector3(), []);
   const previousTarget = useMemo(() => new Vector3(), []);
   const targetShift = useMemo(() => new Vector3(), []);
+  const transitionFrom = useMemo(() => new Vector3(), []);
   const lookAhead = useMemo(() => new Vector3(), []);
   const cameraOffset = useMemo(() => new Vector3(0.72, 0.58, 1).normalize(), []);
   const camera = useRef<ThreePerspectiveCamera>(null);
   const controls = useRef<ElementRef<typeof OrbitControls>>(null);
   const elapsedMs = useRef(0);
+  const transitionElapsedMs = useRef(SCENE_TRANSITION_MOTION.durationMs);
+  const previousHomeFocused = useRef(homeFocused);
   const initialized = useRef(false);
 
   useLayoutEffect(() => {
@@ -89,6 +101,15 @@ export default function CameraRig({
     cameraInstance.lookAt(desiredTarget);
     controlsInstance.update();
   }, [cameraOffset, desiredTarget, plan.initialDistance, targetTuple]);
+
+  useLayoutEffect(() => {
+    if (previousHomeFocused.current === homeFocused) return;
+    previousHomeFocused.current = homeFocused;
+    const controlsInstance = controls.current;
+    if (!controlsInstance) return;
+    transitionFrom.copy(controlsInstance.target);
+    transitionElapsedMs.current = 0;
+  }, [homeFocused, transitionFrom]);
 
   useFrame((_, delta) => {
     const cameraInstance = camera.current;
@@ -109,7 +130,16 @@ export default function CameraRig({
     }
 
     previousTarget.copy(controlsInstance.target);
-    if (
+    if (transitionElapsedMs.current < SCENE_TRANSITION_MOTION.durationMs) {
+      transitionElapsedMs.current += delta * 1_000;
+      controlsInstance.target.lerpVectors(
+        transitionFrom,
+        desiredTarget,
+        resolveSceneTransitionProgress(transitionElapsedMs.current, view.flags.reducedMotion),
+      );
+      targetShift.copy(controlsInstance.target).sub(previousTarget);
+      cameraInstance.position.add(targetShift);
+    } else if (
       view.flags.reducedMotion ||
       controlsInstance.target.distanceTo(desiredTarget) > config.deadzoneRadius
     ) {
