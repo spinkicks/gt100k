@@ -168,3 +168,15 @@
 
 - T016 + T024 — Add the `repairCohort` contract first, then implement bounded in-budget repair in `packages/cohort-compiler/src/repair.ts`.
 - Acceptance: an in-budget repair returns a reversible repaired assignment with a guide-veto window; a repair exceeding the churn budget or changing cohort size returns `staffExceptionRequired` and does not auto-apply; the focused RED/GREEN cycle and repository typecheck/test/lint gate remain green.
+
+## 2026-07-20 — P4 / T016 + T024
+
+- Added the FR-017/SC-004 `repairCohort` contract for an exact in-budget A6→A7 repair, an over-base-cap repair with a recorded manual exception, and a size-changing proposal with a recorded size exception.
+- Implemented pure bounded-automation admission in `packages/cohort-compiler/src/repair.ts`: unchanged cohort sizes and remaining base churn capacity produce a repaired snapshot with prior/rollback wiring, an explicit guide-veto window, and a one-click rollback target; over-cap and size-changing proposals expose only `staffExceptionRequired` and never a repaired snapshot.
+- TDD status: the correctly root-scoped focused suite first failed because `src/repair.ts` was absent, then passed 3/3 after the minimal implementation. The initial package-filtered invocation found no files because the repository Vitest globs are root-relative; no code was changed for that command-only issue.
+- Gate status: package-local strict TypeScript and focused Biome pass; repository `pnpm typecheck`, `pnpm test` (78/78), and `pnpm lint` pass. P3/P4 SC-004 is complete; P4 remains in progress for safeguarding and post-lock shadow seams. No blocker.
+
+## NEXT
+
+- T017 + T025 + T026 — Add the Golden Fixture D safeguarding contract first, then implement `routeHealthEvent` and the in-memory `SafeguardingSink` adapter.
+- Acceptance: the synthetic event reaches `sink.pending()` without entering optimization; the move touching A3 (`mv-1`) is paused while `mv-2` is unchanged; no rating or objective value changes; the focused RED/GREEN cycle and repository typecheck/test/lint gate remain green.
