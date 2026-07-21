@@ -399,3 +399,14 @@
 ## NEXT
 - Complete U007: scaffold `apps/interest-lab/package.json` with the pinned Next 14, React 18, Motion 12, Three.js, react-three-fiber 8, and drei 9 dependency lines plus both Interest Lab workspace packages.
 - Acceptance: the manifest mirrors the existing Next app scripts and exact pinned dependency ranges, both workspace dependencies resolve, no optional post-processing dependency is added early, and the repository `pnpm typecheck`, `pnpm test`, and `pnpm lint` gate remains green.
+
+## 2026-07-21 — P8 / U007
+- Scaffolded `@gt100k/interest-lab-app` with the existing Next app scripts, both Interest Lab workspace dependencies, and the exact pinned Next 14, React 18, Motion 12, Three.js 0.169, react-three-fiber 8, drei 9, and type dependency ranges.
+- Confirmed the contract-first red state: the exact manifest assertion failed because `apps/interest-lab/package.json` was absent, then passed after the minimal manifest was added.
+- Resolved both workspace links and all pinned runtime packages with `pnpm install --lockfile=false`, preserving the shared root lockfile; kept the optional P14 post-processing dependencies absent.
+- Verified `pnpm typecheck`, `pnpm test` (123 tests across 28 files), `pnpm lint` (89 files), and the repository `pnpm build`; all pass. Independent review found no Critical, Important, or Minor issues.
+- Status: U007 complete; P8 remains in progress. Part-I SC-001 through SC-016 and the existing Part-II view-package gate remain green; app-local build acceptance begins after U008/U009 provide the Next config and App Router shell. No blocker.
+
+## NEXT
+- Complete U008: add `apps/interest-lab/next.config.mjs` with both workspace packages in `transpilePackages` and `apps/interest-lab/tsconfig.json` mirroring `apps/student-compass/tsconfig.json`.
+- Acceptance: the app config preserves Next 14 App Router compilation settings, TypeScript uses `noEmit`, `jsx: "preserve"`, and DOM libs, and `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green without a shared-root edit.
