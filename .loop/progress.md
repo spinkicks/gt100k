@@ -434,3 +434,14 @@
 ## NEXT
 - Complete U010: add `packages/interest-lab-view/test/motion.test.ts` with the complete §U8.4 animated and reduced-motion golden table before widening the temporary resolver.
 - Acceptance: every DOM and 3D motion kind has an exact reduced equivalent with `mode:"reduced"`, `easing:"linear"`, and the pinned reduced duration; `pick` is the only spring, no reveal uses `scale(0)`, the focused suite records a genuine red failure, and the package compiler plus `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green after the paired minimal U014 implementation.
+
+## 2026-07-21 — P9 / U010 + partial U014
+- Added the complete §U8.4 motion acceptance table for all 25 DOM and 3D kinds, including exact animated easing/duration values and every reduced-motion equivalent.
+- Confirmed the test-first red state: three focused cases failed because the P8 resolver hardcoded the animated press token, ignored reduced motion, and exposed no pick spring; the suite passed after the minimal resolver implementation.
+- Replaced the temporary press-only resolver with a typed deterministic table, preserving `pickSpring` as the sole spring token and mapping reduced motion to linear static/short-crossfade equivalents without introducing transform instructions.
+- Verified the focused motion suite (4 tests), forced view-package compiler, `pnpm typecheck`, `pnpm test` (127 tests across 29 files), and `pnpm lint` (94 files) all pass.
+- Status: U010 complete; U014 is partial pending `resolveDomainHue`. SC-UI-08 and UI-FR-010 are green at the pure view-package boundary. No blocker.
+
+## NEXT
+- Complete U011: add `packages/interest-lab-view/test/art.test.ts` for the exact §U8.2/§U8.3 palette/typography and §U8.5 catalog-order hue behavior before completing U014.
+- Acceptance: tests pin all contrast guarantees, the eight golden seed-domain hues, deterministic catalog-order derivation, and an unknown-domain throw; preserve a genuine focused red run, then implement/export only the minimal `resolveDomainHue` needed to restore the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` gate.
