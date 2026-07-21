@@ -149,3 +149,8 @@
 - Chose: retain the spec-mandated `@media (prefers-reduced-transparency: reduce)` block with one adjacent Biome suppression for `noUnknownMediaFeatureName`.
 - Why: Biome 1.9 does not include that preference in its known media-feature registry, but §U9/U12 explicitly require the solid-panel fallback. A line-local suppression documents the compatibility boundary without weakening any other CSS lint rule.
 - Rejected: removing the media query violates the accessibility contract; disabling the rule globally requires a forbidden shared-root edit and would hide unrelated mistakes; substituting a different preference would not implement the specified behavior.
+
+## D031 — Provenance-aware picker copy with a fresh-history baseline
+- Chose: derive domain hues from `lab.coverage.domains.have`, keep offer order unchanged, vary only `whyCopy`/`title` and the visible slice by age-band staging, and describe RULE, GUIDE, and SHADOW_MODEL provenance truthfully in each copy register. Accept the specified history input but keep every card `new`/`neutral` and exploration counts at zero for the P9 fresh-history baseline; U031 owns non-empty return-history derivation.
+- Why: §U8.8 pins the empty-history golden, the Lab coverage view already preserves catalog domain order, UI-FR-017 requires provenance-aware copy, and the ordered plan explicitly defers voluntary/prompted return states to P11. This keeps U016 pure and useful without preempting the later return-delight contract.
+- Rejected: deriving hues from a fixed domain map would violate D-U4; saying "rule" for GUIDE/SHADOW_MODEL offers would misstate provenance; implementing return delight before U030's failing tests would violate the ordered test-first path; using a forbidden `label` field would reverse D026.

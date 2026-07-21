@@ -467,3 +467,15 @@
 ## NEXT
 - Complete U013 with its minimal U016 implementation: add the exact `buildProbePickerView` structural golden in `packages/interest-lab-view/test/probe-picker.test.ts`, then implement and export the pure picker projection.
 - Acceptance: G1 yields 20 RULE-provenance cards with non-empty band-appropriate `whyCopy`, catalog-order hue and fixed work-mode glyph, `returnState:"new"`, `helpAffordance:true`, and at least two eligible choices; forbidden price/score/rank/percentile/verdict/label keys remain absent, the focused suite records a genuine red failure, and the package compiler plus `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
+
+## 2026-07-21 — P9 / U013 + U016
+- Added four picker acceptance contracts over a synthetic G1 Lab: exact 20-card offer order, catalog-order hues, fixed work-mode glyphs, RULE provenance, non-empty band-aware copy, fresh-history state, always-present help, age-band visible slices, reduced-motion tokens, provenance-truthful GUIDE/SHADOW_MODEL copy, and all six forbidden card keys absent.
+- Confirmed the test-first red state twice: all picker/public-API cases first failed on the absent function/export, then the review-added provenance case failed because GUIDE copy was incorrectly described as a rule before the mapping was corrected.
+- Implemented and exported pure `buildProbePickerView`, composing existing art, glyph, motion, and staging resolvers without React, Three.js, I/O, wall-clock access, randomization, fixed domain mappings, or learning-rule recomputation. Non-empty return-history interpretation remains deliberately assigned to U030/U031.
+- Fixed the view package's scoped test script after the fresh gate exposed root-relative test discovery: added the same package-local `test/**/*.test.ts` Vitest config used by `@gt100k/interest-lab`, with no shared-root edit.
+- Verified the view package suite (31 tests), forced view-package compiler, `pnpm typecheck`, `pnpm test` (141 tests across 32 files), `pnpm lint` (100 files), and the Interest Lab production build; all pass.
+- Status: U013 and U016 complete; P9 remains in progress. SC-UI-01 and UI-FR-002/UI-FR-017 are green at the pure picker boundary. No blocker.
+
+## NEXT
+- Complete U017: add the first pure `buildInterestLabView` child-surface composition in `packages/interest-lab-view/src/view.ts` and export it.
+- Acceptance: tests first prove the builder composes the child `ProbePickerView` with `surface:"child"`, caller flags, and derived presentation without recomputing domain state; the scene block remains deferred to P9b, and the view package compiler, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and Interest Lab app build remain green.
