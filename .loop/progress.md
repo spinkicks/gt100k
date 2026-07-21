@@ -688,3 +688,16 @@
 
 - T136 — Make the feature's single final shared-file touch by adding all Cohort Compiler package/adapter references and `packages/cohort-arena-view` to the root `tsconfig.json` composite references; do not reference the non-composite Next.js app.
 - Acceptance: the reference list includes `packages/cohort-compiler`, every `adapters/cohort-*` package, and `packages/cohort-arena-view` exactly once; `apps/cohort-arena` remains absent; fresh repository typecheck/test/lint, both production builds, and the seeded production smoke remain green; then create `.loop-done` only if every feature task and SC is complete.
+
+## 2026-07-21 — P11 / T136
+
+- Added the final composite project references for `packages/cohort-compiler`, all five `adapters/cohort-*` packages, and `packages/cohort-arena-view` to the root `tsconfig.json`; each appears exactly once and the non-composite `apps/cohort-arena` app remains excluded.
+- TDD/config status: the exact reference-set contract failed first with all seven paths missing, then passed after the isolated additive configuration change. The newly expanded root `tsc -b` graph compiles cleanly.
+- Completion audit: all 18 success criteria (SC-001 through SC-018) have recorded implementation and acceptance evidence. All actionable tasks are recorded complete; the placeholder T037 is explicitly superseded and folded into T136 by `tasks.md`.
+- Gate status: `pnpm typecheck`, `pnpm test` (151/151), `pnpm lint` (152 files), root `pnpm build`, and `pnpm --filter @gt100k/cohort-arena build` pass. The unchanged production Playwright smoke passes 5/5 after exposing the existing local Chromium dependency bundle through an ephemeral `LD_LIBRARY_PATH`; the initial host-only launcher failure (`libnspr4.so` unavailable) required no repository or host-package change. No blocker.
+- Feature status: the full `006-cohort-compiler` spec, including the domain compiler, adapters, Cohort Arena view/app, accessible 2D tier, and best-effort 3D phases, is complete. `.loop-done` created.
+
+## NEXT
+
+- None — the whole `006-cohort-compiler` feature is complete; the harness can commit this isolated final reference increment and open the PR.
+- Acceptance: preserve the green gate and the single shared-file scope during merge reconciliation.
