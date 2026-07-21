@@ -4,21 +4,30 @@
 
 This records the decisions behind the UI surfaces so the loop does not re-open them. It complements spec.md **Part II §U2/§U13** (decisions + decision points) and plan.md **Part II**. Values are pinned in spec.md **§U8**.
 
-## R1 — Rendering approach: React + framer-motion + SVG/DOM (no game engine)
+> **Revision (3D pass).** The child surface is now an explorable **3D world of floating interest islands** (react-three-fiber + drei + three.js) with a **2D-DOM equal/fallback tier**, and all DOM motion standardizes on **`motion@^12`**. R1/R7/R8 below are updated; R9/R10/R11 are new.
 
-**Decision.** Build both surfaces in the **DOM/SVG** with React and **framer-motion** (`^11`), not on a Canvas/WebGL game engine.
+## R1 — Rendering approach: a 3D child world (react-three-fiber + drei + three.js) + a 2D-DOM equal/fallback tier
+
+**Decision.** The child **Curiosity Quest World** is a **real 3D scene** on a WebGL `<Canvas>` (react-three-fiber + drei + three.js) — floating interest islands (one per domain), glowing quest-markers, dusk light, gentle idle motion, a drifting/focusing camera. The guide **Hypothesis Console** stays DOM/SVG (coverage grid + evidence columns + timeline + lifecycle diagram + prose) with an **optional, tasteful r3f "evidence constellation"** depth viz. All of it is driven by **one deterministic view model** (D-U3) across **three tiers**: `quest-world-3d` (full) → `quest-world-3d-lite` (degraded) → `board-2d` (the calm/accessible/reduced-motion/no-WebGL fallback — the classic card-constellation board).
 
 **Why.**
-- The child probe-picker is a **quest board of cards / islands**; the guide console is a **coverage grid + evidence columns + a return timeline + a lifecycle state diagram + prose**. Every one of these is a natural DOM/SVG structure.
-- **Accessibility by construction.** A DOM surface is directly operable by keyboard/switch/screen-reader with real focus order and semantics — no `aria-hidden` canvas + a hand-maintained parallel structure (the shim feature 004 needs for its Phaser world). WCAG 2.2 AA (UI-FR-013) is far cheaper and less error-prone here.
-- **Craft fit.** The Apple fluid-motion and Emil design-engineering guidance is DOM-native: springs, `@starting-style`, `clip-path`/`mask` reveals, `backdrop-filter` materials, origin-aware transforms, blur-masked crossfades, stagger. framer-motion gives interruptible springs, `AnimatePresence`, and `layout`/shared-element transitions with `useReducedMotion` gating.
-- **Lean build.** No WebGL runtime, no asset atlas pipeline, no context-loss handling; `next build` stays small and deterministic.
+- **The vision demands a world, not a form.** "An explorable, tactile 3D world of floating islands you sail/hop between, with warm light and gentle idle motion" is inherently volumetric — depth, atmospheric fog, and idle float are the delight. A flat card grid cannot carry it. r3f + drei give exactly the primitives (scene graph, `useFrame`, `<Float>`, `<Sparkles>`, `<OrbitControls>`, `<PerformanceMonitor>`, `<AdaptiveDpr>`) with a React-idiomatic, declarative surface.
+- **Accessibility stays DOM-native.** The `<Canvas>` is `aria-hidden="true"` and **never the sole affordance**; every quest is a real, focusable DOM control (an ordered "quest ledger") from the same view model. Keyboard/switch/screen-reader users operate the DOM; the 3D camera *mirrors* focus. This mirrors feature 004's settled "one view model → canvas + accessible DOM" pattern (D5/DP-1), adapted to r3f. WCAG 2.2 AA (UI-FR-013) is met by construction.
+- **60fps + graceful degradation is first-class.** drei `<PerformanceMonitor>` + `<AdaptiveDpr>` + a deterministic `resolveQualityTier`/`resolveRenderTier` step the scene down (full → lite → 2D) on weak devices / low FPS / no-WebGL / lost context / `Save-Data` / `deviceMemory<4`, holding the budget without losing a quest (SC-UI-14/16).
+- **The pure view layer stays GPU-free and testable.** The view package emits **numbers** (island positions, camera framing, quality tiers) — it imports no `three`/`react`. Every scene value is a Vitest golden (§U8.13/§U8.14/§U8.16), so the 3D world is verified without a GPU, and `plainViewEquals` proves tier is presentation-only.
+- **Craft fit both ways.** Apple fluid-motion + Emil craft apply to the DOM tier (springs, `@starting-style`, `clip-path`/`mask`, `backdrop-filter`, origin-aware transforms, blur-masked crossfades, stagger — via `motion@^12`) **and** to the 3D tier (gentle looped Float/glow idle, an establishing drift-in, damped camera focus, the reserved come-back bloom, an interruptible pick hop).
 
-**Rejected.** Canvas/Phaser (feature 004's choice) — right for a *traversable 2D game world*, wrong for card/grid/timeline surfaces that must be AT-native. Recorded as **DP-U1 (settled)**.
+**Rejected.** (a) DOM/SVG-only (the prior choice) — right for the guide console, too flat for the explorable-world child vision. (b) Canvas-only interaction / text-in-canvas — opaque to AT and forces font fetches; instead interaction + text stay in the DOM and the canvas is decorative-but-synchronized. (c) A heavyweight 2D game engine (Phaser) — feature 004 already owns that lane; r3f is the right tool for a *3D* world and integrates natively with React/Next. Recorded as **DP-U1 (settled)**.
+
+## R1b — Why r3f 8 + drei 9 + React 18 (not r3f 9 / React 19)
+
+**Decision.** Pin **`@react-three/fiber ^8.17.10` + `@react-three/drei ^9.114.0` + `three ^0.169.0`** with React `^18.3.1` (matching `apps/student-compass`).
+
+**Why.** r3f is a React renderer and must pair with a React major: **r3f 8 ↔ React 18; r3f 9 ↔ React 19**. The repo standardizes on React 18.3.1, so the React-18 line (r3f 8 + drei 9) is the low-risk, proven pairing and keeps the interest-lab app consistent with the rest of the monorepo. Upgrading the *app only* to React 19 + r3f 9 later is isolated and non-breaking (recorded **DP-U8**).
 
 ## R2 — Architecture: a new pure view package + a separate app
 
-**Decision.** A new pure package **`packages/interest-lab-view` (`@gt100k/interest-lab-view`)** holds all render-shaping logic + constant registries; **`apps/interest-lab` (`@gt100k/interest-lab-app`)** is the only place React/framer-motion/DOM live. The **Part-I domain package is not modified** beyond consuming its public API.
+**Decision.** A new pure, **GPU-free** package **`packages/interest-lab-view` (`@gt100k/interest-lab-view`)** holds all render-shaping logic + constant registries + the deterministic 3D scene numbers (it imports no `three`/`react`); **`apps/interest-lab` (`@gt100k/interest-lab-app`)** is the only place React / `motion@^12` (DOM) / react-three-fiber+drei+three (3D) live. The **Part-I domain package is not modified** beyond consuming its public API.
 
 **Why.**
 - Mirrors the proven 001/004 split (pure package + app) and keeps every render rule **Vitest-covered** — the root `vitest.config.ts` globs `packages/**/test`, **not** `apps/**`, so any logic that needs a unit test must live in a package.
@@ -57,14 +66,32 @@ This records the decisions behind the UI surfaces so the loop does not re-open t
 
 **Why.** Encodes IL-005/IL-006 (no scalar passion score; gap never hidden behind a number), §14.5 (disconfirming beside supporting; "current evidence suggests"; guide authors the record), IL-011 (shadow proposals stay shadow), and PASS-006/010 (help never lowers a signal; no forbidden-purpose framing) as **structure**, so a grep test (SC-UI-11) proves them rather than relying on review.
 
-## R7 — Motion system as testable golden constants
+## R7 — Motion system as testable golden constants (DOM = `motion@^12`, 3D = r3f)
 
-**Decision.** All motion derives from `MOTION`/`EASINGS` via `resolveMotion(kind,{reducedMotion})` (spec §U8.4); every kind has a reduced-motion equivalent. One reserved spring (the pick gesture, `bounce 0.2`); everything else critically-damped/duration-eased; enter = strong ease-out; reveals = gentle overshoot ≤1.05 (never `scale(0)`).
+**Decision.** All motion derives from `MOTION`/`EASINGS` via `resolveMotion(kind,{reducedMotion})` (spec §U8.4); every kind — **DOM and 3D** — has a reduced-motion equivalent. One reserved spring (the pick gesture, `bounce 0.2`); everything else critically-damped/duration-eased/linearly-looped; enter = strong ease-out; reveals = gentle overshoot ≤1.05 (never `scale(0)`). **DOM motion is implemented with `motion@^12`** (`import from "motion/react"`); **3D scene motion is implemented with r3f `useFrame` + drei** (`<Float>`, `<Sparkles>`, `<OrbitControls>`). No other animation engine.
 
-**Why.** Emil (frequency-appropriate, strong custom ease-out, exit-faster/asymmetry, springs for gestures, transitions over keyframes for interruptibility) + Apple (springs interruptible/velocity-aware, reduced motion = gentler not gone) — expressed as constants so the golden motion table (§U6) is machine-checked (SC-UI-08), matching feature 004's rigor.
+**Why.** Emil (frequency-appropriate, strong custom ease-out, exit-faster/asymmetry, springs for gestures, transitions over keyframes for interruptibility) + Apple (springs interruptible/velocity-aware, camera animates from the live value, reduced motion = gentler not gone) — expressed as constants so the golden motion table (§U6) is machine-checked (SC-UI-08), matching feature 004's rigor. The 3D idle/camera/bloom rows reuse the same tokens (`islandFloat`, `islandFocus`, `driftIn`, `welcomeBack`, `glowLoop`) so the whole motion system is one testable registry.
 
 ## R8 — Stack, isolation, root reference
 
-**Decision.** Next `^14.2.15` + React `^18.3.1` (match `apps/student-compass`) + `framer-motion ^11.11.0`; `transpilePackages:["@gt100k/interest-lab","@gt100k/interest-lab-view"]`; app not in the Vitest glob (verified by `next build`). The only shared-root edit is the final root-`tsconfig.json` reference for `packages/interest-lab-view` (the app, like `student-compass`, is not a `tsc -b` reference).
+**Decision.** Next `^14.2.15` + React `^18.3.1` (match `apps/student-compass`) + **`motion ^12`** (DOM) + **`three ^0.169.0` / `@react-three/fiber ^8.17.10` / `@react-three/drei ^9.114.0`** (3D, dev `@types/three ^0.169.0`); optional non-breaking full-tier bloom `@react-three/postprocessing ^2.16.3` + `postprocessing ^6.36.3`. `transpilePackages:["@gt100k/interest-lab","@gt100k/interest-lab-view"]`; the `<Canvas>` mounts client-only via `next/dynamic(..., {ssr:false})`; app not in the Vitest glob (verified by `next build`). The only shared-root edit is the final root-`tsconfig.json` reference for `packages/interest-lab-view` (the app, like `student-compass`, is not a `tsc -b` reference).
 
-**Why.** Reuse the repo's proven Next/React versions and workspace globbing (`packages/*`/`apps/*` already covered by `pnpm-workspace.yaml`; `packages/**/test` by `vitest.config.ts`; `packages`/`apps` by the Biome `lint` script) → parallel-safe, one flagged root edit.
+**Why.** Reuse the repo's proven Next/React versions and workspace globbing (`packages/*`/`apps/*` already covered by `pnpm-workspace.yaml`; `packages/**/test` by `vitest.config.ts`; `packages`/`apps` by the Biome `lint` script) → parallel-safe, one flagged root edit. `motion@^12` is the current successor to `framer-motion` (same API surface, imported as `motion/react`); r3f 8/drei 9 is the React-18 line (R1b). The view package imports **none** of these (it stays pure/GPU-free), so the domain gate never depends on WebGL.
+
+## R9 — Three rendering tiers from one view model (parity + degradation)
+
+**Decision.** One `InterestLabView` (with a deterministic `scene` sub-view) drives **three tiers**: `quest-world-3d` (full WebGL), `quest-world-3d-lite` (fewer motes, no shadows/post-processing, capped DPR), and `board-2d` (the calm DOM card-constellation — reduced-motion/plain/no-WebGL/AT tier). `resolveRenderTier`/`resolveQualityTier` (spec §U8.16) choose the tier deterministically from device caps + flags; drei `<PerformanceMonitor>`/`<AdaptiveDpr>` step down at runtime.
+
+**Why.** It satisfies four hard requirements at once with **one** state source: reduced-motion as a first-class *equal* mode (the 2D tier), 60fps + graceful degradation (lite + runtime step-down), no-WebGL/weak-device robustness (2D fallback), and parity-by-construction (`plainViewEquals` holds because tier is presentation, not state). It mirrors feature 004's "one `ArenaView` → canvas + reduced + Ledger" discipline. Recorded as **DP-U6 (thresholds)**.
+
+## R10 — No external fetch: procedural 3D + DOM text
+
+**Decision.** All 3D geometry is **three primitives** (procedural low-poly islands/markers); glow is **emissive-first** + an **in-app generated** additive halo sprite; motes are drei `<Sparkles>`; **no HDRI/`Environment` presets, no remote GLTF/textures, no web fonts**. All **text is DOM** (never rendered inside the canvas).
+
+**Why.** The constitution/spec forbid external fetch and keep the build deterministic and public-repo-safe; drei `<Environment>` presets and troika `<Text>` both fetch, so they are excluded. DOM text keeps the world accessible (AT reads real text) and crisp. Post-processing bloom and committed GLB islands remain optional non-breaking upgrades. Recorded as **DP-U7/DP-U11**.
+
+## R11 — Accessibility for a 3D canvas: `aria-hidden` canvas + operable DOM ledger
+
+**Decision.** The child world's `<Canvas>` is `aria-hidden="true"`; the **operable, accessible surface is the DOM** — an ordered "quest ledger" of card-buttons (from the same view model) that owns focus/selection, with the 3D camera mirroring DOM focus. Dropping the canvas (Tier C) leaves a fully functional, fully accessible board.
+
+**Why.** WebGL is opaque to assistive tech; per WCAG 2.2 AA and the brief ("any 3D canvas `aria-hidden`; an accessible DOM equivalent, keyboard/screen-reader"), interaction must live in the DOM. Because both the canvas and the DOM ledger render from the one view model (R9), they never drift — parity by construction, exactly as feature 004's Ledger (D5). Recorded as **DP-U1 (settled)**.

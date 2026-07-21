@@ -16,15 +16,15 @@
 
 Build the code-first core of GT100K's **Cohort Compiler + RivalryMix** (PRD §15, §15.1, §15.2) as a **pure, framework-agnostic TypeScript domain package** (`packages/cohort-compiler`), mirroring `packages/learning-loop` / `packages/evidence-graph`. Three capabilities: (1) **near-peer candidate generation** by a level+velocity **caliper** (a pure-TS deterministic kNN/distance filter; **HNSW** deferred behind a port); (2) a **cohort-assignment solver** that forms stable **cohorts of six** under **hard constraints** — age, schedule, safeguarding separation, accommodations, level-velocity caliper, an **individual non-harm floor**, and a **churn budget** — via a pure-TS **greedy + local-search/repair** heuristic (**OR-Tools CP-SAT / branch-and-price** deferred), returning a `CohortAssignment` **snapshot** with **atomic in-memory commit + rollback**, **one active assignment per learner**, a **weekly churn cap**, and **cohort repair within the churn budget**; and (3) a pure-logic **RivalryMix turn-taking analysis** that detects **observable** patterns (dominance, repeated interruption) but **cannot** infer honesty/emotion/personality/motivation and **suppresses prompts** under low-quality input (**WebRTC/AudioWorklet + LiveKit** media plane deferred to a stub port). All I/O sits behind ports — `CandidateIndex`, `CohortRepository`, `SafeguardingSink`, plus deferred/shadow stub ports `MediaTurnSource` and `BenefitEstimator` — with in-memory/stub adapters under `adapters/cohort-*`, so the domain stays deterministic and 100% unit-testable. Guardrails are encoded, not asserted: **no fixed-ability caste ranks** (G6), **bullying/exclusion bypasses optimization to safeguarding**, **no learned model assigns**, **peer-effect causal uplift stays shadow**. Synthetic-only.
 
-**UI layer (this expansion — P7–P11).** On top of the finished domain, add a **beautiful, game-y, fully-animated, guide/ops-facing Cohort & Arena Viewer** (PRD §9.2 Guide/Ops consoles; §15/§15.3): a **pure view-model package** `packages/cohort-arena-view` (`@gt100k/cohort-arena-view`) that reads the committed `@gt100k/cohort-compiler` API read-only and composes a single deterministic **`CohortArenaView`**, plus a **Next.js App-Router app** `apps/cohort-arena` (`@gt100k/cohort-arena`) rendering it on **Pixi.js v8 (WebGL)** for the two spatial surfaces (an animated **cohort-formation constellation** and a **RivalryMix arena room**) and **DOM/SVG + Framer Motion** for the HUD (cohort cards with FLIP layout animation, satisfied-constraint badges, the non-harm floor line, the **opt-in gain-based standings**, the churn meter, rollback, and the **safeguarding-bypass** affordance) and the accessible **Cohort Ledger**. One view model drives every renderer (parity by construction); reduced motion is a first-class **equal** mode; WCAG 2.2 AA via the Ledger (canvas `aria-hidden`); **no caste/bottom-rank, no dark patterns, no emotion/trait labels** — guardrails structural, not asserted. The domain package is **not modified**. The view package is unit-tested (Vitest); the app is verified by `next build` + a seeded smoke.
+**UI layer (this expansion — P7–P11).** On top of the finished domain, add a **beautiful, mission-control-grade, guide/ops-facing Cohort & Arena Viewer** (PRD §9.2 Guide/Ops consoles; §15/§15.3): a **pure view-model package** `packages/cohort-arena-view` (`@gt100k/cohort-arena-view`) that reads the committed `@gt100k/cohort-compiler` API read-only and composes a single deterministic **`CohortArenaView`** (with exact 3D `LAYOUT` + a pure `project2D`), plus a **Next.js App-Router app** `apps/cohort-arena` (`@gt100k/cohort-arena`) rendering it as a **3D "Compiler Observatory"** on **react-three-fiber + drei + three.js (WebGL2)** for the two spatial surfaces (a 3D **cohort-formation choreography** — learner-stars drift in a caliper field then crystallize into hexagonal cohorts of six with lit constraint rings + non-harm-floor halos — and a **3D RivalryMix arena room** seat-ring) and **DOM + motion@^12** (`motion/react`) for the HUD (cohort cards with FLIP layout animation, satisfied-constraint badges, the non-harm floor readout, the **opt-in gain-based standings**, the churn meter, rollback, and the **safeguarding-bypass** affordance) and the accessible **Cohort Ledger**. One view model drives every renderer (parity by construction) across three tiers: the **full 3D tier**, a **2D tier** (a pure `project2D` DOM/SVG rendering for reduced-motion / plain / weak devices / WebGL loss), and the **Ledger**; reduced motion is a first-class **equal** mode (the calm 2D/static tier); 60fps with graceful degradation; WCAG 2.2 AA via the Ledger (3D canvas `aria-hidden`); **no caste/bottom-rank, no dark patterns, no emotion/trait labels** — guardrails structural, not asserted. The domain package is **not modified**. The view package is unit-tested (Vitest); the app is verified by `next build` + a seeded smoke.
 
 ## Technical Context
 
 **Language/Version**: TypeScript (strict), Node.js LTS (per PRD §26.1). `tsconfig.base.json` with `strict`, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`, `composite` (inherited).
 
-**Primary Dependencies**: None in the domain package (pure TS). pnpm workspaces + Vitest + Biome + `tsc -b` (existing factory gate). No OR-Tools, no HNSW library, no WebRTC/LiveKit — all deferred. **UI layer**: `packages/cohort-arena-view` depends on `@gt100k/cohort-compiler` (`workspace:*`) only (pure TS); `apps/cohort-arena` adds **Next.js `^14.2.15`** + **React `^18.3.1`** (match `apps/student-compass`), **Pixi.js `^8.19.0`** (WebGL canvas, client-only), and **motion `^12.42.0`** (`motion/react`, HUD/FLIP animation). No other runtime deps; no media/WebRTC/network.
+**Primary Dependencies**: None in the domain package (pure TS). pnpm workspaces + Vitest + Biome + `tsc -b` (existing factory gate). No OR-Tools, no HNSW library, no WebRTC/LiveKit — all deferred. **UI layer**: `packages/cohort-arena-view` depends on `@gt100k/cohort-compiler` (`workspace:*`) only (pure TS); `apps/cohort-arena` adds **Next.js `^14.2.15`** + **React/React-DOM `^18.3.1`** (match `apps/student-compass`), the **3D stack** **three `^0.169.0`** + **@react-three/fiber `^8.17.10`** (v8 pairs with React 18) + **@react-three/drei `^9.114.0`** + **@react-three/postprocessing `^2.16.3`** (WebGL2 canvas, client-only), and **motion `^12.42.0`** (`motion/react`, HUD/FLIP animation). No other runtime deps; no media/WebRTC/network.
 
-**UI project type**: A pure view-model **package** (`packages/cohort-arena-view`, unit-tested by Vitest — the existing `packages/**/test` glob discovers it) + a **Next.js App-Router app** (`apps/cohort-arena`, verified by `next build` + a seeded smoke; **not** in the Vitest globs, mirroring feature 004). One `CohortArenaView` drives the Pixi canvas, the DOM/Framer-Motion HUD, the reduced-motion rendering, and the accessible Cohort Ledger.
+**UI project type**: A pure view-model **package** (`packages/cohort-arena-view`, unit-tested by Vitest — the existing `packages/**/test` glob discovers it) + a **Next.js App-Router app** (`apps/cohort-arena`, verified by `next build` + a seeded smoke; **not** in the Vitest globs, mirroring feature 004). One `CohortArenaView` drives the **3D react-three-fiber canvas**, the **DOM + motion@^12 HUD**, the **2D-tier `project2D` rendering** (reduced-motion / weak-device / WebGL loss), and the accessible Cohort Ledger.
 
 **Storage**: In-memory `CohortRepository` (atomic commit + prior-snapshot rollback) for the synthetic slice, behind a port so a real PostgreSQL store slots in later without touching domain logic (PRD §15).
 
@@ -149,8 +149,9 @@ packages/
     │   │                            #   ArenaRoomView/SeatView/TurnPatternView (NO emotion/trait field),
     │   │                            #   SafeguardingView, MotionSpec, PresentationView/VisualBand, LedgerView
     │   ├── art.ts                   # PALETTE + TYPOGRAPHY (exact tokens)
-    │   ├── motion.ts                # MOTION + EASINGS + resolveMotion (reduced-motion table)
-    │   ├── layout.ts                # LAYOUT + layoutConstellation + layoutArenaRing (deterministic geometry)
+    │   ├── motion.ts                # MOTION + EASINGS + resolveMotion (19-kind reduced-motion table)
+    │   ├── layout.ts                # LAYOUT (3D) + CAMERA + layoutField + layoutConstellation +
+    │   │                            #   layoutArenaRing + project2D (deterministic 3D geometry + 2D projection)
     │   ├── standings.ts             # deriveStandingsView (opt-in; gainToBandTop; no rank/bottom-rank)
     │   ├── rivalry.ts               # buildArenaRoomView (observable-only; suppression veil)
     │   ├── band.ts                  # resolveVisualBand (age band + plain mode; state-identical)
@@ -164,21 +165,23 @@ packages/
     ├── tsconfig.json                # extends ../../tsconfig.base.json (composite)
     └── README.md
 apps/
-└── cohort-arena/                    # Next.js App Router — the ONLY place Pixi/React/DOM live
+└── cohort-arena/                    # Next.js App Router — the ONLY place three.js/r3f/React/DOM live
     ├── app/
     │   ├── layout.tsx               # root layout + metadata
     │   ├── page.tsx                 # server shell → dynamic(ssr:false) import of the client Viewer
     │   └── globals.css              # PALETTE/TYPOGRAPHY tokens + reduced-motion/-transparency + :focus-visible
     ├── components/
-    │   ├── CohortArena.client.tsx   # client Viewer: mounts Pixi (useEffect, destroy on unmount) + HUD + Ledger
-    │   ├── constellation/           # Pixi Cohort Constellation (compile flow → crystallize; churn/rollback)
-    │   ├── arena/                   # Pixi RivalryMix arena room (seat ring; suppression veil)
-    │   ├── hud/                     # DOM/Framer-Motion: cohort cards (FLIP), badges, standings, churn, safeguarding
+    │   ├── CohortArena.client.tsx   # client Viewer: r3f <Canvas> (dispose on unmount) + HUD + 2D-tier + Ledger
+    │   ├── observatory/             # r3f/drei 3D scene: field drift → compile choreography → hex formations;
+    │   │                            #   badge rings, non-harm-floor halos, camera, bloom; churn/rollback
+    │   ├── arena/                   # r3f/drei 3D RivalryMix seat-ring (pulse, arcs, dominance ring; veil)
+    │   ├── tier2d/                  # 2D fallback: project2D DOM/SVG (reduced-motion / weak device / WebGL loss)
+    │   ├── hud/                     # DOM + motion@^12: cohort cards (FLIP), badges, standings, churn, safeguarding
     │   └── ledger/                  # accessible Cohort Ledger (role=tree; aria-live)
-    ├── public/seed/                 # committed inline SVGs (mote/seat/shield/icons); no external fetch
+    ├── public/seed/                 # committed inline SVGs (star/seat/shield/icons); no external fetch
     ├── next.config.mjs              # transpilePackages: [cohort-arena-view, cohort-compiler]
     ├── tsconfig.json                # mirror apps/student-compass (jsx preserve, noEmit, DOM libs)
-    ├── package.json                 # @gt100k/cohort-arena; next/react/pixi.js/motion
+    ├── package.json                 # @gt100k/cohort-arena; next/react/three/@react-three/*/motion
     ├── .env.local.example           # NEXT_PUBLIC_* placeholders (git-ignored .env.local)
     └── README.md
 ```
@@ -187,7 +190,7 @@ apps/
 
 **Parallel-safety**: all new code lives in `packages/cohort-compiler`, `adapters/cohort-*`, and the UI dirs `packages/cohort-arena-view` + `apps/cohort-arena`. The root workspace glob (`packages/*`, `adapters/*`, `apps/*`), the Vitest include (`packages/**/test`, `adapters/**/test`), and `biome check packages adapters apps` already discover the new dirs, so **no** shared root file (`package.json`, `pnpm-workspace.yaml`, `vitest.config.ts`, `biome.json`) is edited. The **only** shared-file touch is adding composite project references to the root `tsconfig.json` (domain dirs + `packages/cohort-arena-view`); that is the **final task** (P11) and is flagged as the single point a human reconciles at merge. `apps/cohort-arena` is a Next.js app (its own `tsconfig` with `composite:false`, `noEmit`), so it is not a `tsc -b` composite reference — it is verified by `next build`.
 
-**UI structure decision**: mirror feature `004-arena-game-world` — a **pure view-model package** holds every display rule as a deterministic, unit-testable function (so the guardrails are structurally provable) and a **separate Next.js app** is the only place Pixi/React/DOM live. Rendering is split (D-UI-1): **Pixi.js v8** for the constellation + arena room (WebGL, best fit for a learner-mote field), **Framer Motion + DOM/SVG** for the HUD (FLIP layout animation on cohort membership) and the Ledger. One `CohortArenaView` drives all renderers (D-UI-3); the canvas is `aria-hidden` and the Cohort Ledger is the AT source of truth (D-UI-4).
+**UI structure decision**: mirror feature `004-arena-game-world` — a **pure view-model package** holds every display rule as a deterministic, unit-testable function (so the guardrails are structurally provable, incl. the exact 3D `LAYOUT` and the pure `project2D`) and a **separate Next.js app** is the only place three.js/r3f/React/DOM live. Rendering is split (D-UI-1): **react-three-fiber + drei + three.js (WebGL2)** for the 3D Compiler Observatory + the 3D arena room, **motion@^12 + DOM** for the HUD (FLIP layout animation on cohort membership) and a **2D tier** (`project2D` DOM/SVG) for reduced-motion / weak devices / WebGL loss, plus the Ledger. One `CohortArenaView` drives all renderers (D-UI-3); the 3D canvas is `aria-hidden` and the Cohort Ledger is the AT source of truth (D-UI-4); **three.js `useFrame` owns 3D motion, motion@^12 owns DOM motion — no third animation lib**.
 
 ## Phasing & gate (see spec.md § Phasing P0–P11)
 

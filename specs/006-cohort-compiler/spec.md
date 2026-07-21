@@ -73,15 +73,21 @@ or a **Non-goal** — never built here.
    pure presentation functions (`layoutConstellation`, `layoutArenaRing`, `deriveStandingsView`,
    `resolveMotion`, `resolveVisualBand`, `buildLedger`, `plainViewEquals`). No I/O, no wall-clock, **no
    `Math.random`** — unit-tested by Vitest (UI-US1). ([§ UI Art Direction](#ui-art-direction--visual-identity), [§ UI Golden Values](#ui-golden-values--constants))
-10. **Next.js App-Router app** `apps/cohort-arena` (`@gt100k/cohort-arena`) rendering the Viewer:
-    an animated **Cohort Constellation** (Pixi.js WebGL — learners flow and crystallize into cohorts of six
-    under the caliper, satisfied hard-constraint badges, the individual non-harm floor line, churn/rollback
-    animation) + a **gain-based standings** panel + a **RivalryMix arena room** + the **safeguarding-bypass**
-    affordance, built as **DOM/SVG + Framer Motion** HUD over a **Pixi.js** canvas (UI-US2/US3/US4).
-11. **First-class equal reduced-motion mode** and a **synchronized accessible DOM "Cohort Ledger"** (WCAG
-    2.2 AA; keyboard/switch/screen-reader; canvas `aria-hidden`) rendered from the **same** `CohortArenaView`,
-    plus **age-band representation** and a **plain mode** — all state-identical to the full-spectacle view
-    (`plainViewEquals`).
+10. **Next.js App-Router app** `apps/cohort-arena` (`@gt100k/cohort-arena`) rendering the Viewer as a
+    **3D "Compiler Observatory"** (**react-three-fiber + drei + three.js**, WebGL2, client-only): learner-stars
+    drift in a calm 3D field along the near-peer caliper gradient, then **choreograph** into **cohorts of six** —
+    hexagonal formations crystallizing with easing, each ringed by lit badges for the seven satisfied hard
+    constraints and a **non-harm-floor halo**; unassigned learners rest on a calm **"still compiling" bench**;
+    churn/rollback play as a visible **reverse-choreography** to the prior snapshot. A **RivalryMix arena room**
+    is a **3D seat-ring** with turn-holder pulses, interruption arcs, and a dominance-share ring (observable-only).
+    A **gain-based standings** panel + the **safeguarding-bypass** affordance are **DOM + motion@^12** HUD over the
+    3D canvas (UI-US2/US3/US4).
+11. **First-class equal reduced-motion mode (a calm 2D/static equivalent)** and a **synchronized accessible DOM
+    "Cohort Ledger"** (WCAG 2.2 AA; keyboard/switch/screen-reader; 3D canvas `aria-hidden`) rendered from the
+    **same** `CohortArenaView`, plus a **60fps budget with graceful degradation to a 2D tier** on weak devices /
+    WebGL loss, **age-band representation**, and a **plain mode** — all state-identical to the full-spectacle view
+    (`plainViewEquals`). The 2D tier and the reduced-motion tier render a **pure orthographic projection**
+    (`project2D`) of the identical 3D view model.
 
 ### Out of scope — deferred (production direction; marked port/stub; **no tasks**)
 
@@ -167,21 +173,27 @@ on the committed domain API — see [§ UI Art Direction](#ui-art-direction--vis
   `deriveStandingsView`, `resolveMotion`, `resolveVisualBand`, `buildLedger`, `plainViewEquals`; commit the
   view golden fixtures + a seeded smoke test. → SC-009, SC-010, SC-011, SC-012, SC-013, SC-017, SC-018.
   Golden: [Fixture V1 `view-cohort-12`](#fixture-v1-view-cohort-12-ui-us1), [V4 `motion-golden`](#fixture-v4-motion-golden-ui-us1).
-- **P8 — App shell + Cohort Constellation (UI MVP).** Scaffold `apps/cohort-arena` (Next.js, client-only
-  Pixi mount, transpile the two workspace packages); render the animated **compile** constellation (motes
-  flow → crystallize into hexes of six), the DOM/Framer-Motion HUD (cohort roster cards with FLIP layout
-  animation, satisfied hard-constraint badges, the non-harm floor line), the reduced-motion path, and the
+- **P8 — App shell + 3D Cohort Observatory (UI MVP).** Scaffold `apps/cohort-arena` (Next.js, client-only
+  **react-three-fiber `<Canvas>`** mount, transpile the two workspace packages); render the 3D **compile
+  choreography** (learner-stars drift in the caliper field → flow along field-lines → **crystallize** into
+  hexagonal formations of six with a lit satisfied-badge ring + non-harm-floor halo), the **DOM + motion@^12**
+  HUD (cohort roster cards with FLIP layout animation, satisfied hard-constraint badges, the non-harm floor
+  readout), the **reduced-motion 2D/static tier** (via `project2D`), the **weak-device 2D tier**, and the
   accessible **Cohort Ledger** tree. → SC-014, SC-015. Golden: [Fixture V1](#fixture-v1-view-cohort-12-ui-us1).
 - **P9 — Gain-based standings + churn/rollback.** The opt-in near-peer **standings** panel (bar grow +
-  number ticker; no rank/bottom-rank), the churn-budget meter, and the **rollback** control with its
-  reverse-settle animation + Ledger diff. → SC-012, SC-016 (churn/rollback visual). Golden:
+  number ticker; no rank/bottom-rank), the churn-budget meter, and the **rollback** control with its 3D
+  **reverse-choreography** (stars retrace to the prior snapshot) + Ledger diff. → SC-012, SC-016 (churn/rollback
+  visual). Golden:
   [Fixture V2 `view-standings`](#fixture-v2-view-standings-ui-us2).
-- **P10 — RivalryMix arena room.** The **seat ring** (six seats), turn-holding pulse, interruption arcs,
-  the dominance share arc, and the **low-quality suppression veil** — observable-only, no trait/emotion
-  field. → SC-013. Golden: [Fixture V3 `view-rivalry`](#fixture-v3-view-rivalry-ui-us3).
+- **P10 — RivalryMix arena room (3D).** The **3D seat-ring** (one seat per observed speaker), the turn-holder
+  **pulse** (emissive + a soft vertical light column), **interruption arcs** (3D beziers interrupter→floor-holder),
+  the **dominance-share ring** (a torus arc around the dominant seat), and the **low-quality suppression veil**
+  (volumetric fog dim) — observable-only, no trait/emotion field. → SC-013. Golden:
+  [Fixture V3 `view-rivalry`](#fixture-v3-view-rivalry-ui-us3).
 - **P11 — Safeguarding affordance, a11y, perf & the single shared-file touch.** The **safeguarding-bypass**
   banner/lane (optimization visibly bypassed, conflicting moves paused, no rating/standing change); the
-  WCAG 2.2 AA pass over the Ledger; reduced-motion parity; 60fps + graceful degradation; app README; and the
+  WCAG 2.2 AA pass over the Ledger; reduced-motion parity; **60fps budget with graceful degradation to the 2D
+  tier** (weak device / WebGL loss); app README; and the
   **final** task — add composite project references for `packages/cohort-compiler`, each `adapters/cohort-*`,
   **and** `packages/cohort-arena-view` to the root `tsconfig.json`. → SC-008, SC-016, SC-014, SC-015.
 
@@ -254,21 +266,21 @@ Given a stream/array of **turn events** (speaker, start, duration, overlap) from
 5. **Given** a learner who refused turn analytics (or whose analytics are missing), **When** analysis runs, **Then** cohort status is unchanged, no intervention is triggered, and no motivation hypothesis is created.
 6. **Given** the deferred WebRTC/LiveKit media plane, **When** the `MediaTurnSource` stub port is invoked, **Then** it yields synthetic turns and is clearly marked non-production (§15.1 deferred).
 
-### User Story 4 - Watch cohorts compile in an animated constellation (guide/ops) (Priority: P7/P8) 🎯 UI MVP
+### User Story 4 - Watch cohorts compile in a 3D Compiler Observatory (guide/ops) (Priority: P7/P8) 🎯 UI MVP
 
-A guide or operator opens the **Cohort & Arena Viewer** and sees the synthetic learner pool as a calm field of luminous **motes** in a dark observatory. Near-peer **caliper rings** show the matchmaking bound. On **compile**, the motes *flow* along the field and **crystallize** into stable **cohorts of six** — each rendered as a hexagon of six members with its per-member roles. Every accepted cohort shows a ring of **satisfied hard-constraint badges** (age, schedule, safeguarding separation, accommodations, caliper, non-harm floor, churn) all lit green, and a **non-harm floor line** proving every member sits at or above the floor. Learners with no feasible cohort settle onto a **bench** as a calm violet "still compiling / unassigned" state (never a rejection). A **churn meter** shows this week's budget; a **rollback** control reverses the last commit with a rewind animation. The whole scene is driven by one deterministic view model, has a first-class **reduced-motion** rendering, and a synchronized **accessible Cohort Ledger** conveys every state to keyboard/screen-reader users.
+A guide or operator opens the **Cohort & Arena Viewer** and looks into a calm, dark **3D observatory**. The synthetic learner pool floats as a field of luminous **learner-stars**, positioned along the **near-peer caliper gradient** (level on one axis, velocity on another) so near-peers naturally cluster in space; faint horizontal **caliper rings** show the matchmaking bound and a follow-free camera drifts with unhurried, cinematic calm. On **compile**, the stars **flow along cool aurora field-lines** and **choreograph into cohorts of six** — a genuinely beautiful crystallization where each cohort assembles as a **hexagonal formation** of six members (with per-member roles) that eases into place with a subtle settle. Every accepted formation is **ringed by lit badges** for its seven **satisfied hard constraints** (age, schedule, safeguarding separation, accommodations, caliper, non-harm floor, churn) and sits over a **non-harm-floor halo** — a soft disc under the hex proving every member sits at or above the floor. Learners with no feasible cohort settle onto a calm **"still compiling" bench** (a lower shelf) in a gentle violet resting state — never a rejection jolt. A **churn meter** shows this week's budget; a **rollback** control plays a visible **reverse-choreography** that returns the stars to the prior snapshot. The whole scene is driven by **one deterministic view model**; it has a first-class **reduced-motion tier** (a calm 2D/static projection), a **weak-device 2D tier** (same projection), and a synchronized **accessible Cohort Ledger** that conveys every state to keyboard/screen-reader users (the 3D canvas is `aria-hidden`).
 
 **Why this priority**: This is the headline UI — the thing that makes the compiler legible and impressive to the humans who own the consequential decision (Constitution I). It reads the committed domain output only, so it is the smallest independently-demonstrable UI slice and everything else (standings, arena room, safeguarding) hangs off the same view model.
 
-**Independent Test**: Feed a synthetic `CohortAssignment` (e.g. Fixture B) to `buildCohortArenaView`; confirm the constellation layout is deterministic (byte-identical positions across runs, [Fixture V1](#fixture-v1-view-cohort-12-ui-us1)); render it (Pixi) and confirm every accepted cohort shows six members, all seven hard-constraint badges satisfied, and the non-harm floor line; toggle reduced motion and confirm the same states render without motion; confirm the Cohort Ledger tree exposes the same states to AT; confirm `next build` succeeds with zero console/WebGL errors.
+**Independent Test**: Feed a synthetic `CohortAssignment` (e.g. Fixture B) to `buildCohortArenaView`; confirm the 3D constellation layout is deterministic (byte-identical `{x,y,z}` positions and their `project2D` `{x,y}` projections across runs, [Fixture V1](#fixture-v1-view-cohort-12-ui-us1)); render it (react-three-fiber) and confirm every accepted cohort shows six members, all seven hard-constraint badges satisfied, and the non-harm-floor halo; toggle reduced motion and confirm the same states render in the calm 2D/static tier without motion; force the weak-device/2D tier and confirm no state is lost; confirm the Cohort Ledger tree exposes the same states to AT; confirm `next build` succeeds with zero console/WebGL errors.
 
 **Acceptance Scenarios**:
 
-1. **Given** a feasible synthetic assignment, **When** the constellation composes, **Then** each cohort renders as a hex of exactly six members with roles, all seven hard-constraint badges lit satisfied, and a non-harm floor line at/above the floor — deterministically (identical layout across runs).
-2. **Given** an unassigned learner (Fixture B2 `C1`), **When** the constellation composes, **Then** the learner appears on the calm "still compiling" bench with the binding constraint shown, never force-placed and never shown as a loss/failure.
-3. **Given** `prefers-reduced-motion` (or plain mode), **When** the constellation renders, **Then** the compile "flow" is replaced by an instant snap to settled positions with a static "compiled" state + `aria-live` announce, and no state is lost.
-4. **Given** the accessible Cohort Ledger, **When** a keyboard/screen-reader user navigates it, **Then** every cohort, member, role, satisfied-constraint, and the non-harm floor is conveyed as text; the canvas is `aria-hidden`.
-5. **Given** a rollback, **When** invoked, **Then** the motes reverse-settle to the prior snapshot and the Ledger shows the diff; nothing about the animation changes the domain result.
+1. **Given** a feasible synthetic assignment, **When** the constellation composes, **Then** each cohort renders as a 3D hexagonal formation of exactly six members with roles, ringed by all seven hard-constraint badges lit satisfied, over a non-harm-floor halo at/above the floor — deterministically (identical `{x,y,z}` layout across runs).
+2. **Given** an unassigned learner (Fixture B2 `C1`), **When** the constellation composes, **Then** the learner appears on the calm "still compiling" bench (the lower shelf) with the binding constraint shown, never force-placed and never shown as a loss/failure.
+3. **Given** `prefers-reduced-motion` (or plain mode, or the weak-device 2D tier), **When** the constellation renders, **Then** the 3D compile choreography is replaced by the calm **2D projection** (`project2D`) with an instant snap to settled positions, a static "compiled" state, and an `aria-live` announce — no state is lost and no affordance is motion-only.
+4. **Given** the accessible Cohort Ledger, **When** a keyboard/screen-reader user navigates it, **Then** every cohort, member, role, satisfied-constraint, and the non-harm floor is conveyed as text; the 3D canvas is `aria-hidden`.
+5. **Given** a rollback, **When** invoked, **Then** the learner-stars **reverse-choreograph** to the prior snapshot and the Ledger shows the diff; nothing about the animation changes the domain result.
 
 ### User Story 5 - Gain-based standings, celebrated without toxicity (Priority: P9)
 
@@ -286,7 +298,7 @@ The Viewer shows an **opt-in** (default **off**) **near-peer** standings panel: 
 
 ### User Story 6 - RivalryMix "arena room": observable turn-taking, never a label (Priority: P10)
 
-The Viewer renders a cohort session as an **arena room** — a ring of **seats**, one per observed speaker. The current **turn-holder's** seat pulses; an **interruption** darts a short arc from the interrupter toward the floor-holder; a **dominance** pattern grows a share arc around the dominant speaker's seat, with the triggering evidence text ("S1 holds 4/6 turns"). It surfaces **only observable descriptors + patterns + confidence** straight from `analyzeTurns` — **never** an honesty/emotion/personality/motivation label. When input is **low-quality/sparse**, the room dims under a **"confidence low — prompts suppressed"** veil and **no** pattern is surfaced (the veil, not a false label). Refused/missing analytics change nothing.
+The Viewer renders a cohort session as a **3D arena room** — a **seat-ring** of six seats on a circle, one per observed speaker. The current **turn-holder's** seat **pulses** (an emissive glow + a soft vertical light column); an **interruption** darts a short **3D arc** (a raised bezier) from the interrupter toward the floor-holder; a **dominance** pattern grows a **share ring** (a torus arc, filled to the turn share) around the dominant speaker's seat, with the triggering evidence text ("S1 holds 4/6 turns"). It surfaces **only observable descriptors + patterns + confidence** straight from `analyzeTurns` — **never** an honesty/emotion/personality/motivation label. When input is **low-quality/sparse**, the room dims under a **"confidence low — prompts suppressed"** veil (a volumetric fog + reduced bloom) and **no** pattern is surfaced (the veil, not a false label). Refused/missing analytics change nothing. The seat-ring has the same reduced-motion 2D/static tier + Ledger as the constellation.
 
 **Why this priority**: This is the RivalryMix rights guardrail made visible — the UI must be *incapable* of showing a trait/emotion label and must *suppress rather than mislabel* under noise. It reads `TurnAnalysis` (US3 output) only, so it ships independently and last.
 
@@ -321,7 +333,8 @@ The Viewer renders a cohort session as an **arena room** — a ring of **seats**
 - **Standings floor**: never "last of N" — a would-be bottom learner sees own gain vs. band top, and the view type cannot represent a rank/position (FR-035, SC-012).
 - **RivalryMix low-quality**: the arena room suppresses (veil + no pattern) rather than showing a label; a refused/missing analytics case shows a neutral "analytics off" state and changes nothing (FR-037, SC-013).
 - **Safeguarding during viewing**: a `CohortHealthEvent` renders a firm-not-alarm banner, freezes conflicting cohort moves in the constellation, and visibly routes to the safeguarding lane; it never alters a standing, rating, or objective in the view (FR-038, SC-016).
-- **WebGL unavailable / context loss**: if WebGL is unavailable or the context is lost, the app falls back to the reduced-motion DOM/SVG rendering + the Cohort Ledger (which never depend on WebGL); no state is lost and no mastery/ops action is blocked (FR-041).
+- **WebGL unavailable / context loss / weak device**: if WebGL2 is unavailable, the context is lost, or the runtime fails the 60fps budget on a weak device, the app **degrades gracefully to the 2D tier** — a pure `project2D` orthographic rendering (DOM/SVG) + the Cohort Ledger (neither depends on WebGL); no state is lost and no mastery/ops action is blocked (FR-041). The degraded 3D tier (halved star count, bloom/postprocessing off, shadows off) is tried before the 2D tier.
+- **60fps budget**: the 3D scene targets 60fps on the minimum supported device; instanced learner-stars, a capped light count, and an optional degraded tier hold the budget; frame-rate is an acceptance target (verified in the walkthrough), not a unit test (FR-041, SC-014).
 - **App builds with no network/env**: `next build` succeeds with an empty environment; the app fetches nothing external (fonts fall back to a system-rounded stack; all data is synthetic/injected) (FR-042).
 
 ## Requirements *(mandatory)*
@@ -369,14 +382,14 @@ The Viewer renders a cohort session as an **arena room** — a ring of **seats**
 
 **UI view model — pure & one-view-drives-all (UI-US1)**
 
-- **FR-028**: The Viewer MUST compose a **single `CohortArenaView`** via `buildCohortArenaView(input)` in the **pure** `packages/cohort-arena-view` package (no I/O, no wall-clock, **no `Math.random`**); the Pixi canvas, the DOM/Framer-Motion HUD, the reduced-motion rendering, and the accessible Cohort Ledger MUST **all** render from that one view (parity by construction). Reduced-motion/plain/age-band MUST **not** recompute domain state — they render the identical view with motion/presentation varied.
+- **FR-028**: The Viewer MUST compose a **single `CohortArenaView`** via `buildCohortArenaView(input)` in the **pure** `packages/cohort-arena-view` package (no I/O, no wall-clock, **no `Math.random`**); the **3D react-three-fiber canvas**, the **DOM + motion@^12 HUD**, the **reduced-motion / 2D-tier rendering** (via `project2D`), and the accessible Cohort Ledger MUST **all** render from that one view (parity by construction). Reduced-motion/plain/age-band/2D-tier MUST **not** recompute domain state — they render the identical view with motion/presentation/projection varied. The 3D layout carries exact `{x,y,z}` positions and their deterministic `project2D` `{x,y}` projections; both are pure outputs of the view.
 - **FR-029**: `buildCohortArenaView` and every presentation function (`layoutConstellation`, `layoutArenaRing`, `deriveStandingsView`, `resolveMotion`, `resolveVisualBand`, `buildLedger`, `plainViewEquals`) MUST be **pure, deterministic** functions of their inputs — identical inputs → byte-identical view (no randomness, no time, replayable).
 - **FR-030**: The view package MUST read the committed `@gt100k/cohort-compiler` public API **read-only** and MUST NOT modify the domain package, its adapters, `apps/student-compass`, or shared root config (except the single final root-`tsconfig.json` reference task).
 
 **UI cohort-formation constellation (UI-US2)**
 
-- **FR-031**: The Viewer MUST render an animated **cohort-formation constellation** — learner motes that **flow** and **crystallize** into **cohorts of six** under the near-peer caliper — with a **deterministic layout** (`layoutConstellation`), a follow-free calm camera, and a "compile" animation; each animation MUST have a reduced-motion equivalent (FR-039).
-- **FR-032**: Each accepted cohort in the view MUST show its **six members with roles**, a ring of **satisfied hard-constraint badges** (age, schedule, safeguarding separation, accommodations, level-velocity caliper, individual non-harm floor, churn budget) — all shown satisfied for an accepted cohort — and a **non-harm floor line** proving every member's benefit is at/above the floor (read from the domain; never re-derived).
+- **FR-031**: The Viewer MUST render an animated **3D cohort-formation constellation** — learner-stars that drift in a 3D caliper field (positioned along the near-peer caliper gradient via `layoutField`), then **flow** along field-lines and **choreograph/crystallize** into **hexagonal cohorts of six** — with a **deterministic 3D layout** (`layoutConstellation` producing `{x,y,z}` mote/hex/bench positions per the pinned `LAYOUT`), a **follow-free calm camera**, and a "compile" choreography; each animation MUST have a reduced-motion equivalent (FR-039) and MUST be renderable in the **2D tier** via the pure `project2D` projection of the identical positions.
+- **FR-032**: Each accepted cohort in the view MUST show its **six members with roles**, a ring of **satisfied hard-constraint badges** (age, schedule, safeguarding separation, accommodations, level-velocity caliper, individual non-harm floor, churn budget) — all shown satisfied for an accepted cohort — and a **non-harm-floor halo** (a disc/glow under the hexagonal formation) proving every member's benefit is at/above the floor (read from the domain; never re-derived).
 - **FR-033**: A learner with **no feasible cohort** MUST render as a calm **"still compiling / unassigned"** bench state with its binding constraint — **never** force-placed, **never** a loss/rejection/error framing (no shake, no red alarm) (§14.12).
 - **FR-034**: The **churn budget** MUST render as a meter, and **rollback** MUST render as a reverse-settle animation restoring the prior snapshot with a Cohort Ledger diff; the visualization MUST NOT change the domain result (display only).
 
@@ -387,14 +400,14 @@ The Viewer renders a cohort session as an **arena room** — a ring of **seats**
 
 **UI RivalryMix arena room (UI-US3)**
 
-- **FR-037**: The Viewer MUST render a RivalryMix **arena room** (a **seat ring**, turn-holding pulse, interruption arcs, dominance share arc) from `TurnAnalysis` **only** — observable descriptors, detected patterns, and confidence; it MUST NOT render (and the arena view type MUST NOT be able to carry) any **honesty/emotion/personality/motivation** label. Low-quality/sparse input MUST render a **"confidence low — prompts suppressed"** veil with **no** pattern surfaced (suppress, never mislabel); refused/missing analytics MUST render a neutral "analytics off" state and change nothing (§15/§15.2; G5/G6).
+- **FR-037**: The Viewer MUST render a RivalryMix **3D arena room** (a **3D seat-ring** via `layoutArenaRing` producing `{x,y,z}` seat positions, a turn-holder pulse, 3D interruption arcs, a dominance-share ring) from `TurnAnalysis` **only** — observable descriptors, detected patterns, and confidence; it MUST NOT render (and the arena view type MUST NOT be able to carry) any **honesty/emotion/personality/motivation** label. Low-quality/sparse input MUST render a **"confidence low — prompts suppressed"** veil with **no** pattern surfaced (suppress, never mislabel); refused/missing analytics MUST render a neutral "analytics off" state and change nothing (§15/§15.2; G5/G6).
 
 **UI safeguarding, dark-pattern & motion guardrails (UI-US4)**
 
 - **FR-038**: A `CohortHealthEvent` (bullying/coercion/exclusion) MUST render a **firm-but-not-alarm safeguarding affordance** that visibly **bypasses optimization**, **pauses conflicting cohort moves** in the constellation (POL-007), and routes to a safeguarding **lane** — and MUST NEVER alter a standing, rating, or objective in the view (§15.2; Constitution I/IX).
-- **FR-039**: **Reduced motion MUST be a first-class, equal mode**: every animated affordance MUST have a reduced-motion rendering conveying the same state; `prefers-reduced-motion` MUST be honored by default; **no** feature may require motion. All interaction motion MUST derive from the deterministic token registry (`MOTION`/`EASINGS`) via `resolveMotion(kind,{reducedMotion})`, and every row of the [§ UI Motion Table](#ui-motion-table) MUST have a first-class reduced-motion equivalent (WCAG 2.2 AA).
+- **FR-039**: **Reduced motion MUST be a first-class, equal mode** (a **calm 2D/static equivalent**): every animated affordance MUST have a reduced-motion rendering conveying the same state; the reduced-motion tier renders the pure **`project2D`** orthographic projection of the identical 3D view (no camera motion, no drift, instant snaps); `prefers-reduced-motion` MUST be honored by default; **no** feature may require motion or 3D/WebGL. All interaction motion MUST derive from the deterministic token registry (`MOTION`/`EASINGS`) via `resolveMotion(kind,{reducedMotion})`, and every row of the [§ UI Motion Table](#ui-motion-table) MUST have a first-class reduced-motion equivalent (WCAG 2.2 AA).
 - **FR-040**: All Viewer surfaces MUST meet **WCAG 2.2 AA** via the synchronized accessible **Cohort Ledger** (`buildLedger`): keyboard/switch/screen-reader operable, focus-visible, color-independent, captioned where sound exists, ≥4.5:1 contrast. The canvas MUST be `aria-hidden="true"`; the Ledger MUST convey identical state from the same `CohortArenaView`.
-- **FR-041**: The app MUST render the canvas on **Pixi.js v8 (WebGL)** loaded **client-only** (no SSR), destroyed cleanly on unmount, with **zero console/WebGL errors** in the smoke run; on WebGL unavailability or context loss it MUST fall back to the reduced-motion DOM/SVG + Ledger path (which never depend on WebGL) with no state lost.
+- **FR-041**: The app MUST render the 3D scene on **react-three-fiber + drei + three.js (WebGL2)** via a `<Canvas>` loaded **client-only** (no SSR; `next/dynamic ssr:false`), disposed cleanly on unmount (geometries/materials/textures freed; no leaked GL contexts), with **zero console/WebGL errors** in the smoke run. It MUST target **60fps** on the minimum supported device with an internal **degraded 3D tier** (halved star count, postprocessing/bloom off, shadows off); on WebGL2 unavailability, context loss, or a sustained frame-budget miss it MUST **degrade to the 2D tier** — the pure `project2D` DOM/SVG rendering + Ledger (neither depends on WebGL) — with no state lost and no ops action blocked.
 - **FR-042**: Seed art (small inline SVG/procedural shapes) MUST be committed in-repo; the app MUST build (`next build`) and run with **no external fetch** and **no secrets/env** required (fonts fall back to a system-rounded stack; all data is synthetic/injected).
 - **FR-043**: The reward/standings/celebration surface MUST use **no dark patterns** — no loss-framed streak, decay/absence meter, manufactured scarcity, FOMO, gacha/loot randomness, purchase/currency path, or engagement-timed notification (§14.12); an infeasible/unassigned learner is a calm state, never a punishment.
 - **FR-044**: Presentation MUST resolve per **age band** via `resolveVisualBand(band)` and support a low-spectacle **plain mode**; the underlying `CohortArenaView` state MUST be identical across bands/plain/reduced (`plainViewEquals`) — only presentation varies.
@@ -420,7 +433,7 @@ The Viewer renders a cohort session as an **arena room** — a ring of **seats**
 **UI view entities** (in `packages/cohort-arena-view`; full shapes in [data-model.md](./data-model.md)):
 
 - **CohortArenaView**: The single composed view model that drives every renderer — `constellation`, `cohorts`, `standings`, `rivalry`, `safeguarding`, `motion`, `presentation`, and `ledger`. Pure output of `buildCohortArenaView`.
-- **ConstellationView / MoteView / CohortHexView**: Deterministic constellation layout — per-learner mote positions (assigned to a cohort hex, or on the bench), per-cohort hex center + six member vertices, caliper ring radii, and each mote's `state` (`assigned | unassigned | candidate`).
+- **ConstellationView / MoteView / CohortHexView**: Deterministic **3D** constellation layout — per-learner mote positions in `{x,y,z}` (assigned to a cohort hexagonal formation, or on the bench shelf) plus each mote's **field-start** `{x,y,z}` (the caliper-gradient drift position) and its `project2D` `{x,y}` screen position; per-cohort hex center `{x,y,z}` + six member vertices; caliper ring radii; and each mote's `state` (`assigned | unassigned | candidate`).
 - **CohortCardView**: Per-cohort HUD card — members + roles, the seven **satisfied** hard-constraint badges, the non-harm floor readout (`minBenefit ≥ floor`), and the churn delta vs. prior.
 - **StandingsView** *(opt-in; nullable)*: near-peer, anonymized, gain-based — `band`, `anonymizedPeers`, `selfGain`, `gainToBandTop`. **Structurally has no `rank`/`position`/`percentile`/`outOf` field** and no bottom-rank surface (G6).
 - **ArenaRoomView / SeatView / TurnPatternView**: RivalryMix seat-ring layout + turn-holding/interruption/dominance render specs + `confidence` + `suppressed`. **Structurally has no honesty/emotion/personality/motivation field.**
@@ -466,7 +479,7 @@ for a phase = its SCs' tests pass under the pinned gate.
   → `test/standings.test.ts` + `test/guardrails.test.ts` (no rank field in view source); golden [Fixture V2](#fixture-v2-view-standings-ui-us2).
 - **SC-013** *(P10)*: The RivalryMix arena view carries **only** observable descriptors + patterns + confidence + `suppressed`; it has **no** honesty/emotion/personality/motivation field (structural); low-quality/sparse input → `suppressed` veil with **0** patterns surfaced; refused/missing → neutral "analytics off", **0** status changes.
   → `test/rivalry.test.ts` + `test/guardrails.test.ts`; golden [Fixture V3](#fixture-v3-view-rivalry-ui-us3).
-- **SC-014** *(P8/P11)*: The app **builds** (`next build`), the Pixi canvas mounts **client-only** with **zero** console/WebGL errors and destroys cleanly on unmount, the canvas is `aria-hidden`, and the accessible **Cohort Ledger** conveys every state to keyboard/switch/screen-reader with visible focus and ≥4.5:1 contrast (WCAG 2.2 AA).
+- **SC-014** *(P8/P11)*: The app **builds** (`next build`), the **react-three-fiber `<Canvas>`** mounts **client-only** with **zero** console/WebGL errors and disposes cleanly on unmount, the canvas is `aria-hidden`, the app degrades to the **2D tier** on WebGL loss without losing state, and the accessible **Cohort Ledger** conveys every state to keyboard/switch/screen-reader with visible focus and ≥4.5:1 contrast (WCAG 2.2 AA).
   → `next build` + seeded app smoke + quickstart a11y walkthrough; `test/view.test.ts` (Ledger completeness).
 - **SC-015** *(P8/P11)*: **Reduced motion is a first-class equal mode** — with `prefers-reduced-motion` (or plain mode), full state/progression/celebration remain conveyable with **no** motion; **no** affordance is motion-only, and no state is lost.
   → `test/motion.test.ts` + `test/view.test.ts` (`plainViewEquals`) + quickstart reduced-motion pass.
@@ -694,8 +707,9 @@ Expected: the `quality:0.2` overlap is **not** attributable (below `qualityFloor
 > This is the **design bible** for the Cohort & Arena Viewer. It defines the look, motion, and feel the app
 > must deliver. Everything a machine can check is pinned as an exact **testable golden constant** in
 > [§ UI Golden Values](#ui-golden-values--constants); where prose here and a golden value disagree, the
-> golden value wins. Everything stays buildable with **Pixi.js v8 + Framer Motion + Next.js** and inside
-> every guardrail ([§ Scope Fence](#scope-fence) non-goals, [§ Requirements](#requirements-mandatory) FR-028–FR-046).
+> golden value wins. Everything stays buildable with **react-three-fiber + drei + three.js (WebGL2) +
+> motion@^12 + Next.js** and inside every guardrail ([§ Scope Fence](#scope-fence) non-goals,
+> [§ Requirements](#requirements-mandatory) FR-028–FR-046).
 
 ### Design pillars (the five sentences everything answers to)
 
@@ -705,7 +719,7 @@ Expected: the `quality:0.2` overlap is **not** attributable (below `qualityFloor
    cream-dashboard default.
 2. **Show the guarantees, not just the result.** The screen makes the *rights guardrails visible*: the
    near-peer caliper as a field, the seven satisfied hard constraints as a lit badge-ring, the individual
-   **non-harm floor** as a floor-line under every member, churn as a metered budget, and rollback as a real
+   **non-harm floor** as a glowing halo under every formation, churn as a metered budget, and rollback as a real
    rewind. A guide should be able to *see* that the compile was fair.
 3. **Calm by default, celebratory only where growth is real.** Ambient motion is gentle and sparse; the
    loudest moment is a warm amber pulse on **own-growth** standings — never "you beat N children". An
@@ -721,17 +735,21 @@ Expected: the `quality:0.2` overlap is **not** attributable (below `qualityFloor
 - **Register (impeccable):** *product* (design **serves** the tool), pushed to a **game-y, impressive**
   finish — "mission control that happens to be gorgeous", not a marketing page. Deliberately rejects the
   cream/sand body bg and the SaaS hero-metric template.
-- **Rendering split (decision — see [§ UI Decisions](#ui-decisions-already-made) D-UI-1):** a **Pixi.js v8
-  (WebGL)** canvas for the two motion-heavy, spatial surfaces (the **Cohort Constellation** compile and the
-  **RivalryMix arena room**), and **DOM/SVG + Framer Motion** for the HUD (cohort cards with FLIP layout
-  animation, badges, standings bars, churn meter, safeguarding banner) and the accessible Ledger. Pixi and
-  DOM both render from the one `CohortArenaView`; the canvas is `aria-hidden`, the Ledger is the AT truth.
+- **Rendering split (decision — see [§ UI Decisions](#ui-decisions-already-made) D-UI-1):** a **3D
+  react-three-fiber `<Canvas>` (drei + three.js, WebGL2)** for the two spatial, motion-heavy surfaces (the
+  **3D Compiler Observatory** compile choreography and the **RivalryMix arena room**), and **DOM + motion@^12**
+  (`motion/react`) for the HUD (cohort cards with FLIP layout animation, badges, standings bars, churn meter,
+  safeguarding banner) and the accessible Ledger. Three tiers all render from the **one `CohortArenaView`**:
+  (a) the **full 3D tier** (WebGL2 + drei helpers + bloom postprocessing); (b) the **2D tier** — a pure
+  `project2D` orthographic DOM/SVG rendering used for reduced-motion, plain mode, weak devices, and WebGL loss;
+  (c) the **Cohort Ledger** — the accessible DOM twin. The 3D canvas is `aria-hidden`; the Ledger is the AT truth.
+  **motion@^12** owns *DOM* motion; **three.js** (via r3f `useFrame`) owns *3D* motion — no third animation lib.
 
 ### Master palette (exact hex — golden `PALETTE`; OKLCH-reasoned, contrast-verified)
 
 | Role | Token | Hex | Use |
 |---|---|---|---|
-| Deck (canvas void / app bg) | `--deck` | `#0B1220` | the observatory void; canvas + app backdrop |
+| Deck (canvas void / app bg) | `--deck` | `#0B1220` | the observatory void; scene background + fog + app backdrop |
 | Deck raised (panel base) | `--deck-2` | `#111B2E` | frosted HUD panel base |
 | Deck raised-2 (card) | `--deck-3` | `#182740` | cohort cards, raised surfaces |
 | Ink (on light chips) | `--ink` | `#0C1524` | text on light badges |
@@ -740,7 +758,7 @@ Expected: the `quality:0.2` overlap is **not** attributable (below `qualityFloor
 | Peer (caliper / cool primary) | `--peer` | `#38BDF8` | near-peer caliper field, candidate motes |
 | Peer-hi | `--peer-hi` | `#7DD3FC` | hover / highlight |
 | Form (cohort crystallized / feasible) | `--form` | `#34D399` | settled cohort hex, satisfied badges |
-| Floor (non-harm floor guarantee) | `--floor` | `#2DD4BF` | the "every member ≥ floor" floor-line |
+| Floor (non-harm floor guarantee) | `--floor` | `#2DD4BF` | the "every member ≥ floor" non-harm-floor halo/disc |
 | Gain (standings / reward) | `--gain` | `#FBBF24` | own-growth bar + ticker (warm, rare) |
 | Gain-hi | `--gain-hi` | `#FCD34D` | gain highlight |
 | Pending (unassigned / compiling) | `--pending` | `#A78BFA` | calm "still compiling" bench motes |
@@ -774,21 +792,24 @@ inverse to size. All counters/timers/gains use **tabular numbers** so digits don
 
 ### Mood board, in words
 
-*A quiet mission-control deck at 2 a.m. A dark observatory dome where a hundred learner-stars drift, then —
-on compile — flow along cool aurora field-lines and **crystallize** into calm hexagonal constellations of
-six. Frosted-glass readouts float over the void. Cool cyan/teal light carries the constraints; warm amber
-appears only where real growth is celebrated. The unhurried confidence of air-traffic control, not a
+*A quiet mission-control deck at 2 a.m. A dark **3D observatory dome** with real depth and slow parallax,
+where a hundred learner-stars drift in a volumetric field, then — on compile — flow along cool aurora
+field-lines and **crystallize** into calm hexagonal formations of six that hang in space over soft
+non-harm-floor halos. Frosted-glass readouts float in front of the void; a follow-free camera breathes with
+unhurried, cinematic calm. Cool cyan/teal light carries the constraints; warm amber appears only where real
+growth is celebrated. The unhurried confidence of air-traffic control, not a
 casino. Never a leaderboard, never an alarm — a guide watching a fair, safe world assemble itself.*
 
 ### Surfaces & scenes (what the app renders)
 
 | Surface | Owner | UX |
 |---|---|---|
-| **Cohort Constellation** (canvas) | Pixi | Learner motes drift in the caliper field; on **compile** they flow and crystallize into cohort hexes of six; satisfied badge-rings + non-harm floor lines light up; unassigned motes rest on the calm bench; churn/rollback animate here. |
-| **Cohort roster HUD** (DOM) | Framer Motion | Frosted cards, one per cohort — members+roles, the seven satisfied-constraint chips, the floor readout; **FLIP layout animation** when membership changes; press feedback on controls. |
-| **Standings panel** (DOM) | Framer Motion | Opt-in (default off); own-gain bar-grow + tabular ticker vs. band top; anonymized peers; **no rank/bottom-rank** possible. |
-| **RivalryMix arena room** (canvas) | Pixi | A seat ring; turn-holder pulse; interruption arcs; dominance share arc; the low-quality **suppression veil**. Observable-only. |
-| **Safeguarding lane** (DOM) | Framer Motion | A firm-not-alarm banner + a routed "bypass optimization" lane; freezes conflicting moves; never mutates a standing/rating. |
+| **3D Compiler Observatory** (canvas) | r3f + drei + three.js | Learner-stars drift in a 3D caliper field (positioned along the caliper gradient); on **compile** they flow along field-lines and **choreograph** into hexagonal cohort formations of six; satisfied badge-rings ignite + non-harm-floor halos glow; unassigned stars rest on the calm bench shelf; churn/rollback play as reverse-choreography. Instanced stars, bloom postprocessing, follow-free camera. |
+| **Cohort roster HUD** (DOM) | motion@^12 | Frosted cards, one per cohort — members+roles, the seven satisfied-constraint chips, the floor readout; **FLIP layout animation** (`layout` prop) when membership changes; press feedback on controls. |
+| **Standings panel** (DOM) | motion@^12 | Opt-in (default off); own-gain bar-grow + tabular ticker vs. band top; anonymized peers; **no rank/bottom-rank** possible. |
+| **RivalryMix arena room** (canvas) | r3f + drei + three.js | A 3D seat-ring; turn-holder pulse (emissive + light column); 3D interruption arcs; dominance-share ring; the low-quality **suppression veil** (fog dim). Observable-only. |
+| **Safeguarding lane** (DOM) | motion@^12 | A firm-not-alarm banner + a routed "bypass optimization" lane; freezes conflicting moves; never mutates a standing/rating. |
+| **2D tier** (DOM/SVG) | React + `project2D` | The reduced-motion / plain / weak-device / WebGL-loss rendering: a pure orthographic projection of the identical 3D view — same states, no motion/no 3D. |
 | **Cohort Ledger** (DOM, AT) | React | The accessible twin from the same view: cohorts as a `role="tree"`, standings/rivalry/safeguarding as text/lists/alerts; `aria-live` for compile/rollback announces. Canvas `aria-hidden`. |
 | **Control cluster** (DOM) | React | Reduced-motion / plain-mode / age-band / standings-off toggles (instant, frequent actions) + compile / rollback controls + a "?" help. ≥44px targets. |
 
@@ -806,35 +827,38 @@ comparison off. 9–11: growth-first, ×1.1. 12–14: full readouts (mono number
 
 Motion is designed, not decorated (Apple §17). Durations are **named tokens** (`MOTION`); easings are
 **named** (`EASINGS`); **every** row has a first-class reduced-motion equivalent (reduced motion = *gentler*,
-not *gone*). All entries derive from `resolveMotion(kind,{reducedMotion})` so the values are testable
-constants (SC-011). Durations are exact ms; tolerances on the acceptance walkthrough are ±30ms.
+not *gone* — and in this build the reduced-motion / 2D tier renders the `project2D` projection). All entries
+derive from `resolveMotion(kind,{reducedMotion})` so the values are testable constants (SC-011). The **Layer**
+column names the engine: **3D** = three.js via r3f `useFrame`/drei; **DOM** = motion@^12 (`motion/react`);
+**both** = a coordinated pair. Durations are exact ms; tolerances on the acceptance walkthrough are ±30ms.
 
-| Event | Named effect (vocabulary) | Easing (name) | Duration (token, ms) | Particles | Reduced-motion equivalent |
-|---|---|---|---|---|---|
-| HUD panel enter | **Materialize** (blur+scale 0.98→1.0) | `enter` | `panel` 320 | — | instant show + `micro` 150 opacity |
-| Learner mote idle | **Float / ambient drift** | `linear` | `ambientDrift` 9000 loop | motes (low) | **off**; static positions |
-| **Cohort compile** | **Flow + Settle** (motes flow along field, crystallize into hex of six) | `settle` (overshoot ≤1.04) | `compile` 900 | small burst/cohort | **instant snap** to settled + static "compiled" + `aria-live` (150) |
-| Constraint badge satisfied | **Pop-in** (0.95→1.0) + check **Line-draw** | `settle` | `reveal` 240 | — | instant show + static check |
-| Non-harm floor line | **Glow pulse** (yoyo, low amplitude) | `loop` | `pulse` 1200 loop | — | static floor line + "all ≥ floor" text |
-| Member swap (churn) | **Layout (FLIP)** shift + churn-color trail | `move` | `settle` 520 | small trail | instant reposition + Ledger diff |
-| **Rollback** | **Reverse-settle** (motes return to prior snapshot) + rewind sweep | `rollback` | `rollback` 600 | — | instant restore + "rolled back to asg-N" announce |
-| Standings bar | **Bar grow** L→R + **Number ticker** (tabular) | `enter` | `standings` 420 | — | instant filled bar + final number |
-| Gain celebrate (own-growth) | **Warm pulse** + amber sweep | `settle` | `reveal` 240 | few | static amber chip + announce |
-| RivalryMix turn-holding | **Seat pulse** (speaker ring) | `loop` | `pulse` 1200 loop | — | static "S1 holds the floor" + highlighted seat |
-| RivalryMix interruption | **Arc dart** (interrupter→floor-holder) | `move` | `fast` 200 | spark | static interruption tally in Ledger |
-| RivalryMix dominance | **Share arc grow** | `enter` | `standings` 420 | — | instant arc + "S1 holds 4/6 turns" text |
-| Low-quality suppression | **Dim + veil** ("confidence low — prompts suppressed") | `enter` | `base` 300 | — | static veil + identical text |
-| Safeguarding bypass | **Shield sweep** (moves freeze, event routes to sink lane) | `enter` (firm) | `base` 300 | — | static "Safeguarding — optimization bypassed; N move(s) paused" + focus |
-| Press feedback | **Press/Tap** scale 0.97 (on pointer-down) | `press` | `press` 120 | — | **kept** (non-vestibular) |
-| Card/badge enter | **Stagger** 40ms between items | `enter` | `reveal` 240 | — | instant / opacity |
-| Detail/drawer open | **Origin-aware Scale-in** (from trigger) | `enter` | `fast` 200 | — | instant / fade |
-| HUD toggle (rm/plain/band/standings) | **Instant** (frequent action → no animation) | — | `instant` 0 | — | instant |
+| Event | `kind` | Named effect (vocabulary) | Easing (name) | Duration (token, ms) | Layer · extras | Reduced-motion / 2D-tier equivalent |
+|---|---|---|---|---|---|---|
+| Scene / camera settle | `cameraEase` | **Continuity dolly** (camera eases to framing on load / recenter) | `move` | `pulse` 1200 | 3D · follow-free | static camera at the pinned pose; no motion |
+| HUD panel enter | `panelEnter` | **Materialize** (blur+scale 0.98→1.0) | `enter` | `panel` 320 | DOM | instant show + `micro` 150 opacity |
+| Learner-star idle | `ambientDrift` | **Float / ambient drift** (3D low-amplitude bob + parallax) | `linear` | `ambientDrift` 9000 loop | 3D · instanced | **off**; static positions (settled) |
+| **Cohort compile** | `compile` | **Flow + Choreograph + Settle** (stars flow along 3D field-lines, crystallize into a hex of six) | `settle` (overshoot ≤1.04) | `compile` 900 | 3D · small burst/cohort | **instant snap** to settled 3D positions (2D-tier: snap to `project2D`) + static "compiled" + `aria-live` (150) |
+| Constraint badge satisfied | `badgeSatisfied` | **Pop-in** (0.95→1.0) + check **Line-draw** + bloom flare | `settle` | `reveal` 240 | 3D · bloom | instant show + static check |
+| Non-harm-floor halo | `floorHalo` | **Glow pulse** (yoyo, low amplitude, emissive disc) | `loop` | `pulse` 1200 loop | 3D · bloom | static halo + "all ≥ floor" text |
+| Member swap (churn) | `memberSwap` | **Layout (FLIP)** card shift + 3D star re-choreograph + churn-color trail | `move` | `settle` 520 | both · small trail | instant reposition + Ledger diff |
+| **Rollback** | `rollback` | **Reverse-choreography** (stars retrace to the prior snapshot) + rewind sweep | `rollback` | `rollback` 600 | 3D | instant restore + "rolled back to asg-N" announce |
+| Standings bar | `standingsBar` | **Bar grow** L→R + **Number ticker** (tabular) | `enter` | `standings` 420 | DOM | instant filled bar + final number |
+| Gain celebrate (own-growth) | `gainCelebrate` | **Warm pulse** + amber sweep | `settle` | `reveal` 240 | DOM · few | static amber chip + announce |
+| RivalryMix turn-holding | `turnPulse` | **Seat pulse** (emissive + soft vertical light column) | `loop` | `pulse` 1200 loop | 3D · bloom | static "S1 holds the floor" + highlighted seat |
+| RivalryMix interruption | `interruptionArc` | **Arc dart** (raised 3D bezier interrupter→floor-holder) | `move` | `fast` 200 | 3D · spark | static interruption tally in Ledger |
+| RivalryMix dominance | `dominanceRing` | **Share-ring grow** (torus arc filled to turn share) | `enter` | `standings` 420 | 3D | instant ring + "S1 holds 4/6 turns" text |
+| Low-quality suppression | `suppressVeil` | **Dim + veil** (volumetric fog; "confidence low — prompts suppressed") | `enter` | `base` 300 | 3D | static veil + identical text |
+| Safeguarding bypass | `safeguardSweep` | **Shield sweep** (moves freeze, event routes to sink lane) | `enter` (firm) | `base` 300 | both | static "Safeguarding — optimization bypassed; N move(s) paused" + focus |
+| Press feedback | `press` | **Press/Tap** scale 0.97 (on pointer-down) | `press` | `press` 120 | DOM | **kept** (non-vestibular) |
+| Card/badge enter | `cardEnter` | **Stagger** 40ms between items | `enter` | `reveal` 240 | DOM | instant / opacity |
+| Detail/drawer open | `drawerOpen` | **Origin-aware Scale-in** (from trigger) | `enter` | `fast` 200 | DOM | instant / fade |
+| HUD toggle (rm/plain/band/standings/2D) | `hudToggle` | **Instant** (frequent action → no animation) | `linear` | `instant` 0 | DOM | instant |
 
 **Deliberately excluded** (would violate §14.12 / this design): **Shake/Wiggle** on infeasibility (an
 unassigned learner is a *calm* violet bench state, not a rejection jolt), any `scale(0)` entrance, `ease-in`
 on entrances, gacha/loot "reroll" reveals, loss/decay/streak meters, any leaderboard or bottom-rank
-surface, alarm-red flashing, engagement-timed pop-ins, and any looping audio earworm. No emotion/trait
-label motion exists anywhere.
+surface, alarm-red flashing, engagement-timed pop-ins, aggressive camera shake / dolly-zoom / whip-pans,
+and any looping audio earworm. No emotion/trait label motion exists anywhere.
 
 ### Motion principles (the rules every value above obeys)
 
@@ -842,11 +866,14 @@ label motion exists anywhere.
   bar) → standard eased; frequent (HUD toggles, press) → instant/`press`.
 - **Enter/exit `enter` (strong ease-out)**; on-screen moves `move` (ease-in-out); the crystallize "settle"
   uses a **subtle** Back.Out overshoot ≤1.04 (never `scale(0)`); **never `ease-in` on entrances**.
-- **Interruptible** (Apple): compile/rollback animate from the live presentation value; input is never
-  locked out.
-- **Only `transform`/`alpha`/particles** animate on canvas; DOM animates `transform`/`opacity` (FLIP for
-  layout); no layout-thrash; target **60fps** with a degraded tier (halved particles, glow off) holding the
-  budget.
+- **Interruptible** (Apple): compile/rollback animate from the live presentation value (r3f `useFrame`
+  lerps from the current transform); input/camera is never locked out.
+- **3D layer** animates only `position`/`rotation`/`scale`/`material` (emissive/opacity) + instanced
+  attributes via `useFrame`; **DOM layer** animates `transform`/`opacity` (motion@^12 `layout` for FLIP); no
+  layout-thrash. Target **60fps**, with a degraded 3D tier (halved instanced stars, bloom off, shadows off)
+  and then the 2D tier holding the budget.
+- **Camera is calm and follow-free** — a slow idle drift/breath only; no aggressive auto-rotate, dolly-zoom,
+  or shake. Under reduced motion the camera is static.
 - **Every** animation has a reduced-motion equivalent (this table) and a Ledger equivalent (`buildLedger`);
   reduced motion is *the same instrument, read calmly*.
 
@@ -864,29 +891,34 @@ except the pure `resolveMotion` values which are exact.
 - **`MOTION` (durations, ms — exact):** `instant:0`, `press:120`, `micro:150`, `fast:200`, `reveal:240`,
   `base:300`, `panel:320`, `standings:420`, `settle:520`, `rollback:600`, `tickerRoll:600`, `compile:900`,
   `pulse:1200`, `ambientDrift:9000`.
-- **`EASINGS` (name → CSS cubic-bézier / Pixi-friendly — exact):** `enter: cubic-bezier(0.23,1,0.32,1)`;
+- **`EASINGS` (name → CSS cubic-bézier; the same normalized `t→t` curves are used by the three.js
+  `useFrame` lerps — exact):** `enter: cubic-bezier(0.23,1,0.32,1)`;
   `move: cubic-bezier(0.65,0,0.35,1)`; `settle: cubic-bezier(0.34,1.4,0.64,1)` (overshoot ≤1.04);
   `press: cubic-bezier(0.4,0,0.6,1)`; `loop: cubic-bezier(0.45,0,0.55,1)` (sine-like, yoyo);
   `rollback: cubic-bezier(0.32,0.72,0,1)`; `linear: linear`.
 - **`resolveMotion(kind,{reducedMotion})` → `{ kind, mode, durationMs, easing }`.** Animated table below;
   under `reducedMotion:true` → `mode:"reduced"`, `easing:"linear"`, and `durationMs` from the reduced column.
+  There are **19** kinds; every kind has both an `animated` and a `reduced` form.
 
 | kind | animated ms | animated easing | reduced ms | reduced note |
 |---|---|---|---|---|
+| `cameraEase` | 1200 | move | 0 | static camera at the pinned pose |
 | `panelEnter` | 320 | enter | 150 | opacity only |
+| `ambientDrift` | 9000 | linear | 0 | static positions |
 | `compile` | 900 | settle | 0 | instant snap to settled |
 | `badgeSatisfied` | 240 | settle | 0 | instant check |
-| `floorGlow` | 1200 | loop | 0 | static floor line |
+| `floorHalo` | 1200 | loop | 0 | static halo + "all ≥ floor" text |
 | `memberSwap` | 520 | move | 0 | instant reposition |
 | `rollback` | 600 | rollback | 0 | instant restore |
 | `standingsBar` | 420 | enter | 0 | instant filled bar |
 | `gainCelebrate` | 240 | settle | 0 | static chip |
 | `turnPulse` | 1200 | loop | 0 | static highlight |
 | `interruptionArc` | 200 | move | 0 | static tally |
-| `dominanceArc` | 420 | enter | 0 | instant arc |
+| `dominanceRing` | 420 | enter | 0 | instant ring |
 | `suppressVeil` | 300 | enter | 300 | static veil (same) |
 | `safeguardSweep` | 300 | enter | 0 | static banner |
 | `press` | 120 | press | 120 | kept (non-vestibular) |
+| `cardEnter` | 240 | enter | 0 | instant / opacity |
 | `drawerOpen` | 200 | enter | 150 | fade |
 | `hudToggle` | 0 | linear | 0 | instant |
 
@@ -896,31 +928,55 @@ except the pure `resolveMotion` values which are exact.
   `locked:#4B5C72`, `focus:#FFD166`. Contrast: `inkHi/deck ≈ 14:1` (AAA), `inkMut/deck ≥ 4.5:1`. State
   color always paired with an icon/shape (FR-045).
 - **`TYPOGRAPHY` (exact):** families + the scale table above; `numeric:"tabular-nums"`.
-- **`LAYOUT` (exact — the deterministic geometry):**
-  - Constellation `WORLD = { width: 1600, height: 900 }`.
-  - Cohort hex centers: `COHORT_ORIGIN = { x: 480, y: 450 }`, `COL_W = 640`, `ROW_H = 300`, `COHORT_COLS = 2`;
-    `center(i) = { x: 480 + (i%2)*640, y: 450 + floor(i/2)*300 }`.
-  - Member vertices: `HEX_R = 96`; member `k` (0..5, members sorted by `learnerRef` ascending) at angles
-    `[-90,-30,30,90,150,210]°`: `vertex = { x: round(cx + 96·cosθ), y: round(cy + 96·sinθ) }`
-    (`round(96·cos30°)=83`, `round(96·sin30°)=48`).
-  - Bench (unassigned): `BENCH_Y = 820`, `BENCH_X0 = 120`, `BENCH_DX = 80`; unassigned `i` at
-    `{ x: 120 + i·80, y: 820 }`.
-  - Caliper rings: radii `CALIPER_RINGS = [140, 220, 300]` px (display bands; do not gate anything).
-  - Arena seat ring: `RING_CENTER = { x: 800, y: 450 }`, `RING_R = 240`; for `N` speakers (sorted
-    ascending), seat `k` at `angle = -90 + k·(360/N)°`: `{ x: round(800 + 240·cosθ), y: round(450 + 240·sinθ) }`.
+- **`LAYOUT` (exact — the deterministic 3D geometry + its pure 2D projection).** All `{x,y,z}` are three.js
+  world units; all `{x,y}` are screen px. Up axis is **+Y**; the scene floor plane is **Y = 0**; the camera
+  looks toward **−Z**. 3D values are rounded to **3 decimals (±1e-3)**; projected `{x,y}` are integers
+  (tolerance 0).
+  - Screen/fallback viewport: `WORLD = { width: 1600, height: 900 }`.
+  - Camera (presentation constant): `CAMERA = { position: { x: 0, y: 26, z: 46 }, target: { x: 0, y: 0, z: -6 }, fov: 42, near: 0.1, far: 400 }`.
+  - Scene fog (presentation constant): `FOG = { color: "#0B1220", near: 40, far: 120 }`.
+  - **Hex formation** (members lie in the local XZ plane, `y = 0`): `HEX_R = 6`. Member `k` (0..5, members
+    sorted by `learnerRef` ascending) at angle `θk = 90 − k·60°`:
+    `vertexLocal(k) = { x: round(6·cosθk,3), y: 0, z: round(6·sinθk,3) }` →
+    `k0 {0,0,6}`, `k1 {5.196,0,3}`, `k2 {5.196,0,-3}`, `k3 {0,0,-6}`, `k4 {-5.196,0,-3}`, `k5 {-5.196,0,3}`.
+  - **Cohort centers** (2-column grid; rows recede along −Z):
+    `COHORT_ORIGIN = { x: -11, y: 0, z: 0 }`, `COL_W = 22`, `ROW_D = 22`, `COHORT_COLS = 2`;
+    `center(i) = { x: -11 + (i%2)·22, y: 0, z: -(floor(i/2))·22 }` → `center(0) {-11,0,0}`, `center(1) {11,0,0}`,
+    `center(2) {-11,0,-22}`, `center(3) {11,0,-22}`. Member world pos: `memberPos(i,k) = center(i) + vertexLocal(k)`.
+  - **Non-harm-floor halo**: a horizontal emissive disc under each hex at `FLOOR_Y = -1.5`, radius `FLOOR_R = 8`,
+    centered under `center(i)` (display of `minBenefit ≥ floor`, never re-derived).
+  - **Badge ring**: seven satisfied-constraint badges on a circle of radius `BADGE_R = 8.5` at `y = 0.2` in the
+    hex's XZ plane; badge `j` (0..6) at `θ = 90 − j·(360/7)°`.
+  - **Bench** (unassigned "still compiling"; a lower front shelf): `BENCH_Y = -8`, `BENCH_Z = 18`,
+    `BENCH_X0 = -20`, `BENCH_DX = 5`; unassigned `i` at `{ x: -20 + i·5, y: -8, z: 18 }`.
+  - **Caliper field** (compile-start / drift positions along the near-peer gradient — level→X, velocity→Z):
+    `FIELD_STEP = 2.5`, `FIELD_REF = { level: 11, velocity: 11 }`;
+    `fieldPos(l) = { x: round((l.level − 11)·2.5,3), y: 0, z: round((l.velocity − 11)·2.5,3) }`.
+  - **Caliper rings**: horizontal display discs, radii `CALIPER_RADII = [5, 10, 15]` world units (do not gate anything).
+  - **Arena seat ring**: `RING_CENTER = { x: 0, y: 0, z: 0 }`, `RING_R = 10`; for `N` speakers (sorted ascending),
+    seat `k` at `θk = 90 − k·(360/N)°`: `seatPos(k) = { x: round(10·cosθk,3), y: 0, z: round(10·sinθk,3) }`.
+  - **Orthographic 2D projection** (reduced-motion / 2D tier / SVG; drops Y, top-down):
+    `PROJECT = { scale: 24, cx: 800, cy: 450 }`; `project2D(p) = { x: round(800 + p.x·24), y: round(450 − p.z·24) }`.
+    (Chosen so `RING_R·scale = 240` and `PROJECT.center = (800,450)`: the 2D-tier arena reproduces a clean
+    240px-radius ring centered in the 1600×900 viewport.)
 
 ### Fixture V1: `view-cohort-12` (UI-US1)
 
 `buildCohortArenaView` over domain [Fixture B `cohort-12`](#fixture-b-cohort-12-us2) (2 cohorts, no
 unassigned, `prior = null`, `flags = { reducedMotion:false, plain:false, band:"9-11", standingsOptIn:false }`).
 
-**Expected constellation (exact mote positions, `LAYOUT` above):**
+**Expected constellation (exact 3D `{x,y,z}` mote positions + their `project2D` `{x,y}`, `LAYOUT` above):**
 
-- **Cohort 0** center `(480,450)`, members `[A1,A2,A3,A4,A5,A6]` at vertices:
-  `A1 (480,354)`, `A2 (563,402)`, `A3 (563,498)`, `A4 (480,546)`, `A5 (397,498)`, `A6 (397,402)`.
-- **Cohort 1** center `(1120,450)`, members `[B1,B2,B3,B4,B5,B6]` at vertices:
-  `B1 (1120,354)`, `B2 (1203,402)`, `B3 (1203,498)`, `B4 (1120,546)`, `B5 (1037,498)`, `B6 (1037,402)`.
+- **Cohort 0** center `{-11,0,0}`, members `[A1,A2,A3,A4,A5,A6]` at `memberPos(0,k)`:
+  - `A1 {-11,0,6}` → 2D `(536,306)`; `A2 {-5.804,0,3}` → `(661,378)`; `A3 {-5.804,0,-3}` → `(661,522)`;
+    `A4 {-11,0,-6}` → `(536,594)`; `A5 {-16.196,0,-3}` → `(411,522)`; `A6 {-16.196,0,3}` → `(411,378)`.
+- **Cohort 1** center `{11,0,0}`, members `[B1,B2,B3,B4,B5,B6]` at `memberPos(1,k)`:
+  - `B1 {11,0,6}` → `(1064,306)`; `B2 {16.196,0,3}` → `(1189,378)`; `B3 {16.196,0,-3}` → `(1189,522)`;
+    `B4 {11,0,-6}` → `(1064,594)`; `B5 {5.804,0,-3}` → `(939,522)`; `B6 {5.804,0,3}` → `(939,378)`.
 - `bench === []` (no unassigned).
+- **Field-start (compile origin)** examples via `fieldPos`: `A1 (level 10, velocity 10)` → `{-2.5,0,-2.5}`;
+  `B1 (level 20, velocity 20)` → `{22.5,0,22.5}` (near-peers cluster; the B-group sits off along the caliper
+  gradient). Field positions are the compile animation's start; the **settled** positions above are the golden.
 
 **Expected cohort cards:** two cards; each with 6 members + the pinned role vector
 `[anchor,scout,builder,builder,challenger,scribe]`; all **seven** hard-constraint badges `satisfied:true`;
@@ -951,19 +1007,21 @@ domain assignment (SC-016).
 
 `buildArenaRoomView(analysis)` over the domain RivalryMix goldens ([Fixture E](#fixture-e-turns--us3)).
 
-- **`turns-dominance`** (speakers `[S1,S2,S3]`, sorted) → 3 seats at the pinned ring (`RING_R=240`, center
-  `(800,450)`): `S1 (800,210)`, `S2 (1008,570)`, `S3 (592,570)`; one `dominance` pattern on `S1` with the
-  observable evidence "S1 holds 4/6 turns (66.7%) > 50%"; `confidence 1.0`; `suppressed false`.
-- **`turns-lowquality`** → `suppressed true`, the veil state, `patterns: []` (nothing surfaced).
+- **`turns-dominance`** (speakers `[S1,S2,S3]`, sorted) → 3 seats on the pinned 3D ring (`RING_R=10`, center
+  `{0,0,0}`): `S1 {0,0,10}` → 2D `(800,210)`; `S2 {8.66,0,-5}` → `(1008,570)`; `S3 {-8.66,0,-5}` → `(592,570)`;
+  one `dominance` pattern on `S1` with the observable evidence "S1 holds 4/6 turns (66.7%) > 50%";
+  `confidence 1.0`; `suppressed false`. (The `project2D` of the 3D seats reproduces the clean 240px-radius ring.)
+- **`turns-lowquality`** → `suppressed true`, the veil state (volumetric fog dim), `patterns: []` (nothing surfaced).
 - **Universal:** the arena view carries **no** honesty/emotion/personality/motivation field, in **100%** of
-  outputs (SC-013). Reduced-motion: seats static, turn-holder highlighted (no pulse), interruptions as a
-  tally in the Ledger.
+  outputs (SC-013). Reduced-motion / 2D tier: seats static at their `project2D` positions, turn-holder
+  highlighted (no pulse), interruptions as a tally in the Ledger.
 
 ### Fixture V4: `motion-golden` (UI-US1)
 
-`resolveMotion(kind,{reducedMotion})` MUST return exactly the animated/reduced table rows above for every
-`kind`; every kind MUST have both an `animated` and a `reduced` form; `EASINGS`/`MOTION` MUST equal the
-pinned registries (tolerance 0). (SC-011.)
+`resolveMotion(kind,{reducedMotion})` MUST return exactly the animated/reduced table rows above for **all 19**
+`kind`s; every kind MUST have both an `animated` and a `reduced` form; `EASINGS`/`MOTION` MUST equal the
+pinned registries (tolerance 0). (SC-011.) A companion **`project2D`** golden asserts the exact projected
+`{x,y}` for Fixture V1's members and Fixture V3's seats (the 2D-tier positions), tolerance 0.
 
 ---
 
@@ -990,30 +1048,38 @@ These are settled — do **not** re-open them.
 
 These UI choices are settled — do **not** re-open them.
 
-- **D-UI-1 — Rendering split: Pixi.js v8 (WebGL) canvas + DOM/SVG Framer Motion HUD.** The two motion-heavy
-  spatial surfaces (Cohort Constellation, RivalryMix arena room) render on **Pixi.js `^8.19.0`** (WebGL,
-  client-only); the HUD (cohort cards with FLIP layout animation, badges, standings, churn meter,
-  safeguarding banner) and the accessible Ledger render as **DOM/SVG + Framer Motion (`motion@^12.42.0`,
-  imported from `motion/react`)**. *Rationale:* Pixi (not Phaser) because this is a data-viz **constellation**,
-  not a traversable game world — Pixi's lower-level 2D WebGL renderer + `ParticleContainer` suit a field of
-  learner motes at 60fps without game-scene scaffolding (Phaser is the right call for the *child-facing*
-  feature 004, the wrong weight here). Framer Motion for the HUD because cohort membership changes are
-  exactly **FLIP/shared-layout** animations (its core strength) and it ships first-class `useReducedMotion`.
-  A different engine (e.g. raw canvas, or a pure-DOM/SVG-only build) is acceptable **only** with a documented
-  reason in `.loop/decisions.md`.
+- **D-UI-1 — Rendering split: a 3D react-three-fiber canvas + DOM motion@^12 HUD, with a pure 2D-tier
+  fallback.** The two spatial, motion-heavy surfaces (the 3D **Compiler Observatory** compile choreography and
+  the RivalryMix **arena room**) render on **react-three-fiber `^8.17.10`** + **@react-three/drei `^9.114.0`**
+  + **three `^0.169.0`** (WebGL2, client-only), with **@react-three/postprocessing `^2.16.3`** for a restrained
+  bloom on the satisfied badges / floor halo / turn-pulse. The HUD (cohort cards with FLIP layout animation,
+  badges, standings, churn meter, safeguarding banner) and the accessible Ledger render as **DOM + motion@^12**
+  (`motion@^12.42.0`, imported from **`motion/react`**). A **2D tier** — a pure `project2D` DOM/SVG rendering of
+  the identical 3D view — serves reduced-motion, plain mode, weak devices, and WebGL loss. *Rationale:* the
+  vision is a genuinely 3D "observatory" where learner-stars drift in a volumetric caliper field and
+  **choreograph** into hexagonal formations with real depth, parallax, and lit constraint rings — r3f gives
+  declarative three.js with drei helpers (`OrbitControls`, `Instances`, `Line`, `Billboard`, `Html`,
+  `Environment`) and clean React lifecycle/dispose; three.js owns 3D motion via `useFrame`. **motion@^12 owns
+  DOM motion** (FLIP/shared-layout on cohort membership changes is its core strength; first-class
+  `useReducedMotion`). This is a deliberate move **off Pixi's 2D renderer** — Pixi was the right call for a flat
+  data-viz, but the spec now commits to a 3D scene, so Pixi and Phaser are both the wrong weight here. A
+  different 3D approach (e.g. bare three.js without r3f) is acceptable **only** with a documented reason in
+  `.loop/decisions.md`. **No third animation library** (no GSAP/Framer-Motion-legacy); motion@^12 for DOM,
+  three.js `useFrame` for 3D.
 - **D-UI-2 — Pure view package + separate Next.js app (mirror feature 004 D2).** `packages/cohort-arena-view`
   is **pure** (no I/O, no wall-clock, **no `Math.random`**), reads the committed `@gt100k/cohort-compiler`
-  API read-only, and holds every view rule as a unit-testable function + the golden constants.
-  `apps/cohort-arena` is the only place Pixi/React/DOM live. This makes every guardrail deterministically
-  testable and keeps the build parallel-safe (new dirs only).
-- **D-UI-3 — One `CohortArenaView` drives every renderer (parity by construction; mirror 004 D4).** The Pixi
-  canvas, the DOM HUD, the reduced-motion rendering, and the accessible Cohort Ledger **all** render from the
-  single `buildCohortArenaView(...)` output; reduced-motion/plain/age-band never recompute state, so
-  `plainViewEquals` is a pure, testable guarantee.
-- **D-UI-4 — Accessible parallel DOM ("Cohort Ledger"), canvas `aria-hidden` (mirror 004 D5).** Because a
+  API read-only, and holds every view rule as a unit-testable function + the golden constants (incl. the exact
+  3D `LAYOUT` and the pure `project2D`). `apps/cohort-arena` is the only place three.js/r3f/React/DOM live. This
+  makes every guardrail deterministically testable and keeps the build parallel-safe (new dirs only).
+- **D-UI-3 — One `CohortArenaView` drives every renderer (parity by construction; mirror 004 D4).** The 3D r3f
+  canvas, the DOM HUD, the **2D-tier** projection, and the accessible Cohort Ledger **all** render from the
+  single `buildCohortArenaView(...)` output; reduced-motion/plain/age-band/2D-tier never recompute state, so
+  `plainViewEquals` is a pure, testable guarantee. The view carries both 3D `{x,y,z}` and projected `{x,y}`
+  positions, so the 2D tier is not a second layout — it is a pure projection of the same one.
+- **D-UI-4 — Accessible parallel DOM ("Cohort Ledger"), 3D canvas `aria-hidden` (mirror 004 D5).** Because a
   WebGL surface is opaque to assistive tech, the app renders a synchronized semantic HTML/ARIA twin from the
   same view (cohorts as a `role="tree"`, standings/rivalry/safeguarding as text/lists/alerts, `aria-live`
-  announces). Reduced motion is a first-class **equal** mode; WCAG 2.2 AA is a hard requirement.
+  announces). Reduced motion is a first-class **equal** mode (the calm 2D/static tier); WCAG 2.2 AA is a hard requirement.
 - **D-UI-5 — Guardrails are structural, not asserted.** The `StandingsView` type has **no**
   `rank`/`position`/`percentile`/`outOf` field; the `ArenaRoomView` type has **no**
   honesty/emotion/personality/motivation field; there is no `price`/`currency`/gacha/decay construct anywhere.
@@ -1066,17 +1132,22 @@ not touch; the **domain** loop gate (P0–P6) is **`pnpm typecheck` + `pnpm test
   `@gt100k/cohort-compiler` (`workspace:*`) only; `tsconfig.json` extends `../../tsconfig.base.json`
   (composite). Unit-tested by the existing Vitest globs — **no root config edit**.
 - **App** `@gt100k/cohort-arena` (`apps/cohort-arena`): **Next.js `^14.2.15`** App Router + **React
-  `^18.3.1`** (match `apps/student-compass`), **Pixi.js `^8.19.0`** (WebGL; client-only, `ssr:false`),
-  **motion `^12.42.0`** (imported from `motion/react`). `next.config.mjs` sets
-  `transpilePackages: ["@gt100k/cohort-arena-view","@gt100k/cohort-compiler"]`. App `tsconfig.json` mirrors
-  `apps/student-compass` (`jsx: preserve`, `noEmit`, `composite:false`, DOM libs). `.env.local.example` with
-  non-secret `NEXT_PUBLIC_*` placeholders; `.env.local` git-ignored.
+  `^18.3.1`** + **React-DOM `^18.3.1`** (match `apps/student-compass`), and the **3D stack** pinned for
+  React 18: **three `^0.169.0`**, **@react-three/fiber `^8.17.10`** (v8 pairs with React 18 — v9 requires
+  React 19), **@react-three/drei `^9.114.0`** (v9 pairs with r3f v8), **@react-three/postprocessing `^2.16.3`**
+  (bloom), plus **motion `^12.42.0`** (imported from **`motion/react`**) for the DOM HUD. Dev-deps
+  `@types/three`, `@types/react@^18`, `@types/react-dom@^18`. `next.config.mjs` sets
+  `transpilePackages: ["@gt100k/cohort-arena-view","@gt100k/cohort-compiler"]`. The r3f `<Canvas>` is loaded
+  **client-only** via `next/dynamic(..., { ssr:false })`. App `tsconfig.json` mirrors `apps/student-compass`
+  (`jsx: preserve`, `noEmit`, `composite:false`, DOM libs). `.env.local.example` with non-secret
+  `NEXT_PUBLIC_*` placeholders; `.env.local` git-ignored. *(React-19 + r3f v9 + drei v10 is the documented
+  future upgrade path — DP-UI-8 — but React 18 is pinned here for consistency with the rest of the repo.)*
 
 **UI commands:**
 
 ```bash
 pnpm --filter @gt100k/cohort-arena-view test    # pure view unit + golden tests (Vitest)
-pnpm --filter @gt100k/cohort-arena dev          # run the Viewer (Pixi + HUD)
+pnpm --filter @gt100k/cohort-arena dev          # run the Viewer (r3f/three canvas + HUD)
 pnpm --filter @gt100k/cohort-arena build        # next build — the UI acceptance gate
 ```
 
@@ -1148,28 +1219,37 @@ choices that would invalidate an SC or touch something irreversible/shared; the 
 
 ### UI Pre-marked Decision Points
 
-- **DP-UI-1 — Canvas engine. ✅ Settled: Pixi.js `^8.19.0` (WebGL, client-only).** Best-looking, lightest fit
-  for a learner-mote **constellation** + arena ring (D-UI-1). Pixi v8's renderer + `ParticleContainer` hold
-  60fps; on context loss the app falls back to the reduced-motion DOM/SVG + Ledger (FR-041). Raw-canvas or
-  pure-DOM/SVG-only is acceptable **only** with a documented reason. `severity: low`.
-- **DP-UI-2 — HUD animation lib. ✅ Settled: `motion@^12.42.0` (`motion/react`).** Chosen for FLIP/shared-layout
-  animation (cohort membership changes) + first-class `useReducedMotion`. GSAP is acceptable with a
+- **DP-UI-1 — 3D engine. ✅ Settled: react-three-fiber `^8.17.10` + drei `^9.114.0` + three `^0.169.0`
+  (+ @react-three/postprocessing `^2.16.3`), WebGL2, client-only.** The vision is a genuinely 3D "Compiler
+  Observatory" with depth, parallax, volumetric field drift, hexagonal crystallization, lit constraint rings,
+  and a 3D arena seat-ring (D-UI-1). r3f gives declarative three.js + drei helpers with clean React
+  lifecycle/dispose; three.js `useFrame` owns 3D motion. On WebGL2 loss / weak device the app degrades to the
+  **2D tier** (`project2D` DOM/SVG) + Ledger (FR-041). Bare three.js (no r3f) is acceptable **only** with a
   documented reason. `severity: low`.
+- **DP-UI-2 — DOM animation lib. ✅ Settled: `motion@^12.42.0` (imported from `motion/react`).** Chosen for
+  FLIP/shared-layout animation (cohort membership changes) + first-class `useReducedMotion`. **motion@^12 owns
+  DOM motion; three.js `useFrame` owns 3D motion — no third animation library.** `severity: low`.
 - **DP-UI-3 — Fonts (no-fetch).** *Default:* the system-stack fallback in `TYPOGRAPHY` (Space Grotesk / Inter
   / JetBrains Mono → system-rounded/mono fallbacks); self-hosted subset `woff2` under `public/fonts/` is an
-  optional, non-breaking upgrade. `severity: low`.
-- **DP-UI-4 — Constellation layout constants (`LAYOUT`).** *Default:* the pinned `WORLD`/hex/bench/ring
-  geometry ([§ UI Golden Values](#ui-golden-values--constants)). Changing them changes golden Fixtures
-  V1/V3, so keep them for the golden tests. `severity: low` — tunable; determinism is the fixed invariant.
-- **DP-UI-5 — Motion tokens/easings (`MOTION`/`EASINGS`).** *Default:* the pinned registries + reduced-motion
-  table (Fixture V4). `severity: low` — tunable; the *rule* (every kind has a reduced-motion equivalent,
-  frequent actions are instant, no `scale(0)`/`ease-in`/shake) is **fixed**.
+  optional, non-breaking upgrade; in-scene text uses drei `<Text>`/`<Html>` over the same tokens. `severity: low`.
+- **DP-UI-4 — 3D layout constants (`LAYOUT`).** *Default:* the pinned 3D `WORLD`/`CAMERA`/hex/bench/field/ring
+  geometry + the pure `project2D` ([§ UI Golden Values](#ui-golden-values--constants)). Changing them changes
+  golden Fixtures V1/V3, so keep them for the golden tests. `severity: low` — tunable; determinism (exact
+  `{x,y,z}` and projected `{x,y}`) is the fixed invariant.
+- **DP-UI-5 — Motion tokens/easings (`MOTION`/`EASINGS`).** *Default:* the pinned registries + the 19-kind
+  reduced-motion table (Fixture V4). `severity: low` — tunable; the *rule* (every kind has a reduced-motion
+  equivalent, frequent actions are instant, no `scale(0)`/`ease-in`/shake, calm follow-free camera) is **fixed**.
 - **DP-UI-6 — Age-band presentation.** *Default:* `resolveVisualBand` labels/marker-scale/celebration-ceiling
   per band; underlying state identical (`plainViewEquals`). `severity: low`.
 - **DP-UI-7 — Root `tsconfig.json` references (the single shared-file touch).** *Default:* the **final** UI
   task adds `packages/cohort-arena-view` (and confirms the domain dirs) to `references` in its own commit.
   `severity: critical` — the only shared-file edit; keep it isolated. *(Supersedes DP-6's scope to also list
   the view package.)*
+- **DP-UI-8 — React major version for the app.** *Default:* **React 18.3.1** with r3f v8 / drei v9 (matches
+  `apps/student-compass` and the rest of the repo). The documented future upgrade is **React 19 + Next 15 +
+  @react-three/fiber v9 + @react-three/drei v10** (a single lockfile transaction: fiber v9 → drei v10 → React 19).
+  `severity: low` — do not bump unless the repo moves to React 19 wholesale; the pure view package and all
+  golden values are React-version-independent.
 
 ## Assumptions
 

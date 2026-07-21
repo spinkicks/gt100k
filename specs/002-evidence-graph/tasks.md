@@ -1,5 +1,13 @@
 # Tasks: EvidenceGraph
 
+> **One spec home.** **Part I** below is the domain task list (T001–T032, unchanged). **Part II** (folded in
+> from the former `explorer/tasks.md`) is the **Provenance Explorer** 3D-UI task list (U0–U7, tasks
+> UE001–UE050). See [spec.md](./spec.md) Part I / Part II.
+
+---
+
+# PART I — Domain tasks (`packages/evidence-graph`)
+
 **Input**: Design documents from `specs/002-evidence-graph/`
 **Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/evidence-graph.md, quickstart.md
 **Tests**: INCLUDED — the constitution makes tests part of "done" and `contracts/evidence-graph.md` defines explicit test obligations. Write tests first; ensure they fail before implementing.
@@ -154,3 +162,234 @@ All work lives in **new** directories (`packages/evidence-graph`, `adapters/evid
 - **MVP scope**: P0 + US1 (content-addressed evidence DAG, golden node id).
 - **Golden-value coverage**: T010a (node id), T018a (Merkle roots), T019/T020 (subject digest, packet root) — all exact (`===`, zero tolerance).
 - **Shared-file touches**: exactly one — T032 (root `tsconfig.json` references), flagged for human merge reconciliation.
+
+---
+---
+
+# PART II — Provenance Explorer tasks (3D "Provenance Observatory")
+
+**Input**: [spec.md](./spec.md) Part II (§U0–§U15), [plan.md](./plan.md) Part II,
+[data-model.md](./data-model.md) Part II, [contracts/provenance-explorer.md](./contracts/provenance-explorer.md),
+[research.md](./research.md) Part II, [quickstart.md](./quickstart.md) Part II.
+**Prerequisites**: the completed Part I domain (`packages/evidence-graph` + adapters) is available and
+**unchanged** — this expansion reads it.
+**Tests**: INCLUDED — write view-package tests first; ensure they fail before implementing.
+
+**Loop gate**: `pnpm typecheck` (`tsc -b`) + `pnpm test` (Vitest, view package). App phases add
+`pnpm --filter @gt100k/evidence-explorer build` + the §U11 smoke + the quickstart walkthrough. Phases map to
+**§U9 Phasing**: **U0** setup/foundation (UE001–UE012), **U1** 3D constellation MVP (UE013–UE024), **U2**
+time-scrub (UE025–UE028), **U3** verify+tamper (UE029–UE035), **U4** inspector+authority (UE036–UE041),
+**U5** HUD/legend/filters/trace/plain/tier (UE042–UE046), **U6** polish/a11y/perf (UE047–UE049), **U7**
+T-ROOT (UE050).
+
+**Golden values (deterministic acceptance targets)**: exact 2D layout (§U8.1) + 3D layout (§U8.2, ±1e-6),
+`resolveMotion` table + `MOTION`/`EASINGS`/`SPRINGS` (§U8.5), `PALETTE`/`TYPOGRAPHY` (§U8.11),
+`NODE_BODIES`/`NODE_GLYPHS`/`EDGE_THREADS` (§U8.12), `CAMERA` (§U8.9), `TIERS`/`resolveRenderTier` (§U8.10),
+verification-step + `verifyWaveOrder` derivation (§U8.8). Match the spec; the spec is the arbiter.
+
+## Format / conventions
+
+- **[P]**: parallelizable (different files, no incomplete-task dependency). **[Story]**: UX1…UX6.
+- View package: `packages/evidence-explorer-view/src/`, tests `packages/evidence-explorer-view/test/`.
+- App: `apps/evidence-explorer/`.
+
+## Parallel-safety note (read before starting)
+
+All work lives in **new** directories (`packages/evidence-explorer-view`, `apps/evidence-explorer`). The root
+workspace glob + Vitest include already discover them, so **do NOT edit** `package.json`,
+`pnpm-workspace.yaml`, `vitest.config.ts`, or `biome.json`, and **do NOT modify** `packages/evidence-graph`,
+its adapters, `packages/learning-loop`, or `apps/student-compass`. The **only** shared-file edit is the final
+task (UE050, root `tsconfig.json` references), kept as its own isolated change.
+
+---
+
+## Phase U0 — Setup & Foundation (new dirs only)
+
+- [ ] UE001 Scaffold `@gt100k/evidence-explorer-view`: `package.json` (`type:module`, exports → `./src/index.ts`,
+  `test:"vitest run"`, dep `@gt100k/evidence-graph:workspace:*`, dev-deps `@gt100k/evidence-hash-node`/
+  `@gt100k/evidence-verifier-stub`/`@gt100k/evidence-deferred` `workspace:*`), `tsconfig.json` (extends
+  `../../tsconfig.base.json`), empty `src/index.ts`. No shared-root edit.
+- [ ] UE002 [P] Define view types in `src/model.ts` per [data-model.md](./data-model.md) Part II (`ExplorerView`,
+  `NodeView` (incl. `pos2d`/`pos3d`/`depthRank`/`birthOrder`), `EdgeView`, `ActorChip`, `GrowthTimelineView`/
+  `TimelineBeat`, `VerificationView`/`VerifyStep`/`SealState`, `CameraKeyframe`, `RenderTier`/`RenderCaps`,
+  `LedgerView`/`LedgerNode`, `MotionSpec`, `Presentation`, `NodeBody`, `NodeGlyph`, `EdgeThreadStyle`).
+  Import domain types from `@gt100k/evidence-graph` (never redefine).
+- [ ] UE003 [P] Golden art tokens in `src/art.ts`: `PALETTE` + `TYPOGRAPHY` (exact §U8.11).
+- [ ] UE004 [P] Golden motion in `src/motion.ts`: `MOTION`, `EASINGS`, `SPRINGS`, `resolveMotion` (exact §U8.5,
+  incl. all 3D events + reduced column).
+- [ ] UE005 [P] Golden visual language in `src/visual.ts`: `NODE_BODIES`, `NODE_GLYPHS`, `EDGE_THREADS`,
+  `resolveNodeBody`/`resolveNodeGlyph`/`resolveNodeColorRole` (exact §U8.12/§U8.3).
+- [ ] UE006 [P] Golden camera in `src/camera.ts`: `CAMERA` (keyframes + clamps + lookAhead) + `PARALLAX`
+  (exact §U8.9).
+- [ ] UE007 [P] Golden tier ladder in `src/tiers.ts`: `TIERS` (capabilities + degrade/recover thresholds) +
+  `resolveRenderTier` (exact §U8.10).
+- [ ] UE008 [P] Committed synthetic fixture in `src/fixtures/explorer.fixture.ts`: `explorerFixture(hasher)`
+  builds the "speaker-v1" milestone (§U7.1 nodes+edges, declaration order fixed) via the
+  `@gt100k/evidence-graph` API, assembles the packet, returns `{graph,packet,verifierResult}`; plus
+  `applyTamper(fixture)`. Pseudonymous actors, no PII.
+- [ ] UE009 Add the **seeded smoke test** `test/smoke.test.ts` (builds the fixture `ExplorerView` with the
+  real node hasher; asserts 13 nodes / 12 in-milestone / golden 2D bounds §U8.1 + golden 3D center §U8.2 /
+  non-empty growth timeline) so the gate is green from iteration 1 (SC-E15).
+- [ ] UE010 Scaffold `@gt100k/evidence-explorer` app: `package.json` (next `^14.2.15` / react `^18.3.1` /
+  react-dom + **`motion@^12.0.0`** + **`three@^0.169.0`** + **`@react-three/fiber@^8.17.10`** +
+  **`@react-three/drei@^9.114.0`** + **`@react-three/postprocessing@^2.16.3`** + `postprocessing@^6.36.4` +
+  deps `@gt100k/evidence-explorer-view`/`@gt100k/evidence-graph`/the three adapters `workspace:*`),
+  `next.config.mjs` (`transpilePackages` the view + graph packages), `tsconfig.json` (match
+  `apps/student-compass`), `app/layout.tsx`, `app/page.tsx` placeholder, `app/globals.css` (§U8.11 tokens +
+  `@media (prefers-reduced-motion)`/`(prefers-reduced-transparency)` + `:focus-visible` rings),
+  `next-env.d.ts`, `.env.local.example` (§U11), `.gitignore`.
+- [ ] UE011 Skeleton `layoutExplorer2D`/`layoutExplorer3D` + `SHELL_SLOTS` in `src/layout2d.ts`/`src/layout3d.ts`
+  and `plainViewEquals`/`buildExplorerView` stub in `src/view.ts`; export the U0 surface from `src/index.ts`.
+- [ ] UE012 Verify U0 gate: `pnpm typecheck` + `pnpm test` green; `pnpm --filter @gt100k/evidence-explorer
+  build` compiles the placeholder page.
+
+**Checkpoint**: packages/app skeletons compile; golden constants + fixture exist; smoke green.
+
+---
+
+## Phase U1 — 3D constellation (UX1) 🎯 MVP
+
+### Tests first (ensure they fail)
+
+- [ ] UE013 [P] [UX1] `test/layout2d.test.ts`: `layoutExplorer2D` deterministic + golden §U8.1 incl. island;
+  x depends only on depthRank (SC-E01).
+- [ ] UE014 [P] [UX1] `test/layout3d.test.ts`: `layoutExplorer3D` deterministic + golden §U8.2 (±1e-6) via
+  `SHELL_SLOTS`; no `Math.sin`/`cos`; island at `ISLAND` (SC-E16).
+- [ ] UE015 [P] [UX1] `test/art.test.ts` + `test/visual.test.ts`: `PALETTE`/`TYPOGRAPHY` exact;
+  `NODE_BODIES`/`NODE_GLYPHS`/`EDGE_THREADS` exact; all 8 node → distinct body/glyph/color, all 6 edge →
+  distinct thread + label; comet `declaredTag` (SC-E05/E19).
+- [ ] UE016 [P] [UX1] `test/mapping.test.ts`: all 8 node + 6 edge types covered with accessible labels; island
+  `isInMilestone=false` (SC-E06).
+- [ ] UE017 [P] [UX1] `test/tiers.test.ts`: `resolveRenderTier` golden truth table + degrade/recover thresholds
+  (SC-E18).
+- [ ] UE018 [P] [UX1] `test/camera.test.ts`: `CAMERA` keyframes exact; `focus(node)` derives from
+  `node.pos3d + offset`; clamps present (SC-E17).
+- [ ] UE019 [P] [UX1] `test/view.test.ts` + `test/motion-tokens.test.ts`: `buildExplorerView` composes one
+  view; `plainViewEquals(full, plain)`/`(full, reduced)`/`(full, tier-swapped)` hold; `resolveMotion` golden
+  table incl. reduced mode (SC-E02/E03/E04).
+
+### Implementation
+
+- [ ] UE020 [UX1] `src/layout2d.ts` + `src/layout3d.ts`: full deterministic layouts → match goldens.
+- [ ] UE021 [UX1] `src/ledger.ts`: `buildLedgerView` (tree accessible names).
+- [ ] UE022 [UX1] `src/view.ts`: `buildExplorerView` (nodes+edges+bounds2d/3d+camera+presentation+ledger) +
+  `plainViewEquals`; export the U1 API from `src/index.ts`.
+- [ ] UE023 [UX1] App: `ObservatoryStage.tsx` (owns the shared `ExplorerView` + presentation; picks the tier
+  via `resolveRenderTier`; auto-degrade hook), `Cosmos3D.tsx` (R3F `<Canvas ssr:false>` — procedural
+  `bodies.tsx` + light-thread edges + `EffectComposer` bloom/DOF + orbit/dolly/fly-to camera via drei),
+  `Starfield.tsx` (seeded three.js `Points`, aria-hidden), `Constellation2D.tsx` (calm-2D SVG fallback +
+  `glyphs.tsx`), `Ledger.tsx` (`role="tree"`), wired in `app/page.tsx` (client). Every canvas `aria-hidden`.
+- [ ] UE024 [UX1] Verify U1 gate: `next build` + smoke (zero console errors) + walkthrough steps 1, 6. MVP
+  demonstrable (incl. reduced-motion → calm 2D and no-WebGL fallback).
+
+---
+
+## Phase U2 — Time-scrub galaxy growth (UX2)
+
+- [ ] UE025 [P] [UX2] `test/timeline.test.ts`: `buildGrowthTimeline` deterministic grouped order + `birthOrder`
+  (§U8.7); scrub reveals the right subset; island excluded (SC-E07).
+- [ ] UE026 [UX2] `src/timeline.ts`: `buildGrowthTimeline`; fold into `buildExplorerView`.
+- [ ] UE027 [UX2] App: `TimeScrub.tsx` — dragging grows the cosmos (bodies ignite in `birthOrder` via
+  `resolveMotion("scrubStep")`; threads draw when both endpoints exist); beat→body fly-to; reduced = instant
+  per-step; Ledger ordered-list + scrub-position parity.
+- [ ] UE028 [UX2] Verify walkthrough step 2.
+
+---
+
+## Phase U3 — Verify light-wave + tamper fracture (UX3)
+
+- [ ] UE029 [P] [UX3] `test/verify-view.test.ts`: `buildVerificationView` steps + `verifyWaveOrder` derived
+  from the domain (`merkleRoot`/subject-digest/`assertHumanAuthority`/stub); untampered → `verified`;
+  `applyTamper` → `mismatch` with both roots; stub step `nonProduction`; no grade computed (SC-E08/E20). Uses
+  the real node hasher + stub verifier + deferred stub adapters.
+- [ ] UE030 [P] [UX3] `test/authority-view.test.ts`: grade `Outcome` human-owned with owner; `model` actor
+  cited/neutral (comet "Declared"); no accusation field (SC-E09).
+- [ ] UE031 [UX3] `src/verify.ts`: `buildVerificationView` + `verifyWaveOrder` + `applyTamper` (reads the
+  domain; §U8.8); `ActorChip` tone + `isHumanOwned`/`isCitedAssistance` derivation; fold into
+  `buildExplorerView`.
+- [ ] UE032 [UX3] App: `VerifyPanel.tsx` — stepped checks (`verifyStep`) + verify light-wave (`verifyWave`,
+  order = `verifyWaveOrder`) + Verified ✓ seal-forge (ring Line-draw + Bloom + root Number-ticker via
+  `sealForge`/`rootTick`), `aria-live` announce.
+- [ ] UE033 [UX3] App: tamper demo in `VerifyPanel`/`Cosmos3D` — byte-body **fracture** (`fracture`) + lineage
+  desaturate + root Text-morph diff (`rootDiverge`) + MISMATCH seal (`--tamper`); reduced = static MISMATCH
+  chip + diff.
+- [ ] UE034 [UX3] Ensure red + fracture appear **only** on the byte-level body + root diff (never on a
+  person/Outcome/Assistance); reduced-motion equivalents for both sequences.
+- [ ] UE035 [UX3] Verify walkthrough step 3.
+
+---
+
+## Phase U4 — Drill-down inspector + human-authority + cited AI-assist (UX4)
+
+- [ ] UE036 [P] [UX4] `test/ledger.test.ts`: Ledger panel descriptions complete per node (id/actor/tool/
+  inputs/timestamp/consent/payload); grade `Outcome` human-owned; model `Assistance` cited (SC-E10).
+- [ ] UE037 [UX4] Extend `src/ledger.ts` panels + `NodeView` panel fields.
+- [ ] UE038 [UX4] App: `Inspector.tsx` (`motion@12`) — frosted, origin-aware (scale from the body's screen
+  position), id (mono, copy), actor kind chip, tool/version, inputs (fly-to links), timestamp, consent scope,
+  payload; Materialize open; reduced = fade.
+- [ ] UE039 [UX4] App: human-owned seal on a grade `Outcome` seal-sun; neutral "Declared AI assistance —
+  cited" ribbon on a model `Assistance`/`Review` comet; **no** accusation affordance anywhere.
+- [ ] UE040 [UX4] Ledger inspector parity (described regions).
+- [ ] UE041 [UX4] Verify walkthrough step 4.
+
+---
+
+## Phase U5 — HUD, legend, filters, trace, plain mode, tier control (UX5)
+
+- [ ] UE042 [P] [UX5] `test/integration.test.ts`: build the view with the real node hasher + stub verifier;
+  domain unchanged; adapter swap needs no view change; `traceEvidence` drives trace (SC-E14).
+- [ ] UE043 [P] [UX5] `test/guardrails.test.ts`: view types expose none of price/currency/rank/leaderboard/
+  percentile/outOf/streak/countdown/urgency/dropRate/rarity/accusation; no `Math.random` in `src`; no
+  `Math.sin`/`Math.cos` in the golden layout path (SC-E11).
+- [ ] UE044 [UX5] App: `Hud.tsx` — legend (all 8 bodies + 6 threads, body-icon+color+label), filters by node
+  type, "trace from Outcome" (domain `traceEvidence` highlight; Ledger marks the subset), search/focus.
+- [ ] UE045 [UX5] App: plain-mode toggle (state-identical, `plainViewEquals`), reduced-motion override
+  (system/on/off), **render-tier control** (auto/cinematic/standard3d/calm2d), audio-caption toggle (muted
+  default) — presentation-only.
+- [ ] UE046 [UX5] Confirm toggles/filters/trace/tier change only presentation flags (state unchanged); verify
+  walkthrough steps 5–6.
+
+---
+
+## Phase U6 — Polish, accessibility & the 60fps performance budget
+
+- [ ] UE047 [P] a11y pass: keyboard/switch/screen-reader over the Ledger; visible focus; color-independent
+  cues (grayscale check); ≥4.5:1 contrast; every canvas/decorative layer `aria-hidden` (SC-E13).
+- [ ] UE048 [P] performance + reduced-motion sweep: 60fps orbit/fly on the min device; auto-degrade
+  (cinematic→standard3d→calm2d) when the budget slips; no-WebGL/context-loss → calm 2D with no lost state;
+  every motion-table row has a reduced equivalent; only `transform`/`opacity`/`filter` animate in DOM
+  (SC-E03/E21/E22).
+- [ ] UE049 [P] `packages/evidence-explorer-view/README.md` (public API + "reads the domain, computes no
+  grade / no crypto, deterministic layout" note) + app README/demo note (run via the filter); app smoke
+  (Playwright): loads `/`, 3D canvas + Ledger mount, zero console errors, reduced-motion toggle, Verify →
+  seal + `aria-live`, WebGL-disabled → calm-2D fallback (SC-E12/E22).
+- [ ] UE050 **[FINAL — the single shared-file touch]** Add a composite project reference for
+  `packages/evidence-explorer-view` to the root `tsconfig.json` `references` array (the app is `noEmit`, like
+  `apps/student-compass`, so it needs no reference). Keep this as its own isolated change.
+
+---
+
+## Dependencies & Execution Order (Part II)
+
+- **U0 (UE001–UE012)** → **U1 (UE013–UE024)** → **U2 (UE025–UE028)** → **U3 (UE029–UE035)** → **U4
+  (UE036–UE041)** → **U5 (UE042–UE046)** → **U6 (UE047–UE049)** → **U7 (UE050)**.
+- App phases depend on the corresponding view-package function landing first.
+- UE050 (root `tsconfig.json`) runs **last**; it is the sole shared-file change for the expansion.
+
+## Parallel Opportunities (Part II)
+
+- U0: UE002–UE008 in parallel; then UE009/UE011.
+- U1: UE013–UE019 (tests) in parallel before UE020–UE023.
+- U3: UE029/UE030 in parallel before UE031–UE034.
+- U5: UE042/UE043 in parallel.
+- U6: UE047–UE049 in parallel.
+
+## Summary (Part II)
+
+- **Total tasks**: 50 (UE001–UE050).
+- **Setup/Foundation (U0)**: UE001–UE012 · **3D constellation MVP (U1)**: UE013–UE024 · **Time-scrub (U2)**:
+  UE025–UE028 · **Verify+Tamper (U3)**: UE029–UE035 · **Inspector+Authority (U4)**: UE036–UE041 · **HUD/
+  Trace/Plain/Tier (U5)**: UE042–UE046 · **Polish/a11y/perf (U6)**: UE047–UE049 · **T-ROOT (U7)**: UE050.
+- **Golden coverage**: UE013 (2D layout), UE014 (3D layout), UE015 (palette/type/bodies/threads), UE017
+  (tier ladder), UE018 (camera), UE019 (motion table), UE029 (verification + wave) — all exact against §U8.
+- **Shared-file touches**: exactly one — UE050 (root `tsconfig.json` references), isolated.

@@ -67,7 +67,7 @@ pnpm --filter @gt100k/cohort-arena-view test    # pure view unit + golden tests 
 pnpm test                                        # (also runs the view tests via the packages/**/test glob)
 ```
 
-The view tests assert the **exact golden values** in [spec.md § UI Golden Values](./spec.md#ui-golden-values--constants) (Fixtures V1–V4) and the [contracts/cohort-arena-view.md](./contracts/cohort-arena-view.md) obligations: one deterministic `CohortArenaView` drives every renderer; exact constellation/arena-ring layout; the motion registry with a reduced-motion equivalent for every kind; opt-in near-peer standings with **no** rank/bottom-rank field; observable-only RivalryMix with **no** emotion/trait field; a guardrail scan (no `Math.random`, no rank/emotion field, no dark-pattern construct).
+The view tests assert the **exact golden values** in [spec.md § UI Golden Values](./spec.md#ui-golden-values--constants) (Fixtures V1–V4) and the [contracts/cohort-arena-view.md](./contracts/cohort-arena-view.md) obligations: one deterministic `CohortArenaView` drives every renderer; exact **3D `{x,y,z}`** constellation/arena-ring layout **and** its **`project2D` `{x,y}`** 2D-tier projection; the 19-kind motion registry with a reduced-motion equivalent for every kind; opt-in near-peer standings with **no** rank/bottom-rank field; observable-only RivalryMix with **no** emotion/trait field; a guardrail scan (no `Math.random`, no rank/emotion field, no dark-pattern construct).
 
 ### Build & run the app (UI acceptance gate)
 
@@ -75,28 +75,28 @@ The view tests assert the **exact golden values** in [spec.md § UI Golden Value
 pnpm typecheck                                   # tsc -b (after T136 adds the view-package reference)
 pnpm lint                                        # biome check packages adapters apps (covers apps/cohort-arena)
 pnpm --filter @gt100k/cohort-arena build         # next build — the UI acceptance/perf gate
-pnpm --filter @gt100k/cohort-arena dev           # run the Viewer locally (Pixi + HUD + Ledger)
+pnpm --filter @gt100k/cohort-arena dev           # run the Viewer locally (r3f/three 3D + HUD + Ledger)
 ```
 
-**Expected**: `next build` succeeds with an **empty environment** (no secrets/network); the seeded app smoke loads `/`, mounts a `<canvas>`, and asserts **zero console errors and zero WebGL errors**; toggling reduced-motion shows the static equivalents; the Cohort Ledger is present and keyboard-focusable.
+**Expected**: `next build` succeeds with an **empty environment** (no secrets/network); the seeded app smoke loads `/`, mounts the react-three-fiber `<canvas>`, and asserts **zero console errors and zero WebGL errors** (and clean dispose on unmount); toggling reduced-motion (or forcing WebGL loss) shows the **2D-tier** static equivalents with no state lost; the Cohort Ledger is present and keyboard-focusable.
 
 ### Walk the UI flow (synthetic)
 
-1. **Compile constellation (UI-US1/US2)**: the app builds a `CohortArenaView` from a synthetic `CohortAssignment` (Fixture B shape) → learner motes flow and **crystallize** into cohorts of six; each cohort card shows six members+roles, all **seven satisfied** hard-constraint badges, and the **non-harm floor line** (`minBenefit ≥ floor`). An unassigned learner rests on the calm "still compiling" bench — never a rejection.
-2. **Reduced-motion + Ledger (a11y)**: toggle reduced-motion → the compile becomes an instant snap to settled + an `aria-live` announce; every state is still conveyed. Tab through the **Cohort Ledger** (`role="tree"`) → every cohort/member/role/satisfied-constraint is read out; the canvas is `aria-hidden`.
+1. **Compile in the 3D Observatory (UI-US1/US2)**: the app builds a `CohortArenaView` from a synthetic `CohortAssignment` (Fixture B shape) + pool → learner-stars drift in the 3D caliper field, flow along field-lines, and **crystallize** into hexagonal cohorts of six; each cohort card shows six members+roles, all **seven satisfied** hard-constraint badges, and the **non-harm-floor halo** (`minBenefit ≥ floor`). An unassigned learner rests on the calm "still compiling" bench — never a rejection.
+2. **Reduced-motion / 2D tier + Ledger (a11y)**: toggle reduced-motion (or force WebGL loss) → the scene renders the calm **2D tier** (`project2D`) with an instant snap to settled + an `aria-live` announce; every state is still conveyed. Tab through the **Cohort Ledger** (`role="tree"`) → every cohort/member/role/satisfied-constraint is read out; the 3D canvas is `aria-hidden`.
 3. **Standings (UI-US2)**: with standings **opt-in on**, own-growth is celebrated (amber bar-grow + tabular ticker) vs. the near-peer band top (`gainToBandTop`); there is **no** rank and **no** bottom-rank. Turning it off changes nothing.
-4. **Churn + rollback (UI-US2)**: the churn meter shows the budget; **rollback** reverse-settles the motes to the prior snapshot with a Ledger diff — **display only**, the domain result is unchanged.
-5. **RivalryMix arena room (UI-US3)**: feed `analyzeTurns` output → the seat ring shows the turn-holder pulse, interruption arcs, and a dominance share arc with observable evidence; a low-quality array shows the **"confidence low — prompts suppressed"** veil and **no** pattern — never an emotion/trait label.
+4. **Churn + rollback (UI-US2)**: the churn meter shows the budget; **rollback** plays a 3D **reverse-choreography** returning the learner-stars to the prior snapshot with a Ledger diff — **display only**, the domain result is unchanged.
+5. **RivalryMix arena room (UI-US3)**: feed `analyzeTurns` output → the 3D seat-ring shows the turn-holder pulse (emissive + light column), 3D interruption arcs, and a dominance-share ring with observable evidence; a low-quality array shows the **"confidence low — prompts suppressed"** veil (fog dim) and **no** pattern — never an emotion/trait label.
 6. **Safeguarding (UI-US4)**: a `CohortHealthEvent` renders a firm-not-alarm banner, freezes conflicting moves, and routes to the safeguarding lane — never altering a standing/rating/objective.
 
 ### UI success criteria mapping
 
 - SC-009 one deterministic view drives all renderers; `plainViewEquals` → `view` test (steps 1–2).
-- SC-010 exact constellation/arena-ring layout → `layout` test (steps 1, 5).
+- SC-010 exact 3D constellation/arena-ring layout + `project2D` → `layout` test (steps 1, 5).
 - SC-011 motion registry + reduced-motion equivalent per kind → `motion` test (step 2).
 - SC-012 opt-in near-peer standings, no rank/bottom-rank → `standings`/`guardrails` tests (step 3).
 - SC-013 observable-only RivalryMix, no emotion/trait field, suppress-not-mislabel → `rivalry`/`guardrails` tests (step 5).
-- SC-014 `next build` + client-only Pixi + zero console/WebGL errors + accessible Ledger → build + smoke + a11y walkthrough (steps 1–2).
+- SC-014 `next build` + client-only react-three-fiber `<Canvas>` + zero console/WebGL errors + 2D-tier degradation + accessible Ledger → build + smoke + a11y walkthrough (steps 1–2).
 - SC-015 reduced-motion first-class equal → `motion`/`view` tests + reduced-motion walkthrough (step 2).
 - SC-016 safeguarding bypass + churn/rollback display-only → `safeguarding`/`view` tests (steps 4, 6).
 - SC-017 no dark pattern / no caste-bottom-rank (structural + scan) → `guardrails` test (steps 3, 5).
