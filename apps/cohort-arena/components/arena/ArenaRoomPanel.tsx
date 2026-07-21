@@ -1,6 +1,6 @@
 "use client";
 
-import type { CohortArenaView } from "@gt100k/cohort-arena-view";
+import { type CohortArenaView, STATE_CUES } from "@gt100k/cohort-arena-view";
 import { Canvas } from "@react-three/fiber";
 
 import { ArenaRoomScene } from "./ArenaRoomScene";
@@ -9,6 +9,7 @@ import {
   resolveArenaEvidenceMotion,
   resolveArenaFrameLoop,
   resolveArenaRoomMotion,
+  resolveArenaSuppressionMotion,
 } from "./scene";
 
 interface ArenaRoomPanelProps {
@@ -16,11 +17,70 @@ interface ArenaRoomPanelProps {
   readonly reducedMotion: boolean;
 }
 
+function SuppressionNotice({ overlay = false }: { readonly overlay?: boolean }) {
+  return (
+    <div
+      className={
+        overlay
+          ? "arena-room-suppression-state arena-room-suppression-overlay"
+          : "arena-room-suppression-state"
+      }
+      data-state-icon={STATE_CUES.suppressed.icon}
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      <span className="arena-room-state-mark" aria-hidden="true">
+        ▧
+      </span>
+      <div>
+        <p className="arena-room-state-title">confidence low — prompts suppressed</p>
+        <p className="arena-room-state-detail">No turn-taking pattern is being surfaced.</p>
+      </div>
+    </div>
+  );
+}
+
+function AnalyticsOffState() {
+  return (
+    <div className="arena-room-off-state">
+      <span className="arena-room-state-mark" data-state-icon="analytics-off" aria-hidden="true">
+        ○
+      </span>
+      <div>
+        <p className="arena-room-state-title">Analytics off</p>
+        <p className="arena-room-state-detail">No turn-taking analytics were supplied.</p>
+      </div>
+    </div>
+  );
+}
+
 export function ArenaRoomPanel({ view, reducedMotion }: ArenaRoomPanelProps) {
   const scene = buildArenaRoomScene(view);
-  if (!scene) return null;
+  const analyticsOff = !scene || scene.seats.length === 0;
 
-  const motion = resolveArenaRoomMotion(view);
+  if (analyticsOff) {
+    return (
+      <section
+        className="scene-panel arena-room-panel"
+        aria-labelledby="arena-room-heading"
+        data-region="arena-room-off"
+        data-rivalry-state="off"
+      >
+        <div className="region-heading">
+          <div>
+            <p className="region-label">Observable turn-taking</p>
+            <h2 id="arena-room-heading">RivalryMix arena room</h2>
+          </div>
+          <span className="status-chip">Analytics off</span>
+        </div>
+        <AnalyticsOffState />
+      </section>
+    );
+  }
+
+  const motion = scene.suppressed
+    ? resolveArenaSuppressionMotion(view)
+    : resolveArenaRoomMotion(view);
   const evidenceMotion = resolveArenaEvidenceMotion(view);
   const floorHolder = scene.seats.find(({ holdingFloor }) => holdingFloor);
   const confidencePercent = Math.round(scene.confidence * 100);
@@ -36,6 +96,7 @@ export function ArenaRoomPanel({ view, reducedMotion }: ArenaRoomPanelProps) {
       data-motion-duration={motion.durationMs}
       data-rivalry-confidence={scene.confidence}
       data-rivalry-suppressed={scene.suppressed}
+      data-rivalry-state={scene.suppressed ? "suppressed" : "active"}
     >
       <div className="region-heading">
         <div>
@@ -106,9 +167,13 @@ export function ArenaRoomPanel({ view, reducedMotion }: ArenaRoomPanelProps) {
             ))}
           </svg>
           <figcaption>
-            {floorHolder
-              ? `${floorHolder.speaker} holds the floor — static highlight.`
-              : "Aggregate session summary — no live floor-holder marker supplied."}
+            {scene.suppressed ? (
+              <SuppressionNotice />
+            ) : floorHolder ? (
+              `${floorHolder.speaker} holds the floor — static highlight.`
+            ) : (
+              "Aggregate session summary — no live floor-holder marker supplied."
+            )}
           </figcaption>
         </figure>
       ) : (
@@ -125,6 +190,7 @@ export function ArenaRoomPanel({ view, reducedMotion }: ArenaRoomPanelProps) {
             <color attach="background" args={[view.presentation.palette.deck]} />
             <ArenaRoomScene view={view} />
           </Canvas>
+          {scene.suppressed ? <SuppressionNotice overlay /> : null}
         </div>
       )}
     </section>

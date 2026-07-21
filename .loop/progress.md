@@ -596,3 +596,16 @@
 
 - T129 — Implement the low-quality suppression veil and neutral refused/missing analytics state in `apps/cohort-arena/components/arena/`.
 - Acceptance: `suppressed:true` dims the 3D room with restrained fog and shows the exact `confidence low — prompts suppressed` message with `patterns:[]`; refused/missing analytics renders a neutral `analytics off` state and changes nothing else; no false label or trait/emotion field is possible; focused RED/GREEN, app TypeScript/tests, both builds, seeded smoke, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P10 / T129
+
+- Added the low-quality RivalryMix suppression state: non-empty `suppressed:true` rooms surface zero dominance/interruption geometry, enter a restrained volumetric fog dim through the exact `suppressVeil` token, reduce light/emissive energy, and retain the exact icon/shape/text notice in both 3D and static tiers.
+- Added one neutral `Analytics off` presentation for null and zero-seat analytics without adding a status field to the observable-only arena view or changing any other composed state.
+- TDD status: the focused contract first failed for the absent suppression state/token, absent neutral surface, and absent 3D fog, then passed 8/8 after the minimal renderer implementation. The complete app suite passes 37/37.
+- Review status: production-width suppressed/off renders were inspected with no horizontal overflow; the motion review approved the rare 300ms demand-driven shader-uniform transition and found no blocking issue.
+- Gate status: app-local TypeScript, `pnpm typecheck`, `pnpm test` (144/144), `pnpm lint` (141 files), root `pnpm build`, `pnpm --filter @gt100k/cohort-arena build`, and the production Playwright WebGL smoke (2/2) pass. T129 completes the suppression/off slice of FR-037/SC-013; P10 remains in progress for the consolidated Ledger entries. No blocker.
+
+## NEXT
+
+- T130 — Complete the RivalryMix entries in the Cohort Ledger from `view.ledger.rivalryList`.
+- Acceptance: observable speaker descriptors, detected-pattern evidence, the exact suppression-veil text, and neutral analytics-off state are available as semantic Ledger text; the canvas remains `aria-hidden`; no trait/emotion field can be rendered; focused RED/GREEN, app TypeScript/tests, both builds, seeded smoke, and repository typecheck/test/lint remain green.

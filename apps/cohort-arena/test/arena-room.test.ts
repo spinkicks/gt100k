@@ -61,6 +61,42 @@ function withRepeatedInterruption(
   };
 }
 
+function withSuppressedRivalry(view: CohortArenaView): CohortArenaView {
+  if (!view.rivalry) throw new Error("Fixture V3 rivalry view is required");
+
+  return {
+    ...view,
+    rivalry: {
+      ...view.rivalry,
+      patterns: [],
+      confidence: 0.225,
+      suppressed: true,
+    },
+    ledger: {
+      ...view.ledger,
+      rivalryList: ["Confidence low — prompts suppressed."],
+    },
+  };
+}
+
+function withoutAnalytics(view: CohortArenaView, emptyRoom: boolean): CohortArenaView {
+  return {
+    ...view,
+    rivalry: emptyRoom
+      ? {
+          seats: [],
+          patterns: [],
+          confidence: 0,
+          suppressed: true,
+        }
+      : null,
+    ledger: {
+      ...view.ledger,
+      rivalryList: [],
+    },
+  };
+}
+
 describe("the RivalryMix arena room", () => {
   it("projects Fixture V3 into the exact seat ring without inventing a live floor holder", () => {
     const view = buildSyntheticCohortView();
@@ -207,6 +243,52 @@ describe("the RivalryMix arena room", () => {
     expect(resolveArenaFrameLoop(buildArenaRoomScene(withHolder))).toBe("always");
   });
 
+  it("renders the exact low-confidence veil with no surfaced pattern", () => {
+    const view = withSuppressedRivalry(buildSyntheticCohortView({ reducedMotion: true }));
+    const before = structuredClone(view);
+    const scene = buildArenaRoomScene(view);
+    const markup = renderToStaticMarkup(
+      createElement(ArenaRoomPanel, { view, reducedMotion: true }),
+    );
+
+    expect(scene).toMatchObject({
+      confidence: 0.225,
+      suppressed: true,
+      dominanceRings: [],
+      interruptionArcs: [],
+    });
+    expect(markup).toContain('data-rivalry-state="suppressed"');
+    expect(markup).toContain('data-motion-kind="suppressVeil"');
+    expect(markup).toContain('data-motion-mode="reduced"');
+    expect(markup).toContain('data-motion-duration="300"');
+    expect(markup).toContain('data-state-icon="veil"');
+    expect(markup).toContain("confidence low — prompts suppressed");
+    expect(occurrences(markup, 'data-arena-seat="true"')).toBe(3);
+    expect(occurrences(markup, 'data-dominance-ring="true"')).toBe(0);
+    expect(view).toEqual(before);
+
+    const ledgerMarkup = renderToStaticMarkup(createElement(CohortLedger, { ledger: view.ledger }));
+    expect(ledgerMarkup).toContain("Confidence low — prompts suppressed.");
+  });
+
+  it("renders missing and empty analytics as the same neutral off state", () => {
+    for (const emptyRoom of [false, true]) {
+      const view = withoutAnalytics(buildSyntheticCohortView(), emptyRoom);
+      const before = structuredClone(view);
+      const markup = renderToStaticMarkup(
+        createElement(ArenaRoomPanel, { view, reducedMotion: false }),
+      );
+
+      expect(markup).toContain('data-rivalry-state="off"');
+      expect(markup).toContain("Analytics off");
+      expect(markup).toContain("No turn-taking analytics were supplied.");
+      expect(markup).not.toContain("confidence low");
+      expect(markup).not.toContain("<canvas");
+      expect(markup).not.toContain('data-rivalry-suppressed="true"');
+      expect(view).toEqual(before);
+    }
+  });
+
   it("owns pulse motion in r3f and keeps the accessible Ledger beside the hidden canvas", () => {
     const sceneSource = readFileSync(
       new URL("../components/arena/ArenaRoomScene.tsx", import.meta.url),
@@ -229,8 +311,10 @@ describe("the RivalryMix arena room", () => {
     expect(sceneSource).toContain("torusGeometry");
     expect(sceneSource).toContain("resolveArenaEvidenceMotion");
     expect(sceneSource).toContain("invalidate");
+    expect(sceneSource).toContain("arena-suppression-fog");
     expect(sceneSource).not.toContain("Math.random");
     expect(projectionSource).toContain('resolveMotion("turnPulse"');
+    expect(projectionSource).toContain('resolveMotion("suppressVeil"');
     expect(shellSource).toMatch(/<ArenaRoomPanel[\s\S]*?view=\{view\}/);
     expect(shellSource).toMatch(/<Canvas[\s\S]*?aria-hidden="true"/);
     expect(shellSource).toContain("<CohortLedger ledger={view.ledger}");

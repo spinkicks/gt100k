@@ -111,6 +111,13 @@ export function resolveArenaRoomMotion(view: CohortArenaView): MotionSpec {
   });
 }
 
+/** Resolves the pinned low-confidence veil token without inventing analytics state. */
+export function resolveArenaSuppressionMotion(view: CohortArenaView): MotionSpec {
+  return resolveMotion("suppressVeil", {
+    reducedMotion: view.motion.suppressVeil.mode === "reduced",
+  });
+}
+
 /** Resolves both evidence animations from the shared, golden motion registry. */
 export function resolveArenaEvidenceMotion(view: CohortArenaView): ArenaEvidenceMotion {
   return {

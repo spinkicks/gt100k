@@ -5,6 +5,7 @@ import { Line } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
+  type Fog,
   type Mesh,
   MeshBasicMaterial,
   type MeshStandardMaterial,
@@ -20,6 +21,7 @@ import {
   buildArenaRoomScene,
   resolveArenaEvidenceMotion,
   resolveArenaRoomMotion,
+  resolveArenaSuppressionMotion,
 } from "./scene";
 
 interface ArenaRoomSceneProps {
@@ -39,6 +41,34 @@ function progressFor(motion: MotionSpec, elapsedMs: number): number {
     return linear < 0.5 ? 2 * linear * linear : 1 - (-2 * linear + 2) ** 2 / 2;
   }
   return linear;
+}
+
+function SuppressionFog({
+  motion,
+  color,
+}: { readonly motion: MotionSpec; readonly color: string }) {
+  const fog = useRef<Fog>(null);
+  const startedAt = useRef<number | null>(null);
+  const invalidate = useThree(({ invalidate: requestFrame }) => requestFrame);
+
+  useEffect(() => {
+    startedAt.current = null;
+    invalidate();
+  }, [invalidate]);
+
+  useFrame(({ clock }) => {
+    if (!fog.current) return;
+
+    startedAt.current ??= clock.elapsedTime;
+    const elapsedMs = (clock.elapsedTime - startedAt.current) * 1_000;
+    const progress = progressFor(motion, elapsedMs);
+    fog.current.near = 28 + (10 - 28) * progress;
+    fog.current.far = 62 + (30 - 62) * progress;
+
+    if (progress < 1) invalidate();
+  });
+
+  return <fog ref={fog} attach="fog" args={[color, 28, 62]} name="arena-suppression-fog" />;
 }
 
 function DominanceRing({
@@ -161,6 +191,7 @@ export function ArenaRoomScene({ view }: ArenaRoomSceneProps) {
   const scene = useMemo(() => buildArenaRoomScene(view), [view]);
   const motion = useMemo(() => resolveArenaRoomMotion(view), [view]);
   const evidenceMotion = useMemo(() => resolveArenaEvidenceMotion(view), [view]);
+  const suppressionMotion = useMemo(() => resolveArenaSuppressionMotion(view), [view]);
   const camera = useThree(({ camera: activeCamera }) => activeCamera);
   const seatMaterials = useRef(new Map<string, MeshStandardMaterial>());
   const lightColumns = useRef(new Map<string, Mesh>());
@@ -195,7 +226,13 @@ export function ArenaRoomScene({ view }: ArenaRoomSceneProps) {
 
     for (const seat of scene.seats) {
       const material = seatMaterials.current.get(seat.speaker);
-      if (material) material.emissiveIntensity = seat.holdingFloor ? 0.72 + phase * 0.5 : 0.1;
+      if (material) {
+        material.emissiveIntensity = seat.holdingFloor
+          ? 0.72 + phase * 0.5
+          : scene.suppressed
+            ? 0.025
+            : 0.1;
+      }
 
       const column = lightColumns.current.get(seat.speaker);
       if (!column) continue;
@@ -210,13 +247,21 @@ export function ArenaRoomScene({ view }: ArenaRoomSceneProps) {
 
   return (
     <>
-      <fog attach="fog" args={[view.presentation.palette.deck, 28, 62]} />
+      {scene.suppressed ? (
+        <SuppressionFog motion={suppressionMotion} color={view.presentation.palette.deck2} />
+      ) : (
+        <fog attach="fog" args={[view.presentation.palette.deck, 28, 62]} />
+      )}
       <hemisphereLight
-        args={[view.presentation.palette.peerHi, view.presentation.palette.deck, 0.5]}
+        args={[
+          view.presentation.palette.peerHi,
+          view.presentation.palette.deck,
+          scene.suppressed ? 0.22 : 0.5,
+        ]}
       />
       <pointLight
         color={view.presentation.palette.peer}
-        intensity={12}
+        intensity={scene.suppressed ? 4 : 12}
         distance={45}
         position={[0, 12, 4]}
       />
@@ -260,9 +305,13 @@ export function ArenaRoomScene({ view }: ArenaRoomSceneProps) {
                   : view.presentation.palette.deck3
               }
               emissive={
-                seat.holdingFloor ? view.presentation.palette.gain : view.presentation.palette.peer
+                scene.suppressed
+                  ? view.presentation.palette.locked
+                  : seat.holdingFloor
+                    ? view.presentation.palette.gain
+                    : view.presentation.palette.peer
               }
-              emissiveIntensity={seat.holdingFloor ? 1.22 : 0.1}
+              emissiveIntensity={scene.suppressed ? 0.025 : seat.holdingFloor ? 1.22 : 0.1}
               metalness={0.08}
               roughness={0.34}
               toneMapped={false}
@@ -273,8 +322,10 @@ export function ArenaRoomScene({ view }: ArenaRoomSceneProps) {
             <boxGeometry args={[1.65, 1.15, 0.3]} />
             <meshStandardMaterial
               color={view.presentation.palette.deck3}
-              emissive={view.presentation.palette.peer}
-              emissiveIntensity={seat.holdingFloor ? 0.34 : 0.06}
+              emissive={
+                scene.suppressed ? view.presentation.palette.locked : view.presentation.palette.peer
+              }
+              emissiveIntensity={scene.suppressed ? 0.02 : seat.holdingFloor ? 0.34 : 0.06}
               metalness={0.06}
               roughness={0.42}
             />

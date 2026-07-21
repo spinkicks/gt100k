@@ -212,3 +212,8 @@
 
 - Derive a dominance ring only from an observable `dominance` pattern and that subject seat's exact turn share. Derive an interruption arc only when a `repeated_interruption` subject and a distinct truthful `holdingFloor` seat both exist; rejected aiming an aggregate interruption at the dominant/highest-share speaker because `TurnAnalysis` does not identify the interrupted floor holder and the UI must not invent one.
 - Animate the exact partial torus and raised bezier once through the pinned `dominanceRing`/`interruptionArc` tokens, requesting demand-loop frames only until each entrance settles. Keep continuous frames owned solely by the already-truthful turn-holder pulse; rejected looping historical evidence indefinitely and rejected a 2.4-world-unit arc in favor of a restrained 2.4px line.
+
+## 2026-07-21 — T129 suppression and missing-analytics states
+
+- Treat a null rivalry view or a zero-seat rivalry view as the same neutral `analytics off` presentation. Rejected adding an unpinned status field to `ArenaRoomView`, and rejected presenting an empty/refused input as low confidence because Fixture E and SC-013 require no status change for missing analytics.
+- For non-empty `suppressed:true` rooms, animate only the pinned 300ms `suppressVeil` fog uniforms through the existing demand frame loop, lower scene lighting/emissive energy, and retain exact icon/shape/text in both 3D and static tiers. Rejected a perpetual render loop, a new animation dependency, or any pattern geometry under suppression.
