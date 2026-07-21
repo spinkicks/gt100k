@@ -289,3 +289,14 @@
 ## NEXT
 - Complete T035: add `packages/interest-lab/README.md` documenting the public API and injected ports, mirroring `packages/learning-loop/README.md`.
 - Acceptance: the README clearly states rules-engine-only MVP, deferred bandit/Bayesian components, synthetic-only operation, and the prohibition on scalar passion scores; `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
+
+## 2026-07-21 — P7 / T035
+- Added `packages/interest-lab/README.md` with a verified `buildLab` example, grouped public API, injected-port responsibilities, current adapter/fixture mappings, and development commands.
+- Documented the pinned scope boundaries: rules-engine-only MVP, deferred contextual bandit and learned Bayesian model, synthetic-only operation, catalog-driven domains, guide-authored operative revisions, and no scalar passion score.
+- Confirmed the documentation contract's red state against the missing README, then checked every documented runtime symbol and adapter package name against the implemented entry points.
+- Verified the forced package compiler, package suite (81 tests), `pnpm typecheck`, `pnpm test` (108 tests across 23 files), and `pnpm lint` (72 files) all pass.
+- Status: T035 complete; P7 remains in progress. All Part-I success criteria remain green. No blocker.
+
+## NEXT
+- Complete T036: add a deterministic synthetic demo under `adapters/interest-probe-catalog` or `packages/interest-lab` that exercises the public domain API.
+- Acceptance: the demo builds the golden Lab, summarizes `EVENTS_GOLDEN_V1`, and prints the coverage matrix plus a proposed-versus-guide-authored hypothesis transition; preserve a focused red run and keep package/adapter compilation, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
