@@ -107,3 +107,14 @@
 
 ## NEXT
 - T015/T016: write the `assertHumanAuthority` contract test first, confirm RED on the missing invariant, then implement the pure domain predicate; acceptance is human-owned grade pass, model-owned grade fail, model `Assistance`/`Review` pass, authorship-accusation rejection, machine-readable reasons, and a green workspace gate.
+
+## 2026-07-20 — P2 human-authority invariant (T015–T017)
+- Added the pure `assertHumanAuthority` predicate and exported it from `@gt100k/evidence-graph`.
+- Enforced explicit human attribution for grade/judgment outcomes, restricted model authorship to `Assistance`/`Review`, and rejected explicit accusation markers with stable machine-readable reason codes.
+- Added nine SC-003 contract cases for human grades/judgments, missing and model ownership, allowed model supporting evidence, prohibited model attribution, and node/edge accusation markers. Confirmed RED on the absent public function, then GREEN after the minimal implementation.
+- Gate evidence: package composite `tsc -b`, focused invariant tests (9/9), workspace `pnpm typecheck`, workspace `pnpm test` (64/64), and `pnpm lint` over 51 files all pass.
+- Phase status: P2 complete; SC-003 is passing, with P0/P1 criteria unchanged and green. P3 is next.
+- Blockers: none.
+
+## NEXT
+- T018/T022: write the `merkleRoot` contract test first, confirm RED on the missing API, then implement the injected-hasher RFC-6962 raw-byte algorithm; acceptance is deterministic/permutation-independent roots, single-leaf hashing, odd-node promotion unchanged, leaf/interior domain separation, and a green workspace gate.
