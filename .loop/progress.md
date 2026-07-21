@@ -283,3 +283,16 @@
 ## NEXT
 - T016: add a focused test first, then implement and explicitly export `packages/arena-world/src/feed.ts` as a fixed or seeded deterministic `NodeMasterySignal` sequence/simulator.
 - Acceptance: the feed reproduces scenario S1 exactly, advances through progressive valid unlock states in stable order, produces byte-identical replay for identical input/seed, uses no wall clock or `Math.random`, and keeps direct package plus repository gates green.
+
+## 2026-07-20 — P1 / T016
+- Added and explicitly exported `createSyntheticMasteryFeed()`, a pure fixed six-record signal sequence whose complete output is the exact S1 golden scenario and whose cumulative prefixes advance through stable prerequisite-valid unlock states.
+- Return fresh records for every replay; the feed has no seed, cursor, wall clock, timer, or randomness input, so identical calls are byte-identical and consumer mutation cannot alter later runs.
+- Followed red-green TDD: all three focused tests failed with the missing public function, then passed after the minimal feed and entrypoint export landed.
+- Review status: checked T016 line-by-line against the P1 feed task, US1 scenarios, exact §8.2 S1 values, and the replaceable synthetic-input boundary; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: `pnpm lint` passed (73 files); `pnpm typecheck` passed; `pnpm test` passed (25 files, 94 tests). No app changed, so no Next.js build was required.
+- SC status: the deterministic synthetic input required to exercise SC-001 is complete; P1 remains in progress, with the composed view and renderer/Ledger tasks still open.
+- Blockers: none.
+
+## NEXT
+- T017: add a focused test first, then implement and explicitly export the initial `buildArenaView` in `packages/arena-world/src/view.ts`.
+- Acceptance: the view deterministically composes the fixture world, golden layout and node states with the complete P1 `presentation` block (`biomes`, world transform, camera, parallax, lighting, water, post-fx, avatar animation, quality tier/budget, asset keys, and palette) plus flags; progression/eligibility/base/standing/visual-band remain deferred; focused checks and repository gates stay green.
