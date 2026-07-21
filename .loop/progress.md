@@ -81,3 +81,16 @@
 
 - T006 — Add the in-memory `CandidateIndex` adapter contract in `adapters/cohort-candidates-memory/test/index.test.ts`, then pair it with the minimal T009 adapter implementation to keep the tree green.
 - Acceptance: `candidatesFor` returns the same `CandidateSet` as `generateCandidates` for Fixture A; the HNSW production seam is clearly marked deferred/not implemented; the focused test first fails because the adapter is absent, then passes after T009; repository typecheck/test/lint remain green.
+
+## 2026-07-20 — P1 / T006 + T009
+
+- Added the `@gt100k/cohort-candidates-memory` adapter package with an `InMemoryCandidateIndex` that wraps the pure domain generator over an injected synthetic pool and conforms to the `CandidateIndex` port.
+- Added an explicit `DeferredHnswCandidateIndex` port implementation that contains no ANN dependency and rejects with a stable deferred/not-implemented error.
+- Added the FR-005 contract suite comparing all eight Fixture A lookups byte-for-byte with `generateCandidates` and proving the production HNSW seam is unavailable in the MVP.
+- TDD status: the focused suite first failed because `adapters/cohort-candidates-memory/src/index.ts` was absent, then passed 2/2 after the minimal implementation; an adapter-local strict TypeScript compilation also passes.
+- Gate status: `pnpm typecheck`, `pnpm test` (40/40), and `pnpm lint` pass. P1 remains in progress only for T010's public domain exports; no blocker. A full standalone project-reference build also exposes the intentionally empty T010 entrypoint and a prior `cohort-12.ts` object-spread index-signature inference issue, neither of which is reached by the deferred root reference yet.
+
+## NEXT
+
+- T010 — Export the `model`, `caliper`, and `candidates` APIs from `packages/cohort-compiler/src/index.ts`, while preserving the repository's no-barrel constraint as far as the spec permits.
+- Acceptance: consumers can import the required P1 domain types and functions through `@gt100k/cohort-compiler`; the package smoke/type contract compiles; the standalone feature project-reference build is green (including correction of the surfaced fixture index-signature inference if still required); repository typecheck/test/lint remain green; P1/SC-001 reaches its checkpoint.
