@@ -100,3 +100,16 @@
 ## NEXT
 - T007: create `apps/arena/package.json` with the exact React 18 / Next 14 / r3f v8 / drei v9 / postprocessing v2 / three / motion dependency contract from `tasks.md`, mirroring the existing student-compass app manifest where applicable.
 - Acceptance: a manifest contract test fails first, then verifies the exact package name, scripts, workspace dependencies, pinned React-compatible 3D stack ranges, and required type devDependencies; `pnpm typecheck`, `pnpm test`, and the new app package's dependency resolution remain green.
+
+## 2026-07-20 — P0 / T007
+- Added `apps/arena/package.json` for `@gt100k/arena-world-app`, mirroring the existing app scripts/private/version shape and pinning the specified Next 14, React 18, three, r3f v8, drei v9, postprocessing v2, and Motion ranges.
+- Added a feature-owned manifest contract test first. The RED run failed only because the manifest was absent; the GREEN run verifies the full exact manifest, including both workspace links and required type dependencies.
+- Resolved the complete app dependency graph with lockfile reads/writes disabled and verified `pnpm-lock.yaml` stayed byte-identical. The first offline attempt exposed missing local metadata for `@types/three`; registry verification plus an online no-lockfile resolution confirmed the pinned package and all React-18-compatible majors without peer-dependency errors.
+- Review status: checked the manifest line-by-line against T007 and §11; no Critical, Important, or Minor issues found. Git-SHA/subagent review was not used because this loop prohibits Git commands and unrequested subagents.
+- Gate status: Biome checked both deliverable files; direct arena-world TypeScript validation passed; `pnpm typecheck` passed; `pnpm test` passed (11 files, 37 tests); required root `pnpm build` passed. The Arena-specific build remains scheduled after T008/T009 add its Next configuration and routes.
+- SC status: P0 app dependency groundwork is complete; no feature-level success criterion is claimed by this manifest-only increment.
+- Blockers: none.
+
+## NEXT
+- T008: add `apps/arena/next.config.mjs` with exact `transpilePackages` entries for `@gt100k/arena-world` and `@gt100k/learning-loop`, plus `apps/arena/tsconfig.json` mirroring the student-compass app TypeScript contract.
+- Acceptance: configuration contract tests fail first, then verify the exact transpilation list and strict no-emit/DOM/JSX settings; dependency resolution, direct feature checks, `pnpm typecheck`, `pnpm test`, and the required root `pnpm build` remain green.

@@ -18,3 +18,6 @@
 
 ## 2026-07-20 — T006 seeded-smoke resolver boundary
 - Chose generic deterministic P0 stubs: copy the supplied world definition, lay nodes out by declaration order on a simple three-column grid, and map that layout into a complete 3D result. Rejected fixture-specific hard-coding because the public functions should accept any compatible world, and rejected pulling P1 validation, regional golden layout, and biome elevation forward because T006 explicitly permits trivial stubs and schedules those behaviors for T013/T014/T014a.
+
+## 2026-07-20 — T007 app type dependency alignment
+- Chose `@types/three: ^0.169.0` to align its minor with the pinned `three: ^0.169.0` runtime, and mirrored the existing student-compass React type ranges. Rejected an unbounded latest type dependency because it could drift beyond the React-18-compatible app stack.
