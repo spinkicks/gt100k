@@ -683,3 +683,15 @@
 ## NEXT
 - Complete U037 with the minimal timeline portion of U040: add `packages/interest-lab-view/test/timeline.test.ts` and implement `buildReturnTimelineView` from `EVENTS_GOLDEN_V1`.
 - Acceptance: voluntary returns at day 7 and 30 are distinct; prompted return is recessed with `interventionContext:"reminder"` and contributes zero voluntary signal; every accessibility/safety support marker has `lowersSignal:false`; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-21 — P13 / U037 + partial U040
+- Added three pure `buildReturnTimelineView` contracts covering the complete day-ascending §U8.10 marker golden, exact 7/30-day voluntary horizons, prompted-return recession/context without a voluntary horizon, neutral assistive/safety support, the timeline span, a color-independent legend, and pinned motion tokens.
+- Confirmed genuine test-first RED evidence: the suite first failed to resolve the absent timeline module, then all three behavioral assertions failed against a typed null scaffold before the minimal implementation made them green.
+- Implemented the GPU-free event-to-marker projection with a total event-type presentation map, stable chronological ordering, exact horizon/context fields, a non-mutating legend copy, and animated `timelineDraw`/`markerPop` tokens; public export remains deferred with the other partial U040 builders.
+- Recorded the canonical-golden tone and chronological-order conflict in D051. Local specification review found no Critical or Important issue; one formatter-only gate failure was reproduced and corrected with the exact Biome-prescribed signature layout.
+- Verified the focused timeline suite, forced view-package compiler, view-package suite (64 tests across 15 files), `pnpm typecheck`, `pnpm test` (174 tests across 39 files), and `pnpm lint` (147 files); all pass.
+- Status: U037 complete; U040 is partial; P13 remains in progress. SC-UI-06 and UI-FR-008 are green at the pure direct-module boundary. No blocker.
+
+## NEXT
+- Complete U038 with the minimal lifecycle/history portion of U040: add `packages/interest-lab-view/test/lifecycle-view.test.ts` and implement `buildLifecycleStateView` plus `buildRevisionHistoryView`.
+- Acceptance: the lifecycle gate checklist matches `evaluateCandidateGate` G5, shadow proposals remain suggestions with `operative:false`, all fixed legal transitions are present with no proposal path to operative authorship, and revision history is append-only and monotonic; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
