@@ -70,3 +70,8 @@
 
 - Represent a conflicting in-flight hold by adding an optional literal `paused: true` marker to the supplied move object. The settled route return is `Promise<void>`, so in-place marking makes the POL-007 result observable while leaving unaffected moves byte-for-byte unchanged; rejected changing the return type or rebuilding every move with an unpinned status field.
 - Apply conflicting holds before awaiting the human-queue submission. This conservatively freezes affected movement even if the queue adapter fails, while still surfacing the submission error to the caller; rejected allowing a queue failure to leave a safety-conflicting move active.
+
+## 2026-07-20 — T018/T027 post-lock shadow gate
+
+- Inject an iterable of host-authorized locked assignment IDs into `ShadowBenefitEstimator` and copy it into a private set. Rejected a public `markLocked` method because the shadow adapter must not grant lock authority to itself, and rejected coupling the deferred estimator to a repository because the settled port requires only a post-lock logging seam.
+- Reject an unlocked call with a stable error. The port returns `Promise<BenefitLCB>`, so returning `undefined` would widen the approved contract, while returning a placeholder before lock would violate FR-019/SC-006.

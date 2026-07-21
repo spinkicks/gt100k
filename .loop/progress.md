@@ -192,3 +192,15 @@
 
 - T018 + T027 — Add the Golden Fixture D `BenefitEstimator` shadow-adapter contract first, then scaffold and implement `adapters/cohort-benefit-shadow`.
 - Acceptance: `logAfterLock("asg-1", "2026-07-20T12:00:00Z")` returns the exact `{ assignmentId: "asg-1", lcb: 0, loggedAt: "2026-07-20T12:00:00Z", shadow: true }` golden only for a locked assignment; an unlocked/pre-lock call produces no estimate; the LCB is absent from and never consumed by solve/repair inputs; focused RED/GREEN and repository typecheck/test/lint remain green.
+
+## 2026-07-20 — P4 / T018 + T027
+
+- Added the Golden Fixture D shadow-estimator contract for the exact zero-LCB result, locked-assignment gating, pre-lock refusal, literal shadow marker, exact output surface, and both type-level and runtime exclusion from solve/repair inputs.
+- Added the synthetic `@gt100k/cohort-benefit-shadow` adapter with an injected, copied lock registry and deterministic `ShadowBenefitEstimator`; peer-effect causal uplift remains explicitly deferred, no learned estimate or wall clock is consulted, and no domain source changed.
+- TDD status: the focused suite first failed because `adapters/cohort-benefit-shadow/src/index.ts` was absent, then passed 4/4 after the minimal adapter implementation.
+- Gate status: adapter-local composite TypeScript and focused Biome pass; repository `pnpm typecheck`, `pnpm test` (85/85), and `pnpm lint` pass. P4/SC-006 is complete; P4 governance behavior is complete, with its public-surface checkpoint remaining at T028. No blocker.
+
+## NEXT
+
+- T028 — Export the remaining US2 `benefit`, `constraints`, `objective`, `solver`, `commit`, `repair`, and `safeguarding` APIs from `packages/cohort-compiler/src/index.ts` using explicit named exports.
+- Acceptance: consumers can import every required US2 value and type through `@gt100k/cohort-compiler`; the public API contract covers their exact signatures without widening the learned-model boundary; the standalone feature project-reference build and repository typecheck/test/lint gate remain green; the P4 checkpoint completes.
