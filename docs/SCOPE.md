@@ -21,9 +21,10 @@ canonical product spec.
   `docs/prd/ADMISSIONS_PRD.md`. **Spec ready:** `specs/008-family-selection/spec.md` — full
   pipeline (application → routing → snapshot → review → lottery); loop starting. Lower priority than passion work.
 
-## Deprioritized (paused, NOT deleted — work preserved)
-- **004-arena-game-world** — the RPG/quest game-experience layer (PRD §15.3). Paused; latest work in **PR #62**.
-- **006-cohort-compiler** — cohort solver + RivalryMix + viewer (PRD §15). Paused; latest work in **PR #66**.
+## Archived (out of focus — moved to `archive/`, work preserved)
+- **004-arena-game-world** — RPG/quest game-experience layer (PRD §15.3). Spec: `archive/specs/004-arena-game-world/`. No merged code (branch + **PR #62** preserved).
+- **006-cohort-compiler** — cohort solver + RivalryMix + viewer (PRD §15). Spec: `archive/specs/006-cohort-compiler/`; code at `archive/code/` (app + packages + adapters, removed from the pnpm workspace + tsconfig). **PR #66** preserved.
+- **pitch deck** — moved to `archive/pitch/index.html`.
 
 ## Unchanged
 - **001-daily-learning-loop** — academic mastery daily loop (merged; `apps/student-compass`).
