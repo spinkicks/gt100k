@@ -608,3 +608,16 @@
 ## NEXT
 - T038: add `packages/arena-world/test/staging.test.ts` first for the exact §8.6 age-band reward representations, then implement only the minimal `resolveRewardRepresentation` slice needed to restore the green gate.
 - Acceptance: all exact 6-8, 9-11, and 12-14 strings resolve deterministically; 6-8 has `showRawNumber=false` and `comparisonDefault="off"`; the underlying progression/economy remains unchanged (FR-017/018, SC-005); focused and repository gates remain green.
+
+## 2026-07-21 — P5 / T038 + T042 (`resolveRewardRepresentation` slice)
+- Added `staging.test.ts` through the public package API, covering every exact §8.6 band row, the 6-8 raw-number/comparison guardrails, frozen progression preservation, the exact two-input signature, fresh results, and deterministic replay.
+- Followed red-green TDD: all four tests failed because `resolveRewardRepresentation` was absent, then passed after the minimal table-backed resolver and explicit package export landed.
+- Added pure `resolveRewardRepresentation(ageBand, progression)` behavior in `staging.ts`. It selects only the exact age-band presentation row and never reads, copies, or mutates the shared progression economy.
+- Review status: checked the implementation line-by-line against US5, §§8.6/P5, the fixed data model, FR-017/018, and SC-005; no Critical, Important, or Minor issues remain. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused staging tests passed (4 tests); direct arena-world TypeScript validation and focused Biome checks passed; `pnpm lint` passed (125 files); `pnpm typecheck` passed; `pnpm test` passed (48 files, 192 tests). No app file changed, so no Next.js build was required.
+- SC status: T038 completes SC-005's exact deterministic reward-vocabulary, 6-8 raw-number, and comparison-off domain contract. P5 remains in progress for visual-band staging, standings, final view parity, and app controls.
+- Blockers: none.
+
+## NEXT
+- T038a + the `resolveVisualBand` slice of T042: add `packages/arena-world/test/visual-band.test.ts` first, then implement and explicitly export the minimal pure visual-band resolver.
+- Acceptance: all exact §8.19 band tokens resolve deterministically; 6-8 has `showCanvasNumbers=false`, `celebrationCeiling="medium"`, and `markerScale=1.25`; the underlying progression/economy remains identical across bands; focused and repository gates remain green (FR-040, SC-020).

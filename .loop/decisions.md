@@ -142,3 +142,6 @@
 - Reserve a campfire point light only when `maxDynamicLights` has capacity after active mastery-node lights; otherwise render the same fire emissively. Rejected always allocating the light because Tier B/C would exceed the settled global cap, and rejected hiding the campfire because quality degradation must preserve state.
 - Animate home returns from the live `OrbitControls.target` with the exact 350ms `sceneTransition` Cubic.Out curve, while reduced motion recenters instantly. Rejected a target-value jump for full motion and a vestibular camera glide in reduced mode.
 - Render all six canonical Base Camp feature looks explicitly and retain one deterministic generic low-poly prop only for unknown fallback slots. Rejected duplicating base layout coordinates in the renderer; every canvas, SVG, and Ledger placement continues to come from `presentation.basePlacements`.
+
+## 2026-07-21 — T038 reward-representation boundary
+- Resolve the exact presentation row exclusively from `AgeBand` while accepting `ProgressionState` only as the settled two-input API contract. Rejected deriving labels from reward values or copying/mutating progression because FR-017 requires one identical economy across every band.
