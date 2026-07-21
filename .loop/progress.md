@@ -621,3 +621,16 @@
 ## NEXT
 - T038a + the `resolveVisualBand` slice of T042: add `packages/arena-world/test/visual-band.test.ts` first, then implement and explicitly export the minimal pure visual-band resolver.
 - Acceptance: all exact §8.19 band tokens resolve deterministically; 6-8 has `showCanvasNumbers=false`, `celebrationCeiling="medium"`, and `markerScale=1.25`; the underlying progression/economy remains identical across bands; focused and repository gates remain green (FR-040, SC-020).
+
+## 2026-07-21 — P5 / T038a + T042 (`resolveVisualBand` slice)
+- Added `visual-band.test.ts` through the public package API, covering every exact §8.19 visual token, the complete 6-8 canvas/marker/target/celebration/comparison guardrails, the exact presentation-only one-input signature, frozen progression preservation, and fresh deterministic replay.
+- Followed red-green TDD: all four tests failed because `resolveVisualBand` was absent, then passed after the minimal table-backed resolver and explicit package export landed.
+- Added pure `resolveVisualBand(ageBand)` behavior in `staging.ts`. It returns a fresh exact presentation row and has no progression/economy input, so age-band selection cannot change underlying learning state.
+- Review status: checked the implementation line-by-line against US5, §§5.13/8.19/P5, the fixed `VisualBand` model, FR-040, SC-020, and the governance comparison-default boundary; no Critical, Important, or Minor issues remain. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused visual-band tests passed (4 tests); direct arena-world TypeScript validation and focused Biome checks passed; `pnpm lint` passed (126 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (49 files, 196 tests). No app file changed, so no Next.js build was required.
+- SC status: T038a completes SC-020's exact deterministic age-band visual-token and 6-8 canvas guardrail domain contract. P5 remains in progress for standings, full-view parity, and app controls.
+- Blockers: none.
+
+## NEXT
+- T039 + the `deriveStanding` slice of T043: add `packages/arena-world/test/standings.test.ts` first, then implement and explicitly export the minimal pure opt-in standings resolver.
+- Acceptance: standings are `null` unless explicitly opted in; the S1 golden scenario yields `selfGain=300` and `gainToBandTop=40`; output is anonymized/near-peer, deterministic, and structurally exposes no `rank`, `position`, `percentile`, or `outOf`; focused and repository gates remain green (spec §8.7, FR-019, SC-009).

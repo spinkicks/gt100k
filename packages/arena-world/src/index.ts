@@ -89,7 +89,7 @@ export {
   resolveWater,
 } from "./scene3d";
 export { SOUND_CUES, resolveSoundCue } from "./sound";
-export { resolveRewardRepresentation } from "./staging";
+export { resolveRewardRepresentation, resolveVisualBand } from "./staging";
 export { layoutQuestWorld } from "./layout";
 export { deriveNodeStates } from "./nodes";
 export { buildQuestWorld } from "./world";
