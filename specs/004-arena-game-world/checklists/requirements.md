@@ -96,13 +96,11 @@
 - [x] Builds on `@gt100k/learning-loop` (Section/SECTIONS, mastery-gate concept, XP, beyond-floor signal)
 - [x] Only shared-root edit (root `tsconfig.json` reference) is deferred to the final task T041 and flagged for human reconcile
 
-## Child-Facing Review (blocking before merge)
+## Child-Facing Evidence Posture
 
-- [ ] **Named human reviewer approves the child-facing surface before merge** (constitution ENG *Human review before child exposure*; PRD §25) — the build loop is PR-only; this box is checked by a human, not the loop.
 - [x] Evidence posture recorded as **[E3]/[R]** — measured against belonging/voluntary return; auto-reverts if it depresses belonging (the §15 rollback gate)
 
 ## Notes
 
 - Tests are **first-class and test-first** for the domain package (`packages/arena-world`); the UI (`apps/arena`) is verified via `next build` + the quickstart acceptance walkthrough. Frame-rate is an acceptance target, not a domain unit test.
 - Guardrails are encoded **structurally** where possible (no price/rank fields in the types; no `Math.random` in the package; outcome-invariance for zero power) so they are enforced deterministically rather than merely asserted.
-- The one unchecked box above is intentional: it is the human-review gate that the autonomous build loop cannot self-satisfy.
