@@ -1,3 +1,4 @@
+import { InterviewClient } from "../src/interview-client.js";
 import { loadSeededInterview } from "../src/load-seeded-interview.js";
 
 export default async function Page() {
@@ -23,15 +24,7 @@ export default async function Page() {
         <p className="synthetic-note">Synthetic practice project</p>
       </aside>
 
-      <section className="question-stage" aria-labelledby="current-question">
-        <div className="question-copy">
-          <p className="question-cue">Let&apos;s start here.</p>
-          <h1 id="current-question" data-current-question="true">
-            {question.text}
-          </h1>
-          <p className="take-time">Take your time.</p>
-        </div>
-      </section>
+      <InterviewClient initialSession={session} />
     </main>
   );
 }
