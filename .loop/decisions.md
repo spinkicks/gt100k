@@ -115,3 +115,7 @@
 - Use the literal `"near-peer"` for the required anonymized band label. Rejected a named tier or level-derived label because those would create the public caste surface the structural guardrail forbids.
 - Canonicalize output peers by pseudonym ascending, then gain ascending for a duplicate pseudonym, while copying every row. Rejected preserving caller order because equivalent synthetic inputs should produce byte-identical view output without mutating their arrays.
 - Treat the learner's own gain as part of `max(all gains)`, so an empty peer band or a learner already at the band top yields zero own-growth headroom instead of `-Infinity` or a negative deficit. Rejected framing leading growth as debt; Fixture V2 remains pinned at `340 - 300 = 40`.
+
+## 2026-07-21 — T106/T111 current-floor truthfulness
+
+- Set every arena seat's `holdingFloor` marker to `false` because the settled `TurnAnalysis` input contains aggregate speaker descriptors and patterns but no current-speaker or turn-sequence carrier. Rejected treating the highest turn share or a dominance subject as the current floor holder because that would invent live state from historical aggregates; a later pulse may activate only when a truthful observable carrier exists.

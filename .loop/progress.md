@@ -350,3 +350,16 @@
 
 - T106 + rivalry portion of T111 — Add the Fixture V3 `buildArenaRoomView` contract first, then implement the pure observable-only arena-room view in `packages/cohort-arena-view/src/rivalry.ts`.
 - Acceptance: dominance input yields the three pinned sorted seats, the S1 dominance pattern, confidence `1.0`, and `suppressed: false`; low-quality input yields the suppression veil with zero patterns; sparse/refused input invents no status; the type/runtime surface cannot carry honesty, emotion, personality, or motivation fields; focused RED/GREEN, forced feature TypeScript, package tests, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P7 / T106 + rivalry portion of T111
+
+- Added the pure `buildArenaRoomView` projection and structural `ArenaRoomView`, `SeatView`, and `TurnPatternView` contracts over the committed observable-only `TurnAnalysis` boundary.
+- Added the Fixture V3 golden suite for the exact sorted 3D/2D seat ring, S1 dominance evidence, confidence `1.0`, low-quality suppression with zero surfaced patterns, empty/refused neutrality, input/output copy isolation, deterministic record ordering, and exact trait-free type/runtime surfaces.
+- Kept every `holdingFloor` marker false because `TurnAnalysis` contains no truthful current-speaker carrier; rejected inferring live state from aggregate share or dominance and recorded the choice in `.loop/decisions.md`.
+- TDD status: the focused suite first failed because `src/rivalry.ts` was absent, then passed 5/5 after the minimal implementation; forced compiler/view composite TypeScript and focused Biome also pass.
+- Gate status: `pnpm typecheck`, `pnpm test` (133/133), and `pnpm lint` pass. P7/SC-013 is complete at the pure view-model layer; the observable arena renderer remains scheduled for P10. No current blocker.
+
+## NEXT
+
+- T107 + remaining T111/T112 view composition — Add the Fixture V1 `buildCohortArenaView` and `plainViewEquals` contract first, then implement the remaining pure band, Ledger, and composed view functions needed to make it green.
+- Acceptance: Fixture V1 produces two exact six-member cohort views with the pinned role vector, seven satisfied badges, `minBenefit 0.825 >= 0.5`, churn delta 0, and standings `null`; repeated inputs are byte-identical; presentation flags change only presentation/motion; the A6 to A7 rollback diff is display-only and leaves domain inputs unchanged; focused RED/GREEN, forced feature TypeScript, package tests, and repository typecheck/test/lint remain green.
