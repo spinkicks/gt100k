@@ -34,3 +34,15 @@
 
 - T038 — Commit the exact synthetic seed fixtures and golden expected values under `packages/cohort-compiler/test/fixtures/`: Fixture A (`caliper-8`), Fixtures B/B2/B3/B4 (`cohort-12`), Fixture C (`churn-rollback`), Fixture D (`safeguarding-shadow`), and Fixture E (`turns`).
 - Acceptance: fixtures match the spec tables exactly, including D1–D6 benefit inputs and expected values; every fixture is typed against `model.ts`; no live or child data is present; focused package typecheck and the repository typecheck/test/lint gate remain green.
+
+## 2026-07-20 — P0 / T038
+
+- Added all five in-repo synthetic fixture modules for Golden Fixtures A, B/B2/B3/B4, C, D, and E, with model-typed learner, assignment, safeguarding, benefit, and turn-analysis values plus every pinned expected result.
+- Added an exact fixture contract test covering shared learner fields, candidate lists/preimages, cohort partitions, B3/B4 floor cases, churn budgets/results and independent rollback oracle, safeguarding routing expectations, and every RivalryMix turn sequence/full analysis.
+- TDD status: the focused fixture suite first failed because `fixtures/caliper-8.ts` did not exist, then passed after the fixture modules were implemented. A read-only review found no remaining Critical or Important findings after hardening benefit injection, exactness assertions, and rollback-oracle isolation.
+- Gate status: `pnpm typecheck`, `pnpm test` (28/28), and `pnpm lint` pass. P0 remains in progress; no blocker.
+
+## NEXT
+
+- T039 — Add `packages/cohort-compiler/test/smoke.test.ts` importing the package entrypoint and `caliper-8` fixture.
+- Acceptance: the entrypoint loads as an object; `caliper8.pool` contains exactly eight learners with eight unique `learnerRef`s; the focused smoke test and repository typecheck/test/lint gate remain green.
