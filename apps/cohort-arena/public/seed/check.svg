@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" color="#34D399" fill="none">
+  <title>Satisfied</title>
+  <circle cx="12" cy="12" r="8.5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.5"/>
+  <path d="m7.75 12.1 2.65 2.65 5.85-5.85" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -478,3 +478,15 @@
 
 - T120 — Commit the seed inline SVG set under `apps/cohort-arena/public/seed/` plus the deterministic three.js/drei procedural fallback.
 - Acceptance: star, hex, badge, floor-halo, seat, shield, and shared icons are committed in-repo; the scene has a deterministic primitive fallback; no renderer performs an external fetch; focused RED/GREEN, app-local TypeScript/tests, production build, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P8 / T120
+
+- Added nine in-repo Compiler Observatory SVG seeds for the star, cohort hex, constraint badge, non-harm-floor halo, arena seat, and the complete semantic state-cue set (`bench`, `check`, `shield`, `veil`), all with accessible titles, pinned palette defaults, `currentColor` geometry, and no remote or raster content.
+- Added an app-local asset contract that pins the exact seed inventory, ties every `STATE_CUES` icon to a committed file, rejects scripts/raster/remote references and renderer fetches, and proves the existing deterministic three.js/drei primitives remain the no-asset fallback.
+- TDD status: the focused four-test contract first failed because `public/seed` was absent, then passed 4/4 after the minimal SVG set was added; the complete app-local suite passes 16/16.
+- Gate status: app-local TypeScript, `pnpm typecheck`, `pnpm test` (144/144), and `pnpm lint` (127 files) pass; both `pnpm --filter @gt100k/cohort-arena build` and root `pnpm build` succeed. T120/FR-042 is complete; P8 remains in progress only for the runtime smoke. No blocker.
+
+## NEXT
+
+- T121 — Add the seeded app runtime smoke for the full P8 UI MVP.
+- Acceptance: `/` mounts the r3f canvas with zero console/WebGL errors, disposes cleanly, switches to the reduced-motion/2D tier without state loss, and exposes a present and keyboard-focusable Cohort Ledger; the smoke, app-local tests/TypeScript, production build, and repository typecheck/test/lint gate remain green.
