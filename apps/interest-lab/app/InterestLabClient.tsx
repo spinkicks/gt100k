@@ -4,7 +4,7 @@ import type { DeviceCaps, RenderTier } from "@gt100k/interest-lab-view";
 import { useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { QuestWorld } from "./child/QuestWorld";
-import { buildSyntheticInterestLabSeed } from "./seed";
+import { SYNTHETIC_RETURN_HISTORY, buildSyntheticInterestLabSeed } from "./seed";
 import { InterestLabControls } from "./ui/controls/InterestLabControls";
 import {
   type InterestLabSurface,
@@ -76,6 +76,7 @@ export function InterestLabClient() {
         reducedMotion,
         plainMode,
         deviceCaps: effectiveDeviceCaps,
+        history: SYNTHETIC_RETURN_HISTORY,
       }),
     [ageBand, reducedMotion, plainMode, effectiveDeviceCaps],
   );

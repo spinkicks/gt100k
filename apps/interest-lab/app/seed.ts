@@ -8,6 +8,11 @@ import { CATALOG_GOLDEN_V1 } from "@gt100k/interest-probe-catalog";
 
 const SYNTHETIC_LEARNER_REF = "synthetic-interest-lab-preview";
 
+export const SYNTHETIC_RETURN_HISTORY = [
+  { probeId: "p01", returnKind: "voluntary", horizon: 7 },
+  { probeId: "p02", returnKind: "prompted", interventionContext: "reminder" },
+] as const satisfies NonNullable<BuildInterestLabViewOptions["history"]>;
+
 export interface SyntheticInterestLabSeedOptions {
   ageBand?: BuildInterestLabViewOptions["ageBand"];
   reducedMotion?: boolean;

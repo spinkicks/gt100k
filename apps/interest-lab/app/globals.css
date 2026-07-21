@@ -574,6 +574,26 @@ footer {
   background: color-mix(in srgb, var(--quest-hue) 22%, var(--night-raised));
 }
 
+.quest-card--spark {
+  border-color: var(--spark);
+  background: radial-gradient(circle at 2.125rem 2.125rem, rgb(255 158 94 / 24%), transparent 5rem),
+    color-mix(in srgb, var(--spark) 12%, var(--night-raised));
+}
+
+.quest-card--prompted {
+  border-color: color-mix(in srgb, var(--prompted) 62%, var(--line));
+  background: color-mix(in srgb, var(--prompted) 9%, var(--night-sunk));
+}
+
+.quest-card--prompted .quest-work-glyph {
+  background: var(--prompted);
+}
+
+.quest-card--prompted .quest-provenance,
+.quest-card--prompted .quest-picked-state {
+  color: var(--ink-muted);
+}
+
 .quest-card-topline,
 .quest-cues,
 .quest-cue {
@@ -636,6 +656,46 @@ footer {
 .quest-why {
   color: var(--ink-muted);
   font-family: var(--font-reading);
+}
+
+.welcome-back {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  color: var(--spark-hi);
+  font-family: var(--font-reading);
+  font-weight: 600;
+}
+
+.prompted-return {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  color: var(--ink-muted);
+  font-size: var(--type-label-size);
+  font-weight: 600;
+}
+
+.prompted-return-mark {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--prompted);
+  color: var(--night-sunk);
+}
+
+.welcome-back-halo {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--spark-hi) 0 18%, var(--spark) 34%, transparent 72%);
+  color: var(--night-sunk);
 }
 
 .quest-help {

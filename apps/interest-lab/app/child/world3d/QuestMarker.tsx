@@ -18,10 +18,14 @@ import {
   type SpriteMaterial,
   type Texture,
 } from "three";
+import { WelcomeBloom, resolveWelcomeBloomFrame } from "./WelcomeBloom";
 
 const HOVER_RAISE = 0.18;
 const REST_HALO_OPACITY = 0.36;
 const ACTIVE_HALO_OPACITY = 0.62;
+const PROMPTED_SCALE = 0.92;
+const PROMPTED_EMISSIVE_INTENSITY = 0.14;
+const PROMPTED_HALO_OPACITY = 0.12;
 const PICK_HOP_HEIGHT = 0.5;
 const SPRING_SETTLE_EXPONENT = 4;
 
@@ -31,6 +35,7 @@ export interface QuestMarkerInteraction {
   pressed?: boolean;
   picked?: boolean;
   hopOffset?: number;
+  welcomeElapsedMs?: number;
 }
 
 export interface QuestMarkerVisual {
@@ -57,6 +62,11 @@ export function resolveQuestMarkerVisual(
   scene3d: Readonly<Scene3DView>,
   interaction: Readonly<QuestMarkerInteraction>,
 ): QuestMarkerVisual {
+  const prompted = marker.returnState === "prompted-return";
+  const welcome =
+    marker.returnState === "voluntary-return"
+      ? resolveWelcomeBloomFrame(interaction.welcomeElapsedMs ?? 0, scene3d, false)
+      : null;
   const active =
     interaction.hovered === true || interaction.focused === true || interaction.picked === true;
 
@@ -66,10 +76,18 @@ export function resolveQuestMarkerVisual(
       marker.position[1] + (interaction.hovered ? HOVER_RAISE : 0) + (interaction.hopOffset ?? 0),
       marker.position[2],
     ],
-    scale: interaction.pressed ? 0.97 : 1,
-    color: marker.tone === "prompted" ? PALETTE.prompted : scene3d.markerEmissiveHex,
-    emissiveIntensity: active ? scene3d.markerEmissivePulse : scene3d.markerEmissiveRest,
-    haloOpacity: active ? ACTIVE_HALO_OPACITY : REST_HALO_OPACITY,
+    scale: interaction.pressed ? 0.97 : prompted ? PROMPTED_SCALE : 1,
+    color: prompted ? PALETTE.prompted : scene3d.markerEmissiveHex,
+    emissiveIntensity:
+      welcome?.emissiveIntensity ??
+      (prompted
+        ? PROMPTED_EMISSIVE_INTENSITY
+        : active
+          ? scene3d.markerEmissivePulse
+          : scene3d.markerEmissiveRest),
+    haloOpacity:
+      welcome?.haloOpacity ??
+      (prompted ? PROMPTED_HALO_OPACITY : active ? ACTIVE_HALO_OPACITY : REST_HALO_OPACITY),
     spring: {
       durationMs: MOTION.pick,
       type: EASINGS.pickSpring.type,
@@ -78,6 +96,10 @@ export function resolveQuestMarkerVisual(
       hopHeight: PICK_HOP_HEIGHT,
     },
   };
+}
+
+export function shouldRenderWelcomeBloom(marker: Readonly<QuestMarkerView>): boolean {
+  return marker.returnState === "voluntary-return";
 }
 
 export interface PickHopSpring {
@@ -159,6 +181,7 @@ export function QuestMarker({
   const hopSpringRef = useRef<PickHopSpring>();
   if (!hopSpringRef.current) hopSpringRef.current = createPickHopSpring();
   const previousPickedRef = useRef(picked);
+  const welcomeElapsedMsRef = useRef(0);
   const [interaction, setInteraction] = useState({ hovered: false, pressed: false });
   const baseMarker = {
     ...marker,
@@ -175,25 +198,30 @@ export function QuestMarker({
   }, [picked]);
 
   useFrame((_state, delta) => {
+    if (shouldRenderWelcomeBloom(marker)) {
+      welcomeElapsedMsRef.current = Math.min(
+        welcomeElapsedMsRef.current + Math.min(delta, 0.1) * 1_000,
+        MOTION.welcomeBack,
+      );
+    }
     const hopOffset = hopSpringRef.current?.step(delta) ?? 0;
-    const active = interaction.hovered || focused || picked;
-    const targetScale = interaction.pressed ? 0.97 : 1;
-    const targetEmissive = active ? scene3d.markerEmissivePulse : scene3d.markerEmissiveRest;
-    const targetHaloOpacity = active ? ACTIVE_HALO_OPACITY : REST_HALO_OPACITY;
+    const frameVisual = resolveQuestMarkerVisual(baseMarker, scene3d, {
+      ...interaction,
+      focused,
+      picked,
+      hopOffset,
+      welcomeElapsedMs: welcomeElapsedMsRef.current,
+    });
     const group = groupRef.current;
     if (group) {
-      group.position.set(
-        baseMarker.position[0],
-        baseMarker.position[1] + (interaction.hovered ? HOVER_RAISE : 0) + hopOffset,
-        baseMarker.position[2],
-      );
-      const scale = MathUtils.damp(group.scale.x, targetScale, 28, delta);
+      group.position.set(...frameVisual.position);
+      const scale = MathUtils.damp(group.scale.x, frameVisual.scale, 28, delta);
       group.scale.setScalar(scale);
     }
     if (materialRef.current) {
       materialRef.current.emissiveIntensity = MathUtils.damp(
         materialRef.current.emissiveIntensity,
-        targetEmissive,
+        frameVisual.emissiveIntensity,
         12,
         delta,
       );
@@ -201,7 +229,7 @@ export function QuestMarker({
     if (haloMaterialRef.current) {
       haloMaterialRef.current.opacity = MathUtils.damp(
         haloMaterialRef.current.opacity,
-        targetHaloOpacity,
+        frameVisual.haloOpacity,
         12,
         delta,
       );
@@ -212,6 +240,7 @@ export function QuestMarker({
     ...interaction,
     focused,
     picked,
+    welcomeElapsedMs: 0,
   });
   const stop = (event: ThreeEvent<MouseEvent | PointerEvent>) => event.stopPropagation();
 
@@ -250,7 +279,7 @@ export function QuestMarker({
         <meshStandardMaterial
           ref={materialRef}
           color={visual.color}
-          emissive={scene3d.markerEmissiveHex}
+          emissive={visual.color}
           emissiveIntensity={visual.emissiveIntensity}
           metalness={0.08}
           roughness={0.32}
@@ -268,6 +297,9 @@ export function QuestMarker({
           toneMapped={false}
         />
       </sprite>
+      {shouldRenderWelcomeBloom(marker) ? (
+        <WelcomeBloom scene3d={scene3d} haloTexture={haloTexture} />
+      ) : null}
     </group>
   );
 }

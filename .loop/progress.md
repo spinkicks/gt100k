@@ -634,3 +634,16 @@
 ## NEXT
 - Complete U032: implement `apps/interest-lab/app/child/world3d/WelcomeBloom.tsx` and `apps/interest-lab/app/child/WelcomeBack.tsx`, then render voluntary and prompted return presentation from the existing view model.
 - Acceptance: voluntary return renders the reserved 3D emissive bloom, spark-mote burst, and camera ease plus the static 2D/reduced-motion warm halo with concrete copy; prompted return remains recessed and uncelebrated; no countdown, streak, scarcity, FOMO, or time-gated unlock appears; focused tests, app tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.
+
+## 2026-07-21 — P11 / U032
+- Added the reserved deterministic 3D voluntary-return bloom: emissive intensity peaks at `SCENE3D.bloomPeak`, eight fixed additive spark sprites rise and settle within the exact 480ms `welcomeBack` token, and the existing interruptible camera rig eases toward the returned island with DOM focus taking precedence.
+- Added the static DOM/reduced-motion equal with a warm halo and concrete `You came back to this one.` copy; prompted cards and markers now recede with the `prompted` palette plus an explicit icon/text cue and never render the bloom.
+- Added five app contracts covering the synthetic P11 preview, DOM copy/halo, prompted no-delight state, exact bloom peak/settle/reduced values, deterministic motes, camera timing/priority, and the ≤1.05 pop overshoot ceiling. Confirmed genuine RED states for the absent renderers, the initial 1400ms camera path, excessive raw-pop overshoot, and the missing prompted text cue before each minimal correction.
+- Static audits found no countdown, streak, scarcity, FOMO, time-gated unlock, level-up, fixed-label copy, `scale(0)`, `ease-in`, or unbounded transition in the child runtime.
+- Verified `pnpm typecheck`, `pnpm test` (163 tests across 36 files), `pnpm lint` (139 files), the app suite (53 tests across 12 files), the Interest Lab production build, and `pnpm build`; all pass. The production server returned HTTP 200 with the expected voluntary static delight and prompted no-delight cue.
+- Browser note: the cached headless Chromium could not launch because this host lacks `libnspr4.so`, and no Playwright runtime is installed; no dependency or host mutation was made to bypass that environment limitation. The deterministic 3D scene graph and camera path are covered by app tests, but this turn could not repeat P10's mounted WebGL walkthrough.
+- Status: U032 and P11 complete. SC-UI-03 and the P11 portion of SC-UI-17 are green at the view, app-render, scene, motion, static-server, and production-build boundaries. No implementation blocker.
+
+## NEXT
+- Complete U033: add `packages/interest-lab-view/test/coverage-view.test.ts` with the complete G2 and gappy G3 coverage-view goldens.
+- Acceptance: rows preserve catalog order and domain hues; columns contain all nine work modes with glyphs; cells are row-major with exact complete/gappy outcomes and gap strings; no `score` or `confidence` key exists at any depth; preserve focused RED evidence and keep `pnpm typecheck`, `pnpm test`, and `pnpm lint` green without beginning U034 implementation beyond the minimum green-only harness boundary.

@@ -4,6 +4,7 @@ import { EASINGS, type ProbeCardView, resolveMotion } from "@gt100k/interest-lab
 import { motion } from "motion/react";
 import type { CSSProperties, FocusEventHandler } from "react";
 import { Glyph, type GlyphName, STATE_GLYPHS } from "../ui/Glyph";
+import { WelcomeBack } from "./WelcomeBack";
 
 const titleCase = (value: string) =>
   value.replaceAll("_", " ").replace(/^./, (c) => c.toUpperCase());
@@ -97,6 +98,13 @@ export function QuestCard({
     ...motionSpec.enter.transition,
     ease: toMotionEasing(motionSpec.enter.transition.ease),
   };
+  const stateTransition =
+    quest.returnState === "prompted-return"
+      ? {
+          duration: quest.motion.durationMs / 1000,
+          ease: toMotionEasing(quest.motion.easing),
+        }
+      : enterTransition;
   const difficulty = titleCase(quest.difficulty);
   const social = titleCase(quest.social);
   const audience = quest.audience === "audience" ? "Audience" : "No audience";
@@ -111,16 +119,23 @@ export function QuestCard({
     <article className="quest-card-shell" style={style}>
       <motion.button
         type="button"
-        className="quest-card"
+        className={`quest-card quest-card--${quest.tone}`}
         data-quest-card="true"
         data-probe-id={quest.probeId}
+        data-return-state={quest.returnState}
+        data-return-tone={quest.tone}
         aria-label={accessibleName}
         aria-pressed={picked}
         initial={motionSpec.enter.initial}
-        animate={{ opacity: 1, scale: 1, transform: "translateY(0)" }}
+        animate={{
+          opacity: quest.returnState === "prompted-return" ? 0.86 : 1,
+          scale: 1,
+          transform: "translateY(0)",
+          filter: quest.returnState === "prompted-return" ? "saturate(0.62)" : "saturate(1)",
+        }}
         whileHover={hover}
         whileTap={press}
-        transition={enterTransition}
+        transition={stateTransition}
         onClick={() => onPick(quest.probeId)}
         onFocus={onFocus}
       >
@@ -151,7 +166,10 @@ export function QuestCard({
             ? "Rules suggested this quest"
             : `${titleCase(quest.provenance)} suggestion`}
         </span>
-        <span className="quest-why">{quest.whyCopy}</span>
+        <WelcomeBack quest={quest} />
+        {quest.returnState !== "voluntary-return" ? (
+          <span className="quest-why">{quest.whyCopy}</span>
+        ) : null}
       </motion.button>
 
       <details className="quest-help">

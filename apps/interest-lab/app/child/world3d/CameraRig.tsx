@@ -4,7 +4,6 @@ import {
   CAMERA3D,
   type CameraView,
   type ChildStaging,
-  EASINGS,
   MOTION,
   type SceneView,
   type Vector3,
@@ -19,7 +18,7 @@ import { MathUtils, Vector3 as ThreeVector3 } from "three";
 export const AUTO_TOUR_DWELL_MS = 8_000;
 
 type WorldCameraMode = ChildStaging["worldCameraMode"];
-type CameraMotionKind = "driftIn" | "islandFocus";
+type CameraMotionKind = "driftIn" | "islandFocus" | "welcomeBack";
 
 export interface CameraPose {
   pos: Vector3;
@@ -53,8 +52,6 @@ const readCubicBezier = (easing: string): [number, number, number, number] => {
   return [values[0]!, values[1]!, values[2]!, values[3]!];
 };
 
-const MOVE_CURVE = readCubicBezier(EASINGS.move);
-
 const sampleBezier = (parameter: number, firstControl: number, secondControl: number) => {
   const inverse = 1 - parameter;
   return (
@@ -64,21 +61,22 @@ const sampleBezier = (parameter: number, firstControl: number, secondControl: nu
   );
 };
 
-const resolveMoveProgress = (linearProgress: number) => {
+const resolveEasedProgress = (linearProgress: number, easing: string) => {
   if (linearProgress <= 0) return 0;
   if (linearProgress >= 1) return 1;
 
+  const curve = readCubicBezier(easing);
   let low = 0;
   let high = 1;
   for (let step = 0; step < 16; step += 1) {
     const parameter = (low + high) / 2;
-    if (sampleBezier(parameter, MOVE_CURVE[0], MOVE_CURVE[2]) < linearProgress) {
+    if (sampleBezier(parameter, curve[0], curve[2]) < linearProgress) {
       low = parameter;
     } else {
       high = parameter;
     }
   }
-  return sampleBezier((low + high) / 2, MOVE_CURVE[1], MOVE_CURVE[3]);
+  return sampleBezier((low + high) / 2, curve[1], curve[3]);
 };
 
 const resolveFocusProgress = (elapsedMs: number, durationMs: number) => {
@@ -115,14 +113,23 @@ export function createCameraTransition(
       const progress =
         kind === "islandFocus"
           ? resolveFocusProgress(elapsedMs, motion.durationMs)
-          : resolveMoveProgress(linearProgress);
+          : resolveEasedProgress(linearProgress, motion.easing);
+      const boundedProgress = kind === "welcomeBack" ? Math.min(progress, 1.05) : progress;
 
       return {
-        pos: interpolateVector(fromPose.pos, toPose.pos, progress),
-        target: interpolateVector(fromPose.target, toPose.target, progress),
+        pos: interpolateVector(fromPose.pos, toPose.pos, boundedProgress),
+        target: interpolateVector(fromPose.target, toPose.target, boundedProgress),
       };
     },
   };
+}
+
+export function createWelcomeCameraTransition(
+  from: Readonly<CameraPose>,
+  to: Readonly<CameraView>,
+  reducedMotion: boolean,
+): CameraTransition {
+  return createCameraTransition(from, to, "welcomeBack", reducedMotion);
 }
 
 export function createEstablishingCameraTransition(
@@ -142,13 +149,14 @@ export function createEstablishingCameraTransition(
 
 interface CameraRigTargetOptions {
   focusedProbeId: string | null;
+  welcomeProbeId?: string | null;
   worldCameraMode: WorldCameraMode;
   reducedMotion: boolean;
   elapsedMs: number;
 }
 
 export interface CameraRigTarget {
-  source: "home" | "focus" | "auto-tour";
+  source: "home" | "focus" | "welcome" | "auto-tour";
   islandIndex: number | null;
   camera: CameraView;
 }
@@ -169,6 +177,22 @@ export function resolveCameraRigTarget(
       source: "focus",
       islandIndex: focusedIslandIndex,
       camera: resolveCamera3D(focusedIslandIndex, {
+        reducedMotion: options.reducedMotion,
+        islandCenters,
+      }),
+    };
+  }
+
+  const welcomeIslandIndex = options.welcomeProbeId
+    ? scene.islands.findIndex(({ markers }) =>
+        markers.some(({ probeId }) => probeId === options.welcomeProbeId),
+      )
+    : -1;
+  if (welcomeIslandIndex >= 0) {
+    return {
+      source: "welcome",
+      islandIndex: welcomeIslandIndex,
+      camera: resolveCamera3D(welcomeIslandIndex, {
         reducedMotion: options.reducedMotion,
         islandCenters,
       }),
@@ -224,6 +248,7 @@ interface ActiveCameraTransition {
 export interface CameraRigProps {
   scene: SceneView;
   focusedProbeId?: string | null;
+  welcomeProbeId?: string | null;
   reducedMotion: boolean;
   worldCameraMode: WorldCameraMode;
 }
@@ -231,17 +256,29 @@ export interface CameraRigProps {
 export function CameraRig({
   scene,
   focusedProbeId = null,
+  welcomeProbeId = null,
   reducedMotion,
   worldCameraMode,
 }: CameraRigProps) {
   const camera = useThree((state) => state.camera);
   const initialTarget = resolveCameraRigTarget(scene, {
     focusedProbeId,
+    welcomeProbeId,
     worldCameraMode,
     reducedMotion,
     elapsedMs: 0,
   });
-  const initialTransition = createEstablishingCameraTransition(initialTarget.camera, reducedMotion);
+  const initialTransition =
+    initialTarget.source === "welcome"
+      ? createWelcomeCameraTransition(
+          {
+            pos: [...CAMERA3D.establishStart.pos],
+            target: [...CAMERA3D.home.target],
+          },
+          initialTarget.camera,
+          reducedMotion,
+        )
+      : createEstablishingCameraTransition(initialTarget.camera, reducedMotion);
   const activeTransitionRef = useRef<ActiveCameraTransition | null>({
     definition: initialTransition,
     elapsedMs: 0,
@@ -265,6 +302,7 @@ export function CameraRig({
     elapsedRef.current += deltaMs;
     const nextTarget = resolveCameraRigTarget(scene, {
       focusedProbeId,
+      welcomeProbeId,
       worldCameraMode,
       reducedMotion,
       elapsedMs: elapsedRef.current,
@@ -279,7 +317,7 @@ export function CameraRig({
             target: currentTargetRef.current.toArray() as Vector3,
           },
           nextTarget.camera,
-          "islandFocus",
+          nextTarget.source === "welcome" ? "welcomeBack" : "islandFocus",
           reducedMotion,
         ),
         elapsedMs: 0,

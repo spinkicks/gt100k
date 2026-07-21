@@ -29,6 +29,9 @@ export function buildQuestWorldSceneGraph({
   haloTexture,
   onPerformanceDecline,
 }: Readonly<BuildQuestWorldSceneGraphOptions>): ReactElement[] {
+  const welcomeProbeId = view.scene.islands
+    .flatMap(({ markers }) => markers)
+    .find(({ returnState }) => returnState === "voluntary-return")?.probeId;
   return [
     <PerformanceMonitor
       key="performance-monitor"
@@ -51,6 +54,7 @@ export function buildQuestWorldSceneGraph({
       key="camera"
       scene={view.scene}
       focusedProbeId={focusedProbeId}
+      welcomeProbeId={welcomeProbeId ?? null}
       reducedMotion={view.flags.reducedMotion}
       worldCameraMode={view.probePicker.staging.worldCameraMode}
     />,
