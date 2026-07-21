@@ -204,3 +204,14 @@
 
 ## NEXT
 - T029a: add `adapters/evidence-repo-memory/test/e2e.test.ts`; acceptance is a synthetic-only flow that builds the `syntheticMilestone` graph, passes `assertHumanAuthority`, assembles its packet, and passes stub verification without consent, legal, or admissions workflow machinery.
+
+## 2026-07-20 — P4 synthetic end-to-end flow (T029a)
+- Added the SC-005 adapter-level acceptance test that content-addresses every `syntheticMilestone` node, resolves and validates its provenance edges, persists the synthetic records and packet, enforces human authority, checks the attestation subject binding, excludes the unrelated island, and passes deterministic stub verification.
+- Added repository-local composite references to the Node hasher and verifier stub projects so the cross-adapter test typechecks without touching the shared root `tsconfig.json` before T032.
+- The existing runtime composition passed immediately; the test-first composite build exposed the expected missing sibling-project references, then passed after the minimal local configuration change. Removed and verified cleanup of source-side compiler artifacts emitted by that failing build.
+- Gate evidence: repository-adapter composite `tsc -b`, workspace `pnpm typecheck`, workspace `pnpm test` (93/93 across 23 files), and `pnpm lint` over 68 files all pass.
+- Phase status: P4 in progress; T027–T029a are complete. SC-005 and SC-006 are passing; T030–T032 remain before the domain checkpoint.
+- Blockers: none.
+
+## NEXT
+- T030: add `adapters/evidence-repo-memory/src/demo.ts` and the package-local `demo` script; acceptance is a runnable synthetic milestone flow wiring the real hasher, in-memory repository, domain graph/invariant/packet APIs, and stub verifier, matching `quickstart.md` and passing via `pnpm --filter @gt100k/evidence-repo-memory demo` with the workspace gate green.

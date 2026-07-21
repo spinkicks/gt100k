@@ -1,1 +1,1 @@
-docs: document evidence graph public API
+test: cover synthetic evidence flow end to end

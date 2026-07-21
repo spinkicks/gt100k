@@ -4,6 +4,10 @@
     "rootDir": ".",
     "outDir": "dist"
   },
-  "references": [{ "path": "../../packages/evidence-graph" }],
+  "references": [
+    { "path": "../../packages/evidence-graph" },
+    { "path": "../evidence-hash-node" },
+    { "path": "../evidence-verifier-stub" }
+  ],
   "include": ["src/**/*.ts", "test/**/*.ts"]
 }
