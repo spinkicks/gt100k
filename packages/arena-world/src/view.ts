@@ -1,11 +1,13 @@
 import { PALETTE, resolveBiome } from "./art";
 import { ASSET_KEYS } from "./assets";
 import { resolveAvatarAnimation } from "./avatar";
+import { resolveBaseLayout } from "./baseLayout";
 import { deriveCosmeticEligibility } from "./cosmetics";
 import { layoutQuestWorld } from "./layout";
 import type {
   AgeBand,
   AvatarState,
+  CohortBase,
   Cosmetic,
   DeviceCaps,
   NodeMasterySignal,
@@ -33,6 +35,7 @@ export interface BuildArenaViewInputs {
   readonly tierTable: readonly Tier[];
   readonly catalog: readonly Cosmetic[];
   readonly avatar: AvatarState;
+  readonly base: CohortBase;
   readonly caps: DeviceCaps;
   readonly options: {
     readonly ageBand: AgeBand;
@@ -60,6 +63,11 @@ export function buildArenaView(inputs: BuildArenaViewInputs) {
     prefersReducedMotion: reducedMotion,
   });
   const worldTheme = resolveEquippedWorldTheme(inputs.avatar.equipped);
+  const base = {
+    cohortRef: inputs.base.cohortRef,
+    contributions: inputs.base.contributions.map((contribution) => ({ ...contribution })),
+    unlockedFeatures: [...inputs.base.unlockedFeatures],
+  };
 
   return {
     world,
@@ -75,6 +83,7 @@ export function buildArenaView(inputs: BuildArenaViewInputs) {
       equipped: [...inputs.avatar.equipped],
     },
     eligibility,
+    base,
     presentation: {
       biomes: world.regions.map((region) => {
         const biome = resolveBiome(region);
@@ -99,6 +108,7 @@ export function buildArenaView(inputs: BuildArenaViewInputs) {
         fx: [...ASSET_KEYS.fx],
         ui: [...ASSET_KEYS.ui],
       },
+      basePlacements: resolveBaseLayout(base),
       palette: { ...PALETTE },
     },
     flags: {
@@ -136,5 +146,6 @@ function buildProgressionRepresentation(ageBand: AgeBand): RewardRepresentation 
   };
 }
 
-export type ProgressionArenaView = ReturnType<typeof buildArenaView>;
-export type InitialArenaView = ProgressionArenaView;
+export type BaseArenaView = ReturnType<typeof buildArenaView>;
+export type ProgressionArenaView = BaseArenaView;
+export type InitialArenaView = BaseArenaView;

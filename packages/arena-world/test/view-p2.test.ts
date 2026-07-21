@@ -10,6 +10,7 @@ import {
   createSyntheticMasteryFeed,
 } from "@gt100k/arena-world";
 import { describe, expect, expectTypeOf, it } from "vitest";
+import { createSyntheticCohortBase } from "./view-fixture";
 
 const FULL_CAPS = {
   webgl2: true,
@@ -28,6 +29,7 @@ const INPUTS = {
     learnerRef: "learner-synthetic-001",
     equipped: ["avatar-hat-explorer"],
   },
+  base: createSyntheticCohortBase(),
   caps: FULL_CAPS,
   options: {
     ageBand: "9-11",
@@ -48,6 +50,7 @@ describe("buildArenaView P2 composition", () => {
       "representation",
       "avatar",
       "eligibility",
+      "base",
       "presentation",
       "flags",
     ]);
@@ -85,7 +88,7 @@ describe("buildArenaView P2 composition", () => {
         "celebration-aurora",
       ],
     });
-    expect(view).not.toHaveProperty("base");
+    expect(view.base).toEqual(createSyntheticCohortBase());
     expect(view).not.toHaveProperty("standing");
     expect(view.presentation.qualityTier).toBe("A");
     expect(view.nodeStates).toHaveLength(9);

@@ -579,3 +579,17 @@
 ## NEXT
 - Complete the remaining T036 composed-view slice: add a P4 view acceptance test first, then extend `buildArenaView` and its public staged type with injected `base`, returned `base`, and `presentation.basePlacements = resolveBaseLayout(base)`.
 - Acceptance: the exact three-feature synthetic base and placements compose into the existing P2 view without changing world/layout/node/progression/eligibility state; replay and zero-power parity remain intact; all feature-owned app/test call sites supply the synthetic base; lint, typecheck, tests, root build, and Arena app build remain green.
+
+## 2026-07-21 — P4 / T036 (composed-view slice)
+- Extended `buildArenaView` with a required injected `CohortBase`, a fresh copied `base` field, and `presentation.basePlacements` derived once through `resolveBaseLayout`; no base state reaches world, node, progression, eligibility, or standing logic.
+- Exported the exact staged P4 return type as `BaseArenaView` while retaining `ProgressionArenaView` and `InitialArenaView` as compatibility aliases until the final P5 composer lands.
+- Added `view-p4.test.ts` first. The RED run failed specifically on absent `base`/`basePlacements`; the GREEN suite proves the exact campfire/banner/garden base and placements, fresh deterministic replay, and byte-identical existing state across golden and empty base inputs.
+- Updated every feature-owned `buildArenaView` caller to inject the exact synthetic three-mission base; test callers share a fresh fixture factory while the app keeps the synthetic default private to its client composition.
+- Review status: checked T036 against D2/D4, US4, §§5.8/8.8/8.16/P4, FR-011, SC-003/014/019, the staged model, and every caller; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused composer/app tests passed (7 files, 30 tests); direct arena-world and Arena-app TypeScript validation passed; `pnpm lint` passed (121 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (46 files, 184 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 57.4 kB route, 145 kB first load).
+- SC status: T036 completes the one-view domain composition for the deterministic, attributable, zero-power cohort base and advances SC-003/014/019. P4 remains in progress for the concrete Base Camp/Ledger renderer in T037.
+- Blockers: none.
+
+## NEXT
+- T037: add focused app tests first, then implement `apps/arena/app/scene/BaseCamp.tsx` and wire it into the canvas, Tier-D fallback, and Arena Ledger.
+- Acceptance: render the deterministic Base Camp zones/slots and attributable pseudonymous lantern-marks from `view.base`/`presentation.basePlacements`; new features use `resolveMotion("baseAccretion")` with an instant reduced-motion equivalent; standings-off home navigation lands at Base Camp; the Ledger mirrors the base as a list; lint, typecheck, tests, root build, and Arena app build remain green.

@@ -51,7 +51,12 @@ export type {
   NodeLightContribution,
   PointLightDescriptor,
 } from "./lighting";
-export type { BuildArenaViewInputs, InitialArenaView, ProgressionArenaView } from "./view";
+export type {
+  BaseArenaView,
+  BuildArenaViewInputs,
+  InitialArenaView,
+  ProgressionArenaView,
+} from "./view";
 
 export { BASE_LAYOUT } from "./baseLayout.fixture";
 export { BIOMES } from "./biomes.fixture";

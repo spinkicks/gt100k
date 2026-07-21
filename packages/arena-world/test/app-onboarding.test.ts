@@ -8,6 +8,7 @@ import {
   createSyntheticMasteryFeed,
 } from "@gt100k/arena-world";
 import { describe, expect, it, vi } from "vitest";
+import { createSyntheticCohortBase } from "./view-fixture";
 
 const APP_ROOT = new URL("../../../apps/arena/", import.meta.url);
 
@@ -105,6 +106,7 @@ function buildView(reducedMotion = false): InitialArenaView {
     tierTable: TIERS,
     catalog: CATALOG,
     avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
+    base: createSyntheticCohortBase(),
     caps: {
       webgl2: true,
       webgl1: true,

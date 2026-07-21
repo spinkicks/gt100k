@@ -11,6 +11,7 @@ import {
   resolveAvatarAnimation,
 } from "@gt100k/arena-world";
 import { describe, expect, it } from "vitest";
+import { createSyntheticCohortBase } from "./view-fixture";
 
 const APP_ROOT = new URL("../../../apps/arena/", import.meta.url);
 
@@ -32,6 +33,7 @@ function buildView(tier: QualityTier = "A", reducedMotion = false): InitialArena
     tierTable: TIERS,
     catalog: CATALOG,
     avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
+    base: createSyntheticCohortBase(),
     caps: {
       webgl2: tier !== "D",
       webgl1: tier !== "D",

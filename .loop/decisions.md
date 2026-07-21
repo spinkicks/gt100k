@@ -132,3 +132,7 @@
 ## 2026-07-21 — T035a/T036 base-layout attribution defaults
 - Attribute each unlocked feature placement to the first matching contribution, because that append-only record is the feature's stable unlock origin. Rejected the latest contributor because later duplicate missions must not rewrite historical attribution.
 - Treat only own keys of `BASE_LAYOUT` as known features and route inherited-name collisions such as `toString` through the exact outskirts fallback. Reject a missing contribution for an unlocked feature instead of inventing an empty contributor, because every placement is contractually attributable.
+
+## 2026-07-21 — T036 staged P4 ArenaView composition
+- Require callers to inject `CohortBase`, copy it into the composed view, and derive `presentation.basePlacements` from that same copy. Rejected importing a hidden canonical base because `buildArenaView` must remain deterministic for any valid synthetic cohort scenario, and rejected passing base state into world/progression resolvers because the base is zero-power.
+- Export the exact P4 return shape as `BaseArenaView`, with the earlier staged names retained as compatibility aliases. Rejected claiming the final `ArenaView` because standing and the final visual-band presentation remain scheduled for P5, and rejected adding the golden cohort base to the production package surface solely to share test/app setup.

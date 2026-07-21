@@ -4,6 +4,7 @@ import {
   type AgeBand,
   type AvatarState,
   CATALOG,
+  type CohortBase,
   type DeviceCaps,
   FIXTURE,
   type QualityTier,
@@ -31,6 +32,15 @@ const REDUCED_MOTION_DEFAULTS = ["system", "on", "off"] as const;
 const DEFAULT_AVATAR: AvatarState = {
   learnerRef: "learner-synthetic-001",
   equipped: [],
+};
+const DEFAULT_BASE: CohortBase = {
+  cohortRef: "cohort-synthetic-six",
+  contributions: [
+    { missionId: "m1", feature: "campfire", by: "kestrel" },
+    { missionId: "m2", feature: "banner", by: "otter" },
+    { missionId: "m3", feature: "garden", by: "kestrel" },
+  ],
+  unlockedFeatures: ["campfire", "banner", "garden"],
 };
 
 type QualityPreference = (typeof QUALITY_PREFERENCES)[number];
@@ -193,6 +203,7 @@ export function createArenaClientSnapshot(
     tierTable: TIERS,
     catalog: CATALOG,
     avatar,
+    base: DEFAULT_BASE,
     caps: effective.caps,
     options: {
       ageBand: config.ageBand,

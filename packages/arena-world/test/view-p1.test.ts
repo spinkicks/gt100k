@@ -4,6 +4,7 @@ import {
   BIOMES,
   CAMERA3D,
   CATALOG,
+  type CohortBase,
   type Cosmetic,
   type DeviceCaps,
   FIXTURE,
@@ -18,6 +19,7 @@ import {
   createSyntheticMasteryFeed,
   layoutQuestWorld,
   resolveAvatarAnimation,
+  resolveBaseLayout,
   resolveLighting,
   resolveParallaxLayers,
   resolvePostFx,
@@ -26,6 +28,7 @@ import {
 } from "@gt100k/arena-world";
 import * as arenaWorld from "@gt100k/arena-world";
 import { describe, expect, expectTypeOf, it } from "vitest";
+import { createSyntheticCohortBase } from "./view-fixture";
 
 type BuildArenaViewInputs = {
   world: QuestWorld;
@@ -33,6 +36,7 @@ type BuildArenaViewInputs = {
   tierTable: readonly Tier[];
   catalog: readonly Cosmetic[];
   avatar: { learnerRef: string; equipped: string[] };
+  base: CohortBase;
   caps: DeviceCaps;
   options: {
     ageBand: AgeBand;
@@ -75,6 +79,7 @@ describe("buildArenaView P1 composition", () => {
       tierTable: TIERS,
       catalog: CATALOG,
       avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
+      base: createSyntheticCohortBase(),
       caps: FULL_CAPS,
       options: {
         ageBand: "9-11",
@@ -92,6 +97,7 @@ describe("buildArenaView P1 composition", () => {
       "representation",
       "avatar",
       "eligibility",
+      "base",
       "presentation",
       "flags",
     ]);
@@ -120,6 +126,7 @@ describe("buildArenaView P1 composition", () => {
       "qualityTier",
       "qualityBudget",
       "assetKeys",
+      "basePlacements",
       "palette",
     ]);
     expect(view.presentation).toEqual({
@@ -134,6 +141,7 @@ describe("buildArenaView P1 composition", () => {
       qualityTier: "A",
       qualityBudget: QUALITY_TIERS.A,
       assetKeys: ASSET_KEYS,
+      basePlacements: resolveBaseLayout(createSyntheticCohortBase()),
       palette: PALETTE,
     });
     expect(view.flags).toEqual({ reducedMotion: false, plainMode: false, ageBand: "9-11" });
@@ -150,6 +158,7 @@ describe("buildArenaView P1 composition", () => {
       tierTable: TIERS,
       catalog: CATALOG,
       avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
+      base: createSyntheticCohortBase(),
       caps: FULL_CAPS,
       options: { ageBand: "6-8", reducedMotion: true, plainMode: true },
     });
@@ -175,6 +184,7 @@ describe("buildArenaView P1 composition", () => {
       tierTable: TIERS,
       catalog: CATALOG,
       avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
+      base: createSyntheticCohortBase(),
       caps: FULL_CAPS,
       options: { ageBand: "12-14", reducedMotion: false, plainMode: false },
     } as const satisfies BuildArenaViewInputs;
