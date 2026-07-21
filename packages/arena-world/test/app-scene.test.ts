@@ -194,6 +194,9 @@ describe("arena scene bootstrap", () => {
     expect(source).toContain('setFrameloop("never")');
     expect(source).toContain("setFrameloop(frameLoop)");
     expect(source).toContain('emit("tier-degraded"');
+    expect(source).toMatch(
+      /fallback: \(reason\) => \{[\s\S]*?from: qualityTier,[\s\S]*?to: "D",[\s\S]*?reason: "context-loss"/,
+    );
   });
 
   it("generates deterministic disposable low-poly resources for every asset key", async () => {

@@ -68,6 +68,29 @@ describe("arena P6 rolling frame monitor", () => {
     expect(monitor.sample(40)).toBeNull();
   });
 
+  it("walks sustained overload through A to B to C to D and stays at D", async () => {
+    const module = await importAppModule<FrameBudgetModule>("app/scene/ArenaCanvas.tsx");
+    expect(module.createFrameBudgetMonitor).toBeTypeOf("function");
+    if (!module.createFrameBudgetMonitor) return;
+
+    const monitor = module.createFrameBudgetMonitor("A");
+    const sampleOverBudgetWindow = (): QualityTier | null => {
+      let result: QualityTier | null = null;
+      for (let sample = 0; sample < 90; sample += 1) {
+        result = monitor.sample(18.01);
+      }
+      return result;
+    };
+
+    expect(sampleOverBudgetWindow()).toBe("B");
+    monitor.reset("B");
+    expect(sampleOverBudgetWindow()).toBe("C");
+    monitor.reset("C");
+    expect(sampleOverBudgetWindow()).toBe("D");
+    monitor.reset("D");
+    expect(sampleOverBudgetWindow()).toBeNull();
+  });
+
   it("samples inside the existing canvas and emits the typed frame-budget event", () => {
     const canvas = readAppFile("app/scene/ArenaCanvas.tsx");
     const client = readAppFile("app/ArenaClient.tsx");

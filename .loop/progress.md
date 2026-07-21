@@ -731,3 +731,16 @@
 ## NEXT
 - T046c: audit and finalize the quality-ladder acceptance coverage in `packages/arena-world/test/quality.test.ts` and the existing frame-monitor tests.
 - Acceptance: the exact A/B/C/D capability mapping, full budget/beacon-cap table, A→B→C→D→D degradation path, strict 90-frame `>18ms` trigger, one-step/reset behavior, and context-loss-to-D path are all explicitly covered without weakening existing tests; lint, typecheck, tests, root build, and Arena build remain green (FR-043, SC-025).
+
+## 2026-07-21 — P6 / T046c
+- Finalized `quality.test.ts` so the domain acceptance now spells out the complete A→B→C→D→D sequence in one deterministic path while retaining the exact capability-profile, full budget, and dynamic-light-cap assertions.
+- Added an end-to-end frame-monitor acceptance that drives four consecutive strict 90-frame `>18ms` windows across A→B→C→D and proves Tier D remains idempotent after reset. Tightened the context lifecycle contract to assert unrecoverable loss emits an exact Tier-D degradation event.
+- Followed test-first mutation verification for the coverage-only task: with the new test present, a temporary C→C monitor mutation failed exactly at the uncovered C→D leg (`expected "D", received null`); the production implementation was restored and the focused 20-test quality/frame/context suite passed.
+- Review status: audited T046c against US6, §§8.22/8.24/P6, FR-043, SC-025, and the existing renderer/frame/context tests; the final coverage is explicit and no production behavior change or test weakening was required. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: `pnpm lint` passed (134 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (55 files, 220 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 59.9 kB route, 147 kB first load).
+- SC status: T046c closes the automated quality-ladder acceptance for SC-025 and completes P6 implementation. The min-device 60fps and live forced-fallback walkthrough remains part of the P7 acceptance pass.
+- Blockers: browser automation/performance measurement remains unavailable in this workspace; deterministic quality behavior, static fallback coverage, type checks, tests, and both production builds are green.
+
+## NEXT
+- T047: add `packages/arena-world/test/synthetic.test.ts` first for the complete synthetic-only domain surface.
+- Acceptance: the public domain API runs end-to-end from the committed fixtures without consent, admissions, legal, live-user, network, time, or external-data inputs; FR-024/SC-008 are explicit and focused plus repository gates remain green.

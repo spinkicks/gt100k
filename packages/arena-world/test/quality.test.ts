@@ -139,15 +139,17 @@ describe("arena rendering quality", () => {
     expect(resolveQualityTier(FULL_CAPS)).toBe(resolveQualityTier({ ...FULL_CAPS }));
   });
 
-  it("degrades one tier at a time and remains at Tier D", () => {
+  it("follows the complete A to B to C to D path and remains at Tier D", () => {
     expect(nextLowerTier).toBeTypeOf("function");
     if (!nextLowerTier) return;
 
-    expect((["A", "B", "C", "D"] as const).map((tier) => nextLowerTier(tier))).toEqual([
-      "B",
-      "C",
-      "D",
-      "D",
-    ]);
+    let tier: QualityTier = "A";
+    const path: QualityTier[] = [tier];
+    for (let step = 0; step < 4; step += 1) {
+      tier = nextLowerTier(tier);
+      path.push(tier);
+    }
+
+    expect(path).toEqual(["A", "B", "C", "D", "D"]);
   });
 });
