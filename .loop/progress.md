@@ -24,3 +24,16 @@
 ## NEXT
 - T003: define every arena-world domain type in `packages/arena-world/src/model.ts` exactly as listed in `tasks.md` and `data-model.md`, reusing `Section`/`SECTIONS` from `@gt100k/learning-loop`.
 - Acceptance: type-level tests first; `Cosmetic` cannot expose `price`, `currency`, `dropRate`, or `rarity`; standings cannot expose `rank`, `position`, `percentile`, or `outOf`; `SoundCue` cannot expose negative/alarm/loop flags; package and repository gates remain green.
+
+## 2026-07-20 — P0 / T003
+- Added the complete pure-domain type surface in `packages/arena-world/src/model.ts`, including quest/layout/3D presentation, progression, cosmetic, avatar, base, motion, quality, accessibility, staging, standing, and composed `ArenaView` shapes.
+- Reused `Section` and `SECTIONS` from `@gt100k/learning-loop`; no framework, renderer, I/O, time, or randomness dependency entered the domain model.
+- Added six type-level contract tests first. The RED run failed on the missing model, then the implementation passed; exact key assertions make commerce fields, caste-ranking fields, and negative/alarm/loop sound flags structurally unrepresentable.
+- Restored the new package's missing local workspace symlink with a filtered offline install and lockfile writes disabled; verified `pnpm-lock.yaml` stayed byte-identical.
+- Gate status: `pnpm typecheck` passed; `pnpm test` passed (6 files, 21 tests); direct arena-world TypeScript validation and Biome checks passed.
+- SC status: structural groundwork for SC-002, SC-021, and SC-022 is present; those criteria remain open until their fixtures/resolvers and final guardrail tests land.
+- Blockers: none.
+
+## NEXT
+- T004: add `packages/arena-world/src/graph.fixture.ts`, `tiers.fixture.ts`, and `catalog.fixture.ts` from spec §§7.1–7.3 and §8.15.
+- Acceptance: tests fail first, then prove the exact synthetic 9-node/4-region DAG with a landmark on every node, tier thresholds `0/100/250/500/900/1500`, and the nine-item catalog in declaration order with deterministic eligibility plus stable `look`/`equipEffect`; region order is `[numbers-coast, tinker-bluffs, story-vale, wordwind-reach]`, guardrail fields remain absent, and repository gates stay green.
