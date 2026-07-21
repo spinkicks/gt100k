@@ -215,3 +215,14 @@
 
 ## NEXT
 - T030: add `adapters/evidence-repo-memory/src/demo.ts` and the package-local `demo` script; acceptance is a runnable synthetic milestone flow wiring the real hasher, in-memory repository, domain graph/invariant/packet APIs, and stub verifier, matching `quickstart.md` and passing via `pnpm --filter @gt100k/evidence-repo-memory demo` with the workspace gate green.
+
+## 2026-07-20 — P4 synthetic headless demo (T030)
+- Added the package-local `demo` command and a fail-closed headless runner that content-addresses the committed synthetic fixture, persists its nodes and edges, enforces human authority, assembles and reloads the packet, and verifies it with the deterministic stub.
+- Added a CLI acceptance test that executes the exact documented pnpm command and checks the deterministic graph, packet, persistence, authority, and verification summary. Confirmed RED on the missing package script, then GREEN after the minimal orchestration.
+- Demo evidence: `pnpm --filter @gt100k/evidence-repo-memory demo` reports 8 nodes, 13 edges, a 7-node packet, persisted packet PASS, and verification PASS.
+- Gate evidence: workspace `pnpm typecheck`, workspace `pnpm test` (94/94 across 24 files), and `pnpm lint` over 70 files all pass.
+- Phase status: P4 in progress; T027–T030 plus T029a are complete. SC-005 and SC-006 remain passing; T031/T032 remain before the Part I checkpoint.
+- Blockers: none.
+
+## NEXT
+- T031: run the complete Part I quickstart validation end-to-end; acceptance is clean `pnpm exec tsc -b`, full `pnpm exec biome check .`, `pnpm --filter @gt100k/evidence-graph test`, workspace `pnpm test`, and the documented synthetic demo, resolving only feature-owned failures while preserving the T032 root-reference change as the final isolated task.

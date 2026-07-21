@@ -9,6 +9,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
+    "demo": "tsx src/demo.ts",
     "test": "vitest run"
   }
 }
