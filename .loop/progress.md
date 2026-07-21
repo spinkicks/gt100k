@@ -97,3 +97,13 @@
 
 ## NEXT
 - T010a/T014: write the public-entrypoint golden Artifact test first, confirm RED while the package barrel is still empty, then export the model, canonicalize, and graph APIs from `packages/evidence-graph/src/index.ts`; acceptance is the exact `facecf25460fedd81070a1194f25639af9561cd6190d829739f4af21568a9039` id through the public API and a green workspace gate.
+
+## 2026-07-20 — P1 golden value and public API (T010a/T014)
+- Added the public-entrypoint G1 golden test for the exact Artifact canonical bytes and `facecf25460fedd81070a1194f25639af9561cd6190d829739f4af21568a9039` id.
+- Exported the settled model, canonicalization, and graph API from `@gt100k/evidence-graph`. Confirmed RED while the entrypoint was empty, then GREEN after only the required exports.
+- Gate evidence: focused golden test (2/2), workspace `pnpm typecheck`, workspace `pnpm test` (55/55), and `pnpm lint` over 49 files all pass.
+- Phase status: P1 complete; SC-001, SC-002, SC-007, SC-009, and the content-addressed DAG MVP are passing. P2 is next.
+- Blockers: none.
+
+## NEXT
+- T015/T016: write the `assertHumanAuthority` contract test first, confirm RED on the missing invariant, then implement the pure domain predicate; acceptance is human-owned grade pass, model-owned grade fail, model `Assistance`/`Review` pass, authorship-accusation rejection, machine-readable reasons, and a green workspace gate.
