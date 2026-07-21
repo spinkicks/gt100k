@@ -482,3 +482,17 @@
 ## NEXT
 - T031: add `packages/arena-world/test/celebrate.test.ts` first, then implement and explicitly export `classifyCelebration` in `packages/arena-world/src/celebrate.ts`.
 - Acceptance: transfer-critical independent unlock resolves to `high`, ordinary independent unlock to `medium`, productive struggle to `low`, and incorrect attempts/help requests to `null` without removing state; the union exposes no loss type, every event uses `copyStyle:"process-praise"`, replay is deterministic, and focused plus repository gates stay green (FR-012/013/014, SC-007).
+
+## 2026-07-21 — P3 / T031 + T033 (`classifyCelebration` slice)
+- Added `celebrate.test.ts` through the public package API, covering transfer-critical high, ordinary medium, productive-struggle low, incorrect/help null behavior, unchanged frozen earned state, the no-loss event union, exact process-praise copy style, one-input API shape, and fresh deterministic replay.
+- Followed red-green TDD: all four acceptance tests failed because `classifyCelebration` was absent, then passed after the minimal classifier and explicit package exports landed.
+- Added the pure exhaustive `classifyCelebration(signal)` implementation plus a discriminated `LearningMomentSignal` contract. Error/help variants return `null`; outcome state cannot enter the API, and no loss/penalty event is representable.
+- A fresh direct package TypeScript build exposed a stale P1-only return declaration in `view-p1.test.ts` after T029 expanded the composer. Aligned that test helper with the already-exported `ProgressionArenaView`; no view production behavior changed, and the direct package typecheck passed afterward.
+- Review status: checked T031/T033 against spec §§5.7/8.5, the domain contract, data model, FR-012/013/014, and SC-007; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused celebration/guardrail tests passed (8 tests); direct arena-world TypeScript validation passed; `pnpm lint` passed (106 files); `pnpm typecheck` passed; `pnpm test` passed (39 files, 158 tests). No app changed, so no Next.js build was required.
+- SC status: T031 completes SC-007's deterministic classification/no-loss/process-praise domain slice. Reduced-motion celebration specs and concrete app feedback remain scheduled for T032/T034.
+- Blockers: none.
+
+## NEXT
+- T032 + the `celebrationMotionSpec` slice of T033: add `packages/arena-world/test/motion.test.ts` first, then implement and explicitly export the minimal pure celebration-motion resolver.
+- Acceptance: high/medium/low map exactly to particle counts `24/12/6`, durations `800/600/400`, camera punch `true/false/false`, and bloom peaks `1.4/1.1/0.7`; `reducedMotion:true` returns the exact static `0`-particle, `150ms`, no-punch, `0.7`-bloom equivalent for every intensity; replay is deterministic and repository gates remain green (FR-015, SC-004).

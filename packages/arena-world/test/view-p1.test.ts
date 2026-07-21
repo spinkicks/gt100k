@@ -9,6 +9,7 @@ import {
   FIXTURE,
   type NodeMasterySignal,
   PALETTE,
+  type ProgressionArenaView,
   QUALITY_TIERS,
   type QuestWorld,
   TIERS,
@@ -48,26 +49,7 @@ type BuildArenaViewInputs = {
   };
 };
 
-type BuildArenaView = (inputs: BuildArenaViewInputs) => {
-  world: QuestWorld;
-  layout: ReturnType<typeof layoutQuestWorld>;
-  nodeStates: Array<{ nodeId: string; state: "locked" | "available" | "unlocked" }>;
-  presentation: {
-    biomes: typeof BIOMES;
-    worldTransform: ReturnType<typeof resolveWorldTransform>;
-    camera: typeof CAMERA3D;
-    parallax: ReturnType<typeof resolveParallaxLayers>;
-    lighting: ReturnType<typeof resolveLighting>;
-    water: ReturnType<typeof resolveWater>;
-    postfx: ReturnType<typeof resolvePostFx>;
-    avatarAnim: ReturnType<typeof resolveAvatarAnimation>;
-    qualityTier: keyof typeof QUALITY_TIERS;
-    qualityBudget: (typeof QUALITY_TIERS)[keyof typeof QUALITY_TIERS];
-    assetKeys: typeof ASSET_KEYS;
-    palette: typeof PALETTE;
-  };
-  flags: { reducedMotion: boolean; plainMode: boolean; ageBand: AgeBand };
-};
+type BuildArenaView = (inputs: BuildArenaViewInputs) => ProgressionArenaView;
 
 const buildArenaView = (arenaWorld as typeof arenaWorld & { buildArenaView?: BuildArenaView })
   .buildArenaView;

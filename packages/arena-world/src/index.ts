@@ -45,6 +45,7 @@ export type {
 } from "./model";
 
 export type { AssetFallbackDescriptor, AssetKeyGroup } from "./assets";
+export type { LearningMomentSignal } from "./celebrate";
 export type {
   NodeLightCandidate,
   NodeLightContribution,
@@ -61,6 +62,7 @@ export { TIERS } from "./tiers.fixture";
 export { PALETTE, TYPOGRAPHY, resolveBiome, resolveElevation } from "./art";
 export { ASSET_KEYS, resolveAssetFallback } from "./assets";
 export { resolveAvatarAnimation } from "./avatar";
+export { classifyCelebration } from "./celebrate";
 export { deriveCosmeticEligibility, equipCosmetic } from "./cosmetics";
 export { createSyntheticMasteryFeed } from "./feed";
 export { resolveNodeLightContributions } from "./lighting";

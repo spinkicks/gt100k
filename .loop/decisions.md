@@ -111,3 +111,6 @@
 ## 2026-07-21 — T030 cosmetic equip presentation
 - Keep equipped cosmetics in stable additive order, matching the settled `equipCosmetic` contract. If more than one world-theme ID is present, the last equipped theme controls the resolved lighting rig. Rejected silently removing an earlier ID because the domain exposes no unequip/replace operation and later renderers still need the complete expressive history.
 - Store earned base-theme and celebration-effect selections in the same shared avatar state even though their concrete Base Camp and celebration renderers land in P4 and P3. Rejected inventing premature base or celebration view fields; the HUD and Ledger expose the equipped state now, and the scheduled renderers can consume the existing IDs without changing the equip flow.
+
+## 2026-07-21 — T031/T033 celebration-classification boundary
+- Chose an explicit `LearningMomentSignal` discriminated union: independent unlocks alone carry `nodeId` and `transferCritical`, while productive struggle, incorrect attempt, and help request are distinct parameter-free variants. Rejected generic strings or passing earned state because an exhaustive one-input classifier makes invalid event kinds and outcome mutation structurally unavailable.
