@@ -15,7 +15,7 @@ The single most important finding: **environment totality — the brainlift's de
 
 **The highest-leverage gaps are operational, not ideological.** The three potentially existential holes the PRD never addresses: **(1) guide supply** (~5,000 expert-generalists; the substrate the entire human-authority model rests on — solvable via a SPOV-3 near-peer grow-your-own ladder); **(2) safeguarding-at-scale + mandatory reporting + breach blast-radius for 100K children's records**; and **(3) the TimeBack single-point-of-failure + the date-driven Phase-0→1 engine cutover.** Close behind: no declared **legal operating model** (the full-day structure *is* school-replacement but claims none of the obligations), no **unit-economics / funding** model (~$0.7–1.7B/yr, ~80% labor), no **age-14 exit ladder**, and no **committed longitudinal eval** to test what is, by the PRD's own §5 taxonomy, an E3/R bet given production authority over a child's entire education (fixable near-free via a regression-discontinuity design at the Track A/B cutoff).
 
-Reading guide: §0 the meta-thesis + five-softenings table · §1 the gap inventory · §2 the four SPOV debates · §3 seven load-bearing gap deep-dives · §4 the consolidated, compliance-hardened feature set · §5 the cross-doc fidelity audit (new gaps, G-dial compliance corrections, fidelity scorecard). **All of this is analysis, not a spec change** — adoption goes through the normal PRD/governance workflow, and the fixed G-class rights dials win over anything proposed here.
+Reading guide: §0 the meta-thesis + five-softenings table · §1 the gap inventory · §2 the four SPOV debates · §3 seven load-bearing gap deep-dives · §4 the consolidated, compliance-hardened feature set · §5 the cross-doc fidelity audit (new gaps, G-dial compliance corrections, fidelity scorecard) · §6 the three existential operational-risk deep-dives (safeguarding, TimeBack, breach) · §7 the priority-ranked recommendation register (all 21 recs, tiered). **All of this is analysis, not a spec change** — adoption goes through the normal PRD/governance workflow, and the fixed G-class rights dials win over anything proposed here.
 
 ---
 
@@ -119,7 +119,7 @@ Ranked roughly by how load-bearing the gap is.
 
 ---
 
-## 3. Load-bearing gap deep-dives (batch 2)
+## 3. Load-bearing gap deep-dives (batches 2–3)
 
 ### 3.1 The 5,000-guide problem — the unpriced human bottleneck (gap #2)
 
