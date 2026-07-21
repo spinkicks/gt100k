@@ -832,3 +832,32 @@
 ## NEXT
 - Complete U051: run `specs/003-interest-lab/quickstart.md` end to end and assemble the final SC-UI-01…18 acceptance map.
 - Acceptance: `pnpm --filter @gt100k/interest-lab-view test`, `pnpm lint`, `pnpm --filter @gt100k/interest-lab-app build`, and the production app smoke all pass; every SC-UI-01…18 has current automated or walkthrough evidence, with any environment-only validation gap stated explicitly.
+
+## 2026-07-21 — P15 / U051
+- Ran the quickstart gate end to end: the view package passed 102 tests across 22 files, the app passed 73 tests across 14 files, the workspace passed 212 tests across 46 files, `pnpm typecheck` passed, and Biome checked 166 files without fixes.
+- Rebuilt both production targets successfully: `@gt100k/interest-lab-app` emitted its static app routes and the root `pnpm build` completed the Student Compass build.
+- Started the built Interest Lab with `next start` and passed an HTTP production smoke for status 200, title/heading, the hydration-safe `board-2d` server fallback, synthetic-only copy, and all six labeled/operable quest buttons. A first guessed aria-label probe failed because the cards use full semantic quest labels rather than a `Pick…` prefix; rendered-markup inspection identified the actual contract and the corrected smoke passed without product changes.
+- Current browser retry is environment-blocked before navigation because the bundled Chromium cannot load host library `libnspr4.so`; no host/dependency mutation was made. U045 remains the browser evidence for performance/degradation/context-loss and U050 remains the browser evidence for accessibility/responsive behavior. Physical mid-GPU 3D throughput remains the sole operator-hardware validation gap; the available SwiftShader host degraded correctly and its settled 2D tier measured 60.4fps.
+- SC-UI-01 → `probe-picker.test.ts` green: exact quest-card structure, provenance, hue/glyph, choices, help, and forbidden-field absence.
+- SC-UI-02 → `staging.test.ts` + `view.test.ts` green: exact age staging and state identity across bands.
+- SC-UI-03 → `return-delight.test.ts` plus app return tests green: voluntary/prompted distinction and reduced static equal.
+- SC-UI-04 → `coverage-view.test.ts` plus semantic matrix app tests green: exact complete/gappy coverage, visible named gaps, no scalar.
+- SC-UI-05 → `explanations.test.ts` plus guide app tests green: paired competing evidence, grade/interval uncertainty, no fixed verdict.
+- SC-UI-06 → `timeline.test.ts` plus guide app tests green: 7/30 voluntary markers, recessed prompted context, support never lowers.
+- SC-UI-07 → `lifecycle-view.test.ts` plus guide app tests green: G5 checklist, legal transitions, non-operative proposal, append-only authoring history.
+- SC-UI-08 → `motion.test.ts` plus app motion tests green: exact DOM/3D tokens and reduced equivalents.
+- SC-UI-09 → `art.test.ts` green and U050 walkthrough evidence: exact palette/type/hues with measured contrast checks.
+- SC-UI-10 → `view.test.ts`/`view-composition.test.ts` green: one-view equality across surfaces, tiers, plain/reduced modes, and age bands.
+- SC-UI-11 → `guardrails.test.ts` green: deterministic GPU-free view source, no forbidden fields/imports, and no fixed-label copy.
+- SC-UI-12 → `synthetic.test.ts` green: both complete surfaces build only from canonical synthetic fixtures.
+- SC-UI-13 → `scene.test.ts` plus quest-world app tests green: deterministic layout/camera and marker/card parity.
+- SC-UI-14 → `tiers.test.ts` plus device/performance app tests green: exact full/lite/2D selection and presentation-only degradation.
+- SC-UI-15 → `constellation.test.ts` plus guide app tests green: exact six-star geometry/brightness, DOM equal, and no scalar.
+- SC-UI-16 → production build, app/world/device tests, current HTTP smoke, and U045 browser walkthrough green for client-only hidden canvas, reduced/no-WebGL floor, full→lite→2D degradation, context loss, and pick preservation; physical mid-GPU 3D 60fps remains environment-only.
+- SC-UI-17 → guardrail/app tests and U050 copy walkthrough green: no dark patterns/floating score/fixed labels; help stays visible and non-penalizing.
+- SC-UI-18 → semantic app tests and U050 browser walkthrough green: keyboard DOM operation, hidden decorative canvas, visible focus, color-independent cues, contrast, responsive text, and reduced transparency.
+- Status: U051 complete; every SC-UI-01…18 has passing automated and/or completed walkthrough evidence, with the physical mid-GPU throughput limitation explicit. P15 remains in progress only for U-ROOT. No implementation blocker.
+
+## NEXT
+- Complete U-ROOT: add `{ "path": "packages/interest-lab-view" }` to the root `tsconfig.json` project references as the one final shared-root/human-reconcile edit.
+- Acceptance: the new reference appears exactly once without changing other root configuration; `pnpm typecheck`, `pnpm test`, `pnpm lint`, `pnpm --filter @gt100k/interest-lab-app build`, and `pnpm build` remain green. If the whole spec is then satisfied, create `.loop-done`.
