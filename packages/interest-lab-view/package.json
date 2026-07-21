@@ -13,5 +13,8 @@
   },
   "dependencies": {
     "@gt100k/interest-lab": "workspace:*"
+  },
+  "devDependencies": {
+    "@gt100k/interest-probe-catalog": "workspace:*"
   }
 }

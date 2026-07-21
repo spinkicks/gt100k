@@ -799,3 +799,14 @@
 ## NEXT
 - Complete U048: add `packages/interest-lab-view/test/synthetic.test.ts` for the whole synthetic-only view layer.
 - Acceptance: build the complete child and guide view from Part-I synthetic fixtures without consent, admissions, or legal input; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-21 — P15 / U048
+- Added four synthetic-only acceptance cases that build the complete child and guide views from the canonical Part-I `CATALOG_GOLDEN_V1` and `EVENTS_GOLDEN_V1` fixtures, cover every composed guide/scene block, and prove the shared fixtures remain unchanged.
+- Locked the public input boundary with a compile-time assertion excluding assent, consent, admissions, discipline, and legal machinery, plus exact runtime input-key checks. A controlled temporary `consent` input made the package compiler fail before the regression was removed.
+- Added the catalog adapter as a test-only workspace dependency under D060; the view runtime still depends only on the pure domain package, and `pnpm install --lockfile=false` left the shared lockfile untouched.
+- Verified the focused suite (4 tests), forced view-package compiler, view-package suite (99 tests across 21 files), `pnpm typecheck`, `pnpm test` (209 tests across 45 files), and `pnpm lint` (165 files); all pass. No app file changed, so the app production-build gate was not triggered this increment.
+- Status: U048 complete; P15 remains in progress. SC-UI-12 is green across both composed surfaces using only synthetic Part-I inputs, with no governance machinery in the view API. No blocker.
+
+## NEXT
+- Complete U049: add `packages/interest-lab-view/README.md` documenting the public view API, inputs, scene/tier resolvers, and guardrails.
+- Acceptance: the README states that the GPU-free package renders `@gt100k/interest-lab` without recomputing rules, documents the complete public entry points and inputs, and explicitly forbids scalar passion scores, fixed labels, and floating world scores; the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
