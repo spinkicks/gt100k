@@ -502,3 +502,16 @@
 
 - T122 — Implement the opt-in gain-based standings panel in `apps/cohort-arena/components/hud/` from `view.standings`.
 - Acceptance: an opted-in view renders anonymized near-peer gains, `selfGain: 300`, and `gainToBandTop: 40` with an amber left-to-right bar and tabular number ticker driven by `resolveMotion("standingsBar"/"gainCelebrate", ...)`; the renderer exposes no rank/bottom-rank language or field, reduced motion shows the instant final values, and focused tests, app TypeScript/build, the seeded smoke, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P9 / T122
+
+- Added a stateless `StandingsPanel` over the shared composed view: default/null renders nothing, while Fixture V2 renders exact own gain `300`, headroom `40`, and the three pseudonymous near-peer gains with no rank, position, percentile, leaderboard, bottom-rank, or beating-others surface.
+- Added the pinned amber left-to-right bar and tabular number ticker through `resolveMotion("standingsBar", ...)`, plus the restrained own-growth chip through `resolveMotion("gainCelebrate", ...)`; reduced/plain presentation resolves both to the exact instant final state while screen readers receive one stable final value.
+- Added the hidden-by-default synthetic Fixture V2 payload, client HUD integration, responsive token-based styles, and a focused three-test contract for opt-out absence, exact opted-in state, structural language guardrails, golden motion values, and reduced-motion parity. New color pairs measure from 8.03:1 to 11.94:1.
+- TDD status: the focused suite first failed because `components/hud/StandingsPanel.tsx` was absent, then passed 3/3 after the minimal renderer, integration, and styles; the full app suite passes 19/19.
+- Gate status: app-local TypeScript, `pnpm typecheck`, `pnpm test` (144/144), `pnpm lint` (131 files), `pnpm --filter @gt100k/cohort-arena build`, root `pnpm build`, and the seeded Playwright production smoke (1/1) pass. The first smoke launch exposed three missing host Chromium libraries; extracting them temporarily and setting `LD_LIBRARY_PATH` proved the unchanged smoke green without modifying the repo or host package database. T122 and the renderer portion of SC-012 are complete; T123 retains interactive opt-in wiring. No blocker.
+
+## NEXT
+
+- T123 — Add the standings opt-in toggle in `apps/cohort-arena/components/` and wire it to the existing `standingsOptIn` view flag.
+- Acceptance: standings remain default off; opting in exposes the exact T122 Fixture V2 panel and Ledger text from one recomposed synthetic view; opting out restores the byte-identical default cohort/rivalry/safeguarding state; the frequent toggle uses instant `resolveMotion("hudToggle", ...)`, has a >=44px accessible target, and focused tests, app TypeScript/build, seeded smoke, and repository typecheck/test/lint remain green.

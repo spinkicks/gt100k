@@ -6,6 +6,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 
 import { CohortRosterHud } from "./hud/CohortRosterHud";
+import { StandingsPanel } from "./hud/StandingsPanel";
 import { toMotionEasing } from "./hud/motion-transition";
 import { CohortLedger } from "./ledger/CohortLedger";
 import { ObservatoryScene } from "./observatory/ObservatoryScene";
@@ -113,6 +114,7 @@ export default function CohortArenaClient() {
             <span className="status-dot" aria-label="All hard constraints satisfied" />
           </div>
           <CohortRosterHud view={VIEW} reducedMotion={tier2D.active} />
+          <StandingsPanel standings={VIEW.standings} reducedMotion={tier2D.active} />
         </aside>
       </div>
 

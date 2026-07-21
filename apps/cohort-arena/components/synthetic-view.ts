@@ -27,6 +27,16 @@ const HARD = {
 
 const ROLE_VECTOR = ["anchor", "scout", "builder", "builder", "challenger", "scribe"] as const;
 
+const STANDINGS = {
+  self: { selfGain: 300 },
+  nearPeers: [
+    { pseudonym: "kestrel", gain: 260 },
+    { pseudonym: "otter", gain: 340 },
+    { pseudonym: "finch", gain: 300 },
+  ],
+  optedIn: true,
+} satisfies NonNullable<BuildCohortArenaViewInput["standings"]>;
+
 function learner(
   learnerRef: string,
   ageBand: SyntheticLearner["ageBand"],
@@ -99,6 +109,7 @@ const INPUT = {
   pool: POOL,
   hard: HARD,
   churn: CHURN,
+  standings: STANDINGS,
   flags: {
     reducedMotion: false,
     plain: false,

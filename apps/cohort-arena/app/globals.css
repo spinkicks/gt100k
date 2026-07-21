@@ -459,6 +459,133 @@ html[data-reduced-motion="true"] *::after {
   font-size: 1.1rem;
 }
 
+.standings-panel {
+  padding-top: 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid var(--locked);
+}
+
+.standings-header,
+.standings-own-gain,
+.standings-headroom,
+.standings-peer-context li {
+  display: flex;
+  align-items: center;
+}
+
+.standings-header,
+.standings-own-gain,
+.standings-peer-context li {
+  justify-content: space-between;
+}
+
+.standings-header {
+  gap: 0.75rem;
+}
+
+.standings-header h3,
+.standings-header p,
+.standings-own-gain p,
+.standings-headroom,
+.standings-peer-context p,
+.standings-peer-context ul {
+  padding: 0;
+  margin: 0;
+}
+
+.standings-header h3 {
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+}
+
+.standings-context,
+.standings-own-gain > p:first-child,
+.standings-peer-context > p {
+  color: var(--ink-muted);
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+}
+
+.standings-gain-chip {
+  flex: none;
+  padding: 0.3rem 0.625rem;
+  color: var(--ink);
+  background: var(--gain);
+  border-radius: 999px;
+  font-size: var(--text-label-size);
+  font-weight: 700;
+}
+
+.standings-own-gain {
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.standings-value {
+  color: var(--gain-hi);
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.standings-bar-track {
+  height: 0.625rem;
+  margin-top: 0.75rem;
+  overflow: hidden;
+  background: var(--deck);
+  border-radius: 999px;
+}
+
+.standings-bar-fill {
+  width: 100%;
+  height: 100%;
+  background: var(--gain);
+  border-radius: inherit;
+  transform-origin: left center;
+  will-change: transform;
+}
+
+.standings-headroom {
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  color: var(--ink-muted);
+  font-size: var(--text-label-size);
+}
+
+.standings-headroom strong {
+  color: var(--gain-hi);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.standings-peer-context {
+  padding-top: 0.75rem;
+  margin-top: 0.875rem;
+  border-top: 1px solid var(--locked);
+}
+
+.standings-peer-context ul {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  list-style: none;
+}
+
+.standings-peer-context li {
+  min-width: 0;
+  color: var(--ink-muted);
+  font-size: var(--text-label-size);
+}
+
+.standings-peer-context data {
+  color: var(--ink-hi);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
 .tier2d-figure {
   margin: 1rem 0 0;
 }
