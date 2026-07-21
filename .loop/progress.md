@@ -204,3 +204,15 @@
 
 - T028 — Export the remaining US2 `benefit`, `constraints`, `objective`, `solver`, `commit`, `repair`, and `safeguarding` APIs from `packages/cohort-compiler/src/index.ts` using explicit named exports.
 - Acceptance: consumers can import every required US2 value and type through `@gt100k/cohort-compiler`; the public API contract covers their exact signatures without widening the learned-model boundary; the standalone feature project-reference build and repository typecheck/test/lint gate remain green; the P4 checkpoint completes.
+
+## 2026-07-20 — P4 / T028
+
+- Published the completed US2 domain functions, result/move types, and injected `CohortRepository`, `SafeguardingSink`, and shadow `BenefitEstimator` port types through the `@gt100k/cohort-compiler` entrypoint using explicit named exports.
+- Extended the package-name public API contract with runtime export checks and exact function signatures for benefit, feasibility, objective scoring, solving, commit/rollback/churn, repair, and safeguarding; the exact solve/repair tuples prove no learned-model input was added.
+- TDD status: an initial type-only contract passed because Vitest erased type-position imports, so the contract was corrected to exercise the values at runtime; it then failed with all nine T028 exports undefined and passed 4/4 after the minimal entrypoint change.
+- Gate status: package-local strict TypeScript and the focused public API suite pass; repository `pnpm typecheck`, `pnpm test` (87/87), and `pnpm lint` pass. A completion self-review found no Critical, Important, or Minor issues. P4 and SC-004/SC-005/SC-006 are complete; no blocker.
+
+## NEXT
+
+- T029 + T031 — Add the Fixture E `analyzeTurns` contract first, then implement pure observable-only RivalryMix analysis in `packages/cohort-compiler/src/rivalrymix.ts`.
+- Acceptance: dominance flags S1 at confidence 1.0; repeated interruption flags S2; low-quality input yields confidence 0.225 and suppresses all patterns; sparse, empty, and ambiguous inputs surface no invented pattern; every output contains no honesty, emotion, personality, or motivation field; focused RED/GREEN and repository typecheck/test/lint remain green.

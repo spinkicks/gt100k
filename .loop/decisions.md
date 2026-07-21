@@ -75,3 +75,7 @@
 
 - Inject an iterable of host-authorized locked assignment IDs into `ShadowBenefitEstimator` and copy it into a private set. Rejected a public `markLocked` method because the shadow adapter must not grant lock authority to itself, and rejected coupling the deferred estimator to a repository because the settled port requires only a post-lock logging seam.
 - Reject an unlocked call with a stable error. The port returns `Promise<BenefitLCB>`, so returning `undefined` would widen the approved contract, while returning a placeholder before lock would violate FR-019/SC-006.
+
+## 2026-07-20 — T028 public US2 surface
+
+- Published the three injected US2 port types (`CohortRepository`, `SafeguardingSink`, and `BenefitEstimator`) beside the functions that consume or implement them, so package consumers can satisfy the root entrypoint's lifecycle and governance signatures without source-relative imports. Kept the export list explicit and kept `BenefitEstimator` absent from the exact solve/repair tuples; rejected wildcard exports because they could silently widen the public or learned-model boundary.
