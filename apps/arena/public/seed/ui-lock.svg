@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <title>Locked</title>
+  <circle cx="12" cy="12" r="11" fill="#14384C"/>
+  <path fill="none" stroke="#F5F9FC" stroke-linecap="round" stroke-width="2" d="M8.5 10V8a3.5 3.5 0 0 1 7 0v2"/>
+  <rect width="11" height="8" x="6.5" y="10" fill="#F2C14E" rx="2"/>
+  <circle cx="12" cy="14" r="1.25" fill="#14384C"/>
+</svg>

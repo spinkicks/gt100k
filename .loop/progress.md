@@ -770,3 +770,17 @@
 ## NEXT
 - T049: audit and complete the seed asset kit under `apps/arena/public/seed/`, keyed to `ASSET_KEYS`.
 - Acceptance: committed SVGs cover `ui-lock`, `ui-star`, `ui-home`, `ui-audio`, `ui-help` plus the Tier-D node/region/base art; every key follows committed model/SVG before deterministic procedural fallback, optional-model absence still renders without external fetch, and focused tests plus lint/typecheck/tests/root build/Arena build remain green.
+
+## 2026-07-21 — P7 / T049
+- Completed the committed seed kit for all 21 `ASSET_KEYS` node/region/base/UI keys, adding the five HUD/Ledger icons plus beacon, water, and bridge art. All 22 SVGs in the directory, including the generic Base Camp fallback, now carry stable viewBoxes and accessible titles with no executable or external asset references.
+- Added seed-kit documentation for the optional local model, atlas, and font upgrade paths. Those directories remain absent until populated, so the no-model state continues to exercise seeded procedural geometry/material and the system-rounded font fallback with no external fetch.
+- Added `app-seed-assets.test.ts` first. The RED run failed on missing titles, missing UI files, and absent documentation; the GREEN run verifies all committed registry SVGs, exact compact UI viewBoxes, all 30 procedural mesh fallbacks with optional assets absent, and the documented no-fetch source order.
+- Applied the warm Independence Isles palette and rounded 24×24 icon register from the design guidance. Direct SVG preview was unavailable because the workspace has no rasterizer/browser, so structural asset validation, focused renderer regressions, and both production builds provide the automated evidence for this increment.
+- Review status: checked T049 line-by-line against §§5.11/8.17/8.25/P7, FR-030/039, SC-023, and DP-3/DP-6; no Critical, Important, or Minor issues remain. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused asset/fallback/scene regressions passed (4 files, 18 tests); `pnpm lint` passed (137 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (58 files, 232 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 59.9 kB route, 147 kB first load).
+- SC status: T049 completes the committed seed-kit and no-model app-smoke slices of FR-030/039 and SC-023. P7 remains in progress for T050 accessibility/performance acceptance, T051 quickstart/SC mapping, and final T-ROOT.
+- Blockers: live visual/browser inspection remains unavailable in this workspace; the static SVG contract, fallback rendering tests, full automated gate, and production builds are green. T050's interactive keyboard/screen-reader/performance walkthrough remains deferred to an environment with browser automation and managed-device access.
+
+## NEXT
+- T050: run the P7 accessibility and performance acceptance audit over `apps/arena`, adding or tightening focused automated coverage before any required in-scope fix.
+- Acceptance: explicitly verify reduced-motion Tier-C depth parity and all motion equivalents, reduced-transparency/contrast/focus styling, keyboard/switch/screen-reader Ledger behavior, color-independent cues, hidden canvas, muted audio, quality/context-loss fallback, and non-blocking mastery/onboarding; keep lint, typecheck, tests, root build, and Arena build green, and record any live-only walkthrough limitations without weakening SC-004/010/011/012/025/026.

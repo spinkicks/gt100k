@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <title>Audio controls</title>
+  <circle cx="12" cy="12" r="11" fill="#14384C"/>
+  <path fill="#F2C14E" stroke="#F5F9FC" stroke-linejoin="round" d="M5 10h3l4-3.5v11L8 14H5Z"/>
+  <path fill="none" stroke="#F5F9FC" stroke-linecap="round" stroke-width="1.75" d="M15 9.25c1.75 1.5 1.75 4 0 5.5M17.5 7c3.25 2.75 3.25 7.25 0 10"/>
+</svg>

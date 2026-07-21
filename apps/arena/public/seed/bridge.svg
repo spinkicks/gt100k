@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 160">
+  <title>Island bridge</title>
+  <path fill="none" stroke="#14384C" stroke-linecap="round" stroke-width="16" d="M26 38c118 112 342 112 460 0"/>
+  <path fill="none" stroke="#F5F9FC" stroke-dasharray="28 12" stroke-linecap="round" stroke-width="24" d="M26 38c118 112 342 112 460 0"/>
+  <path fill="none" stroke="#8A6B4F" stroke-dasharray="28 12" stroke-linecap="round" stroke-width="16" d="M26 38c118 112 342 112 460 0"/>
+  <circle cx="26" cy="38" r="20" fill="#F2C14E" stroke="#14384C" stroke-width="7"/>
+  <circle cx="486" cy="38" r="20" fill="#F2C14E" stroke="#14384C" stroke-width="7"/>
+</svg>

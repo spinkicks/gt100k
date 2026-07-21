@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <title>Locked quest node</title>
   <circle cx="48" cy="48" r="43" fill="#5A6B78" stroke="#F5F9FC" stroke-width="5"/>
   <path fill="none" stroke="#F5F9FC" stroke-linecap="round" stroke-width="7" d="M32 43V31a16 16 0 0 1 32 0v12"/>
   <rect width="46" height="35" x="25" y="41" fill="#14384C" rx="7"/>

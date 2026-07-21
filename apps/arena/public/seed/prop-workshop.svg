@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <title>Base Camp workshop</title>
   <path fill="#8A6B4F" stroke="#F5F9FC" stroke-linejoin="round" stroke-width="4" d="M10 50h76v31H10Z"/>
   <circle cx="63" cy="38" r="21" fill="#F2C14E" stroke="#14384C" stroke-width="7"/>
   <circle cx="63" cy="38" r="7" fill="#14384C"/>

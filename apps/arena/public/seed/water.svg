@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 320">
+  <title>Independence Isles water</title>
+  <rect width="512" height="320" fill="#0E2A3B"/>
+  <path fill="#14384C" d="M0 92c64-30 112 28 176 0s112 28 176 0 112 28 160 6v222H0Z"/>
+  <path fill="none" stroke="#7FB6D6" stroke-linecap="round" stroke-width="12" d="M20 112c55-28 99 25 154 0s99 25 154 0 99 25 164 0M52 202c55-28 99 25 154 0s99 25 154 0 87 19 132 6"/>
+  <path fill="none" stroke="#FFD9A0" stroke-linecap="round" stroke-width="7" d="M148 156c34-15 62 15 96 0s62 15 96 0"/>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <title>Mastery beacon</title>
+  <circle cx="48" cy="48" r="42" fill="#14384C" stroke="#F5F9FC" stroke-width="4"/>
+  <path fill="#F2C14E" d="m48 8 8 24 24 8-24 8-8 24-8-24-24-8 24-8Z"/>
+  <circle cx="48" cy="40" r="9" fill="#F5F9FC"/>
+  <path fill="#E8623B" d="M43 50h10l7 34H36Z"/>
+</svg>

@@ -183,3 +183,8 @@
 
 ## 2026-07-21 — T048 package-local Vitest root
 - Changed the Arena package test script from the T001 scaffold literal to `vitest run --root ../.. packages/arena-world/test`. The documented `pnpm --filter @gt100k/arena-world test` command otherwise inherits repository-relative include globs from a package working directory and finds no tests. Rejected editing the shared root Vitest config, duplicating it inside the package, or documenting a broken command; the root-aware script keeps the fix feature-local and limits the run to Arena tests.
+
+## 2026-07-21 — T049 seed asset defaults
+- Use a compact 24×24 viewBox and one dark circular tile with warm gold/white glyphs for every HUD/Ledger icon. Rejected context-dependent `currentColor` files because external SVG images do not reliably inherit the embedding document's color, while the self-contained palette stays legible over both the dark world and light Ledger surfaces.
+- Treat every `nodes`, `regions`, and `base` registry key as committed Tier-D coverage, including `node-beacon`, `water`, and `bridge`, even where the current fallback composes water or paths directly. Rejected limiting the kit to currently mounted filenames because the stable registry is the cross-renderer asset contract and richer fallback composition must not require a later naming change.
+- Document optional `public/models/`, `public/atlas/`, and `public/fonts/` paths without placeholder files or empty committed directories. Rejected dummy assets because absence is the exact condition that proves the seeded procedural and system-rounded fallbacks remain the default.
