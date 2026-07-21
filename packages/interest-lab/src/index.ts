@@ -1,7 +1,7 @@
 export { isProbeEligible, rotateBySeed, selectEligibleFamilyVariants } from "./catalog";
 export { buildCoverageMatrix } from "./coverage";
 export type { CoverageConfig, CoverageItem } from "./coverage";
-export { EVENT_TYPES, SIGNAL_FAMILIES } from "./events";
+export { EVENT_TYPES, SIGNAL_FAMILIES, recordEvent } from "./events";
 export type {
   EngagementEvent,
   EventType,
@@ -10,6 +10,7 @@ export type {
   SignalFamily,
   SignalSummary,
 } from "./events";
+export { summarizeSignals } from "./signals";
 export { CHILD_POSITIONS, FORBIDDEN_PURPOSES, HYPOTHESIS_STATES } from "./hypothesis";
 export type {
   ChildPosition,

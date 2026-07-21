@@ -15,8 +15,10 @@ import {
   buildCoverageMatrix,
   buildLab,
   isProbeEligible,
+  recordEvent,
   rotateBySeed,
   selectEligibleFamilyVariants,
+  summarizeSignals,
 } from "../src/index";
 import type {
   ArtifactSignalSource,
@@ -134,5 +136,10 @@ describe("interest lab public API", () => {
       explorationFloor: 4,
     });
     expectTypeOf<OfferTypeExports>().toEqualTypeOf<OfferTypeExports>();
+  });
+
+  it("exports the complete P4 event and signal API", () => {
+    expect(recordEvent).toBeTypeOf("function");
+    expect(summarizeSignals).toBeTypeOf("function");
   });
 });

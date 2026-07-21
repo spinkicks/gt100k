@@ -186,3 +186,13 @@
 ## NEXT
 - Complete T022: export `recordEvent` and `summarizeSignals` explicitly from `packages/interest-lab/src/index.ts` and extend the consumer-facing public API test.
 - Acceptance: consumers can import both P4 functions from `@gt100k/interest-lab`; preserve a failing public-API red run before the minimal export change, and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-20 — P4 / T022
+- Added a consumer-facing public API contract for `recordEvent` and `summarizeSignals`, then exposed both through explicit named entry-point exports.
+- Confirmed the test-first red state: the focused suite received `undefined` for the missing function export, then passed all four public API tests after the minimal entry-point change.
+- Verified the focused suite, forced package compiler, `pnpm typecheck`, `pnpm test` (64 tests), and `pnpm lint` all pass.
+- Status: T022 and P4 complete. SC-005, SC-006, SC-007, and SC-015 remain green through the package public API. No blocker.
+
+## NEXT
+- Complete T023 and the minimal `evaluateCandidateGate` portion of T028 in `packages/interest-lab/test/state-machine.test.ts` and `packages/interest-lab/src/state-machine.ts`.
+- Acceptance: all five G5 rows deep-equal the pinned eligibility and ordered `missing` outcomes, including novelty's exact three reasons, competence-only's delayed-discretionary reason, no-artifact's artifact/competence reason, and the two eligible cases; preserve a focused red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
