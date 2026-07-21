@@ -6,10 +6,13 @@ import { type ReactNode, useEffect, useRef } from "react";
 import { ACESFilmicToneMapping, ColorManagement, type Group, SRGBColorSpace } from "three";
 import Avatar from "./Avatar";
 import CameraRig from "./CameraRig";
+import Fx from "./Fx";
 import LightingRig from "./LightingRig";
+import PostFx from "./PostFx";
 import SeaAndSky from "./SeaAndSky";
 import WorldRoot from "./WorldRoot";
 import type { ArenaEventBus } from "./eventBus";
+import type { SequencedArenaFeedback } from "./feedback";
 
 export const CONTEXT_RECOVERY_GRACE_MS = 2_000;
 
@@ -111,6 +114,7 @@ export interface ArenaCanvasProps {
   view: InitialArenaView;
   eventBus: ArenaEventBus;
   children?: ReactNode;
+  feedback?: SequencedArenaFeedback;
   targetNodeId?: string;
   onFallback?: (reason: ContextFailureReason) => void;
 }
@@ -119,6 +123,7 @@ export default function ArenaCanvas({
   view,
   eventBus,
   children,
+  feedback,
   targetNodeId,
   onFallback,
 }: ArenaCanvasProps) {
@@ -160,6 +165,8 @@ export default function ArenaCanvas({
           <WorldRoot view={view} />
           <Avatar avatarRef={avatarRef} targetNodeId={targetNodeId} view={view} />
           <CameraRig followRef={avatarRef} view={view} />
+          <Fx eventBus={eventBus} feedback={feedback} targetNodeId={targetNodeId} view={view} />
+          <PostFx feedback={feedback} view={view} />
         </>
       )}
     </Canvas>

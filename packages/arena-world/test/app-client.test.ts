@@ -238,7 +238,7 @@ describe("arena P1 client composition", () => {
       /dynamic\(\(\)\s*=>\s*import\("\.\/scene\/ArenaCanvas"\)[\s\S]*?ssr:\s*false/,
     );
     expect(client).toContain("<Fallback2D view={view}");
-    expect(client).toContain("<ArenaLedger eventBus={eventBus} view={view}");
+    expect(client).toContain("<ArenaLedger eventBus={eventBus} feedback={feedback} view={view}");
     expect(client).toContain('eventBus.subscribe("focus-node"');
     expect(client).toContain('eventBus.subscribe("tier-degraded"');
     expect(client).toContain("onFallback={handleCanvasFallback}");

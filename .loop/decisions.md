@@ -114,3 +114,12 @@
 
 ## 2026-07-21 — T031/T033 celebration-classification boundary
 - Chose an explicit `LearningMomentSignal` discriminated union: independent unlocks alone carry `nodeId` and `transferCritical`, while productive struggle, incorrect attempt, and help request are distinct parameter-free variants. Rejected generic strings or passing earned state because an exhaustive one-input classifier makes invalid event kinds and outcome mutation structurally unavailable.
+
+## 2026-07-21 — T034 learning-feedback presentation
+- Kept feedback presentation-only: the typed event carries a learning-moment signal, while `Fx`, `PostFx`, and the Ledger consume the existing `ArenaView` without mutating mastery or node state. Rejected feeding visual completion back into the domain because effects must remain zero-power and errors-never-loss.
+- Resolve an effect anchor in the stable order event node → focused node → first available node. Rejected dropping node-less productive-struggle/error feedback or inventing a new world position when an existing view anchor is available.
+- Source not-yet wording from the current view's staged `representation.failureCopy`. Rejected pulling the final age-band wording forward because P5 owns that resolver and the renderer should remain faithful to the current public view.
+- Keep sound cues captioned and muted with no playback path until a later audio-control task explicitly owns opt-in playback. Rejected autoplay or an implicit unmute because every current cue is contractually muted by default.
+- Use emissive geometry overlays for beacon/warm-pulse feedback rather than allocating additional point lights. Rejected effect-local lights because they could violate the resolved quality tier's light cap.
+- Delay the rare high-intensity burst, beacon ignition, camera punch, and bloom pulse together by 120ms so the sequence remains synchronized after the triggering state change. Rejected independently timed effects because they could visually drift across renderers.
+- Key repeatable visual feedback by its monotonic sequence and deduplicate only the downstream `unlock-celebrated` emission. Rejected signal-content deduplication because two identical learning moments at different times must each remain visible, and rejected emitting twice during React effect replay.

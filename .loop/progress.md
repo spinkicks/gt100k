@@ -522,3 +522,18 @@
 ## NEXT
 - T034: add focused app tests first, then implement `apps/arena/app/scene/Fx.tsx` and `PostFx.tsx` and wire them into the existing scene/Ledger composition.
 - Acceptance: high unlocks orchestrate Burst + bloom pulse + beacon ignition + camera punch; productive struggle uses Warm Pulse; `notYet` stays a calm no-shake wisp with unchanged state; reduced motion becomes a static badge/announcement; particles scale by the quality budget; post-fx follows `resolvePostFx`; resolved sound cues remain muted by default and captioned through `aria-live`; lint, typecheck, tests, root build, and Arena app build stay green (FR-012–015/037, SC-004/007/021).
+
+## 2026-07-21 — P3 / T034
+- Added deterministic learning-feedback planning and rendering in `Fx.tsx`, `PostFx.tsx`, and `feedback.ts`, driven by the existing domain classification, celebration-motion, motion-token, lambda, sound-cue, and resolved-view contracts.
+- Wired a typed, sequenced `learning-moment` event through `ArenaClient` into the shared canvas and Ledger composition. High unlocks stage a quality-scaled burst, bloom pulse, beacon ignition, and bounded reversible camera punch; productive struggle uses a warm emissive pulse; incorrect/help feedback uses a calm no-shake not-yet wisp without changing mastery or node state.
+- Added Tier-C/reduced-motion static beacon, effort-honored, and not-yet badges with polite semantic announcements. Tier A/B particle counts follow the resolved quality budget, and post-processing follows the view's resolved bloom, vignette, and SMAA configuration.
+- Kept every sound cue muted by default and rendered its caption in the Ledger's atomic `aria-live="polite"` feedback region. No audio element or playback path was introduced.
+- Added five focused P3 app acceptance tests for exact feedback/caption resolution, quality-scaled and static plans, deterministic particles and bounded camera motion, tier-resolved post-fx damping, and one-signal canvas/Ledger wiring. Updated the scene/client contract coverage for the typed event.
+- Review status: checked T034 against spec §§5.6–5.7/5.12/8.5/8.9–8.10/8.18/P3, FR-012–015/037, and SC-004/007/021; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: `pnpm lint` passed (112 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (42 files, 169 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 55.6 kB route, 143 kB first load).
+- SC status: T034 completes the concrete FX, reduced/static equivalence, no-loss feedback, and captioned-muted-cue slices of SC-004/007/021. P3 remains open only for T034a onboarding.
+- Blockers: none.
+
+## NEXT
+- T034a: implement first-run onboarding coach marks.
+- Acceptance: three skippable beats, dismissal on any input, no mastery blocking, reduced-motion fade, local shown-once flag, HUD reopen control, and Ledger parity; all gates remain green.

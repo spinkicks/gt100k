@@ -1,10 +1,16 @@
-import type { AgeBand, CelebrationEvent, QualityTier } from "@gt100k/arena-world";
+import type {
+  AgeBand,
+  CelebrationEvent,
+  LearningMomentSignal,
+  QualityTier,
+} from "@gt100k/arena-world";
 
 export const ARENA_EVENT_NAMES = [
   "set-band",
   "toggle-plain",
   "equip-cosmetic",
   "advance-feed",
+  "learning-moment",
   "focus-node",
   "node-focused",
   "unlock-celebrated",
@@ -18,6 +24,7 @@ export interface ArenaEventMap {
   "toggle-plain": { enabled: boolean };
   "equip-cosmetic": { cosmeticId: string };
   "advance-feed": undefined;
+  "learning-moment": LearningMomentSignal;
   "focus-node": { nodeId: string };
   "node-focused": { nodeId: string };
   "unlock-celebrated": { nodeId: string; intensity: CelebrationEvent["intensity"] };

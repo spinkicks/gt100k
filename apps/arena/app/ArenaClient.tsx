@@ -18,6 +18,7 @@ import Hud from "./hud/Hud";
 import ArenaLedger from "./ledger/ArenaLedger";
 import Fallback2D from "./scene/Fallback2D";
 import { createArenaEventBus } from "./scene/eventBus";
+import type { SequencedArenaFeedback } from "./scene/feedback";
 
 const DynamicArenaCanvas = dynamic(() => import("./scene/ArenaCanvas"), { ssr: false });
 
@@ -225,6 +226,8 @@ export default function ArenaClient() {
   const [caps, setCaps] = React.useState<DeviceCaps>(SERVER_SAFE_CAPS);
   const [runtimeTier, setRuntimeTier] = React.useState<QualityTier>();
   const [targetNodeId, setTargetNodeId] = React.useState<string>();
+  const [feedback, setFeedback] = React.useState<SequencedArenaFeedback>();
+  const feedbackSequence = React.useRef(0);
   const [avatar, setAvatar] = React.useState<AvatarState>(() => ({
     learnerRef: DEFAULT_AVATAR.learnerRef,
     equipped: [...DEFAULT_AVATAR.equipped],
@@ -237,10 +240,15 @@ export default function ArenaClient() {
   React.useEffect(() => {
     const stopFocus = eventBus.subscribe("focus-node", ({ nodeId }) => setTargetNodeId(nodeId));
     const stopTier = eventBus.subscribe("tier-degraded", ({ to }) => setRuntimeTier(to));
+    const stopFeedback = eventBus.subscribe("learning-moment", (signal) => {
+      feedbackSequence.current += 1;
+      setFeedback({ sequence: feedbackSequence.current, signal: { ...signal } });
+    });
 
     return () => {
       stopFocus();
       stopTier();
+      stopFeedback();
       eventBus.clear();
     };
   }, [eventBus]);
@@ -273,6 +281,7 @@ export default function ArenaClient() {
           {renderer === "canvas" ? (
             <DynamicArenaCanvas
               eventBus={eventBus}
+              feedback={feedback}
               onFallback={handleCanvasFallback}
               targetNodeId={targetNodeId}
               view={view}
@@ -283,7 +292,7 @@ export default function ArenaClient() {
         </div>
         <Hud catalog={CATALOG} eventBus={eventBus} view={view} />
       </div>
-      <ArenaLedger eventBus={eventBus} view={view} catalog={CATALOG} />
+      <ArenaLedger eventBus={eventBus} feedback={feedback} view={view} catalog={CATALOG} />
     </section>
   );
 }

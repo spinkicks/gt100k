@@ -89,6 +89,7 @@ const EVENT_NAMES = [
   "toggle-plain",
   "equip-cosmetic",
   "advance-feed",
+  "learning-moment",
   "focus-node",
   "node-focused",
   "unlock-celebrated",

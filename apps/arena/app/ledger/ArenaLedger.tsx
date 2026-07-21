@@ -4,6 +4,11 @@ import { CATALOG, type Cosmetic, type InitialArenaView, type NodeState } from "@
 import * as React from "react";
 import { buildHudCosmeticEntries } from "../hud/Hud";
 import type { ArenaEventBus } from "../scene/eventBus";
+import {
+  type SequencedArenaFeedback,
+  resolveArenaFeedback,
+  resolveFeedbackAnnouncement,
+} from "../scene/feedback";
 import styles from "./ArenaLedger.module.css";
 
 const STATE_ICON: Readonly<Record<NodeState, string>> = {
@@ -114,11 +119,18 @@ export interface ArenaLedgerProps {
   view: InitialArenaView;
   catalog?: readonly Cosmetic[];
   eventBus: Pick<ArenaEventBus, "emit">;
+  feedback?: SequencedArenaFeedback;
 }
 
-export default function ArenaLedger({ view, catalog = CATALOG, eventBus }: ArenaLedgerProps) {
+export default function ArenaLedger({
+  view,
+  catalog = CATALOG,
+  eventBus,
+  feedback,
+}: ArenaLedgerProps) {
   const entries = buildLedgerEntries(view);
   const cosmetics = buildHudCosmeticEntries(view, catalog);
+  const ledgerFeedback = feedback ? resolveArenaFeedback(feedback.signal) : null;
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [activeCosmeticIndex, setActiveCosmeticIndex] = React.useState(0);
   const itemRefs = React.useRef<Array<HTMLLIElement | null>>([]);
@@ -280,6 +292,28 @@ export default function ArenaLedger({ view, catalog = CATALOG, eventBus }: Arena
           ))}
         </div>
       </section>
+      <div
+        aria-atomic="true"
+        aria-live="polite"
+        className={styles.feedback}
+        data-feedback-kind={ledgerFeedback?.kind ?? "idle"}
+      >
+        {ledgerFeedback ? (
+          <>
+            <span aria-hidden="true" className={styles.feedbackIcon}>
+              {ledgerFeedback.kind === "not-yet"
+                ? "○"
+                : ledgerFeedback.event.intensity === "high"
+                  ? "★"
+                  : "✦"}
+            </span>
+            <span className={styles.feedbackCopy}>
+              <strong>{resolveFeedbackAnnouncement(view, ledgerFeedback)}</strong>
+              <span>{ledgerFeedback.soundCue.caption}</span>
+            </span>
+          </>
+        ) : null}
+      </div>
     </aside>
   );
 }
