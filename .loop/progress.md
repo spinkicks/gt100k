@@ -788,3 +788,14 @@
 ## NEXT
 - Complete U047: add the static view-package guardrail suite in `packages/interest-lab-view/test/guardrails.test.ts`.
 - Acceptance: prove `packages/interest-lab-view/src` contains no `Math.random` or `three`/`react`/`@react-three/*` import; no view type exposes `price`, `currency`, `score`, `confidence`, `passionScore`, `rank`, `percentile`, `verdict`, or `outOf`; and no copy generator emits `/you are (a|an|the) /i`; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-21 — P15 / U047
+- Added four syntax-aware static guardrail contracts over every `packages/interest-lab-view/src/*.ts` file: no `Math.random`, no `three`/`react`/`@react-three/*` import, no exact forbidden view-field declaration, and no authored fixed-label string or interpolated template segment.
+- Confirmed failure sensitivity with a controlled temporary source mutation: all four contracts failed with exact file/line diagnostics, then returned green after the mutation was removed. A separate template-literal mutation exposed and reproduced a missed `TemplateHead`; the audit now covers template heads, middles, and tails and catches that regression.
+- Used TypeScript AST structure instead of raw substring matching so comments and the defensive fixed-label regex do not create false positives; recorded the boundary and mutation strategy in D059. No production source change was necessary because the feature-owned source already met SC-UI-11.
+- Verified the final focused suite (4 tests), forced view-package compiler, `pnpm typecheck`, `pnpm test` (205 tests across 44 files), and `pnpm lint` (164 files); all pass. No app file changed, so the app production-build gate was not triggered this increment.
+- Status: U047 complete; P15 remains in progress. SC-UI-11 is green across deterministic purity, framework/GPU isolation, structural forbidden fields, and fixed-label authored copy. No blocker.
+
+## NEXT
+- Complete U048: add `packages/interest-lab-view/test/synthetic.test.ts` for the whole synthetic-only view layer.
+- Acceptance: build the complete child and guide view from Part-I synthetic fixtures without consent, admissions, or legal input; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
