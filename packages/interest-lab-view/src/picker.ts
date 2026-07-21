@@ -63,6 +63,43 @@ const titleFor = (offer: Offer, band: AgeBand): string => {
   return band === "9-11" ? `${domain}: ${offer.workMode} quest` : `${domain} · ${offer.workMode}`;
 };
 
+const returnPresentationFor = (
+  probeId: string,
+  history: readonly ProbeHistoryEntry[],
+  whyCopy: string,
+  reducedMotion: boolean,
+): Pick<ProbeCardView, "returnState" | "tone" | "motion" | "whyCopy"> => {
+  const entries = history.filter((entry) => entry.probeId === probeId);
+  const hasVoluntaryReturn = entries.some(
+    (entry) => entry.returnKind === "voluntary" && (entry.horizon === 7 || entry.horizon === 30),
+  );
+
+  if (hasVoluntaryReturn) {
+    return {
+      returnState: "voluntary-return",
+      tone: "spark",
+      motion: resolveMotion("welcomeBack", { reducedMotion }),
+      whyCopy: "You came back to this one.",
+    };
+  }
+
+  if (entries.some((entry) => entry.returnKind === "prompted")) {
+    return {
+      returnState: "prompted-return",
+      tone: "prompted",
+      motion: resolveMotion("promptedRecede", { reducedMotion }),
+      whyCopy,
+    };
+  }
+
+  return {
+    returnState: "new",
+    tone: "neutral",
+    motion: resolveMotion("cardEnter", { reducedMotion }),
+    whyCopy,
+  };
+};
+
 export function buildProbePickerView(
   lab: Lab,
   options: Readonly<ProbePickerOptions>,
@@ -70,25 +107,25 @@ export function buildProbePickerView(
   const staging = resolveChildStaging(options.band);
   const reducedMotion = options.flags?.reducedMotion ?? false;
 
-  // P9 establishes the fresh-learner projection. P11 extends these fields from history.
-  const quests: ProbeCardView[] = lab.offers.map((offer) => ({
-    probeId: offer.probeId,
-    familyId: offer.familyId,
-    domain: offer.domain,
-    domainHue: resolveDomainHue(lab.coverage.domains.have, offer.domain),
-    workMode: offer.workMode,
-    workModeGlyph: WORK_MODE_GLYPHS[offer.workMode],
-    difficulty: offer.difficulty,
-    social: offer.social,
-    audience: offer.audience,
-    provenance: offer.provenance,
-    whyCopy: whyCopyFor(offer, options.band),
-    returnState: "new",
-    tone: "neutral",
-    motion: resolveMotion("cardEnter", { reducedMotion }),
-    title: titleFor(offer, options.band),
-    helpAffordance: true,
-  }));
+  const quests: ProbeCardView[] = lab.offers.map((offer) => {
+    const whyCopy = whyCopyFor(offer, options.band);
+
+    return {
+      probeId: offer.probeId,
+      familyId: offer.familyId,
+      domain: offer.domain,
+      domainHue: resolveDomainHue(lab.coverage.domains.have, offer.domain),
+      workMode: offer.workMode,
+      workModeGlyph: WORK_MODE_GLYPHS[offer.workMode],
+      difficulty: offer.difficulty,
+      social: offer.social,
+      audience: offer.audience,
+      provenance: offer.provenance,
+      ...returnPresentationFor(offer.probeId, options.history, whyCopy, reducedMotion),
+      title: titleFor(offer, options.band),
+      helpAffordance: true,
+    };
+  });
   const visibleCount =
     staging.maxVisibleQuests === "all" ? quests.length : staging.maxVisibleQuests;
 

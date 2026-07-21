@@ -224,3 +224,8 @@
 - Chose: treat a sustained `<55fps` `PerformanceMonitor` decline as a client capability floor, then rebuild the same view through `resolveRenderTier` so full quality steps to `quest-world-3d-lite`.
 - Why: the parent status, scene quality, DPR, shadows, motes, and procedural detail all remain derived from one view model, while the mounted DOM ledger keeps focus and pick state across the presentation-only change.
 - Rejected: mutating `SceneView` locally inside `QuestWorld` would duplicate tier policy and let the parent status drift from the rendered scene; falling directly to `board-2d` would discard the specified lite degradation step.
+
+## D046 — A valid delayed voluntary return takes presentation precedence
+- Chose: when a probe has multiple history rows, any voluntary row at the exact 7- or 30-day horizon takes precedence over prompted rows; otherwise any prompted row receives the recessed state. Represent the reduced-motion equivalent through the existing zero-duration `welcomeBack` token, `spark` tone, concrete copy, and `board-2d` tier rather than adding a new view field.
+- Why: the injected history has no separate recency field, and the spec reserves delight for a valid delayed-voluntary signal. Set-based precedence is deterministic, prevents an unrelated prompt from erasing that signal, and keeps the exact picker/scene model sufficient for the static equivalent.
+- Rejected: last-row-wins would make meaning depend on incidental array order; prompted-first would suppress a valid voluntary-return signal; a new `staticHalo` field would expand the pinned view model without a golden requirement.

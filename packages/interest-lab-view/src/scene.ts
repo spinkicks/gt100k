@@ -249,7 +249,12 @@ export function buildSceneView(lab: Lab, options: Readonly<BuildSceneViewOptions
         position: resolveQuestPlacement(island.center, index, quests.length),
         returnState: quest.returnState,
         tone: quest.tone,
-        motionKind: "markerGlow",
+        motionKind:
+          quest.returnState === "voluntary-return"
+            ? "welcomeBack"
+            : quest.returnState === "prompted-return"
+              ? "promptedRecede"
+              : "markerGlow",
         provenance: quest.provenance,
         whyCopy: quest.whyCopy,
         helpAffordance: true as const,

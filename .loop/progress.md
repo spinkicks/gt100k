@@ -622,3 +622,15 @@
 ## NEXT
 - Complete U030 with the minimal U031 implementation: add `packages/interest-lab-view/test/return-delight.test.ts` and derive voluntary-versus-prompted return presentation in the picker and scene view models.
 - Acceptance: voluntary return at day 7 or 30 yields card/marker `returnState:"voluntary-return"`, `spark` tone, label-free concrete copy, and `welcomeBack` motion (static warm-halo text under reduced motion); prompted return yields `returnState:"prompted-return"`, recessed `prompted` tone, and no welcome-back delight; card/marker parity, focused RED evidence, and the full green gate are preserved.
+
+## 2026-07-21 — P11 / U030 + U031
+- Added four SC-UI-03 acceptance contracts covering both exact delayed-voluntary horizons, prompted recession, picker/scene parity, label-free concrete copy, and the zero-duration reduced-motion warm-halo equivalent.
+- Confirmed genuine test-first RED evidence: all four focused cases failed because history was ignored and every card/marker retained the fresh `new`/`neutral` presentation, then passed after the minimal implementation.
+- Implemented one pure return-presentation projection in the picker and mirrored it into scene markers, with `welcomeBack`/`spark` reserved for valid 7/30-day voluntary history and `promptedRecede`/`prompted` for prompted history.
+- Recorded the deterministic multi-row precedence and reduced-presentation default in D046; no new view field, domain rule, framework dependency, wall-clock read, or GPU dependency was introduced.
+- Verified the focused return suite (4 tests), view package suite (53 tests across 12 files), forced view-package compiler, `pnpm typecheck`, `pnpm test` (163 tests across 36 files), `pnpm lint` (136 files), `pnpm build`, and the warning-free Interest Lab production build; all pass.
+- Status: U030 and U031 complete; P11 remains in progress pending U032. SC-UI-03 is green at the pure picker/scene boundary; the rendered 3D bloom and static 2D equivalent remain with U032. No blocker.
+
+## NEXT
+- Complete U032: implement `apps/interest-lab/app/child/world3d/WelcomeBloom.tsx` and `apps/interest-lab/app/child/WelcomeBack.tsx`, then render voluntary and prompted return presentation from the existing view model.
+- Acceptance: voluntary return renders the reserved 3D emissive bloom, spark-mote burst, and camera ease plus the static 2D/reduced-motion warm halo with concrete copy; prompted return remains recessed and uncelebrated; no countdown, streak, scarcity, FOMO, or time-gated unlock appears; focused tests, app tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.
