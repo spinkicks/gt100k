@@ -2,8 +2,13 @@
 
 import type { InitialArenaView, QualityTier } from "@gt100k/arena-world";
 import { Canvas, type RootState, useThree } from "@react-three/fiber";
-import { type ReactNode, useEffect } from "react";
-import { ACESFilmicToneMapping, ColorManagement, SRGBColorSpace } from "three";
+import { type ReactNode, useEffect, useRef } from "react";
+import { ACESFilmicToneMapping, ColorManagement, type Group, SRGBColorSpace } from "three";
+import Avatar from "./Avatar";
+import CameraRig from "./CameraRig";
+import LightingRig from "./LightingRig";
+import SeaAndSky from "./SeaAndSky";
+import WorldRoot from "./WorldRoot";
 import type { ArenaEventBus } from "./eventBus";
 
 export const CONTEXT_RECOVERY_GRACE_MS = 2_000;
@@ -106,13 +111,21 @@ export interface ArenaCanvasProps {
   view: InitialArenaView;
   eventBus: ArenaEventBus;
   children?: ReactNode;
+  targetNodeId?: string;
   onFallback?: (reason: ContextFailureReason) => void;
 }
 
-export default function ArenaCanvas({ view, eventBus, children, onFallback }: ArenaCanvasProps) {
+export default function ArenaCanvas({
+  view,
+  eventBus,
+  children,
+  targetNodeId,
+  onFallback,
+}: ArenaCanvasProps) {
   const { qualityBudget, qualityTier } = view.presentation;
   const dprMax = qualityBudget.dprMax;
   const frameLoop: FrameLoop = qualityBudget.ambientMotion ? "always" : "demand";
+  const avatarRef = useRef<Group>(null);
 
   if (!qualityBudget.canvas || dprMax === null) return null;
 
@@ -132,7 +145,23 @@ export default function ArenaCanvas({ view, eventBus, children, onFallback }: Ar
         onFallback={onFallback}
         qualityTier={qualityTier}
       />
-      {children}
+      {children ?? (
+        <>
+          <LightingRig
+            ambientMotion={qualityBudget.ambientMotion}
+            lighting={view.presentation.lighting}
+          />
+          <SeaAndSky
+            palette={view.presentation.palette}
+            qualityBudget={qualityBudget}
+            reducedMotion={view.flags.reducedMotion}
+            water={view.presentation.water}
+          />
+          <WorldRoot view={view} />
+          <Avatar avatarRef={avatarRef} targetNodeId={targetNodeId} view={view} />
+          <CameraRig followRef={avatarRef} view={view} />
+        </>
+      )}
     </Canvas>
   );
 }

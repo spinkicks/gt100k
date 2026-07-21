@@ -85,3 +85,8 @@
 ## 2026-07-21 — T021a Tier-D fallback boundary
 - Kept the static SVG map `aria-hidden` and non-interactive because the adjacent Arena Ledger is the settled semantic and keyboard source of truth. Rejected a second SVG accessibility tree because duplicate controls and labels could drift or create conflicting navigation.
 - Named the seven committed fallback assets after the existing region and node-state asset keys, and derived every rendered path, position, landmark, and state from `InitialArenaView`. Rejected recomputing world state or hard-coding fixture positions in the renderer because Tier D must remain a presentation of the identical view.
+
+## 2026-07-21 — T022 client composition defaults
+- Start server rendering and hydration from a conservative Tier-D capability profile, then upgrade after browser capability detection. Rejected assuming WebGL during SSR because it would create a hydration mismatch and briefly remove the guaranteed static fallback on unknown devices.
+- Apply explicit runtime degradation before the public quality preference, while reduced-motion and automatic low-power signals still force calm Tier-C behavior unless WebGL is unavailable. Rejected allowing a QA quality override to defeat reduced-motion equivalence or allowing the build-time override to undo an unrecoverable context-loss fallback.
+- Assemble the complete Three/r3f scene inside the dynamically imported `ArenaCanvas` module while keeping `Fallback2D` and the Ledger in the light client shell. Rejected statically importing scene components into `ArenaClient` because Tier D must not evaluate or mount the WebGL renderer path.

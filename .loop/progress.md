@@ -383,3 +383,18 @@
 ## NEXT
 - T022: add focused tests first, then implement `apps/arena/app/ArenaClient.tsx` and render it from `apps/arena/app/page.tsx`.
 - Acceptance: gather deterministic `DeviceCaps` and public quality overrides, build one shared `InitialArenaView`, render the dynamic client-only canvas for tiers A/B/C or `Fallback2D` for Tier D, always pair it with the Ledger and synthetic feed, honor reduced-motion defaults as calm Tier C, and keep `pnpm lint`, `pnpm typecheck`, `pnpm test`, root `pnpm build`, and the Arena app build green.
+
+## 2026-07-21 — P1 / T022
+- Added the client-side Arena composition boundary with safe public-config parsing, deterministic WebGL/device/preference capability gathering, and a hydration-safe Tier-D initial profile that upgrades after mount.
+- Built one shared `InitialArenaView` from the canonical fixture and fixed synthetic feed, then selected the dynamically imported r3f renderer for A/B/C or the static SVG fallback for D while keeping the Arena Ledger mounted beside either rendering.
+- Wired Ledger focus events to the live avatar/camera target and context-loss/tier-degradation events back to renderer selection. The dynamic `ArenaCanvas` now composes the resolved lighting, atmosphere, world, avatar, and camera without pulling Three/r3f into the Tier-D shell.
+- Honored `system`/`on`/`off` reduced-motion defaults and public A/B/C/D quality preferences with explicit precedence: no-WebGL/runtime fallback remains D, reduced motion and automatic low power select calm C, and QA tier overrides remain deterministic.
+- Followed red-green TDD: six focused assertions failed on the absent client/shell wiring, then all T022 tests passed; a harness-only classic-JSX RED failure identified the missing React namespace binding before the narrow fix.
+- Review status: checked T022 line-by-line against D3-D5, US1, P1, §§8.24/11/12, React/Next bundle guidance, and the existing scene/Ledger contracts; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused integration tests passed (22 tests); `pnpm lint` passed (94 files); `pnpm typecheck` passed; `pnpm test` passed (32 files, 128 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 9.47 kB route, 96.9 kB first load). The built server returned HTTP 200 with the Tier-D fallback and Ledger in SSR output.
+- SC status: P1 implementation tasks are complete; the one-view renderer/Ledger composition advances SC-004/011/012/014/025/026. The interactive zero-console/WebGL smoke remains for the review pipeline because no local Playwright runtime is installed; dependencies were left unchanged.
+- Blockers: none for T022.
+
+## NEXT
+- T023 + T027: add `packages/arena-world/test/progression.test.ts` first, then implement and explicitly export `tierForReward` and `computeProgression` in `packages/arena-world/src/progression.ts`.
+- Acceptance: exact reward boundaries `99/100/249/250/500/899/900/1500`; scenario S1 cumulative reward `300` resolves to tier 2 with `regionsComplete=["tinker-bluffs"]` and populated growth-vs-past; deterministic focused checks and repository gates remain green (FR-005/006).

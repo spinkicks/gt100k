@@ -26,7 +26,7 @@ function ruleBody(source: string, selector: string): string {
 }
 
 describe("arena App Router foundation", () => {
-  it("provides a server-rendered placeholder shell with document metadata", () => {
+  it("provides a server-rendered Arena client shell with document metadata", () => {
     const layout = readAppFile("app/layout.tsx");
     const page = readAppFile("app/page.tsx");
 
@@ -38,8 +38,8 @@ describe("arena App Router foundation", () => {
     expect(page).not.toContain('"use client"');
     expect(page).toContain('<main className="arena-shell">');
     expect(page).toContain('<h1 id="arena-title">GT100K Arena</h1>');
-    expect(page).toContain('<output className="arena-status">');
-    expect(page).toContain("Synthetic learner world");
+    expect(page).toContain("<ArenaClient />");
+    expect(page).toContain("Synthetic mastery-gated quest world");
   });
 
   it("maps every exact palette and typography value to CSS custom properties", () => {

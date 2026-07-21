@@ -67,59 +67,57 @@ textarea {
 }
 
 .arena-shell {
-  display: grid;
+  display: flex;
   min-height: 100vh;
-  place-items: center;
-  padding: 2rem;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
 }
 
-.arena-placeholder {
-  width: min(100%, 42rem);
-  padding: 2.5rem;
-  border: 1px solid var(--surface-border);
-  border-radius: 16px;
-  background: var(--surface);
-  backdrop-filter: var(--surface-backdrop);
+.arena-heading {
+  display: flex;
+  width: 100%;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-.arena-placeholder h1 {
+.arena-heading h1 {
   margin: 0;
   color: var(--ink-hi);
   font-family: var(--font-display);
-  font-size: var(--text-display-size);
+  font-size: var(--text-h1-size);
   font-weight: 700;
-  letter-spacing: var(--text-display-letter-spacing);
-  line-height: var(--text-display-line-height);
+  letter-spacing: var(--text-h1-letter-spacing);
+  line-height: var(--text-h1-line-height);
   text-wrap: balance;
 }
 
 .arena-intro {
   max-width: 60ch;
-  margin: 1rem 0 0;
-  color: var(--ink-hi);
+  margin: 0;
+  color: rgb(245 249 252 / 82%);
+  font-size: var(--text-label-size);
   text-wrap: pretty;
 }
 
-.arena-status {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  margin: 1.5rem 0 0;
-  color: var(--sun-hi);
-  font-size: var(--text-label-size);
-  font-variant-numeric: var(--numeric);
-  font-weight: 700;
-  letter-spacing: var(--text-label-letter-spacing);
-  line-height: var(--text-label-line-height);
+.arena-client {
+  display: grid;
+  min-height: 0;
+  flex: 1;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
 }
 
-.status-light {
-  width: 0.75rem;
-  height: 0.75rem;
-  flex: 0 0 auto;
-  border: 2px solid var(--ink);
-  border-radius: 50%;
-  background: var(--gold);
+.arena-visual {
+  min-height: 36rem;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.arena-visual > canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 :focus-visible {
@@ -154,18 +152,30 @@ textarea {
     --surface: var(--sea-deep);
     --surface-border: var(--ink-hi);
   }
+}
 
-  .arena-placeholder {
-    border-width: 2px;
+@media (max-width: 60rem) {
+  .arena-client {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .arena-visual {
+    min-height: 30rem;
   }
 }
 
 @media (max-width: 36rem) {
   .arena-shell {
-    padding: 1rem;
+    padding: 0.75rem;
   }
 
-  .arena-placeholder {
-    padding: 1.5rem;
+  .arena-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .arena-visual {
+    min-height: 24rem;
   }
 }
