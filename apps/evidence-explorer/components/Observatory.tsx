@@ -11,6 +11,7 @@
 import { type ExplorerView, buildLedgerView } from "@gt100k/evidence-explorer-view";
 import type { JSX } from "react";
 import { Hud } from "./Hud.js";
+import { NodesIcon, ThreadsIcon, UnlinkedIcon } from "./icons.js";
 import { Ledger } from "./Ledger.js";
 import { ObservatoryStage } from "./ObservatoryStage.js";
 import { HudProvider } from "./hud-state.js";
@@ -38,14 +39,33 @@ export function Observatory({
           <h1>
             Milestone <span className="mono obs-ref">{view.milestoneRef}</span>
           </h1>
-          <p className="obs-sub">
-            A content-addressed evidence DAG — {milestoneCount} nodes in the milestone,{" "}
-            {view.nodes.length - milestoneCount} unlinked, {threadCount} provenance threads.
-          </p>
         </div>
-        <div className="obs-badges">
-          <span className="badge badge--synthetic">Synthetic data</span>
-          <span className="badge">3D cosmos · calm-2D equal mode</span>
+        <div className="obs-readout" aria-label="Milestone summary">
+          <div className="obs-stat">
+            <span className="obs-stat-glyph" aria-hidden="true">
+              <NodesIcon size={16} />
+            </span>
+            <span className="obs-stat-num mono">{milestoneCount}</span>
+            <span className="obs-stat-label">nodes</span>
+          </div>
+          <div className="obs-stat">
+            <span className="obs-stat-glyph" aria-hidden="true">
+              <UnlinkedIcon size={16} />
+            </span>
+            <span className="obs-stat-num mono">{view.nodes.length - milestoneCount}</span>
+            <span className="obs-stat-label">unlinked</span>
+          </div>
+          <div className="obs-stat">
+            <span className="obs-stat-glyph" aria-hidden="true">
+              <ThreadsIcon size={16} />
+            </span>
+            <span className="obs-stat-num mono">{threadCount}</span>
+            <span className="obs-stat-label">threads</span>
+          </div>
+          <span className="obs-synthetic">
+            <span className="obs-dot" aria-hidden="true" />
+            Synthetic
+          </span>
         </div>
       </header>
 

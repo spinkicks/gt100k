@@ -1,4 +1,4 @@
-# Loop progress — evidence-explorer (002) · DECLUTTER / simplicity pass (claude)
+# Loop progress — evidence-explorer (002) · DECLUTTER / simplicity pass → 3D craft (claude)
 
 ## Task
 Elevate **apps/evidence-explorer** (the "Provenance Observatory") to the SIMPLICITY bar.
@@ -29,19 +29,46 @@ each padded with explanatory sentences. Rebuilt `components/Hud.tsx` as a focuse
 Gate GREEN: `tsc -b` clean · 66/66 vitest (incl. a11y svg-aria-hidden) · `next build` ok · SSR HTML
 verified (primary + search + tabs render; drawer content absent at rest; zero console errors).
 
+## Done this turn (Turn 2 — header declutter → diegetic telemetry readout)
+The header was the worst always-on AI-demo tell: a **wordy prose sentence** ("A content-addressed
+evidence DAG — X nodes in the milestone, Y unlinked, Z provenance threads") plus **two pill badges**,
+one of which ("3D cosmos · calm-2D equal mode") described the *tool*, not the content — a textbook
+"explanatory paragraph where a label would do." Rebuilt `.obs-header` in `Observatory.tsx` + CSS:
+- **Kept** the diegetic title block (eyebrow "Provenance Observatory" + `h1` "Milestone <ref>");
+  tightened display tracking to `-0.025em` / leading `1.02` (apple-design §15 size-specific type).
+- **Replaced** the prose + badges with a compact **telemetry readout strip** — three frosted **stat
+  tiles** (`nodes` · `unlinked` · `threads`, each a 1.5px glyph + tabular-nums count + uppercase
+  label) and one **"Synthetic" status chip** with a softly pulsing verify-teal dot. Reads like a game
+  HUD readout, not a sentence. Deleted the whole prose clause + the tool-describing badge.
+- **Materials** (apple-design §12): tiles are translucent (`backdrop-filter` blur+saturate over the
+  void) with an inset top-edge highlight + soft drop shadow; labels use vibrancy (heavier weight,
+  higher contrast) for legibility over the blur. Degrades to solid under reduced-transparency.
+- **Motion**: the status dot's pulse is neutralised by the existing global reduced-motion rule (no new
+  media block — that shifted the motion-budget test's `indexOf`; folded back out).
+- New cohesive glyphs in `components/icons.tsx`: `NodesIcon` (diamond node), `UnlinkedIcon` (radiating
+  lone body), `ThreadsIcon` (two bodies joined) — same 1.5px `currentColor` set, all `aria-hidden`.
+
+Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ok · rendered `index.html` verified (readout +
+`aria-label="Milestone summary"` + all 3 stat counts + Synthetic chip present; prose clause + both old
+badges/`obs-sub`/`obs-badges`/`.badge` classes absent from the DOM; the only remaining "…evidence DAG…"
+string is the `<meta name=description>` SEO tag in `layout.tsx`, not visible chrome).
+
 ## Still generic / next targets (judged vs game-feel.md)
-- The **3D cosmos itself** still needs the visual-craft pass: verify lighting rig (key/fill/rim +
-  Environment), soft ContactShadows, PBR/emissive materials over primitives, and the postprocessing
-  grade (Bloom/ACES/Vignette/SSAO). That's the biggest remaining "AI-demo tell" once chrome is calm.
-- **Header** is still three wordy lines + two badges — could tighten to a compact diegetic title.
-- **Ledger** panel is a dense scrolling list; node-detail Inspector still fairly wordy (progressive
-  disclosure of inputs/consent/payload behind a "Details" expander not yet done).
+- The **3D cosmos itself** is now the biggest remaining tell to *polish* (it already has a lighting rig,
+  emissive PBR materials, Bloom/DOF/Vignette, damped cinematic camera). Missing vs game-feel.md: drei
+  `<Environment>` image-based ambient, soft `<ContactShadows>`/grounding, and **SSAO** in the composer —
+  add these to lift it from "good r3f scene" to "AAA grade".
+- **Inspector** still fairly wordy — move inputs/consent/payload behind a single "Details" expander so
+  the default popover shows only label/actor/hash/time (progressive disclosure, not yet done).
+- **Ledger** panel is a dense scrolling list — could gain more rhythm/whitespace.
 - Consider a settings **popover anchored to its trigger** (apple-design) instead of inline drawer if the
   rail gets tall on small viewports.
 
 ## NEXT
-- Turn 2: **tighten the header + Inspector wordiness** (simplicity pass continues) — compact the
-  `.obs-header` to a short title + one status chip, and move the Inspector's inputs/consent/payload
-  behind a single "Details" expander so the default popover shows only label/actor/hash/time. Keep the
-  gate green (tsc + test + build); write `.loop/commit-msg`. THEN pivot to the 3D visual-craft pass
-  (lighting + shadows + materials + postprocessing) now that the chrome reads calm.
+- Turn 3: **pivot to the 3D visual-craft pass** now that all chrome (HUD rail + header) reads calm.
+  Add drei `<Environment>` (subtle studio/night IBL for real ambient reflections on the emissive
+  bodies) + soft `<ContactShadows>` (or a grounded glow plane) so bodies don't float shadeless, and add
+  **SSAO** to the `EffectComposer` (cinematic tier only, behind the same `spectacle` gate as Bloom/DOF).
+  Keep it cohesive to EE-ART (cinematic dark cosmos, focus-cyan/verify-teal). Verify perf still self-heals
+  via `PerformanceMonitor`. Keep the gate green (tsc + test + build); write `.loop/commit-msg`.
+  (Inspector "Details" expander is the fallback simplicity task if the 3D pass proves too heavy headless.)

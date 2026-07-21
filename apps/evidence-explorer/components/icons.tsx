@@ -88,3 +88,34 @@ export function ChevronIcon({ size }: IconProps): JSX.Element {
     </Svg>
   );
 }
+
+/** Nodes — a body inside the milestone constellation (the diamond node motif). */
+export function NodesIcon({ size }: IconProps): JSX.Element {
+  return (
+    <Svg size={size}>
+      <path d="M12 3.2l8.8 8.8-8.8 8.8L3.2 12z" />
+      <circle cx={12} cy={12} r={2.1} />
+    </Svg>
+  );
+}
+
+/** Unlinked — a lone body radiating free, outside this milestone's threads. */
+export function UnlinkedIcon({ size }: IconProps): JSX.Element {
+  return (
+    <Svg size={size}>
+      <circle cx={12} cy={12} r={3} />
+      <path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l1.8 1.8M18 18l-1.8-1.8M18 6l-1.8 1.8M6 18l1.8-1.8" />
+    </Svg>
+  );
+}
+
+/** Threads — two bodies joined by a provenance edge. */
+export function ThreadsIcon({ size }: IconProps): JSX.Element {
+  return (
+    <Svg size={size}>
+      <circle cx={6} cy={6} r={2.4} />
+      <circle cx={18} cy={18} r={2.4} />
+      <path d="M7.7 7.7c2.3 2.3 6.3 6.3 8.6 8.6" />
+    </Svg>
+  );
+}

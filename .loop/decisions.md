@@ -28,6 +28,27 @@
 - Kept green: no change to `useHud` state or any evidence/domain logic (SC-E14 presentation-only holds);
   all decorative `<svg>` in Hud.tsx stay `aria-hidden` (a11y test); icons moved to `components/icons.tsx`.
 
+## EE-002 — the header is a diegetic telemetry readout, not prose + tool badges (Turn 2)
+- Chose: strip the header's explanatory sentence and both pill badges; keep only the diegetic title
+  (eyebrow + `Milestone <ref>`) and replace the removed content with a compact **stat-tile readout**
+  (`nodes` / `unlinked` / `threads` as glyph + tabular count + uppercase label) plus one **"Synthetic"
+  status chip** with a pulsing verify-teal dot. Tiles are translucent (`backdrop-filter`) with vibrant
+  labels; degrade solid under `prefers-reduced-transparency`.
+- Why: game-feel.md's #1 rule (simplicity) flags "explanatory sentences where a label/icon would do"
+  and "demote status to a compact summary (a chip or one line)". The prose sentence and the
+  "3D cosmos · calm-2D equal mode" badge (which described the *tool*, not the milestone) were the worst
+  always-on AI-demo tell left after the Turn-1 HUD declutter. Numbers as a HUD readout keep the useful
+  data while killing the paragraph.
+- Rejected: (a) a single one-line status chip with no counts — the node/thread counts are genuinely
+  load-bearing context, so a telemetry strip beats hiding them; (b) a separate
+  `@media (prefers-reduced-motion)` block for the pulse — it made a *second, earlier* reduced-motion
+  block that shifted the motion-budget test's `css.indexOf("prefers-reduced-motion")` off the global
+  neutraliser; instead the pulse rides the existing global `* { animation-duration: .001ms }` rule and
+  the phrase "prefers-reduced-motion" is kept out of comments so the test's index stays put.
+- Kept green: no domain/logic touch; counts come from the same `view` the server already builds; new
+  glyphs live in `components/icons.tsx` (all `aria-hidden`, matching the a11y SVG audit); the header
+  lives in the server component `Observatory.tsx` (no client hooks added).
+
 ---
 _Legacy scratch below (prior interest-lab loop — not applicable to evidence-explorer):_
 
