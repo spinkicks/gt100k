@@ -636,3 +636,15 @@
 
 - T132 — Complete the WCAG 2.2 AA pass over the Cohort Ledger.
 - Acceptance: the Ledger supports the full Tab/Arrow/Enter/Escape keyboard and switch path with visible `--focus` rings; every state remains icon/shape/text and at least 4.5:1; captions exist wherever sound exists; the canvas stays `aria-hidden`; focused RED/GREEN, app TypeScript/tests, both builds, seeded smoke, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P11 / T132
+
+- Completed the Cohort Ledger as a single-tab-stop ARIA tree with live `aria-activedescendant` state: Up/Down/Home/End traverse visible nodes, Right/Left enter and collapse cohorts, Enter provides the switch-friendly expand/collapse path, and Escape returns to and collapses the active parent cohort.
+- Added visible focus treatment for both the composite and active descendant, screen-reader keyboard instructions, truthful expanded/collapsed labels, and icon/shape/text cues for assigned, unassigned, satisfied, suppressed, analytics-off/observable, and safeguarding-paused states. Required state/focus colors measure from 5.34:1 to 10.38:1 against the Ledger surface; the app has no audio surface requiring captions, and both canvases remain `aria-hidden`.
+- TDD status: the navigation contract first failed because `components/ledger/navigation.ts` was absent; the semantic component contract then failed against the missing keyboard instructions/state cues; the pre-implementation browser path failed because Enter left the first cohort expanded. After implementation, the production smoke exposed that author CSS `display:grid` overrode the group `hidden` state; the existing browser regression failed at 28 visible items before the explicit `[hidden]` rule restored the correct 15-item collapsed tree.
+- Gate status: app tests pass (50/50); `pnpm typecheck`, `pnpm test` (147/147), and `pnpm lint` (147 files) pass; root `pnpm build`, `pnpm --filter @gt100k/cohort-arena build`, and the production Playwright WebGL smoke (3/3) pass. The smoke used an ephemeral external Chromium library bundle and changed no repo or host package state. T132 completes the keyboard/switch/focus/color/caption portion of FR-040/FR-045 and SC-014/SC-018; WebGL-loss and performance degradation remain T133. No blocker.
+
+## NEXT
+
+- T133 — Implement performance monitoring and graceful degradation for `apps/cohort-arena`.
+- Acceptance: the 3D scene targets 60fps and degrades first to a halved-star/no-bloom/no-shadow 3D tier, then to the state-identical `project2D` tier on WebGL2 unavailability, context loss, or sustained frame-budget misses; no state or action is lost; focused RED/GREEN, app TypeScript/tests, both builds, production smoke, and repository typecheck/test/lint remain green.

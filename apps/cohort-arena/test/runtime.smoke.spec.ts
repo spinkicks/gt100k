@@ -258,3 +258,58 @@ test("keeps standings, churn, and rollback fully operable across reduced and pla
   expect(await churnMeter.evaluate((meter) => meter.outerHTML)).toBe(initialChurn);
   expect(runtimeErrors).toEqual([]);
 });
+
+test("operates the Cohort Ledger with Tab, arrows, Enter, and Escape", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/", { waitUntil: "networkidle" });
+
+  const plainMode = page.getByRole("button", { name: "Plain mode off" });
+  const standings = page.getByRole("button", { name: "Standings off" });
+  const rollback = page.locator('[data-motion-kind="rollback"]');
+  const ledger = page.getByRole("tree", { name: "Compiled cohort details" });
+  const firstCohort = page.locator("#ledger-cohort-1");
+
+  await plainMode.focus();
+  await page.keyboard.press("Tab");
+  await expect(standings).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(rollback).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(ledger).toBeFocused();
+  await expect(ledger).toHaveAttribute("aria-activedescendant", "ledger-cohort-1");
+
+  const focus = await ledger.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { style: style.outlineStyle, width: Number.parseFloat(style.outlineWidth) };
+  });
+  expect(focus.style).not.toBe("none");
+  expect(focus.width).toBeGreaterThanOrEqual(2);
+
+  await page.keyboard.press("Enter");
+  await expect(firstCohort).toHaveAttribute("aria-expanded", "false");
+  await expect(page.getByRole("treeitem")).toHaveCount(15);
+  await page.keyboard.press("Enter");
+  await expect(firstCohort).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("treeitem")).toHaveCount(28);
+
+  await page.keyboard.press("ArrowRight");
+  await expect(ledger).toHaveAttribute("aria-activedescendant", "ledger-cohort-1-detail-1");
+  await page.keyboard.press("ArrowDown");
+  await expect(ledger).toHaveAttribute("aria-activedescendant", "ledger-cohort-1-detail-2");
+  await expect(page.locator("#ledger-cohort-1-detail-2")).toHaveAttribute(
+    "data-ledger-active",
+    "true",
+  );
+
+  await page.keyboard.press("Escape");
+  await expect(ledger).toHaveAttribute("aria-activedescendant", "ledger-cohort-1");
+  await expect(firstCohort).toHaveAttribute("aria-expanded", "false");
+  await page.keyboard.press("ArrowDown");
+  await expect(ledger).toHaveAttribute("aria-activedescendant", "ledger-cohort-2");
+
+  await expect(page.locator('[data-region="ledger"] [data-ledger-state="paused"]')).toContainText(
+    "Optimization bypassed",
+  );
+  await expect(page.getByRole("heading", { name: "Observable turn-taking" })).toBeVisible();
+  await expect(page.locator("audio")).toHaveCount(0);
+});

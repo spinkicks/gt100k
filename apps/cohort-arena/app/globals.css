@@ -1105,6 +1105,15 @@ html[data-reduced-motion="true"] *::after {
   list-style: none;
 }
 
+.cohort-ledger-tree {
+  border-radius: 10px;
+}
+
+.cohort-ledger-tree:focus-visible [data-ledger-active="true"] {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
 .ledger-cohort-item {
   padding: 0.875rem;
   color: var(--ink-hi);
@@ -1158,6 +1167,10 @@ html[data-reduced-motion="true"] *::after {
   border-top: 1px solid var(--locked);
 }
 
+.ledger-node-group[hidden] {
+  display: none;
+}
+
 .ledger-child-item {
   min-width: 0;
   color: var(--ink-hi);
@@ -1175,6 +1188,29 @@ html[data-reduced-motion="true"] *::after {
 }
 
 .ledger-state-assigned {
+  color: var(--form);
+  border-radius: 50%;
+}
+
+.ledger-state-unassigned {
+  color: var(--pending);
+  border-radius: 4px;
+}
+
+.ledger-state-paused {
+  color: var(--safeguard);
+  border-radius: 4px;
+}
+
+.ledger-state-suppressed {
+  color: var(--ink-hi);
+  background: var(--locked);
+  border-color: var(--ink-muted);
+  border-radius: 3px;
+}
+
+.ledger-state-observable,
+.ledger-state-off {
   color: var(--peer-hi);
   border-radius: 50%;
 }
@@ -1200,6 +1236,18 @@ html[data-reduced-motion="true"] *::after {
 .ledger-supporting-state ul {
   margin-top: 0.5rem;
   color: var(--ink-muted);
+}
+
+.ledger-supporting-state ul {
+  padding: 0;
+  list-style: none;
+}
+
+.ledger-rivalry-item,
+.ledger-safeguarding-state {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
 }
 
 .ledger-safeguarding-state {
