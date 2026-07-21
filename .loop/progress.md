@@ -309,3 +309,18 @@
 ## NEXT
 - T018: add focused app contract tests first, then implement the P1 scene bootstrap in `apps/arena/app/scene/eventBus.ts`, `ArenaCanvas.tsx`, and `scene/geometry/`.
 - Acceptance: a typed DOM-to-scene bridge, client-only r3f v8 Canvas using the view quality budget for DPR and the pinned ACES/sRGB color setup, context-loss pause/restore and Tier-D fallback signaling, cleanup on unmount, plus deterministic seeded low-poly geometry/material descriptors keyed to `ASSET_KEYS` with no `Math.random`; `pnpm lint`, `pnpm typecheck`, `pnpm test`, root `pnpm build`, and the Arena app build remain green.
+
+## 2026-07-21 — P1 / T018
+- Added a typed per-client event-bus factory with the exact DOM-to-scene and scene-to-DOM event vocabulary, isolated subscriptions, unsubscribe cleanup, and explicit clearing.
+- Added the client-only r3f v8 `ArenaCanvas` root driven by `InitialArenaView`: DPR and frame-loop mode come from the quality budget, Tier C uses demand rendering, shadows follow the tier, the canvas is hidden from assistive technology, and Three is configured for ACES filmic tone mapping, sRGB output, and color management.
+- Added testable WebGL context lifecycle handling: loss pauses the loop, restoration resumes and invalidates it, creation failure or a non-restored loss emits a Tier-D degradation event, and unmount cleanup removes listeners and pending recovery timers. R3F retains ownership of renderer/root disposal.
+- Added deterministic low-poly Three geometry, material, and mesh factories for all 30 `ASSET_KEYS`, derived from the domain fallback seeds with no ambient randomness or external fetch; explicit disposal frees generated geometry and material resources.
+- Followed red-green TDD: all five focused tests first failed on missing modules, then passed after the minimal implementation. Coverage includes event isolation, recoverable/unrecoverable context paths, renderer source contract, every asset key, deterministic replay, unknown-key rejection, and disposal.
+- Review status: checked T018 line-by-line against spec D3/D6, §§5.5/5.11/8.17/8.24, FR-028/030/039, and the React/Next lifecycle guidance; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was intentionally not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: `pnpm lint` passed (79 files); `pnpm typecheck` passed; `pnpm test` passed (27 files, 102 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 138 B route, 87.4 kB first load).
+- SC status: the app-side deterministic procedural-generator portion of SC-023 and the renderer lifecycle groundwork for FR-028/SC-025 are present; dynamic mounting, concrete world rendering, no-network smoke, and end-to-end fallback remain scheduled for T019–T022/P7.
+- Blockers: none.
+
+## NEXT
+- T019: add focused tests first, then implement `apps/arena/app/scene/LightingRig.tsx` and `SeaAndSky.tsx` from the exact resolved P1 presentation values.
+- Acceptance: lighting renders the resolved key/hemi/ambient/rim rig with per-tier shadow and sun-drift behavior; sea/sky render the resolved water mode, sky, clouds, fog, and motes with all ambient motion disabled under reduced motion/Tier C; generated resources clean up; focused checks plus `pnpm lint`, `pnpm typecheck`, `pnpm test`, root `pnpm build`, and the Arena app build remain green.
