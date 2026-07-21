@@ -139,3 +139,13 @@
 - Chose: expose `resolveMotion` for only the U006-pinned `press` with `reducedMotion:false` call, returning the exact animated press row; widen the kind and option types when U010/U014 land the complete golden table.
 - Why: U006 explicitly permits a temporary stub and tests only that seeded call. A narrow signature states the currently supported behavior truthfully while preserving a source-compatible widening path.
 - Rejected: implementing the full §U8.4 table would pull P9 acceptance behavior into P8; accepting arbitrary kinds or `reducedMotion:true` while returning press/animated defaults would advertise incorrect behavior.
+
+## D029 — App-local re-inclusion of the public environment example
+- Chose: keep the required `.env.local` and `.next` ignores and add `!.env.local.example` in the app-local ignore file.
+- Why: the root public-repository policy ignores `.env.*`, which would otherwise hide the spec-required non-secret example from the harness; the nested negation preserves the real-env prohibition while making only the documented public defaults trackable.
+- Rejected: weakening the root secret policy would exceed feature isolation; renaming the file would violate U009 and §U11; omitting the example would leave the five public settings undocumented.
+
+## D030 — Narrow lint suppression for the transparency preference
+- Chose: retain the spec-mandated `@media (prefers-reduced-transparency: reduce)` block with one adjacent Biome suppression for `noUnknownMediaFeatureName`.
+- Why: Biome 1.9 does not include that preference in its known media-feature registry, but §U9/U12 explicitly require the solid-panel fallback. A line-local suppression documents the compatibility boundary without weakening any other CSS lint rule.
+- Rejected: removing the media query violates the accessibility contract; disabling the rule globally requires a forbidden shared-root edit and would hide unrelated mistakes; substituting a different preference would not implement the specified behavior.

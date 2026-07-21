@@ -421,3 +421,16 @@
 ## NEXT
 - Complete U009: add the Interest Lab App Router placeholder shell, exact palette/typography CSS properties and accessibility media rules, public environment example, and app-local ignore file.
 - Acceptance: the placeholder app uses all pinned §U8.2/§U8.3 tokens, reduced-motion/reduced-transparency/plain/focus treatments, documents every §U11 `NEXT_PUBLIC_*` setting including `NEXT_PUBLIC_RENDER_TIER=auto`, ignores `.env.local` and `.next`, and passes the app build plus `pnpm typecheck`, `pnpm test`, and `pnpm lint`.
+
+## 2026-07-21 — P8 / U009
+- Added the App Router layout and static Curiosity Atelier placeholder shell with semantic landmarks, a keyboard-visible skip link, synthetic-only copy, and no client component or premature domain/view behavior.
+- Added every exact §U8.2 palette and §U8.3 typography value as CSS custom properties, including all scale rows and system fallback stacks; the five pinned foreground/background pairs measure 7.97:1–16.39:1.
+- Added responsive dusk styling, color-plus-shape cues, `--focus` rings, reduced-motion, reduced-transparency, high-contrast, and `.plain-mode` treatments; kept the mandated nonstandard transparency preference behind one line-local Biome suppression.
+- Added all five non-secret §U11 public defaults, ignored the real `.env.local` and `.next`, and explicitly re-included `.env.local.example` against the root `.env.*` policy so the harness can track it. The Next build generated the standard app-local `next-env.d.ts`.
+- Confirmed the contract-first red state with all five U009 artifacts missing, then verified the complete artifact/token/env contract, exact WCAG contrast ratios, and the production HTTP shell response after implementation.
+- Verified `pnpm typecheck`, `pnpm test` (123 tests across 28 files), `pnpm lint` (93 files), and `pnpm --filter @gt100k/interest-lab-app build`; all pass. The `/` route is statically prerendered.
+- Status: U009 and P8 complete. Part-I SC-001 through SC-016 remain green; the Part-II foundation gate is green, and behavioral SC-UI acceptance begins in P9. No blocker.
+
+## NEXT
+- Complete U010: add `packages/interest-lab-view/test/motion.test.ts` with the complete §U8.4 animated and reduced-motion golden table before widening the temporary resolver.
+- Acceptance: every DOM and 3D motion kind has an exact reduced equivalent with `mode:"reduced"`, `easing:"linear"`, and the pinned reduced duration; `pick` is the only spring, no reveal uses `scale(0)`, the focused suite records a genuine red failure, and the package compiler plus `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green after the paired minimal U014 implementation.
