@@ -138,6 +138,20 @@ emissive glow, spring/ease-out motion. Display font Fredoka; reading serif Iowan
   pinned `name=`/`value=`/h2/status/`--control-target` string survives (all 9 client-shell assertions
   green). Gate green: tsc + 74 tests + `next build`. See D-VP11.
 
+- **Turn 10 (this):** First **content-copy** subtraction — applied game-feel **#1 (Simplicity & flow,
+  the FIRST requirement)** to the *content* surfaces, which Turns 1–9 skipped (Turn 9 cut the control
+  *wall*; nobody had cut the *prose*). The child quest screen was carrying **two overlapping reassurance
+  paragraphs** (masthead lede + ledger paragraph both saying "explore freely, no wrong answer") **plus**
+  an obvious-stating instruction — the doc's exact "explanatory paragraphs where a label works" tell.
+  Pure text, no markup/CSS/logic: (1) masthead lede trimmed to one clause (its 3rd clause was echoed by
+  the footer); (2) ledger paragraph dropped its eyebrow-restating first sentence, kept the load-bearing
+  child-safety reassurance; (3) quest-world instruction dropped its states-the-obvious first sentence,
+  kept the one functional hint ("Focus a quest below to visit its island."); (4) guide intro merged two
+  staccato sentences into one, every noun preserved. Reading path on the child screen is now
+  focal-content → one short reassurance → cards. Test-safe: the only two pinned content strings
+  ("Your quest constellation", "Synthetic data only") are untouched and no new string trips the
+  `price|score|rank|percentile|verdict` guard. Gate green: tsc + 212 tests + `next build`. See D-VP12.
+
 ## Verification note (honest)
 The grade only mounts client-side on the WebGL full tier, so it can't be pixel-verified in this
 headless / GPU-less env (swiftshader would fall to board-2d and never exercise the composer).
@@ -168,30 +182,29 @@ why the ACES ToneMapping effect is present. A GPU screenshot pass is the ideal n
   crafted material so the lift reads as depth)** ·
 7 HUD not forms ✓ (child deck + guide deck, Turn 4; **control-wall subtracted to one nav control +
   Preview-settings disclosure, Turn 9**) · 8 type+icons ✓ ·
-**#1 Simplicity & flow ✓ — Turn 9 cut the always-visible control count 5→1 (the doc's FIRST
-  requirement, and the real remaining gap the prior material-polish turns had skipped).** ·
+**#1 Simplicity & flow ✓ — Turn 9 cut the always-visible control count 5→1; Turn 10 cut the
+  duplicated content prose (two overlapping reassurance paragraphs + an obvious instruction) to one calm
+  reading path. The doc's FIRST requirement is now honored on BOTH controls and copy.** ·
 **9 cohesion ✓ — 3D world, child deck, guide deck, AND board-2d fallback now read as one crafted world
   (Turns 4 + 6).** Every non-negotiable is met and no auto-fail anti-pattern remains; what's left is
   AAA-grade polish (SSAO/DoF, tray material, GPU-tuning), not a redo.
 
 ## NEXT
-Turn 9 closed the last *real* gap — game-feel **#1 (Simplicity & flow)**, which the prior material-polish
-turns had skipped. With the control-wall subtracted (5→1 visible), **every game-feel non-negotiable is now
-met AND the FIRST requirement (simplicity) is honored** — visual craft (lighting, materials, post-FX grade,
-camera, motion, HUD, cohesion) was already complete through Turn 8. **Strong case to declare `.loop-done`**
-after one more end-to-end audit against `game-feel.md`. Before that, two low-risk critic passes worth a look:
-1. **Re-audit simplicity end-to-end (the #1 lens, now that the deck is calm).** Check the *child quest world*
-   and *guide console* for any remaining wordiness / competing panels: e.g. the masthead lede sentence + the
-   footer sentence + per-surface intro copy — is any of it non-load-bearing? Cut a sentence before adding a
-   pixel (game-feel #1 "radically cut words / subtract every turn"). This is the same subtractive lens that
-   found Turn 9; apply it to the two content surfaces, not just the control deck.
-2. **GPU/browser screenshot pass — still the highest-value *visual* confirmation** (can't be done in this
-   headless GPU-less env; swiftshader falls to board-2d and never runs the composer). Confirm Bloom /
+Turn 10 executed NEXT-item-1 from last turn: the **content-copy** subtraction (game-feel #1 applied to the
+prose, not just the controls). With Turns 9+10, **both the control wall AND the duplicated content prose are
+subtracted** — the child screen now reads as one calm focal path. **Every game-feel non-negotiable is met,
+the FIRST requirement (simplicity) is honored on both controls and copy, and no auto-fail anti-pattern
+remains.** The remaining candidates are all *AAA-grade polish or eyes-on tuning*, NOT gaps:
+1. **Declare `.loop-done` next turn** unless a fresh end-to-end critic pass against `game-feel.md` finds a
+   real tell. Strong case: the scorecard is full and the last two subtractive gaps (#1 controls, #1 copy)
+   are closed. Do one clean read-through of all copy + a scorecard re-walk, then create `.loop-done`.
+2. **GPU/browser screenshot pass — the highest-value remaining *visual* confirmation** (cannot be done in
+   this headless GPU-less env; swiftshader falls to board-2d and never runs the composer). Confirm Bloom /
    Vignette / N8AO intensity+radius / idle-breath amplitude / board & tray glow read right, then tune to
-   taste. Only after eyes-on, consider **optional shallow depth-of-field** (last #4 item; deferred as the
-   higher blind-tuning risk).
-3. **Deeper guide trenching (optional):** explanation columns + lifecycle tracks + revision rail could take
-   the two scroll instruments' inset-trench treatment for more instrument depth.
+   taste. Only after eyes-on, consider **optional shallow depth-of-field** (last #4 item; the higher
+   blind-tuning risk).
+3. **Deeper guide trenching (optional polish):** explanation columns + lifecycle tracks + revision rail
+   could take the two scroll instruments' inset-trench treatment for more instrument depth.
 Keep the gate green (tsc + test + `next build`); write `.loop/commit-msg`; keep the art direction cohesive.
-**Before adding, subtract (game-feel #1)** — Turn 9 proved this is where the real wins still are; guard hard
-against over-decorating an already calm, cohesive world.
+**Before adding, subtract (game-feel #1)** — Turns 9+10 proved this is where the real wins were; guard hard
+against over-decorating an already calm, cohesive world. If nothing real is found, ship `.loop-done`.

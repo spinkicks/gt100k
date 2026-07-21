@@ -138,10 +138,7 @@ export function InterestLabClient() {
           <div className="title-group">
             <p className="context-line">Interest Lab · synthetic preview</p>
             <h1>The Curiosity Atelier</h1>
-            <p className="lede">
-              Try different kinds of work, notice what draws you back, and keep every possibility
-              open.
-            </p>
+            <p className="lede">Try different kinds of work and notice what draws you back.</p>
           </div>
           <p className="status-pill">
             <span aria-hidden="true" className="status-mark" />

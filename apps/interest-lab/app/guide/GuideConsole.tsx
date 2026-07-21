@@ -29,7 +29,7 @@ export function GuideConsole({ view, onAuthorRevision }: GuideConsoleProps) {
           <h2 id="guide-console-title">Hypothesis Console</h2>
         </div>
         <p>
-          Read the supporting case beside what could change it. Gaps, prompts, and shadow
+          Read the supporting case beside what could change it — gaps, prompts, and shadow
           suggestions stay visible.
         </p>
       </header>

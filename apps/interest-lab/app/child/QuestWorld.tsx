@@ -121,9 +121,7 @@ export function QuestWorld({ view, onContextLost, onPerformanceDecline }: QuestW
               onPerformanceDecline={onPerformanceDecline}
             />
           </World3D>
-          <p className="quest-world-instruction">
-            The quest cards below control this world. Focus a card to visit its island.
-          </p>
+          <p className="quest-world-instruction">Focus a quest below to visit its island.</p>
         </div>
       ) : null}
 

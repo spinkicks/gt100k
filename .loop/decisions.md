@@ -615,3 +615,38 @@
   view as "accessibility" (shipped games put a11y in a settings menu; the OS reduced-motion default is
   still auto-respected, so the manual override belongs behind Preview settings); a bespoke summary
   easing (reused `--hud-ease` for deck cohesion); `scale(0)` reveal (emil: nothing appears from nothing).
+
+## D-VP12 — Subtract duplicated content-chrome prose (Turn 10 · the #1 lens on content surfaces)
+- What: A focused copy-subtraction pass on the always-on content chrome (no markup structure, no CSS,
+  no logic change — pure text). Four cuts to their load-bearing core:
+  (1) **Masthead lede**: "Try different kinds of work, notice what draws you back, and keep every
+      possibility open." → "Try different kinds of work and notice what draws you back." — dropped the
+      3rd clause, which the **footer already carries** verbatim in meaning ("choices never become fixed
+      labels"). Cross-chrome duplication removed.
+  (2) **Child ledger paragraph**: "Pick what feels worth trying. There is no best choice, and asking for
+      another way never counts against you." → "There is no best choice, and asking for another way never
+      counts against you." — dropped sentence 1, which just **restated the eyebrow** ("Choose what to
+      try"). Kept the child-safety reassurance (load-bearing product copy per PRD non-labeling stance).
+  (3) **Quest-world instruction**: "The quest cards below control this world. Focus a card to visit its
+      island." → "Focus a quest below to visit its island." — dropped sentence 1 (states the obvious: the
+      cards visibly control the world). Kept the one functional hint.
+  (4) **Guide intro paragraph**: split two staccato sentences into one em-dash clause (kept every noun —
+      gaps, prompts, shadow suggestions); the dense adult surface earns one orientation sentence.
+- Why: game-feel **#1 (Simplicity & flow — the FIRST requirement)** applied to the **content** surfaces,
+  which Turns 1–9 skipped (they subtracted the *control wall*, Turn 9, but never the prose). The child
+  quest screen showed **two overlapping reassurance paragraphs** (masthead lede + ledger paragraph both
+  saying "explore freely, no wrong answer") plus an obvious-stating instruction — exactly the doc's
+  "explanatory paragraphs where a label works" / "delete text that states the obvious" / "subtract every
+  turn." Reading path on the child screen is now: focal content (constellation + islands) → one short
+  reassurance → the cards. Fewer, calmer words = premium, per #1.
+- Verification: only two content strings are test-pinned — "Your quest constellation" (ledger h2) and
+  "Synthetic data only" (footer); both untouched. The negative guard
+  `not.toMatch(/price|score|rank|percentile|verdict/i)` — none of the new strings contain those words.
+  Gate green: tsc + 212 tests + `next build`.
+- Rejected: deleting the ledger reassurance **entirely** (it's load-bearing child-safety copy at the
+  point of action — the PRD's non-labeling promise; hiding/trimming, not removing, is the right cut);
+  gutting the guide paragraph (adult evidence surface earns one orientation sentence — over-cutting there
+  would lose the shadow-suggestion/gaps promise); touching the footer's three governance clauses
+  (all load-bearing: synthetic-only, no-PII, no-fixed-labels) or the masthead "synthetic preview" eyebrow
+  (trust signal, de-emphasized as small text); any CSS/markup change (this is a words-only subtraction —
+  keeps the pinned-markup tests and CSS regexes untouched by construction).

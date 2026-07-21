@@ -66,10 +66,7 @@ export function QuestLedger({
           <p className="surface-name">Choose what to try</p>
           <h2 id="quest-ledger-title">Your quest constellation</h2>
         </div>
-        <p>
-          Pick what feels worth trying. There is no best choice, and asking for another way never
-          counts against you.
-        </p>
+        <p>There is no best choice, and asking for another way never counts against you.</p>
       </div>
       <LayoutGroup id="interest-lab-quest-picks">
         <Board2D
