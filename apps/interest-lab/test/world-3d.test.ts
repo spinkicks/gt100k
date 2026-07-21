@@ -1,5 +1,5 @@
-import { CAMERA3D, QUALITY_TIERS, SCENE3D } from "@gt100k/interest-lab-view";
-import { AdaptiveDpr } from "@react-three/drei";
+import { CAMERA3D, PALETTE, QUALITY_TIERS, SCENE3D } from "@gt100k/interest-lab-view";
+import { AdaptiveDpr, ContactShadows, Environment } from "@react-three/drei";
 import {
   Children,
   type ComponentType,
@@ -42,6 +42,9 @@ vi.mock("@react-three/fiber", () => ({
 
 vi.mock("@react-three/drei", () => ({
   AdaptiveDpr: () => null,
+  Environment: () => null,
+  ContactShadows: () => null,
+  Lightformer: () => null,
 }));
 
 const fullScene = buildSyntheticInterestLabSeed({
@@ -177,7 +180,7 @@ describe("World3D host", () => {
       (child): child is ReactElement<Record<string, unknown>> =>
         isValidElement<Record<string, unknown>>(child),
     );
-    const elementOfType = (type: string | typeof AdaptiveDpr) =>
+    const elementOfType = (type: unknown) =>
       elements.find((element) => element.type === type);
 
     expect(elementOfType("color")?.props).toMatchObject({
