@@ -296,3 +296,16 @@
 ## NEXT
 - T017: add a focused test first, then implement and explicitly export the initial `buildArenaView` in `packages/arena-world/src/view.ts`.
 - Acceptance: the view deterministically composes the fixture world, golden layout and node states with the complete P1 `presentation` block (`biomes`, world transform, camera, parallax, lighting, water, post-fx, avatar animation, quality tier/budget, asset keys, and palette) plus flags; progression/eligibility/base/standing/visual-band remain deferred; focused checks and repository gates stay green.
+
+## 2026-07-20 — P1 / T017
+- Added and explicitly exported the initial pure `buildArenaView`, its `BuildArenaViewInputs`, and the staged `InitialArenaView` return type. The composer normalizes the supplied world, derives the golden layout and stable node-state rows once, and assembles the complete P1 renderer-facing presentation block plus flags.
+- Wired capability resolution through the existing quality ladder: explicit or device-requested reduced motion selects calm Tier C, and the selected tier consistently drives lighting, water, post-fx, avatar animation, and the copied quality budget.
+- Kept later-phase state absent rather than inventing placeholders: progression, representation, avatar state, cosmetic eligibility, base, standings, visual band, and base placements remain scheduled for T029/T036/T044. Renderer-facing fixtures/registries are copied so consumer mutation cannot affect deterministic replay.
+- Followed red-green TDD: all three focused tests failed with `buildArenaView` missing, then passed after the minimal composer and public exports landed. Acceptance covers the exact S1 node-state order, the full P1 presentation key/value contract, reduced-motion Tier C, byte-identical replay, and fresh presentation containers.
+- Gate status: focused view tests passed (3 tests); direct arena-world TypeScript validation and the domain purity scan passed; `pnpm lint` passed (75 files); `pnpm typecheck` passed; `pnpm test` passed (26 files, 97 tests). No app file changed, so no Next.js build was required.
+- SC status: the single-view composition groundwork for SC-014 is complete at P1; full underlying-state parity remains open until progression/base/standing and `plainViewEquals` land in T029/T036/T044.
+- Blockers: none.
+
+## NEXT
+- T018: add focused app contract tests first, then implement the P1 scene bootstrap in `apps/arena/app/scene/eventBus.ts`, `ArenaCanvas.tsx`, and `scene/geometry/`.
+- Acceptance: a typed DOM-to-scene bridge, client-only r3f v8 Canvas using the view quality budget for DPR and the pinned ACES/sRGB color setup, context-loss pause/restore and Tier-D fallback signaling, cleanup on unmount, plus deterministic seeded low-poly geometry/material descriptors keyed to `ASSET_KEYS` with no `Math.random`; `pnpm lint`, `pnpm typecheck`, `pnpm test`, root `pnpm build`, and the Arena app build remain green.

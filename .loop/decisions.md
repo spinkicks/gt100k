@@ -60,3 +60,8 @@
 ## 2026-07-20 — T016 synthetic-feed boundary
 - Chose the spec-permitted fixed S1 schedule and cumulative-prefix advancement instead of a seeded PRNG or mutable cursor. The six stable records reproduce the exact golden scenario while keeping app advancement as ordinary array slicing and avoiding unpinned random ordering or hidden state.
 - Return fresh signal records on every call so a consumer cannot mutate the canonical schedule and change a later replay. Rejected exporting the backing array directly because its mutable record objects could make identical calls diverge.
+
+## 2026-07-20 — T017 staged ArenaView composition
+- Exported `InitialArenaView` as the exact P1 return type instead of claiming the already-defined final `ArenaView` while omitting its later-phase progression, representation, avatar, eligibility, base, standing, visual-band, and base-placement fields. Rejected placeholder values and type assertions because both would make unfinished domain state look authoritative; T029/T036/T044 will grow the composer at their scheduled phases.
+- Added `caps` as a top-level P1 composer input because quality tier and budget must already be resolved for the renderer. Effective reduced motion is the logical OR of the explicit option and the device preference, so either accessibility signal selects the calm Tier C path. Rejected allowing those inputs to disagree and leave avatar motion active in a calm-quality view.
+- Return fresh copies of renderer-facing fixture and registry containers. Rejected exposing mutable `BIOMES`, `CAMERA3D`, `ASSET_KEYS`, `QUALITY_TIERS`, or `PALETTE` objects because a renderer mutation could otherwise make a later identical composition diverge.
