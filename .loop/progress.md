@@ -634,3 +634,16 @@
 ## NEXT
 - T039 + the `deriveStanding` slice of T043: add `packages/arena-world/test/standings.test.ts` first, then implement and explicitly export the minimal pure opt-in standings resolver.
 - Acceptance: standings are `null` unless explicitly opted in; the S1 golden scenario yields `selfGain=300` and `gainToBandTop=40`; output is anonymized/near-peer, deterministic, and structurally exposes no `rank`, `position`, `percentile`, or `outOf`; focused and repository gates remain green (spec §8.7, FR-019, SC-009).
+
+## 2026-07-21 — P5 / T039 + T043 (`deriveStanding` slice)
+- Added `standings.test.ts` through the public package API, covering default-off and explicit opt-out behavior, the exact S1 opted-in result, stable anonymized peer order, fresh deterministic replay, non-negative self-leading/empty-peer gaps, the exact three-input contract, and rank-field unrepresentability.
+- Followed red-green TDD: all five tests failed only because `deriveStanding` was absent, then passed after the minimal resolver and explicit package export landed.
+- Added a pure `deriveStanding(self, nearPeers, options)` implementation that returns `null` unless explicitly opted in, copies pseudonymous gain-only peer records, preserves their supplied near-peer order, and computes `gainToBandTop` from the learner-inclusive maximum.
+- Review status: checked T039/T043 line-by-line against US5, §§8.7/P5, the domain contract and data model, FR-019, and SC-009; no Critical, Important, or Minor issues remain. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused standings tests passed (5 tests); direct arena-world TypeScript validation and focused Biome checks passed; `pnpm lint` passed (128 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (50 files, 201 tests). No app file changed, so no Next.js build was required.
+- SC status: SC-009 is complete at the domain boundary: standings default off, opt-in output is pseudonymous/near-peer/gain-based, and caste/bottom-rank fields remain unrepresentable. P5 remains in progress for plain-mode invariance, final composed-view parity, and app controls.
+- Blockers: none.
+
+## NEXT
+- T040 + the `plainViewEquals` slice of T044: add `packages/arena-world/test/plain-mode.test.ts` first, then implement the minimal pure state-parity comparison needed to restore the green gate.
+- Acceptance: reduced-motion, plain, lower-tier, and standings-off variants preserve byte-identical world/layout/node/progression/eligibility/base/standing state while only flags and presentation may differ; learning/access/standing remain unchanged and focused plus repository gates stay green (FR-020/029, SC-006/014).

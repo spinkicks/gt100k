@@ -145,3 +145,7 @@
 
 ## 2026-07-21 — T038 reward-representation boundary
 - Resolve the exact presentation row exclusively from `AgeBand` while accepting `ProgressionState` only as the settled two-input API contract. Rejected deriving labels from reward values or copying/mutating progression because FR-017 requires one identical economy across every band.
+
+## 2026-07-21 — T039 standing derivation boundary
+- Include the learner's own gain when finding the band top, so an empty peer set or a learner above every peer produces `gainToBandTop=0` rather than a negative or undefined gap. Rejected taking the maximum of peers alone because the data model requires a non-negative own-gain comparison.
+- Preserve the caller-supplied near-peer order while copying each pseudonymous gain record. Rejected sorting by gain because the resolver must not manufacture a rank-like ordering, and rejected returning caller-owned records because later mutation could break deterministic replay.

@@ -90,6 +90,7 @@ export {
 } from "./scene3d";
 export { SOUND_CUES, resolveSoundCue } from "./sound";
 export { resolveRewardRepresentation, resolveVisualBand } from "./staging";
+export { deriveStanding } from "./standings";
 export { layoutQuestWorld } from "./layout";
 export { deriveNodeStates } from "./nodes";
 export { buildQuestWorld } from "./world";
