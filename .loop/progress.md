@@ -30,3 +30,14 @@
 ## NEXT
 - Complete T004: define the foundational probe vocabularies and value types in `packages/interest-lab/src/probe.ts` exactly as specified in the plan data model.
 - Acceptance: tests first encode all 9 `WorkMode` verbs plus `DifficultyBand`, `AudienceCondition`, `SocialMode`, `SafetyClass`, `Provenance`, `Probe`, `ProbeFamily`, and the open `Domain = string` alias; the package-local compiler, `pnpm typecheck`, and `pnpm test` remain green.
+
+## 2026-07-20 — P1 / T004
+- Added the exact fixed vocabularies and their string-literal types, while preserving `Domain` as an open catalog-supplied string with no hardcoded domain list.
+- Defined the full IL-001 `Probe` value type and the IL-002 `ProbeFamily` equivalent-variant container.
+- Confirmed the test-first red state: the focused probe suite failed to resolve the absent `src/probe.ts`, then passed all 5 contract tests after implementation.
+- Verified the forced package-local TypeScript build, `pnpm typecheck`, and `pnpm test` (20 tests) all pass.
+- Status: T004 complete; P1 remains in progress; the IL-001/IL-002 structural contracts are encoded, while feature success-criteria tests remain pending. No blocker.
+
+## NEXT
+- Complete T005: define all injected domain ports and the deferred `OfferSelector` shape in `packages/interest-lab/src/ports.ts` per the plan's Domain Contracts.
+- Acceptance: compile-time tests encode `InterestHypothesisRepository`, `ProbeCatalog`, `AssentRecordPort`, `ArtifactSignalSource`, `OfferDecisionLog`, `Clock`, and the non-implemented forward-compatible `OfferSelector`; the package-local compiler, `pnpm typecheck`, and `pnpm test` remain green.
