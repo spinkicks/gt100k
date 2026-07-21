@@ -703,3 +703,17 @@
 ## NEXT
 - T046a: add a rolling 90-frame monitor in `apps/arena/app/scene/ArenaCanvas.tsx` that degrades one tier when average frame time exceeds 18ms and emits the existing typed tier-degraded event without blocking input.
 - Acceptance: tests fail first, then prove no degradation before 90 samples, one `nextLowerTier` step on sustained `>18ms`, stable reset/no visible flash behavior, and context-loss fallback to Tier D; focused scene tests plus lint/typecheck/tests/root build/Arena build remain green (FR-043, SC-025).
+
+## 2026-07-21 — P6 / T046a
+- Added an O(1) rolling 90-frame monitor inside the live r3f canvas. It uses the exact strict `>18ms` average, calls the domain `nextLowerTier`, and emits one typed `tier-degraded` frame-budget event per rendered tier.
+- Kept degradation flash-free and non-blocking by latching the current window, letting the existing client event subscriber recompose the lower-budget view in place, and resetting only after that tier reaches the canvas. No mastery/input path or canvas key/remount was introduced.
+- Preserved the existing recoverable context pause/resume and unrecoverable context-loss-to-Tier-D path; its focused regression remains green.
+- Followed red-green TDD: three new acceptance tests failed on the absent constants/factory/canvas wiring, then passed with coverage for the first 89 samples, strict rolling-average behavior, one-step latching, tier reset, Tier-D idempotence, and typed event/client wiring.
+- Review status: checked T046a against US6, §§8.24/P6, FR-023/028/043, SC-010/025, and the existing context lifecycle/client composition; no Critical, Important, or Minor issues remain. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused scene/client regressions passed (4 files, 17 tests); `pnpm lint` passed (134 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (55 files, 218 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 59.6 kB route, 147 kB first load).
+- SC status: T046a completes the deterministic sustained-load auto-degrade and context-loss event path for SC-010/025. P6 remains in progress for the complete Tier-D renderer and final quality auto-degrade assertions.
+- Blockers: browser performance measurement remains unavailable in this workspace; deterministic monitor behavior, context fallback, static wiring, and both production builds are green, while the min-device 60fps walkthrough remains scheduled for P7.
+
+## NEXT
+- T046b: finish `apps/arena/app/scene/Fallback2D.tsx` as the complete Tier-D DOM/SVG rendering of the identical `ArenaView`.
+- Acceptance: every island, node/state, edge/path, and Base Camp placement comes from the shared layout/view; the Ledger and HUD remain functional; Tier D never imports or mounts canvas/Three/r3f code; focused tests plus lint/typecheck/tests/root build/Arena build remain green.

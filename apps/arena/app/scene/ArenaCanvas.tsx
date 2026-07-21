@@ -1,7 +1,7 @@
 "use client";
 
-import type { InitialArenaView, QualityTier } from "@gt100k/arena-world";
-import { Canvas, type RootState, useThree } from "@react-three/fiber";
+import { type InitialArenaView, type QualityTier, nextLowerTier } from "@gt100k/arena-world";
+import { Canvas, type RootState, useFrame, useThree } from "@react-three/fiber";
 import { type ReactNode, useEffect, useRef } from "react";
 import { ACESFilmicToneMapping, ColorManagement, type Group, SRGBColorSpace } from "three";
 import Avatar from "./Avatar";
@@ -17,6 +17,8 @@ import type { SequencedArenaFeedback } from "./feedback";
 import { buildRendererQualityPlan } from "./rendererQuality";
 
 export const CONTEXT_RECOVERY_GRACE_MS = 2_000;
+export const FRAME_BUDGET_THRESHOLD_MS = 18;
+export const FRAME_BUDGET_WINDOW_SIZE = 90;
 
 type FrameLoop = "always" | "demand";
 type ContextFailureReason = "context-loss" | "context-creation-error";
@@ -25,6 +27,54 @@ interface ContextLifecycleControls {
   pause(): void;
   resume(): void;
   fallback(reason: ContextFailureReason): void;
+}
+
+export interface FrameBudgetSampler {
+  sample(frameTimeMs: number): QualityTier | null;
+  reset(tier: QualityTier): void;
+}
+
+export function createFrameBudgetMonitor(initialTier: QualityTier): FrameBudgetSampler {
+  const samples = new Array<number>(FRAME_BUDGET_WINDOW_SIZE).fill(0);
+  let tier = initialTier;
+  let count = 0;
+  let cursor = 0;
+  let totalMs = 0;
+  let degraded = false;
+
+  const reset = (nextTier: QualityTier) => {
+    samples.fill(0);
+    tier = nextTier;
+    count = 0;
+    cursor = 0;
+    totalMs = 0;
+    degraded = false;
+  };
+
+  return {
+    sample(frameTimeMs) {
+      if (degraded || !Number.isFinite(frameTimeMs) || frameTimeMs < 0) return null;
+
+      if (count === FRAME_BUDGET_WINDOW_SIZE) {
+        totalMs -= samples[cursor] ?? 0;
+      } else {
+        count += 1;
+      }
+
+      samples[cursor] = frameTimeMs;
+      totalMs += frameTimeMs;
+      cursor = (cursor + 1) % FRAME_BUDGET_WINDOW_SIZE;
+
+      if (count < FRAME_BUDGET_WINDOW_SIZE || totalMs / count <= FRAME_BUDGET_THRESHOLD_MS) {
+        return null;
+      }
+
+      degraded = true;
+      const nextTier = nextLowerTier(tier);
+      return nextTier === tier ? null : nextTier;
+    },
+    reset,
+  };
 }
 
 export function bindWebGlContextLifecycle(
@@ -106,6 +156,35 @@ function ContextLifecycle({ eventBus, frameLoop, qualityTier, onFallback }: Cont
   return null;
 }
 
+interface FrameBudgetMonitorProps {
+  eventBus: ArenaEventBus;
+  qualityTier: QualityTier;
+}
+
+function FrameBudgetMonitor({ eventBus, qualityTier }: FrameBudgetMonitorProps) {
+  const monitor = useRef<FrameBudgetSampler | null>(null);
+  const monitoredTier = useRef(qualityTier);
+
+  if (monitor.current === null) monitor.current = createFrameBudgetMonitor(qualityTier);
+  if (monitoredTier.current !== qualityTier) {
+    monitor.current.reset(qualityTier);
+    monitoredTier.current = qualityTier;
+  }
+
+  useFrame((_, delta) => {
+    const to = monitor.current?.sample(delta * 1_000);
+    if (!to) return;
+
+    eventBus.emit("tier-degraded", {
+      from: qualityTier,
+      to,
+      reason: "frame-budget",
+    });
+  });
+
+  return null;
+}
+
 function configureRenderer({ gl }: RootState): void {
   ColorManagement.enabled = true;
   gl.toneMapping = ACESFilmicToneMapping;
@@ -170,6 +249,7 @@ export default function ArenaCanvas({
         onFallback={onFallback}
         qualityTier={qualityTier}
       />
+      <FrameBudgetMonitor eventBus={eventBus} qualityTier={qualityTier} />
       {children ?? (
         <>
           <LightingRig lighting={view.presentation.lighting} qualityBudget={qualityBudget} />

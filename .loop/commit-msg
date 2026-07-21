@@ -1,1 +1,1 @@
-feat: wire arena renderer quality budgets
+feat: auto-degrade arena rendering under sustained load
