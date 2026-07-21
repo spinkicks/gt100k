@@ -572,3 +572,15 @@
 ## NEXT
 - Complete U026: add the client-only `World3D` host under `apps/interest-lab/app/child/world3d/` using `next/dynamic(..., {ssr:false})` and an `aria-hidden` react-three-fiber Canvas.
 - Acceptance: the host applies exact `SCENE3D` fog, lights, ACES tone mapping, exposure, and camera values; caps DPR through drei `AdaptiveDpr`; renders the supplied scene graph; disposes the renderer on unmount with zero console/WebGL errors; preserves a focused RED run; and keeps app tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds green.
+
+## 2026-07-21 — P10 / U026
+- Added a module-scope `next/dynamic` host that loads the WebGL implementation with `ssr:false`, keeping the r3f/Three.js bundle client-only and accepting a supplied scene graph.
+- Added the accessibility-hidden Canvas shell with the exact scene fog, ambient/hemisphere/key lights, ACES tone mapping, exposure, camera values, shadow flag, DPR cap, and drei `AdaptiveDpr` behavior from the proven view model.
+- Added explicit idempotent renderer-list/renderer disposal while retaining r3f Canvas ownership of event and WebGL-context teardown; added four host contracts for the dynamic boundary, exact scene configuration, supplied graph, and cleanup.
+- Confirmed genuine test-first RED states: the module contract first failed on both absent host exports, then all four behavioral contracts failed against the null scaffolds before the minimal implementation made them green.
+- Verified app tests (29 across 8 files), `pnpm typecheck`, `pnpm test` (159 across 35 files), `pnpm lint` (127 files), `pnpm --filter @gt100k/interest-lab-app build`, and `pnpm build`; all pass. The real WebGL console walkthrough remains correctly deferred until U029 wires this host into the tier switch.
+- Status: U026 complete; P10 remains in progress. SC-UI-16's client-only Canvas, accessibility, deterministic scene setup, adaptive DPR, cleanup, and production-build boundaries are encoded; the mounted browser smoke remains with the P10 checkpoint. No blocker.
+
+## NEXT
+- Complete U027: implement `Island.tsx`, `QuestMarker.tsx`, and `Motes.tsx` under `apps/interest-lab/app/child/world3d/` from the existing `SceneView` and halo texture.
+- Acceptance: islands use deterministic procedural low-poly geometry, domain hues, tier detail/shadow settings, and pinned idle float; markers render emissive forms plus additive halo sprites with hover/press/pick motion; motes use the quality-tier count and exact §U8.15 color/size/speed/scale; focused RED evidence and app tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.

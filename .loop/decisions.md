@@ -204,3 +204,8 @@
 - Chose: draw a centered 128×128 radial texture with stops `0:PALETTE.sparkHi`, `0.35:PALETTE.spark`, and `1:transparent spark`; accept an injected canvas factory, use sRGB linear sampling, and disable mipmaps.
 - Why: §U8.15 pins a deterministic warm additive halo but not its raster size or stop positions. A 128px power-of-two texture is sufficient for a soft sprite, the existing exact palette prevents color drift, and factory injection makes the helper testable and SSR-safe without introducing a canvas package or network path.
 - Rejected: an external image or texture loader violates the no-fetch requirement; a larger procedural texture adds memory without visible value; module-time DOM access would break server evaluation; random or extra color stops would add unpinned behavior.
+
+## D042 — Split the dynamic host from the deterministic Canvas shell
+- Chose: keep `World3D.tsx` as the module-scope `next/dynamic` boundary with `ssr:false`, and put all r3f, drei, and Three.js imports in `World3DCanvas.tsx`. The shell explicitly disposes renderer lists and renderer resources once; r3f's Canvas retains ownership of event disconnection and WebGL context loss during its own unmount.
+- Why: the split keeps the heavy WebGL graph out of server rendering and leaves a literal, statically analyzable chunk boundary. Dividing cleanup ownership avoids a manual render-root implementation while still making app-owned disposal deterministic and unit-testable.
+- Rejected: directly importing Canvas into the host would weaken the client-only bundle boundary; duplicating r3f's context-loss teardown risks noisy double context events; manually creating an r3f root would reimplement Canvas sizing, events, suspense, and cleanup.
