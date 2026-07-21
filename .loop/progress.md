@@ -622,3 +622,17 @@
 
 - T131 — Implement the safeguarding-bypass affordance in `apps/cohort-arena/components/hud/` from `view.safeguarding`.
 - Acceptance: a firm-but-not-alarm shield banner shows optimization bypassed and the safeguarding lane, freezes only conflicting cohort moves in the 3D presentation, and cannot mutate standings, ratings, objectives, or the domain result; focused RED/GREEN, app TypeScript/tests, both builds, seeded smoke, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P11 / T131
+
+- Completed the pure safeguarding display seam so the exact Golden D event and active moves produce one copied pending event, `optimizationBypassed:true`, and only conflicting `mv-1` paused; the assignment, input event/moves, standings, ratings, and objectives remain untouched.
+- Added the firm-but-not-alarm HUD affordance with a shield/icon/shape/text treatment, explicit safeguarding lane, queue routing, paused-move details, the pinned 300ms `safeguardSweep`, and a state-identical instant reduced/plain form. Primary banner text measures 12.96:1 and the safeguard label 5.22:1 against its tinted surface.
+- Projected paused refs into the r3f observatory so only A3/A5 stop frame updates at their live positions and receive the safeguard color; unrelated stars retain compile/rollback motion. The existing Ledger exposes the same grammatical alert from the same `CohortArenaView`.
+- TDD status: the pure test failed first against the hard-coded empty safeguard view and the app test failed first because `SafeguardingBanner` was absent; after the minimal implementation, focused view/app tests and app-local TypeScript passed. A fresh app compile also exposed and corrected a test-only readonly empty-array inference from T130 without changing runtime behavior.
+- Review status: the production UI was inspected at 1440×1000; the shield banner is legible, color-independent, visually firm without alarm-red/flashing, and consistent with the existing operations HUD. The generic subagent review workflow was not dispatched because this loop prohibits unrequested subagents; the completion self-review found no Critical, Important, or Minor issue.
+- Gate status: view tests pass (34/34), app tests pass (44/44), `pnpm typecheck`, `pnpm test` (147/147), and `pnpm lint` (145 files) pass; `pnpm --filter @gt100k/cohort-arena build`, root `pnpm build`, and the production Playwright WebGL smoke (2/2) pass. T131 completes safeguarding for FR-038/SC-016; P11 remains in progress. No blocker.
+
+## NEXT
+
+- T132 — Complete the WCAG 2.2 AA pass over the Cohort Ledger.
+- Acceptance: the Ledger supports the full Tab/Arrow/Enter/Escape keyboard and switch path with visible `--focus` rings; every state remains icon/shape/text and at least 4.5:1; captions exist wherever sound exists; the canvas stays `aria-hidden`; focused RED/GREEN, app TypeScript/tests, both builds, seeded smoke, and repository typecheck/test/lint remain green.

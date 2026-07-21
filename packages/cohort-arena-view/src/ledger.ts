@@ -41,8 +41,9 @@ export function buildLedger(view: LedgerSource): LedgerView {
   const standingsText = view.standings
     ? `Own gain ${view.standings.selfGain}; ${view.standings.gainToBandTop} to the near-peer band top.`
     : null;
+  const pausedMoveCount = view.safeguarding.pausedMoves.length;
   const safeguardingAlert = view.safeguarding.optimizationBypassed
-    ? `Optimization bypassed; ${view.safeguarding.pausedMoves.length} conflicting moves paused for the safeguarding lane.`
+    ? `Optimization bypassed; ${pausedMoveCount} conflicting ${pausedMoveCount === 1 ? "move" : "moves"} paused for the safeguarding lane.`
     : null;
   const assignedCount = view.cohorts.reduce((total, cohort) => total + cohort.members.length, 0);
 

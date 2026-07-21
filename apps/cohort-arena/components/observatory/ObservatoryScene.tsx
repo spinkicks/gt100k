@@ -146,6 +146,7 @@ export function ObservatoryScene({ view, transitionKind = "compile" }: Observato
     for (const [index, star] of scene.stars.entries()) {
       const instance = starRefs.current.get(star.ref);
       if (!instance) continue;
+      if (star.paused) continue;
       const start = animationStarts.current.get(star.ref) ?? new Vector3(...toTuple(star.start));
       const drift =
         transitionProgress === 1 && motion.drift.durationMs > 0
@@ -251,9 +252,11 @@ export function ObservatoryScene({ view, transitionKind = "compile" }: Observato
             key={star.ref}
             ref={registerStar(star.ref)}
             color={
-              star.state === "unassigned"
-                ? view.presentation.palette.pending
-                : view.presentation.palette.peerHi
+              star.paused
+                ? view.presentation.palette.safeguard
+                : star.state === "unassigned"
+                  ? view.presentation.palette.pending
+                  : view.presentation.palette.peerHi
             }
             position={initialStarPosition(star)}
           />

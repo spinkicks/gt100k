@@ -3,7 +3,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { buildLedger } from "@gt100k/cohort-arena-view";
+import { type ArenaRoomView, buildLedger } from "@gt100k/cohort-arena-view";
 
 import { CohortLedger } from "../components/ledger/CohortLedger.js";
 import { buildSyntheticCohortView } from "../components/synthetic-view.js";
@@ -62,10 +62,12 @@ describe("the RivalryMix Cohort Ledger", () => {
     const view = buildSyntheticCohortView();
     const offText = "Analytics off — no turn-taking analytics were supplied.";
 
-    for (const rivalry of [
+    const rivalryCases: (ArenaRoomView | null)[] = [
       null,
-      { seats: [], patterns: [], confidence: 0, suppressed: true } as const,
-    ]) {
+      { seats: [], patterns: [], confidence: 0, suppressed: true },
+    ];
+
+    for (const rivalry of rivalryCases) {
       const ledger = buildLedger({ ...view, rivalry });
       const markup = renderToStaticMarkup(createElement(CohortLedger, { ledger }));
 

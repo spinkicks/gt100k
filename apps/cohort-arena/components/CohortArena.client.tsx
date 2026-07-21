@@ -10,6 +10,7 @@ import { StandingsToggle } from "./StandingsToggle";
 import { ArenaRoomPanel } from "./arena/ArenaRoomPanel";
 import { ChurnBudgetMeter } from "./hud/ChurnBudgetMeter";
 import { CohortRosterHud } from "./hud/CohortRosterHud";
+import { SafeguardingBanner } from "./hud/SafeguardingBanner";
 import { StandingsPanel } from "./hud/StandingsPanel";
 import { toMotionEasing } from "./hud/motion-transition";
 import { CohortLedger } from "./ledger/CohortLedger";
@@ -142,6 +143,7 @@ export default function CohortArenaClient() {
             </div>
             <span className="status-dot" aria-label="All hard constraints satisfied" />
           </div>
+          <SafeguardingBanner safeguarding={view.safeguarding} reducedMotion={tier2D.active} />
           <CohortRosterHud view={view} reducedMotion={tier2D.active} />
           <ChurnBudgetMeter budget={SYNTHETIC_CHURN_BUDGET} cohorts={view.cohorts} />
           <RollbackControl

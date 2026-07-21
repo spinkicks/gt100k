@@ -7,6 +7,7 @@ import type {
   BuildCohortArenaViewInput,
   CohortArenaView,
   CohortCardView,
+  SafeguardingInput,
   SafeguardingView,
 } from "./model.js";
 import { MOTION_KINDS, resolveMotion } from "./motion.js";
@@ -86,6 +87,24 @@ function assignmentDiff(
   };
 }
 
+function safeguardingView(input: SafeguardingInput | undefined): SafeguardingView {
+  if (!input || input.pending.length === 0) {
+    return { pending: [], pausedMoves: [], optimizationBypassed: false };
+  }
+
+  const affectedMembers = new Set(input.pending.flatMap((event) => event.affectedMembers));
+  return {
+    pending: input.pending.map((event) => ({
+      ...event,
+      affectedMembers: [...event.affectedMembers],
+    })),
+    pausedMoves: input.activeMoves
+      .filter((move) => move.touches.some((learnerRef) => affectedMembers.has(learnerRef)))
+      .map((move) => ({ moveId: move.moveId, touches: [...move.touches] })),
+    optimizationBypassed: true,
+  };
+}
+
 /** Composes the one deterministic view consumed by every visual and accessible renderer. */
 export function buildCohortArenaView(input: BuildCohortArenaViewInput): CohortArenaView {
   const standings = input.standings
@@ -93,11 +112,7 @@ export function buildCohortArenaView(input: BuildCohortArenaViewInput): CohortAr
         optedIn: input.flags.standingsOptIn && input.standings.optedIn,
       })
     : null;
-  const safeguarding: SafeguardingView = {
-    pending: [],
-    pausedMoves: [],
-    optimizationBypassed: false,
-  };
+  const safeguarding = safeguardingView(input.safeguarding);
   const motion = Object.fromEntries(
     MOTION_KINDS.map((kind) => [
       kind,

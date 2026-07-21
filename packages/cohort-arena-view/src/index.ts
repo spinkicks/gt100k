@@ -25,6 +25,7 @@ export type {
   CohortCardView,
   LedgerView,
   PresentationView,
+  SafeguardingInput,
   SafeguardingView,
   ViewBand,
   ViewFlags,

@@ -11,6 +11,7 @@ export interface ObservatoryStar {
   readonly cohortIndex: number | null;
   readonly role: string | null;
   readonly state: "assigned" | "unassigned" | "candidate";
+  readonly paused?: true;
   readonly start: Vec3;
   readonly settled: Vec3;
 }
@@ -131,6 +132,7 @@ export function resolveObservatoryMotion(view: CohortArenaView): ObservatoryMoti
 }
 
 export function buildObservatoryScene(view: CohortArenaView): ObservatorySceneModel {
+  const pausedRefs = new Set(view.safeguarding.pausedMoves.flatMap((move) => move.touches));
   const assignedStars = view.constellation.hexes.flatMap((hex) =>
     hex.members.map(
       (member): ObservatoryStar => ({
@@ -138,6 +140,7 @@ export function buildObservatoryScene(view: CohortArenaView): ObservatorySceneMo
         cohortIndex: hex.cohortIndex,
         role: member.role,
         state: member.state,
+        ...(pausedRefs.has(member.ref) ? { paused: true as const } : {}),
         start: member.field ?? member.pos,
         settled: member.pos,
       }),
@@ -149,6 +152,7 @@ export function buildObservatoryScene(view: CohortArenaView): ObservatorySceneMo
       cohortIndex: null,
       role: member.role,
       state: member.state,
+      ...(pausedRefs.has(member.ref) ? { paused: true as const } : {}),
       start: member.field ?? member.pos,
       settled: member.pos,
     }),

@@ -578,6 +578,107 @@ html[data-reduced-motion="true"] *::after {
   border-top: 1px solid var(--locked);
 }
 
+.safeguarding-banner {
+  position: relative;
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  margin-top: 1rem;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--deck-2) 88%, var(--safeguard));
+  border: 1px solid var(--safeguard);
+  border-radius: 10px;
+}
+
+.safeguarding-sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--safeguard) 10%, transparent);
+  transform-origin: left center;
+}
+
+.safeguarding-banner-mark,
+.safeguarding-banner-copy {
+  position: relative;
+}
+
+.safeguarding-banner-mark {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: var(--safeguard);
+  background: var(--deck);
+  border: 1px solid currentColor;
+  border-radius: 6px;
+}
+
+.safeguarding-banner-mark svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.safeguarding-banner-copy {
+  min-width: 0;
+}
+
+.safeguarding-banner-copy h3,
+.safeguarding-banner-copy p,
+.safeguarding-banner-copy ul {
+  padding: 0;
+  margin: 0;
+}
+
+.safeguarding-banner-copy h3 {
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+}
+
+.safeguarding-banner-copy > p:not(.safeguarding-lane) {
+  margin-top: 0.2rem;
+  color: var(--ink-hi);
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+}
+
+.safeguarding-lane {
+  color: var(--safeguard);
+  font-size: var(--text-label-size);
+  font-weight: 600;
+}
+
+.safeguarding-banner-copy ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.625rem;
+  list-style: none;
+}
+
+.safeguarding-banner-copy li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.45rem;
+  color: var(--ink-hi);
+  background: var(--deck);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: var(--text-label-size);
+  font-variant-numeric: tabular-nums;
+}
+
+.safeguarding-banner-copy li span {
+  color: var(--ink-muted);
+}
+
 .rollback-control h3,
 .rollback-control p {
   padding: 0;

@@ -41,6 +41,14 @@ export interface SafeguardingView {
   readonly optimizationBypassed: boolean;
 }
 
+export interface SafeguardingInput {
+  readonly pending: readonly CohortHealthEvent[];
+  readonly activeMoves: readonly {
+    readonly moveId: string;
+    readonly touches: readonly string[];
+  }[];
+}
+
 export interface VisualBand {
   readonly band: ViewBand;
   readonly labelStyle: "story" | "growth" | "numeric";
@@ -89,5 +97,6 @@ export interface BuildCohortArenaViewInput {
     readonly optedIn: boolean;
   };
   readonly rivalry?: TurnAnalysis | null;
+  readonly safeguarding?: SafeguardingInput;
   readonly flags: ViewFlags;
 }

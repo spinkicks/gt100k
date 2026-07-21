@@ -54,6 +54,26 @@ const RIVALRY = {
   suppressed: false,
 } satisfies NonNullable<BuildCohortArenaViewInput["rivalry"]>;
 
+const SAFEGUARDING = {
+  pending: [
+    {
+      assignmentId: "asg-1",
+      reporterRef: "A2",
+      eventClass: "bullying",
+      affectedMembers: ["A3"],
+      severity: "high",
+      evidenceScope: "session-notes",
+      immediateAction: "paused move",
+      safeguardingLink: "sg-queue-1",
+      followUpOwner: "guide-1",
+    },
+  ],
+  activeMoves: [
+    { moveId: "mv-1", touches: ["A3", "A5"] },
+    { moveId: "mv-2", touches: ["A1"] },
+  ],
+} satisfies NonNullable<BuildCohortArenaViewInput["safeguarding"]>;
+
 function learner(
   learnerRef: string,
   ageBand: SyntheticLearner["ageBand"],
@@ -151,6 +171,7 @@ const INPUT = {
   churn: SYNTHETIC_CHURN_BUDGET,
   standings: STANDINGS,
   rivalry: RIVALRY,
+  safeguarding: SAFEGUARDING,
   flags: {
     reducedMotion: false,
     plain: false,
