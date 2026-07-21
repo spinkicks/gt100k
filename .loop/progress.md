@@ -821,3 +821,14 @@
 ## NEXT
 - Complete U050: run the full accessibility and acceptance pass on `apps/interest-lab` per `specs/003-interest-lab/quickstart.md` and correct any feature-local failures.
 - Acceptance: both surfaces preserve reduced-motion/2D equality, semantic DOM operability, solid reduced-transparency panels, keyboard/switch/screen-reader access, color-independent cues, WCAG contrast/focus, no dark patterns or floating scores, and a non-penalizing help affordance; focused acceptance evidence, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.
+
+## 2026-07-21 — P15 / U050
+- Ran the production Interest Lab app through desktop, 320px, 200%-text, reduced-motion, plain-mode, reduced-transparency, and high-contrast browser passes across both surfaces. Verified labeled sequential focus with visible `--focus` rings, arrow/Enter quest operation and tray state, a decorative non-focusable `aria-hidden` canvas, native table headers, dated timeline markers, lifecycle/gate text, guide form/radio names, color-independent cues, at least 44px labeled targets, no measured text-contrast failures, non-penalizing help beside every visible quest, and zero console/page errors.
+- Found a real guide reflow defect: the wide internal matrix/timeline forced 22px page overflow at 320px and 42px under 200% text. Added a focused CSS contract, confirmed RED on the missing containment, then kept those visuals internally scrollable while allowing the outer grid to shrink and stacking evidence/lifecycle rows at the mobile breakpoint.
+- Independent review found the stacked layout's absolute `Current` marker overlapped the next lifecycle row by 9.3px/21.6px. Added a second RED assertion and moved the marker into normal flow for the stacked tier; the rebuilt production app now measures zero page overflow and zero marker overlap in both cases, with the matrix and timeline scrollers preserved. The reviewer rechecked and marked the increment ready.
+- Verified the focused guide suite (9 tests), app suite (73 tests across 14 files), `pnpm typecheck`, `pnpm test` (212 tests across 46 files), `pnpm lint` (166 files), the Interest Lab production build, and the root production build; all pass.
+- Status: U050 complete; P15 remains in progress pending U051 and U-ROOT. SC-UI-16/17/18 are green at the production-browser, semantic DOM, keyboard, contrast/focus, preference-media, responsive reflow, test, lint, typecheck, and production-build boundaries. No blocker.
+
+## NEXT
+- Complete U051: run `specs/003-interest-lab/quickstart.md` end to end and assemble the final SC-UI-01…18 acceptance map.
+- Acceptance: `pnpm --filter @gt100k/interest-lab-view test`, `pnpm lint`, `pnpm --filter @gt100k/interest-lab-app build`, and the production app smoke all pass; every SC-UI-01…18 has current automated or walkthrough evidence, with any environment-only validation gap stated explicitly.

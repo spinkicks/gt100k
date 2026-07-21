@@ -437,6 +437,7 @@ footer {
 }
 
 .quest-workspace {
+  min-width: 0;
   min-height: 24rem;
   padding: clamp(1.25rem, 4vw, 2.5rem);
 }
@@ -1700,13 +1701,24 @@ footer {
     grid-template-columns: 1fr;
   }
 
-  .lifecycle-track--main {
+  .explanation-column header {
+    flex-wrap: wrap;
+  }
+
+  .lifecycle-track--main,
+  .lifecycle-track--branch {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .lifecycle-track--branch {
     padding-left: 0;
+  }
+
+  .lifecycle-current-marker {
+    position: static;
+    margin-left: auto;
+    transform: none;
   }
 
   .control-heading output {

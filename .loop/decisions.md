@@ -304,3 +304,8 @@
 - Chose: complete U049 with the required package README and a documentation contract; defer its optional `src/demo.ts` because the existing synthetic app seed and U050 walkthrough exercise the composed view.
 - Why: one authoritative usage example documents the input boundary without adding a runtime module or duplicating fixture orchestration. The next ordered task validates both rendered surfaces.
 - Rejected: a second demo would repeat the app seed path and enlarge an optional documentation increment without strengthening a success criterion.
+
+## D062 — Wide guide visuals scroll internally at accessible reflow widths
+- Chose: let the shell's `.quest-workspace` grid item shrink with `min-width: 0`, preserve the coverage matrix and timeline as named keyboard-focusable horizontal scrollers, and stack the evidence headers plus both lifecycle tracks at the existing 48rem breakpoint. In that stacked layout, place the current-state marker in normal flex flow.
+- Why: production-browser measurements found 22px page overflow at 320px and 42px under 200% text because the wide guide visuals contributed to the outer grid's automatic minimum size. The first containment fix exposed a 9.3px/21.6px current-marker collision; the final layout produces zero page overflow and zero marker overlap while retaining every matrix cell, timeline marker, lifecycle state, and internal scroll region.
+- Rejected: hiding overflow on the workspace would clip meaningful guide content and focus indicators; shrinking the matrix/timeline would make their labels unreadable; retaining multi-column lifecycle rows at narrow or text-enlarged widths would force state labels and the current marker to overlap.

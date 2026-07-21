@@ -209,4 +209,21 @@ describe("guide console", () => {
       /@media \(max-width:\s*48rem\)[\s\S]*\.explanation-pair[\s\S]*grid-template-columns:\s*1fr/s,
     );
   });
+
+  it("contains wide guide visuals without creating page-level overflow", () => {
+    const styles = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+
+    expect(styles).toMatch(/\.quest-workspace\s*\{[^}]*min-width:\s*0/s);
+    expect(styles).toMatch(/\.coverage-table-scroll\s*\{[^}]*overflow-x:\s*auto/s);
+    expect(styles).toMatch(/\.timeline-scroll\s*\{[^}]*overflow-x:\s*auto/s);
+    expect(styles).toMatch(
+      /@media \(max-width:\s*48rem\)[\s\S]*\.explanation-column header\s*\{[^}]*flex-wrap:\s*wrap/s,
+    );
+    expect(styles).toMatch(
+      /@media \(max-width:\s*48rem\)[\s\S]*\.lifecycle-track--main,\s*\.lifecycle-track--branch\s*\{[^}]*display:\s*grid[^}]*grid-template-columns:\s*1fr/s,
+    );
+    expect(styles).toMatch(
+      /@media \(max-width:\s*48rem\)[\s\S]*\.lifecycle-current-marker\s*\{[^}]*position:\s*static[^}]*transform:\s*none/s,
+    );
+  });
 });
