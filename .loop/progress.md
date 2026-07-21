@@ -96,3 +96,15 @@
 ## NEXT
 - Complete T010: write the contract and golden tests for `buildCoverageMatrix` in `packages/interest-lab/test/coverage.test.ts` before implementing coverage behavior.
 - Acceptance: the complete and gappy cases deep-equal G2 and G3, including exact per-dimension and aggregated gap strings in dimension order, and expose no `score` or `confidence`; the focused red state is confirmed and the green gate remains intact after the later implementation task.
+
+## 2026-07-20 — P3 / T010 + T014
+- Added three acceptance tests that deep-equal the exact G2 complete matrix and G3 gappy matrix, preserve dimension-ordered aggregate gaps, and reject `score`/`confidence` fields.
+- Confirmed the test-first red state twice: first all three tests failed on the absent module, then the golden assertions failed against a non-behavioral `null` stub before implementation.
+- Implemented the pure `buildCoverageMatrix` projection with catalog-order domains, fixed-vocabulary work modes, explicit cross-cutting gaps, probe-count bounds, and no scalar coverage output.
+- Paired T010 with its minimal T014 implementation so the required red evidence was preserved without leaving the green-only overnight harness at a failing commit boundary.
+- Verified the focused suite (3 tests), forced package compiler, `pnpm typecheck`, `pnpm test` (46 tests), and `pnpm lint` all pass.
+- Status: T010 and T014 complete; P3 remains in progress; SC-002's exact G2/G3 behavioral contract is green. No blocker.
+
+## NEXT
+- Complete T011: add the `buildLab` G1 golden and determinism tests in `packages/interest-lab/test/offer.test.ts`.
+- Acceptance: the golden catalog yields 20 RULE-provenance offers with non-empty reasons, exact G1 domain/work-mode/cross-cutting counts, `explorationReserved === 20`, at least two eligible choices, and byte-identical Lab output for seeds `{1, 42, 999}`; preserve a focused red run and the full green gate.
