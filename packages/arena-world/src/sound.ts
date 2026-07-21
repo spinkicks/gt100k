@@ -36,3 +36,7 @@ export const SOUND_CUES = {
     mutedByDefault: true,
   },
 } satisfies Record<string, SoundCue>;
+
+export function resolveSoundCue(event: keyof typeof SOUND_CUES): SoundCue {
+  return { ...SOUND_CUES[event] };
+}

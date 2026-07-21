@@ -81,7 +81,7 @@ export {
   resolvePostFx,
   resolveWater,
 } from "./scene3d";
-export { SOUND_CUES } from "./sound";
+export { SOUND_CUES, resolveSoundCue } from "./sound";
 export { layoutQuestWorld } from "./layout";
 export { deriveNodeStates } from "./nodes";
 export { buildQuestWorld } from "./world";

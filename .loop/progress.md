@@ -509,3 +509,16 @@
 ## NEXT
 - T032a + the `resolveSoundCue` slice of T033: add `packages/arena-world/test/sound.test.ts` first, then implement and explicitly export the minimal pure sound-cue resolver.
 - Acceptance: all ten events map exactly to the §8.18 cue IDs/captions in registry order; every result is deterministic, fresh, and `mutedByDefault:true`; `notYet` resolves to neutral `soft-tap` / `[soft tap]`; no negative, alarm, or loop flag exists; focused and repository gates remain green (FR-037, SC-021).
+
+## 2026-07-21 — P3 / T032a + T033 (`resolveSoundCue` slice)
+- Added `sound.test.ts` through the public package API, covering all ten exact §8.18 event-to-cue mappings in registry order, one-argument API shape, fresh deterministic replay, muted-by-default behavior, and the neutral `notYet` cue with no negative/alarm/loop fields.
+- Followed red-green TDD: all three focused tests failed because `resolveSoundCue` was absent, then passed after the minimal table-backed resolver and explicit package export landed.
+- Added a pure `resolveSoundCue(event)` implementation that returns a fresh copy of the canonical `SOUND_CUES` row, preserving the existing exact registry as the single source of truth.
+- Review status: checked T032a/T033 against spec §§5.6/8.18, the domain contract, FR-037, SC-021, and the existing sound guardrails; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: related sound/constant/guardrail tests passed (14 tests); direct arena-world TypeScript validation and focused Biome checks passed; `pnpm lint` passed (108 files); `pnpm typecheck` passed; `pnpm test` passed (41 files, 164 tests). No app changed, so no Next.js build was required.
+- SC status: T032a completes SC-021's deterministic, muted, non-looping, neutral sound-selection domain contract. Concrete captioned cue consumption remains scheduled for T034.
+- Blockers: none.
+
+## NEXT
+- T034: add focused app tests first, then implement `apps/arena/app/scene/Fx.tsx` and `PostFx.tsx` and wire them into the existing scene/Ledger composition.
+- Acceptance: high unlocks orchestrate Burst + bloom pulse + beacon ignition + camera punch; productive struggle uses Warm Pulse; `notYet` stays a calm no-shake wisp with unchanged state; reduced motion becomes a static badge/announcement; particles scale by the quality budget; post-fx follows `resolvePostFx`; resolved sound cues remain muted by default and captioned through `aria-live`; lint, typecheck, tests, root build, and Arena app build stay green (FR-012–015/037, SC-004/007/021).
