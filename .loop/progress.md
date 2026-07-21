@@ -410,3 +410,14 @@
 ## NEXT
 - Complete U008: add `apps/interest-lab/next.config.mjs` with both workspace packages in `transpilePackages` and `apps/interest-lab/tsconfig.json` mirroring `apps/student-compass/tsconfig.json`.
 - Acceptance: the app config preserves Next 14 App Router compilation settings, TypeScript uses `noEmit`, `jsx: "preserve"`, and DOM libs, and `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green without a shared-root edit.
+
+## 2026-07-21 — P8 / U008
+- Added the Interest Lab Next config with the two exact TypeScript-source workspace packages in `transpilePackages` and a TypeScript config matching `apps/student-compass` exactly.
+- Confirmed the contract-first red state: the exact config assertion failed with `ENOENT` while `apps/interest-lab/tsconfig.json` was absent, then passed after the two minimal files were added.
+- Preserved the pinned Next App Router compiler shape (`noEmit`, `jsx: "preserve"`, DOM libraries, bundler resolution, and the Next plugin) without editing any shared-root file.
+- Verified the focused configuration contract, `pnpm typecheck`, `pnpm test` (123 tests across 28 files), `pnpm lint` (90 files), and the repository `pnpm build`; all pass.
+- Status: U008 complete; P8 remains in progress pending U009's App Router shell. Part-I SC-001 through SC-016 and the existing Part-II view-package gate remain green. No blocker.
+
+## NEXT
+- Complete U009: add the Interest Lab App Router placeholder shell, exact palette/typography CSS properties and accessibility media rules, public environment example, and app-local ignore file.
+- Acceptance: the placeholder app uses all pinned §U8.2/§U8.3 tokens, reduced-motion/reduced-transparency/plain/focus treatments, documents every §U11 `NEXT_PUBLIC_*` setting including `NEXT_PUBLIC_RENDER_TIER=auto`, ignores `.env.local` and `.next`, and passes the app build plus `pnpm typecheck`, `pnpm test`, and `pnpm lint`.
