@@ -1,0 +1,83 @@
+# Skill Observation Log
+
+Observations captured during task-oriented work.
+
+**Status key:** OPEN = not yet actioned | ACTIONED (YYYY-MM-DD) = skill
+updated/created | DECLINED (YYYY-MM-DD) = user decided not to pursue —
+resolved statuses always carry their resolution date
+
+---
+
+## 2026-07-20
+
+### Observation 1: Recognize pre-approved autonomous specifications
+
+**Status:** ACTIONED (2026-07-20) — Applied to brainstorming (weekly review)
+**Date:** 2026-07-20
+**Session context:** Implementing one ordered task from an existing approved specification in an unattended loop.
+**Skill:** brainstorming
+**Type:** open-source
+**Phase/Area:** Approval gate and transition to implementation
+
+**Issue:** The skill requires fresh questions, a duplicate design document, a commit, and another user approval even when the user has already approved an exact repository specification and explicitly instructed the agent to proceed autonomously without pausing.
+
+**Suggested improvement:** Add a preflight branch that recognizes an explicit implementation request against an existing accepted design as approval. Require a brief scope and test-seam summary, then transition directly to the existing plan while preserving any user prohibition on commits.
+
+**Principle:** Workflow gates should recognize equivalent evidence already supplied by the user so they preserve intent without duplicating approval rituals.
+
+### Observation 2: Respect approved phase boundaries for schema validation
+
+**Status:** ACTIONED (2026-07-20) — Applied to protobuf (weekly review)
+**Date:** 2026-07-20
+**Session context:** Defining fields-only Protobuf contracts in a phase that explicitly defers runtime invariants and pins the dependency set.
+**Skill:** protobuf
+**Type:** open-source
+**Phase/Area:** Write Proto Code and Protovalidate requirement
+
+**Issue:** The skill states that Protovalidate constraints are mandatory on every production field, but an approved phased specification may explicitly defer validation and prohibit adding unpinned dependencies. Following the skill literally would violate the source-of-truth contract and expand the current task.
+
+**Suggested improvement:** Add a preflight check for approved schema phase boundaries and pinned dependencies. When validation is explicitly deferred, preserve the fields-only wire contract, record the deferral, and verify schema shape and Buf compatibility without introducing Protovalidate.
+
+**Principle:** Implementation guidance should preserve approved phase boundaries and dependency constraints when the source of truth deliberately sequences structural contracts before validation.
+
+### Observation 3: Support harness-managed version control
+
+**Status:** ACTIONED (2026-07-20) — Applied to executing-plans (weekly review)
+**Date:** 2026-07-20
+**Session context:** Executing one increment from an approved plan where the automation harness exclusively owns commits, branches, and pull requests.
+**Skill:** executing-plans
+**Type:** open-source
+**Phase/Area:** Worktree setup and development completion
+
+**Issue:** The execution workflow requires worktree setup and a branch-finishing workflow even when the user explicitly prohibits version-control commands because an external harness performs those operations after verification.
+
+**Suggested improvement:** Add a harness-managed mode that verifies the current workspace boundary, writes the requested handoff metadata, and skips worktree, commit, merge, and pull-request operations while retaining all test and review gates.
+
+**Principle:** Execution workflows should separate code-quality gates from version-control ownership so external automation can safely own repository mutations.
+
+- 2026-07-20 T012 checkpoint: no observations.
+- 2026-07-20 T013 checkpoint: no observations.
+- 2026-07-20 T014 checkpoint: no observations.
+- 2026-07-20 T015 checkpoint: no observations.
+- 2026-07-20 T016/T020 checkpoint: no observations.
+- 2026-07-20 T021 checkpoint: no observations.
+- 2026-07-20 T022 implementation checkpoint: no observations.
+- 2026-07-20 T023/T028 RED-GREEN checkpoint: no observations.
+- 2026-07-20 T023/T028 completion checkpoint: no observations.
+- 2026-07-20 weekly review checkpoint: no observations.
+- 2026-07-20 T024 RED checkpoint: no observations.
+
+### Observation 4: Distinguish autonomous task sessions from scheduled reviews
+
+**Status:** OPEN
+**Date:** 2026-07-20
+**Session context:** Executing a harness-managed unattended implementation increment with a narrow product commit scope.
+**Skill:** task-observer
+**Type:** open-source
+**Phase/Area:** Session Start Protocol review trigger
+
+**Issue:** Treating every autonomous task session as a scheduled skill-review run can inject unrelated staged skill updates into a tightly scoped product increment. The trigger conflates an unattended implementation harness with a scheduler whose explicit purpose is skill maintenance.
+
+**Suggested improvement:** Run the review unprompted only when the invocation is explicitly scheduled for skill review or declares skill review as its purpose. For unattended product work, record that the fallback is pending and continue the requested task without staging unrelated updates.
+
+**Principle:** Background execution mode does not imply maintenance intent; automatic side workflows should require a purpose-specific trigger before mutating the task workspace.

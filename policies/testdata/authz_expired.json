@@ -1,0 +1,11 @@
+{
+  "authz_expired": {
+    "actor": {"ref": "actor_pseudo_guide_01", "class": "STAFF", "role": "guide"},
+    "purpose": "onboarding.schedule",
+    "subject_ref": "learner_synth_001",
+    "jurisdiction": "US-CA",
+    "at": "2026-07-20T14:03:11Z",
+    "policy_version": "opa-bundle/2026-07-20a",
+    "consents": []
+  }
+}

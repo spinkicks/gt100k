@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package gt100k.platform.v1;
+
+import "google/protobuf/timestamp.proto";
+import "gt100k/platform/v1/envelope.proto";
+
+option go_package = "github.com/gt100k/platform/proto/gen/go/gt100k/platform/v1;platformv1";
+
+message DecisionRecord {
+  Envelope header = 1;
+  string decision_type = 2;
+  string subject_ref = 3;
+  repeated string candidates = 4;
+  string outcome = 5;
+  repeated string reason_codes = 6;
+  repeated string evidence_snapshot = 7;
+  double uncertainty = 8;
+  string policy_version = 9;
+  string model_version = 10;
+  ActorRef authorized_human = 11;
+  google.protobuf.Timestamp effective_at = 12;
+  bool consequential = 13;
+}

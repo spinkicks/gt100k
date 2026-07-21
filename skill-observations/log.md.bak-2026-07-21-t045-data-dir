@@ -1,0 +1,82 @@
+# Skill Observation Log
+
+Observations captured during task-oriented work.
+
+**Status key:** OPEN = not yet actioned | ACTIONED (YYYY-MM-DD) = skill
+updated/created | DECLINED (YYYY-MM-DD) = user decided not to pursue —
+resolved statuses always carry their resolution date
+
+---
+
+## 2026-07-20
+
+- 2026-07-20 T012 checkpoint: no observations.
+- 2026-07-20 T013 checkpoint: no observations.
+- 2026-07-20 T014 checkpoint: no observations.
+- 2026-07-20 T015 checkpoint: no observations.
+- 2026-07-20 T016/T020 checkpoint: no observations.
+- 2026-07-20 T021 checkpoint: no observations.
+- 2026-07-20 T022 implementation checkpoint: no observations.
+- 2026-07-20 T023/T028 RED-GREEN checkpoint: no observations.
+- 2026-07-20 T023/T028 completion checkpoint: no observations.
+- 2026-07-20 weekly review checkpoint: no observations.
+- 2026-07-20 T024 RED checkpoint: no observations.
+
+### Observation 4: Distinguish autonomous task sessions from scheduled reviews
+
+**Status:** OPEN
+**Date:** 2026-07-20
+**Session context:** Executing a harness-managed unattended implementation increment with a narrow product commit scope.
+**Skill:** task-observer
+**Type:** open-source
+**Phase/Area:** Session Start Protocol review trigger
+
+**Issue:** Treating every autonomous task session as a scheduled skill-review run can inject unrelated staged skill updates into a tightly scoped product increment. The trigger conflates an unattended implementation harness with a scheduler whose explicit purpose is skill maintenance.
+
+**Suggested improvement:** Run the review unprompted only when the invocation is explicitly scheduled for skill review or declares skill review as its purpose. For unattended product work, record that the fallback is pending and continue the requested task without staging unrelated updates.
+
+**Principle:** Background execution mode does not imply maintenance intent; automatic side workflows should require a purpose-specific trigger before mutating the task workspace.
+
+- 2026-07-20 T024/T029 completion checkpoint: no additional observations.
+- 2026-07-20 T025 RED checkpoint: no additional observations.
+- 2026-07-20 T025 completion checkpoint: no additional observations.
+- 2026-07-21 T030 RED-GREEN checkpoint: no additional observations.
+- 2026-07-21 T030 completion checkpoint: no additional observations.
+- 2026-07-21 T031 implementation checkpoint: no additional observations.
+- 2026-07-21 T032 implementation checkpoint: no additional observations.
+- 2026-07-21 T032 completion checkpoint: no additional observations.
+- 2026-07-21 T034 RED-GREEN checkpoint: no additional observations.
+- 2026-07-21 T034 completion checkpoint: no additional observations.
+- 2026-07-21 T035 implementation checkpoint: no additional observations.
+- 2026-07-21 T035 completion checkpoint: no additional observations.
+- 2026-07-21 T036 RED-GREEN checkpoint: no additional observations.
+- 2026-07-21 T036 completion checkpoint: no additional observations.
+
+## 2026-07-21
+
+### Observation 5: Treat an explicit implementation spec as design approval
+
+**Status:** OPEN
+**Date:** 2026-07-21
+**Session context:** Executing an autonomous increment from an ordered, test-first implementation specification.
+**Skill:** brainstorming
+**Type:** open-source
+**Phase/Area:** User approval hard gate
+
+**Issue:** The brainstorming hard gate can require a duplicate design document and another approval round even when the user has supplied an approved canonical specification, an ordered task plan, and an explicit instruction to implement autonomously.
+
+**Suggested improvement:** Define explicit implementation requests backed by a canonical design and task plan as satisfying the design-approval gate. Require fresh brainstorming only when the requested increment introduces an unapproved product or architecture choice.
+
+**Principle:** A workflow should recognize approval already embodied in explicit artifacts and instructions instead of manufacturing a redundant approval loop.
+
+- 2026-07-21 T039 checkpoint: no observations.
+
+- 2026-07-21 T037/T040 completion checkpoint: no additional observations.
+- 2026-07-21 T038/T041 RED-GREEN checkpoint: no additional observations.
+- 2026-07-21 T038/T041 completion checkpoint: no additional observations.
+- 2026-07-21 T039 completion checkpoint: no additional observations.
+- 2026-07-21 T043 RED-GREEN and gate checkpoint: no additional observations.
+- 2026-07-21 T043 completion checkpoint: no additional observations.
+- 2026-07-21 T044 RED-GREEN checkpoint: no additional observations.
+- 2026-07-21 T044/T047 completion checkpoint: no additional observations.
+- 2026-07-21 T045 implementation checkpoint: no additional observations.

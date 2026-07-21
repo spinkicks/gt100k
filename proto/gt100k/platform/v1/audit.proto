@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package gt100k.platform.v1;
+
+import "gt100k/platform/v1/envelope.proto";
+
+option go_package = "github.com/gt100k/platform/proto/gen/go/gt100k/platform/v1;platformv1";
+
+message AuditEntry {
+  string entry_id = 1;
+  Envelope header = 2;
+  ActorRef actor_ref = 3;
+  string action = 4;
+  bool policy_allow = 5;
+  string policy_reason = 6;
+  string policy_version = 7;
+  string outcome = 8;
+}

@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package gt100k.platform.v1;
+
+import "google/protobuf/timestamp.proto";
+import "gt100k/platform/v1/envelope.proto";
+
+option go_package = "github.com/gt100k/platform/proto/gen/go/gt100k/platform/v1;platformv1";
+
+message WithdrawalState {
+  bool withdrawn = 1;
+  google.protobuf.Timestamp withdrawn_at = 2;
+}
+
+message ConsentGrant {
+  Envelope header = 1;
+  string subject_ref = 2;
+  bool guardian_authority = 3;
+  string purpose = 4;
+  repeated string data_categories = 5;
+  repeated string processors = 6;
+  string jurisdiction = 7;
+  google.protobuf.Timestamp effective_at = 8;
+  google.protobuf.Timestamp expiry_at = 9;
+  string collection_method = 10;
+  string document_hash = 11;
+  WithdrawalState withdrawal_state = 12;
+}
