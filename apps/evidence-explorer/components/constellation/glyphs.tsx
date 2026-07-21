@@ -37,7 +37,10 @@ export function Glyph({ glyph, r = 9 }: { glyph: NodeGlyphId; r?: number }): JSX
       return (
         <g {...common}>
           <path d={`M0 ${-r} V${r} M${-r} 0 H${r}`} />
-          <path d={`M${-r * 0.7} ${-r * 0.7} L${r * 0.7} ${r * 0.7} M${r * 0.7} ${-r * 0.7} L${-r * 0.7} ${r * 0.7}`} opacity={0.7} />
+          <path
+            d={`M${-r * 0.7} ${-r * 0.7} L${r * 0.7} ${r * 0.7} M${r * 0.7} ${-r * 0.7} L${-r * 0.7} ${r * 0.7}`}
+            opacity={0.7}
+          />
         </g>
       );
     case "scale": // Review

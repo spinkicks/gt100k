@@ -1,13 +1,13 @@
 /**
- * Provenance Observatory shell (calm-2D tier). Composes the header, the deterministic constellation,
- * the legend, and the accessible ledger from one shared `ExplorerView`. Presentation is fixed to the
- * calm tier this phase; the tier-selecting client stage + 3D cosmos arrive in U1 (UE023).
+ * Provenance Observatory shell. Composes the header, the tier-selecting render stage (calm-2D SVG or
+ * the 3D cosmos — equal modes), the legend, and the accessible ledger from one shared `ExplorerView`.
+ * The stage is a client island; the shell itself is a server component that builds the view once.
  */
 import type { ExplorerView } from "@gt100k/evidence-explorer-view";
 import type { JSX } from "react";
-import { Constellation2D } from "./constellation/Constellation2D.js";
 import { Ledger } from "./Ledger.js";
 import { Legend } from "./Legend.js";
+import { ObservatoryStage } from "./ObservatoryStage.js";
 
 export function Observatory({ view }: { view: ExplorerView }): JSX.Element {
   const threadCount = view.edges.filter((e) => e.isNodeEdge).length;
@@ -28,13 +28,13 @@ export function Observatory({ view }: { view: ExplorerView }): JSX.Element {
         </div>
         <div className="obs-badges">
           <span className="badge badge--synthetic">Synthetic data</span>
-          <span className="badge">Calm 2D · accessible tier</span>
+          <span className="badge">3D cosmos · calm-2D equal mode</span>
         </div>
       </header>
 
       <div className="obs-grid">
         <div className="panel stage" aria-label="Provenance constellation">
-          <Constellation2D view={view} />
+          <ObservatoryStage view={view} />
         </div>
         <div className="obs-side">
           <Legend />

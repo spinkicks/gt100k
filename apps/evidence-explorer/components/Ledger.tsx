@@ -18,18 +18,32 @@ export function Ledger({ view }: { view: ExplorerView }): JSX.Element {
       <ol className="ledger-list">
         {nodes.map((n) => (
           <li key={n.id} className="ledger-row">
-            <span className="ledger-dot" style={{ background: `var(--${n.colorRole})` }} aria-hidden="true" />
+            <span
+              className="ledger-dot"
+              style={{ background: `var(--${n.colorRole})` }}
+              aria-hidden="true"
+            />
             <div className="ledger-body">
               <div className="ledger-head">
                 <span className="ledger-label">{n.label}</span>
                 <span className="ledger-type">{n.type}</span>
               </div>
               <div className="ledger-meta">
-                <span>{n.actor.kind} · {n.actor.label}</span>
-                {n.tool ? <span className="mono">{n.tool.name}@{n.tool.version}</span> : null}
+                <span>
+                  {n.actor.kind} · {n.actor.label}
+                </span>
+                {n.tool ? (
+                  <span className="mono">
+                    {n.tool.name}@{n.tool.version}
+                  </span>
+                ) : null}
                 {n.isInMilestone ? null : <span className="ledger-flag">unlinked note</span>}
-                {n.isHumanOwned ? <span className="ledger-flag ledger-flag--human">human-owned</span> : null}
-                {n.isCitedAssistance ? <span className="ledger-flag ledger-flag--model">cited AI assistance</span> : null}
+                {n.isHumanOwned ? (
+                  <span className="ledger-flag ledger-flag--human">human-owned</span>
+                ) : null}
+                {n.isCitedAssistance ? (
+                  <span className="ledger-flag ledger-flag--model">cited AI assistance</span>
+                ) : null}
               </div>
               <code className="ledger-hash">{n.id.slice(0, 16)}…</code>
             </div>
