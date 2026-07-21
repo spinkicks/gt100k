@@ -950,3 +950,12 @@
 
 ## NEXT
 - T031: probe `pnpm exec biome check .`; if the shared/root failure fingerprint changes or clears, run the complete Part I quickstart. Acceptance remains zero Biome diagnostics with typecheck, 64 domain tests, 94 workspace tests, exact golden root, and synthetic demo green. Do not begin T032 until T031 passes.
+
+## 2026-07-21 — P4 quickstart baseline recheck (T031 partial, seventy-eighth attempt)
+- Re-ran the complete Part I quickstart. Composite `tsc -b`, the filtered domain suite (64/64), workspace Vitest (94/94), the exact G2 golden-root command, the synthetic demo, feature-owned Biome (45 files), and standard lint (70 files) all pass.
+- `pnpm exec biome check .` retains the unchanged fingerprint: 33 reported errors only in prohibited shared/root paths (`biome.json`, root configuration, `.specify`, and `.claude/workflows/deep-research.js`). No feature source or shared file was modified.
+- Phase status: P4 remains in progress. T031 is still incomplete, T032 remains untouched and final, and SC-001–SC-012 remain green in the feature suites.
+- Blocker: repository owners must complete the operator-approved owning-lane baseline repair; the answered critical request remains current and was not duplicated.
+
+## NEXT
+- T031: probe `pnpm exec biome check .`; if the shared/root failure fingerprint changes or clears, run the complete Part I quickstart. Acceptance remains zero Biome diagnostics with typecheck, 64 domain tests, 94 workspace tests, exact golden root, and synthetic demo green. Do not begin T032 until T031 passes.
