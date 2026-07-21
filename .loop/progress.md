@@ -85,3 +85,14 @@
 ## NEXT
 - Complete T009: add the normative ten-event `EVENTS_GOLDEN_V1` fixture under `packages/interest-lab/test/fixtures/events.ts` exactly as pinned in the P2 seed table.
 - Acceptance: tests first lock event ids/types/day offsets and intervention/assistive fields, including `e7.optionalReflection === true`; the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
+
+## 2026-07-20 — P2 / T009
+- Added the normative ten-event `EVENTS_GOLDEN_V1` synthetic stream with exact ids, types, day offsets, prompted reminder context, assistive marker, and withdrawable `e7` reflection.
+- Added two fixture contract tests covering the pinned stream order and the deterministic synthetic defaults required by `EngagementEvent`.
+- Confirmed the test-first red state: the focused suite failed to resolve the absent fixture module, then passed both tests after implementation.
+- Verified the forced package compiler, package suite (24 tests), `pnpm typecheck`, full suite (43 tests), and `pnpm lint` all pass.
+- Status: T009 complete; P2 complete; the normative inputs for G1–G4 and later SC tests are present. No blocker.
+
+## NEXT
+- Complete T010: write the contract and golden tests for `buildCoverageMatrix` in `packages/interest-lab/test/coverage.test.ts` before implementing coverage behavior.
+- Acceptance: the complete and gappy cases deep-equal G2 and G3, including exact per-dimension and aggregated gap strings in dimension order, and expose no `score` or `confidence`; the focused red state is confirmed and the green gate remains intact after the later implementation task.
