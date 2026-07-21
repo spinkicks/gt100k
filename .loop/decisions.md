@@ -124,3 +124,8 @@
 - Chose: add `packages/interest-lab-view/src/index.ts` containing only `export {};` alongside the exact U002 TypeScript config; U005 will replace the empty public surface with explicit named exports as registries and resolvers land.
 - Why: TypeScript reproducibly rejected the otherwise exact config with TS18003 because U001 created no `.ts` input, while U002 explicitly requires the package project to compile independently. A module-only entry point is the smallest input and matches the manifest's already-pinned package entry path without preempting U003 behavior.
 - Rejected: accepting a red independent compile violates U002 acceptance; changing the pinned include/compiler options weakens the spec; implementing U003 or U005 early would expand this increment beyond the next ordered task.
+
+## D026 — Structural guardrail wins over conflicting display-label rows
+- Chose: omit the forbidden `label` property from every view type and use `title` for the child card and coverage-rail display copy.
+- Why: U003 and spec D-U4 explicitly forbid a `label` field on any view model, while two companion data-model rows still name generic display text `label`; the canonical spec wins over the companion document. `title` preserves the required render-ready copy without reopening the no-fixed-label guardrail.
+- Rejected: retaining `label` and weakening the recursive forbidden-key test would violate the task's acceptance criteria; dropping display copy entirely would make the later child and guide renderers incomplete.

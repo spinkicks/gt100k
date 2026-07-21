@@ -354,3 +354,15 @@
 ## NEXT
 - Complete U003: define all DOM, 3D scene, evidence-constellation, and composed view types in `packages/interest-lab-view/src/model.ts` exactly as specified by the Part-II data model.
 - Acceptance: compile-time tests encode the complete U003 type surface while forbidding `score`, `confidence`, `passionScore`, `verdict`, `label`, `rank`, `percentile`, `outOf`, and `price` fields; the package-local compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
+
+## 2026-07-21 — P8 / U003
+- Added the complete plain-data view type surface for child cards, deterministic 3D scenes, guide coverage/explanations/timeline/lifecycle/history, evidence constellation, and the composed two-surface `InterestLabView`.
+- Reused Part-I domain types through type-only imports, represented 3D geometry as numeric tuples, and added exact structural contracts for the future palette, typography, scene, and camera registries without introducing runtime behavior or framework/GPU dependencies.
+- Added four compile-time contract groups plus a recursive forbidden-key assertion covering every U003 view model; confirmed the red state with the package TypeScript build failing on the absent `model.ts`, then the green state after the minimal type implementation.
+- Resolved the companion-data-model `label` conflict in favor of canonical D-U4/U003 by using `title` for renderable display copy; recorded the rationale in D026.
+- Verified the forced package compiler, `pnpm typecheck`, `pnpm test` (114 tests across 25 files), and `pnpm lint` (81 files) all pass. A final static audit found every required U003 type and no explicit forbidden fields or React/Three imports.
+- Status: U003 complete; P8 remains in progress. Part-I SC-001 through SC-016 remain green; the Part-II structural guardrail foundation is encoded, while SC-UI acceptance behavior begins in later phases. No blocker.
+
+## NEXT
+- Complete U004: add the exact value-only `PALETTE`, `TYPOGRAPHY`, `HUE_RAMP`, `MOTION`, `EASINGS`, `WORK_MODE_GLYPHS`, `SCENE3D`, `CAMERA3D`, `QUALITY_TIERS`, and `RENDER_TIERS` registries in their four specified modules.
+- Acceptance: registry tests first pin every §U8.2–§U8.6, §U8.14, and §U8.16 value without implementing later resolvers; the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
