@@ -3,11 +3,13 @@ import { describe, expect, it } from "vitest";
 import {
   AUTO_TOUR_DWELL_MS,
   CameraRig,
+  IDLE_DRIFT,
   cameraRigTargetKey,
   createCameraTransition,
   createEstablishingCameraTransition,
   resolveCameraRigTarget,
   resolveOrbitControlsConfig,
+  sampleIdleDrift,
 } from "../app/child/world3d/CameraRig";
 import { buildSyntheticInterestLabSeed } from "../app/seed";
 
@@ -166,6 +168,39 @@ describe("CameraRig", () => {
         focusedProbeId: "probe-no-longer-in-scene",
       }),
     ).toEqual({ source: "home", islandIndex: null, camera: fullScene.camera });
+  });
+
+  it("breathes a pop-free, bounded idle drift once a shot settles", () => {
+    // Joins the settled pose with zero offset (no pop at t=0).
+    expect(sampleIdleDrift(0, false)).toEqual({
+      posOffset: [0, 0, 0],
+      targetOffset: [0, 0, 0],
+    });
+
+    // Reduced motion keeps the resting shot perfectly still.
+    expect(sampleIdleDrift(4_000, true)).toEqual({
+      posOffset: [0, 0, 0],
+      targetOffset: [0, 0, 0],
+    });
+
+    // Ramps in: right after settling the offset is tiny relative to its amplitude.
+    const early = sampleIdleDrift(120, false);
+    expect(Math.abs(early.posOffset[0])).toBeLessThan(IDLE_DRIFT.pos.amp[0] * 0.1);
+
+    // Never exceeds its per-axis amplitude, sampled densely across a long window.
+    for (let ms = 0; ms <= 60_000; ms += 250) {
+      const drift = sampleIdleDrift(ms, false);
+      drift.posOffset.forEach((value, axis) => {
+        expect(Math.abs(value)).toBeLessThanOrEqual(IDLE_DRIFT.pos.amp[axis]! + 1e-9);
+      });
+      drift.targetOffset.forEach((value, axis) => {
+        expect(Math.abs(value)).toBeLessThanOrEqual(IDLE_DRIFT.target.amp[axis]! + 1e-9);
+      });
+    }
+
+    // Reaches near its full amplitude at a sine peak once ramped in.
+    const peak = sampleIdleDrift(IDLE_DRIFT.pos.periodMs[0] / 4, false);
+    expect(peak.posOffset[0]).toBeGreaterThan(IDLE_DRIFT.pos.amp[0] * 0.9);
   });
 
   it("retargets an in-flight pose when reduced motion changes live", () => {

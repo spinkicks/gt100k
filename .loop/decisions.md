@@ -380,3 +380,25 @@
   island-over-misty-sea composition gains little from contact AO the ContactShadows already imply;
   recorded as a candidate next turn. AgX tone-map (the lib default) — rejected for ACES to match the
   other tiers exactly. Enabling the grade on lite/board — rejected; it would break the D057 perf floor.
+
+## D-VP5 — Idle camera breath completes cinematography #5 (Turn 3)
+- Chose: add a subtle, continuous "idle drift/parallax" to `CameraRig.tsx` so a shot never freezes
+  once a transition settles. New pure `sampleIdleDrift(settledElapsedMs, reducedMotion)` (+ `IDLE_DRIFT`
+  config) returns an additive pos/target offset built from three incommensurate sines per channel
+  (periods 9/13/17s pos, 15/21/25s target), amplitudes ≤ 0.34 world units, ramped in over 1.4s via
+  `MathUtils.smoothstep`. The rig captures each completed transition's `to` pose as `settledBaseRef`,
+  resets a settle clock, and while idle sets `camera.position = base + offset` each frame.
+- Why: game-feel **#5** explicitly names "subtle idle drift/parallax," and the settled camera was the
+  worst remaining cinematography tell — the rig already had intro drift-in, eased island focus,
+  welcome-back, auto-tour, and damped orbit, but froze dead-still between them (most visible during the
+  8s auto-tour dwells → a lifeless diorama). Sines are exactly 0 at t=0 and the ramp starts at 0, so
+  the breath joins the settled pose with **no pop**; keeping the offset purely additive (never touching
+  `createCameraTransition`/`frameAt`) preserves the byte-exact transition unit tests. Amplitudes/periods
+  follow the motion-craft bar (never linear, slow, non-repeating, purposeful — keep a resting world
+  alive) from apple-design / emil / improve-animations.
+- Rejected: applying idle drift in **focus+orbit** mode — OrbitControls + damping already own the camera
+  there and the user is interacting, so an auto-sway would fight the manual orbit; gated out. Baking the
+  drift into the transition math — would break the pinned `frameAt` equality tests and risk popping.
+  Driving idle motion under **reduced motion** — off by contract (returns zeros), consistent with the
+  rig cutting all motion for that setting. Adding the constant to the view package's typed `CAMERA3D`
+  model — kept app-local (like `AUTO_TOUR_DWELL_MS`) to avoid touching the view package's pinned tests.

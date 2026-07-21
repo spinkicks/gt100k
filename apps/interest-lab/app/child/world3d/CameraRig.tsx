@@ -17,6 +17,60 @@ import { MathUtils, Vector3 as ThreeVector3 } from "three";
 
 export const AUTO_TOUR_DWELL_MS = 8_000;
 
+/**
+ * Ambient "breathing" the camera performs once a transition has settled, so a
+ * resting/dwelling shot never freezes into a lifeless diorama (game-feel #5:
+ * subtle idle drift/parallax). Amplitudes are world units; periods are ms and
+ * deliberately incommensurate so the drift never visibly loops. The sway rides
+ * on sines that are exactly zero at t=0 and ramps in over `rampMs`, so it joins
+ * the settled pose with no pop.
+ */
+export const IDLE_DRIFT = {
+  rampMs: 1_400,
+  pos: {
+    amp: [0.34, 0.16, 0.24] as const,
+    periodMs: [13_000, 9_000, 17_000] as const,
+    phase: [0, 1.3, 0.6] as const,
+  },
+  target: {
+    amp: [0.09, 0.05, 0.06] as const,
+    periodMs: [21_000, 15_000, 25_000] as const,
+    phase: [0.4, 2.1, 1.1] as const,
+  },
+} as const;
+
+const sampleAxis = (
+  elapsedMs: number,
+  ramp: number,
+  amp: number,
+  periodMs: number,
+  phase: number,
+) => Math.sin((elapsedMs / periodMs) * Math.PI * 2 + phase) * amp * ramp;
+
+/**
+ * Pure additive camera offset for the settled idle breath. Returns zeros at the
+ * settle instant and under reduced motion; each axis is bounded by its amplitude.
+ */
+export function sampleIdleDrift(
+  settledElapsedMs: number,
+  reducedMotion: boolean,
+): { posOffset: Vector3; targetOffset: Vector3 } {
+  if (reducedMotion || settledElapsedMs <= 0) {
+    return { posOffset: [0, 0, 0], targetOffset: [0, 0, 0] };
+  }
+  const ramp = MathUtils.smoothstep(settledElapsedMs, 0, IDLE_DRIFT.rampMs);
+  const axis = (group: typeof IDLE_DRIFT.pos | typeof IDLE_DRIFT.target, index: number) =>
+    sampleAxis(settledElapsedMs, ramp, group.amp[index]!, group.periodMs[index]!, group.phase[index]!);
+  return {
+    posOffset: [axis(IDLE_DRIFT.pos, 0), axis(IDLE_DRIFT.pos, 1), axis(IDLE_DRIFT.pos, 2)],
+    targetOffset: [
+      axis(IDLE_DRIFT.target, 0),
+      axis(IDLE_DRIFT.target, 1),
+      axis(IDLE_DRIFT.target, 2),
+    ],
+  };
+}
+
 type WorldCameraMode = ChildStaging["worldCameraMode"];
 type CameraMotionKind = "driftIn" | "islandFocus" | "welcomeBack";
 
@@ -287,6 +341,8 @@ export function CameraRig({
   const currentTargetRef = useRef(new ThreeVector3(...initialTransition.from.target));
   const controlsRef = useRef<ComponentRef<typeof OrbitControls>>(null);
   const targetKeyRef = useRef(cameraRigTargetKey(initialTarget));
+  const settledBaseRef = useRef<CameraPose | null>(null);
+  const settledElapsedRef = useRef(0);
 
   useLayoutEffect(() => {
     const from = activeTransitionRef.current?.definition.from;
@@ -323,19 +379,44 @@ export function CameraRig({
         elapsedMs: 0,
       };
       targetKeyRef.current = nextTargetKey;
+      settledBaseRef.current = null;
     }
 
     const active = activeTransitionRef.current;
-    if (!active) return;
-    active.elapsedMs += deltaMs;
-    const frame = active.definition.frameAt(active.elapsedMs);
-    camera.position.set(...frame.pos);
-    currentTargetRef.current.set(...frame.target);
+    if (active) {
+      active.elapsedMs += deltaMs;
+      const frame = active.definition.frameAt(active.elapsedMs);
+      camera.position.set(...frame.pos);
+      currentTargetRef.current.set(...frame.target);
+      controlsRef.current?.target.copy(currentTargetRef.current);
+      camera.lookAt(currentTargetRef.current);
+      if (active.elapsedMs >= active.definition.durationMs) {
+        settledBaseRef.current = copyPose(active.definition.to);
+        settledElapsedRef.current = 0;
+        activeTransitionRef.current = null;
+      }
+      return;
+    }
+
+    // Settled: breathe a subtle idle parallax so a resting/dwelling shot stays
+    // alive. Skipped for focus+orbit, where the user's damped orbit owns the
+    // camera, and under reduced motion (sampleIdleDrift returns zeros anyway).
+    const base = settledBaseRef.current;
+    if (!base || reducedMotion || worldCameraMode === "focus+orbit") return;
+    settledElapsedRef.current += deltaMs;
+    const drift = sampleIdleDrift(settledElapsedRef.current, reducedMotion);
+    camera.position.set(
+      base.pos[0] + drift.posOffset[0],
+      base.pos[1] + drift.posOffset[1],
+      base.pos[2] + drift.posOffset[2],
+    );
+    currentTargetRef.current.set(
+      base.target[0] + drift.targetOffset[0],
+      base.target[1] + drift.targetOffset[1],
+      base.target[2] + drift.targetOffset[2],
+    );
     controlsRef.current?.target.copy(currentTargetRef.current);
     camera.lookAt(currentTargetRef.current);
-    if (active.elapsedMs >= active.definition.durationMs) {
-      activeTransitionRef.current = null;
-    }
   });
 
   const orbit = resolveOrbitControlsConfig(worldCameraMode);
