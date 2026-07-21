@@ -106,9 +106,10 @@ export interface HudProps {
   view: InitialArenaView;
   catalog: readonly Cosmetic[];
   eventBus: Pick<ArenaEventBus, "emit">;
+  onOpenOnboarding(): void;
 }
 
-export default function Hud({ view, catalog, eventBus }: HudProps) {
+export default function Hud({ view, catalog, eventBus, onOpenOnboarding }: HudProps) {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const wardrobeTrigger = React.useRef<HTMLButtonElement>(null);
   const closeButton = React.useRef<HTMLButtonElement>(null);
@@ -131,6 +132,17 @@ export default function Hud({ view, catalog, eventBus }: HudProps) {
       <div className={styles.quality} aria-label={`Quality tier ${view.presentation.qualityTier}`}>
         Quality {view.presentation.qualityTier}
       </div>
+
+      <motion.button
+        aria-label="Open arena guide"
+        className={styles.guideButton}
+        onClick={onOpenOnboarding}
+        title="Open guide"
+        type="button"
+        whileTap={{ transform: "scale(0.97)" }}
+      >
+        ?
+      </motion.button>
 
       <section className={styles.progress} aria-labelledby="arena-growth-title">
         <div>

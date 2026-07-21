@@ -537,3 +537,18 @@
 ## NEXT
 - T034a: implement first-run onboarding coach marks.
 - Acceptance: three skippable beats, dismissal on any input, no mastery blocking, reduced-motion fade, local shown-once flag, HUD reopen control, and Ledger parity; all gates remain green.
+
+## 2026-07-21 — P3 / T034a
+- Added the exact ordered `this-is-you` → `light-a-path` → `your-way` first-run DOM coach marks over the Arena visual, with distinct responsive semantic anchor zones and `motion@^12` transitions derived from the domain `onboardBeat` duration and `EASINGS.enter.css` curve.
+- Added a versioned, storage-failure-safe local shown-once flag and a HUD `?` control that reopens the guide without changing domain state. The visual layer remains pointer-transparent and never cancels an event.
+- Added one passive input-listener lifecycle for pointer, keyboard, wheel, and assistive virtual-click input. Held-key repeats, continuous trackpad wheel bursts, and synthetic follow-up clicks coalesce to one advance; cleanup and underlying-action delivery are acceptance-tested.
+- Mirrored the exact active beat and skip control into a persistent atomic polite live region in the Arena Ledger, while hiding the duplicate visual copy from assistive technology. Reduced motion uses the golden static/no-slide equivalent.
+- Followed red-green TDD: the initial four acceptance tests failed on the absent feature; the review-driven behavior additions then failed on raw repeated input, missing persistent live-region state, duplicated easing, and collapsed mobile anchors before the fixes landed. The final onboarding suite passes 5 tests.
+- Review status: motion review approved; independent code review found no remaining Critical, Important, or Minor issues after the input-coalescing, persistent-live-region, token-easing, responsive-anchor, and behavior-test fixes. The lockfile suggestion was rejected because this loop explicitly forbids shared-root edits other than final `tsconfig.json`.
+- Gate status: `pnpm lint` passed (115 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (43 files, 174 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 57 kB route, 144 kB first load).
+- SC status: P3 implementation is complete. T034a completes FR-038 and advances the onboarding/non-blocking/Ledger portions of SC-004/SC-012; the final interactive accessibility walkthrough remains scheduled for P7/T050.
+- Blockers: browser automation remains unavailable because neither `playwright-cli` nor a local Playwright package is installed; no dependency was added. Static behavior tests, production builds, and independent review are green.
+
+## NEXT
+- T035: add `packages/arena-world/test/base.test.ts` first for the three-mission cohort-base sequence, then implement the minimal `applyCohortContribution` slice needed to keep the tree green.
+- Acceptance: exact append-only `unlockedFeatures=["campfire","banner","garden"]`; prior contributions preserved; byte-identical replay; base state confers no gameplay power (spec §8.8, FR-011, SC-003); focused and repository gates remain green.

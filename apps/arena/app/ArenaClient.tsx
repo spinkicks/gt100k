@@ -15,6 +15,7 @@ import {
 import dynamic from "next/dynamic";
 import * as React from "react";
 import Hud from "./hud/Hud";
+import Onboarding, { useArenaOnboarding } from "./hud/Onboarding";
 import ArenaLedger from "./ledger/ArenaLedger";
 import Fallback2D from "./scene/Fallback2D";
 import { createArenaEventBus } from "./scene/eventBus";
@@ -222,6 +223,7 @@ const SERVER_SAFE_CAPS: DeviceCaps = {
 };
 
 export default function ArenaClient() {
+  const onboarding = useArenaOnboarding();
   const [eventBus] = React.useState(createArenaEventBus);
   const [caps, setCaps] = React.useState<DeviceCaps>(SERVER_SAFE_CAPS);
   const [runtimeTier, setRuntimeTier] = React.useState<QualityTier>();
@@ -290,9 +292,20 @@ export default function ArenaClient() {
             <Fallback2D view={view} />
           )}
         </div>
-        <Hud catalog={CATALOG} eventBus={eventBus} view={view} />
+        <Onboarding
+          activeBeatIndex={onboarding.activeBeatIndex}
+          onAdvance={onboarding.advance}
+          reducedMotion={view.flags.reducedMotion}
+        />
+        <Hud catalog={CATALOG} eventBus={eventBus} onOpenOnboarding={onboarding.open} view={view} />
       </div>
-      <ArenaLedger eventBus={eventBus} feedback={feedback} view={view} catalog={CATALOG} />
+      <ArenaLedger
+        eventBus={eventBus}
+        feedback={feedback}
+        onboarding={onboarding.ledgerState}
+        view={view}
+        catalog={CATALOG}
+      />
     </section>
   );
 }

@@ -1,0 +1,118 @@
+.coachmark {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  width: min(22rem, calc(100% - 2rem));
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--focus);
+  border-radius: 14px;
+  background: var(--sea-deep);
+  color: var(--ink-hi);
+  gap: 0.75rem;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  pointer-events: none;
+}
+
+.coachmark[data-anchor="avatar"] {
+  bottom: 7.25rem;
+  left: clamp(1rem, 28%, 18rem);
+}
+
+.coachmark[data-anchor="available-node"] {
+  top: 34%;
+  left: clamp(1rem, 38%, 28rem);
+}
+
+.coachmark[data-anchor="controls"] {
+  top: 4.5rem;
+  right: 1rem;
+}
+
+.anchorCue {
+  color: var(--focus);
+  font-size: 1.125rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.step,
+.body,
+.hint,
+.coachmark h2 {
+  margin: 0;
+}
+
+.step {
+  color: var(--sun-hi);
+  font-size: var(--text-label-size);
+  font-weight: 800;
+  letter-spacing: var(--text-label-letter-spacing);
+  line-height: var(--text-label-line-height);
+}
+
+.coachmark h2 {
+  margin-top: 0.15rem;
+  font-family: var(--font-body);
+  font-size: var(--text-h2-size);
+  line-height: var(--text-h2-line-height);
+  text-wrap: balance;
+}
+
+.body,
+.hint {
+  max-width: 42ch;
+  margin-top: 0.3rem;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
+.hint {
+  color: rgb(245 249 252 / 82%);
+  font-size: var(--text-label-size);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coachmark {
+    transform: none !important;
+  }
+}
+
+/* biome-ignore lint/correctness/noUnknownMediaFeatureName: WebKit accessibility preference required by the Arena spec. */
+@media (prefers-reduced-transparency: reduce) {
+  .coachmark {
+    background: var(--sea-deep);
+  }
+}
+
+@media (prefers-contrast: more) {
+  .coachmark {
+    border-width: 2px;
+    border-color: var(--ink-hi);
+  }
+}
+
+@media (max-width: 44rem) {
+  .coachmark[data-anchor="avatar"] {
+    right: 1rem;
+    bottom: 7.25rem;
+    left: 1rem;
+    top: auto;
+    width: auto;
+  }
+
+  .coachmark[data-anchor="available-node"] {
+    top: 34%;
+    right: 1rem;
+    bottom: auto;
+    left: 1rem;
+    width: auto;
+  }
+
+  .coachmark[data-anchor="controls"] {
+    top: 4.5rem;
+    right: 1rem;
+    bottom: auto;
+    left: 1rem;
+    width: auto;
+  }
+}

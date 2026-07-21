@@ -3,6 +3,7 @@
 import { CATALOG, type Cosmetic, type InitialArenaView, type NodeState } from "@gt100k/arena-world";
 import * as React from "react";
 import { buildHudCosmeticEntries } from "../hud/Hud";
+import type { OnboardingLedgerState } from "../hud/Onboarding";
 import type { ArenaEventBus } from "../scene/eventBus";
 import {
   type SequencedArenaFeedback,
@@ -120,6 +121,7 @@ export interface ArenaLedgerProps {
   catalog?: readonly Cosmetic[];
   eventBus: Pick<ArenaEventBus, "emit">;
   feedback?: SequencedArenaFeedback;
+  onboarding?: OnboardingLedgerState;
 }
 
 export default function ArenaLedger({
@@ -127,6 +129,7 @@ export default function ArenaLedger({
   catalog = CATALOG,
   eventBus,
   feedback,
+  onboarding,
 }: ArenaLedgerProps) {
   const entries = buildLedgerEntries(view);
   const cosmetics = buildHudCosmeticEntries(view, catalog);
@@ -187,6 +190,28 @@ export default function ArenaLedger({
           Use Arrow keys to explore the landmarks. Press Enter to focus one in the world.
         </p>
       </header>
+
+      <section
+        aria-atomic="true"
+        aria-live="polite"
+        className={styles.onboarding}
+        data-onboarding-mirror={onboarding ? "active" : "idle"}
+      >
+        {onboarding ? (
+          <>
+            <div>
+              <p className={styles.onboardingStep}>
+                Guide · Step {onboarding.step} of {onboarding.total}
+              </p>
+              <h3>{onboarding.beat.title}</h3>
+              <p>{onboarding.beat.body}</p>
+            </div>
+            <button onClick={onboarding.onDismiss} type="button">
+              Skip guide
+            </button>
+          </>
+        ) : null}
+      </section>
 
       <ul
         aria-describedby="arena-ledger-help"
