@@ -490,3 +490,15 @@
 
 - T121 — Add the seeded app runtime smoke for the full P8 UI MVP.
 - Acceptance: `/` mounts the r3f canvas with zero console/WebGL errors, disposes cleanly, switches to the reduced-motion/2D tier without state loss, and exposes a present and keyboard-focusable Cohort Ledger; the smoke, app-local tests/TypeScript, production build, and repository typecheck/test/lint gate remain green.
+
+## 2026-07-21 — P8 / T121
+
+- Added an app-local Playwright production-runtime smoke and scripts that start the built Viewer, require a real WebGL2 context, capture console/page errors, focus the Cohort Ledger, and pin all 12 roster members, 14 satisfied constraints, two floor readouts, and 28 Ledger tree items.
+- Proved clean r3f disposal by switching the live scene to plain 2D, observing the original WebGL context become lost after unmount, remounting the canvas, then reloading under `prefers-reduced-motion: reduce` and confirming the same compiled state in the motion-free 2D tier.
+- The first behavioral browser run exposed that r3f applied `aria-hidden` to its wrapper but not the generated canvas. Added the minimal `onCreated` boundary so the real canvas is directly `aria-hidden="true"`; the unchanged smoke then passed. Playwright output stays inside the ignored app build tree, and the scoped dependency install changed no shared manifest or lockfile.
+- Gate status: app unit tests pass (16/16); `pnpm typecheck`, `pnpm test` (144/144), `pnpm lint`, root `pnpm build`, `pnpm --filter @gt100k/cohort-arena build`, and the seeded Playwright smoke (1/1) all pass. P8 and the UI MVP checkpoint are complete; SC-014 now has runtime mount/error/disposal/accessibility evidence and SC-015 has runtime state-parity evidence, while P11 retains WebGL-loss/performance degradation and the full WCAG pass. No blocker.
+
+## NEXT
+
+- T122 — Implement the opt-in gain-based standings panel in `apps/cohort-arena/components/hud/` from `view.standings`.
+- Acceptance: an opted-in view renders anonymized near-peer gains, `selfGain: 300`, and `gainToBandTop: 40` with an amber left-to-right bar and tabular number ticker driven by `resolveMotion("standingsBar"/"gainCelebrate", ...)`; the renderer exposes no rank/bottom-rank language or field, reduced motion shows the instant final values, and focused tests, app TypeScript/build, the seeded smoke, and repository typecheck/test/lint remain green.

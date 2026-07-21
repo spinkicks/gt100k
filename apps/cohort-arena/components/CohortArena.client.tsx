@@ -95,6 +95,7 @@ export default function CohortArenaClient() {
                 frameloop="always"
                 gl={{ antialias: true, powerPreference: "high-performance" }}
                 shadows={false}
+                onCreated={({ gl }) => gl.domElement.setAttribute("aria-hidden", "true")}
               >
                 <color attach="background" args={[VIEW.presentation.palette.deck]} />
                 <ObservatoryScene view={VIEW} />
