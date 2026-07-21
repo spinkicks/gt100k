@@ -89,14 +89,10 @@ export default function CohortArenaClient() {
   return (
     <main className="arena-shell">
       <header className="arena-header">
-        <div>
+        <div className="arena-masthead">
           <p className="arena-context">Synthetic operations view</p>
           <h1>Cohort Compiler Observatory</h1>
         </div>
-        <p className="arena-summary">
-          One deterministic cohort view supplies the spatial scene, operations summary, static tier,
-          and accessible Ledger.
-        </p>
         <div className="arena-view-controls" aria-label="View preferences">
           <motion.button
             type="button"
