@@ -1,6 +1,6 @@
 ---
 
-description: "Task list for the Arena progression world (RPG game-experience layer, Phaser 3)"
+description: "Task list for the Arena progression world (RPG game-experience layer, Phaser 4)"
 ---
 
 # Tasks: Arena Progression World (RPG Game-Experience Layer)
@@ -34,7 +34,7 @@ description: "Task list for the Arena progression world (RPG game-experience lay
 - [ ] **T004** [P] Author the fixtures: `packages/arena-world/src/graph.fixture.ts` (the 9-node / 4-region DAG, spec §7.1), `tiers.fixture.ts` (spec §7.2), `catalog.fixture.ts` (spec §7.3). Regions in declaration order `[numbers-coast, tinker-bluffs, story-vale, wordwind-reach]`.
 - [ ] **T005** Create `packages/arena-world/src/index.ts` re-exporting the public surface (types + fixtures) as they are added.
 - [ ] **T006** [P] Seeded smoke test `packages/arena-world/test/smoke.test.ts`: import the package, `buildQuestWorld(FIXTURE)` yields **9 nodes + 4 regions**, `layoutQuestWorld` yields a non-empty `positions` array. (Depends on T003/T004; keep the gate green from iteration 1 — `buildQuestWorld`/`layoutQuestWorld` stubs may be trivial until P1, but the smoke must pass.)
-- [ ] **T007** [P] Create the app skeleton `apps/arena/package.json` (`name: @gt100k/arena-world-app`, scripts `dev`/`build`/`start`, deps `@gt100k/arena-world` + `@gt100k/learning-loop` `workspace:*`, `next ^14.2.15`, `react`/`react-dom ^18.3.1`, **`phaser ^3.90.0`**, dev `@types/react*`) — mirror `apps/student-compass/package.json`.
+- [ ] **T007** [P] Create the app skeleton `apps/arena/package.json` (`name: @gt100k/arena-world-app`, scripts `dev`/`build`/`start`, deps `@gt100k/arena-world` + `@gt100k/learning-loop` `workspace:*`, `next ^14.2.15`, `react`/`react-dom ^18.3.1`, **`phaser ^4.2.1`** (latest stable 4.x; TS types bundled — no separate `@types/phaser`), dev `@types/react*`) — mirror `apps/student-compass/package.json`.
 - [ ] **T008** [P] Add `apps/arena/next.config.mjs` (`transpilePackages: ["@gt100k/arena-world","@gt100k/learning-loop"]`) and `apps/arena/tsconfig.json` mirroring `apps/student-compass/tsconfig.json` (noEmit, jsx preserve, DOM libs).
 - [ ] **T009** [P] Add `apps/arena/app/layout.tsx`, `apps/arena/app/page.tsx` (placeholder shell), `apps/arena/app/globals.css` (`@media (prefers-reduced-motion: reduce)`, `.plain-mode`, `:focus-visible` rings, ≥4.5:1 contrast tokens), `apps/arena/.env.local.example` (spec §11 `NEXT_PUBLIC_*`), and `apps/arena/.gitignore` (`.env.local`, `.next`).
 
@@ -61,9 +61,9 @@ description: "Task list for the Arena progression world (RPG game-experience lay
 - [ ] **T015** [US1] Implement `deriveNodeStates(world, signals)` in `packages/arena-world/src/nodes.ts` (pure, deterministic).
 - [ ] **T016** [US1] Implement the synthetic feed `packages/arena-world/src/feed.ts` — a deterministic, seeded `NodeMasterySignal` sequence/simulator (no `Math.random`; a seeded PRNG or fixed schedule) reproducing S1 and progressive unlocks.
 - [ ] **T017** [US1] First `buildArenaView` in `packages/arena-world/src/view.ts` composing `{ world, layout, nodeStates, flags }` (progression/eligibility/base/standing added in later phases); export from `index.ts`.
-- [ ] **T018** [P] [US1] App game bootstrap: `apps/arena/app/game/eventBus.ts` (typed React↔Phaser bridge), `apps/arena/app/game/config.ts` (`Phaser.Types.Core.GameConfig`: `scale.mode FIT`, WebGL with Canvas fallback, scenes list), `apps/arena/app/game/ArenaGame.tsx` (`"use client"`; create `new Phaser.Game(config)` in `useEffect`, `game.destroy(true)` on unmount).
+- [ ] **T018** [P] [US1] App game bootstrap (**Phaser 4 `^4.2.1`; Phaser-4 APIs only — spec §2 D1**): `apps/arena/app/game/eventBus.ts` (typed React↔Phaser bridge), `apps/arena/app/game/config.ts` (`Phaser.Types.Core.GameConfig`: `type: Phaser.AUTO` = rebuilt WebGL renderer with Canvas fallback, `scale.mode FIT`, scenes array), `apps/arena/app/game/ArenaGame.tsx` (`"use client"`; create `new Phaser.Game(config)` in `useEffect`, `game.destroy(true)` on unmount; wire the renderer's WebGL context-lost/restored handlers for graceful degradation).
 - [ ] **T019** [US1] Scenes `apps/arena/app/game/scenes/BootScene.ts` (read flags/seed; register deterministic procedural texture generator) + `PreloadScene.ts` (load committed seed SVGs from `/seed/`; procedural fallback on miss; **no external fetch**).
-- [ ] **T020** [US1] `apps/arena/app/game/scenes/WorldScene.ts` — render regions/nodes/edges from `ArenaView`; node visuals per state (locked/available/unlocked, color-independent); pseudonymous avatar; **tweened traversal** (`Cubic.Out`, interruptible, §8.9) with **follow-camera** (lerp 0.08); unlock reveal (scale 0.95→1.0 + alpha, `Back.Out`, §8.9); reduced-motion branch (instant/crossfade, no glow).
+- [ ] **T020** [US1] `apps/arena/app/game/scenes/WorldScene.ts` — render regions/nodes/edges from `ArenaView`; node visuals per state (locked/available/unlocked, color-independent); pseudonymous avatar; **tweened traversal** via `this.tweens.add({...})` (`Cubic.Out`, interruptible, §8.9) with **follow-camera** `this.cameras.main.startFollow(avatar, true, 0.08, 0.08)`; unlock reveal (scale 0.95→1.0 + alpha, `Back.Out`, §8.9); reduced-motion branch (instant/crossfade, no glow). **Phaser-4 APIs only** (spec §2 D1).
 - [ ] **T021** [US1] `apps/arena/app/ledger/ArenaLedger.tsx` — accessible DOM parallel from `ArenaView`: quest `role="tree"` (`treeitem` accessible name = title + state + region), keyboard nav (Tab/Arrow/Enter), visible focus; canvas `aria-hidden`.
 - [ ] **T022** [US1] `apps/arena/app/ArenaClient.tsx` (`"use client"`) wiring `dynamic(() => import("./game/ArenaGame"), { ssr:false })` + the Ledger + the synthetic feed; `apps/arena/app/page.tsx` renders it. Reduced-motion honored via `prefers-reduced-motion` + `NEXT_PUBLIC_REDUCED_MOTION_DEFAULT`.
 
@@ -101,7 +101,7 @@ description: "Task list for the Arena progression world (RPG game-experience lay
 ### Implementation
 
 - [ ] **T033** [US3] Implement `classifyCelebration(signal)` + `celebrationMotionSpec(event, options)` in `packages/arena-world/src/celebrate.ts`; export from `index.ts`.
-- [ ] **T034** [US3] `apps/arena/app/game/scenes/FxScene.ts` — particle burst + node bloom + path light-up driven by `celebrationMotionSpec` (counts/durations from §8.5); a no-op / single static frame under reduced motion. Warm process-praise "not yet" wisp on error (**no** loss visual, node unchanged). Announce celebrations in the Ledger via `aria-live="polite"`.
+- [ ] **T034** [US3] `apps/arena/app/game/scenes/FxScene.ts` — particle burst + node bloom + path light-up driven by `celebrationMotionSpec` (counts/durations from §8.5), using the **Phaser-4 unified particle API** `this.add.particles(x, y, textureKey, emitterConfig)` (NOT the removed Phaser-3.55 `createEmitter`/`ParticleEmitterManager`); a no-op / single static frame under reduced motion. Warm process-praise "not yet" wisp on error (**no** loss visual, node unchanged). Announce celebrations in the Ledger via `aria-live="polite"`.
 
 **Checkpoint (P3 gate)**: P2 gate + walkthrough step 6.
 
@@ -147,7 +147,7 @@ description: "Task list for the Arena progression world (RPG game-experience lay
 - [ ] **T046** [P] `packages/arena-world/test/synthetic.test.ts` — the whole domain surface runs from fixtures with no consent/admissions/legal input (FR-024, SC-008).
 - [ ] **T047** [P] `packages/arena-world/README.md` (public API, inputs/ports, guardrail summary, "builds on @gt100k/learning-loop"); optional `packages/arena-world/src/demo.ts` + `demo` script matching quickstart.
 - [ ] **T048** Commit the seed asset kit under `apps/arena/public/seed/` (small SVGs: avatar parts, node markers per state, region tiles ×4, base props) and confirm the procedural fallback renders when an asset is absent (FR-030).
-- [ ] **T049** Accessibility + performance acceptance pass on `apps/arena` per quickstart: reduced-motion parity; keyboard/switch/screen-reader over the Ledger; color-independent cues; ≥4.5:1 contrast; canvas `aria-hidden`; 60fps min-device + degraded tier (halved particles, glow/shadow off) + graceful WebGL context-loss handling; mastery action never blocked (FR-015/16/22/23/28, SC-004/10/11/12).
+- [ ] **T049** Accessibility + performance acceptance pass on `apps/arena` per quickstart: reduced-motion parity; keyboard/switch/screen-reader over the Ledger; color-independent cues; ≥4.5:1 contrast; canvas `aria-hidden`; 60fps min-device + degraded tier (halved particles, glow/shadow off) + graceful WebGL context-loss handling via **Phaser 4's rebuilt WebGL renderer / context-lost-restored handlers**; mastery action never blocked (FR-015/16/22/23/28, SC-004/10/11/12).
 - [ ] **T050** Run `quickstart.md` end-to-end (`pnpm --filter @gt100k/arena-world test`, `pnpm lint`, `pnpm --filter @gt100k/arena-world-app build` + app smoke) and confirm SC-001…SC-014 map green.
 - [ ] **T-ROOT** **[HUMAN-RECONCILE — FINAL, shared root file]** Add `{ "path": "packages/arena-world" }` to the root `tsconfig.json` `references` so `tsc -b` includes the new package. This is the **only** shared-root edit; flag it in the PR for human reconciliation (parallel-safety). Then confirm `pnpm typecheck` is clean.
 

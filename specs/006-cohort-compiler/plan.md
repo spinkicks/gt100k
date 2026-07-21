@@ -83,8 +83,10 @@ packages/
     │   │                            #   TurnEvent, TurnAnalysis, BenefitLCB (shadow)
     │   ├── caliper.ts               # near-peer distance + within-caliper predicate (US1)
     │   ├── candidates.ts            # generateCandidates() — deterministic kNN/caliper filter (US1)
+    │   ├── benefit.ts               # default benefitOf(m,C): real caliper-INDEPENDENT composite
+    │   │                            #   (accommodation compat + prior-pairing history + pace/role fit) (US2)
     │   ├── constraints.ts           # hard-constraint predicates: age/schedule/safeguarding/
-    │   │                            #   accommodation/caliper/non-harm-floor/churn (US2)
+    │   │                            #   accommodation/caliper/non-harm-floor (reads injected benefitOf)/churn (US2)
     │   ├── objective.ts             # deterministic soft scoring (pace/intensity/role/pair-history/
     │   │                            #   rivalry-dose/churn/repeated-pairings) — ranks feasible only (US2)
     │   ├── solver.ts                # assignCohorts() — greedy construction + local-search/repair (US2)

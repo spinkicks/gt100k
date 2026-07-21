@@ -40,14 +40,17 @@ The `golden.test.ts` file asserts the exact values pinned in [spec.md](./spec.md
 with `===`, zero tolerance). Reproduce them independently to sanity-check an implementation:
 
 ```bash
-node -e 'const c=require("crypto"),h=s=>c.createHash("sha256").update(Buffer.from(s,"utf8")).digest("hex");
-const leaf=x=>h("00"+x),int=(l,r)=>h("01"+l+r);
-const a=h("a"),b=h("b"),cc=h("c");                      // 3-leaf golden (sorted [c,b,a], odd→dup last)
-console.log(int(int(leaf(cc),leaf(b)),int(leaf(a),leaf(a))));   // 0360836a…6008976e
+node -e 'const c=require("crypto");
+const sha=b=>c.createHash("sha256").update(b).digest();                 // raw-byte SHA-256
+const leaf=d=>sha(Buffer.concat([Buffer.from([0x00]),d]));             // RFC-6962 leaf
+const int=(l,r)=>sha(Buffer.concat([Buffer.from([0x01]),l,r]));        // RFC-6962 interior
+const a=sha(Buffer.from("a")),b=sha(Buffer.from("b")),cc=sha(Buffer.from("c"));
+// 3-leaf golden: sorted [c,b,a]; RFC-6962 (n=3,k=2) promotes the lone leaf(a) unchanged
+console.log(int(int(leaf(cc),leaf(b)),leaf(a)).toString("hex"));       // dd67a4e9…45ca647b
 '
 ```
 
-Expected: `0360836aef719087a43bc5fe34ebace193a6ea761b65a316dbb2845e6008976e` (matches SC-008).
+Expected: `dd67a4e94fcb4fff954bcb093257364a5b5d0832bda9ffb7a5b6340e45ca647b` (matches SC-008).
 
 ## Success criteria mapping
 

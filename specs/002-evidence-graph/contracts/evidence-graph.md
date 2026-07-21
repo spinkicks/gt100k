@@ -29,12 +29,14 @@ assembleEvidencePacket(graph, { milestoneRef, subjectDigest, nodeIds }, hasher) 
   Postcondition: packet deterministic for a fixed node set (FR-010/FR-011); refuses on empty set or invariant violation.
 
 merkleRoot(hashes, hasher) -> string
-  Pure: operate on lowercase-hex strings. Sort hashes ascending (lexicographic).
-        leaf(h)      = hasher.hash(utf8("00" + h))          // "00" = two ASCII chars, NOT a raw 0x00 byte
-        interior(l,r)= hasher.hash(utf8("01" + l + r))      // "+" is string concatenation of hex
-        odd level promotes/duplicates the last node (interior(last, last)); single hash → its leaf digest.
+  Pure: RFC-6962 (Certificate Transparency) raw-byte scheme. Decode each lowercase-hex content hash to its
+        32 raw digest bytes; sort ascending by digest bytes (== ascending hex). Then:
+        leaf(d)      = hasher.hash(0x00 || d)               // 0x00 is a single prefix BYTE; d = 32 digest bytes
+        interior(l,r)= hasher.hash(0x01 || l || r)          // 0x01 prefix byte; l,r = 32-byte hashes; || = raw-byte concat
+        odd level promotes the lone right-most node UNCHANGED (RFC-6962: k = largest power of two < n),
+        never duplicated; single hash → its leaf digest.
         Deterministic (FR-011); domain-separated (FR-021). Golden roots are pinned in spec.md Golden Values
-        (e.g. merkleRoot([sha256("a"),sha256("b"),sha256("c")]) === 0360836a…6008976e).
+        (e.g. merkleRoot([sha256("a"),sha256("b"),sha256("c")]) === dd67a4e9…45ca647b).
 
 buildAttestation({ subjectDigest, merkleRoot, milestoneRef, builder, materials }) -> Attestation
   Pure: returns the in-toto Statement shape (FR-012). Unsigned in this slice (signing deferred, §19.2 D6).

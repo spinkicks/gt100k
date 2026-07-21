@@ -33,7 +33,7 @@
 
 - [x] **No fixed-ability caste ranks** (G6): private level/velocity bands are matchmaking inputs only; no caste rank / public full-field ranking derived (FR-006; Constitution VIII/IX)
 - [x] **Safeguarding bypass**: bullying/coercion/exclusion reports bypass optimization → human sink; pause conflicting moves (POL-007); never reduce a rating (FR-018; §15.2; Constitution I/IX)
-- [x] **Individual non-harm floor** is a hard per-learner constraint, never averaged away; shadow forecasts can't override child reports (FR-009; §15.2)
+- [x] **Individual non-harm floor** is a hard per-learner constraint, never averaged away, over a **real, caliper-independent** benefit signal (accommodation compatibility + prior-pairing history + pace/role fit; default weights `0.40/0.35/0.25`, injectable) so the floor can actually bind — golden [Fixture B4](../spec.md#fixture-b4-nonharm-default-bind-us2) rejects a cohort with mean `0.705 ≥ 0.5` because one member is at `0.43`; shadow forecasts can't override child reports (FR-009; §15.2)
 - [x] **No learned-model assignment**; peer-effect causal uplift stays shadow, logged post-lock only (FR-019; Constitution III; §15)
 - [x] **Human authority / bounded automation**: in-budget repair is reversible bounded automation with a guide-veto window; over-budget/size changes need a recorded staff exception (FR-010/FR-016/FR-017; §8.5; Constitution I)
 - [x] **Accessibility**: accommodations are a hard constraint; no accommodation penalty; no protected-attribute proxy in matchmaking (FR-007; Constitution VI)
@@ -57,7 +57,7 @@
 
 - **Buildable-MVP scope**: "correct" for the solver slice = feasible + all hard constraints honored + deterministic, **not** provably optimal (CP-SAT deferred). The greedy+repair heuristic must never emit a hard-constraint violation; the soft objective only ranks feasible options.
 - **Level/velocity bands are inputs**: how the private ratings are computed (from mastery/velocity signals, PRD §12/§15) is external to this feature; the slice consumes them.
-- **Individual non-harm floor is deterministic here**: modeled as a per-learner compatibility/benefit threshold from observable features — **not** a learned causal-uplift estimate (which stays shadow, FR-019). The floor formula is an implementation detail; its invariant (hard, per-learner) is fixed.
+- **Individual non-harm floor is deterministic and caliper-independent here**: the per-learner benefit is a pinned composite of accommodation compatibility, prior-pairing history, and pace/role fit — factors chosen precisely because they are **independent of the level/velocity caliper** (a caliper-derived floor would never bind), and it is **injectable** so production can supply a richer signal. It is **not** a learned causal-uplift estimate (which stays shadow, FR-019). The weights/floor value are tunable config; the invariant (hard, per-learner, never averaged) is fixed, and the default formula genuinely binds (Fixture B4).
 - **Standings display is elsewhere**: the near-peer/opt-in/no-bottom-rank *visible standings* surface lives in the Arena feature (`004-arena-game-world`); this feature owns the private matchmaking ratings and the compiler, and must not emit a caste rank (G6).
 - **Open question (non-blocking)**: exact caliper tolerances, churn cap, objective weights, and RivalryMix thresholds are tunable config with documented synthetic defaults; any values satisfy the FRs as long as the invariants hold and behavior is deterministic. These are now pre-marked with defaults + severity in [spec.md § Pre-marked Decision Points](../spec.md#pre-marked-decision-points) (DP-1…DP-7).
 
@@ -66,7 +66,7 @@
 - [x] **Scope fence** — explicit in scope / out-of-scope (deferred, marked ports) / non-goals ([spec.md § Scope Fence](../spec.md#scope-fence))
 - [x] **Phasing (P0…P6)** — ordered build path, each phase gated and mapped to SCs + fixtures ([spec.md § Phasing](../spec.md#phasing-p0p6))
 - [x] **Acceptance criteria = tests** — SC-001…SC-008 each mapped to a concrete test file ([spec.md § Success Criteria](../spec.md#success-criteria-mandatory))
-- [x] **Golden values + tolerances** — Fixtures A–E: exact candidate sets, forced cohort partition, exact churn/rollback outcomes, exact turn-pattern detection ([spec.md § Golden Values](../spec.md#golden-values--seed-fixtures))
+- [x] **Golden values + tolerances** — Fixtures A–E: exact candidate sets, forced cohort partition, exact per-member non-harm benefits (Fixture B4 default formula binds: `D1..D4=0.775`, `D5=0.700`, `D6=0.430`, mean `0.705 ≥ 0.5` → rejected on `D6`; ±1e-9), exact churn/rollback outcomes, exact turn-pattern detection ([spec.md § Golden Values](../spec.md#golden-values--seed-fixtures))
 - [x] **Decisions already made** — 14 pre-settled choices ([spec.md § Decisions Already Made](../spec.md#decisions-already-made))
 - [x] **Defaults for the unspecified** — the verbatim "simplest correct option → log in `.loop/decisions.md` → continue" rule ([spec.md § Defaults](../spec.md#defaults-for-the-unspecified))
 - [x] **Stack + commands pinned** — pnpm@9.15.9, `pnpm typecheck`/`test`/`lint`, seeded smoke test green from iteration 1 ([spec.md § Stack & Commands](../spec.md#stack--commands-pinned))

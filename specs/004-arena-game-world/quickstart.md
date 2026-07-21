@@ -34,12 +34,12 @@ pnpm lint         # biome check packages adapters apps  (already covers packages
 ## View it (the Phaser game experience, US1–US5)
 
 ```bash
-pnpm --filter @gt100k/arena-world-app dev   # apps/arena — Phaser 3 quest-world on Canvas/WebGL
+pnpm --filter @gt100k/arena-world-app dev   # apps/arena — Phaser 4 quest-world on Canvas/WebGL
 # then build to validate the perf/acceptance target:
 pnpm --filter @gt100k/arena-world-app build
 ```
 
-**Engine notes**: the game runs on **Phaser 3** (`^3.90.0`) loaded **client-only** (`next/dynamic` `ssr:false`, created in `useEffect`, destroyed on unmount). Seed art is committed under `apps/arena/public/seed/` (small SVGs) with a deterministic procedural fallback — **no external fetch**. The app must produce **zero console/WebGL errors** (SC-011). No `.env` is required; `apps/arena/.env.local.example` documents non-secret `NEXT_PUBLIC_*` defaults.
+**Engine notes**: the game runs on **Phaser 4** (`^4.2.1`, latest stable 4.x; rebuilt WebGL renderer with GPU context-loss/restore handling) loaded **client-only** (`next/dynamic` `ssr:false`, created in `useEffect`, destroyed on unmount), using **Phaser-4 APIs only** (particles via `this.add.particles(x,y,key,config)`, tweens via `this.tweens.add`, camera `startFollow`, etc. — no removed Phaser-3-only APIs). Seed art is committed under `apps/arena/public/seed/` (small SVGs) with a deterministic procedural fallback — **no external fetch**. The app must produce **zero console/WebGL errors** (SC-011). No `.env` is required; `apps/arena/.env.local.example` documents non-secret `NEXT_PUBLIC_*` defaults.
 
 **Expected walkthrough** (driven by the synthetic mastery-signal feed):
 1. The competency graph renders as a **traversable overworld** ("Independence Isles"): four region islands, quest nodes, lit edge paths, a **pseudonymous avatar**, and a **follow-camera**. Locked/available/unlocked nodes are visually distinct and color-independent.
