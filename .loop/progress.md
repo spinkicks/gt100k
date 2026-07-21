@@ -129,3 +129,13 @@
 
 ## NEXT
 - T018a: extend `packages/evidence-graph/test/golden.test.ts` with exact G2 assertions for the pinned one-, two-, and three-leaf roots plus shuffled-input equality; acceptance is `===` matches for all four values through `merkleRoot`, followed by a green workspace gate.
+
+## 2026-07-20 — P3 golden Merkle vectors (T018a)
+- Added the permanent SC-008 golden test for the exact G2 one-, two-, and three-leaf roots plus shuffled-input equality.
+- Used a fail-closed test-local hasher that recognizes only the pinned RFC-6962 raw-byte inputs and intermediate digests, preserving the domain-to-adapter dependency direction while making any prefix, ordering, concatenation, or promotion deviation fail.
+- Focused evidence: `packages/evidence-graph/test/golden.test.ts` passes 3/3 tests. Final gate evidence: workspace `pnpm typecheck`, workspace `pnpm test` (73/73), and `pnpm lint` over 53 files all pass.
+- Phase status: P3 in progress; T018, T018a, and T022 are complete. SC-008 and SC-010 are passing, and the Merkle portion of SC-004 remains passing. T019–T021 and T023–T026 remain.
+- Blockers: none.
+
+## NEXT
+- T019/T023: write the `buildAttestation` contract test first, confirm RED on the missing API, then implement the minimal in-toto Statement builder in `packages/evidence-graph/src/attestation.ts`; acceptance is subject `digest.sha256` bound to the artifact digest, predicate `merkleRoot` bound to the supplied root, the exact `fa6cc759…f6958` golden subject digest, and a green workspace gate.

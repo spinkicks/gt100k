@@ -49,3 +49,8 @@
 - Decision: reject an empty leaf set with `EMPTY_MERKLE_INPUT` and reject values outside the specified 64-character lowercase SHA-256 form with `INVALID_SHA256_DIGEST`.
 - Why: this feature defines Merkle leaves as decoded 32-byte SHA-256 content digests, while packet assembly explicitly refuses empty node sets. Failing closed prevents an unpinned empty root or malformed digest from entering a packet.
 - Rejected: silently accepting short, uppercase, or non-hex values, which would not represent the specified raw digest bytes; adopting RFC-6962's separate empty-tree hash, which is not a packet value pinned by this spec.
+
+## 2026-07-20 — T018a layer-isolated Merkle golden hasher
+- Decision: drive the G2 golden test with a test-local, fail-closed hasher that maps only the exact prefixed raw-byte inputs to the pinned leaf, interior, and root digests. Keep `merkleRoot` internal until its ordered T026 public export.
+- Why: this asserts every pinned G2 root and makes incorrect ordering, prefixes, concatenation, or odd-node promotion fail without introducing a domain-to-Node-adapter dependency or another `node:crypto` import.
+- Rejected: importing `NodeCryptoHasher` into the domain project, which would reverse the project-reference direction; importing `node:crypto` directly in the domain test, which would violate the adapter-only crypto boundary; exporting Merkle early, which would preempt T026; an unconditional constant hasher, which would not validate the bytes supplied by the Merkle algorithm.

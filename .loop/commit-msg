@@ -1,1 +1,1 @@
-feat: add deterministic RFC-6962 Merkle roots
+test(evidence-graph): pin golden Merkle roots
