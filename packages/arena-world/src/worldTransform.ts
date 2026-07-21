@@ -1,3 +1,4 @@
+import { resolveElevation } from "./art";
 import { BIOMES } from "./biomes.fixture";
 import type { WorldLayout, WorldTransform3D } from "./model";
 import { WORLD_SCALE } from "./scene3d";
@@ -15,13 +16,13 @@ function resolvePositionElevation(
   const regionHeight = layout.bounds.height / REGION_ROWS;
   const column = Math.floor((position.x - layout.bounds.x) / regionWidth);
   const row = Math.floor((position.y - layout.bounds.y) / regionHeight);
-  const biome = BIOMES[row * REGION_COLUMNS + column];
+  const region = BIOMES[row * REGION_COLUMNS + column]?.region;
 
-  if (!biome) {
+  if (!region) {
     throw new Error(`Position for node ${position.nodeId} is outside the world bounds`);
   }
 
-  return biome.elevation;
+  return resolveElevation(region);
 }
 
 function addExact(left: number, right: number): number {

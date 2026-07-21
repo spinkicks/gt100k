@@ -50,7 +50,7 @@ export { CATALOG } from "./catalog.fixture";
 export { FIXTURE } from "./graph.fixture";
 export { TIERS } from "./tiers.fixture";
 
-export { PALETTE, TYPOGRAPHY } from "./art";
+export { PALETTE, TYPOGRAPHY, resolveBiome, resolveElevation } from "./art";
 export { ASSET_KEYS } from "./assets";
 export { EASINGS, LAMBDAS, MOTION, resolveMotion } from "./motion";
 export { QUALITY_TIERS } from "./quality";

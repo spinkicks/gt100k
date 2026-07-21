@@ -1,4 +1,5 @@
-import type { Palette } from "./model";
+import { BIOMES } from "./biomes.fixture";
+import type { BiomeIdentity, Palette } from "./model";
 
 export const PALETTE = {
   seaDeep: "#0E2A3B",
@@ -27,3 +28,17 @@ export const TYPOGRAPHY = {
   },
   numeric: "tabular-nums",
 } as const;
+
+export function resolveBiome(region: string): BiomeIdentity {
+  const biome = BIOMES.find((candidate) => candidate.region === region);
+
+  if (!biome) {
+    throw new Error(`Unknown arena region: ${region}`);
+  }
+
+  return biome;
+}
+
+export function resolveElevation(region: string): number {
+  return resolveBiome(region).elevation;
+}

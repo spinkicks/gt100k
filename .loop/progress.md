@@ -205,3 +205,16 @@
 ## NEXT
 - T012b + the `resolveBiome`/`resolveElevation` slice of T016a: add `packages/arena-world/test/art.test.ts`, then implement and explicitly export the minimal pure biome resolvers.
 - Acceptance: exact `PALETTE`/`TYPOGRAPHY` tokens remain stable; every canonical region resolves to its exact §8.12 biome and elevation row; an unknown region throws (FR-031, SC-017); focused checks and repository gates remain green.
+
+## 2026-07-20 — P1 / T012b + T016a (`resolveBiome`/`resolveElevation` slice)
+- Added `art.test.ts` through the public package API, covering the exact `PALETTE`/`TYPOGRAPHY` tokens, all four §8.12 biome/elevation rows, identical-input determinism, and unknown-region rejection.
+- Followed red-green TDD: the token assertion passed while all three resolver behaviors failed with `resolveBiome is not a function`; all four tests passed after the minimal resolver implementation and explicit package exports landed.
+- Added pure `resolveBiome(region)` and `resolveElevation(region)` lookups backed by the canonical `BIOMES` fixture, and routed `resolveWorldTransform` through the shared elevation resolver so the golden values have one source.
+- Review status: checked T012b/T016a line-by-line against spec §§8.11–8.12, FR-031, SC-017, the data model, and the public contract; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused art and world-transform tests passed (7 tests); Biome checked all four changed feature files; direct arena-world TypeScript validation passed; `pnpm typecheck` passed; `pnpm test` passed (19 files, 62 tests). The domain purity scan passed. No app changed, so no Next.js build was required.
+- SC status: the exact token/biome resolver portion of SC-017 is complete; the renderer's icon/shape/light pairing remains scheduled for T020.
+- Blockers: none.
+
+## NEXT
+- T012c + the `resolveAvatarAnimation` slice of T016a: add `packages/arena-world/test/avatar.test.ts`, then implement and explicitly export the minimal pure avatar-animation resolver.
+- Acceptance: all seven intents match the exact §8.13 state/loop/duration/easing/amplitude table; reduced motion returns `loop:false`, `easing:"Linear"`, a `-static` state, and the exact reduced duration with `amplitudePx:0`; output is deterministic and never represents `scale(0)` (FR-032, SC-016); focused checks and repository gates remain green.

@@ -34,3 +34,6 @@
 ## 2026-07-20 — T011a/T014a transform resolution
 - Derived each node's canonical biome from its position in the specified 2×2 region grid, using `BIOMES` declaration order, because the exact `WorldLayout` contract intentionally carries only `nodeId`, `x`, and `y`. Rejected fixture-specific node-id lookup because it would make the public transform resolver fail for compatible synthetic worlds, and rejected adding region metadata because it would violate the exact §8.1 layout shape.
 - Normalized elevation-plus-lift arithmetic to a stable decimal before returning it. Rejected approximate golden assertions because §8.23 marks positions exact and ordinary binary addition would expose values such as `0.09999999999999998` instead of `0.1`.
+
+## 2026-07-20 — T012b biome resolver source
+- Made `BIOMES` the single lookup source for both `resolveBiome` and `resolveElevation`, and routed the world transform through `resolveElevation`. Rejected a parallel region/elevation map because duplicated golden values could drift from the canonical fixture.
