@@ -218,8 +218,10 @@ export function Constellation2D({
     <svg
       className={`constellation${plainMode ? " is-plain" : ""}`}
       viewBox={`0 0 ${view.bounds2d.width} ${view.bounds2d.height}`}
-      role="img"
-      aria-label={`Provenance constellation for milestone ${view.milestoneRef}: ${visibleNodes.length} evidence nodes linked by ${structuralEdges.length} provenance threads.`}
+      // Decorative render of state the accessible Ledger conveys in full (SC-E13 / FR-E12): the
+      // calm-2D constellation is `aria-hidden` and the Ledger is the single source of truth, so AT
+      // never has to reconcile two parallel structures.
+      aria-hidden="true"
       preserveAspectRatio="xMidYMid meet"
     >
       <defs>
