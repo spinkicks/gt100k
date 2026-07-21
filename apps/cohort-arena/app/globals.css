@@ -165,8 +165,7 @@ html[data-reduced-motion="true"] *::after {
 }
 
 .arena-header,
-.region-heading,
-.cohort-summary > div {
+.region-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -297,27 +296,167 @@ html[data-reduced-motion="true"] *::after {
   border-radius: 10px;
 }
 
-.cohort-summary-list {
+.cohort-roster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
   margin-top: 1rem;
-  border-top: 1px solid var(--deck-3);
 }
 
-.cohort-summary {
-  padding-block: 1rem;
-  border-bottom: 1px solid var(--deck-3);
+.cohort-roster-card {
+  min-width: 0;
+  padding: 0.875rem;
+  background: color-mix(in srgb, var(--deck-3) 88%, transparent);
+  border: 1px solid var(--locked);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
 }
 
-.cohort-summary span {
+.cohort-roster-card-header,
+.cohort-accepted-state,
+.cohort-member-list li,
+.cohort-constraint-list li,
+.cohort-floor-readout {
+  display: flex;
+  align-items: center;
+}
+
+.cohort-roster-card-header {
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.cohort-roster-card h3,
+.cohort-roster-card p,
+.cohort-member-list,
+.cohort-constraint-list {
+  padding: 0;
+  margin: 0;
+}
+
+.cohort-roster-card h3 {
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+}
+
+.cohort-roster-card-header p {
   color: var(--ink-muted);
   font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
 }
 
-.cohort-summary p {
-  margin: 0.65rem 0 0;
+.cohort-accepted-state {
+  flex: none;
+  gap: 0.35rem;
+  color: var(--form);
+  font-size: var(--text-label-size);
+  font-weight: 600;
+}
+
+.cohort-accepted-state > span,
+.cohort-constraint-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.cohort-member-list,
+.cohort-constraint-list {
+  list-style: none;
+}
+
+.cohort-member-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding-block: 0.75rem;
+  margin-top: 0.75rem;
+  border-block: 1px solid var(--locked);
+}
+
+.cohort-member-list li {
+  min-width: 0;
+  gap: 0.5rem;
+}
+
+.cohort-member-mark {
+  flex: none;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--form);
+  border: 2px solid var(--deck-3);
+  border-radius: 50%;
+  outline: 1px solid var(--form);
+}
+
+.cohort-member-list strong,
+.cohort-member-list small {
+  display: block;
+}
+
+.cohort-member-list strong {
+  color: var(--ink-hi);
+  font-family: var(--font-mono);
+  font-size: var(--text-data-size);
+  font-variant-numeric: tabular-nums;
+}
+
+.cohort-member-list small {
+  overflow: hidden;
+  color: var(--ink-muted);
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cohort-constraint-list {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.cohort-constraint-list li {
+  min-width: 0;
+  gap: 0.45rem;
+  color: var(--ink-hi);
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+}
+
+.cohort-constraint-list li > span:nth-child(2) {
+  min-width: 0;
+}
+
+.cohort-constraint-list small {
+  margin-left: auto;
+  color: var(--form);
+  font-size: inherit;
+}
+
+.cohort-constraint-mark {
+  flex: none;
+  color: var(--form);
+}
+
+.cohort-floor-readout {
+  gap: 0.4rem;
+  margin-top: 0.75rem !important;
   color: var(--floor);
   font-family: var(--font-mono);
   font-size: var(--text-data-size);
   font-variant-numeric: tabular-nums;
+}
+
+.cohort-floor-mark {
+  flex: none;
+  font-size: 1.1rem;
 }
 
 .tier2d-figure {

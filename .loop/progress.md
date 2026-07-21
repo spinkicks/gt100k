@@ -465,3 +465,16 @@
 
 - T117 — Implement the DOM cohort roster cards in `apps/cohort-arena/components/hud/` from the same `CohortArenaView` using `motion/react`.
 - Acceptance: one card per cohort renders all six members with roles, seven satisfied badges with icon and text, and the exact non-harm-floor readout; membership changes use the `layout` FLIP boundary, controls retain scale `0.97` press feedback and >=44px targets, reduced motion remains state-equal, and focused RED/GREEN, app-local TypeScript/tests, both builds, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P8 / T117
+
+- Added a dedicated `CohortRosterHud` over the shared module-scoped `CohortArenaView`: two accepted cohort cards render all twelve learner refs and roles, all fourteen icon/shape/text satisfied-constraint states, and both exact `0.825 >= 0.5` non-harm-floor readouts.
+- Added token-derived `motion/react` FLIP boundaries to each card and stable member row using the pinned 520ms `memberSwap` motion, with instant state-identical layout under reduced/plain presentation; the existing 44px plain-mode control now uses the pinned non-vestibular `0.97` press response.
+- Added a focused static-render/source contract covering the full Fixture V1 HUD surface, animated/reduced metadata parity, exact motion-registry wiring, client integration, and target size.
+- TDD status: the focused suite first failed because `components/hud/CohortRosterHud.tsx` was absent, then passed 2/2 after the minimal renderer, integration, and styles. A markup-only assertion mismatch was traced to React's server renderer coalescing adjacent text and corrected without changing the acceptance behavior.
+- Gate status: app-local TypeScript and all 12 app tests pass; `pnpm typecheck`, `pnpm test` (144/144), `pnpm lint` (126 files), and the view package suite (31/31) pass; both `pnpm --filter @gt100k/cohort-arena build` and root `pnpm build` succeed. T117 and the roster-HUD portion of FR-032/FR-033 are complete; P8 remains in progress for seed assets and runtime smoke. No blocker.
+
+## NEXT
+
+- T120 — Commit the seed inline SVG set under `apps/cohort-arena/public/seed/` plus the deterministic three.js/drei procedural fallback.
+- Acceptance: star, hex, badge, floor-halo, seat, shield, and shared icons are committed in-repo; the scene has a deterministic primitive fallback; no renderer performs an external fetch; focused RED/GREEN, app-local TypeScript/tests, production build, and repository typecheck/test/lint remain green.

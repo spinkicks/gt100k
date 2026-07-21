@@ -1,9 +1,12 @@
 "use client";
 
+import { resolveMotion } from "@gt100k/cohort-arena-view";
 import { Canvas } from "@react-three/fiber";
-import { useReducedMotion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 
+import { CohortRosterHud } from "./hud/CohortRosterHud";
+import { toMotionEasing } from "./hud/motion-transition";
 import { CohortLedger } from "./ledger/CohortLedger";
 import { ObservatoryScene } from "./observatory/ObservatoryScene";
 import { buildSyntheticCohortView } from "./synthetic-view";
@@ -21,6 +24,7 @@ export default function CohortArenaClient() {
     systemReducedMotion,
     plainMode,
   });
+  const press = resolveMotion("press", { reducedMotion: tier2D.active });
 
   useEffect(() => {
     const root = document.documentElement;
@@ -54,13 +58,15 @@ export default function CohortArenaClient() {
           and accessible Ledger.
         </p>
         <div className="arena-view-controls" aria-label="View preferences">
-          <button
+          <motion.button
             type="button"
             aria-pressed={plainMode}
+            whileTap={{ scale: 0.97 }}
+            transition={{ duration: press.durationMs / 1_000, ease: toMotionEasing(press.easing) }}
             onClick={() => setPlainMode((current) => !current)}
           >
             Plain mode {plainMode ? "on" : "off"}
-          </button>
+          </motion.button>
         </div>
       </header>
 
@@ -105,19 +111,7 @@ export default function CohortArenaClient() {
             </div>
             <span className="status-dot" aria-label="All hard constraints satisfied" />
           </div>
-          <div className="cohort-summary-list">
-            {VIEW.cohorts.map((cohort) => (
-              <section className="cohort-summary" key={cohort.cohortIndex}>
-                <div>
-                  <strong>Cohort {cohort.cohortIndex + 1}</strong>
-                  <span>{cohort.members.length} members</span>
-                </div>
-                <p>
-                  Non-harm floor {cohort.nonHarmFloor.minBenefit} ≥ {cohort.nonHarmFloor.floor}
-                </p>
-              </section>
-            ))}
-          </div>
+          <CohortRosterHud view={VIEW} reducedMotion={tier2D.active} />
         </aside>
       </div>
 
