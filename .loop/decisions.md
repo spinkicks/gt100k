@@ -119,3 +119,9 @@
 ## 2026-07-21 — T106/T111 current-floor truthfulness
 
 - Set every arena seat's `holdingFloor` marker to `false` because the settled `TurnAnalysis` input contains aggregate speaker descriptors and patterns but no current-speaker or turn-sequence carrier. Rejected treating the highest turn share or a dominance subject as the current floor holder because that would invent live state from historical aggregates; a later pulse may activate only when a truthful observable carrier exists.
+
+## 2026-07-21 — T107/T111/T112 composed-view defaults
+
+- Carried the rollback membership diff in `LedgerView.announce` as `removed:[…]; added:[…]`. Rejected adding an unpinned diff field to the settled Ledger shape; the existing polite live-region carrier is the accessible place for a display-only assignment change.
+- Use the accepted hard floor as the conservative displayed lower bound when `pool` is omitted or incomplete; when the optional synthetic pool is present, compute the exact minimum through the injected domain `hard.benefitOf` function. Rejected inventing missing learner profiles or making the spec-explicit optional pool mandatory.
+- Use stable kebab-case identifiers for the seven satisfied badge rows and require both the view flag and the optional standings payload's opt-in marker before exposing standings. Rejected human-label-only badge values and either opt-in source unilaterally enabling a comparison surface.

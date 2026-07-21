@@ -363,3 +363,16 @@
 
 - T107 + remaining T111/T112 view composition — Add the Fixture V1 `buildCohortArenaView` and `plainViewEquals` contract first, then implement the remaining pure band, Ledger, and composed view functions needed to make it green.
 - Acceptance: Fixture V1 produces two exact six-member cohort views with the pinned role vector, seven satisfied badges, `minBenefit 0.825 >= 0.5`, churn delta 0, and standings `null`; repeated inputs are byte-identical; presentation flags change only presentation/motion; the A6 to A7 rollback diff is display-only and leaves domain inputs unchanged; focused RED/GREEN, forced feature TypeScript, package tests, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P7 / T107 + remaining T111/T112 composition
+
+- Added the structural `CohortArenaView`, input, cohort-card, safeguarding, presentation, visual-band, and Ledger contracts; implemented exact age-band presentation, the accessible Ledger projection, and the one deterministic composed view exported through the package's explicit public surface.
+- Fixture V1 now composes two exact six-member hex/card views with the pinned role vector, all seven satisfied badge rows, exact `0.825 >= 0.5` non-harm readouts, zero churn, standings off, all 19 motion rows, and byte-identical repeated output. Reduced/plain/age-band variants change only motion and presentation under `plainViewEquals`.
+- Added the display-only A6→A7 rollback view: per-cohort churn is `[2,0]`, the Ledger live-region announces `removed:[A6]; added:[A7]`, and both current and prior domain snapshots remain unchanged.
+- TDD status: the focused suite first failed 3/3 because `buildCohortArenaView` was absent, then passed 3/3 after the minimal band/Ledger/composition implementation. A focused Biome check found only canonical formatting differences; the canonical formatter resolved them and the same strict checks passed.
+- Gate status: forced compiler/view composite TypeScript passes; the view package passes 23/23 tests; repository `pnpm typecheck`, `pnpm test` (136/136), and `pnpm lint` pass. P7/SC-009 is complete; the pure-view portions of SC-014 and SC-016 are complete, with renderer/a11y work still scheduled. No blocker.
+
+## NEXT
+
+- T108 — Add `packages/cohort-arena-view/test/guardrails.test.ts` for the pure view-model source and structural public types.
+- Acceptance: the package source contains no `Math.random`, dark-pattern, loss/decay/gacha/purchase/currency, or engagement-timer construct; public view types cannot carry price/currency/rank/position/percentile/out-of or honesty/emotion/personality/motivation fields; the focused test, forced feature TypeScript, package tests, and repository typecheck/test/lint remain green.

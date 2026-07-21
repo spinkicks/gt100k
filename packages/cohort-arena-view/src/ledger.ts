@@ -1,0 +1,45 @@
+import type { CohortArenaView, LedgerView } from "./model.js";
+
+type LedgerSource = Pick<CohortArenaView, "cohorts" | "standings" | "rivalry" | "safeguarding">;
+
+function buildRivalryList(view: LedgerSource): string[] {
+  if (!view.rivalry) return [];
+  if (view.rivalry.suppressed) return ["Confidence low — prompts suppressed."];
+
+  return [
+    ...view.rivalry.seats.map(
+      ({ speaker, turnShare, interruptions }) =>
+        `${speaker}: turn share ${turnShare}; interruptions ${interruptions}.`,
+    ),
+    ...view.rivalry.patterns.map(
+      ({ kind, subjects, evidence }) => `${kind}: ${subjects.join(", ")} — ${evidence}`,
+    ),
+  ];
+}
+
+export function buildLedger(view: LedgerSource): LedgerView {
+  const cohortTree = view.cohorts.map((cohort) => ({
+    label: `Cohort ${cohort.cohortIndex + 1} — ${cohort.members.length} members — non-harm floor ${cohort.nonHarmFloor.minBenefit} ≥ ${cohort.nonHarmFloor.floor}`,
+    children: [
+      ...cohort.members.map(({ ref, role }) => ({ label: `${ref} — ${role} — assigned` })),
+      ...cohort.badges.map(({ constraint, satisfied }) => ({
+        label: `${constraint} — ${satisfied ? "satisfied" : "not satisfied"}`,
+      })),
+    ],
+  }));
+  const standingsText = view.standings
+    ? `Own gain ${view.standings.selfGain}; ${view.standings.gainToBandTop} to the near-peer band top.`
+    : null;
+  const safeguardingAlert = view.safeguarding.optimizationBypassed
+    ? `Optimization bypassed; ${view.safeguarding.pausedMoves.length} conflicting moves paused for the safeguarding lane.`
+    : null;
+  const assignedCount = view.cohorts.reduce((total, cohort) => total + cohort.members.length, 0);
+
+  return {
+    cohortTree,
+    standingsText,
+    rivalryList: buildRivalryList(view),
+    safeguardingAlert,
+    announce: `Compiled ${view.cohorts.length} cohorts with ${assignedCount} assigned learners.`,
+  };
+}

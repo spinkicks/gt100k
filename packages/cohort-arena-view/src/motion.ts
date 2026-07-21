@@ -58,6 +58,8 @@ const MOTION_ROWS = {
 
 export type MotionKind = keyof typeof MOTION_ROWS;
 
+export const MOTION_KINDS = Object.freeze(Object.keys(MOTION_ROWS)) as readonly MotionKind[];
+
 export interface MotionSpec {
   readonly kind: MotionKind;
   readonly mode: "animated" | "reduced";
