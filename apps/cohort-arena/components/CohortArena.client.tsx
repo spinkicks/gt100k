@@ -1,14 +1,45 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
+import { useReducedMotion } from "motion/react";
+import { useEffect, useState } from "react";
 
 import { CohortLedger } from "./ledger/CohortLedger";
 import { buildSyntheticCohortView } from "./synthetic-view";
+import { CohortTier2D } from "./tier2d/CohortTier2D";
+import { resolveTier2DMode } from "./tier2d/mode";
 
 const VIEW = buildSyntheticCohortView();
 
 export default function CohortArenaClient() {
   const camera = VIEW.constellation.camera;
+  const systemReducedMotion = useReducedMotion();
+  const [plainMode, setPlainMode] = useState(VIEW.presentation.plain);
+  const tier2D = resolveTier2DMode({
+    configuredDefault: process.env.NEXT_PUBLIC_REDUCED_MOTION_DEFAULT,
+    systemReducedMotion,
+    plainMode,
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const priorPlainMode = root.getAttribute("data-plain-mode");
+    const priorReducedMotion = root.getAttribute("data-reduced-motion");
+
+    if (plainMode) root.setAttribute("data-plain-mode", "true");
+    else root.removeAttribute("data-plain-mode");
+
+    if (tier2D.reason === "reduced-motion") root.setAttribute("data-reduced-motion", "true");
+    else root.removeAttribute("data-reduced-motion");
+
+    return () => {
+      if (priorPlainMode === null) root.removeAttribute("data-plain-mode");
+      else root.setAttribute("data-plain-mode", priorPlainMode);
+
+      if (priorReducedMotion === null) root.removeAttribute("data-reduced-motion");
+      else root.setAttribute("data-reduced-motion", priorReducedMotion);
+    };
+  }, [plainMode, tier2D.reason]);
 
   return (
     <main className="arena-shell">
@@ -21,34 +52,47 @@ export default function CohortArenaClient() {
           One deterministic cohort view supplies the spatial scene, operations summary, static tier,
           and accessible Ledger.
         </p>
+        <div className="arena-view-controls" aria-label="View preferences">
+          <button
+            type="button"
+            aria-pressed={plainMode}
+            onClick={() => setPlainMode((current) => !current)}
+          >
+            Plain mode {plainMode ? "on" : "off"}
+          </button>
+        </div>
       </header>
 
       <div className="arena-primary-grid">
-        <section className="scene-panel" aria-labelledby="scene-heading" data-region="scene-3d">
-          <div className="region-heading">
-            <div>
-              <p className="region-label">Compiler field</p>
-              <h2 id="scene-heading">Two cohorts settled</h2>
+        {tier2D.active && tier2D.reason ? (
+          <CohortTier2D view={VIEW} reason={tier2D.reason} />
+        ) : (
+          <section className="scene-panel" aria-labelledby="scene-heading" data-region="scene-3d">
+            <div className="region-heading">
+              <div>
+                <p className="region-label">Compiler field</p>
+                <h2 id="scene-heading">Two cohorts settled</h2>
+              </div>
+              <span className="status-chip">12 assigned</span>
             </div>
-            <span className="status-chip">12 assigned</span>
-          </div>
-          <div className="canvas-shell" data-spectacle>
-            <Canvas
-              aria-hidden="true"
-              camera={{
-                position: [camera.position.x, camera.position.y, camera.position.z],
-                fov: camera.fov,
-                near: camera.near,
-                far: camera.far,
-              }}
-              dpr={[1, 1.5]}
-              frameloop="demand"
-            >
-              <color attach="background" args={[VIEW.presentation.palette.deck]} />
-              <ambientLight intensity={0.35} />
-            </Canvas>
-          </div>
-        </section>
+            <div className="canvas-shell" data-spectacle>
+              <Canvas
+                aria-hidden="true"
+                camera={{
+                  position: [camera.position.x, camera.position.y, camera.position.z],
+                  fov: camera.fov,
+                  near: camera.near,
+                  far: camera.far,
+                }}
+                dpr={[1, 1.5]}
+                frameloop="demand"
+              >
+                <color attach="background" args={[VIEW.presentation.palette.deck]} />
+                <ambientLight intensity={0.35} />
+              </Canvas>
+            </div>
+          </section>
+        )}
 
         <aside className="hud-panel" aria-labelledby="hud-heading" data-region="hud">
           <div className="region-heading">
@@ -74,17 +118,7 @@ export default function CohortArenaClient() {
         </aside>
       </div>
 
-      <div className="arena-secondary-grid">
-        <section className="tier-panel" aria-labelledby="tier-heading" data-region="tier-2d">
-          <p className="region-label">Equal static tier</p>
-          <h2 id="tier-heading">2D projection ready</h2>
-          <p>
-            The same {VIEW.constellation.hexes.length} cohort formations and{" "}
-            {VIEW.cohorts.length * 6}
-            learner positions are available without WebGL or motion.
-          </p>
-        </section>
-
+      <div className="arena-secondary-grid arena-ledger-grid">
         <section className="ledger-panel" aria-labelledby="ledger-heading" data-region="ledger">
           <div className="region-heading">
             <div>

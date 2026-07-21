@@ -439,3 +439,16 @@
 
 - T119 — Implement the first-class 2D/reduced-motion tier in `apps/cohort-arena/components/tier2d/` from the same `CohortArenaView`, before richer 3D choreography.
 - Acceptance: `useReducedMotion` and `NEXT_PUBLIC_REDUCED_MOTION_DEFAULT` select a motion-free DOM/SVG rendering of the exact `project2D` cohort positions; plain mode uses the same low-spectacle tier; no state is recomputed or lost; the Ledger remains available; focused RED/GREEN, app-local TypeScript/tests, production build, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P8 / T119
+
+- Added a motion-free DOM/SVG 2D tier over the shared `CohortArenaView`, rendering the exact Fixture V1 `project2D` positions, settled cohort hexes, floor halos, all 12 member/role states, all 14 satisfied-constraint states, and a static polite announcement without WebGL.
+- Wired `motion/react`'s `useReducedMotion`, the `NEXT_PUBLIC_REDUCED_MOTION_DEFAULT=system|on|off` override, and a 44px plain-mode toggle so reduced or plain presentation replaces the Canvas while the same module-scoped view, HUD, and Cohort Ledger remain available.
+- Extended the synthetic view factory with test-only partial flags and proved `plainViewEquals` across standard, reduced, and plain views; invalid/unset configuration follows the system preference, while plain mode always selects the low-spectacle tier.
+- TDD status: the focused suite first failed because `components/tier2d/CohortTier2D.tsx` was absent, then passed 4/4 after the minimal renderer and mode resolver; all app-local tests pass 7/7.
+- Gate status: app-local TypeScript passes; `pnpm --filter @gt100k/cohort-arena build` succeeds with the reduced-motion environment unset and prerenders `/`; repository `pnpm typecheck`, `pnpm test` (144/144), and `pnpm lint` (120 files) pass. T119 and the P8 portion of SC-015 are complete; WebGL-loss fallback/runtime smoke remain T121/T133. P8 remains in progress; no blocker.
+
+## NEXT
+
+- T116 — Implement the 3D Compiler Observatory in `apps/cohort-arena/components/observatory/` from the already-shared view, now that the accessible Ledger and first-class 2D tier are green.
+- Acceptance: render learner stars with drei `Instances` at exact constellation positions; animate compile field-to-hex choreography only through `useFrame` and `resolveMotion("compile", ...)`; draw caliper rings, satisfied-badge rings, and floor halos with restrained bloom; keep a calm follow-free camera, dispose GL resources on unmount, and retain the verified reduced/plain 2D fallback; focused RED/GREEN, app-local TypeScript/tests, production build, and repository typecheck/test/lint remain green.

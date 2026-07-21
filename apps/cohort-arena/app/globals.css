@@ -174,8 +174,30 @@ html[data-reduced-motion="true"] *::after {
 }
 
 .arena-header {
-  align-items: end;
+  align-items: center;
   padding-block: 0.5rem 1.75rem;
+}
+
+.arena-view-controls {
+  display: flex;
+  flex: none;
+  align-items: center;
+}
+
+.arena-view-controls button {
+  min-height: 44px;
+  padding: 0.625rem 0.875rem;
+  color: var(--ink-hi);
+  background: var(--deck-2);
+  border: 1px solid var(--locked);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.arena-view-controls button:hover,
+.arena-view-controls button[aria-pressed="true"] {
+  background: var(--deck-3);
+  border-color: var(--peer-hi);
 }
 
 .arena-header h1,
@@ -222,6 +244,10 @@ html[data-reduced-motion="true"] *::after {
 .arena-secondary-grid {
   grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 2fr);
   margin-top: 1rem;
+}
+
+.arena-ledger-grid {
+  grid-template-columns: 1fr;
 }
 
 .scene-panel,
@@ -294,11 +320,116 @@ html[data-reduced-motion="true"] *::after {
   font-variant-numeric: tabular-nums;
 }
 
-.tier-panel > p:last-child {
-  max-width: 50ch;
-  margin-bottom: 0;
+.tier2d-figure {
+  margin: 1rem 0 0;
+}
+
+.tier2d-map {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  background: var(--deck);
+  border-radius: 10px;
+}
+
+.tier2d-floor-halo {
+  fill: color-mix(in srgb, var(--floor) 15%, transparent);
+  stroke: var(--floor);
+  stroke-width: 5;
+}
+
+.tier2d-hex {
+  fill: color-mix(in srgb, var(--peer) 9%, transparent);
+  stroke: var(--peer-hi);
+  stroke-width: 5;
+}
+
+.tier2d-learner {
+  fill: var(--deck-3);
+  stroke: var(--form);
+  stroke-width: 6;
+}
+
+.tier2d-bench-learner {
+  fill: var(--deck-3);
+  stroke: var(--pending);
+  stroke-width: 6;
+  rx: 8px;
+}
+
+.tier2d-learner-label {
+  fill: var(--ink-hi);
+  font-family: var(--font-mono);
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.tier2d-figure figcaption,
+.tier2d-empty {
+  max-width: 65ch;
+  margin: 0.75rem 0 0;
   color: var(--ink-muted);
+  font-size: var(--text-label-size);
   text-wrap: pretty;
+}
+
+.tier2d-state-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(21rem, 100%), 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.tier2d-cohort-state {
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--locked);
+}
+
+.tier2d-cohort-state h3,
+.tier2d-cohort-state p,
+.tier2d-cohort-state ul {
+  margin: 0;
+}
+
+.tier2d-cohort-state h3 {
+  font-size: var(--text-body-size);
+}
+
+.tier2d-floor-readout {
+  margin-top: 0.4rem !important;
+  color: var(--floor);
+  font-family: var(--font-mono);
+  font-size: var(--text-data-size);
+  font-variant-numeric: tabular-nums;
+}
+
+.tier2d-member-list,
+.tier2d-badge-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
+  gap: 0.35rem 0.75rem;
+  padding: 0;
+  margin-top: 0.75rem !important;
+  color: var(--ink-muted);
+  font-size: var(--text-label-size);
+  list-style: none;
+}
+
+.tier2d-badge-list li {
+  color: var(--ink-hi);
+}
+
+.tier2d-badge-list span {
+  display: inline-grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-right: 0.25rem;
+  color: var(--form);
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  font-weight: 700;
 }
 
 .cohort-ledger-tree,

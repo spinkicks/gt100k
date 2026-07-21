@@ -1,6 +1,7 @@
 import {
   type BuildCohortArenaViewInput,
   type CohortArenaView,
+  type ViewFlags,
   buildCohortArenaView,
 } from "@gt100k/cohort-arena-view";
 
@@ -106,6 +107,9 @@ const INPUT = {
   },
 } satisfies BuildCohortArenaViewInput;
 
-export function buildSyntheticCohortView(): CohortArenaView {
-  return buildCohortArenaView(INPUT);
+export function buildSyntheticCohortView(flags: Partial<ViewFlags> = {}): CohortArenaView {
+  return buildCohortArenaView({
+    ...INPUT,
+    flags: { ...INPUT.flags, ...flags },
+  });
 }
