@@ -650,3 +650,40 @@
   (all load-bearing: synthetic-only, no-PII, no-fixed-labels) or the masthead "synthetic preview" eyebrow
   (trust signal, de-emphasized as small text); any CSS/markup change (this is a words-only subtraction —
   keeps the pinned-markup tests and CSS regexes untouched by construction).
+
+## D-VP13 — Light the guide evidence constellation as glowing nodes (Turn 11)
+- What: Overhauled `EvidenceConstellationCanvas.tsx` — the guide's decorative 3D depth figure — which
+  was the one remaining 3D surface still rendering **bare `meshBasicMaterial` spheres on transparent
+  black** (flat balls + thin lines). Every star and anchor pole is now a `GlowPoint`: a small hot
+  self-luminous **core** sphere wrapped in a soft **additive halo sprite**, tinted per pull
+  (supporting→sparkHi, disconfirming→tide, neutral→inkHi) and scaled by the star's `brightness`. Added
+  `constellation-node.ts` with (a) `createSoftDotTexture()` — a **white** radial-gradient sprite
+  (opaque centre → transparent rim) drawn in-memory (mirrors `glow-texture.ts`; white so a single
+  texture tints to any tone via `spriteMaterial.color`), and (b) pure `resolveStarNode()` /
+  `resolveAnchorNode()` mapping brightness → `{coreScale, haloScale, coreOpacity, haloOpacity}` (halo
+  ~5× the core; opacities unit-clamped). Anchors read as hotter/wider beacons the pull-lines converge
+  on. Links bumped 0.28→0.34 opacity so the light-threads read against the now-brighter stars.
+- Why: game-feel auto-fail #1 verbatim — "Flat-lit, untextured primitives (… orange spheres on
+  black)" + "Materials, never bare primitives … emissive for glow." The 10 prior turns crafted the
+  child 3D world AND the guide's *DOM* light-table deck, but nobody touched the guide's *3D constellation
+  canvas* — so it sat as the last "three.js starter" surface in the app, directly under a `figcaption`
+  calling it the "Evidence constellation." The doc's per-app note wants the constellation to read as a
+  *living constellation of glowing nodes*, not flat dots. apple-design §12 (materials/depth) + §16.7
+  (craft: deliberate values): the additive halo + hot core is the emissive "glowing node" idiom, chosen
+  conservative on a decorative float (restraint — it's `aria-hidden`, DOM evidence stays authoritative).
+- Verification: the sole source pin on this file (guide-console.test.ts) is `<Canvas … aria-hidden="true"`
+  — preserved. New `constellation-node.test.ts` (6 tests, mirrors the glow-texture harness): texture
+  draws a white radial dot in-memory w/o fetch + correct filters/colorspace, throws w/o a 2D context;
+  `colorForPull` tone mapping; `resolveStarNode` brightness-monotonic scaling + unit-clamped opacity +
+  halo>core; `resolveAnchorNode` hotter/wider beacon. Gate green: tsc + app 80 tests (74→80) +
+  root 212 tests + `next build`. Pixel glow still can't be verified in this GPU-less headless env
+  (same honest caveat as the Bloom grade — the canvas is dynamic ssr:false and never rasterizes here),
+  so values were chosen conservative-by-construction and tinted to the committed palette.
+- Rejected: three separate tinted glow textures (one white texture + per-sprite `color` tint is simpler
+  and DRY — emil "fewer moving parts"); a full `<EffectComposer>`+Bloom on this canvas (heavy for a
+  decorative float that already floats behind authoritative DOM — the additive halo is the honest,
+  perf-cheap 2D stand-in, same board-2d rationale as D-VP8); brightening the neutral stars to compete
+  with supporting/disconfirming (neutral must stay quiet — matches the calm/spark split, D-VP8);
+  animating the glow (the `<Float>` drift is enough ambient motion; a pulsing halo would over-decorate
+  a background figure — game-feel #1 restraint); touching `glow-texture.ts` (warm-only + pinned test —
+  added a sibling factory instead).

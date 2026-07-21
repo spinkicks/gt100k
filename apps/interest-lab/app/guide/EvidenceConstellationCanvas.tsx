@@ -9,12 +9,15 @@ import {
 } from "@gt100k/interest-lab-view";
 import { Float, Line } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-
-const colorForPull = (pull: ConstellationStar["pull"]): string => {
-  if (pull === "supporting") return PALETTE.sparkHi;
-  if (pull === "disconfirming") return PALETTE.tide;
-  return PALETTE.inkHi;
-};
+import { useMemo } from "react";
+import { AdditiveBlending, type CanvasTexture } from "three";
+import {
+  colorForPull,
+  createSoftDotTexture,
+  type GlowNode,
+  resolveAnchorNode,
+  resolveStarNode,
+} from "./constellation-node";
 
 interface EvidenceLinkProps {
   star: ConstellationStar;
@@ -30,35 +33,59 @@ function EvidenceLink({ star, view }: EvidenceLinkProps) {
       points={[star.position, target]}
       color={colorForPull(star.pull)}
       lineWidth={0.7}
-      opacity={0.28}
+      opacity={0.34}
       transparent
     />
   );
 }
 
-interface EvidenceStarProps {
-  star: ConstellationStar;
+interface GlowPointProps {
+  node: GlowNode;
+  glow: CanvasTexture;
+  position?: Vector3;
 }
 
-function EvidenceStar({ star }: EvidenceStarProps) {
-  const scale = 0.12 + star.brightness * 0.14;
-
+/** A hot self-luminous core wrapped in a soft additive halo — one point of light. */
+function GlowPoint({ node, glow, position }: GlowPointProps) {
   return (
-    <mesh position={star.position} scale={scale}>
-      <sphereGeometry args={[1, 16, 16]} />
-      <meshBasicMaterial
-        color={colorForPull(star.pull)}
-        opacity={0.38 + star.brightness * 0.62}
-        toneMapped={false}
-        transparent
-      />
-    </mesh>
+    <group position={position}>
+      <sprite scale={node.haloScale}>
+        <spriteMaterial
+          map={glow}
+          color={node.color}
+          opacity={node.haloOpacity}
+          blending={AdditiveBlending}
+          depthWrite={false}
+          toneMapped={false}
+          transparent
+        />
+      </sprite>
+      <mesh scale={node.coreScale}>
+        <sphereGeometry args={[1, 16, 16]} />
+        <meshBasicMaterial
+          color={node.color}
+          opacity={node.coreOpacity}
+          toneMapped={false}
+          transparent
+        />
+      </mesh>
+    </group>
   );
+}
+
+interface EvidenceStarProps {
+  star: ConstellationStar;
+  glow: CanvasTexture;
+}
+
+function EvidenceStar({ star, glow }: EvidenceStarProps) {
+  return <GlowPoint node={resolveStarNode(star)} glow={glow} position={star.position} />;
 }
 
 interface AnchorProps {
   position: Vector3;
   tone: string;
+  glow: CanvasTexture;
 }
 
 const ANCHOR_POINTS = [
@@ -67,14 +94,16 @@ const ANCHOR_POINTS = [
   { id: "lower", position: [0, -0.11, 0.06], scale: 0.13 },
 ] as const satisfies readonly { id: string; position: Vector3; scale: number }[];
 
-function Anchor({ position, tone }: AnchorProps) {
+function Anchor({ position, tone, glow }: AnchorProps) {
   return (
     <group position={position}>
       {ANCHOR_POINTS.map((point) => (
-        <mesh key={point.id} position={point.position} scale={point.scale}>
-          <sphereGeometry args={[1, 12, 12]} />
-          <meshBasicMaterial color={tone} opacity={0.76} toneMapped={false} transparent />
-        </mesh>
+        <GlowPoint
+          key={point.id}
+          node={resolveAnchorNode(point.scale, tone)}
+          glow={glow}
+          position={point.position}
+        />
       ))}
     </group>
   );
@@ -86,6 +115,8 @@ export interface EvidenceConstellationCanvasProps {
 }
 
 export function EvidenceConstellationCanvas({ view, quality }: EvidenceConstellationCanvasProps) {
+  const glow = useMemo(() => createSoftDotTexture(() => document.createElement("canvas")), []);
+
   return (
     <Canvas
       aria-hidden="true"
@@ -98,13 +129,13 @@ export function EvidenceConstellationCanvas({ view, quality }: EvidenceConstella
     >
       <Float speed={0.25} rotationIntensity={0.08} floatIntensity={0.12}>
         {view.stars.map((star) => (
-          <EvidenceStar key={star.family} star={star} />
+          <EvidenceStar key={star.family} star={star} glow={glow} />
         ))}
         {view.stars.map((star) => (
           <EvidenceLink key={`link:${star.family}`} star={star} view={view} />
         ))}
-        <Anchor position={view.supportingAnchor} tone={PALETTE.sparkHi} />
-        <Anchor position={view.disconfirmingAnchor} tone={PALETTE.tide} />
+        <Anchor position={view.supportingAnchor} tone={PALETTE.sparkHi} glow={glow} />
+        <Anchor position={view.disconfirmingAnchor} tone={PALETTE.tide} glow={glow} />
       </Float>
     </Canvas>
   );
