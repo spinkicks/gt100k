@@ -538,3 +538,14 @@
 ## NEXT
 - Complete U022 and the remaining render/quality-tier portion of U023 in `packages/interest-lab-view/test/tiers.test.ts` and `packages/interest-lab-view/src/scene.ts`.
 - Acceptance: `resolveRenderTier` and `resolveQualityTier` match every §U8.16 full/lite/board golden, including weak memory, coarse pointer, reduced motion, plain mode, no WebGL, and Save-Data; `buildSceneView` consumes those resolvers; preserve focused red evidence and keep `pnpm typecheck`, `pnpm test`, `pnpm lint`, and the Interest Lab production build green.
+
+## 2026-07-21 — P9b / U022 + U023
+- Added eleven render/quality-tier contracts covering every §U8.16 full, lite, and board golden; exact default and threshold boundaries; and identical scene state across presentation tiers.
+- Confirmed the genuine test-first red state: both resolver imports were absent for all golden cases, the public API lacked both exports, and the existing conservative scene policy returned `board-2d` instead of the required lite tier.
+- Implemented and exported pure `resolveRenderTier` and `resolveQualityTier` with hard 2D fallbacks taking precedence over lite thresholds, then replaced the temporary P9b scene policy so `buildSceneView` delegates to the dedicated resolvers.
+- Verified the view package suite (49 tests across 11 files), `pnpm typecheck`, `pnpm test` (159 tests across 35 files), `pnpm lint` (122 files), `pnpm build`, and the warning-free Interest Lab production build; all pass.
+- Status: U022 and U023 complete; P9b remains in progress pending U024. SC-UI-14's exact resolver goldens and presentation-only scene parity are green. No blocker.
+
+## NEXT
+- Complete U024: extend `buildInterestLabView` in `packages/interest-lab-view/src/view.ts` to compose the deterministic scene and complete presentation blocks.
+- Acceptance: tests first prove the child view includes `scene` plus derived `scene3d`, `camera3d`, `renderTier`, `quality`, and `motionOf` presentation values while underlying quest state remains unchanged; preserve focused red evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and the Interest Lab production build green.

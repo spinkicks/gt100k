@@ -91,6 +91,49 @@ export const RENDER_TIERS = [
   "board-2d",
 ] as const satisfies readonly RenderTier[];
 
+interface TierFlags {
+  reducedMotion: boolean;
+  plainMode: boolean;
+}
+
+export function resolveRenderTier(
+  caps: Readonly<DeviceCaps>,
+  flags: Readonly<TierFlags>,
+): RenderTier {
+  const deviceMemoryGB = caps.deviceMemoryGB ?? 8;
+
+  if (
+    flags.reducedMotion ||
+    flags.plainMode ||
+    !caps.webglAvailable ||
+    caps.saveData === true ||
+    deviceMemoryGB < 4
+  ) {
+    return "board-2d";
+  }
+
+  if (deviceMemoryGB < 8 || (caps.hardwareConcurrency ?? 8) < 8 || caps.coarsePointer === true) {
+    return "quest-world-3d-lite";
+  }
+
+  return "quest-world-3d";
+}
+
+export function resolveQualityTier(
+  caps: Readonly<DeviceCaps>,
+  flags: Readonly<TierFlags>,
+): QualityTier {
+  const renderTier = resolveRenderTier(caps, flags);
+
+  if (renderTier === "quest-world-3d") {
+    return { ...QUALITY_TIERS.full };
+  }
+  if (renderTier === "quest-world-3d-lite") {
+    return { ...QUALITY_TIERS.lite };
+  }
+  return { ...QUALITY_TIERS.board2d };
+}
+
 const RING_RADIUS = 9;
 const ISLAND_RADIUS = 2.2;
 const MARKER_RADIUS = 1.1;
@@ -188,24 +231,6 @@ interface BuildSceneViewOptions {
   plainMode: boolean;
 }
 
-const resolveP9bPresentation = (
-  options: Readonly<BuildSceneViewOptions>,
-): Pick<SceneView, "renderTier" | "quality"> => {
-  const { deviceCaps } = options;
-  const usesFullScene =
-    !options.reducedMotion &&
-    !options.plainMode &&
-    deviceCaps.webglAvailable &&
-    !deviceCaps.saveData &&
-    (deviceCaps.deviceMemoryGB ?? 8) >= 8 &&
-    (deviceCaps.hardwareConcurrency ?? 8) >= 8 &&
-    !deviceCaps.coarsePointer;
-
-  return usesFullScene
-    ? { renderTier: "quest-world-3d", quality: { ...QUALITY_TIERS.full } }
-    : { renderTier: "board-2d", quality: { ...QUALITY_TIERS.board2d } };
-};
-
 export function buildSceneView(lab: Lab, options: Readonly<BuildSceneViewOptions>): SceneView {
   const picker = buildProbePickerView(lab, {
     history: options.history,
@@ -231,13 +256,15 @@ export function buildSceneView(lab: Lab, options: Readonly<BuildSceneViewOptions
       })),
     };
   });
-  const presentation = resolveP9bPresentation(options);
+  const renderTier = resolveRenderTier(options.deviceCaps, options);
+  const quality = resolveQualityTier(options.deviceCaps, options);
 
   return {
     islands,
     camera: resolveCamera3D(null, { reducedMotion: options.reducedMotion }),
-    ...presentation,
-    motes: presentation.quality.motes,
+    renderTier,
+    quality,
+    motes: quality.motes,
     scene3d: SCENE3D,
   };
 }

@@ -10,7 +10,9 @@ export {
   buildSceneView,
   resolveCamera3D,
   resolveIslandLayout,
+  resolveQualityTier,
   resolveQuestPlacement,
+  resolveRenderTier,
 } from "./scene";
 export { resolveChildStaging } from "./staging";
 export { buildInterestLabView } from "./view";

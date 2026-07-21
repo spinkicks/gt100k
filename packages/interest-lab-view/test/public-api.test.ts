@@ -103,7 +103,9 @@ describe("interest lab view public API", () => {
       "resolveDomainHue",
       "resolveIslandLayout",
       "resolveMotion",
+      "resolveQualityTier",
       "resolveQuestPlacement",
+      "resolveRenderTier",
     ]);
   });
 
