@@ -1,7 +1,7 @@
 /*
  * Provenance Observatory — the PassionLab design-token system (EE-007) + accessibility floors.
  * A deliberate matte-graphite instrument: neutral surfaces + hairline structure (no dark rainbow
- * gradients), a crisp radius scale, and a real self-hosted type system (see layout.tsx). Tokens are
+ * gradients), square 90° corners, and a real self-hosted type system (see layout.tsx). Tokens are
  * authored here so PassionLab inherits one visual language; components reference tokens, never literals.
  * State colour is ALWAYS paired with a body-shape/glyph + text label (FR-E04) — never colour alone.
  */
@@ -47,14 +47,6 @@
   --text-body: 0.9375rem;
   --text-label: 0.75rem;
   --text-mono: 0.8125rem;
-
-  /* ── Geometry — a deliberate radius scale (crisp instrument, not default-soft). ──
-     --r-lg = structural cards/media · --r-md = controls/tiles/drawers · --r-sm = chips/insets
-     · --r-pill = genuine pills only (segmented tracks, status chip, numeric badges, dots). */
-  --r-lg: 8px;
-  --r-md: 6px;
-  --r-sm: 4px;
-  --r-pill: 999px;
 
   /* ── Spacing rhythm (4px base) + elevation. ── */
   --space-1: 4px;
@@ -128,14 +120,12 @@ button {
 :focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 3px;
-  border-radius: var(--r-sm);
 }
 
 /* Matte instrument panels — solid graphite + hairline + a restrained shadow (no frosted glass). */
 .panel {
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: var(--r-lg);
   box-shadow: var(--shadow-panel);
 }
 
@@ -189,7 +179,6 @@ button {
   align-items: baseline;
   gap: 8px;
   padding: 9px 14px;
-  border-radius: var(--r-md);
   border: 1px solid var(--line);
   background: var(--panel);
   box-shadow: var(--shadow-panel);
@@ -224,7 +213,6 @@ button {
   align-items: center;
   gap: 8px;
   padding: 9px 15px 9px 13px;
-  border-radius: var(--r-pill);
   border: 1px solid color-mix(in oklab, var(--verify) 36%, var(--line));
   background: color-mix(in oklab, var(--verify) 8%, var(--panel));
   font-size: var(--text-label);
@@ -236,7 +224,6 @@ button {
 .obs-dot {
   width: 7px;
   height: 7px;
-  border-radius: 50%;
   background: var(--verify);
   box-shadow: 0 0 9px color-mix(in oklab, var(--verify) 80%, transparent);
   /* The global reduced-motion rule (further down) neutralises this pulse to a still dot. */
@@ -311,7 +298,6 @@ button {
   padding: 3px;
   min-inline-size: 0;
   border: 1px solid var(--line);
-  border-radius: 999px;
   background: color-mix(in oklab, var(--void) 60%, transparent);
 }
 
@@ -330,7 +316,6 @@ button {
 .obs-tier-btn {
   padding: 5px 12px;
   border: 0;
-  border-radius: 999px;
   background: transparent;
   color: var(--ink-muted);
   font-size: var(--text-label);
@@ -351,7 +336,6 @@ button {
   width: 100%;
   aspect-ratio: 16 / 10;
   min-height: 420px;
-  border-radius: var(--r-lg);
   overflow: hidden;
   background: #08090c; /* deepest step — a true black-graphite frame behind the cosmos canvas */
   border: 1px solid var(--line);
@@ -411,7 +395,7 @@ button {
   max-height: 620px;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* the panel's rounded corners clip; the inner region scrolls */
+  overflow: hidden; /* clip content to the panel edges; the inner region scrolls */
 }
 /* Fixed header — the title + count stay put while the tree scrolls beneath them. */
 .ledger-head {
@@ -433,7 +417,6 @@ button {
 .ledger-count {
   flex: none;
   padding: 2px 9px;
-  border-radius: 999px;
   border: 1px solid var(--line);
   background: color-mix(in oklab, var(--void) 55%, transparent);
   color: var(--ink-muted);
@@ -469,13 +452,11 @@ button {
   flex: none;
   width: 9px;
   height: 9px;
-  border-radius: 50%;
   background: currentColor;
   box-shadow: 0 0 9px color-mix(in oklab, currentColor 75%, transparent);
 }
 .ledger-flag {
   padding: 1px 7px;
-  border-radius: 999px;
   border: 1px solid var(--line);
   font-size: 11px;
 }
@@ -515,7 +496,6 @@ button {
   gap: 8px;
   padding: 6px 14px;
   border: 1px solid color-mix(in oklab, var(--focus) 40%, var(--line));
-  border-radius: var(--r-md);
   background: color-mix(in oklab, var(--focus) 14%, transparent);
   color: var(--ink);
   font-size: var(--text-label);
@@ -533,7 +513,6 @@ button {
   margin: 2px 0;
   appearance: none;
   -webkit-appearance: none;
-  border-radius: 999px;
   background: color-mix(in oklab, var(--focus) 55%, var(--line));
   cursor: pointer;
 }
@@ -541,7 +520,6 @@ button {
   -webkit-appearance: none;
   width: 18px;
   height: 18px;
-  border-radius: 50%;
   background: var(--ink);
   border: 3px solid var(--focus);
   box-shadow: 0 0 12px 1px color-mix(in oklab, var(--focus) 70%, transparent);
@@ -550,7 +528,6 @@ button {
   width: 18px;
   height: 18px;
   border: 3px solid var(--focus);
-  border-radius: 50%;
   background: var(--ink);
 }
 .scrub-status {
@@ -574,7 +551,6 @@ button {
   gap: 8px;
   padding: 7px 12px 7px 8px;
   border: 1px solid var(--line);
-  border-radius: var(--r-md);
   background: color-mix(in oklab, var(--panel-2) 70%, transparent);
   color: var(--ink);
   white-space: nowrap;
@@ -694,7 +670,6 @@ button {
   gap: 6px;
   padding: 6px 14px;
   border: 1px solid var(--line);
-  border-radius: var(--r-md);
   background: color-mix(in oklab, var(--panel-2) 80%, transparent);
   color: var(--ink);
   font-size: var(--text-label);
@@ -731,7 +706,6 @@ button {
   gap: 10px;
   align-self: flex-start;
   padding: 8px 16px;
-  border-radius: var(--r-md);
   border: 1px solid var(--line);
   font-family: var(--font-display);
   font-weight: 700;
@@ -777,7 +751,6 @@ button {
   gap: 10px;
   padding: 8px 10px;
   border: 1px solid var(--line);
-  border-radius: var(--r-md);
   background: color-mix(in oklab, var(--panel-2) 55%, transparent);
   opacity: 0.5;
   transition: opacity 200ms ease, border-color 200ms ease;
@@ -907,7 +880,6 @@ button {
   overflow: auto;
   z-index: 5;
   padding: 16px 18px 18px;
-  border-radius: var(--r-lg);
   border: 1px solid color-mix(in oklab, var(--focus) 22%, var(--line));
   background: var(--panel);
   box-shadow: var(--shadow-float);
@@ -944,7 +916,6 @@ button {
   flex: none;
   width: 28px;
   height: 28px;
-  border-radius: var(--r-md);
   border: 1px solid var(--line);
   background: transparent;
   color: var(--ink-muted);
@@ -964,7 +935,6 @@ button {
   gap: 8px;
   margin: 12px 0 0;
   padding: 8px 10px;
-  border-radius: var(--r-md);
   font-size: var(--text-label);
   line-height: 1.3;
 }
@@ -1011,7 +981,6 @@ button {
 .insp-copy {
   margin-top: 6px;
   padding: 3px 10px;
-  border-radius: var(--r-sm);
   border: 1px solid var(--line);
   background: color-mix(in oklab, var(--focus) 12%, transparent);
   color: var(--ink);
@@ -1032,7 +1001,6 @@ button {
   display: inline-block;
   padding: 1px 8px;
   margin-right: 6px;
-  border-radius: 999px;
   border: 1px solid var(--line);
   font-size: 11px;
   color: var(--ink-muted);
@@ -1090,7 +1058,6 @@ button {
 .insp-tag {
   display: inline-block;
   padding: 0 7px;
-  border-radius: 999px;
   border: 1px solid color-mix(in oklab, var(--verify) 40%, var(--line));
   color: var(--verify);
   font-size: 10.5px;
@@ -1107,7 +1074,6 @@ button {
   margin-top: 14px;
   padding: 8px 12px;
   border: 1px solid var(--line);
-  border-radius: var(--r-md);
   background: color-mix(in oklab, var(--panel-2) 55%, transparent);
   color: var(--ink);
   font-size: var(--text-label);
@@ -1164,7 +1130,6 @@ button {
   gap: 5px;
 }
 .ledger-node {
-  border-radius: var(--r-md);
   border: 1px solid transparent;
   transition: border-color 160ms ease, background-color 160ms ease, box-shadow 200ms ease;
 }
@@ -1188,7 +1153,6 @@ button {
   font: inherit;
   text-align: left;
   cursor: pointer;
-  border-radius: var(--r-md);
   transition: background-color 160ms ease, transform 140ms ease;
 }
 .ledger-tree .ledger-row:hover {
@@ -1272,7 +1236,6 @@ button {
   padding: 12px 14px;
   text-align: left;
   border: 1px solid color-mix(in oklab, var(--focus) 26%, var(--line));
-  border-radius: var(--r-lg);
   background: color-mix(in oklab, var(--focus) 8%, var(--panel-2));
   color: var(--ink);
   transition: border-color 160ms ease, background-color 160ms ease, transform 120ms ease, box-shadow
@@ -1296,7 +1259,6 @@ button {
   place-items: center;
   width: 34px;
   height: 34px;
-  border-radius: var(--r-md);
   color: var(--focus);
   background: color-mix(in oklab, var(--focus) 14%, transparent);
   transition: color 200ms ease, background-color 200ms ease, box-shadow 220ms ease;
@@ -1332,7 +1294,6 @@ button {
   min-height: 46px;
   padding: 4px 4px 4px 12px;
   border: 1px solid var(--line);
-  border-radius: var(--r-md);
   background: color-mix(in oklab, var(--void) 55%, transparent);
   transition: border-color 160ms ease;
 }
@@ -1368,7 +1329,6 @@ button {
   width: 38px;
   height: 38px;
   border: 0;
-  border-radius: var(--r-sm);
   color: var(--focus);
   background: color-mix(in oklab, var(--focus) 14%, transparent);
   transition: background-color 140ms ease, transform 120ms ease, opacity 140ms ease;
@@ -1406,7 +1366,6 @@ button {
   min-height: 44px;
   padding: 8px 12px;
   border: 1px solid var(--line);
-  border-radius: var(--r-md);
   background: color-mix(in oklab, var(--panel-2) 55%, transparent);
   color: var(--ink);
   font-size: var(--text-label);
@@ -1452,7 +1411,6 @@ button {
   padding: 0 6px;
   display: grid;
   place-items: center;
-  border-radius: 999px;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
   color: var(--void);
@@ -1470,7 +1428,6 @@ button {
   padding: 14px;
   margin-top: 2px;
   border: 1px solid var(--line);
-  border-radius: var(--r-md);
   background: color-mix(in oklab, var(--void) 45%, transparent);
 }
 .hud-drawer-head {
@@ -1496,7 +1453,6 @@ button {
   font-size: 0.72rem;
   cursor: pointer;
   padding: 2px 4px;
-  border-radius: var(--r-sm);
 }
 .hud-link:disabled {
   color: var(--ink-muted);
@@ -1518,7 +1474,6 @@ button {
   min-height: 40px;
   padding: 4px 8px;
   border: 1px solid var(--line);
-  border-radius: var(--r-md);
   cursor: pointer;
   font-size: var(--text-label);
   color: var(--ink);
@@ -1572,7 +1527,6 @@ button {
   gap: 2px;
   padding: 3px;
   border: 1px solid var(--line);
-  border-radius: 999px;
   background: color-mix(in oklab, var(--void) 60%, transparent);
 }
 .hud-seg-btn {
@@ -1580,7 +1534,6 @@ button {
   min-height: 36px;
   padding: 6px 10px;
   border: 0;
-  border-radius: 999px;
   background: transparent;
   color: var(--ink-muted);
   font: inherit;
@@ -1614,7 +1567,6 @@ button {
   min-height: 42px;
   padding: 8px 12px;
   border: 1px solid var(--line);
-  border-radius: var(--r-md);
   background: color-mix(in oklab, var(--panel-2) 55%, transparent);
   color: var(--ink);
   font: inherit;
@@ -1649,7 +1601,6 @@ button {
   margin-bottom: 14px;
   padding: 10px 12px;
   border: 1px solid var(--line);
-  border-radius: var(--r-md);
   background: color-mix(in oklab, var(--panel-2) 40%, transparent);
 }
 .ledger-verify-steps {
