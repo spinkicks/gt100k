@@ -177,3 +177,43 @@ existing tests meaningful — update them as behavior changes; DO NOT weaken the
 - **CARRY-OVER lint debt (not mine):** `pnpm lint` reports 19 pre-existing errors in out-of-lane
   `evidence-explorer-view` + prior-turn interest-lab files (QuestLedger/CameraRig/World3DCanvas/
   InterestLabControls/world-3d.test.ts). Outside this feature's lane; left untouched.
+
+- **Turn 5 (v2) — P1 item 5 DONE.** Remove the dev harness from the child build. Gate green: `tsc -b`
+  0 · root `pnpm test` **362/362** · app test **115/115** (+7) · `next build` ✓ (route `/` static,
+  287 kB) · biome clean on my files. **Browser-verified** (chromium, prod `next start`): default `/`
+  shows only the child comfort bar (Calm mode toggle + "How to explore"), the surface/age/tier/plain
+  QA controls are ABSENT, `data-staff-debug` null; toggling **Calm mode** ON drove the render tier to
+  the **board-2d calm/accessible equal tier** (a real working control); **How to explore** opens to 3
+  concrete steps. `/?debug` restores the full "Mission deck" harness (Viewing Quests⇄Guide + Preview
+  settings: age/motion/tier/plain) AND mounts the full 3D world. **ZERO console/page errors** on both.
+  - Pure `resolveStaffDebugMode(search)` (settings.ts) reads `?debug`/`?staff` (truthy in any form;
+    explicit `=0/false/no/off` off). `InterestLabClient` reads it in the mount effect → `staffDebug`
+    state (default false, so SSR == first client render, no hydration flash), and conditionally renders
+    `InterestLabControls` (staff) vs the new `ChildComfortControls` (child). See D-VP22.
+  - `ChildComfortControls.tsx`: the only child chrome — a Calm-mode toggle (checked = the app's
+    `effectiveReducedMotion`; onChange → motionPreference on/off) + a `<details>` help card, framed as
+    the same lit `control-panel hud-deck material` deck. Age-band touch targets via `resolveChildStaging`.
+  - `InterestLabControls` is unchanged/still exported (its existing SSR test still passes); the
+    `NEXT_PUBLIC_DEFAULT_SURFACE` deploy knob is preserved — only the in-page child-facing toggle moved
+    behind the staff gate. New CSS: `.child-comfort*` / `.child-help*` (reduced-motion-safe reveal).
+  - Tests: `test/child-chrome.test.ts` (7) — debug flag truthy/falsey/absent; child bar renders
+    calm+help and NOT surface/age/tier/plain; toggle reflects calm state; age-band touch target;
+    default client SSR hides the harness.
+
+## NEXT
+- **P1 item 6 — Wayfinding (spec §5.5).** Now that the child chrome is minimal, add the four Apple
+  wayfinding answers to the WORLD (not the QA deck): (a) a persistent **"overview / see all"** control
+  that drifts out to the whole archipelago (where can I get out); (b) a persistent **my-quests count**
+  chip (what have I collected); complementing the already-shipped focused-island **banner** ("Visiting
+  <Domain>", P0.4) and focusable islands. Acceptance: a pure resolver maps world state → the count +
+  overview-available flag (unit-test it); the DOM renders a persistent my-quests count and an overview
+  affordance that returns focus to the archipelago (clears focusedProbeId); keep tsc/test/build/biome
+  green. Prefer new small components in `app/child/` (e.g. `WorldWayfinding.tsx`) over editing QuestWorld
+  heavily. NOTE the masthead "· synthetic preview" context-line + "Accessible 2D tier" status pill are
+  mild dev-tells (tier jargon in child chrome) — fold child-appropriate copy for them into **P1 item 8
+  (child copy)** rather than here.
+- **CARRY-OVER P1.7 caveat (unchanged):** when the WORLD is later staged by age band (reducing world
+  markers below `quests.length`), keep world-reachable == board-reachable by staging the BOARD's
+  `revealAll` baseline to the same set (D-VP19).
+- **CARRY-OVER lint debt (not mine):** pre-existing `pnpm lint` errors in out-of-lane
+  evidence-explorer-view + prior-turn interest-lab files; left untouched.

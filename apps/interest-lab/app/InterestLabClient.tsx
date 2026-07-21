@@ -7,6 +7,7 @@ import { QuestWorld } from "./child/QuestWorld";
 import { GuideConsole } from "./guide/GuideConsole";
 import type { GuideAuthoringInput } from "./guide/authoring";
 import { SYNTHETIC_RETURN_HISTORY, buildSyntheticInterestLabSeed } from "./seed";
+import { ChildComfortControls } from "./ui/controls/ChildComfortControls";
 import { InterestLabControls } from "./ui/controls/InterestLabControls";
 import {
   type InterestLabSurface as InterestLabSurfaceName,
@@ -17,6 +18,7 @@ import {
   applySustainedPerformanceFloor,
   readInterestLabClientDefaults,
   resolveHydrationSafeReducedMotionPreference,
+  resolveStaffDebugMode,
 } from "./ui/controls/settings";
 import { detectDeviceCaps } from "./ui/deviceCaps";
 
@@ -71,6 +73,7 @@ export function InterestLabClient() {
     DEFAULTS.renderTierOverride,
   );
   const [clientReady, setClientReady] = useState(false);
+  const [staffDebug, setStaffDebug] = useState(false);
   const [deviceCaps, setDeviceCaps] = useState<DeviceCaps>(SERVER_DEVICE_CAPS);
   const [webglContextLost, setWebglContextLost] = useState(false);
   const [performanceStep, setPerformanceStep] = useState<SustainedPerformanceStep>(0);
@@ -78,6 +81,7 @@ export function InterestLabClient() {
 
   useEffect(() => {
     setDeviceCaps(detectDeviceCaps());
+    setStaffDebug(resolveStaffDebugMode(window.location.search));
     setClientReady(true);
   }, []);
 
@@ -133,6 +137,7 @@ export function InterestLabClient() {
         data-active-render-tier={activeRenderTier}
         data-requested-render-tier={renderTierOverride}
         data-webgl-context={webglContextLost ? "lost" : "available"}
+        data-staff-debug={staffDebug ? "true" : undefined}
       >
         <header className="masthead">
           <div className="title-group">
@@ -146,20 +151,28 @@ export function InterestLabClient() {
           </p>
         </header>
 
-        <InterestLabControls
-          ageBand={ageBand}
-          motionPreference={motionPreference}
-          plainMode={plainMode}
-          surface={surface}
-          renderTierOverride={renderTierOverride}
-          effectiveReducedMotion={reducedMotion}
-          activeRenderTier={activeRenderTier}
-          onAgeBandChange={setAgeBand}
-          onMotionPreferenceChange={setMotionPreference}
-          onPlainModeChange={setPlainMode}
-          onSurfaceChange={setSurface}
-          onRenderTierOverrideChange={setRenderTierOverride}
-        />
+        {staffDebug ? (
+          <InterestLabControls
+            ageBand={ageBand}
+            motionPreference={motionPreference}
+            plainMode={plainMode}
+            surface={surface}
+            renderTierOverride={renderTierOverride}
+            effectiveReducedMotion={reducedMotion}
+            activeRenderTier={activeRenderTier}
+            onAgeBandChange={setAgeBand}
+            onMotionPreferenceChange={setMotionPreference}
+            onPlainModeChange={setPlainMode}
+            onSurfaceChange={setSurface}
+            onRenderTierOverrideChange={setRenderTierOverride}
+          />
+        ) : surface === "child" ? (
+          <ChildComfortControls
+            ageBand={ageBand}
+            calm={reducedMotion}
+            onCalmChange={(calm) => setMotionPreference(calm ? "on" : "off")}
+          />
+        ) : null}
 
         <section className="quest-workspace material" id="interest-lab-content">
           <InterestLabSurface

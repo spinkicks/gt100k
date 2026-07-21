@@ -897,3 +897,40 @@
   other 3D resolvers since it's geometry, not a token; (b) the useFrame spin in Island — breaks the
   hook-free direct-call unit test; (c) throwing on unknown domain — a child-facing world must never
   blank out as the catalog grows.
+
+## D-VP22 — Staff `?debug` gates the QA harness; child gets a comfort bar (interest-lab-v2 Turn 5 · P1.5→P1 item 5)
+- Context: the full presentation harness (surface switch child⇄guide, Age band, Render tier, Plain
+  mode, Motion segmented controls — the "Mission deck" `InterestLabControls`) rendered unconditionally
+  as CHILD chrome. Spec §5.5 (line 816) calls the surface switch "staff-gated in a real build; here a
+  synthetic toggle" — the current build shipped the *preview* convenience as if it were the product. A
+  child meeting a QA settings wall is the #1 "generic AI dashboard" tell the rebuild verdict flags.
+- Chose: a pure `resolveStaffDebugMode(search)` (settings.ts) reads `?debug`/`?staff` from
+  `window.location.search` (any truthy form: bare `?debug`, `=1/true/yes/on`; explicit
+  `=0/false/no/off` keeps it OFF so a shared link can pin either way). `InterestLabClient` reads it in
+  the mount effect into `staffDebug` state (default false → SSR and first client render both show the
+  child bar, no hydration mismatch; staff see the harness appear right after hydration). When
+  `staffDebug` → render `InterestLabControls`; else (child surface) → render the new
+  `ChildComfortControls`. Added `data-staff-debug` on `main` for QA/tests.
+- `ChildComfortControls.tsx`: the ONLY chrome a child meets — a single **Calm mode** toggle + a
+  **How to explore** `<details>` (3 concrete steps). The calm toggle's `checked` = the app's already-
+  computed `effectiveReducedMotion` (reuses the existing hydration-safe resolver), and onChange maps
+  calm→"on"/playful→"off" motionPreference. Browser-verified: toggling calm ON drove the render tier
+  to the board-2d **calm/accessible equal tier** — a real working control, not decoration. Framed as
+  the same lit `control-panel hud-deck material` deck for cohesion (inherits `--hud-ease` + top rail).
+- Why: the debug resolver is pure → unit-tested off the DOM (truthy/falsey/absent). The child bar is a
+  server-renderable component → SSR-tested for presence of calm+help and ABSENCE of surface/age/tier/
+  plain. `InterestLabControls` is unchanged and still exported, so staff/QA keep the full harness under
+  `?debug` and its existing test still passes. The env `NEXT_PUBLIC_DEFAULT_SURFACE` knob is preserved
+  (a deploy can still land on guide); only the in-page child-facing *toggle* moved behind the gate.
+- Verified: `test/child-chrome.test.ts` (7) + browser (chromium, prod `next start`): default `/` shows
+  calm+help only (surface/age/tier absent, staffDebug null), calm toggle flips (data-on) + drives 2D
+  calm tier, help opens with 3 steps; `/?debug` restores the full Mission-deck harness (surface + age
+  radios) and mounts the full 3D world — ZERO console/page errors on both. Gate: tsc 0 · root test 362
+  · app test 115 (+7) · next build OK (route / static, 287 kB) · biome clean on my files.
+- Rejected: (a) forcing surface="child" whenever not-debug — would silently defeat the
+  `NEXT_PUBLIC_DEFAULT_SURFACE=guide` deploy knob; the plan only asked to gate the in-page *toggle*, so
+  the surface *default* stays env-driven. (b) reading the flag synchronously for SSR — impossible
+  (no window on the server) and would risk a hydration mismatch; the mount-effect read is safe because
+  the default (child bar) is identical on server and first client render. (c) keeping Plain mode in the
+  child bar — plain mode is auto-derived from the reduced-motion/fallback tier, so a child never needs
+  a separate switch; it stays a staff-only override behind `?debug`.

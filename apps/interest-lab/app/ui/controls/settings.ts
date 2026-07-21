@@ -50,6 +50,26 @@ export function readInterestLabClientDefaults(
   };
 }
 
+const FALSEY_FLAG_VALUES = new Set(["0", "false", "no", "off"]);
+
+function hasTruthyFlag(params: URLSearchParams, key: string): boolean {
+  if (!params.has(key)) return false;
+  const value = (params.get(key) ?? "").trim().toLowerCase();
+  return !FALSEY_FLAG_VALUES.has(value);
+}
+
+/**
+ * Staff/QA gate for the full presentation harness (surface switch, age band,
+ * render-tier, plain mode). A child never sees `?debug`/`?staff`, so the child
+ * build shows only child chrome; a bare `?debug` (or `?debug=1/true/yes`) opens
+ * the harness, while an explicit `?debug=0/false/no/off` keeps it closed so a
+ * shared link can pin it either way. Pure so it is unit-testable off the DOM.
+ */
+export function resolveStaffDebugMode(search: string): boolean {
+  const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+  return hasTruthyFlag(params, "debug") || hasTruthyFlag(params, "staff");
+}
+
 export function resolveReducedMotionPreference(
   preference: MotionPreference,
   osPrefersReducedMotion: boolean,
