@@ -355,3 +355,17 @@
 ## NEXT
 - T021: add focused tests first, then implement `apps/arena/app/ledger/ArenaLedger.tsx` as the accessible DOM parallel of the same `InitialArenaView`.
 - Acceptance: expose the quest as `role="tree"` with every node as a `treeitem` named by title + state + region, support Tab/Arrow/Enter keyboard navigation with visible focus, keep the canvas `aria-hidden`, and keep focused checks plus all repository/app gates green.
+
+## 2026-07-21 — P1 / T021
+- Added the client-side `ArenaLedger`, derived directly from the same `InitialArenaView` as the scene, with all nine landmarks preserved in declaration order and accessible names containing landmark, state, and human-readable region.
+- Implemented a semantic `role="tree"`/`treeitem` structure with one roving tab stop, clamped Arrow navigation, Home/End shortcuts, and Enter/pointer activation through the existing typed `focus-node` event bus.
+- Added visible icon + state + region cues independent of color, 56px tree targets, high-contrast and reduced-motion CSS branches, and an explicit `--focus` ring while retaining the canvas's `aria-hidden="true"` contract.
+- Followed red-green TDD: after correcting a test-harness-only React resolution error, four tests failed on the absent Ledger module and styles, then passed after the minimal component and CSS module landed. Runtime static markup verifies nine treeitems and exactly one tab stop; pure tests verify all labels and keyboard commands.
+- Review status: checked T021 line-by-line against spec §5.12, §12, FR-016/FR-029, SC-012, the existing event bus, React performance guidance, and the Arena design tokens; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was intentionally not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused Ledger tests passed (4 tests); `pnpm lint` passed (89 files); `pnpm typecheck` passed; `pnpm test` passed (30 files, 119 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 138 B route, 87.4 kB first load).
+- SC status: the T021 semantic tree, keyboard model, color-independent cues, visible focus, and canvas-hiding portion of SC-012 is complete; mounting, switch/screen-reader walkthrough, and Tier-D parity remain scheduled for T022/P7.
+- Blockers: none.
+
+## NEXT
+- T021a: add focused tests first, then implement `apps/arena/app/scene/Fallback2D.tsx` as the P1 Tier-D static 2D/DOM(SVG) stub driven by the identical `InitialArenaView`.
+- Acceptance: Tier D renders the same regions, node positions, landmark labels, and locked/available/unlocked states without mounting a canvas; the Ledger remains the semantic source of truth, and focused checks plus `pnpm lint`, `pnpm typecheck`, `pnpm test`, root `pnpm build`, and the Arena app build remain green.
