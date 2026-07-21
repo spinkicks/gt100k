@@ -45,6 +45,11 @@ export type {
 } from "./model";
 
 export type { AssetFallbackDescriptor, AssetKeyGroup } from "./assets";
+export type {
+  NodeLightCandidate,
+  NodeLightContribution,
+  PointLightDescriptor,
+} from "./lighting";
 
 export { BASE_LAYOUT } from "./baseLayout.fixture";
 export { BIOMES } from "./biomes.fixture";
@@ -55,6 +60,7 @@ export { TIERS } from "./tiers.fixture";
 export { PALETTE, TYPOGRAPHY, resolveBiome, resolveElevation } from "./art";
 export { ASSET_KEYS, resolveAssetFallback } from "./assets";
 export { resolveAvatarAnimation } from "./avatar";
+export { resolveNodeLightContributions } from "./lighting";
 export { EASINGS, LAMBDAS, MOTION, resolveMotion } from "./motion";
 export { QUALITY_TIERS, nextLowerTier, resolveQualityTier } from "./quality";
 export {

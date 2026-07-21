@@ -270,3 +270,16 @@
 ## NEXT
 - T012g: add `packages/arena-world/test/lighting.test.ts` for exact per-tier/world-theme rigs, mastery-state light contributions, and paired non-color state cues.
 - Acceptance: `resolveLighting` retains its exact per-tier/default/dawn/dusk rigs; unlocked nodes contribute beacon lights, available nodes contribute warm glows, locked nodes contribute none; contributions respect the A=8/B=3/C=0 dynamic-light caps and expose icon/shape cues so light is never the sole state signal (FR-041, SC-026); focused checks and repository gates remain green.
+
+## 2026-07-20 — P1 / T012g
+- Added `lighting.test.ts` through the public package API, covering every exact default/dawn/dusk per-tier rig, ordinary and transfer-critical beacons, available glows, locked/unlit nodes, paired icon/shape cues, theme-adjusted light values, and fresh deterministic output.
+- Followed red-green TDD: the exact rig assertion passed against the prior resolver while all three contribution tests failed because `resolveNodeLightContributions` was absent; all four tests passed after the minimal implementation and explicit exports landed.
+- Added a pure `resolveNodeLightContributions` helper that preserves declaration-order output, allocates dynamic lights nearest the camera target with a stable declaration-order tie-break, applies the exact A=8/B=3/C=0/D=0 caps, and degrades over-cap active nodes to emissive presentation.
+- Review status: checked T012g line-by-line against spec §§5.2/8.20/8.22, FR-041, SC-026, the data model, and the public contract; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused lighting tests passed (4 tests); direct arena-world TypeScript validation and the domain purity scan passed; `pnpm lint` passed (71 files); `pnpm typecheck` passed; `pnpm test` passed (24 files, 91 tests). No app changed, so no Next.js build was required.
+- SC status: SC-026's deterministic domain rig/contribution/cap/non-color-cue coverage is complete; concrete 3D marker/light rendering and walkthrough verification remain scheduled for T020/P7.
+- Blockers: none.
+
+## NEXT
+- T016: add a focused test first, then implement and explicitly export `packages/arena-world/src/feed.ts` as a fixed or seeded deterministic `NodeMasterySignal` sequence/simulator.
+- Acceptance: the feed reproduces scenario S1 exactly, advances through progressive valid unlock states in stable order, produces byte-identical replay for identical input/seed, uses no wall clock or `Math.random`, and keeps direct package plus repository gates green.

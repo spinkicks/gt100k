@@ -51,3 +51,8 @@
 ## 2026-07-20 — T012e asset-fallback descriptor boundary
 - Chose one renderer-neutral descriptor per key: group, committed-source-first load order, and a procedural mesh/material seed. UI keys prefer committed SVG while all other groups prefer committed model/atlas. Rejected embedding app paths or loader I/O in the pure domain because the renderer owns file availability and loading.
 - Derived a stable unsigned 32-bit seed from each key with FNV-1a arithmetic and rejected a shared constant or runtime randomness so every fallback is key-specific and replay-identical.
+
+## 2026-07-20 — T012g mastery-light contribution boundary
+- Preserved the settled two-input `resolveLighting(tier, worldTheme)` rig contract and added a pure `resolveNodeLightContributions(candidates, tier, worldTheme, cameraTarget)` companion for state-specific lights. Rejected adding per-node data to `LightingConfig` because its exact golden shape has no node/state input, and rejected leaving contribution selection solely to the renderer because SC-026 requires deterministic domain acceptance coverage.
+- Returned contributions in node declaration order while allocating dynamic lights by squared distance to the camera target, with declaration order as the exact tie-breaker. Rejected returning distance-sorted contributions because that would destabilize the shared view-model order.
+- Encoded each state with literal icon and shape cues alongside its light mode: closed padlock/closed marker, start pennant/open ring, and filled star/raised beacon. Rejected generic optional cue strings because the no-color-only requirement should be structurally present on every contribution.
