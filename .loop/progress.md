@@ -456,3 +456,14 @@
 ## NEXT
 - Complete U012 and its minimal U015 implementation: add the exact child-staging golden contracts in `packages/interest-lab-view/test/staging.test.ts`, then implement and export `resolveChildStaging`.
 - Acceptance: all three age bands match §U8.7 including `worldCameraMode`; the 6-8 band has `showRawNumbers:false`, `comparisonDefault:"off"`, and `worldCameraMode:"auto-tour"`; presentation changes do not alter underlying state; preserve a genuine focused red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-21 — P9 / U012 + U015
+- Added four child-staging contracts covering the exact §U8.7 values for all three age bands, the pinned 6-8 safeguards, presentation-only function boundary, and deterministic resolution.
+- Confirmed the test-first red state twice: the initial focused suite failed because the resolver was absent, then the tightened staging/public-API run produced five explicit contract assertion failures before implementation.
+- Implemented and exported pure `resolveChildStaging` with the exact presentation table and fresh returned values; no domain state, wall clock, framework, or GPU dependency was introduced.
+- Verified the focused staging/public-API suites (6 tests), forced view-package compiler, focused Biome check, `pnpm typecheck`, `pnpm test` (137 tests across 31 files), `pnpm lint` (97 files), and the Interest Lab production build; all pass.
+- Status: U012 and U015 complete; P9 remains in progress. SC-UI-02 and UI-FR-005 are green at the pure staging boundary; whole-view age-band parity remains independently covered by U046. No blocker.
+
+## NEXT
+- Complete U013 with its minimal U016 implementation: add the exact `buildProbePickerView` structural golden in `packages/interest-lab-view/test/probe-picker.test.ts`, then implement and export the pure picker projection.
+- Acceptance: G1 yields 20 RULE-provenance cards with non-empty band-appropriate `whyCopy`, catalog-order hue and fixed work-mode glyph, `returnState:"new"`, `helpAffordance:true`, and at least two eligible choices; forbidden price/score/rank/percentile/verdict/label keys remain absent, the focused suite records a genuine red failure, and the package compiler plus `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
