@@ -1,9 +1,16 @@
 "use client";
 
 import type { CohortArenaView, Vec3 } from "@gt100k/cohort-arena-view";
-import { Instance, Instances, Line } from "@react-three/drei";
+import { Environment, Instance, Instances, Lightformer, Line, Sparkles } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { Bloom, EffectComposer } from "@react-three/postprocessing";
+import {
+  Bloom,
+  BrightnessContrast,
+  EffectComposer,
+  HueSaturation,
+  Noise,
+  Vignette,
+} from "@react-three/postprocessing";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   Group,
@@ -205,6 +212,58 @@ export function ObservatoryScene({
         distance={55}
         position={[18, 8, -12]}
       />
+      {/* Cool rim/back light so stars separate from the void as silhouettes. */}
+      <directionalLight
+        color={view.presentation.palette.peerHi}
+        intensity={0.75}
+        position={[-6, 15, -22]}
+      />
+
+      {/* Crafted image-based ambient — no HDRI fetch; art-directed to the palette so
+          non-emissive crystals and halos catch real cool/violet reflections. */}
+      <Environment resolution={256} frames={1}>
+        <Lightformer
+          form="ring"
+          intensity={2.4}
+          color={view.presentation.palette.peerHi}
+          position={[0, 20, -16]}
+          scale={[26, 26, 1]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={1.2}
+          color={view.presentation.palette.form}
+          position={[-18, 8, 8]}
+          scale={[12, 16, 1]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={0.9}
+          color={view.presentation.palette.pending}
+          position={[18, 6, -8]}
+          scale={[12, 16, 1]}
+        />
+        <Lightformer
+          form="circle"
+          intensity={0.5}
+          color={view.presentation.palette.peer}
+          position={[0, -12, 0]}
+          scale={[34, 34, 1]}
+        />
+      </Environment>
+
+      {/* Drifting dust motes / distant stars so the void is never static (full-3d only). */}
+      {renderTier === "full-3d" ? (
+        <Sparkles
+          count={70}
+          scale={[50, 20, 50]}
+          size={2.2}
+          speed={0.3}
+          opacity={0.55}
+          noise={1.5}
+          color={view.presentation.palette.peerHi}
+        />
+      ) : null}
 
       {scene.caliperRadii.map((radius) => (
         <mesh key={radius} position={[0, -0.9, 0]} rotation={[-Math.PI / 2, 0, 0]}>
@@ -286,9 +345,15 @@ export function ObservatoryScene({
         ))}
       </Instances>
 
+      {/* Cinematic grade (full-3d only; degraded tier skips post for frame budget):
+          glow -> saturation lift -> filmic contrast -> vignette framing -> fine grain. */}
       {renderSettings.bloom ? (
-        <EffectComposer multisampling={0} enableNormalPass={false}>
-          <Bloom intensity={0.42} luminanceThreshold={0.54} luminanceSmoothing={0.72} mipmapBlur />
+        <EffectComposer multisampling={renderSettings.antialias ? 4 : 0} enableNormalPass={false}>
+          <Bloom intensity={0.55} luminanceThreshold={0.5} luminanceSmoothing={0.7} mipmapBlur />
+          <HueSaturation saturation={0.12} />
+          <BrightnessContrast brightness={0.015} contrast={0.14} />
+          <Vignette offset={0.24} darkness={0.64} />
+          <Noise premultiply opacity={0.045} />
         </EffectComposer>
       ) : null}
     </>
