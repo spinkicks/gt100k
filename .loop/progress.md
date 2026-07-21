@@ -1,271 +1,247 @@
-# Loop progress — interest-lab (003) · VISUAL POLISH pass (claude)
+## REPO LAYOUT (restructured 2026-07-21)
+The repo is now passion-centric: ALL code lives under `passion/apps/`, `passion/packages/`, `passion/adapters/`. There is NO `apps/`, `packages/`, or `adapters/` at the repo root anymore. Work under `passion/`; pnpm-workspace globs are `passion/*`.
+
+# Loop progress — evidence-explorer (002) · DECLUTTER / simplicity pass → 3D craft (claude)
 
 ## Task
-Elevate **apps/interest-lab** ("Curiosity Quest World") to the game-feel bar.
-Do NOT rebuild domain/logic; keep tests green. This is a visual pass.
-FIRST read ~/code/gt100k-factory/docs/game-feel.md. Use the design skills every turn:
-impeccable, apple-design, emil-design-eng, find-animation-opportunities, ui-ux-pro-max, ui-styling.
+Elevate **apps/evidence-explorer** (the "Provenance Observatory") to the SIMPLICITY bar.
+Keep the cinematic 3D DAG + build timeline; the problem is the **chrome is too cluttered**.
+Do NOT change domain/evidence logic; keep tests green.
 
-## Committed art direction (see .loop/decisions.md D-VP1)
-"Curiosity Quest World" — a warm, tactile, hand-crafted floating-island atelier at dusk.
-Palette (from `@gt100k/interest-lab-view` PALETTE): deep plum night (#181026 / #221A3D / #120B1E),
-spark orange (#FF9E5E→#FFC08A), beacon gold (#FFD166), tide cyan (#5EC8D8), sprout green (#7BD88F).
-Material language: frosted-glass panels with a thin lit top rail, inset "trench" controls, warm
-emissive glow, spring/ease-out motion. Display font Fredoka; reading serif Iowan; body Inter.
+## Art direction (committed — keep cohesive)
+- World: **cinematic dark cosmos**. Palette: --void #0a0e17, panels #121826/#1a2233, ink #eaf0fb,
+  focus cyan #7dd3fc (primary/interaction accent), verify teal #34e5b0 (on/success), per-type node hues.
+- Type: Space Grotesk (display) + Inter (body) + JetBrains Mono. Radii 10–16px. Frosted `.panel`.
+- Motion: `motion@12` springs (`SPRINGS.ui` = bounce 0, 0.4s), reduced-motion → opacity-only.
 
-## Turn history
-- **Turn 1:** Killed the stock `<select>` dropdown control surface (auto-fail #2 / non-negotiable #7).
-  Rebuilt `app/ui/controls/InterestLabControls.tsx` as a game HUD "mission deck": eyebrow +
-  display-font title + live telemetry chip; four segmented radio controls with lucide icons, tactile
-  pill segments, inset trenches; a toggle switch for Plain mode; frosted-glass panel w/ lit top rail.
-  Test-safe (preserved the `name=`/`value=` SSR markup). Gate green.
-- **Turn 1.5 (landed in the "green increment" commit, notes were stale):** Completed the **lighting
-  rig (#2)** in `World3DCanvas.tsx` — added a cool tide **rim/back light**, a local palette-baked
-  **`<Environment>`** IBL (four Lightformers, `frames=1`, no remote HDRI), a faintly emissive **misty
-  sea** floor, and soft **`<ContactShadows>`** grounding the islands (full tier). The flat "gray
-  primitive" look is gone; key+fill+rim+IBL+shadows are all present.
-- **Turn 2 (this):** Killed the worst remaining tell — **no post-processing grade (#4)**. Installed
-  `@react-three/postprocessing` v2 + `postprocessing` (pinned to the r3f-v8-compatible line; verified
-  headless resolution + clean import in the vitest node env before wiring). Added `WorldPostFX.tsx`:
-  **Bloom → warm HueSaturation/BrightnessContrast grade → ACES ToneMapping → Vignette**, mounted
-  inside the Canvas and gated on the model's pre-existing `quality.postprocessing`/`bloom` flags
-  (full tier only; lite/board keep the direct render for the D057 perf floor). Bloom is driven by the
-  model's `bloomPeak`/emissive markers, so the plum night stays matte and only the warm cores glow.
-  Because `<EffectComposer>` disables the renderer tone-map while mounted, ACES is re-applied in-chain
-  to stay cohesive across tiers. Gate green: tsc + 73 tests + `next build`. See D-VP4.
-- **Turn 3:** Finished **camera cinematography (#5)** — killed the last camera tell, the
-  *frozen settled shot*. The rig already had intro drift-in + eased island focus + welcome-back +
-  auto-tour + damped orbit, but went dead-still the instant a transition settled (worst during the 8s
-  auto-tour dwells → lifeless diorama). Added a pure, tested `sampleIdleDrift()`/`IDLE_DRIFT` in
-  `CameraRig.tsx`: an additive **idle parallax breath** (three incommensurate sines per channel, ≤0.34
-  world-unit amplitude, 1.4s smoothstep ramp-in) layered on the captured settled pose. Pop-free (sines
-  = 0 at t=0), never touches the byte-exact transition math, skipped in focus+orbit (user's damped
-  orbit owns the camera) and under reduced motion. Gate green: tsc + 74 tests (camera-rig 6→7) +
-  `next build`. See D-VP5.
-- **Turn 4 (this):** Closed the **cohesion gap (#9)** + finished **HUD-not-forms on the guide side
-  (#7)** — killed the worst remaining tell, the guide reading as a *flat "dashboard" paper card* while
-  the child world was fully graded/lit/HUD'd. Kept the deliberate warm paper reading surface (right for
-  dense adult evidence; apple-design §12 — a heavier *opaque structural* material vs. the child's
-  floating translucent HUD), but reframed `.guide-console` as a crafted **lit atelier light-table deck**:
-  the **signature top rail** (identical spark→beacon→tide gradient to the child deck — the strongest
-  shared cohesion mark), layered depth shadow (deep ambient + contact + top inner highlight so the slab
-  lifts off the dark desk), warm/tide corner glows baked into the vellum, a bright hairline lip; the two
-  console eyebrows upgraded to the **HUD eyebrow** with a lit **spark glow-dot**; and the coverage map +
-  return timeline recessed into **inset trenches** (matching the child controls' recessed instruments).
-  Nested `.coverage-console` now paints transparent so the lit surface stays continuous. All additive on
-  an opaque surface — no color inversion, no `backdrop-filter` — so a11y media queries + the two pinned
-  coverage CSS regexes are untouched. Pure DOM/CSS (no GPU), so the build's CSS compile + the pinned
-  guide/coverage markup tests actually verify it. Gate green: tsc + 74 tests + `next build`. See D-VP6.
+## Done this turn (Turn 1 — HUD declutter)
+The right rail was a **wall of ~24 always-visible controls** across 4 stacked sections
+(BODIES 8 toggles · THREADS 6 legend rows · EXPLORE trace+search · DISPLAY tier+motion+plain+captions),
+each padded with explanatory sentences. Rebuilt `components/Hud.tsx` as a focused **command cluster**:
+- **One primary action** — a tactile, glowing **"Trace lineage"** button (icon + title + one-line sub),
+  cyan-accented, lights up (verify/focus glow) when active. The single prominent CTA in the rail.
+- **Compact search** — inset field, leading magnifier, fly-to submit; match count only while typing.
+- **Two quiet disclosure tabs** — **Filters** (bodies grid + threads legend; badge shows # hidden) and
+  **Display** (render tier + reduced motion as real `radiogroup`s + plain/captions switches). Mutually
+  exclusive; open with a soft spring height+opacity reveal (`motion` `AnimatePresence`), chevron rotates.
+- **Words cut hard**: deleted every "presentation only / toggle a body / system is currently…" paragraph
+  (kept one tiny caption inside Display). At rest the rail shows **~4 controls**, not 24.
+- New cohesive **icon set** (`components/icons.tsx`) — 1.5px stroke glyphs, currentColor, all decorative.
+- Segmented controls are now semantic `role=radiogroup`/`radio` (a11y win; e2e updated to open Display).
 
-- **Turn 5 (this):** Made the crafted guide deck *feel alive under the pointer* — killed the highest-
-  leverage remaining tell (#6 guide side): the guide's **directly-interacted controls had zero press /
-  hover / focus feedback** (dead-feeling), even though every guide *enter* animation (coverage stagger,
-  explanations reveal, timeline draw, marker/gate pops, lifecycle state-morph) already existed via
-  `motion/react`. Applied a **pure-CSS feedback pass** reusing the child deck's exact idiom (the shared
-  `--hud-ease` = `cubic-bezier(0.23,1,0.32,1)`, `scale(0.97)` press, 140–180ms, hover behind
-  `@media (hover:hover) and (pointer:fine)`): (a) the primary **"Author operative revision" button** now
-  lifts + warms toward spark on hover and presses to `scale(0.97)` with a depth shadow; (b) the three
-  guide **`<details>` disclosures** (linked evidence, other explanations, legal transitions) got a
-  hover tint + spark text shift + press scale + a **rotating custom chevron** (native marker hidden) so
-  the open/closed state reads; (c) the **revision-scrubber** rows tint + press-scale, the selected row's
-  background now *fades* in (220ms) instead of snapping, and the selected/hovered **revision mark** gets a
-  spark focus ring + scale; (d) the **authoring inputs** brighten their border toward spark on
-  hover/focus. Animates only transform/background/box-shadow/border/color; reduced-motion is auto-
-  neutralized by the global `transition-duration:0.01ms !important` block, so it's a11y-safe by
-  construction. No markup change → every pinned guide/coverage test + CSS regex untouched. Gate green:
-  tsc + 212 tests + `next build`. See D-VP7.
+Gate GREEN: `tsc -b` clean · 66/66 vitest (incl. a11y svg-aria-hidden) · `next build` ok · SSR HTML
+verified (primary + search + tabs render; drawer content absent at rest; zero console errors).
 
-- **Turn 6 (this):** Closed the **last cohesion gap (#9)** on the board-2d fallback — killed its worst
-  tell, which was *material*, not motion. Critic finding via `find-animation-opportunities`: the
-  `QuestCard` was **already fully juiced** (stagger enter + hover-lift + press + pick-spring via
-  `motion/react`) — the stale note's "board pops in flat" was wrong. The real tell was that the cards
-  were **flat CSS rectangles** (hairline border + flat fill, zero depth) sitting on the dark board like a
-  generic dashboard list, while the child HUD deck + guide light-table deck both carry lit rails +
-  layered shadow + emissive glow. Pure-CSS material pass on `.quest-card*` + `.quest-constellation h3`
-  (+ one tiny markup tweak: domain hue → `--domain-hue` var): (1) cards get the deck's **layered depth
-  shadow** + a **hue-baked corner glow** + a per-card **lit top rail** (`::before`, hue→spark-hi); (2)
-  **hover** blooms the shadow + a hue glow ring + warms the border (so motion's existing `translateY(-4px)`
-  reads as *lifting*); (3) **picked** cards get an **emissive hue glow ring** + full rail; (4) the **spark**
-  recommendation card glows warm (spark→beacon rail — 2D stand-in for Bloom); (5) **prompted-return** stays
-  calm (muted rail, no glow); (6) domain headers upgraded to the shared **HUD eyebrow + lit glow-dot**
-  (identical idiom to `.hud-eyebrow`/`.hud-eyebrow-dot`). Motion owns transform/opacity/filter; CSS owns
-  shadow/border/bg — no conflict. Reduced-motion auto-neutralized (resting depth persists as static
-  material, correct); `:focus-visible` outline untouched (not clipped by `overflow:hidden`). Gate green:
-  tsc + 212 tests + `next build`. See D-VP8.
+## Done this turn (Turn 2 — header declutter → diegetic telemetry readout)
+The header was the worst always-on AI-demo tell: a **wordy prose sentence** ("A content-addressed
+evidence DAG — X nodes in the milestone, Y unlinked, Z provenance threads") plus **two pill badges**,
+one of which ("3D cosmos · calm-2D equal mode") described the *tool*, not the content — a textbook
+"explanatory paragraph where a label would do." Rebuilt `.obs-header` in `Observatory.tsx` + CSS:
+- **Kept** the diegetic title block (eyebrow "Provenance Observatory" + `h1` "Milestone <ref>");
+  tightened display tracking to `-0.025em` / leading `1.02` (apple-design §15 size-specific type).
+- **Replaced** the prose + badges with a compact **telemetry readout strip** — three frosted **stat
+  tiles** (`nodes` · `unlinked` · `threads`, each a 1.5px glyph + tabular-nums count + uppercase
+  label) and one **"Synthetic" status chip** with a softly pulsing verify-teal dot. Reads like a game
+  HUD readout, not a sentence. Deleted the whole prose clause + the tool-describing badge.
+- **Materials** (apple-design §12): tiles are translucent (`backdrop-filter` blur+saturate over the
+  void) with an inset top-edge highlight + soft drop shadow; labels use vibrancy (heavier weight,
+  higher contrast) for legibility over the blur. Degrades to solid under reduced-transparency.
+- **Motion**: the status dot's pulse is neutralised by the existing global reduced-motion rule (no new
+  media block — that shifted the motion-budget test's `indexOf`; folded back out).
+- New cohesive glyphs in `components/icons.tsx`: `NodesIcon` (diamond node), `UnlinkedIcon` (radiating
+  lone body), `ThreadsIcon` (two bodies joined) — same 1.5px `currentColor` set, all `aria-hidden`.
 
-- **Turn 7 (this):** Crafted the **last generic surface** — the child **quest tray + welcome-back**
-  badge — killing the final "dashboard aside" tell (#3 materials / #6 juice / #9 cohesion). The tray was
-  a flat `--night-sunk` rectangle with flat `--night-raised` chips and a **feedback-less "Put back" pill**
-  (dead under the pointer), sitting right beside the fully-crafted board cards + HUD deck. Pure-CSS pass,
-  no markup change: (1) `.quest-tray` → a **lit slab** (hairline border, faint tide corner glow, top
-  inner highlight + ambient drop, and the **signature spark→beacon→tide rail** with rounded top corners
-  — no `overflow:hidden`, so inner-button focus rings stay unclipped); (2) tray eyebrow gains the
-  **HUD lit glow-dot** (scoped `.quest-tray .surface-name`, guide/global eyebrow untouched); (3) chips get
-  **raised material** (top-highlight gradient + hairline + soft drop) so kept quests lift off the floor;
-  (4) the **"Put back" button** gets the emil tactile idiom — resting depth shadow, `:active scale(0.97)`,
-  gated hover that warms toward `--spark` + lifts, all on the shared `--card-ease` @150ms; (5)
-  `.welcome-back-halo` gains a warm `--spark` **emissive glow** (2D bloom stand-in) while
-  `.prompted-return-mark` stays calm. Also fixed a **stale `.quest-card:hover` box-shadow override** that
-  was clobbering Turn 6's richer board hover shadow (later source order, same specificity) — the crafted
-  board hover now actually renders. Reduced-motion auto-neutralized by the global block; pinned
-  `data-quest-tray-item` / aria-label tests untouched. Gate green: tsc + 74 tests + `next build`. See D-VP9.
+Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ok · rendered `index.html` verified (readout +
+`aria-label="Milestone summary"` + all 3 stat counts + Synthetic chip present; prose clause + both old
+badges/`obs-sub`/`obs-badges`/`.badge` classes absent from the DOM; the only remaining "…evidence DAG…"
+string is the `<meta name=description>` SEO tag in `layout.tsx`, not visible chrome).
 
-- **Turn 8 (this):** Finished the **post-processing grade (#4)** — added the one named-but-unbuilt
-  item, **contact ambient occlusion**. Critic pass (impeccable + apple-design §12 materials/depth): every
-  surface is crafted, but the 3D islands + markers were *lit* yet not *seated in each other* (no
-  contact-scale occlusion → a faint "floaty / decal'd" CG tell, the last one in the world). Added
-  `<N8AO>` as the first effect in `WorldPostFX.tsx`'s chain (N8AO → Bloom → grade → ACES → Vignette),
-  full-tier only. Tuned conservative: `aoRadius=1.1` (island cap↔underside seam, markers on island tops,
-  rim torus — ≈1 world unit so distant islands don't cross-darken), `intensity=1.25`, `quality="medium"`,
-  `halfRes` + `depthAwareUpsampling`, and `color=PALETTE.nightSunk` so creases tint to the plum night (not
-  gray dirt), cohesive with `<ContactShadows>`. **N8AO retires the deferral risk directly: it derives
-  normals from depth — no separate normal pass to add/tune** (the exact thing that made classic SSAO risky
-  blind), and depth-only means fog/emissive/contact-shadows are untouched. Gate green: tsc + 74 tests
-  (`world-3d.test.ts` loads the real, un-mocked composer → proves N8AO evaluates clean) + `next build`.
-  See D-VP10.
+## Done this turn (Turn 3 — 3D craft: image-based ambient + cinematic AO grade)
+The worst remaining *visual* tell (chrome now reads calm) was the cosmos missing two of game-feel.md's
+non-negotiables: **#2 image-based ambient light** and **#4 subtle SSAO** in the composer — bodies were
+lit only by a 3-light rig with no real ambient reflections, so their non-emissive faces read flat.
+Rebuilt the lighting in `components/cosmos/Cosmos3D.tsx`:
+- **Procedural IBL** — a new `CosmosEnvironment` builds a drei `<Environment>` from four `<Lightformer>`
+  area lights (cool focus-cyan key ↑right · warm human-gold rim ↙back · dim model-violet overhead ring ·
+  a near-black void floor for contrast). `frames={1}` bakes the cubemap **once** (static → cheap),
+  `resolution={64}`, `background={false}` (keeps our `<color>` void + starfield as the visible backdrop).
+  **No HDRI preset / no fetch** — fully procedural, honours FR-E19 ("no external fetch, ever") and stays
+  headless-safe. Feeds real ambient + soft reflections into the emissive PBR bodies so they seat in the
+  volume instead of floating shadeless.
+- **Cinematic AO** — added `<N8AO>` (postprocessing's modern SSAO successor; n8ao 1.10 ships transitively)
+  as the **first** effect in the `EffectComposer`, void-tinted, `halfRes` + `aoRadius 1.6` — subtle
+  crevice shading on the multi-part bodies (world+ring, blueprint shell+core, seal-sun+seal) before Bloom.
+- **Ambient rebalanced** — dropped `ambientLight` 0.35→0.22 **on spectacle only** so the IBL + key/rim
+  carry the contrast rather than a flat wash (standard3d keeps 0.35; calm2d unchanged).
+- Both IBL + N8AO ride the existing **`spectacle` gate** (cinematic && !plainMode), exactly like Bloom /
+  DOF / Vignette — so standard3d, plain mode, and calm-2D are byte-for-byte unaffected.
 
-- **Turn 9 (this):** First turn to **subtract, not add** — closed the real remaining gap, which was
-  **game-feel #1 (Simplicity & flow, the FIRST requirement)**, not more material polish. Judged against
-  the doc: the HUD deck was a persistent **five-control wall** (Age band / Motion / Surface / Render tier
-  / Plain mode) labelled "presentation only" — the auto-fail the doc names *verbatim*. Turn 1 restyled
-  the `<select>`s but never removed the *wall*. Restructured `InterestLabControls.tsx` (+ CSS) so **one**
-  control is in view — the primary `Surface` toggle (relabelled **"Viewing"**: Quests ↔ Guide) in a new
-  prominent `.hud-primary` row — and the four preview/a11y/debug switches collapse behind a native
-  `<details>` **"Preview settings"** disclosure (sliders icon + rotating chevron, `:active` press,
-  ease-out fade-slide reveal, all on the shared `--hud-ease`; native details = keyboard/a11y for free).
-  Always-visible control count **5 → 1**; the compact live-status chip stays as the one-line summary.
-  Test-safe: `renderToStaticMarkup` renders `<details>` children regardless of open state, so every
-  pinned `name=`/`value=`/h2/status/`--control-target` string survives (all 9 client-shell assertions
-  green). Gate green: tsc + 74 tests + `next build`. See D-VP11.
+Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ok. **Live Playwright walkthrough** (swiftshader
+WebGL, 1440×900): cinematic 3D mounts + renders the graded scene (glowing bodies, bloom/DOF/vignette,
+new IBL/AO — no artifacts, no dark halos), **zero console/page errors**, 13-item Ledger, Trace lineage +
+ledger fly-to + Verify seal + Filters/Display drawers all work. Under *software* WebGL the pre-existing
+`PerformanceMonitor` self-heals cinematic→standard3d→calm2d (SC-E21) — expected; on real GPU it holds
+cinematic (captured in the load screenshot before degrade). Every tier is a usable, polished state.
 
-- **Turn 10 (this):** First **content-copy** subtraction — applied game-feel **#1 (Simplicity & flow,
-  the FIRST requirement)** to the *content* surfaces, which Turns 1–9 skipped (Turn 9 cut the control
-  *wall*; nobody had cut the *prose*). The child quest screen was carrying **two overlapping reassurance
-  paragraphs** (masthead lede + ledger paragraph both saying "explore freely, no wrong answer") **plus**
-  an obvious-stating instruction — the doc's exact "explanatory paragraphs where a label works" tell.
-  Pure text, no markup/CSS/logic: (1) masthead lede trimmed to one clause (its 3rd clause was echoed by
-  the footer); (2) ledger paragraph dropped its eyebrow-restating first sentence, kept the load-bearing
-  child-safety reassurance; (3) quest-world instruction dropped its states-the-obvious first sentence,
-  kept the one functional hint ("Focus a quest below to visit its island."); (4) guide intro merged two
-  staccato sentences into one, every noun preserved. Reading path on the child screen is now
-  focal-content → one short reassurance → cards. Test-safe: the only two pinned content strings
-  ("Your quest constellation", "Synthetic data only") are untouched and no new string trips the
-  `price|score|rank|percentile|verdict` guard. Gate green: tsc + 212 tests + `next build`. See D-VP12.
+## Done this turn (Turn 4 — Inspector declutter → summary + Details disclosure)
+After the HUD (T1), header (T2) and cosmos lighting (T3), the **Inspector was the last wordy chrome
+tell**: a `<dl>` of ~7 always-visible fields (Content-address + a note sentence, Actor, Tool, Inputs,
+Timestamp, Consent scope, Payload) — the exact "wall of fields" game-feel.md flags, and it ranks
+simplicity *above* visual richness. Rebuilt `components/Inspector.tsx` (+ CSS):
+- **Default = calm summary** — type glyph + label, the authority badge (human-owned seal / cited ribbon,
+  kept: it's the "evidence, not accusation" point), **Content-address + Copy**, the **Actor** chip, and
+  **Timestamp**. Three fields, not seven.
+- **One-tap Details disclosure** — Tool, Inputs (fly-to lineage links), Consent scope (+ synthetic tag),
+  Payload, and the address-fingerprint note now live behind a single **Details** button styled 1:1 with
+  the HUD tabs (frosted, chevron rotates, `is-open` cyan tint). Reveals with the same `SPRINGS.ui`
+  height+opacity drawer via `AnimatePresence` (opacity-only under reduced motion) — cohesive with the HUD.
+- Panel re-mounts per selection (`key={node.id}`), so every open starts **collapsed** (fresh summary).
+- **Words cut**: the always-on "content-addressed — the id is the hash…" note moved into Details (still
+  plain-mode aware via `panelCopy`); the default card no longer carries an explanatory sentence.
+- Did **not** touch `inspector-model.ts` (the unit-tested pure model) or any domain/state (SC-E14 holds).
 
-- **Turn 11 (this):** Did NOT rubber-stamp `.loop-done` — a fresh end-to-end critic pass (impeccable +
-  apple-design §12) found a **real, verbatim auto-fail** the prior 10 turns missed: the guide's
-  `EvidenceConstellationCanvas` (a live 3D `<Canvas>`, captioned "Evidence constellation") was the one
-  remaining surface rendering **bare `meshBasicMaterial` spheres on transparent black** — the doc's #1
-  anti-pattern ("flat-lit untextured primitives … orange spheres on black"). Every turn had crafted the
-  child 3D world AND the guide's *DOM* light-table deck, but nobody had touched the guide's *3D
-  constellation*. Fixed it: each star + anchor is now a **glowing node** — a hot self-luminous core sphere
-  wrapped in a soft **additive halo sprite**, tinted per pull (spark/tide/ink) and brightness-scaled — via
-  a new `constellation-node.ts` (`createSoftDotTexture` white-radial sprite + pure `resolveStarNode`/
-  `resolveAnchorNode`), reusing the world's in-memory glow-sprite idiom. Links bumped to read as
-  light-threads. Conservative on a decorative `aria-hidden` float (no composer/Bloom — the additive halo
-  is the perf-cheap 2D emissive stand-in, same rationale as the board-2d glow). Test-safe: the sole source
-  pin (`<Canvas aria-hidden>`) is preserved; new `constellation-node.test.ts` adds 6 pure tests. Gate
-  green: tsc + app 80 tests (74→80) + root 212 tests + `next build`. See D-VP13.
+Gate GREEN: `tsc -b` clean · 66/66 vitest (inspector.test.ts unchanged & green) · `next build` ok.
+**Live Playwright walkthrough** (swiftshader, standard-3d tier, 1440×900): opening a Ledger row opens the
+Inspector; at rest only address/actor/timestamp render (drawer + consent + payload + inputs absent, toggle
+`aria-expanded=false`); clicking **Details** reveals all of them (`aria-expanded=true`); clicking again
+removes the drawer (reversible) — **zero console/page errors** on load + every interaction. Screenshots
+`/tmp/ee-inspector-summary.png` + `/tmp/ee-inspector-details.png` confirm the calm→full states read well.
 
-- **Turn 12 (this) — DONE.** No code change. Honored the Turn-11 lesson ("a scorecard can lie") by
-  running the disciplined, surface-by-surface critic sweep the NEXT block demanded — *inspecting* each
-  surface, not trusting the scorecard — then declaring `.loop-done`. Sweep (all clean, actually
-  inspected): (a) a whole-app grep for any 3D primitive returns exactly 4 files — the child world
-  (`World3DCanvas`/`QuestMarker`/`Island`) + the guide constellation (crafted Turn 11); the guide's
-  `Lifecycle`/`RevisionHistory`/`ReturnTimeline`/`CoverageMatrix` are DOM/SVG, not flat 3D. (b) `board-2d`
-  renders the Turn-6 crafted `QuestCard` board; `plainMode` forces `board-2d` and flattens only the glass
-  `.material` panels (intentional calm) while crafted cards persist; `EvidenceConstellation` returns
-  `null` under the fallbacks (no flat DOM stand-in). (c) `QuestMarker`/`Island` are PBR + emissive +
-  halo + rim torus (no bare primitives); `Motes` = drei `<Sparkles>`. Every non-negotiable met, no
-  auto-fail remains — verified by inspection + green gate: **tsc exit 0 · root 212 · app 80 · build ✓**.
-  Declined the two optional items (shallow DoF, deeper guide trenching) — game-feel #1 forbids
-  over-decorating an already-calm world; both are eyes-on GPU-tune polish, not blockers. See D-VP14.
+## Done this turn (Turn 5 — the 3D material pass: distinct substances + envMap specular + fresnel rim)
+With every clutter tell gone (T1–T4) and the scene lit (T3: IBL + AO + bloom/DOF/vignette), the last big
+*visual* lift from "good scene" to AAA was the **material language**: all 8 bodies shared one emissive
+material (`roughness 0.35 / metalness 0.1`), so a world, a crystal, a gold-star and an obelisk read as the
+*same glowing plastic* in eight hues — and with the IBL present they barely caught reflections, so they
+read shadeless. Rebuilt the materials in `components/cosmos/Bodies.tsx`:
+- **Per-body PBR character** — a new `PBR` map gives each node type a distinct **substance**: matte/chalky
+  *construct* (blueprint, roughness 0.6), *icy* comet (roughness 0.15), warm **metallic gold** (gold-star
+  metalness 0.7), sharp **glassy** crystal (roughness 0.12), polished beacon/seal. `emissive()` now merges
+  a per-body profile including **`envMapIntensity` (0.7–1.5)** so each silhouette catches the cool focus
+  key from the baked IBL as a real specular highlight → bodies **seat in the volume** instead of floating
+  flat. (`apple-design §7`: every value deliberate; `game-feel §3`: a material *language*.)
+- **Faint additive fresnel rim** — a self-contained `RimMaterial` (hand-written GLSL, **no three chunk-name
+  coupling** → version-robust) + a `<Rim>` back-shell (scale ~1.05–1.14) clones each body's geometry and
+  lights only the grazing silhouette (`BackSide` + `AdditiveBlending` + `depthWrite:false`, `raycast`
+  disabled so it never occludes the core or eats picks). Edges now glow **into** the Bloom so bodies pop
+  off the void. Kept conservative (`intensity 0.7`, islands halved) — verified live it reads as a gentle
+  edge glow, **not** a blown-out halo.
+- **Strictly gated** — every material change rides `rich = animate = spectacle` (cinematic && !plainMode),
+  the same gate as Bloom/DOF/IBL. When `rich` is false, `emissive()` returns the flat baseline byte-for-byte
+  (no `envMapIntensity` key) and **no** rim renders, so **standard3d / plain / calm-2D are unchanged**.
 
-## Verification note (honest)
-The grade only mounts client-side on the WebGL full tier, so it can't be pixel-verified in this
-headless / GPU-less env (swiftshader would fall to board-2d and never exercise the composer).
-Verified instead: package resolves + imports without side-effect crashes (world-3d.test.ts loads the
-real module), tsc + tests + build all green, and the tone-mapping chain is correct **by construction**
-— confirmed from the installed dist that EffectComposer sets `NoToneMapping` while mounted, which is
-why the ACES ToneMapping effect is present. A GPU screenshot pass is the ideal next confirmation.
+Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ok. **Live Playwright walkthrough** (swiftshader,
+1440×900): app boots at **Cinematic 3D** → the composer, IBL bake, and the new custom `RimMaterial` GLSL
+**all compiled and rendered** (screenshot `/tmp/ee-cinematic.png`: distinct metallic-gold / glassy-crystal /
+icy-comet / matte-construct substances + soft rim glow, no washout). Forcing the Cinematic tier held it.
+**0 page errors · 0 console `error`s**; the only console warnings (25) are the pre-existing swiftshader
+`glBlitFramebuffer` depth-stencil GL-driver noise from the EffectComposer under *software* WebGL (present
+since T3), **0 non-GL** — my change adds no app error/warning. Trace lineage, 13-row Ledger → Inspector,
+Filters + Display drawers all work.
 
-## What still reads generic (candidates for next turns)
-- **All primary surfaces are now crafted + cohesive** (3D world, child HUD deck, guide light-table deck,
-  board-2d fallback). Remaining items are AAA-grade *polish*, not auto-fail tells:
-- ~~**SSAO / ambient occlusion (part of #4)**~~ — DONE Turn 8 (tinted N8AO contact AO; depth-only, so
-  no normal pass was needed after all). Only optional **shallow depth-of-field** remains to finish the
-  AAA grade — deferred as the higher blind-tuning risk (best done in a GPU screenshot pass).
-- ~~**Quest-tray + welcome-back surfaces**~~ — DONE Turn 7 (lit slab + rail + glow-dot + raised chips +
-  tactile "Put back" + emissive welcome-back halo). Board↔tray↔deck now cohere; also fixed a stale board
-  hover-shadow override in passing.
-- **Deeper guide trenching (optional polish):** the explanation columns + lifecycle tracks + revision rail
-  could take the same inset-trench treatment as the two scroll instruments for even more instrument depth.
-- **GPU/browser screenshot pass:** tune Bloom/Vignette + idle-breath amplitude + the new board glow/rail
-  amounts to taste (can't be pixel-verified headless — see note below).
+## Done this turn (Turn 6 — Ledger calm-depth pass: HUD panel, scroll-edge fade, hue-glow dots)
+With the cosmos fully lit + materialised (T3/T5) and every other chrome tell decluttered (T1/T2/T4), the
+**Ledger** was the last generic surface: a hard-clipped `overflow:auto` list whose header + verify seal
+**scrolled away** with the rows, carrying a wordy explanatory intro ("Every evidence node, in provenance
+order. Select a row to inspect it — the same view the constellation shows.") — a textbook game-feel #1
+"explanatory paragraph where a label does" tell — and rows met the panel edge with a flat clip (reads as a
+dashboard table, not depth). Rebuilt `components/Ledger.tsx` + its CSS into a **HUD panel**:
+- **Fixed header** — the `.ledger` panel is now a flex column (`overflow:hidden`) with a non-scrolling
+  `.ledger-head` (uppercase title + a **tabular count chip**, `13`) pinned above a `.ledger-scroll` region
+  that alone scrolls. The title/seal no longer slide out of view. The count is a glanceable HUD readout of
+  list scale (replaces the info the deleted intro carried).
+- **Scroll-edge depth fade** (apple-design §12) — `.ledger-scroll` carries a **static** `mask-image`
+  linear-gradient (16px top+bottom) so rows dissolve into the panel chrome instead of hard-clipping. No
+  animation → the motion-budget test (bans layout-prop transitions / non-compositor keyframes) is untouched.
+- **Words cut** — deleted the intro paragraph entirely (title + rows are self-evident; the HUD already owns
+  "Trace"). game-feel #1 "subtract every turn."
+- **Signature hue-glow dots** — each row's `.ledger-dot` now takes the node **type hue via inline `color`**
+  (`background:currentColor` + a `color-mix` currentColor glow), so the ledger dots echo the cosmos node
+  hues instead of an inkish white glow; dropped the stale `margin-top` (rows are center-aligned).
+- **Selected/hover juice** — selected row gains an inset cyan left-accent bar + soft focus glow (box-shadow,
+  compositor-safe); hover nudges the row `translateX(2px)`; row gap 4→5px for a touch more rhythm.
+- **Orphan cleanup** (impeccable): deleted 7 dead `.ledger-list/.ledger-body/.ledger-head(old)/.ledger-label/
+  .ledger-type/.ledger-meta/.ledger-hash` CSS rules + the legacy `.ledger-row` variant (0 TSX usages, left
+  over from a prior ledger). Kept the used `.ledger-flag*`.
+- **Tier-safe by construction** — the Ledger is the DOM parallel rendered in *every* tier (not 3D-gated), so
+  this chrome improves calm-2D / standard-3d / cinematic equally; no 3D code (`Bodies`/`Cosmos3D`) touched.
 
-## Non-negotiable scorecard (vs game-feel.md)
-1 committed world ✓ · 2 lighting rig ✓ · 3 materials ✓ (**no bare primitives remain — the last ones,
-  the guide constellation's flat spheres, became glowing nodes in Turn 11**; the prior scorecard's
-  "no bare primitives" claim was wrong: it had overlooked the guide's 3D canvas) ·
-4 post-FX grade ✓ (Bloom+grade+ACES+Vignette+**N8AO contact AO, Turn 8**; only optional DoF open) ·
-5 camera cinematography ✓ (idle breath, Turn 3) ·
-6 motion/juice ✓ world + child HUD + guide + **board-2d (motion was already there; Turn 6 added the
-  crafted material so the lift reads as depth)** ·
-7 HUD not forms ✓ (child deck + guide deck, Turn 4; **control-wall subtracted to one nav control +
-  Preview-settings disclosure, Turn 9**) · 8 type+icons ✓ ·
-**#1 Simplicity & flow ✓ — Turn 9 cut the always-visible control count 5→1; Turn 10 cut the
-  duplicated content prose (two overlapping reassurance paragraphs + an obvious instruction) to one calm
-  reading path. The doc's FIRST requirement is now honored on BOTH controls and copy.** ·
-**9 cohesion ✓ — 3D world, child deck, guide deck, board-2d fallback, AND (Turn 11) the guide's 3D
-  evidence constellation now read as one crafted world.** Every non-negotiable is met and no auto-fail
-  anti-pattern remains; what's left is AAA-grade polish (DoF, guide trenching, GPU-tuning), not a redo.
+Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ok. **Live Playwright** (Python, 1440×900): count
+chip = 13; **`.ledger-intro` gone (0)**; `mask-image` applied; scroll region genuinely scrollable (1082 >
+564) with the header staying pinned when scrolled to bottom; dot color = the type hue (`rgb(94,124,226)`,
+not white); row-click selects + opens the Inspector; **Trace / Filters / Display (7 radios) / search /
+Inspector Details all fire — every control does something, 0 console + 0 page errors** across the whole
+walkthrough. Screenshots `/tmp/ee-ledger-{rest,selected,scrolled}.png` confirm the calm HUD read.
 
-- **Turn 13 (this) — RE-VERIFIED DONE.** The loop re-invoked because `.loop-done` is **gitignored**
-  (`git check-ignore .loop-done` → hit) so the marker never commits and was wiped between sessions — no
-  work was actually left. Did NOT rubber-stamp and did NOT invent a decoration turn (game-feel #1 forbids
-  over-decorating a calm working world). Instead re-ran the full gate + a fresh adversarial critic sweep
-  (actually inspecting, per the Turn-11 lesson): `grep '<select'`/native form controls across `app/` →
-  **none**; enumerated every 3D geometry (island cap/cone/emissive-rim silhouette; faceted emissive gem
-  markers; emissive sea floor; guide constellation `sphere` cores that are *deliberately* self-luminous
-  `meshBasicMaterial` + additive halo — the canonical glowing-node idiom, verified by reading the file,
-  not the note); post-FX chain present + full-tier gated. Every non-negotiable holds, no auto-fail remains.
-  Gate green: **tsc exit 0 · domain 81 · app UI 80 · `next build` ✓**. Re-created `.loop-done`. See D-VP15.
+## Done this turn (Turn 7 — RESET: deliberate "Provenance Instrument" design-token system)
+**The escalated brief matters more than T6's "done" marker.** The operator re-reviewed after T1–T6 and
+rejected the *look itself*: "still looks a bit cluttered; the **dark gradients, curved edges, and font**
+give an overall impression of vibe-coded." T1–T6 decluttered + lit the scene but kept the vibe-coded VISUAL
+STACK. This turn is a foundational **chrome-token rewrite** (not a decoration turn — a genuine response to a
+stronger verdict), targeting exactly the three named tells + the brief's "extract a token system for
+PassionLab" requirement. The 3D cosmos stays dark (it's space; game-feel commits it) — the fix is making the
+chrome a *deliberate* matte instrument, not default blue-black glassmorphism.
+- **Typography (tell #1) — discovered `layout.tsx` loaded NO real typeface** (system-ui fallback = the
+  "generic font" the operator saw). Now loads real self-hosted faces via `next/font` (build-time, no runtime
+  fetch → FR-E19): **Fraunces** (optical serif → archival authority) + **IBM Plex Sans** (technical body) +
+  **IBM Plex Mono** (hashes). Wired into `--font-*` tokens w/ fallback stacks; optical sizing + serif
+  tracking on headings. Verified live: computed `body`=IBM Plex Sans, `h1`=Fraunces (really applied).
+- **Geometry (tell #2)** — a deliberate radius scale (`--r-lg 8 / --r-md 6 / --r-sm 4 / --r-pill`) replaces
+  the scattered 16/14/13/12/11/10/9/8/7/6px literals, applied consistently; pills reserved for genuine pills
+  (segmented tracks, status chip, badges, dots); the two pill-buttons (verify/scrub-play) de-pilled to `-md`.
+- **Surfaces/color ("dark gradients")** — dropped every decorative `radial-gradient` glow (body, stage,
+  cosmos-viewport, inspector) + all `backdrop-filter` frosted glass → matte graphite steps + hairline +
+  restrained shadow tokens; re-pitched palette off blue-black `#0a0e17` → neutral graphite `#0c0d11`; single
+  monochrome page depth (not a rainbow); de-neoned the focus accent, single-hue slider fill, killed chrome
+  bloom halos (kept transient state-feedback glows). Removed the now-dead `--surface-alpha` + 3 obsolete
+  `prefers-reduced-transparency` blocks; refreshed the stale file-header + comment.
+- **Token system for PassionLab (§6)** — color/type/geometry/space/elevation authored cleanly in `:root`;
+  components reference tokens, never literals.
+- **Kept green / invariants:** `--focus` + `:focus-visible` ring, semantic state + node-type hues (FR-E04
+  grayscale-safe), the reduced-motion global block (motion-budget `prefers-reduced-motion` index intact,
+  keyframes still transform/opacity/filter only, no layout-prop transitions — `border-radius` isn't one),
+  no domain/state/3D-geometry touch (SC-E14). Pure chrome refactor.
 
-## NEXT — DONE (re-verified Turn 13; `.loop-done` re-created)
-The app meets **every** game-feel non-negotiable with **none** of the auto-fail anti-patterns, verified
-by a surface-by-surface critic sweep (not a scorecard read) + a green gate (tsc · root 212 · app 80 ·
-build). `.loop-done` is created. Any future turn should NOT re-open this to add decoration (game-feel #1:
-subtract, don't over-decorate). The only remaining work is **optional, eyes-on GPU polish** that cannot
-be done in this headless GPU-less env and is not a blocker for any requirement:
-1. **GPU/browser screenshot pass** — tune Bloom / Vignette / N8AO amounts, idle-breath amplitude, the
-   board-2d glow/rail amounts, and the guide constellation's halo/core scale + opacity to taste. This is
-   the highest-value remaining *visual* confirmation (swiftshader falls to board-2d headless, so the
-   composer + constellation halos never rasterize here).
-2. **Shallow depth-of-field** (last optional #4 item) — only after eyes-on; higher blind-tuning risk.
-3. **Deeper guide trenching** (optional polish) — explanation columns + lifecycle tracks + revision rail
-   could take the two scroll instruments' inset-trench treatment for more instrument depth.
-If reopening for polish, keep the gate green and keep the committed art direction cohesive (D-VP1).
+Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ✓ (next/font self-hosted). **Live Playwright**
+(Chromium, 1440×900, production `next start`): **0 page + 0 console errors** across load → Trace → Filters →
+Display → search (1 match / 0-match empty state) → ledger→Inspector→Details → Verify (Verified) → tamper
+(MISMATCH) → calm-2D tier. Every control functional; real empty/error states. Screenshots `/tmp/ee7-*.png`.
 
-## NEXT (historical — Turn 11's guidance, now satisfied)
-Turn 11 was the payoff for NOT rubber-stamping `.loop-done`: the fresh critic pass caught the guide's 3D
-evidence constellation still rendering **flat `meshBasicMaterial` spheres on black** — a verbatim #1
-auto-fail the prior scorecard had wrongly marked closed ("no bare primitives remain"). It is now lit as
-glowing nodes, so **the scorecard is genuinely full and every 3D surface in the app is crafted.** This
-strongly supports declaring done — but the lesson of Turn 11 is that a scorecard can lie, so:
-1. **Do ONE more disciplined end-to-end critic sweep before `.loop-done`.** Specifically re-check the
-   surfaces the scorecard *assumed* rather than *inspected*: (a) any other `meshBasicMaterial` /
-   `<Line>` / bare-geometry usage across the guide (`Lifecycle`, `RevisionHistory`, `ReturnTimeline`,
-   `CoverageMatrix` — confirm these are DOM/SVG, not flat 3D); (b) the `board-2d` and `plainMode`
-   fallbacks end-to-end (they skip the composer AND now the constellation — make sure they still feel
-   crafted, not stripped); (c) `QuestMarker`/`Island` materials for any remaining flat primitive. If
-   that sweep is clean, **create `.loop-done`** — the strong case is the full, now-verified scorecard.
-2. **GPU/browser screenshot pass — the highest-value remaining *visual* confirmation** (cannot be done in
-   this headless GPU-less env; swiftshader falls to board-2d and never runs the composer). Confirm Bloom /
-   Vignette / N8AO + the **new constellation halo/core scale + opacity** read right, then tune to taste.
-   Only after eyes-on, consider **optional shallow depth-of-field** (last #4 item; higher blind-tuning risk).
-3. **Deeper guide trenching (optional polish):** explanation columns + lifecycle tracks + revision rail
-   could take the two scroll instruments' inset-trench treatment for more instrument depth.
-Keep the gate green (tsc + app test + root test + `next build`); write `.loop/commit-msg`; keep the art
-direction cohesive. **Before adding, subtract (game-feel #1)** and guard hard against over-decorating an
-already calm world — but Turn 11 proves the critic sweep must actually *inspect* each surface, not trust
-the scorecard. If the sweep in (1) is clean, ship `.loop-done`.
+## Still generic / next targets (judged vs game-feel.md)
+- The cosmos now has IBL + AO + bloom/DOF/vignette + rig + damped cinematic camera + a **per-body material
+  language** (distinct substances + envMap specular + fresnel rim, T5). The scene meets game-feel §1–§9.
+  Remaining candidates are **taste-tunes best done eyes-on a real GPU** (see caveat) — not blind blockers.
+- ~~**Ledger** panel is a dense scrolling list — scroll-edge fade + rhythm.~~ **DONE Turn 6** (HUD header +
+  mask fade + hue-glow dots + intro cut). No generic *chrome* candidate remains.
+- The Display drawer keeps one caption ("Presentation only — the evidence never changes"); load-bearing
+  (explains the state-only guarantee) and inside progressive disclosure, so it stays.
+- Rim/envMap **intensity taste-tune**: on a real GPU the fresnel rim + per-body `envMapIntensity` could be
+  nudged (e.g. crystal a touch sharper, gold a touch warmer) — but that needs pixel eyes headless can't give.
+
+## Honest caveat (unchanged from EE-003)
+Under *software* WebGL (swiftshader) the EffectComposer emits benign `glBlitFramebuffer` depth-stencil
+GL-driver warnings and the `PerformanceMonitor` may self-heal cinematic→standard3d on a slow frame — both
+pre-existing and environmental. The cinematic composer + rim shaders **do** compile and render here (boots at
+Cinematic 3D), but final pixel taste-tuning of bloom/rim balance is ideal on a real GPU; it blocks no
+non-negotiable.
+
+## NEXT
+- **DONE this session — Turn 7 landed the design RESET; `.loop-done` re-created.** The operator's escalated
+  verdict (dark gradients / curved edges / font = vibe-coded) is directly addressed by a real, extractable
+  **design-token system**: real self-hosted type (Fraunces + IBM Plex Sans/Mono), a deliberate radius scale,
+  matte-graphite surfaces with no rainbow gradients / no frosted glass, de-neoned restrained accent. Verified
+  usable end-to-end in Chromium (0 console + 0 page errors; every control functional; real empty/error
+  states). The chrome now reads as a deliberate "Provenance Instrument," not an AI dashboard.
+- **If the loop re-invokes:** do NOT invent a decoration turn (game-feel #1 forbids over-decorating a
+  now-calm, cohesive world). Re-run the gate + a fresh adversarial critic sweep (actually *inspect* the
+  rendered surfaces — a scorecard can lie), confirm nothing regressed, re-create `.loop-done`. The token
+  system is the leverage point — any further chrome change should go THROUGH the tokens, never hardcode.
+- **Genuine candidates for a future turn (not blockers):**
+  1. **3D bodies vs the new chrome:** the glowing planet/star primitives read a touch toy-like against the
+     serious matte-instrument chrome. A *scene* taste-tune (glowing-nodes is the committed concept; changing
+     node representation is larger scope + GPU-eyes work) — do it deliberately, not blind.
+  2. **GPU-eyes taste-tunes** (unchanged): bloom/rim/vignette/DoF balance, per-body `envMapIntensity` — need
+     a real GPU; block no non-negotiable; forcing them blind risks over-decoration.
+- Do NOT add `<ContactShadows>` (EE-003: a floor fights the floating cosmos) unless a grounded glow-plane
+  variant is prototyped and clearly reads better.
+- Do NOT revert to blue-black + neon-glow + frosted-glass chrome (EE-007): that is the exact vibe-coded look
+  the operator rejected. The matte-graphite instrument palette is the committed direction now.
