@@ -1,0 +1,62 @@
+.fallback {
+  width: min(100%, 72rem);
+  overflow: hidden;
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
+  background: var(--sea-deep);
+}
+
+.map {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.regionArt {
+  opacity: 0.96;
+}
+
+.path {
+  stroke: var(--sun-hi);
+  stroke-linecap: round;
+  stroke-width: 12;
+  vector-effect: non-scaling-stroke;
+}
+
+.nodeArt {
+  filter: drop-shadow(0 4px 4px rgb(14 42 59 / 55%));
+}
+
+.landmark,
+.state {
+  fill: var(--ink-hi);
+  font-family: var(--font-body);
+  paint-order: stroke;
+  stroke: var(--sea-deep);
+  stroke-linejoin: round;
+  text-anchor: middle;
+}
+
+.landmark {
+  font-size: 28px;
+  font-weight: 800;
+  stroke-width: 8px;
+}
+
+.state {
+  font-size: 22px;
+  font-weight: 700;
+  stroke-width: 6px;
+}
+
+@media (prefers-contrast: more) {
+  .fallback {
+    border-width: 2px;
+    border-color: var(--ink-hi);
+  }
+
+  .path {
+    stroke-width: 16;
+  }
+}

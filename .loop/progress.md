@@ -369,3 +369,17 @@
 ## NEXT
 - T021a: add focused tests first, then implement `apps/arena/app/scene/Fallback2D.tsx` as the P1 Tier-D static 2D/DOM(SVG) stub driven by the identical `InitialArenaView`.
 - Acceptance: Tier D renders the same regions, node positions, landmark labels, and locked/available/unlocked states without mounting a canvas; the Ledger remains the semantic source of truth, and focused checks plus `pnpm lint`, `pnpm typecheck`, `pnpm test`, root `pnpm build`, and the Arena app build remain green.
+
+## 2026-07-21 — P1 / T021a
+- Added the static Tier-D `Fallback2D` renderer and a pure `buildFallback2DPlan(view)` projection. It preserves the identical four-region order, all nine golden 2D positions and landmark labels, all seven graph edges, and every locked/available/unlocked state from `InitialArenaView` without recomputing domain state.
+- Added seven committed, no-fetch SVG assets keyed to the existing four region and three node-state identifiers. The responsive SVG map includes visible landmark and state text while remaining fully static and free of r3f, Three, canvas, timers, effects, and randomness.
+- Kept the visual fallback `aria-hidden` and non-interactive so the synchronized Arena Ledger remains the sole semantic and keyboard source of truth rather than creating a duplicate accessibility tree.
+- Followed red-green TDD: all four focused tests first failed on the absent module/assets, then passed after implementation. A harness-only React binding and an SVG-namespace false positive were corrected without weakening the behavior assertions.
+- Review status: checked T021a line-by-line against D4–D6, §§5.11/8.24/9 P1/12, FR-029/030/043, SC-011/012, the existing Ledger, UI accessibility guidance, and React/Next performance guidance; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was intentionally not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused fallback tests passed (4 tests); the static-dependency scan passed; `pnpm lint` passed (92 files); `pnpm typecheck` passed; `pnpm test` passed (31 files, 123 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 138 B route, 87.4 kB first load).
+- SC status: the P1 Tier-D visual-parity/no-canvas contract advances FR-029/043 and the fallback half of the SC-011/SC-012 smoke; mounted client selection and forced-Tier-D smoke remain scheduled for T022/P7.
+- Blockers: none.
+
+## NEXT
+- T022: add focused tests first, then implement `apps/arena/app/ArenaClient.tsx` and render it from `apps/arena/app/page.tsx`.
+- Acceptance: gather deterministic `DeviceCaps` and public quality overrides, build one shared `InitialArenaView`, render the dynamic client-only canvas for tiers A/B/C or `Fallback2D` for Tier D, always pair it with the Ledger and synthetic feed, honor reduced-motion defaults as calm Tier C, and keep `pnpm lint`, `pnpm typecheck`, `pnpm test`, root `pnpm build`, and the Arena app build green.
