@@ -176,3 +176,85 @@ test("mounts and disposes WebGL while preserving the seeded view in the reduced-
   expect(await compiledState(page)).toEqual(before);
   expect(runtimeErrors).toEqual([]);
 });
+
+test("keeps standings, churn, and rollback fully operable across reduced and plain modes", async ({
+  page,
+}) => {
+  const runtimeErrors: string[] = [];
+
+  page.on("console", (message) => {
+    if (message.type() === "error") runtimeErrors.push(`console: ${message.text()}`);
+  });
+  page.on("pageerror", (error) => runtimeErrors.push(`page: ${error.message}`));
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/", { waitUntil: "networkidle" });
+
+  const tier2D = page.locator('[data-region="tier-2d"]');
+  const churnMeter = page.locator('[data-churn-meter="weekly-budget"]');
+  const rollback = page.locator('[data-motion-kind="rollback"]');
+  const standingsPanel = page.locator('[data-standings-panel="own-growth"]');
+  const ledgerAnnouncement = page.locator('[data-region="ledger"] output');
+  const plainMode = page.getByRole("button", { name: "Plain mode off" });
+
+  await expect(tier2D).toHaveAttribute("data-static-reason", "reduced-motion");
+  await expect(rollback).toHaveAttribute("data-motion-duration", "0");
+  await expect(rollback).toHaveAttribute("data-motion-mode", "reduced");
+  await expect(plainMode).toBeVisible();
+
+  const initialChurn = await churnMeter.evaluate((meter) => meter.outerHTML);
+  await page.getByRole("button", { name: "Standings off" }).click();
+
+  await expect(standingsPanel).toBeVisible();
+  await expect(standingsPanel).toHaveAttribute("data-motion-mode", "reduced");
+  await expect(standingsPanel).toHaveAttribute("data-bar-duration-ms", "0");
+  await expect(standingsPanel).toHaveAttribute("data-celebrate-duration-ms", "0");
+  await expect(standingsPanel.locator(".standings-value")).toContainText("300 points");
+  await expect(page.locator("#ledger-standings-state")).toContainText(
+    "Own gain 300; 40 to the near-peer band top.",
+  );
+  const reducedBarScale = await standingsPanel.locator(".standings-bar-fill").evaluate((bar) => {
+    return new DOMMatrixReadOnly(getComputedStyle(bar).transform).a;
+  });
+  expect(reducedBarScale).toBeCloseTo(300 / 340, 5);
+  expect(await churnMeter.evaluate((meter) => meter.outerHTML)).toBe(initialChurn);
+
+  await rollback.click();
+  await expect(rollback).toHaveAttribute("aria-pressed", "true");
+  await expect(rollback).toHaveAttribute("data-motion-duration", "0");
+  await expect(tier2D.locator('[data-learner-ref="A6"]')).toHaveAttribute(
+    "data-learner-state",
+    "assigned",
+  );
+  await expect(tier2D.locator('[data-learner-ref="A7"]')).toHaveAttribute(
+    "data-learner-state",
+    "unassigned",
+  );
+  await expect(ledgerAnnouncement).toHaveText("Assignment changed — removed:[A7]; added:[A6].");
+  await expect(page.getByRole("button", { name: "Standings on" })).toBeVisible();
+  expect(await churnMeter.evaluate((meter) => meter.outerHTML)).toBe(initialChurn);
+
+  const reducedPrior = await compiledState(page);
+  await plainMode.click();
+  await expect(tier2D).toHaveAttribute("data-static-reason", "plain");
+  await expect(rollback).toHaveAttribute("aria-pressed", "true");
+  await expect(rollback).toHaveAttribute("data-motion-duration", "0");
+  await expect(standingsPanel).toHaveAttribute("data-bar-duration-ms", "0");
+  await expect(page.getByRole("button", { name: "Standings on" })).toBeVisible();
+  expect(await compiledState(page)).toEqual(reducedPrior);
+  expect(await churnMeter.evaluate((meter) => meter.outerHTML)).toBe(initialChurn);
+
+  await page.getByRole("button", { name: "Plain mode on" }).click();
+  await expect(tier2D).toHaveAttribute("data-static-reason", "reduced-motion");
+  await expect(rollback).toHaveAttribute("aria-pressed", "true");
+  await expect(standingsPanel.locator(".standings-value")).toContainText("300 points");
+  expect(await compiledState(page)).toEqual(reducedPrior);
+
+  await rollback.click();
+  await expect(rollback).toHaveAttribute("aria-pressed", "false");
+  await expect(rollback).toHaveAttribute("data-motion-duration", "0");
+  await expect(ledgerAnnouncement).toHaveText("Assignment changed — removed:[A6]; added:[A7].");
+  await expect(page.getByRole("button", { name: "Standings on" })).toBeVisible();
+  expect(await churnMeter.evaluate((meter) => meter.outerHTML)).toBe(initialChurn);
+  expect(runtimeErrors).toEqual([]);
+});

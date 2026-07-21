@@ -556,3 +556,15 @@
 
 - T126 — Consolidate and verify the reduced-motion equivalents for standings, churn, and rollback.
 - Acceptance: reduced/plain presentation shows the final standings bar and number instantly, keeps the churn meter state-identical, restores the prior snapshot instantly with the Ledger diff, loses no state or control, and keeps focused tests, app TypeScript/build, seeded smoke, and repository typecheck/test/lint green.
+
+## 2026-07-21 — P9 / T126
+
+- Extended the production Playwright smoke with one consolidated reduced/plain acceptance path covering the complete P9 surface: the standings bar resolves immediately to `300 / 340` with final text `300`, both standings motion tokens are `0ms`, rollback restores the A6 prior snapshot with its exact Ledger diff at `0ms`, and the same controls remain operable throughout.
+- Proved the domain-sourced churn meter remains byte-identical while standings, rollback, system reduced motion, and explicit plain mode change presentation; switching reduced → plain → reduced preserves the opted-in standings and prior-snapshot state without losing controls or accessible Ledger output.
+- TDD status: T126 is the spec-defined consolidation checkpoint over the already-landed T122–T125 behavior, so the new behavioral path required no production change and passed on its first product run. The initial Playwright command failed before test execution because Chromium's existing local shared libraries were outside the linker path; the documented ephemeral `LD_LIBRARY_PATH` restored the browser environment and the unchanged smoke passed.
+- Gate status: app tests pass (29/29); `pnpm typecheck`, `pnpm test` (144/144), `pnpm lint` (137 files), root `pnpm build`, `pnpm --filter @gt100k/cohort-arena build`, and the production Playwright smoke (2/2) pass. T126 completes P9; SC-012's opt-in own-growth surface, SC-015's reduced/plain equivalence for the P9 controls, and SC-016's display-only churn/rollback invariance now have consolidated runtime evidence. No blocker.
+
+## NEXT
+
+- T127 — Implement the 3D RivalryMix arena room in `apps/cohort-arena/components/arena/` from `view.rivalry`.
+- Acceptance: seats use the exact `layoutArenaRing` 3D positions; the observable turn holder receives an emissive seat pulse and soft vertical light column driven only by `resolveMotion("turnPulse", ...)`; reduced/plain presentation uses the static `project2D` highlight plus Ledger text; no trait/emotion field is introduced; focused RED/GREEN, app tests/TypeScript, both builds, seeded smoke, and repository typecheck/test/lint remain green.
