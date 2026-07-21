@@ -290,3 +290,41 @@ existing tests meaningful — update them as behavior changes; DO NOT weaken the
   `revealAll` baseline to the same set (D-VP19).
 - **CARRY-OVER lint debt (not mine):** pre-existing `pnpm lint` errors in out-of-lane
   evidence-explorer-view + prior-turn interest-lab files; left untouched.
+
+- **Turn 8 (v2) — SC-UI-18 automated a11y walkthrough DONE (machine-checkable half) + a real
+  reduced-transparency fix.** Gate green: `tsc -b` 0 · root `pnpm test` **384/384** · app vitest
+  **137/137** (+6: `test/a11y-walkthrough.test.ts`) · `next build` ✓ (route `/` static, 288 kB) · my
+  touched files biome-clean (2 pre-existing multi-line-`transition:` nits in globals.css @ ~2410/2529
+  predate this turn, out of my edit region). **Browser-verified** (chromium headless, prod `next start`):
+  child `/` mounted full `quest-world-3d` — 1 canvas `aria-hidden`, 6 native card-buttons keyboard-
+  focusable w/ visible 3px `--focus` ring (#ffd166), Enter picks (aria-pressed false→true), skip-link →
+  `#interest-lab-content` landmark, ZERO console errors; emulated `prefers-reduced-transparency` → child
+  comfort deck computed `backgroundImage:none`+`backdropFilter:none` (SOLID), ZERO errors. See D-VP25.
+  - Consolidated SC-UI-18's DOM-as-AT-source contract into `test/a11y-walkthrough.test.ts` (6): ledger
+    operable WITH the aria-hidden 3D host; every quest control a native `<button type="button">` (no
+    `role=`/`tabindex="-1"`); full accessible name = title + work-mode + why + return-state in one
+    aria-label (quest-board.test only pinned the prefix); color-independent state (aria-pressed + text,
+    glyphs aria-hidden, no emoji/score); skip-link → operable landmark + operable-with-zero-canvas.
+  - **RED→GREEN (real fix):** `prefers-reduced-transparency` only solidified `.material` (0,1,0);
+    `.control-panel.hud-deck` (0,2,0) kept its translucent gradient → child chrome stayed glassy. Added a
+    reduced-transparency rule neutralising the deck (`background: --surface-solid; background-image: none;
+    backdrop-filter: none;` + hide `::before`). Test pins the stylesheet block covers `.control-panel.hud-deck`.
+
+## NEXT
+- **SC-UI-18 machine-checkable half is DONE + browser-verified.** Remaining SC-UI-18 surface is
+  **BLOCKED/MANUAL:** true screen-reader (VoiceOver/NVDA) + human contrast-ratio (≥4.5:1) verification is
+  not doable headless in-lane → `manual:` per the loop's blocked-criterion rule; it does not block the
+  rest. Do NOT loop a recheck marker on it.
+- **NEXT candidate — the GUIDE console a11y (SC-UI-18, second surface).** The child surface is covered;
+  the guide "Hypothesis Console" (CoverageMatrix = DOM table w/ row/col headers, ReturnTimeline = labelled
+  dated marker list, Lifecycle = labelled state list + gate checklist text, EvidenceConstellation canvas
+  `aria-hidden` w/ DOM-equivalent) needs the same consolidated machine-checkable walkthrough test: table
+  header semantics + per-cell status text, timeline marker labels, lifecycle state/transition text, and
+  the constellation canvas aria-hidden with its side-by-side DOM equivalent present. Encode via
+  `renderToStaticMarkup` role/aria assertions (jsdom-free, matching the repo pattern). Keep the gate green.
+- **THEN — U046/U047/U048 view-package guardrails (spec §U9 P15, SC-UI-10/11/12).** `plainViewEquals`
+  across full-3D/3D-lite/2D/plain/reduced/age-band; the static guardrails (no `three`/`react` import, no
+  score/rank/verdict field, no "you are a/an/the" copy); synthetic-only from Part-I fixtures. These are the
+  pure view-package acceptance SCs that finalize the spec's parity/guardrail claims.
+- **CARRY-OVER lint debt (not mine):** pre-existing `pnpm lint`/biome nits in out-of-lane
+  evidence-explorer-view + prior-turn interest-lab files; left untouched.

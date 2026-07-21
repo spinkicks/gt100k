@@ -986,3 +986,31 @@
   in warm spark accent, pill top-right with green dot, no dev jargon anywhere in child chrome.
 - Gate: `tsc -b` 0 · root `pnpm test` 384/384 · app vitest 131/131 (+8: `test/masthead-copy.test.ts`) ·
   `next build` ✓ (route `/` static, 288 kB) · biome clean on my files.
+
+- **D-VP25 (Turn 8, v2) — SC-UI-18 a11y walkthrough encoded as an acceptance test + one real fix.**
+  The DOM-as-AT-source contract was already largely built (native card-buttons, aria-hidden canvas,
+  color-independent state, arrow/Tab focus, ledger↔canvas co-existence — covered piecemeal across
+  quest-board/quest-world/world-3d tests). Consolidated the machine-checkable half of SC-UI-18 into one
+  `test/a11y-walkthrough.test.ts` (6 tests) that pins the parts NOT yet locked: (a) the operable ledger
+  present WITH the aria-hidden 3D host; (b) every quest control is a native `<button type="button">` with
+  no `role=`/`tabindex="-1"` (Enter/Space + Tab by the platform); (c) the FULL accessible name carries
+  title + work-mode + why + return-state in ONE aria-label (`quest-board.test` only checked the prefix);
+  (d) color-independent state (aria-pressed + text, decorative glyphs aria-hidden, no emoji/score);
+  (e) skip-link → operable content landmark + operable-with-zero-canvas at board-2d.
+  - **Real defect found + fixed (the RED):** `prefers-reduced-transparency` only solidified `.material`
+    (specificity 0,1,0). `.control-panel.hud-deck` (0,2,0) paints its own translucent gradient background,
+    so it WON — the child comfort deck (the only child chrome) stayed glassy when a child asked for
+    reduced transparency. Fix (globals.css reduced-transparency block): neutralise the deck explicitly
+    (`background: var(--surface-solid); background-image: none; backdrop-filter: none;` + hide its lit
+    `::before` rail). Test asserts the emitted stylesheet block covers `.control-panel.hud-deck`.
+  - **Browser-verified** (chromium headless, prod `next start`): default child `/` mounted the full
+    `quest-world-3d` tier — exactly 1 canvas, `aria-hidden="true"`; 6 native card-buttons keyboard-
+    focusable with a visible 3px `--focus` ring (#ffd166); Enter picks (aria-pressed false→true, focus
+    retained on the card); skip-link `#interest-lab-content` targets the content landmark; ZERO console
+    errors. Under emulated `prefers-reduced-transparency: reduce` the child comfort deck computed
+    `backgroundImage:none` + `backdropFilter:none` (SOLID — the fix), screenshot calm/legible, ZERO errors.
+    Note: in the QuestWorld composition the card activates as add-to-tray (idempotent), removal is the
+    tray's own keyboard-operable "put back" button — so Space doesn't toggle off; not a defect.
+  - **BLOCKED/MANUAL (unchanged):** true screen-reader (VoiceOver/NVDA) + human contrast-ratio
+    verification is not doable headless in-lane — treated as `manual:` per the loop's blocked-criterion
+    rule; the machine-checkable contract above is fully green and does not block the rest.

@@ -2697,6 +2697,20 @@ footer {
     background: var(--surface-solid);
     backdrop-filter: none;
   }
+
+  /* The HUD deck paints its own translucent gradient background at a higher specificity
+     than .material, so it must be neutralised here too — otherwise the child comfort
+     controls (the only child chrome) stay glassy when the user asks for reduced
+     transparency. Drop the gradient layers and land on the solid surface. */
+  .control-panel.hud-deck {
+    background: var(--surface-solid);
+    background-image: none;
+    backdrop-filter: none;
+  }
+
+  .control-panel.hud-deck::before {
+    display: none;
+  }
 }
 
 @media (prefers-contrast: more) {
