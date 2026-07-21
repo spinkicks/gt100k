@@ -109,3 +109,9 @@
 
 - Kept the contract's one-argument `layoutConstellation(assignment)` behavior and added an optional synthetic pool with an empty default. When supplied, the pool provides field-start values and any pool reference absent from the assignment cohorts becomes a sorted calm bench mote; when absent, assigned motes receive `field: null`. Rejected adding unassigned state to the committed `CohortAssignment` domain type or inventing a second assignment carrier.
 - Imported domain types through the compiler's public entrypoint using the repository's feature-local source-path convention and added an explicit package project reference. Rejected updating the shared lockfile merely to create a workspace symlink because shared dependency metadata is outside this feature's permitted files. Anchored the view-package test script at the workspace root so the shared root-relative Vitest globs execute rather than silently finding zero tests.
+
+## 2026-07-21 — T105/T111 standings defaults
+
+- Use the literal `"near-peer"` for the required anonymized band label. Rejected a named tier or level-derived label because those would create the public caste surface the structural guardrail forbids.
+- Canonicalize output peers by pseudonym ascending, then gain ascending for a duplicate pseudonym, while copying every row. Rejected preserving caller order because equivalent synthetic inputs should produce byte-identical view output without mutating their arrays.
+- Treat the learner's own gain as part of `max(all gains)`, so an empty peer band or a learner already at the band top yields zero own-growth headroom instead of `-Infinity` or a negative deficit. Rejected framing leading growth as debt; Fixture V2 remains pinned at `340 - 300 = 40`.

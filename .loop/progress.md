@@ -338,3 +338,15 @@
 
 - T105 + standings portion of T111 — Add the Fixture V2 `deriveStandingsView` contract first, then implement the pure gain-based opt-in standings view in `packages/cohort-arena-view/src/standings.ts`.
 - Acceptance: opted-out standings return `null`; opted-in standings expose the exact anonymized near-peer gains, `selfGain: 300`, and `gainToBandTop: 40`; output ordering is deterministic and the type/runtime surface cannot carry rank, position, percentile, out-of, bottom-rank, or full-field ranking data; focused RED/GREEN, forced feature TypeScript, package tests, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P7 / T105 + standings portion of T111
+
+- Added the pure `deriveStandingsView` projection and its structural `StandingsView` contract: standings are null unless explicitly opted in, Fixture V2 yields the exact three pseudonymous peer gains with `selfGain: 300` and `gainToBandTop: 40`, and the public shape contains only the four approved fields.
+- Canonicalized copied peer rows by pseudonym/gain so input permutations are byte-identical without mutating caller data; used the neutral `"near-peer"` band label and kept own-growth headroom nonnegative when the learner already leads or the peer list is empty.
+- TDD status: the focused suite first failed because `src/standings.ts` was absent, then passed 4/4 after the minimal implementation. Forced compiler/view TypeScript and focused Biome checks also pass.
+- Gate status: `pnpm typecheck`, `pnpm test` (128/128), and `pnpm lint` pass. P7/SC-012 is complete at the pure view-model layer; the animated/reduced-motion standings renderer remains scheduled for P9. No blocker.
+
+## NEXT
+
+- T106 + rivalry portion of T111 — Add the Fixture V3 `buildArenaRoomView` contract first, then implement the pure observable-only arena-room view in `packages/cohort-arena-view/src/rivalry.ts`.
+- Acceptance: dominance input yields the three pinned sorted seats, the S1 dominance pattern, confidence `1.0`, and `suppressed: false`; low-quality input yields the suppression veil with zero patterns; sparse/refused input invents no status; the type/runtime surface cannot carry honesty, emotion, personality, or motivation fields; focused RED/GREEN, forced feature TypeScript, package tests, and repository typecheck/test/lint remain green.
