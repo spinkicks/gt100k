@@ -322,3 +322,13 @@
 ## NEXT
 - Complete T038: run the final Part-I verification exactly as ordered after the root project references landed.
 - Acceptance: `pnpm --filter @gt100k/interest-lab test`, `pnpm test`, `pnpm typecheck`, and `pnpm lint` all pass from the repository root; record the final Part-I SC status without beginning Part II in the same increment.
+
+## 2026-07-21 — P7 / T038
+- Ran the final Part-I verification after the five feature projects entered the root TypeScript reference graph.
+- Verified `pnpm --filter @gt100k/interest-lab test` (81 tests across 15 files), `pnpm test` (110 tests across 24 files), `pnpm typecheck`, and `pnpm lint` (76 files); all pass with zero failures or findings.
+- Status: T038, P7, and Part I complete. SC-001 through SC-016 are green at their unit, contract, golden, smoke, adapter, and §14.4.3 acceptance boundaries. No blocker.
+- The whole feature remains in progress because Part II UI tasks U001 onward are not yet implemented; `.loop-done` was not created.
+
+## NEXT
+- Complete U001: scaffold `packages/interest-lab-view/package.json` with the pinned ESM entry points, `vitest run` test script, and `@gt100k/interest-lab: workspace:*` dependency, mirroring the domain package.
+- Acceptance: the new GPU-free view package manifest contains no `three` or `react` dependency, resolves the Part-I workspace dependency, and leaves `pnpm typecheck` plus `pnpm test` green.
