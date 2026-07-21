@@ -1,4 +1,5 @@
-import type { CelebrationEvent } from "./model";
+import type { CelebrationEvent, MotionSpec } from "./model";
+import { MOTION } from "./motion";
 
 export type LearningMomentSignal =
   | { type: "independent-unlock"; nodeId: string; transferCritical: boolean }
@@ -25,4 +26,45 @@ export function classifyCelebration(signal: LearningMomentSignal): CelebrationEv
     case "help-request":
       return null;
   }
+}
+
+const ANIMATED_CELEBRATION_MOTION = {
+  high: {
+    particleCount: 24,
+    durationMs: MOTION.celebrateHigh,
+    cameraPunch: true,
+    bloomPeak: 1.4,
+  },
+  medium: {
+    particleCount: 12,
+    durationMs: MOTION.celebrateMed,
+    cameraPunch: false,
+    bloomPeak: 1.1,
+  },
+  low: {
+    particleCount: 6,
+    durationMs: MOTION.celebrateLow,
+    cameraPunch: false,
+    bloomPeak: 0.7,
+  },
+} as const satisfies Record<CelebrationEvent["intensity"], Omit<MotionSpec, "mode">>;
+
+export function celebrationMotionSpec(
+  event: CelebrationEvent,
+  options: { readonly reducedMotion: boolean },
+): MotionSpec {
+  if (options.reducedMotion) {
+    return {
+      mode: "static",
+      particleCount: 0,
+      durationMs: MOTION.micro,
+      cameraPunch: false,
+      bloomPeak: 0.7,
+    };
+  }
+
+  return {
+    mode: "animated",
+    ...ANIMATED_CELEBRATION_MOTION[event.intensity],
+  };
 }

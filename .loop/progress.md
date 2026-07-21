@@ -496,3 +496,16 @@
 ## NEXT
 - T032 + the `celebrationMotionSpec` slice of T033: add `packages/arena-world/test/motion.test.ts` first, then implement and explicitly export the minimal pure celebration-motion resolver.
 - Acceptance: high/medium/low map exactly to particle counts `24/12/6`, durations `800/600/400`, camera punch `true/false/false`, and bloom peaks `1.4/1.1/0.7`; `reducedMotion:true` returns the exact static `0`-particle, `150ms`, no-punch, `0.7`-bloom equivalent for every intensity; replay is deterministic and repository gates remain green (FR-015, SC-004).
+
+## 2026-07-21 — P3 / T032 + T033 (`celebrationMotionSpec` slice)
+- Added and explicitly exported the pure table-driven `celebrationMotionSpec(event, options)` resolver. Animated high/medium/low events emit the exact particle, duration, camera-punch, and bloom values; durations derive from the existing named `MOTION` registry.
+- Added `motion.test.ts` through the public package API, covering all three animated rows, every intensity's exact static reduced-motion equivalent, the two-argument API, fresh deterministic replay, and the `0.7` no-pulse baseline.
+- Followed red-green TDD: all three focused tests failed because `celebrationMotionSpec` was absent, then passed after the minimal resolver and entrypoint export landed.
+- Motion review status: approved. The domain emits renderer-neutral hints only; the longer durations are rare mechanism-aligned celebrations, while reduced motion removes particles and camera punch and returns the pinned static `150ms` spec.
+- Gate status: related celebration/motion tests passed (11 tests); direct arena-world TypeScript validation and focused Biome checks passed; `pnpm lint` passed (107 files); `pnpm typecheck` passed; `pnpm test` passed (40 files, 161 tests). No app changed, so no Next.js build was required.
+- SC status: T032 completes the deterministic celebration-motion and reduced-equivalence domain slice of SC-004. Concrete static-badge/announcement parity remains scheduled for T034/P7.
+- Blockers: none.
+
+## NEXT
+- T032a + the `resolveSoundCue` slice of T033: add `packages/arena-world/test/sound.test.ts` first, then implement and explicitly export the minimal pure sound-cue resolver.
+- Acceptance: all ten events map exactly to the §8.18 cue IDs/captions in registry order; every result is deterministic, fresh, and `mutedByDefault:true`; `notYet` resolves to neutral `soft-tap` / `[soft tap]`; no negative, alarm, or loop flag exists; focused and repository gates remain green (FR-037, SC-021).
