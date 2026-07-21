@@ -94,3 +94,7 @@
 ## 2026-07-21 — T023/T027 progression derivation defaults
 - Resolve each unlocked node's reward through a node-id map while iterating the canonical world nodes, so one world node contributes at most once and signals outside the world cannot inflate progression. Rejected summing the raw signal list because duplicate or extraneous records could diverge from the derived unlock state.
 - Select the eligible tier with the greatest `minReward` and return a fresh tier value. Rejected relying on tier-table declaration order or exposing the mutable fixture object because the public contract is threshold-based and replay results should not be mutable through shared registry references.
+
+## 2026-07-21 — T024/T028 cosmetic resolver defaults
+- Evaluate `min-unlocks` and `region-complete` against the supplied canonical world/node-state pair, while `min-tier` reads the resolved progression tier. Rejected trusting duplicated `masteredCount`/`regionsComplete` summaries for every rule because the public contract deliberately supplies node states and world membership as the competence source.
+- Treat equipping an already-equipped eligible cosmetic as an idempotent operation that returns a fresh avatar with stable order. Rejected appending duplicate IDs because `equipped` represents a set of active cosmetic IDs and repeated UI activation must not accumulate duplicate appearance state.

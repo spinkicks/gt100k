@@ -61,6 +61,7 @@ export { TIERS } from "./tiers.fixture";
 export { PALETTE, TYPOGRAPHY, resolveBiome, resolveElevation } from "./art";
 export { ASSET_KEYS, resolveAssetFallback } from "./assets";
 export { resolveAvatarAnimation } from "./avatar";
+export { deriveCosmeticEligibility, equipCosmetic } from "./cosmetics";
 export { createSyntheticMasteryFeed } from "./feed";
 export { resolveNodeLightContributions } from "./lighting";
 export { EASINGS, LAMBDAS, MOTION, resolveMotion } from "./motion";

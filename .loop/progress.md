@@ -411,3 +411,17 @@
 ## NEXT
 - T024 + T028: add `packages/arena-world/test/cosmetics.test.ts` first, then implement and explicitly export `deriveCosmeticEligibility` and `equipCosmetic` in `packages/arena-world/src/cosmetics.ts`.
 - Acceptance: S1 eligible/locked IDs match §8.4 exactly in catalog order; identical inputs replay identically; every cosmetic retains stable `look`/`equipEffect`; appearance never changes eligibility; equipping `avatar-cape-aurora` in S1 rejects; no money/randomness parameter or behavior enters the API; focused and repository gates remain green (FR-007/035, SC-002/022).
+
+## 2026-07-21 — P2 / T024 + T028
+- Added `cosmetics.test.ts` through the public package API, covering the exact S1 eligible/locked sets, fresh deterministic replay, all three rule variants, exact stable visual descriptors, appearance-independent eligibility, earned equip, duplicate-safe equip, unearned rejection, and the three-input no-money API shape.
+- Followed red-green TDD: the initial seven tests failed because both public resolvers were absent; the positive `region-complete` case then failed independently before its minimal rule branch was restored. All eight focused tests pass.
+- Added pure `deriveCosmeticEligibility` and `equipCosmetic` resolvers with explicit public exports. Eligibility partitions IDs in catalog order without reading visual descriptors; equip preserves the pseudonymous learner reference, rejects unearned IDs, never mutates caller state, and adds an earned cosmetic at most once.
+- Confirmed the existing `resolveLighting(tier, worldTheme)` already implements the exact dawn/dusk appearance-only variants required by T028, and locked that integration in the cosmetic acceptance suite without duplicating the resolver.
+- Review status: checked T024/T028 line-by-line against the domain contract, data model, §§7.3/8.4/8.15/8.20, FR-007/035, and SC-002/022; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused cosmetic tests passed (8 tests); the domain-purity/commerce scan passed; `pnpm lint` passed (98 files); `pnpm typecheck` passed; `pnpm test` passed (34 files, 139 tests). No app changed, so no Next.js build was required.
+- SC status: deterministic eligibility and the no-money function surface advance SC-002; stable descriptors and appearance-independent eligibility complete the behavioral half of SC-022. The package-wide static guardrails remain scheduled for T025, and full zero-power outcome invariance remains scheduled for T026.
+- Blockers: none.
+
+## NEXT
+- T025: add `packages/arena-world/test/guardrails.test.ts` as the next ordered P2 acceptance task.
+- Acceptance: statically prove no `Math.random` or 3D/render imports exist anywhere in `packages/arena-world/src`; `Cosmetic` exposes none of `price|currency|dropRate|rarity`; standings expose none of `rank|position|percentile|outOf`; every sound cue is muted by default and carries no `negative|alarm|loop` flag; focused and repository gates remain green (FR-008/019/037, SC-002/021/022).
