@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package gt100k.platform.v1;
+
+import "google/protobuf/timestamp.proto";
+import "gt100k/platform/v1/envelope.proto";
+
+option go_package = "github.com/gt100k/platform/proto/gen/go/gt100k/platform/v1;platformv1";
+
+enum AppealStatus {
+  APPEAL_STATUS_UNSPECIFIED = 0;
+  FILED = 1;
+  UNDER_REVIEW = 2;
+  RESOLVED = 3;
+  REOPENED = 4;
+  LATE = 5;
+}
+
+message Deadlines {
+  google.protobuf.Timestamp respond_by = 1;
+}
+
+message Appeal {
+  Envelope header = 1;
+  string appellant_role = 2;
+  string target_decision = 3;
+  string grounds = 4;
+  repeated string submitted_evidence_refs = 5;
+  string requested_remedy = 6;
+  AppealStatus status = 7;
+  ActorRef independent_reviewer = 8;
+  Deadlines deadlines = 9;
+  string resolution = 10;
+}

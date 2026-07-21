@@ -24,6 +24,14 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.1)
 
+  adapters/evidence-deferred: {}
+
+  adapters/evidence-hash-node: {}
+
+  adapters/evidence-repo-memory: {}
+
+  adapters/evidence-verifier-stub: {}
+
   adapters/interest-artifact-stub:
     dependencies:
       '@gt100k/interest-lab':
@@ -78,7 +86,7 @@ importers:
         specifier: ^8.17.10
         version: 8.18.0(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.169.0)
       '@react-three/postprocessing':
-        specifier: 2.19.1
+        specifier: ^2.19.1
         version: 2.19.1(@react-three/fiber@8.18.0(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.169.0))(@types/three@0.169.0)(react@18.3.1)(three@0.169.0)
       motion:
         specifier: ^12
@@ -87,7 +95,7 @@ importers:
         specifier: ^14.2.15
         version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       postprocessing:
-        specifier: 6.39.3
+        specifier: ^6.39.3
         version: 6.39.3(three@0.169.0)
       react:
         specifier: ^18.3.1
@@ -133,6 +141,8 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.1
         version: 18.3.7(@types/react@18.3.31)
+
+  packages/evidence-graph: {}
 
   packages/interest-lab: {}
 
