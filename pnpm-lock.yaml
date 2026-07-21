@@ -24,51 +24,41 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.1)
 
-  adapters/evidence-deferred: {}
+  passion/adapters/evidence-deferred: {}
 
-  adapters/evidence-hash-node: {}
+  passion/adapters/evidence-hash-node: {}
 
-  adapters/evidence-repo-memory: {}
+  passion/adapters/evidence-repo-memory: {}
 
-  adapters/evidence-verifier-stub: {}
+  passion/adapters/evidence-verifier-stub: {}
 
-  adapters/interest-artifact-stub:
+  passion/adapters/interest-artifact-stub:
     dependencies:
       '@gt100k/interest-lab':
         specifier: workspace:*
         version: link:../../packages/interest-lab
 
-  adapters/interest-assent-stub:
+  passion/adapters/interest-assent-stub:
     dependencies:
       '@gt100k/interest-lab':
         specifier: workspace:*
         version: link:../../packages/interest-lab
 
-  adapters/interest-probe-catalog:
+  passion/adapters/interest-probe-catalog:
     dependencies:
       '@gt100k/interest-lab':
         specifier: workspace:*
         version: link:../../packages/interest-lab
 
-  adapters/interest-repo-memory:
+  passion/adapters/interest-repo-memory:
     dependencies:
       '@gt100k/interest-lab':
         specifier: workspace:*
         version: link:../../packages/interest-lab
 
-  adapters/repo-memory:
-    dependencies:
-      '@gt100k/learning-loop':
-        specifier: workspace:*
-        version: link:../../packages/learning-loop
+  passion/adapters/passion-tutor-memory: {}
 
-  adapters/timeback-stub:
-    dependencies:
-      '@gt100k/learning-loop':
-        specifier: workspace:*
-        version: link:../../packages/learning-loop
-
-  apps/evidence-explorer:
+  passion/apps/evidence-explorer:
     dependencies:
       '@gt100k/evidence-deferred':
         specifier: workspace:*
@@ -123,7 +113,7 @@ importers:
         specifier: ^0.169.0
         version: 0.169.0
 
-  apps/interest-lab:
+  passion/apps/interest-lab:
     dependencies:
       '@gt100k/interest-lab':
         specifier: workspace:*
@@ -172,14 +162,8 @@ importers:
         specifier: ^0.169.0
         version: 0.169.0
 
-  apps/student-compass:
+  passion/apps/passion-tutor:
     dependencies:
-      '@gt100k/learning-loop':
-        specifier: workspace:*
-        version: link:../../packages/learning-loop
-      '@gt100k/timeback-stub':
-        specifier: workspace:*
-        version: link:../../adapters/timeback-stub
       next:
         specifier: ^14.2.15
         version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -196,8 +180,11 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.1
         version: 18.3.7(@types/react@18.3.31)
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.20.1)
 
-  packages/evidence-explorer-view:
+  passion/packages/evidence-explorer-view:
     dependencies:
       '@gt100k/evidence-graph':
         specifier: workspace:*
@@ -213,11 +200,11 @@ importers:
         specifier: workspace:*
         version: link:../../adapters/evidence-verifier-stub
 
-  packages/evidence-graph: {}
+  passion/packages/evidence-graph: {}
 
-  packages/interest-lab: {}
+  passion/packages/interest-lab: {}
 
-  packages/interest-lab-view:
+  passion/packages/interest-lab-view:
     dependencies:
       '@gt100k/interest-lab':
         specifier: workspace:*
@@ -227,7 +214,7 @@ importers:
         specifier: workspace:*
         version: link:../../adapters/interest-probe-catalog
 
-  packages/learning-loop: {}
+  passion/packages/passion-tutor: {}
 
 packages:
 

@@ -159,3 +159,19 @@ resolved statuses always carry their resolution date
 - 2026-07-21 T054 completion checkpoint: no additional observations.
 - 2026-07-21 T055 RED-GREEN checkpoint: no additional observations.
 - 2026-07-21 T055 completion checkpoint: no additional observations.
+- 2026-07-21 passion-tutor P3 RED-GREEN checkpoint: no additional observations.
+
+### Observation 10: Assign lockfile reconciliation for isolated workspace additions
+
+**Status:** OPEN
+**Date:** 2026-07-21
+**Session context:** Adding a dependency-bearing application package in a parallel monorepo lane that forbids shared-root edits.
+**Skill:** New skill candidate: parallel-monorepo-feature-loop
+**Type:** open-source
+**Phase/Area:** Dependency installation and clean-checkout verification
+
+**Issue:** A lane can add a valid package manifest and pass local build/test gates against an existing install while a clean frozen install still fails because the shared lockfile has no importer for the new workspace. A rule that forbids every lane from editing the shared lockfile prevents conflicts but leaves clean-checkout CI ownership undefined.
+
+**Suggested improvement:** Require the workflow to assign exactly one reconciliation path for shared dependency metadata: either the feature lane owns an atomic importer update, a central aggregation job regenerates the lock before CI, or a lockfile merge queue serializes updates. Verify `pnpm install --frozen-lockfile` from the reconciled state and surface any pending reconciliation as an explicit integration handoff.
+
+**Principle:** Isolation policy must assign ownership of shared build metadata; forbidding a mutation does not remove the build contract that metadata satisfies.

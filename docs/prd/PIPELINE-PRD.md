@@ -77,7 +77,7 @@ flowchart TB
     FS["INTAKE<br/>families with a child age 6–14<br/>(primary 6–8) · §5"]
 
     subgraph S1["STATION 1 — SELECTION / FILTERING · §6"]
-        A1["Admissions front door<br/>CogAT · Track A/B<br/>(admissions team)"]
+        A1["External admission / selection<br/>(separate team, out of scope · §3.4)"]
         A2["Cognitive Floor QC<br/>IQ-floor tolerance band<br/>(platform · §11)"]
         A3["Family selection<br/>compensated trial + execution signal<br/>(platform · §10)"]
         A1 --> A2 --> A3
@@ -144,7 +144,7 @@ The rights and safety rules are the plant's **interlocks**. Any one of them halt
 - **Safeguarding override** — bullying, distress, injury, abuse concern, sleep loss, or acute risk bypasses every optimization and every rework timer and triggers immediate deload (`GOVERNANCE.md` G4; `PRD.md` §14.8).
 - **No abandonment** — no automated rejection, no automated exit, no irrevocable contract; humane routing with real alternatives is always offered (§9; `GOVERNANCE.md` G3 §8.4).
 - **No surveillance** — no ambient home audio, video, biometric, location, or behavioral sensing, ever; sensitive-signal work is school-only, separately consented, shadow-only, and never a selection input (`GOVERNANCE.md` G5, G7; `PRD.md` §10.2).
-- **Human authority** over admission, intensity, specialization, safeguarding, discipline, public release, and route transitions (`GOVERNANCE.md` G2, G3).
+- **Human authority** over intensity, specialization, safeguarding, discipline, public release, and route transitions (`GOVERNANCE.md` G2, G3).
 - **Strict human review before any child-facing exposure** of any surface, content, model behavior, or release — mandatory regardless of build velocity (`PRD.md` §25).
 
 The heavy industrial framing stops at these interlocks. They are described in the manufacturing register (line-stop, tolerance, interlock) but their *content* is verbatim-faithful to `GOVERNANCE.md`; the register never softens them.
@@ -161,9 +161,9 @@ The most important design consequence of SPOV 1: the line does not process an is
 
 ## 5. Intake
 
-**What enters the line.** A family with a child aged 6 to 14 who has cleared the admissions front door. The line is tuned for maximum runway, so **primary intake is ages 6 to 8**; since the program ends at age 14, a unit entering at 12 or 13 has a compressed runway and is placed on an **individualized target horizon** rather than the full age-14 tolerance (§9.3; `PRD.md` §2.5).
+**What enters the line.** A family with a child aged 6 to 14 who has been admitted through the external admission process (`PRD.md` §3.4). The line is tuned for maximum runway, so **primary intake is ages 6 to 8**; since the program ends at age 14, a unit entering at 12 or 13 has a compressed runway and is placed on an **individualized target horizon** rather than the full age-14 tolerance (§9.3; `PRD.md` §2.5).
 
-**Top of funnel (not built by this line).** Recruitment and outreach — sourcing qualified, consented families — are owned by a **separate recruitment/outreach team**, neither the admissions team nor this platform (`PRD.md` §3.4, §10); that team feeds the intake gate. It may optimize delivery and language fit but may never predict child ability, scrape minors, buy household-vulnerability data, or target protected-class proxies. Every source carries campaign, eligibility, and conversion metadata for audit, and a decline suppresses further contact.
+**Top of funnel (not built by this line).** Recruitment and outreach — sourcing qualified, consented families — are owned by a **separate recruitment/outreach team**, not this platform (`PRD.md` §3.4, §10); that team feeds the intake gate. It may optimize delivery and language fit but may never predict child ability, scrape minors, buy household-vulnerability data, or target protected-class proxies. Every source carries campaign, eligibility, and conversion metadata for audit, and a decline suppresses further contact.
 
 **What is explicitly *not* screened as a commitment proxy.** Wealth, accent, employment type, family structure, personality profile, or access to private household surveillance (`PRD.md` §10; `GOVERNANCE.md` G1). The intake gate measures declared availability and *recovery behavior*, not affluence or a perfect record.
 
@@ -171,15 +171,15 @@ The most important design consequence of SPOV 1: the line does not process an is
 
 ## 6. Station 1 — Selection / Filtering
 
-**Purpose.** Admit families who can run the eight-year dose, and route everyone else humanely. Two things are filtered: a cognitive floor (necessary) and family fidelity (the higher-leverage filter). Neither is a statement about a child's worth.
+**Purpose.** For an already-admitted learner (admission is external and out of scope — `PRD.md` §3.4), confirm the household can run the eight-year dose and place the learner, routing everyone else humanely. Two things are filtered here by this platform: a cognitive-readiness floor for placement (necessary) and family fidelity (the higher-leverage filter). Neither is a statement about a child's worth.
 
-**Ownership (marked, per design).** The admission *decision* is owned and built by a **separate admissions team**; the Cognitive Floor Engine, the compensated family trial, and the family-execution signal are **this platform's**, and run as post-eligibility onboarding — they inform placement and support, they do **not** gate admission (`PRD.md` §3.4). The stage is described end-to-end for coherence, with the ownership boundary marked at each sub-station.
+**Ownership (marked, per design).** The admission and selection *decision* is external and out of scope for this repository (`PRD.md` §3.4). The Cognitive Floor Engine, the compensated family trial, the Household Schedule Compiler, and the family-execution signal are **this platform's**, and run as post-enrollment placement and onboarding for an already-admitted learner — they inform placement and support, they do **not** gate admission. This station is described end-to-end for coherence, with the external boundary marked at the entry.
 
-### 6.1 Sub-station 1a — Admissions front door *(admissions team)*
+### 6.1 Sub-station 1a — Enrollment handoff *(external admission is out of scope)*
 
-CogAT is administered **outside** the product; results are imported and a configured rules engine routes each applicant to **Track A** (the existing gifted cutoff) or **Track B** (a below-cutoff talent pathway with an anchored Talent Evidence Snapshot and independent blind rubric review). The output is a `qualifies` / `does not currently qualify` / `pending correction` eligibility determination with reason codes, rule version, and audit history (`PRD.md` §3.4, §8.4; `GOVERNANCE.md` G3 §8.4). Prohibited eligibility inputs (income, ZIP, school/recommender prestige, paid enrichment, awards, disability/accommodation use, referral source, demographic identity) are excluded by design, matching this platform's non-discrimination rules.
+Admission and selection are owned by a separate team and run through an external process that is **out of scope for this repository** (`PRD.md` §3.4). That external process is designed to exclude prohibited eligibility inputs (e.g., income, ZIP, prestige, demographic identity), matching this platform's non-discrimination rules.
 
-**Handoff into the line.** At the enrollment handoff (`PRD.md` §3.5), the line consumes verified identity + consent scope, the eligible-learner roster + start plan, the approved accommodation profile, and a reference to the eligibility-evidence record. It does **not** re-collect these and does **not** ingest raw application, CogAT items, or Snapshot artifacts.
+**Handoff into the line.** At the enrollment handoff (`PRD.md` §3.5), the line consumes verified identity + consent scope, the eligible-learner roster + start plan, the approved accommodation profile, and a reference to the eligibility-evidence record. It does **not** re-collect these and does **not** ingest raw application data or artifacts.
 
 ### 6.2 Sub-station 1b — Cognitive Floor QC *(platform, `PRD.md` §11)*
 
@@ -375,7 +375,7 @@ Every instrument sits on exactly one rung, gated by its evidence class (`PRD.md`
 
 | Where | Machines (deterministic services) | Instruments (ML models) & their rung |
 |---|---|---|
-| **Station 1 — Selection** | Cognitive Floor Engine (Rust/WASM client + item service, CAT/SPRT stop policy); Household Schedule Compiler (CP-SAT); Family OS; enrollment-handoff integration. *Admissions surfaces are the admissions team's machine.* | Multidimensional Bayesian IRT → readiness posterior (**advisory**); IRT item calibration (offline/field-test, applied via **governance-gated versioned releases**, never a live change to the decision rule); family-execution model (**advisory**); any learned readiness model (**shadow**). *No model issues the admission.* |
+| **Station 1 — Selection** | Cognitive Floor Engine (Rust/WASM client + item service, CAT/SPRT stop policy); Household Schedule Compiler (CP-SAT); Family OS; enrollment-handoff integration. *Admission and selection are external and out of scope (`PRD.md` §3.4).* | Multidimensional Bayesian IRT → readiness posterior (**advisory**); IRT item calibration (offline/field-test, applied via **governance-gated versioned releases**, never a live change to the decision rule); family-execution model (**advisory**); any learned readiness model (**shadow**). *No model issues the admission.* |
 | **Station 2 — Development** | TimeBack Integration Layer (anti-corruption → `AcademicSignalEvent`); Academic Mastery OS (90% gate, Practice-Item Foundry, FSRS); Answer-Blind Tutor **+ isolated grader**; Specialization Planner; Cohort Compiler (HNSW + CP-SAT) / Arena / RivalryMix; Motivation Rate Limiter (dose ledger + token gateway); Masterpiece Foundry (Temporal + Firecracker + CP-SAT broker); Mentor Mesh; gamification/reward service (§7.5); Resonance (stretch). | Interpretable KT — PFA/BKT/IKT — gating baseline (deep KT stays **shadow** challenger); contextual bandit for probe selection (**bounded automation**); Bayesian `InterestHypothesis` state + novelty/return models (**shadow**); motivation MPC (**bounded automation** within caps); TrueSkill/Glicko matchmaking; peer-effect causal-uplift (**shadow**); tutor stack = QLoRA-tuned open model + solution-leakage classifier + misconception RAG; Mentor Mesh evaluated RAG. |
 | **Station 3 — Readiness QC & ship** | EvidenceGraph (content-addressed DAG, WASI verifiers, in-toto + transparency-log anchoring); Reality Gateway (`ExposureLease` + OPA); Passport issuer (Verifiable Credentials). | Comparative-judgment model panels + conformal-interval triage (**shadow** until calibrated). *Humans issue every final grade; model output is only cited supporting evidence.* |
 | **Cross-cutting** | Go inference broker (enforces purpose / provider / version / token budget / authority level / kill switch on every model call); Triton/vLLM serving; KEDA autoscale; Feast/Flink features; MLflow lineage. | GT-Twin simulators + Self-Play Gym: off-policy evaluation, causal replay, doubly-robust bounds — **research-only**, no production authority. |
@@ -420,7 +420,7 @@ The line is commissioned in four months (`PRD.md` §32); the roadmap plans aroun
 | **Month 3** | Final assembly + finish | Phase-1 in-house Academic Mastery OS + fairness audit, Reality Gateway rings, credentials/Passport, GT-Twin, ops/governance console — **feature-complete release candidate** |
 | **Month 4** | **Factory acceptance test** | Integrated testing, accessibility/legal/psychometric/privacy/security review, chaos/DR, 100k-learner load, and a gated beta at 1,000 / 2,500 / 5,000 **synthetic** learners |
 
-**Critical commissioning rule.** The Month 4 beta runs on **synthetic, simulated learners, not live children** — a factory acceptance test exercising the full operational, safeguarding, consent, and support machinery end-to-end. Live enrollment is out of scope here and gated behind the admissions pipeline going live plus privacy/legal sign-off (`PRD.md` §32.4). Wave promotion is a release decision: any sentinel event, failed threshold, or unresolved blocker **pauses promotion**; the line cannot waive a gate to hit a number by a date.
+**Critical commissioning rule.** The Month 4 beta runs on **synthetic, simulated learners, not live children** — a factory acceptance test exercising the full operational, safeguarding, consent, and support machinery end-to-end. Live enrollment is out of scope here and gated behind the external admission process going live plus privacy/legal sign-off (`PRD.md` §32.4). Wave promotion is a release decision: any sentinel event, failed threshold, or unresolved blocker **pauses promotion**; the line cannot waive a gate to hit a number by a date.
 
 ---
 
@@ -461,7 +461,7 @@ Condensed from `PRD.md` §34.
 | Factory term (this doc) | Program term / spec |
 |---|---|
 | Intake | Enrolled family + child; enrollment handoff (`PRD.md` §3.5, §5) |
-| Station 1 / filtering | Selection: admissions front door + Cognitive Floor + family trial (`PRD.md` §3.4, §10, §11) |
+| Station 1 / filtering | Post-enrollment selection: Cognitive Floor placement + family trial; admission itself is external (`PRD.md` §3.4, §10, §11) |
 | Station 2 / production core | Development: Academic Mastery OS, Passion/Specialization, Cohorts, Foundry, Mentor Mesh (`PRD.md` §12–§18) |
 | Station 3 / QC & shipping | Readiness: age-14 tolerance, EvidenceGraph, Reality Gateway, Passport (`PRD.md` §2.5, §19–§21) |
 | QC gate / station tolerance | Mastery gate, floor boundary, Release Threshold Registry (`PRD.md` §12, §11, §33.1) |
