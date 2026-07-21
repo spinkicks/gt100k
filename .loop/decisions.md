@@ -99,3 +99,8 @@
 ## 2026-07-21 — T036 focused Vitest root
 
 - Run the `@gt100k/cohort-compiler` test script from the workspace root and filter it to `packages/cohort-compiler/test`. The required filtered command executes scripts from the package directory, while the shared Vitest config intentionally uses workspace-root `packages/**` and `adapters/**` includes; rejected `--passWithNoTests` because it would weaken the gate, and rejected an unfiltered root run because the focused command must prove the domain package independently.
+
+## 2026-07-21 — T102/T109 art-token structure
+
+- Kept `PALETTE` as the exact flat primitive registry and represented `TYPOGRAPHY` as named no-fetch families plus six scale rows and the global `tabular-nums` feature. Rejected CSS variables or external font loading in the pure view package because the app owns rendering and the spec pins a framework-independent token registry.
+- Added a minimal semantic `STATE_CUES` registry for assigned, unassigned, satisfied, paused, and suppressed states, with each cue referencing a palette color plus an icon name and text. Rejected leaving color-independence as a test-only table because later 3D, 2D, and Ledger renderers need one deterministic source; layout remains reserved for the dedicated T104/T110 contract.

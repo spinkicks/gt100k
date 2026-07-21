@@ -300,3 +300,16 @@
 
 - T102 — Add `packages/cohort-arena-view/test/art.test.ts` with the golden contract for `PALETTE`, `TYPOGRAPHY`, and state colors.
 - Acceptance: the test pins every exact art token, proves each semantic state color has a paired icon, and verifies every required foreground/background contrast pair is at least 4.5:1; it fails first because `src/art.ts` is absent, while the existing repository gate remains green until the paired T109 implementation.
+
+## 2026-07-21 — P7 / T102 + art portion of T109
+
+- Added the exact Compiler Observatory `PALETTE` and `TYPOGRAPHY` registries in `packages/cohort-arena-view/src/art.ts`, including all 17 pinned hex values, three no-fetch font stacks, six type-scale rows, and tabular numerals.
+- Added semantic `STATE_CUES` for assigned, unassigned, satisfied, paused, and suppressed states so every state color is paired with a stable icon and text label before any renderer exists.
+- Added the T102 golden contract for exact tokens, semantic cue pairings, and WCAG relative-luminance checks across every required dark-surface, light-badge, state, and focus foreground/background pair.
+- TDD status: the focused suite first failed because `src/art.ts` was absent, then passed 4/4 after the minimal art-token implementation.
+- Gate status: package-local strict TypeScript and focused Biome pass; repository `pnpm typecheck`, `pnpm test` (117/117), and `pnpm lint` pass. P7 is in progress; SC-018's art-token and color-independent semantic foundation is complete, with layout constants and renderer-level accessibility still scheduled. No blocker.
+
+## NEXT
+
+- T103 + motion portion of T109 — Add `packages/cohort-arena-view/test/motion.test.ts`, then implement the exact `MOTION`, `EASINGS`, and `resolveMotion` registries in `src/motion.ts`.
+- Acceptance: all 19 motion kinds match Fixture V4 in animated and reduced modes; exact durations/easings are pinned; every reduced result uses `mode: "reduced"` and `easing: "linear"`; the focused test demonstrates RED before implementation and repository typecheck/test/lint remain green.
