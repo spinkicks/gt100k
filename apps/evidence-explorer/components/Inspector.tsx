@@ -2,21 +2,29 @@
 /**
  * Drill-down inspector (§U5.8 / UX4) — the frosted, origin-aware `motion@^12` surface that opens when
  * a body is selected. It renders the shared `LedgerPanel` (the exact view-model the accessible Ledger
- * describes to AT — parity by construction) as: a header (type glyph + label; a **human-owned seal**
- * for a grade `Outcome`, a neutral **"Declared AI assistance — cited"** ribbon for a `model`
- * `Assistance`/`Review`), the full content-address (mono, copy button), the neutral actor chip,
- * tool/version, input lineage (each a link that flies to the input body), timestamp, consent scope
- * ("synthetic"), and the type-specific payload. There is **no accusation affordance anywhere**.
+ * describes to AT — parity by construction).
+ *
+ * **Progressive disclosure (game-feel simplicity pass).** At rest the panel shows only the load-bearing
+ * few — the type glyph + label, the authority badge (**human-owned seal** for a grade `Outcome`, the
+ * neutral **"Declared AI assistance — cited"** ribbon for a `model` `Assistance`/`Review`), the
+ * content-address (mono, copy), the neutral actor chip, and the timestamp. The fuller record —
+ * tool/version, input lineage (each a link that flies to the input body), consent scope ("synthetic"),
+ * and the type-specific payload — lives one tap deeper behind a single **Details** disclosure, so the
+ * default card reads as a calm summary rather than a wall of fields. There is **no accusation
+ * affordance anywhere**, in either state.
  *
  * Motion: Materialize (scale-in from the body's screen origin) on open; under reduced motion it simply
- * fades. The `<Canvas>` stays `aria-hidden`; this panel + the Ledger are the accessible surface.
+ * fades. The Details drawer reveals with a soft spring height+opacity (a plain fade under reduced
+ * motion), exactly like the HUD drawers. The `<Canvas>` stays `aria-hidden`; this panel + the Ledger
+ * are the accessible surface.
  */
 import type { LedgerPanel, NodeView } from "@gt100k/evidence-explorer-view";
 import { MOTION, SPRINGS } from "@gt100k/evidence-explorer-view";
-import { motion } from "motion/react";
-import { useLayoutEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { useId, useLayoutEffect, useRef, useState } from "react";
 import type { JSX } from "react";
 import { Glyph } from "./constellation/glyphs.js";
+import { ChevronIcon } from "./icons.js";
 import {
   type SelectionOrigin,
   actorChipView,
@@ -53,8 +61,12 @@ export function Inspector({
   const prefersReduced = reducedMotion;
   const copy = panelCopy(plainMode);
   const ref = useRef<HTMLDivElement>(null);
+  const detailsId = useId();
   const [originCss, setOriginCss] = useState("50% 50%");
   const [copied, setCopied] = useState(false);
+  // The fuller record starts collapsed — a fresh selection re-mounts this panel (keyed by node id),
+  // so every open shows the calm summary first (progressive disclosure).
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   // Origin-aware: scale in from the picked body's screen point, expressed against the panel box.
   useLayoutEffect(() => {
@@ -87,6 +99,22 @@ export function Inspector({
         exit: { opacity: 0, scale: 0.94 },
       };
   const spring = prefersReduced ? { duration: MOTION.fast / 1000 } : SPRINGS.ui;
+
+  // Details drawer reveal — a soft spring height+opacity; a plain fade under reduced motion (matches
+  // the HUD disclosure drawers so the two surfaces feel like one system).
+  const drawerMotion = prefersReduced
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: MOTION.reveal / 1000 },
+      }
+    : {
+        initial: { opacity: 0, height: 0 },
+        animate: { opacity: 1, height: "auto" as const },
+        exit: { opacity: 0, height: 0 },
+        transition: SPRINGS.ui,
+      };
 
   return (
     <motion.aside
@@ -133,6 +161,7 @@ export function Inspector({
         </p>
       ) : null}
 
+      {/* At rest: the load-bearing summary — address, actor, timestamp. */}
       <dl className="insp-fields">
         <div className="insp-field insp-field--address">
           <dt>{copy.addressLabel}</dt>
@@ -141,7 +170,6 @@ export function Inspector({
             <button type="button" className="insp-copy" onClick={copyId}>
               {copied ? "Copied" : "Copy"}
             </button>
-            <span className="insp-note">{copy.addressNote}</span>
           </dd>
         </div>
 
@@ -153,69 +181,93 @@ export function Inspector({
           </dd>
         </div>
 
-        {panel.tool ? (
-          <div className="insp-field">
-            <dt>Tool</dt>
-            <dd className="mono">
-              {panel.tool.name}
-              <span className="insp-note">v{panel.tool.version}</span>
-            </dd>
-          </div>
-        ) : null}
-
-        <div className="insp-field">
-          <dt>Inputs</dt>
-          <dd>
-            {panel.inputs.length === 0 ? (
-              <span className="insp-empty">{copy.inputsEmpty}</span>
-            ) : (
-              <ul className="insp-inputs">
-                {panel.inputs.map((id) => (
-                  <li key={id}>
-                    <button
-                      type="button"
-                      className="insp-input-link"
-                      onClick={() => onSelectInput(id)}
-                    >
-                      <span aria-hidden="true">↗</span> {labelFor(id)}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </dd>
-        </div>
-
         <div className="insp-field">
           <dt>Timestamp</dt>
           <dd className="mono">{panel.timestamp}</dd>
         </div>
-
-        <div className="insp-field">
-          <dt>Consent scope</dt>
-          <dd>
-            {consentLabel(panel)} <span className="insp-tag">synthetic</span>
-          </dd>
-        </div>
-
-        <div className="insp-field">
-          <dt>Payload</dt>
-          <dd>
-            {payloadRows(panel).length === 0 ? (
-              <span className="insp-empty">No payload fields.</span>
-            ) : (
-              <ul className="insp-payload">
-                {payloadRows(panel).map(([k, v]) => (
-                  <li key={k}>
-                    <span className="insp-key">{k}</span>
-                    <span className="insp-val">{v}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </dd>
-        </div>
       </dl>
+
+      {/* One tap deeper: tool, lineage, consent, payload — the fuller record. */}
+      <button
+        type="button"
+        className={`insp-details-toggle${detailsOpen ? " is-open" : ""}`}
+        aria-expanded={detailsOpen}
+        aria-controls={detailsId}
+        onClick={() => setDetailsOpen((v) => !v)}
+      >
+        <span className="insp-details-label">Details</span>
+        <span className="insp-details-chevron" aria-hidden="true">
+          <ChevronIcon size={16} />
+        </span>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {detailsOpen && (
+          <motion.div key="details" id={detailsId} className="insp-drawer" {...drawerMotion}>
+            <dl className="insp-fields insp-fields--details">
+              <p className="insp-detail-note">{copy.addressNote}</p>
+
+              {panel.tool ? (
+                <div className="insp-field">
+                  <dt>Tool</dt>
+                  <dd className="mono">
+                    {panel.tool.name}
+                    <span className="insp-note">v{panel.tool.version}</span>
+                  </dd>
+                </div>
+              ) : null}
+
+              <div className="insp-field">
+                <dt>Inputs</dt>
+                <dd>
+                  {panel.inputs.length === 0 ? (
+                    <span className="insp-empty">{copy.inputsEmpty}</span>
+                  ) : (
+                    <ul className="insp-inputs">
+                      {panel.inputs.map((id) => (
+                        <li key={id}>
+                          <button
+                            type="button"
+                            className="insp-input-link"
+                            onClick={() => onSelectInput(id)}
+                          >
+                            <span aria-hidden="true">↗</span> {labelFor(id)}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </dd>
+              </div>
+
+              <div className="insp-field">
+                <dt>Consent scope</dt>
+                <dd>
+                  {consentLabel(panel)} <span className="insp-tag">synthetic</span>
+                </dd>
+              </div>
+
+              <div className="insp-field">
+                <dt>Payload</dt>
+                <dd>
+                  {payloadRows(panel).length === 0 ? (
+                    <span className="insp-empty">No payload fields.</span>
+                  ) : (
+                    <ul className="insp-payload">
+                      {payloadRows(panel).map(([k, v]) => (
+                        <li key={k}>
+                          <span className="insp-key">{k}</span>
+                          <span className="insp-val">{v}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </dd>
+              </div>
+            </dl>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.aside>
   );
 }

@@ -73,6 +73,30 @@
   the cinematic spectacle tier, so the perf-monitor self-heal ladder (SC-E21) is unaffected. Verified live
   in Chromium (swiftshader): cinematic renders the graded scene, zero console errors, all controls work.
 
+## EE-004 — the Inspector is a calm summary + one-tap Details disclosure (Turn 4)
+- Chose: split the drill-down Inspector into a **default summary** (type glyph + label, the authority
+  badge, Content-address + Copy, Actor chip, Timestamp) and a single **Details** disclosure holding the
+  fuller record (the address-fingerprint note, Tool, Inputs lineage links, Consent scope + synthetic tag,
+  Payload). The toggle is styled 1:1 with the HUD tabs (frosted, chevron rotates, `is-open` cyan tint) and
+  reveals with the same `SPRINGS.ui` height+opacity drawer (opacity-only under reduced motion). The panel
+  re-mounts per selection (`key={node.id}` in the Stage's `AnimatePresence`), so every open starts collapsed.
+- Why: after Turns 1–3 decluttered the HUD, header, and lit the cosmos, the Inspector was the **last wordy
+  chrome surface** — a `<dl>` of ~7 always-visible fields with inline notes. game-feel.md orders simplicity
+  *before* visual richness ("Cap visible controls… progressive disclosure"; apple-design §16.6 "show the
+  common path first, advanced options one level deeper"). The default card now reads as a summary, not a
+  data dump; the lineage/consent/payload are one tap away, not gone.
+- Rejected: (a) doing the 3D **material pass** (per-role `envMapIntensity` + fresnel rim) this turn — it's
+  *visual richness*, which the doc explicitly ranks below simplicity, and the fresnel shell/`onBeforeCompile`
+  is the fiddly/headless-risky path; deferred to a later turn now that the last clutter tell is gone.
+  (b) keeping the always-on address note in the summary — it's the textbook "explanatory sentence where a
+  label does" tell, so it moved into Details (still plain-mode aware via `panelCopy`). (c) hiding the
+  authority badge behind Details — it's the whole "evidence, not accusation" point, so it stays in view.
+- Kept green: `inspector-model.ts` (the unit-tested pure model) is untouched — only the component markup +
+  CSS changed, so all 66 tests pass unchanged; no domain/logic/state touch (SC-E14 holds). Verified live in
+  Chromium (swiftshader, standard-3d tier): at rest only address/actor/timestamp render (drawer + consent +
+  payload + inputs absent, toggle `aria-expanded=false`); expanding reveals them all (`aria-expanded=true`);
+  collapsing removes the drawer; **zero console/page errors** on load + every interaction.
+
 ---
 _Legacy scratch below (prior interest-lab loop — not applicable to evidence-explorer):_
 

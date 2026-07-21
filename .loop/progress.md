@@ -80,6 +80,30 @@ ledger fly-to + Verify seal + Filters/Display drawers all work. Under *software*
 `PerformanceMonitor` self-heals cinematic→standard3d→calm2d (SC-E21) — expected; on real GPU it holds
 cinematic (captured in the load screenshot before degrade). Every tier is a usable, polished state.
 
+## Done this turn (Turn 4 — Inspector declutter → summary + Details disclosure)
+After the HUD (T1), header (T2) and cosmos lighting (T3), the **Inspector was the last wordy chrome
+tell**: a `<dl>` of ~7 always-visible fields (Content-address + a note sentence, Actor, Tool, Inputs,
+Timestamp, Consent scope, Payload) — the exact "wall of fields" game-feel.md flags, and it ranks
+simplicity *above* visual richness. Rebuilt `components/Inspector.tsx` (+ CSS):
+- **Default = calm summary** — type glyph + label, the authority badge (human-owned seal / cited ribbon,
+  kept: it's the "evidence, not accusation" point), **Content-address + Copy**, the **Actor** chip, and
+  **Timestamp**. Three fields, not seven.
+- **One-tap Details disclosure** — Tool, Inputs (fly-to lineage links), Consent scope (+ synthetic tag),
+  Payload, and the address-fingerprint note now live behind a single **Details** button styled 1:1 with
+  the HUD tabs (frosted, chevron rotates, `is-open` cyan tint). Reveals with the same `SPRINGS.ui`
+  height+opacity drawer via `AnimatePresence` (opacity-only under reduced motion) — cohesive with the HUD.
+- Panel re-mounts per selection (`key={node.id}`), so every open starts **collapsed** (fresh summary).
+- **Words cut**: the always-on "content-addressed — the id is the hash…" note moved into Details (still
+  plain-mode aware via `panelCopy`); the default card no longer carries an explanatory sentence.
+- Did **not** touch `inspector-model.ts` (the unit-tested pure model) or any domain/state (SC-E14 holds).
+
+Gate GREEN: `tsc -b` clean · 66/66 vitest (inspector.test.ts unchanged & green) · `next build` ok.
+**Live Playwright walkthrough** (swiftshader, standard-3d tier, 1440×900): opening a Ledger row opens the
+Inspector; at rest only address/actor/timestamp render (drawer + consent + payload + inputs absent, toggle
+`aria-expanded=false`); clicking **Details** reveals all of them (`aria-expanded=true`); clicking again
+removes the drawer (reversible) — **zero console/page errors** on load + every interaction. Screenshots
+`/tmp/ee-inspector-summary.png` + `/tmp/ee-inspector-details.png` confirm the calm→full states read well.
+
 ## Still generic / next targets (judged vs game-feel.md)
 - The cosmos now has IBL + AO + bloom/DOF/vignette + rig + damped cinematic camera. Remaining 3D polish:
   soft `<ContactShadows>` was **deliberately deferred** — a floor plane implies ground that fights the
@@ -92,14 +116,19 @@ cinematic (captured in the load screenshot before degrade). Every tier is a usab
   rail gets tall on small viewports.
 
 ## NEXT
-- Turn 4: **make the new IBL read stronger + finish the material pass.** The env is baked but the bodies
-  are so emissive the ambient reflection is subtle. Add per-role `envMapIntensity` (~0.6–1.0) to the
-  `meshStandardMaterial`s in `Bodies.tsx` and a faint **fresnel rim** (thin additive shell or
-  `onBeforeCompile`) so silhouettes catch the cool key — this is the cheapest lift from "good scene" to
-  "AAA". Keep it behind the `spectacle`/animate flags; don't touch geometry or domain logic. Gate green.
-- Fallback simplicity task (if the material pass proves fiddly headless): the **Inspector "Details"
-  expander** — the popover still shows inputs/consent/payload inline (see the calm-2D fly-to screenshot,
-  quite wordy); move those behind a single "Details" disclosure so the default shows only
-  label/actor/hash/time (progressive disclosure, matches the HUD/header declutter already shipped).
+- Turn 5: **the 3D material pass — the last big lift from "good scene" to "AAA".** With every clutter
+  tell now gone (HUD/header/Inspector) and the scene lit (IBL+AO+bloom/DOF/vignette), the emissive PBR
+  bodies still read a touch shadeless because the baked ambient reflection is subtle. In `Bodies.tsx`:
+  (a) add a per-role `envMapIntensity` (~0.8–1.4) + a small metalness bump (~0.1→0.3) so silhouettes
+  catch the cool focus key as specular; (b) add a faint **fresnel rim** so edges glow into the bloom —
+  prefer a **thin additive back-shell** (a scaled clone of each body's geometry with a tiny custom
+  `ShaderMaterial`, `AdditiveBlending`, `depthWrite:false`) over `onBeforeCompile` (version-robust,
+  self-contained, no three chunk-name coupling). Keep it strictly behind the `spectacle`/`animate` flag
+  so standard3d/plain/calm-2D stay byte-identical; don't touch geometry math or domain logic. Gate green,
+  and verify live that the rim doesn't wash out under bloom.
+- Fallback (if the shell proves fiddly headless): just ship the `envMapIntensity`+metalness half (pure
+  material-prop tuning, zero shader risk) and defer the fresnel shell to its own turn.
+- **Ledger** panel is a dense scrolling list — a later turn could add rhythm/whitespace + a subtle
+  scroll-edge fade (apple-design §12) where rows meet the panel chrome.
 - Do NOT add `<ContactShadows>` (EE-003: a floor fights the floating cosmos) unless a grounded glow-plane
   variant is prototyped and clearly reads better.
