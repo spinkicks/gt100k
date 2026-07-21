@@ -257,3 +257,14 @@
 
 ## NEXT
 - T031: rerun the complete Part I quickstart after the shared/root Biome baseline is repaired; acceptance is zero diagnostics from `pnpm exec biome check .` with the typecheck, 64 domain tests, 94 workspace tests, exact golden root, and synthetic demo still green. Do not begin T032 until T031 passes.
+
+## 2026-07-20 — P4 quickstart baseline recheck (T031 partial, fourth attempt)
+- Re-ran the complete Part I quickstart. Composite `tsc -b`, the filtered domain suite (64/64), workspace Vitest (94/94), the exact G2 golden-root command, and the synthetic demo all pass.
+- Confirmed the standard feature-owned `pnpm lint` scope remains clean across 70 package, adapter, and app files.
+- `pnpm exec biome check .` still fails with 33 errors exclusively in out-of-scope shared/root files: CRLF/formatting in root configuration, formatting under `.specify`, and parse/lint diagnostics in `.claude/workflows/deep-research.js`. No shared file was modified.
+- Escalated the repeated cross-lane baseline failure in `.loop/requests.jsonl` because it has now prevented T031 completion across four turns. The spec-preserving recommendation is repair by the owning lane, not weakening T031 or bypassing task order.
+- Phase status: P4 remains in progress. T031 is not complete, T032 remains untouched and final, and no feature source changed this turn.
+- Blocker: repository owners must repair the shared/root full-Biome baseline before T031 can complete.
+
+## NEXT
+- T031: rerun the complete Part I quickstart after the shared/root Biome baseline is repaired; acceptance is zero diagnostics from `pnpm exec biome check .` with the typecheck, 64 domain tests, 94 workspace tests, exact golden root, and synthetic demo still green. Do not begin T032 until T031 passes.
