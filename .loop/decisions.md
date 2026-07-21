@@ -97,6 +97,39 @@
   payload + inputs absent, toggle `aria-expanded=false`); expanding reveals them all (`aria-expanded=true`);
   collapsing removes the drawer; **zero console/page errors** on load + every interaction.
 
+## EE-005 — a per-body material *language* + fresnel rim, strictly gated to cinematic (Turn 5)
+- Chose: in `Bodies.tsx`, replace the single shared emissive material (every body `roughness 0.35 /
+  metalness 0.1`) with a per-body-type **PBR profile** map (`PBR`) so each node reads as a distinct
+  **substance** — matte/chalky *construct* (blueprint 0.6 roughness), *icy* comet (0.15), warm **metallic
+  gold** (gold-star metalness 0.7), sharp **glassy** crystal (0.12), polished beacon/seal — plus a per-body
+  **`envMapIntensity` (0.7–1.5)** so silhouettes catch the cool focus key from the T3 baked IBL as real
+  specular. Added a self-contained additive **fresnel rim** (`RimMaterial` + `<Rim>` back-shell) so edges
+  glow into the Bloom. `emissive(hex, i, pbr?)` merges the profile when supplied.
+- Why: after T1–T4 killed every clutter tell and T3 lit the volume, the bodies were the last *visual* tell —
+  uniform "glowing plastic" that barely caught the new IBL (game-feel §3 "materials, never bare primitives …
+  a material *language*"; apple-design §7 craft "every value a deliberate choice you can defend"). A material
+  language + rim is the documented lift from "good scene" to AAA.
+- Gating (the load-bearing constraint): everything rides `rich = animate = spectacle` (cinematic &&
+  !plainMode) — the SAME gate as Bloom/DOF/IBL. When `rich=false`, `emissive()` returns the flat baseline
+  byte-for-byte (**no** `envMapIntensity` key) and **no** `<Rim>` renders → standard3d / plain / calm-2D are
+  byte-identical. (envMap has no effect below cinematic anyway — no env is mounted there — but gating the
+  metalness/roughness too is what makes the lower tiers truly unchanged.)
+- Rejected: (a) `onBeforeCompile`/material `onBeforeCompile` chunk injection for the rim — brittle across
+  three versions; a hand-written self-contained `ShaderMaterial` (`BackSide` + `AdditiveBlending` +
+  `depthWrite:false`, `raycast` disabled) is version-robust and never occludes the core or eats picks.
+  (b) bumping metalness/roughness *ungated* — would change standard3d's look (violates "byte-identical lower
+  tiers"). (c) an aggressive rim — washout risk under Bloom; kept `intensity 0.7` (islands halved), verified
+  live it reads as a gentle edge glow. (d) `meshPhysicalMaterial`/clearcoat — heavier + unneeded; stayed on
+  `meshStandardMaterial`'s well-supported knobs (metalness/roughness/envMapIntensity/emissiveIntensity).
+- Verification: no test inspects Bodies' materials, so all 66 stay green; `tsc -b` clean; `next build` ok.
+  **Live Playwright** (swiftshader, 1440×900): app boots at **Cinematic 3D** → composer + IBL + the new
+  custom `RimMaterial` GLSL all **compile and render** (`/tmp/ee-cinematic.png` shows the distinct
+  metallic/glassy/icy/matte substances + soft rim); forcing Cinematic held it; **0 page errors, 0 console
+  `error`s**; all 25 console warnings are the pre-existing swiftshader `glBlitFramebuffer` GL-driver noise
+  (0 non-GL). Trace/Ledger→Inspector/Filters/Display all work.
+- Honest caveat: pixel-level bloom↔rim balance is best taste-tuned on a real GPU (swiftshader renders it but
+  isn't the reference); it blocks no non-negotiable. Same GPU-less caveat as EE-003.
+
 ---
 _Legacy scratch below (prior interest-lab loop — not applicable to evidence-explorer):_
 

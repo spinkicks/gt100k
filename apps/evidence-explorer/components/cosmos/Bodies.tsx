@@ -11,7 +11,7 @@
  */
 import type { NodeView } from "@gt100k/evidence-explorer-view";
 import { type ThreeEvent, useFrame } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { type ReactNode, useMemo, useRef } from "react";
 import type { JSX } from "react";
 import * as THREE from "three";
 import type { VerifyVisualState } from "../verify-machine.js";
@@ -45,29 +45,144 @@ function useStarGeometry(): THREE.ExtrudeGeometry {
   }, []);
 }
 
-/** Shared emissive material props tuned per role hue. */
-function emissive(hex: string, intensity = 1.4) {
+/**
+ * Per-body PBR *character* (cinematic tier only) so each node type reads as a distinct **substance** —
+ * a chalky-matte declared construct, an icy comet, warm metallic gold, a glassy faceted crystal — instead
+ * of one uniform emissive plastic tinted eight ways (game-feel §3: a material *language*, apple-design §7:
+ * every value deliberate). `envMapIntensity` lets each silhouette catch the cool focus key from the baked
+ * IBL (Turn 3) as a real specular highlight, so the bodies **seat in the volume** rather than reading flat.
+ *
+ * These are applied ONLY when `rich` (= spectacle = cinematic && !plainMode). Under standard3d / plain /
+ * calm-2D the baseline below is returned byte-for-byte (`roughness 0.35 / metalness 0.1`, no envMap), so
+ * those tiers are unchanged — the whole pass rides the same gate as Bloom / DOF / IBL.
+ */
+type Pbr = { readonly metalness: number; readonly roughness: number; readonly envMapIntensity: number };
+const PBR: Readonly<Record<string, Pbr>> = {
+  world: { metalness: 0.35, roughness: 0.3, envMapIntensity: 1.1 },
+  moon: { metalness: 0.3, roughness: 0.4, envMapIntensity: 1.0 },
+  blueprint: { metalness: 0.1, roughness: 0.6, envMapIntensity: 0.7 }, // matte, chalky "construct"
+  beacon: { metalness: 0.5, roughness: 0.25, envMapIntensity: 1.2 }, // polished obelisk
+  comet: { metalness: 0.2, roughness: 0.15, envMapIntensity: 1.4 }, // icy sheen
+  "gold-star": { metalness: 0.7, roughness: 0.28, envMapIntensity: 1.3 }, // warm metallic gold
+  crystal: { metalness: 0.4, roughness: 0.12, envMapIntensity: 1.5 }, // sharp glassy facets
+  "seal-sun": { metalness: 0.6, roughness: 0.3, envMapIntensity: 1.2 }, // radiant sealed metal
+};
+
+/**
+ * Shared emissive material props tuned per role hue. When `pbr` is supplied (cinematic tier) the body
+ * gets its distinct metalness / roughness + `envMapIntensity`; otherwise the flat baseline is returned so
+ * the lower tiers stay byte-identical.
+ */
+function emissive(hex: string, intensity = 1.4, pbr?: Pbr) {
   return {
     color: hex,
     emissive: hex,
     emissiveIntensity: intensity,
-    roughness: 0.35,
-    metalness: 0.1,
+    roughness: pbr?.roughness ?? 0.35,
+    metalness: pbr?.metalness ?? 0.1,
+    ...(pbr ? { envMapIntensity: pbr.envMapIntensity } : {}),
   };
+}
+
+/**
+ * Faint additive **fresnel rim** (cinematic tier only) — a thin back-shell clone of a body's geometry whose
+ * custom shader lights only the grazing silhouette, so edges glow into the Bloom and each body pops off the
+ * void (game-feel §3: fresnel/rim edges). Self-contained GLSL (no three chunk-name coupling → version-robust);
+ * `BackSide` + `AdditiveBlending` + `depthWrite:false` means the shell never occludes the core or eats picks.
+ */
+const RIM_VERT = /* glsl */ `
+  varying vec3 vNormalW;
+  varying vec3 vWorldPos;
+  void main() {
+    vec4 wp = modelMatrix * vec4(position, 1.0);
+    vWorldPos = wp.xyz;
+    vNormalW = normalize(mat3(modelMatrix) * normal);
+    gl_Position = projectionMatrix * viewMatrix * wp;
+  }
+`;
+const RIM_FRAG = /* glsl */ `
+  uniform vec3 uColor;
+  uniform float uPower;
+  uniform float uIntensity;
+  varying vec3 vNormalW;
+  varying vec3 vWorldPos;
+  void main() {
+    vec3 viewDir = normalize(cameraPosition - vWorldPos);
+    float fres = 1.0 - abs(dot(normalize(vNormalW), viewDir));
+    fres = pow(clamp(fres, 0.0, 1.0), uPower);
+    gl_FragColor = vec4(uColor * uIntensity * fres, fres);
+  }
+`;
+
+function RimMaterial({
+  color,
+  intensity = 0.7,
+  power = 2.6,
+}: {
+  color: string;
+  intensity?: number;
+  power?: number;
+}): JSX.Element {
+  const mat = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        uniforms: {
+          uColor: { value: new THREE.Color(color) },
+          uIntensity: { value: intensity },
+          uPower: { value: power },
+        },
+        vertexShader: RIM_VERT,
+        fragmentShader: RIM_FRAG,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.BackSide,
+      }),
+    [color, intensity, power],
+  );
+  return <primitive object={mat} attach="material" />;
+}
+
+/** A rim shell wrapping the geometry passed as children (a fresh clone matching the body it haloes). */
+function Rim({
+  scale = 1.08,
+  color,
+  intensity,
+  power,
+  children,
+}: {
+  scale?: number;
+  color: string;
+  intensity?: number;
+  power?: number;
+  children: ReactNode;
+}): JSX.Element {
+  return (
+    <mesh scale={scale} raycast={() => null}>
+      {children}
+      <RimMaterial color={color} intensity={intensity} power={power} />
+    </mesh>
+  );
 }
 
 function BodyMesh({
   node,
   star,
+  rich,
   hexOverride,
 }: {
   node: NodeView;
   star: THREE.ExtrudeGeometry;
+  /** Cinematic tier → distinct PBR substance + fresnel rim; false → flat byte-identical baseline. */
+  rich: boolean;
   /** Byte-tamper only: the fractured byte-body glows in the integrity `--tamper` hue (never a person). */
   hexOverride?: string;
 }): JSX.Element {
   const hex = hexOverride ?? roleHex(node.colorRole);
   const dim = node.isIsland ? 0.4 : 1; // island reads dimmer ("outside this milestone").
+  // Per-body PBR character + rim only when rich (cinematic); island rims stay quieter.
+  const pbr = rich ? PBR[node.body.id] : undefined;
+  const rimI = 0.7 * (node.isIsland ? 0.5 : 1);
 
   switch (node.body.id) {
     case "world":
@@ -75,21 +190,33 @@ function BodyMesh({
         <group>
           <mesh>
             <sphereGeometry args={[0.95, 40, 40]} />
-            <meshStandardMaterial {...emissive(hex, 1.1 * dim)} />
+            <meshStandardMaterial {...emissive(hex, 1.1 * dim, pbr)} />
           </mesh>
           {/* Faint equatorial ring. */}
           <mesh rotation={[Math.PI / 2, 0, 0]}>
             <torusGeometry args={[1.35, 0.03, 12, 64]} />
-            <meshStandardMaterial {...emissive(hex, 0.9 * dim)} transparent opacity={0.55} />
+            <meshStandardMaterial {...emissive(hex, 0.9 * dim, pbr)} transparent opacity={0.55} />
           </mesh>
+          {rich ? (
+            <Rim scale={1.09} color={hex} intensity={rimI}>
+              <sphereGeometry args={[0.95, 40, 40]} />
+            </Rim>
+          ) : null}
         </group>
       );
     case "moon":
       return (
-        <mesh>
-          <sphereGeometry args={[0.5, 28, 28]} />
-          <meshStandardMaterial {...emissive(hex, 1.0 * dim)} />
-        </mesh>
+        <group>
+          <mesh>
+            <sphereGeometry args={[0.5, 28, 28]} />
+            <meshStandardMaterial {...emissive(hex, 1.0 * dim, pbr)} />
+          </mesh>
+          {rich ? (
+            <Rim scale={1.12} color={hex} intensity={rimI}>
+              <sphereGeometry args={[0.5, 28, 28]} />
+            </Rim>
+          ) : null}
+        </group>
       );
     case "blueprint":
       // Wireframe icosahedron — the declared plan/construct.
@@ -101,17 +228,29 @@ function BodyMesh({
           </mesh>
           <mesh scale={0.4}>
             <icosahedronGeometry args={[0.9, 0]} />
-            <meshStandardMaterial {...emissive(hex, 1.3 * dim)} />
+            <meshStandardMaterial {...emissive(hex, 1.3 * dim, pbr)} />
           </mesh>
+          {rich ? (
+            <Rim scale={1.05} color={hex} intensity={rimI * 0.8}>
+              <icosahedronGeometry args={[0.9, 0]} />
+            </Rim>
+          ) : null}
         </group>
       );
     case "beacon":
       // Thin luminous obelisk.
       return (
-        <mesh>
-          <cylinderGeometry args={[0.16, 0.24, 2.2, 6]} />
-          <meshStandardMaterial {...emissive(hex, 1.5 * dim)} />
-        </mesh>
+        <group>
+          <mesh>
+            <cylinderGeometry args={[0.16, 0.24, 2.2, 6]} />
+            <meshStandardMaterial {...emissive(hex, 1.5 * dim, pbr)} />
+          </mesh>
+          {rich ? (
+            <Rim scale={1.14} color={hex} intensity={rimI}>
+              <cylinderGeometry args={[0.16, 0.24, 2.2, 6]} />
+            </Rim>
+          ) : null}
+        </group>
       );
     case "comet":
       // Icy body + a stretched tail (calm, never a "flare").
@@ -119,28 +258,47 @@ function BodyMesh({
         <group>
           <mesh>
             <sphereGeometry args={[0.55, 30, 30]} />
-            <meshStandardMaterial {...emissive(hex, 1.4 * dim)} />
+            <meshStandardMaterial {...emissive(hex, 1.4 * dim, pbr)} />
           </mesh>
           <mesh position={[-0.9, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
             <coneGeometry args={[0.35, 1.8, 20, 1, true]} />
-            <meshStandardMaterial {...emissive(hex, 0.8 * dim)} transparent opacity={0.5} />
+            <meshStandardMaterial {...emissive(hex, 0.8 * dim, pbr)} transparent opacity={0.5} />
           </mesh>
+          {rich ? (
+            <Rim scale={1.12} color={hex} intensity={rimI}>
+              <sphereGeometry args={[0.55, 30, 30]} />
+            </Rim>
+          ) : null}
         </group>
       );
     case "gold-star":
       // Warm-gold star — human warmth of a Review.
       return (
-        <mesh geometry={star}>
-          <meshStandardMaterial {...emissive(hex, 1.5 * dim)} />
-        </mesh>
+        <group>
+          <mesh geometry={star}>
+            <meshStandardMaterial {...emissive(hex, 1.5 * dim, pbr)} />
+          </mesh>
+          {rich ? (
+            <Rim scale={1.1} color={hex} intensity={rimI}>
+              <primitive object={star} attach="geometry" />
+            </Rim>
+          ) : null}
+        </group>
       );
     case "crystal":
       // Faceted octahedron.
       return (
-        <mesh>
-          <octahedronGeometry args={[0.85, 0]} />
-          <meshStandardMaterial {...emissive(hex, 1.3 * dim)} flatShading />
-        </mesh>
+        <group>
+          <mesh>
+            <octahedronGeometry args={[0.85, 0]} />
+            <meshStandardMaterial {...emissive(hex, 1.3 * dim, pbr)} flatShading />
+          </mesh>
+          {rich ? (
+            <Rim scale={1.1} color={hex} intensity={rimI}>
+              <octahedronGeometry args={[0.85, 0]} />
+            </Rim>
+          ) : null}
+        </group>
       );
     case "seal-sun":
       // Radiant sphere + a gold seal ring — the human-owned grade reads at the verify moment.
@@ -148,13 +306,18 @@ function BodyMesh({
         <group>
           <mesh>
             <sphereGeometry args={[0.9, 40, 40]} />
-            <meshStandardMaterial {...emissive(hex, 1.6 * dim)} />
+            <meshStandardMaterial {...emissive(hex, 1.6 * dim, pbr)} />
           </mesh>
           {node.isHumanOwned ? (
             <mesh rotation={[Math.PI / 2, 0, 0]}>
               <torusGeometry args={[1.3, 0.06, 16, 80]} />
-              <meshStandardMaterial {...emissive(COSMOS.human, 1.4 * dim)} />
+              <meshStandardMaterial {...emissive(COSMOS.human, 1.4 * dim, pbr)} />
             </mesh>
+          ) : null}
+          {rich ? (
+            <Rim scale={1.09} color={hex} intensity={rimI}>
+              <sphereGeometry args={[0.9, 40, 40]} />
+            </Rim>
           ) : null}
         </group>
       );
@@ -162,7 +325,7 @@ function BodyMesh({
       return (
         <mesh>
           <sphereGeometry args={[0.7, 24, 24]} />
-          <meshStandardMaterial {...emissive(hex, 1.0 * dim)} />
+          <meshStandardMaterial {...emissive(hex, 1.0 * dim, pbr)} />
         </mesh>
       );
   }
@@ -251,7 +414,12 @@ function Body({
       onPointerOut={hover(false)}
     >
       <group ref={inner}>
-        <BodyMesh node={node} star={star} hexOverride={isFracture ? COSMOS.tamper : undefined} />
+        <BodyMesh
+          node={node}
+          star={star}
+          rich={animate}
+          hexOverride={isFracture ? COSMOS.tamper : undefined}
+        />
       </group>
     </group>
   );

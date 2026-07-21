@@ -104,31 +104,66 @@ Inspector; at rest only address/actor/timestamp render (drawer + consent + paylo
 removes the drawer (reversible) — **zero console/page errors** on load + every interaction. Screenshots
 `/tmp/ee-inspector-summary.png` + `/tmp/ee-inspector-details.png` confirm the calm→full states read well.
 
+## Done this turn (Turn 5 — the 3D material pass: distinct substances + envMap specular + fresnel rim)
+With every clutter tell gone (T1–T4) and the scene lit (T3: IBL + AO + bloom/DOF/vignette), the last big
+*visual* lift from "good scene" to AAA was the **material language**: all 8 bodies shared one emissive
+material (`roughness 0.35 / metalness 0.1`), so a world, a crystal, a gold-star and an obelisk read as the
+*same glowing plastic* in eight hues — and with the IBL present they barely caught reflections, so they
+read shadeless. Rebuilt the materials in `components/cosmos/Bodies.tsx`:
+- **Per-body PBR character** — a new `PBR` map gives each node type a distinct **substance**: matte/chalky
+  *construct* (blueprint, roughness 0.6), *icy* comet (roughness 0.15), warm **metallic gold** (gold-star
+  metalness 0.7), sharp **glassy** crystal (roughness 0.12), polished beacon/seal. `emissive()` now merges
+  a per-body profile including **`envMapIntensity` (0.7–1.5)** so each silhouette catches the cool focus
+  key from the baked IBL as a real specular highlight → bodies **seat in the volume** instead of floating
+  flat. (`apple-design §7`: every value deliberate; `game-feel §3`: a material *language*.)
+- **Faint additive fresnel rim** — a self-contained `RimMaterial` (hand-written GLSL, **no three chunk-name
+  coupling** → version-robust) + a `<Rim>` back-shell (scale ~1.05–1.14) clones each body's geometry and
+  lights only the grazing silhouette (`BackSide` + `AdditiveBlending` + `depthWrite:false`, `raycast`
+  disabled so it never occludes the core or eats picks). Edges now glow **into** the Bloom so bodies pop
+  off the void. Kept conservative (`intensity 0.7`, islands halved) — verified live it reads as a gentle
+  edge glow, **not** a blown-out halo.
+- **Strictly gated** — every material change rides `rich = animate = spectacle` (cinematic && !plainMode),
+  the same gate as Bloom/DOF/IBL. When `rich` is false, `emissive()` returns the flat baseline byte-for-byte
+  (no `envMapIntensity` key) and **no** rim renders, so **standard3d / plain / calm-2D are unchanged**.
+
+Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ok. **Live Playwright walkthrough** (swiftshader,
+1440×900): app boots at **Cinematic 3D** → the composer, IBL bake, and the new custom `RimMaterial` GLSL
+**all compiled and rendered** (screenshot `/tmp/ee-cinematic.png`: distinct metallic-gold / glassy-crystal /
+icy-comet / matte-construct substances + soft rim glow, no washout). Forcing the Cinematic tier held it.
+**0 page errors · 0 console `error`s**; the only console warnings (25) are the pre-existing swiftshader
+`glBlitFramebuffer` depth-stencil GL-driver noise from the EffectComposer under *software* WebGL (present
+since T3), **0 non-GL** — my change adds no app error/warning. Trace lineage, 13-row Ledger → Inspector,
+Filters + Display drawers all work.
+
 ## Still generic / next targets (judged vs game-feel.md)
-- The cosmos now has IBL + AO + bloom/DOF/vignette + rig + damped cinematic camera. Remaining 3D polish:
-  soft `<ContactShadows>` was **deliberately deferred** — a floor plane implies ground that fights the
-  floating-constellation concept (see EE-003); revisit only if a subtle grounded glow-plane reads right.
-  Could also add per-material `envMapIntensity` tuning + a faint fresnel rim to make the IBL read stronger.
-- **Inspector** still fairly wordy — move inputs/consent/payload behind a single "Details" expander so
-  the default popover shows only label/actor/hash/time (progressive disclosure, not yet done).
-- **Ledger** panel is a dense scrolling list — could gain more rhythm/whitespace.
-- Consider a settings **popover anchored to its trigger** (apple-design) instead of inline drawer if the
-  rail gets tall on small viewports.
+- The cosmos now has IBL + AO + bloom/DOF/vignette + rig + damped cinematic camera + a **per-body material
+  language** (distinct substances + envMap specular + fresnel rim, T5). The scene meets game-feel §1–§9.
+  Remaining candidates are **taste-tunes best done eyes-on a real GPU** (see caveat) — not blind blockers.
+- **Ledger** panel is a dense scrolling list — could gain rhythm/whitespace + a subtle scroll-edge fade
+  (apple-design §12) where rows meet the panel chrome. The clearest remaining *chrome* candidate.
+- The Display drawer keeps one caption ("Presentation only — the evidence never changes"); load-bearing
+  (explains the state-only guarantee) and inside progressive disclosure, so it stays.
+- Rim/envMap **intensity taste-tune**: on a real GPU the fresnel rim + per-body `envMapIntensity` could be
+  nudged (e.g. crystal a touch sharper, gold a touch warmer) — but that needs pixel eyes headless can't give.
+
+## Honest caveat (unchanged from EE-003)
+Under *software* WebGL (swiftshader) the EffectComposer emits benign `glBlitFramebuffer` depth-stencil
+GL-driver warnings and the `PerformanceMonitor` may self-heal cinematic→standard3d on a slow frame — both
+pre-existing and environmental. The cinematic composer + rim shaders **do** compile and render here (boots at
+Cinematic 3D), but final pixel taste-tuning of bloom/rim balance is ideal on a real GPU; it blocks no
+non-negotiable.
 
 ## NEXT
-- Turn 5: **the 3D material pass — the last big lift from "good scene" to "AAA".** With every clutter
-  tell now gone (HUD/header/Inspector) and the scene lit (IBL+AO+bloom/DOF/vignette), the emissive PBR
-  bodies still read a touch shadeless because the baked ambient reflection is subtle. In `Bodies.tsx`:
-  (a) add a per-role `envMapIntensity` (~0.8–1.4) + a small metalness bump (~0.1→0.3) so silhouettes
-  catch the cool focus key as specular; (b) add a faint **fresnel rim** so edges glow into the bloom —
-  prefer a **thin additive back-shell** (a scaled clone of each body's geometry with a tiny custom
-  `ShaderMaterial`, `AdditiveBlending`, `depthWrite:false`) over `onBeforeCompile` (version-robust,
-  self-contained, no three chunk-name coupling). Keep it strictly behind the `spectacle`/`animate` flag
-  so standard3d/plain/calm-2D stay byte-identical; don't touch geometry math or domain logic. Gate green,
-  and verify live that the rim doesn't wash out under bloom.
-- Fallback (if the shell proves fiddly headless): just ship the `envMapIntensity`+metalness half (pure
-  material-prop tuning, zero shader risk) and defer the fresnel shell to its own turn.
-- **Ledger** panel is a dense scrolling list — a later turn could add rhythm/whitespace + a subtle
-  scroll-edge fade (apple-design §12) where rows meet the panel chrome.
+- The big lifts are done (HUD/header/Inspector declutter · IBL+AO · full material language). The app now
+  meets every game-feel non-negotiable with no auto-fail anti-pattern. **Before declaring done, do one
+  disciplined art-critic sweep** (per the D-VP11 lesson: a scorecard can lie — *inspect* each surface):
+  1. Confirm the lower tiers are truly untouched — read `Bodies.tsx` and verify `rich=false` returns the
+     flat baseline + renders no `<Rim>` (standard3d/plain/calm-2D byte-identical), and that `Constellation2D`
+     (calm-2D) is unaffected.
+  2. Grep the app for any remaining bare/flat primitive or stock `<select>`/native form widget as a control
+     surface (expect none — controls are the HUD cluster + drawers).
+  3. Then either ship a **Ledger rhythm/scroll-edge-fade** polish turn (the last real chrome candidate) OR,
+     if the sweep shows nothing load-bearing left, **create `.loop-done`** — game-feel §1 forbids
+     over-decorating an already-cohesive calm world ("subtract, don't add"; density reads as AI).
 - Do NOT add `<ContactShadows>` (EE-003: a floor fights the floating cosmos) unless a grounded glow-plane
   variant is prototyped and clearly reads better.
