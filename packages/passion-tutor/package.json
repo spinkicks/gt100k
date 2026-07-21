@@ -1,0 +1,15 @@
+{
+  "name": "@gt100k/passion-tutor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/public.ts",
+  "types": "./src/public.ts",
+  "exports": {
+    ".": "./src/public.ts"
+  },
+  "scripts": {
+    "test": "vitest run --root ../.. packages/passion-tutor/test",
+    "typecheck": "tsc -b --pretty false"
+  }
+}
