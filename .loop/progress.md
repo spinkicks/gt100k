@@ -182,3 +182,14 @@
 
 ## NEXT
 - T027/T028: write the deferred `TransparencyLog` and `ErasureService` stub contract test first, confirm RED on the missing adapter, then implement `adapters/evidence-deferred`; acceptance is deterministic `stub: true` anchor/inclusion/erasure placeholders, an explicit non-production marker, a retained-packet-stays-verifiable shape, and a green workspace gate.
+
+## 2026-07-20 — P4 deferred pre-live adapters (T027/T028)
+- Added the `@gt100k/evidence-deferred` adapter package with stateless `StubTransparencyLog` and `StubErasureService` implementations of the settled domain ports.
+- Added three SC-006 contracts for port conformance, exact deterministic `stub: true` placeholders, altered-proof rejection, and retained-root verifiability after the erasure seam is invoked. Confirmed RED on the missing adapter entrypoint, then GREEN after the minimal implementation.
+- Marked both implementations explicitly NON-PRODUCTION pre-live gates for §19.2 D1/D2; no network anchoring, key lifecycle, packet mutation, or real erasure machinery was introduced.
+- Gate evidence: adapter composite `tsc -b`, focused tests (3/3), workspace `pnpm typecheck`, workspace `pnpm test` (89/89), and `pnpm lint` over 66 files all pass.
+- Phase status: P4 in progress; T027 and T028 are complete and SC-006 is passing. T029–T032 plus T029a remain.
+- Blockers: none.
+
+## NEXT
+- T029: add `packages/evidence-graph/README.md`; acceptance is concise public API and ports usage plus an explicit deferred/non-production section covering D1–D4 and D6, followed by a green workspace gate.

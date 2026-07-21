@@ -74,3 +74,8 @@
 - Decision: expose only the settled `attestation`, `merkle`, and `packet` modules from the package's existing public entrypoint, including their associated input types.
 - Why: T026 explicitly makes these P3 functions part of `@gt100k/evidence-graph`; keeping the change to three named modules satisfies that feature contract while preserving the package as the sole supported import boundary.
 - Rejected: requiring consumers to import internal source paths, which would make source layout public API; exporting unrelated ports early, which belongs to later documentation and adapter work; introducing another aggregate entrypoint, which would broaden the general barrel pattern prohibited by the repository rules.
+
+## 2026-07-20 — T027/T028 canonical deferred placeholders
+- Decision: make the stateless transparency stub anchor every root at `logIndex: 0` with an empty proof array, and accept inclusion only for that exact matching placeholder. Make the erasure stub echo the supplied synthetic key reference in a `shredded: true`, `stub: true` tombstone while leaving packet/root commitments outside the service.
+- Why: the spec pins the value shapes but not placeholder contents. Index zero and an empty proof are the smallest deterministic values, exact validation prevents altered placeholders from passing, and separating the tombstone from retained commitments directly preserves their verifiability without simulating key lifecycle.
+- Rejected: stateful or randomized fake log entries, which would add unrequired nondeterminism; accepting any proof with a matching root, which would make the placeholder fields meaningless; deleting or mutating evidence packets, which would pretend to implement the explicitly deferred crypto-shred machinery.
