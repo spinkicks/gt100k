@@ -15,7 +15,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   Group,
   IcosahedronGeometry,
-  MeshStandardMaterial,
+  MeshPhysicalMaterial,
   OctahedronGeometry,
   Vector3,
 } from "three";
@@ -32,9 +32,9 @@ interface ObservatorySceneProps {
 
 interface SceneResources {
   readonly starGeometry: IcosahedronGeometry;
-  readonly starMaterial: MeshStandardMaterial;
+  readonly starMaterial: MeshPhysicalMaterial;
   readonly badgeGeometry: OctahedronGeometry;
-  readonly badgeMaterial: MeshStandardMaterial;
+  readonly badgeMaterial: MeshPhysicalMaterial;
 }
 
 function toTuple(position: Vec3): [number, number, number] {
@@ -84,21 +84,43 @@ export function ObservatoryScene({
   const resources = useMemo<SceneResources>(
     () => ({
       starGeometry: new IcosahedronGeometry(0.58 * view.presentation.markerScale, 2),
-      starMaterial: new MeshStandardMaterial({
+      // Hero learner stars: crafted emissive glass gems, not solid blobs. A lit core
+      // still feeds Bloom, but the read now comes from a clearcoat fresnel highlight, a
+      // thin-film iridescent rim, and genuine reflections of the crafted IBL environment
+      // (envMapIntensity) — so grazing edges shimmer cool/violet instead of reading flat.
+      starMaterial: new MeshPhysicalMaterial({
         color: view.presentation.palette.peerHi,
         emissive: view.presentation.palette.peer,
-        emissiveIntensity: 0.8,
-        metalness: 0.08,
-        roughness: 0.32,
+        emissiveIntensity: 0.5,
+        metalness: 0,
+        roughness: 0.12,
+        clearcoat: 1,
+        clearcoatRoughness: 0.16,
+        iridescence: 0.7,
+        iridescenceIOR: 1.32,
+        iridescenceThicknessRange: [120, 440],
+        sheen: 0.45,
+        sheenColor: view.presentation.palette.peerHi,
+        sheenRoughness: 0.55,
+        envMapIntensity: 1.7,
         toneMapped: false,
       }),
       badgeGeometry: new OctahedronGeometry(0.32 * view.presentation.markerScale, 0),
-      badgeMaterial: new MeshStandardMaterial({
+      // Guarantee crystals: faceted cut gems. flatShading gives each octahedron face a
+      // crisp normal so the IBL rig lands as distinct bevel glints; emissive is dialed
+      // right back so the facets read from reflection + a light metallic sheen, not glow.
+      badgeMaterial: new MeshPhysicalMaterial({
         color: view.presentation.palette.form,
         emissive: view.presentation.palette.form,
-        emissiveIntensity: 0.9,
-        metalness: 0.05,
-        roughness: 0.38,
+        emissiveIntensity: 0.34,
+        metalness: 0.4,
+        roughness: 0.26,
+        clearcoat: 0.7,
+        clearcoatRoughness: 0.28,
+        iridescence: 0.4,
+        iridescenceIOR: 1.28,
+        envMapIntensity: 1.9,
+        flatShading: true,
         toneMapped: false,
       }),
     }),
