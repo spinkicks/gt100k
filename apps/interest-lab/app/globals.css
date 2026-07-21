@@ -759,6 +759,256 @@ footer {
   font-size: var(--type-label-size);
 }
 
+.coverage-console {
+  display: grid;
+  gap: 1.5rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border-radius: 1rem;
+  background: var(--paper-guide);
+  color: var(--ink-guide);
+}
+
+.coverage-console-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.coverage-console-header .surface-name {
+  color: color-mix(in srgb, var(--spark) 58%, var(--ink-guide));
+}
+
+.coverage-console-header > p,
+.coverage-rail-heading > p {
+  max-width: 52ch;
+  margin: 0;
+  font-family: var(--font-reading);
+}
+
+.coverage-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.coverage-table-scroll:focus-visible {
+  border-radius: 0.5rem;
+}
+
+.coverage-table {
+  width: 100%;
+  min-width: 70rem;
+  border-collapse: separate;
+  border-spacing: 0.35rem;
+  table-layout: fixed;
+}
+
+.coverage-table caption {
+  padding: 0 0 0.75rem;
+  font-family: var(--font-reading);
+  font-weight: 600;
+  text-align: left;
+}
+
+.coverage-table th {
+  color: var(--ink-guide);
+  font-size: var(--type-label-size);
+  font-weight: 600;
+}
+
+.coverage-domain-heading,
+.coverage-row-heading {
+  width: 10rem;
+  text-align: left;
+}
+
+.coverage-column-heading {
+  display: grid;
+  min-height: 3.5rem;
+  gap: 0.35rem;
+  place-items: center;
+  text-align: center;
+}
+
+.coverage-row-heading {
+  position: sticky;
+  z-index: 1;
+  left: 0;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--matrix-row-hue) 16%, var(--paper-guide));
+  box-shadow: 3px 0 0 var(--paper-guide);
+  text-transform: none;
+}
+
+.coverage-row-hue {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-right: 0.5rem;
+  border: 2px solid var(--ink-guide);
+  border-radius: 50%;
+  background: var(--matrix-row-hue);
+  vertical-align: -0.08rem;
+}
+
+.coverage-cell {
+  min-width: 6.25rem;
+  height: 5.5rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  color: var(--ink-guide);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.coverage-cell--voluntary {
+  border: 1px solid color-mix(in srgb, var(--tide) 68%, var(--ink-guide));
+  background: color-mix(in srgb, var(--tide) 22%, var(--paper-guide));
+}
+
+.coverage-cell--prompted {
+  border: 1px solid color-mix(in srgb, var(--prompted) 72%, var(--ink-guide));
+  background: color-mix(in srgb, var(--prompted) 20%, var(--paper-guide));
+}
+
+.coverage-cell--offered {
+  border: 1px solid color-mix(in srgb, var(--met) 68%, var(--ink-guide));
+  background: color-mix(in srgb, var(--met) 18%, var(--paper-guide));
+}
+
+.coverage-cell--empty {
+  border: 1px dashed var(--gap);
+  background: transparent;
+}
+
+.coverage-cell-state {
+  display: grid;
+  gap: 0.35rem;
+  place-items: center;
+}
+
+.coverage-state-glyph {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+}
+
+.coverage-cell--empty .coverage-state-glyph {
+  color: color-mix(in srgb, var(--gap) 72%, var(--ink-guide));
+}
+
+.coverage-rail {
+  display: grid;
+  gap: 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--ink-guide) 20%, transparent);
+}
+
+.coverage-rail-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.coverage-rail h3,
+.coverage-gaps h3 {
+  margin: 0;
+  font-family: var(--font-reading);
+  font-size: var(--type-reading-size);
+}
+
+.coverage-rail-list,
+.coverage-gaps-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.coverage-rail-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.75rem;
+}
+
+.coverage-rail-item {
+  display: flex;
+  min-height: 7rem;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.875rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--ink-guide) 5%, transparent);
+}
+
+.coverage-rail-item--met .coverage-state-glyph {
+  color: color-mix(in srgb, var(--met) 66%, var(--ink-guide));
+}
+
+.coverage-rail-item--gap {
+  border: 1px dashed var(--gap);
+  background: transparent;
+}
+
+.coverage-rail-item--gap .coverage-state-glyph {
+  color: var(--gap);
+}
+
+.coverage-rail-copy {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.coverage-rail-copy > span {
+  font-size: var(--type-label-size);
+}
+
+.coverage-gap-copy {
+  margin-top: 0.25rem;
+  color: var(--ink-guide);
+  font-family: var(--font-reading);
+  font-weight: 600;
+}
+
+.coverage-gaps {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px dashed var(--gap);
+  border-radius: 0.75rem;
+}
+
+.coverage-gaps-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.coverage-gaps-list li,
+.coverage-complete-note {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+}
+
+.coverage-gaps-list .coverage-state-glyph {
+  color: var(--gap);
+}
+
+.coverage-complete-note {
+  margin: 0;
+  color: var(--ink-guide);
+  font-family: var(--font-reading);
+  font-weight: 600;
+}
+
+.coverage-complete-note .coverage-state-glyph {
+  color: color-mix(in srgb, var(--met) 66%, var(--ink-guide));
+}
+
 @media (hover: hover) and (pointer: fine) {
   .quest-card,
   .quest-tray-list button {
@@ -807,7 +1057,9 @@ footer {
 
   .quest-ledger-intro,
   .quest-tray,
-  .control-heading {
+  .control-heading,
+  .coverage-console-header,
+  .coverage-rail-heading {
     display: grid;
     grid-template-columns: 1fr;
   }

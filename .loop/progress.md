@@ -659,3 +659,15 @@
 ## NEXT
 - Complete U035: implement the semantic animated guide coverage matrix and coverage rail in `apps/interest-lab/app/guide/CoverageMatrix.tsx` from the pure `CoverageMatrixView`.
 - Acceptance: the app renders row/column headers and every cell as an accessible table/grid; filled cells use the pinned `matrixCell` motion, reduced motion is instant, and named gaps remain calm, visible, color-independent, and never scalar; focused tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.
+
+## 2026-07-21 — P12 / U035
+- Added a single native domains×work-modes coverage table with catalog-hued row headers, all nine glyph-and-text column headers, and one visible icon-and-text state for every offered or empty cell.
+- Added the six-item semantic coverage rail plus an explicit aggregate `Still to explore` list, using calm `--gap` hollow cues for every unmet dimension and no scalar coverage representation.
+- Added pinned `matrixCell`/40ms stagger and 600ms rail transition helpers with zero-duration reduced-motion equivalents, keeping initial content visible rather than gating it behind animation.
+- Confirmed genuine test-first RED evidence against the absent guide component, then passed four focused contracts covering exact table cardinality, complete/gappy fixtures, color-independent gap visibility, responsive overflow, and motion values.
+- Verified app tests (57 tests across 13 files), `pnpm typecheck`, `pnpm test` (166 tests across 37 files), `pnpm lint` (143 files), the warning-free Interest Lab production build, and `pnpm build`; all pass.
+- Status: U035 and P12 complete. SC-UI-04 and UI-US4 are green at the pure view and app-render boundaries; U042 owns mounting the completed guide surfaces together. No blocker.
+
+## NEXT
+- Complete U036: add `packages/interest-lab-view/test/explanations.test.ts` for the exact §U8.12 competing-explanations contract, paired with only the minimal implementation needed to preserve the green-only harness boundary.
+- Acceptance: supporting evidence always has a side-by-side disconfirming counterpart; uncertainty preserves grade/interval; no `passionScore`, `score`, `verdict`, or `label` key exists; no card copy matches `/you are (a|an|the) /i`; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
