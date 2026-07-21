@@ -142,3 +142,14 @@
 ## NEXT
 - Complete T016: upgrade `packages/interest-lab/test/smoke.test.ts` from the P0 arithmetic smoke to the seeded G1 determinism guard.
 - Acceptance: the smoke test builds the golden Lab, asserts 20 offers, identical selected probe ids across seeds `{1, 42, 999}`, and coverage deep-equal to G2; preserve a failing red run before implementation and keep `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-20 — P3 / T016
+- Replaced the P0 arithmetic smoke with a standalone seeded G1/G2 guard that builds the golden Lab for seeds `{1, 42, 999}`, pins all 20 selected probe ids, and deep-equals the complete coverage matrix for every run.
+- Extracted the existing package-local golden catalog helpers into `test/fixtures/catalog.ts` so the offer suite and smoke share one synthetic input without introducing a domain-to-adapter dependency.
+- Confirmed the smoke's failure sensitivity by temporarily changing the default target from 20 to 19, observing the exact `expected length 20 but got 19` assertion failure, restoring the pinned value, and rerunning green.
+- Verified the focused smoke, forced package compiler, `pnpm typecheck`, `pnpm test` (53 tests), and `pnpm lint` all pass.
+- Status: T016 complete; P3 remains in progress pending the public API export. SC-001 and SC-002 now have an additional seeded smoke guard. No blocker.
+
+## NEXT
+- Complete T017: export the offer, coverage, and catalog API explicitly from `packages/interest-lab/src/index.ts`.
+- Acceptance: a consumer-facing test imports the P3 functions, constants, and public types from `@gt100k/interest-lab`; the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
