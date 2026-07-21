@@ -63,3 +63,15 @@
 ## NEXT
 - T004b: add the exact exported constant registries in `art.ts`, `motion.ts`, `scene3d.ts`, `quality.ts`, `assets.ts`, and `sound.ts` from spec §§8.10–8.11 and §§8.17–8.24, without resolver behavior.
 - Acceptance: tests fail first and then prove every golden registry value, stable declaration order, and required quality beacon-light caps; the domain remains pure/renderer-free and package plus repository gates stay green.
+
+## 2026-07-20 — P0 / T004b
+- Added the exact exported `PALETTE`/`TYPOGRAPHY`, `MOTION`/`EASINGS`/`LAMBDAS`, 3D scene, four-tier quality, asset-key, and muted sound-cue registries in six focused pure-domain modules; no resolver behavior was pulled forward.
+- Added seven golden acceptance tests first. The RED run failed on the absent registry modules; the GREEN run verifies every pinned value, stable keyed/array declaration order, quality caps A=8/B=3/C=0/D=0, and sound-cue guardrail keys.
+- Confirmed the package source contains no `Math.random`, React/Next, three.js, or react-three imports.
+- Gate status: direct arena-world TypeScript validation passed; Biome checked all seven changed feature files; `pnpm typecheck` passed; `pnpm test` passed (8 files, 33 tests). No app changed, so no Next.js build was required.
+- SC status: exact-registry groundwork for SC-015, SC-017, SC-018, SC-021, SC-023, and SC-025 is present; resolver, fallback-loader, and final guardrail acceptance remain open in their scheduled phases.
+- Blockers: none.
+
+## NEXT
+- T005: add `packages/arena-world/src/index.ts` as the package public entrypoint with explicit named exports for the completed types, fixtures, and constant registries (avoid wildcard/barrel-style exports).
+- Acceptance: a package-entrypoint test fails first, then imports the full completed P0 surface through `@gt100k/arena-world`; direct package checks and repository `pnpm typecheck`/`pnpm test` remain green.
