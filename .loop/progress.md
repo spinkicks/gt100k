@@ -661,3 +661,17 @@
 ## NEXT
 - T041 + the remaining T044 final-composer work: add `packages/arena-world/test/view.test.ts` first, then finalize `buildArenaView` with exact reward representation, opt-in standing, and the complete presentation block including `visualBand`.
 - Acceptance: one full synthetic scenario composes every `ArenaView` field from injected inputs; standings default off and resolve exactly when opted in; age-band/plain/reduced/lower-tier variants retain `plainViewEquals` state parity; presentation carries exact visual-band/quality/lighting/water/post-fx values; Ledger-facing state is complete; focused and repository gates, plus builds for any changed app callers, remain green (SC-012/014/020).
+
+## 2026-07-21 — P5 / T041 + T044 (final composer)
+- Added `view.test.ts` through the public package API, covering the complete full-scenario `ArenaView`, exact opted-in S1 standing, every renderer-facing presentation field, Ledger-facing state completeness, default-off standings, and state parity across age-band/plain/reduced-motion/lower-tier variants.
+- Followed red-green TDD: all three acceptance tests failed on the missing `standing`, exact band representation, and `visualBand`, then passed after the minimal composer finalization. The initial RED also caught and corrected one fixture-landmark typo before production code changed.
+- Finalized `BuildArenaViewInputs` with explicit synthetic `nearPeers` and `standingsOptedIn`; `buildArenaView` now returns `ArenaView`, resolves the exact reward representation and visual band, derives standing from progression gain, and retains the existing deterministic 3D presentation and state-parity boundaries.
+- Updated every feature-owned caller with the fixed input contract. The app injects the exact synthetic S1 near-peer rows but remains standings-off; staged P1/P2/P4 and HUD/feedback acceptance expectations now consume the canonical P5 vocabulary instead of the retired P2 placeholder copy.
+- Review status: checked T041/T044 line-by-line against D4/D5, US5, the fixed data model and contract, §§8.6/8.7/8.19/P5, FR-019/020/029/040, and SC-012/014/020; no Critical, Important, or Minor issues remain. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused final-view tests passed (3 tests); `pnpm lint` passed (130 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (52 files, 208 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 58.6 kB route, 146 kB first load).
+- SC status: T041/T044 completes the final one-view domain composition and acceptance coverage for SC-014/020, and supplies every Ledger-facing state required for SC-012; SC-012's final interactive accessibility walkthrough remains scheduled for P7. P5 remains in progress for the T045 app controls.
+- Blockers: browser automation remains unavailable in this workspace; no blocker affects the green automated gate.
+
+## NEXT
+- T045: add focused app tests first, then extend `Hud.tsx`, `ArenaClient.tsx`, and the Arena Ledger with age-band, plain-mode, muted-audio, and opt-in standings controls.
+- Acceptance: the 6-8 switch applies the exact story/no-canvas-number/1.25 marker/56px/medium-celebration presentation; standings default off and opted-in display only own gain versus band top; all controls are keyboard-operable, mirrored in the Ledger, and use `motion@^12`; lint, typecheck, tests, root build, and Arena app build remain green.

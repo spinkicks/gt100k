@@ -34,6 +34,7 @@ describe("buildArenaView P4 composition", () => {
       "avatar",
       "eligibility",
       "base",
+      "standing",
       "presentation",
       "flags",
     ]);
@@ -79,6 +80,7 @@ function buildInputs(base: CohortBase): BuildArenaViewInputs & { base: CohortBas
       equipped: ["avatar-hat-explorer"],
     },
     base,
+    nearPeers: [],
     caps: {
       webgl2: true,
       webgl1: true,
@@ -90,6 +92,7 @@ function buildInputs(base: CohortBase): BuildArenaViewInputs & { base: CohortBas
       ageBand: "9-11",
       reducedMotion: false,
       plainMode: false,
+      standingsOptedIn: false,
     },
   };
 }

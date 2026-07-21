@@ -151,6 +151,7 @@ function buildVariant(overrides: VariantOverrides = {}): { view: BaseArenaView }
       equipped: ["avatar-hat-explorer"],
     },
     base: createSyntheticCohortBase(),
+    nearPeers: [],
     caps: {
       webgl2: true,
       webgl1: true,
@@ -162,6 +163,7 @@ function buildVariant(overrides: VariantOverrides = {}): { view: BaseArenaView }
       ageBand: "9-11",
       reducedMotion: overrides.reducedMotion ?? false,
       plainMode: overrides.plainMode ?? false,
+      standingsOptedIn: false,
     },
   } as const satisfies BuildArenaViewInputs;
 

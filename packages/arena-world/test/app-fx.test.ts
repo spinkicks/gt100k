@@ -288,7 +288,7 @@ describe("arena P3 learning feedback", () => {
       beaconDelayMs: 0,
       cameraDelayMs: 0,
       staticBadge: null,
-      announcement: "Not yet — keep trying a strategy.",
+      announcement: "Not yet — here's one thing to try.",
       soundCue: {
         cueId: "soft-tap",
         caption: "[soft tap]",

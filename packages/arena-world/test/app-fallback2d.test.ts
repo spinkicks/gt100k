@@ -39,12 +39,18 @@ function buildTierDView(): InitialArenaView {
     catalog: CATALOG,
     avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
     base: createSyntheticCohortBase(),
+    nearPeers: [],
     caps: {
       webgl2: false,
       webgl1: false,
       prefersReducedMotion: false,
     },
-    options: { ageBand: "9-11", reducedMotion: false, plainMode: false },
+    options: {
+      ageBand: "9-11",
+      reducedMotion: false,
+      plainMode: false,
+      standingsOptedIn: false,
+    },
   });
 }
 

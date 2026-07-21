@@ -39,6 +39,7 @@ function buildView(tier: "A" | "B" | "D" = "A", reducedMotion = false): InitialA
     catalog: CATALOG,
     avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
     base: createSyntheticCohortBase(),
+    nearPeers: [],
     caps: {
       webgl2: tier !== "D",
       webgl1: tier !== "D",
@@ -47,7 +48,12 @@ function buildView(tier: "A" | "B" | "D" = "A", reducedMotion = false): InitialA
       deviceMemoryGB: 8,
       hardwareConcurrency: 8,
     },
-    options: { ageBand: "9-11", reducedMotion, plainMode: false },
+    options: {
+      ageBand: "9-11",
+      reducedMotion,
+      plainMode: false,
+      standingsOptedIn: false,
+    },
   });
 }
 

@@ -39,6 +39,7 @@ function buildView(): InitialArenaView {
     catalog: CATALOG,
     avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
     base: createSyntheticCohortBase(),
+    nearPeers: [],
     caps: {
       webgl2: true,
       webgl1: true,
@@ -46,7 +47,12 @@ function buildView(): InitialArenaView {
       deviceMemoryGB: 8,
       hardwareConcurrency: 8,
     },
-    options: { ageBand: "9-11", reducedMotion: false, plainMode: false },
+    options: {
+      ageBand: "9-11",
+      reducedMotion: false,
+      plainMode: false,
+      standingsOptedIn: false,
+    },
   });
 }
 

@@ -13,7 +13,6 @@ import type {
   DeviceCaps,
   NodeMasterySignal,
   QuestWorld,
-  RewardRepresentation,
   Tier,
   WorldTheme,
 } from "./model";
@@ -27,6 +26,8 @@ import {
   resolvePostFx,
   resolveWater,
 } from "./scene3d";
+import { resolveRewardRepresentation, resolveVisualBand } from "./staging";
+import { deriveStanding } from "./standings";
 import { buildQuestWorld } from "./world";
 import { resolveWorldTransform } from "./worldTransform";
 
@@ -37,17 +38,19 @@ export interface BuildArenaViewInputs {
   readonly catalog: readonly Cosmetic[];
   readonly avatar: AvatarState;
   readonly base: CohortBase;
+  readonly nearPeers: readonly { readonly pseudonym: string; readonly gain: number }[];
   readonly caps: DeviceCaps;
   readonly options: {
     readonly ageBand: AgeBand;
     readonly reducedMotion: boolean;
     readonly plainMode: boolean;
+    readonly standingsOptedIn: boolean;
     readonly previousReward?: number;
     readonly avatarIntent?: Parameters<typeof resolveAvatarAnimation>[0];
   };
 }
 
-export function buildArenaView(inputs: BuildArenaViewInputs) {
+export function buildArenaView(inputs: BuildArenaViewInputs): ArenaView {
   const world = buildQuestWorld(inputs.world);
   const layout = layoutQuestWorld(world);
   const nodeStateMap = deriveNodeStates(world, inputs.signals);
@@ -69,6 +72,14 @@ export function buildArenaView(inputs: BuildArenaViewInputs) {
     contributions: inputs.base.contributions.map((contribution) => ({ ...contribution })),
     unlockedFeatures: [...inputs.base.unlockedFeatures],
   };
+  const standing = deriveStanding(
+    {
+      band: inputs.options.ageBand,
+      selfGain: progression.cumulativeIndependenceReward,
+    },
+    inputs.nearPeers,
+    { optedIn: inputs.options.standingsOptedIn },
+  );
 
   return {
     world,
@@ -78,13 +89,14 @@ export function buildArenaView(inputs: BuildArenaViewInputs) {
       state,
     })),
     progression,
-    representation: buildProgressionRepresentation(inputs.options.ageBand),
+    representation: resolveRewardRepresentation(inputs.options.ageBand, progression),
     avatar: {
       learnerRef: inputs.avatar.learnerRef,
       equipped: [...inputs.avatar.equipped],
     },
     eligibility,
     base,
+    standing,
     presentation: {
       biomes: world.regions.map((region) => {
         const biome = resolveBiome(region);
@@ -99,6 +111,7 @@ export function buildArenaView(inputs: BuildArenaViewInputs) {
       avatarAnim: resolveAvatarAnimation(inputs.options.avatarIntent ?? "idle", {
         reducedMotion,
       }),
+      visualBand: resolveVisualBand(inputs.options.ageBand),
       qualityTier,
       qualityBudget: { ...QUALITY_TIERS[qualityTier] },
       assetKeys: {
@@ -155,17 +168,6 @@ function resolveEquippedWorldTheme(equipped: readonly string[]): WorldTheme {
   }
 
   return "default";
-}
-
-function buildProgressionRepresentation(ageBand: AgeBand): RewardRepresentation {
-  return {
-    band: ageBand,
-    headline: "growth-vs-past",
-    currencyLabel: "Growth from your past",
-    showRawNumber: false,
-    comparisonDefault: "off",
-    failureCopy: "Not yet — keep trying a strategy.",
-  };
 }
 
 export type BaseArenaView = ReturnType<typeof buildArenaView>;

@@ -34,13 +34,19 @@ function buildView(tier: QualityTier = "A", reducedMotion = false): InitialArena
     catalog: CATALOG,
     avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
     base: createSyntheticCohortBase(),
+    nearPeers: [],
     caps: {
       webgl2: tier !== "D",
       webgl1: tier !== "D",
       prefersReducedMotion: reducedMotion,
       isSafari: tier === "B",
     },
-    options: { ageBand: "9-11", reducedMotion, plainMode: false },
+    options: {
+      ageBand: "9-11",
+      reducedMotion,
+      plainMode: false,
+      standingsOptedIn: false,
+    },
   });
 }
 

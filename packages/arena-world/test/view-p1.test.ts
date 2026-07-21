@@ -23,6 +23,7 @@ import {
   resolveLighting,
   resolveParallaxLayers,
   resolvePostFx,
+  resolveVisualBand,
   resolveWater,
   resolveWorldTransform,
 } from "@gt100k/arena-world";
@@ -37,11 +38,13 @@ type BuildArenaViewInputs = {
   catalog: readonly Cosmetic[];
   avatar: { learnerRef: string; equipped: string[] };
   base: CohortBase;
+  nearPeers: readonly { pseudonym: string; gain: number }[];
   caps: DeviceCaps;
   options: {
     ageBand: AgeBand;
     reducedMotion: boolean;
     plainMode: boolean;
+    standingsOptedIn: boolean;
     avatarIntent?:
       | "idle"
       | "walk"
@@ -80,11 +83,13 @@ describe("buildArenaView P1 composition", () => {
       catalog: CATALOG,
       avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
       base: createSyntheticCohortBase(),
+      nearPeers: [],
       caps: FULL_CAPS,
       options: {
         ageBand: "9-11",
         reducedMotion: false,
         plainMode: false,
+        standingsOptedIn: false,
         avatarIntent: "walk",
       },
     });
@@ -98,6 +103,7 @@ describe("buildArenaView P1 composition", () => {
       "avatar",
       "eligibility",
       "base",
+      "standing",
       "presentation",
       "flags",
     ]);
@@ -123,6 +129,7 @@ describe("buildArenaView P1 composition", () => {
       "water",
       "postfx",
       "avatarAnim",
+      "visualBand",
       "qualityTier",
       "qualityBudget",
       "assetKeys",
@@ -138,6 +145,7 @@ describe("buildArenaView P1 composition", () => {
       water: resolveWater("A"),
       postfx: resolvePostFx("A"),
       avatarAnim: resolveAvatarAnimation("walk", { reducedMotion: false }),
+      visualBand: resolveVisualBand("9-11"),
       qualityTier: "A",
       qualityBudget: QUALITY_TIERS.A,
       assetKeys: ASSET_KEYS,
@@ -159,8 +167,14 @@ describe("buildArenaView P1 composition", () => {
       catalog: CATALOG,
       avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
       base: createSyntheticCohortBase(),
+      nearPeers: [],
       caps: FULL_CAPS,
-      options: { ageBand: "6-8", reducedMotion: true, plainMode: true },
+      options: {
+        ageBand: "6-8",
+        reducedMotion: true,
+        plainMode: true,
+        standingsOptedIn: false,
+      },
     });
 
     expect(view.flags).toEqual({ reducedMotion: true, plainMode: true, ageBand: "6-8" });
@@ -185,8 +199,14 @@ describe("buildArenaView P1 composition", () => {
       catalog: CATALOG,
       avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
       base: createSyntheticCohortBase(),
+      nearPeers: [],
       caps: FULL_CAPS,
-      options: { ageBand: "12-14", reducedMotion: false, plainMode: false },
+      options: {
+        ageBand: "12-14",
+        reducedMotion: false,
+        plainMode: false,
+        standingsOptedIn: false,
+      },
     } as const satisfies BuildArenaViewInputs;
     const first = buildArenaView(inputs);
     const second = buildArenaView(inputs);

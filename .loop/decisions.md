@@ -153,3 +153,8 @@
 ## 2026-07-21 — T040 staged state-parity boundary
 - Compare exactly the fixed data-model state projection: world, layout, node states, progression, eligibility, base, and standing. Rejected whole-view equality because flags, quality/motion presentation, and later age-band representation are expected to vary without changing underlying state.
 - Accept that state projection directly instead of pulling the final T044 `buildArenaView` inputs and presentation fields into T040. This keeps the ordered test-first path honest while allowing the final composed `ArenaView` to satisfy the same comparator structurally once T044 lands.
+
+## 2026-07-21 — T041/T044 final ArenaView composition
+- Use the injected `options.ageBand` as the standing's near-peer band label because the fixed `buildArenaView` input contract supplies `nearPeers` but no separate pace-band identifier. Rejected adding an unpinned input outside the fixed data model and rejected deriving a band from the public tier label because standings must not manufacture a rank-like grouping.
+- Require `nearPeers` and `standingsOptedIn` at every composer call site, with the app injecting the exact synthetic S1 peers while remaining default-off until T045 owns the interactive opt-in control. Rejected hidden peers inside the domain package because composed views must remain deterministic from explicit inputs.
+- Make the finalized composer return `ArenaView` explicitly while retaining `BaseArenaView`, `ProgressionArenaView`, and `InitialArenaView` as compatibility aliases. Rejected deleting the staged names in this increment because existing renderer APIs still use them and their shapes are now identical to the final view.

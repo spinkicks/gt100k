@@ -42,6 +42,11 @@ const DEFAULT_BASE: CohortBase = {
   ],
   unlockedFeatures: ["campfire", "banner", "garden"],
 };
+const DEFAULT_NEAR_PEERS = [
+  { pseudonym: "kestrel", gain: 260 },
+  { pseudonym: "otter", gain: 340 },
+  { pseudonym: "finch", gain: 300 },
+] as const;
 
 type QualityPreference = (typeof QUALITY_PREFERENCES)[number];
 type ReducedMotionDefault = (typeof REDUCED_MOTION_DEFAULTS)[number];
@@ -204,11 +209,13 @@ export function createArenaClientSnapshot(
     catalog: CATALOG,
     avatar,
     base: DEFAULT_BASE,
+    nearPeers: DEFAULT_NEAR_PEERS,
     caps: effective.caps,
     options: {
       ageBand: config.ageBand,
       reducedMotion: effective.reducedMotion,
       plainMode: false,
+      standingsOptedIn: false,
     },
   });
 

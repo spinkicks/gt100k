@@ -180,7 +180,7 @@ describe("arena P2 HUD and cosmetic equip", () => {
 
     expect(markup).toContain('data-arena-hud="ready"');
     expect(markup).toContain("Steady Flame");
-    expect(markup).toContain("Growth from your past");
+    expect(markup).toContain("You vs. past-you");
     expect(markup).toContain("+300");
     expect(markup).toContain('aria-controls="arena-cosmetic-drawer"');
     expect(markup).toContain('aria-expanded="false"');

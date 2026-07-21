@@ -30,11 +30,13 @@ const INPUTS = {
     equipped: ["avatar-hat-explorer"],
   },
   base: createSyntheticCohortBase(),
+  nearPeers: [],
   caps: FULL_CAPS,
   options: {
     ageBand: "9-11",
     reducedMotion: false,
     plainMode: false,
+    standingsOptedIn: false,
   },
 } as const satisfies BuildArenaViewInputs;
 
@@ -51,6 +53,7 @@ describe("buildArenaView P2 composition", () => {
       "avatar",
       "eligibility",
       "base",
+      "standing",
       "presentation",
       "flags",
     ]);
@@ -64,10 +67,10 @@ describe("buildArenaView P2 composition", () => {
     expect(view.representation).toEqual({
       band: "9-11",
       headline: "growth-vs-past",
-      currencyLabel: "Growth from your past",
+      currencyLabel: "You vs. past-you",
       showRawNumber: false,
-      comparisonDefault: "off",
-      failureCopy: "Not yet — keep trying a strategy.",
+      comparisonDefault: "opt-in",
+      failureCopy: "Not yet — here's one thing to try.",
     });
     expect(view.avatar).toEqual({
       learnerRef: "learner-synthetic-001",
@@ -89,7 +92,7 @@ describe("buildArenaView P2 composition", () => {
       ],
     });
     expect(view.base).toEqual(createSyntheticCohortBase());
-    expect(view).not.toHaveProperty("standing");
+    expect(view.standing).toBeNull();
     expect(view.presentation.qualityTier).toBe("A");
     expect(view.nodeStates).toHaveLength(9);
     expectTypeOf(view).toEqualTypeOf<ProgressionArenaView>();
