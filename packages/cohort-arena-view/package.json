@@ -9,7 +9,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run --root ../.. packages/cohort-arena-view/test"
   },
   "dependencies": {
     "@gt100k/cohort-compiler": "workspace:*"

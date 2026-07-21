@@ -325,3 +325,16 @@
 
 - T104 + T110 — Add the exact 3D/2D layout golden contract first, then implement `LAYOUT`, `layoutConstellation`, `layoutField`, `layoutArenaRing`, and `project2D` in `packages/cohort-arena-view/src/layout.ts`.
 - Acceptance: Fixture V1 pins both cohort centers, all six-member hex vertices, floor halos, empty bench, field-position examples, and exact `project2D` coordinates; Fixture V3 pins the seat ring and projections; outputs are deterministic with 3D values rounded to 3 decimals and projected pixels integer-rounded; focused RED/GREEN and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P7 / T104 + T110
+
+- Added the exact `LAYOUT` registry and pure deterministic 3D geometry for cohort centers, sorted six-member hexes, non-harm-floor halos, the calm unassigned bench, caliper-gradient field starts, arena seats, and integer-rounded orthographic `project2D` output.
+- Added the Fixture V1/V3 golden contract covering every pinned constant, all twelve settled cohort coordinates and projections, floor halos, field examples, deterministic pool/ref ordering, bench placement, the empty arena, and the exact three-speaker ring.
+- Added a local TypeScript project reference to the compiler public surface and rooted the package test command at the workspace, so forced composite builds and the required package-filtered Vitest invocation are independently green without a shared lockfile edit.
+- TDD status: the focused suite first failed because `src/layout.ts` was absent, then passed 4/4 after the minimal implementation. A forced feature build exposed the missing workspace-link boundary; following the established source-path/project-reference pattern made that strict build pass without widening the feature surface.
+- Gate status: forced `cohort-compiler` + `cohort-arena-view` composite build passes; `pnpm --filter @gt100k/cohort-arena-view test` passes 11/11; repository `pnpm typecheck`, `pnpm test` (124/124), and `pnpm lint` pass. P7/SC-010 and the exact layout portion of SC-018 are complete; P7 remains in progress. No blocker.
+
+## NEXT
+
+- T105 + standings portion of T111 — Add the Fixture V2 `deriveStandingsView` contract first, then implement the pure gain-based opt-in standings view in `packages/cohort-arena-view/src/standings.ts`.
+- Acceptance: opted-out standings return `null`; opted-in standings expose the exact anonymized near-peer gains, `selfGain: 300`, and `gainToBandTop: 40`; output ordering is deterministic and the type/runtime surface cannot carry rank, position, percentile, out-of, bottom-rank, or full-field ranking data; focused RED/GREEN, forced feature TypeScript, package tests, and repository typecheck/test/lint remain green.

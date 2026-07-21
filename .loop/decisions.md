@@ -104,3 +104,8 @@
 
 - Kept `PALETTE` as the exact flat primitive registry and represented `TYPOGRAPHY` as named no-fetch families plus six scale rows and the global `tabular-nums` feature. Rejected CSS variables or external font loading in the pure view package because the app owns rendering and the spec pins a framework-independent token registry.
 - Added a minimal semantic `STATE_CUES` registry for assigned, unassigned, satisfied, paused, and suppressed states, with each cue referencing a palette color plus an icon name and text. Rejected leaving color-independence as a test-only table because later 3D, 2D, and Ledger renderers need one deterministic source; layout remains reserved for the dedicated T104/T110 contract.
+
+## 2026-07-21 — T104/T110 layout inputs and package routing
+
+- Kept the contract's one-argument `layoutConstellation(assignment)` behavior and added an optional synthetic pool with an empty default. When supplied, the pool provides field-start values and any pool reference absent from the assignment cohorts becomes a sorted calm bench mote; when absent, assigned motes receive `field: null`. Rejected adding unassigned state to the committed `CohortAssignment` domain type or inventing a second assignment carrier.
+- Imported domain types through the compiler's public entrypoint using the repository's feature-local source-path convention and added an explicit package project reference. Rejected updating the shared lockfile merely to create a workspace symlink because shared dependency metadata is outside this feature's permitted files. Anchored the view-package test script at the workspace root so the shared root-relative Vitest globs execute rather than silently finding zero tests.
