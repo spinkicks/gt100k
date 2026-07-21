@@ -5,6 +5,7 @@ import { PerformanceMonitor } from "@react-three/drei";
 import { type ReactElement, useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import type { Texture } from "three";
 import { QuestLedger, updatePickedProbeIds } from "./QuestLedger";
+import { WorldWayfinding } from "./WorldWayfinding";
 import { Beacon } from "./world3d/Beacon";
 import { CameraRig } from "./world3d/CameraRig";
 import { Island } from "./world3d/Island";
@@ -130,6 +131,10 @@ export function QuestWorld({ view, onContextLost, onPerformanceDecline }: QuestW
     dispatch({ type: "pick", probeId });
   }, []);
   const focus = useCallback((probeId: string) => setFocusedProbeId(probeId), []);
+  // The persistent escape hatch: drift back out to the whole archipelago (the CameraRig eases
+  // home whenever nothing is focused), so a child who has zoomed into one island always has a
+  // way out — Apple's "how do I get back?" answer.
+  const returnToArchipelago = useCallback(() => setFocusedProbeId(null), []);
   const returnQuest = useCallback((probeId: string) => {
     dispatch({ type: "return", probeId });
   }, []);
@@ -173,6 +178,12 @@ export function QuestWorld({ view, onContextLost, onPerformanceDecline }: QuestW
             </World3D>
           </World3DBoundary>
           {bannerLabel ? <IslandBanner label={bannerLabel} /> : null}
+          <WorldWayfinding
+            islands={view.scene.islands}
+            focusedProbeId={focusedProbeId}
+            pickedCount={pickedProbeIdSet.size}
+            onOverview={returnToArchipelago}
+          />
           <p className="quest-world-instruction">
             Tap an island to visit it, or choose a quest below.
           </p>

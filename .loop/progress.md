@@ -217,3 +217,41 @@ existing tests meaningful — update them as behavior changes; DO NOT weaken the
   `revealAll` baseline to the same set (D-VP19).
 - **CARRY-OVER lint debt (not mine):** pre-existing `pnpm lint` errors in out-of-lane
   evidence-explorer-view + prior-turn interest-lab files; left untouched.
+
+- **Turn 6 (v2) — P1 item 6 (Wayfinding, spec §5.5) DONE.** Add the last two Apple wayfinding answers
+  to the WORLD: a persistent *my-quests count* chip and a persistent *"See all islands"* escape hatch.
+  Gate green: `tsc -b` 0 · root `pnpm test` **362/362** · app **123/123** (+8) · `next build` ✓ (route
+  `/` static, 288 kB) · biome clean on my files. **Browser-verified** (chromium+swiftshader, prod
+  `next start`, `/?debug`): top-centre HUD renders "0 / 20 quests collected · See all islands"; overview
+  **disabled** at the archipelago; focusing a quest → banner "Visiting Making", count→1, overview
+  **ENABLED**; clicking **See all islands** clears `data-focused-probe`→null and re-disables the button.
+  **ZERO console/page errors.** Screenshot self-review: pill legible, beacon-accented, clears banner
+  (top-left) + instruction (top-right), no overlap. See D-VP23.
+  - **Pure `resolveWorldWayfinding(islands, focusedProbeId, pickedCount)`** (`world3d/wayfinding.ts`)
+    → `{ pickedCount, questTotal, countLabel, overviewAvailable, focusedDomainLabel }`. `questTotal` =
+    unique island markers; `pickedCount` clamped to `[0, questTotal]`; `overviewAvailable` iff an island
+    is focused. Empty world → "No quests yet"; singular noun for 1 quest. Reuses beacon.ts helpers.
+  - **`WorldWayfinding.tsx`**: DOM HUD (aria-live count + real `<button>`, `disabled` when overview
+    unavailable so the flag is load-bearing). Wired in `QuestWorld` beside the banner; new
+    `returnToArchipelago` handler = `setFocusedProbeId(null)` (CameraRig eases home on cleared focus —
+    no new camera code). New CSS `.world-wayfinding*` (beacon pill, reduced-motion-safe).
+  - Tests: `test/world-wayfinding.test.ts` (8) — total counts unique markers; picked-count clamp;
+    collected label incl. singular; overview-available iff focused; empty-world guard; DOM chip reflects
+    picks + overview enable/disable.
+
+## NEXT
+- **P1 item 7 — motif responds to focus (was the P1.6 candidate, now unblocked).** The per-domain island
+  motif (P1.5) sits static+spinning regardless of focus. Brighten/raise the focused island's motif so
+  arrival has physical weight (reuse the `focused` signal already computed in `Island`). Keep the pure
+  descriptor unit-testable — put the pure focus→intensity mapping in a resolver (e.g. extend `motif.ts`
+  or a new `motif-focus.ts`), and the per-frame response in `IslandMotif`'s `useFrame`, NOT in `Island`.
+  Acceptance: a pure `resolveMotifFocusEmphasis(focused)` (unit-tested: focused > unfocused, finite,
+  clamped) drives `IslandMotif`; keep `tsc`/`test`/`build`/biome green. Best-effort browser-verify the
+  focused motif visibly lifts.
+- **THEN P1 item 8 — child copy pass.** Fold child-appropriate copy for the masthead "· synthetic
+  preview" context-line + the "Accessible 2D tier" status pill (tier jargon leaks into child chrome).
+- **CARRY-OVER P1.7 caveat (unchanged):** when the WORLD is later staged by age band (reducing world
+  markers below `quests.length`), keep world-reachable == board-reachable by staging the BOARD's
+  `revealAll` baseline to the same set (D-VP19).
+- **CARRY-OVER lint debt (not mine):** pre-existing `pnpm lint` errors in out-of-lane
+  evidence-explorer-view + prior-turn interest-lab files; left untouched.

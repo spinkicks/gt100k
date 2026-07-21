@@ -1000,6 +1000,86 @@ footer {
   }
 }
 
+/* Persistent world HUD — the "what have I collected" chip + the "see all islands" escape hatch.
+   Top-centre so it clears the banner (top-left) and instruction (top-right). */
+.world-wayfinding {
+  position: absolute;
+  z-index: 2;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.5rem 0.4rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--beacon) 32%, var(--line));
+  border-radius: 999px;
+  background: rgb(18 11 30 / 90%);
+  box-shadow: 0 0.6rem 1.4rem rgb(6 4 12 / 42%), 0 0 0.7rem color-mix(in srgb, var(--beacon) 16%, transparent);
+}
+
+.world-wayfinding__count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.world-wayfinding__count-value {
+  color: color-mix(in srgb, var(--beacon) 82%, var(--ink));
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.world-wayfinding__count-total {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.world-wayfinding__count-label {
+  color: var(--ink-muted);
+  font-size: var(--type-label-size);
+}
+
+.world-wayfinding__overview {
+  padding: 0.35rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--beacon) 45%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--beacon) 12%, transparent);
+  color: var(--ink);
+  font-size: var(--type-label-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--card-ease, 180ms), border-color var(--card-ease, 180ms), transform var(--card-ease, 180ms);
+}
+
+.world-wayfinding__overview:hover:not(:disabled),
+.world-wayfinding__overview:focus-visible {
+  background: color-mix(in srgb, var(--beacon) 24%, transparent);
+  border-color: var(--beacon);
+}
+
+.world-wayfinding__overview:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.world-wayfinding__overview:disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-wayfinding__overview {
+    transition: none;
+  }
+  .world-wayfinding__overview:active:not(:disabled) {
+    transform: none;
+  }
+}
+
 .quest-world--3d .quest-ledger-shell {
   z-index: 2;
   margin: -5rem 1rem 0;

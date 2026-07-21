@@ -934,3 +934,29 @@
   the default (child bar) is identical on server and first client render. (c) keeping Plain mode in the
   child bar — plain mode is auto-derived from the reduced-motion/fallback tier, so a child never needs
   a separate switch; it stays a staff-only override behind `?debug`.
+
+## D-VP23 — World wayfinding: count chip + see-all escape hatch (P1.6)
+- **Decision.** Answer the remaining two Apple wayfinding questions in the WORLD (not the QA deck):
+  (a) *"what have I collected"* → a persistent top-centre my-quests count chip, and (b) *"how do I get
+  out"* → a persistent "See all islands" button that clears `focusedProbeId` (the CameraRig already
+  eases home whenever nothing is focused, so no new camera code). The focused-island banner (P0.4) and
+  focusable islands already answered "where am I" / "where can I go".
+- **Pure resolver.** `resolveWorldWayfinding(islands, focusedProbeId, pickedCount)` (world3d/wayfinding.ts)
+  → `{ pickedCount, questTotal, countLabel, overviewAvailable, focusedDomainLabel }`. `questTotal` counts
+  UNIQUE island markers (the world's own pool); `pickedCount` is clamped into `[0, questTotal]` so a
+  stray pick can never render "9 of 8"; `overviewAvailable` is true exactly when an island is focused
+  (the escape hatch is actionable only when there's somewhere further out to go). Reuses
+  `resolveFocusedDomain` + `domainBannerLabel` from beacon.ts. Empty archipelago → "No quests yet",
+  singular noun for a 1-quest world.
+- **Placement.** Top-centre HUD pill so it clears the banner (top-left) + instruction (top-right); lives
+  in the DOM (aria-live count, real `<button>`) so both answers reach AT and the board-2d tier. New
+  component `app/child/WorldWayfinding.tsx`, new CSS `.world-wayfinding*` (beacon-accented, reduced-
+  motion-safe). The overview button is `disabled` when `!overviewAvailable` so the flag is load-bearing.
+- **Rejected.** (a) putting the count in the QA deck — the NEXT block + spec §5.5 want it in the world,
+  not the staff harness. (b) counting `visibleQuests` for the total — that's the age-band-staged board
+  subset; the world shows every marker, so the world HUD counts markers. (c) a bespoke "fly to overview"
+  camera animation — clearing focus already triggers the CameraRig's ease-home; no new motion needed.
+- **Browser-verified** (chromium+swiftshader, prod `next start`, `/?debug`): HUD visible, count "0" +
+  overview disabled at the archipelago → focus a quest (banner "Visiting Making", count→1) → overview
+  ENABLED → click it → `data-focused-probe` cleared to null, overview disabled again. Zero console/page
+  errors. Gate: `tsc -b` 0 · root `pnpm test` 362/362 · app 123/123 (+8) · `next build` ✓ · biome clean.
