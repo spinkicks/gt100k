@@ -1,8 +1,11 @@
 # GT100K — Active build scope (2026-07-21)
 
-Two products: **passion** (developing the student's passion) and **admissions — the FAMILY-facing part**
-(family selection). The social/game (arena/cohort) layer is paused. This file is the source of truth for
-what the software factory works on; `docs/prd/` remains the canonical product spec.
+**Active product: passion** (developing the student's passion → the PassionLab app). The repo is now
+**passion-centric**: everything active lives under `passion/`; family selection (the FAMILY-facing
+admissions part), the academic loop, the Go/infra spine, and arena/cohort are **archived** (`archive/`,
+work preserved) — family selection resumes when the family brainlift lands. Layout:
+`docs/RESTRUCTURE-PLAN.md`. This file is the source of truth for what the software factory works on;
+`docs/prd/` remains the canonical product spec.
 
 ## The admissions boundary (important — do not conflate)
 WE build **family selection = screening the FAMILY** for fit + commitment: whether they'll genuinely
