@@ -5,6 +5,7 @@ import { useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 
 import { CohortLedger } from "./ledger/CohortLedger";
+import { ObservatoryScene } from "./observatory/ObservatoryScene";
 import { buildSyntheticCohortView } from "./synthetic-view";
 import { CohortTier2D } from "./tier2d/CohortTier2D";
 import { resolveTier2DMode } from "./tier2d/mode";
@@ -85,10 +86,12 @@ export default function CohortArenaClient() {
                   far: camera.far,
                 }}
                 dpr={[1, 1.5]}
-                frameloop="demand"
+                frameloop="always"
+                gl={{ antialias: true, powerPreference: "high-performance" }}
+                shadows={false}
               >
                 <color attach="background" args={[VIEW.presentation.palette.deck]} />
-                <ambientLight intensity={0.35} />
+                <ObservatoryScene view={VIEW} />
               </Canvas>
             </div>
           </section>

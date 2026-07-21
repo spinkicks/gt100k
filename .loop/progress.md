@@ -452,3 +452,16 @@
 
 - T116 — Implement the 3D Compiler Observatory in `apps/cohort-arena/components/observatory/` from the already-shared view, now that the accessible Ledger and first-class 2D tier are green.
 - Acceptance: render learner stars with drei `Instances` at exact constellation positions; animate compile field-to-hex choreography only through `useFrame` and `resolveMotion("compile", ...)`; draw caliper rings, satisfied-badge rings, and floor halos with restrained bloom; keep a calm follow-free camera, dispose GL resources on unmount, and retain the verified reduced/plain 2D fallback; focused RED/GREEN, app-local TypeScript/tests, production build, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P8 / T116
+
+- Added a pure app-local observatory projection over the one shared `CohortArenaView`, pinning all twelve Fixture V1 field origins/settled positions, three caliper radii, fourteen satisfied badge markers, both exact domain-sourced floor halos, and the calm pending-bench carrier.
+- Added the r3f Compiler Observatory with drei-instanced learner stars and badge markers, field guides, caliper rings, emissive floor halos, restrained bloom, capped lighting, 900ms field-to-hex compile choreography, 9000ms low-amplitude drift, and a 1200ms follow-free camera settle driven only by the golden motion/easing registry through `useFrame`.
+- Added explicit lifecycle disposal for manually allocated instanced geometries/materials and kept the existing reduced-motion/plain-mode branch outside the Canvas, preserving the motion-free 2D tier and accessible Ledger from the exact same module-scoped view.
+- TDD status: the focused suite first failed because `components/observatory/scene.ts` was absent, then passed after the minimal projection/renderer implementation. A subsequent fixture assertion correctly failed because B1's pinned field origin had been assigned to B6; tracing the synthetic profiles confirmed the production projection was correct, and the contract was narrowed to the spec-pinned B1 golden while retaining B6's exact settled position.
+- Gate status: app-local TypeScript and all 10 app tests pass; repository `pnpm typecheck`, `pnpm test` (144/144), `pnpm lint` (123 files), and the view package suite (31/31) pass; both `pnpm --filter @gt100k/cohort-arena build` and root `pnpm build` succeed. T116 completes the 3D observatory portion of FR-031/FR-032 while the established 2D/Ledger paths retain SC-014/SC-015 parity. P8 remains in progress for the roster HUD, seed assets, and runtime smoke; no blocker.
+
+## NEXT
+
+- T117 — Implement the DOM cohort roster cards in `apps/cohort-arena/components/hud/` from the same `CohortArenaView` using `motion/react`.
+- Acceptance: one card per cohort renders all six members with roles, seven satisfied badges with icon and text, and the exact non-harm-floor readout; membership changes use the `layout` FLIP boundary, controls retain scale `0.97` press feedback and >=44px targets, reduced motion remains state-equal, and focused RED/GREEN, app-local TypeScript/tests, both builds, and repository typecheck/test/lint remain green.
