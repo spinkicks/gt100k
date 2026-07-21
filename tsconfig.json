@@ -2,6 +2,7 @@
   "files": [],
   "references": [
     { "path": "packages/learning-loop" },
+    { "path": "packages/evidence-explorer-view" },
     { "path": "packages/interest-lab" },
     { "path": "packages/interest-lab-view" },
     { "path": "adapters/repo-memory" },
