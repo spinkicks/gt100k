@@ -6,13 +6,7 @@
  * `@gt100k/evidence-graph` and never redefined here. This package reads the domain, computes no
  * grade and no crypto, and produces a deterministic layout.
  */
-import type {
-  ActorKind,
-  ConsentScope,
-  EdgeType,
-  NodeType,
-  ToolRef,
-} from "@gt100k/evidence-graph";
+import type { ActorKind, ConsentScope, EdgeType, NodeType, ToolRef } from "@gt100k/evidence-graph";
 
 export type Vec2 = { readonly x: number; readonly y: number };
 export type Vec3 = readonly [number, number, number];
@@ -193,15 +187,76 @@ export interface VerificationView {
   readonly verifyWaveOrder: ReadonlyArray<{ readonly from: string; readonly to: string }>;
 }
 
-// ── Ledger (§U12) — type surface; built in U1/U4 ─────────────────────────────
-export interface LedgerNode {
+// ── Accessible Provenance Ledger (§U5.12 / §U12, SC-E10) ─────────────────────
+// The parallel DOM view-model: every node → a tree item with an accessible name; every timeline
+// beat → a list item; every verification step → a status. Parity with the constellation is by
+// construction (both consume one `ExplorerView`). Never accusatory (§U8.14).
+
+/** The described drill-down inspector region for one node (§U5.8 / UX4). */
+export interface LedgerPanel {
+  /** Full content-address (mono, copyable in the DOM). */
   readonly id: string;
-  readonly name: string;
-  readonly children?: readonly LedgerNode[];
+  readonly type: NodeType;
+  readonly label: string;
+  readonly actor: ActorChip;
+  readonly tool?: ToolRef;
+  readonly inputs: readonly string[];
+  readonly timestamp: string;
+  readonly consentScope: ConsentScope;
+  readonly payload: Record<string, unknown>;
+  readonly isHumanOwned: boolean;
+  /** Named human owner of a human-owned grade `Outcome` (else undefined). */
+  readonly humanOwner?: string;
+  /** A `model` actor's `Assistance`/`Review` — "Declared AI assistance — cited". */
+  readonly isCitedAssistance: boolean;
+}
+
+/** A `role="tree"` item; one per node, in deterministic view order. */
+export interface LedgerTreeItem {
+  readonly id: string;
+  readonly type: NodeType;
+  readonly label: string;
+  readonly depthRank: number;
+  readonly orderInRank: number;
+  readonly isInMilestone: boolean;
+  readonly isIsland: boolean;
+  /** Downstream node→node edge targets (ids), in deterministic edge order. */
+  readonly children: readonly string[];
+  /** Accessible name = type + label + state + actor + human-owned/cited marker (§U5.12). */
+  readonly accessibleName: string;
+  readonly panel: LedgerPanel;
+}
+
+/** A growth-timeline beat as an ordered-list item with a 1-based scrub position. */
+export interface LedgerTimelineItem {
+  readonly position: number;
+  readonly nodeId: string;
+  readonly birthOrder: number;
+  readonly group: string;
+  readonly label: string;
+}
+
+/** A verification step as a status-list row with spoken status text. */
+export interface LedgerVerifyStepItem {
+  readonly id: VerifyStepId;
+  readonly label: string;
+  readonly status: VerifyStatus;
+  readonly nonProduction: boolean;
+  readonly statusText: string;
+}
+
+/** The verification status list + the `aria-live` seal region (non-accusatory). */
+export interface LedgerVerification {
+  readonly steps: readonly LedgerVerifyStepItem[];
+  readonly sealState: SealState;
+  readonly sealText: string;
 }
 
 export interface LedgerView {
-  readonly roots: readonly LedgerNode[];
+  readonly milestoneRef: string;
+  readonly tree: readonly LedgerTreeItem[];
+  readonly timeline: readonly LedgerTimelineItem[];
+  readonly verification?: LedgerVerification;
 }
 
 // ── Presentation flags (never state) ─────────────────────────────────────────
