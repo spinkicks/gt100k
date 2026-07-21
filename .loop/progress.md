@@ -289,3 +289,14 @@
 
 - T101 — Scaffold `packages/cohort-arena-view` as `@gt100k/cohort-arena-view` with the pinned ESM manifest, composite package TypeScript configuration, and empty public entrypoint; do not touch shared root files.
 - Acceptance: the new pure view package matches the P7 manifest/TypeScript contract, depends only on `@gt100k/cohort-compiler`, is discoverable by existing workspace globs, and the repository typecheck/test/lint gate remains green.
+
+## 2026-07-21 — P7 / T101
+
+- Scaffolded `packages/cohort-arena-view` as the pure `@gt100k/cohort-arena-view` workspace package with the pinned private ESM manifest, sole `@gt100k/cohort-compiler` workspace dependency, strict composite package TypeScript configuration, and empty public entrypoint.
+- TDD status: the standalone package compiler first failed with the expected `TS5058` because the T101 configuration was absent, then passed after the minimal scaffold was added. Focused Biome exposed a single newline in the nominally empty entrypoint; byte-level diagnosis and canonical formatting reduced it to a true zero-byte file before re-verification.
+- Gate status: standalone package TypeScript and focused Biome pass; repository `pnpm typecheck`, `pnpm test` (113/113), and `pnpm lint` pass. P7 has started; no shared root file was touched and no blocker remains.
+
+## NEXT
+
+- T102 — Add `packages/cohort-arena-view/test/art.test.ts` with the golden contract for `PALETTE`, `TYPOGRAPHY`, and state colors.
+- Acceptance: the test pins every exact art token, proves each semantic state color has a paired icon, and verifies every required foreground/background contrast pair is at least 4.5:1; it fails first because `src/art.ts` is absent, while the existing repository gate remains green until the paired T109 implementation.
