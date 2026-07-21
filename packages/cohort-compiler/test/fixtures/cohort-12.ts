@@ -162,7 +162,7 @@ const benefitByRef: Record<string, number> = {
   M6: 0.8,
 };
 
-const boundaryBenefitByRef = { ...benefitByRef, M5: 0.5 };
+const boundaryBenefitByRef: Record<string, number> = { ...benefitByRef, M5: 0.5 };
 
 export const nonHarmReject = {
   members: nonHarmMembers,

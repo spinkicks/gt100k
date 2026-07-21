@@ -94,3 +94,16 @@
 
 - T010 — Export the `model`, `caliper`, and `candidates` APIs from `packages/cohort-compiler/src/index.ts`, while preserving the repository's no-barrel constraint as far as the spec permits.
 - Acceptance: consumers can import the required P1 domain types and functions through `@gt100k/cohort-compiler`; the package smoke/type contract compiles; the standalone feature project-reference build is green (including correction of the surfaced fixture index-signature inference if still required); repository typecheck/test/lint remain green; P1/SC-001 reaches its checkpoint.
+
+## 2026-07-20 — P1 / T010
+
+- Published every domain model type plus `caliperDistance`, `withinCaliper`, and `generateCandidates` through the explicit `@gt100k/cohort-compiler` entrypoint.
+- Added a package-name public API contract covering all model type exports, exact P1 function signatures, and Fixture A behavior through the public surface.
+- Corrected the previously surfaced `cohort-12.ts` boundary-map inference with a type-only `Record<string, number>` annotation; no synthetic fixture value changed.
+- TDD status: the focused contract failed first because `withinCaliper` was absent from the entrypoint, then passed 2/2 after the explicit exports. The standalone package-and-adapter project-reference build passes.
+- Gate status: `pnpm typecheck`, `pnpm test` (42/42), and `pnpm lint` pass. A read-only independent review found no remaining Critical, Important, or Minor issues. P1 and SC-001 are complete; no blocker.
+
+## NEXT
+
+- T011 — Add `packages/cohort-compiler/test/constraints.test.ts` for `isFeasibleCohort` and the default `benefitOf` formula.
+- Acceptance: the contract rejects each of the seven hard constraints independently; Fixture B4 pins `D1..D4 = 0.775`, `D5 = 0.700`, and `D6 = 0.430`, proves the per-member floor rejects D6 despite a passing mean, and accepts the `0.63` boundary control; Fixture B3 proves injected-map rejection at `0.45` and acceptance at `0.50`; the test first fails against the absent modules, then the paired T040/T019 implementations restore the focused and repository gates.
