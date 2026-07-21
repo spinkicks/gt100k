@@ -1,7 +1,7 @@
 "use client";
 
 import { type AgeBand, type RenderTier, resolveChildStaging } from "@gt100k/interest-lab-view";
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode, SVGProps } from "react";
 import type { InterestLabSurface, MotionPreference, RenderTierOverride } from "./settings";
 
 export interface InterestLabControlsProps {
@@ -25,6 +25,141 @@ const tierName: Record<RenderTier, string> = {
   "board-2d": "accessible 2D board",
 };
 
+/** Lucide-weight inline glyphs, matching the app-wide 24×24/1.8 stroke language. */
+function DeckIcon({ name, ...props }: { name: DeckIconName } & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      width={18}
+      height={18}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {DECK_GLYPHS[name]}
+    </svg>
+  );
+}
+
+type DeckIconName = "age" | "motion" | "surface" | "tier" | "plain";
+
+const DECK_GLYPHS: Record<DeckIconName, ReactNode> = {
+  age: (
+    <>
+      <path d="M6 20V13M12 20V8M18 20V4" />
+      <path d="M4 20h16" />
+    </>
+  ),
+  motion: (
+    <>
+      <path d="M2 12h3l2.5 6 5-14 2.5 8 2-4H22" />
+    </>
+  ),
+  surface: (
+    <>
+      <path d="m12 3 8 4.5-8 4.5-8-4.5Z" />
+      <path d="m4 12 8 4.5 8-4.5" />
+    </>
+  ),
+  tier: (
+    <>
+      <path d="M12 3 20 7.5v9L12 21l-8-4.5v-9Z" />
+      <path d="M12 12v9M12 12 4 7.5M12 12l8-4.5" />
+    </>
+  ),
+  plain: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 3v18" />
+      <path d="M12 3a9 9 0 0 1 0 18Z" fill="currentColor" stroke="none" />
+    </>
+  ),
+};
+
+interface SegmentOption<Value extends string> {
+  value: Value;
+  label: string;
+  hint?: string;
+}
+
+interface SegmentedControlProps<Value extends string> {
+  name: string;
+  title: string;
+  icon: DeckIconName;
+  value: Value;
+  options: readonly SegmentOption<Value>[];
+  onChange: (value: Value) => void;
+}
+
+function SegmentedControl<Value extends string>({
+  name,
+  title,
+  icon,
+  value,
+  options,
+  onChange,
+}: SegmentedControlProps<Value>) {
+  return (
+    <fieldset className="hud-field">
+      <legend className="hud-field-title">
+        <DeckIcon name={icon} />
+        <span>{title}</span>
+      </legend>
+      <div className="hud-track">
+        {options.map((option) => (
+          <label
+            key={option.value}
+            className="hud-seg"
+            data-checked={option.value === value ? "true" : undefined}
+          >
+            <input
+              className="hud-seg-input"
+              type="radio"
+              name={name}
+              value={option.value}
+              checked={option.value === value}
+              onChange={() => onChange(option.value)}
+            />
+            <span className="hud-seg-body">
+              <span className="hud-seg-label">{option.label}</span>
+              {option.hint ? <span className="hud-seg-hint">{option.hint}</span> : null}
+            </span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+const AGE_OPTIONS: readonly SegmentOption<AgeBand>[] = [
+  { value: "6-8", label: "6–8" },
+  { value: "9-11", label: "9–11" },
+  { value: "12-14", label: "12–14" },
+];
+
+const MOTION_OPTIONS: readonly SegmentOption<MotionPreference>[] = [
+  { value: "system", label: "Auto" },
+  { value: "off", label: "Full" },
+  { value: "on", label: "Calm" },
+];
+
+const SURFACE_OPTIONS: readonly SegmentOption<InterestLabSurface>[] = [
+  { value: "child", label: "Quests" },
+  { value: "guide", label: "Guide" },
+];
+
+const TIER_OPTIONS: readonly SegmentOption<RenderTierOverride>[] = [
+  { value: "auto", label: "Auto" },
+  { value: "quest-world-3d", label: "Full 3D" },
+  { value: "quest-world-3d-lite", label: "Lite 3D" },
+  { value: "board-2d", label: "2D" },
+];
+
 export function InterestLabControls(props: InterestLabControlsProps) {
   const style = {
     "--control-target": `${resolveChildStaging(props.ageBand).touchTargetPx}px`,
@@ -36,82 +171,72 @@ export function InterestLabControls(props: InterestLabControlsProps) {
     : `Showing the ${tierName[props.activeRenderTier]}.`;
 
   return (
-    <section className="control-panel material" style={style} aria-labelledby="controls-title">
-      <div className="control-heading">
-        <div>
-          <p className="surface-name">Presentation only</p>
+    <section className="control-panel hud-deck material" style={style} aria-labelledby="controls-title">
+      <div className="hud-header">
+        <div className="hud-titles">
+          <p className="hud-eyebrow">
+            <span className="hud-eyebrow-dot" aria-hidden="true" />
+            Mission deck · presentation only
+          </p>
           <h2 id="controls-title">Interest Lab controls</h2>
         </div>
-        <output aria-live="polite">
-          {tierStatus} Motion is {props.effectiveReducedMotion ? "reduced" : "animated"}.
+        <output className="hud-status" data-pending={pendingTier ? "true" : undefined} aria-live="polite">
+          <span className="hud-status-mark" aria-hidden="true" />
+          <span>
+            {tierStatus} Motion is {props.effectiveReducedMotion ? "reduced" : "animated"}.
+          </span>
         </output>
       </div>
 
-      <div className="control-grid">
-        <label className="control-field">
-          <span>Age band</span>
-          <select
-            name="age-band"
-            value={props.ageBand}
-            onChange={(event) => props.onAgeBandChange(event.target.value as AgeBand)}
-          >
-            <option value="6-8">Ages 6–8</option>
-            <option value="9-11">Ages 9–11</option>
-            <option value="12-14">Ages 12–14</option>
-          </select>
-        </label>
+      <div className="hud-grid">
+        <SegmentedControl
+          name="age-band"
+          title="Age band"
+          icon="age"
+          value={props.ageBand}
+          options={AGE_OPTIONS}
+          onChange={props.onAgeBandChange}
+        />
+        <SegmentedControl
+          name="motion-preference"
+          title="Motion"
+          icon="motion"
+          value={props.motionPreference}
+          options={MOTION_OPTIONS}
+          onChange={props.onMotionPreferenceChange}
+        />
+        <SegmentedControl
+          name="surface"
+          title="Surface"
+          icon="surface"
+          value={props.surface}
+          options={SURFACE_OPTIONS}
+          onChange={props.onSurfaceChange}
+        />
+        <SegmentedControl
+          name="render-tier"
+          title="Render tier"
+          icon="tier"
+          value={props.renderTierOverride}
+          options={TIER_OPTIONS}
+          onChange={props.onRenderTierOverrideChange}
+        />
 
-        <label className="control-field">
-          <span>Motion</span>
-          <select
-            name="motion-preference"
-            value={props.motionPreference}
-            onChange={(event) =>
-              props.onMotionPreferenceChange(event.target.value as MotionPreference)
-            }
-          >
-            <option value="system">Match this device</option>
-            <option value="on">Reduce motion</option>
-            <option value="off">Use animation</option>
-          </select>
-        </label>
-
-        <label className="control-field">
-          <span>Surface</span>
-          <select
-            name="surface"
-            value={props.surface}
-            onChange={(event) => props.onSurfaceChange(event.target.value as InterestLabSurface)}
-          >
-            <option value="child">Child quests</option>
-            <option value="guide">Guide console</option>
-          </select>
-        </label>
-
-        <label className="control-field">
-          <span>Render tier</span>
-          <select
-            name="render-tier"
-            value={props.renderTierOverride}
-            onChange={(event) =>
-              props.onRenderTierOverrideChange(event.target.value as RenderTierOverride)
-            }
-          >
-            <option value="auto">Automatic</option>
-            <option value="quest-world-3d">Full 3D world</option>
-            <option value="quest-world-3d-lite">Lighter 3D world</option>
-            <option value="board-2d">2D board</option>
-          </select>
-        </label>
-
-        <label className="control-check">
+        <label className="hud-toggle" data-on={props.plainMode ? "true" : undefined}>
+          <span className="hud-field-title as-inline">
+            <DeckIcon name="plain" />
+            <span>Plain mode</span>
+          </span>
           <input
+            className="hud-toggle-input"
             type="checkbox"
             name="plain-mode"
             checked={props.plainMode}
             onChange={(event) => props.onPlainModeChange(event.target.checked)}
           />
-          <span>Plain mode</span>
+          <span className="hud-toggle-track" aria-hidden="true">
+            <span className="hud-toggle-thumb" />
+          </span>
         </label>
       </div>
     </section>

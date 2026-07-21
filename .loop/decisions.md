@@ -309,3 +309,49 @@
 - Chose: let the shell's `.quest-workspace` grid item shrink with `min-width: 0`, preserve the coverage matrix and timeline as named keyboard-focusable horizontal scrollers, and stack the evidence headers plus both lifecycle tracks at the existing 48rem breakpoint. In that stacked layout, place the current-state marker in normal flex flow.
 - Why: production-browser measurements found 22px page overflow at 320px and 42px under 200% text because the wide guide visuals contributed to the outer grid's automatic minimum size. The first containment fix exposed a 9.3px/21.6px current-marker collision; the final layout produces zero page overflow and zero marker overlap while retaining every matrix cell, timeline marker, lifecycle state, and internal scroll region.
 - Rejected: hiding overflow on the workspace would clip meaningful guide content and focus indicators; shrinking the matrix/timeline would make their labels unreadable; retaining multi-column lifecycle rows at narrow or text-enlarged widths would force state labels and the current marker to overlap.
+
+---
+
+# VISUAL POLISH pass (game-feel.md) — art-direction decisions
+
+## D-VP1 — Committed art direction: "Curiosity Quest World"
+- Chose: ONE cohesive world — a warm, tactile, hand-crafted **floating-island atelier at dusk**.
+  Graded palette (reuse the existing `@gt100k/interest-lab-view` PALETTE, do not invent new hues):
+  deep plum night (#181026 / #221A3D / #120B1E), spark orange (#FF9E5E→#FFC08A) as the primary warm
+  accent, beacon gold (#FFD166) for active/attention, tide cyan (#5EC8D8) and sprout green (#7BD88F)
+  as secondary domain hues. Material language: frosted-glass panels with a thin lit top rail, inset
+  "trench" controls, warm emissive glow, low-poly crafted geometry, springy/ease-out motion. Type:
+  Fredoka display, Iowan reading serif, Inter body (already wired via next CSS vars).
+- Why: game-feel non-negotiable #1 requires one committed world; the palette + fonts already exist
+  in the view package and the 3D scene, so anchoring to them keeps every turn cohesive and avoids
+  colour/typography drift. Every subsequent turn's choices must serve this world.
+- Rejected: introducing a new palette or a cooler sci-fi HUD look would fight the existing warm
+  island 3D scene and the child-facing, playful product intent.
+
+## D-VP2 — Presentation controls are a HUD deck, not a dropdown form (Turn 1)
+- Chose: rebuild `InterestLabControls.tsx` as a "mission deck" — four **segmented radio controls**
+  (Age / Motion / Surface / Render tier) in inset trenches with lucide-weight inline icons, a
+  spark-gradient active segment, hover lift, `scale(0.97)` press, and focus rings; a **toggle switch**
+  for Plain mode; a display-font title, an uppercase eyebrow, and a live telemetry status chip. The
+  panel is frosted glass with a lit top rail + layered shadow + corner glow. Radios keep the original
+  group `name`s and option `value`s so the pinned SSR markup assertions stay green.
+- Why: the stock `<select>` surface was the single worst remaining AI-demo tell — the verbatim
+  auto-fail #2 and a violation of non-negotiable #7 (UI chrome must be a HUD). Segmented radios are a
+  real form-control underneath (accessible, keyboard-operable, test-compatible) but read as tactile
+  game controls. Custom `cubic-bezier(0.23,1,0.32,1)` ease-out + press feedback follow apple-design /
+  emil-design-eng guidance; visually-hidden inputs preserve semantics; reduced-motion, reduced-
+  transparency, and high-contrast are inherited from the existing global media queries + `.material`.
+- Rejected: styling the native `<select>` (still reads as a form, can't show tactile state); a custom
+  JS listbox (heavier, re-implements keyboard behavior, risks the pinned markup); removing options to
+  simplify (would lose forward-compatible tier/surface requests the app relies on).
+
+## D-VP3 — Defer post-processing to a dedicated turn (supersedes-in-waiting for D056)
+- Chose: NOT add `@react-three/postprocessing` in Turn 1; do the zero-dependency HUD win first and
+  schedule the grade (Bloom + Vignette + subtle SSAO) as the next turn's primary task.
+- Why: game-feel #4 makes a post-processing grade non-negotiable and explicitly lists
+  `@react-three/postprocessing` as an allowed addition, so D056's deferral is overridden by this
+  visual pass — but the packages are not yet installed and adding them touches the shared lockfile +
+  build. Landing that on its own turn keeps each commit a single, verifiable green change rather than
+  risking a red gate by combining a dependency install with the HUD work.
+- Rejected: bundling the package install into Turn 1 (couples two unrelated risks); permanently
+  honoring D056 (would leave a named non-negotiable unmet).
