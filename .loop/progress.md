@@ -193,3 +193,14 @@
 
 ## NEXT
 - T029: add `packages/evidence-graph/README.md`; acceptance is concise public API and ports usage plus an explicit deferred/non-production section covering D1–D4 and D6, followed by a green workspace gate.
+
+## 2026-07-20 — P4 package documentation (T029)
+- Added `packages/evidence-graph/README.md` with a synthetic quick start, the settled public domain API, and the current port-to-adapter map.
+- Documented D1–D6 explicitly, marking the deferred adapters and unsigned attestation as NON-PRODUCTION while stating that D3–D5 have no implementation or interface in this slice.
+- Added three documentation acceptance tests. Confirmed RED on the missing README, then GREEN after the minimal documentation was added.
+- Gate evidence: workspace `pnpm typecheck`, workspace `pnpm test` (92/92), and `pnpm lint` over 67 files all pass.
+- Phase status: P4 in progress; T027–T029 are complete and SC-006 remains passing. T029a–T032 remain.
+- Blockers: none.
+
+## NEXT
+- T029a: add `adapters/evidence-repo-memory/test/e2e.test.ts`; acceptance is a synthetic-only flow that builds the `syntheticMilestone` graph, passes `assertHumanAuthority`, assembles its packet, and passes stub verification without consent, legal, or admissions workflow machinery.
