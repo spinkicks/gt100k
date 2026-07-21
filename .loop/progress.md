@@ -87,3 +87,16 @@
 ## NEXT
 - T006: add `packages/arena-world/test/smoke.test.ts` and only the minimal pure deterministic resolver stubs required for the P0 seeded smoke.
 - Acceptance: the smoke fails first, then imports `@gt100k/arena-world`, proves `buildQuestWorld(FIXTURE)` has 9 nodes and 4 regions, `layoutQuestWorld` returns non-empty positions, `resolveWorldTransform` returns 9 3D nodes, and `PALETTE`/`MOTION`/`CAMERA3D`/`QUALITY_TIERS`/`ASSET_KEYS` are non-empty; direct package checks and repository gates remain green.
+
+## 2026-07-20 — P0 / T006
+- Added the seeded domain smoke through the public `@gt100k/arena-world` entrypoint. It proves the synthetic fixture builds to 9 nodes and 4 regions, layout positions are non-empty, the 3D transform contains 9 nodes, and all five required registries are populated.
+- Added minimal pure deterministic P0 resolvers in `world.ts`, `layout.ts`, and `worldTransform.ts`, with explicit named entrypoint exports. Full DAG validation, golden region layout, and biome elevation remain scheduled for P1.
+- Followed red-green TDD: the new smoke failed with `buildQuestWorld is not a function`, then passed after the resolver stubs landed.
+- Review status: the task requirements were checked locally; no Critical or Important issues found. Subagent/git-SHA review was intentionally not used because the loop forbids unrequested subagents and all git commands.
+- Gate status: Biome checked all five changed feature files; direct arena-world TypeScript validation passed; direct feature tests passed (6 files, 22 tests); `pnpm typecheck` passed; `pnpm test` passed (10 files, 36 tests). No app changed, so no Next.js build was required.
+- SC status: the P0 seeded-smoke requirement is complete; feature-level world determinism SC-013/SC-024 remains open until the P1 golden resolvers and acceptance tests land.
+- Blockers: none.
+
+## NEXT
+- T007: create `apps/arena/package.json` with the exact React 18 / Next 14 / r3f v8 / drei v9 / postprocessing v2 / three / motion dependency contract from `tasks.md`, mirroring the existing student-compass app manifest where applicable.
+- Acceptance: a manifest contract test fails first, then verifies the exact package name, scripts, workspace dependencies, pinned React-compatible 3D stack ranges, and required type devDependencies; `pnpm typecheck`, `pnpm test`, and the new app package's dependency resolution remain green.
