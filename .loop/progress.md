@@ -156,3 +156,15 @@
 
 - T015 + T023 — Add the Golden Fixture C `commit`/`rollback` domain contract first, then implement `packages/cohort-compiler/src/commit.ts`.
 - Acceptance: asg-1 commits with the pinned result; A6→A7 churn 2 is allowed at cap 2, refused at cap 1, and allowed with the recorded exception; duplicate-active refusal leaves the repository unchanged; `rollback("asg-2")` restores asg-1 byte-identically; focused RED/GREEN and repository typecheck/test/lint remain green.
+
+## 2026-07-20 — P3 / T015 + T023
+
+- Added the Golden Fixture C lifecycle contract for the exact commit results, cohort-index churn metric, inclusive cap boundary, recorded-exception path, atomic duplicate-active refusal, and byte-identical rollback.
+- Implemented `membershipChurn`, `commit`, and `rollback` in `packages/cohort-compiler/src/commit.ts`; commit preflights retained-prior existence and one-active-per-learner, accounts for already-used weekly churn plus recorded exception deltas, sets the rollback reference, and delegates the whole-roster write/restore to the repository port.
+- TDD status: the focused suite first failed because `src/commit.ts` was absent, then passed 6/6 after the minimal implementation. A focused Biome failure was traced to canonical formatting only, formatted mechanically, and reverified green.
+- Gate status: package-local strict TypeScript and the package/adapter project-reference build pass; repository `pnpm typecheck`, `pnpm test` (75/75), and `pnpm lint` pass. P3/SC-003 is complete; SC-004's commit budget boundary is complete, with bounded repair remaining in P4. No blocker.
+
+## NEXT
+
+- T016 + T024 — Add the `repairCohort` contract first, then implement bounded in-budget repair in `packages/cohort-compiler/src/repair.ts`.
+- Acceptance: an in-budget repair returns a reversible repaired assignment with a guide-veto window; a repair exceeding the churn budget or changing cohort size returns `staffExceptionRequired` and does not auto-apply; the focused RED/GREEN cycle and repository typecheck/test/lint gate remain green.
