@@ -757,3 +757,16 @@
 ## NEXT
 - T048: add `packages/arena-world/README.md` documenting the package's public API, inputs/ports, guardrails, relationship to `@gt100k/learning-loop`, and renderer-free boundary.
 - Acceptance: the README accurately states that the package builds on `@gt100k/learning-loop`, has no 3D dependency and exposes configuration only, explains the synthetic deterministic quickstart and safety boundaries, and keeps focused plus repository gates green.
+
+## 2026-07-21 — P7 / T048
+- Added `packages/arena-world/README.md` with a synthetic `buildArenaView` quickstart, responsibility-grouped public API, plain-function input ports, the renderer boundary, structural child-safety guardrails, and development commands. The reduced-motion example uses a WebGL-capable profile and resolves the documented Tier C result.
+- Added `readme.test.ts` first. The RED run failed on the missing README, then five GREEN assertions locked the required API/input/guardrail/development contract, the exact Tier-C capability example, and the package command backing it.
+- Repaired the previously recorded package-local test caveat after the documented filtered command reproduced `No test files found`: the Arena script now supplies the repository root and feature test path. A manifest assertion failed against the old script before the minimal fix; the filtered command now runs only the Arena suite.
+- Review status: checked T048 against §1, D2/D4/D7, §11, FR-024/027, the current public entrypoint, `BuildArenaViewInputs`, and the package manifest. The README claims no adapter, renderer, persistence, or identity capability outside the implemented boundary.
+- Gate status: `pnpm lint` passed (136 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (57 files, 228 tests); `pnpm --filter @gt100k/arena-world test -- --reporter=dot` passed (53 files, 214 tests). No app file changed, so no Next.js build was required.
+- SC status: T048 documents the deterministic, synthetic-only, renderer-independent domain contract and its validation path. P7 remains in progress for the complete seed asset audit, interactive acceptance, quickstart run, and final root reference.
+- Blockers: none.
+
+## NEXT
+- T049: audit and complete the seed asset kit under `apps/arena/public/seed/`, keyed to `ASSET_KEYS`.
+- Acceptance: committed SVGs cover `ui-lock`, `ui-star`, `ui-home`, `ui-audio`, `ui-help` plus the Tier-D node/region/base art; every key follows committed model/SVG before deterministic procedural fallback, optional-model absence still renders without external fetch, and focused tests plus lint/typecheck/tests/root build/Arena build remain green.

@@ -180,3 +180,6 @@
 
 ## 2026-07-21 — T047 synthetic acceptance boundary
 - Keep T047 as acceptance coverage over the existing public functions, with the end-to-end scenario composed locally in the test. Rejected adding a production `runSyntheticScenario` helper because the spec requires proof that injected fixtures traverse the whole domain, not a second orchestration API beside `buildArenaView`.
+
+## 2026-07-21 — T048 package-local Vitest root
+- Changed the Arena package test script from the T001 scaffold literal to `vitest run --root ../.. packages/arena-world/test`. The documented `pnpm --filter @gt100k/arena-world test` command otherwise inherits repository-relative include globs from a package working directory and finds no tests. Rejected editing the shared root Vitest config, duplicating it inside the package, or documenting a broken command; the root-aware script keeps the fix feature-local and limits the run to Arena tests.
