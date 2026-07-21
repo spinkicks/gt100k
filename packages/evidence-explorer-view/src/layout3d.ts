@@ -56,14 +56,19 @@ export function layoutExplorer3D(graph: EvidenceGraph): Layout3DResult {
     } else {
       const slotStep = Math.floor(12 / r.countInRank);
       const slotIndex = (r.orderInRank * slotStep) % 12;
-      const slot = SHELL_SLOTS[slotIndex] ?? SHELL_SLOTS[0];
+      // `slotIndex` is always in [0,11]; the literal fallback (= the 0° slot) only satisfies
+      // `noUncheckedIndexedAccess` and is never reached.
+      const slot = SHELL_SLOTS[slotIndex] ?? { uy: 1, uz: 0 };
       pos = [r.depthRank * COL_W_3D, SHELL_R * slot.uy, SHELL_R * slot.uz];
     }
     positions.set(r.node.id, pos);
-    for (let axis = 0; axis < 3; axis += 1) {
-      min[axis] = Math.min(min[axis], pos[axis]);
-      max[axis] = Math.max(max[axis], pos[axis]);
-    }
+    const [px, py, pz] = pos;
+    min[0] = Math.min(min[0], px);
+    min[1] = Math.min(min[1], py);
+    min[2] = Math.min(min[2], pz);
+    max[0] = Math.max(max[0], px);
+    max[1] = Math.max(max[1], py);
+    max[2] = Math.max(max[2], pz);
   }
 
   return {

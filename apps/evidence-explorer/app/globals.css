@@ -1,0 +1,379 @@
+/*
+ * Provenance Observatory — global tokens (§U8.11, exact) + accessibility floors.
+ * Palette is OKLCH-reasoned, contrast-verified against --void (ink ≈16:1 AAA, inkMuted ≈8:1 AA+).
+ * State color is ALWAYS paired with a body-shape/glyph + text label (FR-E04) — never color alone.
+ */
+:root {
+  color-scheme: dark;
+
+  /* Surfaces & ink. */
+  --void: #0a0e17;
+  --panel: #121826;
+  --panel-2: #1a2233;
+  --line: #2a3346;
+  --ink: #eaf0fb;
+  --ink-muted: #9aa7c2;
+
+  /* Semantic state / actor. */
+  --focus: #7dd3fc;
+  --verify: #34e5b0;
+  --tamper: #ff5a6e;
+  --human: #ffd166;
+  --model: #8b9bc7;
+
+  /* Node-type hues (§U8.3). */
+  --artifact: #e9c46a;
+  --attempt: #4cc9f0;
+  --transformation: #5e7ce2;
+  --claim: #b892ff;
+  --assistance: #3ddc97;
+  --review: #ffb03a;
+  --contribution: #f072c0;
+  --outcome: #ff7a8a;
+
+  /* Typography (§U8.11). */
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", "Cascadia Code", monospace;
+
+  --text-display: 2.5rem;
+  --text-h1: 1.75rem;
+  --text-h2: 1.25rem;
+  --text-body: 1rem;
+  --text-label: 0.8125rem;
+  --text-mono: 0.8125rem;
+
+  /* Presentation toggles (never affect state). */
+  --surface-alpha: 0.82;
+  --motion-scale: 1;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: var(--void);
+}
+
+body {
+  min-height: 100svh;
+  margin: 0;
+  background:
+    radial-gradient(120% 90% at 78% -10%, rgba(94, 124, 226, 0.16), transparent 60%),
+    radial-gradient(90% 70% at 8% 108%, rgba(52, 229, 176, 0.08), transparent 55%),
+    var(--void);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+code,
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+}
+
+button {
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--focus) 40%, transparent);
+}
+
+/* Visible focus ring on every interactive element (WCAG 2.4.7). */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Frosted panels — degrade gracefully when transparency is reduced. */
+.panel {
+  background: color-mix(in oklab, var(--panel) calc(var(--surface-alpha) * 100%), transparent);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  backdrop-filter: blur(14px) saturate(1.1);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --surface-alpha: 1;
+  }
+  .panel {
+    backdrop-filter: none;
+    background: var(--panel);
+  }
+}
+
+/* ── Observatory layout ─────────────────────────────────────────────────────── */
+.observatory {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 48px);
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.obs-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.obs-eyebrow {
+  margin: 0 0 6px;
+  font-size: var(--text-label);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--focus);
+}
+
+.obs-header h1 {
+  font-size: var(--text-display);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.obs-ref {
+  color: var(--verify);
+}
+
+.obs-sub {
+  margin: 10px 0 0;
+  max-width: 62ch;
+  color: var(--ink-muted);
+}
+
+.obs-badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  font-size: var(--text-label);
+  color: var(--ink-muted);
+}
+
+.badge--synthetic {
+  border-color: color-mix(in oklab, var(--verify) 45%, var(--line));
+  color: var(--verify);
+}
+
+.obs-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .obs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stage {
+  padding: 18px;
+  overflow: hidden;
+  background:
+    radial-gradient(70% 55% at 62% 8%, rgba(94, 124, 226, 0.1), transparent 70%),
+    color-mix(in oklab, var(--panel) calc(var(--surface-alpha) * 100%), transparent);
+}
+
+.constellation {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.obs-side {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Legend. */
+.legend {
+  padding: 18px 20px;
+}
+.legend-title {
+  font-size: var(--text-label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin: 4px 0 12px;
+}
+.legend-title + .legend-grid,
+.legend-title + .legend-threads {
+  margin-bottom: 18px;
+}
+.legend-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 14px;
+}
+.legend-threads {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: var(--text-label);
+  color: var(--ink);
+}
+
+/* Ledger. */
+.ledger {
+  padding: 18px 20px;
+  max-height: 620px;
+  overflow: auto;
+}
+.ledger-title {
+  font-size: var(--text-label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin: 4px 0 12px;
+}
+.ledger-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ledger-row {
+  display: flex;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.ledger-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.ledger-dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  margin-top: 5px;
+  border-radius: 50%;
+  box-shadow: 0 0 10px 1px currentColor;
+}
+.ledger-body {
+  min-width: 0;
+}
+.ledger-head {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.ledger-label {
+  font-weight: 600;
+}
+.ledger-type {
+  font-size: var(--text-label);
+  color: var(--ink-muted);
+}
+.ledger-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin: 4px 0;
+  font-size: var(--text-label);
+  color: var(--ink-muted);
+}
+.ledger-flag {
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  font-size: 11px;
+}
+.ledger-flag--human {
+  color: var(--human);
+  border-color: color-mix(in oklab, var(--human) 40%, var(--line));
+}
+.ledger-flag--model {
+  color: var(--model);
+  border-color: color-mix(in oklab, var(--model) 40%, var(--line));
+}
+.ledger-hash {
+  color: var(--ink-muted);
+  opacity: 0.75;
+}
+
+/* Entrance/idle motion is opt-in on the class; reduced-motion removes it entirely. */
+.node-enter {
+  animation: node-ignite 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.edge-draw {
+  animation: edge-fade 900ms ease-out both;
+}
+@keyframes node-ignite {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes edge-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-scale: 0;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
