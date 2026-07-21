@@ -1,5 +1,13 @@
 # Quickstart: EvidenceGraph (validation guide)
 
+> **One spec home.** **Part I** below validates the pure domain. **Part II** (folded in from the former
+> `explorer/quickstart.md`) validates the **Provenance Explorer** 3D UI. See [spec.md](./spec.md) Part I /
+> Part II.
+
+---
+
+# PART I — Domain validation (`packages/evidence-graph`)
+
 How to prove the slice works end-to-end once implemented. Implementation code lives in tasks.md / the code itself — this is a run/validation guide only. Synthetic-only; no consent/legal workflow is required.
 
 ## Prerequisites
@@ -65,3 +73,120 @@ Expected: `dd67a4e94fcb4fff954bcb093257364a5b5d0832bda9ffb7a5b6340e45ca647b` (ma
 - SC-010 second-preimage / leaf≠interior domain separation → `merkle.test.ts`.
 - SC-011 seeded smoke test green from iteration 1 → `smoke.test.ts`.
 - SC-012 `traceEvidence` returns supporting-only nodes (excludes unrelated island) → `packet.test.ts`.
+
+---
+---
+
+# PART II — Provenance Explorer validation (3D "Provenance Observatory")
+
+How to prove the UI expansion works once implemented. Implementation lives in [tasks.md](./tasks.md) Part II
+/ the code — this is a run/validation guide only. Synthetic-only, read-only; the Explorer **reads**
+`@gt100k/evidence-graph` and never edits it.
+
+## Prerequisites
+
+- Node.js LTS + pnpm installed; `pnpm install` at the repo root.
+- The completed `packages/evidence-graph` domain + its adapters are present and unchanged.
+- A browser with WebGL for the cinematic tier; the calm-2D tier needs no WebGL.
+
+## Run the view-package tests (primary validation)
+
+```bash
+pnpm test                                            # Vitest across the workspace
+pnpm --filter @gt100k/evidence-explorer-view test    # view-package tests only
+```
+
+**Expected**: all contract obligations in [contracts/provenance-explorer.md](./contracts/provenance-explorer.md)
+pass — deterministic 2D layout (golden §U8.1) + 3D layout (golden §U8.2, ±1e-6), one composed `ExplorerView`
+with tier/reduced-motion/plain parity (`plainViewEquals`), the golden motion table (`resolveMotion` incl.
+reduced mode + all 3D events), palette/typography + node-body/edge-thread visual language, camera keyframes,
+the render-tier ladder, deterministic growth timeline, verification derived from the domain (untampered →
+verified; tampered → mismatch) + `verifyWaveOrder`, human-owned grade + cited (never accused) AI-assistance,
+accessible Ledger completeness, and the structural no-dark-patterns guardrail.
+
+## Build & lint gate
+
+```bash
+pnpm typecheck                                        # tsc -b (green after UE050 adds the ref)
+pnpm lint                                             # biome check packages adapters apps
+```
+
+## Build & run the app
+
+```bash
+pnpm --filter @gt100k/evidence-explorer build         # next build — app acceptance/perf gate
+pnpm --filter @gt100k/evidence-explorer dev           # run it locally
+```
+
+**Expected**: `next build` clean; the app boots with **zero console errors** and **no network requests**.
+
+## Walk the end-to-end experience (synthetic "speaker-v1" milestone)
+
+1. **Orbit & fly the 3D constellation (UX1)**: the evidence DAG ignites as a cosmos — 8 node types as
+   distinct luminous **bodies** (Artifact=world, Attempt=moon, Transformation=blueprint, Claim=beacon,
+   Assistance=comet marked "Declared", Review=gold star, Contribution=crystal, Outcome=seal-sun), 6 edge
+   types as **light-threads** with directional flow, under bloom + depth-of-field with a parallax starfield.
+   Orbit (drag with momentum), dolly, and fly-to a body to reveal its lineage (DOF racks focus). Layout is
+   deterministic; the unrelated island body is clearly outside the milestone.
+2. **Time-scrub the galaxy (UX2)**: drag the scrubber — bodies ignite in build order and threads draw in as
+   both endpoints appear; selecting a beat flies to its body.
+3. **Verify, then tamper (UX3)**: press **Verify** — a wave of light propagates edge-by-edge while the checks
+   tick (Merkle root recomputed → attestation subject digest → human authority → *(pre-live gate, stub)*
+   transparency-log), then the cosmos locks into a **Verified ✓** seal (ring forges shut + bloom + the Merkle
+   root ticking up in mono). Then run the **Tamper demo** — one bound node's bytes are altered and
+   re-verification visibly **fails**: the byte-level body **fractures**, the lineage to the root desaturates,
+   the root morphs old→new with a highlighted diff, and a **MISMATCH** seal appears. Red + fracture appear
+   **only** on the bytes, never on a person.
+4. **Drill down (UX4)**: select any body to open its frosted inspector (id/actor/tool/inputs/timestamp/
+   consent/payload). A grade `Outcome` seal-sun shows its **named human owner** with a human-owned seal; a
+   `model`-authored `Assistance`/`Review` reads as **"Declared AI assistance — cited"** (neutral, calm) —
+   never an accusation.
+5. **HUD, legend, filters, trace, plain mode, tier (UX5)**: the legend lists all 8 bodies + 6 threads
+   (body-icon + color + label); filter by type; "trace from Outcome" highlights the provenance path (domain
+   `traceEvidence`, island excluded); toggle plain mode / reduced motion / render tier — the underlying state
+   is unchanged.
+6. **Accessibility, reduced motion & the 60fps budget (UX6)**: toggle reduced motion (or a weak GPU / no
+   WebGL) — the app renders the **calm 2D** tier conveying the identical state, nothing lost. Navigate by
+   keyboard only — the **Provenance Ledger** (`role="tree"` + lists + `aria-live` seal) reaches every body,
+   beat, and verification step; focus is visible; every canvas/decorative layer is `aria-hidden`; a grayscale
+   check still distinguishes every type/state. On the min device the 3D scene holds 60fps and auto-degrades
+   (bloom/DOF off → calm 2D) when the budget slips, recovering when stable.
+
+## Golden-value quick check (deterministic acceptance targets)
+
+The view-package golden tests assert the exact values pinned in [spec.md](./spec.md) §U8. Spot-checks:
+
+- **Layout 2D (§U8.1)**: `plan → (120,120)`, `src-artifact → (360,120)`, `outcome-grade → (1320,280)`,
+  `island-note → (120,760)`; world bounds `{1440,880}`. x = 120 + depthRank·240.
+- **Layout 3D (§U8.2)**: `plan → (0, 3.2, 0)`, `assist-research → (0, -1.6, 2.77128)`,
+  `review-technical → (24, 0, 3.2)`, `outcome-grade → (30, -3.2, 0)`, `island-note → (0, -9, 0)`; center
+  `[15,-1,0]`. x = depthRank·6.
+- **Motion (§U8.5)**: `resolveMotion("sealForge",{reducedMotion:false}).durationMs === 900`;
+  `resolveMotion("flyIn",{reducedMotion:true})` → `{ mode:"reduced", durationMs:0, easing:"linear" }`;
+  `resolveMotion("press",{reducedMotion:true}).durationMs === 120` (kept).
+- **Tiers (§U8.10)**: `resolveRenderTier({gpuTier:3,webglAvailable:true})==="cinematic"`;
+  `resolveRenderTier({gpuTier:1,webglAvailable:true})==="standard3d"`;
+  `resolveRenderTier({gpuTier:3,prefersReducedMotion:true})==="calm2d"`;
+  `resolveRenderTier({gpuTier:3,webglAvailable:false})==="calm2d"`.
+- **Verification (§U8.8)**: untampered fixture → `sealState:"verified"`, all non-stub steps `pass`, the
+  transparency-log step `nonProduction:true`; `applyTamper(fixture)` → `sealState:"mismatch"` with
+  `merkle-root` `fail` and `committed !== recomputed`.
+
+## Success criteria mapping
+
+- SC-E01/E16 deterministic 2D + 3D layout → `layout2d.test.ts` / `layout3d.test.ts` (step 1).
+- SC-E02/E03 one composed view + tier/reduced-motion/plain parity → `view.test.ts` + `motion.test.ts` (steps 1, 6).
+- SC-E04 golden motion table → `motion-tokens.test.ts`.
+- SC-E05/E06/E19 palette/type/bodies/threads + all node/edge types + island → `art.test.ts`/`visual.test.ts`/`mapping.test.ts` (steps 1, 5).
+- SC-E07 deterministic growth timeline → `timeline.test.ts` (step 2).
+- SC-E08/E20 verification + wave derived from the domain; tamper fails → `verify-view.test.ts` (step 3).
+- SC-E09 human-owned grade + cited (never accused) AI-assist → `authority-view.test.ts` (step 4).
+- SC-E10 accessible Ledger completeness → `ledger.test.ts` (step 6).
+- SC-E11 structural no-dark-patterns guardrail → `guardrails.test.ts`.
+- SC-E12 `next build` + zero console errors + reduced-motion + seal announce → app smoke.
+- SC-E13 WCAG 2.2 AA keyboard/SR/contrast/color-independent → a11y walkthrough (step 6).
+- SC-E14 reads the domain unchanged; adapter swap needs no view change → `integration.test.ts`.
+- SC-E15 seeded smoke green from iteration 1 → `smoke.test.ts`.
+- SC-E17 camera keyframes → `camera.test.ts` (step 1).
+- SC-E18 render-tier ladder → `tiers.test.ts`.
+- SC-E21/E22 60fps budget + auto-degrade + no-WebGL fallback → perf/a11y walkthrough + Playwright smoke (step 6).

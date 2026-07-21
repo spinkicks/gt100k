@@ -262,15 +262,21 @@ TURN EVENTS (TurnEvent[])
 
 The Viewer's view types live in `packages/cohort-arena-view`, computed by **pure, deterministic** functions
 that read the committed `@gt100k/cohort-compiler` types **read-only** (no I/O, no wall-clock, **no
-`Math.random`**). One `CohortArenaView` drives the Pixi canvas, the DOM/Framer-Motion HUD, the reduced-motion
-rendering, and the accessible Cohort Ledger (parity by construction). Guardrails are **structural** — the
-types below cannot represent a caste/bottom-rank or an emotion/trait label. Golden constants + fixtures are
-pinned in [spec.md § UI Golden Values](./spec.md#ui-golden-values--constants).
+`Math.random`**). One `CohortArenaView` drives the **3D react-three-fiber canvas**, the **DOM + motion@^12
+HUD**, the **2D-tier `project2D` rendering** (reduced-motion / plain / weak device / WebGL loss), and the
+accessible Cohort Ledger (parity by construction). Positions are carried as exact **3D `{x,y,z}`** world
+coordinates **and** their pure **`project2D` `{x,y}`** screen projection, so the 2D tier is a projection of the
+one 3D layout, never a second layout. Guardrails are **structural** — the types below cannot represent a
+caste/bottom-rank or an emotion/trait label. Golden constants + fixtures are pinned in
+[spec.md § UI Golden Values](./spec.md#ui-golden-values--constants).
 
 ## CohortArenaView (composed — the one view)
 
 Output of `buildCohortArenaView(input) → CohortArenaView`, where
-`input = { assignment: CohortAssignment; priorAssignment?: CohortAssignment | null; candidateSets?: CandidateSet[]; hard: HardConstraints; churn: ChurnBudget; standings?: { self: { selfGain: number }; nearPeers: { pseudonym: string; gain: number }[]; optedIn: boolean }; rivalry?: TurnAnalysis | null; flags: ViewFlags }`.
+`input = { assignment: CohortAssignment; priorAssignment?: CohortAssignment | null; pool?: LearnerProfile[]; candidateSets?: CandidateSet[]; hard: HardConstraints; churn: ChurnBudget; standings?: { self: { selfGain: number }; nearPeers: { pseudonym: string; gain: number }[]; optedIn: boolean }; rivalry?: TurnAnalysis | null; flags: ViewFlags }`.
+The optional `pool` supplies each learner's level/velocity so `layoutField` can place the **field-start** (drift
+origin) along the caliper gradient; if `pool` is absent, a mote's `field` is `null` and it simply appears at its
+settled position (no drift).
 
 | Field | Type | Notes |
 |---|---|---|
@@ -298,19 +304,27 @@ reduced-motion/plain/band (`plainViewEquals`, FR-028/FR-044, SC-009).
 
 ## ConstellationView / MoteView / CohortHexView
 
-Deterministic layout (`layoutConstellation`, geometry pinned in `LAYOUT`).
+Deterministic **3D** layout (`layoutConstellation` + `layoutField` + `project2D`, geometry pinned in `LAYOUT`).
+`Vec3 = { x: number; y: number; z: number }` (world units, rounded to 3 dp); `Vec2 = { x: number; y: number }`
+(screen px, integers).
 
 | Type | Field | Type | Notes |
 |---|---|---|---|
-| ConstellationView | `world` | `{ width: number; height: number }` | `1600×900` |
+| ConstellationView | `world` | `{ width: number; height: number }` | 2D-tier viewport `1600×900` |
+| | `camera` | `{ position: Vec3; target: Vec3; fov: number; near: number; far: number }` | pinned `CAMERA` (presentation constant) |
+| | `fog` | `{ color: string; near: number; far: number }` | pinned `FOG` |
 | | `hexes` | CohortHexView[] | one per cohort |
-| | `bench` | MoteView[] | unassigned learners (calm "still compiling") |
-| | `caliperRings` | number[] | display radii `[140,220,300]` (never gate anything) |
+| | `bench` | MoteView[] | unassigned learners (calm "still compiling"; on the bench shelf) |
+| | `caliperRadii` | number[] | display disc radii `[5,10,15]` world units (never gate anything) |
 | CohortHexView | `cohortIndex` | number | order = domain cohort order |
-| | `center` | `{ x: number; y: number }` | `center(i)` per `LAYOUT` |
+| | `center` | Vec3 | `center(i)` per `LAYOUT` |
+| | `center2d` | Vec2 | `project2D(center)` |
+| | `floorHalo` | `{ pos: Vec3; radius: number }` | non-harm-floor halo (`FLOOR_Y`, `FLOOR_R`) |
 | | `members` | MoteView[] | six, at the hex vertices |
 | MoteView | `ref` | string | learner ref |
-| | `pos` | `{ x: number; y: number }` | settled position (integer, rounded) |
+| | `pos` | Vec3 | settled 3D position (`memberPos(i,k)` or bench slot) |
+| | `pos2d` | Vec2 | `project2D(pos)` — the 2D-tier position |
+| | `field` | Vec3 \| null | caliper-gradient drift start (`layoutField`; `null` if no `pool`) |
 | | `state` | `"assigned" \| "unassigned" \| "candidate"` | color+icon+text (never color alone) |
 | | `role` | Role \| null | assigned role for a cohort member |
 
@@ -351,7 +365,8 @@ Deterministic layout (`layoutConstellation`, geometry pinned in `LAYOUT`).
 | | `confidence` | number | from `TurnAnalysis` |
 | | `suppressed` | boolean | true → render the "confidence low — prompts suppressed" veil; **0** patterns surfaced |
 | SeatView | `speaker` | string | pseudonymous ref |
-| | `pos` | `{ x: number; y: number }` | ring position (`RING_R=240`, center `(800,450)`) |
+| | `pos` | Vec3 | 3D ring position (`RING_R=10`, center `{0,0,0}`) via `layoutArenaRing` |
+| | `pos2d` | Vec2 | `project2D(pos)` — the 2D-tier position |
 | | `turnShare` | number | observable descriptor |
 | | `interruptions` | number | observable descriptor |
 | | `holdingFloor` | boolean | current turn-holder (pulse) |
@@ -381,7 +396,7 @@ Deterministic layout (`layoutConstellation`, geometry pinned in `LAYOUT`).
 
 | Field | Type | Notes |
 |---|---|---|
-| `kind` | MotionKind | e.g. `compile`, `rollback`, `turnPulse`, `standingsBar`, `press`, `hudToggle` |
+| `kind` | MotionKind | one of the **19** kinds, e.g. `cameraEase`, `compile`, `floorHalo`, `rollback`, `turnPulse`, `interruptionArc`, `dominanceRing`, `standingsBar`, `press`, `hudToggle` |
 | `mode` | `"animated" \| "reduced"` | `reduced` when `reducedMotion:true` |
 | `durationMs` | number | from `MOTION` (animated) or the reduced column |
 | `easing` | string | from `EASINGS` (animated) or `"linear"` (reduced) |
@@ -421,9 +436,11 @@ the AT source of truth (FR-040, SC-014).
 
 ## Golden constant registries (exact — unit-tested)
 
-`PALETTE`, `TYPOGRAPHY`, `MOTION`, `EASINGS`, `LAYOUT` — the exact values are pinned in
+`PALETTE`, `TYPOGRAPHY`, `MOTION`, `EASINGS`, `LAYOUT` (the exact 3D geometry — `CAMERA`, `FOG`, `HEX_R`,
+`center(i)`, `vertexLocal(k)`, bench, `FIELD_STEP`/`FIELD_REF`, `CALIPER_RADII`, `RING_R`, and the pure
+`PROJECT`/`project2D`) — the exact values are pinned in
 [spec.md § UI Golden Values](./spec.md#ui-golden-values--constants) and asserted by `art.test.ts` /
-`motion.test.ts` / `layout.test.ts`.
+`motion.test.ts` / `layout.test.ts` (the last also asserts `project2D` of the golden 3D positions).
 
 ## UI view state transitions
 
@@ -431,7 +448,8 @@ the AT source of truth (FR-040, SC-014).
 DOMAIN OUTPUT (CohortAssignment, CandidateSet[], TurnAnalysis, CohortHealthEvent — all synthetic/injected)
   -- buildCohortArenaView(input) --> CohortArenaView            (P7; pure, deterministic, one view)
        * plainViewEquals(view, reducedMotion|plain|band) holds  (state-identical; presentation varies)
-  -- Pixi renderer <-- view.constellation / view.rivalry        (P8/P10; canvas, aria-hidden)
-  -- DOM/Framer-Motion HUD <-- view.cohorts / standings / safeguarding  (P8/P9)
+  -- r3f/three 3D renderer <-- view.constellation / view.rivalry  (P8/P10; WebGL2 canvas, aria-hidden)
+  -- 2D tier (project2D DOM/SVG) <-- same view                  (reduced-motion / weak device / WebGL loss)
+  -- DOM + motion@^12 HUD <-- view.cohorts / standings / safeguarding  (P8/P9)
   -- buildLedger(view) --> LedgerView                           (P8; accessible twin, AT truth)
 ```

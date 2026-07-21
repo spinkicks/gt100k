@@ -182,34 +182,34 @@
 ---
 ---
 
-# Part II — Interest Lab UI Tasks (child probe-picker + guide console)
+# Part II — Interest Lab UI Tasks (child Curiosity Quest World + guide Hypothesis Console)
 
-**Input**: Design documents from `specs/003-interest-lab/` **Part II** — spec.md (§U0 scope, §U6 motion table, §U8 golden values, §U9 phasing, §U10 SC-UI), plan.md (Part II), research.md, data-model.md, contracts/interest-lab-ui.md, quickstart.md.
+**Input**: Design documents from `specs/003-interest-lab/` **Part II** — spec.md (§U0 scope, §U6 motion table, §U8 golden values incl. the 3D scene/tier goldens, §U9 phasing P8…P15, §U10 SC-UI-01…18), plan.md (Part II), research.md, data-model.md, contracts/interest-lab-ui.md, quickstart.md.
 **Prerequisites**: Part I (`@gt100k/interest-lab` + `adapters/interest-*` + fixtures) present and green.
-**Tests**: INCLUDED and **test-first** for the view package — the constitution makes tests part of "done" and `contracts/interest-lab-ui.md` defines explicit obligations. Write each test first with the **golden values from spec §U8**, ensure it FAILS, then implement. The app is verified via `next build` + the seeded smoke + the [quickstart](./quickstart.md) acceptance walkthrough.
+**Tests**: INCLUDED and **test-first** for the view package — the constitution makes tests part of "done" and `contracts/interest-lab-ui.md` defines explicit obligations. Write each test first with the **golden values from spec §U8**, ensure it FAILS, then implement. The view package is fully testable **without a GPU** (it emits scene numbers, never imports `three`). The app is verified via `next build` + the seeded smoke + the [quickstart](./quickstart.md) acceptance walkthrough.
 
-**Child-facing note**: The child Quest Board is a child-facing surface, so the buildable child-safety guardrails apply — reduced-motion equal mode, WCAG 2.2 AA (DOM-native), age-band staging, no dark patterns, help-never-penalizes, no forbidden-purpose fields, never a fixed label / scalar passion score. Encoded as UI-FR-001…020 + SC-UI-01…15.
+**Child-facing note**: The child Quest World is a child-facing surface, so the buildable child-safety guardrails apply — reduced-motion equal mode (the `board-2d` tier), WCAG 2.2 AA (DOM-native; 3D `<Canvas>` `aria-hidden`, DOM quest ledger operable), age-band staging, no dark patterns (incl. no time/mastery-gated island unlocks/levels), help-never-penalizes, no forbidden-purpose fields, never a fixed label / scalar passion score / floating score in the world. Encoded as UI-FR-001…021 + SC-UI-01…18.
 
 ## Path conventions (Part II — from plan.md, NEW dirs only)
 
-- View package: `packages/interest-lab-view/src/`, tests `packages/interest-lab-view/test/`.
-- App: `apps/interest-lab/` (Next.js App Router; package `@gt100k/interest-lab-app`; DOM/SVG + framer-motion, no Canvas/Phaser).
+- View package: `packages/interest-lab-view/src/`, tests `packages/interest-lab-view/test/`. **Pure + GPU-free** (no `three`/`react`/`@react-three/*` import, no `Math.random`).
+- App: `apps/interest-lab/` (Next.js App Router; package `@gt100k/interest-lab-app`; DOM motion = **`motion@^12`**; 3D world = **react-three-fiber + drei + three**; the `<Canvas>` mounts client-only, `aria-hidden`).
 - **Do NOT modify** Part I (`packages/interest-lab`, `adapters/interest-*`) beyond consuming its public API, `apps/student-compass`, or shared root files (except the single final human-reconciled task **U-ROOT**).
-- Phases map to **spec §U9 (P8…P13)**. Loop gate per phase = `pnpm typecheck` + `pnpm test`; app phases add `pnpm --filter @gt100k/interest-lab-app build` + smoke + walkthrough.
+- Phases map to **spec §U9 (P8…P15)**. Loop gate per phase = `pnpm typecheck` + `pnpm test`; app phases add `pnpm --filter @gt100k/interest-lab-app build` + smoke + walkthrough. The 3D phases (P10/P11/P14) never block the gate — the scene *numbers* are proven in P9b without a GPU.
 
 ---
 
 ## Phase P8: UI foundation & green-from-first-increment (spec §U9 P8)
 
-- [ ] **U001** Scaffold the view package `packages/interest-lab-view/package.json` (`name:@gt100k/interest-lab-view`, `"type":"module"`, `main`/`types`/`exports`→`./src/index.ts`, `test`:`vitest run`, dep `@gt100k/interest-lab: workspace:*`) — mirror `packages/interest-lab/package.json`.
+- [ ] **U001** Scaffold the view package `packages/interest-lab-view/package.json` (`name:@gt100k/interest-lab-view`, `"type":"module"`, `main`/`types`/`exports`→`./src/index.ts`, `test`:`vitest run`, dep `@gt100k/interest-lab: workspace:*`) — mirror `packages/interest-lab/package.json`. **No** `three`/`react` dep (the package is GPU-free).
 - [ ] **U002** [P] Add `packages/interest-lab-view/tsconfig.json` extending `../../tsconfig.base.json` (`rootDir:"."`, `outDir:"dist"`, include `src/**/*.ts`, `test/**/*.ts`).
-- [ ] **U003** Define all view types in `packages/interest-lab-view/src/model.ts` per data-model.md (`AgeBand`, `ChildStaging`, `MotionToken`, `ProbeCardView`, `ProbePickerView`, `CellView`, `DimensionRailItem`, `CoverageMatrixView`, `ExplanationCard`, `ExplanationsView`, `MarkerView`, `ReturnTimelineView`, `GateChecklist`, `LifecycleStateView`, `RevisionHistoryView`, `InterestLabView`), reusing Part-I types. **No `score`/`confidence`/`passionScore`/`verdict`/`label`/`rank`/`percentile`/`outOf`/`price` field on any view type (guardrail by construction).**
-- [ ] **U004** [P] Add the exact constant registries as exported modules (values only; resolvers land in their phase): `art.ts` (`PALETTE`/`TYPOGRAPHY`/`HUE_RAMP`, §U8.2/§U8.3/§U8.5), `motion.ts` (`MOTION`/`EASINGS`, §U8.4), `glyphs.ts` (`WORK_MODE_GLYPHS`, §U8.6).
+- [ ] **U003** Define all view types in `packages/interest-lab-view/src/model.ts` per data-model.md — DOM: `AgeBand`, `DeviceCaps`, `RenderTier`, `QualityTier`, `ChildStaging`, `MotionToken`, `ProbeCardView`, `ProbePickerView`, `CellView`, `DimensionRailItem`, `CoverageMatrixView`, `ExplanationCard`, `ExplanationsView`, `MarkerView`, `ReturnTimelineView`, `GateChecklist`, `LifecycleStateView`, `RevisionHistoryView`; 3D: `QuestMarkerView`, `IslandView`, `CameraView`, `SceneView`, `ConstellationStar`, `EvidenceConstellationView`; composed: `InterestLabView` (reusing Part-I types). **No `score`/`confidence`/`passionScore`/`verdict`/`label`/`rank`/`percentile`/`outOf`/`price` field on ANY view type incl. `SceneView`/`QuestMarkerView`/`ConstellationStar` (guardrail by construction).**
+- [ ] **U004** [P] Add the exact constant registries as exported value-only modules (resolvers land in their phase): `art.ts` (`PALETTE`/`TYPOGRAPHY`/`HUE_RAMP`, §U8.2/§U8.3/§U8.5), `motion.ts` (`MOTION`/`EASINGS`, §U8.4), `glyphs.ts` (`WORK_MODE_GLYPHS`, §U8.6), `scene.ts` (`SCENE3D`/`CAMERA3D`/`QUALITY_TIERS`/`RENDER_TIERS`, §U8.14/§U8.16).
 - [ ] **U005** Create `packages/interest-lab-view/src/index.ts` re-exporting the public surface (types + registries + resolvers) as they are added.
-- [ ] **U006** [P] Seeded smoke test `packages/interest-lab-view/test/smoke.test.ts`: import the package; assert `PALETTE`/`MOTION`/`EASINGS`/`HUE_RAMP`/`WORK_MODE_GLYPHS` are non-empty and `resolveMotion("press",{reducedMotion:false}).durationMs === 120` (a trivial `resolveMotion` stub is fine until P9; keep the gate green from iteration 1).
-- [ ] **U007** [P] Scaffold the app `apps/interest-lab/package.json` (`name:@gt100k/interest-lab-app`, scripts `dev`/`build`/`start`, deps `@gt100k/interest-lab` + `@gt100k/interest-lab-view` `workspace:*`, `next ^14.2.15`, `react`/`react-dom ^18.3.1`, **`framer-motion ^11.11.0`**, dev `@types/react*`) — mirror `apps/student-compass/package.json`.
+- [ ] **U006** [P] Seeded smoke test `packages/interest-lab-view/test/smoke.test.ts`: import the package; assert `PALETTE`/`MOTION`/`EASINGS`/`HUE_RAMP`/`WORK_MODE_GLYPHS`/`SCENE3D`/`CAMERA3D`/`QUALITY_TIERS` are non-empty and `resolveMotion("press",{reducedMotion:false}).durationMs === 120` (a trivial `resolveMotion` stub is fine until P9; keep the gate green from iteration 1).
+- [ ] **U007** [P] Scaffold the app `apps/interest-lab/package.json` (`name:@gt100k/interest-lab-app`, scripts `dev`/`build`/`start`, deps `@gt100k/interest-lab` + `@gt100k/interest-lab-view` `workspace:*`, `next ^14.2.15`, `react`/`react-dom ^18.3.1`, **`motion ^12`**, **`three ^0.169.0`**, **`@react-three/fiber ^8.17.10`**, **`@react-three/drei ^9.114.0`**; dev `@types/react*`, `@types/three ^0.169.0`) — mirror `apps/student-compass/package.json` + the 3D/motion deps. *(Optional non-breaking full-tier bloom `@react-three/postprocessing ^2.16.3` + `postprocessing ^6.36.3` may be added in P14; not required for the gate.)*
 - [ ] **U008** [P] Add `apps/interest-lab/next.config.mjs` (`transpilePackages:["@gt100k/interest-lab","@gt100k/interest-lab-view"]`) and `apps/interest-lab/tsconfig.json` mirroring `apps/student-compass/tsconfig.json` (noEmit, jsx preserve, DOM libs).
-- [ ] **U009** [P] Add `apps/interest-lab/app/layout.tsx`, `apps/interest-lab/app/page.tsx` (placeholder shell), `apps/interest-lab/app/globals.css` (the §U8.2/§U8.3 `PALETTE`/`TYPOGRAPHY` CSS custom properties incl. the system-font fallback stacks; `@media (prefers-reduced-motion: reduce)`, `@media (prefers-reduced-transparency: reduce)`, `.plain-mode`, `:focus-visible` `--focus` rings, ≥4.5:1 contrast tokens), `apps/interest-lab/.env.local.example` (spec §U11 `NEXT_PUBLIC_*`), and `apps/interest-lab/.gitignore` (`.env.local`, `.next`).
+- [ ] **U009** [P] Add `apps/interest-lab/app/layout.tsx`, `apps/interest-lab/app/page.tsx` (placeholder shell), `apps/interest-lab/app/globals.css` (the §U8.2/§U8.3 `PALETTE`/`TYPOGRAPHY` CSS custom properties incl. the system-font fallback stacks; `@media (prefers-reduced-motion: reduce)`, `@media (prefers-reduced-transparency: reduce)`, `.plain-mode`, `:focus-visible` `--focus` rings, ≥4.5:1 contrast tokens), `apps/interest-lab/.env.local.example` (spec §U11 `NEXT_PUBLIC_*` incl. `NEXT_PUBLIC_RENDER_TIER=auto`), and `apps/interest-lab/.gitignore` (`.env.local`, `.next`).
 
 > No root `vitest.config.ts`, `biome.json`, or `pnpm-workspace.yaml` edits: existing globs already cover `packages/interest-lab-view/test/**` and `packages/*`/`apps/*`. Root `tsconfig.json` reference is deferred to **U-ROOT**.
 
@@ -217,15 +217,15 @@
 
 ---
 
-## Phase P9: Child probe-picker + age-band staging (UI-US1) 🎯 MVP (spec §U9 P9)
+## Phase P9: Child quest view model + 2D card-constellation board (UI-US1) 🎯 MVP-floor (spec §U9 P9)
 
-**Goal**: the domain Lab renders as a playful, animated Curiosity Quest Board with satisfying pick/press motion, age-band staging, and a reduced-motion equal mode.
+**Goal**: the domain Lab renders as the deterministic quest view model + a 2D card-constellation board (Tier C) with satisfying pick/press motion (`motion@^12`), age-band staging, and a reduced-motion equal mode. This is the accessible/fallback tier + AT source of truth.
 
 ### Tests first (write, ensure they FAIL)
 
-- [ ] **U010** [P] [US1] `packages/interest-lab-view/test/motion.test.ts` — `resolveMotion` golden table (spec §U8.4); `reducedMotion:true` ⇒ `mode:"reduced"`, `easing:"linear"`, reduced durations; every kind has a reduced equivalent; the only spring is `pick`; no reveal uses `scale(0)` (UI-FR-010, SC-UI-08).
+- [ ] **U010** [P] [US1] `packages/interest-lab-view/test/motion.test.ts` — `resolveMotion` golden table (spec §U8.4) incl. the 3D kinds (`driftIn`/`islandFloat`/`islandFocus`/`markerGlow`/`motes`/`constellation`); `reducedMotion:true` ⇒ `mode:"reduced"`, `easing:"linear"`, reduced durations; every kind has a reduced equivalent; the only spring is `pick`; no reveal uses `scale(0)` (UI-FR-010, SC-UI-08).
 - [ ] **U011** [P] [US1] `packages/interest-lab-view/test/art.test.ts` — `PALETTE`/`TYPOGRAPHY` exact tokens (spec §U8.2/§U8.3) with the contrast guarantees; `resolveDomainHue` golden for the 8 seed domains (spec §U8.5); unknown domain throws (UI-FR-011/020, SC-UI-09).
-- [ ] **U012** [P] [US1] `packages/interest-lab-view/test/staging.test.ts` — `resolveChildStaging` exact band tokens (spec §U8.7); 6-8 `showRawNumbers:false` + `comparisonDefault:"off"`; underlying state identical across bands (UI-FR-005, SC-UI-02).
+- [ ] **U012** [P] [US1] `packages/interest-lab-view/test/staging.test.ts` — `resolveChildStaging` exact band tokens (spec §U8.7) incl. `worldCameraMode`; 6-8 `showRawNumbers:false` + `comparisonDefault:"off"` + `worldCameraMode:"auto-tour"`; underlying state identical across bands (UI-FR-005, SC-UI-02).
 - [ ] **U013** [P] [US1] `packages/interest-lab-view/test/probe-picker.test.ts` — `buildProbePickerView(G1 Lab, {history:[], band:"9-11"})` matches spec §U8.8: 20 cards, `provenance:"RULE"`, non-empty `whyCopy`, `domainHue`/`workModeGlyph` correct, `returnState:"new"`, `helpAffordance:true`, `choicePointsMinEligible >= 2`; **no** price/score/rank/percentile/verdict/label key (UI-FR-002/017, SC-UI-01).
 
 ### Implementation
@@ -233,102 +233,147 @@
 - [ ] **U014** [US1] Implement `resolveMotion` in `packages/interest-lab-view/src/motion.ts` (§U8.4) and `resolveDomainHue` in `art.ts` (§U8.5); export from `index.ts`.
 - [ ] **U015** [US1] Implement `resolveChildStaging` in `packages/interest-lab-view/src/staging.ts` (§U8.7).
 - [ ] **U016** [US1] Implement `buildProbePickerView` in `packages/interest-lab-view/src/picker.ts` (offers→cards; provenance+whyCopy band-appropriate and never a fixed label; hue+glyph; `visibleQuests`=first `maxVisibleQuests`; help affordance always present) (depends on U014/U015).
-- [ ] **U017** [US1] First `buildInterestLabView` (child surface) in `packages/interest-lab-view/src/view.ts` composing `{ surface:"child", probePicker, flags, presentation }`; export from `index.ts`.
-- [ ] **U018** [P] [US1] App wiring: `apps/interest-lab/app/seed.ts` (feed `CATALOG_GOLDEN_V1` through Part-I `buildLab` + the view; no external fetch), `apps/interest-lab/app/motion/useMotionToken.ts` (bridge `resolveMotion` + framer-motion `useReducedMotion`), `apps/interest-lab/app/ui/Glyph.tsx` (inline SVGs for `WORK_MODE_GLYPHS` + state glyphs, **no emoji**).
-- [ ] **U019** [US1] `apps/interest-lab/app/child/QuestCard.tsx` + `QuestBoard.tsx` + `QuestTray.tsx` — render `ProbePickerView` as domain-constellation quest cards (hue + work-mode glyph + difficulty/social/audience icon+text + why/provenance + help affordance), staggered `cardEnter`, hover-lift (`@media (hover:hover)`), press feedback (scale 0.97 on pointer-down), and the **pick momentum spring** into the tray (interruptible; reduced-motion crossfade). Fully keyboard-operable with visible focus.
-- [ ] **U020** [US1] `apps/interest-lab/app/InterestLabClient.tsx` (`"use client"`) wiring the view-model state + flags (reduced-motion via `prefers-reduced-motion` + `NEXT_PUBLIC_REDUCED_MOTION_DEFAULT`, plain-mode, age band, surface) + the control cluster (`app/ui/controls/`); `apps/interest-lab/app/page.tsx` renders it (child surface first). Age-band switch re-renders via `resolveChildStaging`.
+- [ ] **U017** [US1] First `buildInterestLabView` (child surface) in `packages/interest-lab-view/src/view.ts` composing `{ surface:"child", probePicker, flags, presentation }` (scene added in P9b); export from `index.ts`.
+- [ ] **U018** [P] [US1] App wiring: `apps/interest-lab/app/seed.ts` (feed `CATALOG_GOLDEN_V1` through Part-I `buildLab` + the view; no external fetch), `apps/interest-lab/app/motion/useMotionToken.ts` (bridge `resolveMotion` + **`motion/react`** `useReducedMotion`), `apps/interest-lab/app/ui/Glyph.tsx` (inline SVGs for `WORK_MODE_GLYPHS` + state glyphs, **no emoji**), `apps/interest-lab/app/ui/deviceCaps.ts` (client feature-detect → `DeviceCaps`).
+- [ ] **U019** [US1] `apps/interest-lab/app/child/QuestLedger.tsx` (the accessible operable DOM list of card-buttons — owns focus/pick), `QuestCard.tsx`, `Board2D.tsx` (the `board-2d` tier: domain-constellation cards), `QuestTray.tsx` — render `ProbePickerView` (hue + work-mode glyph + difficulty/social/audience icon+text + why/provenance + help affordance), staggered `cardEnter`, hover-lift (`@media (hover:hover)`), press feedback (scale 0.97 on pointer-down), and the **pick momentum spring** into the tray via `motion@^12` (interruptible; reduced-motion crossfade). Fully keyboard-operable with visible focus.
+- [ ] **U020** [US1] `apps/interest-lab/app/InterestLabClient.tsx` (`"use client"`) wiring the view-model state + flags (reduced-motion via `prefers-reduced-motion` + `NEXT_PUBLIC_REDUCED_MOTION_DEFAULT`, plain-mode, age band, surface, `deviceCaps`) + the control cluster (`app/ui/controls/` incl. a render-tier override); `apps/interest-lab/app/page.tsx` renders it (child surface, `board-2d` first). Age-band switch re-renders via `resolveChildStaging`.
 
-**Checkpoint (P9 gate = MVP)**: P8 gate + view goldens (§U8.4–§U8.8) + `pnpm --filter @gt100k/interest-lab-app build` + smoke + walkthrough steps 1–3, 9.
+**Checkpoint (P9 gate = MVP-floor)**: P8 gate + view goldens (§U8.4–§U8.8) + `pnpm --filter @gt100k/interest-lab-app build` + smoke + walkthrough steps 1–3.
 
 ---
 
-## Phase P10: "Come back later" voluntary-return delight (UI-US2) (spec §U9 P10)
+## Phase P9b: Scene view model (GPU-free, deterministic) (spec §U9 P9b)
+
+**Goal**: the 3D world's positions/camera/tiers exist as pure, Vitest-tested numbers so P10 renders from proven constants. **No app 3D yet.**
 
 ### Tests first (write, ensure they FAIL)
 
-- [ ] **U021** [P] [US2] `packages/interest-lab-view/test/return-delight.test.ts` — a voluntary-return @7/@30 history yields the card's `returnState:"voluntary-return"` + `welcomeBack` motion + `spark` tone with **label-free** copy (no `/you are (a|an|the) /i`); a prompted return yields `returnState:"prompted-return"` + `prompted` tone + **no** welcome-back; reduced-motion ⇒ static warm ring + text (UI-FR-004, SC-UI-03).
+- [ ] **U021** [P] `packages/interest-lab-view/test/scene.test.ts` — `resolveIslandLayout` golden positions for the 8 seed domains (§U8.13, ±0.001), catalog-order-derived (no hardcoded domain→position map), deterministic; `resolveQuestPlacement` golden for `making` (§U8.13); `resolveCamera3D(null,…)` = home framing (`drift-in`/`cut`), focused island eased (`ease`/`cut`) (§U8.14); `buildSceneView` marker↔card parity by `probeId` (§U8.18); no `score`/`rank`/`price` on `SceneView`/`IslandView`/`QuestMarkerView` (SC-UI-13).
+- [ ] **U022** [P] `packages/interest-lab-view/test/tiers.test.ts` — `resolveRenderTier`/`resolveQualityTier` match the §U8.16 golden case table (full / lite / board-2d selection); render tier is presentation-only (SC-UI-14).
 
 ### Implementation
 
-- [ ] **U022** [US2] Extend `buildProbePickerView` (`picker.ts`) with `returnState`/`tone`/`welcomeBack` derivation from the injected history (voluntary @7/@30 vs prompted-with-context); keep prompted un-celebrated and recessed.
-- [ ] **U023** [US2] `apps/interest-lab/app/child/WelcomeBack.tsx` — the reserved voluntary-return delight (warm `spark` bloom + concrete copy; reduced-motion static ring + text); recessed `prompted` state on prompted-return cards. **No** countdown/streak/scarcity/FOMO anywhere.
+- [ ] **U023** Implement `resolveIslandLayout`, `resolveQuestPlacement`, `resolveCamera3D`, `resolveRenderTier`, `resolveQualityTier`, `buildSceneView` in `packages/interest-lab-view/src/scene.ts` (§U8.13/§U8.14/§U8.16/§U8.18); export from `index.ts`.
+- [ ] **U024** Extend `buildInterestLabView` (`view.ts`) to compose the `scene` block + the `presentation` block (`scene3d`/`camera3d`/`renderTier`/`quality`/`motionOf`); keep it presentation-only (state unchanged).
 
-**Checkpoint (P10 gate)**: P9 gate + walkthrough step 4.
+**Checkpoint (P9b gate)**: P9 gate + scene/tier goldens (§U8.13/§U8.14/§U8.16/§U8.18).
 
 ---
 
-## Phase P11: Guide console — coverage matrix (UI-US3) (spec §U9 P11)
+## Phase P10: The 3D Curiosity Quest World (UI-US2) 🎯 MVP (3D-UI phase) (spec §U9 P10)
+
+**Goal**: the r3f world renders `SceneView` — floating islands, glowing markers, dusk light, idle motion, a drifting/focusing camera — with the DOM quest ledger as the operable/accessible surface and a clean fallback to `board-2d`.
+
+- [ ] **U025** [US2] `apps/interest-lab/app/child/world3d/glow-texture.ts` — deterministic in-app additive radial-gradient sprite (canvas 2D → `THREE.CanvasTexture`); **no external fetch**.
+- [ ] **U026** [US2] `apps/interest-lab/app/child/world3d/World3D.tsx` — `next/dynamic(..., {ssr:false})` host mounting `<Canvas aria-hidden="true">` with `SCENE3D` lights/fog/tone-mapping, drei `<AdaptiveDpr>` (DPR cap from `quality.dprCap`), and the scene graph; destroy the renderer on unmount; **zero console/WebGL errors**.
+- [ ] **U027** [US2] `Island.tsx` (procedural low-poly island via three primitives, hue-tinted, drei `<Float>` idle per `islandFloat`), `QuestMarker.tsx` (glowing marker: emissive `markerEmissive*` + additive halo sprite; hover raise/brighten; press `scale 0.97`; **pick hop** via the reserved spring), `Motes.tsx` (drei `<Sparkles>`, count from `quality.motes`).
+- [ ] **U028** [US2] `CameraRig.tsx` — establishing `driftIn` on enter; `islandFocus` ease to the focused island (mirrors DOM focus from the ledger; reduced-motion `cut`); clamped drei `<OrbitControls>` (enablePan/zoom false, polar/azimuth clamps) only for `worldCameraMode:"focus+orbit"` (9-11/12-14); 6-8 auto-tour.
+- [ ] **U029** [US2] `QuestWorld.tsx` — the **tier switch**: render `World3D` (+ the DOM `QuestLedger` overlay driving focus/pick) when `renderTier` is `quest-world-3d`/`-lite`, else `Board2D`; on no-WebGL / lost context, fall back to `Board2D` with no state change. Wire into `InterestLabClient.tsx`.
+
+**Checkpoint (P10 gate)**: P9b gate + `next build` + app smoke (canvas mounts `aria-hidden`, zero console/WebGL errors, destroys on unmount; toggling reduced-motion → `board-2d`) + walkthrough steps for UI-US2 (incl. keyboard focus island→island).
+
+---
+
+## Phase P11: "Come back later" voluntary-return delight (UI-US3) (3D-UI phase) (spec §U9 P11)
 
 ### Tests first (write, ensure they FAIL)
 
-- [ ] **U024** [P] [US3] `packages/interest-lab-view/test/coverage-view.test.ts` — `buildCoverageMatrixView` complete case (from Part-I **G2**) and gappy case (from **G3**, exact gap strings) per spec §U8.9; rows in catalog order with hue; cols the 9 work-modes with glyphs; **no** `score`/`confidence` key at any depth (UI-FR-006, SC-UI-04).
+- [ ] **U030** [P] [US3] `packages/interest-lab-view/test/return-delight.test.ts` — a voluntary-return @7/@30 history yields the card's **and** the scene marker's `returnState:"voluntary-return"` + `welcomeBack`/`markerGlow→welcomeBack` motion + `spark` tone with **label-free** copy (no `/you are (a|an|the) /i`); a prompted return yields `returnState:"prompted-return"` + `prompted` tone + **no** welcome-back; reduced-motion ⇒ static warm halo + text (UI-FR-004, SC-UI-03).
 
 ### Implementation
 
-- [ ] **U025** [US3] Implement `buildCoverageMatrixView` in `packages/interest-lab-view/src/coverage-view.ts` (rows/cols/cells row-major with visible `empty` gap cells; rail = the exact Part-I `CoverageMatrix`; `complete`+`gaps` passthrough); export from `index.ts`.
-- [ ] **U026** [US3] `apps/interest-lab/app/guide/CoverageMatrix.tsx` — the animated domains×work-modes grid + coverage rail; cells fill with a `matrixCell` stagger (instant under reduced motion); **gap cells calm/visible** (`--gap` + hollow-ring glyph + text), never red, never a score. Rendered as a semantic table/grid with row/column headers.
+- [ ] **U031** [US3] Extend `buildProbePickerView` (`picker.ts`) **and** `buildSceneView` (`scene.ts`) with `returnState`/`tone`/`welcomeBack` derivation from the injected history (voluntary @7/@30 vs prompted-with-context); keep prompted un-celebrated and recessed (parity: card and marker agree, §U8.18).
+- [ ] **U032** [US3] `apps/interest-lab/app/child/world3d/WelcomeBloom.tsx` — the 3D reserved delight (emissive → `bloomPeak` + spark-mote burst + camera ease) and `apps/interest-lab/app/child/WelcomeBack.tsx` — the 2D/reduced-motion **static** equivalent (warm `--spark` halo + concrete copy). Recessed `prompted` state on prompted-return markers/cards. **No** countdown/streak/scarcity/FOMO/time-gated unlock anywhere.
 
-**Checkpoint (P11 gate)**: P10 gate + coverage golden (§U8.9) + walkthrough step 5.
+**Checkpoint (P11 gate)**: P10 gate + return-delight golden + walkthrough step for UI-US3 (incl. reduced-motion static).
 
 ---
 
-## Phase P12: Guide console — explanations + timeline + lifecycle + authoring (UI-US4) (spec §U9 P12)
+## Phase P12: Guide console — coverage matrix (UI-US4) (spec §U9 P12)
 
 ### Tests first (write, ensure they FAIL)
 
-- [ ] **U027** [P] [US4] `packages/interest-lab-view/test/explanations.test.ts` — `buildExplanationsView`: `disconfirming` present whenever `supporting` is (side-by-side invariant); uncertainty grade/interval; **no** `passionScore`/`score`/`verdict`/`label` key; no card text matches `/you are (a|an|the) /i` (spec §U8.12; UI-FR-007, SC-UI-05).
-- [ ] **U028** [P] [US4] `packages/interest-lab-view/test/timeline.test.ts` — `buildReturnTimelineView(EVENTS_GOLDEN_V1)` matches spec §U8.10: voluntary @7/@30 distinct; prompted recedes + `interventionContext:"reminder"` + contributes 0 to voluntary; every `support` marker `lowersSignal:false` (UI-FR-008, SC-UI-06).
-- [ ] **U029** [P] [US4] `packages/interest-lab-view/test/lifecycle-view.test.ts` — `buildLifecycleStateView`: gate checklist from `evaluateCandidateGate` (spec §U8.11 / Part-I **G5**: competence-only → `missing:["no delayed-discretionary signal"]`; G4 summary → eligible); proposal `operative:false`; legal transitions present; no path sets `operative:true` (UI-FR-009, SC-UI-07). Plus `buildRevisionHistoryView` append-only/monotonic (IL-006).
+- [ ] **U033** [P] [US4] `packages/interest-lab-view/test/coverage-view.test.ts` — `buildCoverageMatrixView` complete case (from Part-I **G2**) and gappy case (from **G3**, exact gap strings) per spec §U8.9; rows in catalog order with hue; cols the 9 work-modes with glyphs; **no** `score`/`confidence` key at any depth (UI-FR-006, SC-UI-04).
 
 ### Implementation
 
-- [ ] **U030** [US4] Implement `buildExplanationsView` (`explanations.ts`), `buildReturnTimelineView` (`timeline.ts`), `buildLifecycleStateView` + `buildRevisionHistoryView` (`lifecycle-view.ts`); export from `index.ts`.
-- [ ] **U031** [US4] Finalize `buildInterestLabView` + `plainViewEquals` in `packages/interest-lab-view/src/view.ts` (compose the full `guide` block; `plainViewEquals` compares state fields, allowing `flags`+`presentation` to differ) (depends on U030).
-- [ ] **U032** [US4] `apps/interest-lab/app/guide/Explanations.tsx` (supporting **beside** disconfirming, equal columns, `explanationsReveal` blur-mask crossfade), `ReturnTimeline.tsx` (voluntary bright / prompted recessed / support care-markers; `timelineDraw` line + `markerPop`), `Lifecycle.tsx` (state visual + `stateMorph` + gate checklist `gateCheck` + shadow-**proposal-as-suggestion** + guide-authoring affordance), `RevisionHistory.tsx` (append-only version rail). Add the guide surface to `InterestLabClient.tsx` behind the surface toggle.
+- [ ] **U034** [US4] Implement `buildCoverageMatrixView` in `packages/interest-lab-view/src/coverage-view.ts` (rows/cols/cells row-major with visible `empty` gap cells; rail = the exact Part-I `CoverageMatrix`; `complete`+`gaps` passthrough); export from `index.ts`.
+- [ ] **U035** [US4] `apps/interest-lab/app/guide/CoverageMatrix.tsx` — the animated domains×work-modes grid + coverage rail via `motion@^12`; cells fill with a `matrixCell` stagger (instant under reduced motion); **gap cells calm/visible** (`--gap` + hollow-ring glyph + text), never red, never a score. Rendered as a semantic table/grid with row/column headers.
 
-**Checkpoint (P12 gate)**: P11 gate + goldens (§U8.10–§U8.12) + walkthrough steps 6–8.
+**Checkpoint (P12 gate)**: P11 gate + coverage golden (§U8.9) + walkthrough step for UI-US4.
 
 ---
 
-## Phase P13: Polish, accessibility, plain mode & one-view parity (spec §U9 P13)
+## Phase P13: Guide console — explanations + timeline + lifecycle + authoring + constellation (UI-US5) (spec §U9 P13)
 
-- [ ] **U033** [P] `packages/interest-lab-view/test/view.test.ts` — `buildInterestLabView` composes both surfaces; `plainViewEquals` holds across full/plain/reduced/age-band (identical underlying state, differ only in `flags`+`presentation`) (UI-FR-001/019, SC-UI-10).
-- [ ] **U034** [P] `packages/interest-lab-view/test/guardrails.test.ts` — static: no `Math.random` in `packages/interest-lab-view/src`; no `price|currency|score|confidence|passionScore|rank|percentile|verdict|outOf` field in any view type; no copy generator emits `/you are (a|an|the) /i` (UI-FR-016, SC-UI-11).
-- [ ] **U035** [P] `packages/interest-lab-view/test/synthetic.test.ts` — the whole view layer runs from the Part-I fixtures with no consent/admissions/legal input (UI-FR-018, SC-UI-12).
-- [ ] **U036** [P] `packages/interest-lab-view/README.md` (public API, inputs, guardrail summary, "renders @gt100k/interest-lab; never re-computes a rule; no scalar passion score / no fixed label"); optional `packages/interest-lab-view/src/demo.ts` matching quickstart.
-- [ ] **U037** Accessibility + acceptance pass on `apps/interest-lab` per quickstart: reduced-motion parity (every §U6 motion has its equivalent; ambient off); `prefers-reduced-transparency` → solid panels; keyboard/switch/screen-reader over **both** surfaces (labeled quest cards, matrix table headers, dated timeline markers, lifecycle states + gate checklist as text); color-independent cues; ≥4.5:1 contrast + visible `--focus`; **no dark patterns** (no countdown/decay/FOMO); help affordance present & non-penalizing (UI-FR-012/013/014/015, SC-UI-13/14/15).
-- [ ] **U038** Run `quickstart.md` end-to-end (`pnpm --filter @gt100k/interest-lab-view test`, `pnpm lint`, `pnpm --filter @gt100k/interest-lab-app build` + app smoke) and confirm **SC-UI-01…15** map green.
+### Tests first (write, ensure they FAIL)
+
+- [ ] **U036** [P] [US5] `packages/interest-lab-view/test/explanations.test.ts` — `buildExplanationsView`: `disconfirming` present whenever `supporting` is (side-by-side invariant); uncertainty grade/interval; **no** `passionScore`/`score`/`verdict`/`label` key; no card text matches `/you are (a|an|the) /i` (spec §U8.12; UI-FR-007, SC-UI-05).
+- [ ] **U037** [P] [US5] `packages/interest-lab-view/test/timeline.test.ts` — `buildReturnTimelineView(EVENTS_GOLDEN_V1)` matches spec §U8.10: voluntary @7/@30 distinct; prompted recedes + `interventionContext:"reminder"` + contributes 0 to voluntary; every `support` marker `lowersSignal:false` (UI-FR-008, SC-UI-06).
+- [ ] **U038** [P] [US5] `packages/interest-lab-view/test/lifecycle-view.test.ts` — `buildLifecycleStateView`: gate checklist from `evaluateCandidateGate` (spec §U8.11 / Part-I **G5**); proposal `operative:false`; legal transitions present; no path sets `operative:true` (UI-FR-009, SC-UI-07). Plus `buildRevisionHistoryView` append-only/monotonic (IL-006).
+- [ ] **U039** [P] [US5] `packages/interest-lab-view/test/constellation.test.ts` — `buildEvidenceConstellationView` matches §U8.17: six family stars in gate order, `voluntary_return.brightness===1.0` others `0.7` (present) / `0.18` (absent), supporting `[+2.4,0.4,0]` / disconfirming `[−2.4,0.4,0]` anchors, `domEquivalent:true`, **no** scalar score (UI-FR-009b, SC-UI-15).
+
+### Implementation
+
+- [ ] **U040** [US5] Implement `buildExplanationsView` (`explanations.ts`), `buildReturnTimelineView` (`timeline.ts`), `buildLifecycleStateView` + `buildRevisionHistoryView` (`lifecycle-view.ts`), `buildEvidenceConstellationView` (`constellation.ts`); export from `index.ts`.
+- [ ] **U041** [US5] Finalize `buildInterestLabView` + `plainViewEquals` in `packages/interest-lab-view/src/view.ts` (compose the full `guide` block incl. `constellation` + the `scene` block; `plainViewEquals` compares state fields incl. scene markers-by-probeId and constellation stars, allowing `flags`+`presentation` incl. `renderTier`/`quality`/`camera` to differ) (depends on U040).
+- [ ] **U042** [US5] `apps/interest-lab/app/guide/` — `Explanations.tsx` (supporting **beside** disconfirming, equal columns, `explanationsReveal` blur-mask crossfade), `ReturnTimeline.tsx` (voluntary bright / prompted recessed / support care-markers; `timelineDraw` + `markerPop`), `Lifecycle.tsx` (state visual + `stateMorph` + gate checklist `gateCheck` + shadow-**proposal-as-suggestion** + guide-authoring affordance), `RevisionHistory.tsx` (append-only version rail), and `EvidenceConstellation.tsx` (OPTIONAL r3f `<Canvas aria-hidden>` depth viz; DOM-equivalent = Explanations+Timeline; degrades off under reduced-motion / no-WebGL). Add the guide surface to `InterestLabClient.tsx` behind the surface toggle. All DOM motion via `motion@^12`.
+
+**Checkpoint (P13 gate)**: P12 gate + goldens (§U8.10–§U8.12, §U8.17) + walkthrough steps for UI-US5.
+
+---
+
+## Phase P14: Performance, quality tiers & graceful degradation (3D-UI phase) (spec §U9 P14)
+
+- [ ] **U043** Wire `resolveQualityTier` params into the scene: DPR cap (`<AdaptiveDpr>`), motes count, shadows on/off, island detail; the optional post-processing bloom behind the `QUALITY_TIERS.full.bloom` gate (add `@react-three/postprocessing` + `postprocessing` only if enabling — non-breaking).
+- [ ] **U044** Runtime degradation: drei `<PerformanceMonitor>` steps `full → lite → board-2d` on sustained low FPS; WebGL context-loss + `Save-Data` + `deviceMemory<4` fall back to `board-2d`; a tier change MUST NOT block a pick or lose a quest (UI-FR-021, SC-UI-16).
+- [ ] **U045** Performance/degradation walkthrough: verify the 60fps target on a mid device, confirm lite/2D step-down under simulated load, and confirm no dropped picks; `next build` clean.
+
+**Checkpoint (P14 gate)**: P13 gate + tier golden (§U8.16) + `next build` + performance/degradation walkthrough (SC-UI-16).
+
+---
+
+## Phase P15: Polish, accessibility, plain mode & one-view parity (spec §U9 P15)
+
+- [ ] **U046** [P] `packages/interest-lab-view/test/view.test.ts` — `buildInterestLabView` composes both surfaces + `scene`; `plainViewEquals` holds across **full-3D / 3D-lite / 2D / plain / reduced / age-band** (identical underlying state incl. scene markers-by-probeId + constellation, differ only in `flags`+`presentation`) (UI-FR-001/001b/019, SC-UI-10).
+- [ ] **U047** [P] `packages/interest-lab-view/test/guardrails.test.ts` — static: no `Math.random` **and no `three`/`react`/`@react-three/*` import** in `packages/interest-lab-view/src`; no `price|currency|score|confidence|passionScore|rank|percentile|verdict|outOf` field in any view type (incl. `SceneView`/`QuestMarkerView`/`ConstellationStar`); no copy generator emits `/you are (a|an|the) /i` (UI-FR-016/018, SC-UI-11).
+- [ ] **U048** [P] `packages/interest-lab-view/test/synthetic.test.ts` — the whole view layer runs from the Part-I fixtures with no consent/admissions/legal input (UI-FR-018, SC-UI-12).
+- [ ] **U049** [P] `packages/interest-lab-view/README.md` (public API incl. the scene/tier resolvers, inputs, guardrail summary, "renders @gt100k/interest-lab; never re-computes a rule; GPU-free; no scalar passion score / no fixed label / no floating score in the world"); optional `packages/interest-lab-view/src/demo.ts` matching quickstart.
+- [ ] **U050** Accessibility + acceptance pass on `apps/interest-lab` per quickstart: reduced-motion parity (every §U6 DOM **and** 3D motion has its equivalent; the 2D tier is the reduced default; ambient off); the 3D `<Canvas>` is `aria-hidden` and the DOM quest ledger / console panels are the operable AT source of truth; `prefers-reduced-transparency` → solid panels; keyboard/switch/screen-reader over **both** surfaces (labeled quest cards, matrix table headers, dated timeline markers, lifecycle states + gate checklist as text); color-independent cues; ≥4.5:1 contrast + visible `--focus`; **no dark patterns** (no countdown/decay/FOMO/scarcity, no time/mastery-gated unlock/level); no number/score/rank floats in the world; help affordance present & non-penalizing (UI-FR-012/013/014/015/020b/021, SC-UI-16/17/18).
+- [ ] **U051** Run `quickstart.md` end-to-end (`pnpm --filter @gt100k/interest-lab-view test`, `pnpm lint`, `pnpm --filter @gt100k/interest-lab-app build` + app smoke) and confirm **SC-UI-01…18** map green.
 - [ ] **U-ROOT** **[HUMAN-RECONCILE — FINAL, shared root file]** Add `{ "path": "packages/interest-lab-view" }` to the root `tsconfig.json` `references` so `tsc -b` includes the new view package. This is the **only** shared-root edit for Part II; flag it for human reconciliation (parallel-safety). The app (like `student-compass`) is not a `tsc -b` reference. Then confirm `pnpm typecheck` is clean.
 
 ---
 
 ## Dependencies & Execution Order (Part II)
 
-- **P8 (blocks all)** → **P9 (US1, MVP)** → **P10 (US2)** → **P11 (US3)** → **P12 (US4)** → **P13 (polish)**.
-- View functions depend on `model.ts` (U003) + the registries (U004). `buildProbePickerView` (U016/U022) feeds the child surface; the guide view functions (U030) feed the console; `buildInterestLabView` grows phase by phase (U017 → U031). All app components depend on the exported view functions for their phase.
+- **P8 (blocks all)** → **P9 (US1, 2D board)** → **P9b (scene view model)** → **P10 (US2, 3D world)** → **P11 (US3, delight)** → **P12 (US4, coverage)** → **P13 (US5, evidence)** → **P14 (perf/tiers)** → **P15 (polish)**.
+- View functions depend on `model.ts` (U003) + the registries (U004). `buildProbePickerView` (U016/U031) feeds the 2D board + scene parity; `buildSceneView` (U023/U031) feeds the 3D world; the guide view functions (U040) feed the console; `buildInterestLabView` grows phase by phase (U017 → U024 → U041). All app components depend on the exported view functions/scene numbers for their phase; the r3f layer (P10) depends on the P9b scene goldens.
 - **U-ROOT** is last and touches a shared root file (flagged for human reconcile).
 
 ## Within each phase
 
-- Tests are written first and MUST fail before implementation (use spec §U8 golden values verbatim).
+- Tests are written first and MUST fail before implementation (use spec §U8 golden values verbatim). The scene/tier resolvers (P9b) are pure and GPU-free — proven before any r3f code.
 - Types/registries before resolvers; resolvers before their `index.ts` export; view export before the component that consumes it.
 
 ## Parallel Opportunities (Part II)
 
 - P8: U002/U004/U006/U007/U008/U009 in parallel after U001/U003.
 - P9 tests U010/U011/U012/U013 in parallel; then U014/U015 → U016 → U017; app U018/U019/U020.
-- P12 tests U027/U028/U029 in parallel; then U030 → U031 → U032.
-- P13: U033/U034/U035/U036 in parallel; U037/U038; U-ROOT alone last.
+- P9b tests U021/U022 in parallel; then U023 → U024.
+- P10 app components U025/U027 in parallel; then U026 → U028 → U029.
+- P13 tests U036/U037/U038/U039 in parallel; then U040 → U041 → U042.
+- P15: U046/U047/U048/U049 in parallel; U050/U051; U-ROOT alone last.
 
 ## Implementation Strategy (Part II)
 
-- **MVP = P8 + P9** (the playful, staged, reduced-motion child Quest Board rendering the domain Lab) → validate against SC-UI-01/02/08/09 → then P10 (voluntary delight), P11 (coverage matrix), P12 (explanations/timeline/lifecycle/authoring), P13 (polish/a11y/parity).
-- Test-first: write each phase's tests and confirm they FAIL before implementing. Synthetic-only; the app runs entirely on the Part-I fixtures.
+- **MVP = P8 + P9 + P9b + P10** (the explorable 3D Curiosity Quest World rendering the domain Lab, with its 2D reduced-motion/accessible equal) → validate against SC-UI-01/02/08/09/10/13/14/16 → then P11 (voluntary delight), P12 (coverage), P13 (explanations/timeline/lifecycle/authoring/constellation), P14 (perf/tiers), P15 (polish/a11y/parity).
+- Test-first: write each phase's tests and confirm they FAIL before implementing. The scene numbers are proven GPU-free (P9b) before the r3f world (P10). Synthetic-only; the app runs entirely on the Part-I fixtures with no external fetch.
 
 ## Summary (Part II)
 
-- **Total UI tasks**: 39 (U001–U038 + U-ROOT)
-- **P8** 9 (U001–U009) · **P9/US1** 11 (U010–U020) · **P10/US2** 3 (U021–U023) · **P11/US3** 3 (U024–U026) · **P12/US4** 6 (U027–U032) · **P13/polish** 7 (U033–U038 + U-ROOT)
-- **View golden gates**: `motion` (§U8.4) · `art`+domain-hue (§U8.2/§U8.3/§U8.5) · `staging` (§U8.7) · `probe-picker` (§U8.8) · `return-delight` (§U8.8) · `coverage-view` (§U8.9) · `explanations` (§U8.12) · `timeline` (§U8.10) · `lifecycle-view` (§U8.11) · `view`/`plainViewEquals` (§U8.13) — all test-first against spec §U8.
-- **MVP scope**: P8 + P9 (the child Curiosity Quest Board with art direction, staging, motion tokens, and reduced-motion equal mode).
+- **Total UI tasks**: 52 (U001–U051 + U-ROOT).
+- **P8** 9 (U001–U009) · **P9/US1** 11 (U010–U020) · **P9b/scene** 4 (U021–U024) · **P10/US2** 5 (U025–U029) · **P11/US3** 3 (U030–U032) · **P12/US4** 3 (U033–U035) · **P13/US5** 7 (U036–U042) · **P14/perf** 3 (U043–U045) · **P15/polish** 6 (U046–U051 + U-ROOT).
+- **View golden gates**: `motion` (§U8.4) · `art`+domain-hue (§U8.2/§U8.3/§U8.5) · `staging` (§U8.7) · `probe-picker` (§U8.8) · `scene`+`tiers` (§U8.13/§U8.14/§U8.16/§U8.18) · `return-delight` (§U8.8) · `coverage-view` (§U8.9) · `explanations` (§U8.12) · `timeline` (§U8.10) · `lifecycle-view` (§U8.11) · `constellation` (§U8.17) · `view`/`plainViewEquals` (§U8.18/§U8.19) — all test-first against spec §U8, all GPU-free.
+- **MVP scope**: P8 + P9 + P9b + P10 (the child Curiosity Quest World with art direction, staging, motion tokens, the 3D floating islands, and the 2D reduced-motion/accessible equal tier).
 - **Parallel-safety**: all work in `packages/interest-lab-view` + `apps/interest-lab`; the only shared-root edit is **U-ROOT** (root `tsconfig.json` reference for the view package), flagged for human reconcile.

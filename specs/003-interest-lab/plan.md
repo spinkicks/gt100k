@@ -331,7 +331,7 @@ None — Constitution Check passed with no violations. The learned Bayesian mode
 
 ## Summary (Part II)
 
-Deliver the Interest Lab **UI** as two cleanly separated parts, built **on top of** the done Part-I pure domain. (1) A **pure, framework-agnostic view package `packages/interest-lab-view` (`@gt100k/interest-lab-view`)** turns the Part-I outputs (`Lab`, `CoverageMatrix`, `SignalSummary`, `InterestHypothesis`/`HypothesisRevision`, `evaluateCandidateGate`) into deterministic **render-ready view models** for both surfaces, plus the exact constant registries (`PALETTE`, `TYPOGRAPHY`, `MOTION`, `EASINGS`, `HUE_RAMP`, `WORK_MODE_GLYPHS`) and resolvers (`resolveMotion`, `resolveDomainHue`, `resolveChildStaging`), and composes a single **`InterestLabView`** that drives every rendering. (2) A **new Next.js App-Router app `apps/interest-lab` (`@gt100k/interest-lab-app`)** renders **two animated DOM/SVG surfaces** with React + `framer-motion`: the child **Curiosity Quest Board** (playful, quest-like probe-picker with satisfying pick/return motion and a reserved "come back later" delight) and the guide **Hypothesis Console** (animated coverage matrix with gaps visible, competing explanations side-by-side, a voluntary-vs-prompted return timeline, and an elegant lifecycle state visual with shadow-proposals-as-suggestions and guide authoring). Reduced motion is a **first-class equal mode** and WCAG 2.2 AA is **DOM-native** (no opaque canvas). The **Part-I domain is not modified** beyond consuming its public API. Tests are first-class for the view package (Vitest golden values, spec §U8); the app is verified by `next build` + a seeded smoke + the [quickstart](./quickstart.md) acceptance walkthrough. Synthetic learners only. Ordered build path (P8…P13) and machine-checkable acceptance (SC-UI-01…15) live in spec.md **§U9–§U10**.
+Deliver the Interest Lab **UI** as two cleanly separated parts, built **on top of** the done Part-I pure domain. (1) A **pure, framework- and GPU-agnostic view package `packages/interest-lab-view` (`@gt100k/interest-lab-view`)** turns the Part-I outputs (`Lab`, `CoverageMatrix`, `SignalSummary`, `InterestHypothesis`/`HypothesisRevision`, `evaluateCandidateGate`) into deterministic **render-ready view models** for both surfaces — **including the 3D scene view model** (island layout, quest-marker placement, camera framing, render/quality tiers, evidence-constellation positions) — plus the exact constant registries (`PALETTE`, `TYPOGRAPHY`, `MOTION`, `EASINGS`, `HUE_RAMP`, `WORK_MODE_GLYPHS`, `SCENE3D`, `CAMERA3D`, `QUALITY_TIERS`, `RENDER_TIERS`) and resolvers (`resolveMotion`, `resolveDomainHue`, `resolveChildStaging`, `resolveIslandLayout`, `resolveQuestPlacement`, `resolveCamera3D`, `resolveRenderTier`, `resolveQualityTier`, `buildSceneView`, `buildEvidenceConstellationView`), and composes a single **`InterestLabView`** that drives every rendering and tier. The package imports **no** `three`/`react`/`@react-three/*` (it emits scene *numbers*), so every value is Vitest-tested without a GPU. (2) A **new Next.js App-Router app `apps/interest-lab` (`@gt100k/interest-lab-app`)** renders **two surfaces**: the child **Curiosity Quest World** — an explorable **3D world of floating interest islands** (react-three-fiber + drei + three.js) with glowing quest-markers, warm dusk light, gentle idle motion, a drifting/focusing camera, and a reserved "come back later" bloom on voluntary return — and the guide **Hypothesis Console** (animated DOM/SVG coverage matrix with gaps visible, competing explanations side-by-side, a voluntary-vs-prompted return timeline, an elegant lifecycle state visual with shadow-proposals-as-suggestions and guide authoring, and an optional tasteful 3D **evidence constellation**). **All DOM motion uses `motion@^12`** (`motion/react`); r3f/drei own only the 3D scene. The child surface has **three tiers from one view model**: `quest-world-3d` (full WebGL) → `quest-world-3d-lite` (degraded) → `board-2d` (the calm card-constellation board — the reduced-motion equal mode, plain mode, no-WebGL/weak-device fallback, and always-present accessible operable surface). Reduced motion is a **first-class equal mode**; WCAG 2.2 AA is **DOM-native** (the 3D `<Canvas>` is `aria-hidden`; the DOM quest ledger is the AT source of truth); 60fps with graceful degradation (drei `<PerformanceMonitor>`/`<AdaptiveDpr>` + deterministic tier resolvers). The **Part-I domain is not modified** beyond consuming its public API. Tests are first-class for the view package (Vitest golden values, spec §U8, incl. the 3D scene/tier goldens); the app is verified by `next build` + a seeded smoke + the [quickstart](./quickstart.md) acceptance walkthrough. Synthetic learners only. Ordered build path (P8…P15) and machine-checkable acceptance (SC-UI-01…18) live in spec.md **§U9–§U10**.
 
 **Child-facing surface (load-bearing).** The child Quest Board is a child-facing surface, so the buildable child-safety guardrails apply: reduced-motion equal mode, WCAG 2.2 AA, age-band staging (§14.13), no dark patterns (§14.12), help-never-penalizes (PASS-006), no forbidden-purpose framing (PASS-010), and never a fixed label / scalar passion score (§14.5, IL-005/006). These are encoded as functional requirements (UI-FR-001…020) and contract-test obligations so they are enforced deterministically.
 
@@ -339,7 +339,7 @@ Deliver the Interest Lab **UI** as two cleanly separated parts, built **on top o
 
 **Language/Version**: TypeScript (strict, per `tsconfig.base.json`), Node.js LTS.
 
-**Primary Dependencies**: View package — none at runtime (pure TS; depends only on the workspace package `@gt100k/interest-lab`). App — Next.js `^14.2.15` App Router + React `^18.3.1` (matching `apps/student-compass`) + **`framer-motion ^11.11.0`** (Motion), with `transpilePackages: ["@gt100k/interest-lab","@gt100k/interest-lab-view"]`. DOM/SVG only — **no** Canvas/Phaser (spec §U2 D-U1).
+**Primary Dependencies**: View package — none at runtime (pure TS; depends only on the workspace package `@gt100k/interest-lab`; imports no `three`/`react`/`@react-three/*`). App — Next.js `^14.2.15` App Router + React `^18.3.1` (matching `apps/student-compass`) + **`motion ^12`** (`motion/react`, DOM motion) + **`three ^0.169.0` / `@react-three/fiber ^8.17.10` / `@react-three/drei ^9.114.0`** (3D world; React-18 line — r3f 8 ↔ React 18), dev `@types/three ^0.169.0`; optional non-breaking full-tier bloom `@react-three/postprocessing ^2.16.3` + `postprocessing ^6.36.3`. `transpilePackages: ["@gt100k/interest-lab","@gt100k/interest-lab-view"]`; the r3f `<Canvas>` mounts **client-only** via `next/dynamic(..., {ssr:false})` and is destroyed on unmount (spec §U2 D-U1/D-U2).
 
 **Storage**: None. The view layer is stateless-pure over injected domain outputs; the app holds only ephemeral UI state (flags, tray, selected surface).
 
@@ -351,9 +351,9 @@ Deliver the Interest Lab **UI** as two cleanly separated parts, built **on top o
 
 **Performance Goals**: The view layer is O(offers/events/nodes) per derivation and not performance-bound. The app carries a 60fps feel as an **acceptance target** (DOM transform/opacity/filter animation only; no layout thrash), verified via `next build` + the walkthrough.
 
-**Constraints**: View package is pure (no I/O, no wall-clock, **no `Math.random`**), deterministic. Reduced motion is an equal mode; WCAG 2.2 AA is DOM-native. **No** scalar passion score / coverage number / verdict / fixed label anywhere; **no** dark patterns; **no** forbidden-purpose fields (`rank`/`percentile`/`score`/`price`). No external fetch (system fonts, in-repo fixtures). Part I is untouched beyond its public API.
+**Constraints**: View package is pure (no I/O, no wall-clock, **no `Math.random`**, **no `three`/`react`/`@react-three/*` import** — framework- and GPU-free), deterministic. Reduced motion is an equal mode (the `board-2d` tier); WCAG 2.2 AA is DOM-native — the 3D `<Canvas>` is `aria-hidden` and the DOM quest ledger is the AT source of truth. 60fps target with graceful degradation (3D-full → 3D-lite → 2D) via deterministic tier resolvers + drei `<PerformanceMonitor>`/`<AdaptiveDpr>`. **No** scalar passion score / coverage number / verdict / fixed label anywhere (incl. no number/score/rank floating in the 3D world); **no** dark patterns (incl. no time/mastery-gated island unlocks/levels); **no** forbidden-purpose fields (`rank`/`percentile`/`score`/`price`). No external fetch (system fonts, in-repo fixtures, procedural 3D geometry + in-app textures — no HDRI/GLTF/web-font). Part I is untouched beyond its public API.
 
-**Scale/Scope**: One synthetic learner's Lab (from `CATALOG_GOLDEN_V1`), its coverage matrix, one event stream (`EVENTS_GOLDEN_V1`), one hypothesis + revisions; the child board + the guide console. The learned model, the bandit, real persistence, real standings, and the Specialization Planner adoption remain out of scope.
+**Scale/Scope**: One synthetic learner's Lab (from `CATALOG_GOLDEN_V1`), its coverage matrix, one event stream (`EVENTS_GOLDEN_V1`), one hypothesis + revisions; the child 3D world (+ its 2D fallback board) + the guide console (+ optional evidence constellation). The learned model, the bandit, real persistence, real standings, and the Specialization Planner adoption remain out of scope.
 
 ## Constitution Check (Part II — child-facing surface)
 
@@ -366,7 +366,7 @@ Deliver the Interest Lab **UI** as two cleanly separated parts, built **on top o
 | III. Evidence-class authority ladder | ✅ Pass | No learned component; the view renders deterministic domain outputs. Experience posture is **[E3]/[R]** — measured against belonging/voluntary return, no production authority. |
 | IV. Evidence before authority; deterministic rules | ✅ Pass | All view functions are deterministic; uncertainty is a grade/interval; competing explanations sit side-by-side; **no scalar passion score** (UI-FR-007, SC-UI-05). |
 | V. Privacy follows purpose | ✅ Pass | Pseudonymous, synthetic-only; the view carries no PII and no forbidden-purpose field (`rank`/`score`/`price`) — a caste/admissions framing is structurally unrepresentable (UI-FR-016, SC-UI-11). |
-| VI. Accessibility & non-discrimination | ✅ Pass | Reduced motion is a first-class equal mode; WCAG 2.2 AA is DOM-native (keyboard/switch/screen-reader; ≥4.5:1; color-independent); accessibility/safety help never lowers a signal (`lowersSignal:false`) (UI-FR-008/012/013/015). |
+| VI. Accessibility & non-discrimination | ✅ Pass | Reduced motion is a first-class equal mode (the `board-2d` tier); WCAG 2.2 AA is DOM-native — the 3D `<Canvas>` is `aria-hidden` and the DOM quest ledger is the operable AT source of truth (keyboard/switch/screen-reader; ≥4.5:1; color-independent); graceful degradation (3D→lite→2D) never removes a quest; accessibility/safety help never lowers a signal (`lowersSignal:false`) (UI-FR-008/012/013/021, SC-UI-16/18). |
 | VII. Durable learning over performance | ✅ Pass | The one reserved delight celebrates **voluntary return** (the signal that survives pressure), never time-in-app; prompted return is never celebrated (UI-FR-004). |
 | VIII. Bounded motivational pressure | ✅ Pass | No dark patterns — no countdown/scarcity/FOMO/streak/decay/engagement-timed nudge (UI-FR-014); no cross-cohort standings on this surface. |
 | IX. Prohibited product behavior (G1) | ✅ Pass | **No** purchase/price path, **no** ranking/leaderboard, **no** export to admissions/discipline; the view types forbid those fields structurally (UI-FR-016). |
@@ -387,7 +387,7 @@ specs/003-interest-lab/
 ├── contracts/
 │   └── interest-lab-ui.md  # Part II view-package API + test obligations
 ├── quickstart.md           # Part II run/validate + acceptance walkthrough
-├── tasks.md                # Part I tasks (T001–T038) + Part II tasks (P8…P13)
+├── tasks.md                # Part I tasks (T001–T038) + Part II tasks (P8…P15)
 └── checklists/
     ├── requirements.md     # Part I spec-quality checklist
     └── ui.md               # Part II spec-quality + design + a11y + guardrail checklist
@@ -408,12 +408,16 @@ packages/
     │   ├── motion.ts        # MOTION, EASINGS, resolveMotion (spec §U8.4)
     │   ├── glyphs.ts        # WORK_MODE_GLYPHS (spec §U8.6)
     │   ├── staging.ts       # resolveChildStaging (spec §U8.7)
-    │   ├── picker.ts        # buildProbePickerView (child surface) (spec §U8.8)
+    │   ├── scene.ts         # SCENE3D/CAMERA3D/QUALITY_TIERS/RENDER_TIERS + resolveIslandLayout/
+    │   │                    #   resolveQuestPlacement/resolveCamera3D/resolveRenderTier/resolveQualityTier/
+    │   │                    #   buildSceneView (spec §U8.13/§U8.14/§U8.16/§U8.18) — GPU-free, emits numbers only
+    │   ├── constellation.ts # buildEvidenceConstellationView (spec §U8.17)
+    │   ├── picker.ts        # buildProbePickerView (child 2D board / accessible ledger) (spec §U8.8)
     │   ├── coverage-view.ts # buildCoverageMatrixView (spec §U8.9)
     │   ├── explanations.ts  # buildExplanationsView (spec §U8.12)
     │   ├── timeline.ts      # buildReturnTimelineView (spec §U8.10)
     │   ├── lifecycle-view.ts# buildLifecycleStateView + buildRevisionHistoryView (spec §U8.11)
-    │   ├── view.ts          # buildInterestLabView + plainViewEquals (spec §U8.13)
+    │   ├── view.ts          # buildInterestLabView + plainViewEquals (spec §U8.18/§U8.19)
     │   └── index.ts         # public surface
     ├── test/                # Vitest unit + contract + golden (mirror UI-FR/SC-UI; guardrails first) + smoke.test.ts
     ├── package.json         # @gt100k/interest-lab-view; dep: @gt100k/interest-lab (workspace:*)
@@ -429,32 +433,45 @@ apps/
     │   ├── InterestLabClient.tsx  # "use client" root: view-model state, flags (reduced-motion/plain/band/surface), event wiring
     │   ├── seed.ts          # wires CATALOG_GOLDEN_V1 / EVENTS_GOLDEN_V1 through the domain + view (no external fetch)
     │   ├── child/
-    │   │   ├── QuestBoard.tsx      # the Curiosity Quest Board (constellations of quest cards)
+    │   │   ├── QuestWorld.tsx      # tier switch: renders World3D (r3f) OR Board2D from the same SceneView/ProbePickerView
+    │   │   ├── world3d/
+    │   │   │   ├── World3D.tsx     # next/dynamic ssr:false <Canvas aria-hidden> host; lights/fog per SCENE3D; AdaptiveDpr/PerformanceMonitor
+    │   │   │   ├── Island.tsx      # procedural low-poly island (drei <Float>), hue-tinted, its quest-markers
+    │   │   │   ├── QuestMarker.tsx # glowing marker (emissive + additive halo sprite); hover/press/pick hop
+    │   │   │   ├── CameraRig.tsx   # establishing drift-in + focus ease (mirrors DOM focus) + clamped <OrbitControls>
+    │   │   │   ├── Motes.tsx       # drei <Sparkles> ambient fireflies (count from quality tier)
+    │   │   │   ├── WelcomeBloom.tsx# the reserved voluntary-return bloom (emissive→bloomPeak + spark-mote burst)
+    │   │   │   └── glow-texture.ts # in-app generated additive radial-gradient sprite (deterministic; no fetch)
+    │   │   ├── QuestLedger.tsx     # the accessible operable DOM surface: ordered card-buttons; owns focus/pick (AT source of truth)
+    │   │   ├── Board2D.tsx         # the board-2d tier: card-constellation via motion@^12 (reduced-motion/plain/no-WebGL/fallback)
     │   │   ├── QuestCard.tsx       # a ProbeCardView: hue + work-mode glyph + why/provenance + help affordance
-    │   │   ├── QuestTray.tsx       # "my quests" tray + pick spring + return crossfade
-    │   │   └── WelcomeBack.tsx     # the reserved voluntary-return delight (reduced-motion static)
+    │   │   ├── QuestTray.tsx       # "my quests" beacon/tray + pick spring + return crossfade (motion@^12)
+    │   │   └── WelcomeBack.tsx     # the 2D/reduced-motion static welcome-back (warm halo + copy)
     │   ├── guide/
-    │   │   ├── CoverageMatrix.tsx  # domains × work-modes grid + coverage rail (gaps visible, no score)
+    │   │   ├── CoverageMatrix.tsx  # domains × work-modes grid + coverage rail (gaps visible, no score) — motion@^12
     │   │   ├── Explanations.tsx    # supporting beside disconfirming (equal weight)
     │   │   ├── ReturnTimeline.tsx  # voluntary vs prompted vs support markers (draw-in)
     │   │   ├── Lifecycle.tsx       # state visual + gate checklist + shadow-proposal-as-suggestion + authoring
-    │   │   └── RevisionHistory.tsx # append-only version rail
+    │   │   ├── RevisionHistory.tsx # append-only version rail
+    │   │   └── EvidenceConstellation.tsx # OPTIONAL r3f depth viz (<Canvas aria-hidden>); DOM-equivalent = Explanations+Timeline
     │   ├── ui/
     │   │   ├── Glyph.tsx           # inline SVG for WORK_MODE_GLYPHS + state glyphs (no emoji)
-    │   │   └── controls/           # reduced-motion / plain / band / surface / help control cluster (translucent panels)
+    │   │   ├── deviceCaps.ts       # client feature-detect -> DeviceCaps (webgl/deviceMemory/hardwareConcurrency/pointer/saveData)
+    │   │   └── controls/           # reduced-motion / plain / render-tier / band / surface / help cluster (translucent panels)
     │   └── motion/
-    │       └── useMotionToken.ts   # bridges resolveMotion + framer-motion useReducedMotion
+    │       └── useMotionToken.ts   # bridges resolveMotion + motion@^12 useReducedMotion (motion/react)
     ├── public/fonts/        # OPTIONAL self-hosted subset woff2 (non-breaking; system-rounded fallback by default)
     ├── .env.local.example   # NEXT_PUBLIC_* placeholders (spec §U11); .env.local git-ignored
     ├── .gitignore           # ignores .env.local, .next
-    ├── package.json         # deps: @gt100k/interest-lab, @gt100k/interest-lab-view, next, react, react-dom, framer-motion
+    ├── package.json         # deps: @gt100k/interest-lab, @gt100k/interest-lab-view, next, react, react-dom,
+    │                        #   motion(^12), three(^0.169), @react-three/fiber(^8), @react-three/drei(^9); dev @types/three
     ├── next.config.mjs      # transpilePackages: ["@gt100k/interest-lab","@gt100k/interest-lab-view"]
     └── tsconfig.json        # mirrors apps/student-compass (noEmit, jsx preserve, DOM libs)
 tsconfig.json                # ROOT — add { "path": "packages/interest-lab-view" } as the FINAL,
                              #   human-reconciled task only (shared root file; do not edit early)
 ```
 
-**Structure Decision (Part II)**: Mirror the proven 001/004 split — a **pure, side-effect-free view package** (`packages/interest-lab-view`) holding every render rule, with the framework-bound **React/framer-motion** UI isolated in a **new Next.js app** (`apps/interest-lab`). The view layer has no randomness, no I/O, and no wall-clock, so every guardrail (gaps visible / no scalar score, side-by-side explanations, voluntary≠prompted, support-never-lowers, shadow-proposal-only, deterministic motion, age-band staging, no-forbidden-field, no-fixed-label) is unit-testable as a pure function. The view composes **one `InterestLabView`** (`buildInterestLabView`) that both surfaces and every mode consume — so reduced-motion is an *equal* mode and accessibility is parity-by-construction (`plainViewEquals`). Because the surfaces are DOM/SVG, WCAG 2.2 AA is native (no `aria-hidden` canvas + parallel structure). **Parallel-safety**: all new code lives in the two new directories; `pnpm-workspace.yaml` already globs `packages/*`/`apps/*`, `vitest.config.ts` already globs `packages/**/test/**`, and the Biome `lint` script already lints `packages`/`apps` — so **no shared root file is edited** except the single root `tsconfig.json` project reference for `packages/interest-lab-view` (the app, like `student-compass`, is not a `tsc -b` reference), deferred to the final task and flagged for human reconcile. Ordered build path (P8…P13) and machine-checkable acceptance (SC-UI-01…15) live in spec.md §U9–§U10.
+**Structure Decision (Part II)**: Mirror the proven 001/004 split — a **pure, side-effect-free, GPU-free view package** (`packages/interest-lab-view`) holding every render rule **and** the deterministic 3D scene numbers, with the framework-bound UI (**React + `motion@^12`** for DOM; **react-three-fiber + drei + three** for the 3D world) isolated in a **new Next.js app** (`apps/interest-lab`). The view layer has no randomness, no I/O, no wall-clock, and imports no `three`/`react`, so every guardrail (gaps visible / no scalar score, side-by-side explanations, voluntary≠prompted, support-never-lowers, shadow-proposal-only, deterministic motion, age-band staging, no-forbidden-field incl. `SceneView`, no-fixed-label, catalog-order island layout, tier-is-presentation) is unit-testable as a pure function **without a GPU**. The view composes **one `InterestLabView`** (`buildInterestLabView`) that both surfaces and **all three render tiers** (3D-full / 3D-lite / 2D) consume — so reduced-motion is an *equal* mode, degradation is graceful, and accessibility is parity-by-construction (`plainViewEquals`). WCAG 2.2 AA is DOM-native: the 3D `<Canvas>` is `aria-hidden` (mirroring feature 004's one-view-model → canvas + accessible-DOM discipline) and the operable surface is the DOM quest ledger; dropping the canvas (Tier C) leaves a fully functional, fully accessible board. **Parallel-safety**: all new code lives in the two new directories; `pnpm-workspace.yaml` already globs `packages/*`/`apps/*`, `vitest.config.ts` already globs `packages/**/test/**`, and the Biome `lint` script already lints `packages`/`apps` — so **no shared root file is edited** except the single root `tsconfig.json` project reference for `packages/interest-lab-view` (the app, like `student-compass`, is not a `tsc -b` reference), deferred to the final task and flagged for human reconcile. Ordered build path (P8…P15, incl. the 3D-UI phases P10/P11/P14) and machine-checkable acceptance (SC-UI-01…18) live in spec.md §U9–§U10.
 
 ## Complexity Tracking (Part II)
 

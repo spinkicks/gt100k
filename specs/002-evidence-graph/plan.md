@@ -4,6 +4,12 @@
 
 **Input**: Feature specification from `specs/002-evidence-graph/spec.md`
 
+> **One spec home.** This plan covers **both** the pure domain (**Part I** below) **and** the Provenance
+> Explorer 3D-UI expansion (**Part II**, folded in from the former `explorer/` subfolder). The domain plan
+> is unchanged; the Explorer plan (renderer = react-three-fiber + drei + three.js, DOM motion =
+> `motion@^12`, a render-tier ladder with a calm-2D fallback) is **Part II**. See [spec.md](./spec.md)
+> Part I / Part II.
+
 ## Summary
 
 Build the code-first core of GT100K's EvidenceGraph (PRD §19) as a **pure, framework-agnostic TypeScript domain package** (`packages/evidence-graph`): a content-addressed evidence DAG of eight PROV-extended node types and six edge types; a deterministic Merkle root and an in-toto-style attestation for a per-milestone `EvidencePacket`; and the non-negotiable human-authority invariant (humans own every grade; a model output is only a cited `Assistance`/`Review`, never a grade or an authorship accusation). All I/O sits behind ports — `Hasher` (SHA-256, Node-crypto adapter), `Verifier` (deterministic stub adapter), `EvidenceRepository` (in-memory adapter) — so the domain stays deterministic and 100% unit-testable. The genuinely-hard parts (external transparency-log anchoring, crypto-shred erasure, comparative-judgment reliability, conformal calibration) are **stubs / out of scope** per §19.2. Synthetic-only; consent/legal machinery is a stubbed field.
@@ -107,3 +113,187 @@ adapters/
 ## Complexity Tracking
 
 None — Constitution Check passed with no violations.
+
+---
+---
+
+# PART II — Implementation Plan: Provenance Explorer (3D "Provenance Observatory")
+
+**Reads**: Part I (`packages/evidence-graph`), unchanged. **Spec**: [spec.md](./spec.md) Part II (§U0–§U15).
+
+## Summary
+
+Add a cinematic, navigable **3D "Provenance Observatory"** on top of the completed `packages/evidence-graph`
+domain (PRD §19; reviewer/verifier surfaces §9.2 / §19.1). Two new units, both new-dirs-only:
+
+- **`packages/evidence-explorer-view`** — a **pure, deterministic view-model package** that **reads**
+  `@gt100k/evidence-graph` and composes a single `ExplorerView` driving every render tier: a deterministic
+  **2D layout** (calm/reduced tier) **and** a deterministic **3D layout** (authored `SHELL_SLOTS` ring — no
+  `Math.sin`/`cos` in the golden path), per-node/edge visual mapping (3D **body** + 2D glyph + color + label
+  for all 8 node + 6 edge types), a build/time-scrub growth timeline, a verification view (re-using the
+  domain's `merkleRoot`, subject-digest check, `assertHumanAuthority`, and the stub `Verifier`) + a
+  deterministic `verifyWaveOrder`, camera keyframes, a **render-tier ladder** (`resolveRenderTier`), the
+  accessible **Provenance Ledger**, and the golden constant registries `PALETTE`/`TYPOGRAPHY`/`MOTION`/
+  `EASINGS`/`SPRINGS`/`CAMERA`/`TIERS`/`NODE_BODIES`/`EDGE_THREADS` + `resolveMotion` + `resolveRenderTier`
+  + `plainViewEquals`. Pure (no I/O, no wall-clock, no `Math.random`), unit-tested with Vitest — the loop's
+  testable core.
+- **`apps/evidence-explorer`** — a **Next.js 14 App-Router app** rendering that view as a navigable 3D cosmos
+  (**react-three-fiber + drei + three.js** scene with **bloom + depth-of-field** via
+  `@react-three/postprocessing`, a deterministic seeded parallax starfield, orbit/fly-through camera, a
+  time-scrub that grows the galaxy, a cinematic Verify → *Verified ✓* light-wave seal, a tamper demo that
+  fractures a body — bytes only, and **frosted DOM** inspector/HUD panels animated with **`motion@^12`**),
+  plus a **calm-2D** renderer (the reduced-motion / weak-GPU equal fallback) and the accessible Ledger.
+  Verified by `next build` + a seeded smoke + the quickstart walkthrough.
+
+**Guardrails (kept):** reduced-motion is a first-class **equal** mode (the calm-2D tier; every animation has
+a reduced-motion equivalent via `resolveMotion`); WCAG 2.2 AA via the synchronized accessible DOM Ledger
+(every canvas/decorative layer is `aria-hidden`); a **60fps budget** on the min device with graceful
+auto-degradation (Cinematic 3D → Standard 3D → Calm 2D, incl. a no-WebGL fallback); no dark patterns (view
+types structurally exclude leaderboard/rank/streak/countdown/urgency/…); humans issue grades (the app
+computes no grade — it displays the domain's human-owned `Outcome`; a `model` actor renders only as a cited
+`Assistance`/`Review` comet marked "Declared", never an accusation). Red + fracture are reserved for the
+byte-level tamper demo only.
+
+**Loop-ready:** [spec.md](./spec.md) Part II folds in a hard scope fence, ordered phasing (U0…U7),
+machine-checkable success criteria (SC-E01…SC-E22) each mapped to a named test, and **pinned golden values**
+(exact 2D **and** 3D layout positions, motion tokens/easings/springs, camera keyframes, tier ladder,
+palette/typography, node-body/edge-thread mapping, verification-step derivation). The gate is `pnpm
+typecheck` + `pnpm test` (view package) with a seeded smoke green from iteration 1; app phases add `pnpm
+--filter @gt100k/evidence-explorer build` + smoke + walkthrough.
+
+## Technical Context
+
+**Language/Version**: TypeScript (strict), Node.js LTS. `tsconfig.base.json` inherited
+(`noUncheckedIndexedAccess`, `verbatimModuleSyntax`, `composite`).
+
+**Primary Dependencies**: view package — `@gt100k/evidence-graph` (`workspace:*`) only (pure); dev-deps
+`adapters/evidence-hash-node`, `adapters/evidence-verifier-stub`, `adapters/evidence-deferred`
+(`workspace:*`) for verification/integration tests. App — Next.js `^14.2.15`, React `^18.3.1`,
+**`motion@^12.0.0`** (`motion/react`, DOM), **`three@^0.169.0`** + **`@react-three/fiber@^8.17.10`** +
+**`@react-three/drei@^9.114.0`** + **`@react-three/postprocessing@^2.16.3`** (+ `postprocessing@^6.36.4`,
+3D). pnpm workspaces + Vitest + Biome + `tsc -b` (existing factory gate).
+
+**Storage**: none — read-only over a committed synthetic fixture (in-memory).
+
+**Testing**: Vitest (unit + contract) for the view package, matching the workspace `vitest.config.ts` globs
+(`packages/**/test`); `next build` + a Playwright smoke + the quickstart walkthrough for the app.
+
+**Target Platform**: view package = Node (pure); app = modern browsers with WebGL (client-rendered 3D
+canvas), gracefully degrading to a 2D Canvas/SVG tier where WebGL is unavailable or the GPU/power budget is
+tight.
+
+**Performance Goals**: 60fps orbit/fly on the min device with a graceful tier ladder (Cinematic 3D →
+Standard 3D → Calm 2D); the view package is not performance-bound (small, deterministic).
+
+**Constraints**: pure view logic — no I/O, no wall-clock, no `Math.random`, **no `Math.sin`/`Math.cos` in
+the golden layout path** (authored `SHELL_SLOTS`), no crypto re-implementation (reads the domain);
+reduced-motion first-class equal (calm 2D); WCAG 2.2 AA; no external fetch (procedural 3D bodies + seeded
+starfield); no secrets; no dark patterns; the app computes no grade / no accusation.
+
+**Scale/Scope**: one synthetic milestone (13 nodes / 12 in-milestone + 1 island); tens of nodes, not
+thousands (WebGL is for the *cinematic register*, not node count).
+
+## Constitution Check
+
+*GATE: must pass before Phase U0. Re-checked after design.*
+
+| Principle | Status | Note |
+|---|---|---|
+| I. Human authority over consequential decisions | ✅ Pass | The app computes no grade; it displays the domain's human-owned `Outcome` seal-sun with its named owner (FR-E08). |
+| IV. Evidence before authority; proof of process | ✅ Pass (core purpose) | The Explorer *is* the proof-of-process surface; declared AI-assistance is a cited comet marked "Declared", and the view model has no AI-authorship-accusation field/affordance (FR-E08/E09). |
+| V. Privacy follows purpose | ✅ Pass | Synthetic-only, read-only; pseudonymous refs; consent scope displayed as a stubbed field; no PII/persistence/network. |
+| VI. Accessibility & non-discrimination | ✅ Pass | WCAG 2.2 AA via the accessible Ledger; reduced-motion first-class equal (calm 2D); color-independent cues (body-shape/glyph + text); ≥4.5:1 contrast (FR-E10/E11). |
+| VIII. Bounded motivational pressure | ✅ Pass | No dark patterns: view types structurally exclude leaderboard/caste-rank/bottom-rank/streak/countdown/urgency (FR-E12). |
+| IX. Prohibited product behavior | ✅ Pass | No automated AI-authorship accusation is representable; a `model` output renders only as cited `Assistance`/`Review` (FR-E08/E09). |
+| ENG (tests-define-done, no secrets, contracts/isolation) | ✅ Pass | View package unit-tested (Vitest) + app `next build`; no secrets/machine paths; new-dirs-only; reads the domain unchanged. |
+
+**Result: PASS** — no violations. The one deliberate deferral (the domain's §19.2 transparency-log /
+erasure / signing machinery) is **displayed** as the domain's clearly-labeled pre-live-gate stub, never
+re-built here.
+
+> **Note (process language intentionally omitted).** These planning artifacts describe **product**
+> guardrails only (human-owned grades, cited assistance, WCAG, reduced-motion, the 60fps budget, no dark
+> patterns). They do **not** encode any development-process / merge-gate / PR-loop language.
+
+## Project Structure (this expansion — new dirs only)
+
+```text
+packages/
+└── evidence-explorer-view/          # PURE view-model — the testable heart of the UI expansion
+    ├── src/
+    │   ├── model.ts                  # view types (ExplorerView, NodeView, EdgeView, CameraKeyframe, RenderTier, ...)
+    │   ├── art.ts                    # PALETTE, TYPOGRAPHY (golden §U8.11)
+    │   ├── motion.ts                 # MOTION, EASINGS, SPRINGS, resolveMotion (golden §U8.5)
+    │   ├── visual.ts                 # NODE_BODIES, NODE_GLYPHS, EDGE_THREADS + resolvers (§U8.12/§U8.3)
+    │   ├── camera.ts                 # CAMERA, PARALLAX (§U8.9)
+    │   ├── tiers.ts                  # TIERS, resolveRenderTier + degrade/recover thresholds (§U8.10)
+    │   ├── layout2d.ts               # layoutExplorer2D (deterministic layered §U8.1)
+    │   ├── layout3d.ts               # layoutExplorer3D + SHELL_SLOTS (deterministic ring §U8.2)
+    │   ├── timeline.ts               # buildGrowthTimeline (§U8.7)
+    │   ├── verify.ts                 # buildVerificationView + verifyWaveOrder + applyTamper (reads domain, §U8.8)
+    │   ├── ledger.ts                 # buildLedgerView (accessible parity)
+    │   ├── view.ts                   # buildExplorerView + plainViewEquals
+    │   ├── fixtures/explorer.fixture.ts
+    │   └── index.ts
+    ├── test/                         # Vitest (mirror FR/SC + contracts)
+    │   ├── smoke.test.ts  layout2d.test.ts  layout3d.test.ts  view.test.ts
+    │   ├── motion.test.ts  motion-tokens.test.ts  art.test.ts  visual.test.ts
+    │   ├── mapping.test.ts  timeline.test.ts  camera.test.ts  tiers.test.ts
+    │   ├── verify-view.test.ts  authority-view.test.ts  ledger.test.ts
+    │   ├── guardrails.test.ts  integration.test.ts
+    ├── package.json  tsconfig.json  README.md
+apps/
+└── evidence-explorer/               # Next.js 14 App Router — the only place React/DOM/R3F/three/Canvas live
+    ├── app/
+    │   ├── layout.tsx  page.tsx      # page.tsx mounts <ObservatoryStage/> (client; Cosmos3D via ssr:false)
+    │   └── globals.css               # §U8.11 tokens + reduced-motion/reduced-transparency + focus rings
+    ├── components/
+    │   ├── ObservatoryStage.tsx  Cosmos3D.tsx  Constellation2D.tsx  Starfield.tsx  TimeScrub.tsx
+    │   ├── Inspector.tsx  VerifyPanel.tsx  Hud.tsx  Ledger.tsx  bodies.tsx  glyphs.tsx
+    ├── next.config.mjs               # transpilePackages the two workspace packages
+    ├── package.json  tsconfig.json  next-env.d.ts  .env.local.example  .gitignore
+```
+
+**Structure Decision**: a pure `packages/evidence-explorer-view` (mirroring `packages/learning-loop` +
+feature 004's `packages/arena-world`) quarantines every deterministic rule + golden constant (incl. the 2D
+**and** 3D layout, camera keyframes, and tier ladder) so it is unit-testable under the loop gate;
+`apps/evidence-explorer` (mirroring `apps/student-compass`) is the only place rendering/animation live. The
+view package **reads** the completed `packages/evidence-graph` and never edits it.
+
+**Parallel-safety**: all new code lives in `packages/evidence-explorer-view` + `apps/evidence-explorer`. The
+root workspace glob (`packages/*`, `apps/*`) and the Vitest include (`packages/**/test`) already discover
+them, so **no** shared root file (`package.json`, `pnpm-workspace.yaml`, `vitest.config.ts`, `biome.json`)
+is edited. The **only** shared-file touch is adding a composite project reference for
+`packages/evidence-explorer-view` to the root `tsconfig.json` — the **final, isolated task** (T-ROOT, §U9
+U7). The root `build` script (student-compass) is not modified; the Explorer app is built via its filter.
+
+## Reads the domain (unchanged)
+
+| Domain API (`@gt100k/evidence-graph`) | Used for |
+|---|---|
+| `addNode` / `addEdge` / `assembleEvidencePacket` | building the committed synthetic fixture only |
+| `merkleRoot` | re-derived in `buildVerificationView` (the merkle step + verify light-wave) |
+| `assertHumanAuthority` | the human-authority verify step |
+| `traceEvidence` | the "trace from Outcome" highlight |
+| `Hasher` (adapters/evidence-hash-node) | node ids + Merkle re-derivation (real crypto adapter) |
+| `Verifier` (adapters/evidence-verifier-stub) | the pass/fail verifier result |
+| `TransparencyLog`/`ErasureService` (adapters/evidence-deferred) | the clearly-labeled `nonProduction` stub step |
+
+## Renderer decision (see [research.md](./research.md))
+
+**react-three-fiber + drei + three.js (3D)** primary, with **bloom + depth-of-field**
+(`@react-three/postprocessing`), a deterministic **seeded parallax starfield**, and **frosted DOM** panels
+(`motion@^12`) in front; **deterministic layered layout** in 2D **and** 3D (not force-directed). Chosen for
+the cinematic *knowledge-cosmos* register the brief demands. The **calm-2D** renderer (SVG/Canvas2D) is a
+first-class **equal** fallback (reduced-motion / weak GPU / no WebGL). `@react-spring/three` (3D) and GSAP
+(DOM) are acceptable non-breaking alternatives only with a documented reason (`.loop/decisions.md`); DOM
+motion is standardized on `motion@^12`.
+
+## Complexity Tracking
+
+None — Constitution Check passed with no violations. The second package (`evidence-explorer-view`) is
+justified: it is the only way to unit-test the golden motion table, the deterministic 2D **and** 3D layout,
+camera keyframes, the tier ladder, and reduced-motion parity under the existing workspace Vitest glob
+without editing the shared root config. The 3D renderer is justified by the cinematic register (not node
+count); determinism is preserved by the authored `SHELL_SLOTS` layout (no force sim, no `Math.sin`/`cos` in
+the golden path).

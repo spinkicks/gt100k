@@ -33,31 +33,35 @@
 
 - [x] Scope fence: explicit in-scope / out-of-scope / non-goals (spec §1)
 - [x] Phasing P0…P6, ordered, each with a goal + gate (spec §9)
-- [x] Acceptance criteria = tests: SC-001…SC-023, each mapped to a named test (spec §10)
+- [x] Acceptance criteria = tests: SC-001…SC-026, each mapped to a named test (spec §10)
 - [x] Golden values + tolerances: layout, node states, tiers, cosmetics, motion, staging, standings, base (spec §7–§8)
-- [x] Decisions already made: Phaser 4, architecture, integration, view model, a11y (settled parallel-DOM Ledger), seed assets, data model, UX/motion, stack (spec §2)
+- [x] Decisions already made: 3D renderer (react-three-fiber + three.js + drei; Phaser dropped), architecture, client-only integration, view model, a11y (settled parallel-DOM Ledger), procedural seed assets, data model, UX/motion (`motion@^12` for DOM), quality ladder, stack (spec §2)
 - [x] "Defaults for the unspecified" rule present verbatim (spec §3)
 - [x] Stack + commands pinned (pnpm; typecheck/test/build) + seeded smoke green from iteration 1 (spec §11)
 - [x] Env/secrets: `apps/arena/.env.local.example` placeholders, `.env.local` git-ignored, build never fails on missing env (spec §11)
 - [x] Navigable per-phase headers for JIT reading (spec §0, §9)
 - [x] Pre-marked decision points with severity (spec §13)
 
-## Game / rendering (Phaser)
+## Game / rendering (3D — react-three-fiber)
 
-- [x] Real 2D game engine on Canvas/WebGL — Phaser 4 default `^4.2.1` (rebuilt WebGL renderer; Phaser-4 APIs only) (spec §2 D1, FR-028)
+- [x] Real 3D game engine on WebGL2 — react-three-fiber `^8.17` + three `^0.169` + drei `^9.114` + postprocessing `^2.16` (r3f v8/drei v9 APIs, React-18 compatible) (spec §2 D1, FR-028)
+- [x] 2D-vs-3D decision recorded with rationale + honest counter-analysis; Phaser dropped (spec §2 D1, §13 DP-2)
+- [x] Deterministic 3D world transform in the pure domain (no three.js dep); golden 3D positions (spec §8.20/§8.23, FR-042, SC-024)
+- [x] Mastery-as-light: unlocked→beacon light / available→glow / locked→unlit, capped per tier, never color-only (spec §8.20/§8.22, FR-041, SC-026)
+- [x] Quality ladder A/B/C/D + auto-degrade + 2D/no-WebGL fallback; 60fps on min managed device (spec §8.24, FR-043, SC-010/025)
 - [x] Rich overworld: regions, quest nodes, edge paths, follow-camera (spec §5, FR-001)
 - [x] Avatar + tweened movement + equippable cosmetics on canvas (spec §5.4, US2)
 - [x] Cohort base scene co-built from cooperative missions (spec §5.8, US4)
 - [x] Celebration/juice on independent-unlock, deterministic motion spec (spec §5.6/§5.7/§8.5, US3)
-- [x] Scene/asset pipeline with committed SEED SVGs + procedural fallback, no external fetch (spec §2 D6, FR-030)
+- [x] Scene/asset pipeline: procedural low-poly code geometry + committed SEED SVGs (icons/2D fallback) + procedural material fallback, no external fetch (spec §2 D6, FR-030)
 - [x] Client-only mount (ssr:false), clean unmount, zero console/WebGL errors (spec §2 D3, FR-028, SC-011)
-- [x] One `ArenaView` (with derived `presentation` block) drives Phaser + reduced-motion + accessible Ledger (spec §2 D4, FR-029, SC-014)
+- [x] One `ArenaView` (with derived `presentation` block incl. 3D transform/lighting/camera/quality) drives the 3D scene + calm reduced-motion tier + 2D fallback + accessible Ledger (spec §2 D4, FR-029, SC-014)
 
 ## Game-design depth (AAA design bible — spec §5, golden §8.10–§8.19)
 
 - [x] Art direction: Independence Isles identity, exact palette hex + typography tokens, per-biome region identities, lighting/atmosphere, mood board (spec §5.1/§5.2, §8.11/§8.12, FR-031, SC-017)
 - [x] World & level design: 4 biome islands, named landmarks/POIs per node, paths + cross-island bridges, Base Camp, wayfinding (spec §5.2, §7.1)
-- [x] Camera system: follow + deadzone + look-ahead + establishing dolly-in + region zoom + 7 parallax layers, all with reduced-motion cuts (spec §5.3, §8.14, FR-033, SC-018)
+- [x] Camera system: damped follow/orbit + deadzone + look-ahead + establishing dolly-in + region focus + 7 parallax layers + golden-hour lighting rig, all with reduced-motion cuts (spec §5.3, §8.20, FR-033, SC-018)
 - [x] Avatar: pseudonymous lantern-explorer + customization + idle/walk/run/think/celebrate states with exact tween/easing/duration + reduced-motion (spec §5.4, §8.13, FR-032, SC-016)
 - [x] Motion & juice: master motion table (event→named effect→easing→duration→particles→camera→sound→reduced-motion) as testable tokens (spec §5.6/§5.7, §8.10, FR-034, SC-015)
 - [x] Cosmetics catalog: 9 items with `look`/`equipEffect` visuals, competence-earned, deterministic, zero-power, never purchasable (spec §5.9, §8.15, FR-035, SC-022)
@@ -65,14 +69,14 @@
 - [x] Sound design cues: muted-by-default, captioned, non-looping, neutral error cue, deterministic (spec §5.10, §8.18, FR-037, SC-021)
 - [x] Scene-by-scene UX incl. onboarding (Boot/Preload/World/Base/Fx/Onboard) (spec §5.5, FR-038)
 - [x] Age-band visual variants: 6-8 concrete/no-canvas-number; 12-14 full, via `resolveVisualBand` (spec §5.13, §8.19, FR-040, SC-020)
-- [x] Asset pipeline: `ASSET_KEYS` registry, atlas→SVG→procedural, non-breaking richer-art + font upgrade path, no external fetch (spec §5.11, §8.17, FR-039, SC-023)
+- [x] Asset pipeline: `ASSET_KEYS` registry, committed-model→procedural, non-breaking richer-art (Draco-glTF/atlas) + font upgrade path, no external fetch (spec §5.11, §8.17/§8.25, FR-039, SC-023)
 - [x] HUD + Ledger visual/semantic design (translucent materials; role=tree with landmark names; captions) (spec §5.12)
 
 ## Accessibility (canvas)
 
 - [x] Reduced motion is a first-class EQUAL mode with a full equivalent for every animation (FR-015, SC-004)
 - [x] Accessible DOM/ARIA parallel structure ("Arena Ledger"); canvas `aria-hidden`; keyboard/switch/screen-reader; ≥4.5:1 contrast; color-independent (FR-016, SC-012)
-- [x] **Canvas-accessibility approach settled** (spec §13 DP-1 RESOLVED): the synchronized parallel accessible DOM "Arena Ledger" (canvas `aria-hidden`; one shared `ArenaView` drives both canvas and Ledger); alternatives (dedicated `/accessible` route; Phaser DOM-elements plugin) rejected — no longer an open question
+- [x] **Canvas-accessibility approach settled** (spec §13 DP-1 RESOLVED): the synchronized parallel accessible DOM "Arena Ledger" (canvas `aria-hidden`; one shared `ArenaView` drives both canvas and Ledger); alternatives (dedicated `/accessible` route; in-canvas a11y plugin) rejected — no longer an open question
 
 ## Constitution / Governance Guardrails (child-facing surface)
 
@@ -94,7 +98,7 @@
 
 - [x] Lives only in new dirs `packages/arena-world` + `apps/arena`; does not modify `packages/learning-loop` or `apps/student-compass` (FR-027)
 - [x] Builds on `@gt100k/learning-loop` (Section/SECTIONS, mastery-gate concept, XP, beyond-floor signal)
-- [x] Only shared-root edit (root `tsconfig.json` reference) is deferred to the final task T041 and flagged for human reconcile
+- [x] Only shared-root edit (root `tsconfig.json` reference) is the single final task T-ROOT, applied last for parallel-safety
 
 ## Child-Facing Evidence Posture
 

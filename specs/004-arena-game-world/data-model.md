@@ -43,6 +43,17 @@ Deterministic overworld coordinates (spec §8.1). Pure function of the world; no
 
 Constants: `REGION_SPACING = 1024`, `NODE_SPACING = 192`, `NODE_COLS = 3`, `NODE_OFFSET = 96`. Region origins per spec §5.1.
 
+## WorldTransform3D / NodeTransform3D *(derived)*
+
+Deterministic mapping of the 2D grid layout to 3D world positions (spec §8.20/§8.23). Pure arithmetic — **no three.js dependency in the domain**. `resolveWorldTransform(layout)` → `WorldTransform3D`.
+
+| Type | Shape | Notes |
+|---|---|---|
+| `NodeTransform3D` | `{ nodeId: string; x: number; y: number; z: number }` | `x = layout.x·WORLD_SCALE`, `z = layout.y·WORLD_SCALE`, `y = resolveElevation(region) + nodeLiftUnits` |
+| `WorldTransform3D` | `{ nodes: NodeTransform3D[]; worldScale: number; seaLevel: number; bounds3D: { size: number; center: {x,y,z} } }` | golden 3D positions in spec §8.23 |
+
+Constants: `WORLD_SCALE = 0.03125`, `seaLevel = -3.0`, `nodeLiftUnits = 0.6`, `beaconLiftUnits = 1.2`, Base Camp elevation `0.8`. `resolveElevation(region)` returns the biome `elevation` (spec §8.12). Island bob params (`islandFloatAmpUnits = 0.15`, `islandFloatMs = 8000`, per-region phase `regionIndex·1600ms`) are render hints (spec §8.23); off under reduced motion (depth kept).
+
 ## NodeMasterySignal *(synthetic input)*
 
 The §12 90%-independent-mastery gate output + the §13 independence reward for one node. Supplied by a stub/simulator — **not** computed here.
@@ -139,7 +150,7 @@ Deterministic animation hint for the avatar. `resolveAvatarAnimation(intent, { r
 | `state` | `"idle" \| "walk" \| "run" \| "think" \| "celebrate"` (+ `-static` under reduced motion) | sprite/anim state |
 | `loop` | boolean | `false` under reduced motion |
 | `durationMs` | int ≥ 0 | per §8.13 (reduced column when reduced) |
-| `easing` | string | Phaser ease string; `"Linear"` under reduced motion |
+| `easing` | string | three/`motion` ease name; `"Linear"` under reduced motion |
 | `amplitudePx` | int ≥ 0 | idle/celebrate bob amplitude; `0` under reduced motion; never `scale(0)` |
 
 `intent`: `idle | walk | run | think | celebrate-low | celebrate-med | celebrate-high`.
@@ -193,7 +204,7 @@ Classified learning-moment event (§14.12). **Never a loss.**
 
 ## MotionSpec *(derived)*
 
-Deterministic rendering hints; the same for Phaser and any renderer, and stripped under reduced motion. Golden in spec §8.5.
+Deterministic rendering hints; the same for the 3D scene and any renderer, and stripped under reduced motion. Golden in spec §8.5.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -213,9 +224,9 @@ A resolved motion value from the deterministic `MOTION`/`EASINGS` registries (sp
 | `kind` | string | motion kind (spec §8.10 table) |
 | `mode` | `"animated" \| "reduced"` | `reduced` under `prefers-reduced-motion` |
 | `durationMs` | int ≥ 0 | animated or reduced column |
-| `easing` | string | Phaser ease string; `"Linear"` when reduced |
+| `easing` | string | three/`motion` ease name; `"Linear"` when reduced |
 
-`MOTION` (durations) and `EASINGS` are exported constant maps (golden §8.10). `PALETTE`/`TYPOGRAPHY` (§8.11), `CAMERA`/`PARALLAX` (§8.14), `ASSET_KEYS` (§8.17), and `SOUND_CUES` (§8.18) are likewise exported constant registries.
+`MOTION`/`EASINGS`/`LAMBDAS` are exported constant maps (golden §8.10/§8.21). `PALETTE`/`TYPOGRAPHY` (§8.11), `CAMERA3D`/`PARALLAX3D`/`LIGHTING`/`WATER`/`POSTFX`/`WORLD_SCALE` (§8.20), `QUALITY_TIERS` (§8.24), `ASSET_KEYS` (§8.17), and `SOUND_CUES` (§8.18) are likewise exported constant registries.
 
 ## BiomeIdentity / WorldTheme
 
@@ -230,9 +241,41 @@ Per-region art identity (spec §8.12). `resolveBiome(region)` → BiomeIdentity;
 | `ambientHex` | string | ambient/atmosphere tint |
 | `landmarks` | string[] | POI names, stable order |
 
-## CameraConfig / ParallaxLayer *(constants + derived)*
+## CameraConfig3D / ParallaxLayer *(constants + derived)*
 
-`CAMERA` config + `resolveParallaxLayers()` (spec §8.14). `CameraConfig` carries `lerpX/lerpY`, `roundPixels`, `zoomBase/zoomRegion/zoomIntroStart`, `deadzoneW/deadzoneH`, `lookAheadPx`, `punchZoomDelta/punchOutMs/punchBackMs`, `bounds`. `ParallaxLayer = { id: string; scrollFactor: number }` (back→front). Under reduced motion / degraded tier, ambient layers stop moving but still render (depth kept).
+`CAMERA3D` config + `resolveParallaxLayers()` (spec §8.20). `CameraConfig3D` carries `fov/near/far`, `distanceDefault/distanceRegion/distanceMin/distanceMax/introDistance`, `followLambda`, `orbitDampingFactor`, `orbitYawMinDeg/orbitYawMaxDeg/pitchMinDeg/pitchMaxDeg`, `deadzoneRadius`, `lookAheadUnits`, `punchDistDelta/punchFovDelta/punchOutMs/punchBackMs`, `restTarget`. `ParallaxLayer = { id: string; scrollFactor: number }` (back→front, `PARALLAX3D`). Under reduced motion / degraded tier, ambient layers stop moving but still render (depth kept). Every camera motion has a reduced-motion instant/cut equivalent (FR-033).
+
+## LightingConfig *(derived)*
+
+The deterministic golden-hour lighting rig (spec §8.20). `resolveLighting(tier, worldTheme)` → `LightingConfig`. This is where the **mastery-as-light** mechanic lives (FR-041): `unlocked` nodes contribute a beacon light, `available` a glow, `locked` none — capped per tier (§8.22).
+
+| Field | Type | Notes |
+|---|---|---|
+| `key` | `{ type:"directional"; dir:{x,y,z}; colorHex; intensity; castShadow }` | the warm top-left sun |
+| `hemi` | `{ skyHex; groundHex; intensity }` | hemisphere fill |
+| `ambient` | `{ colorHex; intensity }` | base ambient |
+| `rim` | `{ type:"directional"; dir:{x,y,z}; colorHex; intensity }` | cool back/rim light for separation |
+| `sunDriftDeg` / `sunDriftMs` | number | subtle sun-angle drift; `0` under reduced motion / Tier C |
+| `shadow` | `{ mapSize; bias; soft }` | `castShadow:false` on Tier C (baked look) |
+| `beacon` / `beaconTransfer` / `availableGlow` | `{ colorHex; intensity; distance; decay }` | per-node dynamic point lights; §8.22 cap |
+
+`world-theme` (`dawn`/`dusk`) selects a rig variant — appearance only, zero power (`look` never affects any outcome).
+
+## WaterConfig / PostFxConfig *(derived)*
+
+`resolveWater(tier)` → `WaterConfig { level; baseHex; glintHex; shimmerMs; foam; mode:"shader"|"cheap"|"static"|"none" }` (spec §8.20). `resolvePostFx(tier)` → `PostFxConfig { bloom:{threshold;intensity;radius;mipmapBlur}|null; vignette:{offset;darkness}|null; smaa:boolean }`. Celebration transiently raises bloom `intensity` to `celebrationMotionSpec.bloomPeak` on Tier A/B; off on Tier C/D and under reduced motion.
+
+## DeviceCaps / QualityTier / QualityBudget *(input + derived)*
+
+The deterministic quality ladder (spec §8.24). `resolveQualityTier(caps)` → `QualityTier`; `nextLowerTier(tier)` → the auto-degrade path.
+
+| Type | Shape | Notes |
+|---|---|---|
+| `DeviceCaps` *(input)* | `{ webgl2; webgl1; prefersReducedMotion; savePower?; deviceMemoryGB?; hardwareConcurrency?; isSafari?; coarsePointer? }` | capability descriptor gathered by the app; passed to the pure resolver |
+| `QualityTier` | `"A" \| "B" \| "C" \| "D"` | A full-3D, B reduced-3D, C calm static-3D (= reduced-motion), D 2D/static DOM (no-WebGL) |
+| `QualityBudget` | `{ tier; dprMax; shadows; maxDynamicLights; water; postfx; ambientMotion; particleScale; targetFps; canvas }` | golden per-tier budget table (spec §8.24); `maxDynamicLights` A=8/B=3/C=0 (spec §8.22) |
+
+`resolveQualityTier` rules (deterministic, in order): no-WebGL → `D`; reduced-motion/low-power → `C`; Safari/iPad/weak/no-WebGL2 → `B`; else `A`. `nextLowerTier`: `A→B→C→D→D`. `particleScale` multiplies `celebrationMotionSpec.particleCount` (A×1, B×0.5, C/D×0). Reduced motion forces Tier-C behavior regardless of the GPU-derived tier (depth kept, motion off).
 
 ## SoundCue *(derived)*
 
@@ -269,14 +312,22 @@ The render-only block on `ArenaView`, all derived from `flags` + fixtures (never
 
 | Field | Type | Notes |
 |---|---|---|
-| `biomes` | BiomeIdentity[] | per region, stable order |
-| `camera` | CameraConfig | golden §8.14 |
-| `parallax` | ParallaxLayer[] | back→front |
+| `biomes` | BiomeIdentity[] | per region, stable order (incl. elevation) |
+| `worldTransform` | WorldTransform3D | deterministic 3D positions (§8.20/§8.23) |
+| `camera` | CameraConfig3D | golden §8.20 |
+| `parallax` | ParallaxLayer[] | back→front (`PARALLAX3D`) |
+| `lighting` | LightingConfig | golden-hour rig + mastery-as-light beacons (§8.20) |
+| `water` | WaterConfig | per active quality tier |
+| `postfx` | PostFxConfig | per active quality tier |
 | `avatarAnim` | AvatarAnimationSpec | for the avatar's current intent |
 | `visualBand` | VisualBand | age-band presentation |
+| `qualityTier` | QualityTier | resolved from `DeviceCaps` (or forced by reduced motion) |
+| `qualityBudget` | QualityBudget | golden per-tier budget (DPR/shadows/lights/water/postfx/particles) |
 | `assetKeys` | AssetKeyRegistry | keys for the renderer |
 | `basePlacements` | BasePlacement[] | Base Camp layout |
 | `palette` | typeof PALETTE | exact tokens |
+
+The `presentation` block is **render-only** and derived from `flags` + `caps` + fixtures; it never recomputes learning state. `water`/`postfx`/`qualityTier`/`qualityBudget`/`lighting` vary with the resolved quality tier and reduced-motion flag but carry **no** learning state, so `plainViewEquals` (which compares state fields only) still holds across every tier and mode.
 
 ## RewardRepresentation *(derived, age-band resolved)*
 
@@ -306,7 +357,7 @@ How the identical economy is shown per band (§14.13, FR-017/18). Golden strings
 
 ## ArenaView *(derived, composed — drives every renderer)*
 
-The single composed view model produced by `buildArenaView(inputs)`. The Phaser scene, the reduced-motion/plain rendering, and the accessible DOM Ledger all render from **this** object (FR-029, D4) — parity by construction.
+The single composed view model produced by `buildArenaView(inputs)`. The 3D scene, the calm reduced-motion tier (Tier C), the 2D fallback (Tier D), and the accessible DOM Ledger all render from **this** object (FR-029, D4) — parity by construction.
 
 | Field | Type | Notes |
 |---|---|---|

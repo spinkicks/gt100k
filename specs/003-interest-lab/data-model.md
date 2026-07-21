@@ -2,7 +2,9 @@
 
 **Feature**: `003-interest-lab` · **Part II** (UI) · **Date**: 2026-07-20
 
-All shapes are **render-ready view models** computed by pure functions in `packages/interest-lab-view` — **no I/O, no wall-clock, no `Math.random`**. They are derived from the **Part-I domain outputs** (`Lab`, `CoverageMatrix`, `SignalSummary`, `InterestHypothesis`/`HypothesisRevision`, `evaluateCandidateGate`) — the view layer **never re-computes a learning rule**. Golden values live in [spec.md](./spec.md) **§U8**; this file defines the shapes. **Structural guardrails (D-U4):** no view type carries a `score`/`confidence`/`passionScore`/`verdict`/`label`/`rank`/`percentile`/`outOf`/`price` field.
+All shapes are **render-ready view models** computed by pure functions in `packages/interest-lab-view` — **no I/O, no wall-clock, no `Math.random`, and no `three`/`react`/`@react-three/*` import** (the package is framework- and GPU-free; it emits 3D-scene *numbers* the app's r3f layer consumes). They are derived from the **Part-I domain outputs** (`Lab`, `CoverageMatrix`, `SignalSummary`, `InterestHypothesis`/`HypothesisRevision`, `evaluateCandidateGate`) — the view layer **never re-computes a learning rule**. Golden values live in [spec.md](./spec.md) **§U8**; this file defines the shapes. **Structural guardrails (D-U4):** no view type (including the 3D `SceneView`/`IslandView`/`QuestMarkerView`/`ConstellationStar`) carries a `score`/`confidence`/`passionScore`/`verdict`/`label`/`rank`/`percentile`/`outOf`/`price` field.
+
+> **3D pass.** The child surface is a 3D world of floating islands (react-three-fiber + drei + three.js) with a 2D-DOM equal/fallback tier; DOM motion uses **`motion@^12`**. The view package adds a deterministic **scene view model** (`SceneView` and friends, §"3D scene view models" below) + the `SCENE3D`/`CAMERA3D`/`QUALITY_TIERS`/`RENDER_TIERS` registries + resolvers (`resolveIslandLayout`/`resolveQuestPlacement`/`resolveCamera3D`/`resolveRenderTier`/`resolveQualityTier`/`buildSceneView`/`buildEvidenceConstellationView`).
 
 Types reuse the Part-I `WorkMode`, `Provenance`, `HypothesisState`, `SignalFamily`, `CoverageMatrix`, `SignalSummary`, `HypothesisRevision` from `@gt100k/interest-lab`.
 
@@ -14,10 +16,20 @@ Types reuse the Part-I `WorkMode`, `Provenance`, `HypothesisState`, `SignalFamil
 - **`EASINGS`** — `Record<EasingName,string>` cubic-béziers + `pickSpring:{type,bounce,duration}` (spec §U8.4).
 - **`HUE_RAMP`** — `readonly string[]` of 12 curated accent hexes (spec §U8.5).
 - **`WORK_MODE_GLYPHS`** — `Record<WorkMode,string>` of 9 glyph ids (spec §U8.6, no emoji).
+- **`SCENE3D`** — the 3D atmosphere/lighting/material constants (bg/fog, ambient/hemi/key light, tone-mapping/exposure, marker emissive, bloom peak) (spec §U8.14). Plain data; no `three` types.
+- **`CAMERA3D`** — camera constants (fov/near/far, home + establish framing, focus lerp/fill-distance, orbit clamps) (spec §U8.14).
+- **`QUALITY_TIERS`** — `Record<"full"|"lite"|"board2d",{dprCap,shadows,bloom,motes,islandDetail,postprocessing}>` (spec §U8.16).
+- **`RENDER_TIERS`** — the `"quest-world-3d" | "quest-world-3d-lite" | "board-2d"` literal set.
 
 ## AgeBand (enum)
 
 `"6-8" | "9-11" | "12-14"` — the §14.13 bands (identical to Part I's Specialization bands).
+
+## DeviceCaps / RenderTier / QualityTier *(inputs + derived)*
+
+- **`DeviceCaps`** — `{ webglAvailable: boolean; deviceMemoryGB?: number; hardwareConcurrency?: number; coarsePointer?: boolean; saveData?: boolean }`. Supplied by the app (feature-detected client-side); the view layer treats it as plain injected data (no I/O in the package).
+- **`RenderTier`** — `"quest-world-3d" | "quest-world-3d-lite" | "board-2d"` from `resolveRenderTier(caps, flags)` (spec §U8.16).
+- **`QualityTier`** — `{ dprCap: number; shadows: boolean; bloom: boolean; motes: int; islandDetail: "high"|"low"|"none"; postprocessing: boolean }` from `resolveQualityTier(caps, flags)` (spec §U8.16). **Render tier is presentation, not state** (`plainViewEquals` holds across tiers).
 
 ## ChildStaging *(derived)* — `resolveChildStaging(band)`
 
@@ -35,6 +47,7 @@ Presentation-only tokens for the child surface (spec §U8.7). The underlying `Pr
 | `maxVisibleQuests` | `int \| "all"` | 3 / 6 / "all" |
 | `showProvenanceDetail` | boolean | 6-8 false (friendly one-liner only) |
 | `showExplorationMap` | boolean | 6-8 false |
+| `worldCameraMode` | `"auto-tour" \| "focus+orbit"` | **6-8 "auto-tour"** (no free-orbit); 9-11/12-14 "focus+orbit" |
 
 ## MotionToken *(derived)* — `resolveMotion(kind, { reducedMotion })`
 
@@ -45,7 +58,7 @@ Presentation-only tokens for the child surface (spec §U8.7). The underlying `Pr
 | `durationMs` | int ≥ 0 | animated or reduced column |
 | `easing` | string | CSS cubic-bézier or `"linear"` (reduced) or the `pickSpring` name |
 
-Every kind has a reduced-motion equivalent (spec §U8.4). `pick` maps to the one reserved spring; all reveals use `pop` (overshoot ≤1.05, never `scale(0)`).
+Every kind has a reduced-motion equivalent (spec §U8.4). `pick` maps to the one reserved spring; all reveals use `pop` (overshoot ≤1.05, never `scale(0)`). DOM `MotionToken`s are consumed by **`motion@^12`** (`motion/react`); the 3D kinds (`driftIn`/`islandFloat`/`islandFocus`/`markerGlow`/`motes`/`constellation`) are consumed by r3f `useFrame`/drei. The token is a plain object either way.
 
 ## ProbeCardView
 
@@ -85,6 +98,80 @@ One quest card, derived from a Part-I `Offer` + the learner's engagement history
 | `exploration` | `{ domainsExplored: int; workModesExplored: int }` | growth-vs-past facts (9+); **never a score** |
 
 `history`: a list of `{ probeId, returnKind: "voluntary" \| "prompted"; horizon?: 7 \| 30; interventionContext?: string }` derived from Part-I events (the app builds it from `EVENTS_GOLDEN_V1` / the domain event stream). Fresh learner → empty → all `returnState:"new"`.
+
+## 3D scene view models *(derived — the child Curiosity Quest World)*
+
+These describe the 3D world as **plain numbers** the app's r3f layer renders. The view package imports no `three`. Positions are `[x,y,z]` tuples in world units (golden §U8.13/§U8.14; trig tolerance ±0.001).
+
+### QuestMarkerView — `resolveQuestPlacement(...)` + offer
+
+| Field | Type | Notes |
+|---|---|---|
+| `probeId` | string | matches the sibling `ProbeCardView.probeId` (parity, §U8.18) |
+| `familyId` | string | |
+| `workModeGlyph` | string | `WORK_MODE_GLYPHS[workMode]` (§U8.6) |
+| `position` | `[number,number,number]` | local-ring placement over its island (§U8.13) |
+| `returnState` | `"new" \| "explored" \| "voluntary-return" \| "prompted-return"` | same as the card |
+| `tone` | `"neutral" \| "spark" \| "prompted"` | `spark` on voluntary return |
+| `motionKind` | string | `markerGlow` normally; `welcomeBack` on voluntary return |
+| `provenance` | Provenance | PASS-001 |
+| `whyCopy` | string | band-appropriate, never a fixed label |
+| `helpAffordance` | `true` | always present |
+
+**No** `score`/`rank`/`price`/`verdict` (guardrail).
+
+### IslandView — one per domain (`resolveIslandLayout`)
+
+| Field | Type | Notes |
+|---|---|---|
+| `domain` | string | catalog-driven |
+| `hue` | string | `resolveDomainHue` (§U8.5); terrain tint only, **never** a state cue |
+| `center` | `[number,number,number]` | ring position (§U8.13) |
+| `baseRadius` | number | `ISLAND_R` (2.2) |
+| `markers` | QuestMarkerView[] | offers for this domain, offer order |
+
+### CameraView — `resolveCamera3D(focusIslandIndex, { reducedMotion })`
+
+| Field | Type | Notes |
+|---|---|---|
+| `pos` | `[number,number,number]` | camera position (§U8.14) |
+| `target` | `[number,number,number]` | look-at |
+| `mode` | `"drift-in" \| "ease" \| "cut"` | `cut` under reduced motion; `drift-in` on enter; `ease` on focus |
+
+### SceneView — `buildSceneView(lab, { history, ageBand, deviceCaps, reducedMotion, plainMode })`
+
+| Field | Type | Notes |
+|---|---|---|
+| `islands` | IslandView[] | catalog-domain order (§U8.13) |
+| `camera` | CameraView | home framing initially |
+| `renderTier` | RenderTier | `resolveRenderTier` (§U8.16) — presentation only |
+| `quality` | QualityTier | `resolveQualityTier` (§U8.16) |
+| `motes` | int | `quality.motes` (drei `<Sparkles>` count) |
+| `scene3d` | typeof SCENE3D | atmosphere/lighting/material constants (echoed for the renderer) |
+
+`SceneView` and `ProbePickerView` derive from the **same** `Lab`+history: for every offer there is exactly one card and one marker with identical `probeId`/`returnState`/`tone`/`provenance`/`whyCopy`/`workModeGlyph`; they differ only in geometry vs 2D layout (§U8.18). The 3D `<Canvas>` rendering `SceneView` is `aria-hidden`; the accessible operable surface is the DOM `ProbePickerView` (quest ledger).
+
+## EvidenceConstellationView / ConstellationStar *(derived — optional 3D guide viz)*
+
+`buildEvidenceConstellationView(revision, timeline)` (spec §U8.17). A tasteful depth data-viz of the hypothesis evidence; **`aria-hidden`**, `domEquivalent:true` (the side-by-side explanations + timeline are the AT/reduced-motion equivalent), degrades off under reduced-motion / no-WebGL. **No** `score`/`confidence`/`passionScore`.
+
+**ConstellationStar**
+
+| Field | Type | Notes |
+|---|---|---|
+| `family` | SignalFamily | the six gate families (fixed order) |
+| `position` | `[number,number,number]` | golden arc placement (§U8.17) |
+| `brightness` | number | `present ? (voluntary?1.0:0.7) : 0.18` |
+| `pull` | `"supporting" \| "disconfirming" \| "neutral"` | from the revision's explanation mapping |
+
+**EvidenceConstellationView**
+
+| Field | Type | Notes |
+|---|---|---|
+| `stars` | ConstellationStar[] | six, gate-family order |
+| `supportingAnchor` | `[number,number,number]` | `[+2.4,0.4,0]` |
+| `disconfirmingAnchor` | `[number,number,number]` | `[−2.4,0.4,0]` |
+| `domEquivalent` | `true` | the DOM explanations+timeline convey the same state |
 
 ## CellView / DimensionRailItem / CoverageMatrixView *(derived)*
 
@@ -213,11 +300,12 @@ One quest card, derived from a Part-I `Offer` + the learner's engagement history
 | Field | Type | Notes |
 |---|---|---|
 | `surface` | `"child" \| "guide"` | which surface is active |
-| `probePicker` | ProbePickerView | child surface |
-| `guide` | `{ coverage: CoverageMatrixView; explanations: ExplanationsView; timeline: ReturnTimelineView; lifecycle: LifecycleStateView; revisionHistory: RevisionHistoryView }` | guide surface |
-| `flags` | `{ reducedMotion: boolean; plainMode: boolean; ageBand: AgeBand; surface: "child" \| "guide" }` | render flags |
-| `presentation` | `{ palette: typeof PALETTE; typography: typeof TYPOGRAPHY; motionOf: (kind) => MotionToken }` | render-only, derived from flags |
+| `probePicker` | ProbePickerView | child surface (2D board / accessible ledger) |
+| `scene` | SceneView | child surface (3D world) — same offers as `probePicker` (§U8.18) |
+| `guide` | `{ coverage: CoverageMatrixView; explanations: ExplanationsView; timeline: ReturnTimelineView; lifecycle: LifecycleStateView; revisionHistory: RevisionHistoryView; constellation: EvidenceConstellationView }` | guide surface |
+| `flags` | `{ reducedMotion: boolean; plainMode: boolean; ageBand: AgeBand; surface: "child" \| "guide"; deviceCaps: DeviceCaps }` | render flags |
+| `presentation` | `{ palette: typeof PALETTE; typography: typeof TYPOGRAPHY; scene3d: typeof SCENE3D; camera3d: typeof CAMERA3D; renderTier: RenderTier; quality: QualityTier; motionOf: (kind) => MotionToken }` | render-only, derived from flags |
 
-`buildInterestLabView` inputs: `{ lab, coverage, hypothesis, events, gate, proposal?, options }` where `options = { surface, ageBand, reducedMotion, plainMode, history? }`.
+`buildInterestLabView` inputs: `{ lab, coverage, hypothesis, events, gate, proposal?, options }` where `options = { surface, ageBand, reducedMotion, plainMode, deviceCaps, history? }`.
 
-`plainViewEquals(a, b)` → boolean: the two views carry **identical** underlying domain-derived state (`probePicker` quests + `returnState`s, `guide.coverage`, `guide.explanations`, `guide.timeline` markers, `guide.lifecycle`+gate, `guide.revisionHistory`) and differ **only** in `flags` + the `presentation` derived from them (UI-FR-019, SC-UI-10). The comparison is over the state fields; `presentation` (motion mode etc.) is *expected* to vary with flags.
+`plainViewEquals(a, b)` → boolean: the two views carry **identical** underlying domain-derived state (`probePicker` quests + `returnState`s, `scene.islands`→`markers` matched by `probeId` with identical `returnState`/`tone`/`provenance`/`whyCopy`/`workModeGlyph`, `guide.coverage`, `guide.explanations`, `guide.timeline` markers, `guide.lifecycle`+gate, `guide.revisionHistory`, `guide.constellation` stars) and differ **only** in `flags` + the `presentation` derived from them (UI-FR-019, SC-UI-10). The comparison is over the state fields; `presentation` — including `renderTier`/`quality`/`camera`/motion mode — is *expected* to vary with flags/caps (render tier is presentation, not state).

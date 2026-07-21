@@ -538,119 +538,145 @@ Where a real product judgment is unavoidable, the preferred answer is the **defa
 ---
 ---
 
-# Part II — Interest Lab UI Surfaces (Child Probe-Picker + Guide Hypothesis Console)
+# Part II — Interest Lab UI Surfaces (Child "Curiosity Quest World" + Guide "Hypothesis Console")
 
-**Status**: Loop-ready (UI expansion) · **Created**: 2026-07-20 · builds **on top of** the done Part I pure domain (`@gt100k/interest-lab`).
+**Status**: Loop-ready (UI expansion — **3D pass**) · **Created**: 2026-07-20 · **Revised**: 2026-07-20 (3D + `motion@^12`) · builds **on top of** the done Part I pure domain (`@gt100k/interest-lab`).
 
-**Input (Part II)**: "A BEAUTIFUL, game-y, impressive, fully-animated UI on top of the existing pure Interest-Lab domain — a **child probe-picker** (playful, quest-like) plus a **guide hypothesis console** — rendered from the domain outputs, with full art direction + a golden motion table, reduced-motion as a first-class equal mode, WCAG 2.2 AA, age-band staging, and no dark patterns. Synthetic learners only; the pure domain stays the unit-tested core."
+**Input (Part II)**: "A GENUINELY IMPRESSIVE, delightful UI on top of the existing pure Interest-Lab domain — a child **Curiosity Quest World**: an explorable, tactile **3D world of floating interest islands** (react-three-fiber + drei + three.js) where each domain is an island/biome and probes are glowing quest-markers you hop between, with warm dusk light, gentle idle motion, and a magical 'come back later' moment that rewards **voluntary** unprompted return — plus a beautiful analyst **Hypothesis Console** for the guide (animated coverage matrix, side-by-side competing explanations, a voluntary-vs-prompted return timeline, the lifecycle as an elegant state visual, and a tasteful 3D evidence constellation). Reduced motion is a first-class **equal** mode (a calm 2D/static equivalent); an accessible **DOM** equivalent is always operable (WCAG 2.2 AA, keyboard/screen-reader; any 3D canvas `aria-hidden`); 60fps budget with graceful degradation to a 2D tier on weak devices; no dark patterns; safety/help never penalizes; a probe/hypothesis result never enters admissions/discipline/ranking. Synthetic learners only; the pure domain stays the unit-tested core."
 
 ## §U0 · How to read Part II (for the build loop)
 
 Part I (above) is the **pure domain** and is *done* — Part II renders it; it never re-computes a learning rule and never re-opens a Part-I decision. This Part II is the single loop source-of-truth for the UI. It is large on purpose; read **only the section for the current phase** each turn (JIT), then the referenced golden values.
 
-- Build path is **§U9 Phasing (P8…P13)** — always work the lowest unfinished phase.
+- Build path is **§U9 Phasing (P8…P15)** — always work the lowest unfinished phase. The 3D world is staged across dedicated **3D-UI phases** (P10 world, P11 delight, P14 quality-tiers/degradation) so the gate is never blocked on WebGL.
 - Every phase gate is **`pnpm typecheck` (`tsc -b`) + `pnpm test` (Vitest)** green for the pure **view package** `@gt100k/interest-lab-view`; the app phases add **`pnpm --filter @gt100k/interest-lab-app build`** (`next build`) + the **§U11 seeded smoke** + the **[quickstart](./quickstart.md) acceptance walkthrough**.
-- Machine-checkable acceptance lives in **§U10 Success Criteria** (each mapped to a named test) and **§U8 Golden values**.
-- Choices already settled are in **§U2 Decisions already made** — do not re-open them.
+- Machine-checkable acceptance lives in **§U10 Success Criteria** (each mapped to a named test) and **§U8 Golden values**. The view package holds **all** deterministic view-models + golden motion/palette/**scene** constants + `plainViewEquals` — so the 3D scene is testable *without* a GPU (the view emits positions/params; the app's r3f consumes them).
+- Choices already settled are in **§U2 Decisions already made** — do not re-open them (rendering approach D-U1, motion library D-U2, architecture D-U3, art direction D-U5).
 - Anything not specified: follow **§U3 Defaults for the unspecified** (log it, continue).
-- Companion docs kept consistent with this file: [plan.md](./plan.md) *(Part II)*, [tasks.md](./tasks.md) *(P8…P13)*, [data-model.md](./data-model.md), [contracts/interest-lab-ui.md](./contracts/interest-lab-ui.md), [research.md](./research.md), [quickstart.md](./quickstart.md), [checklists/ui.md](./checklists/ui.md). **Where they disagree, this file wins.**
+- Companion docs kept consistent with this file: [plan.md](./plan.md) *(Part II)*, [tasks.md](./tasks.md) *(P8…P15)*, [data-model.md](./data-model.md), [contracts/interest-lab-ui.md](./contracts/interest-lab-ui.md), [research.md](./research.md), [quickstart.md](./quickstart.md), [checklists/ui.md](./checklists/ui.md). **Where they disagree, this file wins.**
 
 ## §U1 · Scope fence (in / out / non-goals)
 
 ### In scope
 
-1. A **pure, deterministic presentation package `@gt100k/interest-lab-view` (`packages/interest-lab-view`)** that turns the Part-I domain outputs (`Lab`, `CoverageMatrix`, `SignalSummary`, `InterestHypothesis`/`HypothesisRevision`, `evaluateCandidateGate`) into **render-ready view models** for both surfaces, plus the exact constant registries (`PALETTE`, `TYPOGRAPHY`, `MOTION`, `EASINGS`, `HUE_RAMP`, `WORK_MODE_GLYPHS`) and their resolvers (`resolveMotion`, `resolveDomainHue`, `resolveChildStaging`). Depends only on `@gt100k/interest-lab` (`workspace:*`). No I/O, no wall-clock, **no `Math.random`**.
-2. A **new Next.js App-Router app `@gt100k/interest-lab-app` (`apps/interest-lab`)** rendering **two animated DOM/SVG surfaces** with React + a motion library (framer-motion): the **child Curiosity Quest Board** (probe-picker) and the **guide Hypothesis Console**.
-3. A **first-class, equal reduced-motion / plain rendering** of the identical view models, and **DOM-native WCAG 2.2 AA** (keyboard/switch/screen-reader operable by construction — no opaque canvas).
-4. **Age-band staging** on the child surface (6-8 / 9-11 / 12-14) per §14.13, resolved from `resolveChildStaging`.
-5. A **seed adapter wiring** in the app that feeds the Part-I fixtures (`CATALOG_GOLDEN_V1`, `EVENTS_GOLDEN_V1`) through the domain and view package so the app renders **with no external fetch**.
+1. A **pure, deterministic presentation package `@gt100k/interest-lab-view` (`packages/interest-lab-view`)** that turns the Part-I domain outputs (`Lab`, `CoverageMatrix`, `SignalSummary`, `InterestHypothesis`/`HypothesisRevision`, `evaluateCandidateGate`) into **render-ready view models** for both surfaces — including the **3D scene view model** (deterministic island layout, quest-marker placements, camera framing, quality/render tiers, evidence-constellation positions) — plus the exact constant registries (`PALETTE`, `TYPOGRAPHY`, `MOTION`, `EASINGS`, `HUE_RAMP`, `WORK_MODE_GLYPHS`, `SCENE3D`, `CAMERA3D`, `QUALITY_TIERS`) and their resolvers (`resolveMotion`, `resolveDomainHue`, `resolveChildStaging`, `resolveIslandLayout`, `resolveQuestPlacement`, `resolveCamera3D`, `resolveQualityTier`, `resolveRenderTier`). Depends only on `@gt100k/interest-lab` (`workspace:*`). **No I/O, no wall-clock, no `Math.random`, and no `three`/`react`/`@react-three/*` import** — the view stays framework-agnostic and GPU-free so every value is Vitest-testable.
+2. A **new Next.js App-Router app `@gt100k/interest-lab-app` (`apps/interest-lab`)** rendering **two surfaces**:
+   - the child **Curiosity Quest World** — a **react-three-fiber + drei + three.js** 3D scene of **floating interest islands** (one per domain), glowing quest-markers, warm dusk atmosphere, gentle idle motion, a camera that drifts/focuses between islands, and the reserved **"come back later"** bloom on voluntary return; and
+   - the guide **Hypothesis Console** — animated DOM/SVG analyst cockpit (coverage matrix, competing explanations, return timeline, lifecycle state visual, authoring) with an **optional, tasteful 3D "evidence constellation"** depth view.
+3. A **three-tier rendering model, all from one view model** (parity by construction): **(A)** the full **3D tier** (WebGL), **(B)** a **degraded 3D-lite tier** (fewer effects, capped DPR) auto-selected on weak devices / low FPS, and **(C)** a **2D DOM tier** — a calm card-constellation board — that is simultaneously the **reduced-motion equal mode**, the **plain mode**, the **no-WebGL / context-lost fallback**, and (always present) the **accessible operable surface**. The 3D `<Canvas>` is `aria-hidden="true"`; real interaction is on **semantic DOM controls** operable by keyboard/switch/screen-reader.
+4. **DOM motion standardized on `motion@^12`** (`import { motion, AnimatePresence, useReducedMotion } from "motion/react"`) for the 2D tier, HUD, console, transitions, and micro-interactions. `three`/`@react-three/fiber` own **only** the 3D scene animation (`useFrame`, drei helpers); no other animation engine is used.
+5. **Age-band staging** on the child surface (6-8 / 9-11 / 12-14) per §14.13, resolved from `resolveChildStaging` — including which render tier and how much of the world a band gets (6-8 the calmest concrete version; 12-14 the fuller explorable map).
+6. A **seed adapter wiring** in the app that feeds the Part-I fixtures (`CATALOG_GOLDEN_V1`, `EVENTS_GOLDEN_V1`) through the domain and view package so the app renders **with no external fetch** (all 3D geometry is procedural primitives + in-app generated textures; no HDRI/GLTF/font fetch).
 
 ### Out of scope (explicit)
 
-- Any change to **Part I** (`packages/interest-lab`, `adapters/interest-*`) beyond consuming its public API. The domain rules, the coverage matrix, the signal families, the hypothesis lifecycle, and the guardrails are **injected as inputs**, not recomputed.
+- Any change to **Part I** (`packages/interest-lab`, `adapters/interest-*`) beyond consuming its public API. The domain rules, coverage matrix, signal families, hypothesis lifecycle, and guardrails are **injected as inputs**, not recomputed.
 - The **learned Bayesian model** and the **contextual bandit** (still shadow/deferred in Part I). The console renders shadow **proposals as suggestions only**; it never makes them operative.
 - The **Specialization Planner** (`CANDIDATE_SPINE → ACTIVE` adoption, §14.7) — the console *visualizes* the lifecycle state and the transition guardrails; it does not author an adoption.
-- Real persistence, real consent/admissions/legal machinery, real device/artifact capture, sound-asset pipeline (cues are muted-by-default captions only), and cross-cohort standings (this is the exploration/scouting surface, not the Arena §15.3 social surface).
+- Real persistence, real consent/admissions/legal machinery, real device/artifact capture, a sound-asset pipeline (cues are muted-by-default captions only), and cross-cohort standings (this is the exploration/scouting surface, not the Arena §15.3 social surface).
+- **No external asset fetch** of any kind — no CDN HDRI/`Environment` presets, no remote GLTF/textures, no web fonts. All 3D geometry is three primitives; all textures are generated in-app deterministically; fonts are system fallback stacks (self-hosted `woff2` is an optional non-breaking upgrade).
 
 ### Non-goals (will not build, by principle)
 
-- **No** scalar passion/drive score, **no** confidence number that hides a coverage gap, and **no** verdict/label ("you are an X person") in **any** view model or on **any** surface (IL-005/IL-006; §14.5).
-- **No** dark patterns on the child surface: no countdown/urgency timers, manufactured scarcity, FOMO/guilt framing, loss-framed streaks, decaying/absence meters, or engagement-timed notifications (§14.12).
+- **No** scalar passion/drive score, **no** confidence number that hides a coverage gap, and **no** verdict/label ("you are an X person") in **any** view model or on **any** surface (IL-005/IL-006; §14.5). Never a fixed label — only "current evidence suggests".
+- **No** dark patterns on the child surface: no countdown/urgency timers, manufactured scarcity, FOMO/guilt framing, loss-framed streaks, decaying/absence meters, or engagement-timed notifications (§14.12). The 3D world adds **no** grind, no time-gated island unlocks, no login-streak lanterns.
 - **No** admissions/discipline/family-fidelity/public-ranking/commercial framing: the view types are **structurally** free of `rank`/`percentile`/`score`/`price`/`verdict` fields (PASS-010, IL-013).
-- **No** motion-only affordance and **no** degraded accessibility fallback — reduced-motion and the full DOM are **equal** modes.
-- **No** game engine / Canvas / WebGL (see §U2 D-U1): the surfaces are card/grid/timeline/state-diagram based and are **DOM-native** for accessibility-by-construction.
-- **No** fixed identity/career taxonomy and **no** hardcoded domain list in the view package — domain hue is derived from **catalog order**, not a domain→hue table (constitution: no fixed labels; IL-001).
+- **No** motion-only affordance and **no** degraded accessibility fallback — reduced-motion, the 2D tier, and the full DOM are **equal** modes; nothing stateful is canvas-only or pointer-only.
+- **No** interaction that lives *only* inside the WebGL canvas: every pick/focus/return is a real, focusable DOM control; the 3D scene mirrors state, it does not own it.
+- **No** fixed identity/career taxonomy and **no** hardcoded domain list in the view package — domain hue **and** island position are derived from **catalog order**, not a domain→hue/position table (constitution: no fixed labels; IL-001).
 
 ## §U2 · Decisions already made (do not re-open)
 
-### D-U1 — Rendering: **React + framer-motion + SVG/DOM (no game engine) — SETTLED**
+### D-U1 — Rendering: **a 3D child world (react-three-fiber + drei + three.js) with a 2D-DOM equal/fallback tier — SETTLED**
 
-The two surfaces are a **card/quest board**, a **coverage grid**, a **return timeline**, a **lifecycle state diagram**, and **evidence prose** — all inherently DOM/SVG. Building them in the DOM (not Canvas/Phaser) makes them **accessible by construction** (no `aria-hidden` canvas + parallel structure needed), lets us apply the Apple/Emil DOM-motion craft (springs, `@starting-style`, `clip-path`, `backdrop-filter`, origin-aware transforms), and keeps `next build` lean. **Motion library: `framer-motion@^11`** (a.k.a. Motion). Canvas/Phaser is rejected for these surfaces (recorded in [research.md](./research.md)). Reduced motion remains a first-class **equal** mode; WCAG 2.2 AA is a hard requirement (UI-FR-012/013).
+The child Curiosity Quest World is a **real 3D scene** on a WebGL `<Canvas>` (react-three-fiber), not a flat card grid, because the vision is an *explorable, tactile world of floating islands you wander* — depth, warm volumetric light, and gentle idle motion are the point. **This supersedes the earlier "DOM/SVG, no game engine" decision.** To keep every hard requirement, the world is built on **three tiers driven by one view model** (D-U3):
 
-### D-U2 — Architecture: pure view package + separate Next.js app (mirror feature 001 / 004)
+- **Tier A — `quest-world-3d` (full):** `three` + `@react-three/fiber` + `@react-three/drei` render floating islands, glowing quest-markers, dusk sky/fog, ambient motes (drei `<Sparkles>`), idle float (drei `<Float>`), and a drifting/focusing camera. Emissive-glow + additive halo sprites carry the "warmth" (post-processing bloom is an **optional non-breaking** full-tier upgrade, §U8.15).
+- **Tier B — `quest-world-3d-lite` (degraded):** same scene, fewer motes, no shadows, no post-processing, capped device-pixel-ratio, lower island detail — auto-selected on weak devices / sustained low FPS (drei `<PerformanceMonitor>` + `<AdaptiveDpr>`), preserving the 60fps budget (SC-UI-16).
+- **Tier C — `board-2d` (calm/accessible/fallback):** a DOM/SVG **card-constellation board** (essentially the classic probe-picker) animated with **`motion@^12`**, or **static** under reduced motion. Tier C is simultaneously the **reduced-motion equal mode**, **plain mode**, the **no-WebGL / lost-context fallback**, and the always-present **accessible operable surface**.
 
-`packages/interest-lab-view` is **pure** (no I/O, no wall-clock, **no `Math.random`**), framework-agnostic, and holds every render-shaping rule as a unit-testable function. `apps/interest-lab` is the only place React/framer-motion/DOM live. The **Part-I domain package stays the untouched, unit-tested core**; the view package builds *on top of it*, so both layers are Vitest-covered (the app is verified by `next build` + walkthrough). Parallel-safe (new dirs only).
+**Accessibility is DOM-native and canvas-independent.** The 3D `<Canvas>` is `aria-hidden="true"` and is **never the sole affordance**. Every quest is a real, semantic, focusable DOM control (an ordered "quest ledger" list of card-buttons) rendered from the same view model; keyboard/switch/screen-reader users operate the DOM, and the 3D scene *mirrors* the focused/picked/returned state. Dropping the canvas entirely (Tier C) leaves a fully functional, fully accessible surface. WCAG 2.2 AA is a hard requirement (UI-FR-013). Recorded in [research.md](./research.md) R1.
 
-### D-U3 — One state → many renderings (parity by construction)
+### D-U2 — DOM motion library: **`motion@^12`** (`import from "motion/react"`) — SETTLED
 
-The view package composes a single **`InterestLabView`** (`buildInterestLabView(...)`). The child probe-picker, the guide console, the reduced-motion/plain rendering, and every age-band rendering **all render from that same view**. Reduced-motion/plain/age-band **do not recompute** the domain state — they render the identical view with motion stripped and presentation swapped. `plainViewEquals` is a pure, testable guarantee (UI-FR-019, SC-UI-10).
+All **DOM** motion (2D board, HUD, console panels, coverage grid, timeline draw, lifecycle morph, drawers, tooltips, page/surface transitions, press feedback, the pick/return gesture in Tier C) uses **`motion` v12** imported as `motion/react` — springs, `AnimatePresence`, layout/shared-element transitions, and `useReducedMotion` gating. **`three` + `@react-three/fiber` (`useFrame`) + `@react-three/drei`** own **only** the 3D scene; no other animation engine (no GSAP, no anime.js, no framer-motion — `motion@^12` *is* the successor to framer-motion). Recorded as DP-U2 (settled).
+
+### D-U3 — One view model → three tiers → both surfaces (parity by construction)
+
+The view package composes a single **`InterestLabView`** (`buildInterestLabView(...)`) that carries the domain-derived state **and** a deterministic `scene` view model (island layout, marker placements, camera, quality/render tier). The 3D world, the 2D board, the reduced-motion/plain rendering, every age-band rendering, and the accessible DOM ledger **all render from that same view** — none recompute domain state; they differ only in `flags` (reducedMotion/plainMode/ageBand/surface/deviceCaps) and the `presentation` derived from them. `plainViewEquals` is a pure, testable guarantee (UI-FR-019, SC-UI-10). The **render tier is presentation, not state**: `plainViewEquals` holds across 3D-full / 3D-lite / 2D / reduced.
 
 ### D-U4 — Guardrails are structural
 
-View types carry **no** `score`/`confidence`/`passionScore`/`verdict`/`label`/`rank`/`percentile`/`price` field (grep-tested, SC-UI-11). Coverage **gaps are visible fields**, never collapsed to a number. Competing explanations are a **paired supporting+disconfirming** structure (never averaged). Prompted engagement and support (accessibility/safety) markers carry an explicit `lowersSignal: false`. Shadow proposals carry `operative: false` and the console has **no path** to make them operative — the guide authors the record (IL-011).
+View types carry **no** `score`/`confidence`/`passionScore`/`verdict`/`label`/`rank`/`percentile`/`price` field (grep-tested, SC-UI-11) — including the 3D scene view model (an island/marker has a position + hue + state + glyph, never a score or rank). Coverage **gaps are visible fields**, never collapsed to a number. Competing explanations are a **paired supporting+disconfirming** structure (never averaged). Prompted engagement and support (accessibility/safety) markers carry an explicit `lowersSignal: false`. Shadow proposals carry `operative: false` and the console has **no path** to make them operative — the guide authors the record (IL-011). No island "unlocks" or "levels up" — there is no gating, no grind, no locked domains (the world shows *what to try*, never *what you've earned*).
 
-### D-U5 — Art direction: **"The Curiosity Atelier" — dusk workshop, not cream, not golden-hour**
+### D-U5 — Art direction: **"The Curiosity Atelier at Dusk" — a floating dusk archipelago, not cream, not golden-hour**
 
-Deliberately **not** the 2026 SaaS-cream/sand default (impeccable) and deliberately **distinct** from feature 004's golden-hour teal-navy sea. The identity is a **deep plum-indigo dusk workshop-atrium** where curiosities glow warm; the guide console is a calm **violet-tinted observatory desk / field notebook**. Full palette + type in **§U8.2/§U8.3** (golden). Fonts served by **system fallback stacks** (no external fetch); self-hosted `woff2` is an optional non-breaking upgrade (D-U8).
+Deliberately **not** the 2026 SaaS-cream/sand default (impeccable) and deliberately **distinct** from feature 004's golden-hour teal-navy sea. The identity is a **deep plum-indigo dusk sky** in which warm **curiosity-islands** float and glow; the guide console is a calm **violet-tinted observatory desk / field notebook** with an optional star-map evidence constellation. Full palette + type in **§U8.2/§U8.3** (golden); 3D materials/lighting/atmosphere in **§U8.14**. Fonts served by **system fallback stacks** (no external fetch); self-hosted `woff2` is an optional non-breaking upgrade (D-U8). Text lives in the **DOM**, never rendered inside the WebGL canvas (accessibility + no-font-fetch).
 
-### D-U6 — Data model, motion vocabulary, stack
+### D-U6 — Data model, motion vocabulary, 3D scene model, stack
 
-- **View data model** is fixed in [data-model.md](./data-model.md).
-- **Motion vocabulary** (Apple fluid-motion + Emil design-engineering) is fixed in **§U6** and **§U8.4**: eased `enter` (strong ease-out) on entrances, `move` (ease-in-out) for on-screen moves, `pop` (gentle overshoot ≤1.05, **never `scale(0)`**) for reveals, press feedback `scale 0.97` on pointer-down, one momentum **spring** reserved for the "pick" gesture, and a full reduced-motion equivalent for every row.
-- **Stack** pinned in **§U11**. Loop gate = `pnpm typecheck` + `pnpm test`; app phases add `next build` + smoke + walkthrough.
+- **View data model** (incl. the 3D scene view model) is fixed in [data-model.md](./data-model.md).
+- **Motion vocabulary** (Apple fluid-motion + Emil design-engineering) is fixed in **§U6** and **§U8.4**: DOM = eased `enter` (strong ease-out) on entrances, `move` (ease-in-out) for on-screen moves, `pop` (gentle overshoot ≤1.05, **never `scale(0)`**) for reveals, press feedback `scale 0.97` on pointer-down, one momentum **spring** reserved for the "pick" gesture; 3D = gentle looped **Float**/glow idle, an establishing **drift-in**, camera **focus** easing, the reserved **come-back-later bloom**, and a **hop** on pick — each with a first-class reduced-motion/2D equivalent.
+- **Stack** pinned in **§U11**: `three` + `@react-three/fiber@^8` + `@react-three/drei@^9` (React-18 line) + `motion@^12`. Loop gate = `pnpm typecheck` + `pnpm test`; app phases add `next build` + smoke + walkthrough.
 
 ## §U3 · Defaults for the unspecified
 
 > **For anything Part II doesn't specify, choose the simplest correct option, record it in `.loop/decisions.md`, and continue.**
 
-Escalate (append one line to `.loop/requests.jsonl`, then proceed on your recommendation) **only** for a genuine product/design choice with hard-to-reverse consequences you cannot defensibly default — e.g. a golden value you believe is wrong. Never escalate naming, formatting, copy wording, or anything this doc answers. The rendering approach (D-U1), the view-package architecture (D-U2), and the art direction (D-U5) are **settled** and MUST NOT be re-opened.
+Escalate (append one line to `.loop/requests.jsonl`, then proceed on your recommendation) **only** for a genuine product/design choice with hard-to-reverse consequences you cannot defensibly default — e.g. a golden value you believe is wrong. Never escalate naming, formatting, copy wording, or anything this doc answers. The rendering approach (D-U1: 3D world + 2D equal tier), the DOM motion library (D-U2: `motion@^12`), the view-package architecture (D-U3), and the art direction (D-U5) are **settled** and MUST NOT be re-opened.
 
 ## §U4 · User Scenarios & Testing *(mandatory)*
 
-Prioritized, independently testable slices. **UI-US1 alone is a viable MVP**: the child Curiosity Quest Board rendering the domain Lab with satisfying pick motion, age-band staging, and a reduced-motion equal mode.
+Prioritized, independently testable slices. **The MVP is UI-US1 (view model) + UI-US2 (3D world)**: the child Curiosity Quest World rendering the domain Lab as floating islands with satisfying pick motion, age-band staging, and a 2D reduced-motion equal mode.
 
-### UI-US1 — Pick a curiosity quest on a playful, animated board (P9) 🎯 MVP
+### UI-US1 — The quest view model + the 2D card-constellation board (P9) 🎯 MVP-floor
 
-A synthetic learner opens the **Curiosity Quest Board**: the domain `Lab` (18–24 balanced probes) rendered as a warm, dusk-lit spread of **quest cards / curiosity islands**, clustered by domain constellation. Each card shows its **domain hue**, a **work-mode glyph** (build / investigate / compose / …), difficulty/social/audience cues (icon + text, never color-only), and **why it appears** (provenance: guide / rule / shadow-model). The child always has **≥2 eligible offers** at each choice point. Picking a quest plays a satisfying **momentum spring** into a "my quests" tray; press feedback is instant. `prefers-reduced-motion` conveys the identical state calmly.
+Before any GPU, the domain `Lab` (18–24 balanced probes) becomes a deterministic **quest view model** and a **2D card-constellation board** (Tier C): quest cards clustered by domain constellation, each with its **domain hue**, a **work-mode glyph** (build / investigate / compose / …), difficulty/social/audience cues (icon + text, never color-only), and **why it appears** (provenance: guide / rule / shadow-model). The child always has **≥2 eligible offers** at each choice point. This board is the accessible/reduced-motion/fallback tier and the AT source of truth; it ships first so the world (US2) has a guaranteed floor.
 
-**Why this priority**: it is the atomic child-facing surface — the playful rendering of the balanced Lab. Everything else (the delight, the console) hangs off "the board renders the domain Lab with parity, staging, and reduced-motion" (UI-FR-002).
+**Why this priority**: it is the deterministic, testable, GPU-free heart. The 3D world and every mode render from this same view model; if it is right and accessible, the world is delight layered on a correct, operable base (UI-FR-001/002/019).
 
-**Independent Test**: feed `buildLab(CATALOG_GOLDEN_V1, freshLearner, {seed:42})` (Part-I **G1**) into `buildProbePickerView`; assert 20 quest cards, each `provenance:"RULE"` + non-empty `whyCopy`, `domainHue` = `HUE_RAMP[catalog-domain-index]`, `workModeGlyph` per **§U8.6**, `returnState:"new"`, ≥2 eligible at each choice point; render the board (DOM) and confirm each card state is conveyed color-independently, with a reduced-motion rendering that loses no state.
+**Independent Test**: feed `buildLab(CATALOG_GOLDEN_V1, freshLearner, {seed:42})` (Part-I **G1**) into `buildProbePickerView`; assert 20 quest cards, each `provenance:"RULE"` + non-empty `whyCopy`, `domainHue` = `HUE_RAMP[catalog-domain-index]`, `workModeGlyph` per §U8.6, `returnState:"new"`, ≥2 eligible per choice point; render the 2D board (DOM) and confirm each card state is conveyed color-independently, keyboard-operable, with a reduced-motion rendering that loses no state.
 
 **Acceptance Scenarios**:
 
-1. **Given** the golden Lab, **When** the board renders, **Then** every offer appears as a quest card with its domain hue, work-mode glyph, difficulty/social/audience cue (icon+text), and a `whyCopy`/provenance — and no card exposes a price/score/rank/label.
+1. **Given** the golden Lab, **When** the 2D board renders, **Then** every offer appears as a quest card with its domain hue, work-mode glyph, difficulty/social/audience cue (icon+text), and a `whyCopy`/provenance — and no card exposes a price/score/rank/label.
 2. **Given** any choice point, **When** the child views offers, **Then** ≥2 eligible offers are present and pickable by pointer **and** keyboard, with visible focus.
-3. **Given** a pick, **When** the child selects a quest, **Then** it animates into the tray with a momentum spring (interruptible), press feedback fired on pointer-down; under reduced motion it moves via a ≤150ms crossfade with no spring.
-4. **Given** `prefers-reduced-motion`, **When** the board renders, **Then** entrances become instant/short crossfades, no `scale(0)`, and every quest/state remains fully conveyed.
+3. **Given** a pick (Tier C), **When** the child selects a quest, **Then** it animates into the tray with a `motion@^12` momentum spring (interruptible), press feedback fired on pointer-down; under reduced motion it moves via a ≤150ms crossfade with no spring.
+4. **Given** `prefers-reduced-motion` or plain mode, **When** the board renders, **Then** entrances become instant/short crossfades, no `scale(0)`, and every quest/state remains fully conveyed.
 
-### UI-US2 — "Come back later" delight for voluntary return (P10)
+### UI-US2 — Explore a 3D world of floating curiosity islands (P10) 🎯 MVP
 
-When the child **voluntarily returns** to a quest they already explored (the domain's delayed voluntary-return signal at 7 / 30 days — the central passion signal), the quest renders a warm **welcome-back** state: a gentle `spark` bloom + concrete copy ("You came back to this one"). This is the **one delight reserved for voluntary return** — it celebrates the signal that survives the removal of pressure, **without** telling the child a fixed label and **without** any guilt/FOMO/urgency. Prompted returns get **no** such delight and visibly recede.
+A synthetic learner opens the **Curiosity Quest World**: the domain `Lab` rendered as **floating interest islands** (one per domain, deterministic layout §U8.13), warm and glowing against a deep plum-indigo dusk sky, with probes as **glowing quest-markers** hovering over their island. Islands **idle-float** gently; motes drift like fireflies; a camera performs an establishing **drift-in** then lets the child **focus** island to island (keyboard arrows move focus; pointer drag gently orbits for 9-11/12-14). Focusing an island brings its quest-markers forward with their work-mode glyph + why (rendered as real DOM controls, not canvas text). Picking a marker plays a satisfying **hop** into a "my quests" beacon. The scene is `aria-hidden`; every quest is operable via the DOM ledger; on weak devices it degrades to 3D-lite, and reduced-motion/no-WebGL falls back to the US1 board — **identical state throughout**.
 
-**Why this priority**: voluntary return is the load-bearing passion signal (PASS-004/005). Making it *felt* — and making prompted return deliberately un-celebrated — encodes the whole thesis at the child surface without dark patterns.
+**Why this priority**: this is the vision — a beloved-kids'-adventure feel, not a form. It renders the US1 view model as a place. Everything magical (US3 return delight) hangs off "the world renders the balanced Lab with parity, staging, and a first-class 2D/reduced equivalent" (UI-FR-002/002b).
 
-**Independent Test**: with a history marking a probe as voluntary-return @7 (and @30), `buildProbePickerView` yields that card's `returnState:"voluntary-return"` with a `welcomeBack` motion token and concrete (label-free) copy; a prompted-return probe yields `returnState:"prompted-return"` with a recessed tone and **no** delight; reduced-motion yields a static warm ring + text.
+**Independent Test**: from `buildSceneView(G1 Lab, {ageBand, deviceCaps, reducedMotion:false})` assert: 8 islands at the golden positions (§U8.13), each island `hue` = `resolveDomainHue`, each carrying its offers as markers at the golden local placements; `camera` = §U8.14 home framing; `renderTier` resolves per caps (§U8.16). Mount the r3f scene and confirm zero console/WebGL errors, the canvas is `aria-hidden`, the DOM ledger is present + focusable, and toggling reduced-motion swaps to the 2D board with no state change (`plainViewEquals`).
 
 **Acceptance Scenarios**:
 
-1. **Given** a voluntary return @7/@30, **When** the card renders, **Then** it shows a warm welcome-back state with concrete copy and **no** fixed label / no "you are an X".
-2. **Given** a prompted return (reminder/deadline/nudge), **When** the card renders, **Then** it recedes (`prompted` tone), carries its intervention context on inspect, and shows **no** celebration.
-3. **Given** the board, **When** inspected for dark patterns, **Then** there is no countdown, streak-break threat, scarcity, FOMO, or engagement-timed nudge anywhere.
+1. **Given** the golden Lab + full caps, **When** the world mounts, **Then** 8 floating islands render at the golden layout, each tinted by its domain hue, with its offers as glowing quest-markers (work-mode glyph + why on focus), and the camera performs the establishing drift-in.
+2. **Given** keyboard-only operation, **When** the child presses arrow/Tab, **Then** focus moves island→island and marker→marker via the DOM ledger with visible focus, and the 3D camera mirrors the focus (reduced-motion: instant framing); no interaction requires the pointer or the canvas.
+3. **Given** a marker pick, **When** the child selects a quest, **Then** it plays the `hop` into the my-quests beacon (interruptible), press feedback on pointer-down; reduced motion → the 2D crossfade-to-tray.
+4. **Given** weak-device caps or sustained <55fps, **When** the tier resolves, **Then** the scene degrades to `quest-world-3d-lite` (fewer motes, no shadows, capped DPR) without losing any quest; no-WebGL/`prefers-reduced-motion` → the `board-2d` tier; the underlying quest state is identical across tiers.
 
-### UI-US3 — Guide console: the animated coverage matrix, gaps never hidden (P11)
+### UI-US3 — The magical "come back later" moment for voluntary return (P11)
 
-The guide opens the **Hypothesis Console** and sees the **coverage matrix**: domains (rows, catalog order, each with its hue) × the 9 work-modes (columns, each with its glyph). Each cell shows a **coverage status** (voluntary-explored / prompted-explored / offered / not-yet-offered). **Gaps are visible** (calm slate hollow cells + text), never hidden behind a score. A **coverage rail** summarizes each required dimension (`probeCount`, `domains`, `workModes`, `social`, `difficulty`, `audience`) as met / named-gap — the exact Part-I `CoverageMatrix` (**G2** complete, **G3** gappy). There is **no** scalar coverage/confidence anywhere.
+When the child **voluntarily returns** to a quest/island they already explored (the domain's delayed voluntary-return signal at 7 / 30 days — the central passion signal), that island **warms and blooms**: a gentle `--spark` light bloom, a soft burst of drifting spark-motes, the camera eases toward it, and concrete DOM copy appears ("You came back to this one"). This is the **one delight reserved for voluntary return** — it celebrates the signal that survives the removal of pressure, **without** a fixed label and **without** any guilt/FOMO/urgency. Prompted returns get **no** bloom and their marker visibly recedes. In Tier C / reduced motion the bloom is a **static warm halo + text**; the meaning is never motion-only.
+
+**Why this priority**: voluntary return is the load-bearing passion signal (PASS-004/005). Making it *felt* in the world — and making prompted return deliberately un-celebrated — encodes the whole thesis at the child surface without dark patterns.
+
+**Independent Test**: with a history marking a probe voluntary-return @7 (and @30), `buildProbePickerView`/`buildSceneView` yield that card/marker `returnState:"voluntary-return"` with a `welcomeBack` motion token, `spark` tone, and concrete (label-free) copy; a prompted-return probe yields `returnState:"prompted-return"` with a recessed tone and **no** delight; reduced-motion yields a static warm ring/halo + text; the bloom emits **no** number/label.
+
+**Acceptance Scenarios**:
+
+1. **Given** a voluntary return @7/@30, **When** the world (or board) renders, **Then** the island/card shows a warm welcome-back bloom with concrete copy and **no** fixed label / no "you are an X".
+2. **Given** a prompted return (reminder/deadline/nudge), **When** it renders, **Then** it recedes (`prompted` tone), carries its intervention context on inspect, and shows **no** celebration.
+3. **Given** the surface, **When** inspected for dark patterns, **Then** there is no countdown, streak-break threat, scarcity, FOMO, engagement-timed nudge, or time-gated island unlock anywhere.
+4. **Given** reduced motion / Tier C, **When** a voluntary return renders, **Then** the delight is a static warm halo + concrete text, fully conveyed without motion.
+
+### UI-US4 — Guide console: the animated coverage matrix, gaps never hidden (P12)
+
+The guide opens the **Hypothesis Console** and sees the **coverage matrix**: domains (rows, catalog order, each with its hue) × the 9 work-modes (columns, each with its glyph). Each cell shows a **coverage status** (voluntary-explored / prompted-explored / offered / not-yet-offered). **Gaps are visible** (calm slate hollow cells + text), never hidden behind a score. A **coverage rail** summarizes each required dimension (`probeCount`, `domains`, `workModes`, `social`, `difficulty`, `audience`) as met / named-gap — the exact Part-I `CoverageMatrix` (**G2** complete, **G3** gappy). There is **no** scalar coverage/confidence anywhere. Rendered in DOM/SVG with `motion@^12` (grid stagger, rail ticker).
 
 **Why this priority**: the console's first job is an honest, beautiful coverage picture — the thing §14.4.3 #3 forbids collapsing into a confidence number.
 
@@ -658,206 +684,231 @@ The guide opens the **Hypothesis Console** and sees the **coverage matrix**: dom
 
 **Acceptance Scenarios**:
 
-1. **Given** a complete Lab, **When** the matrix renders, **Then** the rail shows every dimension met, gaps empty, and the grid fills with a stagger (instant under reduced motion).
+1. **Given** a complete Lab, **When** the matrix renders, **Then** the rail shows every dimension met, gaps empty, and the grid fills with a `motion@^12` stagger (instant under reduced motion).
 2. **Given** a gappy Lab, **When** the matrix renders, **Then** each unmet dimension appears as a **named, visible gap** (calm slate, icon+text) and the aggregate `gaps` list is shown — never a single number.
 3. **Given** any matrix, **When** inspected, **Then** there is no scalar coverage/confidence field or element.
 
-### UI-US4 — Guide console: competing explanations, return timeline, lifecycle & authoring (P12)
+### UI-US5 — Guide console: competing explanations, return timeline, lifecycle, authoring + evidence constellation (P13)
 
-The console renders the mutable `InterestHypothesis` beautifully: (a) **competing explanations side-by-side** — the strongest **supporting** evidence beside the strongest **disconfirming** evidence, equal weight, never averaged, with uncertainty as an **evidence grade** (thin/moderate/strong) or interval — never a scalar passion score, never "you are an X"; (b) a **voluntary-vs-prompted return timeline** — voluntary returns @7/@30 bright and distinct, prompted returns recessed with their intervention context, and accessibility/safety events as **neutral care-markers that never lower a signal**; (c) an elegant **lifecycle state visual** (EXPLORING → EMERGING → CANDIDATE_SPINE → ACTIVE, with CONTESTED / PARKED / REOPENED branches) showing the current state, the legal transitions, and the **CANDIDATE_SPINE gate checklist** (≥3 families incl. ≥1 delayed-discretionary + ≥1 artifact/competence, from `evaluateCandidateGate`); (d) **authoring**: the guide authors the operative revision; a shadow rule/model proposal is shown as a **suggestion only** (`operative:false`, "a guide authors the record").
+The console renders the mutable `InterestHypothesis` beautifully: (a) **competing explanations side-by-side** — strongest **supporting** beside strongest **disconfirming**, equal weight, never averaged, uncertainty as an **evidence grade** (thin/moderate/strong) or interval — never a scalar passion score, never "you are an X"; (b) a **voluntary-vs-prompted return timeline** — voluntary returns @7/@30 bright and distinct, prompted returns recessed with their intervention context, accessibility/safety events as **neutral care-markers that never lower a signal**; (c) an elegant **lifecycle state visual** (EXPLORING → EMERGING → CANDIDATE_SPINE → ACTIVE, with CONTESTED / PARKED / REOPENED branches) with the current state, legal transitions, and the **CANDIDATE_SPINE gate checklist** (from `evaluateCandidateGate`); (d) **authoring** — the guide authors the operative revision; a shadow rule/model proposal shows as a **suggestion only** (`operative:false`). Optionally (e) a **tasteful 3D "evidence constellation"** (`aria-hidden`, its own quality gating, DOM-equivalent always present): supporting evidence as a warm cluster, disconfirming as a cool cluster, the six signal families as stars whose brightness reflects presence, voluntary returns glowing brightest — a depth data-viz that *elevates* the side-by-side clarity, never replaces it.
 
-**Why this priority**: this is the console's evidentiary heart — the §14.5 contract rendered as an honest, contestable, human-authored record.
+**Why this priority**: this is the console's evidentiary heart — the §14.5 contract rendered as an honest, contestable, human-authored record; the constellation is a considered 3D elevation, not a gimmick.
 
-**Independent Test**: from a fixture revision + `EVENTS_GOLDEN_V1` + `evaluateCandidateGate`, assert: the explanations view always carries a `disconfirming` card whenever it carries a `supporting` card and exposes no scalar passion score; the timeline marks voluntary @7/@30 distinctly, marks the prompted return recessed with context `"reminder"`, and marks the assistive/safety events with `lowersSignal:false`; the lifecycle view's gate checklist matches **G5** (competence-only → `missing:["no delayed-discretionary signal"]`; the G4 summary → eligible) and any proposal is `operative:false`.
+**Independent Test**: from a fixture revision + `EVENTS_GOLDEN_V1` + `evaluateCandidateGate`, assert: the explanations view always carries a `disconfirming` card whenever it carries a `supporting` card and exposes no scalar passion score; the timeline marks voluntary @7/@30 distinctly, marks the prompted return recessed with context `"reminder"`, marks assistive/safety events `lowersSignal:false`; the lifecycle gate checklist matches **G5**; any proposal is `operative:false`; `buildEvidenceConstellationView` places supporting at +X, disconfirming at −X, families as the six golden stars (§U8.17), exposes no scalar score, and has a DOM-equivalent flag.
 
 **Acceptance Scenarios**:
 
 1. **Given** a hypothesis revision, **When** explanations render, **Then** supporting and disconfirming appear **side-by-side**, uncertainty is a grade/interval, and there is no scalar passion score or verdict.
 2. **Given** `EVENTS_GOLDEN_V1`, **When** the timeline renders, **Then** voluntary @7/@30 are distinct and bright, the prompted return recedes with its context, and assistive/safety markers never lower a signal (`lowersSignal:false`).
-3. **Given** the lifecycle visual, **When** a rule/model proposes a transition, **Then** it renders as a **suggestion** (`operative:false`) and only a guide-authored revision is shown as operative; the CANDIDATE_SPINE gate checklist matches `evaluateCandidateGate`.
-4. **Given** any console text, **When** reviewed, **Then** it uses "current evidence suggests" / "next test" and never "you are an X person".
+3. **Given** the lifecycle visual, **When** a rule/model proposes a transition, **Then** it renders as a **suggestion** (`operative:false`) and only a guide-authored revision is shown as operative; the gate checklist matches `evaluateCandidateGate`.
+4. **Given** the evidence constellation on, **When** it renders, **Then** the same supporting/disconfirming/family state is shown in depth with a DOM-equivalent, `aria-hidden` canvas, no scalar score, and it degrades off cleanly (reduced motion / no-WebGL → the DOM panels alone).
+5. **Given** any console text, **When** reviewed, **Then** it uses "current evidence suggests" / "next test" and never "you are an X person".
 
-### UI-US5 — Reduced motion, plain mode, WCAG 2.2 AA & one-view parity (P13)
+### UI-US6 — Reduced motion, tiers, plain mode, WCAG 2.2 AA & one-view parity (P15)
 
-Every animated affordance has a reduced-motion equal; a low-spectacle **plain mode** is state-identical to full; both surfaces are fully **keyboard/switch/screen-reader** operable with visible focus, color-independent cues, and ≥4.5:1 contrast. Age-band staging changes only presentation; the underlying view state is identical across bands/plain/reduced (`plainViewEquals`).
+Every animated affordance (DOM **and** 3D) has a reduced-motion equal; the render tier (3D-full / 3D-lite / 2D) is chosen deterministically from device caps + flags and is **presentation only**; a low-spectacle **plain mode** and the `board-2d` tier are state-identical to full; both surfaces are fully **keyboard/switch/screen-reader** operable with visible focus, color-independent cues, and ≥4.5:1 contrast; the 3D canvas is `aria-hidden` with the DOM ledger as the AT source of truth. Age-band staging changes only presentation; the underlying view state is identical across bands/plain/reduced/tiers (`plainViewEquals`).
 
-**Independent Test**: `buildInterestLabView` + `plainViewEquals` confirm full/plain/reduced/age-band carry identical underlying state and differ only in `flags`+`presentation`; the a11y walkthrough confirms keyboard/screen-reader parity and contrast.
+**Independent Test**: `buildInterestLabView` + `plainViewEquals` confirm full-3D/3D-lite/2D/plain/reduced/age-band carry identical underlying state and differ only in `flags`+`presentation`; `resolveQualityTier`/`resolveRenderTier` match §U8.16 golden; the a11y walkthrough confirms keyboard/screen-reader parity, `aria-hidden` canvas, and contrast.
 
 **Acceptance Scenarios**:
 
-1. **Given** `prefers-reduced-motion` / plain mode, **When** either surface renders, **Then** every state/explanation/coverage-gap/timeline/lifecycle is fully conveyed without motion.
-2. **Given** keyboard-only + screen-reader, **When** operating either surface, **Then** every control is reachable/operable with visible `--focus` rings, color-independent state, ≥4.5:1 contrast; `prefers-reduced-transparency` → solid panels.
-3. **Given** an age-band switch, **When** the surfaces re-render, **Then** only presentation changes; `plainViewEquals` holds.
+1. **Given** `prefers-reduced-motion` / plain mode / no WebGL, **When** either surface renders, **Then** it uses the `board-2d`/static tier and every state/explanation/coverage-gap/timeline/lifecycle/quest is fully conveyed without motion or GPU.
+2. **Given** keyboard-only + screen-reader, **When** operating either surface, **Then** every control is reachable/operable via the DOM with visible `--focus` rings, color-independent state, ≥4.5:1 contrast, the 3D canvas `aria-hidden`; `prefers-reduced-transparency` → solid panels.
+3. **Given** an age-band or tier switch, **When** the surfaces re-render, **Then** only presentation changes; `plainViewEquals` holds.
 
 ### Edge cases (Part II)
 
-- **Fresh learner** (no history): every quest `returnState:"new"`; no welcome-back; the coverage matrix shows all gaps honestly.
-- **All-prompted history**: no voluntary delight fires; prompted markers recede; the gate stays un-met (no delayed-discretionary family).
-- **Coverage gap present**: the matrix shows the named gap (calm, never red, never a score) — parity with G3.
+- **Fresh learner** (no history): every quest `returnState:"new"`; no welcome-back bloom; the coverage matrix shows all gaps honestly.
+- **All-prompted history**: no voluntary delight fires anywhere; prompted markers recede; the gate stays un-met (no delayed-discretionary family).
+- **Coverage gap present**: the matrix shows the named gap (calm, never red, never a score) — parity with G3. In the 3D world a not-yet-offered work-mode is simply *absent*, never a locked/greyed "you failed" state.
 - **Missing data / withdrawn reflection**: the timeline/console reflect the domain's exclusion (a withdrawn optional reflection is absent) and **never** worsen the lifecycle state on absence alone.
 - **Assistive input / safety rescue**: rendered as neutral care-markers; `lowersSignal:false`; identical interpretation to an unaided learner.
-- **Shadow proposal**: rendered as a suggestion (`operative:false`); no UI path makes it operative.
+- **Shadow proposal**: rendered as a suggestion (`operative:false`); no UI path (DOM or 3D) makes it operative.
 - **Help affordance**: always present on the child surface; framed as "a different way", never as failure; never penalizes.
-- **Reduced-motion + reduced-transparency + high-contrast**: all three honored; depth/hierarchy kept, motion/translucency dropped.
+- **No WebGL / GPU context lost / `Save-Data` / `deviceMemory < 4`**: falls back to the `board-2d` tier with no loss of state or operability; a lost context never blocks a pick.
+- **Reduced-motion + reduced-transparency + high-contrast**: all three honored; depth/hierarchy kept in DOM, motion/translucency/WebGL dropped.
 
 ## §U5 · The two surfaces — the design bible
 
-This is the **design doc** the app must deliver. Machine-checkable values are pinned as golden constants in **§U8**; where §U5 describes and §U8 pins, **§U8 wins for values**. Everything is buildable in React + framer-motion + SVG/CSS and inside every guardrail (§U1 non-goals, §14.5, §14.12, §14.13).
+This is the **design doc** the app must deliver. Machine-checkable values are pinned as golden constants in **§U8**; where §U5 describes and §U8 pins, **§U8 wins for values**. The child world is buildable in **react-three-fiber + drei + three** + `motion@^12` DOM overlays; the guide console in **DOM/SVG + `motion@^12`** (+ an optional r3f constellation) — all inside every guardrail (§U1 non-goals, §14.5, §14.12, §14.13).
 
 **Design pillars (five sentences everything answers to):**
 
-1. **Curiosity is the light.** The Interest Lab is a warm dusk **workshop-atrium** of glowing curiosities you wander; the passion signal — *returning after the pressure fades* — is literally the warmest light on the board. Exploration, not a test.
-2. **The board offers; it never verdicts.** The child picks among quests; the interface says "a new kind to try", never "you are an X". The *hypothesis* lives in the guide console, as evidence, always contestable.
-3. **Honesty over a number.** Coverage **gaps are shown**, competing explanations sit **side-by-side**, uncertainty is a **grade** — never a scalar passion score, never a confidence that hides a gap.
-4. **Calm by default, delight only at the return.** Ambient motion is sparse; the one reserved delight is the **voluntary "come back later"** moment. Frequency-appropriate motion (Emil): rare → delightful, occasional → standard, frequent → instant. No dark patterns, ever.
-5. **Reduced motion and the keyboard are equal citizens.** Every visual has a calm, non-vestibular equivalent; the DOM is the accessible surface by construction (no opaque canvas). Nothing beautiful is motion-only; nothing stateful is pointer-only.
+1. **Curiosity is the light.** The Interest Lab is a warm **dusk archipelago** of glowing curiosity-islands you wander; the passion signal — *returning after the pressure fades* — is literally the warmest light in the world. Exploration, not a test.
+2. **The world offers; it never verdicts.** The child hops between islands and picks quests; the interface says "a new kind to try", never "you are an X". The *hypothesis* lives in the guide console, as contestable evidence. No island is locked, levelled, or ranked — there is nothing to grind.
+3. **Honesty over a number.** Coverage **gaps are shown**, competing explanations sit **side-by-side**, uncertainty is a **grade** — never a scalar passion score, never a confidence that hides a gap, never a score floating over an island.
+4. **Calm by default, delight only at the return.** Idle motion is gentle and sparse; the one reserved loud delight is the **voluntary "come back later"** bloom. Frequency-appropriate motion (Emil): rare → delightful, occasional → standard, frequent → instant. No dark patterns, ever.
+5. **Reduced motion, the 2D tier, and the keyboard are equal citizens.** Every visual (DOM and 3D) has a calm, non-vestibular equivalent; the DOM is the accessible surface by construction (the canvas is `aria-hidden`). Nothing beautiful is motion-only; nothing stateful is canvas-only or pointer-only.
 
-### 5.1 · Art direction & visual identity — "The Curiosity Atelier"
+### 5.1 · Art direction & visual identity — "The Curiosity Atelier at Dusk"
 
-**Style register.** A tactile, warm-dusk **illustrated workshop** — soft rounded forms, 2px hand-inked outlines, 16–20px card radii, a single soft shadow + a warm inner glow on "lit" (returned-to) quests. Warmth is carried by **light + accent + type**, not by a cream body (impeccable anti-slop): the canvas is a **deep plum-indigo dusk** so warm curiosities glow against it. The guide console is a calmer, brighter **violet-tinted observatory desk** — an evidence field-notebook, editorial and quiet.
+**Style register.** A tactile, warm-dusk **floating archipelago**: soft low-poly islands with rounded silhouettes, a single warm key-light, deep atmospheric fog, and a warm inner glow on "lit" (returned-to) islands. Warmth is carried by **light + accent + type**, not by a cream body (impeccable anti-slop): the sky is a **deep plum-indigo dusk** so warm curiosities glow against it. The guide console is a calmer, brighter **violet-tinted observatory desk** — an evidence field-notebook, editorial and quiet, with an optional star-map.
 
-**Master palette (exact hex — golden in §U8.2).** OKLCH-reasoned, contrast-verified.
+**Master palette (exact hex — golden in §U8.2).** OKLCH-reasoned, contrast-verified. (Shared by DOM and 3D materials; 3D materials additionally use the emissive/lighting constants of §U8.14.)
 
 | Role | Token | Hex | Use |
 |---|---|---|---|
-| Night (child canvas bg) | `--night` | `#181026` | dusk atrium backdrop |
-| Night raised (card/panel) | `--night-raised` | `#221A3D` | quest cards, panels |
-| Night sunk | `--night-sunk` | `#120B1E` | wells, insets |
+| Night (sky / canvas bg) | `--night` | `#181026` | dusk sky backdrop + fog color |
+| Night raised (card/panel/island base) | `--night-raised` | `#221A3D` | quest cards, panels, island underside |
+| Night sunk | `--night-sunk` | `#120B1E` | wells, insets, deep fog |
 | Paper (guide surface) | `--paper-guide` | `#F6F3FB` | console light surface (violet-tinted off-white, **not** cream) |
 | Ink (on paper) | `--ink-guide` | `#241B3A` | console body text (≈13:1 on paper) |
 | Ink-hi (on night) | `--ink-hi` | `#F4F0FB` | primary text on night (≈14:1, AAA) |
 | Ink-muted (on night) | `--ink-muted` | `#C3B8D9` | secondary text on night (≥4.5:1) |
-| Spark (primary warm) | `--spark` | `#FF9E5E` | curiosity warmth; **voluntary-return glow** |
-| Spark-hi | `--spark-hi` | `#FFC08A` | highlight/hover |
+| Spark (primary warm) | `--spark` | `#FF9E5E` | curiosity warmth; **voluntary-return glow/bloom** |
+| Spark-hi | `--spark-hi` | `#FFC08A` | highlight/hover; 3D key-light tint |
 | Beacon (self-authored/challenge) | `--beacon` | `#FFD166` | chosen-challenge / scope-authored gold |
 | Tide (voluntary marker) | `--tide` | `#5EC8D8` | voluntary-return timeline marker (cool counterweight) |
 | Sprout (competence) | `--sprout` | `#7BD88F` | artifact/competence growth |
 | Met (coverage) | `--met` | `#7BD88F` | dimension met (paired with check glyph) |
-| Gap (coverage) | `--gap` | `#8FA6C9` | **calm slate** "still to explore" (paired with hollow-ring glyph) — deliberately **not** red |
+| Gap (coverage) | `--gap` | `#8FA6C9` | **calm slate** "still to explore" (hollow-ring glyph) — deliberately **not** red |
 | Prompted (discount) | `--prompted` | `#9A8FB5` | prompted engagement (recedes) |
-| Support (help) | `--support` | `#5EC8D8` | accessibility/safety care marker (neutral/positive, **never** negative) |
+| Support (help) | `--support` | `#5EC8D8` | accessibility/safety care marker (neutral/positive) |
 | Contested (lifecycle) | `--contested` | `#E0A458` | CONTESTED (amber caution, **not** red) |
 | Parked (lifecycle) | `--parked` | `#8B93A7` | PARKED (resting grey-blue) |
 | Focus ring | `--focus` | `#FFD166` | 3px ring, 2px offset — high-contrast on night **and** paper |
 
-**Per-domain hue** — **catalog-order-derived, not a fixed taxonomy.** `resolveDomainHue(catalogDomainsInOrder, domainId)` returns `HUE_RAMP[index % HUE_RAMP.length]` (12 curated accents, §U8.5). It tints only a domain's quest card / constellation node / matrix row header — **never** a state cue (state uses the semantic palette + glyph + text). This respects "no fixed labels" (the hue attaches to catalog *position*, not a hardcoded domain name).
+**Per-domain hue** — **catalog-order-derived, not a fixed taxonomy.** `resolveDomainHue(catalogDomainsInOrder, domainId)` returns `HUE_RAMP[index % 12]` (12 curated accents, §U8.5). It tints only a domain's island terrain/quest-card/constellation-node/matrix-row header — **never** a state cue (state uses the semantic palette + glyph + text). This respects "no fixed labels" (the hue attaches to catalog *position*, not a hardcoded domain name).
 
-**Typography (tokens §U8.3).** A three-role, contrast-axis system: display = rounded (`Fredoka`) for the child's playful headings; reading = a **serif** (`Iowan Old Style`/`Georgia`) for the guide's evidence prose (field-notebook gravitas); body = humanist sans (`Inter`) for UI/labels. **No external fetch** — system fallback stacks by default; self-hosted `woff2` is an optional non-breaking upgrade (D-U8). Size-specific tracking (Apple): display tight (`-0.02em`), body `0`, labels `+0.01em`; leading inverse to size. The guide's counts use **tabular numbers**; the 6-8 child surface shows **no raw numbers** (§14.13).
+**Typography (tokens §U8.3).** A three-role, contrast-axis system: display = rounded (`Fredoka`) for the child's playful headings; reading = a **serif** (`Iowan Old Style`/`Georgia`) for the guide's evidence prose (field-notebook gravitas); body = humanist sans (`Inter`) for UI/labels. **No external fetch** — system fallback stacks by default; self-hosted `woff2` optional (D-U8). **All text is DOM** (never rendered into the WebGL canvas): keeps it accessible, crisp, and fetch-free. Size-specific tracking (Apple): display tight (`-0.02em`), body `0`, labels `+0.01em`; leading inverse to size. The guide's counts use **tabular numbers**; the 6-8 child surface shows **no raw numbers** (§14.13).
 
-**Mood board, in words.** *A child's dusk workbench strewn with glowing curiosities — a jar of pinned constellations, tools that hum when you pick them up, a warm lantern that brightens for the things you keep coming back to. Beside it, a calm observatory desk with a field notebook open: a tide-chart of returns, two columns of evidence weighed against each other, a grid of little lit and unlit windows showing what's been explored and what's still dark. Studio-Ghibli-workshop warmth × a naturalist's honest field journal.*
+**Mood board, in words.** *A child at dusk looking out over a sky full of small floating islands, each one glowing with a different warm curiosity — a jar-island of pinned constellations, a workshop-island whose tools hum, a lantern-island that brightens for the things you keep coming back to. You hop from island to island on drifting light. Beside all this, a calm observatory desk with a field notebook open: a tide-chart of returns, two columns of evidence weighed against each other, a grid of little lit and unlit windows, and — if you tilt the desk lamp — a small star-map of the evidence itself. Studio-Ghibli-at-dusk × a naturalist's honest field journal.*
 
-### 5.2 · Surface A — The Curiosity Quest Board (child probe-picker)
+### 5.2 · Surface A — The Curiosity Quest World (child, 3D)
 
-The domain `Lab` rendered as a **quest board**: offers are **quest cards / curiosity islands** clustered into **domain constellations**. Each card carries its domain hue, a **work-mode glyph** (the process verb, §U8.6), difficulty/social/audience cues (icon + text), the **provenance + why** ("a new kind to try" / "you liked building" / "your guide picked this"), and an always-present **help affordance** ("try a different way" — never a failure). The child picks 1 of **≥2** eligible offers at each choice point.
+The domain `Lab` rendered as a **floating dusk archipelago**. **Islands = domains**; **quest-markers = probes**; there is **no ground, no locks, no levels** — just a calm sky of glowing curiosities to visit.
 
-**Interactions & motion.** Cards enter with a staggered `enter` scale-in+fade (never `scale(0)`, 40ms stagger, §U8.4). Hover lift is `@media (hover:hover)`-gated; press feedback `scale 0.97` on pointer-down. **Pick** = a momentum **spring** (`bounce 0.2`, the one reserved bouncy gesture) into the "my quests" tray; interruptible from the live position. A muted-by-default captioned chime accompanies a pick.
+**World & layout (golden §U8.13).** Each domain becomes an island placed on a gentle **ring** in world space (`resolveIslandLayout`, catalog-order-derived — so no fixed domain→position map). Islands **idle-float** (drei `<Float>`) and slowly rotate; each island's terrain is tinted by its domain hue; a soft warm rim-light catches its top. An island carries its offers as **quest-markers** hovering above it on a small local ring (`resolveQuestPlacement`), each a rounded glowing form bearing (in DOM, on focus/hover) its **work-mode glyph**, difficulty/social/audience cues (icon+text), and the **provenance + why** ("a new kind to try" / "you liked building" / "your guide picked this"). An always-present **help beacon** ("try a different way") floats within reach — never a failure.
 
-**"Come back later" delight (UI-US2).** A voluntary return warms the quest (`--spark` bloom, `welcomeBack`) with concrete copy — **the only reserved delight** — never a label, never guilt. Prompted return recedes (`--prompted`) and is never celebrated.
+**Atmosphere & lighting (golden §U8.14).** A deep plum-indigo dusk sky (`--night`) with distance fog; a single warm key **directionalLight** (top-right, `--spark-hi`), soft ambient + hemispheric fill, `ACESFilmic` tone-mapping. Ambient **motes/fireflies** (drei `<Sparkles>`, low count) drift between islands. Lit (returned-to) islands gain warm emissive + an additive halo sprite.
+
+**Camera (golden §U8.14).** An establishing **drift-in** (from a wide framing to the home framing) on enter; then the child **focuses** islands: keyboard arrows/Tab move focus island→island and marker→marker (the DOM ledger drives it; the camera eases to frame the focused island with damping); 9-11/12-14 may also **gently orbit** by pointer drag (drei `<OrbitControls>`, damped, `enablePan:false`, clamped polar, no zoom-to-infinity); 6-8 gets an auto-gentle tour and no free-orbit (calm). No motion is required to operate — focus is a DOM concept the camera mirrors.
+
+**Interactions & motion (golden §U6/§U8.4).** Hover (pointer-fine) raises + brightens a marker; **press feedback** is instant. **Pick** = a satisfying **hop**: the marker arcs (a momentum spring, the one reserved bouncy gesture) into a "my quests" **beacon** in the HUD, leaving a brief spark-trail; interruptible. A muted-by-default captioned chime accompanies a pick. **The one reserved delight is the voluntary "come back later" bloom** (§5.3/UI-US3).
+
+**Tiers & fallback.** Full/lite tiers per §U8.16; reduced-motion / plain / no-WebGL → the **US1 2D card-constellation board** (identical state). The 3D `<Canvas>` is `aria-hidden`; the **quest ledger** (ordered DOM list of card-buttons) is always the operable, accessible surface and the AT source of truth.
 
 **Age-band staging (§14.13, `resolveChildStaging`, §U8.7).**
-- **6-8** — concrete & story-framed: `showRawNumbers:false`, comparison **off**, `cardScale 1.25`, 56px targets, `maxVisibleQuests 3`, story labels ("A quest about building things"), a friendly one-line "why" (no guide/rule/model detail), celebration ceiling **medium**.
-- **9-11** — transitional: growth-vs-past ("you've explored 5 kinds of making"), `cardScale 1.1`, 48px, `maxVisibleQuests 6`, provenance detail shown, a personal **exploration map** (never a score).
-- **12-14** — full & strategic: the whole board + domain/work-mode filters, `cardScale 1.0`, 44px, all eligible visible, full provenance, exploration map with the child's own coverage (still never a verdict/score).
+- **6-8** — concrete & calm: `showRawNumbers:false`, comparison **off**, `cardScale 1.25`, 56px targets, `maxVisibleQuests 3`, story labels ("A quest about building things"), a friendly one-line "why" (no guide/rule/model detail), celebration ceiling **medium**, **no free-orbit** (auto-gentle tour), fewer islands framed at once (calmest world). No numbers float in the world.
+- **9-11** — transitional: growth-vs-past ("you've explored 5 kinds of making"), `cardScale 1.1`, 48px, `maxVisibleQuests 6`, provenance detail shown, a personal **exploration map** (never a score), gentle pointer orbit enabled.
+- **12-14** — full & strategic: the whole archipelago + domain/work-mode filters, `cardScale 1.0`, 44px, all eligible visible, full provenance, exploration map with the child's own coverage (still never a verdict/score), full orbit + focus.
 
-**No dark patterns (UI-FR-014).** No countdowns, no streak-break threats, no scarcity/FOMO, no engagement-timed nudges. Always ≥2 offers and a "something else / a different way" route. Language is concrete and non-labeling ("current evidence suggests"/"a new kind to try"), never "you are an X" (§14.5).
+**No dark patterns (UI-FR-014).** No countdowns, streak-break threats, scarcity/FOMO, engagement-timed nudges, **and no time-gated / mastery-gated island unlocks or "level up"** (this is exploration, not the Arena). Always ≥2 offers and a "something else / a different way" route. Language is concrete and non-labeling, never "you are an X" (§14.5).
 
-### 5.3 · Surface B — The Guide Hypothesis Console (staff-facing)
+### 5.3 · The reserved delight — "Come back later" (voluntary return)
 
-An **observatory desk / field notebook** — calm, editorial, honest about gaps. Four components render the mutable `InterestHypothesis`:
+The single reserved loud moment. On a **voluntary** return (@7/@30) to a previously-explored quest/island: the island **warms** (emissive rises to the §U8.14 bloom peak), a soft **burst of spark-motes** rises, an additive `--spark` **halo** blooms and settles, the camera **eases** toward it, and concrete DOM copy reads "You came back to this one." One-shot, ≤ `welcomeBack` (480ms), interruptible. **Reduced motion / Tier C:** a **static warm halo + text**, no motion. **Prompted** return: the marker recedes to `--prompted`, carries its intervention context on inspect, and is **never** celebrated. No number, no label, no "you are an X".
 
-1. **Coverage matrix** (UI-US3). Domains (rows, catalog order + hue) × the 9 work-modes (columns + glyph). Cells show a coverage **status** (voluntary / prompted / offered / empty) with icon+text; **gaps are visible** calm slate cells. A **coverage rail** renders the exact Part-I `CoverageMatrix` per dimension (`probeCount`/`domains`/`workModes`/`social`/`difficulty`/`audience`) as met / named-gap. Cells fill with a stagger (instant under reduced motion). **No scalar coverage/confidence anywhere.**
-2. **Competing explanations, side-by-side** (UI-US4). Strongest **supporting** beside strongest **disconfirming**, equal columns, never averaged; each card lists its `evidenceRefs`; uncertainty is a **grade** (thin/moderate/strong) or interval. Never a scalar passion score; never a verdict.
-3. **Voluntary-vs-prompted return timeline** (UI-US4). A horizontal `dayOffset` axis; voluntary returns @7/@30 as bright `--tide`/`--spark` markers; prompted returns as recessed `--prompted` markers carrying their intervention context; assistive/safety events as neutral `--support` care-markers with `lowersSignal:false`. The line **draws in** (`timelineDraw`), markers **pop** on their day (static under reduced motion). This makes "returns that survived the removal of pressure" legible.
-4. **Lifecycle state visual + authoring** (UI-US4). EXPLORING → EMERGING → CANDIDATE_SPINE → ACTIVE with CONTESTED / PARKED / REOPENED branches as an elegant **tide-chart**; the current state highlighted; **legal transitions** shown; the **CANDIDATE_SPINE gate checklist** (from `evaluateCandidateGate`) checks in met families and names the missing prerequisite. A rule/model **proposal** renders as a dashed **suggestion** (`operative:false`, "a guide authors the record"); the **guide authors** the operative revision. A **version history rail** scrubs revisions (append-only, never overwritten; bitemporal).
+### 5.4 · Surface B — The Guide Hypothesis Console (staff-facing, DOM/SVG + optional 3D)
+
+An **observatory desk / field notebook** — calm, editorial, honest about gaps. DOM/SVG + `motion@^12`. Five components render the mutable `InterestHypothesis`:
+
+1. **Coverage matrix** (UI-US4). Domains (rows, catalog order + hue) × the 9 work-modes (columns + glyph). Cells show a coverage **status** (voluntary / prompted / offered / empty) with icon+text; **gaps are visible** calm slate cells. A **coverage rail** renders the exact Part-I `CoverageMatrix` per dimension as met / named-gap. Cells fill with a `motion@^12` stagger (instant under reduced motion). **No scalar coverage/confidence anywhere.**
+2. **Competing explanations, side-by-side** (UI-US5). Strongest **supporting** beside strongest **disconfirming**, equal columns, never averaged; each card lists its `evidenceRefs`; uncertainty is a **grade** (thin/moderate/strong) or interval. Never a scalar passion score; never a verdict.
+3. **Voluntary-vs-prompted return timeline** (UI-US5). A horizontal `dayOffset` axis; voluntary @7/@30 as bright `--tide`/`--spark` markers; prompted as recessed `--prompted` markers carrying their intervention context; assistive/safety as neutral `--support` care-markers with `lowersSignal:false`. The line **draws in** (`timelineDraw`), markers **pop** on their day (static under reduced motion).
+4. **Lifecycle state visual + authoring** (UI-US5). EXPLORING → EMERGING → CANDIDATE_SPINE → ACTIVE with CONTESTED / PARKED / REOPENED branches as an elegant **tide-chart**; the current state highlighted; **legal transitions** shown; the **CANDIDATE_SPINE gate checklist** (from `evaluateCandidateGate`) checks met families and names the missing prerequisite. A rule/model **proposal** renders as a dashed **suggestion** (`operative:false`, "a guide authors the record"); the **guide authors** the operative revision. A **version history rail** scrubs revisions (append-only, bitemporal).
+5. **Evidence constellation** (UI-US5, optional). A tasteful r3f **depth data-viz** (`aria-hidden`, its own tier gating, off under reduced-motion / no-WebGL, DOM-equivalent = components 2+3): the six signal families as **stars** (`buildEvidenceConstellationView`, §U8.17) whose brightness reflects presence; supporting evidence clustered warm at +X, disconfirming cool at −X; voluntary returns glow brightest; a faint line links a family to its supporting/disconfirming pull. It **elevates** the side-by-side clarity (you *see* the balance and the gaps in space) — it never becomes the source of truth and carries **no** scalar score.
 
 **Console language.** "current evidence suggests" / "next test" throughout; never "you are an X person" (§14.5). No scalar passion score; gaps and disconfirming evidence are always shown beside the supporting case.
 
-### 5.4 · HUD, materials & wayfinding
+### 5.5 · HUD, materials & wayfinding
 
-Translucent `backdrop-filter` panels float over the night (Apple materials: chrome content flows under, not opaque bars); `prefers-reduced-transparency` → solid. Press feedback on every control; ≥44px targets (56px in the 6-8 band). A persistent surface switch (child ⇄ guide, staff-gated in a real build; here a synthetic toggle), a reduced-motion / plain-mode / age-band / audio (muted) control cluster, and a "?" help. Every screen answers Apple's four wayfinding questions (where am I / where can I go / what's here / how do I get out).
+Translucent `backdrop-filter` DOM panels float over the world (Apple materials: chrome content flows under, not opaque bars); `prefers-reduced-transparency` → solid. The 3D scene sits behind; the HUD (my-quests beacon, help, controls) is DOM on top. Press feedback on every control; ≥44px targets (56px in the 6-8 band). A persistent surface switch (child ⇄ guide, staff-gated in a real build; here a synthetic toggle), a **tier/motion cluster** (reduced-motion / plain-mode / render-tier override / age-band / audio-muted), and a "?" help. Every screen answers Apple's four wayfinding questions (where am I / where can I go / what's here / how do I get out) — in the world, an island banner names *where you are*, focusable islands show *where you can go*, markers show *what's here*, and a persistent "overview" (drift-out to the whole archipelago) shows *how to get out*.
 
-### 5.5 · Motion principles (the rules every §U8.4 value obeys)
+### 5.6 · Motion principles (the rules every §U8.4 value obeys)
 
-- **Frequency-appropriate** (Emil): rare (welcome-back, tier-of-exploration reveal) → delight; occasional (pick, matrix fill, timeline draw) → standard eased; frequent (filters, toggles) → instant.
-- **Enter/exit `enter` (strong ease-out)**; on-screen moves `move` (ease-in-out); reveals `pop` (overshoot ≤1.05, never `scale(0)`); **never `ease-in` on entrances**.
-- **One reserved spring**: the **pick** gesture carries momentum (`bounce 0.2`); everything else is critically damped / duration-eased.
-- **Interruptible & velocity-aware** (Apple): a pick can be grabbed/redirected mid-flight; animate from the presentation (live) value.
-- **Only transform/opacity/filter** animate; no layout thrash; target 60fps.
-- **Every** animation has a reduced-motion equivalent (§U8.4) and works keyboard-only; reduced motion is *the same surfaces, conveyed calmly*.
+- **Frequency-appropriate** (Emil): rare (welcome-back bloom, world drift-in) → delight; occasional (pick hop, island focus, matrix fill, timeline draw) → standard eased; frequent (filters, toggles, orbit) → instant / continuous-damped.
+- **DOM: enter/exit `enter` (strong ease-out)**; on-screen moves `move` (ease-in-out); reveals `pop` (overshoot ≤1.05, never `scale(0)`); **never `ease-in` on entrances**.
+- **3D: idle is gentle looped Float/glow**; camera eases with damping (Apple: animate from the presentation/live value — the focus lerp reads current camera state); the pick hop and the come-back bloom are the loud, reserved moments.
+- **One reserved spring**: the **pick** gesture carries momentum (`bounce 0.2`) in both tiers; everything else critically damped / duration-eased / linearly looped.
+- **Interruptible & velocity-aware** (Apple): a pick can be grabbed/redirected mid-flight; the camera focus retargets from its live position; nothing locks input.
+- **Only transform/opacity/filter (DOM) and transform/emissive/opacity (3D)** animate; no layout thrash; target **60fps** with the degraded tier holding the budget.
+- **Every** animation (DOM and 3D) has a reduced-motion equivalent (§U8.4) and works keyboard-only; reduced motion is *the same surfaces, conveyed calmly* (the 2D tier).
 
-**Deliberately excluded** (would violate §14.12 / §14.5): `Shake`/`Wiggle` on a wrong/"not-yet" state (reads as rejection), any `scale(0)` entrance, `ease-in` entrances, countdown/urgency timers, decaying/absence meters, gacha "reroll" reveals, engagement-timed pop-ins, looping earworm audio, and any scalar-passion-score number or "you are an X" reveal.
+**Deliberately excluded** (would violate §14.12 / §14.5): `Shake`/`Wiggle` on a wrong/"not-yet" state (reads as rejection), any `scale(0)` entrance, `ease-in` entrances, countdown/urgency timers, decaying/absence meters, gacha "reroll"/loot reveals, engagement-timed pop-ins, looping earworm audio, **time/mastery-gated island unlocks or level-ups**, any scalar-passion-score number, any score/rank floating in the 3D world, and any "you are an X" reveal.
 
 ## §U6 · The master motion table (the heart)
 
-Every row derives from `resolveMotion(kind, { reducedMotion })` so the values are testable constants (SC-UI-08). Durations are named tokens (§U8.4 `MOTION`); easings are named (§U8.4 `EASINGS`); every row has a first-class reduced-motion equivalent (Emil/Apple: reduced motion = *gentler*, not *gone*).
+Every row derives from `resolveMotion(kind, { reducedMotion })` so the values are testable constants (SC-UI-08); every row has a first-class reduced-motion equivalent (Emil/Apple: reduced motion = *gentler*, not *gone*). **DOM** rows animate via `motion@^12`; **3D** rows animate via r3f `useFrame`/drei. Durations are named tokens (§U8.4 `MOTION`); easings are named (§U8.4 `EASINGS`).
 
-| Event | Named effect (vocabulary) | Easing | Duration (token) | Reduced-motion equivalent |
-|---|---|---|---|---|
-| Quest card appear | **Scale-in + Fade** (0.96→1, α0→1) + **Stagger** 40ms | `enter` | 260 (`cardEnter`) | instant show, no stagger |
-| Card hover (pointer-fine) | **Hover lift** (translateY -4px + shadow) | `enter` | 150 (`micro`) | none (no hover motion) |
-| Press feedback | **Press/Tap** scale 0.97 on pointer-*down* | `press` | 120 (`press`) | kept (non-vestibular) |
-| Pick a quest | **Momentum spring** into tray (origin-aware) | spring `bounce 0.2` | 420 (`pick`) | ≤150ms crossfade to tray |
-| Voluntary "come back later" | **Warm bloom + Glow** (`--spark`) + concrete copy | `pop` | 480 (`welcomeBack`) | static warm ring + text |
-| Prompted return | recede to `--prompted` (no celebration) | `enter` | 300 (`base`) | instant recede |
-| Tray item return | **Crossfade** back to board | `enter` | 320 (`tray`) | 150ms crossfade |
-| Filter / band / plain toggle | **Instant** (frequent → no animation) | — | 0 (`instant`) | instant |
-| Coverage cell fill | **Fill + Fade** + **Stagger** 40ms | `enter` | 260 (`matrixCell`) | instant fill, no stagger |
-| Coverage rail update | **Number ticker** (tabular; 9-11/12-14 only) | `enter` | 600 (`ticker`) | instant number |
-| Timeline draw | **Line-drawing** of the axis | `move` | 700 (`timelineDraw`) | static drawn line |
-| Timeline marker | **Pop** on its day (≤1.05) | `pop` | 260 (`markerPop`) | static marker |
-| Explanations reveal | **Fade + Blur-mask** crossfade of the two columns | `enter` | 300 (`base`) | instant |
-| Lifecycle state change | **Continuity morph** between states (shared element) | `move` | 360 (`stateMorph`) | instant state |
-| Gate checklist item | **Check pop** (≤1.05) | `pop` | 200 (`fast`) | instant check |
-| Drawer / popover | **Origin-aware Scale-in** (from trigger) | `drawer` | 220 (`drawer`) | instant / fade |
-| Tooltip (subsequent) | **Fade** (skip delay + animation once one is open) | `enter` | 150 (`tooltip`) | instant |
-| Ambient (lantern glow on lit quests) | **Glow pulse** (yoyo, low amplitude) | `linear` (loop) | 1600 (`glowLoop`) | off (static glow) |
+| Event | Tier | Named effect (vocabulary) | Easing | Duration (token) | Reduced-motion equivalent |
+|---|---|---|---|---|---|
+| Quest card appear (2D) | DOM | **Scale-in + Fade** (0.96→1, α0→1) + **Stagger** 40ms | `enter` | 260 (`cardEnter`) | instant show, no stagger |
+| Card hover (pointer-fine, 2D) | DOM | **Hover lift** (translateY -4px + shadow) | `enter` | 150 (`micro`) | none (no hover motion) |
+| Press feedback | DOM/3D | **Press/Tap** scale 0.97 on pointer-*down* | `press` | 120 (`press`) | kept (non-vestibular) |
+| Pick a quest | DOM/3D | **Momentum hop/spring** into beacon (origin-aware) | spring `bounce 0.2` | 420 (`pick`) | ≤150ms crossfade to tray |
+| Voluntary "come back later" | DOM/3D | **Warm bloom + Glow + spark-motes** (`--spark`) + copy | `pop` | 480 (`welcomeBack`) | static warm ring/halo + text |
+| Prompted return | DOM/3D | recede to `--prompted` (no celebration) | `enter` | 300 (`base`) | instant recede |
+| Tray item return (2D) | DOM | **Crossfade** back to board | `enter` | 320 (`tray`) | 150ms crossfade |
+| Filter / band / tier / plain toggle | DOM | **Instant** (frequent → no animation) | — | 0 (`instant`) | instant |
+| World establishing drift-in (3D) | 3D | **Camera dolly** (wide → home) | `move` | 1400 (`driftIn`) | instant cut to home framing |
+| Island idle (3D) | 3D | **Float** (y ±0.18) + slow spin (0.03 rad/s) | `linear` (loop) | 6500 (`islandFloat`) | static pose |
+| Island focus (nav) (3D) | 3D | **Camera ease** to frame + island rise 0.1 | `move` | 520 (`islandFocus`) | instant framing |
+| Quest-marker glow (3D) | 3D | **Emissive Glow pulse** (0.35↔0.50, yoyo) | `linear` (loop) | 1600 (`glowLoop`) | static emissive |
+| Marker hover (pointer-fine, 3D) | 3D | **Raise 0.06 + brighten** | `enter` | 150 (`micro`) | none |
+| Ambient motes/fireflies (3D) | 3D | **Sparkles drift/twinkle** | `linear` (loop) | 1600 (`glowLoop`) | off (static/none) |
+| Coverage cell fill (2D) | DOM | **Fill + Fade** + **Stagger** 40ms | `enter` | 260 (`matrixCell`) | instant fill, no stagger |
+| Coverage rail update | DOM | **Number ticker** (tabular; 9-11/12-14 only) | `enter` | 600 (`ticker`) | instant number |
+| Timeline draw | DOM | **Line-drawing** of the axis | `move` | 700 (`timelineDraw`) | static drawn line |
+| Timeline marker | DOM | **Pop** on its day (≤1.05) | `pop` | 260 (`markerPop`) | static marker |
+| Explanations reveal | DOM | **Fade + Blur-mask** crossfade of the two columns | `enter` | 300 (`base`) | instant |
+| Lifecycle state change | DOM | **Continuity morph** between states (shared element) | `move` | 360 (`stateMorph`) | instant state |
+| Gate checklist item | DOM | **Check pop** (≤1.05) | `pop` | 200 (`fast`) | instant check |
+| Evidence-constellation reveal (3D) | 3D | **Stars fade-in + gentle drift** | `enter` | 600 (`constellation`) | off → DOM panels only |
+| Drawer / popover | DOM | **Origin-aware Scale-in** (from trigger) | `drawer` | 220 (`drawer`) | instant / fade |
+| Tooltip (subsequent) | DOM | **Fade** (skip delay + animation once one is open) | `enter` | 150 (`tooltip`) | instant |
 
 ## §U7 · Requirements *(mandatory)*
 
 ### Functional Requirements (UI-FR-xxx)
 
-**Two surfaces & parity**
-- **UI-FR-001**: The app MUST render **two** surfaces — the child Curiosity Quest Board and the guide Hypothesis Console — from a **single** `buildInterestLabView` view model; both surfaces (and reduced-motion/plain/age-band renderings) MUST render from that one view (parity by construction).
-- **UI-FR-019**: `buildInterestLabView` MUST compose one view; reduced-motion / plain / age-band MUST differ **only** in `flags` + the `presentation` derived from them; `plainViewEquals` MUST hold (no re-computation of domain state).
+**Two surfaces, tiers & parity**
+- **UI-FR-001**: The app MUST render **two** surfaces — the child Curiosity Quest World and the guide Hypothesis Console — from a **single** `buildInterestLabView` view model; the 3D world, the 2D board, the reduced-motion/plain rendering, every age-band rendering, and the accessible DOM ledger MUST render from that one view (parity by construction).
+- **UI-FR-001b**: The child surface MUST support **three render tiers** — `quest-world-3d` (full WebGL), `quest-world-3d-lite` (degraded WebGL), and `board-2d` (DOM, the reduced-motion/plain/no-WebGL/AT tier) — chosen deterministically by `resolveRenderTier`/`resolveQualityTier` from device caps + flags (§U8.16). The render tier is **presentation only**: the underlying quest state MUST be identical across tiers (`plainViewEquals`).
+- **UI-FR-019**: `buildInterestLabView` MUST compose one view (incl. the deterministic `scene` view model); reduced-motion / plain / age-band / render-tier MUST differ **only** in `flags` + the `presentation` derived from them; `plainViewEquals` MUST hold (no re-computation of domain state).
 
-**Child probe-picker**
-- **UI-FR-002**: The board MUST render the domain `Lab` as quest cards — each with its domain hue, work-mode glyph, difficulty/social/audience cue (icon+text, **never color-only**), provenance + `whyCopy`, and an always-present help affordance — preserving the domain's **≥2 eligible offers** at each choice point (PASS-003).
-- **UI-FR-003**: Pick/return motion MUST be satisfying and **interruptible**: press feedback on pointer-down, a momentum spring on pick, tray crossfade on return; **every** motion MUST have a reduced-motion equivalent and MUST NEVER animate from `scale(0)`.
-- **UI-FR-004**: A **voluntary return** (@7/@30) MUST render a warm "come back later" delight with **concrete, label-free** copy; a **prompted** return MUST recede and MUST NOT be celebrated; there MUST be **no** guilt/FOMO/countdown/scarcity anywhere (§14.12).
-- **UI-FR-005**: The child surface MUST resolve presentation from the age band (`resolveChildStaging`): 6-8 concrete/story/`showRawNumbers:false`/comparison-off/larger targets/celebration-ceiling `medium`; 9-11 transitional; 12-14 full. The **underlying view state MUST be identical across bands** (only presentation varies).
-- **UI-FR-017**: Each quest MUST surface **provenance** (PASS-001) — why it appears + whether a guide/rule/shadow-model proposed it — band-appropriately (6-8: a friendly one-liner; 9+: detail).
+**Child Curiosity Quest World (3D)**
+- **UI-FR-002**: The world MUST render the domain `Lab` as **floating islands** (one per domain, deterministic layout via `resolveIslandLayout`, §U8.13) carrying their offers as **quest-markers** (deterministic placement via `resolveQuestPlacement`), each surfacing its domain hue, work-mode glyph, difficulty/social/audience cue (icon+text, **never color-only**, in DOM), provenance + `whyCopy`, and an always-present help affordance — preserving the domain's **≥2 eligible offers** at each choice point (PASS-003).
+- **UI-FR-002b**: The world MUST have a **first-class 2D equal**: the `board-2d` card-constellation renders the identical state and is the reduced-motion, plain, no-WebGL/lost-context fallback, and the always-present accessible operable surface. No quest, state, or affordance may be reachable **only** in the 3D tier.
+- **UI-FR-003**: Pick/return motion MUST be satisfying and **interruptible** in every tier: press feedback on pointer-down, a momentum spring/hop on pick, crossfade-to-tray on return; **every** motion MUST have a reduced-motion equivalent and MUST NEVER animate from `scale(0)`.
+- **UI-FR-004**: A **voluntary return** (@7/@30) MUST render the reserved warm "come back later" bloom with **concrete, label-free** copy (3D: light bloom + spark-motes + camera ease; reduced-motion/2D: static warm halo + text); a **prompted** return MUST recede and MUST NOT be celebrated; there MUST be **no** guilt/FOMO/countdown/scarcity and **no** time-gated island unlock anywhere (§14.12).
+- **UI-FR-005**: The child surface MUST resolve presentation from the age band (`resolveChildStaging`): 6-8 concrete/story/`showRawNumbers:false`/comparison-off/larger targets/celebration-ceiling `medium`/no free-orbit; 9-11 transitional; 12-14 full. The **underlying view state MUST be identical across bands** (only presentation varies).
+- **UI-FR-017**: Each quest MUST surface **provenance** (PASS-001) — why it appears + whether a guide/rule/shadow-model proposed it — band-appropriately (6-8: friendly one-liner; 9+: detail), as **DOM** (never canvas-only text).
+- **UI-FR-020b**: The child surface MUST NOT gate, lock, level, rank, or grind any island/quest; the world shows *what to try*, never *what has been earned* — there is no locked/greyed "you failed" island (this is the exploration surface, not the Arena §15.3).
 
 **Guide console**
 - **UI-FR-006**: The coverage matrix MUST render **gaps visibly** (calm slate, icon+text) and MUST render the exact Part-I `CoverageMatrix` rail per dimension; **no** view model or element may express coverage as, or hide a gap behind, a scalar score/confidence (IL-005, §14.4.3 #3).
 - **UI-FR-007**: Competing explanations MUST render the strongest **supporting** beside the strongest **disconfirming**, equal weight, never averaged; uncertainty MUST be an evidence grade or interval, **never a scalar passion score**; the console MUST use "current evidence suggests"/"next test" and MUST NEVER render "you are an X" (§14.5, IL-006/012).
 - **UI-FR-008**: The return timeline MUST distinguish **voluntary** returns (@7/@30, bright) from **prompted** returns (recessed, carrying intervention context), and MUST render accessibility/safety events as **neutral care-markers with `lowersSignal:false`** (PASS-005/006).
 - **UI-FR-009**: The lifecycle visual MUST show the current state, the **legal transitions**, and the **CANDIDATE_SPINE gate checklist** (from `evaluateCandidateGate`); a rule/model **proposal** MUST render as a suggestion (`operative:false`) with **no UI path** to make it operative — the **guide authors** the operative revision (IL-011); the version history MUST be append-only/replayable (IL-006).
+- **UI-FR-009b**: The optional **evidence constellation** MUST render from `buildEvidenceConstellationView` (the same domain state), be `aria-hidden` with a **DOM-equivalent always present** (the side-by-side explanations + timeline), carry **no** scalar score, degrade off under reduced-motion / no-WebGL, and never become the source of truth.
 
-**Motion, art & guardrails**
-- **UI-FR-010**: All interaction motion MUST derive from the deterministic `MOTION`/`EASINGS` registries via `resolveMotion`; **every** row of the §U6 master motion table MUST have a first-class reduced-motion equivalent; the excluded effects (§U5.5) MUST NOT appear.
-- **UI-FR-011**: The surfaces MUST render with the **Curiosity Atelier** identity — the exact `PALETTE` (hex) + `TYPOGRAPHY` tokens, per-domain hue via `resolveDomainHue` — using **no external fetch** (system-font fallback). **Color is never the sole state cue**: every state also carries icon/shape/text at ≥4.5:1 contrast (WCAG 2.2 AA).
-- **UI-FR-012**: Reduced motion MUST be a **first-class equal** mode (honored by default; overridable); `prefers-reduced-transparency` → solid panels; **no** feature may require motion.
-- **UI-FR-013**: Both surfaces MUST meet WCAG 2.2 AA **natively in the DOM** — keyboard/switch/screen-reader operable, visible `--focus` rings, color-independent, ≥4.5:1 contrast; there is **no** opaque canvas to shim.
-- **UI-FR-014**: The child surface MUST use **no dark patterns** — no loss-framed streaks, manufactured scarcity, FOMO/guilt, countdown/urgency timers, decaying/absence meters, or engagement-timed notifications.
+**Motion, art, 3D & guardrails**
+- **UI-FR-010**: All **DOM** interaction motion MUST derive from the deterministic `MOTION`/`EASINGS` registries via `resolveMotion` and be implemented with **`motion@^12`** (`motion/react`); all **3D** scene motion MUST derive from the same tokens (`resolveMotion`) and the golden scene constants (§U8.13/§U8.14) and be implemented with `three`/`@react-three/fiber`/`@react-three/drei`; **every** row of the §U6 master motion table MUST have a first-class reduced-motion equivalent; the excluded effects (§U5.6) MUST NOT appear. No animation engine other than `motion@^12` (DOM) and r3f/drei (3D) is used.
+- **UI-FR-011**: The surfaces MUST render with the **Curiosity Atelier at Dusk** identity — the exact `PALETTE` (hex) + `TYPOGRAPHY` tokens, per-domain hue via `resolveDomainHue`, and the 3D `SCENE3D`/materials (§U8.14) — using **no external fetch** (system-font fallback; procedural geometry + in-app textures; no HDRI/GLTF/web-font). **Color is never the sole state cue**: every state also carries icon/shape/text at ≥4.5:1 contrast (WCAG 2.2 AA), and all such text is DOM.
+- **UI-FR-012**: Reduced motion MUST be a **first-class equal** mode (honored by default; overridable) that renders the `board-2d`/static tier; `prefers-reduced-transparency` → solid panels; **no** feature may require motion or WebGL.
+- **UI-FR-013**: Both surfaces MUST meet WCAG 2.2 AA **natively in the DOM** — keyboard/switch/screen-reader operable, visible `--focus` rings, color-independent, ≥4.5:1 contrast; **any 3D `<Canvas>` MUST be `aria-hidden="true"`** and the DOM (quest ledger / console panels) MUST be the AT source of truth and fully operable without the canvas.
+- **UI-FR-014**: The child surface MUST use **no dark patterns** — no loss-framed streaks, manufactured scarcity, FOMO/guilt, countdown/urgency timers, decaying/absence meters, engagement-timed notifications, or time/mastery-gated unlocks/levels.
 - **UI-FR-015**: The child surface MUST always present a **help / "a different way"** affordance that is **never** framed as failure and **never** penalizes; assistive/safety signals MUST NEVER lower any value in any view (PASS-006).
-- **UI-FR-016**: No probe-result or hypothesis view may be shaped for admissions/discipline/family-fidelity/public-ranking/commercial targeting: the view types MUST expose **no** `rank`/`percentile`/`score`/`confidence`/`passionScore`/`verdict`/`price` field (PASS-010, IL-013).
-- **UI-FR-020**: Domain hue MUST be **deterministic and catalog-order-derived** (`resolveDomainHue`), never a hardcoded domain→hue taxonomy, and never a state cue (IL-001).
+- **UI-FR-016**: No probe-result or hypothesis view (DOM or 3D scene) may be shaped for admissions/discipline/family-fidelity/public-ranking/commercial targeting: the view types MUST expose **no** `rank`/`percentile`/`score`/`confidence`/`passionScore`/`verdict`/`price` field, and **no** number/score/rank may be rendered floating in the 3D world (PASS-010, IL-013).
+- **UI-FR-020**: Domain hue **and** island position MUST be **deterministic and catalog-order-derived** (`resolveDomainHue`/`resolveIslandLayout`), never a hardcoded domain→hue/position taxonomy, and hue is never a state cue (IL-001).
 
-**Build-on / isolation & stack**
-- **UI-FR-018**: The view package MUST be pure (no I/O, no wall-clock, **no `Math.random`**) and depend only on `@gt100k/interest-lab`; the app MUST read `@gt100k/interest-lab` + `@gt100k/interest-lab-view`, build via `next build`, run **synthetic-only** (no consent/admissions/legal), and fetch nothing external; Part I MUST NOT be modified beyond consuming its public API.
+**Performance, degradation & isolation**
+- **UI-FR-021**: The child 3D world MUST target **60fps** on the minimum supported device and **degrade gracefully**: `resolveQualityTier` picks `quest-world-3d-lite` (fewer motes, no shadows, no post-processing, capped DPR) on weak caps, and runtime FPS monitoring (drei `<PerformanceMonitor>` + `<AdaptiveDpr>`) MUST step down without losing state; on no-WebGL / lost GPU context / `Save-Data` / `deviceMemory < 4`, it MUST fall back to `board-2d`. A tier change MUST NEVER block a pick or lose a quest.
+- **UI-FR-018**: The view package MUST be pure (no I/O, no wall-clock, **no `Math.random`**, **no `three`/`react`/`@react-three/*` import**) and depend only on `@gt100k/interest-lab`; the app MUST read `@gt100k/interest-lab` + `@gt100k/interest-lab-view`, build via `next build`, run **synthetic-only** (no consent/admissions/legal), mount the r3f `<Canvas>` **client-only** (no SSR) and destroy it on unmount with **zero console/WebGL errors**, and fetch nothing external; Part I MUST NOT be modified beyond consuming its public API.
 
 ### Key Entities
 
-Full shapes in [data-model.md](./data-model.md). Summary: `AgeBand`, `MotionToken`, `PALETTE`/`TYPOGRAPHY`/`MOTION`/`EASINGS`/`HUE_RAMP`/`WORK_MODE_GLYPHS` (constant registries), `ChildStaging` *(derived)*, `ProbeCardView`, `ProbePickerView` *(derived)*, `CoverageMatrixView`/`DimensionRailItem`/`CellView` *(derived)*, `ExplanationsView`/`ExplanationCard` *(derived)*, `ReturnTimelineView`/`MarkerView` *(derived)*, `LifecycleStateView`/`GateChecklist` *(derived)*, `RevisionHistoryView` *(derived)*, and the composed **`InterestLabView`** with a `presentation` block + `flags`.
+Full shapes in [data-model.md](./data-model.md). Summary: `AgeBand`, `MotionToken`, `DeviceCaps`, `RenderTier`, `QualityTier`, `PALETTE`/`TYPOGRAPHY`/`MOTION`/`EASINGS`/`HUE_RAMP`/`WORK_MODE_GLYPHS`/`SCENE3D`/`CAMERA3D`/`QUALITY_TIERS` (constant registries), `ChildStaging` *(derived)*, `ProbeCardView`, `ProbePickerView` *(derived)*, `IslandView`/`QuestMarkerView`/`CameraView`/`SceneView` *(derived, 3D)*, `CoverageMatrixView`/`DimensionRailItem`/`CellView` *(derived)*, `ExplanationsView`/`ExplanationCard` *(derived)*, `ReturnTimelineView`/`MarkerView` *(derived)*, `LifecycleStateView`/`GateChecklist` *(derived)*, `RevisionHistoryView` *(derived)*, `EvidenceConstellationView`/`ConstellationStar` *(derived, 3D)*, and the composed **`InterestLabView`** with a `scene` block, a `presentation` block + `flags`.
 
 ## §U8 · Golden values + tolerances
 
-All view-package values below are **exact** (deterministic; tolerance = 0). App-only UX (frame rate, gesture feel) are acceptance targets verified via the walkthrough.
+All view-package values below are **exact** (deterministic; tolerance = 0) unless a numeric tolerance is stated (the 3D trig positions carry a **±0.001** rounding tolerance). App-only UX (frame rate, gesture feel) are acceptance targets verified via the walkthrough.
 
 ### 8.1 Ordering conventions (so arrays are exactly reproducible)
 
 - Matrix **rows** = domains in **catalog order** (first-appearance in the injected catalog, as Part-I `coverage.domains.have`). Matrix **columns** = the fixed 9 work-modes in vocabulary order (`build, investigate, compose, explain, perform, debug, collaborate, care, persuade`).
-- `ProbePickerView.quests` = Part-I `Lab.offers` order. Timeline markers = event `occurredAtDayOffset` ascending, then fixture `ord`. Rail dimensions in dimension order (`probeCount, domains, workModes, social, difficulty, audience`).
+- `ProbePickerView.quests` = Part-I `Lab.offers` order. `SceneView.islands` = catalog-domain order; each island's `markers` = offer order within that domain. Timeline markers = event `occurredAtDayOffset` ascending, then fixture `ord`. Rail dimensions in dimension order (`probeCount, domains, workModes, social, difficulty, audience`).
 
 ### 8.2 Palette (exact) — `PALETTE`
 
@@ -867,11 +918,11 @@ All view-package values below are **exact** (deterministic; tolerance = 0). App-
 
 ### 8.3 Typography (exact) — `TYPOGRAPHY`
 
-`fontDisplay:'"Fredoka","Baloo 2",ui-rounded,"Segoe UI Rounded",system-ui,sans-serif'`, `fontReading:'"Iowan Old Style","Palatino","Georgia",ui-serif,serif'`, `fontBody:'"Inter",ui-sans-serif,system-ui,"Segoe UI",sans-serif'`; scale `display{rem:2.5,lh:1.05,ls:-0.02,w:600}`, `h1{1.75,1.1,-0.01,600}`, `h2{1.25,1.2,0,600}`, `reading{1.0625,1.6,0,400}`, `body{1.0,1.5,0,400}`, `label{0.8125,1.4,0.01,500}`; `numeric:"tabular-nums"`.
+`fontDisplay:'"Fredoka","Baloo 2",ui-rounded,"Segoe UI Rounded",system-ui,sans-serif'`, `fontReading:'"Iowan Old Style","Palatino","Georgia",ui-serif,serif'`, `fontBody:'"Inter",ui-sans-serif,system-ui,"Segoe UI",sans-serif'`; scale `display{rem:2.5,lh:1.05,ls:-0.02,w:600}`, `h1{1.75,1.1,-0.01,600}`, `h2{1.25,1.2,0,600}`, `reading{1.0625,1.6,0,400}`, `body{1.0,1.5,0,400}`, `label{0.8125,1.4,0.01,500}`; `numeric:"tabular-nums"`. All text is DOM (never rendered inside the WebGL canvas).
 
 ### 8.4 Motion tokens + easings (exact) — `MOTION`, `EASINGS`, `resolveMotion`
 
-`MOTION` (durations, ms — exact): `instant:0`, `press:120`, `micro:150`, `tooltip:150`, `fast:200`, `drawer:220`, `cardEnter:260`, `matrixCell:260`, `markerPop:260`, `base:300`, `tray:320`, `stateMorph:360`, `pick:420`, `welcomeBack:480`, `ticker:600`, `timelineDraw:700`, `stagger:40`, `glowLoop:1600`.
+`MOTION` (durations, ms — exact): `instant:0`, `press:120`, `micro:150`, `tooltip:150`, `fast:200`, `drawer:220`, `cardEnter:260`, `matrixCell:260`, `markerPop:260`, `base:300`, `tray:320`, `stateMorph:360`, `pick:420`, `welcomeBack:480`, `islandFocus:520`, `ticker:600`, `constellation:600`, `timelineDraw:700`, `driftIn:1400`, `glowLoop:1600`, `islandFloat:6500`, `stagger:40`.
 
 `EASINGS` (CSS cubic-bézier / spring — exact): `enter:"cubic-bezier(0.23,1,0.32,1)"`; `move:"cubic-bezier(0.77,0,0.175,1)"`; `pop:"cubic-bezier(0.34,1.56,0.64,1)"` (overshoot peak ≤ 1.05 in use); `press:"cubic-bezier(0.5,0,0.5,1)"`; `drawer:"cubic-bezier(0.32,0.72,0,1)"`; `linear:"linear"`; `pickSpring:{ type:"spring", bounce:0.2, duration:0.42 }`.
 
@@ -884,9 +935,14 @@ All view-package values below are **exact** (deterministic; tolerance = 0). App-
 | `cardStagger` | 40 | enter | 0 | no stagger |
 | `hoverLift` | 150 | enter | 0 | none |
 | `pick` | 420 | pickSpring | 150 | crossfade to tray |
-| `welcomeBack` | 480 | pop | 0 | static warm ring + text |
+| `welcomeBack` | 480 | pop | 0 | static warm ring/halo + text |
 | `promptedRecede` | 300 | enter | 0 | instant recede |
 | `trayReturn` | 320 | enter | 150 | crossfade |
+| `driftIn` | 1400 | move | 0 | instant framing |
+| `islandFloat` | 6500 | linear | 0 | static pose |
+| `islandFocus` | 520 | move | 0 | instant framing |
+| `markerGlow` | 1600 | linear | 0 | static emissive |
+| `motes` | 1600 | linear | 0 | off |
 | `matrixCell` | 260 | enter | 0 | instant fill |
 | `matrixStagger` | 40 | enter | 0 | none |
 | `ticker` | 600 | enter | 0 | instant number |
@@ -895,6 +951,7 @@ All view-package values below are **exact** (deterministic; tolerance = 0). App-
 | `explanationsReveal` | 300 | enter | 0 | instant |
 | `stateMorph` | 360 | move | 0 | instant state |
 | `gateCheck` | 200 | pop | 0 | instant check |
+| `constellation` | 600 | enter | 0 | off → DOM panels only |
 | `drawerOpen` | 220 | drawer | 150 | fade |
 | `tooltip` | 150 | enter | 0 | instant |
 | `glowLoop` | 1600 | linear | 0 | static glow (off) |
@@ -922,8 +979,9 @@ Fixed map (SVG icon keys — **no emoji**, ui-ux-pro-max): `build→"glyph-hamme
 | `maxVisibleQuests` | 3 | 6 | "all" |
 | `showProvenanceDetail` | false | true | true |
 | `showExplorationMap` | false | true | true |
+| `worldCameraMode` | **"auto-tour"** | "focus+orbit" | "focus+orbit" |
 
-The underlying `ProbePickerView` state is **identical** across bands; only this presentation varies (UI-FR-005, `plainViewEquals`). 6-8 `showRawNumbers` MUST be `false` and `comparisonDefault` MUST be `"off"`.
+The underlying `ProbePickerView`/`SceneView` state is **identical** across bands; only this presentation varies (UI-FR-005, `plainViewEquals`). 6-8 `showRawNumbers` MUST be `false`, `comparisonDefault` MUST be `"off"`, and `worldCameraMode` MUST be `"auto-tour"` (no free-orbit).
 
 ### 8.8 ProbePickerView (exact structural golden) — `buildProbePickerView(G1 Lab, {history:[], band:"9-11", flags:default})`
 
@@ -956,43 +1014,107 @@ Markers (day-ascending): `e1`(voluntary, horizon 7, tone `tide`, `lowersSignal:f
 
 For any revision carrying ≥1 explanation: `supporting` present ⇒ `disconfirming` present (the side-by-side invariant); `uncertainty` is `{kind:"grade",grade:"thin"|"moderate"|"strong"}` or `{kind:"interval",lo,hi}`; the view exposes **no** `passionScore`/`score`/`confidence`/`verdict`/`label` key; no card text matches `/you are (a|an|the) /i` (no-fixed-label guardrail).
 
-### 8.13 InterestLabView + `plainViewEquals` (exact)
+### 8.13 Island layout (exact, ±0.001) — `resolveIslandLayout(catalogDomainsInOrder)`, `resolveQuestPlacement(...)`
 
-`buildInterestLabView(inputs)` composes `{ surface, probePicker, guide:{ coverage, explanations, timeline, lifecycle, revisionHistory }, flags:{ reducedMotion, plainMode, ageBand, surface }, presentation:{ palette, typography, motionOf } }`. `plainViewEquals(a,b)` = the two views carry **identical** underlying domain-derived state (probePicker quests + returnStates, coverage, explanations, timeline markers, lifecycle+gate) and differ **only** in `flags` + the `presentation` derived from them (SC-UI-10).
+Islands sit on a horizontal **ring** (radius `RING_R = 9`), gentle Y stagger for floating feel. For domain at index `i` of `N` (catalog order), with `θ = (i / N) · 2π`:
+`x = RING_R · sin(θ)`, `z = −RING_R · cos(θ)`, `y = ((i mod 3) − 1) · 0.6`, island base radius `ISLAND_R = 2.2`. So index 0 sits front-center at `(0, −0.6, −9)` facing the home camera. **Golden** for the 8 `CATALOG_GOLDEN_V1` domains (`N=8`, catalog order):
 
-## §U9 · Phasing (P8…P13) — the UI build path
+| i | domain | (x, y, z) |
+|---:|---|---|
+| 0 | making | (0.000, −0.600, −9.000) |
+| 1 | living_systems | (6.364, 0.000, −6.364) |
+| 2 | symbols_math | (9.000, 0.600, 0.000) |
+| 3 | word_craft | (6.364, −0.600, 6.364) |
+| 4 | sound_music | (0.000, 0.000, 9.000) |
+| 5 | movement_body | (−6.364, 0.600, 6.364) |
+| 6 | visual_design | (−9.000, −0.600, 0.000) |
+| 7 | social_world | (−6.364, 0.000, −6.364) |
 
-Continues the Part-I build path (P0…P7 = the done domain). Work the lowest unfinished phase. Detailed tasks in [tasks.md](./tasks.md).
+Each island's `hue` = `resolveDomainHue` (§8.5); `state` is never encoded by island position/hue (states use glyph + text). **Quest-marker placement** within an island (`resolveQuestPlacement(islandCenter, k, m)` for marker `k` of `m` on that island): local ring radius `MARKER_R = 1.1`, height `MARKER_H = 1.4`, `φ = (k / m) · 2π`; marker world position `= (cx + MARKER_R·sin φ, cy + MARKER_H + 0.15·sin(k), cz + MARKER_R·cos φ)`. Golden example — `making` (3 markers, center `(0,−0.6,−9)`): `k0 → (0.000, 0.800, −7.900)`, `k1 → (0.953, 0.929, −8.450)`, `k2 → (−0.953, 0.664, −8.450)` (±0.001). Determinism: same `(catalogDomainsInOrder, offers)` ⇒ identical positions (no `Math.random`).
+
+### 8.14 3D scene, camera, lighting (exact) — `SCENE3D`, `CAMERA3D`, `resolveCamera3D`
+
+`SCENE3D` (exact): `bgHex:"#181026"`, `fogHex:"#181026"`, `fogNear:14`, `fogFar:46`, `ambientHex:"#3A2E5C"`, `ambientIntensity:0.35`, `hemiSkyHex:"#2A2140"`, `hemiGroundHex:"#0E0A18"`, `hemiIntensity:0.40`, `keyHex:"#FFC08A"`, `keyIntensity:1.15`, `keyPos:[6,10,6]`, `toneMapping:"ACESFilmic"`, `exposure:1.05`, `markerEmissiveHex:"#FF9E5E"`, `markerEmissiveRest:0.35`, `markerEmissivePulse:0.50`, `bloomPeak:1.40` (voluntary-return welcome-back emissive peak).
+
+`CAMERA3D` (exact): `fov:42`, `near:0.1`, `far:100`, `home:{ pos:[0,4.5,15], target:[0,0.4,0] }`, `establishStart:{ pos:[0,7,22] }`, `focusLerp:0.075` (per-frame damping toward target framing), `focusFillDistance:6.5` (camera stands `6.5` units out along the island→center vector when an island is focused), `orbit:{ enablePan:false, enableZoom:false, minPolarDeg:60, maxPolarDeg:85, azimuthClampDeg:75, dampingFactor:0.08 }`.
+
+`resolveCamera3D(focusIslandIndex | null, { reducedMotion })` → `{ pos, target, mode }`. `focusIslandIndex === null` → `home` framing, `mode:"drift-in"` (animated) or `"cut"` (reduced). A focused island `i` → `target = islandCenter[i]`, `pos = islandCenter[i] + normalize(home.target − islandCenter[i]) · focusFillDistance + [0, 1.6, 0]`; `mode:"ease"` (animated, `islandFocus` 520ms) or `"cut"` (reduced, instant). Deterministic; no `Math.random`.
+
+### 8.15 Glow & post-processing (exact) — emissive-first, bloom optional
+
+The warm glow is **emissive-first** (no post-processing dependency): lit/returned markers use `markerEmissive*` (§8.14) + an additive radial-gradient **halo sprite** generated in-app (deterministic canvas texture, no fetch). Ambient motes = drei `<Sparkles>` (`count` from the tier, §8.16; `color:"#FFC08A"`, `size:2`, `speed:0.3`, `scale:[26,10,26]`). **Post-processing bloom** (`@react-three/postprocessing` `EffectComposer`+`Bloom`, `intensity:0.6`, `luminanceThreshold:0.62`) is an **optional, non-breaking, full-tier-only** upgrade (`QUALITY_TIERS.full.bloom === true` gates it); `lite`/`board-2d` never load it. Reduced-motion → no motes, static emissive, no bloom.
+
+### 8.16 Render & quality tiers (exact) — `RENDER_TIERS`, `QUALITY_TIERS`, `resolveRenderTier`, `resolveQualityTier`
+
+`resolveRenderTier(caps, flags)` → one of `"quest-world-3d" | "quest-world-3d-lite" | "board-2d"`:
+- `"board-2d"` **iff** `flags.reducedMotion === true` **or** `flags.plainMode === true` **or** `caps.webglAvailable === false` **or** `caps.saveData === true` **or** `(caps.deviceMemoryGB ?? 8) < 4`.
+- else `"quest-world-3d-lite"` **iff** `(caps.deviceMemoryGB ?? 8) < 8` **or** `(caps.hardwareConcurrency ?? 8) < 8` **or** `caps.coarsePointer === true`.
+- else `"quest-world-3d"`.
+
+`QUALITY_TIERS` (exact params): `full:{ dprCap:2, shadows:true, bloom:true, motes:60, islandDetail:"high", postprocessing:true }`; `lite:{ dprCap:1.5, shadows:false, bloom:false, motes:24, islandDetail:"low", postprocessing:false }`; `board2d:{ dprCap:0, shadows:false, bloom:false, motes:0, islandDetail:"none", postprocessing:false }`.
+
+`resolveQualityTier(caps, flags)` = `QUALITY_TIERS[ resolveRenderTier(caps,flags) mapped to full|lite|board2d ]`. **Golden** cases: `{webglAvailable:true, deviceMemoryGB:16, hardwareConcurrency:12, coarsePointer:false, reducedMotion:false, plainMode:false}` → `"quest-world-3d"` (full); `{…deviceMemoryGB:6…}` → `"quest-world-3d-lite"` (lite); `{…coarsePointer:true…}` → `"quest-world-3d-lite"`; `{reducedMotion:true, …}` → `"board-2d"`; `{webglAvailable:false, …}` → `"board-2d"`; `{saveData:true, …}` → `"board-2d"`. Runtime FPS downgrade (drei `<PerformanceMonitor>`) may step `full → lite → board-2d` but the resolver is the deterministic floor. `plainViewEquals` holds across all tiers (tier is presentation only, UI-FR-001b/019).
+
+### 8.17 Evidence constellation (exact, ±0.001) — `buildEvidenceConstellationView(revision, timeline)`
+
+The six gate families are placed as **stars** on a shallow arc in a small 3D box; supporting pull is `+X`, disconfirming pull is `−X`. Family order = the fixed gate order `[voluntary_return, unrequired_revision, chosen_challenge, failure_recovery, self_authored_scope, artifact_competence]`. For family index `j` of 6: `x = 0` (base), `y = 1.2 − j·0.4`, `z = −0.3·(j mod 2)`, `brightness = present ? (family === "voluntary_return" ? 1.0 : 0.7) : 0.18`. `supportingAnchor = [+2.4, 0.4, 0]`, `disconfirmingAnchor = [−2.4, 0.4, 0]`; each star carries `pull ∈ {"supporting"|"disconfirming"|"neutral"}` from the revision's explanation mapping (a family with only supporting evidence pulls supporting, only disconfirming pulls disconfirming, both/none → neutral). The view carries `domEquivalent:true`, is `aria-hidden` when rendered, and exposes **no** `score`/`confidence`/`passionScore` key. Golden for the G4-derived revision (all six present, voluntary brightest): stars at `y = [1.2, 0.8, 0.4, 0.0, −0.4, −0.8]`, `voluntary_return.brightness === 1.0`, the other five `0.7`.
+
+### 8.18 ProbePickerView / SceneView parity (exact) — `plainViewEquals`
+
+`SceneView` = `{ islands: IslandView[], camera: CameraView, renderTier: RenderTier, quality: QualityTier, motes: int }`. Each `IslandView` = `{ domain, hue, center:[x,y,z], markers: QuestMarkerView[] }`; each `QuestMarkerView` = `{ probeId, familyId, workModeGlyph, position:[x,y,z], returnState, tone, motionKind, provenance, whyCopy, helpAffordance:true }` — **no** `score`/`rank`/`price`/`verdict`. The 3D `SceneView` and the 2D `ProbePickerView` derive from the **same** `Lab`+history: for every offer there is exactly one card and one marker with identical `probeId`, `returnState`, `tone`, `provenance`, `whyCopy`, `workModeGlyph`; they differ only in geometry vs layout. `plainViewEquals(a,b)` compares the domain-derived state (quests/returnStates, islands→markers by probeId, coverage, explanations, timeline, lifecycle+gate, revisionHistory, constellation stars) and ignores `flags`+`presentation` (incl. `renderTier`/`quality`/`camera`).
+
+### 8.19 InterestLabView (exact composition)
+
+`buildInterestLabView(inputs)` composes `{ surface, probePicker, scene, guide:{ coverage, explanations, timeline, lifecycle, revisionHistory, constellation }, flags:{ reducedMotion, plainMode, ageBand, surface, deviceCaps }, presentation:{ palette, typography, scene3d, camera3d, renderTier, quality, motionOf } }`. `inputs = { lab, coverage, hypothesis, events, gate, proposal?, options }` where `options = { surface, ageBand, reducedMotion, plainMode, deviceCaps, history? }`. `plainViewEquals` (§8.18) proves full-3D / 3D-lite / 2D / plain / reduced / age-band carry identical underlying state (SC-UI-10).
+
+## §U9 · Phasing (P8…P15) — the UI build path
+
+Continues the Part-I build path (P0…P7 = the done domain). Work the lowest unfinished phase. Detailed tasks in [tasks.md](./tasks.md). The 3D world is isolated to **P10 / P11 / P14** so the gate is never blocked on WebGL; the deterministic scene view model (P9b) is testable without a GPU.
 
 ### P8 — UI foundation & green-from-first-increment
 
 **Goal**: view package + app skeletons compile; the gate is green immediately.
-**Deliverables**: `packages/interest-lab-view` (`package.json` dep `@gt100k/interest-lab: workspace:*`, `tsconfig.json`, `src/index.ts`, `src/model.ts` view types, constant registries `art.ts` (`PALETTE`/`TYPOGRAPHY`/`HUE_RAMP`), `motion.ts` (`MOTION`/`EASINGS`), `glyphs.ts` (`WORK_MODE_GLYPHS`); a `test/smoke.test.ts` asserting the registries are non-empty). `apps/interest-lab` skeleton (`package.json`, `next.config.mjs` `transpilePackages:["@gt100k/interest-lab","@gt100k/interest-lab-view"]`, `tsconfig.json`, `app/layout.tsx`, `app/page.tsx` placeholder, `app/globals.css` with the §U8.2/§U8.3 tokens + `prefers-reduced-motion`/`prefers-reduced-transparency`/`.plain-mode`/`:focus-visible` rings, `.env.local.example`, `.gitignore`).
+**Deliverables**: `packages/interest-lab-view` (`package.json` dep `@gt100k/interest-lab: workspace:*`; `tsconfig.json`; `src/index.ts`; `src/model.ts` view types incl. the 3D scene types; constant registries `art.ts` (`PALETTE`/`TYPOGRAPHY`/`HUE_RAMP`), `motion.ts` (`MOTION`/`EASINGS`), `glyphs.ts` (`WORK_MODE_GLYPHS`), `scene.ts` (`SCENE3D`/`CAMERA3D`/`QUALITY_TIERS`/`RENDER_TIERS`); a `test/smoke.test.ts` asserting the registries are non-empty). `apps/interest-lab` skeleton (`package.json`; `next.config.mjs` `transpilePackages:["@gt100k/interest-lab","@gt100k/interest-lab-view"]`; `tsconfig.json`; `app/layout.tsx`; `app/page.tsx` placeholder; `app/globals.css` with the §U8.2/§U8.3 tokens + `prefers-reduced-motion`/`prefers-reduced-transparency`/`.plain-mode`/`:focus-visible` rings; `.env.local.example`; `.gitignore`).
 **Gate**: `pnpm typecheck` + `pnpm test` green.
 
-### P9 — Child probe-picker + age-band staging (UI-US1) 🎯 MVP
+### P9 — Child quest view model + 2D card-constellation board (UI-US1) 🎯 MVP-floor
 
-**View**: `resolveMotion`, `resolveDomainHue`, `resolveChildStaging`, `buildProbePickerView`, first `buildInterestLabView` (child surface). **App**: the Curiosity Quest Board rendering the domain Lab (quest cards w/ hue + glyph + provenance + help affordance), pick spring + press feedback + tray, age-band staging, reduced-motion path.
+**View**: `resolveMotion`, `resolveDomainHue`, `resolveChildStaging`, `buildProbePickerView`, first `buildInterestLabView` (child surface, `board-2d` presentation). **App**: the 2D Curiosity board (quest cards w/ hue + glyph + provenance + help affordance), pick spring + press feedback + tray via **`motion@^12`**, age-band staging, reduced-motion path. This is the accessible/fallback tier and AT source of truth.
 **Gate**: P8 gate + view golden tests (§8.4–§8.8) + `next build` + smoke + walkthrough steps 1–3.
 
-### P10 — "Come back later" voluntary-return delight (UI-US2)
+### P9b — Scene view model (GPU-free, deterministic)
 
-**View**: `returnState` derivation (voluntary @7/@30 vs prompted) + `welcomeBack` motion. **App**: warm welcome-back state (reduced-motion static) + recessed prompted state; dark-pattern-free confirmation.
-**Gate**: P9 gate + walkthrough step 4.
+**View**: `resolveIslandLayout`, `resolveQuestPlacement`, `resolveCamera3D`, `resolveRenderTier`, `resolveQualityTier`, `buildSceneView`; extend `buildInterestLabView` with `scene`. **No app 3D yet** — this is pure, Vitest-tested against §8.13/§8.14/§8.16/§8.18 goldens so the world (P10) renders from proven constants.
+**Gate**: P9 gate + scene golden tests (§8.13/§8.14/§8.16/§8.18).
 
-### P11 — Guide console: coverage matrix (UI-US3)
+### P10 — The 3D Curiosity Quest World (UI-US2) 🎯 MVP (3D-UI phase)
 
-**View**: `buildCoverageMatrixView` (rows/cols/cells/rail; gaps visible; no score). **App**: the animated coverage grid + coverage rail; gap cells calm/visible.
-**Gate**: P10 gate + coverage golden (§8.9) + walkthrough step 5.
+**App**: `apps/interest-lab` r3f layer — client-only `<Canvas aria-hidden>` (`ssr:false`), `QuestWorld` scene rendering `SceneView` (floating islands via procedural low-poly meshes tinted by hue, quest-markers with emissive glow + halo sprite, dusk fog/lighting per `SCENE3D`, drei `<Float>`/`<Sparkles>`, establishing drift-in + `<OrbitControls>` per band, `<AdaptiveDpr>`), with the **DOM quest ledger** as the operable/accessible surface driving focus/pick and the 3D camera mirroring focus; `resolveRenderTier` picks 3D vs `board-2d`; destroy on unmount, zero console/WebGL errors.
+**Gate**: P9b gate + `next build` + app smoke (canvas mounts, `aria-hidden`, zero errors; toggling reduced-motion → 2D board) + walkthrough steps for UI-US2.
 
-### P12 — Guide console: explanations + timeline + lifecycle + authoring (UI-US4)
+### P11 — "Come back later" voluntary-return delight (UI-US3) (3D-UI phase)
 
-**View**: `buildExplanationsView`, `buildReturnTimelineView`, `buildLifecycleStateView`, `buildRevisionHistoryView`; finalize `buildInterestLabView` (guide surface). **App**: side-by-side explanations, voluntary/prompted timeline, lifecycle state visual + gate checklist + shadow-proposal-as-suggestion + guide authoring; version history rail.
-**Gate**: P11 gate + golden (§8.10–§8.12) + walkthrough steps 6–8.
+**View**: `returnState` derivation (voluntary @7/@30 vs prompted) + `welcomeBack` motion, marker `tone`. **App**: the 3D warm bloom (emissive→`bloomPeak` + spark-motes burst + camera ease) and its **static** reduced-motion/2D equivalent (warm halo + copy); recessed prompted state; dark-pattern-free confirmation.
+**Gate**: P10 gate + walkthrough step for UI-US3 (+ reduced-motion static).
 
-### P13 — Polish, accessibility, plain mode & one-view parity
+### P12 — Guide console: coverage matrix (UI-US4)
 
-**Goal**: reduced-motion parity, plain mode, WCAG 2.2 AA (keyboard/switch/screen-reader, contrast, focus, color-independent), `plainViewEquals`, README + demo; the final root-`tsconfig` reference for `packages/interest-lab-view` (human-reconciled).
+**View**: `buildCoverageMatrixView` (rows/cols/cells/rail; gaps visible; no score). **App**: the animated coverage grid + coverage rail via `motion@^12`; gap cells calm/visible.
+**Gate**: P11 gate + coverage golden (§8.9) + walkthrough step for UI-US4.
+
+### P13 — Guide console: explanations + timeline + lifecycle + authoring + constellation (UI-US5)
+
+**View**: `buildExplanationsView`, `buildReturnTimelineView`, `buildLifecycleStateView`, `buildRevisionHistoryView`, `buildEvidenceConstellationView`; finalize `buildInterestLabView` (guide surface). **App**: side-by-side explanations, voluntary/prompted timeline, lifecycle state visual + gate checklist + shadow-proposal-as-suggestion + guide authoring; version history rail; the optional r3f evidence constellation (`aria-hidden`, DOM-equivalent, degrades off).
+**Gate**: P12 gate + golden (§8.10–§8.12, §8.17) + walkthrough steps for UI-US5.
+
+### P14 — Performance, quality tiers & graceful degradation (UI-US2 hardening) (3D-UI phase)
+
+**App**: wire `resolveQualityTier` params (DPR cap, motes, shadows, bloom) into the scene; drei `<PerformanceMonitor>` runtime step-down (full→lite→board-2d); WebGL context-loss/`Save-Data`/`deviceMemory` fallback to `board-2d`; the optional post-processing bloom behind the `full.bloom` gate; verify 60fps target + no dropped picks under load.
+**Gate**: P13 gate + tier golden (§8.16) + `next build` + performance/degradation walkthrough.
+
+### P15 — Polish, accessibility, plain mode & one-view parity
+
+**Goal**: reduced-motion parity (DOM + 3D), plain mode, WCAG 2.2 AA (keyboard/switch/screen-reader, contrast, focus, color-independent, `aria-hidden` canvas), `plainViewEquals` across all tiers, README + demo; the final root-`tsconfig` reference for `packages/interest-lab-view` (human-reconciled, **U-ROOT**).
 **Gate**: all SC-UI map green; full quickstart validation.
 
 ## §U10 · Success Criteria *(mandatory)* — each mapped to a test
@@ -1000,20 +1122,23 @@ Continues the Part-I build path (P0…P7 = the done domain). Work the lowest unf
 View-package SCs are Vitest tests in `packages/interest-lab-view/test/`; app SCs are verified via `next build` + the smoke + the [quickstart](./quickstart.md) walkthrough.
 
 - **SC-UI-01** — `buildProbePickerView` matches the §8.8 structural golden (20 cards, `provenance:"RULE"`, domain hue per catalog order, work-mode glyph, ≥2 eligible, help affordance, no forbidden field). → `test/probe-picker.test.ts`
-- **SC-UI-02** — `resolveChildStaging` matches §8.7; 6-8 `showRawNumbers:false` + `comparisonDefault:"off"`; underlying state identical across bands. → `test/staging.test.ts`
+- **SC-UI-02** — `resolveChildStaging` matches §8.7; 6-8 `showRawNumbers:false` + `comparisonDefault:"off"` + `worldCameraMode:"auto-tour"`; underlying state identical across bands. → `test/staging.test.ts`
 - **SC-UI-03** — Voluntary return @7/@30 yields `returnState:"voluntary-return"` + `welcomeBack` motion with **label-free** copy; prompted yields a recessed state with no delight; reduced-motion static. → `test/return-delight.test.ts`
 - **SC-UI-04** — `buildCoverageMatrixView` matches §8.9 (complete from G2, gappy from G3, exact gap strings); **no** `score`/`confidence` key anywhere. → `test/coverage-view.test.ts`
 - **SC-UI-05** — `buildExplanationsView` always pairs `disconfirming` with `supporting`; uncertainty is grade/interval; no scalar passion score / verdict / fixed-label text. → `test/explanations.test.ts`
 - **SC-UI-06** — `buildReturnTimelineView` matches §8.10 (voluntary @7/@30 distinct; prompted recedes + carries context; support markers `lowersSignal:false`). → `test/timeline.test.ts`
 - **SC-UI-07** — `buildLifecycleStateView` matches §8.11 (gate checklist from G5; proposal `operative:false`; legal transitions present). → `test/lifecycle-view.test.ts`
-- **SC-UI-08** — `resolveMotion` matches the §8.4 golden table; every kind has a reduced-motion equivalent (`mode:"reduced"`, `easing:"linear"`). → `test/motion.test.ts`
+- **SC-UI-08** — `resolveMotion` matches the §8.4 golden table; every kind (DOM **and** 3D) has a reduced-motion equivalent (`mode:"reduced"`, `easing:"linear"`). → `test/motion.test.ts`
 - **SC-UI-09** — `PALETTE`/`TYPOGRAPHY` exact (§8.2/§8.3) with the stated contrast guarantees; `resolveDomainHue` matches §8.5. → `test/art.test.ts`
-- **SC-UI-10** — `buildInterestLabView` + `plainViewEquals` (§8.13): full/plain/reduced/age-band carry identical underlying state, differ only in `flags`+`presentation`. → `test/view.test.ts`
-- **SC-UI-11** — Guardrails (static): no `Math.random` in `packages/interest-lab-view/src`; no `price|currency|score|confidence|passionScore|rank|percentile|verdict|outOf` field in any view type; no copy generator emits `/you are (a|an|the) /i`. → `test/guardrails.test.ts`
+- **SC-UI-10** — `buildInterestLabView` + `plainViewEquals` (§8.18/§8.19): full-3D / 3D-lite / 2D / plain / reduced / age-band carry identical underlying state, differ only in `flags`+`presentation` (incl. `renderTier`/`quality`/`camera`). → `test/view.test.ts`
+- **SC-UI-11** — Guardrails (static): no `Math.random` and no `three`/`react`/`@react-three/*` import in `packages/interest-lab-view/src`; no `price|currency|score|confidence|passionScore|rank|percentile|verdict|outOf` field in any view type (incl. `SceneView`/`ConstellationStar`); no copy generator emits `/you are (a|an|the) /i`. → `test/guardrails.test.ts`
 - **SC-UI-12** — Synthetic-only: the whole view layer runs from the Part-I fixtures with **no** consent/admissions/legal input. → `test/synthetic.test.ts`
-- **SC-UI-13** — (app) `next build` succeeds; both surfaces mount; `prefers-reduced-motion` honored by default; DOM accessible surface present. → `next build` + smoke + walkthrough (§ Accessibility).
-- **SC-UI-14** — (app) No dark patterns present (no countdown/decay/FOMO/scarcity); help affordance present and non-penalizing; child copy passes the no-fixed-label check. → walkthrough + copy review.
-- **SC-UI-15** — (app) WCAG 2.2 AA on both surfaces: keyboard/switch/screen-reader operable, visible focus, color-independent, ≥4.5:1; `prefers-reduced-transparency` → solid. → a11y walkthrough.
+- **SC-UI-13** — Scene view model: `resolveIslandLayout`/`resolveQuestPlacement`/`resolveCamera3D` match §8.13/§8.14 (±0.001), catalog-order-derived (no hardcoded domain→position map), deterministic (no `Math.random`); `SceneView`↔`ProbePickerView` marker/card parity (§8.18). → `test/scene.test.ts`
+- **SC-UI-14** — Render/quality tiers: `resolveRenderTier`/`resolveQualityTier` match §8.16 golden cases; tier is presentation-only (`plainViewEquals` holds across tiers). → `test/tiers.test.ts`
+- **SC-UI-15** — Evidence constellation: `buildEvidenceConstellationView` matches §8.17 (six family stars, voluntary brightest, supporting/disconfirming anchors, `domEquivalent:true`, no scalar score). → `test/constellation.test.ts`
+- **SC-UI-16** — (app) `next build` succeeds; the r3f `<Canvas>` mounts **client-only** with `aria-hidden="true"`, **zero console/WebGL errors**, destroys on unmount; on `prefers-reduced-motion` / no-WebGL the surface renders the `board-2d` tier by default; 60fps target with graceful degradation (drei `<PerformanceMonitor>`/`<AdaptiveDpr>`) verified in the walkthrough. → `next build` + smoke + performance walkthrough.
+- **SC-UI-17** — (app) No dark patterns present (no countdown/decay/FOMO/scarcity, no time/mastery-gated island unlock or level-up); help affordance present and non-penalizing; child copy passes the no-fixed-label check; no number/score/rank floats in the 3D world. → walkthrough + copy review.
+- **SC-UI-18** — (app) WCAG 2.2 AA on both surfaces: keyboard/switch/screen-reader operable via the DOM, the 3D `<Canvas>` `aria-hidden` with the DOM ledger as AT source of truth, visible focus, color-independent, ≥4.5:1; `prefers-reduced-transparency` → solid. → a11y walkthrough.
 
 ## §U11 · Stack, commands, env & seeded smoke (pinned)
 
@@ -1021,9 +1146,9 @@ View-package SCs are Vitest tests in `packages/interest-lab-view/test/`; app SCs
 
 - **Package manager**: pnpm `9.15.9` (workspace).
 - **Language**: TypeScript `5.6.3`, strict (`tsconfig.base.json`), Node LTS.
-- **View package**: pure TS; dep `@gt100k/interest-lab` (`workspace:*`) only. **No `Math.random`.**
-- **App**: Next.js `^14.2.15` App Router + React `^18.3.1` (match `apps/student-compass`), **`framer-motion ^11.11.0`** (Motion), `transpilePackages` for the two workspace packages. DOM/SVG only — **no** Canvas/Phaser.
-- **Test**: Vitest (root `vitest.config.ts` already globs `packages/**/test/**/*.test.ts` — no root edit; the app is **not** in the Vitest glob and is verified by `next build`).
+- **View package**: pure TS; dep `@gt100k/interest-lab` (`workspace:*`) only. **No `Math.random`; no `three`/`react`/`@react-three/*` import** (framework- and GPU-free).
+- **App**: Next.js `^14.2.15` App Router + React `^18.3.1` (match `apps/student-compass`). **DOM motion: `motion ^12`** (`import from "motion/react"`). **3D: `three ^0.169.0` + `@react-three/fiber ^8.17.10` + `@react-three/drei ^9.114.0`** (the React-18 line — r3f 8 pairs with React 18; r3f 9 requires React 19), dev `@types/three ^0.169.0`. **Optional non-breaking** full-tier bloom: `@react-three/postprocessing ^2.16.3` + `postprocessing ^6.36.3` (gated by `QUALITY_TIERS.full.bloom`; not required for the gate). `transpilePackages` for the two workspace packages; the `<Canvas>` is mounted via `next/dynamic(..., { ssr:false })` and destroyed on unmount.
+- **Test**: Vitest (root `vitest.config.ts` already globs `packages/**/test/**/*.test.ts` — no root edit; the app is **not** in the Vitest glob and is verified by `next build`). The view package is fully testable **without a GPU** (it emits scene numbers, never touches `three`).
 
 ### Commands
 
@@ -1033,7 +1158,7 @@ pnpm typecheck                                      # tsc -b (green after the fi
 pnpm test                                           # Vitest across the workspace (view package)
 pnpm --filter @gt100k/interest-lab-view test        # view package tests only
 pnpm lint                                           # biome check packages adapters apps (covers new dirs)
-pnpm --filter @gt100k/interest-lab-app dev          # run the two surfaces
+pnpm --filter @gt100k/interest-lab-app dev          # run the two surfaces (3D world + guide console)
 pnpm --filter @gt100k/interest-lab-app build        # next build — app acceptance gate
 ```
 
@@ -1046,42 +1171,48 @@ No secrets. Commit `apps/interest-lab/.env.local.example` with non-secret public
 ```dotenv
 # apps/interest-lab/.env.local.example
 NEXT_PUBLIC_LAB_SEED=42
-NEXT_PUBLIC_REDUCED_MOTION_DEFAULT=system   # system | on | off
-NEXT_PUBLIC_DEFAULT_AGE_BAND=9-11           # 6-8 | 9-11 | 12-14
-NEXT_PUBLIC_DEFAULT_SURFACE=child           # child | guide
+NEXT_PUBLIC_REDUCED_MOTION_DEFAULT=system     # system | on | off
+NEXT_PUBLIC_DEFAULT_AGE_BAND=9-11             # 6-8 | 9-11 | 12-14
+NEXT_PUBLIC_DEFAULT_SURFACE=child             # child | guide
+NEXT_PUBLIC_RENDER_TIER=auto                  # auto | quest-world-3d | quest-world-3d-lite | board-2d
 ```
 
 ### Seeded smoke (green from iteration 1)
 
-- **View-package smoke** (`packages/interest-lab-view/test/smoke.test.ts`, part of P8): imports the package, asserts `PALETTE`/`MOTION`/`EASINGS`/`HUE_RAMP`/`WORK_MODE_GLYPHS` are non-empty and `resolveMotion("press",{reducedMotion:false}).durationMs === 120` — so `pnpm test` is green from the first increment.
-- **App smoke** (P9+, run in the review pipeline's Playwright pass): loads `/`, mounts the child board, asserts **zero console errors**, then toggles reduced-motion and confirms the accessible controls are present and focusable.
+- **View-package smoke** (`packages/interest-lab-view/test/smoke.test.ts`, part of P8): imports the package, asserts `PALETTE`/`MOTION`/`EASINGS`/`HUE_RAMP`/`WORK_MODE_GLYPHS`/`SCENE3D`/`CAMERA3D`/`QUALITY_TIERS` are non-empty and `resolveMotion("press",{reducedMotion:false}).durationMs === 120` — so `pnpm test` is green from the first increment.
+- **App smoke** (P10+, run in the review pipeline's Playwright pass): loads `/`, mounts the child surface; in a WebGL-capable context asserts the `<Canvas aria-hidden="true">` mounts with **zero console/WebGL errors**; toggles reduced-motion and confirms it swaps to the `board-2d` tier with the accessible controls present and focusable.
 
 ## §U12 · Accessibility & reduced-motion equivalence (detail)
 
-- **Reduced motion** (`prefers-reduced-motion: reduce`, honored by default; overridable): entrances → instant or ≤150ms crossfade; the pick spring → crossfade-to-tray; welcome-back → static warm ring + text; timeline draws → static; ambient glow off. State/coverage/explanations/timeline/lifecycle remain fully conveyed (UI-FR-012, SC-UI-10).
-- **DOM-native accessibility** (UI-FR-013, SC-UI-15): both surfaces are semantic HTML — the quest board a keyboard-navigable list/`grid` of `button`/`option` cards with accessible names (title + work-mode + why + return-state); the coverage matrix a `table`/`grid` with row/column headers and per-cell status text; the timeline a labeled list of dated markers; the lifecycle a labeled state list with the gate checklist as text. Full keyboard/switch operation, visible `--focus` rings, color-independent state (icon + text), ≥4.5:1 contrast. There is **no** opaque canvas to shim.
-- **Plain mode**: a low-spectacle rendering (calm palette, minimal motion) that is state-identical to full (`plainViewEquals`, SC-UI-10).
+- **Reduced motion** (`prefers-reduced-motion: reduce`, honored by default; overridable): renders the **`board-2d`** tier (no WebGL) — entrances instant or ≤150ms crossfade; the pick spring → crossfade-to-tray; welcome-back → static warm halo + text; timeline draws → static; ambient motes/glow off. State/coverage/explanations/timeline/lifecycle remain fully conveyed (UI-FR-012, SC-UI-10).
+- **Canvas is `aria-hidden`; the DOM is the AT source of truth** (UI-FR-013, SC-UI-18): the child world's **quest ledger** is an ordered, keyboard-navigable list of card-buttons (accessible name = title + work-mode + why + return-state) that drives focus/pick; the 3D camera *mirrors* DOM focus. The coverage matrix is a DOM `table`/`grid` with row/column headers + per-cell status text; the timeline a labeled list of dated markers; the lifecycle a labeled state list with the gate checklist as text; the evidence constellation is decorative (`aria-hidden`) with the side-by-side explanations + timeline as its DOM equivalent. Full keyboard/switch operation, visible `--focus` rings, color-independent state (icon + text), ≥4.5:1 contrast. There is **no** state or affordance reachable only via the canvas.
+- **Graceful degradation** (UI-FR-021, SC-UI-16): weak caps / low FPS / no-WebGL / lost context / `Save-Data` / `deviceMemory < 4` step down `full → lite → board-2d`; a tier change never blocks a pick or loses a quest.
+- **Plain mode**: a low-spectacle rendering (the `board-2d` tier, calm palette, minimal motion) that is state-identical to full (`plainViewEquals`, SC-UI-10).
 - **Reduced transparency / high contrast**: `prefers-reduced-transparency` → solid panels; `prefers-contrast: more` → near-solid surfaces with defined borders.
-- **Free opt-out**: plain mode / reduced motion / muted audio never change the underlying view state.
+- **Free opt-out**: plain mode / reduced motion / lower render tier / muted audio never change the underlying view state.
 
 ## §U13 · Pre-marked decision points (defaults + severity)
 
 The loop proceeds on the **default**; it escalates only per §U3.
 
-- **DP-U1 — Rendering approach. ✅ SETTLED: React + framer-motion + SVG/DOM (no game engine).** Rejected: Canvas/Phaser (opaque to AT; the surfaces are card/grid/timeline/state-diagram DOM). Severity: low.
-- **DP-U2 — Motion library. ✅ Settled: `framer-motion ^11`** (Motion), with CSS transitions/`@starting-style` for the simple cases and springs/`AnimatePresence`/layout for gestures; `useReducedMotion` gates every motion. Severity: low.
-- **DP-U3 — View-layer location. ✅ Settled: a new pure package `packages/interest-lab-view`** (the Part-I domain core stays untouched and unit-tested). Severity: low.
-- **DP-U4 — Art direction. ✅ Settled: "The Curiosity Atelier"** — deep plum-indigo dusk workshop + curiosity-warm accents; deliberately **not** cream/sand (impeccable) and **not** feature-004 golden-hour. Severity: low.
-- **DP-U5 — Domain hue derivation. ✅ Settled: catalog-order `HUE_RAMP`** (no hardcoded domain→hue taxonomy; never a state cue). Severity: low.
-- **DP-U6 — Coverage-gap framing.** Default: gaps render as **calm "still to explore"** (slate `--gap` + hollow-ring + text), never red/error, never a score. Severity: normal.
-- **DP-U7 — Voluntary-return delight copy.** Default: concrete, label-free ("You came back to this one"); never "you are an X". Severity: normal.
-- **DP-U8 — Fonts (no-fetch constraint).** Default: system fallback stacks; self-hosted subset `woff2` under `public/fonts/` is an optional non-breaking upgrade keyed identically. Severity: low.
+- **DP-U1 — Rendering approach. ✅ SETTLED: a 3D child world (react-three-fiber + drei + three.js) + a 2D-DOM equal/fallback tier, one view model.** The child Curiosity Quest World is real 3D; accessibility is DOM-native (canvas `aria-hidden`, DOM ledger operable); reduced-motion / plain / no-WebGL / weak-device fall back to the 2D card-constellation board with identical state. Rejected: canvas-only interaction (opaque to AT); a DOM-only surface (loses the explorable-world vision). Severity: low.
+- **DP-U2 — DOM motion library. ✅ SETTLED: `motion@^12`** (`motion/react`) for all DOM motion; r3f/drei for 3D scene motion; no other engine. Severity: low.
+- **DP-U3 — View-layer location. ✅ Settled: a new pure package `packages/interest-lab-view`** (framework- and GPU-free; emits scene numbers; the Part-I domain core stays untouched and unit-tested). Severity: low.
+- **DP-U4 — Art direction. ✅ Settled: "The Curiosity Atelier at Dusk"** — deep plum-indigo dusk sky + floating warm curiosity-islands; deliberately **not** cream/sand (impeccable) and **not** feature-004 golden-hour. Severity: low.
+- **DP-U5 — Domain hue + island position derivation. ✅ Settled: catalog-order (`HUE_RAMP` + ring layout)** (no hardcoded domain→hue/position taxonomy; hue never a state cue). Severity: low.
+- **DP-U6 — Render-tier thresholds.** Default: `resolveRenderTier`/`resolveQualityTier` per §8.16 (`deviceMemory<4`/no-WebGL/reduced/plain/Save-Data → 2D; `<8`/coarse-pointer → lite; else full) + runtime `<PerformanceMonitor>` step-down. Severity: normal.
+- **DP-U7 — 3D geometry & glow.** Default: procedural low-poly islands (three primitives) + emissive-first glow + in-app halo sprite; **no external fetch** (no HDRI/GLTF/font). Post-processing bloom and committed GLB islands are optional non-breaking upgrades. Severity: low.
+- **DP-U8 — R3F/React major line.** Default: **r3f 8 + drei 9 + React 18.3.1** (matches the repo). Upgrading the app to React 19 + r3f 9 + drei (React-19 line) is an optional, isolated, non-breaking future path (app-only). Severity: low.
+- **DP-U9 — Coverage-gap framing.** Default: gaps render as **calm "still to explore"** (slate `--gap` + hollow-ring + text), never red/error, never a score. Severity: normal.
+- **DP-U10 — Voluntary-return delight copy.** Default: concrete, label-free ("You came back to this one"); never "you are an X". Severity: normal.
+- **DP-U11 — Fonts (no-fetch constraint).** Default: system fallback stacks; self-hosted subset `woff2` under `public/fonts/` is an optional non-breaking upgrade keyed identically. Text is DOM, never in the canvas. Severity: low.
+- **DP-U12 — Evidence constellation (3D guide viz).** Default: **on as an optional elevation** with a DOM-equivalent always present; `aria-hidden`; degrades off under reduced-motion / no-WebGL. Severity: low.
 
 ## §U14 · Assumptions
 
 - **Builds on the done Part-I domain.** `@gt100k/interest-lab` (+ its `adapters/interest-*` and fixtures `CATALOG_GOLDEN_V1`/`CATALOG_GAPPY_V1`/`EVENTS_GOLDEN_V1`) is available and unchanged; the view package consumes its public API (`buildLab`, `buildCoverageMatrix`, `summarizeSignals`, hypothesis/`evaluateCandidateGate`).
-- **The view layer never re-computes a learning rule.** No scalar passion score, no coverage number, no verdict is introduced anywhere; the domain's honesty guarantees are rendered, not recomputed.
-- **Synthetic-only, governance stubbed.** No real learners/consent/admissions/legal; the app runs entirely on the Part-I fixtures.
-- **Child-facing surface.** The child Quest Board is a child-facing surface, so the buildable child-safety guardrails here apply (reduced-motion equal mode, WCAG 2.2 AA, age-band staging, no dark patterns, help-never-penalizes, no forbidden-purpose framing) — enforced as functional requirements + tests. Age-band defaults are **[E3]** operating defaults (§14.13), not research-validated optima.
-- **Performance is an acceptance target.** 60fps feel is validated via `next build` + the walkthrough, not a unit test (the pure view layer carries no rendering).
-- **New dirs only.** All code lives in `packages/interest-lab-view` + `apps/interest-lab`; the only shared-root edit is the final, human-reconciled root-`tsconfig` reference for the view package.
+- **The view layer never re-computes a learning rule and never touches a GPU.** No scalar passion score, coverage number, or verdict is introduced anywhere; the domain's honesty guarantees are rendered, not recomputed. The 3D scene is described by deterministic numbers (positions/camera/tiers) the pure view emits and the app's r3f consumes — so the whole view layer is Vitest-testable without WebGL.
+- **Synthetic-only, governance stubbed.** No real learners/consent/admissions/legal; the app runs entirely on the Part-I fixtures with no external fetch.
+- **Child-facing surface.** The child Quest World is a child-facing surface, so the buildable child-safety guardrails here apply (reduced-motion equal mode, WCAG 2.2 AA with `aria-hidden` canvas, age-band staging, no dark patterns, no time/mastery-gated unlocks, help-never-penalizes, no forbidden-purpose framing) — enforced as functional requirements + tests. Age-band defaults are **[E3]** operating defaults (§14.13), not research-validated optima.
+- **Performance is an acceptance target.** 60fps feel + graceful degradation are validated via `next build` + the walkthrough (drei `<PerformanceMonitor>`/`<AdaptiveDpr>` + `resolveQualityTier`), not a unit test (the pure view layer carries no rendering); the deterministic **tier resolvers** are unit-tested (§8.16).
+- **New dirs only.** All code lives in `packages/interest-lab-view` + `apps/interest-lab`; the only shared-root edit is the final, human-reconciled root-`tsconfig` reference for the view package (**U-ROOT**).
