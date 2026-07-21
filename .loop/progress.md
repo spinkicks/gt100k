@@ -132,3 +132,15 @@
 
 - T013 + T021 — Add the `assignCohorts` golden solver contract first, then implement deterministic greedy construction plus bounded feasible repair in `packages/cohort-compiler/src/solver.ts`.
 - Acceptance: Fixture B yields byte-identical cohorts `[A1..A6]` and `[B1..B6]` with the pinned role vector and no unassigned learners; Fixture B2 leaves `C1` unassigned with its binding age reason; every accepted cohort has six members and zero hard violations; no learned model is consulted; the focused RED/GREEN cycle and repository typecheck/test/lint gate pass.
+
+## 2026-07-20 — P2 / T013 + T021
+
+- Added the FR-007/FR-010/FR-012/FR-019 solver contract for Fixtures B/B2: exact cohorts and roles, exact C1 binding reason, six-member/zero-violation enforcement, byte-identical repeated output, and a solve signature/output with no learned-model seam.
+- Implemented pure `assignCohorts` with greedy-first deterministic option ordering, bounded partition repair that maximizes feasible assigned coverage before soft score, two bounded feasible swap passes, lexical cohort/role ordering, assignment-level churn enforcement, stable unassigned reasons, and deterministic snapshot metadata derived only from passed inputs.
+- TDD status: the focused suite first failed because `src/solver.ts` was absent, then review-driven regressions independently failed for greedy stranding, aggregate churn overflow, post-sort churn miscount, and post-sort hard-constraint validation before each targeted fix made them pass.
+- Gate status: `pnpm typecheck`, `pnpm test` (65/65), and `pnpm lint` pass. Independent read-only review found no remaining Critical or Important issues. P2/SC-002 is complete; SC-006's no-learned-model solver boundary is complete, with the post-lock shadow adapter still scheduled in P4. No blocker.
+
+## NEXT
+
+- T014 + T022 — Add the `CohortRepository` adapter contract first, then scaffold and implement `adapters/cohort-repo-memory`.
+- Acceptance: `commitAtomic` is whole-roster-or-nothing; `activeFor` enforces one active assignment per learner; `getSnapshot`/`restore` retain and return the exact prior snapshot; all reads/writes have deep-copy isolation; the focused test demonstrates RED before implementation; repository typecheck/test/lint remain green.
