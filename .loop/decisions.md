@@ -544,3 +544,37 @@
   is off-main-thread and the tray items already animate enter/exit via `motion/react` — emil's "CSS beats
   JS under load"); a bespoke tray easing (used the shared `--card-ease` for cohesion); a warm glow on the
   prompted-return mark (prompted must stay calm — game-feel #1 + D-VP8's spark/prompted split).
+
+## D-VP10 — Contact ambient occlusion finishes the post-FX grade (Turn 8)
+- What: Added an `<N8AO>` pass as the first effect in `WorldPostFX.tsx`'s composer chain
+  (N8AO → Bloom → HueSaturation → BrightnessContrast → ACES ToneMapping → Vignette), full-tier only
+  (it lives inside the composer that only mounts when `quality.postprocessing`). Tuned conservatively:
+  `aoRadius={1.1}` (contact-scale — the island-cap↔underside-cone seam, markers meeting island tops,
+  the rim torus meeting the deck; ≈1 world unit so distant islands don't darken each other across the
+  void), `distanceFalloff={1}`, `intensity={1.25}` (just above N8AO's already-legible 1.0 default),
+  `quality="medium"`, `halfRes` + `depthAwareUpsampling` (perf + clean edges), and — the cohesion move —
+  `color={PALETTE.nightSunk}` so the occlusion tints toward the deep plum night instead of gray/black
+  dirt, matching the `<ContactShadows>` grounding color (D-VP1).
+- Why: game-feel **#4** explicitly lists "subtle SSAO" as part of the post-processing stack ("~half of
+  AAA feel"), and it was the one named-but-unbuilt item (Turn 2 shipped Bloom+grade+tone-map+vignette;
+  AO was deferred as "needs a normal pass; riskiest to tune blind"). Critic pass (impeccable +
+  apple-design §12 materials/depth, §16.7 craft): every surface is now crafted, but the 3D islands +
+  markers were *lit* yet not *seated in each other* — no contact-scale occlusion, so they read a hair
+  "floaty / decal'd," the last CG tell in the world. **N8AO retires the deferral risk directly: it
+  derives normals from the depth buffer, so there is no separate normal pass to add or tune** — the
+  exact thing that made classic `SSAO` risky blind. Depth-only also means the fog + emissive markers +
+  ContactShadows are untouched; AO only multiplies darkening into creases (already-dark regions), so it
+  can't change which warm cores Bloom lifts.
+- Verification: `world-3d.test.ts` transitively imports the real `@react-three/postprocessing` (it is
+  NOT mocked — only fiber/drei/next-dynamic are), so the 74-test app suite + the standalone node ESM
+  probe both prove the N8AO module evaluates without a side-effect crash. tsc + 74 tests + `next build`
+  green. Pixel appearance still can't be verified in this GPU-less headless env (swiftshader falls to
+  board-2d and never runs the composer) — same honest caveat as the Bloom grade (see progress
+  Verification note); params were chosen conservative-by-construction and tinted to the committed palette.
+- Rejected: classic `SSAO` (needs a `NormalPass` — more wiring + the blind-tuning risk that deferred it);
+  a bright/black AO color (gray dirt breaks the warm dusk cohesion — tinted to `nightSunk` to match the
+  contact shadows); high `intensity` / large `aoRadius` (over-darkening reads as muddy — game-feel #1
+  "keep it calm", and this can't be pixel-checked, so conservative wins); a new `quality.ssao` flag
+  (redundant — the composer already gates on `postprocessing`, so AO auto-drops with the full tier and
+  the D057 perf floor is preserved); adding depth-of-field this turn (optional per #4; one grounded
+  change per turn, and DoF is the higher blind-tuning risk — left for a GPU screenshot pass).

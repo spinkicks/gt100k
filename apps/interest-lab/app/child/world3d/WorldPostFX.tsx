@@ -1,11 +1,12 @@
 "use client";
 
-import type { QualityTier, Scene3DView } from "@gt100k/interest-lab-view";
+import { PALETTE, type QualityTier, type Scene3DView } from "@gt100k/interest-lab-view";
 import {
   Bloom,
   BrightnessContrast,
   EffectComposer,
   HueSaturation,
+  N8AO,
   ToneMapping,
   Vignette,
 } from "@react-three/postprocessing";
@@ -22,7 +23,7 @@ export interface WorldPostFXProps {
 //
 // Chain order is deliberate. `<EffectComposer>` forces `gl.toneMapping = NoToneMapping` while mounted
 // and renders the scene linearly into an HDR HalfFloat buffer, so we must re-apply the tone curve here:
-//   Bloom (HDR) → warm palette grade → ACES tone-map → Vignette (display-space edge falloff).
+//   N8AO (linear, seats objects) → Bloom (HDR) → warm palette grade → ACES tone-map → Vignette.
 // ACES_FILMIC matches the renderer's tone mapping used on the non-composer tiers, keeping the look
 // cohesive across quality steps.
 export function WorldPostFX({ scene3d, quality }: WorldPostFXProps) {
@@ -30,6 +31,21 @@ export function WorldPostFX({ scene3d, quality }: WorldPostFXProps) {
 
   return (
     <EffectComposer multisampling={4}>
+      {/* Contact ambient occlusion — the last "floaty CG" tell. Seats each quest marker into its
+          island top, the island cap into its underside cone, and the rim torus into the deck. N8AO
+          derives normals from depth (no separate normal pass), so it's robust to tune. The AO color
+          is tinted to the deep plum night (not black) so the creases stay cohesive with the
+          `<ContactShadows>` grounding rather than reading as gray dirt. Half-res + medium quality
+          keeps the full-tier budget; it auto-drops with the composer on the lite/board tiers. */}
+      <N8AO
+        aoRadius={1.1}
+        distanceFalloff={1}
+        intensity={1.25}
+        quality="medium"
+        color={PALETTE.nightSunk}
+        halfRes
+        depthAwareUpsampling
+      />
       {/* Soft dusk glow — feeds on the emissive quest markers + additive welcome halos. A selective
           luminance threshold keeps the plum night matte and only lets the warm cores bloom. */}
       {quality.bloom ? (

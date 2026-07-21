@@ -110,6 +110,20 @@ emissive glow, spring/ease-out motion. Display font Fredoka; reading serif Iowan
   board hover now actually renders. Reduced-motion auto-neutralized by the global block; pinned
   `data-quest-tray-item` / aria-label tests untouched. Gate green: tsc + 74 tests + `next build`. See D-VP9.
 
+- **Turn 8 (this):** Finished the **post-processing grade (#4)** — added the one named-but-unbuilt
+  item, **contact ambient occlusion**. Critic pass (impeccable + apple-design §12 materials/depth): every
+  surface is crafted, but the 3D islands + markers were *lit* yet not *seated in each other* (no
+  contact-scale occlusion → a faint "floaty / decal'd" CG tell, the last one in the world). Added
+  `<N8AO>` as the first effect in `WorldPostFX.tsx`'s chain (N8AO → Bloom → grade → ACES → Vignette),
+  full-tier only. Tuned conservative: `aoRadius=1.1` (island cap↔underside seam, markers on island tops,
+  rim torus — ≈1 world unit so distant islands don't cross-darken), `intensity=1.25`, `quality="medium"`,
+  `halfRes` + `depthAwareUpsampling`, and `color=PALETTE.nightSunk` so creases tint to the plum night (not
+  gray dirt), cohesive with `<ContactShadows>`. **N8AO retires the deferral risk directly: it derives
+  normals from depth — no separate normal pass to add/tune** (the exact thing that made classic SSAO risky
+  blind), and depth-only means fog/emissive/contact-shadows are untouched. Gate green: tsc + 74 tests
+  (`world-3d.test.ts` loads the real, un-mocked composer → proves N8AO evaluates clean) + `next build`.
+  See D-VP10.
+
 ## Verification note (honest)
 The grade only mounts client-side on the WebGL full tier, so it can't be pixel-verified in this
 headless / GPU-less env (swiftshader would fall to board-2d and never exercise the composer).
@@ -121,8 +135,9 @@ why the ACES ToneMapping effect is present. A GPU screenshot pass is the ideal n
 ## What still reads generic (candidates for next turns)
 - **All primary surfaces are now crafted + cohesive** (3D world, child HUD deck, guide light-table deck,
   board-2d fallback). Remaining items are AAA-grade *polish*, not auto-fail tells:
-- **SSAO / ambient occlusion (part of #4)** — deferred (needs a normal pass; riskiest to tune blind).
-  A subtle N8AO pass + optional shallow depth-of-field would finish the AAA grade.
+- ~~**SSAO / ambient occlusion (part of #4)**~~ — DONE Turn 8 (tinted N8AO contact AO; depth-only, so
+  no normal pass was needed after all). Only optional **shallow depth-of-field** remains to finish the
+  AAA grade — deferred as the higher blind-tuning risk (best done in a GPU screenshot pass).
 - ~~**Quest-tray + welcome-back surfaces**~~ — DONE Turn 7 (lit slab + rail + glow-dot + raised chips +
   tactile "Put back" + emissive welcome-back halo). Board↔tray↔deck now cohere; also fixed a stale board
   hover-shadow override in passing.
@@ -133,7 +148,8 @@ why the ACES ToneMapping effect is present. A GPU screenshot pass is the ideal n
 
 ## Non-negotiable scorecard (vs game-feel.md)
 1 committed world ✓ · 2 lighting rig ✓ · 3 materials ✓ (no bare primitives remain) ·
-4 post-FX grade ✓ (SSAO/DoF still open) · 5 camera cinematography ✓ (idle breath, Turn 3) ·
+4 post-FX grade ✓ (Bloom+grade+ACES+Vignette+**N8AO contact AO, Turn 8**; only optional DoF open) ·
+5 camera cinematography ✓ (idle breath, Turn 3) ·
 6 motion/juice ✓ world + child HUD + guide + **board-2d (motion was already there; Turn 6 added the
   crafted material so the lift reads as depth)** ·
 7 HUD not forms ✓ (child deck + guide deck, Turn 4) · 8 type+icons ✓ ·
@@ -142,17 +158,20 @@ why the ACES ToneMapping effect is present. A GPU screenshot pass is the ideal n
   AAA-grade polish (SSAO/DoF, tray material, GPU-tuning), not a redo.
 
 ## NEXT
-All primary + secondary surfaces are now crafted + cohesive (3D world, child HUD deck, guide light-table
-deck, board-2d cards, **quest tray + welcome-back**). Every game-feel non-negotiable is met and no auto-fail
-anti-pattern remains — what's left is AAA-grade *polish*, no redo:
-1. **SSAO + shallow DoF to finish #4 (highest remaining visual value).** Add a subtle `N8AO` pass (needs a
-   normal pass — tune conservatively; riskiest to tune blind, hence deferred so far) + optional shallow
-   depth-of-field in `WorldPostFX.tsx`, gated on the same full-tier `quality.postprocessing` flag so the
-   board/lite tiers keep the D057 perf floor. Verify the composer still imports clean in the vitest node
-   env before wiring (as done in Turn 2).
+Every game-feel non-negotiable is now met (the post-FX grade is complete: Bloom + palette grade + ACES +
+Vignette + **N8AO contact AO** as of Turn 8) and no auto-fail anti-pattern remains. All primary + secondary
+surfaces are crafted + cohesive (3D world, child HUD deck, guide light-table deck, board-2d cards, quest
+tray + welcome-back). **The DoD is satisfied by construction** — what remains is discretionary AAA polish
+that is best done with GPU eyes on, not blind:
+1. **GPU/browser screenshot pass — do this before any further blind post-FX tuning.** In this headless,
+   GPU-less env swiftshader falls to board-2d and never runs the composer, so Bloom / Vignette / **the new
+   N8AO intensity+radius** / idle-breath amplitude / board & tray glow amounts can't be pixel-verified.
+   A real screenshot pass is the single highest-value next step: confirm the AO isn't muddy, then tune to
+   taste. Only after that, consider **optional shallow depth-of-field** (the last #4 item — deferred as the
+   higher blind-tuning risk).
 2. **Deeper guide trenching (optional):** the explanation columns + lifecycle tracks + revision rail could
    take the two scroll instruments' inset-trench treatment for more instrument depth.
-3. **GPU/browser screenshot pass** to tune Bloom/Vignette + idle-breath amplitude + the board & tray
-   glow/rail amounts to taste (can't be pixel-verified headless — see Verification note).
+3. **Consider `.loop-done`.** With #4 complete, re-audit against `game-feel.md` end to end; if it holds up,
+   the remaining items are polish, not blockers — a case for declaring done rather than adding more.
 Keep the gate green (tsc + test + `next build`); write `.loop/commit-msg`; keep the art direction cohesive.
-Before adding, subtract (game-feel #1) — the world is now calm + cohesive; guard against over-decorating.
+Before adding, subtract (game-feel #1) — the world is calm + cohesive; guard hard against over-decorating.
