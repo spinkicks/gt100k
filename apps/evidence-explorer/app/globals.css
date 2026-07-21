@@ -1134,36 +1134,251 @@ button {
   display: contents;
 }
 
-/* ── HUD control cluster (§U5.9) ─────────────────────────────────────────── */
+/* ── HUD command cluster (§U5.9) — one primary action + search + two disclosure drawers ── */
 .hud {
-  padding: 18px 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 }
-.hud-section {
+
+/* Primary action — Trace lineage. The single prominent CTA in the rail. */
+.hud-primary {
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
-.hud-head {
+.hud-trace {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 12px 14px;
+  text-align: left;
+  border: 1px solid color-mix(in oklab, var(--focus) 28%, var(--line));
+  border-radius: 14px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--focus) 10%, transparent),
+    color-mix(in oklab, var(--panel-2) 70%, transparent)
+  );
+  color: var(--ink);
+  transition: border-color 160ms ease, background-color 160ms ease, transform 120ms ease,
+    box-shadow 220ms ease;
+}
+.hud-trace:hover {
+  border-color: color-mix(in oklab, var(--focus) 50%, var(--line));
+}
+.hud-trace:active {
+  transform: scale(0.98);
+}
+.hud-trace.is-active {
+  border-color: color-mix(in oklab, var(--focus) 65%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--focus) 22%, transparent),
+    color-mix(in oklab, var(--focus) 8%, transparent)
+  );
+  box-shadow: 0 0 26px -6px color-mix(in oklab, var(--focus) 70%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--focus) 30%, transparent);
+}
+.hud-trace-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  color: var(--focus);
+  background: color-mix(in oklab, var(--focus) 14%, transparent);
+  transition: color 200ms ease, background-color 200ms ease, box-shadow 220ms ease;
+}
+.hud-trace.is-active .hud-trace-icon {
+  color: var(--void);
+  background: var(--focus);
+  box-shadow: 0 0 16px -2px color-mix(in oklab, var(--focus) 80%, transparent);
+}
+.hud-trace-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.hud-trace-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.98rem;
+  letter-spacing: -0.01em;
+}
+.hud-trace-sub {
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  line-height: 1.3;
+}
+
+/* Compact search — an inset field with a leading icon and a fly-to submit. */
+.hud-find {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 4px 4px 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--void) 55%, transparent);
+  transition: border-color 160ms ease;
+}
+.hud-find:focus-within {
+  border-color: color-mix(in oklab, var(--focus) 45%, var(--line));
+}
+.hud-find-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: var(--ink-muted);
+}
+.hud-find-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-label);
+  padding: 8px 0;
+}
+.hud-find-input::placeholder {
+  color: var(--ink-muted);
+}
+.hud-find-input:focus {
+  outline: none;
+}
+.hud-find-go {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 9px;
+  color: var(--focus);
+  background: color-mix(in oklab, var(--focus) 14%, transparent);
+  transition: background-color 140ms ease, transform 120ms ease, opacity 140ms ease;
+}
+.hud-find-go:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--focus) 26%, transparent);
+}
+.hud-find-go:active:not(:disabled) {
+  transform: scale(0.94);
+}
+.hud-find-go:disabled {
+  opacity: 0.35;
+  cursor: default;
+  color: var(--ink-muted);
+  background: transparent;
+}
+
+.hud-caption {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--ink-muted);
+}
+
+/* Two quiet disclosure tabs — the toggle walls live one tap deeper. */
+.hud-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.hud-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: color-mix(in oklab, var(--panel-2) 55%, transparent);
+  color: var(--ink);
+  font-size: var(--text-label);
+  transition: border-color 140ms ease, background-color 140ms ease, transform 120ms ease;
+}
+.hud-tab:hover {
+  border-color: color-mix(in oklab, var(--focus) 40%, var(--line));
+}
+.hud-tab:active {
+  transform: scale(0.97);
+}
+.hud-tab.is-open {
+  border-color: color-mix(in oklab, var(--focus) 45%, var(--line));
+  background: color-mix(in oklab, var(--focus) 9%, transparent);
+}
+.hud-tab-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: var(--ink-muted);
+}
+.hud-tab.is-open .hud-tab-icon {
+  color: var(--focus);
+}
+.hud-tab-label {
+  flex: 1;
+  text-align: left;
+}
+.hud-tab-chevron {
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: var(--ink-muted);
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hud-tab.is-open .hud-tab-chevron {
+  transform: rotate(180deg);
+}
+.hud-badge {
+  flex: none;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--void);
+  background: var(--focus);
+}
+
+/* Disclosure drawer — height + opacity animated open/close (motion). */
+.hud-drawer {
+  overflow: hidden;
+}
+.hud-drawer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  margin-top: 2px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--void) 45%, transparent);
+}
+.hud-drawer-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
 }
-.hud-title {
-  font-size: var(--text-label);
-  letter-spacing: 0.12em;
+.hud-drawer-title {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink-muted);
-  margin: 0;
 }
-.hud-hint {
-  font-size: 0.72rem;
-  line-height: 1.4;
-  color: var(--ink-muted);
-  margin: 0;
+.hud-drawer-title--sub {
+  margin-top: 4px;
 }
 .hud-link {
   border: 0;
@@ -1186,13 +1401,13 @@ button {
   padding: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px 10px;
+  gap: 6px 8px;
 }
 .hud-filter {
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 44px;
+  min-height: 40px;
   padding: 4px 8px;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -1206,7 +1421,7 @@ button {
   background: color-mix(in oklab, var(--focus) 7%, transparent);
 }
 .hud-filter.is-off {
-  opacity: 0.55;
+  opacity: 0.5;
 }
 .hud-filter:active {
   transform: scale(0.97);
@@ -1224,7 +1439,7 @@ button {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 .hud-thread {
   display: flex;
@@ -1233,73 +1448,19 @@ button {
   font-size: var(--text-label);
   color: var(--ink);
 }
-.hud-toggle {
-  min-height: 44px;
-  padding: 8px 14px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: color-mix(in oklab, var(--panel-2) 60%, transparent);
-  color: var(--ink);
-  font: inherit;
-  font-size: var(--text-label);
-  cursor: pointer;
-  transition: border-color 140ms ease, background-color 140ms ease;
-}
-.hud-toggle:hover:not(:disabled) {
-  border-color: color-mix(in oklab, var(--focus) 40%, var(--line));
-}
-.hud-toggle:active:not(:disabled) {
-  transform: scale(0.97);
-}
-.hud-toggle.is-active {
-  border-color: color-mix(in oklab, var(--verify) 50%, var(--line));
-  background: color-mix(in oklab, var(--verify) 12%, transparent);
-  color: var(--verify);
-}
-.hud-toggle:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-.hud-search {
+
+/* Segmented single-selects (radiogroup) + toggle switches — inside the Display drawer. */
+.hud-field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
-.hud-search-row {
-  display: flex;
-  gap: 8px;
-}
-.hud-search-input {
-  flex: 1;
-  min-width: 0;
-  min-height: 44px;
-  padding: 8px 12px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--void);
-  color: var(--ink);
-  font: inherit;
-  font-size: var(--text-label);
-}
-.hud-search-input:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
-}
-
-/* ── Display controls: segmented tier / reduced-motion (UE045) ──────────────── */
-.hud-segment {
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-.hud-seg-legend {
-  padding: 0;
-  margin-bottom: 6px;
-  font-size: var(--text-label);
+.hud-field-label {
+  font-size: 0.72rem;
   color: var(--ink-muted);
 }
-.hud-seg-row {
-  display: inline-flex;
+.hud-seg {
+  display: flex;
   gap: 2px;
   padding: 3px;
   border: 1px solid var(--line);
@@ -1307,8 +1468,9 @@ button {
   background: color-mix(in oklab, var(--void) 60%, transparent);
 }
 .hud-seg-btn {
-  min-height: 38px;
-  padding: 6px 12px;
+  flex: 1;
+  min-height: 36px;
+  padding: 6px 10px;
   border: 0;
   border-radius: 999px;
   background: transparent;
@@ -1317,7 +1479,7 @@ button {
   font-size: var(--text-label);
   line-height: 1;
   cursor: pointer;
-  transition: color 160ms ease, background-color 160ms ease;
+  transition: color 160ms ease, background-color 160ms ease, transform 120ms ease;
 }
 .hud-seg-btn:hover {
   color: var(--ink);
@@ -1332,6 +1494,36 @@ button {
 .hud-seg-btn:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
+}
+.hud-switch-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.hud-switch {
+  flex: 1;
+  min-width: 120px;
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--panel-2) 55%, transparent);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-label);
+  cursor: pointer;
+  transition: border-color 140ms ease, background-color 140ms ease, transform 120ms ease;
+}
+.hud-switch:hover {
+  border-color: color-mix(in oklab, var(--focus) 40%, var(--line));
+}
+.hud-switch:active {
+  transform: scale(0.97);
+}
+.hud-switch.is-active {
+  border-color: color-mix(in oklab, var(--verify) 50%, var(--line));
+  background: color-mix(in oklab, var(--verify) 12%, transparent);
+  color: var(--verify);
 }
 
 .obs-stage-tag {

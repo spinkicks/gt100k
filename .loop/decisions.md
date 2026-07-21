@@ -1,5 +1,37 @@
 # Loop decisions — what was chosen and why (do not re-litigate)
 
+> ACTIVE FEATURE = **002 evidence-explorer** (Provenance Observatory visual/simplicity pass).
+> The `EE-*` entries below are this loop's decisions. The legacy `D0xx` entries further down are
+> leftover scratch from a prior interest-lab run and do not apply to this app.
+
+## EE-ART — committed art direction (keep cohesive across turns)
+- World: **cinematic dark cosmos**. Palette: `--void #0a0e17`, panels `#121826`/`#1a2233`,
+  ink `#eaf0fb`/muted `#9aa7c2`, **focus cyan `#7dd3fc`** = interaction/primary accent,
+  **verify teal `#34e5b0`** = on/success, per-node-type hues for the constellation bodies.
+- Type: Space Grotesk (display), Inter (body), JetBrains Mono (hashes). Radii 10–16px. Frosted `.panel`
+  (`backdrop-filter` blur+saturate; degrades solid under prefers-reduced-transparency).
+- Motion: `motion@12` springs — `SPRINGS.ui` (bounce 0, dur 0.4) as the house default; reduced-motion
+  collapses every reveal to opacity-only (no height/scale/spring). Never linear, never instant pop.
+
+## EE-001 — HUD is a command cluster, not a control wall (Turn 1)
+- Chose: rebuild the right-rail HUD as **one primary action (Trace lineage) + compact search + two
+  mutually-exclusive disclosure drawers (Filters, Display)**. At rest ≤ ~4 controls; the 8 body toggles,
+  6 thread legend rows, and all Display controls live one tap deeper. Deleted the explanatory hint
+  paragraphs (kept one tiny "presentation only" caption).
+- Why: game-feel.md's #1 requirement is simplicity — the old rail showed ~24 controls across 4 stacked
+  sections at once, the textbook AI-demo "wall of dropdowns/toggles" tell. Progressive disclosure keeps
+  every capability while making the scene + timeline the focus.
+- Rejected: a settings *popover* anchored to its trigger (apple-design-preferred) — deferred; the inline
+  spring-revealed drawer is more robust headless and avoids fixed-position clipping. Revisit if the rail
+  gets tall on small viewports. Also rejected keeping tier/motion as `aria-pressed` buttons — promoted
+  to real `role=radiogroup`/`radio` (single-select semantics + fixes the e2e reduced-motion selector).
+- Kept green: no change to `useHud` state or any evidence/domain logic (SC-E14 presentation-only holds);
+  all decorative `<svg>` in Hud.tsx stay `aria-hidden` (a11y test); icons moved to `components/icons.tsx`.
+
+---
+_Legacy scratch below (prior interest-lab loop — not applicable to evidence-explorer):_
+
+
 ## D001 — Package-local Vitest discovery
 - Chose: add `packages/interest-lab/vitest.config.ts` with `test/**/*.test.ts` discovery while preserving the spec-pinned `"test": "vitest run"` script.
 - Why: filtered package scripts execute from the package directory, so the shared root config's `packages/**` include discovers no tests; the reference `@gt100k/learning-loop` filter fails the same way.
