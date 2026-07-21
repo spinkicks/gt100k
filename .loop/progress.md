@@ -172,3 +172,13 @@
 
 ## NEXT
 - T026: export `merkle`, `attestation`, and `packet` from `packages/evidence-graph/src/index.ts`; acceptance is `merkleRoot`, `buildAttestation`, `assembleEvidencePacket`, and `traceEvidence` importable through the public package entrypoint with the workspace gate green.
+
+## 2026-07-20 — P3 public domain API (T026)
+- Exported the settled Merkle, attestation, and packet modules from `@gt100k/evidence-graph`, including their associated input types.
+- Added a public-package-boundary acceptance test for `merkleRoot`, `buildAttestation`, `assembleEvidencePacket`, and `traceEvidence`. Confirmed RED with undefined public exports, then GREEN after the minimal entrypoint change.
+- Gate evidence: focused public API test (1/1), workspace `pnpm typecheck`, workspace `pnpm test` (86/86), and `pnpm lint` over 62 files all pass.
+- Phase status: P3 complete; SC-004, SC-008, SC-010, and SC-012 remain passing through the complete public domain flow. P4 deferred stubs and polish are next.
+- Blockers: none.
+
+## NEXT
+- T027/T028: write the deferred `TransparencyLog` and `ErasureService` stub contract test first, confirm RED on the missing adapter, then implement `adapters/evidence-deferred`; acceptance is deterministic `stub: true` anchor/inclusion/erasure placeholders, an explicit non-production marker, a retained-packet-stays-verifiable shape, and a green workspace gate.
