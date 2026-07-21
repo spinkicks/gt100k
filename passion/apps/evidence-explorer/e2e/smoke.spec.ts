@@ -47,8 +47,12 @@ test.describe("Provenance Observatory smoke", () => {
     await page.goto(BASE, { waitUntil: "networkidle" });
     const before = await page.getByRole("treeitem").count();
 
-    // Flip the HUD reduced-motion tri-state to "on".
-    await page.getByRole("radio", { name: /reduced motion.*on/i }).click();
+    // Open the HUD "Display" drawer (progressive disclosure), then flip the reduced-motion radiogroup to "On".
+    await page.getByRole("button", { name: /^Display$/ }).click();
+    await page
+      .getByRole("radiogroup", { name: /reduced motion/i })
+      .getByRole("radio", { name: /^on$/i })
+      .click();
 
     await expect(page.getByText(/Rendering:\s*Calm 2D/i)).toBeVisible();
     // No canvas in calm-2D; state (the Ledger) is intact.

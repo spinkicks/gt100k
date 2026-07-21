@@ -1,5 +1,139 @@
 # Loop decisions — what was chosen and why (do not re-litigate)
 
+> ACTIVE FEATURE = **002 evidence-explorer** (Provenance Observatory visual/simplicity pass).
+> The `EE-*` entries below are this loop's decisions. The legacy `D0xx` entries further down are
+> leftover scratch from a prior interest-lab run and do not apply to this app.
+
+## EE-ART — committed art direction (keep cohesive across turns)
+- World: **cinematic dark cosmos**. Palette: `--void #0a0e17`, panels `#121826`/`#1a2233`,
+  ink `#eaf0fb`/muted `#9aa7c2`, **focus cyan `#7dd3fc`** = interaction/primary accent,
+  **verify teal `#34e5b0`** = on/success, per-node-type hues for the constellation bodies.
+- Type: Space Grotesk (display), Inter (body), JetBrains Mono (hashes). Radii 10–16px. Frosted `.panel`
+  (`backdrop-filter` blur+saturate; degrades solid under prefers-reduced-transparency).
+- Motion: `motion@12` springs — `SPRINGS.ui` (bounce 0, dur 0.4) as the house default; reduced-motion
+  collapses every reveal to opacity-only (no height/scale/spring). Never linear, never instant pop.
+
+## EE-001 — HUD is a command cluster, not a control wall (Turn 1)
+- Chose: rebuild the right-rail HUD as **one primary action (Trace lineage) + compact search + two
+  mutually-exclusive disclosure drawers (Filters, Display)**. At rest ≤ ~4 controls; the 8 body toggles,
+  6 thread legend rows, and all Display controls live one tap deeper. Deleted the explanatory hint
+  paragraphs (kept one tiny "presentation only" caption).
+- Why: game-feel.md's #1 requirement is simplicity — the old rail showed ~24 controls across 4 stacked
+  sections at once, the textbook AI-demo "wall of dropdowns/toggles" tell. Progressive disclosure keeps
+  every capability while making the scene + timeline the focus.
+- Rejected: a settings *popover* anchored to its trigger (apple-design-preferred) — deferred; the inline
+  spring-revealed drawer is more robust headless and avoids fixed-position clipping. Revisit if the rail
+  gets tall on small viewports. Also rejected keeping tier/motion as `aria-pressed` buttons — promoted
+  to real `role=radiogroup`/`radio` (single-select semantics + fixes the e2e reduced-motion selector).
+- Kept green: no change to `useHud` state or any evidence/domain logic (SC-E14 presentation-only holds);
+  all decorative `<svg>` in Hud.tsx stay `aria-hidden` (a11y test); icons moved to `components/icons.tsx`.
+
+## EE-002 — the header is a diegetic telemetry readout, not prose + tool badges (Turn 2)
+- Chose: strip the header's explanatory sentence and both pill badges; keep only the diegetic title
+  (eyebrow + `Milestone <ref>`) and replace the removed content with a compact **stat-tile readout**
+  (`nodes` / `unlinked` / `threads` as glyph + tabular count + uppercase label) plus one **"Synthetic"
+  status chip** with a pulsing verify-teal dot. Tiles are translucent (`backdrop-filter`) with vibrant
+  labels; degrade solid under `prefers-reduced-transparency`.
+- Why: game-feel.md's #1 rule (simplicity) flags "explanatory sentences where a label/icon would do"
+  and "demote status to a compact summary (a chip or one line)". The prose sentence and the
+  "3D cosmos · calm-2D equal mode" badge (which described the *tool*, not the milestone) were the worst
+  always-on AI-demo tell left after the Turn-1 HUD declutter. Numbers as a HUD readout keep the useful
+  data while killing the paragraph.
+- Rejected: (a) a single one-line status chip with no counts — the node/thread counts are genuinely
+  load-bearing context, so a telemetry strip beats hiding them; (b) a separate
+  `@media (prefers-reduced-motion)` block for the pulse — it made a *second, earlier* reduced-motion
+  block that shifted the motion-budget test's `css.indexOf("prefers-reduced-motion")` off the global
+  neutraliser; instead the pulse rides the existing global `* { animation-duration: .001ms }` rule and
+  the phrase "prefers-reduced-motion" is kept out of comments so the test's index stays put.
+- Kept green: no domain/logic touch; counts come from the same `view` the server already builds; new
+  glyphs live in `components/icons.tsx` (all `aria-hidden`, matching the a11y SVG audit); the header
+  lives in the server component `Observatory.tsx` (no client hooks added).
+
+## EE-003 — the cosmos is grounded by procedural IBL + AO, not by floor shadows (Turn 3)
+- Chose: add real image-based ambient via a drei `<Environment>` built entirely from `<Lightformer>`
+  area lights (cool key / warm rim / overhead fill / void floor), baked once (`frames={1}`,
+  `resolution={64}`, `background={false}`), plus `<N8AO>` as the first `EffectComposer` effect
+  (void-tinted, `halfRes`). Softened `ambientLight` 0.35→0.22 on spectacle so the IBL carries contrast.
+  All three ride the existing `spectacle` gate (cinematic && !plainMode) — standard3d / plain / calm-2D
+  are untouched.
+- Why: game-feel.md's visual non-negotiables #2 (image-based ambient / `<Environment>`) and #4 (subtle
+  SSAO in the composer) were the two missing pieces after the scene already had a 3-light rig, emissive
+  PBR, Bloom/DOF/Vignette and a damped cinematic camera. IBL is *the* change that removes the "flat
+  primitive" tell; N8AO adds crevice grounding on the multi-part bodies. N8AO is postprocessing's modern
+  SSAO successor (better quality/perf) and ships transitively (`n8ao@1.10`), so no new dependency.
+- Rejected: (a) a drei `<Environment preset=…>` HDRI — it fetches from a CDN, which violates FR-E19
+  ("no external fetch, ever") and dies headless; the Lightformer-baked env is fully procedural and
+  deterministic. (b) `<ContactShadows>` / a floor plane — the bodies are a constellation floating at
+  varied depths, so a ground plane implies a floor that fights the "worlds suspended in space" concept;
+  grounding via IBL + AO is truer to EE-ART. Revisit only if a subtle grounded *glow-plane* (not a hard
+  shadow catcher) is prototyped and clearly reads better. (c) legacy `SSAO` effect — needs an explicit
+  normal pass and looks noisier than N8AO at equal cost.
+- Kept green: no domain/logic/geometry touch (SC-E14 presentation-only holds); the `<Canvas aria-hidden>`
+  attr is unchanged and still the first attribute (a11y source-scan test passes); IBL/AO only activate on
+  the cinematic spectacle tier, so the perf-monitor self-heal ladder (SC-E21) is unaffected. Verified live
+  in Chromium (swiftshader): cinematic renders the graded scene, zero console errors, all controls work.
+
+## EE-004 — the Inspector is a calm summary + one-tap Details disclosure (Turn 4)
+- Chose: split the drill-down Inspector into a **default summary** (type glyph + label, the authority
+  badge, Content-address + Copy, Actor chip, Timestamp) and a single **Details** disclosure holding the
+  fuller record (the address-fingerprint note, Tool, Inputs lineage links, Consent scope + synthetic tag,
+  Payload). The toggle is styled 1:1 with the HUD tabs (frosted, chevron rotates, `is-open` cyan tint) and
+  reveals with the same `SPRINGS.ui` height+opacity drawer (opacity-only under reduced motion). The panel
+  re-mounts per selection (`key={node.id}` in the Stage's `AnimatePresence`), so every open starts collapsed.
+- Why: after Turns 1–3 decluttered the HUD, header, and lit the cosmos, the Inspector was the **last wordy
+  chrome surface** — a `<dl>` of ~7 always-visible fields with inline notes. game-feel.md orders simplicity
+  *before* visual richness ("Cap visible controls… progressive disclosure"; apple-design §16.6 "show the
+  common path first, advanced options one level deeper"). The default card now reads as a summary, not a
+  data dump; the lineage/consent/payload are one tap away, not gone.
+- Rejected: (a) doing the 3D **material pass** (per-role `envMapIntensity` + fresnel rim) this turn — it's
+  *visual richness*, which the doc explicitly ranks below simplicity, and the fresnel shell/`onBeforeCompile`
+  is the fiddly/headless-risky path; deferred to a later turn now that the last clutter tell is gone.
+  (b) keeping the always-on address note in the summary — it's the textbook "explanatory sentence where a
+  label does" tell, so it moved into Details (still plain-mode aware via `panelCopy`). (c) hiding the
+  authority badge behind Details — it's the whole "evidence, not accusation" point, so it stays in view.
+- Kept green: `inspector-model.ts` (the unit-tested pure model) is untouched — only the component markup +
+  CSS changed, so all 66 tests pass unchanged; no domain/logic/state touch (SC-E14 holds). Verified live in
+  Chromium (swiftshader, standard-3d tier): at rest only address/actor/timestamp render (drawer + consent +
+  payload + inputs absent, toggle `aria-expanded=false`); expanding reveals them all (`aria-expanded=true`);
+  collapsing removes the drawer; **zero console/page errors** on load + every interaction.
+
+## EE-005 — a per-body material *language* + fresnel rim, strictly gated to cinematic (Turn 5)
+- Chose: in `Bodies.tsx`, replace the single shared emissive material (every body `roughness 0.35 /
+  metalness 0.1`) with a per-body-type **PBR profile** map (`PBR`) so each node reads as a distinct
+  **substance** — matte/chalky *construct* (blueprint 0.6 roughness), *icy* comet (0.15), warm **metallic
+  gold** (gold-star metalness 0.7), sharp **glassy** crystal (0.12), polished beacon/seal — plus a per-body
+  **`envMapIntensity` (0.7–1.5)** so silhouettes catch the cool focus key from the T3 baked IBL as real
+  specular. Added a self-contained additive **fresnel rim** (`RimMaterial` + `<Rim>` back-shell) so edges
+  glow into the Bloom. `emissive(hex, i, pbr?)` merges the profile when supplied.
+- Why: after T1–T4 killed every clutter tell and T3 lit the volume, the bodies were the last *visual* tell —
+  uniform "glowing plastic" that barely caught the new IBL (game-feel §3 "materials, never bare primitives …
+  a material *language*"; apple-design §7 craft "every value a deliberate choice you can defend"). A material
+  language + rim is the documented lift from "good scene" to AAA.
+- Gating (the load-bearing constraint): everything rides `rich = animate = spectacle` (cinematic &&
+  !plainMode) — the SAME gate as Bloom/DOF/IBL. When `rich=false`, `emissive()` returns the flat baseline
+  byte-for-byte (**no** `envMapIntensity` key) and **no** `<Rim>` renders → standard3d / plain / calm-2D are
+  byte-identical. (envMap has no effect below cinematic anyway — no env is mounted there — but gating the
+  metalness/roughness too is what makes the lower tiers truly unchanged.)
+- Rejected: (a) `onBeforeCompile`/material `onBeforeCompile` chunk injection for the rim — brittle across
+  three versions; a hand-written self-contained `ShaderMaterial` (`BackSide` + `AdditiveBlending` +
+  `depthWrite:false`, `raycast` disabled) is version-robust and never occludes the core or eats picks.
+  (b) bumping metalness/roughness *ungated* — would change standard3d's look (violates "byte-identical lower
+  tiers"). (c) an aggressive rim — washout risk under Bloom; kept `intensity 0.7` (islands halved), verified
+  live it reads as a gentle edge glow. (d) `meshPhysicalMaterial`/clearcoat — heavier + unneeded; stayed on
+  `meshStandardMaterial`'s well-supported knobs (metalness/roughness/envMapIntensity/emissiveIntensity).
+- Verification: no test inspects Bodies' materials, so all 66 stay green; `tsc -b` clean; `next build` ok.
+  **Live Playwright** (swiftshader, 1440×900): app boots at **Cinematic 3D** → composer + IBL + the new
+  custom `RimMaterial` GLSL all **compile and render** (`/tmp/ee-cinematic.png` shows the distinct
+  metallic/glassy/icy/matte substances + soft rim); forcing Cinematic held it; **0 page errors, 0 console
+  `error`s**; all 25 console warnings are the pre-existing swiftshader `glBlitFramebuffer` GL-driver noise
+  (0 non-GL). Trace/Ledger→Inspector/Filters/Display all work.
+- Honest caveat: pixel-level bloom↔rim balance is best taste-tuned on a real GPU (swiftshader renders it but
+  isn't the reference); it blocks no non-negotiable. Same GPU-less caveat as EE-003.
+
+---
+_Legacy scratch below (prior interest-lab loop — not applicable to evidence-explorer):_
+
+
 ## D001 — Package-local Vitest discovery
 - Chose: add `packages/interest-lab/vitest.config.ts` with `test/**/*.test.ts` discovery while preserving the spec-pinned `"test": "vitest run"` script.
 - Why: filtered package scripts execute from the package directory, so the shared root config's `packages/**` include discovers no tests; the reference `@gt100k/learning-loop` filter fails the same way.
@@ -751,3 +885,93 @@
   `next build` ✓** (route `/` prerendered static, 285 kB page / 373 kB first-load).
 - Honest caveat (unchanged): the WebGL full tier can't be pixel-verified headless; a GPU/browser
   screenshot pass remains the ideal final taste-tune but blocks no non-negotiable.
+
+---
+
+# Evidence Explorer (002 · "Provenance Observatory") — art-direction decisions
+> NOTE: the D-VP/D0xx series above belongs to interest-lab (003); this worktree's decisions.md was
+> inherited from that loop. Evidence-explorer's per-turn art direction is recorded in `.loop/progress.md`
+> (Turns 1–6). This section captures the standing committed art direction + the Turn-6 choice.
+
+## D-EE-AD — Committed art direction (keep cohesive across turns)
+- World: **cinematic dark cosmos**. Palette — `--void #0a0e17`, panels `#121826`/`#1a2233`, ink `#eaf0fb`,
+  **focus cyan `#7dd3fc`** (primary/interaction accent), **verify teal `#34e5b0`** (on/success), per-type
+  node hues. Type: Space Grotesk (display) + Inter (body) + JetBrains Mono. Radii 10–16px. Frosted `.panel`.
+- Motion: `motion@12` springs (`SPRINGS.ui` ≈ bounce 0, 0.4s); reduced-motion → opacity-only; DOM animates
+  only transform/opacity/filter (motion-budget test enforces no layout-prop transitions).
+
+## D-EE-T6 — The Ledger is a HUD panel, not a scrolling table (Turn 6)
+- **Chose:** rebuild the accessible Ledger chrome as a fixed-header HUD panel — a pinned `.ledger-head`
+  (title + tabular count chip) above a `.ledger-scroll` region that alone scrolls and carries a **static
+  `mask-image` scroll-edge fade** (apple-design §12 depth); cut the explanatory intro paragraph; hue-match
+  the row dots to the node type (inline `color` → `currentColor` glow); add a selected left-accent + hover
+  `translateX(2px)`; delete 7 orphaned legacy `.ledger-*` CSS rules.
+- **Why:** it was the last generic chrome surface — a hard-clipped list whose header scrolled away and whose
+  intro was a textbook game-feel #1 "paragraph where a label does." A **static** mask (not a JS-driven
+  dynamic fade) was deliberate: keeps the motion-budget guarantee intact and is headless-robust. The dot
+  hue-glow ties the ledger to the cosmos node palette (cohesion #9) at ~zero cost.
+- **Tier-safe:** the Ledger is the DOM parallel rendered in *every* render tier (not 3D-gated), so this
+  improves calm-2D / standard-3d / cinematic equally; no 3D code touched.
+- **Verification (evidence, not assertion):** `tsc -b` exit 0 · 66/66 vitest · `next build` ✓. Whole-app
+  Python-Playwright walkthrough (1440×900): count=13, intro removed (0), mask applied, scroll region
+  scrollable (1082>564) with header pinned when scrolled, dot=type hue, row-select→Inspector, and
+  Trace/Filters/Display(7 radios)/search/Inspector-Details all fire — **0 console + 0 page errors**.
+- **Done:** with T6 the app meets every game-feel non-negotiable with no auto-fail; `.loop-done` created.
+- **Honest caveat (unchanged):** under software WebGL (swiftshader) the EffectComposer emits benign
+  `glBlitFramebuffer` GL warnings and `PerformanceMonitor` may self-heal cinematic→lower on a slow frame —
+  pre-existing + environmental. Final bloom/rim/DoF pixel taste-tuning is ideal on a real GPU; blocks no
+  non-negotiable.
+
+## EE-007 — RESET: chrome becomes a deliberate "Provenance Instrument" token system (Turn 7, escalated brief)
+> **This supersedes EE-ART's chrome aesthetic.** The operator re-reviewed after T1–T6 and rejected the
+> *look itself*: "still looks a bit cluttered; the **dark gradients, curved edges, and font** give an
+> overall impression of vibe-coded." T1–T6 decluttered + lit the scene but kept the vibe-coded VISUAL
+> STACK: neon radial gradients on blue-black, 14px frosted-glass panels, scattered radii (16/14/13/12/
+> 11/10/9/8/7/6/999), cyan/teal glow box-shadows — and (discovered this turn) **no real typeface loaded
+> at all** (layout.tsx has no next/font → the app renders in system-ui fallback = the generic "font"
+> the operator saw). The escalated brief demands a real, extractable design-token system for PassionLab.
+
+- **Dark vs light (brief asked to actively reconsider):** KEEP dark, but make it *deliberate*, not default.
+  Rationale: the hero is a cinematic dark **cosmos** (game-feel commits the 3D scene to space; brief item 5
+  keeps it). A light page framing a dark space-canvas fights the concept. So the fix is not light-mode —
+  it's replacing *default blue-black + neon glow + frosted glass* with a **matte graphite instrument**:
+  flat surfaces (no rainbow radial glows), crisp intentional geometry, a real typeface, restrained accent.
+- **Typography (operator tell #1) — CHOSEN, load real self-hosted faces via `next/font`:**
+  - **Display: Fraunces** (optical-size old-style serif). A serif on a provenance/records tool = archival
+    *authority* (certificate / journal / museum catalog) — the deliberate opposite of the geometric-sans
+    AI-default. Optical sizing + tight negative tracking at large sizes reads crafted, not wonky.
+  - **Body: IBM Plex Sans** — a technical grotesque with real character (explicitly NOT Inter), reads
+    "engineered instrument / records system."
+  - **Mono: IBM Plex Mono** — purpose-built for the content-address/hash display, cohesive w/ Plex Sans.
+  - Rationale: each face chosen for a defensible reason (authority / instrument / hashes); decisively not
+    Space-Grotesk+Inter. All OFL + on Google Fonts → `next/font` self-hosts at build (no RUNTIME fetch →
+    honours FR-E19). Fallback if build-time fetch flakes: `next/font/local` with committed woff2.
+- **Geometry (tell #2) — a deliberate radius scale as tokens, applied consistently:** `--r-lg 8px`
+  (structural cards/panels, was 16), `--r-md 6px` (controls/tiles/drawers), `--r-sm 4px` (chips/insets),
+  `--r-pill 999px` used ONLY for genuine pills (segmented toggle tracks, status dot). Crisp/instrument, not
+  default-soft; kills "scattered random rounded-*". `border-radius` is not a layout-animated prop (safe vs
+  motion-budget test).
+- **Surfaces/color (tell "dark gradients" + glow):** drop every decorative `radial-gradient` glow (body,
+  .stage, .cosmos-viewport, inspector) → flat matte graphite steps + hairline structure. Re-pitch the
+  surface palette off blue-black `#0a0e17` to a deliberate neutral graphite so it doesn't read as default
+  slate. Drop/þin the `backdrop-filter: blur(14px)` frosted-glass to a matte panel + hairline + restrained
+  shadow. Keep the accent HUE family but stop using it as bloom halos on chrome (accent = ink/border/fill).
+- **Load-bearing invariants kept:** `--focus` token stays (a11y test asserts it + the `:focus-visible`
+  outline uses it); semantic state tokens (`--verify/--tamper/--human/--model`) + node-type hues stay
+  (FR-E04 / grayscale-safe, and colour is never the sole cue); reduced-motion global block untouched
+  (motion-budget `prefers-reduced-motion` index + only transform/opacity/filter in keyframes); no
+  domain/state/geometry(3D) touch (SC-E14 presentation-only). This is a pure chrome-token refactor.
+- **Extractable for PassionLab:** the token block (color/type/geometry/space/motion) is authored as a
+  self-contained `:root` system so PassionLab inherits it (§6 of the plan) — no hardcoded values in
+  components; components reference tokens only.
+- **Verification (evidence, not assertion):** `tsc -b` exit 0 · 66/66 vitest · `next build` ✓ (next/font
+  fetched + self-hosted Fraunces/IBM Plex at build; no runtime fetch). Live Chromium Playwright (1440×900,
+  production `next start`): computed `body` font = `__IBM_Plex_Sans…`, `h1` = `__Fraunces…` (faces really
+  applied, not fallback). **0 page errors · 0 console errors** across: load → Trace lineage → Filters →
+  Display → search ("plan" → 1 match; "crystal" → 0 matches empty state) → ledger row → Inspector →
+  Details → Verify (Verified seal) → Run tamper demo (`verify-seal--mismatch`, "✕ MISMATCH") → Calm-2D
+  tier. Screenshots `/tmp/ee7-0{1..9}.png` + `-10-tamper.png` confirm the crafted matte-instrument read.
+- **Deferred (not blockers, no regression):** the 3D bodies still read a touch toy-like (glowing planet/
+  star primitives) against the now-serious instrument chrome — a *scene* taste-tune (glowing-nodes is the
+  committed concept; changing node representation is larger scope + GPU-eyes work). Accent usage (cyan
+  eyebrow/labels) kept for restrained life in the palette — judged tasteful, not accent-spam.

@@ -17,9 +17,9 @@ import {
   SPRINGS,
   type Vec3,
 } from "@gt100k/evidence-explorer-view";
-import { OrbitControls, PerformanceMonitor } from "@react-three/drei";
+import { Environment, Lightformer, OrbitControls, PerformanceMonitor } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Bloom, DepthOfField, EffectComposer, Vignette } from "@react-three/postprocessing";
+import { Bloom, DepthOfField, EffectComposer, N8AO, Vignette } from "@react-three/postprocessing";
 import { useMemo, useRef } from "react";
 import type { JSX } from "react";
 import * as THREE from "three";
@@ -60,6 +60,54 @@ const BLOOM = {
   mipmapBlur: true,
 } as const;
 const DOF = { focalLength: 0.02, bokehScale: 2.4 } as const;
+/** Cinematic ambient-occlusion grade — cool-tinted crevice shading that seats bodies in the volume. */
+const AO = { aoRadius: 1.6, intensity: 1.35, distanceFalloff: 1.0, halfRes: true } as const;
+
+/**
+ * Procedural image-based ambient (§U8.13 lighting rig) — a baked studio env built from `Lightformer`
+ * area lights, NEVER a fetched HDRI (FR-E19: no external fetch, ever). `frames={1}` bakes the cubemap
+ * once (static → cheap); `background={false}` keeps our void + starfield as the visible backdrop while
+ * the env feeds real ambient + soft reflections into the emissive PBR bodies so they stop reading flat.
+ * Cool focus-cyan key ↑right, warm human-gold rim ↙back, dim model-violet overhead fill, void floor.
+ */
+function CosmosEnvironment(): JSX.Element {
+  return (
+    <Environment frames={1} resolution={64} background={false} environmentIntensity={0.55}>
+      <Lightformer
+        form="rect"
+        intensity={2.4}
+        color={COSMOS.focus}
+        scale={[12, 12, 1]}
+        position={[9, 11, 9]}
+        target={[0, 0, 0]}
+      />
+      <Lightformer
+        form="rect"
+        intensity={1.5}
+        color={COSMOS.human}
+        scale={[14, 7, 1]}
+        position={[-11, -3, -13]}
+        target={[0, 0, 0]}
+      />
+      <Lightformer
+        form="ring"
+        intensity={0.6}
+        color={COSMOS.model}
+        scale={[18, 18, 1]}
+        position={[0, 15, -7]}
+        target={[0, 0, 0]}
+      />
+      <Lightformer
+        form="rect"
+        intensity={0.12}
+        color={COSMOS.void}
+        scale={[34, 34, 1]}
+        position={[0, -18, 0]}
+        rotation={[Math.PI / 2, 0, 0]}
+      />
+    </Environment>
+  );
+}
 
 export function Cosmos3D({
   view,
@@ -120,10 +168,12 @@ export function Cosmos3D({
       <color attach="background" args={[COSMOS.void]} />
       <fog attach="fog" args={[COSMOS.void, 55, 200]} />
 
-      {/* Lighting — deep ambient + a cool key + a warm rim for readable, non-flat bodies. */}
-      <ambientLight intensity={0.35} color={COSMOS.inkMuted} />
+      {/* Lighting — a cool key + a warm rim over baked image-based ambient (spectacle) for grounded,
+          non-flat bodies. Ambient is kept low so the IBL + rig carry the contrast, not a flat wash. */}
+      <ambientLight intensity={spectacle ? 0.22 : 0.35} color={COSMOS.inkMuted} />
       <directionalLight position={[18, 30, 26]} intensity={1.15} color={COSMOS.focus} />
       <pointLight position={[-10, -6, -18]} intensity={0.7} color={COSMOS.human} distance={140} />
+      {spectacle ? <CosmosEnvironment /> : null}
 
       {plainMode ? null : <Starfield animate={cinematic} />}
       <Threads edges={visibleEdges} nodes={visibleNodes} waveOrder={waveOrder} verify={verify} />
@@ -148,6 +198,13 @@ export function Cosmos3D({
 
       {spectacle ? (
         <EffectComposer>
+          <N8AO
+            aoRadius={AO.aoRadius}
+            intensity={AO.intensity}
+            distanceFalloff={AO.distanceFalloff}
+            color={COSMOS.void}
+            halfRes={AO.halfRes}
+          />
           <Bloom
             intensity={BLOOM.intensity}
             luminanceThreshold={BLOOM.luminanceThreshold}
