@@ -13,11 +13,14 @@ import {
 } from "@react-three/postprocessing";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
+  AdditiveBlending,
+  Color,
   type Fog,
   type Mesh,
   MeshBasicMaterial,
   type MeshPhysicalMaterial,
   QuadraticBezierCurve3,
+  ShaderMaterial,
   Vector3,
 } from "three";
 import type { Line2 } from "three/examples/jsm/lines/Line2.js";
@@ -32,6 +35,42 @@ import {
   resolveArenaRoomMotion,
   resolveArenaSuppressionMotion,
 } from "./scene";
+
+// Arena floor boundary as an inlaid glowing light-strip, not a flat CAD hairline: a radial
+// band falloff (bright at the boundary radius -> transparent at both edges) additively blended
+// over the deck reads as light inlaid in the floor, cohesive with the seat light-columns and
+// the observatory's breathing halos. Fed by Bloom so the strip blooms softly.
+const FLOOR_RING_VERTEX_SHADER = /* glsl */ `
+  varying float vRadius;
+  void main() {
+    vRadius = length(position.xy);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const FLOOR_RING_FRAGMENT_SHADER = /* glsl */ `
+  precision mediump float;
+  varying float vRadius;
+  uniform vec3 uColor;
+  uniform float uOpacity;
+  uniform float uCenter;
+  uniform float uHalfWidth;
+  void main() {
+    float band = abs(vRadius - uCenter) / uHalfWidth;  // 0 at boundary -> 1 at edges
+    if (band > 1.0) discard;                            // clean strip edges
+    float glow = pow(1.0 - band, 1.8);                  // soft cross-band falloff
+    float alpha = glow * uOpacity;
+    vec3 col = uColor * (0.9 + glow * 0.5);
+    gl_FragColor = vec4(col, alpha);
+  }
+`;
+
+const FLOOR_RING_RADIUS = 10;
+const FLOOR_RING_HALF_WIDTH = 0.55;
+const FLOOR_RING_BASE_OPACITY = 0.5;
+const FLOOR_RING_BREATH_AMPLITUDE = 0.12;
+const FLOOR_RING_BREATH_PERIOD_MS = 4200;
+const FLOOR_RING_SUPPRESSED_OPACITY = 0.16;
 
 interface ArenaRoomSceneProps {
   readonly view: CohortArenaView;
@@ -208,6 +247,26 @@ export function ArenaRoomScene({ view, renderTier = "full-3d" }: ArenaRoomSceneP
   const lightColumns = useRef(new Map<string, Mesh>());
   const cameraStartedAt = useRef<number | null>(null);
   const restPosition = useRef<Vector3 | null>(null);
+  // Shared additive-glow material for the inlaid floor boundary strip (built once, disposed
+  // on unmount alongside the scene). Colour follows the shared "floor light = palette.floor"
+  // rule the observatory halos use, so the two worlds read as one graded space.
+  const floorRingMaterial = useMemo(
+    () =>
+      new ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        blending: AdditiveBlending,
+        vertexShader: FLOOR_RING_VERTEX_SHADER,
+        fragmentShader: FLOOR_RING_FRAGMENT_SHADER,
+        uniforms: {
+          uColor: { value: new Color(view.presentation.palette.floor) },
+          uOpacity: { value: FLOOR_RING_BASE_OPACITY },
+          uCenter: { value: FLOOR_RING_RADIUS },
+          uHalfWidth: { value: FLOOR_RING_HALF_WIDTH },
+        },
+      }),
+    [view.presentation.palette.floor],
+  );
   // Instant when reduced motion is active (the 3D scene only mounts outside the
   // 2D fallback, but keep it honest); a crafted crane duration otherwise.
   const introDurationMs = motion.mode === "reduced" ? 0 : 1_400;
@@ -235,6 +294,8 @@ export function ArenaRoomScene({ view, renderTier = "full-3d" }: ArenaRoomSceneP
     invalidate();
   }, [invalidate]);
 
+  useEffect(() => () => floorRingMaterial.dispose(), [floorRingMaterial]);
+
   useFrame(({ camera, clock }) => {
     if (!scene) return;
 
@@ -261,6 +322,20 @@ export function ArenaRoomScene({ view, renderTier = "full-3d" }: ArenaRoomSceneP
       if (column.material instanceof MeshBasicMaterial) {
         column.material.opacity = 0.1 + phase * 0.12;
       }
+    }
+
+    // Breathe the inlaid floor boundary strip so it reads as living light, not a static
+    // decal. Gated to a live floor holder (which already runs the loop "always"), so demand
+    // rooms hold it steady and add no perpetual invalidate — frame-loop contract intact.
+    const floorOpacity = floorRingMaterial.uniforms.uOpacity;
+    if (floorOpacity) {
+      const breath = hasFloorHolder
+        ? Math.sin((elapsedMs / FLOOR_RING_BREATH_PERIOD_MS) * Math.PI * 2) *
+          FLOOR_RING_BREATH_AMPLITUDE
+        : 0;
+      floorOpacity.value = scene.suppressed
+        ? FLOOR_RING_SUPPRESSED_OPACITY
+        : FLOOR_RING_BASE_OPACITY + breath;
     }
 
     // ── Cinematography (game-feel #5) ──────────────────────────────────────
@@ -396,14 +471,15 @@ export function ArenaRoomScene({ view, renderTier = "full-3d" }: ArenaRoomSceneP
         />
       ))}
 
-      <mesh position={[0, -0.24, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[10, 0.045, 8, 128]} />
-        <meshBasicMaterial
-          color={view.presentation.palette.locked}
-          depthWrite={false}
-          opacity={0.72}
-          transparent
-        />
+      {/* Arena floor boundary: an inlaid glowing light-strip (additive band falloff) instead
+          of a flat uniform CAD hairline — world architecture rendered as light, cohesive with
+          the seat light-columns and the observatory's breathing floor halos. */}
+      <mesh
+        material={floorRingMaterial}
+        position={[0, -0.24, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+      >
+        <ringGeometry args={[9.4, 10.6, 128]} />
       </mesh>
 
       {scene.seats.map((seat) => (
