@@ -7,6 +7,7 @@
  */
 import type { EdgeView, ExplorerView, NodeView } from "@gt100k/evidence-explorer-view";
 import type { JSX } from "react";
+import { type VerifyVisualState, isEdgeLit } from "../verify-machine.js";
 import { Glyph } from "./glyphs.js";
 
 const NODE_R = 28;
@@ -27,7 +28,17 @@ function NodeMark({
   node,
   index,
   focused,
-}: { node: NodeView; index: number; focused: boolean }): JSX.Element {
+  fractured,
+  sealed,
+}: {
+  node: NodeView;
+  index: number;
+  focused: boolean;
+  /** Byte-tamper only: a static red crack + integrity ring on the byte-body (never a person). */
+  fractured: boolean;
+  /** Human-owned Outcome + a passing Verify → the gold seal ring reads as forged/locked. */
+  sealed: boolean;
+}): JSX.Element {
   const color = `var(--${node.colorRole})`;
   // Staggered entrance keyed to provenance depth so the DAG "ignites" front-to-back. Positioning
   // lives on the outer group; the CSS scale animation runs on an inner group with `fill-box` origin
@@ -36,7 +47,7 @@ function NodeMark({
   return (
     <g transform={`translate(${node.pos2d.x} ${node.pos2d.y})`}>
       <g
-        className={`node-enter${focused ? " is-focused" : ""}`}
+        className={`node-enter${focused ? " is-focused" : ""}${fractured ? " is-fractured" : ""}`}
         style={{ animationDelay: delay, transformBox: "fill-box", transformOrigin: "center" }}
       >
         {/* Selected-beat focus ring (calm-2D parity for the 3D fly-to). */}
@@ -47,6 +58,17 @@ function NodeMark({
             fill="none"
             stroke="var(--focus)"
             strokeWidth={2}
+          />
+        ) : null}
+        {/* Verified seal-forge: a gold locked ring on the human-owned Outcome (parity with the 3D seal). */}
+        {sealed ? (
+          <circle
+            className="node-seal-ring"
+            r={NODE_R + 9}
+            fill="none"
+            stroke="var(--verify)"
+            strokeWidth={2.5}
+            opacity={0.9}
           />
         ) : null}
         {/* Emissive halo. */}
@@ -77,6 +99,36 @@ function NodeMark({
             strokeWidth={1.5}
             opacity={0.8}
           />
+        ) : null}
+        {/* Byte-tamper: a static integrity ring + crack on the byte-body (bytes only — UE034). The
+            MISMATCH is fully conveyed here + in the VerifyPanel badge, requiring no motion (scenario 4). */}
+        {fractured ? (
+          <g className="node-fracture">
+            <circle
+              r={NODE_R + 9}
+              fill="none"
+              stroke="var(--tamper)"
+              strokeWidth={2.5}
+              strokeDasharray="4 3"
+            />
+            <path
+              d="M0 -28 L6 -6 L-7 4 L4 12 L-2 28"
+              fill="none"
+              stroke="var(--tamper)"
+              strokeWidth={2}
+              strokeLinejoin="round"
+            />
+            <text
+              y={-NODE_R - 24}
+              textAnchor="middle"
+              fontSize={10}
+              fill="var(--tamper)"
+              className="mono"
+              style={{ fontWeight: 700 }}
+            >
+              bytes mismatch
+            </text>
+          </g>
         ) : null}
         {/* Glyph — reads as the node's type without relying on hue. */}
         <g style={{ color: "var(--ink)" }}>
@@ -116,17 +168,26 @@ export function Constellation2D({
   view,
   revealed,
   focusNodeId = null,
+  waveOrder = [],
+  verify,
 }: {
   view: ExplorerView;
   /** When present (time-scrub), only these node ids render; omitted = fully grown (SSR baseline). */
   revealed?: ReadonlySet<string>;
   focusNodeId?: string | null;
+  /** Deterministic verify light-wave order (`view.verifyWaveOrder`). */
+  waveOrder?: ReadonlyArray<{ readonly from: string; readonly to: string }>;
+  /** Verify-sequence visual state (light-wave / seal / byte-fracture). */
+  verify?: VerifyVisualState;
 }): JSX.Element {
   const visibleNodes = revealed ? view.nodes.filter((n) => revealed.has(n.id)) : view.nodes;
   const byId = new Map(visibleNodes.map((n) => [n.id, n]));
   const structuralEdges = view.edges.filter(
     (e) => e.isNodeEdge && byId.has(e.from) && byId.has(e.to),
   );
+  const litCount = verify?.run === "verify" ? verify.litEdgeCount : 0;
+  const fractureId = verify?.fractureNodeId ?? null;
+  const sealed = verify?.run === "verify" && verify.sealState === "verified";
 
   return (
     <svg
@@ -200,16 +261,25 @@ export function Constellation2D({
                 : e.cap === "slash"
                   ? "url(#cap-slash)"
                   : undefined;
+          const lit = litCount > 0 && isEdgeLit(waveOrder, litCount, e.from, e.to);
+          // On a tamper mismatch, lineage touching the byte-body desaturates (dim — never red).
+          const desaturated = fractureId !== null && (e.from === fractureId || e.to === fractureId);
+          const stroke = lit
+            ? "var(--verify)"
+            : e.threadStyle === "frayed"
+              ? "var(--tamper)"
+              : "var(--line)";
+          const baseOpacity = e.flow ? 0.85 : 0.55;
           return (
             <path
               key={`${e.from}->${e.to}-${i}`}
               className="edge-draw"
               d={edgePath(from, to)}
-              stroke={e.threadStyle === "frayed" ? "var(--tamper)" : "var(--line)"}
-              strokeWidth={e.flow ? 1.8 : 1.2}
+              stroke={stroke}
+              strokeWidth={(e.flow ? 1.8 : 1.2) * (lit ? 1.6 : 1)}
               strokeDasharray={DASH[e.threadStyle]}
               markerEnd={cap}
-              opacity={e.flow ? 0.85 : 0.55}
+              opacity={lit ? 1 : desaturated ? baseOpacity * 0.3 : baseOpacity}
             />
           );
         })}
@@ -218,7 +288,14 @@ export function Constellation2D({
       {/* Bodies. */}
       <g>
         {visibleNodes.map((n, i) => (
-          <NodeMark key={n.id} node={n} index={i} focused={focusNodeId === n.id} />
+          <NodeMark
+            key={n.id}
+            node={n}
+            index={i}
+            focused={focusNodeId === n.id}
+            fractured={fractureId === n.id}
+            sealed={sealed && n.isHumanOwned}
+          />
         ))}
       </g>
     </svg>

@@ -14,6 +14,7 @@ import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import type { JSX } from "react";
 import * as THREE from "three";
+import type { VerifyVisualState } from "../verify-machine.js";
 import { COSMOS, roleHex } from "./palette.js";
 
 /** Build a filled 5-point star `ShapeGeometry`-free extrude (warm-gold Review body). */
@@ -55,8 +56,17 @@ function emissive(hex: string, intensity = 1.4) {
   };
 }
 
-function BodyMesh({ node, star }: { node: NodeView; star: THREE.ExtrudeGeometry }): JSX.Element {
-  const hex = roleHex(node.colorRole);
+function BodyMesh({
+  node,
+  star,
+  hexOverride,
+}: {
+  node: NodeView;
+  star: THREE.ExtrudeGeometry;
+  /** Byte-tamper only: the fractured byte-body glows in the integrity `--tamper` hue (never a person). */
+  hexOverride?: string;
+}): JSX.Element {
+  const hex = hexOverride ?? roleHex(node.colorRole);
   const dim = node.isIsland ? 0.4 : 1; // island reads dimmer ("outside this milestone").
 
   switch (node.body.id) {
@@ -165,7 +175,17 @@ function Body({
   node,
   star,
   animate,
-}: { node: NodeView; star: THREE.ExtrudeGeometry; animate: boolean }): JSX.Element {
+  isFracture,
+  sealActive,
+}: {
+  node: NodeView;
+  star: THREE.ExtrudeGeometry;
+  animate: boolean;
+  /** This body's bytes were tampered → it fractures (jitters) in the integrity hue (UE033/UE034). */
+  isFracture: boolean;
+  /** This human-owned Outcome is the Verified ✓ seal → a one-shot forge pulse (UE032). */
+  sealActive: boolean;
+}): JSX.Element {
   const ref = useRef<THREE.Group>(null);
   const inner = useRef<THREE.Group>(null);
   // Deterministic per-node phase so floats are varied but not random.
@@ -185,10 +205,24 @@ function Body({
         const p = Math.min((t - born.current) / (IGNITE_MS / 1000), 1);
         // Overshoot-eased pop toward 1.0 (peaks ~1.04 near p≈0.7).
         const eased = 1 - (1 - p) ** 3;
-        inner.current.scale.setScalar(0.95 + eased * 0.05 + Math.sin(p * Math.PI) * 0.04);
+        let scale = 0.95 + eased * 0.05 + Math.sin(p * Math.PI) * 0.04;
+        // Seal-forge: a gentle one-shot swell on the human-owned Outcome as the seal locks.
+        if (sealActive) scale *= 1.06 + Math.sin(t * 3) * 0.02;
+        inner.current.scale.setScalar(scale);
       }
     }
-    if (!animate || !ref.current) return;
+    if (!ref.current) return;
+    // Byte-tamper fracture: a high-frequency shudder — bytes only, never a person/Outcome (UE034).
+    if (isFracture && animate) {
+      ref.current.position.x = bx + Math.sin(t * 47) * 0.06;
+      ref.current.position.y = by + Math.cos(t * 41) * 0.06;
+      ref.current.rotation.z = Math.sin(t * 37) * 0.04;
+      return;
+    }
+    if (!animate) {
+      ref.current.position.set(bx, by, bz);
+      return;
+    }
     ref.current.position.y = by + Math.sin(t * 0.6 + phase) * 0.12;
     ref.current.rotation.y = t * 0.15 + phase;
   });
@@ -196,7 +230,7 @@ function Body({
   return (
     <group ref={ref} position={[bx, by, bz]}>
       <group ref={inner}>
-        <BodyMesh node={node} star={star} />
+        <BodyMesh node={node} star={star} hexOverride={isFracture ? COSMOS.tamper : undefined} />
       </group>
     </group>
   );
@@ -205,12 +239,26 @@ function Body({
 export function Bodies({
   nodes,
   animate,
-}: { nodes: readonly NodeView[]; animate: boolean }): JSX.Element {
+  verify,
+}: {
+  nodes: readonly NodeView[];
+  animate: boolean;
+  verify?: VerifyVisualState;
+}): JSX.Element {
   const star = useStarGeometry();
+  const fractureId = verify?.fractureNodeId ?? null;
+  const sealed = verify?.run === "verify" && verify.sealState === "verified";
   return (
     <group>
       {nodes.map((n) => (
-        <Body key={n.id} node={n} star={star} animate={animate} />
+        <Body
+          key={n.id}
+          node={n}
+          star={star}
+          animate={animate}
+          isFracture={fractureId === n.id}
+          sealActive={sealed && n.isHumanOwned}
+        />
       ))}
     </group>
   );

@@ -8,8 +8,12 @@
 import {
   type BuildExplorerViewOptions,
   type ExplorerView,
+  type VerificationView,
+  applyTamper,
   buildExplorerView,
   buildFixtureGraph,
+  buildVerificationView,
+  explorerFixture,
 } from "@gt100k/evidence-explorer-view";
 import { NodeCryptoHasher } from "@gt100k/evidence-hash-node";
 
@@ -17,4 +21,36 @@ import { NodeCryptoHasher } from "@gt100k/evidence-hash-node";
 export function buildSyntheticExplorerView(opts: BuildExplorerViewOptions = {}): ExplorerView {
   const { graph, packet } = buildFixtureGraph(new NodeCryptoHasher());
   return buildExplorerView(graph, packet, opts);
+}
+
+/**
+ * The pre-computed, serializable verification for U3 (§U8.8). Both the honest and the tampered
+ * `VerificationView` are derived **server-side** (Node SHA-256 hasher) so the client replays the
+ * deterministic truth — no client-side crypto and no grade computed in the app. `tamperNodeId` is the
+ * byte-level released Artifact that fractures (never a person, learner, `Outcome`, or `Assistance`).
+ */
+export interface SyntheticVerification {
+  readonly verified: VerificationView;
+  readonly tampered: VerificationView;
+  readonly tamperNodeId: string;
+}
+
+/** Derive the untampered + tampered verification views for the synthetic milestone (server-only). */
+export async function buildSyntheticVerification(): Promise<SyntheticVerification> {
+  const hasher = new NodeCryptoHasher();
+  const fixture = await explorerFixture(hasher);
+  const verified = buildVerificationView(
+    fixture.packet,
+    fixture.verifierResult,
+    fixture.graph,
+    hasher,
+  );
+  const tamperedBundle = applyTamper(fixture);
+  const tampered = buildVerificationView(
+    tamperedBundle.packet,
+    fixture.verifierResult,
+    tamperedBundle.graph,
+    hasher,
+  );
+  return { verified, tampered, tamperNodeId: fixture.ids["released-artifact"] };
 }

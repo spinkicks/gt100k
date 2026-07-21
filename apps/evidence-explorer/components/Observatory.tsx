@@ -8,8 +8,15 @@ import type { JSX } from "react";
 import { Ledger } from "./Ledger.js";
 import { Legend } from "./Legend.js";
 import { ObservatoryStage } from "./ObservatoryStage.js";
+import type { SyntheticVerification } from "./synthetic-view.js";
 
-export function Observatory({ view }: { view: ExplorerView }): JSX.Element {
+export function Observatory({
+  view,
+  verification,
+}: {
+  view: ExplorerView;
+  verification: SyntheticVerification;
+}): JSX.Element {
   const threadCount = view.edges.filter((e) => e.isNodeEdge).length;
   const milestoneCount = view.nodes.filter((n) => n.isInMilestone).length;
 
@@ -34,7 +41,7 @@ export function Observatory({ view }: { view: ExplorerView }): JSX.Element {
 
       <div className="obs-grid">
         <div className="panel stage" aria-label="Provenance constellation">
-          <ObservatoryStage view={view} />
+          <ObservatoryStage view={view} verification={verification} />
         </div>
         <div className="obs-side">
           <Legend />

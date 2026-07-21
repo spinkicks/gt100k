@@ -31,8 +31,11 @@ import {
 } from "react";
 import type { JSX } from "react";
 import { TimeScrub } from "./TimeScrub.js";
+import { VerifyPanel } from "./VerifyPanel.js";
 import { Constellation2D } from "./constellation/Constellation2D.js";
 import { effectiveFocusId, revealedNodeIds } from "./scrub.js";
+import type { SyntheticVerification } from "./synthetic-view.js";
+import { IDLE_VISUAL, type VerifyVisualState } from "./verify-machine.js";
 
 // 3D is client-only: it must never be server-rendered (no WebGL on the server).
 const Cosmos3D = dynamic(() => import("./cosmos/Cosmos3D.js").then((m) => m.Cosmos3D), {
@@ -92,7 +95,13 @@ class CanvasBoundary extends Component<
   }
 }
 
-export function ObservatoryStage({ view }: { view: ExplorerView }): JSX.Element {
+export function ObservatoryStage({
+  view,
+  verification,
+}: {
+  view: ExplorerView;
+  verification: SyntheticVerification;
+}): JSX.Element {
   const [mounted, setMounted] = useState(false);
   const [caps, setCaps] = useState<RenderCaps | null>(null);
   const [override, setOverride] = useState<TierOverride>("auto");
@@ -106,6 +115,11 @@ export function ObservatoryStage({ view }: { view: ExplorerView }): JSX.Element 
 
   const revealed = useMemo(() => revealedNodeIds(view, revealedCount), [view, revealedCount]);
   const effFocus = effectiveFocusId(focusNodeId, revealed);
+
+  // Verify-sequence visual state (§U8.8) — the light-wave / seal / byte-fracture the tiers render.
+  // Presentation-only: it never mutates the `ExplorerView`. Idle by default so the baseline is unchanged.
+  const [verifyVisual, setVerifyVisual] = useState<VerifyVisualState>(IDLE_VISUAL);
+  const waveOrder = verification.verified.verifyWaveOrder;
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -173,11 +187,19 @@ export function ObservatoryStage({ view }: { view: ExplorerView }): JSX.Element 
               onDegrade={onDegrade}
               revealed={revealed}
               focusNodeId={effFocus}
+              waveOrder={waveOrder}
+              verify={verifyVisual}
             />
           </CanvasBoundary>
         </div>
       ) : (
-        <Constellation2D view={view} revealed={revealed} focusNodeId={effFocus} />
+        <Constellation2D
+          view={view}
+          revealed={revealed}
+          focusNodeId={effFocus}
+          waveOrder={waveOrder}
+          verify={verifyVisual}
+        />
       )}
 
       <TimeScrub
@@ -186,6 +208,12 @@ export function ObservatoryStage({ view }: { view: ExplorerView }): JSX.Element 
         onScrub={setRevealedCount}
         focusNodeId={focusNodeId}
         onSelectBeat={setFocusNodeId}
+      />
+
+      <VerifyPanel
+        verification={verification}
+        reducedMotion={caps?.prefersReducedMotion ?? false}
+        onVisualChange={setVerifyVisual}
       />
     </div>
   );

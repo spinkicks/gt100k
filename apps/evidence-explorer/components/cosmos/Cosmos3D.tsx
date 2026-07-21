@@ -23,6 +23,7 @@ import { Bloom, DepthOfField, EffectComposer, Vignette } from "@react-three/post
 import { useMemo, useRef } from "react";
 import type { JSX } from "react";
 import * as THREE from "three";
+import type { VerifyVisualState } from "../verify-machine.js";
 import { Bodies } from "./Bodies.js";
 import { Starfield } from "./Starfield.js";
 import { Threads } from "./Threads.js";
@@ -66,6 +67,8 @@ export function Cosmos3D({
   onDegrade,
   revealed,
   focusNodeId = null,
+  waveOrder = [],
+  verify,
 }: {
   view: ExplorerView;
   tier: RenderTier;
@@ -73,6 +76,10 @@ export function Cosmos3D({
   /** Time-scrub reveal set; omitted = fully grown. */
   revealed?: ReadonlySet<string>;
   focusNodeId?: string | null;
+  /** Deterministic verify light-wave order (`view.verifyWaveOrder`). */
+  waveOrder?: ReadonlyArray<{ readonly from: string; readonly to: string }>;
+  /** Verify-sequence visual state (light-wave / seal / byte-fracture). */
+  verify?: VerifyVisualState;
 }): JSX.Element {
   const cinematic = tier === "cinematic";
   const [cx, cy, cz] = view.center3d;
@@ -110,8 +117,8 @@ export function Cosmos3D({
       <pointLight position={[-10, -6, -18]} intensity={0.7} color={COSMOS.human} distance={140} />
 
       <Starfield animate={cinematic} />
-      <Threads edges={visibleEdges} nodes={visibleNodes} />
-      <Bodies nodes={visibleNodes} animate={cinematic} />
+      <Threads edges={visibleEdges} nodes={visibleNodes} waveOrder={waveOrder} verify={verify} />
+      <Bodies nodes={visibleNodes} animate={cinematic} verify={verify} />
 
       <OrbitControls
         makeDefault

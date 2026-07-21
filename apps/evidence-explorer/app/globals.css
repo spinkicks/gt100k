@@ -593,6 +593,237 @@ button {
   }
 }
 
+/* ── Verify panel (§U5.3 / §U8.8, UE032–UE035) ──────────────────────────────── */
+.verify {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 18px;
+  border-top: 1px solid var(--line);
+}
+.verify-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.verify-title {
+  font-size: var(--text-label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin: 0;
+}
+.verify-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.verify-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--panel-2) 80%, transparent);
+  color: var(--ink);
+  font-size: var(--text-label);
+  line-height: 1;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 120ms ease;
+}
+.verify-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.verify-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.verify-btn--primary {
+  border-color: color-mix(in oklab, var(--verify) 45%, var(--line));
+  background: color-mix(in oklab, var(--verify) 14%, transparent);
+  color: var(--verify);
+}
+.verify-btn--tamper {
+  border-color: color-mix(in oklab, var(--tamper) 40%, var(--line));
+  color: var(--tamper);
+}
+.verify-intro {
+  margin: 0;
+  font-size: var(--text-label);
+  color: var(--ink-muted);
+  line-height: 1.4;
+}
+
+/* The seal — a static, text-first badge (meaning never depends on the 3D wave; scenario 4). */
+.verify-seal {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-start;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.verify-seal-icon {
+  font-size: 1.1em;
+}
+.verify-seal--verified {
+  color: var(--verify);
+  border-color: color-mix(in oklab, var(--verify) 60%, var(--line));
+  background: color-mix(in oklab, var(--verify) 12%, transparent);
+  box-shadow: 0 0 22px -6px color-mix(in oklab, var(--verify) 70%, transparent);
+  animation: seal-forge 900ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.verify-seal--mismatch {
+  color: var(--tamper);
+  border-color: color-mix(in oklab, var(--tamper) 60%, var(--line));
+  background: color-mix(in oklab, var(--tamper) 12%, transparent);
+}
+.verify-seal--unverified {
+  color: var(--ink-muted);
+}
+@keyframes seal-forge {
+  from {
+    transform: scale(0.82);
+    opacity: 0;
+  }
+}
+
+/* Stepped checklist — the accessible truth; rows tick in order, each with a text status. */
+.verify-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.verify-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--panel-2) 55%, transparent);
+  opacity: 0.5;
+  transition: opacity 200ms ease, border-color 200ms ease;
+}
+.verify-step.is-revealed {
+  opacity: 1;
+  animation: step-pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes step-pop {
+  from {
+    transform: translateX(-6px);
+    opacity: 0;
+  }
+}
+.verify-step-mark {
+  font-size: 1em;
+  line-height: 1.4;
+  width: 1.2em;
+  text-align: center;
+}
+.verify-step--pass {
+  border-color: color-mix(in oklab, var(--verify) 45%, var(--line));
+}
+.verify-step--pass .verify-step-mark {
+  color: var(--verify);
+}
+.verify-step--fail {
+  border-color: color-mix(in oklab, var(--tamper) 55%, var(--line));
+}
+.verify-step--fail .verify-step-mark {
+  color: var(--tamper);
+}
+.verify-step--stub .verify-step-mark {
+  color: var(--ink-muted);
+}
+.verify-step-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.verify-step-label {
+  font-size: var(--text-label);
+  font-weight: 600;
+}
+.verify-step-status {
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+
+/* Merkle root — ticks in on verify; diverges old→new on tamper. */
+.verify-root {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: var(--text-label);
+}
+.verify-root-label {
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+}
+.verify-root-value {
+  color: var(--verify);
+  animation: root-tick 1200ms linear both;
+}
+@keyframes root-tick {
+  from {
+    opacity: 0;
+    filter: blur(3px);
+  }
+}
+.verify-root-diff {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.verify-root-old {
+  color: var(--ink-muted);
+  text-decoration: line-through;
+}
+.verify-root-arrow {
+  color: var(--tamper);
+}
+.verify-root-new {
+  color: var(--tamper);
+  animation: root-diverge 900ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@keyframes root-diverge {
+  from {
+    transform: translateX(-8px);
+    opacity: 0;
+  }
+}
+
+/* Calm-2D verify parity: the seal-forge ring pulses; the byte-body fracture crack pulses subtly. */
+.node-seal-ring {
+  animation: focus-pulse 1600ms ease-in-out infinite;
+}
+.node-fracture {
+  animation: fracture-pulse 900ms ease-in-out infinite;
+}
+@keyframes fracture-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root {
     --motion-scale: 0;
