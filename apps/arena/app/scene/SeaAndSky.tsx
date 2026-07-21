@@ -109,11 +109,12 @@ export function resolveAtmospherePlan(
   qualityBudget: QualityBudget,
   reducedMotion: boolean,
 ): AtmospherePlan {
+  const waterMode = qualityBudget.water === "2d" ? "none" : qualityBudget.water;
   return {
     skyHex: palette.skyDawn,
     fogHex: palette.seaDeep,
-    waterMode: water.mode,
-    waterVisible: water.mode !== "none",
+    waterMode,
+    waterVisible: waterMode !== "none",
     cloudsVisible: true,
     motesVisible: true,
     ambientMotion: qualityBudget.ambientMotion && !reducedMotion,
@@ -285,6 +286,10 @@ export default function SeaAndSky({
   reducedMotion,
 }: SeaAndSkyProps) {
   const plan = resolveAtmospherePlan(palette, water, qualityBudget, reducedMotion);
+  const budgetedWater = useMemo(
+    () => ({ ...water, mode: plan.waterMode }),
+    [plan.waterMode, water],
+  );
 
   return (
     <>
@@ -294,7 +299,9 @@ export default function SeaAndSky({
       {plan.cloudsVisible ? (
         <CloudCards ambientMotion={plan.ambientMotion} colorHex={palette.inkHi} />
       ) : null}
-      {plan.waterVisible ? <WaterSurface ambientMotion={plan.ambientMotion} water={water} /> : null}
+      {plan.waterVisible ? (
+        <WaterSurface ambientMotion={plan.ambientMotion} water={budgetedWater} />
+      ) : null}
       {plan.motesVisible ? (
         <AmbientMotes ambientMotion={plan.ambientMotion} colorHex={palette.sunHi} />
       ) : null}

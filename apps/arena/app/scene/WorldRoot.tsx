@@ -72,7 +72,11 @@ export function resolveNodePresentationLabel(
   return `${landmark} is waiting.`;
 }
 
-export function buildWorldRenderPlan(view: InitialArenaView): WorldRenderPlan {
+export function buildWorldRenderPlan(
+  view: InitialArenaView,
+  dynamicNodeLightIds?: readonly string[],
+  cameraTarget = view.presentation.camera.restTarget,
+): WorldRenderPlan {
   const transforms = new Map(
     view.presentation.worldTransform.nodes.map((node) => [node.nodeId, node] as const),
   );
@@ -85,13 +89,26 @@ export function buildWorldRenderPlan(view: InitialArenaView): WorldRenderPlan {
     transferCritical: node.transferCritical,
     position: required(transforms.get(node.id), `Missing transform for ${node.id}`),
   }));
+  const selectedDynamicLights = dynamicNodeLightIds ? new Set(dynamicNodeLightIds) : null;
   const contributions = new Map(
     resolveNodeLightContributions(
       candidates,
       view.presentation.qualityTier,
       "default",
-      view.presentation.camera.restTarget,
-    ).map((contribution) => [contribution.nodeId, contribution] as const),
+      cameraTarget,
+    ).map((contribution) => {
+      if (
+        selectedDynamicLights &&
+        contribution.renderMode === "dynamic" &&
+        !selectedDynamicLights.has(contribution.nodeId)
+      ) {
+        return [
+          contribution.nodeId,
+          { ...contribution, renderMode: "emissive" as const, pointLight: null },
+        ] as const;
+      }
+      return [contribution.nodeId, contribution] as const;
+    }),
   );
 
   const islands = view.world.regions.map((region, regionIndex) => {
@@ -369,10 +386,22 @@ function NodeMarker({ node, reducedMotion }: { node: NodePlan; reducedMotion: bo
 
 export interface WorldRootProps {
   view: InitialArenaView;
+  cameraTarget?: Position3D;
+  dynamicNodeLightIds?: readonly string[];
+  staticMotion?: boolean;
 }
 
-export default function WorldRoot({ view }: WorldRootProps) {
-  const plan = useMemo(() => buildWorldRenderPlan(view), [view]);
+export default function WorldRoot({
+  view,
+  cameraTarget,
+  dynamicNodeLightIds,
+  staticMotion = false,
+}: WorldRootProps) {
+  const plan = useMemo(
+    () => buildWorldRenderPlan(view, dynamicNodeLightIds, cameraTarget),
+    [cameraTarget, dynamicNodeLightIds, view],
+  );
+  const motionReduced = view.flags.reducedMotion || staticMotion;
 
   return (
     <group name="independence-isles">
@@ -402,7 +431,7 @@ export default function WorldRoot({ view }: WorldRootProps) {
           </span>
         </Html>
       ) : null}
-      <FloatingIslands islands={plan.islands} reducedMotion={view.flags.reducedMotion} />
+      <FloatingIslands islands={plan.islands} reducedMotion={motionReduced} />
       <group name="arena-paths-and-bridges">
         {plan.paths.map((path) => (
           <Line
@@ -418,7 +447,7 @@ export default function WorldRoot({ view }: WorldRootProps) {
         ))}
       </group>
       {plan.nodes.map((node) => (
-        <NodeMarker key={node.nodeId} node={node} reducedMotion={view.flags.reducedMotion} />
+        <NodeMarker key={node.nodeId} node={node} reducedMotion={motionReduced} />
       ))}
     </group>
   );

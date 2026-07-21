@@ -689,3 +689,17 @@
 ## NEXT
 - T046: audit and finish `qualityBudget` wiring across `apps/arena/app/scene/*` for the P6 quality ladder.
 - Acceptance: renderer DPR, shadows, water, post-fx, ambient motion, particles, and the global nearest-to-camera-target dynamic-light cap follow the exact A/B/C/D budgets; over-cap beacons remain emissive, Tier C keeps depth with all motion stripped, and focused tests plus lint/typecheck/tests/root build/Arena build remain green (spec §8.22/§8.24, FR-043, SC-025).
+
+## 2026-07-21 — P6 / T046
+- Added a pure renderer-quality plan that maps the exact A/B/C/D budgets to DPR, frame loop, shadows/map size, water, post-fx, ambient/static motion, particles, canvas availability, and one deterministic dynamic-light allocation.
+- Replaced the separate node/Base Camp light-cap decisions with a global nearest-to-camera-target selection. At the Base Camp Tier-B target the three dynamic lights are the campfire, Letter Landing, and Whispering Falls; every over-cap active node remains emissive.
+- Made the budget authoritative in `LightingRig`, `SeaAndSky`, and `PostFx`, and threaded static-motion behavior through islands, node reveals, Base Camp accretion, avatar/cosmetics, camera/orbit damping, and learning feedback so Tier C retains 3D depth without ambient or inertial motion.
+- Followed red-green TDD: the four new P6 acceptance groups failed on the missing central plan, global cap, budget guards, and wiring; the camera-static regression failed on orbit damping before the reduced/static fix. All focused P1-P6 scene regressions then passed (8 files, 39 tests).
+- Review status: checked T046 against §§8.20/8.22/8.24/P6, FR-041/043, SC-025, the existing P1-P5 scene contracts, and React render-path guidance; no Critical, Important, or Minor issues remain. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: `pnpm lint` passed (133 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (54 files, 215 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 59.6 kB route, 147 kB first load).
+- SC status: T046 completes the deterministic renderer-budget and global beacon-cap wiring for SC-025. P6 remains in progress for sustained frame monitoring, full Tier-D rendering, and the final quality auto-degrade assertions.
+- Blockers: browser performance measurement is unavailable in this workspace; the deterministic renderer budget and production build gates are green, while the min-device 60fps walkthrough remains scheduled for P7.
+
+## NEXT
+- T046a: add a rolling 90-frame monitor in `apps/arena/app/scene/ArenaCanvas.tsx` that degrades one tier when average frame time exceeds 18ms and emits the existing typed tier-degraded event without blocking input.
+- Acceptance: tests fail first, then prove no degradation before 90 samples, one `nextLowerTier` step on sustained `>18ms`, stable reset/no visible flash behavior, and context-loss fallback to Tier D; focused scene tests plus lint/typecheck/tests/root build/Arena build remain green (FR-043, SC-025).

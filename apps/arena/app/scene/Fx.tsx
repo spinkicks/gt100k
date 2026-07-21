@@ -137,28 +137,29 @@ export function buildFxPlan(
   view: InitialArenaView,
   feedbackInput: SequencedArenaFeedback,
   targetNodeId?: string,
+  staticMotion = false,
 ): FxPlan {
   const feedback = resolveArenaFeedback(feedbackInput.signal);
   const event = feedback.event;
   const eventNodeId = event?.type === "independent-unlock" ? event.nodeId : undefined;
   const anchor = requiredAnchor(view, eventNodeId ?? targetNodeId);
   const announcement = resolveFeedbackAnnouncement(view, feedback);
+  const motionReduced = view.flags.reducedMotion || staticMotion;
 
   if (!event) {
-    const reduced = view.flags.reducedMotion;
     return {
       sequence: feedbackInput.sequence,
-      kind: reduced ? "static-badge" : "not-yet-wisp",
+      kind: motionReduced ? "static-badge" : "not-yet-wisp",
       anchor,
       particleCount: 0,
-      durationMs: reduced ? MOTION.micro : MOTION.base,
+      durationMs: motionReduced ? MOTION.micro : MOTION.base,
       bloomPeak: 0.7,
       cameraPunch: false,
       beaconIgnition: "none",
       burstDelayMs: 0,
       beaconDelayMs: 0,
       cameraDelayMs: 0,
-      staticBadge: reduced ? "not-yet" : null,
+      staticBadge: motionReduced ? "not-yet" : null,
       announcement,
       soundCue: feedback.soundCue,
     };
@@ -172,10 +173,10 @@ export function buildFxPlan(
     ),
   };
   const motion = celebrationMotionSpec(effectiveEvent, {
-    reducedMotion: view.flags.reducedMotion,
+    reducedMotion: motionReduced,
   });
   const beaconMotion = resolveMotion("nodeReveal", {
-    reducedMotion: view.flags.reducedMotion,
+    reducedMotion: motionReduced,
   });
   const independentUnlock = event.type === "independent-unlock";
   const staticBadge = independentUnlock ? "beacon-lit" : "effort-honored";
@@ -469,13 +470,20 @@ export interface FxProps {
   feedback?: SequencedArenaFeedback;
   targetNodeId?: string;
   eventBus?: Pick<ArenaEventBus, "emit">;
+  staticMotion?: boolean;
 }
 
-export default function Fx({ view, feedback, targetNodeId, eventBus }: FxProps) {
+export default function Fx({
+  view,
+  feedback,
+  targetNodeId,
+  eventBus,
+  staticMotion = false,
+}: FxProps) {
   const emittedSequence = useRef(0);
   const plan = useMemo(
-    () => (feedback ? buildFxPlan(view, feedback, targetNodeId) : null),
-    [feedback, targetNodeId, view],
+    () => (feedback ? buildFxPlan(view, feedback, targetNodeId, staticMotion) : null),
+    [feedback, staticMotion, targetNodeId, view],
   );
 
   useEffect(() => {

@@ -27,8 +27,13 @@ const AVATAR_SLOT_BY_COSMETIC_ID: Readonly<Record<string, AvatarCosmeticSlot>> =
   "avatar-badge-firstlight": "badge",
 };
 
-export function buildAvatarCosmeticPlan(view: InitialArenaView): AvatarCosmeticPlanEntry[] {
-  const transition = resolveMotion("equip", { reducedMotion: view.flags.reducedMotion });
+export function buildAvatarCosmeticPlan(
+  view: InitialArenaView,
+  staticMotion = false,
+): AvatarCosmeticPlanEntry[] {
+  const transition = resolveMotion("equip", {
+    reducedMotion: view.flags.reducedMotion || staticMotion,
+  });
 
   return view.avatar.equipped.flatMap((id) => {
     const slot = AVATAR_SLOT_BY_COSMETIC_ID[id];
@@ -114,6 +119,7 @@ export interface AvatarProps {
   view: InitialArenaView;
   targetNodeId?: string;
   avatarRef?: MutableRefObject<Group | null>;
+  staticMotion?: boolean;
 }
 
 interface AvatarCosmeticProps {
@@ -196,7 +202,12 @@ function AvatarCosmetic({ entry, palette }: AvatarCosmeticProps) {
   );
 }
 
-export default function Avatar({ view, targetNodeId, avatarRef }: AvatarProps) {
+export default function Avatar({
+  view,
+  targetNodeId,
+  avatarRef,
+  staticMotion = false,
+}: AvatarProps) {
   const target = useMemo(() => resolveAvatarTarget(view, targetNodeId), [targetNodeId, view]);
   const livePosition = useRef(new Vector3(target.x, target.y + 0.55, target.z));
   const destination = useMemo(() => new Vector3(), []);
@@ -208,7 +219,11 @@ export default function Avatar({ view, targetNodeId, avatarRef }: AvatarProps) {
   const animation = view.presentation.avatarAnim;
   const animationKey = `${animation.state}:${animation.durationMs}:${animation.amplitudePx}`;
   const previousAnimationKey = useRef(animationKey);
-  const cosmetics = useMemo(() => buildAvatarCosmeticPlan(view), [view]);
+  const motionReduced = view.flags.reducedMotion || staticMotion;
+  const cosmetics = useMemo(
+    () => buildAvatarCosmeticPlan(view, staticMotion),
+    [staticMotion, view],
+  );
 
   useFrame((_, delta) => {
     const avatarGroup = avatar.current;
@@ -219,7 +234,7 @@ export default function Avatar({ view, targetNodeId, avatarRef }: AvatarProps) {
     const deltaZ = destination.z - livePosition.current.z;
     const moving = Math.hypot(deltaX, deltaZ) > 0.001;
 
-    if (view.flags.reducedMotion) {
+    if (motionReduced) {
       livePosition.current.copy(destination);
     } else {
       const moveLambda = animation.state === "run" ? LAMBDAS.avatarMove * 1.35 : LAMBDAS.avatarMove;
@@ -240,7 +255,9 @@ export default function Avatar({ view, targetNodeId, avatarRef }: AvatarProps) {
     } else {
       animationElapsedMs.current += delta * 1_000;
     }
-    const pose = resolveAvatarPose(animation, animationElapsedMs.current);
+    const pose = motionReduced
+      ? { offsetY: 0, scaleY: 1, lanternIntensity: 1 }
+      : resolveAvatarPose(animation, animationElapsedMs.current);
     avatarGroup.position.set(
       livePosition.current.x,
       livePosition.current.y + pose.offsetY,
@@ -248,7 +265,7 @@ export default function Avatar({ view, targetNodeId, avatarRef }: AvatarProps) {
     );
     if (body.current) {
       body.current.scale.set(1, pose.scaleY, 1);
-      body.current.rotation.x = animation.state === "run" && !view.flags.reducedMotion ? -0.12 : 0;
+      body.current.rotation.x = animation.state === "run" && !motionReduced ? -0.12 : 0;
     }
     if (lantern.current) lantern.current.emissiveIntensity = pose.lanternIntensity;
   });

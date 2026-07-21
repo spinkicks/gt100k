@@ -1,6 +1,6 @@
 "use client";
 
-import type { LightingConfig } from "@gt100k/arena-world";
+import type { LightingConfig, QualityBudget } from "@gt100k/arena-world";
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import type { DirectionalLight } from "three";
@@ -27,10 +27,26 @@ export function resolveSunDriftRadians(
 
 export interface LightingRigProps {
   lighting: LightingConfig;
-  ambientMotion: boolean;
+  qualityBudget: QualityBudget;
 }
 
-export default function LightingRig({ lighting, ambientMotion }: LightingRigProps) {
+export function resolveLightingRigPlan(lighting: LightingConfig, qualityBudget: QualityBudget) {
+  const shadowsEnabled = qualityBudget.shadows !== "off" && qualityBudget.shadows !== null;
+  return {
+    ambientMotion: qualityBudget.ambientMotion,
+    castShadow: shadowsEnabled && lighting.key.castShadow,
+    shadowMapSize:
+      qualityBudget.shadows === "soft-pcf-2048"
+        ? 2_048
+        : qualityBudget.shadows === "pcf-1024"
+          ? 1_024
+          : null,
+    softShadow: qualityBudget.shadows === "soft-pcf-2048",
+  };
+}
+
+export default function LightingRig({ lighting, qualityBudget }: LightingRigProps) {
+  const plan = resolveLightingRigPlan(lighting, qualityBudget);
   const keyLight = useRef<DirectionalLight>(null);
   const keyPosition = positionFromDirection(lighting.key.dir);
   const rimPosition = positionFromDirection(lighting.rim.dir);
@@ -39,7 +55,7 @@ export default function LightingRig({ lighting, ambientMotion }: LightingRigProp
     const light = keyLight.current;
     if (!light) return;
 
-    const angle = resolveSunDriftRadians(clock.elapsedTime * 1_000, lighting, ambientMotion);
+    const angle = resolveSunDriftRadians(clock.elapsedTime * 1_000, lighting, plan.ambientMotion);
     const cosine = Math.cos(angle);
     const sine = Math.sin(angle);
     const [x, y, z] = keyPosition;
@@ -50,7 +66,7 @@ export default function LightingRig({ lighting, ambientMotion }: LightingRigProp
     <>
       <directionalLight
         ref={keyLight}
-        castShadow={lighting.key.castShadow}
+        castShadow={plan.castShadow}
         color={lighting.key.colorHex}
         intensity={lighting.key.intensity}
         position={keyPosition}
@@ -63,7 +79,7 @@ export default function LightingRig({ lighting, ambientMotion }: LightingRigProp
         shadow-camera-top={72}
         shadow-mapSize-height={lighting.shadow.mapSize}
         shadow-mapSize-width={lighting.shadow.mapSize}
-        shadow-radius={lighting.shadow.soft ? 2 : 0}
+        shadow-radius={plan.softShadow ? 2 : 0}
       />
       <hemisphereLight
         args={[lighting.hemi.skyHex, lighting.hemi.groundHex, lighting.hemi.intensity]}

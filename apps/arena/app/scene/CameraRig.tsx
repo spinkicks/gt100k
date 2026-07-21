@@ -58,6 +58,7 @@ export interface CameraRigProps {
   lookDirection?: readonly [number, number, number];
   followRef?: RefObject<Object3D>;
   homeFocused?: boolean;
+  staticMotion?: boolean;
 }
 
 export default function CameraRig({
@@ -66,9 +67,11 @@ export default function CameraRig({
   lookDirection = [0, 0, 0],
   followRef,
   homeFocused = false,
+  staticMotion = false,
 }: CameraRigProps) {
   const config = view.presentation.camera;
-  const plan = resolveCameraPlan(config, view.flags.reducedMotion);
+  const motionReduced = view.flags.reducedMotion || staticMotion;
+  const plan = resolveCameraPlan(config, motionReduced);
   const targetX = target?.[0] ?? config.restTarget.x;
   const targetY = target?.[1] ?? config.restTarget.y;
   const targetZ = target?.[2] ?? config.restTarget.z;
@@ -135,21 +138,21 @@ export default function CameraRig({
       controlsInstance.target.lerpVectors(
         transitionFrom,
         desiredTarget,
-        resolveSceneTransitionProgress(transitionElapsedMs.current, view.flags.reducedMotion),
+        resolveSceneTransitionProgress(transitionElapsedMs.current, motionReduced),
       );
       targetShift.copy(controlsInstance.target).sub(previousTarget);
       cameraInstance.position.add(targetShift);
     } else if (
-      view.flags.reducedMotion ||
+      motionReduced ||
       controlsInstance.target.distanceTo(desiredTarget) > config.deadzoneRadius
     ) {
-      if (view.flags.reducedMotion) controlsInstance.target.copy(desiredTarget);
+      if (motionReduced) controlsInstance.target.copy(desiredTarget);
       else damp3(controlsInstance.target, desiredTarget, LAMBDAS.cameraFollow, delta);
       targetShift.copy(controlsInstance.target).sub(previousTarget);
       cameraInstance.position.add(targetShift);
     }
 
-    const introDistance = resolveIntroDistance(elapsedMs.current, config, view.flags.reducedMotion);
+    const introDistance = resolveIntroDistance(elapsedMs.current, config, motionReduced);
     if (elapsedMs.current <= INTRO_MOTION.durationMs) {
       cameraInstance.position
         .copy(controlsInstance.target)
@@ -176,7 +179,7 @@ export default function CameraRig({
         ref={controls}
         makeDefault
         dampingFactor={plan.dampingFactor}
-        enableDamping
+        enableDamping={!motionReduced}
         enablePan={false}
         maxAzimuthAngle={plan.maxAzimuthAngle}
         maxDistance={plan.maxDistance}

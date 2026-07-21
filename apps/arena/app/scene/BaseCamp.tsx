@@ -35,7 +35,10 @@ function required<T>(value: T | undefined, message: string): T {
   return value;
 }
 
-export function buildBaseCampRenderPlan(view: InitialArenaView): BaseCampRenderPlan {
+export function buildBaseCampRenderPlan(
+  view: InitialArenaView,
+  dynamicCampfireLight?: boolean,
+): BaseCampRenderPlan {
   const features = view.presentation.basePlacements.map((placement) => {
     const contribution = required(
       view.base.contributions.find(({ feature }) => feature === placement.feature),
@@ -63,7 +66,8 @@ export function buildBaseCampRenderPlan(view: InitialArenaView): BaseCampRenderP
     },
     features,
     dynamicCampfireLight:
-      features.some(({ feature }) => feature === "campfire") && activeNodeLights < lightCap,
+      dynamicCampfireLight ??
+      (features.some(({ feature }) => feature === "campfire") && activeNodeLights < lightCap),
   };
 }
 
@@ -236,10 +240,22 @@ export interface BaseCampProps {
   view: InitialArenaView;
   focusedFeature?: string;
   onFocusFeature?(feature: string): void;
+  dynamicCampfireLight?: boolean;
+  staticMotion?: boolean;
 }
 
-export default function BaseCamp({ view, focusedFeature, onFocusFeature }: BaseCampProps) {
-  const plan = useMemo(() => buildBaseCampRenderPlan(view), [view]);
+export default function BaseCamp({
+  view,
+  focusedFeature,
+  onFocusFeature,
+  dynamicCampfireLight,
+  staticMotion = false,
+}: BaseCampProps) {
+  const plan = useMemo(
+    () => buildBaseCampRenderPlan(view, dynamicCampfireLight),
+    [dynamicCampfireLight, view],
+  );
+  const motionReduced = view.flags.reducedMotion || staticMotion;
 
   return (
     <group name="base-camp">
@@ -258,7 +274,7 @@ export default function BaseCamp({ view, focusedFeature, onFocusFeature }: BaseC
           key={feature.feature}
           lit={feature.feature === "campfire" && plan.dynamicCampfireLight}
           onFocus={() => onFocusFeature?.(feature.feature)}
-          reducedMotion={view.flags.reducedMotion}
+          reducedMotion={motionReduced}
         />
       ))}
     </group>

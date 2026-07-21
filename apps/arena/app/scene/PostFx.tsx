@@ -35,13 +35,17 @@ export function buildPostFxPlan(
   feedbackInput?: SequencedArenaFeedback,
 ): PostFxPlan {
   const config = view.presentation.postfx;
+  const budgetMode = view.presentation.qualityBudget.postfx;
+  const bloomConfig = budgetMode === "off" ? null : config.bloom;
+  const vignetteConfig = budgetMode === "bloom-vignette-smaa" ? config.vignette : null;
+  const smaaEnabled = budgetMode === "bloom-vignette-smaa" && config.smaa;
   const feedback = feedbackInput ? resolveArenaFeedback(feedbackInput.signal) : null;
   const motion =
     feedback?.event === null || feedback?.event === undefined
       ? null
       : celebrationMotionSpec(feedback.event, { reducedMotion: view.flags.reducedMotion });
   const enabled =
-    !view.flags.reducedMotion && (config.bloom !== null || config.vignette !== null || config.smaa);
+    !view.flags.reducedMotion && (bloomConfig !== null || vignetteConfig !== null || smaaEnabled);
 
   if (!enabled) {
     return {
@@ -56,17 +60,17 @@ export function buildPostFxPlan(
 
   return {
     enabled: true,
-    bloom: config.bloom
+    bloom: bloomConfig
       ? {
-          threshold: config.bloom.threshold,
-          baselineIntensity: config.bloom.intensity,
-          peakIntensity: motion?.bloomPeak ?? config.bloom.intensity,
-          radius: config.bloom.radius,
-          mipmapBlur: config.bloom.mipmapBlur,
+          threshold: bloomConfig.threshold,
+          baselineIntensity: bloomConfig.intensity,
+          peakIntensity: motion?.bloomPeak ?? bloomConfig.intensity,
+          radius: bloomConfig.radius,
+          mipmapBlur: bloomConfig.mipmapBlur,
         }
       : null,
-    vignette: config.vignette ? { ...config.vignette } : null,
-    smaa: config.smaa,
+    vignette: vignetteConfig ? { ...vignetteConfig } : null,
+    smaa: smaaEnabled,
     pulseDelayMs:
       feedback?.event?.type === "independent-unlock" && feedback.event.intensity === "high"
         ? 120

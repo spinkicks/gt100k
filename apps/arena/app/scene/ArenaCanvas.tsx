@@ -14,6 +14,7 @@ import SeaAndSky from "./SeaAndSky";
 import WorldRoot from "./WorldRoot";
 import type { ArenaEventBus } from "./eventBus";
 import type { SequencedArenaFeedback } from "./feedback";
+import { buildRendererQualityPlan } from "./rendererQuality";
 
 export const CONTEXT_RECOVERY_GRACE_MS = 2_000;
 
@@ -133,11 +134,25 @@ export default function ArenaCanvas({
   onFallback,
 }: ArenaCanvasProps) {
   const { qualityBudget, qualityTier } = view.presentation;
-  const dprMax = qualityBudget.dprMax;
-  const frameLoop: FrameLoop = qualityBudget.ambientMotion ? "always" : "demand";
+  const focusedNode = view.presentation.worldTransform.nodes.find(
+    ({ nodeId }) => nodeId === targetNodeId,
+  );
+  const cameraTarget = homeFocused
+    ? { x: BASE_CAMP_TARGET[0], y: BASE_CAMP_TARGET[1], z: BASE_CAMP_TARGET[2] }
+    : focusedNode
+      ? { x: focusedNode.x, y: focusedNode.y, z: focusedNode.z }
+      : { ...view.presentation.camera.restTarget };
+  const qualityPlan = buildRendererQualityPlan(view, cameraTarget);
+  const worldRootProps = {
+    cameraTarget,
+    dynamicNodeLightIds: qualityPlan.dynamicNodeLightIds,
+    staticMotion: qualityPlan.staticMotion,
+  };
+  const dprMax = qualityPlan.dpr?.[1];
+  const frameLoop: FrameLoop = qualityPlan.frameLoop;
   const avatarRef = useRef<Group>(null);
 
-  if (!qualityBudget.canvas || dprMax === null) return null;
+  if (!qualityPlan.canvas || dprMax === undefined) return null;
 
   return (
     <Canvas
@@ -146,7 +161,7 @@ export default function ArenaCanvas({
       frameloop={frameLoop}
       gl={{ alpha: false, antialias: true, powerPreference: "high-performance" }}
       onCreated={configureRenderer}
-      shadows={qualityBudget.shadows !== "off"}
+      shadows={qualityPlan.shadows}
       tabIndex={-1}
     >
       <ContextLifecycle
@@ -157,30 +172,41 @@ export default function ArenaCanvas({
       />
       {children ?? (
         <>
-          <LightingRig
-            ambientMotion={qualityBudget.ambientMotion}
-            lighting={view.presentation.lighting}
-          />
+          <LightingRig lighting={view.presentation.lighting} qualityBudget={qualityBudget} />
           <SeaAndSky
             palette={view.presentation.palette}
             qualityBudget={qualityBudget}
             reducedMotion={view.flags.reducedMotion}
             water={view.presentation.water}
           />
-          <WorldRoot view={view} />
+          <WorldRoot view={view} {...worldRootProps} />
           <BaseCamp
+            dynamicCampfireLight={qualityPlan.dynamicCampfireLight}
             focusedFeature={focusedBaseFeature}
             onFocusFeature={(feature) => eventBus.emit("focus-base-feature", { feature })}
+            staticMotion={qualityPlan.staticMotion}
             view={view}
           />
-          <Avatar avatarRef={avatarRef} targetNodeId={targetNodeId} view={view} />
+          <Avatar
+            avatarRef={avatarRef}
+            staticMotion={qualityPlan.staticMotion}
+            targetNodeId={targetNodeId}
+            view={view}
+          />
           <CameraRig
             followRef={homeFocused ? undefined : avatarRef}
             homeFocused={homeFocused}
+            staticMotion={qualityPlan.staticMotion}
             target={homeFocused ? BASE_CAMP_TARGET : undefined}
             view={view}
           />
-          <Fx eventBus={eventBus} feedback={feedback} targetNodeId={targetNodeId} view={view} />
+          <Fx
+            eventBus={eventBus}
+            feedback={feedback}
+            staticMotion={qualityPlan.staticMotion}
+            targetNodeId={targetNodeId}
+            view={view}
+          />
           <PostFx feedback={feedback} view={view} />
         </>
       )}
