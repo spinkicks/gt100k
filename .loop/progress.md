@@ -1857,3 +1857,14 @@
 
 ## NEXT
 - T031: probe `pnpm exec biome check .`; if the shared/root failure fingerprint changes or clears, run the complete Part I quickstart. Acceptance remains zero Biome diagnostics with typecheck, 64 domain tests, 94 workspace tests, exact golden root, and synthetic demo green. Do not begin T032 until T031 passes.
+
+## 2026-07-21 — P4 quickstart baseline recheck (T031 partial, concurrent handoff)
+- Re-ran the complete Part I quickstart. Composite `tsc -b`, the filtered domain suite (64/64), workspace Vitest (94/94), the exact G2 golden-root command, and the synthetic demo all pass.
+- Confirmed both the feature-owned Biome scope (45 files) and standard `pnpm lint` scope (70 files) are clean.
+- `pnpm exec biome check .` retains the established fingerprint: 33 reported errors with 73 further diagnostics suppressed, exclusively in prohibited shared/root paths. No shared or feature source file was modified.
+- The existing critical operator request already recommends owning-lane repair, so no duplicate request was added. T031 remains incomplete and T032 remains untouched.
+- Phase status: P4 remains in progress; SC-001–SC-012 stay green, but the explicit full-repository Biome definition-of-done criterion is not satisfied.
+- Blocker: repository owners must complete the operator-approved owning-lane baseline repair before T031 can complete.
+
+## NEXT
+- T031: probe `pnpm exec biome check .`; if the shared/root failure fingerprint changes or clears, run the complete Part I quickstart. Acceptance remains zero Biome diagnostics with typecheck, 64 domain tests, 94 workspace tests, exact golden root, and synthetic demo green. Do not begin T032 until T031 passes.
