@@ -811,3 +811,16 @@
 ## NEXT
 - T-ROOT: add `{ "path": "packages/arena-world" }` to the root `tsconfig.json` references as the feature's single final shared-file edit.
 - Acceptance: the reference appears exactly once, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green, both required production builds pass, and `.loop-done` is not created while the recorded live-only success-criteria evidence remains unavailable.
+
+## 2026-07-21 — P7 / T-ROOT
+- Added the single final `{ "path": "packages/arena-world" }` root TypeScript project reference and a feature-owned contract test proving it appears exactly once.
+- Followed red-green TDD: the focused reference test failed with zero Arena references, then passed after the minimal root edit.
+- The newly active strict project build exposed an unchecked regex-capture type in `acceptance-evidence.test.ts`. Added one explicit parser-boundary invariant for both evidence captures; the narrow package TypeScript check and focused five-test suite then passed.
+- Review status: checked T-ROOT against the scope fence, FR-027, P7, the pinned command contract, and the final-task acceptance. The root config contains the Arena reference once and no other shared-root behavior changed.
+- Gate status: `pnpm lint` passed (139 files); `pnpm typecheck` passed with Arena included; `pnpm test -- --reporter=dot` passed (60 files, 242 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 59.9 kB route, 147 kB first load).
+- SC status: every ordered implementation task through T-ROOT is complete and the full automated gate is green. SC-010/011/012/025 remain Partial only for their previously recorded minimum-device, real-WebGL, and assistive-technology observations; `.loop-done` was intentionally not created.
+- Blockers: this host still lacks a launchable browser runtime (`libnspr4.so`), minimum managed-device access, and screen-reader/switch hardware, so the remaining live acceptance cannot be honestly completed here.
+
+## NEXT
+- Run the remaining live P7 acceptance on a browser/device/assistive-technology capable host and update `packages/arena-world/ACCEPTANCE.md` with observed evidence.
+- Acceptance: record the minimum-managed-device 60fps/non-blocking result (SC-010), clean real-WebGL mount/unmount plus forced Tier-D no-canvas result (SC-011/025), and keyboard/switch/screen-reader Ledger walkthrough (SC-012); rerun the full gate, then create `.loop-done` only if all SC-001…SC-026 are green.

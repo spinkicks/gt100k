@@ -19,4 +19,14 @@ describe("arena-world TypeScript configuration", () => {
       include: ["src/**/*.ts", "test/**/*.ts"],
     });
   });
+
+  it("is referenced exactly once by the root TypeScript build", () => {
+    const rootConfigUrl = new URL("../../../tsconfig.json", import.meta.url);
+    const rootConfig = JSON.parse(readFileSync(rootConfigUrl, "utf8"));
+    const arenaReferences = rootConfig.references.filter(
+      (reference: { path: string }) => reference.path === "packages/arena-world",
+    );
+
+    expect(arenaReferences).toEqual([{ path: "packages/arena-world" }]);
+  });
 });
