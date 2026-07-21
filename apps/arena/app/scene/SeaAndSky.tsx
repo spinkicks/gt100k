@@ -3,7 +3,14 @@
 import type { Palette, QualityBudget, WaterConfig } from "@gt100k/arena-world";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
-import { BackSide, Color, type Group, type ShaderMaterial } from "three";
+import {
+  BackSide,
+  Color,
+  type Group,
+  type ShaderMaterial,
+  UniformsLib,
+  UniformsUtils,
+} from "three";
 
 const WATER_SIZE = 96;
 const SKY_RADIUS = 180;
@@ -153,18 +160,22 @@ interface WaterSurfaceProps {
   ambientMotion: boolean;
 }
 
-function WaterSurface({ water, ambientMotion }: WaterSurfaceProps) {
-  const shader = useRef<ShaderMaterial>(null);
-  const uniforms = useMemo(
-    () => ({
+export function createWaterUniforms(water: WaterConfig) {
+  return UniformsUtils.merge([
+    UniformsLib.fog,
+    {
       uTime: { value: 0 },
       uWaveAmplitude: { value: water.mode === "shader" ? 0.18 : 0.06 },
       uBaseColor: { value: new Color(water.baseHex) },
       uGlintColor: { value: new Color(water.glintHex) },
       uFoam: { value: water.foam ? 1 : 0 },
-    }),
-    [water.baseHex, water.foam, water.glintHex, water.mode],
-  );
+    },
+  ]);
+}
+
+function WaterSurface({ water, ambientMotion }: WaterSurfaceProps) {
+  const shader = useRef<ShaderMaterial>(null);
+  const uniforms = useMemo(() => createWaterUniforms(water), [water]);
 
   useFrame(({ clock }) => {
     const material = shader.current;

@@ -1,0 +1,192 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - heading "GT100K Arena" [level=1] [ref=e4]
+      - paragraph [ref=e5]: Synthetic mastery-gated quest world · Independence Isles
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - complementary:
+          - generic: ✦
+          - generic:
+            - paragraph: Step 1 of 3
+            - heading [level=2]: This is you
+            - paragraph: Your Spark travels the islands with you.
+            - paragraph: Any key, click, or scroll continues.
+        - generic:
+          - generic "Quality tier A" [ref=e9]: Quality A
+          - button "Return home to Base Camp" [ref=e10] [cursor=pointer]: Home
+          - button "Open arena guide" [ref=e11] [cursor=pointer]: "?"
+          - region "Arena presentation controls" [ref=e12]:
+            - generic [ref=e13]:
+              - generic [ref=e14]: Age band
+              - combobox "Age band" [ref=e15] [cursor=pointer]:
+                - option "Ages 6–8"
+                - option "Ages 9–11" [selected]
+                - option "Ages 12–14"
+            - generic [ref=e16]:
+              - button "Plain mode off" [ref=e17] [cursor=pointer]
+              - button "Audio muted" [ref=e18] [cursor=pointer]
+              - button "Standings off" [ref=e19] [cursor=pointer]
+          - region [ref=e20]:
+            - generic [ref=e21]:
+              - paragraph [ref=e22]: You vs. past-you
+              - generic "plus 300" [ref=e23]: "+300"
+            - generic [ref=e25]:
+              - generic [ref=e26]: Current light
+              - strong [ref=e27]: Steady Flame
+          - button "Wardrobe 5 earned" [ref=e29] [cursor=pointer]:
+            - generic [ref=e30]: Wardrobe
+            - generic [ref=e31]: 5 earned
+      - complementary [ref=e32]:
+        - generic [ref=e33]:
+          - heading "Arena Ledger" [level=2] [ref=e34]
+          - paragraph [ref=e35]: Use Arrow keys to explore the landmarks. Press Enter to focus one in the world.
+        - region "Ledger presentation controls" [ref=e36]:
+          - generic [ref=e37]:
+            - generic [ref=e38]: Age band
+            - combobox "Age band" [ref=e39] [cursor=pointer]:
+              - option "Ages 6–8"
+              - option "Ages 9–11" [selected]
+              - option "Ages 12–14"
+          - generic [ref=e40]:
+            - button "Plain mode off" [ref=e41] [cursor=pointer]
+            - button "Audio muted" [ref=e42] [cursor=pointer]
+            - button "Standings off" [ref=e43] [cursor=pointer]
+        - generic [ref=e44]:
+          - generic [ref=e45]:
+            - paragraph [ref=e46]: Guide · Step 1 of 3
+            - heading "This is you" [level=3] [ref=e47]
+            - paragraph [ref=e48]: Your Spark travels the islands with you.
+          - button "Skip guide" [ref=e49] [cursor=pointer]
+        - tree "Quest world" [ref=e50]:
+          - treeitem "Counting Lighthouse, unlocked, Numbers Coast" [level=1] [ref=e51] [cursor=pointer]:
+            - generic [ref=e52]: ★
+            - generic [ref=e53]:
+              - strong [ref=e54]: Counting Lighthouse
+              - generic [ref=e55]: Unlocked · Numbers Coast
+          - treeitem "Abacus Jetty, unlocked, Numbers Coast" [level=1] [ref=e56] [cursor=pointer]:
+            - generic [ref=e57]: ★
+            - generic [ref=e58]:
+              - strong [ref=e59]: Abacus Jetty
+              - generic [ref=e60]: Unlocked · Numbers Coast
+          - treeitem "Tide-Pool Terraces, available, Numbers Coast" [level=1] [ref=e61] [cursor=pointer]:
+            - generic [ref=e62]: ⚑
+            - generic [ref=e63]:
+              - strong [ref=e64]: Tide-Pool Terraces
+              - generic [ref=e65]: Available · Numbers Coast
+          - treeitem "Gear Overlook, unlocked, Tinker Bluffs" [level=1] [ref=e66] [cursor=pointer]:
+            - generic [ref=e67]: ★
+            - generic [ref=e68]:
+              - strong [ref=e69]: Gear Overlook
+              - generic [ref=e70]: Unlocked · Tinker Bluffs
+          - treeitem "Gadget Workshop, unlocked, Tinker Bluffs" [level=1] [ref=e71] [cursor=pointer]:
+            - generic [ref=e72]: ★
+            - generic [ref=e73]:
+              - strong [ref=e74]: Gadget Workshop
+              - generic [ref=e75]: Unlocked · Tinker Bluffs
+          - treeitem "Whispering Falls, available, Story Vale" [level=1] [ref=e76] [cursor=pointer]:
+            - generic [ref=e77]: ⚑
+            - generic [ref=e78]:
+              - strong [ref=e79]: Whispering Falls
+              - generic [ref=e80]: Available · Story Vale
+          - treeitem "Book-Root Forest, locked, Story Vale" [level=1] [ref=e81] [cursor=pointer]:
+            - generic [ref=e82]: ■
+            - generic [ref=e83]:
+              - strong [ref=e84]: Book-Root Forest
+              - generic [ref=e85]: Locked · Story Vale
+          - treeitem "Letter Landing Field, available, Wordwind Reach" [level=1] [ref=e86] [cursor=pointer]:
+            - generic [ref=e87]: ⚑
+            - generic [ref=e88]:
+              - strong [ref=e89]: Letter Landing Field
+              - generic [ref=e90]: Available · Wordwind Reach
+          - treeitem "The Spelling Spires, locked, Wordwind Reach" [level=1] [ref=e91] [cursor=pointer]:
+            - generic [ref=e92]: ■
+            - generic [ref=e93]:
+              - strong [ref=e94]: The Spelling Spires
+              - generic [ref=e95]: Locked · Wordwind Reach
+        - region [ref=e96]:
+          - generic [ref=e97]:
+            - heading "Base Camp" [level=3] [ref=e98]
+            - paragraph [ref=e99]: Visit the shared features your cohort built together.
+          - list [ref=e100]:
+            - listitem [ref=e101]:
+              - button "Campfire in Hearth, contributed by kestrel for mission m1" [ref=e102] [cursor=pointer]:
+                - generic [ref=e103]: ◉
+                - generic [ref=e104]:
+                  - strong [ref=e105]: Campfire
+                  - generic [ref=e106]: Hearth
+                  - generic [ref=e107]: kestrel · mission m1
+            - listitem [ref=e108]:
+              - button "Banner in Gateway, contributed by otter for mission m2" [ref=e109] [cursor=pointer]:
+                - generic [ref=e110]: ◉
+                - generic [ref=e111]:
+                  - strong [ref=e112]: Banner
+                  - generic [ref=e113]: Gateway
+                  - generic [ref=e114]: otter · mission m2
+            - listitem [ref=e115]:
+              - button "Garden in Grove, contributed by kestrel for mission m3" [ref=e116] [cursor=pointer]:
+                - generic [ref=e117]: ◉
+                - generic [ref=e118]:
+                  - strong [ref=e119]: Garden
+                  - generic [ref=e120]: Grove
+                  - generic [ref=e121]: kestrel · mission m3
+        - region [ref=e122]:
+          - generic [ref=e123]:
+            - heading "Cosmetics" [level=3] [ref=e124]
+            - paragraph [ref=e125]: Use Arrow keys to browse. Press Enter to equip an earned look.
+          - listbox "Competence-earned cosmetics" [ref=e126]:
+            - option "soft tan felt explorer's cap, earned, press Enter to equip" [ref=e127] [cursor=pointer]:
+              - generic [ref=e128]: ✦
+              - generic [ref=e129]:
+                - strong [ref=e130]: soft tan felt explorer's cap
+                - generic [ref=e131]: "tilts slightly on walk (reduced motion: static tilt)"
+                - generic [ref=e132]: Earned · press Enter to equip
+            - 'option "teal-to-plum aurora-gradient cape, locked, earn goal: Reach Bright Ember" [disabled] [ref=e133]':
+              - generic [ref=e134]: ■
+              - generic [ref=e135]:
+                - strong [ref=e136]: teal-to-plum aurora-gradient cape
+                - generic [ref=e137]: "trails on run (reduced motion: static cape, no trail)"
+                - generic [ref=e138]: "Earn goal: Reach Bright Ember"
+            - option "small gold first-light star pin, earned, press Enter to equip" [ref=e139] [cursor=pointer]:
+              - generic [ref=e140]: ✦
+              - generic [ref=e141]:
+                - strong [ref=e142]: small gold first-light star pin
+                - generic [ref=e143]: "glints (emissive) on idle (reduced motion: static pin)"
+                - generic [ref=e144]: Earned · press Enter to equip
+            - option "rosier dawn sky and softer light, earned, press Enter to equip" [ref=e145] [cursor=pointer]:
+              - generic [ref=e146]: ✦
+              - generic [ref=e147]:
+                - strong [ref=e148]: rosier dawn sky and softer light
+                - generic [ref=e149]: "recolors sky/sea and shifts the lighting rig on equip (reduced motion: instant recolor)"
+                - generic [ref=e150]: Earned · press Enter to equip
+            - 'option "deep-indigo dusk with brighter lanterns and stars, locked, earn goal: Reach Beacon" [disabled] [ref=e151]':
+              - generic [ref=e152]: ■
+              - generic [ref=e153]:
+                - strong [ref=e154]: deep-indigo dusk with brighter lanterns and stars
+                - generic [ref=e155]: "indigo ambient, beacons more prominent, and star cards twinkle (reduced motion: static stars, indigo rig)"
+                - generic [ref=e156]: "Earn goal: Reach Beacon"
+            - 'option "co-signed cohort unity banner, locked, earn goal: Light every beacon in Numbers Coast" [disabled] [ref=e157]':
+              - generic [ref=e158]: ■
+              - generic [ref=e159]:
+                - strong [ref=e160]: co-signed cohort unity banner
+                - generic [ref=e161]: "shows contributor marks (reduced motion: static banner)"
+                - generic [ref=e162]: "Earn goal: Light every beacon in Numbers Coast"
+            - option "warm lantern strings around camp, earned, press Enter to equip" [ref=e163] [cursor=pointer]:
+              - generic [ref=e164]: ✦
+              - generic [ref=e165]:
+                - strong [ref=e166]: warm lantern strings around camp
+                - generic [ref=e167]: "gentle sway (reduced motion: static strings)"
+                - generic [ref=e168]: Earned · press Enter to equip
+            - option "unlock burst as flower-petal bloom, earned, press Enter to equip" [ref=e169] [cursor=pointer]:
+              - generic [ref=e170]: ✦
+              - generic [ref=e171]:
+                - strong [ref=e172]: unlock burst as flower-petal bloom
+                - generic [ref=e173]: "changes particle shape (reduced motion: static petal badge)"
+                - generic [ref=e174]: Earned · press Enter to equip
+            - 'option "unlock burst as aurora ribbons with sky shimmer, locked, earn goal: Reach Lighthouse" [disabled] [ref=e175]':
+              - generic [ref=e176]: ■
+              - generic [ref=e177]:
+                - strong [ref=e178]: unlock burst as aurora ribbons with sky shimmer
+                - generic [ref=e179]: "rarest sky one-shot (reduced motion: static ribbon badge)"
+                - generic [ref=e180]: "Earn goal: Reach Lighthouse"
+  - alert [ref=e181]

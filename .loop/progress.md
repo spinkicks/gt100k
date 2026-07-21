@@ -797,3 +797,17 @@
 ## NEXT
 - T051: run `specs/004-arena-game-world/quickstart.md` end-to-end and produce the final SC-001…SC-026 evidence map without overstating live-only acceptance.
 - Acceptance: the filtered domain test command, lint, Arena production build, and app smoke all pass; every SC maps to current automated or explicitly identified live evidence; any remaining issue is fixed test-first before proceeding to final T-ROOT.
+
+## 2026-07-21 — P7 / T051
+- Added `packages/arena-world/ACCEPTANCE.md`, mapping SC-001 through SC-026 exactly once to 37 existing feature-owned tests and recording the fresh T051 command results. Automated criteria are distinguished from the four live-dependent Partial criteria instead of inferring browser, hardware, or assistive-technology results from static evidence.
+- Completed the existing test-first acceptance cycle: the focused suite failed all three checks while the evidence file was absent, then passed with the exact ordered criterion map, explicit live-only gap section, and valid test references.
+- The quickstart audit exposed a stale Biome dependency-list error in `SeaAndSky.tsx` and two formatting drifts in feature tests. Corrected the whole-object `water` dependency and formatting only; focused atmosphere/fx/evidence tests and the complete lint gate pass.
+- Live smoke status: the Arena production server reached ready state, but `playwright-cli` and a local Playwright package are absent. Direct cached-Chromium launch exits before navigation because `libnspr4.so` is unavailable. No console, WebGL, unmount, frame-rate, screen-reader, or switch result is claimed.
+- Review status: checked the evidence map against spec §10, P7, and every quickstart mapping. Each criterion cites concrete current evidence; SC-010/011/012/025 retain the exact unmet live observation.
+- Gate status: filtered Arena tests passed (56 files, 227 tests); `pnpm lint` passed (139 files); `pnpm typecheck` passed; workspace tests passed (60 files, 241 tests); root `pnpm build` passed; Arena production build passed (static `/`, 59.9 kB route, 147 kB first load).
+- SC status: T051's automated audit is complete. SC-001…009, SC-013…024 except the listed live-dependent portions, and SC-026 have automated evidence; SC-010/011/012/025 remain Partial pending their specified live observations.
+- Blockers: this host cannot provide the real WebGL smoke, minimum-managed-device 60fps run, or screen-reader/switch walkthrough. The automated gate is green and T-ROOT can proceed without weakening those open acceptance requirements.
+
+## NEXT
+- T-ROOT: add `{ "path": "packages/arena-world" }` to the root `tsconfig.json` references as the feature's single final shared-file edit.
+- Acceptance: the reference appears exactly once, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green, both required production builds pass, and `.loop-done` is not created while the recorded live-only success-criteria evidence remains unavailable.

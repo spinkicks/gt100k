@@ -11,6 +11,20 @@ interface BloomHandle {
   intensity: number;
 }
 
+interface SmaaAttributeHandle {
+  getAttributes(): number;
+  setAttributes(attributes: number): void;
+}
+
+const DEPTH_EFFECT_ATTRIBUTE = 1;
+
+export function configureColorEdgeSmaa(effect: ElementRef<typeof SMAA> | null): void {
+  if (!effect) return;
+
+  const handle = effect as unknown as SmaaAttributeHandle;
+  handle.setAttributes(handle.getAttributes() & ~DEPTH_EFFECT_ATTRIBUTE);
+}
+
 export interface PostFxPlan {
   enabled: boolean;
   bloom: {
@@ -133,7 +147,11 @@ export default function PostFx({ view, feedback }: PostFxProps) {
       <Vignette darkness={plan.vignette.darkness} key="vignette" offset={plan.vignette.offset} />,
     );
   }
-  if (plan.smaa) effects.push(<SMAA key="smaa" />);
+  if (plan.smaa) effects.push(<SMAA key="smaa" ref={configureColorEdgeSmaa} />);
 
-  return <EffectComposer multisampling={0}>{effects}</EffectComposer>;
+  return (
+    <EffectComposer depthBuffer={false} multisampling={0}>
+      {effects}
+    </EffectComposer>
+  );
 }

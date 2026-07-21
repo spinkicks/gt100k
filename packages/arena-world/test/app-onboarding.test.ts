@@ -314,6 +314,8 @@ describe("arena P3 first-run onboarding", () => {
     expect(source).toContain("target.removeEventListener");
     expect(source).toContain("passive: true");
     expect(source).not.toMatch(/preventDefault|stopPropagation/);
+    expect(source).toContain('transform: "translate3d(0, 0rem, 0)"');
+    expect(source).not.toContain('transform: "translate3d(0, 0, 0)"');
     expect(styles).toContain("pointer-events: none");
     const mobileStyles = styles.slice(styles.indexOf("@media (max-width: 44rem)"));
     expect(mobileStyles).toContain('.coachmark[data-anchor="avatar"]');

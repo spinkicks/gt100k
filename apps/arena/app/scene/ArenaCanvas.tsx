@@ -186,9 +186,17 @@ function FrameBudgetMonitor({ eventBus, qualityTier }: FrameBudgetMonitorProps) 
 }
 
 function configureRenderer({ gl }: RootState): void {
+  configureCanvasAccessibility(gl.domElement);
   ColorManagement.enabled = true;
   gl.toneMapping = ACESFilmicToneMapping;
   gl.outputColorSpace = SRGBColorSpace;
+}
+
+export function configureCanvasAccessibility(
+  canvas: Pick<HTMLCanvasElement, "setAttribute" | "tabIndex">,
+): void {
+  canvas.setAttribute("aria-hidden", "true");
+  canvas.tabIndex = -1;
 }
 
 export interface ArenaCanvasProps {

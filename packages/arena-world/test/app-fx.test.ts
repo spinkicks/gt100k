@@ -130,6 +130,9 @@ interface PostFxModule {
     feedback?: SequencedArenaFeedback;
   }) => unknown;
   buildPostFxPlan(view: InitialArenaView, feedback?: SequencedArenaFeedback): PostFxPlan;
+  configureColorEdgeSmaa(
+    effect: { getAttributes(): number; setAttributes(attributes: number): void } | null,
+  ): void;
   dampScalar(current: number, target: number, lambda: number, delta: number): number;
 }
 
@@ -386,6 +389,26 @@ describe("arena P3 learning feedback", () => {
     expect(sixtySteps).toBeCloseTo(oneStep, 10);
   });
 
+  it("keeps color-edge SMAA convolution-only so Tier A does not request a depth blit", async () => {
+    const postFx = await importAppModule<PostFxModule>("app/scene/PostFx.tsx");
+    const receivedAttributes: number[] = [];
+
+    expect(postFx.configureColorEdgeSmaa).toBeTypeOf("function");
+    postFx.configureColorEdgeSmaa?.({
+      getAttributes() {
+        return 3;
+      },
+      setAttributes(attributes) {
+        receivedAttributes.push(attributes);
+      },
+    });
+
+    expect(receivedAttributes).toEqual([2]);
+    expect(readAppFile("app/scene/PostFx.tsx")).toContain(
+      '<SMAA key="smaa" ref={configureColorEdgeSmaa}',
+    );
+  });
+
   it("wires one feedback signal into the canvas, post-fx, and polite Ledger announcement", () => {
     const eventBus = readAppFile("app/scene/eventBus.ts");
     const client = readAppFile("app/ArenaClient.tsx");
@@ -402,7 +425,7 @@ describe("arena P3 learning feedback", () => {
     expect(fx).toContain("celebrationMotionSpec");
     expect(fx).toContain("resolveMotion");
     expect(fx).toContain("LAMBDAS");
-    expect(postFx).toContain("EffectComposer");
+    expect(postFx).toContain("<EffectComposer depthBuffer={false}");
     expect(postFx).toContain("<Bloom");
     expect(postFx).toContain("<Vignette");
     expect(postFx).toContain("<SMAA");

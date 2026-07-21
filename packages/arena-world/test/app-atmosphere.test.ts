@@ -63,6 +63,7 @@ interface SeaAndSkyModule {
     qualityBudget: QualityBudget,
     reducedMotion: boolean,
   ): AtmospherePlan;
+  createWaterUniforms(water: WaterConfig): Record<string, { value: unknown }>;
 }
 
 describe("arena lighting and atmosphere", () => {
@@ -141,6 +142,26 @@ describe("arena lighting and atmosphere", () => {
       motesVisible: true,
       ambientMotion: false,
     });
+  });
+
+  it("supplies every Three fog uniform required by the custom water shader", async () => {
+    const module = await importAppModule<SeaAndSkyModule>("app/scene/SeaAndSky.tsx");
+
+    expect(module.createWaterUniforms).toBeTypeOf("function");
+    if (!module.createWaterUniforms) return;
+
+    const uniforms = module.createWaterUniforms(resolveWater("A"));
+
+    expect(uniforms).toEqual(
+      expect.objectContaining({
+        fogColor: expect.objectContaining({ value: expect.anything() }),
+        fogNear: expect.objectContaining({ value: expect.any(Number) }),
+        fogFar: expect.objectContaining({ value: expect.any(Number) }),
+        fogDensity: expect.objectContaining({ value: expect.any(Number) }),
+        uTime: { value: 0 },
+        uWaveAmplitude: { value: 0.18 },
+      }),
+    );
   });
 
   it("uses declarative disposable r3f resources for sky, clouds, water, fog, and motes", () => {

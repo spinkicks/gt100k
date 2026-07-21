@@ -40,6 +40,10 @@ interface EventBusModule {
 
 interface ContextLifecycleModule {
   CONTEXT_RECOVERY_GRACE_MS: number;
+  configureCanvasAccessibility(canvas: {
+    setAttribute(name: string, value: string): void;
+    tabIndex: number;
+  }): void;
   bindWebGlContextLifecycle(
     target: EventTarget,
     controls: {
@@ -197,6 +201,23 @@ describe("arena scene bootstrap", () => {
     expect(source).toMatch(
       /fallback: \(reason\) => \{[\s\S]*?from: qualityTier,[\s\S]*?to: "D",[\s\S]*?reason: "context-loss"/,
     );
+  });
+
+  it("applies hidden, unfocusable semantics to the generated canvas element", async () => {
+    const module = await importAppModule<ContextLifecycleModule>("app/scene/ArenaCanvas.tsx");
+    const attributes = new Map<string, string>();
+    const canvas = {
+      tabIndex: 0,
+      setAttribute: (name: string, value: string) => attributes.set(name, value),
+    };
+
+    expect(module.configureCanvasAccessibility).toBeTypeOf("function");
+    if (!module.configureCanvasAccessibility) return;
+
+    module.configureCanvasAccessibility(canvas);
+
+    expect(attributes.get("aria-hidden")).toBe("true");
+    expect(canvas.tabIndex).toBe(-1);
   });
 
   it("generates deterministic disposable low-poly resources for every asset key", async () => {

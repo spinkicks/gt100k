@@ -217,7 +217,7 @@ export default function Onboarding({ activeBeatIndex, reducedMotion, onAdvance }
     <AnimatePresence initial={false}>
       {beat && activeBeatIndex !== null ? (
         <motion.aside
-          animate={{ opacity: 1, transform: "translate3d(0, 0, 0)" }}
+          animate={{ opacity: 1, transform: "translate3d(0, 0rem, 0)" }}
           aria-hidden="true"
           className={styles.coachmark}
           data-anchor={beat.anchor}
@@ -225,11 +225,11 @@ export default function Onboarding({ activeBeatIndex, reducedMotion, onAdvance }
           data-onboarding-beat={beat.id}
           exit={{
             opacity: 0,
-            transform: reducedMotion ? "translate3d(0, 0, 0)" : "translate3d(0, -0.35rem, 0)",
+            transform: reducedMotion ? "translate3d(0, 0rem, 0)" : "translate3d(0, -0.35rem, 0)",
           }}
           initial={{
             opacity: reducedMotion ? 1 : 0,
-            transform: reducedMotion ? "translate3d(0, 0, 0)" : "translate3d(0, 0.75rem, 0)",
+            transform: reducedMotion ? "translate3d(0, 0rem, 0)" : "translate3d(0, 0.75rem, 0)",
           }}
           key={beat.id}
           transition={{
