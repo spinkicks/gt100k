@@ -144,3 +144,9 @@
 - Add an app-local `vitest.config.mts` for focused app contracts. Rejected changing the shared root Vitest include, accepting a no-tests run, or leaving the deterministic app composition without a RED/GREEN contract.
 - Preserve the view package's emitted-ESM `.js` implementation specifiers through an app-local Next extension alias, but use extensionless re-exports at its public source entrypoint so webpack can statically discover named exports. Rejected suppressing the warning, relying on generated `dist`, or reaching into the package through an app-relative private source import.
 - Schedule T118 and T119 before the richer T116 3D choreography because the operator explicitly requires the accessible/2D tier before 3D polish and `tasks.md` marks T116–T119 parallel once T115 exists. Rejected treating numeric task order as stronger than the stated MVP-first build order.
+
+## 2026-07-21 — T118 accessible tree foundation
+
+- Make the `role="tree"` composite the single keyboard Tab stop and identify the first expanded cohort through `aria-activedescendant`; keep every member and constraint visible as nested `treeitem` text. Rejected putting every tree item in the Tab sequence because that creates a long, non-standard navigation path; T132 owns the richer Arrow/Enter/Escape behavior on this foundation.
+- Pair every satisfied state with a square check marker and the explicit `satisfied` text, while member assignment uses a distinct circular marker plus `assigned` text. Rejected color-only state because FR-040/FR-045 require shape, icon, and text parity.
+- Configure the app-local Vitest transform for the automatic JSX runtime used by Next. Rejected adding a classic-runtime `React` import only for the test harness because the mismatch belongs at the app-local Vitest boundary.

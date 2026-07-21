@@ -2,6 +2,7 @@
 
 import { Canvas } from "@react-three/fiber";
 
+import { CohortLedger } from "./ledger/CohortLedger";
 import { buildSyntheticCohortView } from "./synthetic-view";
 
 const VIEW = buildSyntheticCohortView();
@@ -92,17 +93,9 @@ export default function CohortArenaClient() {
             </div>
             <span className="ledger-count">{VIEW.ledger.cohortTree.length} cohorts</span>
           </div>
-          <ol className="ledger-preview">
-            {VIEW.ledger.cohortTree.map(({ label }) => (
-              <li key={label}>{label}</li>
-            ))}
-          </ol>
+          <CohortLedger ledger={VIEW.ledger} />
         </section>
       </div>
-
-      <p className="sr-only" aria-live="polite">
-        {VIEW.ledger.announce}
-      </p>
     </main>
   );
 }

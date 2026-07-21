@@ -426,3 +426,16 @@
 
 - T118 — Implement the accessible Cohort Ledger in `apps/cohort-arena/components/ledger/` from the already-shared `view.ledger`, ahead of richer 3D work under the explicit MVP-first accessible-tier rule (T116–T119 are parallel after T115).
 - Acceptance: cohorts render as a keyboard-focusable `role="tree"` with stateful accessible names; the live region conveys the same compiled state; the 3D canvas remains `aria-hidden="true"`; satisfied state is communicated by icon, shape, and text with visible focus and >=4.5:1 contrast; focused RED/GREEN, app build, app-local TypeScript, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P8 / T118
+
+- Added the accessible `CohortLedger` React leaf over the shared `view.ledger`: one keyboard-focusable `role="tree"` composite, expanded cohort tree items with stateful accessible names, nested member/role and constraint tree items, and conditional standings, observable-turn, and safeguarding text surfaces.
+- Replaced the preview list with visible focus styling and color-independent state cues: satisfied constraints use a square check marker plus explicit text, assigned members use a circular marker plus explicit text, and the native atomic polite status region announces the exact compiled state. The existing react-three-fiber canvas remains `aria-hidden="true"`.
+- Added a static-render contract proving all 28 Fixture V1 tree items, both expanded cohort groups, the single keyboard entry point, every pinned member/role and satisfied constraint, 14 satisfied state cues, the non-harm floor, the live announcement, and the hidden-canvas boundary. Measured Ledger text/state/focus contrast ranges from 7.79:1 to 13.25:1.
+- TDD status: the focused suite first failed because `components/ledger/CohortLedger.tsx` was absent, then reached a reproducible classic-JSX harness mismatch; aligning the app-local Vitest config with Next's automatic JSX runtime made the two-test contract pass.
+- Gate status: app-local TypeScript and all 3 app tests pass; `pnpm typecheck`, `pnpm test` (144/144), `pnpm lint` (117 files), and the view package suite (31/31) pass; `pnpm --filter @gt100k/cohort-arena build` succeeds and prerenders `/`. T118 and the Cohort Ledger portion of SC-014 are complete; full tree command handling remains T132, and 2D/WebGL-loss/runtime-smoke coverage remains scheduled. No blocker.
+
+## NEXT
+
+- T119 — Implement the first-class 2D/reduced-motion tier in `apps/cohort-arena/components/tier2d/` from the same `CohortArenaView`, before richer 3D choreography.
+- Acceptance: `useReducedMotion` and `NEXT_PUBLIC_REDUCED_MOTION_DEFAULT` select a motion-free DOM/SVG rendering of the exact `project2D` cohort positions; plain mode uses the same low-spectacle tier; no state is recomputed or lost; the Ledger remains available; focused RED/GREEN, app-local TypeScript/tests, production build, and repository typecheck/test/lint remain green.

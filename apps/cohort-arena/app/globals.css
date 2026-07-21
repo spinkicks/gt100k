@@ -301,21 +301,112 @@ html[data-reduced-motion="true"] *::after {
   text-wrap: pretty;
 }
 
-.ledger-preview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+.cohort-ledger-tree,
+.ledger-node-group {
   padding: 0;
   margin: 1rem 0 0;
   list-style: none;
 }
 
-.ledger-preview li {
-  flex: 1 1 18rem;
-  padding: 0.75rem;
+.ledger-cohort-item {
+  padding: 0.875rem;
   color: var(--ink-hi);
   background: var(--deck-3);
   border-radius: 10px;
+}
+
+.ledger-cohort-item + .ledger-cohort-item {
+  margin-top: 0.75rem;
+}
+
+.ledger-cohort-label,
+.ledger-child-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+}
+
+.ledger-cohort-label {
+  align-items: center;
+  font-weight: 600;
+}
+
+.ledger-cohort-mark,
+.ledger-state-mark {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 1.375rem;
+  height: 1.375rem;
+  border: 1px solid currentColor;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ledger-cohort-mark {
+  color: var(--ink);
+  background: var(--peer-hi);
+  border-color: var(--peer-hi);
+  border-radius: 4px;
+}
+
+.ledger-node-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+  gap: 0.625rem 1rem;
+  padding: 0.875rem 0 0 2rem;
+  margin-top: 0.875rem;
+  border-top: 1px solid var(--locked);
+}
+
+.ledger-child-item {
+  min-width: 0;
+  color: var(--ink-hi);
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+}
+
+.ledger-state-mark {
+  margin-top: 0.05rem;
+}
+
+.ledger-state-satisfied {
+  color: var(--form);
+  border-radius: 4px;
+}
+
+.ledger-state-assigned {
+  color: var(--peer-hi);
+  border-radius: 50%;
+}
+
+.ledger-supporting-state,
+.ledger-safeguarding-state {
+  padding-top: 0.875rem;
+  margin: 0.875rem 0 0;
+  border-top: 1px solid var(--locked);
+}
+
+.ledger-supporting-state h3,
+.ledger-supporting-state p,
+.ledger-supporting-state ul {
+  margin: 0;
+}
+
+.ledger-supporting-state h3 {
+  font-size: var(--text-body-size);
+}
+
+.ledger-supporting-state p,
+.ledger-supporting-state ul {
+  margin-top: 0.5rem;
+  color: var(--ink-muted);
+}
+
+.ledger-safeguarding-state {
+  color: var(--ink-hi);
 }
 
 @media (max-width: 840px) {
