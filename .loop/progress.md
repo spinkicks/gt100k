@@ -324,3 +324,18 @@
 ## NEXT
 - T019: add focused tests first, then implement `apps/arena/app/scene/LightingRig.tsx` and `SeaAndSky.tsx` from the exact resolved P1 presentation values.
 - Acceptance: lighting renders the resolved key/hemi/ambient/rim rig with per-tier shadow and sun-drift behavior; sea/sky render the resolved water mode, sky, clouds, fog, and motes with all ambient motion disabled under reduced motion/Tier C; generated resources clean up; focused checks plus `pnpm lint`, `pnpm typecheck`, `pnpm test`, root `pnpm build`, and the Arena app build remain green.
+
+## 2026-07-21 — P1 / T019
+- Added `LightingRig`, consuming the resolved key, hemisphere, ambient, and rim configuration directly, including per-tier shadow map/bias/softness and a world-covering shadow frustum.
+- Added a deterministic 120-second ±5-degree key-light drift with a static zero-angle branch whenever ambient motion is disabled or the Tier-C resolver has clamped sun drift to zero.
+- Added `SeaAndSky` with a deep-teal/dawn-horizon sky dome, sea-deep fog, fixed cloud cards, shader/cheap/static water branches, foam/glint treatment, and a fixed mote field. The resolved Tier-D `none` mode omits water.
+- Preserved depth under reduced motion: sky, clouds, water, and motes remain rendered, while sun drift, cloud drift, water phase, and mote drift all resolve to stable static values. All resources stay declarative so r3f owns unmount disposal.
+- Followed red-green TDD: three tests first failed on the missing modules; a review-driven RED pass then caught the flat sky and default shadow-frustum gaps before the gradient dome and explicit bounds landed.
+- Review status: checked T019 line-by-line against tasks.md, spec §§5.1/5.3/8.20, the motion-review standards, and React/r3f performance guidance. The two visual/coverage findings were fixed; no Critical, Important, or Minor issues remain. Subagent/Git-SHA review was intentionally not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: `pnpm lint` passed (82 files); `pnpm typecheck` passed; `pnpm test` passed (28 files, 105 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 138 B route, 87.4 kB first load).
+- SC status: app-side atmosphere consumption advances SC-017/SC-018 and the static reduced-motion path advances SC-004; P1 remains in progress until the world, avatar, camera, Ledger, fallback, and client wiring tasks land.
+- Blockers: none.
+
+## NEXT
+- T020: add focused tests first, then implement `WorldRoot.tsx`, `Avatar.tsx`, and `CameraRig.tsx` from the resolved `InitialArenaView` presentation.
+- Acceptance: render deterministic floating biome islands, color-independent node markers/landmarks, paths/bridges, capped beacon lights with emissive fallback, the interruptible lantern-avatar, and the bounded follow/orbit/dolly camera; reduced motion uses static island/avatar/camera equivalents while retaining depth; focused checks and all repository/app gates remain green.
