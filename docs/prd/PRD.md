@@ -6,7 +6,7 @@
 |---|---|
 | Product | GT100K |
 | Document status | Implementation baseline |
-| Version | 1.11 |
+| Version | 1.12 |
 | Date | 2026-07-20 |
 | Initial market | United States, English-first |
 | Learner ages | 6 through 14 |
@@ -21,6 +21,7 @@ Terse index; git history holds the full detail. `G`-class rights/safety dials we
 
 | Version | Date | Summary |
 |---|---|---|
+| 1.12 | 2026-07-20 | Social/competitive layer expanded into a production-quality **RPG-style game-experience layer** (new **§15.3** + acceptance criteria §15.3.1): learner avatars, a traversable animated **quest-world** over the competency graph, gain-based **levels/tiers**, competence-earned **cosmetics** (no loot boxes, no purchase, zero power), a **persistent cohort base**, and a **live animated Arena**. Layered strictly on the existing guardrails — reduced motion is a first-class equal mode, no dark patterns (§14.12), developmental staging by age (§14.13), dose-metered pushes (§14.8), near-peer/anonymized/opt-in/no-bottom-rank standings and no caste ranks (§15). Framed **[E3]/[R]**: measured against belonging/voluntary-return, never assumed to lift learning, auto-reverts if it depresses belonging. |
 | 1.11 | 2026-07-20 | TimeBack dependency confirmed. New **§3.6** records access to Alpha's TimeBack platform and its core-curriculum learning apps (four sections, standard courses, SAT/AP) as an accepted planning assumption (was "access TBD"); documents the inherited mechanics (2 hr/day, 1 min = 1 XP, 120 XP = 4×30 across math/science/reading/language, XP-gate-then-projects) and GT100K's 3–4 hr / higher-XP modification; the integration mode (direct incorporation vs. assumed-available) remains open pending the TimeBack engineering discussion. No scope or rights change beyond making the substrate assumption explicit. |
 | 1.10 | 2026-07-20 | Reconciliation + safety pass. **Dose:** academic block set to a 3–4 hr / higher-XP target everywhere ([E3] operating default; the partner TimeBack 2-hr baseline is kept as the substrate it extends, §6.1, §12). **Contradictions reconciled:** CFE stated as adaptive item selection with a fixed, human-owned decision cut (§1, §11; `GOVERNANCE.md` G3 §8.5); the platform's admissions data zone clarified as an eligibility-*reference* zone, not admissions PII (`GOVERNANCE.md` G7); the weekly wellbeing pulse separated from the monthly/six-week specialization-plan reviews (§14.7); §9.2 marked as five platform-built surfaces plus the admissions-team surface; guide vs. mentor content-help boundary clarified (§6.3). **Standings (answers `PRD-review.md` Q3 on the record):** cross-cohort visible standings retained but tightened to near-peer-band, anonymized, no-bottom-rank, and opt-in (default off); the G7 gap on cross-cohort academic-gain exposure is closed (§15, §9.2, §15.2; `GOVERNANCE.md` G6, G7). The prior pod-only recommendation was considered and overridden in favor of guarded cross-cohort visibility, weighing the long-term-psychology evidence on competitive social comparison as an explicit values trade. **Yield honesty:** "no-scrap" renamed to no-abandonment; "route the rest" reframed as a change-of-fit; an intent-to-treat yield denominator is committed (all children ever enrolled; routed-out counted as non-attainment) with a matching age-14 attainment metric added to the §2.6 scorecard (`PIPELINE-PRD.md` §9). G-class dials moved only in the more-protective direction (standings opt-in, ITT honesty). |
 | 1.9 | 2026-07-20 | Gamification experience layer, closing two gaps found in a gamification review: the reward economy was well-specified but the child-facing *experience* was not. New **§14.12** (reward experience and failure framing — error-as-information, process-not-trait praise, celebrate-the-mechanism, no dark patterns; anchors on the O'Keefe/Dweck/Walton and Deci/Koestner/Ryan citations already in §14.6) and **§14.13** (developmental staging — one reward economy rendered in three age-band vocabularies on the §14.7 bands; the raw mastery-delta is never the headline currency for ages 6–8; personal-progress display is the default, comparison is opt-in). Acceptance criteria added; §13 cross-links the two. Underlying independence-reward computation unchanged. |
@@ -868,6 +869,39 @@ The plane must support 20,000 synthetic six-person rooms, p95 join under five se
 - RivalryMix keeps feature-to-guide-screen latency below 250 ms at p95 under the target room load.
 - Packet loss or audio noise lowers confidence and suppresses intervention prompts rather than creating a false behavioral label.
 - Reports of bullying, coercion, or exclusion bypass optimization and enter the safeguarding workflow.
+
+### 15.3 Arena progression world (game-experience layer)
+
+The social and competitive layer is delivered as a **production-quality, RPG-style game world**, not a dashboard. A child should experience the cohort/afternoon surface with the polish, motion, and progression feel of a real game — an avatar, a world to traverse, animated feedback, earned cosmetics, and a shared cohort home — because engagement and belonging are load-bearing levers (SPOV 3), and because a surface that feels like a chore is not returned to voluntarily (§14.4). This is an **[E3] experience design**: it is engineered to make the *learning mechanism* feel great, and it is constrained so game-feel never becomes engagement-maxxing or a dark pattern (§14.12) and never overrides the child-protection rules of §15 and §14.13. The same computed reward economy (§13) drives it; only the representation is richer.
+
+**Components.**
+
+- **Learner avatar.** A customizable, **pseudonymous** avatar — no real likeness, legal name, or biometric (§29). Purely expressive; it encodes no ability signal and confers no advantage.
+- **The quest world (overworld map).** The competency graph (§12) and project ladders (§16) render as a **traversable, animated world map**: nodes are locations/quests, edges are paths, and a node **unlocks only through its 90% independent-mastery gate** (§12) — progression is bought with real mastery, never with time-in-app or grinding. Movement, camera, and node reveals are animated.
+- **Levels & tiers (gain-based).** Tiers advance on **mastery-gain and the independence reward** (§13), framed first as the child's growth against their own past (§14.13). A tier is **not** a public caste ladder: any cross-child comparison stays near-peer, anonymized, opt-in, and never shows a bottom rank (§15), and a tier never affects access, matchmaking, or standing beyond cosmetics.
+- **Earned cosmetics (no loot boxes, no purchase).** The independence reward (§13) spends into **purely cosmetic** unlocks — avatar items, world/base themes, celebration effects. Cosmetics are **competence-earned and deterministic** (no gacha, no variable-ratio/random loot), **never purchasable with money** (G1 forbids financial mechanisms for minors), and **carry zero power** — they never touch mastery, matchmaking, standing, or access. A child who ignores cosmetics is never disadvantaged.
+- **Persistent cohort base (guild hall).** The stable cohort of six shares a **persistent space they co-build** through cooperative missions (§15). It anchors team identity and belonging (the monitored rollback gate, §15.2) and is the home surface the child returns to.
+- **Live Arena presence.** Cohort rooms and Arena sessions (§15) render **animated real-time presence** — co-op missions and short rivalry events with movement, countdowns, and celebratory effects. Any push or comparison event still spends a `MotivationDoseToken` (§14.8); a passive standing the child opted into does not.
+- **Juice on the learning moment.** The loudest celebrations (motion, particles, sound) fire on **independent unlocks and productive-struggle events** (§14.12); an error is never rendered as a loss. This is where "friction is the product" is made to *feel* rewarding rather than merely be true in the backend.
+
+**Guardrails the game layer cannot cross.**
+
+- **Reduced motion is a first-class, equal mode** — not a degraded fallback. Every animated affordance has a reduced-motion rendering that conveys the same state, progression, and celebration without motion; no feature requires motion to be usable. The OS `prefers-reduced-motion` signal is honored by default (WCAG 2.2 AA, §8.3, §22).
+- **Developmental staging (§14.13)** governs the surface: ages 6–8 get a concrete, story-framed, no-raw-number, comparison-off world; 12–14 get the full map, tiers, and standings. One economy, age-appropriate representation.
+- **No dark patterns (§14.12):** no loss-framed streaks, manufactured scarcity, FOMO, gacha/loot randomness, or engagement-timed notifications; nothing is purchasable.
+- **Opt-out is free:** a child can use a low-spectacle "plain" mode or turn off standings/competition with no loss of learning, access, or standing.
+- **Performance budget:** the real-time client targets 60 fps on the minimum supported managed device (§26.6 launch matrix), with a reduced tier on Safari/iPadOS; the game surface must never block, delay, or gate a mastery action and must degrade gracefully under load or on low-end hardware.
+- **Privacy, safety, evidence:** avatars/base/cosmetics are pseudonymous and hold no sensitive data; every child-facing surface passes the named human-review gate before release (§25); bullying or exclusion in any social surface bypasses optimization to safeguarding (§15.2). The engagement lift is **[E3]/[R]** — measured against belonging, voluntary return, and wellbeing (§2.6), never assumed to improve learning, and if a mechanic raises time-in-app while depressing belonging or voluntary return it **auto-reverts** (the §15 rollback gate).
+
+#### 15.3.1 Acceptance criteria
+
+- The quest-world renders the competency graph and gates each node on its 90% independent-mastery check; no node unlocks without the gate.
+- Every animation has a reduced-motion equivalent; with `prefers-reduced-motion` set (or accessibility mode on), full progression, state, and celebrations remain conveyable without motion and no function is lost.
+- A red-team check confirms **no random-loot/gacha mechanic, no purchase path**, and that no cosmetic or tier affects mastery, matchmaking, standing, or access.
+- The reward/progression surface resolves representation from the learner's age band (§14.13); a 6-to-8 learner sees the concrete/story-framed world with comparison off and no raw mastery-delta number.
+- Turning off competition/standings, or using the plain mode, leaves learning, access, and standing unchanged.
+- The real-time client meets its frame-rate and asset budgets on the minimum supported device and degrades gracefully; the game surface never blocks or delays a mastery action.
+- All game-experience surfaces meet WCAG 2.2 AA (keyboard, switch, screen-reader, caption, color-independent) and pass the child-facing human-review gate before release.
 
 ## 16. Masterpiece Foundry
 
