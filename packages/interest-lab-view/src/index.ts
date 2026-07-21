@@ -20,7 +20,7 @@ export {
 } from "./scene";
 export { resolveChildStaging } from "./staging";
 export { buildReturnTimelineView } from "./timeline";
-export { buildInterestLabView } from "./view";
+export { buildInterestLabView, plainViewEquals } from "./view";
 export type {
   BuildInterestLabViewInputs,
   BuildInterestLabViewOptions,

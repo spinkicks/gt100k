@@ -104,6 +104,7 @@ describe("interest lab view public API", () => {
       "buildReturnTimelineView",
       "buildRevisionHistoryView",
       "buildSceneView",
+      "plainViewEquals",
       "resolveCamera3D",
       "resolveChildStaging",
       "resolveDomainHue",

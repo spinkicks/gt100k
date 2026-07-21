@@ -1,5 +1,10 @@
-import { buildLab } from "@gt100k/interest-lab";
-import type { ProbeFamily } from "@gt100k/interest-lab";
+import {
+  EVENTS_GOLDEN_V1,
+  buildLab,
+  evaluateCandidateGate,
+  summarizeSignals,
+} from "@gt100k/interest-lab";
+import type { HypothesisRevision, Lab, ProbeFamily } from "@gt100k/interest-lab";
 import { describe, expect, it } from "vitest";
 import {
   CAMERA3D,
@@ -72,6 +77,54 @@ const makeLab = () =>
     },
   );
 
+const makeGuideInputs = (lab: Lab) => {
+  const summary = summarizeSignals(EVENTS_GOLDEN_V1);
+  const revision = {
+    hypothesisId: "synthetic-child-view-hypothesis",
+    learnerRef: lab.learnerRef,
+    version: 1,
+    candidateDomains: ["making"],
+    workModeProfile: { build: 1 },
+    state: "EMERGING",
+    evidenceRefs: EVENTS_GOLDEN_V1.map(({ id }) => id),
+    signalSummary: summary,
+    competingExplanations: [
+      "Interest may sustain through repeated building.",
+      "Novelty may explain the current pattern.",
+    ],
+    coverageGaps: [],
+    uncertainty: { kind: "grade", grade: "moderate" },
+    nextProbe: "compare a familiar tool with a new tool",
+    childPosition: "UNSURE",
+    guideReview: {
+      guide: "synthetic-guide-001",
+      decision: "retain competing explanations",
+      rationale: "keep multiple accounts visible while evidence grows",
+      reviewedAtDayOffset: 30,
+    },
+    proposedBy: "GUIDE",
+    operative: true,
+    modelVersion: "rules-only-v1",
+    policyVersion: "rules-engine-v1",
+    validFromDayOffset: 30,
+    recordedAtDayOffset: 30,
+  } satisfies HypothesisRevision;
+
+  return {
+    coverage: lab.coverage,
+    hypothesis: {
+      hypothesisId: revision.hypothesisId,
+      learnerRef: revision.learnerRef,
+      revisions: [revision],
+    },
+    events: EVENTS_GOLDEN_V1,
+    gate: {
+      ...evaluateCandidateGate(summary),
+      familiesPresent: summary.familiesPresent,
+    },
+  };
+};
+
 describe("buildInterestLabView child composition", () => {
   it("composes the picker, deterministic scene, caller flags, and derived presentation", () => {
     const lab = makeLab();
@@ -84,6 +137,7 @@ describe("buildInterestLabView child composition", () => {
     } as const;
     const view = buildInterestLabView({
       lab,
+      ...makeGuideInputs(lab),
       options: {
         surface: "child",
         ageBand: "6-8",
@@ -133,7 +187,7 @@ describe("buildInterestLabView child composition", () => {
     expect(view.presentation.motionOf("pick")).toEqual(
       resolveMotion("pick", { reducedMotion: false }),
     );
-    expect("guide" in view).toBe(false);
+    expect(view.guide.constellation.stars).toHaveLength(6);
   });
 
   it("leaves the supplied domain Lab unchanged", () => {
@@ -142,6 +196,7 @@ describe("buildInterestLabView child composition", () => {
 
     buildInterestLabView({
       lab,
+      ...makeGuideInputs(lab),
       options: {
         surface: "child",
         ageBand: "9-11",

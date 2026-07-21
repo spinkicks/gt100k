@@ -719,3 +719,14 @@
 ## NEXT
 - Complete U041: finalize `buildInterestLabView` and add `plainViewEquals` in `packages/interest-lab-view/src/view.ts`, composing the full guide block plus existing scene from one domain state.
 - Acceptance: tests first prove guide composition includes coverage, explanations, timeline, lifecycle, revision history, and constellation; `plainViewEquals` compares all domain-derived state including marker parity and constellation stars while allowing flags/presentation/tier/camera to differ; preserve focused RED evidence and keep the package compiler, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and Interest Lab production build green.
+
+## 2026-07-21 — P13 / U041
+- Finalized `buildInterestLabView` around the exact full input contract, composing coverage, explanations, timeline, lifecycle, revision history, constellation, picker, and scene from one explicit domain state; an absent operative hypothesis revision now fails closed.
+- Added `plainViewEquals` as a key-order-independent structural comparison over the spec-named domain slices, including probe-id-keyed scene markers and constellation stars, while excluding surface flags and camera/tier/quality/motion presentation differences.
+- Added six composition/parity contracts and updated the public API, child composition fixture, and synthetic app seed. Confirmed genuine RED evidence for the missing guide surface/export/equality, then separate review-driven RED regressions for reduced guide motion and insertion-order-sensitive equality before their minimal fixes.
+- Verified `pnpm typecheck`, `pnpm test` (191 tests across 42 files), `pnpm lint` (152 files), `pnpm build`, and `pnpm --filter @gt100k/interest-lab-app build`; all pass.
+- Status: U041 complete; P13 remains in progress pending U042. SC-UI-05/06/07/10/15 are green at the complete pure composition boundary; U042 owns the rendered guide console and P15/U046 retains the exhaustive cross-mode parity matrix. No blocker.
+
+## NEXT
+- Complete U042: implement the guide console components under `apps/interest-lab/app/guide/` and mount the guide surface behind the existing `InterestLabClient` surface toggle.
+- Acceptance: supporting and disconfirming explanations render side-by-side; the return timeline distinguishes voluntary, prompted, and support markers; lifecycle proposals remain non-operative suggestions with guide-authoring affordance; revision history stays append-only; the optional constellation is `aria-hidden` with a DOM equal and degrades off under reduced motion/no WebGL; focused tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, and both production builds remain green.
