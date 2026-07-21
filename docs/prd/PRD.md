@@ -31,20 +31,20 @@ Terse index; git history holds the full detail. `G`-class rights/safety dials we
 | 1.6 | 2026-07-19 | EvidenceGraph provenance hardening (§19): integrity backbone = content-addressed DAG (SHA-256/BLAKE3) + in-toto + append-only transparency-log anchor; **C2PA demoted to export-only**; PROV + Workflow-Run RO-Crate formats; erasure via off-graph payloads + per-subject crypto-shred; §19.2 adds post-M4 pre-live hardening gates. |
 | 1.5 | 2026-07-19 | Phased Academic Mastery OS. **Phase 0:** build the surrounding product on the partner engine's academic block (2-hr Pomodoro, guide staffing, near-90% ZPD gate). **Phase 1:** the in-house interpretable-KT engine (PFA/BKT/IKT), Practice-Item Foundry, answer-blind tutor, help receipts, independence reward, and per-skill fairness audit — built after the surrounding product and cut over on a hard scheduled milestone. |
 | 1.4 | 2026-07-18 | Consistency pass on v1.3. Ownership fixes (trial/recruitment); CFE readiness result stated as Advisory (only learned models stay Shadow); `BELOW_THRESHOLD` only adds support, never changes status/route; comparison events draw the daily 2-token cap; Month-4 beta is synthetic; glossary additions. |
-| 1.3 | 2026-07-18 | Admissions reconciliation with [`ADMISSIONS_PRD.md`](ADMISSIONS_PRD.md). Admissions team owns the CogAT / Track A/B front door (§3.4, §3.5, §8.4); the Cognitive Floor Engine, compensated family trial + Household Schedule Compiler, and family-execution model are reassigned to this platform as post-eligibility onboarding/readiness. |
+| 1.3 | 2026-07-18 | Admissions reconciliation with the separate admissions team's PRD. Admissions team owns the CogAT / Track A/B front door (§3.4, §3.5, §8.4); the Cognitive Floor Engine, compensated family trial + Household Schedule Compiler, and family-execution model are reassigned to this platform as post-eligibility onboarding/readiness. |
 | 1.2 | 2026-07-17 | "Max defensible intensity" (from `PRD-review.md`): non-punitive potential-based independence reward (§13); cross-cohort gain-based visible rivalry, caste ranks still banned (§15, §23); Shadow→bounded-automation model path gated on reversibility + short-horizon feedback (§8.5); sharper cognitive floor + advisory family-execution signal (§10, §11); quarantined radical-dose R&D track (§31.1). Rights dials (assent/veto, safeguarding, no surveillance/biometric-truth, no irrevocable contracts, no automated rejection, accessibility, subgroup-fairness) held fixed. |
 
 ## 1. Executive summary
 
 **In one sentence.** GT100K is the operating system for an intensive, in-person gifted academy: it takes an *already-admitted* child from daily academic mastery and passion discovery through to a portable, evidence-backed body of work.
 
-**What is in and out of scope.** This PRD covers the full post-admission program and its supporting infrastructure (mastery, tutoring, passion development, cohorts, projects, evidence, credentials, governance). The admission and selection pipeline — the family application, CogAT-based routing, the Track A / Track B eligibility decision, and the Talent Evidence Snapshot review — is **owned by a separate team** (documented in `ADMISSIONS_PRD.md`) and is integrated at the enrollment handoff; those boundaries are set out in §3.4 and §3.5, and the affected sections carry an ownership banner. The Cognitive Floor Engine (§11), the compensated family trial (§10), and the family-execution signal (RF-04) are **not** in that team's MVP and are owned by this platform (§3.4).
+**What is in and out of scope.** This PRD covers the full post-enrollment program and its supporting infrastructure (mastery, tutoring, passion development, cohorts, projects, evidence, credentials, governance). Admission and selection are **owned by a separate team** and happen through an external process that is **out of scope for this repository**; this platform integrates only at the enrollment handoff (§3.4, §3.5). The Cognitive Floor Engine (§11), the compensated family trial (§10), and the family-execution signal (RF-04) are post-enrollment capabilities owned by this platform, not part of that external process (§3.4).
 
 **What we are building (feature summary).**
 
 - **Academic Mastery OS (§12).** Core academics ride **Alpha's TimeBack** engine (inherited, not rebuilt): four sections (math/reading/science/language), spaced retrieval, and the ~90% mastery gate — accelerated for gifted learners to a **3–4 hr / higher-XP** target. GT100K adds a **TimeBack Integration Layer** (`AcademicSignalEvent`) plus our own passion-tailored answer-blind tutor and independence-reward layers on top.
 - **Answer-Blind Socratic Tutor (§13).** A tutor that helps a child think without ever seeing or revealing the answer — available while learning a topic, disabled during mastery quizzes.
-- **Cognitive Floor Engine (§11) — platform-owned readiness assessment.** Adaptive-item-selection, accommodation-aware psychometric readiness assessment with a fixed, human-owned decision cut (§8.5, §11). Repositioned from an admission gate (the admissions team gates on externally-administered CogAT, §3.4) to post-enrollment placement/diagnostics and advisory readiness evidence.
+- **Cognitive Floor Engine (§11) — platform-owned readiness assessment.** Adaptive-item-selection, accommodation-aware psychometric readiness assessment with a fixed, human-owned decision cut (§8.5, §11). It is a post-enrollment placement/diagnostics and advisory readiness capability, not an admission or selection decision (§3.4).
 - **Interest Lab & Passion Engine (§14).** Repeated, varied encounters with domains and work modes to find where a child *voluntarily returns*, tracked as mutable interest hypotheses with evidence and counter-evidence.
 - **Specialization Planner (§14.7).** Turns a validated interest into an ambitious project spine without locking in a permanent identity.
 - **Cohort Compiler, Arena & RivalryMix (§15).** Forms stable near-peer cohorts and runs bounded, opt-out cooperative missions and short rivalry events.
@@ -61,7 +61,7 @@ GT100K serves children whose families choose an intensive program spanning up to
 
 Readiness is a benchmark portfolio, not a single score: the age-14 targets are SAT ≥ 1570 and 5s on AP Calculus BC, Physics C, and English Literature (§2.5), alongside explanation, modeling, research, writing, project execution, collaboration, and defense. Acceleration without durable interest yields a test-taker who stops when adult pressure ends; passion without foundations caps what a child can build — so GT100K develops both, treating passion as a mutable, evidence-tracked hypothesis rather than a fixed identity (§14).
 
-High intensity runs under explicit limits: every machine-generated pressure action spends a `MotivationDoseToken` under a guide veto, safety overrides performance, and a 14-day protocol distinguishes a hard step from a bad context or a fading interest (§14.8). Models estimate, rank, and simulate; humans retain authority over admission, intensity, specialization, safeguarding, discipline, release, and route transitions, with irreversible learned policies kept in shadow and only reversible, fast-feedback models in a bounded, vetoable envelope (§8.5). The first three months build the complete product; Month 4 is integrated validation and a gated **synthetic** beta (§32). Validating actual MIT readiness, durable passion, and family continuation needs years of outcome data.
+High intensity runs under explicit limits: every machine-generated pressure action spends a `MotivationDoseToken` under a guide veto, safety overrides performance, and a 14-day protocol distinguishes a hard step from a bad context or a fading interest (§14.8). Models estimate, rank, and simulate; humans retain authority over intensity, specialization, safeguarding, discipline, release, and route transitions, with irreversible learned policies kept in shadow and only reversible, fast-feedback models in a bounded, vetoable envelope (§8.5). The first three months build the complete product; Month 4 is integrated validation and a gated **synthetic** beta (§32). Validating actual MIT readiness, durable passion, and family continuation needs years of outcome data.
 
 **Environment thesis — scope honesty.** The Brainlift's originating claim is that the total learning *environment* (family, peers, immersion) is the dominant lever. GT100K deliberately declines *home totality*: it performs no home sensing of any kind (§10.2, `GOVERNANCE.md` G5/G6) and touches only the school day, so the program bets on the **school + peer + culture** environment it can ethically deliver — homogeneous near-peer cohorts (§15), a portable field culture and child-owned record (§21), and *self-authored* (never sensed, never scored) family support (§10). The far-tail-of-obsession home environment the Brainlift admired (the Polgar case) is reachable only by selecting for it or by sensing/controlling the home, both of which the rights dials forbid; where the Brainlift's spiky bets exceed this defensible line they are studied only in the quarantined, consented Radical-Dose R&D track (§31.1, `GOVERNANCE.md` G8), never asserted in the mainline program.
 
@@ -149,7 +149,7 @@ This PRD covers the post-enrollment program and its supporting infrastructure. A
 - project planning, secure workspaces, creative and technical tools, mentors, equipment, and resource scheduling;
 - artifact provenance, evaluation, student defense, public release, outcomes, and portable credentials;
 - identity, consent, data, policy, model, security, reliability, simulation, and governance infrastructure;
-- integration with the separately-owned admission pipeline at the enrollment handoff (identity/consent, roster, accommodation profile, eligibility-evidence reference, records portability) per §3.5;
+- integration with the external admission/selection process at the enrollment handoff (identity/consent, roster, accommodation profile, eligibility-evidence reference, records portability) per §3.5;
 - staff workflows for guides, mentors, safeguarding, review, operations, and post-enrollment appeals.
 
 ### 3.2 Out of scope for the initial release candidate and beta
@@ -158,14 +158,14 @@ Neither the Month 3 feature-complete release candidate nor the Month 4 beta clai
 
 - proof that the program causes age-14 MIT readiness;
 - validated prediction of eight-year family continuation;
-- autonomous admission, route transition, discipline, or intensity decisions;
+- autonomous route transition, discipline, or intensity decisions;
 - a completed grade-by-grade content library for every subject;
 - public release without human approval;
 - clinical diagnosis of burnout, attention, emotion, or mental health;
 - production authority for digital-twin or reinforcement-learning policies;
 - nationwide legal approval for biometric or home-signal collection.
 
-The Month 4 beta itself operates on synthetic learner populations (§32.4); **live child enrollment is out of scope** for this PRD and depends on the admissions pipeline going live plus privacy and legal sign-off.
+The Month 4 beta itself operates on synthetic learner populations (§32.4); **live child enrollment is out of scope** for this PRD and depends on the external admission process going live plus privacy and legal sign-off.
 
 **Provisional and stretch features.** Some capabilities are deliberately not committed: **shadow (trial) enrollment** (§10) is a beta-only experiment, owned by this platform (§3.4, §10) and run as post-eligibility onboarding, that may not be implemented beyond the beta; the **Resonance Audio Studio** (§17) is a low-priority stretch feature built only if capacity allows. Neither is required for the Month 3 release candidate.
 
@@ -175,48 +175,11 @@ The Month 4 beta itself operates on synthetic learner populations (§32.4); **li
 
 ### 3.4 Admission process ownership
 
-The **admission process is owned and built by a separate team** (the "admissions team"), not by the platform described in the rest of this PRD. That team's design is documented in **[`ADMISSIONS_PRD.md`](ADMISSIONS_PRD.md)** — a role-based web application (currently an approved **synthetic four-week prototype, not live admissions**) that guides families through the application, routes applicants after CogAT, supports independent Track B review, and produces an explainable eligibility record. This PRD treats that document as the **authoritative description of the admissions front door**; any remaining admission-adjacent policies of ours are implemented to work with it.
-
-The admissions team owns and builds:
-
-- the **Family Application Portal** — start / save / resume / submit the base application, status and next-step tracking, accessibility and translation routes, corrections, and the Track B Talent Evidence Snapshot;
-- the **Admissions Operations Dashboard** — completeness review, CogAT result import/entry, Track A / Track B routing, and pending-evidence, correction, and manual re-entry management;
-- the **Track B Reviewer Workspace** — anchored-rubric classification, blind independent reviews, and third-review adjudication;
-- the **Configuration and Audit view** — versioned (synthetic) Track A / Track B rules, decision reasons, workflow history, and decision replay;
-- **CogAT-based routing** — CogAT is administered *outside* the product; results are imported and the routing engine applies the configured rules. Their MVP does **not** build an adaptive cognitive assessment engine (see §11);
-- **Track A** (GT's existing cutoff, unchanged) and **Track B** (the below-cutoff talent pathway), the Talent Evidence Snapshot (artifact and narrative routes), the review rubric, independent multi-reviewer adjudication, and the final **Track A / Track B eligibility** determination with reason codes and audit history (§8.4).
-
-Their MVP explicitly **defers or excludes**, per their plan: financial-aid intake and household income (`B-08`), Track B seat allocation and any offer/ranking rule, program-effect evaluation and MAP follow-up, and substantive rubric-application appeals (only factual/procedural correction and manual re-entry are in scope). Their prototype uses synthetic applicants, synthetic CogAT profiles, and fixed synthetic artifacts, and does not process live child data.
-
-Sections of this document that describe admission-owned areas carry an **ownership banner** pointing to their PRD. Where a change we recommended sits inside an admissions-owned area, it is recorded as a **recommendation to the admissions team**, not a commitment of this platform.
-
-**Capabilities reassigned to this platform (not in the admissions MVP).** Three capabilities our earlier draft assigned to admissions are **not** part of their MVP and are therefore owned and built by **this platform**, designed to work alongside the admissions front door rather than gate it:
-
-- the **Cognitive Floor Engine** (§11) — repositioned from an admission gate to a platform-owned readiness/placement assessment; the admission gate is the admissions team's externally-administered CogAT, and the engine may at most supply supplementary construct-level evidence where their process accepts it;
-- the **compensated family trial / shadow enrollment** and the **Household Schedule Compiler** (§10) — repositioned as a post-eligibility onboarding and feasibility experiment we run in the beta, not an admissions selection step;
-- the **interpretable family-execution model** (§10.1, RF-04) — an advisory support/retention signal for guides, never an admissions selection input.
-
-Recruitment and outreach (§10) are likewise not part of the admissions MVP; they are owned by a **separate recruitment/outreach team** — neither the admissions team nor this platform builds them. That team feeds the top of the funnel (qualified, consented families who then enter the admissions front door); this platform's build scope begins at the post-eligibility onboarding described below.
-
-The program platform in this PRD begins at the **enrollment handoff** (§3.5): once an applicant is Track A / Track B **eligible** and a family has a start plan, this platform owns mastery, tutoring, passion development, cohorts, projects, evidence, credentials, and the supporting governance and infrastructure.
+Admission and selection are **owned by a separate team** and run through an external process that is **out of scope for this repository** — no admissions PRD is maintained here. This platform's build scope begins at the **enrollment handoff** (§3.5): once a learner is admitted and enrolled through that external process, this platform owns mastery, tutoring, passion development, cohorts, projects, evidence, credentials, and the supporting governance and infrastructure. Capabilities this platform owns in its own right — the Cognitive Floor Engine as post-enrollment readiness/placement (§11), the compensated family trial and Household Schedule Compiler as post-enrollment onboarding (§10), and the advisory family-execution signal (§10.1, RF-04) — are not part of that external process.
 
 ### 3.5 Admissions integration and limits of scope
 
-The admissions team's plan is now available ([`ADMISSIONS_PRD.md`](ADMISSIONS_PRD.md)), so this section states the integration contract rather than a placeholder. These remain **out of scope for this platform** and are the admissions team's responsibility:
-
-- the design, rules, and decision policy of the admissions pipeline itself — the base application, CogAT routing, Track A / Track B rules, the Talent Evidence Snapshot, the review rubric, and reviewer adjudication;
-- storage and retention of pre-eligibility application, CogAT, Snapshot, and reviewer data;
-- the Track A / Track B eligibility determination, its factual/procedural corrections and re-entry, and all pre-enrollment family communications.
-
-The **integration point is the enrollment handoff**, which consumes the admissions team's output — a **Track A / Track B eligibility determination** (their `qualifies` / `does not currently qualify` outcome with reason codes, rule version, and audit history; §8.4). Track B seat allocation, offers, and financial aid are deferred in their MVP (`B-08`), so the handoff assumes an eligibility result plus a start plan, not an allocation or aid decision. The contract covers:
-
-1. **Identity & consent handoff** — a verified learner and guardian identity, plus the consent/assent scope captured during application, transferred into this platform's identity and consent domain (§8, §29) so we do not re-collect it.
-2. **Roster / enrollment provisioning** — the signal that an eligible applicant has a start plan, tier, and cohort constraints, so onboarding can begin.
-3. **Accommodation-profile handoff** — the approved accommodation set (§8.3), passed as minimum-required instruction to consuming services; their process already hides accommodation information from eligibility reviewers, which matches our separation of accommodation data from performance evidence.
-4. **Eligibility-evidence reference** — a reference (not raw responses, artifacts, or CogAT items) to the admissions decision record — rule version, reason codes, reviewer classifications, and timestamps — for continuity and audit under the data-separation rules (§4.8, §29).
-5. **Records portability & deletion** — a shared contract for an ineligible or withdrawing family's export and deletion rights spanning both systems (§8.4).
-
-**Alignment already visible in their plan:** their **Prohibited Eligibility Inputs** (income/W-2s/ZIP, school or recommender prestige, paid enrichment, awards, disability/accommodation use, referral source, research-consent choices, demographic identity) match our purpose-separation and non-discrimination rules; their deferral of financial-aid intake (`B-08`) means no household-income data crosses the handoff. **Assumptions to confirm with the admissions team:** that pre-enrollment data flows into post-enrollment modeling only as an explicit, consented reference; that the no-ambient-home-sensing rule and the school-only sensitive-signal collection rule (§10.2, §14.11) hold across the boundary; and that the two systems present a single, coherent privacy and appeals story to families (noting that substantive rubric appeals are deferred in their MVP).
+This platform starts at the **enrollment handoff**: it begins once a learner is admitted and enrolled through the external process (§3.4). At the handoff it consumes only a minimal **eligibility-evidence reference** — a pointer to the external decision record, for continuity and audit — together with the identity/consent scope, roster/start plan, and approved accommodation profile needed to begin onboarding; it never receives raw admissions responses, artifacts, or PII, which stay with the external process under its own retention (§4.8, §29). The design, rules, storage, and decisions of the admission/selection process itself are out of scope for this repository.
 
 ### 3.6 Platform assumption: TimeBack as the inherited academic substrate
 
@@ -355,7 +318,7 @@ At the §6.3 planning ratio, 100,000 learners implies on the order of ~5,000 gui
 
 ```mermaid
 flowchart TB
-    ADM["Admissions pipeline<br/>(separate team, §3.4)"] -->|Track A/B eligibility| HO["Enrollment handoff (§3.5)"]
+    EXTADM["External admission / selection<br/>(separate team, out of scope)"] -->|eligibility outcome| HO["Enrollment handoff (§3.5)"]
 
     subgraph EXT["Inherited from Alpha — not built by us"]
         TB["TimeBack engine<br/>4 sections: math · reading · science · language<br/>XP/mastery · SAT/AP prep"]
@@ -399,7 +362,7 @@ flowchart TB
     class GOV gov;
 ```
 
-**Reading the map:** admissions (a separate team, §3.4) hands an eligible learner to GT100K at the enrollment handoff (§3.5). Core academics are **inherited from Alpha's TimeBack** engine; the **TimeBack Integration Layer** reads mastery/XP/velocity out of it (`AcademicSignalEvent`) and feeds our accelerated-academics layer (3–4 hr, passion-tailored answer-blind tutor, independence reward) and the afternoon passion → projects → evidence flow. Everything runs on the **AWS** platform spine (event spine, purpose-separated data, policy-as-code); rights, consent, and decision authority are governed by [`GOVERNANCE.md`](GOVERNANCE.md). Each transition is recorded as a signed, versioned event so staff can reconstruct a journey without creating a single unrestricted learner profile.
+**Reading the map:** the external admission/selection process (a separate team, §3.4) hands an eligible learner to GT100K at the enrollment handoff (§3.5). Core academics are **inherited from Alpha's TimeBack** engine; the **TimeBack Integration Layer** reads mastery/XP/velocity out of it (`AcademicSignalEvent`) and feeds our accelerated-academics layer (3–4 hr, passion-tailored answer-blind tutor, independence reward) and the afternoon passion → projects → evidence flow. Everything runs on the **AWS** platform spine (event spine, purpose-separated data, policy-as-code); rights, consent, and decision authority are governed by [`GOVERNANCE.md`](GOVERNANCE.md). Each transition is recorded as a signed, versioned event so staff can reconstruct a journey without creating a single unrestricted learner profile.
 
 ## 8. Global policy and decision requirements
 
@@ -415,13 +378,12 @@ flowchart TB
 | Parent or caregiver | A feasible family plan, honest progress, clear responsibilities, and support before sanctions | Separate support needs from commitment, minimize data collection, and show the effect of requested changes |
 | Guide | A concise queue for academic, motivational, cohort, and safeguarding action | Rank by policy and evidence, expose uncertainty, and avoid opaque risk scores |
 | Domain mentor | Project context, student decisions, rubric evidence, and bounded communication | Limit access to assigned projects, record critique, and escalate safety issues |
-| Admissions reviewer *(admissions team — §3.4)* | Valid CogAT results, Track B Snapshot evidence, the anchored rubric, accommodations, policy, and corrections | Keep reviews independent and blind, and make each eligibility decision reproducible and replayable |
 | Operator or governor | Reliability, psychometrics, fairness, privacy, staffing, cost, incidents, and release state | Provide immutable audit, subgroup views with privacy thresholds, kill switches, and change approval |
 | External reviewer | A credible artifact, declared assistance, a usable rubric, and limited contact with minors | Reveal the minimum evidence required and route all contact through controlled channels |
 
-### 9.2 Six applications
+### 9.2 Five platform applications
 
-Five of these are built by this platform; the sixth — the admissions surfaces — is owned and built by the admissions team (§3.4) and is listed here only for a coherent product picture.
+All five are built by this platform. Admission and selection run through an external process (§3.4) and are not a platform surface.
 
 **Student Compass.** The student sees today's mastery plan, Interest Lab choices, specialization allocation, cohort room, Foundry milestones, equipment reservations, reflections, appeals, and private portfolio. A progress view distinguishes attempted, supported, independently verified, retained, and transferred mastery. The interface may show opt-in, anonymized, near-peer-band cross-cohort gain-based standings (§15) but must not show fixed-ability caste ranks, the full-field ranking, or a child's bottom-rank position.
 
@@ -430,8 +392,6 @@ Five of these are built by this platform; the sixth — the admissions surfaces 
 **Guide vs. mentor.** A *guide* is the learner's persistent, in-person human — one named guide plus a backup (§6.3) — who owns motivation, planning, safeguarding, and execution across the whole program and is the child's primary human relationship. A *mentor* is a project- or domain-scoped expert (often external, sometimes remote) who supplies content help and critique for a specific project under scoped, expiring access. Guides stay with the learner across projects; mentors rotate by project need. The primary mentor for any child is always a human (§18).
 
 **Guide and Mentor Console.** Guides receive action queues, mastery evidence, child-raised concerns, passion hypotheses, cohort health, project blockers, and safeguarding workflows. Mentors receive assigned project context, critique tools, and communication controls. The console separates observations from model inferences, and separates the guide's whole-child view from a mentor's project-scoped view.
-
-**Admissions surfaces.** *(Admissions-team ownership — §3.4; see `ADMISSIONS_PRD.md`.)* The admissions team's Family Application Portal, Admissions Operations Dashboard, Track B Reviewer Workspace, and Configuration/Audit view manage the base application, CogAT routing, blind Track B rubric review and adjudication, corrections, and eligibility audit and replay. (The compensated family trial and readiness assessment are this platform's post-eligibility onboarding, §10–§11, surfaced through Family OS and Operations, not here.) These surfaces cannot view Sensitive Signal Lab features or outputs.
 
 **Operations and Governance Console.** Authorized staff manage item calibration, model releases, feature and policy versions, consent coverage, fairness audits, incidents, staffing, equipment, capacity, deletion, and service health. Four-eyes approval applies to production policy changes, public credential issuers, and high-stakes model promotion.
 
@@ -447,19 +407,19 @@ Five of these are built by this platform; the sixth — the admissions surfaces 
 
 ## 10. Recruitment and family partnership
 
-> **Ownership (§3.4).** Recruitment/outreach are owned by a **separate recruitment/outreach team** (neither admissions nor this platform); the material below states that team's responsibilities for integration context, and RF-00b's neutral-positioning rule is cross-cutting. The **family-partnership** capabilities — compensated family trial / shadow enrollment, Household Schedule Compiler, and family-execution model — are built by **this platform** as post-eligibility onboarding (§3.2), never an admissions selection step; the family-execution model (RF-04) is advisory only.
+> **Ownership (§3.4).** Recruitment/outreach are owned by a **separate recruitment/outreach team** (not this platform); the material below states that team's responsibilities for integration context, and RF-00b's neutral-positioning rule is cross-cutting. The **family-partnership** capabilities — compensated family trial / shadow enrollment, Household Schedule Compiler, and family-execution model — are built by **this platform** as post-enrollment onboarding (§3.2); the family-execution model (RF-04) is advisory only.
 
 Recruitment seeks families who can sustain the operating cadence after the program supplies reasonable support. The program must not use wealth, accent, employment type, family structure, a personality profile, or access to private household surveillance as a proxy for commitment. Outreach materials state the workload, the experimental status of the beta, selection rules, compensation, data use, and route options in plain language.
 
 Ethical prospecting uses opt-in referrals, community and school partnerships, public information sessions, and family-initiated interest. Outreach ranking may optimize delivery and language fit, but it cannot predict child ability, scrape minors, buy household vulnerability data, or target families through protected-class proxies. Every source carries campaign, message, eligibility, and conversion metadata so operators can audit who was reached, excluded, or pressured. A decline suppresses further contact except for a family-requested follow-up.
 
-**Shadow enrollment is beta-only and provisional (§3.2).** The compensated trial described below is a post-eligibility onboarding experiment for the beta, owned by this platform, and may not be implemented beyond the beta. It runs after the admissions team's Track A / Track B eligibility determination (§8.4), not as part of the admission decision.
+**Shadow enrollment is beta-only and provisional (§3.2).** The compensated trial described below is a post-enrollment onboarding and feasibility experiment for the beta, owned by this platform, and may not be implemented beyond the beta. It runs after a learner is admitted and enrolled through the external process (§3.4), not as part of any admission or selection decision.
 
 Eligible families enter a compensated 21-to-28-day shadow enrollment. They experience the real schedule, parent handoffs, a planned disruption, a missed obligation, recovery planning, and a support request. The trial measures follow-through against the family's declared availability, honest escalation, and recovery after disruption. Perfect attendance is not the goal.
 
 The Household Schedule Compiler accepts availability, device constraints, caregiver handoffs, rest, and accessibility needs. CP-SAT tests a weekly plan against illness, outages, shift changes, and caregiver conflicts. A second solve finds a support package that restores feasibility. Staff review the result before recording an unmet obligation as evidence.
 
-Participation uses a renewable agreement, not an irrevocable eight-year contract. The child and caregiver renew at defined intervals after reviewing workload, evidence, alternatives, and concerns. Families can pause or leave without financial penalty. Staff offer a humane transition record and route recommendations after ineligibility (determined by the admissions team, §8.4) or withdrawal.
+Participation uses a renewable agreement, not an irrevocable eight-year contract. The child and caregiver renew at defined intervals after reviewing workload, evidence, alternatives, and concerns. Families can pause or leave without financial penalty. Staff offer a humane transition record and route recommendations after ineligibility (determined externally, §3.4) or withdrawal.
 
 ### 10.1 Functional requirements
 
@@ -493,7 +453,7 @@ Tests shall prove quiet-hour suppression, opt-out in one interaction, token reje
 
 ## 11. Cognitive Floor Engine
 
-> **Owned by this platform (reassigned from admissions, §3.4).** The admissions team gates on an externally-administered CogAT, so the Cognitive Floor Engine is built by **this platform** as a **readiness/placement** assessment — post-enrollment placement, diagnostics, and (where their process accepts it) supplementary construct-level evidence. It is **not** the admission decision (§8.4).
+> **Platform-owned readiness (§3.4).** The Cognitive Floor Engine is built by **this platform** as a **readiness/placement** assessment — post-enrollment placement, diagnostics, and advisory readiness evidence. It is **not** an admission or selection decision (those are external, §3.4).
 
 The Cognitive Floor Engine estimates whether current evidence supports the program's accelerated path. It measures baseline reasoning, learning rate after a short instruction, near and far transfer, delayed retention, and speed-accuracy tradeoff. The engine does not convert one score into a claim about a child's worth or fixed potential.
 
@@ -505,13 +465,13 @@ Item difficulty and discrimination parameters are not fixed at authoring time. T
 
 Generative item families instantiate reviewed templates under content, difficulty, and scoring constraints. Psychometric information must remain adequate at the readiness boundary and through the extreme right tail so the engine can separate a clear boundary result from unresolved headroom without imposing a fixed ceiling. Exposure control applies across generated siblings, not only exact item IDs. Tail estimates remain construct-specific distributions and never become a public IQ label.
 
-The engine returns a readiness posterior and one of three **advisory** results (a placement/readiness signal, not an admission decision — that is the admissions team's, §8.4):
+The engine returns a readiness posterior and one of three **advisory** results (a placement/readiness signal, not an admission or selection decision, which are external — §3.4):
 
 - `CLEAR`: the validated evidence clears the configured readiness boundary with the required confidence and no unresolved validity issue.
 - `INCONCLUSIVE`: uncertainty, disagreement, device quality, language, health, accommodation, or exposure requires a parallel form, delayed check, or psychometric review.
 - `BELOW_THRESHOLD`: validated evidence sits below the readiness boundary after applicable verification; this carries no deficiency claim and is never an admission, rejection, or exit. Its only operational effect is to trigger additional placement support, scaffolding, and diagnostics for an already-admitted learner — it never changes the learner's admitted status, route, or continued participation.
 
-The admissions team owns the admission decision; this engine supplies at most advisory readiness evidence and informs placement. The engine cannot combine family commitment, voice, gaze, emotion, or home behavior into the cognitive posterior, and it cannot issue or override an admission decision.
+Admission and selection are external and out of scope (§3.4); this engine supplies at most advisory readiness evidence and informs placement. The engine cannot combine family commitment, voice, gaze, emotion, or home behavior into the cognitive posterior, and it cannot issue or override any admission or selection decision.
 
 ### 11.1 Functional requirements and acceptance criteria
 
@@ -615,7 +575,7 @@ The beta keeps learned models that recommend specialization, persistence, or rou
 
 ### 14.2 Primary child persona
 
-The primary persona is a child age 6 to 14 with enough assessed readiness to enter the program, subject to a human admissions decision. A parent or guardian often starts the application. The child may like learning but lack the vocabulary or experience to name a field. The child may also arrive with a strong claim that reflects a durable interest, a recent novelty, peer influence, parental projection, or some mixture.
+The primary persona is a child age 6 to 14 with enough assessed readiness to enter the program; admission and selection happen through an external process (§3.4). A parent or guardian is often involved from the outset. The child may like learning but lack the vocabulary or experience to name a field. The child may also arrive with a strong claim that reflects a durable interest, a recent novelty, peer influence, parental projection, or some mixture.
 
 The product makes no domain, pace, or passion assumption from sex or gender.
 
@@ -635,11 +595,11 @@ John represents any child with an emerging interest. The audio domain makes the 
 
 ### 14.3 John’s end-to-end journey
 
-#### 14.3.1 Parent-initiated application and child assent
+#### 14.3.1 Parent-initiated entry and child assent
 
-John’s parents start the application when he is ten. The Family OS explains the pace, schedule, Interest Lab, data practices, public portfolio, and exit options in parent and child language. John completes an assent conversation without a parent answering for him and can ask for a private guide conversation. Refusal of optional sensors, public display, or a proposed project cannot reduce his admissions standing.
+John’s family begins the external admission process when he is ten (§3.4). The Family OS explains the pace, schedule, Interest Lab, data practices, public portfolio, and exit options in parent and child language. John completes an assent conversation without a parent answering for him and can ask for a private guide conversation. Refusal of optional sensors, public display, or a proposed project cannot reduce his standing in the program.
 
-The admissions team determines John's eligibility under a separate policy: an externally-administered CogAT routes him to Track A or, if below cutoff but promising, invites a Track B Talent Evidence Snapshot with independent blind review, issuing a Track A / Track B eligibility outcome with a reason and correction route (§3.4, §8.4). Interest evidence cannot affect John's result. Once eligible, the platform's post-eligibility onboarding runs the compensated family trial and the Cognitive Floor Engine for feasibility and placement (§10–§11), neither of which is an admission gate. John begins with no passion label; his statement about speakers becomes a low-confidence starting claim.
+Admission and selection are determined by the external process and are out of scope here (§3.4); interest evidence cannot affect John's admission result. Once he is admitted and enrolled, the platform's post-enrollment onboarding runs the compensated family trial and the Cognitive Floor Engine for feasibility and placement (§10–§11), neither of which is an admission or selection step. John begins with no passion label; his statement about speakers becomes a low-confidence starting claim.
 
 #### 14.3.2 Balanced Interest Lab
 
@@ -796,7 +756,7 @@ Each `SpecializationPlan` shall include the active hypothesis version, child-aut
 
 | Decision | Child | Parent or guardian | Guide or review panel | Model |
 |---|---|---|---|---|
-| Join the program | Gives developmentally appropriate assent and may raise dissent | Gives legal consent and accepts family duties | Decides eligibility under admissions policy | Supplies shadow evidence only for high-stakes inputs |
+| Join the program | Gives developmentally appropriate assent and may raise dissent | Gives legal consent and accepts family duties | Eligibility is decided by the external admission process (§3.4) | Supplies shadow evidence only for high-stakes inputs |
 | Choose a safe probe | Chooses from eligible offers | May add access context | Sets prerequisites and safety limits | May select offers as bounded automation within rules (§8.5) |
 | Adopt or renew a specialization | Co-authors and can decline the label | Consulted on schedule and resources | Approves the plan and records rationale | Proposes with evidence and uncertainty |
 | Increase pressure or rivalry | Can refuse or request a lower setting | Cannot override child refusal | Authorizes within the pressure policy | Shadow recommendation only |
@@ -1168,13 +1128,13 @@ The student selects disclosures, and the caregiver supplies consent where law re
 
 ## 25. Architecture mandate
 
-GT100K uses one program platform across the post-enrollment journey — mastery, passion discovery, cohorting, project production, proof, and controlled publication — and integrates with the separately-owned admission pipeline at the enrollment handoff (§3.4–§3.5). The platform serves children ages 6 to 14, their families, guides, mentors, operators, and outside reviewers. It must reach feature completion in Month 3, support a live beta of 1,000 to 5,000 students in Month 4, and survive synthetic workloads that represent 100,000 registered learners.
+GT100K uses one program platform across the post-enrollment journey — mastery, passion discovery, cohorting, project production, proof, and controlled publication — and integrates with the external admission/selection process at the enrollment handoff (§3.4–§3.5). The platform serves children ages 6 to 14, their families, guides, mentors, operators, and outside reviewers. It must reach feature completion in Month 3, support a live beta of 1,000 to 5,000 students in Month 4, and survive synthetic workloads that represent 100,000 registered learners.
 
 Delivery assumes an AI-native engineering workflow using Codex, Claude, Cursor, and frontier reasoning models for parallel design, implementation, tests, migration, red-team generation, and documentation. The roadmap plans around a 50x velocity hypothesis and therefore preserves the broad scope. Generated changes still require owned contracts, review, automated evidence, security gates, and rollback; development speed grants no model child-facing authority.
 
 **Strict human review before any consumer-facing exposure.** No product surface, content, model behavior, or release reaches consumers — and above all children — without passing a strict, named human review gate. Child-facing surfaces receive the highest scrutiny. This gate is mandatory regardless of development velocity, sits with the public-release reviewer and safeguarding team (§6.5), and is enforced by the operations release process (§30). AI-native speed accelerates building, never the decision to put something in front of a child.
 
-The architecture assigns authority to deterministic services and named people. Statistical models estimate state, rank safe options, or render an action that a rules engine selected. Models cannot admit a child, remove a child, raise pressure, deny help, publish work, or issue a credential. OPA policies, workflow state machines, and authorized staff own those actions. During the Month 4 beta, learned wellbeing, biometric, peer-effect, and cognitive-readiness models run in shadow mode (the admissions decision is the admissions team's and is made by human reviewers on externally-administered CogAT and the anchored rubric, not by learned models, §3.4, §8.4); a learned motivation controller may act only within rules-engine dose caps as bounded automation with a guide veto and one-click revert (§8.5). Staff can compare shadow recommendations with outcomes without exposing children to model-driven decisions on any irreversible or identity-defining matter.
+The architecture assigns authority to deterministic services and named people. Statistical models estimate state, rank safe options, or render an action that a rules engine selected. Models cannot admit a child, remove a child, raise pressure, deny help, publish work, or issue a credential. OPA policies, workflow state machines, and authorized staff own those actions. During the Month 4 beta, learned wellbeing, biometric, peer-effect, and cognitive-readiness models run in shadow mode (admission and selection are external and out of scope, §3.4); a learned motivation controller may act only within rules-engine dose caps as bounded automation with a guide veto and one-click revert (§8.5). Staff can compare shadow recommendations with outcomes without exposing children to model-driven decisions on any irreversible or identity-defining matter.
 
 The architecture inherits the evidence classes in Section 5. Learning mechanisms with strong evidence use E1 or E2; less-settled transfers use E3; learned `InterestHypothesis` updates, learned MotivationDose control, causal cohort effects, and digital-twin policy evaluation use R until validated. Deterministic dose caps and vetoes use G/ENG. Rights and authority boundaries use G; transactional outboxes, multi-zone deployment, queue-depth autoscaling, and other production controls use ENG.
 
@@ -1190,13 +1150,12 @@ flowchart TB
     SC["Student Compass"]
     FO["Family OS"]
     GM["Guide and Mentor Console"]
-    AW["Admissions surfaces (admissions team, §3.4)"]
     OG["Operations and Governance"]
     PP["Public Portfolio and Passport"]
   end
   subgraph Control["Deterministic control plane"]
     IC["Identity, consent, and policy"]
-    AD["Admissions and appeals (admissions team, §3.4)"]
+    AD["Enrollment integration and appeals (§3.5)"]
     MC["Mastery and tutor control"]
     MR["Motivation rate limiter"]
     CC["Cohort compiler"]
@@ -1218,7 +1177,7 @@ flowchart TB
     RV[("Consent-filtered research views")]
   end
   %% Experience apps enter through the identity, consent, and policy gate
-  SC & FO & GM & AW & OG & PP --> IC
+  SC & FO & GM & OG & PP --> IC
   %% the policy gate routes to the deterministic control services
   IC --> AD & MC & MR & CC & MF & RG
   %% control services emit immutable domain events
@@ -1233,7 +1192,7 @@ flowchart TB
   SI --> RV --> GT --> OG
 ```
 
-The web-first monorepo contains the platform's Next.js and TypeScript applications (five owned by this platform; the admissions surfaces are owned and built by the admissions team, §3.4, and are shown here only for integration context), shared design and accessibility packages, generated Protobuf clients, policy fixtures, and end-to-end tests. FastAPI exposes model and research APIs. Go services own low-latency commands, leases, event ingestion, and assignment commits. Rust supplies WASM assessment renderers, AudioWorklet DSP, content verifiers, and security-sensitive gateways.
+The web-first monorepo contains the platform's Next.js and TypeScript applications (five surfaces, all owned by this platform; admission and selection are external and not a platform surface, §3.4), shared design and accessibility packages, generated Protobuf clients, policy fixtures, and end-to-end tests. FastAPI exposes model and research APIs. Go services own low-latency commands, leases, event ingestion, and assignment commits. Rust supplies WASM assessment renderers, AudioWorklet DSP, content verifiers, and security-sensitive gateways.
 
 Protobuf over gRPC carries internal commands and queries. Redpanda carries immutable domain events. PostgreSQL owns transactional records, bitemporal projections, pgvector indexes, reservations, and decision ledgers. Redis serves revocation lists, session state, and low-latency mastery reads. Flink computes streaming features from versioned definitions; Feast serves the same definitions online and through point-in-time Iceberg joins. S3 stores encrypted artifacts and Iceberg tables. Temporal executes family trials, appeals, project milestones, credential issuance, and deletion workflows. OPA and Rego enforce policy at service and workload boundaries.
 
@@ -1250,7 +1209,6 @@ All applications use Next.js App Router, React, strict TypeScript, the kickoff N
 | Student Compass | Installable PWA with React Aria, TanStack Query, an encrypted IndexedDB outbox, LiveKit rooms, Yjs project state, and route-loaded Rust/WASM Resonance. Offline actions cannot finalize mastery, dose, milestones, or exposure. |
 | Family OS | Responsive low-bandwidth PWA for schedules, support, consent receipts, quiet hours, and coaching. |
 | Guide and Mentor | Staff origin with virtualized evidence queues, rubric and diff views, WebSocket updates, and assignment-scoped mentor sessions. |
-| Admissions *(admissions team — §3.4)* | Owned and built by the admissions team; shown for integration only. Family Application Portal, Admissions Operations Dashboard, Track B Reviewer Workspace, and Configuration/Audit view; blind independent review, corrections, and eligibility replay; accommodations hidden from reviewers; no passion or sensitive-research access. |
 | Operations | Isolated admin origin for SRE, policy, models, psychometrics, privacy, staffing, equipment, incidents, and kill switches. |
 | Public Portfolio | Server-rendered public app in a separate AWS account; it calls only Reality Gateway and credential verification and has no route to private stores. |
 
@@ -1260,7 +1218,7 @@ Browsers call same-origin role BFFs. BFFs compose purpose-filtered views but own
 
 | Runtime | Owned work |
 |---|---|
-| Go | Identity and consent, enrollment-handoff integration and post-enrollment family workflows, mastery and tutor control, motivation ledger, cohorts, Foundry resources, EvidenceGraph index, Reality Gateway, credentials, event relays, inference broker, and communications. (Admission pipeline workflows are the admissions team's, §3.4.) |
+| Go | Identity and consent, enrollment-handoff integration and post-enrollment family workflows, mastery and tutor control, motivation ledger, cohorts, Foundry resources, EvidenceGraph index, Reality Gateway, credentials, event relays, inference broker, and communications. (The external admission/selection process is out of scope, §3.4.) |
 | Python | FastAPI model APIs, PyTorch/Pyro research, psychometrics, PFA/BKT/IKT challengers, OR-Tools optimization, comparative evaluation, GT-Twin, and offline policy analysis. |
 | Rust | Assessment WASM, Resonance DSP and workers, Firecracker supervisor, capability gateway, content parsers, deterministic verifiers, and WASI modules. |
 | Managed runtimes | LiveKit/coturn media, Temporal workflows, Redpanda, Flink/Feast, Triton/vLLM, PostgreSQL, Redis, S3/Iceberg, and MLflow behind owned contracts. |
@@ -1318,7 +1276,7 @@ Each service owns one decision domain and its authoritative tables. Other servic
 | Boundary | Owned state and responsibility |
 |---|---|
 | Identity and Consent | Legal identity crosswalk, guardian authority, child assent, consent purposes, retention clocks, account recovery, and revocation. |
-| Enrollment Integration *(admissions handoff, §3.5)* | Consumes the admissions team's Track A / Track B eligibility determination at the enrollment handoff: eligible-learner provisioning, accommodation-profile intake, and eligibility-evidence reference. The admissions pipeline itself — base application, CogAT routing, Track A / Track B rules, the Talent Evidence Snapshot, reviewer adjudication, corrections, and the eligibility decision — is the admissions team's boundary (§3.4), not owned here. The compensated family trial and readiness assessment (§10–§11) are this platform's post-handoff onboarding, not part of this boundary. |
+| Enrollment Integration *(enrollment handoff, §3.5)* | Consumes the external admission process's eligibility outcome at the enrollment handoff: eligible-learner provisioning, accommodation-profile intake, and an eligibility-evidence reference. The admission/selection process itself is external and out of scope (§3.4), not owned here. The compensated family trial and readiness assessment (§10–§11) are this platform's post-handoff onboarding, not part of this boundary. |
 | Learning | Competency graph, mastery projection, retrieval schedule, independent verification, and benchmark mapping. |
 | Tutor Control | Attempt state, approved pedagogical action, hint cap, help receipt, grader isolation, and later unassisted check. |
 | Passion and Specialization | Probe assignment, propensity, InterestHypothesis, exploration floor, student response, and renewable plan. |
@@ -1346,13 +1304,13 @@ All public contracts use Protobuf and JSON representations generated from one re
 | `ConsentGrant` | `subject_ref`, guardian authority, purpose, data categories, processors, jurisdiction, effective and expiry time, collection method, document hash, withdrawal state. | A service may use data only for an active matching purpose. Withdrawal blocks new processing and starts the applicable deletion workflow. |
 | `AssentRecord` | `child_ref`, age band, plain-language notice version, choices shown, response, facilitator, timestamp, renewal date. | Guardian consent cannot substitute for child assent where the product can honor a refusal. Staff record dissent and stop optional collection. |
 | `DecisionRecord` | `decision_type`, subject, candidates considered, outcome, reason codes, evidence snapshot, uncertainty, policy and model versions, authorized human, effective time. | Consequential records require a named human and a policy result. Records remain append-only and replayable. A model output cannot fill `authorized_human`. |
-| `OverrideRecord` | target decision, prior outcome, new outcome, authorized role, rationale, evidence, expiry or review date. | Four-eyes approval applies to admissions, public exposure, safeguarding, and credential revocation. An override creates a new record and preserves the original. |
+| `OverrideRecord` | target decision, prior outcome, new outcome, authorized role, rationale, evidence, expiry or review date. | Four-eyes approval applies to public exposure, safeguarding, and credential revocation. An override creates a new record and preserves the original. |
 | `Appeal` | appellant role, target decision, grounds, submitted evidence, requested remedy, status, independent reviewer, deadlines, resolution. | The reviewer cannot be the original decision owner. Filing an appeal cannot reduce access or trigger retaliation. The system records late and reopened cases. |
 | `FamilyPlan` | household availability intervals, program blocks, device and transport constraints, recovery windows, responsibilities, support links, effective range, renewal date, plan version. | The plan excludes employer names, diagnoses, and full calendars unless a family chooses to provide them for a stated purpose. The compiler preserves rest and declared hard constraints. |
 | `CommitmentEvent` | plan reference, obligation type, due window, completion or exception, disruption class, escalation time, recovery action, receipts. | Onboarding staff and guides evaluate recovery and honest escalation, not perfect attendance (the family trial is this platform's post-eligibility onboarding, §10). A resource barrier cannot count as low commitment before staff offer the approved support. |
 | `SupportPackage` | barrier codes, offered resources, owner, start and end, capacity reservation, family acceptance, review date, outcome. | The decision policy evaluates the family under the feasible package. Staff cannot infer protected attributes from a support code or expose it to peers. |
 | `AssessmentSession` | form and item-family versions, accommodation profile, device runtime attestation, responses, response times, exposure decisions, integrity flags, start and end, status. | The assessment service separates responses from identity. Flags route to review and cannot decide admission. Retests use independent forms and preserve accommodations. |
-| `ReadinessPosterior` | baseline reasoning, learning-rate, near-transfer, far-transfer, retention and speed-accuracy distributions, credible intervals, calibration cohort, estimator version, outcome suggestion. | The contract reports a distribution rather than a scalar IQ label. OPA maps validated evidence to the platform's advisory readiness results `CLEAR`, `INCONCLUSIVE`, or `BELOW_THRESHOLD` (§11); a psychometrist owns the live cut policy. This is a placement/readiness signal, not the admission decision, which is the admissions team's (§8.4). |
+| `ReadinessPosterior` | baseline reasoning, learning-rate, near-transfer, far-transfer, retention and speed-accuracy distributions, credible intervals, calibration cohort, estimator version, outcome suggestion. | The contract reports a distribution rather than a scalar IQ label. OPA maps validated evidence to the platform's advisory readiness results `CLEAR`, `INCONCLUSIVE`, or `BELOW_THRESHOLD` (§11); a psychometrist owns the live cut policy. This is a placement/readiness signal, not an admission or selection decision, which are external (§3.4). |
 | `MasteryState` | learner, competency and competency version, evidence set, support status, decision source, probability, attempts, independent-evidence count, retention due date, model and item versions, fairness-audit status, state interval. | A node unlock requires policy evidence, including at least 90 percent independent verification when that gate applies. Accessibility help cannot lower mastery or independence credit. Corrections create a new bitemporal interval. |
 | `TutorAction` | problem, attempt state, diagnosed misconception, allowed intent, hint abstraction, prohibited content hash, renderer model, grader reference, latency budget. | A deterministic controller selects the intent. The renderer lacks answer and grader secrets. The grader runs in a separate trust domain. Attempt-before-hint and hint caps execute as code. |
 | `HelpReceipt` | action reference, assistance class, information depth, source, accommodation flag, student acknowledgment, follow-up competency and verification due date. | Accessibility support remains exempt from independence penalties. Substitutive help requires a later unassisted check. The product shows the receipt to the student. |
@@ -1417,13 +1375,13 @@ Months 1 through 3 fund feature construction. Engineers still write unit, contra
 
 ### 32.1 Month 1: trustworthy end-to-end foundation
 
-Weeks 1 and 2 establish the monorepo, the platform application shells (the admissions surfaces are the admissions team's, §3.4), identity vault, guardian consent and child assent, role and purpose authorization, contract registry, Redpanda, domain PostgreSQL instances, S3, Terraform, CI/CD, telemetry, and signed OPA bundles. The team implements `LearnerEvent`, consent, decision, override, appeal, and audit contracts first because all later work depends on them.
+Weeks 1 and 2 establish the monorepo, the platform application shells (admission and selection are external and not a platform surface, §3.4), identity vault, guardian consent and child assent, role and purpose authorization, contract registry, Redpanda, domain PostgreSQL instances, S3, Terraform, CI/CD, telemetry, and signed OPA bundles. The team implements `LearnerEvent`, consent, decision, override, appeal, and audit contracts first because all later work depends on them.
 
-Weeks 2 and 3 add the **enrollment-handoff integration** with the admissions team's pipeline (§3.5) — consuming the eligible-learner roster, identity and consent scope, accommodation profile, and an eligibility-evidence reference — plus Family OS **post-enrollment** onboarding (household schedule, device and support requests, and consent management). The admissions pipeline itself — base application, CogAT-based routing, Track A / Track B rules, the Talent Evidence Snapshot, reviewer adjudication, and the eligibility decision — is built and owned by the admissions team (§3.4); this platform integrates against an agreed contract (the Track A / Track B eligibility determination, §8.4) rather than building it. The compensated family trial (§10) and Cognitive Floor Engine (§11) are this platform's post-eligibility onboarding and readiness capabilities, not part of the admissions build. Until the admissions team's interface is available, this integration runs against a stub of that contract.
+Weeks 2 and 3 add the **enrollment-handoff integration** with the external admission process (§3.5) — consuming the eligible-learner roster, identity and consent scope, accommodation profile, and an eligibility-evidence reference — plus Family OS **post-enrollment** onboarding (household schedule, device and support requests, and consent management). The admission/selection process itself is external and out of scope (§3.4); this platform integrates against an agreed eligibility contract rather than building it. The compensated family trial (§10) and Cognitive Floor Engine (§11) are this platform's post-enrollment onboarding and readiness capabilities. Until the external interface is available, this integration runs against a stub of that contract.
 
 Weeks 3 and 4 integrate the partner adaptive-learning provider's two-hour learning engine as the academic substrate (Phase 0, §12) and build the surrounding product on that assumption: Student Compass receives the partner daily plan (reading the partner block, extended to the §6.1 three-to-four-hour target in Phase 1) and an Interest Lab registry, and Foundry receives a project registry, Temporal skeleton, capability-scoped MCP gateway, and one isolated workspace type. The in-house competency graph, PFA-based mastery engine, 90 percent independent gate, retrieval queue, separate tutor and grader services, attempt-before-hint controls, and help receipts are the **Phase-1** gt100k Academic Mastery OS; they are deferred until the surrounding product exists and are built in Month 3 (§12, §32.3). As a low-priority stretch item (§3.2, §17), and only if capacity allows, Resonance implements a speaker-and-filter quest with browser audio capture, FFT display, and saved evidence.
 
-Month 1 construction gate: a synthetic fixture family can grant and withdraw consent, arrive through the stubbed enrollment handoff (admitted-learner roster and accommodation profile from the admissions team's contract, §3.5), start a mastery session on the partner engine, complete an audio interest probe, and open an isolated project. Developers can trace each consequential action to consent, policy, evidence, software version, and authorized person. An automated deletion test removes the fixture learner across all Month 1 stores.
+Month 1 construction gate: a synthetic fixture family can grant and withdraw consent, arrive through the stubbed enrollment handoff (admitted-learner roster and accommodation profile from the external eligibility contract, §3.5), start a mastery session on the partner engine, complete an audio interest probe, and open an isolated project. Developers can trace each consequential action to consent, policy, evidence, software version, and authorized person. An automated deletion test removes the fixture learner across all Month 1 stores.
 
 ### 32.2 Month 2: adaptation, passion, cohorts, and creation
 
@@ -1449,9 +1407,9 @@ Month 3 construction gate: a feature-complete release candidate runs in a produc
 
 ### 32.4 Month 4: validation, refinement, and gated beta
 
-**The Month 4 beta operates on synthetic, simulated learner populations, not live children.** Consistent with the synthetic admissions prototype (§3.4) and the synthetic load tests (§26, §30), the 1,000 / 2,500 / 5,000-learner waves are synthetic fixtures that exercise the full operational, safeguarding, consent, privacy, and support machinery as an end-to-end rehearsal. Live child enrollment is out of scope for this PRD's Month 4 and remains gated behind the admissions team's pipeline going live and the required privacy and legal approvals (§3.4, §8.6, §29).
+**The Month 4 beta operates on synthetic, simulated learner populations, not live children.** Consistent with the synthetic load tests (§26, §30), the 1,000 / 2,500 / 5,000-learner waves are synthetic fixtures that exercise the full operational, safeguarding, consent, privacy, and support machinery as an end-to-end rehearsal. Live child enrollment is out of scope for this PRD's Month 4 and remains gated behind the external admission process going live and the required privacy and legal approvals (§3.4, §8.6, §29).
 
-**Academic Mastery OS cutover.** The Phase-0 → Phase-1 replacement (§12) is a hard, scheduled milestone in the *live* rollout — after the admissions pipeline goes live and privacy and legal approvals clear — not one of the synthetic Month-4 waves above. The synthetic waves may exercise both the partner-engine integration and the in-house engine, but they do not trigger cutover. The specific cutover milestone is an open delivery decision (§0 change log, open items) and must clear the Phase-1 gate's per-skill fairness audit (§12.1) before the near-90-percent gate becomes a hard lockout.
+**Academic Mastery OS cutover.** The Phase-0 → Phase-1 replacement (§12) is a hard, scheduled milestone in the *live* rollout — after the external admission process goes live and privacy and legal approvals clear — not one of the synthetic Month-4 waves above. The synthetic waves may exercise both the partner-engine integration and the in-house engine, but they do not trigger cutover. The specific cutover milestone is an open delivery decision (§0 change log, open items) and must clear the Phase-1 gate's per-skill fairness audit (§12.1) before the near-90-percent gate becomes a hard lockout.
 
 Days 1 through 7 run the cross-system, accessibility, legal, psychometric, privacy, fairness, red-team, chaos, disaster-recovery, deletion, cross-tenant, 100,000-learner load, staff-simulation, incident, support-queue, release-rehearsal, and complete John-journey program. Teams fix blockers and rerun affected suites throughout the week. Enrollment begins only after the release board signs the threshold registry. Subject to every gate, Days 8 through 14 operate Wave 1 at 1,000 learners, Days 15 through 21 operate Wave 2 at 2,500 learners, and Days 22 through 28 operate Wave 3 at 5,000 learners. Engineering remains reserved for measured fixes, tuning, and regression throughout Month 4; no planned feature scope enters the month.
 
@@ -1467,19 +1425,19 @@ The program treats each enrollment wave as a release decision.
 
 #### 32.4.1 Wave staffing and capacity
 
-| Enrollment | Guides, including 15% backup | Admissions reviewers | Psychometricians | Safeguarding on duty | Mentor operations | Credential issuers | SRE and security on call |
-|---:|---:|---:|---:|---:|---:|---:|---:|
-| 1,000 | 50 | 8 | 3 | 3 | 5 | 2 | 3 |
-| 2,500 | 125 | 18 | 6 | 6 | 12 | 4 | 5 |
-| 5,000 | 250 | 35 | 10 | 12 | 24 | 8 | 8 |
+| Enrollment | Guides, including 15% backup | Psychometricians | Safeguarding on duty | Mentor operations | Credential issuers | SRE and security on call |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1,000 | 50 | 3 | 3 | 5 | 2 | 3 |
+| 2,500 | 125 | 6 | 6 | 12 | 4 | 5 |
+| 5,000 | 250 | 10 | 12 | 24 | 8 | 8 |
 
-Guide counts plan to roughly one guide per 20 learners so that active caseload (net of the 15 percent backup) stays inside the §6.3 range of 15 to 25. Admissions reviewers are provided by the admissions team (§3.4) and are shown here only for total-beta capacity context, not as this platform's hires; psychometricians support this platform's Cognitive Floor Engine (§11).
+Guide counts plan to roughly one guide per 20 learners so that active caseload (net of the 15 percent backup) stays inside the §6.3 range of 15 to 25; psychometricians support this platform's Cognitive Floor Engine (§11).
 
 The release board counts trained, scheduled staff rather than offers or hires. It freezes enrollment when average guide caseload exceeds 25 (the §6.3 ceiling), backup coverage falls below 15 percent, safeguarding coverage falls below two staff, or a human-review queue breaches its SLO for two operating days.
 
 Months 1 through 3 run smaller deterministic load and failure-injection checks in CI. The formal Month 4 release-readiness run uses 100,000 registered learners, school-bell traffic bursts, 10,000 events per second, concurrent cohort compilation, 10,000 queued workspace launches, tutor saturation, mass consent withdrawal, and emergency revocation. A synthetic result proves capacity behavior, not educational efficacy.
 
-Month 4 exit target: the 5,000-learner wave completes governance review with human-owned intensity, safeguarding, publication, and credential decisions (admissions decisions are human-owned by the admissions team, §3.4). If a signed pause rule fires, the program ends the calendar month in a controlled hold at the current safe enrollment ceiling with named blockers, owners, and retest evidence; it does not declare beta completion. Irreversible and identity-defining learned models remain in shadow mode; reversible bounded-automation controllers stay within their signed caps. Operators can reconstruct historical state, revoke external exposure within the SLO, restore the platform from backups, and publish the signed validation report.
+Month 4 exit target: the 5,000-learner wave completes governance review with human-owned intensity, safeguarding, publication, and credential decisions (admission and selection are external, §3.4). If a signed pause rule fires, the program ends the calendar month in a controlled hold at the current safe enrollment ceiling with named blockers, owners, and retest evidence; it does not declare beta completion. Irreversible and identity-defining learned models remain in shadow mode; reversible bounded-automation controllers stay within their signed caps. Operators can reconstruct historical state, revoke external exposure within the SLO, restore the platform from backups, and publish the signed validation report.
 
 ## 33. Verification and success measures
 
@@ -1487,11 +1445,11 @@ Month 4 exit target: the 5,000-learner wave completes governance review with hum
 
 Operations stores each threshold with ID, owner, value, unit, population, measurement window, evidence class, approval date, policy version, and rollback action. Two authorized reviewers approve changes. CI (continuous integration) rejects a policy bundle that references an absent or expired threshold.
 
-> **Platform-owned readiness (§3.4, §11).** The **Cognitive boundary** and **Assessment validity** rows below are this platform's Cognitive Floor Engine readiness/placement thresholds (reassigned from admissions). They are **not** the admission gate — that is the admissions team's externally-administered CogAT and Track A / Track B rules (§8.4) — and inform placement and advisory readiness evidence only.
+> **Platform-owned readiness (§3.4, §11).** The **Cognitive boundary** and **Assessment validity** rows below are this platform's Cognitive Floor Engine readiness/placement thresholds. They are **not** an admission or selection gate (those are external, §3.4) and inform placement and advisory readiness evidence only.
 
 | Area | Initial beta release threshold | Owner and failure action |
 |---|---|---|
-| Cognitive boundary | The psychometric board validates, remaps, raises, or rejects the brainlift's hypothesized IQ-equivalent 120 to 125 range against licensed instruments and a representative sample. For the approved construct `g` and selected readiness floor, `CLEAR` requires `P(g ≥ floor) ≥ .95`; `BELOW_THRESHOLD` requires `≤ .05` after independent retest; otherwise `INCONCLUSIVE` (§11). This is a platform readiness/placement threshold, not the admission gate (§8.4); any change must hold the subgroup false-exclusion gap within its limit and preserve a humane `BELOW_THRESHOLD` result with no deficiency claim. | Lead psychometrician per form; stop the affected form. |
+| Cognitive boundary | The psychometric board validates, remaps, raises, or rejects the brainlift's hypothesized IQ-equivalent 120 to 125 range against licensed instruments and a representative sample. For the approved construct `g` and selected readiness floor, `CLEAR` requires `P(g ≥ floor) ≥ .95`; `BELOW_THRESHOLD` requires `≤ .05` after independent retest; otherwise `INCONCLUSIVE` (§11). This is a platform readiness/placement threshold, not an admission or selection gate (§3.4); any change must hold the subgroup false-exclusion gap within its limit and preserve a humane `BELOW_THRESHOLD` result with no deficiency claim. | Lead psychometrician per form; stop the affected form. |
 | Assessment validity | Posterior coverage 93 to 97 percent; subgroup false-exclusion gap at most three points; no unresolved material-DIF item; exposure at most 5 percent per item and 15 percent per family. | Psychometrics panel weekly; quarantine and retest. |
 | Tutor integrity | No hidden-answer access; full-solution leakage below 1 percent in at least 10,000 adversarial conversations; three content hints before a human-help offer. | Tutor safety owner per build; block and restore. |
 | Motivation dose | At most two pressure tokens per day, six per seven days, one parent nudge per day, and none during a ten-hour protected rest window. | Learner-plan panel rolling seven days; revoke, restore help, notify guide. |
@@ -1532,7 +1490,7 @@ MIT-level readiness remains an eight-year outcome. The Month 4 beta can validate
 The program's design bets — the originating spiky points of view — are empirical claims about an eight-year outcome, and by §5's own taxonomy most are E3/R, which carry *no production authority*; yet the program applies them at intensity to real children. §32.4/§33.2 honestly concede the synthetic beta cannot show causation. This subsection commits the design that eventually *tests* the bets, so intensity is earned by accruing evidence rather than assumed indefinitely.
 
 - **Pre-registered predictions with stopping rules.** Each design bet is registered in the Release Threshold Registry (§33.1) as an operational claim, an outcome metric (§2.6), a predicted band, and a change-the-program rule if the prediction fails (mirroring the §33.1 cognitive-floor "validate, remap, raise, or reject" language). Bets that cannot be tested internally — the family-environment causal claim, and early-specialization vs. breadth (there is no in-program breadth arm) — are flagged as **assumptions, not findings**.
-- **Regression-discontinuity at the Track A/B cutoff.** Because admissions routes at a sharp CogAT cutoff and *both* tracks are enrolled and receive the program (§3.4), comparing age-14 outcomes just above vs. just below the cutoff is a clean causal test of the cognitive-floor bet **with no child withheld**. It requires only a data-sharing addendum (§3.5) to retain the running variable and outcomes.
+- **Regression-discontinuity at the external selection cutoff.** Because the external admission process (§3.4) routes at a sharp cognitive cutoff and enrolled learners fall on both sides of it, comparing age-14 outcomes just above vs. just below the cutoff is a clean causal test of the cognitive-floor bet **with no child withheld**. It requires only a data-sharing addendum (§3.5) to retain the running variable and outcomes.
 - **Within-program randomization** of reversible design choices (reward framing, cohort composition, in-cap dose titration) under the §8.5 bounded-automation envelope — never the intensity floor itself — plus staggered-enrollment and matched-cohort comparisons for the cross-program bets.
 - **Independent evaluation body** (analogous to the psychometric board, §33.1, and independent of the decision owners) empowered to pre-register, hold data, and trigger stopping rules, so the design bets cannot ossify into unfalsifiable dogma. The GT-Twin gym (§31) is simulation and cannot substitute for this real-world evidence.
 
@@ -1554,7 +1512,7 @@ The program's design bets — the originating spiky points of view — are empir
 | Guide/staff supply or burnout breaks the named-human authority floor. | Grow-your-own near-peer guide ladder with authority reserved to cleared adults; age-band ratios; a standing enrollment governor that pauses new-cohort formation first; staff-wellbeing measurement and a Workforce scorecard guardrail (§6.6, §2.6, §33.1). |
 | A data breach exposes 100,000 children's records. | Identity-SPOF hardening (split crosswalk from crypto-shred keys, HSM/quorum, anomaly-detected bulk reads, no bulk export), a data-breach incident commander and runbook, a child-data breach-notification workflow, and a population-scale breach red-team as a pre-live gate; breach liability insured (§30, §22.1). |
 | The TimeBack partner engine (sole academic substrate) changes, degrades, or is unavailable; or the Phase-0→1 cutover fails. | A child-data DPA as a blocking condition for live use, version-pinning, an availability degraded-mode, a data-egress exit plan, and a second-source / in-house-accelerate trigger; replace the date-driven cutover with a gate-driven one (dual-run + mastery-state reconciliation + rollback; the near-90% gate stays advisory until the fairness audit and reconciliation both pass) (§3.6, §12, §32.4). |
-| Public/regulatory backlash ("stolen childhood") or a disparate-impact challenge to the IQ gate closes the program. | A separate external-affairs / political-risk function: proactive transparency (honest ITT + rescoped thesis), a standing subgroup adverse-impact audit of the admissions gate, an evidence-grounded narrative library (SMPY, §24 [SRC-05]), community/regulator engagement, and a crisis-comms playbook; neutral positioning, no MIT-brand claims (RF-00b). |
+| Public/regulatory backlash ("stolen childhood") or a disparate-impact challenge to the IQ gate closes the program. | A separate external-affairs / political-risk function: proactive transparency (honest ITT + rescoped thesis), a standing subgroup adverse-impact audit of the external admission gate (§3.4), an evidence-grounded narrative library (SMPY, §24 [SRC-05]), community/regulator engagement, and a crisis-comms playbook; neutral positioning, no MIT-brand claims (RF-00b). |
 | Scarce opportunity goods (enrichment, mentor minutes, compute) rebuild a de-facto caste through access. | An opportunity-allocation equity audit (cumulative allocation share by subgroup) with a fairness constraint on the §16/§18 allocators that auto-demotes to Advisory on breach; equalize by supply (loaners, remote labs, regional partners), never by rationing; enrichment stays additive/non-gating (§2.6, `GOVERNANCE.md` G6). |
 | A child never lands a durable passion (perpetually parked). | A guided-generalist afternoon default (built from adjacent + wildcard paths) instead of an empty Build line; an alternative masterpiece route (guide-scaffolded generalist capstone or a portfolio of smaller defended works) satisfying §2.5's construct; "no-durable-spine" tracked as a named subgroup; never automatic route-out or forced continuation (§14.7, §14.10, §2.6). |
 
@@ -1564,7 +1522,7 @@ The brainlift and implementation blueprint are foundations rather than proposals
 
 `Split` means GT100K retains a safe mechanism while deferring or rejecting its proposed authority, sensing, or incentive design.
 
-> **Ownership and priority note (§3.4, §3.2).** This appendix records how source proposals were consolidated; it predates the admissions-ownership split. Rows about the base application, CogAT-based intake/routing, and the Track A / Track B eligibility decision (e.g., HEADROOM, Gatehouse) are **owned by the admissions team (§3.4)**, and any month shown for them refers to that team's timeline. Rows about the compensated family trial and cognitive-floor assessment (Floor CAT and WASM Runtime, Cognitive Floor Assessment WASM, FloorGate, Covenant Ledger, CRUCIBLE, Cerberus) are **owned by this platform (§10, §11)** — reassigned because they are not in the admissions MVP — and run as post-eligibility onboarding/readiness. Rows about Resonance / audio DSP (ATELIER DSP Studio, RESONANCE) are **low-priority stretch (§17, §3.2)** and are not committed to the release candidate.
+> **Ownership and priority note (§3.4, §3.2).** This appendix records how source proposals were consolidated; it predates the admission-ownership split. Rows about the base application, cognitive intake/routing, and the eligibility decision (e.g., HEADROOM, Gatehouse) describe the **external admission process (§3.4)**, which is out of scope for this repository; any month shown for them refers to that external timeline. Rows about the compensated family trial and cognitive-floor assessment (Floor CAT and WASM Runtime, Cognitive Floor Assessment WASM, FloorGate, Covenant Ledger, CRUCIBLE, Cerberus) are **owned by this platform (§10, §11)** as post-enrollment onboarding/readiness. Rows about Resonance / audio DSP (ATELIER DSP Studio, RESONANCE) are **low-priority stretch (§17, §3.2)** and are not committed to the release candidate.
 
 M1, M2, and M3 identify construction allocation, not live rollout. Month 4 validates the integrated retained system and is not repeated in every row.
 

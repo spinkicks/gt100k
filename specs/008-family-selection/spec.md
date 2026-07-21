@@ -8,7 +8,7 @@
 This spec was originally (mistakenly) written as the full admissions *pipeline*. Corrected: **our lane
 is assessing the FAMILY's fit + commitment** for an ~8-year intensive program. The **child-facing
 assessment** (CogAT, Track A/B eligibility, the Talent Snapshot *review* of the child's work) **and the
-income-banded lottery** are the **separate admissions team's** (`docs/prd/ADMISSIONS_PRD.md`). We
+income-banded lottery** are an **external admissions process** (separate team, out of scope). We
 **integrate** with those at the handoff; we do **not** rebuild them.
 
 ## What we select for (from `docs/research/familyBrainlift.md`)

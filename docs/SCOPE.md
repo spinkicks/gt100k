@@ -10,8 +10,9 @@ commit to ~8 years (**pay AND put the child through it**), truly want the child 
 have the parental drive + **resistance to social pressure**, household buy-in, and a binding commitment
 (family brainlift SPOVs 1–4, `docs/research/familyBrainlift.md`). The **separate admissions team** owns the
 **child-facing assessment** (CogAT, Track A/B eligibility, Talent Snapshot review) **and the income-banded
-lottery** (Tiffany + Aadi, `docs/prd/ADMISSIONS_PRD.md`). We **integrate** at the handoff; we do **not**
-rebuild those. Concrete family instruments are being developed in the family brainlift.
+lottery** (Tiffany + Aadi) — an external process, integrated at the handoff; no admissions doc is hosted in
+this repo. We **integrate** at the handoff; we do **not** rebuild those. Concrete family instruments are
+being developed in the family brainlift.
 
 ## Passion — developing the student's passion
 - **002-evidence-graph** — content-addressed provenance of a student's passion work (PRD §19). **Active** (chrome declutter in progress).

@@ -6,7 +6,8 @@ build on the current flat layout would cause large merge conflicts.
 
 > **admissions/** here is the **family-facing** part only (family selection): family application/portal,
 > family selection, income-banded lottery, decision/aid. The **child-facing** assessment (CogAT, Track A/B,
-> Talent review) is the separate admissions team's (`ADMISSIONS_PRD.md`) — integrated, not rebuilt.
+> Talent review) is the separate admissions team's — an external process, integrated, not rebuilt (no
+> admissions doc is hosted in this repo).
 
 **Why it's low-risk:** imports use package *names* (`@gt100k/…`), not paths. So we move directories and
 update only (1) `pnpm-workspace.yaml` globs, (2) root `tsconfig.json` reference paths, (3) the lockfile.
@@ -27,7 +28,7 @@ gt100k/
 │  └─ adapters/   repo-memory             # generic in-memory repo, cross-product
 ├─ archive/         arena, cohort, pitch (existing) + academics + infra (below)
 ├─ specs/           002-evidence-graph, 003-interest-lab, 007-passion-tutor, 008-family-selection
-└─ docs/            SCOPE.md, RESTRUCTURE-PLAN.md, prd/ (incl. ADMISSIONS_PRD.md), FACTORY-MAP.md
+└─ docs/            SCOPE.md, RESTRUCTURE-PLAN.md, prd/, FACTORY-MAP.md
 ```
 
 ## Move map (current → new)
