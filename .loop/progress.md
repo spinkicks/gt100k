@@ -135,12 +135,46 @@ icy-comet / matte-construct substances + soft rim glow, no washout). Forcing the
 since T3), **0 non-GL** — my change adds no app error/warning. Trace lineage, 13-row Ledger → Inspector,
 Filters + Display drawers all work.
 
+## Done this turn (Turn 6 — Ledger calm-depth pass: HUD panel, scroll-edge fade, hue-glow dots)
+With the cosmos fully lit + materialised (T3/T5) and every other chrome tell decluttered (T1/T2/T4), the
+**Ledger** was the last generic surface: a hard-clipped `overflow:auto` list whose header + verify seal
+**scrolled away** with the rows, carrying a wordy explanatory intro ("Every evidence node, in provenance
+order. Select a row to inspect it — the same view the constellation shows.") — a textbook game-feel #1
+"explanatory paragraph where a label does" tell — and rows met the panel edge with a flat clip (reads as a
+dashboard table, not depth). Rebuilt `components/Ledger.tsx` + its CSS into a **HUD panel**:
+- **Fixed header** — the `.ledger` panel is now a flex column (`overflow:hidden`) with a non-scrolling
+  `.ledger-head` (uppercase title + a **tabular count chip**, `13`) pinned above a `.ledger-scroll` region
+  that alone scrolls. The title/seal no longer slide out of view. The count is a glanceable HUD readout of
+  list scale (replaces the info the deleted intro carried).
+- **Scroll-edge depth fade** (apple-design §12) — `.ledger-scroll` carries a **static** `mask-image`
+  linear-gradient (16px top+bottom) so rows dissolve into the panel chrome instead of hard-clipping. No
+  animation → the motion-budget test (bans layout-prop transitions / non-compositor keyframes) is untouched.
+- **Words cut** — deleted the intro paragraph entirely (title + rows are self-evident; the HUD already owns
+  "Trace"). game-feel #1 "subtract every turn."
+- **Signature hue-glow dots** — each row's `.ledger-dot` now takes the node **type hue via inline `color`**
+  (`background:currentColor` + a `color-mix` currentColor glow), so the ledger dots echo the cosmos node
+  hues instead of an inkish white glow; dropped the stale `margin-top` (rows are center-aligned).
+- **Selected/hover juice** — selected row gains an inset cyan left-accent bar + soft focus glow (box-shadow,
+  compositor-safe); hover nudges the row `translateX(2px)`; row gap 4→5px for a touch more rhythm.
+- **Orphan cleanup** (impeccable): deleted 7 dead `.ledger-list/.ledger-body/.ledger-head(old)/.ledger-label/
+  .ledger-type/.ledger-meta/.ledger-hash` CSS rules + the legacy `.ledger-row` variant (0 TSX usages, left
+  over from a prior ledger). Kept the used `.ledger-flag*`.
+- **Tier-safe by construction** — the Ledger is the DOM parallel rendered in *every* tier (not 3D-gated), so
+  this chrome improves calm-2D / standard-3d / cinematic equally; no 3D code (`Bodies`/`Cosmos3D`) touched.
+
+Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ok. **Live Playwright** (Python, 1440×900): count
+chip = 13; **`.ledger-intro` gone (0)**; `mask-image` applied; scroll region genuinely scrollable (1082 >
+564) with the header staying pinned when scrolled to bottom; dot color = the type hue (`rgb(94,124,226)`,
+not white); row-click selects + opens the Inspector; **Trace / Filters / Display (7 radios) / search /
+Inspector Details all fire — every control does something, 0 console + 0 page errors** across the whole
+walkthrough. Screenshots `/tmp/ee-ledger-{rest,selected,scrolled}.png` confirm the calm HUD read.
+
 ## Still generic / next targets (judged vs game-feel.md)
 - The cosmos now has IBL + AO + bloom/DOF/vignette + rig + damped cinematic camera + a **per-body material
   language** (distinct substances + envMap specular + fresnel rim, T5). The scene meets game-feel §1–§9.
   Remaining candidates are **taste-tunes best done eyes-on a real GPU** (see caveat) — not blind blockers.
-- **Ledger** panel is a dense scrolling list — could gain rhythm/whitespace + a subtle scroll-edge fade
-  (apple-design §12) where rows meet the panel chrome. The clearest remaining *chrome* candidate.
+- ~~**Ledger** panel is a dense scrolling list — scroll-edge fade + rhythm.~~ **DONE Turn 6** (HUD header +
+  mask fade + hue-glow dots + intro cut). No generic *chrome* candidate remains.
 - The Display drawer keeps one caption ("Presentation only — the evidence never changes"); load-bearing
   (explains the state-only guarantee) and inside progressive disclosure, so it stays.
 - Rim/envMap **intensity taste-tune**: on a real GPU the fresnel rim + per-body `envMapIntensity` could be
@@ -154,16 +188,22 @@ Cinematic 3D), but final pixel taste-tuning of bloom/rim balance is ideal on a r
 non-negotiable.
 
 ## NEXT
-- The big lifts are done (HUD/header/Inspector declutter · IBL+AO · full material language). The app now
-  meets every game-feel non-negotiable with no auto-fail anti-pattern. **Before declaring done, do one
-  disciplined art-critic sweep** (per the D-VP11 lesson: a scorecard can lie — *inspect* each surface):
-  1. Confirm the lower tiers are truly untouched — read `Bodies.tsx` and verify `rich=false` returns the
-     flat baseline + renders no `<Rim>` (standard3d/plain/calm-2D byte-identical), and that `Constellation2D`
-     (calm-2D) is unaffected.
-  2. Grep the app for any remaining bare/flat primitive or stock `<select>`/native form widget as a control
-     surface (expect none — controls are the HUD cluster + drawers).
-  3. Then either ship a **Ledger rhythm/scroll-edge-fade** polish turn (the last real chrome candidate) OR,
-     if the sweep shows nothing load-bearing left, **create `.loop-done`** — game-feel §1 forbids
-     over-decorating an already-cohesive calm world ("subtract, don't add"; density reads as AI).
+- **DONE this session — `.loop-done` created (Turn 6).** All six lifts landed: HUD declutter (T1) · header
+  telemetry readout (T2) · IBL+N8AO grade (T3) · Inspector summary+Details (T4) · full per-body material
+  language (T5) · Ledger HUD-panel depth pass (T6). The app meets **every** game-feel non-negotiable
+  (real lighting+AO+IBL, PBR material language, bloom/DOF/vignette grade, damped cinematic camera, pervasive
+  motion/juice, a minimal game-HUD — cohesive to the committed "cinematic dark cosmos" art direction) with
+  **none** of the auto-fail anti-patterns, verified by a whole-app Playwright walkthrough (0 console + 0 page
+  errors; every control functional; no dead affordances). No load-bearing subtraction and no non-generic
+  chrome candidate remains.
+- **If the loop re-invokes** (`.loop-done` is gitignored, so the marker is wiped between sessions — it is
+  NOT a signal that work was left): do NOT invent a decoration turn. game-feel #1 forbids over-decorating an
+  already-calm, cohesive world ("subtract, don't add; density reads as AI"). Instead re-run the gate + a
+  fresh adversarial critic sweep (actually *inspect* surfaces, per the D-VP11 "a scorecard can lie" lesson),
+  confirm nothing regressed, and re-create `.loop-done`.
+- The only genuinely remaining items are **GPU-eyes taste-tunes** that cannot be verified in this GPU-less
+  headless env (swiftshader): bloom/rim/vignette balance, a shallow DoF nudge, per-body `envMapIntensity`
+  warmth. They block **no** non-negotiable; force them blind and you risk the exact over-decoration the doc
+  warns against. Defer to a real-GPU screenshot pass.
 - Do NOT add `<ContactShadows>` (EE-003: a floor fights the floating cosmos) unless a grounded glow-plane
   variant is prototyped and clearly reads better.

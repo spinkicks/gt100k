@@ -406,68 +406,73 @@ button {
   color: var(--ink);
 }
 
-/* Ledger. */
+/* ── Provenance Ledger — a HUD panel: a fixed header over a masked, edge-faded scroll region ── */
 .ledger {
-  padding: 18px 20px;
+  padding: 0;
   max-height: 620px;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* the panel's rounded corners clip; the inner region scrolls */
+}
+/* Fixed header — the title + count stay put while the tree scrolls beneath them. */
+.ledger-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid color-mix(in oklab, var(--line) 65%, transparent);
 }
 .ledger-title {
   font-size: var(--text-label);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-muted);
-  margin: 4px 0 12px;
-}
-.ledger-list {
-  list-style: none;
   margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
 }
-.ledger-row {
-  display: flex;
-  gap: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--line);
+/* Tabular count chip — a glanceable HUD readout of how many entries the list holds. */
+.ledger-count {
+  flex: none;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in oklab, var(--void) 55%, transparent);
+  color: var(--ink-muted);
+  font-size: var(--text-mono);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
 }
-.ledger-row:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
+/* Scroll region — rows dissolve into the panel chrome at both edges (apple-design §12 depth), so the
+   list reads as receding volume rather than a hard-clipped table. Static mask (no animation). */
+.ledger-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 20px 16px;
+  --ledger-edge: 16px;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--ledger-edge),
+    #000 calc(100% - var(--ledger-edge)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--ledger-edge),
+    #000 calc(100% - var(--ledger-edge)),
+    transparent 100%
+  );
 }
+/* Signature glowing node dot — hue-matched to the body's type (set via inline `color`). */
 .ledger-dot {
   flex: none;
-  width: 10px;
-  height: 10px;
-  margin-top: 5px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
-  box-shadow: 0 0 10px 1px currentColor;
-}
-.ledger-body {
-  min-width: 0;
-}
-.ledger-head {
-  display: flex;
-  gap: 10px;
-  align-items: baseline;
-  justify-content: space-between;
-}
-.ledger-label {
-  font-weight: 600;
-}
-.ledger-type {
-  font-size: var(--text-label);
-  color: var(--ink-muted);
-}
-.ledger-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 10px;
-  margin: 4px 0;
-  font-size: var(--text-label);
-  color: var(--ink-muted);
+  background: currentColor;
+  box-shadow: 0 0 9px color-mix(in oklab, currentColor 75%, transparent);
 }
 .ledger-flag {
   padding: 1px 7px;
@@ -482,10 +487,6 @@ button {
 .ledger-flag--model {
   color: var(--model);
   border-color: color-mix(in oklab, var(--model) 40%, var(--line));
-}
-.ledger-hash {
-  color: var(--ink-muted);
-  opacity: 0.75;
 }
 
 /* ── Time-scrub (build timeline) ────────────────────────────────────────────── */
@@ -1163,28 +1164,24 @@ button {
 }
 
 /* ── Accessible Ledger tree (§U5.12 parity) ─────────────────────────────────── */
-.ledger-intro {
-  margin: 0 0 12px;
-  font-size: var(--text-label);
-  color: var(--ink-muted);
-  line-height: 1.4;
-}
 .ledger-tree {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 .ledger-node {
   border-radius: 10px;
   border: 1px solid transparent;
-  transition: border-color 160ms ease, background-color 160ms ease;
+  transition: border-color 160ms ease, background-color 160ms ease, box-shadow 200ms ease;
 }
 .ledger-node.is-selected {
   border-color: color-mix(in oklab, var(--focus) 45%, var(--line));
   background: color-mix(in oklab, var(--focus) 10%, transparent);
+  box-shadow: inset 2px 0 0 var(--focus),
+    0 0 18px -8px color-mix(in oklab, var(--focus) 80%, transparent);
 }
 /* The selectable row (overrides the legacy flex row-rule for the button element). */
 .ledger-tree .ledger-row {
@@ -1201,9 +1198,11 @@ button {
   text-align: left;
   cursor: pointer;
   border-radius: 10px;
+  transition: background-color 160ms ease, transform 140ms ease;
 }
 .ledger-tree .ledger-row:hover {
   background: color-mix(in oklab, var(--focus) 8%, transparent);
+  transform: translateX(2px);
 }
 .ledger-name {
   min-width: 0;

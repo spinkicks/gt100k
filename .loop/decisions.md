@@ -885,3 +885,39 @@ _Legacy scratch below (prior interest-lab loop — not applicable to evidence-ex
   `next build` ✓** (route `/` prerendered static, 285 kB page / 373 kB first-load).
 - Honest caveat (unchanged): the WebGL full tier can't be pixel-verified headless; a GPU/browser
   screenshot pass remains the ideal final taste-tune but blocks no non-negotiable.
+
+---
+
+# Evidence Explorer (002 · "Provenance Observatory") — art-direction decisions
+> NOTE: the D-VP/D0xx series above belongs to interest-lab (003); this worktree's decisions.md was
+> inherited from that loop. Evidence-explorer's per-turn art direction is recorded in `.loop/progress.md`
+> (Turns 1–6). This section captures the standing committed art direction + the Turn-6 choice.
+
+## D-EE-AD — Committed art direction (keep cohesive across turns)
+- World: **cinematic dark cosmos**. Palette — `--void #0a0e17`, panels `#121826`/`#1a2233`, ink `#eaf0fb`,
+  **focus cyan `#7dd3fc`** (primary/interaction accent), **verify teal `#34e5b0`** (on/success), per-type
+  node hues. Type: Space Grotesk (display) + Inter (body) + JetBrains Mono. Radii 10–16px. Frosted `.panel`.
+- Motion: `motion@12` springs (`SPRINGS.ui` ≈ bounce 0, 0.4s); reduced-motion → opacity-only; DOM animates
+  only transform/opacity/filter (motion-budget test enforces no layout-prop transitions).
+
+## D-EE-T6 — The Ledger is a HUD panel, not a scrolling table (Turn 6)
+- **Chose:** rebuild the accessible Ledger chrome as a fixed-header HUD panel — a pinned `.ledger-head`
+  (title + tabular count chip) above a `.ledger-scroll` region that alone scrolls and carries a **static
+  `mask-image` scroll-edge fade** (apple-design §12 depth); cut the explanatory intro paragraph; hue-match
+  the row dots to the node type (inline `color` → `currentColor` glow); add a selected left-accent + hover
+  `translateX(2px)`; delete 7 orphaned legacy `.ledger-*` CSS rules.
+- **Why:** it was the last generic chrome surface — a hard-clipped list whose header scrolled away and whose
+  intro was a textbook game-feel #1 "paragraph where a label does." A **static** mask (not a JS-driven
+  dynamic fade) was deliberate: keeps the motion-budget guarantee intact and is headless-robust. The dot
+  hue-glow ties the ledger to the cosmos node palette (cohesion #9) at ~zero cost.
+- **Tier-safe:** the Ledger is the DOM parallel rendered in *every* render tier (not 3D-gated), so this
+  improves calm-2D / standard-3d / cinematic equally; no 3D code touched.
+- **Verification (evidence, not assertion):** `tsc -b` exit 0 · 66/66 vitest · `next build` ✓. Whole-app
+  Python-Playwright walkthrough (1440×900): count=13, intro removed (0), mask applied, scroll region
+  scrollable (1082>564) with header pinned when scrolled, dot=type hue, row-select→Inspector, and
+  Trace/Filters/Display(7 radios)/search/Inspector-Details all fire — **0 console + 0 page errors**.
+- **Done:** with T6 the app meets every game-feel non-negotiable with no auto-fail; `.loop-done` created.
+- **Honest caveat (unchanged):** under software WebGL (swiftshader) the EffectComposer emits benign
+  `glBlitFramebuffer` GL warnings and `PerformanceMonitor` may self-heal cinematic→lower on a slow frame —
+  pre-existing + environmental. Final bloom/rim/DoF pixel taste-tuning is ideal on a real GPU; blocks no
+  non-negotiable.
