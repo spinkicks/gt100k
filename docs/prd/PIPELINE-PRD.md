@@ -8,7 +8,7 @@
 | Document status | Standalone reframe of the program operating model |
 | Version | 1.1 |
 | Date | 2026-07-20 |
-| Companion documents | `PRD.md` v1.10 (detailed program spec), `GOVERNANCE.md` (rights/consent/authority, G1–G8), `gtBrainlift.md` (originating thesis, SPOV 1–5) |
+| Companion documents | `PRD.md` v1.12 (detailed program spec), `GOVERNANCE.md` (rights/consent/authority, G1–G9), `gtBrainlift.md` (originating thesis, SPOV 1–5) |
 | Initial market | United States, English-first |
 | Intake ages | 6 through 14 (primary intake 6 to 8) |
 | Line output | A learner-owned, verifiable Mastery Passport backed by an evidence trail |
@@ -25,7 +25,7 @@ Three source documents sit underneath it:
 
 - **`gtBrainlift.md`** — the originating thesis and five spiky points of view (SPOV 1–5): the *why*.
 - **`PRD.md` v1.7** — the full program operating system, section by section: the *what*, in engineering detail.
-- **`GOVERNANCE.md`** (G1–G8) — the rights, consent, safety, and decision-authority invariants. Here they are the **plant safety system** (§4.3): hard interlocks that stop the line and can never be traded for throughput.
+- **`GOVERNANCE.md`** (G1–G9) — the rights, consent, safety, and decision-authority invariants. Here they are the **plant safety system** (§4.3): hard interlocks that stop the line and can never be traded for throughput.
 
 A crosswalk from every factory term to its `PRD.md` section and SPOV is in §14.
 
@@ -102,7 +102,7 @@ flowchart TB
     FS --> S1 --> S2 --> S3
 
     REWORK["REWORK LOOPS · §9<br/>persistence protocol · deload · park/reopen · delayed re-check"]
-    STOP["LINE-STOP INTERLOCKS · §4.3<br/>safeguarding · dose limiter · consent/assent · GOVERNANCE G1–G8"]
+    STOP["LINE-STOP INTERLOCKS · §4.3<br/>safeguarding · dose limiter · consent/assent · GOVERNANCE G1–G9"]
 
     S2 -. "fail gate → route to rework (never abandon)" .- REWORK
     REWORK -. "re-enter line" .- S2
@@ -136,7 +136,7 @@ Authority lives in deterministic services and named people. Statistical models e
 
 Every mechanism on the line carries an evidence class (`PRD.md` §5): **E1/E2** (strong/adequate evidence — may run in production with monitoring), **E3** (plausible — shadow or reversible pilot), **R** (research bet — no production authority; separate consent), **G** (rights/safety — enforced as policy regardless of measured lift), **ENG** (engineering control — validated by test/load/security). Software can be *built* in a month; it cannot be *granted authority* over a child without valid data, psychometric review, safety review, and subgroup evidence. Velocity never buys authority.
 
-### 4.3 The safety system: line-stop interlocks (GOVERNANCE G1–G8)
+### 4.3 The safety system: line-stop interlocks (GOVERNANCE G1–G9)
 
 The rights and safety rules are the plant's **interlocks**. Any one of them halts the relevant station immediately, ahead of throughput:
 
@@ -466,7 +466,7 @@ Condensed from `PRD.md` §34.
 | Station 3 / QC & shipping | Readiness: age-14 tolerance, EvidenceGraph, Reality Gateway, Passport (`PRD.md` §2.5, §19–§21) |
 | QC gate / station tolerance | Mastery gate, floor boundary, Release Threshold Registry (`PRD.md` §12, §11, §33.1) |
 | Rework loop / recirculation | Persistence protocol, park/reopen, delayed re-check, retrieval schedule (`PRD.md` §12, §14.8) |
-| Line-stop interlock | Safeguarding override, dose limiter, assent/consent, GOVERNANCE G1–G8 |
+| Line-stop interlock | Safeguarding override, dose limiter, assent/consent, GOVERNANCE G1–G9 |
 | No-abandonment commitment | No automated rejection/exit, humane routing, individualized horizon (`PRD.md` §2.5, §10; `GOVERNANCE.md` G3 §8.4) |
 | Yield | Measured leading indicators + age-14 outcome on an intent-to-treat denominator (all children ever enrolled, routed-out counted as non-attainment); never a guarantee (`PRD.md` §2.5, §2.6, §33) |
 | Rated throughput | 100,000-learner scale target (`PRD.md` §22, §30) |
