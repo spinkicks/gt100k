@@ -228,3 +228,16 @@
 
 - T030 + T032 — Add the `MediaTurnSource` stub adapter contract first, then scaffold and implement `adapters/cohort-media-stub`.
 - Acceptance: `turns` yields a deep-copy-isolated synthetic `TurnEvent[]`; the adapter is explicitly marked non-production with WebRTC/AudioWorklet/LiveKit deferred; the focused RED/GREEN cycle and repository typecheck/test/lint gate remain green.
+
+## 2026-07-21 — P5 / T030 + T032
+
+- Added the synthetic `@gt100k/cohort-media-stub` adapter package with an injected per-room turn registry, copy isolation at constructor and read boundaries, and an empty-array missing-room result.
+- Added an immutable non-production status marker naming WebRTC, AudioWorklet, and LiveKit as deferred under spec section 15.1; no capture, transport, network, or other production media dependency was introduced.
+- Added the FR-025/SC-008 contract suite proving the exact `MediaTurnSource` signature, Fixture E delivery, input/read isolation, missing-analytics behavior, and deferred marker.
+- TDD status: the focused suite first failed because `adapters/cohort-media-stub/src/index.ts` was absent, then passed 4/4 after the minimal implementation. Adapter-local composite TypeScript and focused Biome checks pass.
+- Gate status: `pnpm typecheck`, `pnpm test` (106/106), and `pnpm lint` pass. P5/SC-007's analysis and media-stub behavior are complete; the P5 public-surface checkpoint remains. No blocker.
+
+## NEXT
+
+- T033 — Export the RivalryMix API and `MediaTurnSource` port from `packages/cohort-compiler/src/index.ts` using explicit named exports.
+- Acceptance: consumers can import `analyzeTurns`, its threshold type, and `MediaTurnSource` through `@gt100k/cohort-compiler`; the public API contract proves the exact observable-only signatures; the standalone feature project-reference build and repository typecheck/test/lint gate remain green; P5/SC-007 reaches its checkpoint.

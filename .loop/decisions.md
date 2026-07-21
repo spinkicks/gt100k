@@ -79,3 +79,9 @@
 ## 2026-07-20 — T028 public US2 surface
 
 - Published the three injected US2 port types (`CohortRepository`, `SafeguardingSink`, and `BenefitEstimator`) beside the functions that consume or implement them, so package consumers can satisfy the root entrypoint's lifecycle and governance signatures without source-relative imports. Kept the export list explicit and kept `BenefitEstimator` absent from the exact solve/repair tuples; rejected wildcard exports because they could silently widen the public or learned-model boundary.
+
+## 2026-07-21 — T030/T032 synthetic media-source defaults
+
+- Inject a per-room record into `SyntheticMediaTurnSource` and copy every turn at construction and read boundaries. Rejected a single fixed turn array because it would ignore the settled `roomRef` port parameter, and rejected a callback/provider seam because this adapter is intentionally synthetic and contains no I/O.
+- Return an empty turn array for an unknown room so missing analytics flows into the existing suppressed/no-status-change behavior. Rejected throwing because absence is an expected FR-024 input condition, distinct from a malformed media-plane operation.
+- Expose an immutable runtime status marker with `production: false` and the deferred WebRTC, AudioWorklet, and LiveKit targets. Rejected provisioning any media dependency or relying only on an untestable comment because FR-025/SC-008 require a clearly marked, buildable non-production seam.
