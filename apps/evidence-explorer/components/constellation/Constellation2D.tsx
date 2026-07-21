@@ -30,6 +30,7 @@ function NodeMark({
   focused,
   fractured,
   sealed,
+  onSelect,
 }: {
   node: NodeView;
   index: number;
@@ -38,6 +39,8 @@ function NodeMark({
   fractured: boolean;
   /** Human-owned Outcome + a passing Verify → the gold seal ring reads as forged/locked. */
   sealed: boolean;
+  /** Mouse affordance: click a body to inspect it (keyboard path is the Ledger tree). */
+  onSelect?: (nodeId: string, origin: { readonly x: number; readonly y: number }) => void;
 }): JSX.Element {
   const color = `var(--${node.colorRole})`;
   // Staggered entrance keyed to provenance depth so the DAG "ignites" front-to-back. Positioning
@@ -45,7 +48,12 @@ function NodeMark({
   // so it scales about its own center (SVG CSS-transform otherwise resolves origin to the viewBox).
   const delay = `${Math.min(node.depthRank, 6) * 90 + index * 18}ms`;
   return (
-    <g transform={`translate(${node.pos2d.x} ${node.pos2d.y})`}>
+    // biome-ignore lint/a11y/useKeyWithClickEvents: mouse-only enhancement; the SVG is role="img" (decorative) and the keyboard/AT path is the Ledger role="tree" (§U5.12).
+    <g
+      transform={`translate(${node.pos2d.x} ${node.pos2d.y})`}
+      onClick={onSelect ? (e) => onSelect(node.id, { x: e.clientX, y: e.clientY }) : undefined}
+      style={onSelect ? { cursor: "pointer" } : undefined}
+    >
       <g
         className={`node-enter${focused ? " is-focused" : ""}${fractured ? " is-fractured" : ""}`}
         style={{ animationDelay: delay, transformBox: "fill-box", transformOrigin: "center" }}
@@ -170,6 +178,7 @@ export function Constellation2D({
   focusNodeId = null,
   waveOrder = [],
   verify,
+  onSelect,
 }: {
   view: ExplorerView;
   /** When present (time-scrub), only these node ids render; omitted = fully grown (SSR baseline). */
@@ -179,6 +188,8 @@ export function Constellation2D({
   waveOrder?: ReadonlyArray<{ readonly from: string; readonly to: string }>;
   /** Verify-sequence visual state (light-wave / seal / byte-fracture). */
   verify?: VerifyVisualState;
+  /** Mouse affordance: click a body to open its Inspector (keyboard path is the Ledger). */
+  onSelect?: (nodeId: string, origin: { readonly x: number; readonly y: number }) => void;
 }): JSX.Element {
   const visibleNodes = revealed ? view.nodes.filter((n) => revealed.has(n.id)) : view.nodes;
   const byId = new Map(visibleNodes.map((n) => [n.id, n]));
@@ -295,6 +306,7 @@ export function Constellation2D({
             focused={focusNodeId === n.id}
             fractured={fractureId === n.id}
             sealed={sealed && n.isHumanOwned}
+            onSelect={onSelect}
           />
         ))}
       </g>

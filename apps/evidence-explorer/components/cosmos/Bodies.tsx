@@ -10,7 +10,7 @@
  * they are perfectly still. Ambient float is decorative and seeded off `birthOrder`, never random.
  */
 import type { NodeView } from "@gt100k/evidence-explorer-view";
-import { useFrame } from "@react-three/fiber";
+import { type ThreeEvent, useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import type { JSX } from "react";
 import * as THREE from "three";
@@ -177,6 +177,7 @@ function Body({
   animate,
   isFracture,
   sealActive,
+  onPick,
 }: {
   node: NodeView;
   star: THREE.ExtrudeGeometry;
@@ -185,6 +186,7 @@ function Body({
   isFracture: boolean;
   /** This human-owned Outcome is the Verified ✓ seal → a one-shot forge pulse (UE032). */
   sealActive: boolean;
+  onPick?: (nodeId: string, origin: { readonly x: number; readonly y: number }) => void;
 }): JSX.Element {
   const ref = useRef<THREE.Group>(null);
   const inner = useRef<THREE.Group>(null);
@@ -227,8 +229,27 @@ function Body({
     ref.current.rotation.y = t * 0.15 + phase;
   });
 
+  const pick = (e: ThreeEvent<PointerEvent>): void => {
+    if (!onPick) return;
+    e.stopPropagation(); // the nearest body wins; the pick never falls through to the one behind it.
+    onPick(node.id, { x: e.clientX, y: e.clientY });
+  };
+  const hover =
+    (over: boolean) =>
+    (e: ThreeEvent<PointerEvent>): void => {
+      if (!onPick) return;
+      e.stopPropagation();
+      document.body.style.cursor = over ? "pointer" : "";
+    };
+
   return (
-    <group ref={ref} position={[bx, by, bz]}>
+    <group
+      ref={ref}
+      position={[bx, by, bz]}
+      onPointerDown={pick}
+      onPointerOver={hover(true)}
+      onPointerOut={hover(false)}
+    >
       <group ref={inner}>
         <BodyMesh node={node} star={star} hexOverride={isFracture ? COSMOS.tamper : undefined} />
       </group>
@@ -240,10 +261,12 @@ export function Bodies({
   nodes,
   animate,
   verify,
+  onPick,
 }: {
   nodes: readonly NodeView[];
   animate: boolean;
   verify?: VerifyVisualState;
+  onPick?: (nodeId: string, origin: { readonly x: number; readonly y: number }) => void;
 }): JSX.Element {
   const star = useStarGeometry();
   const fractureId = verify?.fractureNodeId ?? null;
@@ -258,6 +281,7 @@ export function Bodies({
           animate={animate}
           isFracture={fractureId === n.id}
           sealActive={sealed && n.isHumanOwned}
+          onPick={onPick}
         />
       ))}
     </group>

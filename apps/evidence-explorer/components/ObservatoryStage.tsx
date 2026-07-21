@@ -13,12 +13,14 @@
  */
 import {
   type ExplorerView,
+  type LedgerView,
   type RenderCaps,
   type RenderTier,
   TIER_LADDER,
   type TierOverride,
   resolveRenderTier,
 } from "@gt100k/evidence-explorer-view";
+import { AnimatePresence } from "motion/react";
 import dynamic from "next/dynamic";
 import {
   Component,
@@ -30,10 +32,13 @@ import {
   useState,
 } from "react";
 import type { JSX } from "react";
+import { Inspector } from "./Inspector.js";
 import { TimeScrub } from "./TimeScrub.js";
 import { VerifyPanel } from "./VerifyPanel.js";
 import { Constellation2D } from "./constellation/Constellation2D.js";
+import { type SelectionOrigin, panelById } from "./inspector-model.js";
 import { effectiveFocusId, revealedNodeIds } from "./scrub.js";
+import { useSelection } from "./selection.js";
 import type { SyntheticVerification } from "./synthetic-view.js";
 import { IDLE_VISUAL, type VerifyVisualState } from "./verify-machine.js";
 
@@ -98,9 +103,11 @@ class CanvasBoundary extends Component<
 export function ObservatoryStage({
   view,
   verification,
+  ledger,
 }: {
   view: ExplorerView;
   verification: SyntheticVerification;
+  ledger: LedgerView;
 }): JSX.Element {
   const [mounted, setMounted] = useState(false);
   const [caps, setCaps] = useState<RenderCaps | null>(null);
@@ -108,13 +115,41 @@ export function ObservatoryStage({
   const [degradedTo, setDegradedTo] = useState<RenderTier | null>(null);
   const [webglFailed, setWebglFailed] = useState(false);
 
+  // Shared selection (UX4): the selected node drives the Inspector, the camera fly-to, and the beat
+  // highlight — one concept, whether it came from the Ledger, a scrub beat, or a pointer-pick.
+  const { selectedNodeId, origin, select, clear } = useSelection();
+
   // Time-scrub state (§U5.4) — presentation-only: it reveals a subset of the one `ExplorerView`,
   // never mutates it. Starts fully grown so the default view matches the calm baseline.
   const [revealedCount, setRevealedCount] = useState(() => view.growthTimeline.count);
-  const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
 
   const revealed = useMemo(() => revealedNodeIds(view, revealedCount), [view, revealedCount]);
-  const effFocus = effectiveFocusId(focusNodeId, revealed);
+  // The effective selection: a node hidden by scrubbing back closes the Inspector + drops the fly-to.
+  const effFocus = effectiveFocusId(selectedNodeId, revealed);
+
+  // Select a body from an in-stage affordance (canvas pick / 2D click / input link): grow the reveal
+  // so the picked node is present, then select it (carrying the screen origin when there is one).
+  const selectNode = useCallback(
+    (id: string, pickOrigin: SelectionOrigin | null = null) => {
+      const node = view.nodes.find((n) => n.id === id);
+      if (node) {
+        if (node.birthOrder === null) setRevealedCount(view.growthTimeline.count);
+        else if (node.birthOrder >= revealedCount) setRevealedCount(node.birthOrder + 1);
+      }
+      select(id, pickOrigin);
+    },
+    [view, revealedCount, select],
+  );
+
+  const selectedNode = useMemo(
+    () => (effFocus ? (view.nodes.find((n) => n.id === effFocus) ?? null) : null),
+    [view.nodes, effFocus],
+  );
+  const selectedPanel = panelById(ledger, effFocus);
+  const labelFor = useCallback(
+    (id: string) => view.nodes.find((n) => n.id === id)?.label ?? id.slice(0, 12),
+    [view.nodes],
+  );
 
   // Verify-sequence visual state (§U8.8) — the light-wave / seal / byte-fracture the tiers render.
   // Presentation-only: it never mutates the `ExplorerView`. Idle by default so the baseline is unchanged.
@@ -178,36 +213,55 @@ export function ObservatoryStage({
         </fieldset>
       </div>
 
-      {is3D ? (
-        <div className="cosmos-viewport">
-          <CanvasBoundary onError={() => setWebglFailed(true)}>
-            <Cosmos3D
-              view={view}
-              tier={activeTier}
-              onDegrade={onDegrade}
-              revealed={revealed}
-              focusNodeId={effFocus}
-              waveOrder={waveOrder}
-              verify={verifyVisual}
+      <div className="obs-viewport">
+        {is3D ? (
+          <div className="cosmos-viewport">
+            <CanvasBoundary onError={() => setWebglFailed(true)}>
+              <Cosmos3D
+                view={view}
+                tier={activeTier}
+                onDegrade={onDegrade}
+                revealed={revealed}
+                focusNodeId={effFocus}
+                waveOrder={waveOrder}
+                verify={verifyVisual}
+                onPick={selectNode}
+              />
+            </CanvasBoundary>
+          </div>
+        ) : (
+          <Constellation2D
+            view={view}
+            revealed={revealed}
+            focusNodeId={effFocus}
+            waveOrder={waveOrder}
+            verify={verifyVisual}
+            onSelect={selectNode}
+          />
+        )}
+
+        {/* Drill-down inspector — opens over the viewport for the selected body (UX4). */}
+        <AnimatePresence>
+          {selectedNode && selectedPanel ? (
+            <Inspector
+              key={selectedNode.id}
+              panel={selectedPanel}
+              node={selectedNode}
+              origin={origin}
+              labelFor={labelFor}
+              onSelectInput={selectNode}
+              onClose={clear}
             />
-          </CanvasBoundary>
-        </div>
-      ) : (
-        <Constellation2D
-          view={view}
-          revealed={revealed}
-          focusNodeId={effFocus}
-          waveOrder={waveOrder}
-          verify={verifyVisual}
-        />
-      )}
+          ) : null}
+        </AnimatePresence>
+      </div>
 
       <TimeScrub
         view={view}
         revealedCount={revealedCount}
         onScrub={setRevealedCount}
-        focusNodeId={focusNodeId}
-        onSelectBeat={setFocusNodeId}
+        focusNodeId={effFocus}
+        onSelectBeat={select}
       />
 
       <VerifyPanel

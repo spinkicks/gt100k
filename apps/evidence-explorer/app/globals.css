@@ -824,6 +824,316 @@ button {
   }
 }
 
+/* ── Drill-down inspector (UX4, §U5.8) ──────────────────────────────────────── */
+/* The viewport is the positioning context so the Inspector overlays the render, not the layout. */
+.obs-viewport {
+  position: relative;
+}
+
+.inspector {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: min(360px, calc(100% - 28px));
+  max-height: calc(100% - 28px);
+  overflow: auto;
+  z-index: 5;
+  padding: 16px 18px 18px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in oklab, var(--focus) 26%, var(--line));
+  background: color-mix(in oklab, var(--panel) 88%, transparent);
+  backdrop-filter: blur(18px) saturate(1.15);
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+  color: var(--ink);
+}
+/* biome-ignore lint/correctness/noUnknownMediaFeatureName: shipped CSS media feature; Biome's list is stale. */
+@media (prefers-reduced-transparency: reduce) {
+  .inspector {
+    background: var(--panel);
+    backdrop-filter: none;
+  }
+}
+
+.insp-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.insp-glyph {
+  flex: none;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+.insp-heading {
+  min-width: 0;
+  flex: 1;
+}
+.insp-type {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.insp-label {
+  margin: 2px 0 0;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+.insp-close {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+.insp-close:hover {
+  color: var(--ink);
+  border-color: var(--focus);
+}
+
+.insp-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: var(--text-label);
+  line-height: 1.3;
+}
+.insp-badge--human {
+  color: var(--human);
+  background: color-mix(in oklab, var(--human) 12%, transparent);
+  border: 1px solid color-mix(in oklab, var(--human) 40%, var(--line));
+}
+.insp-badge--cited {
+  color: var(--model);
+  background: color-mix(in oklab, var(--model) 12%, transparent);
+  border: 1px solid color-mix(in oklab, var(--model) 38%, var(--line));
+}
+.insp-seal,
+.insp-ribbon {
+  font-size: 15px;
+}
+
+.insp-fields {
+  margin: 14px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.insp-field dt {
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 3px;
+}
+.insp-field dd {
+  margin: 0;
+  font-size: var(--text-label);
+  overflow-wrap: anywhere;
+}
+.insp-hash {
+  display: block;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.insp-copy {
+  margin-top: 6px;
+  padding: 3px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: color-mix(in oklab, var(--focus) 12%, transparent);
+  color: var(--ink);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+.insp-copy:hover {
+  background: color-mix(in oklab, var(--focus) 24%, transparent);
+}
+.insp-note {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+.insp-chip {
+  display: inline-block;
+  padding: 1px 8px;
+  margin-right: 6px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+.insp-chip--human {
+  color: var(--human);
+  border-color: color-mix(in oklab, var(--human) 40%, var(--line));
+}
+.insp-chip--model {
+  color: var(--model);
+  border-color: color-mix(in oklab, var(--model) 40%, var(--line));
+}
+.insp-ref {
+  color: var(--ink-muted);
+  font-size: 12px;
+}
+.insp-inputs,
+.insp-payload {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.insp-input-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--focus);
+  font: inherit;
+  font-size: var(--text-label);
+  cursor: pointer;
+  text-align: left;
+}
+.insp-input-link:hover {
+  text-decoration: underline;
+}
+.insp-payload li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.insp-key {
+  color: var(--ink-muted);
+}
+.insp-val {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.insp-empty {
+  color: var(--ink-muted);
+  font-style: italic;
+}
+.insp-tag {
+  display: inline-block;
+  padding: 0 7px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--verify) 40%, var(--line));
+  color: var(--verify);
+  font-size: 10.5px;
+}
+
+/* ── Accessible Ledger tree (§U5.12 parity) ─────────────────────────────────── */
+.ledger-intro {
+  margin: 0 0 12px;
+  font-size: var(--text-label);
+  color: var(--ink-muted);
+  line-height: 1.4;
+}
+.ledger-tree {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ledger-node {
+  border-radius: 10px;
+  border: 1px solid transparent;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+.ledger-node.is-selected {
+  border-color: color-mix(in oklab, var(--focus) 45%, var(--line));
+  background: color-mix(in oklab, var(--focus) 10%, transparent);
+}
+/* The selectable row (overrides the legacy flex row-rule for the button element). */
+.ledger-tree .ledger-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-bottom: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 10px;
+}
+.ledger-tree .ledger-row:hover {
+  background: color-mix(in oklab, var(--focus) 8%, transparent);
+}
+.ledger-name {
+  min-width: 0;
+  font-size: var(--text-label);
+  line-height: 1.35;
+}
+/* Indent by provenance depth (aria-level), so the tree reads structurally. */
+.ledger-node[aria-level="2"] .ledger-row {
+  padding-left: 22px;
+}
+.ledger-node[aria-level="3"] .ledger-row {
+  padding-left: 34px;
+}
+.ledger-node[aria-level="4"] .ledger-row {
+  padding-left: 46px;
+}
+.ledger-node[aria-level="5"] .ledger-row {
+  padding-left: 58px;
+}
+/* The described panel region — present for AT parity; visually compact under the selected row. */
+.ledger-panel {
+  padding: 0 12px 10px 34px;
+}
+.ledger-node:not(.is-selected) .ledger-panel {
+  /* Collapsed visually but kept in the DOM + accessibility tree (aria-describedby parity). */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+.ledger-panel .ledger-flag {
+  display: inline-block;
+  margin: 0 0 8px;
+}
+.ledger-panel-fields {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  font-size: var(--text-label);
+}
+.ledger-panel-fields dt {
+  color: var(--ink-muted);
+}
+.ledger-panel-fields dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.ledger-payload-row {
+  display: contents;
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root {
     --motion-scale: 0;

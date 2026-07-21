@@ -69,6 +69,7 @@ export function Cosmos3D({
   focusNodeId = null,
   waveOrder = [],
   verify,
+  onPick,
 }: {
   view: ExplorerView;
   tier: RenderTier;
@@ -80,6 +81,8 @@ export function Cosmos3D({
   waveOrder?: ReadonlyArray<{ readonly from: string; readonly to: string }>;
   /** Verify-sequence visual state (light-wave / seal / byte-fracture). */
   verify?: VerifyVisualState;
+  /** Pointer-pick a body → open its Inspector (carrying the screen point for origin-aware scale-in). */
+  onPick?: (nodeId: string, origin: { readonly x: number; readonly y: number }) => void;
 }): JSX.Element {
   const cinematic = tier === "cinematic";
   const [cx, cy, cz] = view.center3d;
@@ -118,7 +121,7 @@ export function Cosmos3D({
 
       <Starfield animate={cinematic} />
       <Threads edges={visibleEdges} nodes={visibleNodes} waveOrder={waveOrder} verify={verify} />
-      <Bodies nodes={visibleNodes} animate={cinematic} verify={verify} />
+      <Bodies nodes={visibleNodes} animate={cinematic} verify={verify} onPick={onPick} />
 
       <OrbitControls
         makeDefault
