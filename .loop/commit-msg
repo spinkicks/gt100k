@@ -1,1 +1,1 @@
-feat: add Node SHA-256 evidence hasher
+feat(evidence-graph): add in-memory evidence repository

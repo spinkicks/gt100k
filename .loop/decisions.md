@@ -9,3 +9,8 @@
 - Decision: expose a stateless `NodeCryptoHasher` class whose public shape is compile-time checked against the domain `Hasher` port from the contract test. Keep the production adapter structurally compatible instead of importing the domain's internal `ports.ts` path before the package barrel is exported.
 - Why: a class follows the repo's injected-adapter convention, while structural conformance keeps the adapter declaration portable and avoids leaking a repo-relative internal path into emitted public types. The adapter-local project reference lets the contract test typecheck against the domain project without a shared-root edit.
 - Rejected: a singleton or factory in addition to the class, which adds an unrequired API; a production import from the unexported internal port module, which would couple emitted declarations to source layout.
+
+## 2026-07-20 — T006/T007 edge round-trip observability
+- Decision: keep the domain `EvidenceRepository` port exactly as specified and add `getEdges()` only to the concrete `InMemoryEvidenceRepository` adapter as a copy-isolated inspection seam.
+- Why: T006 requires an edge save/get round-trip, but the settled port exposes `saveEdge` without an edge reader. The adapter-local method makes the acceptance behavior observable without changing the domain contract or exposing mutable storage.
+- Rejected: adding `getEdge`/`getEdges` to the domain port, which would contradict its exact settled shape; casting through private adapter state in the test, which would couple the contract test to implementation details.

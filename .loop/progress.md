@@ -45,3 +45,14 @@
 
 ## NEXT
 - T006/T007: write the in-memory `EvidenceRepository` contract test first, confirm RED on the missing adapter, then implement `adapters/evidence-repo-memory`; acceptance is node, edge, and packet save/get round-trips with deep-copy isolation and a green workspace gate.
+
+## 2026-07-20 — P0 in-memory evidence repository (T006/T007)
+- Added the `@gt100k/evidence-repo-memory` adapter package with an asynchronous `InMemoryEvidenceRepository` implementing the exact domain persistence port.
+- Added node and milestone-packet maps plus append-only edge storage, with `structuredClone` isolation on every save and read boundary. Added an adapter-local `getEdges()` inspection seam so T006 can observe edge round-trips without changing the settled domain port.
+- Added three synthetic contract tests for port conformance and missing-record behavior, node/edge/packet round-trips, and mutation isolation through both saved inputs and loaded outputs. Confirmed RED on the missing adapter entrypoint, then GREEN after the minimal implementation.
+- Gate evidence: adapter composite `tsc -b`, workspace `pnpm typecheck`, workspace `pnpm test` (28/28), and `pnpm lint` over 41 files all pass.
+- Phase status: P0 in progress; T001, T001a, and T002–T007 complete. SC-011 remains passing; the swappable persistence foundation for FR-016/SC-006 now exists.
+- Blockers: none.
+
+## NEXT
+- T007a: add the pure synthetic seed fixtures under `packages/evidence-graph/test/fixtures/` (`goldenArtifact`, `goldenAttempt`, `goldenLeaves`, and `syntheticMilestone` with a coherent graph plus one unrelated island node); acceptance is exact G1/G2/G3 source values, pseudonymous actors only, no PII, and a green workspace gate.
