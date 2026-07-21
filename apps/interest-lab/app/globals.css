@@ -675,6 +675,115 @@ footer {
   }
 }
 
+/* ---- Primary nav row: the one control kept in view -------------------- */
+/* Everything else is demoted behind the Preview-settings disclosure, so the
+   deck reads as one confident choice (child world ↔ guide), not a control wall. */
+.hud-primary {
+  display: flex;
+}
+
+.hud-primary .hud-field {
+  flex: 1 1 100%;
+}
+
+/* The primary track is a touch taller/rounder than the buried preview tracks. */
+.hud-primary .hud-track {
+  padding: 0.375rem;
+  border-radius: 1rem;
+  border-color: var(--line-strong);
+}
+
+/* ---- Preview settings: progressive disclosure ------------------------- */
+.hud-advanced {
+  border-top: 1px solid var(--line);
+}
+
+.hud-advanced-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 0.25rem 0;
+  color: var(--ink-muted);
+  font-size: var(--type-label-size);
+  font-weight: 600;
+  letter-spacing: var(--type-label-letter-spacing);
+  list-style: none;
+  transition: color 160ms var(--hud-ease), transform 140ms var(--hud-ease);
+}
+
+.hud-advanced-summary::-webkit-details-marker {
+  display: none;
+}
+
+.hud-advanced-summary:active {
+  transform: scale(0.99);
+}
+
+.hud-advanced-summary:focus-visible {
+  border-radius: 0.6rem;
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.hud-advanced-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hud-advanced-label svg {
+  flex: 0 0 auto;
+  color: var(--spark-hi);
+}
+
+.hud-advanced-chevron {
+  flex: 0 0 auto;
+  color: var(--ink-muted);
+  transition: transform 220ms var(--hud-ease), color 160ms var(--hud-ease);
+}
+
+.hud-advanced[open] .hud-advanced-chevron {
+  color: var(--spark-hi);
+  transform: rotate(180deg);
+}
+
+/* Space the buried grid from the summary; reveal it with a soft ease-out
+   slide (never scale(0) — the panel grows down from the summary edge). */
+.hud-advanced .hud-grid {
+  margin-top: 1.25rem;
+}
+
+.hud-advanced[open] .hud-grid {
+  animation: hud-advanced-reveal 220ms var(--hud-ease) both;
+}
+
+@keyframes hud-advanced-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hud-advanced-summary {
+    cursor: pointer;
+  }
+
+  .hud-advanced-summary:hover {
+    color: var(--ink-hi);
+  }
+
+  .hud-advanced-summary:hover svg {
+    color: var(--spark);
+  }
+}
+
 .quest-workspace {
   min-width: 0;
   min-height: 24rem;

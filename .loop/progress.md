@@ -124,6 +124,20 @@ emissive glow, spring/ease-out motion. Display font Fredoka; reading serif Iowan
   (`world-3d.test.ts` loads the real, un-mocked composer → proves N8AO evaluates clean) + `next build`.
   See D-VP10.
 
+- **Turn 9 (this):** First turn to **subtract, not add** — closed the real remaining gap, which was
+  **game-feel #1 (Simplicity & flow, the FIRST requirement)**, not more material polish. Judged against
+  the doc: the HUD deck was a persistent **five-control wall** (Age band / Motion / Surface / Render tier
+  / Plain mode) labelled "presentation only" — the auto-fail the doc names *verbatim*. Turn 1 restyled
+  the `<select>`s but never removed the *wall*. Restructured `InterestLabControls.tsx` (+ CSS) so **one**
+  control is in view — the primary `Surface` toggle (relabelled **"Viewing"**: Quests ↔ Guide) in a new
+  prominent `.hud-primary` row — and the four preview/a11y/debug switches collapse behind a native
+  `<details>` **"Preview settings"** disclosure (sliders icon + rotating chevron, `:active` press,
+  ease-out fade-slide reveal, all on the shared `--hud-ease`; native details = keyboard/a11y for free).
+  Always-visible control count **5 → 1**; the compact live-status chip stays as the one-line summary.
+  Test-safe: `renderToStaticMarkup` renders `<details>` children regardless of open state, so every
+  pinned `name=`/`value=`/h2/status/`--control-target` string survives (all 9 client-shell assertions
+  green). Gate green: tsc + 74 tests + `next build`. See D-VP11.
+
 ## Verification note (honest)
 The grade only mounts client-side on the WebGL full tier, so it can't be pixel-verified in this
 headless / GPU-less env (swiftshader would fall to board-2d and never exercise the composer).
@@ -152,26 +166,32 @@ why the ACES ToneMapping effect is present. A GPU screenshot pass is the ideal n
 5 camera cinematography ✓ (idle breath, Turn 3) ·
 6 motion/juice ✓ world + child HUD + guide + **board-2d (motion was already there; Turn 6 added the
   crafted material so the lift reads as depth)** ·
-7 HUD not forms ✓ (child deck + guide deck, Turn 4) · 8 type+icons ✓ ·
+7 HUD not forms ✓ (child deck + guide deck, Turn 4; **control-wall subtracted to one nav control +
+  Preview-settings disclosure, Turn 9**) · 8 type+icons ✓ ·
+**#1 Simplicity & flow ✓ — Turn 9 cut the always-visible control count 5→1 (the doc's FIRST
+  requirement, and the real remaining gap the prior material-polish turns had skipped).** ·
 **9 cohesion ✓ — 3D world, child deck, guide deck, AND board-2d fallback now read as one crafted world
   (Turns 4 + 6).** Every non-negotiable is met and no auto-fail anti-pattern remains; what's left is
   AAA-grade polish (SSAO/DoF, tray material, GPU-tuning), not a redo.
 
 ## NEXT
-Every game-feel non-negotiable is now met (the post-FX grade is complete: Bloom + palette grade + ACES +
-Vignette + **N8AO contact AO** as of Turn 8) and no auto-fail anti-pattern remains. All primary + secondary
-surfaces are crafted + cohesive (3D world, child HUD deck, guide light-table deck, board-2d cards, quest
-tray + welcome-back). **The DoD is satisfied by construction** — what remains is discretionary AAA polish
-that is best done with GPU eyes on, not blind:
-1. **GPU/browser screenshot pass — do this before any further blind post-FX tuning.** In this headless,
-   GPU-less env swiftshader falls to board-2d and never runs the composer, so Bloom / Vignette / **the new
-   N8AO intensity+radius** / idle-breath amplitude / board & tray glow amounts can't be pixel-verified.
-   A real screenshot pass is the single highest-value next step: confirm the AO isn't muddy, then tune to
-   taste. Only after that, consider **optional shallow depth-of-field** (the last #4 item — deferred as the
+Turn 9 closed the last *real* gap — game-feel **#1 (Simplicity & flow)**, which the prior material-polish
+turns had skipped. With the control-wall subtracted (5→1 visible), **every game-feel non-negotiable is now
+met AND the FIRST requirement (simplicity) is honored** — visual craft (lighting, materials, post-FX grade,
+camera, motion, HUD, cohesion) was already complete through Turn 8. **Strong case to declare `.loop-done`**
+after one more end-to-end audit against `game-feel.md`. Before that, two low-risk critic passes worth a look:
+1. **Re-audit simplicity end-to-end (the #1 lens, now that the deck is calm).** Check the *child quest world*
+   and *guide console* for any remaining wordiness / competing panels: e.g. the masthead lede sentence + the
+   footer sentence + per-surface intro copy — is any of it non-load-bearing? Cut a sentence before adding a
+   pixel (game-feel #1 "radically cut words / subtract every turn"). This is the same subtractive lens that
+   found Turn 9; apply it to the two content surfaces, not just the control deck.
+2. **GPU/browser screenshot pass — still the highest-value *visual* confirmation** (can't be done in this
+   headless GPU-less env; swiftshader falls to board-2d and never runs the composer). Confirm Bloom /
+   Vignette / N8AO intensity+radius / idle-breath amplitude / board & tray glow read right, then tune to
+   taste. Only after eyes-on, consider **optional shallow depth-of-field** (last #4 item; deferred as the
    higher blind-tuning risk).
-2. **Deeper guide trenching (optional):** the explanation columns + lifecycle tracks + revision rail could
-   take the two scroll instruments' inset-trench treatment for more instrument depth.
-3. **Consider `.loop-done`.** With #4 complete, re-audit against `game-feel.md` end to end; if it holds up,
-   the remaining items are polish, not blockers — a case for declaring done rather than adding more.
+3. **Deeper guide trenching (optional):** explanation columns + lifecycle tracks + revision rail could take
+   the two scroll instruments' inset-trench treatment for more instrument depth.
 Keep the gate green (tsc + test + `next build`); write `.loop/commit-msg`; keep the art direction cohesive.
-Before adding, subtract (game-feel #1) — the world is calm + cohesive; guard hard against over-decorating.
+**Before adding, subtract (game-feel #1)** — Turn 9 proved this is where the real wins still are; guard hard
+against over-decorating an already calm, cohesive world.

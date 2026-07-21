@@ -46,7 +46,7 @@ function DeckIcon({ name, ...props }: { name: DeckIconName } & SVGProps<SVGSVGEl
   );
 }
 
-type DeckIconName = "age" | "motion" | "surface" | "tier" | "plain";
+type DeckIconName = "age" | "motion" | "surface" | "tier" | "plain" | "settings" | "chevron";
 
 const DECK_GLYPHS: Record<DeckIconName, ReactNode> = {
   age: (
@@ -79,6 +79,17 @@ const DECK_GLYPHS: Record<DeckIconName, ReactNode> = {
       <path d="M12 3a9 9 0 0 1 0 18Z" fill="currentColor" stroke="none" />
     </>
   ),
+  settings: (
+    <>
+      <path d="M4 6h9M17 6h3" />
+      <circle cx="15" cy="6" r="2" />
+      <path d="M4 12h3M11 12h9" />
+      <circle cx="9" cy="12" r="2" />
+      <path d="M4 18h11M19 18h1" />
+      <circle cx="17" cy="18" r="2" />
+    </>
+  ),
+  chevron: <path d="m6 9 6 6 6-6" />,
 };
 
 interface SegmentOption<Value extends string> {
@@ -176,7 +187,7 @@ export function InterestLabControls(props: InterestLabControlsProps) {
         <div className="hud-titles">
           <p className="hud-eyebrow">
             <span className="hud-eyebrow-dot" aria-hidden="true" />
-            Mission deck · presentation only
+            Mission deck
           </p>
           <h2 id="controls-title">Interest Lab controls</h2>
         </div>
@@ -188,57 +199,70 @@ export function InterestLabControls(props: InterestLabControlsProps) {
         </output>
       </div>
 
-      <div className="hud-grid">
-        <SegmentedControl
-          name="age-band"
-          title="Age band"
-          icon="age"
-          value={props.ageBand}
-          options={AGE_OPTIONS}
-          onChange={props.onAgeBandChange}
-        />
-        <SegmentedControl
-          name="motion-preference"
-          title="Motion"
-          icon="motion"
-          value={props.motionPreference}
-          options={MOTION_OPTIONS}
-          onChange={props.onMotionPreferenceChange}
-        />
+      <div className="hud-primary">
         <SegmentedControl
           name="surface"
-          title="Surface"
+          title="Viewing"
           icon="surface"
           value={props.surface}
           options={SURFACE_OPTIONS}
           onChange={props.onSurfaceChange}
         />
-        <SegmentedControl
-          name="render-tier"
-          title="Render tier"
-          icon="tier"
-          value={props.renderTierOverride}
-          options={TIER_OPTIONS}
-          onChange={props.onRenderTierOverrideChange}
-        />
-
-        <label className="hud-toggle" data-on={props.plainMode ? "true" : undefined}>
-          <span className="hud-field-title as-inline">
-            <DeckIcon name="plain" />
-            <span>Plain mode</span>
-          </span>
-          <input
-            className="hud-toggle-input"
-            type="checkbox"
-            name="plain-mode"
-            checked={props.plainMode}
-            onChange={(event) => props.onPlainModeChange(event.target.checked)}
-          />
-          <span className="hud-toggle-track" aria-hidden="true">
-            <span className="hud-toggle-thumb" />
-          </span>
-        </label>
       </div>
+
+      <details className="hud-advanced">
+        <summary className="hud-advanced-summary">
+          <span className="hud-advanced-label">
+            <DeckIcon name="settings" />
+            <span>Preview settings</span>
+          </span>
+          <DeckIcon name="chevron" className="hud-advanced-chevron" />
+        </summary>
+
+        <div className="hud-grid">
+          <SegmentedControl
+            name="age-band"
+            title="Age band"
+            icon="age"
+            value={props.ageBand}
+            options={AGE_OPTIONS}
+            onChange={props.onAgeBandChange}
+          />
+          <SegmentedControl
+            name="motion-preference"
+            title="Motion"
+            icon="motion"
+            value={props.motionPreference}
+            options={MOTION_OPTIONS}
+            onChange={props.onMotionPreferenceChange}
+          />
+          <SegmentedControl
+            name="render-tier"
+            title="Render tier"
+            icon="tier"
+            value={props.renderTierOverride}
+            options={TIER_OPTIONS}
+            onChange={props.onRenderTierOverrideChange}
+          />
+
+          <label className="hud-toggle" data-on={props.plainMode ? "true" : undefined}>
+            <span className="hud-field-title as-inline">
+              <DeckIcon name="plain" />
+              <span>Plain mode</span>
+            </span>
+            <input
+              className="hud-toggle-input"
+              type="checkbox"
+              name="plain-mode"
+              checked={props.plainMode}
+              onChange={(event) => props.onPlainModeChange(event.target.checked)}
+            />
+            <span className="hud-toggle-track" aria-hidden="true">
+              <span className="hud-toggle-thumb" />
+            </span>
+          </label>
+        </div>
+      </details>
     </section>
   );
 }

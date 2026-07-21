@@ -578,3 +578,40 @@
   (redundant — the composer already gates on `postprocessing`, so AO auto-drops with the full tier and
   the D057 perf floor is preserved); adding depth-of-field this turn (optional per #4; one grounded
   change per turn, and DoF is the higher blind-tuning risk — left for a GPU screenshot pass).
+
+## D-VP11 — Subtract the presentation control-wall to one primary nav + a Preview-settings disclosure (Turn 9)
+- What: Restructured `InterestLabControls.tsx` (+ CSS) so the HUD deck shows **one** control in view —
+  the primary `Surface` toggle (relabelled **"Viewing"**: Quests ↔ Guide) in a new prominent
+  `.hud-primary` row — while the four preview/accessibility/debug switches (**Age band, Motion, Render
+  tier, Plain mode**) collapse behind a native `<details class="hud-advanced">` disclosure with a
+  `<summary>` "Preview settings" (sliders icon + rotating chevron). Trimmed the eyebrow from
+  "Mission deck · presentation only" → "Mission deck" (the "preview" nuance now lives in the disclosure
+  label). The compact live-status chip stays in the header as the one-line summary. No JS: native
+  details/summary = keyboard-operable + a11y-correct for free. Disclosure motion reuses the deck idiom
+  (`--hud-ease` cubic-bezier(0.23,1,0.32,1)): chevron `rotate(180deg)` @220ms, summary `:active
+  scale(0.99)` press + gated-hover spark tint, and an ease-out `translateY(-6px)`→0 + opacity reveal on
+  the buried grid (never scale(0), per emil). Only transform/opacity/color animate; the global
+  `prefers-reduced-motion` block neutralizes both `animation-duration` + `transition-duration`, so it's
+  a11y-safe by construction.
+- Why: game-feel **#1 (Simplicity & flow — the FIRST requirement)** + **#7 (minimal HUD, progressive
+  disclosure)**. The prior 8 turns added *material richness* every turn but never touched the one thing
+  #1 ranks above all polish: the deck was a persistent **five-control wall** labelled "presentation
+  only," which is the auto-fail the doc names verbatim ("Default dropdown forms as the control surface
+  (Age band / Motion / Surface / Render tier)"). Turn 1 restyled the `<select>`s but left the *wall*;
+  #1 demands "cap visible controls (≤~5), one primary action in view, subtract every turn, collapse the
+  rest behind an Advanced disclosure" — the doc's exact proven pattern (subwoofer ref). This is the
+  first turn to actually **subtract** rather than add, taking the always-visible control count 5→1.
+- Verification: pinned `interest-lab-client.test.ts` ("one semantic presentation-control cluster with
+  every required flag") stays green because `renderToStaticMarkup` renders `<details>` children
+  regardless of open state — every `name=`/`value=` string + "Interest Lab controls" h2 +
+  "Showing the accessible 2D board" status + `--control-target` style is still present. A throwaway
+  structural probe confirmed Surface renders inside `.hud-primary` and the four switches inside
+  `<details class="hud-advanced">`, and "presentation only" is gone. Gate green: tsc + 74 tests +
+  `next build`.
+- Rejected: a JS-animated height reveal / `interpolate-size`+`::details-content` (adds risk + browser-
+  support caveats for one occasional disclosure — native details + a fade-slide is honest and cohesive,
+  emil "CSS beats JS under load"); deleting the preview switches outright (they're the app's synthetic-
+  preview affordances — hiding, not removing, is the right subtraction); leaving Motion/Plain mode in
+  view as "accessibility" (shipped games put a11y in a settings menu; the OS reduced-motion default is
+  still auto-respected, so the manual override belongs behind Preview settings); a bespoke summary
+  easing (reused `--hud-ease` for deck cohesion); `scale(0)` reveal (emil: nothing appears from nothing).
