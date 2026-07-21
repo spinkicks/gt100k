@@ -110,6 +110,6 @@ describe("the equal 2D cohort tier", () => {
     expect(shellSource).toMatch(/tier2D\.active[\s\S]*?<CohortTier2D/);
     expect(shellSource).toMatch(/tier2D\.active[\s\S]*?<Canvas/);
     expect(shellSource).toContain("aria-pressed={plainMode}");
-    expect(shellSource).toContain("<CohortLedger ledger={VIEW.ledger}");
+    expect(shellSource).toContain("<CohortLedger ledger={view.ledger}");
   });
 });

@@ -140,7 +140,7 @@ describe("the 3D Compiler Observatory", () => {
     expect(sceneSource).toContain("dispose");
     expect(sceneSource).not.toContain("Math.random");
     expect(sceneSource).not.toContain("OrbitControls");
-    expect(shellSource).toContain("<ObservatoryScene view={VIEW}");
+    expect(shellSource).toContain("<ObservatoryScene view={view}");
     expect(shellSource).toMatch(/tier2D\.active[\s\S]*?<CohortTier2D/);
     expect(shellSource).toMatch(/tier2D\.active[\s\S]*?<Canvas/);
     expect(shellSource).toMatch(/<Canvas[\s\S]*?aria-hidden="true"/);

@@ -515,3 +515,16 @@
 
 - T123 — Add the standings opt-in toggle in `apps/cohort-arena/components/` and wire it to the existing `standingsOptIn` view flag.
 - Acceptance: standings remain default off; opting in exposes the exact T122 Fixture V2 panel and Ledger text from one recomposed synthetic view; opting out restores the byte-identical default cohort/rivalry/safeguarding state; the frequent toggle uses instant `resolveMotion("hudToggle", ...)`, has a >=44px accessible target, and focused tests, app TypeScript/build, seeded smoke, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P9 / T123
+
+- Added an accessible default-off standings preference control with `aria-pressed`, explicit on/off naming, a >=44px target, retained `0.97` press feedback, and the pinned zero-duration linear `hudToggle` motion in both animated and reduced modes.
+- Replaced the fixed module-level view with one memoized `CohortArenaView` derived from primitive plain/reduced/standings flags, so the Fixture V2 panel and accessible Ledger text appear and disappear together while cohort, rivalry, and safeguarding state remains unchanged.
+- Extended the production Playwright smoke through both opt-in directions, pinning the exact own gain `300`, headroom `40`, default-off restoration, Ledger parity, unchanged compiled cohort state, and zero console/WebGL errors.
+- TDD status: the focused contract first failed because `components/StandingsToggle.tsx` was absent, then passed 2/2 after the minimal control and shared-view recomposition. Two pre-existing source contracts failed only because they named the former uppercase view constant; preserving the same renderer-linkage assertions against the derived `view` restored the app suite.
+- Gate status: app-local TypeScript and app tests (21/21), `pnpm typecheck`, `pnpm test` (144/144), `pnpm lint` (133 files), the feature app build, root `pnpm build`, and the seeded production smoke (1/1) pass. The smoke used the existing local Chromium library bundle through an ephemeral `LD_LIBRARY_PATH`; no repo or host package state changed. T123 completes interactive opt-in wiring for SC-012; no blocker.
+
+## NEXT
+
+- T124 — Implement the churn-budget meter in `apps/cohort-arena/components/hud/` from the domain `ChurnBudget` and `view.cohorts[].churnDelta`.
+- Acceptance: the HUD shows the exact base cap, used churn, remaining capacity, and current display-only cohort delta without recomputing or mutating the domain result; state is text- and color-independent with a reduced/plain equivalent; focused RED/GREEN, app TypeScript/tests, both builds, seeded smoke, and repository typecheck/test/lint remain green.

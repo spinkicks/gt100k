@@ -3,8 +3,9 @@
 import { resolveMotion } from "@gt100k/cohort-arena-view";
 import { Canvas } from "@react-three/fiber";
 import { motion, useReducedMotion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import { StandingsToggle } from "./StandingsToggle";
 import { CohortRosterHud } from "./hud/CohortRosterHud";
 import { StandingsPanel } from "./hud/StandingsPanel";
 import { toMotionEasing } from "./hud/motion-transition";
@@ -14,17 +15,25 @@ import { buildSyntheticCohortView } from "./synthetic-view";
 import { CohortTier2D } from "./tier2d/CohortTier2D";
 import { resolveTier2DMode } from "./tier2d/mode";
 
-const VIEW = buildSyntheticCohortView();
-
 export default function CohortArenaClient() {
-  const camera = VIEW.constellation.camera;
   const systemReducedMotion = useReducedMotion();
-  const [plainMode, setPlainMode] = useState(VIEW.presentation.plain);
+  const [plainMode, setPlainMode] = useState(false);
+  const [standingsOptIn, setStandingsOptIn] = useState(false);
   const tier2D = resolveTier2DMode({
     configuredDefault: process.env.NEXT_PUBLIC_REDUCED_MOTION_DEFAULT,
     systemReducedMotion,
     plainMode,
   });
+  const view = useMemo(
+    () =>
+      buildSyntheticCohortView({
+        plain: plainMode,
+        reducedMotion: tier2D.active,
+        standingsOptIn,
+      }),
+    [plainMode, standingsOptIn, tier2D.active],
+  );
+  const camera = view.constellation.camera;
   const press = resolveMotion("press", { reducedMotion: tier2D.active });
 
   useEffect(() => {
@@ -68,12 +77,17 @@ export default function CohortArenaClient() {
           >
             Plain mode {plainMode ? "on" : "off"}
           </motion.button>
+          <StandingsToggle
+            optedIn={standingsOptIn}
+            reducedMotion={tier2D.active}
+            onToggle={() => setStandingsOptIn((current) => !current)}
+          />
         </div>
       </header>
 
       <div className="arena-primary-grid">
         {tier2D.active && tier2D.reason ? (
-          <CohortTier2D view={VIEW} reason={tier2D.reason} />
+          <CohortTier2D view={view} reason={tier2D.reason} />
         ) : (
           <section className="scene-panel" aria-labelledby="scene-heading" data-region="scene-3d">
             <div className="region-heading">
@@ -98,8 +112,8 @@ export default function CohortArenaClient() {
                 shadows={false}
                 onCreated={({ gl }) => gl.domElement.setAttribute("aria-hidden", "true")}
               >
-                <color attach="background" args={[VIEW.presentation.palette.deck]} />
-                <ObservatoryScene view={VIEW} />
+                <color attach="background" args={[view.presentation.palette.deck]} />
+                <ObservatoryScene view={view} />
               </Canvas>
             </div>
           </section>
@@ -113,8 +127,8 @@ export default function CohortArenaClient() {
             </div>
             <span className="status-dot" aria-label="All hard constraints satisfied" />
           </div>
-          <CohortRosterHud view={VIEW} reducedMotion={tier2D.active} />
-          <StandingsPanel standings={VIEW.standings} reducedMotion={tier2D.active} />
+          <CohortRosterHud view={view} reducedMotion={tier2D.active} />
+          <StandingsPanel standings={view.standings} reducedMotion={tier2D.active} />
         </aside>
       </div>
 
@@ -125,9 +139,9 @@ export default function CohortArenaClient() {
               <p className="region-label">Accessible source of truth</p>
               <h2 id="ledger-heading">Cohort Ledger</h2>
             </div>
-            <span className="ledger-count">{VIEW.ledger.cohortTree.length} cohorts</span>
+            <span className="ledger-count">{view.ledger.cohortTree.length} cohorts</span>
           </div>
-          <CohortLedger ledger={VIEW.ledger} />
+          <CohortLedger ledger={view.ledger} />
         </section>
       </div>
     </main>

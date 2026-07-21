@@ -75,7 +75,11 @@ export function CohortLedger({ ledger }: CohortLedgerProps) {
       </ol>
 
       {ledger.standingsText ? (
-        <section className="ledger-supporting-state" aria-labelledby="ledger-standings-heading">
+        <section
+          id="ledger-standings-state"
+          className="ledger-supporting-state"
+          aria-labelledby="ledger-standings-heading"
+        >
           <h3 id="ledger-standings-heading">Growth standing</h3>
           <p>{ledger.standingsText}</p>
         </section>

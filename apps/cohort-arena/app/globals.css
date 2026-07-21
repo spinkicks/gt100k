@@ -181,6 +181,8 @@ html[data-reduced-motion="true"] *::after {
   display: flex;
   flex: none;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .arena-view-controls button {

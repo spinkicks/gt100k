@@ -61,6 +61,7 @@ export function StandingsPanel({ standings, reducedMotion }: StandingsPanelProps
 
   return (
     <section
+      id="standings-panel"
       className="standings-panel"
       aria-labelledby="standings-heading"
       data-standings-panel="own-growth"

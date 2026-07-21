@@ -60,6 +60,12 @@ test("mounts and disposes WebGL while preserving the seeded view in the reduced-
   await expect(ledger).toBeFocused();
   await expect(page.getByRole("treeitem")).toHaveCount(28);
 
+  const standingsToggle = page.getByRole("button", { name: "Standings off" });
+  const standingsPanel = page.locator('[data-standings-panel="own-growth"]');
+  await expect(standingsToggle).toHaveAttribute("aria-pressed", "false");
+  await expect(standingsPanel).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Growth standing" })).toHaveCount(0);
+
   const before = await compiledState(page);
   expect(before.roster).toHaveLength(12);
   expect(before.constraints).toHaveLength(14);
@@ -67,6 +73,26 @@ test("mounts and disposes WebGL while preserving the seeded view in the reduced-
     "◎Non-harm floor 0.825 ≥ 0.5",
     "◎Non-harm floor 0.825 ≥ 0.5",
   ]);
+
+  await standingsToggle.click();
+  await expect(page.getByRole("button", { name: "Standings on" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(standingsPanel).toBeVisible();
+  await expect(standingsPanel).toContainText("Your own gain this sprint");
+  await expect(standingsPanel).toContainText("40 to the near-peer band top");
+  await expect(page.getByRole("heading", { name: "Growth standing" })).toBeVisible();
+  await expect(page.locator("#ledger-standings-state")).toContainText(
+    "Own gain 300; 40 to the near-peer band top.",
+  );
+  expect(await compiledState(page)).toEqual(before);
+
+  await page.getByRole("button", { name: "Standings on" }).click();
+  await expect(standingsToggle).toHaveAttribute("aria-pressed", "false");
+  await expect(standingsPanel).toHaveCount(0);
+  await expect(page.locator("#ledger-standings-state")).toHaveCount(0);
+  expect(await compiledState(page)).toEqual(before);
 
   await page.getByRole("button", { name: "Plain mode off" }).click();
 
