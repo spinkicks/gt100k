@@ -160,3 +160,15 @@
 
 ## NEXT
 - T021/T025: write the deterministic stub `Verifier` contract test first, confirm RED on the missing adapter, then implement `adapters/evidence-verifier-stub`; acceptance is pass for an untampered packet, `MERKLE_MISMATCH` after any selected node alteration, `SUBJECT_DIGEST_MISMATCH` for an attestation subject mismatch, and a green workspace gate.
+
+## 2026-07-20 — P3 deterministic verifier stub (T021/T025)
+- Added the `@gt100k/evidence-verifier-stub` adapter implementing the exact asynchronous `Verifier` port over an injected `Hasher`.
+- Re-derived the RFC-6962 root from selected content digests, checked both packet and attestation root commitments, checked the packet-to-subject digest binding, and fail-closed malformed in-toto structure with stable machine-readable reasons.
+- Added five contract tests covering port conformance, untampered pass, every selected digest position tampered, both committed roots, subject mismatch, exact Statement/predicate constants, milestone binding, and malformed subject handling. Confirmed RED first on the missing adapter and again on the review-discovered structure gap, then GREEN after each minimal implementation.
+- Read-only review found no Critical issues. Its valid malformed-structure concern was fixed; its proposed raw-payload check was rejected because the settled packet/port carry content-addressed digests rather than payloads, so changed content is represented by a changed `nodeId` under SC-001.
+- Gate evidence: adapter composite `tsc -b`, workspace `pnpm typecheck`, workspace `pnpm test` (85/85), and `pnpm lint` over 61 files all pass.
+- Phase status: P3 in progress; T018–T025 plus T018a are complete. SC-004 is now fully passing alongside SC-008, SC-010, and SC-012; T026 remains before the P3 checkpoint.
+- Blockers: none.
+
+## NEXT
+- T026: export `merkle`, `attestation`, and `packet` from `packages/evidence-graph/src/index.ts`; acceptance is `merkleRoot`, `buildAttestation`, `assembleEvidencePacket`, and `traceEvidence` importable through the public package entrypoint with the workspace gate green.
