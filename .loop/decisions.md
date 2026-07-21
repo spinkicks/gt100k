@@ -202,3 +202,6 @@
 - Add an App Router `icon.svg` after the smoke exposed a favicon 404. Rejected ignoring the browser's default favicon request because SC-011 requires a clean console and the local static icon removes the deterministic error without external fetches.
 ## 2026-07-21 — Virtualized GPU is not managed-device evidence
 - Kept the managed-device success criteria open even though this WSL host now exposes a virtual GPU device. Rejected treating a headless/virtualized GPU run as the specified integrated-GPU managed laptop or iPad/Safari observation because it cannot establish the real device frame budget or recovery behavior required by SC-010 and SC-025.
+
+## 2026-07-21 — Operator selection is not acceptance evidence
+- Treat the operator's option-A answer as direction to preserve and execute the real managed-device and assistive-technology passes, not as proof that those passes succeeded. Rejected marking SC-010, SC-012, or SC-025 green without the requested observed frame-rate, recovery, mastery-input, screen-reader, switch, and Ledger results.

@@ -1175,3 +1175,16 @@
 ## NEXT
 - On the specified minimum managed device and real screen-reader/switch setup, execute the remaining P7 acceptance and return the observed results for `packages/arena-world/ACCEPTANCE.md`.
 - Acceptance: sustain 60fps or demonstrate graceful recovery without blocking mastery on Tier-A laptop/Tier-B iPad-Safari (SC-010/025), complete every Ledger flow with the real screen reader and switch input (SC-012), rerun the full gate, and create `.loop-done` only after all SC-001…SC-026 are green.
+
+## 2026-07-21 — P7 operator selection acknowledged / SC-010, SC-012, SC-025
+- Read the terminal append-only handoff, ordered T050/T051 acceptance task, exact remaining criteria, quickstart walkthrough, current acceptance evidence, critical request, and operator response. Every implementation task through T-ROOT remains complete.
+- The operator selected option A: preserve the live criteria and run both the managed-device and real assistive-technology passes. The response contains no frame-rate, degradation, mastery-input, screen-reader, switch, or Ledger observations, so it is direction to perform the passes rather than evidence that they passed.
+- Rechecked the active host and callable tool surface using the Playwright and web-app-testing workflows. WSL2 exposes only `/dev/dxg`; `/dev/dri` and `/dev/input` are absent, and there is no callable Playwright/browser command, browser/device tool, managed-device profile, observable screen-reader output, or switch-input surface. This host still cannot produce the required live evidence.
+- Preserved SC-010, SC-012, and SC-025 as `Partial`, left `packages/arena-world/ACCEPTANCE.md` unchanged, did not duplicate the existing critical request, and kept `.loop-done` absent. No emulated or inferred result was substituted for the specified observations.
+- Gate status: `pnpm --filter @gt100k/arena-world test` passed (56 files, 229 tests); `pnpm lint` passed (139 files); `pnpm typecheck` passed; `pnpm test -- --reporter=dot` passed (60 files, 243 tests); root `pnpm build` passed; `pnpm --filter @gt100k/arena-world-app build` passed (static `/`, 59.9 kB route, 147 kB first load).
+- SC status: all automated work and SC-011's prior live browser smoke remain green; SC-010/025 still require the minimum-managed-device frame/recovery observation, and SC-012 still requires the real screen-reader/switch walkthrough.
+- Blocker: the operator-selected live passes must run in the external managed-device and assistive-technology environments, with their observed results returned to this loop.
+
+## NEXT
+- On the specified minimum managed device and real screen-reader/switch setup, execute the operator-selected P7 acceptance passes and return the observed results for `packages/arena-world/ACCEPTANCE.md`.
+- Acceptance: sustain 60fps or demonstrate graceful recovery without blocking mastery on Tier-A laptop/Tier-B iPad-Safari (SC-010/025), complete every Ledger flow with the real screen reader and switch input (SC-012), rerun the full gate, and create `.loop-done` only after all SC-001…SC-026 are green.
