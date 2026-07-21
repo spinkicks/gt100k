@@ -1,4 +1,9 @@
-import type { AgeBand, RenderTier } from "@gt100k/interest-lab-view";
+import {
+  type AgeBand,
+  type DeviceCaps,
+  type RenderTier,
+  resolveRenderTier,
+} from "@gt100k/interest-lab-view";
 
 export type MotionPreference = "system" | "on" | "off";
 export type InterestLabSurface = "child" | "guide";
@@ -51,4 +56,38 @@ export function resolveReducedMotionPreference(
   if (preference === "on") return true;
   if (preference === "off") return false;
   return osPrefersReducedMotion;
+}
+
+export function resolveHydrationSafeReducedMotionPreference(
+  preference: MotionPreference,
+  osPrefersReducedMotion: boolean,
+  clientReady: boolean,
+): boolean {
+  return resolveReducedMotionPreference(preference, clientReady && osPrefersReducedMotion);
+}
+
+const TIER_FIDELITY: Record<RenderTier, number> = {
+  "quest-world-3d": 0,
+  "quest-world-3d-lite": 1,
+  "board-2d": 2,
+};
+
+/** Applies an explicit presentation request without bypassing the detected capability floor. */
+export function applyRenderTierOverride(
+  caps: Readonly<DeviceCaps>,
+  override: RenderTierOverride,
+): DeviceCaps {
+  const resolved = resolveRenderTier(caps, { reducedMotion: false, plainMode: false });
+  if (override === "auto" || TIER_FIDELITY[override] <= TIER_FIDELITY[resolved]) {
+    return { ...caps };
+  }
+
+  if (override === "board-2d") {
+    return { ...caps, webglAvailable: false };
+  }
+
+  return {
+    ...caps,
+    hardwareConcurrency: Math.min(caps.hardwareConcurrency ?? 8, 4),
+  };
 }

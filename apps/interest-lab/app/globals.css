@@ -441,6 +441,50 @@ footer {
   padding: clamp(1.25rem, 4vw, 2.5rem);
 }
 
+.quest-world {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.quest-world-stage {
+  position: relative;
+  min-height: clamp(24rem, 58vw, 42rem);
+  overflow: hidden;
+  border-radius: 0.875rem;
+  background: var(--night-sunk);
+}
+
+.quest-world-stage > div {
+  position: absolute !important;
+  inset: 0;
+}
+
+.quest-world-instruction {
+  position: absolute;
+  z-index: 1;
+  right: 1rem;
+  bottom: 1rem;
+  max-width: 34ch;
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.625rem;
+  background: rgb(18 11 30 / 88%);
+  color: var(--ink-muted);
+  font-size: var(--type-label-size);
+}
+
+.quest-world--3d .quest-ledger-shell {
+  z-index: 2;
+  margin: -5rem 1rem 0;
+}
+
+.quest-world--3d .quest-ledger {
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: rgb(34 26 61 / 94%);
+}
+
 .surface-placeholder {
   max-width: 42rem;
   margin: 4rem auto;
@@ -710,6 +754,10 @@ footer {
 
   .control-heading output {
     text-align: left;
+  }
+
+  .quest-world--3d .quest-ledger-shell {
+    margin: 0;
   }
 }
 

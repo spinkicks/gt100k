@@ -60,10 +60,17 @@ interface World3DProps {
 }
 
 interface RendererLifecycle {
-  attach(renderer: {
-    renderLists: { dispose: () => void };
-    dispose: () => void;
-  }): void;
+  attach(
+    renderer: {
+      renderLists: { dispose: () => void };
+      dispose: () => void;
+      domElement?: {
+        addEventListener: (type: string, listener: EventListener) => void;
+        removeEventListener: (type: string, listener: EventListener) => void;
+      };
+    },
+    onContextLost?: () => void,
+  ): void;
   dispose(): void;
 }
 
@@ -118,6 +125,32 @@ describe("World3D host", () => {
     });
   });
 
+  it("marks the renderer-owned canvas accessibility-hidden after creation", () => {
+    renderToStaticMarkup(createElement(World3DCanvas, { scene: fullScene }));
+
+    const canvasProps = readCanvasProps();
+    const setAttribute = vi.fn();
+    const renderer = {
+      toneMapping: 0,
+      toneMappingExposure: 0,
+      setClearColor: vi.fn(),
+      renderLists: { dispose: vi.fn() },
+      dispose: vi.fn(),
+      domElement: {
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        setAttribute,
+      },
+    };
+    const onCreated = canvasProps.onCreated as
+      | ((state: { gl: typeof renderer; camera: { lookAt: () => void } }) => void)
+      | undefined;
+
+    onCreated?.({ gl: renderer, camera: { lookAt: vi.fn() } });
+
+    expect(setAttribute).toHaveBeenCalledWith("aria-hidden", "true");
+  });
+
   it("applies the exact dusk fog, lights, tone mapping, exposure, and supplied scene graph", () => {
     const suppliedScene = createElement("group", { "data-scene-graph": "supplied" });
     renderToStaticMarkup(createElement(World3DCanvas, { scene: fullScene }, suppliedScene));
@@ -164,6 +197,11 @@ describe("World3D host", () => {
       setClearColor,
       renderLists: { dispose: vi.fn() },
       dispose: vi.fn(),
+      domElement: {
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        setAttribute: vi.fn(),
+      },
     };
     const onCreated = canvasProps.onCreated as
       | ((state: { gl: typeof renderer; camera: { lookAt: typeof lookAt } }) => void)
@@ -192,5 +230,31 @@ describe("World3D host", () => {
 
     expect(renderListsDispose).toHaveBeenCalledTimes(1);
     expect(rendererDispose).toHaveBeenCalledTimes(1);
+  });
+
+  it("reports WebGL context loss and detaches the listener during disposal", () => {
+    const addEventListener = vi.fn();
+    const removeEventListener = vi.fn();
+    const onContextLost = vi.fn();
+    const preventDefault = vi.fn();
+    const lifecycle = createRendererLifecycle?.();
+
+    lifecycle?.attach(
+      {
+        domElement: { addEventListener, removeEventListener },
+        renderLists: { dispose: vi.fn() },
+        dispose: vi.fn(),
+      },
+      onContextLost,
+    );
+
+    expect(addEventListener).toHaveBeenCalledWith("webglcontextlost", expect.any(Function));
+    const listener = addEventListener.mock.calls[0]?.[1] as EventListener | undefined;
+    listener?.({ preventDefault } as unknown as Event);
+    expect(preventDefault).toHaveBeenCalledOnce();
+    expect(onContextLost).toHaveBeenCalledOnce();
+
+    lifecycle?.dispose();
+    expect(removeEventListener).toHaveBeenCalledWith("webglcontextlost", listener);
   });
 });

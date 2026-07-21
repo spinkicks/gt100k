@@ -1,0 +1,156 @@
+- generic [active] [ref=e1]:
+  - link "Skip to Interest Lab" [ref=e2] [cursor=pointer]:
+    - /url: "#interest-lab-content"
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - paragraph [ref=e6]: Interest Lab · synthetic preview
+        - heading "The Curiosity Atelier" [level=1] [ref=e7]
+        - paragraph [ref=e8]: Try different kinds of work, notice what draws you back, and keep every possibility open.
+      - paragraph [ref=e9]: Full 3D world
+    - region [ref=e11]:
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - paragraph [ref=e14]: Presentation only
+          - heading "Interest Lab controls" [level=2] [ref=e15]
+        - status [ref=e16]: Showing the full 3D world. Motion is animated.
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]: Age band
+          - combobox "Age band" [ref=e20]:
+            - option "Ages 6–8"
+            - option "Ages 9–11" [selected]
+            - option "Ages 12–14"
+        - generic [ref=e21]:
+          - generic [ref=e22]: Motion
+          - combobox "Motion" [ref=e23]:
+            - option "Match this device" [selected]
+            - option "Reduce motion"
+            - option "Use animation"
+        - generic [ref=e24]:
+          - generic [ref=e25]: Surface
+          - combobox "Surface" [ref=e26]:
+            - option "Child quests" [selected]
+            - option "Guide console"
+        - generic [ref=e27]:
+          - generic [ref=e28]: Render tier
+          - combobox "Render tier" [ref=e29]:
+            - option "Automatic" [selected]
+            - option "Full 3D world"
+            - option "Lighter 3D world"
+            - option "2D board"
+        - generic [ref=e30]:
+          - checkbox "Plain mode" [ref=e31]
+          - generic [ref=e32]: Plain mode
+    - region "Curiosity Quest World" [ref=e34]:
+      - paragraph [ref=e36]: The quest cards below control this world. Focus a card to visit its island.
+      - region [ref=e38]:
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - paragraph [ref=e41]: Choose what to try
+            - heading "Your quest constellation" [level=2] [ref=e42]
+          - paragraph [ref=e43]: Pick what feels worth trying. There is no best choice, and asking for another way never counts against you.
+        - generic "Quest card constellation board" [ref=e44]:
+          - region "making constellation" [ref=e45]:
+            - heading "making" [level=3] [ref=e46]
+            - list [ref=e48]:
+              - listitem [ref=e49]:
+                - article [ref=e50]:
+                  - 'button "making: build quest. Build. Foundational. Solo. No audience. A rule suggested this build quest to broaden what you can try.. New quest." [ref=e51] [cursor=pointer]':
+                    - generic [ref=e52]:
+                      - generic [ref=e58]: Making
+                      - generic [ref=e59]: Choose quest
+                    - strong [ref=e60]: "making: build quest"
+                    - generic [ref=e61]:
+                      - generic [ref=e62]: Foundational
+                      - generic [ref=e66]: Solo
+                      - generic [ref=e70]: No audience
+                    - generic [ref=e73]: Rules suggested this quest
+                    - generic [ref=e74]: A rule suggested this build quest to broaden what you can try.
+                  - group [ref=e75]:
+                    - generic "Try a different way" [ref=e76] [cursor=pointer]
+              - listitem [ref=e80]:
+                - article [ref=e81]:
+                  - 'button "making: debug quest. Debug. Stretch. Solo. No audience. A rule suggested this debug quest to broaden what you can try.. New quest." [ref=e82] [cursor=pointer]':
+                    - generic [ref=e83]:
+                      - generic [ref=e88]: Making
+                      - generic [ref=e89]: Choose quest
+                    - strong [ref=e90]: "making: debug quest"
+                    - generic [ref=e91]:
+                      - generic [ref=e92]: Stretch
+                      - generic [ref=e96]: Solo
+                      - generic [ref=e100]: No audience
+                    - generic [ref=e103]: Rules suggested this quest
+                    - generic [ref=e104]: A rule suggested this debug quest to broaden what you can try.
+                  - group [ref=e105]:
+                    - generic "Try a different way" [ref=e106] [cursor=pointer]
+              - listitem [ref=e110]:
+                - article [ref=e111]:
+                  - 'button "making: compose quest. Compose. Foundational. Group. Audience. A rule suggested this compose quest to broaden what you can try.. New quest." [ref=e112] [cursor=pointer]':
+                    - generic [ref=e113]:
+                      - generic [ref=e118]: Making
+                      - generic [ref=e119]: Choose quest
+                    - strong [ref=e120]: "making: compose quest"
+                    - generic [ref=e121]:
+                      - generic [ref=e122]: Foundational
+                      - generic [ref=e126]: Group
+                      - generic [ref=e131]: Audience
+                    - generic [ref=e135]: Rules suggested this quest
+                    - generic [ref=e136]: A rule suggested this compose quest to broaden what you can try.
+                  - group [ref=e137]:
+                    - generic "Try a different way" [ref=e138] [cursor=pointer]
+          - region "living systems constellation" [ref=e142]:
+            - heading "living systems" [level=3] [ref=e143]
+            - list [ref=e145]:
+              - listitem [ref=e146]:
+                - article [ref=e147]:
+                  - 'button "living systems: investigate quest. Investigate. Foundational. Solo. No audience. A rule suggested this investigate quest to broaden what you can try.. New quest." [ref=e148] [cursor=pointer]':
+                    - generic [ref=e149]:
+                      - generic [ref=e154]: Living systems
+                      - generic [ref=e155]: Choose quest
+                    - strong [ref=e156]: "living systems: investigate quest"
+                    - generic [ref=e157]:
+                      - generic [ref=e158]: Foundational
+                      - generic [ref=e162]: Solo
+                      - generic [ref=e166]: No audience
+                    - generic [ref=e169]: Rules suggested this quest
+                    - generic [ref=e170]: A rule suggested this investigate quest to broaden what you can try.
+                  - group [ref=e171]:
+                    - generic "Try a different way" [ref=e172] [cursor=pointer]
+              - listitem [ref=e176]:
+                - article [ref=e177]:
+                  - 'button "living systems: care quest. Care. Foundational. Solo. No audience. A rule suggested this care quest to broaden what you can try.. New quest." [ref=e178] [cursor=pointer]':
+                    - generic [ref=e179]:
+                      - generic [ref=e183]: Living systems
+                      - generic [ref=e184]: Choose quest
+                    - strong [ref=e185]: "living systems: care quest"
+                    - generic [ref=e186]:
+                      - generic [ref=e187]: Foundational
+                      - generic [ref=e191]: Solo
+                      - generic [ref=e195]: No audience
+                    - generic [ref=e198]: Rules suggested this quest
+                    - generic [ref=e199]: A rule suggested this care quest to broaden what you can try.
+                  - group [ref=e200]:
+                    - generic "Try a different way" [ref=e201] [cursor=pointer]
+              - listitem [ref=e205]:
+                - article [ref=e206]:
+                  - 'button "living systems: explain quest. Explain. Stretch. Group. Audience. A rule suggested this explain quest to broaden what you can try.. New quest." [ref=e207] [cursor=pointer]':
+                    - generic [ref=e208]:
+                      - generic [ref=e213]: Living systems
+                      - generic [ref=e214]: Choose quest
+                    - strong [ref=e215]: "living systems: explain quest"
+                    - generic [ref=e216]:
+                      - generic [ref=e217]: Stretch
+                      - generic [ref=e221]: Group
+                      - generic [ref=e226]: Audience
+                    - generic [ref=e230]: Rules suggested this quest
+                    - generic [ref=e231]: A rule suggested this explain quest to broaden what you can try.
+                  - group [ref=e232]:
+                    - generic "Try a different way" [ref=e233] [cursor=pointer]
+        - complementary [ref=e237]:
+          - generic [ref=e238]:
+            - paragraph [ref=e239]: My quest tray
+            - heading "Keep a quest close" [level=2] [ref=e240]
+          - paragraph [ref=e241]: Pick a quest to keep it close. You can put it back anytime.
+    - generic [ref=e242]: Synthetic data only · no live child records · choices never become fixed labels
+  - alert [ref=e243]

@@ -1,17 +1,18 @@
 "use client";
 
-import type { DeviceCaps } from "@gt100k/interest-lab-view";
+import type { DeviceCaps, RenderTier } from "@gt100k/interest-lab-view";
 import { useReducedMotion } from "motion/react";
-import { useEffect, useMemo, useState } from "react";
-import { QuestLedger } from "./child/QuestLedger";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { QuestWorld } from "./child/QuestWorld";
 import { buildSyntheticInterestLabSeed } from "./seed";
 import { InterestLabControls } from "./ui/controls/InterestLabControls";
 import {
   type InterestLabSurface,
   type MotionPreference,
   type RenderTierOverride,
+  applyRenderTierOverride,
   readInterestLabClientDefaults,
-  resolveReducedMotionPreference,
+  resolveHydrationSafeReducedMotionPreference,
 } from "./ui/controls/settings";
 import { detectDeviceCaps } from "./ui/deviceCaps";
 
@@ -24,6 +25,12 @@ const DEFAULTS = readInterestLabClientDefaults({
 
 const SERVER_DEVICE_CAPS: DeviceCaps = { webglAvailable: false };
 
+const TIER_STATUS: Record<RenderTier, string> = {
+  "quest-world-3d": "Full 3D world",
+  "quest-world-3d-lite": "Lighter 3D world",
+  "board-2d": "Accessible 2D tier",
+};
+
 export function InterestLabClient() {
   const osPrefersReducedMotion = useReducedMotion();
   const [ageBand, setAgeBand] = useState(DEFAULTS.ageBand);
@@ -35,19 +42,40 @@ export function InterestLabClient() {
   const [renderTierOverride, setRenderTierOverride] = useState<RenderTierOverride>(
     DEFAULTS.renderTierOverride,
   );
+  const [clientReady, setClientReady] = useState(false);
   const [deviceCaps, setDeviceCaps] = useState<DeviceCaps>(SERVER_DEVICE_CAPS);
+  const [webglContextLost, setWebglContextLost] = useState(false);
 
-  useEffect(() => setDeviceCaps(detectDeviceCaps()), []);
+  useEffect(() => {
+    setDeviceCaps(detectDeviceCaps());
+    setClientReady(true);
+  }, []);
 
-  const reducedMotion = resolveReducedMotionPreference(
+  const reducedMotion = resolveHydrationSafeReducedMotionPreference(
     motionPreference,
     osPrefersReducedMotion === true,
+    clientReady,
+  );
+  const effectiveDeviceCaps = useMemo(
+    () =>
+      applyRenderTierOverride(
+        webglContextLost ? { ...deviceCaps, webglAvailable: false } : deviceCaps,
+        renderTierOverride,
+      ),
+    [deviceCaps, renderTierOverride, webglContextLost],
   );
   const seed = useMemo(
-    () => buildSyntheticInterestLabSeed({ ageBand, reducedMotion, plainMode, deviceCaps }),
-    [ageBand, reducedMotion, plainMode, deviceCaps],
+    () =>
+      buildSyntheticInterestLabSeed({
+        ageBand,
+        reducedMotion,
+        plainMode,
+        deviceCaps: effectiveDeviceCaps,
+      }),
+    [ageBand, reducedMotion, plainMode, effectiveDeviceCaps],
   );
   const activeRenderTier = seed.view.presentation.renderTier;
+  const handleContextLost = useCallback(() => setWebglContextLost(true), []);
 
   return (
     <>
@@ -60,6 +88,7 @@ export function InterestLabClient() {
         data-active-surface={surface}
         data-active-render-tier={activeRenderTier}
         data-requested-render-tier={renderTierOverride}
+        data-webgl-context={webglContextLost ? "lost" : "available"}
       >
         <header className="masthead">
           <div className="title-group">
@@ -72,7 +101,7 @@ export function InterestLabClient() {
           </div>
           <p className="status-pill">
             <span aria-hidden="true" className="status-mark" />
-            Accessible 2D tier
+            {TIER_STATUS[activeRenderTier]}
           </p>
         </header>
 
@@ -93,7 +122,7 @@ export function InterestLabClient() {
 
         <section className="quest-workspace material" id="interest-lab-content">
           {surface === "child" ? (
-            <QuestLedger picker={seed.view.probePicker} />
+            <QuestWorld view={seed.view} onContextLost={handleContextLost} />
           ) : (
             <section className="surface-placeholder" aria-live="polite">
               <p className="surface-name">Guide surface</p>

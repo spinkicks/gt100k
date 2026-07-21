@@ -12,6 +12,7 @@ const ClientWorld3DCanvas = dynamic(
 export interface World3DProps {
   scene: SceneView;
   children?: ReactNode;
+  onContextLost?: () => void;
 }
 
 export function World3D(props: World3DProps) {

@@ -9,21 +9,39 @@ import { ACESFilmicToneMapping } from "three";
 interface World3DRenderer {
   renderLists: { dispose: () => void };
   dispose: () => void;
+  domElement?: {
+    addEventListener: (type: string, listener: EventListener) => void;
+    removeEventListener: (type: string, listener: EventListener) => void;
+    setAttribute: (name: string, value: string) => void;
+  };
 }
 
 export interface World3DRendererLifecycle {
-  attach: (renderer: World3DRenderer) => void;
+  attach: (renderer: World3DRenderer, onContextLost?: () => void) => void;
   dispose: () => void;
 }
 
 export function createWorld3DRendererLifecycle(): World3DRendererLifecycle {
   let renderer: World3DRenderer | null = null;
+  let detachContextLost: (() => void) | null = null;
 
   return {
-    attach(nextRenderer) {
+    attach(nextRenderer, onContextLost) {
+      detachContextLost?.();
       renderer = nextRenderer;
+      if (nextRenderer.domElement && onContextLost) {
+        const listener: EventListener = (event) => {
+          event.preventDefault();
+          onContextLost();
+        };
+        nextRenderer.domElement.addEventListener("webglcontextlost", listener);
+        detachContextLost = () =>
+          nextRenderer.domElement?.removeEventListener("webglcontextlost", listener);
+      }
     },
     dispose() {
+      detachContextLost?.();
+      detachContextLost = null;
       if (!renderer) return;
       renderer.renderLists.dispose();
       renderer.dispose();
@@ -35,9 +53,10 @@ export function createWorld3DRendererLifecycle(): World3DRendererLifecycle {
 export interface World3DCanvasProps {
   scene: SceneView;
   children?: ReactNode;
+  onContextLost?: () => void;
 }
 
-export function World3DCanvas({ scene, children }: World3DCanvasProps) {
+export function World3DCanvas({ scene, children, onContextLost }: World3DCanvasProps) {
   const rendererLifecycle = useMemo(createWorld3DRendererLifecycle, []);
 
   useEffect(() => () => rendererLifecycle.dispose(), [rendererLifecycle]);
@@ -55,7 +74,8 @@ export function World3DCanvas({ scene, children }: World3DCanvasProps) {
       gl={{ alpha: false, antialias: true, powerPreference: "high-performance" }}
       shadows={scene.quality.shadows}
       onCreated={({ gl, camera }) => {
-        rendererLifecycle.attach(gl);
+        gl.domElement.setAttribute("aria-hidden", "true");
+        rendererLifecycle.attach(gl, onContextLost);
         gl.toneMapping = ACESFilmicToneMapping;
         gl.toneMappingExposure = scene.scene3d.exposure;
         gl.setClearColor(scene.scene3d.bgHex);

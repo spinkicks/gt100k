@@ -9,6 +9,7 @@ import {
 } from "../app/ui/controls/InterestLabControls";
 import {
   readInterestLabClientDefaults,
+  resolveHydrationSafeReducedMotionPreference,
   resolveReducedMotionPreference,
 } from "../app/ui/controls/settings";
 
@@ -65,6 +66,13 @@ describe("Interest Lab client shell", () => {
     expect(resolveReducedMotionPreference("system", false)).toBe(false);
     expect(resolveReducedMotionPreference("on", false)).toBe(true);
     expect(resolveReducedMotionPreference("off", true)).toBe(false);
+  });
+
+  it("defers the OS motion preference until hydration without deferring explicit settings", () => {
+    expect(resolveHydrationSafeReducedMotionPreference("system", true, false)).toBe(false);
+    expect(resolveHydrationSafeReducedMotionPreference("system", true, true)).toBe(true);
+    expect(resolveHydrationSafeReducedMotionPreference("on", false, false)).toBe(true);
+    expect(resolveHydrationSafeReducedMotionPreference("off", true, false)).toBe(false);
   });
 
   it("renders one semantic presentation-control cluster with every required flag", () => {
