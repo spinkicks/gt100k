@@ -95,3 +95,7 @@
 - Exposed the demo orchestration as `runCohortCompilerDemo()` returning a deterministic JSON-safe summary, with the package `demo` command responsible only for printing it. Rejected a console-only script because its end-to-end quickstart claims would not be directly contract-testable.
 - Reused the typed golden fixtures and added Fixture C's synthetic A7 to Fixture B's pool, producing two feasible cohorts, one deterministic unassigned learner, and a meaningful two-member in-budget repair that can be committed and rolled back. Rejected live/generated data and a zero-churn repair because neither would make the governance path as legible.
 - Imported the sibling safeguarding and shadow adapters through feature-local source paths and added adapter-local TypeScript project references. Rejected adding undeclared package-name imports or updating the shared lockfile, which is outside this feature's allowed shared-file surface.
+
+## 2026-07-21 — T036 focused Vitest root
+
+- Run the `@gt100k/cohort-compiler` test script from the workspace root and filter it to `packages/cohort-compiler/test`. The required filtered command executes scripts from the package directory, while the shared Vitest config intentionally uses workspace-root `packages/**` and `adapters/**` includes; rejected `--passWithNoTests` because it would weaken the gate, and rejected an unfiltered root run because the focused command must prove the domain package independently.

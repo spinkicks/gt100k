@@ -278,3 +278,14 @@
 
 - T036 — Run `specs/006-cohort-compiler/quickstart.md` validation end-to-end with the pinned domain gate commands.
 - Acceptance: `pnpm typecheck` and `pnpm lint` are clean; `pnpm --filter @gt100k/cohort-compiler test` and workspace `pnpm test` are green; the quickstart obligations for Fixtures A–E and SC-001 through SC-008 remain satisfied without touching the deferred final root reference task.
+
+## 2026-07-21 — P6 / T036
+
+- Ran the domain quickstart validation end-to-end and found the package-filtered Vitest script inherited workspace-root include globs while executing from the package directory, causing the required focused command to find zero tests.
+- Corrected only `packages/cohort-compiler/package.json` so its test script sets the workspace root and filters back to the domain test directory; the failing command then ran all 14 domain files and passed 81/81 tests without admitting adapter or unrelated workspace tests.
+- Gate status: `pnpm typecheck`, `pnpm lint`, `pnpm --filter @gt100k/cohort-compiler test` (81/81), and `pnpm test` (113/113) pass. Fixtures A–E and SC-001 through SC-008 remain covered. P6 and the full pure-domain slice are complete; the shared root reference remains deferred to T136. No blocker.
+
+## NEXT
+
+- T101 — Scaffold `packages/cohort-arena-view` as `@gt100k/cohort-arena-view` with the pinned ESM manifest, composite package TypeScript configuration, and empty public entrypoint; do not touch shared root files.
+- Acceptance: the new pure view package matches the P7 manifest/TypeScript contract, depends only on `@gt100k/cohort-compiler`, is discoverable by existing workspace globs, and the repository typecheck/test/lint gate remains green.

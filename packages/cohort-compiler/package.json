@@ -9,6 +9,6 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run --root ../.. packages/cohort-compiler/test"
   }
 }
