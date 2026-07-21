@@ -209,6 +209,12 @@ describe("World3D host", () => {
     expect(elementOfType(AdaptiveDpr)).toBeDefined();
     expect(elements.some((element) => element.props["data-scene-graph"] === "supplied")).toBe(true);
 
+    // The crash-prone portal <Environment> is replaced by explicit palette fill point lights.
+    const pointLights = elements.filter((element) => element.type === "pointLight");
+    expect(pointLights).toHaveLength(4);
+    expect(pointLights.every((light) => typeof light.props.color === "string")).toBe(true);
+    expect(elementOfType(Environment)).toBeUndefined();
+
     const setClearColor = vi.fn();
     const lookAt = vi.fn();
     const renderer = {

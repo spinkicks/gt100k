@@ -808,6 +808,13 @@ footer {
   inset: 0;
 }
 
+/* Shown if the 3D world subtree throws — a calm dusk wash, never a white/void screen.
+   The accessible DOM ledger below stays fully operable. */
+.quest-world-fallback {
+  background:
+    radial-gradient(120% 90% at 50% 12%, var(--night-raised) 0%, var(--night-sunk) 62%, var(--night) 100%);
+}
+
 .quest-world-instruction {
   position: absolute;
   z-index: 1;

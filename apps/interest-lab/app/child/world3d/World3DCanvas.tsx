@@ -1,7 +1,7 @@
 "use client";
 
 import { CAMERA3D, PALETTE, type SceneView } from "@gt100k/interest-lab-view";
-import { AdaptiveDpr, ContactShadows, Environment, Lightformer } from "@react-three/drei";
+import { AdaptiveDpr, ContactShadows } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { type ReactNode, useEffect, useMemo } from "react";
 import { ACESFilmicToneMapping } from "three";
@@ -13,7 +13,23 @@ const SEA_Y = -3.4;
 const SEA_RADIUS = 46;
 const RIM_LIGHT_POSITION: readonly [number, number, number] = [-8, 5, -7];
 const RIM_LIGHT_INTENSITY = 0.58;
-const ENVIRONMENT_INTENSITY = 0.5;
+
+// Palette fill lights that stand in for the previous drei portal-mode <Environment>
+// (its frames-once cube-camera update crashed on mount — see .loop/decisions.md D-VP16).
+// Real point lights give the same warm-beacon / cool-tide image-based bounce that lifts the
+// matte island materials into readable PBR, with none of the portal's mount fragility.
+const FILL_LIGHTS: ReadonlyArray<{
+  key: string;
+  colorFrom: keyof typeof PALETTE;
+  position: readonly [number, number, number];
+  intensity: number;
+  distance: number;
+}> = [
+  { key: "beacon", colorFrom: "beacon", position: [9, 9, 6], intensity: 22, distance: 34 },
+  { key: "spark", colorFrom: "sparkHi", position: [0, 13, 2], intensity: 14, distance: 34 },
+  { key: "tide", colorFrom: "tide", position: [-9, 6, -6], intensity: 12, distance: 34 },
+  { key: "sea-bounce", colorFrom: "nightRaised", position: [0, -8, 0], intensity: 6, distance: 30 },
+];
 
 interface World3DRenderer {
   renderLists: { dispose: () => void };
@@ -121,48 +137,19 @@ export function World3DCanvas({ scene, children, onContextLost }: World3DCanvasP
         intensity={RIM_LIGHT_INTENSITY}
         position={RIM_LIGHT_POSITION}
       />
-      {/* Local image-based ambient built from palette Lightformers — no remote HDRI fetch,
-          bakes once (frames=1). This lifts the matte island materials into readable PBR and
-          removes the flat, self-lit "gray primitive" look. */}
-      <Environment
-        frames={1}
-        resolution={256}
-        background={false}
-        environmentIntensity={ENVIRONMENT_INTENSITY}
-      >
-        <Lightformer
-          form="rect"
-          intensity={2.2}
-          color={PALETTE.beacon}
-          scale={[18, 10, 1]}
-          position={[9, 9, 6]}
-          rotation={[0, -Math.PI / 4, 0]}
+      {/* Palette fill lights (replacing the crash-prone portal <Environment>): a warm beacon
+          key-fill, a cool tide back-fill, an overhead spark, and a faint sea bounce. Together
+          they lift the matte island materials into readable PBR without any portal/cube-camera. */}
+      {FILL_LIGHTS.map((light) => (
+        <pointLight
+          key={light.key}
+          color={PALETTE[light.colorFrom]}
+          intensity={light.intensity}
+          position={light.position}
+          distance={light.distance}
+          decay={2}
         />
-        <Lightformer
-          form="circle"
-          intensity={1.4}
-          color={PALETTE.sparkHi}
-          scale={[12, 12, 1]}
-          position={[0, 13, 2]}
-          rotation={[Math.PI / 2, 0, 0]}
-        />
-        <Lightformer
-          form="rect"
-          intensity={1.1}
-          color={PALETTE.tide}
-          scale={[16, 9, 1]}
-          position={[-9, 6, -6]}
-          rotation={[0, Math.PI / 3, 0]}
-        />
-        <Lightformer
-          form="rect"
-          intensity={0.5}
-          color={PALETTE.nightRaised}
-          scale={[26, 26, 1]}
-          position={[0, -8, 0]}
-          rotation={[-Math.PI / 2, 0, 0]}
-        />
-      </Environment>
+      ))}
       {/* Misty sea — a faintly glowing floor the islands hover over; its far edge dissolves
           into the dusk fog, giving the world a horizon instead of a void. */}
       <mesh receiveShadow={scene.quality.shadows} rotation={[-Math.PI / 2, 0, 0]} position={[0, SEA_Y, 0]}>

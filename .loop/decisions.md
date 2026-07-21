@@ -751,3 +751,39 @@
   `next build` ✓** (route `/` prerendered static, 285 kB page / 373 kB first-load).
 - Honest caveat (unchanged): the WebGL full tier can't be pixel-verified headless; a GPU/browser
   screenshot pass remains the ideal final taste-tune but blocks no non-negotiable.
+
+## D-VP16 — Kill the portal <Environment> crash; use explicit palette fill lights (interest-lab-v2 Turn 1)
+- Context (P0.1): on load the child app threw `TypeError: Cannot read properties of undefined
+  (reading '0')` from drei's portal-mode `<Environment>` (children/Lightformer path). Root cause,
+  confirmed by reading `@react-three/drei@9.122 core/Environment.js`: `EnvironmentPortal` runs a
+  `useLayoutEffect` that calls `camera.current.update(gl, virtualScene)` in `frames===1` mode; the
+  frames-once cube-camera update is fragile on mount and blows up before the ledger is usable.
+- Chose: remove `<Environment>`+`<Lightformer>` entirely and replace with four declarative
+  `<pointLight>` primitives (warm beacon key-fill, overhead spark, cool tide back-fill, faint sea
+  bounce) tuned to the same palette + positions. Rejected: (a) `<Environment preset=…>` — needs a
+  remote HDRI fetch (banned, offline); (b) `files=…` local HDRI — none in-repo; (c) debugging the
+  portal — a library-internal timing bug we don't own and can't reliably pin.
+- Why it's safe visually: island/marker materials are low-metalness (0.04 / 0.08), so IBL specular
+  contribution was minimal — the diffuse lift is reproduced by real lights + the existing
+  ambient/hemisphere/key/rim rig. No portal, no cube camera, no mount lifecycle → no crash.
+
+## D-VP17 — React error boundary around the 3D Canvas → graceful board-2d fallback (P0.1)
+- Added `World3DBoundary` (class component, `getDerivedStateFromError`/`componentDidCatch`) wrapping
+  `<World3D>` in `QuestWorld`. On any 3D render error it shows a calm dusk-gradient stand-in
+  (`.quest-world-fallback`, never a white screen) and calls `onError` → QuestWorld retires the WebGL
+  tier to `board-2d`, reusing the same path as WebGL context loss. The accessible DOM ledger below
+  is always mounted and operable regardless.
+
+## D-VP18 — Lift pick/focus state to QuestWorld so 3D orbs + DOM cards share ONE reducer (P0.2)
+- Context: pick state lived inside `QuestLedger`'s `useReducer`; `QuestWorld` only mirrored it one-way
+  (ledger→world). 3D `QuestMarker.onClick` called `onPick`, but `buildQuestWorldSceneGraph` never
+  passed `onPick` to `<Island>`, so orb clicks were dead — the #1 demo tell.
+- Chose: lift `updatePickedProbeIds` reducer + `focusedProbeId` up to `QuestWorld`; thread `onPick`
+  through `buildQuestWorldSceneGraph → Island → QuestMarker`; make `QuestLedger` a controlled
+  component (optional controlled props, falls back to internal state so standalone render tests keep
+  working). A 3D orb click now focuses its island AND toggles the quest into the same tray as the
+  card (`pickFromWorld`), giving the hero object a real, visible payoff.
+- Verify caveat (honest): the WebGL interaction can't be pixel/click-verified in this headless,
+  GPU-less env (SSR + swiftshader → `board-2d`); confirmed via unit tests (onPick threaded to all 8
+  islands; boundary behavior) + `next build` + a 200 SSR load. A GPU browser pass remains the ideal
+  final taste-tune but blocks no non-negotiable.

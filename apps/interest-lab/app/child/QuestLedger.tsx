@@ -2,7 +2,7 @@
 
 import type { ProbeCardView, ProbePickerView } from "@gt100k/interest-lab-view";
 import { LayoutGroup } from "motion/react";
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useMemo, useReducer, useState } from "react";
 import { Board2D } from "./Board2D";
 import { QuestTray } from "./QuestTray";
 
@@ -17,20 +17,35 @@ export function updatePickedProbeIds(current: string[], action: PickAction): str
 
 export interface QuestLedgerProps {
   picker: ProbePickerView;
-  onFocusQuest?: (probeId: string) => void;
-  onPickQuest?: (probeId: string) => void;
-  onPickedProbeIdsChange?: (probeIds: readonly string[]) => void;
+  /**
+   * Shared pick state, when the ledger is driven by a parent (QuestWorld) so the 3D
+   * orbs and the DOM cards toggle the SAME reducer. Omit to run standalone (the ledger
+   * then owns its own pick/focus state — used by lightweight render tests).
+   */
+  pickedProbeIds?: readonly string[];
+  focusedProbeId?: string | null;
+  /** Toggle a quest into/out of the tray (card click or 3D orb click). */
+  onTogglePick?: (probeId: string) => void;
+  /** Explicitly remove a quest from the tray (tray "try a different way"). */
+  onReturn?: (probeId: string) => void;
+  /** Focus a quest's island (card focus/hover). */
+  onFocus?: (probeId: string) => void;
 }
 
 export function QuestLedger({
   picker,
-  onFocusQuest,
-  onPickQuest,
-  onPickedProbeIdsChange,
+  pickedProbeIds: controlledPickedProbeIds,
+  focusedProbeId: controlledFocusedProbeId,
+  onTogglePick,
+  onReturn,
+  onFocus,
 }: QuestLedgerProps) {
-  const [pickedProbeIds, dispatch] = useReducer(updatePickedProbeIds, []);
-  const [focusedProbeId, setFocusedProbeId] = useState<string | null>(null);
-  const pickedProbeIdsChangeRef = useRef(onPickedProbeIdsChange);
+  const [internalPickedProbeIds, dispatch] = useReducer(updatePickedProbeIds, []);
+  const [internalFocusedProbeId, setInternalFocusedProbeId] = useState<string | null>(null);
+  const controlled = controlledPickedProbeIds !== undefined;
+  const pickedProbeIds = controlledPickedProbeIds ?? internalPickedProbeIds;
+  const focusedProbeId = controlled ? (controlledFocusedProbeId ?? null) : internalFocusedProbeId;
+
   const questById = useMemo(
     () => new Map(picker.quests.map((quest) => [quest.probeId, quest] as const)),
     [picker.quests],
@@ -40,19 +55,26 @@ export function QuestLedger({
     .filter((quest): quest is ProbeCardView => quest !== undefined);
   const reducedMotion = picker.quests[0]?.motion.mode === "reduced";
 
-  useEffect(() => {
-    pickedProbeIdsChangeRef.current = onPickedProbeIdsChange;
-  }, [onPickedProbeIdsChange]);
-
-  useEffect(() => pickedProbeIdsChangeRef.current?.(pickedProbeIds), [pickedProbeIds]);
-
   const pick = (probeId: string) => {
-    dispatch({ type: pickedProbeIds.includes(probeId) ? "return" : "pick", probeId });
-    if (!pickedProbeIds.includes(probeId)) onPickQuest?.(probeId);
+    if (controlled) {
+      onTogglePick?.(probeId);
+      return;
+    }
+    dispatch({ type: internalPickedProbeIds.includes(probeId) ? "return" : "pick", probeId });
+  };
+  const returnQuest = (probeId: string) => {
+    if (controlled) {
+      onReturn?.(probeId);
+      return;
+    }
+    dispatch({ type: "return", probeId });
   };
   const focus = (probeId: string) => {
-    setFocusedProbeId(probeId);
-    onFocusQuest?.(probeId);
+    if (controlled) {
+      onFocus?.(probeId);
+      return;
+    }
+    setInternalFocusedProbeId(probeId);
   };
 
   return (
@@ -76,11 +98,7 @@ export function QuestLedger({
           onFocus={focus}
           touchTargetPx={picker.staging.touchTargetPx}
         />
-        <QuestTray
-          quests={pickedQuests}
-          reducedMotion={reducedMotion}
-          onReturn={(probeId) => dispatch({ type: "return", probeId })}
-        />
+        <QuestTray quests={pickedQuests} reducedMotion={reducedMotion} onReturn={returnQuest} />
       </LayoutGroup>
     </section>
   );

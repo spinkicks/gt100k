@@ -202,12 +202,14 @@ describe("QuestWorld tier switch", () => {
     const focusedProbeId = view.scene.islands[1]?.markers[0]?.probeId ?? null;
     const pickedProbeIds = new Set([view.scene.islands[0]?.markers[0]?.probeId ?? "missing"]);
     const haloTexture = new Texture();
+    const onPick = vi.fn();
     const onPerformanceDecline = vi.fn();
     const graph = buildQuestWorldSceneGraph({
       view,
       focusedProbeId,
       pickedProbeIds,
       haloTexture,
+      onPick,
       onPerformanceDecline,
     });
     const islands = graph.filter((element) => element.type === Island);
@@ -222,6 +224,9 @@ describe("QuestWorld tier switch", () => {
     expect(islands.every((element) => element.props.haloTexture === haloTexture)).toBe(true);
     expect(islands.every((element) => element.props.pickedProbeIds === pickedProbeIds)).toBe(true);
     expect(islands.every((element) => element.props.focusedProbeId === focusedProbeId)).toBe(true);
+    // Every island (all 8 — not just the ledger's visible slice) forwards the shared pick
+    // handler down to its orbs, so a 3D click drives the same reducer as a DOM card.
+    expect(islands.every((element) => element.props.onPick === onPick)).toBe(true);
     expect(camera?.props).toMatchObject({
       scene: view.scene,
       focusedProbeId,
