@@ -662,3 +662,17 @@
 
 - T134 — Add `apps/cohort-arena/README.md` and `packages/cohort-arena-view/README.md`.
 - Acceptance: document run/build commands, the one-view-drives-all 3D/2D/Ledger architecture, reduced-motion and accessibility behavior, public view API and golden constants, guardrails, and the synthetic-only/no-live-media/no-network boundary; repository typecheck/test/lint and both builds remain green.
+
+## 2026-07-21 — P11 / T134
+
+- Added the app operator README with the exact dev/test/build/smoke commands, one-view 3D/2D/HUD/Ledger architecture, reduced/plain/runtime-degradation tiers, complete Ledger keyboard path, and synthetic-only/no-live-media/no-network guardrails.
+- Added the pure view-package README with every public function and exported type group, all seven golden registries, pinned layout examples, renderer boundaries, deterministic guarantees, structural standing/RivalryMix guardrails, and focused verification commands.
+- Added package-local documentation contracts so each README's commands, public surface, accessibility behavior, runtime tiers, golden constants, and safety boundaries remain executable obligations.
+- TDD status: both focused suites first failed 4/4 because their README was absent; after the minimal documentation, the app contract passed 4/4 and the view contract exposed one case-sensitive `no I/O` wording gap before the production prose correction made its complete 38-test package suite pass.
+- Review status: a local requirement-by-requirement review found no Critical, Important, or Minor issue; the generic subagent review was not dispatched because this loop prohibits unrequested subagents.
+- Gate status: `pnpm typecheck`, `pnpm test` (151/151), `pnpm lint` (152 files), app tests (62/62), `pnpm --filter @gt100k/cohort-arena build`, and root `pnpm build` pass. T134 completes the P11 documentation slice; P11 remains in progress for quickstart validation and the final shared reference. No blocker.
+
+## NEXT
+
+- T135 — Run the Cohort & Arena Viewer quickstart validation end-to-end.
+- Acceptance: repository typecheck/test/lint, the view-package golden suite, app production build, and seeded production smoke all pass; the reduced-motion, WebGL-loss, keyboard/switch, screen-reader, color-independent, and synthetic/no-network walkthrough obligations for SC-009 through SC-018 remain satisfied without touching the final root reference task.
