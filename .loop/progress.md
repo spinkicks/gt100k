@@ -34,3 +34,14 @@
 
 ## NEXT
 - T004/T005: write the Node-crypto `Hasher` contract test first, confirm RED on the missing adapter, then add the minimal `adapters/evidence-hash-node` implementation; acceptance is the exact SHA-256 known answer, deterministic 64-character lowercase hex, explicit SHA-1/MD5 rejection, no domain crypto import, and a green workspace gate.
+
+## 2026-07-20 — P0 Node-crypto hasher (T004/T005)
+- Added the `@gt100k/evidence-hash-node` adapter package with the feature's sole `node:crypto` import and a synchronous, stateless `NodeCryptoHasher` using SHA-256.
+- Added three contract tests for `Hasher` type conformance, the exact `sha256("abc")` known answer, lowercase 64-character hex, explicit SHA-1/MD5 non-matches, and determinism. Confirmed RED on the missing adapter entrypoint before implementation and GREEN afterward.
+- Added an adapter-local composite reference so the contract test typechecks against the domain port without touching the root `tsconfig.json` before T032.
+- Gate evidence: adapter composite `tsc -b`, workspace `pnpm typecheck`, workspace `pnpm test` (25/25), and `pnpm lint` over `packages adapters apps` pass.
+- Phase status: P0 in progress; T001, T001a, and T002–T005 complete. SC-011 remains passing; the real injected hasher foundation for FR-007 and SC-006 now exists.
+- Blockers: none.
+
+## NEXT
+- T006/T007: write the in-memory `EvidenceRepository` contract test first, confirm RED on the missing adapter, then implement `adapters/evidence-repo-memory`; acceptance is node, edge, and packet save/get round-trips with deep-copy isolation and a green workspace gate.

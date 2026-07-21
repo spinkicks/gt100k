@@ -1,1 +1,1 @@
-feat(evidence-graph): define domain ports
+feat: add Node SHA-256 evidence hasher
