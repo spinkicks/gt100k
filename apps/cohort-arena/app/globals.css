@@ -149,6 +149,11 @@ html[data-reduced-motion="true"] *::after {
     background: var(--deck-2) !important;
     backdrop-filter: none !important;
   }
+
+  .arena-view-controls {
+    background: var(--deck-2);
+    backdrop-filter: none;
+  }
 }
 
 @media (forced-colors: active) {
@@ -177,28 +182,129 @@ html[data-reduced-motion="true"] *::after {
   padding-block: 0.5rem 1.75rem;
 }
 
+/* The view controls read as a frosted instrument deck (a HUD bezel), not loose
+   form buttons: layered depth, inner cyan highlight, and a machined ground shadow. */
 .arena-view-controls {
   display: flex;
   flex: none;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.4rem;
+  padding: 0.4rem;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--deck-3) 66%, transparent),
+    color-mix(in srgb, var(--deck) 80%, transparent)
+  );
+  border: 1px solid color-mix(in srgb, var(--peer) 20%, var(--locked));
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--peer-hi) 20%, transparent),
+    0 14px 30px -20px rgb(0 0 0 / 0.9);
+  backdrop-filter: blur(12px) saturate(1.15);
 }
 
+/* Tactile HUD key: glass face, top light-line, icon, and a state LED. */
 .arena-view-controls button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   min-height: 44px;
-  padding: 0.625rem 0.875rem;
-  color: var(--ink-hi);
-  background: var(--deck-2);
-  border: 1px solid var(--locked);
-  border-radius: 8px;
+  padding: 0.55rem 0.85rem;
+  color: var(--ink-muted);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--deck-3) 94%, transparent),
+    color-mix(in srgb, var(--deck-2) 96%, transparent)
+  );
+  border: 1px solid color-mix(in srgb, var(--locked) 82%, transparent);
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #ffffff 8%, transparent),
+    0 1px 2px rgb(0 0 0 / 0.45);
+  font-weight: 600;
+  letter-spacing: -0.005em;
   cursor: pointer;
+  transition:
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
 }
 
-.arena-view-controls button:hover,
+/* Trailing state LED — dim when idle, ignited when the toggle is engaged. */
+.arena-view-controls button::after {
+  content: "";
+  flex: none;
+  width: 0.45rem;
+  height: 0.45rem;
+  background: color-mix(in srgb, var(--locked) 75%, transparent);
+  border-radius: 50%;
+  transition:
+    background 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.hud-control-icon {
+  display: inline-flex;
+  flex: none;
+  width: 1.05rem;
+  height: 1.05rem;
+  color: var(--peer-hi);
+  transition:
+    color 200ms ease,
+    filter 200ms ease;
+}
+
+.hud-control-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hud-control-label {
+  font-variant-numeric: tabular-nums;
+}
+
+.arena-view-controls button:hover {
+  color: var(--ink-hi);
+  border-color: color-mix(in srgb, var(--peer-hi) 55%, transparent);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #ffffff 12%, transparent),
+    0 8px 20px -12px color-mix(in srgb, var(--peer) 75%, transparent),
+    0 1px 2px rgb(0 0 0 / 0.5);
+}
+
 .arena-view-controls button[aria-pressed="true"] {
-  background: var(--deck-3);
-  border-color: var(--peer-hi);
+  color: var(--ink-hi);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--peer) 30%, var(--deck-3)),
+    color-mix(in srgb, var(--peer) 13%, var(--deck-2))
+  );
+  border-color: color-mix(in srgb, var(--peer-hi) 68%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--peer-hi) 42%, transparent),
+    inset 0 0 14px -3px color-mix(in srgb, var(--peer) 55%, transparent),
+    0 8px 22px -12px color-mix(in srgb, var(--peer) 85%, transparent);
+}
+
+.arena-view-controls button[aria-pressed="true"] .hud-control-icon {
+  color: var(--peer-hi);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--peer-hi) 70%, transparent));
+}
+
+.arena-view-controls button[aria-pressed="true"]::after {
+  background: var(--peer-hi);
+  box-shadow: 0 0 9px 1px color-mix(in srgb, var(--peer-hi) 85%, transparent);
 }
 
 .arena-header h1,
@@ -212,17 +318,53 @@ html[data-reduced-motion="true"] *::after {
   font-family: var(--font-display);
   font-size: var(--text-display-size);
   font-weight: 600;
+  color: var(--ink-hi);
   letter-spacing: var(--text-display-tracking);
   line-height: var(--text-display-line);
 }
 
+/* Display-title read without a network font: graded metallic fill + cyan bloom.
+   Guarded so the title never renders transparent where background-clip is unsupported. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .arena-header h1 {
+    background-image: linear-gradient(
+      166deg,
+      var(--ink-hi) 28%,
+      color-mix(in srgb, var(--peer-hi) 62%, var(--ink-hi))
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 16px color-mix(in srgb, var(--peer) 32%, transparent));
+  }
+}
+
 .arena-context,
 .region-label {
-  margin: 0 0 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.4rem;
   color: var(--peer-hi);
-  font-size: var(--text-label-size);
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
   line-height: var(--text-label-line);
+  text-transform: uppercase;
+}
+
+/* Diegetic "system live" LED on the top-of-page status eyebrow. */
+.arena-context::before {
+  content: "";
+  flex: none;
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--form);
+  border-radius: 50%;
+  box-shadow:
+    0 0 8px 1px color-mix(in srgb, var(--form) 85%, transparent),
+    0 0 2px color-mix(in srgb, var(--form) 90%, transparent);
 }
 
 .arena-summary {

@@ -30,7 +30,15 @@ export function StandingsToggle({ optedIn, reducedMotion, onToggle }: StandingsT
       }}
       onClick={onToggle}
     >
-      Standings {optedIn ? "on" : "off"}
+      <span className="hud-control-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 3v18h18" />
+          <path d="M18 17V9" />
+          <path d="M13 17V5" />
+          <path d="M8 17v-3" />
+        </svg>
+      </span>
+      <span className="hud-control-label">{`Standings ${optedIn ? "on" : "off"}`}</span>
     </motion.button>
   );
 }
