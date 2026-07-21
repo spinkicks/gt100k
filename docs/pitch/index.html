@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GT100K — Engineering elite readiness, safely</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+    /* ===== Design tokens — serious edu/research org ===== */
+    :root {
+        --color-background: #FCFBF8;      /* warm paper white */
+        --color-surface: #FFFFFF;
+        --color-surface-2: #F4F2EC;       /* subtle panel */
+        --color-ink: #16202E;             /* near-black navy ink */
+        --color-ink-soft: #47546A;        /* secondary text */
+        --color-ink-faint: #8A93A3;       /* captions */
+        --color-primary: #1B4965;         /* deep teal-navy (brand) */
+        --color-primary-2: #2C6E8F;
+        --color-accent: #C6803A;          /* restrained ochre for highlights */
+        --color-safe: #2A7D5F;            /* guardrail green */
+        --color-safe-bg: #E9F3EE;
+        --color-line: #E4E0D6;            /* hairline borders */
+        --color-primary-bg: #ECF1F4;
+        --gradient-primary: linear-gradient(135deg, #1B4965, #2C6E8F);
+        --font-heading: 'Source Serif 4', Georgia, serif;
+        --font-body: 'Inter', system-ui, sans-serif;
+        --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+        --shadow-card: 0 1px 2px rgba(22,32,46,.04), 0 6px 20px rgba(22,32,46,.06);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+        background: var(--color-background);
+        color: var(--color-ink);
+        font-family: var(--font-body);
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .slide-deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+    @media (min-width: 769px) {
+        .slide-deck {
+            max-width: calc(100vh * 16 / 9);
+            max-height: calc(100vw * 9 / 16);
+            margin: auto; position: absolute; inset: 0;
+            box-shadow: 0 0 60px rgba(22,32,46,.08);
+        }
+    }
+
+    .slide {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; justify-content: center;
+        padding: 5.2vh 6.4vw;
+        opacity: 0; visibility: hidden;
+        transition: opacity .45s ease;
+        background: var(--color-background);
+        overflow: hidden;
+    }
+    .slide.active { opacity: 1; visibility: visible; }
+
+    .slide-content { width: 100%; max-width: 1180px; margin: 0 auto; }
+
+    /* ---- typography ---- */
+    h1, h2, h3 { font-family: var(--font-heading); font-weight: 600; letter-spacing: -.01em; color: var(--color-ink); }
+    .kicker {
+        font-family: var(--font-mono); font-size: clamp(10px, 1.05vw, 13px);
+        letter-spacing: .18em; text-transform: uppercase; color: var(--color-primary);
+        display: inline-flex; align-items: center; gap: 10px; margin-bottom: 18px;
+    }
+    .kicker::before { content: ""; width: 26px; height: 2px; background: var(--color-accent); display: inline-block; }
+    .slide-title { font-size: clamp(30px, 4.6vw, 62px); line-height: 1.04; }
+    h2.head { font-size: clamp(24px, 3.3vw, 42px); line-height: 1.08; }
+    p { color: var(--color-ink-soft); font-size: clamp(14px, 1.35vw, 18px); line-height: 1.55; }
+    .lead { font-size: clamp(16px, 1.7vw, 22px); color: var(--color-ink-soft); line-height: 1.5; }
+    strong { color: var(--color-ink); font-weight: 600; }
+    .em { color: var(--color-primary); font-weight: 600; }
+
+    /* ---- reusable bits ---- */
+    .pill {
+        display: inline-flex; align-items: center; gap: 7px;
+        font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em;
+        color: var(--color-primary); background: var(--color-primary-bg);
+        border: 1px solid var(--color-line); border-radius: 999px; padding: 5px 11px;
+    }
+    .pill.safe { color: var(--color-safe); background: var(--color-safe-bg); border-color: #CFE6DB; }
+
+    .divider { height: 1px; background: var(--color-line); width: 100%; margin: 22px 0; }
+
+    /* Idea slide 4-quadrant */
+    .quad { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; }
+    .qcard {
+        background: var(--color-surface); border: 1px solid var(--color-line);
+        border-radius: 14px; padding: 18px 20px; box-shadow: var(--shadow-card);
+        position: relative;
+    }
+    .qcard .qlabel {
+        font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em;
+        text-transform: uppercase; color: var(--color-ink-faint); margin-bottom: 8px;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .qcard .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-accent); }
+    .qcard.safe .dot { background: var(--color-safe); }
+    .qcard p { font-size: clamp(13px, 1.15vw, 15.5px); line-height: 1.5; }
+    .qcard.safe { background: var(--color-safe-bg); border-color: #CFE6DB; }
+    .qcard.safe p { color: #22503f; }
+
+    .cites { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+    .cite {
+        font-family: var(--font-mono); font-size: 10.5px; color: var(--color-ink-soft);
+        background: var(--color-surface-2); border: 1px solid var(--color-line);
+        border-radius: 6px; padding: 4px 9px; line-height: 1.3;
+    }
+
+    /* metric */
+    .metric-row { display: flex; gap: 34px; flex-wrap: wrap; align-items: flex-end; }
+    .metric .num { font-family: var(--font-heading); font-weight: 700; font-size: clamp(36px, 5vw, 64px); color: var(--color-primary); line-height: 1; }
+    .metric .lbl { font-size: 13px; color: var(--color-ink-faint); margin-top: 6px; max-width: 180px; }
+
+    /* generic cards grid */
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 22px; }
+    .card {
+        background: var(--color-surface); border: 1px solid var(--color-line);
+        border-radius: 14px; padding: 22px; box-shadow: var(--shadow-card);
+    }
+    .card .idx { font-family: var(--font-mono); font-size: 12px; color: var(--color-accent); letter-spacing: .1em; }
+    .card h3 { font-size: clamp(17px, 1.7vw, 22px); margin: 10px 0 8px; line-height: 1.15; }
+    .card p { font-size: clamp(12.5px, 1.1vw, 15px); }
+
+    ul.clean { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
+    ul.clean li { display: flex; gap: 12px; align-items: flex-start; font-size: clamp(14px,1.3vw,17px); color: var(--color-ink-soft); line-height: 1.45; }
+    ul.clean li .tick { flex: 0 0 auto; width: 22px; height: 22px; border-radius: 6px; background: var(--color-safe-bg); color: var(--color-safe); display: grid; place-items: center; font-size: 13px; font-weight: 700; margin-top: 1px; }
+    ul.clean li b { color: var(--color-ink); font-weight: 600; }
+
+    .two-col { display: grid; grid-template-columns: 1.05fr .95fr; gap: 40px; align-items: center; }
+
+    .footer-note { position: absolute; bottom: 3.2vh; left: 6.4vw; right: 6.4vw; display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 10.5px; color: var(--color-ink-faint); letter-spacing: .04em; }
+    .footer-note .brand { color: var(--color-primary); font-weight: 500; }
+
+    /* progress + nav */
+    .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--color-primary); transition: width .3s; z-index: 1000; }
+    .nav-controls { position: fixed; bottom: 22px; right: 26px; display: flex; align-items: center; gap: 14px; z-index: 1000; }
+    .nav-btn { background: var(--color-surface); border: 1px solid var(--color-line); color: var(--color-primary); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 16px; box-shadow: var(--shadow-card); transition: background .2s; }
+    .nav-btn:hover { background: var(--color-primary-bg); }
+    .slide-counter { font-family: var(--font-mono); color: var(--color-ink-faint); font-size: 12px; }
+
+    /* chart */
+    .chart-wrap { background: var(--color-surface); border: 1px solid var(--color-line); border-radius: 14px; padding: 20px 22px 14px; box-shadow: var(--shadow-card); }
+    .chart-cap { font-size: 11.5px; color: var(--color-ink-faint); margin-top: 10px; font-style: italic; }
+
+    /* animations */
+    .slide.active .anim { animation: fadeUp .55s ease-out both; }
+    .slide.active .anim:nth-child(2){animation-delay:.06s}
+    .slide.active .anim:nth-child(3){animation-delay:.12s}
+    .slide.active .anim:nth-child(4){animation-delay:.18s}
+    .slide.active .stagger > * { animation: fadeUp .5s ease-out both; }
+    .slide.active .stagger > *:nth-child(1){animation-delay:.10s}
+    .slide.active .stagger > *:nth-child(2){animation-delay:.20s}
+    .slide.active .stagger > *:nth-child(3){animation-delay:.30s}
+    .slide.active .stagger > *:nth-child(4){animation-delay:.40s}
+    @keyframes fadeUp { from{opacity:0; transform:translateY(16px)} to{opacity:1; transform:none} }
+
+    /* title slide specifics */
+    .title-slide { background:
+        radial-gradient(1100px 480px at 82% -10%, rgba(44,110,143,.10), transparent 60%),
+        radial-gradient(700px 380px at -5% 110%, rgba(198,128,58,.08), transparent 60%),
+        var(--color-background);
+    }
+    .title-slide .slide-content { text-align: left; }
+    .logo-mark { display:flex; align-items:center; gap:12px; margin-bottom: 30px; }
+    .logo-mark .glyph { width: 40px; height: 40px; border-radius: 9px; background: var(--gradient-primary); color:#fff; display:grid; place-items:center; font-family: var(--font-heading); font-weight:700; font-size: 19px; }
+    .logo-mark .wordmark { font-family: var(--font-mono); letter-spacing:.14em; font-size: 13px; color: var(--color-ink-soft); }
+    .title-sub { margin-top: 22px; max-width: 640px; }
+    .audience-row { display:flex; gap: 26px; margin-top: 34px; flex-wrap: wrap; }
+    .audience-row .a { display:flex; flex-direction:column; gap:2px; }
+    .audience-row .a .t { font-family: var(--font-mono); font-size: 10.5px; letter-spacing:.14em; text-transform:uppercase; color: var(--color-ink-faint); }
+    .audience-row .a .v { font-size: 14px; color: var(--color-ink); font-weight:500; }
+
+    @media (max-width: 900px){
+        .quad, .grid3, .two-col { grid-template-columns: 1fr; }
+        .slide { padding: 40px 26px; justify-content: flex-start; overflow-y: auto; }
+        .footer-note { position: static; margin-top: 26px; }
+    }
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="slide-deck">
+
+    <!-- ===== SLIDE 1 — TITLE ===== -->
+    <section class="slide active title-slide">
+        <div class="slide-content">
+            <div class="logo-mark anim">
+                <div class="glyph">GT</div>
+                <div class="wordmark">GT100K&nbsp;·&nbsp;LEARNING&nbsp;OS</div>
+            </div>
+            <div class="kicker anim">Software proposal · GT school engineering review</div>
+            <h1 class="slide-title anim">Engineering elite readiness,<br><span class="em">safely.</span></h1>
+            <p class="lead title-sub anim">Three defensible software mechanisms that build durable capability in gifted learners — designed, first, to protect the child and the brand.</p>
+            <div class="audience-row anim">
+                <div class="a"><span class="t">Prepared for</span><span class="v">GT School engineering team</span></div>
+                <div class="a"><span class="t">Scope</span><span class="v">Answer-blind tutoring · Provenance · Interest</span></div>
+                <div class="a"><span class="t">Status</span><span class="v">Synthetic-only beta · design review</span></div>
+            </div>
+        </div>
+        <div class="footer-note"><span class="brand">GT100K</span><span>01 / 08</span></div>
+    </section>
+
+    <!-- ===== SLIDE 2 — CONTEXT ===== -->
+    <section class="slide">
+        <div class="slide-content">
+            <div class="kicker anim">Context</div>
+            <h2 class="head anim">GT100K is the learning OS for GT school, layered on TimeBack.</h2>
+            <div class="two-col" style="margin-top: 26px;">
+                <div class="anim">
+                    <ul class="clean">
+                        <li><span class="tick">›</span><span><b>Two-hour focused core.</b> Mastery-based practice where <b>1 minute = 1 XP</b>; <b>120 XP</b> unlocks the day's work — completed as <b>4 × 30-minute</b> sections.</span></li>
+                        <li><span class="tick">›</span><span><b>Then project-based time.</b> Once the core is met, learners move into applied, self-directed projects.</span></li>
+                        <li><span class="tick">›</span><span><b>GT dial-up.</b> For the gifted program we raise the focused core to <b>3–4 hours/day</b> — more depth, same guardrails.</span></li>
+                    </ul>
+                </div>
+                <div class="chart-wrap anim">
+                    <div class="chart-cap" style="margin:0 0 8px; font-style:normal; font-family:var(--font-mono); letter-spacing:.1em; text-transform:uppercase; font-size:10.5px; color:var(--color-primary);">A learner's day</div>
+                    <div class="chart-container" style="position:relative; height: 210px;">
+                        <canvas id="dayChart"></canvas>
+                    </div>
+                    <div class="chart-cap">Focused core (XP-gated mastery) → project-based time. GT extends the core to 3–4 hrs. Illustrative structure, not a schedule.</div>
+                </div>
+            </div>
+            <p class="anim" style="margin-top:20px;">GT100K sits <strong>above</strong> TimeBack as the software layer that decides <em>what</em> to practice, <em>how</em> help is given, and <em>how</em> progress is proven. The three proposals below all live in that layer.</p>
+        </div>
+        <div class="footer-note"><span class="brand">GT100K</span><span>02 / 08</span></div>
+    </section>
+
+    <!-- ===== SLIDE 3 — THREE IDEAS AT A GLANCE ===== -->
+    <section class="slide">
+        <div class="slide-content">
+            <div class="kicker anim">The proposal</div>
+            <h2 class="head anim">Three mechanisms, one design rule: safe by construction.</h2>
+            <div class="grid3 stagger">
+                <div class="card">
+                    <span class="idx">IDEA 01</span>
+                    <h3>Answer-Blind Socratic Tutor</h3>
+                    <p>An AI that <b>structurally cannot</b> hand over answers, plus a reward that only pays for the learner's <b>own</b> unassisted gains.</p>
+                    <span class="pill safe" style="margin-top:14px;">Answers "will AI make them lazy?"</span>
+                </div>
+                <div class="card">
+                    <span class="idx">IDEA 02</span>
+                    <h3>EvidenceGraph</h3>
+                    <p>Proof-<b>of-process</b>, not cheating-detection. Cryptographically verifiable credentials; <b>never</b> an automated accusation.</p>
+                    <span class="pill safe" style="margin-top:14px;">Credentials you can trust</span>
+                </div>
+                <div class="card">
+                    <span class="idx">IDEA 03</span>
+                    <h3>Interest Lab</h3>
+                    <p>Measures <b>durable passion</b> by voluntary return — as a revisable hypothesis, <b>never</b> a fixed "you are an X kid" label.</p>
+                    <span class="pill safe" style="margin-top:14px;">Develops interest, no pigeonholing</span>
+                </div>
+            </div>
+            <p class="anim" style="margin-top:24px; text-align:center;">Each is framed the same way for your review: <strong>Problem → Our mechanism → Why it's safe &amp; defensible → Evidence.</strong></p>
+        </div>
+        <div class="footer-note"><span class="brand">GT100K</span><span>03 / 08</span></div>
+    </section>
+
+    <!-- ===== SLIDE 4 — IDEA 1 ===== -->
+    <section class="slide">
+        <div class="slide-content">
+            <div class="kicker anim">Idea 01 · Tutoring</div>
+            <h2 class="head anim">Answer-Blind Socratic Tutor <span style="color:var(--color-ink-faint); font-weight:400;">+ potential-based independence reward</span></h2>
+            <div class="quad stagger">
+                <div class="qcard">
+                    <div class="qlabel"><span class="dot"></span>Problem</div>
+                    <p>Powerful AI in a child's hands invites answer-copying and learned dependence — the exact failure mode a gifted program can't afford.</p>
+                </div>
+                <div class="qcard">
+                    <div class="qlabel"><span class="dot"></span>Our mechanism</div>
+                    <p>The tutor <b>never sees or generates the answer</b> — a separate grader owns answer keys in a different trust domain. It's <b>disabled during mastery quizzes</b> and requires an <b>attempt before a hint</b>. Reward is <b>potential-based</b>: you score the mastery-gain from your <b>own unassisted</b> work.</p>
+                </div>
+                <div class="qcard safe">
+                    <div class="qlabel"><span class="dot"></span>Why it's safe &amp; defensible</div>
+                    <p>It <b>structurally cannot</b> create AI dependence, and it <b>never punishes a child for asking for help</b> — help never lowers access, credit, or standing. An attempt right after an AI rescue earns <b>~0</b>.</p>
+                </div>
+                <div class="qcard">
+                    <div class="qlabel"><span class="dot"></span>Evidence</div>
+                    <p>Grounded in established learning science and reward theory, with adversarial testing.</p>
+                    <div class="cites">
+                        <span class="cite">Bjork — desirable difficulties</span>
+                        <span class="cite">Kapur — productive failure</span>
+                        <span class="cite">Ng, Harada &amp; Russell 1999 — potential-based shaping</span>
+                        <span class="cite">Red-team: answer-leakage &lt;1%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-note"><span class="brand">GT100K</span><span>04 / 08</span></div>
+    </section>
+
+    <!-- ===== SLIDE 5 — IDEA 2 ===== -->
+    <section class="slide">
+        <div class="slide-content">
+            <div class="kicker anim">Idea 02 · Credentialing</div>
+            <h2 class="head anim">EvidenceGraph <span style="color:var(--color-ink-faint); font-weight:400;">— proof-of-process, not cheating-detection</span></h2>
+            <div class="quad stagger">
+                <div class="qcard">
+                    <div class="qlabel"><span class="dot"></span>Problem</div>
+                    <p>In an AI world, "did the student really do this?" is unanswerable — and naive AI cheating-detectors <b>falsely accuse real students</b>, which is reputationally catastrophic.</p>
+                </div>
+                <div class="qcard">
+                    <div class="qlabel"><span class="dot"></span>Our mechanism</div>
+                    <p>Every artifact, attempt, revision, and AI-assist becomes a node in a <b>content-addressed provenance graph</b> (SHA-256/BLAKE3 DAG + in-toto attestation + append-only transparency log). <b>Humans issue every final grade</b>; a model output is only <b>cited supporting evidence</b>, never an accusation. Erasure via <b>crypto-shredding</b>.</p>
+                </div>
+                <div class="qcard safe">
+                    <div class="qlabel"><span class="dot"></span>Why it's safe &amp; defensible</div>
+                    <p>Credential claims are <b>cryptographically backed and independently verifiable</b>. The system <b>never</b> auto-accuses a child of AI-authorship — it documents process, it doesn't police it. COPPA/FERPA-aligned by design.</p>
+                </div>
+                <div class="qcard">
+                    <div class="qlabel"><span class="dot"></span>Evidence</div>
+                    <p>Built on mature open provenance and supply-chain standards.</p>
+                    <div class="cites">
+                        <span class="cite">W3C PROV + Workflow-Run RO-Crate</span>
+                        <span class="cite">SLSA / in-toto / transparency log</span>
+                        <span class="cite">C2PA — export-only, limits acknowledged</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-note"><span class="brand">GT100K</span><span>05 / 08</span></div>
+    </section>
+
+    <!-- ===== SLIDE 6 — IDEA 3 ===== -->
+    <section class="slide">
+        <div class="slide-content">
+            <div class="kicker anim">Idea 03 · Motivation</div>
+            <h2 class="head anim">Interest Lab <span style="color:var(--color-ink-faint); font-weight:400;">+ mutable InterestHypothesis</span></h2>
+            <div class="quad stagger">
+                <div class="qcard">
+                    <div class="qlabel"><span class="dot"></span>Problem</div>
+                    <p>Test scores don't capture what actually makes elite performers: <b>durable passion</b>. And crude "talent profiling" pigeonholes children into fixed identities.</p>
+                </div>
+                <div class="qcard">
+                    <div class="qlabel"><span class="dot"></span>Our mechanism</div>
+                    <p>Passion is measured by <b>voluntary, unprompted return</b> after novelty, praise, and deadlines fade (<b>7- and 30-day return</b>). Tracked as a <b>revisable hypothesis</b> with competing explanations and coverage gaps — and it separates <b>preferred topic</b> from <b>preferred work mode</b>.</p>
+                </div>
+                <div class="qcard safe">
+                    <div class="qlabel"><span class="dot"></span>Why it's safe &amp; defensible</div>
+                    <p>It develops <b>durable interest</b> rather than chasing scores, and <b>never pigeonholes</b> a child — no fixed "you are an X kid" label. Humane <em>and</em> rigorous.</p>
+                </div>
+                <div class="qcard">
+                    <div class="qlabel"><span class="dot"></span>Evidence</div>
+                    <p>Grounded in the modern science of interest and motivation.</p>
+                    <div class="cites">
+                        <span class="cite">Hidi &amp; Renninger — 4-phase interest</span>
+                        <span class="cite">Deci &amp; Ryan — Self-Determination Theory</span>
+                        <span class="cite">O'Keefe / Dweck / Walton — interest is developed</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-note"><span class="brand">GT100K</span><span>06 / 08</span></div>
+    </section>
+
+    <!-- ===== SLIDE 7 — SAFETY & BRAND ===== -->
+    <section class="slide" style="background: linear-gradient(180deg, var(--color-safe-bg) 0%, var(--color-background) 42%);">
+        <div class="slide-content">
+            <div class="kicker anim" style="color:var(--color-safe);">Safety &amp; brand · the guardrails</div>
+            <h2 class="head anim">The rules that keep this safe for children — and for the brand.</h2>
+            <div class="grid3 stagger" style="margin-top:20px;">
+                <div class="card">
+                    <span class="idx" style="color:var(--color-safe);">GUARDRAIL 01</span>
+                    <h3>Humans decide everything consequential</h3>
+                    <p>Models only <b>advise or shadow</b>. Every grade, credential, and high-stakes call is made by a human. No automated accusations, no automated verdicts.</p>
+                </div>
+                <div class="card">
+                    <span class="idx" style="color:var(--color-safe);">GUARDRAIL 02</span>
+                    <h3>Internal benchmark, external humility</h3>
+                    <p>"MIT-level readiness" is an <b>internal benchmark only</b>. All brand-facing language is <b>"elite academic preparation."</b> We never borrow an outside institution's name.</p>
+                </div>
+                <div class="card">
+                    <span class="idx" style="color:var(--color-safe);">GUARDRAIL 03</span>
+                    <h3>No fixed-ability castes</h3>
+                    <p>No permanent ability rankings or "talent tiers." Every learner model — including interest — is a <b>revisable hypothesis</b>, never a label.</p>
+                </div>
+            </div>
+            <div class="divider anim"></div>
+            <ul class="clean stagger" style="margin-top:0;">
+                <li><span class="tick">✓</span><span><b>Synthetic-only beta.</b> No live child data yet — every mechanism is validated on synthetic data before any student touches it.</span></li>
+                <li><span class="tick">✓</span><span><b>Privacy is structural.</b> COPPA/FERPA-aligned; crypto-shredding gives real, verifiable erasure — not "we deleted it, trust us."</span></li>
+            </ul>
+        </div>
+        <div class="footer-note"><span class="brand">GT100K</span><span>07 / 08</span></div>
+    </section>
+
+    <!-- ===== SLIDE 8 — CLOSE / ASK ===== -->
+    <section class="slide title-slide">
+        <div class="slide-content">
+            <div class="kicker anim">The ask</div>
+            <h1 class="slide-title anim" style="font-size:clamp(28px,4vw,54px);">Pressure-test these three, with us.</h1>
+            <p class="lead title-sub anim" style="max-width:680px;">We're not asking you to trust the pitch — we're asking you to try to break it. These mechanisms are designed to survive exactly the scrutiny this team brings.</p>
+            <div class="grid3 stagger" style="margin-top:30px;">
+                <div class="card">
+                    <span class="idx">01</span>
+                    <h3 style="font-size:18px;">Red-team review</h3>
+                    <p>A working session on the trust boundaries: tutor answer-blindness, grader isolation, and EvidenceGraph integrity.</p>
+                </div>
+                <div class="card">
+                    <span class="idx">02</span>
+                    <h3 style="font-size:18px;">Synthetic pilot</h3>
+                    <p>Stand up one mechanism on synthetic data and agree the metrics that would make you comfortable with real learners.</p>
+                </div>
+                <div class="card">
+                    <span class="idx">03</span>
+                    <h3 style="font-size:18px;">Guardrail sign-off</h3>
+                    <p>You co-own the safety spec — humans-decide, revisable models, internal-only benchmarks — before anything ships.</p>
+                </div>
+            </div>
+            <p class="anim" style="margin-top:28px;"><strong>Which one do you want to try to break first?</strong></p>
+        </div>
+        <div class="footer-note"><span class="brand">GT100K</span><span>08 / 08</span></div>
+    </section>
+
+</div><!-- /.slide-deck -->
+
+<div class="nav-controls">
+    <button class="nav-btn" onclick="prevSlide()" aria-label="Previous slide">←</button>
+    <span class="slide-counter"><span id="current">1</span> / <span id="total">8</span></span>
+    <button class="nav-btn" onclick="nextSlide()" aria-label="Next slide">→</button>
+</div>
+
+<script>
+    let current = 1;
+    const slides = document.querySelectorAll('.slide');
+    const total = slides.length;
+    document.getElementById('total').textContent = total;
+    let dayChartDrawn = false;
+
+    function showSlide(n) {
+        if (n < 1) n = 1;
+        if (n > total) n = total;
+        current = n;
+        slides.forEach((s, i) => s.classList.toggle('active', i === n - 1));
+        document.getElementById('current').textContent = n;
+        document.getElementById('progressBar').style.width = (n / total * 100) + '%';
+        if (n === 2 && !dayChartDrawn) { drawDayChart(); dayChartDrawn = true; }
+    }
+    function nextSlide() { showSlide(current + 1); }
+    function prevSlide() { showSlide(current - 1); }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+    });
+
+    function drawDayChart() {
+        const ctx = document.getElementById('dayChart');
+        if (!ctx) return;
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Standard learner', 'GT learner'],
+                datasets: [
+                    { label: 'Focused core (XP-gated mastery)', data: [2, 3.5], backgroundColor: '#1B4965', borderRadius: 6, barPercentage: 0.6 },
+                    { label: 'Project-based time', data: [2, 1.5], backgroundColor: '#C6803A', borderRadius: 6, barPercentage: 0.6 }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#47546A', font: { family: 'Inter', size: 11 }, boxWidth: 12, padding: 14 } },
+                    tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.raw} hrs` } }
+                },
+                scales: {
+                    x: { stacked: true, grid: { color: 'rgba(22,32,46,.06)' }, ticks: { color: '#8A93A3', callback: (v) => v + 'h' }, title: { display: true, text: 'hours / day', color: '#8A93A3', font: { size: 10 } } },
+                    y: { stacked: true, grid: { display: false }, ticks: { color: '#16202E', font: { family: 'Inter', size: 12, weight: '600' } } }
+                }
+            }
+        });
+    }
+
+    showSlide(1);
+</script>
+</body>
+</html>
