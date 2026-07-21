@@ -50,3 +50,16 @@
 ## NEXT
 - T004a: add `packages/arena-world/src/biomes.fixture.ts` and `packages/arena-world/src/baseLayout.fixture.ts` from spec §§8.12, 8.16, and 8.20.
 - Acceptance: tests fail first, then prove the exact four-region biome rows in canonical region order (including elevation and stable landmarks) and the exact base feature-to-zone/coordinate table; fixtures remain pure/synthetic and package plus repository gates stay green.
+
+## 2026-07-20 — P0 / T004a
+- Added `BIOMES`, the exact four-row synthetic biome fixture in canonical region order, including signature/terrain/ambient colors, elevations, and stable landmark order.
+- Added `BASE_LAYOUT`, the exact six-feature Base Camp zone/coordinate lookup table for deterministic later placement resolution.
+- Added two acceptance tests first. The RED run failed on the absent fixture modules; the GREEN run verifies every golden value, biome-to-world region order, and Base Camp feature declaration order.
+- Recorded the ordered-array/keyed-table fixture organization so later resolvers can preserve stable output while performing direct feature lookup.
+- Gate status: direct arena-world TypeScript validation passed; Biome checked all three changed feature files; `pnpm typecheck` passed; `pnpm test` passed (7 files, 26 tests). No app changed, so no Next.js build was required.
+- SC status: the fixture half of SC-017 and deterministic known-feature table groundwork for SC-019 are present; resolver behavior and final acceptance remain open for P1/P4.
+- Blockers: none.
+
+## NEXT
+- T004b: add the exact exported constant registries in `art.ts`, `motion.ts`, `scene3d.ts`, `quality.ts`, `assets.ts`, and `sound.ts` from spec §§8.10–8.11 and §§8.17–8.24, without resolver behavior.
+- Acceptance: tests fail first and then prove every golden registry value, stable declaration order, and required quality beacon-light caps; the domain remains pure/renderer-free and package plus repository gates stay green.
