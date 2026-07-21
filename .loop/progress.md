@@ -180,3 +180,15 @@
 
 - T017 + T025 + T026 — Add the Golden Fixture D safeguarding contract first, then implement `routeHealthEvent` and the in-memory `SafeguardingSink` adapter.
 - Acceptance: the synthetic event reaches `sink.pending()` without entering optimization; the move touching A3 (`mv-1`) is paused while `mv-2` is unchanged; no rating or objective value changes; the focused RED/GREEN cycle and repository typecheck/test/lint gate remain green.
+
+## 2026-07-20 — P4 / T017 + T025 + T026
+
+- Added the Golden Fixture D safeguarding contract with the exact `Promise<void>` route signature, direct human-queue delivery, `mv-1` hold, untouched `mv-2`, optimizer/rating/objective isolation, and deep-copy queue boundaries.
+- Implemented `routeHealthEvent` in `packages/cohort-compiler/src/safeguarding.ts` and the synthetic `@gt100k/cohort-safeguarding-memory` human-queue adapter; the route has no solver or learned-model seam and pauses only moves touching affected members.
+- TDD status: the focused suite first failed because `src/safeguarding.ts` was absent, then passed 3/3 after the minimal domain route and adapter implementation. Focused strict TypeScript and Biome checks also pass.
+- Gate status: `pnpm typecheck`, `pnpm test` (81/81), and `pnpm lint` pass. P4/SC-005 is complete; P4 remains in progress for the post-lock shadow-benefit seam. No blocker.
+
+## NEXT
+
+- T018 + T027 — Add the Golden Fixture D `BenefitEstimator` shadow-adapter contract first, then scaffold and implement `adapters/cohort-benefit-shadow`.
+- Acceptance: `logAfterLock("asg-1", "2026-07-20T12:00:00Z")` returns the exact `{ assignmentId: "asg-1", lcb: 0, loggedAt: "2026-07-20T12:00:00Z", shadow: true }` golden only for a locked assignment; an unlocked/pre-lock call produces no estimate; the LCB is absent from and never consumed by solve/repair inputs; focused RED/GREEN and repository typecheck/test/lint remain green.
