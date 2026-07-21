@@ -1007,6 +1007,8 @@ footer {
   place-items: center;
   border-radius: 50%;
   background: radial-gradient(circle, var(--spark-hi) 0 18%, var(--spark) 34%, transparent 72%);
+  /* A returning quest genuinely glows warm — the 2D stand-in for the world's bloom. */
+  box-shadow: 0 0 1.25rem -0.2rem color-mix(in srgb, var(--spark) 78%, transparent);
   color: var(--night-sunk);
 }
 
@@ -1031,13 +1033,60 @@ footer {
 }
 
 .quest-tray {
+  /* Shared card ease so the tray reads as one crafted world with the board + deck. */
+  --card-ease: cubic-bezier(0.23, 1, 0.32, 1);
+
+  position: relative;
   display: grid;
   grid-template-columns: minmax(12rem, 0.45fr) 1fr;
   gap: 1.25rem;
   align-items: center;
   padding: 1.25rem;
+  border: 1px solid var(--line);
   border-radius: 0.875rem;
-  background: var(--night-sunk);
+  /* Lit slab: a faint tide corner glow over the sunk fill, top inner highlight + ambient drop. */
+  background: radial-gradient(
+      130% 150% at 100% 0%,
+      color-mix(in srgb, var(--tide) 9%, transparent),
+      transparent 56%
+    ),
+    var(--night-sunk);
+  box-shadow: 0 1px 0 rgb(244 240 251 / 8%) inset, 0 18px 40px -26px rgb(0 0 0 / 72%);
+}
+
+/* The tray carries the deck's signature spark→beacon→tide rail so board↔tray↔deck cohere. */
+.quest-tray::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  border-radius: 0.875rem 0.875rem 0 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--spark) 24%,
+    var(--beacon) 52%,
+    var(--tide) 80%,
+    transparent
+  );
+  opacity: 0.62;
+  content: "";
+}
+
+/* The tray eyebrow gets the HUD lit glow-dot, matching .hud-eyebrow-dot / the board headers. */
+.quest-tray .surface-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quest-tray .surface-name::before {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--spark);
+  box-shadow: 0 0 0.75rem var(--spark);
+  content: "";
 }
 
 .quest-tray-empty {
@@ -1056,8 +1105,15 @@ footer {
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem;
+  border: 1px solid var(--line);
   border-radius: 0.75rem;
-  background: var(--night-raised);
+  /* Raised material: subtle top highlight + soft drop so kept quests lift off the tray floor. */
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--ink-hi) 4%, var(--night-raised)),
+    var(--night-raised)
+  );
+  box-shadow: 0 1px 0 rgb(244 240 251 / 10%) inset, 0 8px 18px -14px rgb(0 0 0 / 68%);
 }
 
 .quest-tray-list button {
@@ -1069,6 +1125,22 @@ footer {
   color: var(--ink-hi);
   font: inherit;
   font-size: var(--type-label-size);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 24%);
+  transition: transform 150ms var(--card-ease), border-color 150ms var(--card-ease),
+    background 150ms var(--card-ease), box-shadow 150ms var(--card-ease);
+}
+
+.quest-tray-list button:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .quest-tray-list button:hover {
+    border-color: color-mix(in srgb, var(--spark) 62%, var(--line-strong));
+    background: color-mix(in srgb, var(--spark) 14%, transparent);
+    box-shadow: 0 4px 10px -4px rgb(0 0 0 / 42%);
+  }
 }
 
 .coverage-console {
@@ -2122,10 +2194,6 @@ footer {
   .quest-card,
   .quest-tray-list button {
     cursor: pointer;
-  }
-
-  .quest-card:hover {
-    box-shadow: 0 6px 8px rgb(18 11 30 / 34%);
   }
 }
 

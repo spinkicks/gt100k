@@ -506,3 +506,41 @@
   a box-shadow focus ring (would fight the global `:focus-visible` outline — left the outline as the
   a11y indicator); animating the hue-corner glow / adding particles (violates game-feel #1 "subtract
   first / keep it calm" — the board is dense content, so material depth, not extra motion, is the win).
+
+## D-VP9 — Quest tray + welcome-back get the lit-card material + tactile returns (Turn 7)
+- What: A pure-CSS material + feedback pass on the last generic surface — the child's quest tray
+  (`.quest-tray` container, `.quest-tray-list li` chips, the "Put back" `button`) and the
+  `.welcome-back-halo` badge — reusing the committed lit-card idiom (D-VP1/D-VP6/D-VP8), no markup
+  change. (1) `.quest-tray` becomes a **lit slab**: a hairline `--line` border, a faint tide
+  corner-glow radial over the `--night-sunk` fill, a top inner highlight + ambient drop shadow so it
+  lifts off the world backdrop, and the **signature spark→beacon→tide rail** (`::before`, top corners
+  rounded to the 0.875rem radius — no `overflow:hidden`, so button `:focus-visible` outlines are never
+  clipped). (2) The tray eyebrow (`.quest-tray .surface-name`) gains the **HUD lit glow-dot** (scoped so
+  the shared global `.surface-name` and the guide's eyebrow are untouched). (3) `.quest-tray-list li`
+  chips get **raised material** (top-highlight gradient fill + hairline + soft drop) so kept quests sit
+  proud of the tray floor. (4) The **"Put back" button** — previously dead under the pointer — gets the
+  emil tactile idiom: a resting depth shadow, `:active { transform: scale(0.97); box-shadow: none }`, and
+  a gated `@media (hover:hover) and (pointer:fine)` hover that warms the border + fills toward `--spark` +
+  lifts the shadow, all on the shared `--card-ease` = `cubic-bezier(0.23,1,0.32,1)` at 150ms. (5)
+  `.welcome-back-halo` gains a warm `--spark` **emissive glow** (2D stand-in for the world's bloom) while
+  `.prompted-return-mark` stays calm (no glow) — matching the board's spark-glows-warm / prompted-stays-
+  calm split (D-VP8). Also removed a **stale `.quest-card:hover` box-shadow override** in the later
+  `@media (hover:hover)` block that (same specificity, later source order) was clobbering Turn 6's richer
+  layered hover shadow on the board cards — so the crafted board hover now actually renders.
+- Why: game-feel **#3 (materials, never flat)** + **#6 (juice)** + **#9 (cohesion)**. After Turns 4/6 the
+  3D world, child HUD deck, guide light-table deck, and board-2d cards were all crafted, but the quest
+  tray was still a flat `--night-sunk` rectangle with flat `--night-raised` chips and a feedback-less
+  pill — the last "dashboard aside" tell, and the highest-leverage remaining surface per Turn 6's NEXT.
+  Reusing the exact rail gradient + glow-dot + `--card-ease` + `scale(0.97)` press ties board↔tray↔deck
+  into one world (emil: cohesion; the same easing/idiom everywhere). CSS-only means the pinned
+  `data-quest-tray-item` / aria-label tests + the build's CSS compile actually verify it, and the global
+  `transition-duration:0.01ms !important` reduced-motion block auto-neutralizes the press/hover (resting
+  depth + rail persist as static material — correct, per D-VP8). Occasional-use surface → emil rates
+  standard press/hover feedback as appropriate (not "remove").
+- Rejected: `overflow:hidden` on `.quest-tray` to clip the rail (would clip the inner buttons'
+  `:focus-visible` outline — used rounded `::before` top corners instead); restyling the **global**
+  `.surface-name` to add the dot (would also change the guide's coverage-console eyebrow — scoped to
+  `.quest-tray .surface-name`); a JS/`motion/react` feedback layer on the button (CSS `:active`/`:hover`
+  is off-main-thread and the tray items already animate enter/exit via `motion/react` — emil's "CSS beats
+  JS under load"); a bespoke tray easing (used the shared `--card-ease` for cohesion); a warm glow on the
+  prompted-return mark (prompted must stay calm — game-feel #1 + D-VP8's spark/prompted split).

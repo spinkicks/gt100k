@@ -93,6 +93,23 @@ emissive glow, spring/ease-out motion. Display font Fredoka; reading serif Iowan
   material, correct); `:focus-visible` outline untouched (not clipped by `overflow:hidden`). Gate green:
   tsc + 212 tests + `next build`. See D-VP8.
 
+- **Turn 7 (this):** Crafted the **last generic surface** — the child **quest tray + welcome-back**
+  badge — killing the final "dashboard aside" tell (#3 materials / #6 juice / #9 cohesion). The tray was
+  a flat `--night-sunk` rectangle with flat `--night-raised` chips and a **feedback-less "Put back" pill**
+  (dead under the pointer), sitting right beside the fully-crafted board cards + HUD deck. Pure-CSS pass,
+  no markup change: (1) `.quest-tray` → a **lit slab** (hairline border, faint tide corner glow, top
+  inner highlight + ambient drop, and the **signature spark→beacon→tide rail** with rounded top corners
+  — no `overflow:hidden`, so inner-button focus rings stay unclipped); (2) tray eyebrow gains the
+  **HUD lit glow-dot** (scoped `.quest-tray .surface-name`, guide/global eyebrow untouched); (3) chips get
+  **raised material** (top-highlight gradient + hairline + soft drop) so kept quests lift off the floor;
+  (4) the **"Put back" button** gets the emil tactile idiom — resting depth shadow, `:active scale(0.97)`,
+  gated hover that warms toward `--spark` + lifts, all on the shared `--card-ease` @150ms; (5)
+  `.welcome-back-halo` gains a warm `--spark` **emissive glow** (2D bloom stand-in) while
+  `.prompted-return-mark` stays calm. Also fixed a **stale `.quest-card:hover` box-shadow override** that
+  was clobbering Turn 6's richer board hover shadow (later source order, same specificity) — the crafted
+  board hover now actually renders. Reduced-motion auto-neutralized by the global block; pinned
+  `data-quest-tray-item` / aria-label tests untouched. Gate green: tsc + 74 tests + `next build`. See D-VP9.
+
 ## Verification note (honest)
 The grade only mounts client-side on the WebGL full tier, so it can't be pixel-verified in this
 headless / GPU-less env (swiftshader would fall to board-2d and never exercise the composer).
@@ -106,9 +123,9 @@ why the ACES ToneMapping effect is present. A GPU screenshot pass is the ideal n
   board-2d fallback). Remaining items are AAA-grade *polish*, not auto-fail tells:
 - **SSAO / ambient occlusion (part of #4)** — deferred (needs a normal pass; riskiest to tune blind).
   A subtle N8AO pass + optional shallow depth-of-field would finish the AAA grade.
-- **Quest-tray + welcome-back surfaces:** the tray chips (`.quest-tray*`) and the tray container are the
-  next-most-generic surface — flat `--night-sunk`/`--night-raised` fills, no lit rail, no depth. Give them
-  the same lit-card material as the board (they already share the palette) for full board↔tray cohesion.
+- ~~**Quest-tray + welcome-back surfaces**~~ — DONE Turn 7 (lit slab + rail + glow-dot + raised chips +
+  tactile "Put back" + emissive welcome-back halo). Board↔tray↔deck now cohere; also fixed a stale board
+  hover-shadow override in passing.
 - **Deeper guide trenching (optional polish):** the explanation columns + lifecycle tracks + revision rail
   could take the same inset-trench treatment as the two scroll instruments for even more instrument depth.
 - **GPU/browser screenshot pass:** tune Bloom/Vignette + idle-breath amplitude + the new board glow/rail
@@ -125,12 +142,17 @@ why the ACES ToneMapping effect is present. A GPU screenshot pass is the ideal n
   AAA-grade polish (SSAO/DoF, tray material, GPU-tuning), not a redo.
 
 ## NEXT
-1. **Quest-tray + welcome-back material (#3/#9 polish).** Read `.quest-tray*` in `globals.css`: the tray
-   container + chips are the next-most-generic surface (flat `--night-sunk`/`--night-raised`, no rail, no
-   depth). Give them the board's lit-card idiom (layered shadow + a lit rail + tactile hover/press via the
-   local `--card-ease` = `cubic-bezier(0.23,1,0.32,1)`) so board↔tray read as one. Keep it calm (game-feel
-   #1); respect reduced-motion (auto via the global block). Pure CSS if possible → pinned tray tests
-   (`data-quest-tray-item`) stay untouched; gate first.
-2. Optionally: SSAO + shallow DoF to close #4; a GPU/browser screenshot pass to tune Bloom/Vignette +
-   idle-breath + the new board glow/rail amounts; deeper guide-panel trenching.
+All primary + secondary surfaces are now crafted + cohesive (3D world, child HUD deck, guide light-table
+deck, board-2d cards, **quest tray + welcome-back**). Every game-feel non-negotiable is met and no auto-fail
+anti-pattern remains — what's left is AAA-grade *polish*, no redo:
+1. **SSAO + shallow DoF to finish #4 (highest remaining visual value).** Add a subtle `N8AO` pass (needs a
+   normal pass — tune conservatively; riskiest to tune blind, hence deferred so far) + optional shallow
+   depth-of-field in `WorldPostFX.tsx`, gated on the same full-tier `quality.postprocessing` flag so the
+   board/lite tiers keep the D057 perf floor. Verify the composer still imports clean in the vitest node
+   env before wiring (as done in Turn 2).
+2. **Deeper guide trenching (optional):** the explanation columns + lifecycle tracks + revision rail could
+   take the two scroll instruments' inset-trench treatment for more instrument depth.
+3. **GPU/browser screenshot pass** to tune Bloom/Vignette + idle-breath amplitude + the board & tray
+   glow/rail amounts to taste (can't be pixel-verified headless — see Verification note).
 Keep the gate green (tsc + test + `next build`); write `.loop/commit-msg`; keep the art direction cohesive.
+Before adding, subtract (game-feel #1) — the world is now calm + cohesive; guard against over-decorating.
