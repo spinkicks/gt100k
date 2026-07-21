@@ -14,16 +14,21 @@ pnpm test                                        # Vitest across the workspace
 pnpm --filter @gt100k/cohort-compiler test       # domain unit + contract tests only
 ```
 
+The contract tests assert the **exact golden values** in [spec.md § Golden Values & Seed
+Fixtures](./spec.md#golden-values--seed-fixtures) (Fixtures A–E). A seeded smoke test keeps `pnpm test`
+green from iteration 1.
+
 **Expected**: all contract-test obligations in [contracts/cohort-compiler.md](./contracts/cohort-compiler.md) pass — near-peer candidate generation (within-caliper, self/separation excluded, deterministic + stable hash), feasible cohorts of six with zero hard-constraint violations, atomic commit + rollback with one active assignment per learner, churn-budget enforcement + in-budget repair, safeguarding bypass, no learned-model assignment (shadow benefit LCB post-lock only), and observable-only, confidence-gated RivalryMix analysis.
 
 ## Build & lint gate
 
 ```bash
-pnpm exec tsc -b            # strict typecheck (noUncheckedIndexedAccess, verbatimModuleSyntax)
-pnpm exec biome check .     # lint/format
+pnpm typecheck             # tsc -b (strict; noUncheckedIndexedAccess, verbatimModuleSyntax)
+pnpm lint                  # biome check packages adapters apps
 ```
 
-**Expected**: `tsc -b` clean and `biome check` clean.
+**Expected**: `pnpm typecheck` clean and `pnpm lint` clean. `build` (the `student-compass` app) is not
+touched by this slice, so the loop gate here is **typecheck + test** (+ lint).
 
 ## Walk the end-to-end flow (synthetic pool)
 

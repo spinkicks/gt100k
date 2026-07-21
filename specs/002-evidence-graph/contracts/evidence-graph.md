@@ -29,8 +29,12 @@ assembleEvidencePacket(graph, { milestoneRef, subjectDigest, nodeIds }, hasher) 
   Postcondition: packet deterministic for a fixed node set (FR-010/FR-011); refuses on empty set or invariant violation.
 
 merkleRoot(hashes, hasher) -> string
-  Pure: lexicographically sort hashes; leaf = hash(0x00 || h); interior = hash(0x01 || left || right);
-        odd level promotes/duplicates the last node; single hash → its leaf digest. Deterministic (FR-011).
+  Pure: operate on lowercase-hex strings. Sort hashes ascending (lexicographic).
+        leaf(h)      = hasher.hash(utf8("00" + h))          // "00" = two ASCII chars, NOT a raw 0x00 byte
+        interior(l,r)= hasher.hash(utf8("01" + l + r))      // "+" is string concatenation of hex
+        odd level promotes/duplicates the last node (interior(last, last)); single hash → its leaf digest.
+        Deterministic (FR-011); domain-separated (FR-021). Golden roots are pinned in spec.md Golden Values
+        (e.g. merkleRoot([sha256("a"),sha256("b"),sha256("c")]) === 0360836a…6008976e).
 
 buildAttestation({ subjectDigest, merkleRoot, milestoneRef, builder, materials }) -> Attestation
   Pure: returns the in-toto Statement shape (FR-012). Unsigned in this slice (signing deferred, §19.2 D6).

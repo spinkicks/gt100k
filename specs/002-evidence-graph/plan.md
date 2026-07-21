@@ -8,6 +8,8 @@
 
 Build the code-first core of GT100K's EvidenceGraph (PRD §19) as a **pure, framework-agnostic TypeScript domain package** (`packages/evidence-graph`): a content-addressed evidence DAG of eight PROV-extended node types and six edge types; a deterministic Merkle root and an in-toto-style attestation for a per-milestone `EvidencePacket`; and the non-negotiable human-authority invariant (humans own every grade; a model output is only a cited `Assistance`/`Review`, never a grade or an authorship accusation). All I/O sits behind ports — `Hasher` (SHA-256, Node-crypto adapter), `Verifier` (deterministic stub adapter), `EvidenceRepository` (in-memory adapter) — so the domain stays deterministic and 100% unit-testable. The genuinely-hard parts (external transparency-log anchoring, crypto-shred erasure, comparative-judgment reliability, conformal calibration) are **stubs / out of scope** per §19.2. Synthetic-only; consent/legal machinery is a stubbed field.
 
+**Loop-ready**: [spec.md](./spec.md) folds in a hard scope fence, ordered phasing (P0…P4), machine-checkable success criteria (SC-001…SC-012) each mapped to a named test, and **pinned golden values** (exact SHA-256 node ids and Merkle roots) that are the loop's deterministic acceptance targets. The build gate is `pnpm exec tsc -b` + `pnpm test`; a seeded smoke test keeps the gate green from iteration 1. The canonicalization and Merkle schemes are pinned exactly (see spec **Decisions Already Made**): node id = `sha256_hex(utf8(JCS(content)))`; Merkle over lowercase-hex strings with `leaf(h)=hash("00"+h)`, `interior(l,r)=hash("01"+l+r)`, inputs sorted ascending, odd level duplicates the last node.
+
 ## Technical Context
 
 **Language/Version**: TypeScript (strict), Node.js LTS (per PRD §26.1). `tsconfig.base.json` with `noUncheckedIndexedAccess` + `verbatimModuleSyntax` (inherited).
@@ -76,6 +78,9 @@ packages/
     │   ├── ports.ts             # Hasher, Verifier, EvidenceRepository (+ stub TransparencyLog, ErasureService)
     │   └── index.ts
     ├── test/                    # Vitest unit + contract tests (mirror FR/SC + contracts/)
+    │   ├── smoke.test.ts        # seeded smoke (SC-011) — green from iteration 1
+    │   ├── golden.test.ts       # asserts the exact golden node ids + Merkle roots (SC-007/SC-008)
+    │   └── fixtures/            # in-repo synthetic seed fixtures (goldenArtifact, syntheticMilestone, …)
     ├── package.json
     ├── tsconfig.json            # extends ../../tsconfig.base.json
     └── README.md

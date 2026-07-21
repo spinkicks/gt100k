@@ -1,14 +1,17 @@
 # Phase 0 Research: Platform Foundation Spine
 
 The feature is scoped from a detailed baby-PRD ([FOUNDATION_PRD.md](../../docs/prd/FOUNDATION_PRD.md))
-and the parent PRD §26–§28, §30, §32.1, so there are no open unknowns. The decisions below record the
-choices the plan rests on — chiefly *what is built in TypeScript now vs. what is the deferred
-production target*.
+and the parent PRD §26–§28, §30, §32.1. The decisions below record the choices the plan rests on —
+chiefly *what is built in TypeScript now vs. what is the deferred production target*. The one genuinely
+open design point is the **enrollment-handoff eligibility-contract shape** (owned by the admissions team);
+it is pre-answered with a reference-only default and marked `severity: normal` for human confirmation
+([spec.md → DP-1](./spec.md#pre-marked-decision-points-preferred-default-stated-inline-severity-noted)).
+Because it sits behind the `EnrollmentHandoffSource` port, cutover to the real shape is a config change.
 
 ## Decision: Build the spine's core **logic** in TypeScript; defer the runtime
 
 - **Decision**: Implement a pure-TS, locally-testable reference of the spine — the contract envelope +
-  four contracts + invariants, the consent/assent/identity domain, the purpose-authorization
+  six contracts + invariants, the consent/assent/identity domain, the purpose-authorization
   predicate, and the outbox + idempotent-consumer pattern — as `packages/platform-contracts` and
   `packages/platform-spine` with in-memory adapters. The definition of done is **`tsc -b` + Vitest**.
 - **Rationale**: The correctness that matters most in the spine is *rules*, not infrastructure:
@@ -25,9 +28,10 @@ production target*.
 ## Decision: Two pure packages — `platform-contracts` and `platform-spine`
 
 - **Decision**: `platform-contracts` holds the envelope + `LearnerEvent`/`ConsentGrant`/`AssentRecord`/
-  `DecisionRecord` types, validators, and encoded invariants (append-only, model-cannot-fill-human,
-  active-consent, refusal-honored). `platform-spine` depends on it and holds the identity/consent/
-  assent domain, the authorization predicate, and the event-bus + outbox logic.
+  `DecisionRecord`/`OverrideRecord`/`Appeal` types, validators, and encoded invariants (append-only,
+  model-cannot-fill-human, active-consent, refusal-honored, four-eyes override, appeal reviewer
+  independence). `platform-spine` depends on it and holds the identity/consent/assent domain, the
+  authorization predicate, and the event-bus + outbox logic.
 - **Rationale**: Contracts are the thing "all later work depends on" (parent §32.1); isolating them in
   a dependency-free package lets consumers (and later the real wire types) import just the contracts.
   The spine's behavior sits one layer up and injects all I/O via ports, mirroring
@@ -46,6 +50,36 @@ production target*.
   The ports *are* the "cutover is config, not rewrite" guarantee (FOUNDATION_PRD §7.3).
 - **Alternatives considered**: Direct in-memory maps in the domain — rejected; breaks determinism and
   the later-cutover story.
+
+## Decision: Bring `OverrideRecord` + `Appeal` into scope as contracts
+
+- **Decision**: Build all **six** foundation contracts named in parent §32.1 ("`LearnerEvent`, consent,
+  decision, **override, appeal**, and audit contracts first") in this slice — including `OverrideRecord`
+  (with the **four-eyes** invariant for override classes) and `Appeal` (with the **independent-reviewer**
+  invariant). Only the *human workflows* (four-eyes approval routing/notifications, appeal SLA timers,
+  remedy execution) are deferred.
+- **Rationale**: These two contracts are pure TS types + validators whose correctness is *rules*, exactly
+  what the `tsc -b` + Vitest gate proves, and they complete the contract set every later feature binds to.
+  Deferring them would leave the "override, appeal" half of the parent's explicit "contracts first" list
+  unbuilt while the cheaper contracts shipped — inverting the priority. Their invariants (no single actor
+  can supersede a decision; an appeal reviewer cannot be the original owner) are Constitution I/IX gates
+  worth locking now.
+- **Alternatives considered**: Deferring both entirely (the prior draft) — rejected; they are low-cost,
+  high-value, and named first-class in §32.1. Building their full approval/SLA workflows now — rejected;
+  those are infrastructure/process, not logic, and belong with the deferred production runtime.
+
+## Decision: Fixed authorization reason-code precedence
+
+- **Decision**: `authorize` evaluates in a fixed order so reason codes are deterministic:
+  (1) filter to active consents matching the purpose — none ⇒ `no_active_consent`;
+  (2) require one of those to match the request jurisdiction — none ⇒ `jurisdiction_mismatch`;
+  (3) require a `PolicyRule` matching role + purpose + jurisdiction — none ⇒ `deny_by_default`;
+  (4) otherwise `allow`. Every path returns `policySet.policy_version`.
+- **Rationale**: A single fixed order makes every deny reason a golden value
+  ([spec.md → G-AUTH](./spec.md#g-auth--authorization-decisions)) rather than an implementation detail, so
+  tests assert exact reasons and the loop never has to guess precedence.
+- **Alternatives considered**: Returning the first failing check in arbitrary order — rejected; makes
+  reason codes non-deterministic and un-testable.
 
 ## Decision: Purpose authorization as a deterministic predicate (local OPA analogue)
 

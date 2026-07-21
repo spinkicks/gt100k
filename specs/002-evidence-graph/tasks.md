@@ -4,6 +4,10 @@
 **Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/evidence-graph.md, quickstart.md
 **Tests**: INCLUDED — the constitution makes tests part of "done" and `contracts/evidence-graph.md` defines explicit test obligations. Write tests first; ensure they fail before implementing.
 
+**Loop gate**: `pnpm exec tsc -b` + `pnpm test` (Biome clean is part of done). Phases map to the **Build Phasing** section of [spec.md](./spec.md): **P0** = Setup+Foundational (T001–T007), **P1** = US1 (T008–T014), **P2** = US2 (T015–T017), **P3** = US3 (T018–T026), **P4** = deferred stubs + polish + the single shared-file touch (T027–T032).
+
+**Golden values (deterministic acceptance targets)**: the exact SHA-256 node ids and Merkle roots are pinned in spec.md **Golden Values** (G1 idA `facecf25…`, G2 3-leaf root `0360836a…`, G3 packet root `df1f000d…`). `golden.test.ts` asserts them with `===` (zero tolerance). Do **not** change the code to new values — match the spec.
+
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: parallelizable (different files, no incomplete-task dependency)
@@ -22,7 +26,8 @@ All work lives in **new** directories (`packages/evidence-graph`, `adapters/evid
 
 ## Phase 1: Setup (new dirs only)
 
-- [ ] T001 Scaffold the `@gt100k/evidence-graph` package: `packages/evidence-graph/package.json` (name `@gt100k/evidence-graph`, `type: module`, `test: vitest run`), `packages/evidence-graph/tsconfig.json` (extends `../../tsconfig.base.json`), and an empty `packages/evidence-graph/src/index.ts`. Do not touch any shared root file.
+- [ ] T001 Scaffold the `@gt100k/evidence-graph` package: `packages/evidence-graph/package.json` (name `@gt100k/evidence-graph`, `type: module`, `main`/`types`/`exports` → `./src/index.ts`, `test: vitest run`), `packages/evidence-graph/tsconfig.json` (extends `../../tsconfig.base.json`, `rootDir: "."`, `outDir: "dist"`, include `src`/`test`), and an empty `packages/evidence-graph/src/index.ts`. Do not touch any shared root file.
+- [ ] T001a Add the **seeded smoke test** `packages/evidence-graph/test/smoke.test.ts` (imports `../src/index.js`, asserts it is defined) so the gate (`tsc -b` + `vitest`) is green from iteration 1 (SC-011).
 
 ---
 
@@ -36,8 +41,9 @@ All work lives in **new** directories (`packages/evidence-graph`, `adapters/evid
 - [ ] T005 Implement the Node-crypto `Hasher` adapter in `adapters/evidence-hash-node/` (`package.json`, `tsconfig.json`, `src/index.ts` — the only `node:crypto` import in the feature) (depends on T003)
 - [ ] T006 [P] Contract test for the in-memory `EvidenceRepository` (save/get node, edge, packet round-trip; deep-copy isolation) in `adapters/evidence-repo-memory/test/repo.test.ts` *(write first, ensure it fails)*
 - [ ] T007 Implement the in-memory `EvidenceRepository` adapter in `adapters/evidence-repo-memory/` (`package.json`, `tsconfig.json`, `src/index.ts`) (depends on T002, T003)
+- [ ] T007a [P] Add in-repo synthetic seed fixtures in `packages/evidence-graph/test/fixtures/` (`goldenArtifact` [G1], `goldenAttempt` [G3], `goldenLeaves` [G2 ha/hb/hc], `syntheticMilestone` [coherent graph + one unrelated island node]) per spec **Seed Fixtures**. Pure TS objects, pseudonymous actors, no PII.
 
-**Checkpoint**: domain types, ports, a real hasher, and persistence exist — stories can begin.
+**Checkpoint**: domain types, ports, a real hasher, persistence, and seed fixtures exist — stories can begin.
 
 ---
 
@@ -49,9 +55,10 @@ All work lives in **new** directories (`packages/evidence-graph`, `adapters/evid
 
 ### Tests (write first, ensure they fail)
 
-- [ ] T008 [P] [US1] Contract test for canonical serialization (key-order/formatting invariance ⇒ identical bytes) in `packages/evidence-graph/test/canonicalize.test.ts` (per `contracts/evidence-graph.md`)
-- [ ] T009 [P] [US1] Contract test for `addNode` content-addressing + idempotency (id == hash of canonical content; identical content ⇒ same id, no change; any field change ⇒ new id) in `packages/evidence-graph/test/graph.test.ts` (FR-001/004/005)
-- [ ] T010 [P] [US1] Contract test for `addEdge` validation (dangling endpoint rejected; cycle rejected; DAG stays acyclic; all 6 edge types) in `packages/evidence-graph/test/graph-edges.test.ts` (FR-006, SC-002)
+- [ ] T008 [P] [US1] Contract test for canonical serialization (key-order/formatting invariance ⇒ identical bytes; key-shuffled `goldenArtifact` canonicalizes to the exact golden canonical string) in `packages/evidence-graph/test/canonicalize.test.ts` (FR-004, SC-009)
+- [ ] T009 [P] [US1] Contract test for `addNode` content-addressing + idempotency (id == hash of canonical content; identical content ⇒ same id, no graph change; any field change ⇒ new id; a **fake in-test Hasher** works with the domain unchanged, SC-006) in `packages/evidence-graph/test/graph.test.ts` (FR-001/004/005)
+- [ ] T010 [P] [US1] Contract test for `addEdge` validation (dangling endpoint rejected; **self-edge** rejected; cycle rejected; DAG stays acyclic under a fuzz of inserts; all 6 edge types accepted) in `packages/evidence-graph/test/graph-edges.test.ts` (FR-006, SC-002)
+- [ ] T010a [P] [US1] **Golden** test: `addNode(goldenArtifact)` id === `facecf25460fedd81070a1194f25639af9561cd6190d829739f4af21568a9039` (exact) in `packages/evidence-graph/test/golden.test.ts` (FR-020, SC-007)
 
 ### Implementation
 
@@ -91,14 +98,15 @@ All work lives in **new** directories (`packages/evidence-graph`, `adapters/evid
 
 ### Tests (write first, ensure they fail)
 
-- [ ] T018 [P] [US3] Contract test for `merkleRoot` (determinism across runs; single-node; odd-count rule; leaf/interior domain separation) in `packages/evidence-graph/test/merkle.test.ts` (FR-011, SC-004)
-- [ ] T019 [P] [US3] Contract test for `buildAttestation` (in-toto Statement shape binds `subject.digest.sha256` to `predicate.merkleRoot`) in `packages/evidence-graph/test/attestation.test.ts` (FR-012)
-- [ ] T020 [P] [US3] Contract test for `assembleEvidencePacket` + `traceEvidence` (deterministic packet for a fixed node set; empty set rejected; invariant-violating subgraph refused; trace returns supporting-only nodes) in `packages/evidence-graph/test/packet.test.ts` (FR-010/FR-014/FR-019)
-- [ ] T021 [P] [US3] Contract test for the stub `Verifier` (pass untampered packet; fail after any single node alteration) in `adapters/evidence-verifier-stub/test/verify.test.ts` (FR-013/FR-015, SC-004)
+- [ ] T018 [P] [US3] Contract test for `merkleRoot` (determinism across runs; single-node = leaf digest; odd-count duplicate-last rule; **second-preimage domain separation** `leaf(x) !== interior(x,x)`; permutation-independence) in `packages/evidence-graph/test/merkle.test.ts` (FR-011/FR-021, SC-004/SC-010)
+- [ ] T018a [P] [US3] **Golden** Merkle test in `packages/evidence-graph/test/golden.test.ts`: `merkleRoot([ha])` === `53ff9798…`, `merkleRoot([ha,hb])` === `c48424e0…`, `merkleRoot([ha,hb,hc])` === `0360836a…`, and a shuffled input yields the identical 3-leaf root (FR-020, SC-008). ha/hb/hc = `sha256("a"|"b"|"c")` from `goldenLeaves`.
+- [ ] T019 [P] [US3] Contract test for `buildAttestation` (in-toto Statement shape binds `subject.digest.sha256` to `predicate.merkleRoot`; golden subject digest `fa6cc759…` for `sha256("gt100k-artifact-v1")`) in `packages/evidence-graph/test/attestation.test.ts` (FR-012)
+- [ ] T020 [P] [US3] Contract test for `assembleEvidencePacket` + `traceEvidence` (deterministic packet for a fixed node set; **golden two-node packet root `df1f000d…`**; empty set rejected; invariant-violating subgraph refused; trace of the `syntheticMilestone` `Outcome` returns supporting-only nodes and **excludes the unrelated island node**) in `packages/evidence-graph/test/packet.test.ts` (FR-010/FR-014/FR-019, SC-008/SC-012)
+- [ ] T021 [P] [US3] Contract test for the stub `Verifier` (pass untampered packet; fail after any single node alteration → `MERKLE_MISMATCH`; fail on subject-digest mismatch → `SUBJECT_DIGEST_MISMATCH`) in `adapters/evidence-verifier-stub/test/verify.test.ts` (FR-013/FR-015, SC-004)
 
 ### Implementation
 
-- [ ] T022 [US3] Implement `merkleRoot(hashes, hasher)` (canonical sort; domain-separated leaf `0x00`/interior `0x01`; odd-count promotion) in `packages/evidence-graph/src/merkle.ts` (depends on T003)
+- [ ] T022 [US3] Implement `merkleRoot(hashes, hasher)` over lowercase-hex strings (ascending sort; `leaf(h)=hash("00"+h)`, `interior(l,r)=hash("01"+l+r)` with ASCII prefixes + string concat; odd-count duplicate-last; single leaf → its leaf digest) in `packages/evidence-graph/src/merkle.ts` — MUST reproduce spec Golden Values (depends on T003)
 - [ ] T023 [US3] Implement `buildAttestation(...)` (in-toto Statement shape; unsigned in this slice, §19.2 D6) in `packages/evidence-graph/src/attestation.ts` (depends on T002)
 - [ ] T024 [US3] Implement `assembleEvidencePacket(...)` + `traceEvidence(...)` (Merkle root + ledgers + attestation; runs `assertHumanAuthority`, rejects empty set) in `packages/evidence-graph/src/packet.ts` (depends on T012, T016, T022, T023)
 - [ ] T025 [US3] Implement the deterministic stub `Verifier` (re-derive Merkle root, check attestation subject digest) in `adapters/evidence-verifier-stub/` (`package.json`, `tsconfig.json`, `src/index.ts`) (depends on T022, T024)
@@ -113,7 +121,8 @@ All work lives in **new** directories (`packages/evidence-graph`, `adapters/evid
 - [ ] T027 [P] Contract test for the deferred stub adapters (`TransparencyLog.anchor`/`verifyInclusion` and `ErasureService.shred` return deterministic placeholders marked `stub: true`; retained-packet-stays-verifiable shape) in `adapters/evidence-deferred/test/stubs.test.ts` *(write first, ensure it fails)*
 - [ ] T028 Implement the deferred stub adapters (`TransparencyLog`, `ErasureService`) in `adapters/evidence-deferred/` (`package.json`, `tsconfig.json`, `src/index.ts`), clearly marked **non-production / pre-live gate (§19.2 D1/D2)** (depends on T003)
 - [ ] T029 [P] Add `packages/evidence-graph/README.md` (public API + ports usage + explicit "deferred / not production" section for D1–D4/D6)
-- [ ] T030 [P] Add an end-to-end `demo` script in `adapters/evidence-repo-memory/src/demo.ts` wiring hasher + repo + graph + invariant + packet + stub verifier for a synthetic milestone (mirrors `quickstart.md`)
+- [ ] T029a [P] End-to-end test `adapters/evidence-repo-memory/test/e2e.test.ts`: build the `syntheticMilestone` graph → `assertHumanAuthority` → `assembleEvidencePacket` → stub `verify` = pass, with **only synthetic inputs and no consent/legal/admissions workflow present** (FR-018, SC-005)
+- [ ] T030 [P] Add an end-to-end `demo` script in `adapters/evidence-repo-memory/src/demo.ts` (+ `"demo": "tsx src/demo.ts"` in that package's `package.json`) wiring hasher + repo + graph + invariant + packet + stub verifier for a synthetic milestone (mirrors `quickstart.md`; runnable via `pnpm --filter @gt100k/evidence-repo-memory demo`)
 - [ ] T031 Run the `quickstart.md` validation end-to-end: `pnpm exec tsc -b` clean, `pnpm exec biome check .` clean, `pnpm --filter @gt100k/evidence-graph test` and workspace Vitest green
 - [ ] T032 **[FINAL — the single shared-file touch]** Add composite project references for `packages/evidence-graph` and each `adapters/evidence-*` package to the root `tsconfig.json` `references` array. ⚠️ This is the **only** shared-file edit in the feature; keep it isolated in its own commit so a human reconciles it at merge (parallel-safety flag).
 
@@ -128,10 +137,10 @@ All work lives in **new** directories (`packages/evidence-graph`, `adapters/evid
 
 ## Parallel Opportunities
 
-- Foundational: T002/T003 in parallel; T004 (hasher test) and T006 (repo test) in parallel; then T005/T007.
-- US1: T008/T009/T010 (tests) in parallel before the implementation tasks.
-- US3: T018/T019/T020/T021 (tests) in parallel before the implementation tasks.
-- Polish: T027, T029, T030 in parallel.
+- Foundational: T002/T003 in parallel; T004 (hasher test) and T006 (repo test) in parallel; T007a (fixtures) alongside; then T005/T007.
+- US1: T008/T009/T010/T010a (tests) in parallel before the implementation tasks.
+- US3: T018/T018a/T019/T020/T021 (tests) in parallel before the implementation tasks.
+- Polish: T027, T029, T029a, T030 in parallel.
 
 ## Implementation Strategy
 
@@ -140,7 +149,8 @@ All work lives in **new** directories (`packages/evidence-graph`, `adapters/evid
 
 ## Summary
 
-- **Total tasks**: 32 (T001–T032)
-- **US1**: 7 (T008–T014) · **US2**: 3 (T015–T017) · **US3**: 9 (T018–T026) · Setup 1 · Foundational 6 · Deferred & Polish 6
-- **MVP scope**: Setup + Foundational + US1 (content-addressed evidence DAG).
+- **Total tasks**: 38 (T001–T032 plus T001a, T007a, T010a, T018a, T029a inserted for smoke, fixtures, and golden/e2e coverage)
+- **Setup/Foundational (P0)**: T001, T001a, T002–T007, T007a · **US1 (P1)**: T008–T014 + T010a · **US2 (P2)**: T015–T017 · **US3 (P3)**: T018–T026 + T018a · **Deferred & Polish (P4)**: T027–T032 + T029a
+- **MVP scope**: P0 + US1 (content-addressed evidence DAG, golden node id).
+- **Golden-value coverage**: T010a (node id), T018a (Merkle roots), T019/T020 (subject digest, packet root) — all exact (`===`, zero tolerance).
 - **Shared-file touches**: exactly one — T032 (root `tsconfig.json` references), flagged for human merge reconciliation.

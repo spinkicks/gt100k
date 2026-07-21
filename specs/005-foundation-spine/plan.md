@@ -10,9 +10,10 @@
 
 Build a **code-first, locally-testable TypeScript reference of the platform spine's core logic** — the
 part whose correctness is a matter of rules, not infrastructure. Two pure, framework-agnostic packages:
-`packages/platform-contracts` (the versioned envelope header + `LearnerEvent`/`ConsentGrant`/
-`AssentRecord`/`DecisionRecord` with their invariants encoded — append-only, active-consent,
-refusal-honored, and **a model output can never fill `DecisionRecord.authorized_human`**) and
+`packages/platform-contracts` (the versioned envelope header + the **six** foundation contracts
+`LearnerEvent`/`ConsentGrant`/`AssentRecord`/`DecisionRecord`/`OverrideRecord`/`Appeal` with their
+invariants encoded — append-only, active-consent, refusal-honored, **four-eyes override**, **appeal
+reviewer independence**, and **a model output can never fill `DecisionRecord.authorized_human`**) and
 `packages/platform-spine` (pseudonymous identity/consent/assent domain, a deterministic
 **purpose-authorization predicate** that is a local OPA analogue, and the **transactional-outbox +
 idempotent-consumer** event-spine pattern). All I/O sits behind ports with in-memory / stub adapters
@@ -33,9 +34,9 @@ carry; each port is the exact seam where a production adapter slots in with **ze
 **Primary Dependencies**: None in the domain packages (pure TS). No crypto/network/DB imports in the
 core. pnpm workspaces + Vitest + Biome + `tsc -b` (the existing factory gate).
 
-**Storage**: In-memory adapters behind ports (`ConsentRepository`, `DecisionRepository`, `AuditLog`,
-`OutboxStore`, `ConsumerOffsets`, …) for the synthetic slice; PostgreSQL is the deferred production
-adapter.
+**Storage**: In-memory adapters behind ports (`ConsentRepository`, `DecisionRepository`,
+`OverrideRepository`, `AppealRepository`, `AuditLog`, `OutboxStore`, `ConsumerOffsets`, …) for the
+synthetic slice; PostgreSQL is the deferred production adapter.
 
 **Testing**: Vitest (unit + contract), matching the workspace `vitest.config.ts` include globs
 (`packages/**/test`, `adapters/**/test`).
@@ -53,7 +54,7 @@ runtime; this slice proves the *logical* no-loss / no-double-apply property on a
 id generator injected). Deterministic and replay-safe (FR-016). Append-only contracts (POL-006).
 Deny-by-default authorization (FR-007). Synthetic-only; legal layer stubbed (FR-015).
 
-**Scale/Scope**: One synthetic tenant / learner flow; four contracts; the outbox + idempotent-consumer
+**Scale/Scope**: One synthetic tenant / learner flow; six contracts; the outbox + idempotent-consumer
 pattern; synthetic data only.
 
 ## Constitution Check
@@ -62,18 +63,19 @@ pattern; synthetic data only.
 
 | Principle | Status | Note |
 |---|---|---|
-| I. Human authority over consequential decisions | ✅ Pass (enforced) | `DecisionRecord` cannot be finalized without a named `authorized_human` + policy result; **a model/system actor can never fill it** (FR-005, SC-002). Records are append-only + replayable (FR-011, FR-016; POL-004/006). |
+| I. Human authority over consequential decisions | ✅ Pass (enforced) | `DecisionRecord` cannot be finalized without a named `authorized_human` + policy result; **a model/system actor can never fill it** (FR-005, SC-002). `OverrideRecord` requires **four-eyes** (two distinct human approvers, never model/system) for override classes (FR-017, SC-008); `Appeal` requires an **independent reviewer** ≠ the original decision owner (FR-018, SC-009). Records are append-only + replayable (FR-011, FR-016; POL-004/006). |
 | II. Child assent and veto | ✅ Pass (enforced) | `assentBlocks` makes a child's honorable refusal block optional collection even with guardian consent present (FR-004, SC-006). |
 | III. Evidence-class authority ladder | ✅ Pass | No learned model runs here; a `model` actor is admissible only as advisory `model_version`/evidence, never as decision authority (FR-005). |
 | IV. Evidence before authority; deterministic rules | ✅ Pass (core purpose) | Authorization is a **deterministic policy predicate**, deny-by-default, returning a `policy_version` — a model cannot change the rule (FR-007; PRD §4.1). |
 | V. Privacy follows purpose | ✅ Pass | Synthetic-only; downstream sees only a pseudonymous `actor_ref` + purpose scope (FR-012); consent is purpose-scoped with jurisdiction/residency deny (FR-008); legal layer stubbed (FR-015). Real crypto-shred deletion deferred as an interface stub (FR-014). |
 | ENG (governed flow, tests-define-done, no secrets) | ✅ Pass | Branch→PR→CI; `tsc -b` + Vitest + Biome gate; no secrets/machine paths; synthetic-only; versioned contracts with append-only field evolution modeled (parent §28). |
-| IX. Prohibited product behavior | ✅ Pass | No automated consequential decision is representable (human authority enforced); no irrevocable/automated admission (enrollment is a read-only synthetic stub). |
+| IX. Prohibited product behavior | ✅ Pass | No automated consequential decision is representable (human authority enforced); four-eyes gates override classes (admissions, public exposure, safeguarding, credential revocation) so no single actor can supersede a decision (FR-017); no irrevocable/automated admission (enrollment is a read-only synthetic stub). |
 
 **Result: PASS** — no violations, no Complexity Tracking needed. The deliberate deferrals (production
-runtime, real OPA bundle signing, crypto-shred deletion, `OverrideRecord`/`Appeal`) are **explicit
-production-direction / pre-live items**, represented by clearly-marked ports + notes rather than silent
-omission.
+runtime, real OPA bundle signing, crypto-shred deletion, and the `OverrideRecord`/`Appeal` **human
+workflows**) are **explicit production-direction / pre-live items**, represented by clearly-marked ports +
+notes rather than silent omission. The six contract **shapes + invariants** — including
+`OverrideRecord`/`Appeal` — are in scope and enforced.
 
 ## Project Structure
 
@@ -105,7 +107,10 @@ packages/
 │   │   ├── consent.ts           # ConsentGrant + validateConsentGrant + isConsentActive
 │   │   ├── assent.ts            # AssentRecord + validateAssentRecord + assentBlocks
 │   │   ├── decision.ts          # DecisionRecord + validateDecisionRecord (human-authority invariant)
-│   │   ├── invariants.ts        # assertEnvelopeComplete / assertHumanAuthority / assertAppendOnly
+│   │   ├── override.ts          # OverrideRecord + validateOverrideRecord (four-eyes; FR-017)
+│   │   ├── appeal.ts            # Appeal + validateAppeal (reviewer independence; FR-018)
+│   │   ├── invariants.ts        # assertEnvelopeComplete / assertHumanAuthority / assertAppendOnly /
+│   │   │                        #   assertFourEyes / assertReviewerIndependent
 │   │   ├── validate.ts          # validatorFor(schema_version) registry (FR-006)
 │   │   └── index.ts
 │   ├── test/                    # Vitest unit + contract tests (mirror FR/SC + contracts/)
@@ -129,9 +134,10 @@ packages/
     ├── tsconfig.json            # extends base; references ../platform-contracts
     └── README.md
 adapters/
-├── spine-repo-memory/           # in-memory repos + outbox store + consumer offsets (synthetic)
+├── spine-repo-memory/           # in-memory repos (consent/assent/identity/decision/override/appeal/
+│                                #   audit) + outbox store + consumer offsets (synthetic)
 ├── spine-bus-memory/            # in-process EventBus
-└── enrollment-stub/             # synthetic EligibleLearner roster + no-op DeletionWorkflow stub
+└── enrollment-stub/             # synthetic EligibleLearner roster + fixtures.ts + no-op DeletionWorkflow stub
 ```
 
 **Structure Decision**: A TS monorepo (per parent §26.1) with the spine's rules quarantined in **two
@@ -161,6 +167,7 @@ ports are shaped for**, not work in `tasks.md`. Each row names the port/seam whe
 | Policy-as-code (§11) | Signed **OPA/Rego** bundles evaluated by a local sidecar on every command | `authorize()` predicate + `PolicySet` (local OPA analogue) → OPA sidecar client |
 | Data plane (§12) | Per-service **PostgreSQL** (bitemporal), Redis (revocation/session), S3 + Iceberg | `*Repository` / `AuditLog` / `ConsumerOffsets` ports |
 | Deletion & retention (§13) | **Temporal** workflow: cross-store erasure + per-subject **crypto-shred** (KMS) | `DeletionWorkflow` **stub port** (interface only, FR-014) |
+| Override / appeal **workflows** (§7.2, parent §28) | Four-eyes approval routing/notifications; appeal SLA timers + remedy execution | `OverrideRecord`/`Appeal` **contracts + invariants are in scope** (FR-017/FR-018); only the human workflows are deferred |
 | Identity vault (§10) | Own Identity & Consent vault (passkeys/MFA), Identity AWS account | `IdentityRepository` (pseudonymous resolution kept identical) |
 | Enrollment handoff (§7.3) | Real admissions Track A/Track B eligibility interface | `EnrollmentHandoffSource` stub → real client (config, not rewrite) |
 | Runtime & IaC (§4) | **AWS** (EKS, RDS+pgvector, S3, KMS, CloudFront, VPC) via **Terraform**; account isolation | Out of scope — no infra in `tasks.md` |
@@ -168,8 +175,10 @@ ports are shaped for**, not work in `tasks.md`. Each row names the port/seam whe
 | Observability (§16) | OpenTelemetry / Prometheus / Grafana; `correlation_id`/`causation_id` tracing | Header carries `correlation_id`/`causation_id` already; wiring deferred |
 | Reliability/security (§14, §30) | mTLS, short-lived workload identity, default-deny networks, RTO/RPO sign-off | Out of scope for this slice |
 
-**Also out of scope (noted, not built):** `OverrideRecord` and `Appeal` contracts (parent §28) — the
-two remaining foundation contracts; four-eyes override approval; DR drills.
+**Also out of scope (noted, not built):** the four-eyes override **approval routing/notification
+workflow**, appeal **SLA timers / remedy execution**, and DR drills. The `OverrideRecord`/`Appeal`
+**contracts + invariants** themselves are **in scope** (FR-017, FR-018) — this closes the parent §32.1
+"override, appeal" contract set.
 
 ## Complexity Tracking
 

@@ -15,7 +15,7 @@
 
 - [x] No [NEEDS CLARIFICATION] markers remain (open items captured explicitly under **Open Questions**)
 - [x] Requirements are testable and unambiguous
-- [x] Success criteria are measurable (SC-001…SC-010, with % / count targets)
+- [x] Success criteria are measurable (SC-001…SC-016, with % / count targets) and each maps to a concrete test (spec *SC → test mapping*)
 - [x] Success criteria are technology-agnostic
 - [x] All acceptance scenarios are defined (per user story)
 - [x] Edge cases identified (derived from §14.4.3 and §14.10)
@@ -28,6 +28,20 @@
 - [x] User scenarios cover the primary flows (offer → events → hypothesis → guardrails)
 - [x] Feature meets measurable outcomes defined in Success Criteria
 - [x] No implementation details leak into the spec's normative sections
+
+## Loop-Readiness (per `gt100k-factory/docs/loop-ready-prd.md`)
+
+- [x] **Scope fence** — explicit in-scope / out-of-scope / non-goals (spec *Scope Fence*)
+- [x] **Phasing P0…P7** — ordered build path, each phase → task block + gate (spec *Phasing*)
+- [x] **Acceptance = tests** — SC-001…016 each mapped to a concrete test (spec *SC → test mapping*)
+- [x] **Golden values + tolerances** — exact seeded Lab (G1), coverage matrices (G2/G3), signal summary (G4), gate outcomes (G5), state transitions (G6); tolerance ±0 (exact), ±0.0005 only for the optional competing-explanation interval
+- [x] **Decisions already made** — rules-engine-only, catalog-driven taxonomy, fixed state-machine shape, fixed gate (spec *Decisions Already Made*)
+- [x] **Defaults for the unspecified** — verbatim rule + config-defaults table (spec *Defaults for the Unspecified*)
+- [x] **Stack + commands pinned** — pnpm; `typecheck`/`test`/`lint`; seeded smoke test green from iteration 1 (spec *Stack + Commands*)
+- [x] **Seed fixtures in-repo** — `CATALOG_GOLDEN_V1` / `CATALOG_GAPPY_V1` / `CATALOG_FAMILY_V1` + `EVENTS_GOLDEN_V1` (spec *Seed Fixtures*), no external fetch
+- [x] **Navigable structure** — per-phase headers; JIT-readable sections
+- [x] **Pre-marked decision points w/ severity** — D1…D11, three `critical` (spec *Pre-Marked Decision Points*)
+- [x] **Env/secrets handled** — none required; the gate never fails on missing env (spec *Env / Secrets*)
 
 ## Traceability (PRD + Constitution)
 
@@ -53,7 +67,7 @@
 ## Parallel-Safety
 
 - [x] All new code lives only in `packages/interest-lab/` + `adapters/interest-*`
-- [x] No shared root file requires editing except the root `tsconfig.json` `references`, which is the **final, flagged** task (T033) for human reconcile
+- [x] No shared root file requires editing except the root `tsconfig.json` `references`, which is the **final, flagged** task (T037) for human reconcile
 - [x] `pnpm-workspace.yaml`, `vitest.config.ts`, and the Biome `lint` script already discover the new dirs (verified against repo config)
 
 ## Notes

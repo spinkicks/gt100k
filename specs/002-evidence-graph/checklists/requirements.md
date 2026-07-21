@@ -49,9 +49,20 @@
 - [x] No shared root file (`package.json`, `pnpm-workspace.yaml`, `vitest.config.ts`, `biome.json`) requires editing (existing globs discover the new dirs)
 - [x] The single shared-file touch (root `tsconfig.json` references) is isolated as the final task and flagged for human reconciliation
 
+## Loop-Readiness (spec.md folds in the [loop-ready checklist](../../../../gt100k-factory/docs/loop-ready-prd.md))
+
+- [x] **Scope fence**: explicit in-scope / out-of-scope (marked stubs) / non-goals (no interface).
+- [x] **Phasing P0…P4**: ordered build path with per-phase SC coverage and navigable headers.
+- [x] **Acceptance criteria = tests**: SC-001…SC-012, each mapped to a named test file + assertion.
+- [x] **Golden values + tolerances**: exact SHA-256 node ids (idA `facecf25…`) and Merkle roots (3-leaf `0360836a…`, packet `df1f000d…`); tolerance = exact `===` (zero).
+- [x] **Decisions already made**: SHA-256, RFC 8785 JCS canonicalization, hex-string Merkle scheme, port shapes.
+- [x] **Defaults for the unspecified**: the catch-all rule recorded verbatim.
+- [x] **Stack + commands pinned**: pnpm; `tsc -b` / `vitest` / `biome`; seeded smoke test (SC-011).
+- [x] **Seed fixtures in-repo**; **env/secrets** note (none needed); **pre-marked decision defaults** with severity.
+
 ## Notes
 
 - **PROV extension, not exporter**: this slice encodes the PROV `Entity`/`Activity`/`Agent` mapping (data-model.md) but does not ship a PROV/RO-Crate serializer — deferred (PRD §19, STD-03/STD-04).
 - **in-toto shape, not signed**: the attestation is the typed in-toto Statement shape; cryptographic signing and the attestor key hierarchy are deferred (§19.2 D6). The stub verifier checks structure, subject digests, and Merkle re-derivation only.
 - **Milestone membership is an input**: which nodes belong to a packet is a caller-supplied selection (external `MilestoneContract`, PRD §28); this feature owns assembly/attestation/verification, not the milestone workflow.
-- **Open question (non-blocking)**: exact canonical-serialization spec (JCS/RFC 8785 vs. a bespoke stable-key encoder) is left to the hashing helper's implementation; either satisfies FR-004 as long as it is deterministic and documented in the code.
+- **Canonical serialization (resolved)**: pinned to **RFC 8785 (JCS)** over the hashed field subset with optional-field omission; the exact golden canonical bytes are in spec.md **Golden Values**, so any conformant encoder reproduces the golden ids (FR-004/FR-020). Formerly an open question — now closed by the golden fixtures.

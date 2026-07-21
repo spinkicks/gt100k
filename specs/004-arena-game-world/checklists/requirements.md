@@ -27,7 +27,37 @@
 - [x] All functional requirements have clear acceptance criteria
 - [x] User scenarios cover primary flows (US1–US5, prioritized, independently testable)
 - [x] Feature meets measurable outcomes defined in Success Criteria
-- [x] MVP is identified (Setup + Foundational + US1)
+- [x] MVP is identified (P0 + P1 = mastery-gated traversable animated quest world)
+
+## Loop-readiness (per gt100k-factory/docs/loop-ready-prd.md)
+
+- [x] Scope fence: explicit in-scope / out-of-scope / non-goals (spec §1)
+- [x] Phasing P0…P6, ordered, each with a goal + gate (spec §9)
+- [x] Acceptance criteria = tests: SC-001…SC-014, each mapped to a named test (spec §10)
+- [x] Golden values + tolerances: layout, node states, tiers, cosmetics, motion, staging, standings, base (spec §7–§8)
+- [x] Decisions already made: Phaser 3, architecture, integration, view model, a11y, seed assets, data model, UX/motion, stack (spec §2)
+- [x] "Defaults for the unspecified" rule present verbatim (spec §3)
+- [x] Stack + commands pinned (pnpm; typecheck/test/build) + seeded smoke green from iteration 1 (spec §11)
+- [x] Env/secrets: `apps/arena/.env.local.example` placeholders, `.env.local` git-ignored, build never fails on missing env (spec §11)
+- [x] Navigable per-phase headers for JIT reading (spec §0, §9)
+- [x] Pre-marked decision points with severity (spec §13)
+
+## Game / rendering (Phaser)
+
+- [x] Real 2D game engine on Canvas/WebGL — Phaser 3 default `^3.90.0` (spec §2 D1, FR-028)
+- [x] Rich overworld: regions, quest nodes, edge paths, follow-camera (spec §5, FR-001)
+- [x] Avatar + tweened movement + equippable cosmetics on canvas (spec §5.3, US2)
+- [x] Cohort base scene co-built from cooperative missions (spec §5.5, US4)
+- [x] Celebration/juice on independent-unlock, deterministic motion spec (spec §5.4/§8.5, US3)
+- [x] Scene/asset pipeline with committed SEED SVGs + procedural fallback, no external fetch (spec §2 D6, FR-030)
+- [x] Client-only mount (ssr:false), clean unmount, zero console/WebGL errors (spec §2 D3, FR-028, SC-011)
+- [x] One `ArenaView` drives Phaser + reduced-motion + accessible Ledger (spec §2 D4, FR-029, SC-014)
+
+## Accessibility (canvas)
+
+- [x] Reduced motion is a first-class EQUAL mode with a full equivalent for every animation (FR-015, SC-004)
+- [x] Accessible DOM/ARIA parallel structure ("Arena Ledger"); canvas `aria-hidden`; keyboard/switch/screen-reader; ≥4.5:1 contrast; color-independent (FR-016, SC-012)
+- [ ] **Canvas-accessibility approach confirmed by a human** (spec §13 DP-1: parallel DOM Ledger vs. dedicated `/accessible` route) — flagged, human decision before child exposure
 
 ## Constitution / Governance Guardrails (child-facing surface)
 

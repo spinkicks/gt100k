@@ -8,20 +8,27 @@ How to prove the slice works end-to-end once implemented. Implementation code li
 
 - Node.js LTS + pnpm installed.
 - Repo bootstrapped: `pnpm install` at the repo root (pnpm workspace).
+- **No env or secrets needed** — the slice is pure TS + synthetic in-memory adapters (see
+  [spec.md → Env / secrets](./spec.md#env--secrets)). All fixtures are committed in
+  `adapters/enrollment-stub/src/fixtures.ts` ([spec.md → Seed fixtures](./spec.md#seed-fixtures-in-repo));
+  no external fetch.
 
 ## Primary validation — typecheck + tests (the definition of done)
 
 ```bash
 tsc -b                 # composite build of all packages/adapters (must be clean)
 pnpm test              # Vitest across the workspace
-pnpm --filter @gt100k/platform-contracts test   # contract envelope + four contracts + invariants
+pnpm --filter @gt100k/platform-contracts test   # contract envelope + six contracts + invariants
 pnpm --filter @gt100k/platform-spine test       # consent/assent/authorization + outbox/consumer
 ```
 
 **Expected**: `tsc -b` clean, all Vitest suites green. The contract-test obligations in
 [contracts/foundation-spine.md](./contracts/foundation-spine.md) all pass — envelope completeness,
 `authorized_human` cannot be model-filled, `isConsentActive`, deny-by-default authorization, child
-assent veto, atomic outbox commit, and exactly-once projection under at-least-once delivery.
+assent veto, atomic outbox commit, exactly-once projection under at-least-once **and out-of-order**
+delivery, **four-eyes override**, and **appeal reviewer independence**. Every expected value is pinned in
+[spec.md → Golden Values](./spec.md#golden-values--tolerances) and asserted by
+`packages/platform-spine/test/golden.test.ts`.
 
 ## Run the spine demo (synthetic learner, end-to-end)
 
@@ -48,7 +55,12 @@ scaled to the buildable TS subset):
    `DeletionWorkflow` stub; the append-only audit entry that the change occurred is preserved. (gate 6;
    real cross-store crypto-shred is deferred)
 7. **Event durability (logical)** — a scaled-down synthetic burst flows outbox → in-process bus →
-   projection with **no loss** and duplicate `contract_id`s rejected (exactly-once projection). (gate 7)
+   projection with **no loss** and duplicate `contract_id`s rejected (exactly-once projection), including
+   **out-of-order** delivery. (gate 7)
+8. **Override & appeal** — an `OverrideRecord` with **two distinct human approvers** supersedes a prior
+   `DecisionRecord` while **preserving the original** (both records + audit entries coexist); an `Appeal`
+   filed with an **independent reviewer** (≠ the decision's `authorized_human`) is recorded without
+   mutating the target. Attempting a model approver or a same-owner reviewer is rejected. (gate 8)
 
 Switching the demo to a **denied** scenario (no consent / wrong jurisdiction / unknown role) shows the
 command stopping at authorization with a recorded `policy_deny` audit entry and no `DecisionRecord`.
@@ -59,14 +71,18 @@ command stopping at authorization with a recorded `policy_deny` audit entry and 
 - SC-002 no model in `authorized_human`, human+policy required → `validateDecisionRecord` tests + step 4.
 - SC-003 deny-by-default + policy_version → `authorize` tests + demo step 5.
 - SC-004 exactly-once under at-least-once, no loss → outbox/`deliver` tests + demo step 7.
-- SC-005 withdrawal blocks new processing + enqueues deletion + audit preserved → `withdrawConsent`
+- SC-005 withdrawal blocks new processing + enqueues deletion (once) + audit preserved → `withdrawConsent`
   tests + demo step 6.
 - SC-006 child assent veto → `assentBlocks` tests + demo step 2.
 - SC-007 full run synthetic-only, `tsc -b` + Vitest green → this whole guide needs no external infra.
+- SC-008 four-eyes override + original preserved → `validateOverrideRecord` tests + demo step 8.
+- SC-009 appeal reviewer independence → `validateAppeal` tests + demo step 8.
 
 ## What this quickstart deliberately does **not** exercise (deferred production direction)
 
 Redpanda throughput, Temporal deletion + KMS crypto-shred, signed OPA/Rego bundle evaluation,
-PostgreSQL migrations, AWS/Terraform provisioning, mTLS/network, and CI/CD signing — see
-[plan.md](./plan.md) "Deferred: production direction". Those prove *operational* properties a
-`tsc -b` + Vitest loop cannot, and are the next-stage target the ports are already shaped for.
+PostgreSQL migrations, AWS/Terraform provisioning, mTLS/network, CI/CD signing, and the override/appeal
+**human workflows** (four-eyes approval routing, appeal SLA timers + remedy execution) — see
+[plan.md](./plan.md) "Deferred: production direction". Those prove *operational* / process properties a
+`tsc -b` + Vitest loop cannot, and are the next-stage target the ports are already shaped for. The
+override/appeal **contracts + invariants** themselves are exercised here (demo step 8).

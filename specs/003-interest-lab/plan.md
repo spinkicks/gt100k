@@ -80,12 +80,15 @@ packages/
     │   ├── ports.ts            # repository, probe-catalog, assent, artifact-signal, offer-log, clock ports (IL-014)
     │   └── index.ts            # public API barrel
     └── test/
-        ├── offer.test.ts        # US1 contract tests (PASS-002/003, IL-002/003/004)
-        ├── coverage.test.ts     # US1 coverage-matrix gap tests (IL-005, §14.4.3 #3)
+        ├── fixtures/
+        │   └── events.ts        # EVENTS_GOLDEN_V1 (10-event synthetic stream; spec Seed Fixtures)
+        ├── smoke.test.ts        # P0 smoke (green from iteration 1); upgraded to assert G1 determinism
+        ├── offer.test.ts        # US1 contract + golden G1 (PASS-002/003, IL-002/003/004/018/019)
+        ├── coverage.test.ts     # US1 coverage-matrix golden G2 + gappy G3 (IL-005, §14.4.3 #3)
         ├── events.test.ts       # US2 voluntary vs prompted (PASS-004/005, §14.4.3 #4)
-        ├── signals.test.ts      # US2 separated families + accessibility-safe (PASS-006, §14.4.3 #7)
-        ├── hypothesis.test.ts   # US3 versioning/append-only/bitemporal (IL-006)
-        ├── state-machine.test.ts# US3 promotion gate + missing-data + guide authorship (IL-008/009/011, §14.4.3 #1/#2)
+        ├── signals.test.ts      # US2 separated families golden G4 + accessibility-safe (PASS-006, §14.4.3 #7)
+        ├── hypothesis.test.ts   # US3 versioning/append-only/bitemporal + co-primary + disagreement (IL-006)
+        ├── state-machine.test.ts# US3 gate golden G5 + transitions G6 + missing-data (IL-008/009/011, §14.4.3 #1/#2)
         ├── guards.test.ts       # US4 purpose guard + team-artifact + PASS-007 (PASS-010/007/010, IL-010/013)
         └── acceptance.test.ts   # §14.4.3 acceptance criteria #1–#7 end-to-end over the in-memory adapters
 adapters/
@@ -95,7 +98,7 @@ adapters/
 │   ├── package.json
 │   └── tsconfig.json
 ├── interest-probe-catalog/       # synthetic probe catalog implementing ProbeCatalog (stub source)
-│   ├── src/index.ts
+│   ├── src/index.ts              # exports CATALOG_GOLDEN_V1, CATALOG_GAPPY_V1, CATALOG_FAMILY_V1 (spec Seed Fixtures)
 │   ├── test/catalog.test.ts
 │   ├── package.json
 │   └── tsconfig.json
@@ -127,7 +130,8 @@ All identifiers are pseudonymous; no real PII (Constitution V; synthetic-only). 
 - **`SafetyClass`**: `cleared | review_required | blocked` (only `cleared` is offerable; real safety review is human/out of scope — stubbed on the catalog).
 - **`Provenance`**: `GUIDE | RULE | SHADOW_MODEL` (PASS-001).
 - **`HypothesisState`**: `EXPLORING | EMERGING | CANDIDATE_SPINE | ACTIVE | CONTESTED | PARKED | REOPENED` (IL-007).
-- **`EventType`**: `VOLUNTARY_RETURN | PROMPTED_RETURN | UNREQUIRED_REVISION | CHOSEN_CHALLENGE | FAILURE_RECOVERY | SELF_AUTHORED_SCOPE | ASSISTIVE | SAFETY_RESCUE`.
+- **`EventType`**: `VOLUNTARY_RETURN | PROMPTED_RETURN | UNREQUIRED_REVISION | CHOSEN_CHALLENGE | FAILURE_RECOVERY | SELF_AUTHORED_SCOPE | ARTIFACT_COMPETENCE | ASSISTIVE | SAFETY_RESCUE`. (`ARTIFACT_COMPETENCE` is the artifact/competence-growth event the gate counts; `ASSISTIVE`/`SAFETY_RESCUE` are context tags that never reduce a signal.)
+- **`Domain` (catalog-supplied, not hardcoded)**: the seed catalog uses `making | living_systems | symbols_math | word_craft | sound_music | movement_body | visual_design | social_world` (≥8 so ≥6 coverage is achievable). The domain package stores no fixed domain list — it reads whatever the injected catalog provides (IL-001/IL-017).
 - **`SignalFamily`**: `voluntary_return | unrequired_revision | chosen_challenge | failure_recovery | self_authored_scope | artifact_competence` (the six the promotion gate counts). `prompt_dependence` and `context_effect` are computed but are **discount/context** signals, not families.
 - **`ForbiddenPurpose`**: `admissions | discipline | family_fidelity | public_ranking | commercial_targeting` (IL-013/PASS-010).
 - **`ChildPosition`**: `AGREE | UNSURE | DISAGREE | DECLINE_TO_LABEL | REQUEST_TO_PARK` (PRD §14.5).
@@ -170,7 +174,7 @@ All identifiers are pseudonymous; no real PII (Constitution V; synthetic-only). 
 
 ### `CoverageMatrix` (IL-005, §14.4.3 #3)
 
-`{ domains: {met:boolean, have:string[], need:int, gaps:string[]}, workModes: {...}, social: {solo:boolean, group:boolean}, difficulty: {foundational:boolean, stretch:boolean}, audience: {audience:boolean, no_audience:boolean}, complete: boolean, gaps: string[] }` — `gaps` is an explicit list; there is **no** scalar coverage/confidence field.
+`{ probeCount: {met:boolean, count:int, need:int}, domains: {met:boolean, count:int, need:int, have:string[], gaps:string[]}, workModes: {met:boolean, count:int, need:int, have:string[], gaps:string[]}, social: {met:boolean, solo:boolean, group:boolean, gaps:string[]}, difficulty: {met:boolean, foundational:boolean, stretch:boolean, gaps:string[]}, audience: {met:boolean, audience:boolean, no_audience:boolean, gaps:string[]}, complete: boolean, gaps: string[] }` — `gaps` is an explicit list; there is **no** scalar coverage/confidence field. The **exact** shape + exact gap strings are pinned in spec.md *Golden Values* G2 (complete) and G3 (gappy); the top-level `gaps` aggregates every per-dimension gap in dimension order (`probeCount, domains, workModes, social, difficulty, audience`).
 
 ### `EngagementEvent` (US2)
 
@@ -189,7 +193,7 @@ All identifiers are pseudonymous; no real PII (Constitution V; synthetic-only). 
 
 ### `SignalSummary` (US2)
 
-Separated values, never fused: `{ voluntaryReturn: {day7:int, day30:int}, scopeAuthorship:int, competenceGrowth:int, noveltyDecay:number, failureRecovery:int, promptDependence:number, contextEffects:string[], familiesPresent: SignalFamily[] }`.
+Separated values, never fused: `{ voluntaryReturn: {day7:int, day30:int}, unrequiredRevision:int, chosenChallenge:int, failureRecovery:int, scopeAuthorship:int, competenceGrowth:int, noveltyDecay:number, promptDependence:number, contextEffects:string[], familiesPresent: SignalFamily[] }`. The **exact** golden output for `EVENTS_GOLDEN_V1` is pinned in spec.md *Golden Values* G4. `promptDependence`/`contextEffects` are discount/context values and never appear in `familiesPresent` (IL-020).
 
 ### `InterestHypothesis` + `HypothesisRevision` (US3, PRD §14.5 / §28)
 
@@ -242,14 +246,18 @@ This package exposes **no** network/HTTP API. Its contract is the public interfa
 ### Public functions (pure)
 
 ```text
-buildLab(learnerRef, catalogView, eligibility, config) -> Lab
-  Pre:  catalogView provides families; config valid.
-  Behavior (RULES ENGINE, deterministic given seed): filter to prerequisite-valid,
+buildLab(learnerRef, catalogView, eligibility, config, selector?) -> Lab
+  Pre:  catalogView provides families; config valid. `selector` is OMITTED in the MVP (bandit deferred, IL-021);
+        when absent, the rules engine alone produces the operative Lab.
+  Behavior (RULES ENGINE, deterministic given integer seed): filter to prerequisite-valid,
           safety-cleared probes; select ≥1 variant per family (≤1 per family per choice point);
-          satisfy coverage dimensions greedily; reserve `explorationFloor` offers for untested/dormant
-          domains; tag each offer's provenance+reason.
+          satisfy coverage dimensions greedily over a fixed total order (stableSort(familyId) then seeded
+          rotation); reserve `explorationFloor` offers for untested/dormant domains; tag each offer's
+          provenance (RULE) + reason.
   Post: 18–24 offers when the catalog allows; ≥2 eligible at each choice point; coverage matrix built;
-        adaptive/shadow selection OFF ⇒ still complete & balanced (SC-001, §14.4.3 #5).
+        adaptive/shadow selection OFF ⇒ still complete & balanced.
+  Golden: buildLab(CATALOG_GOLDEN_V1, freshLearner, {seed:42}) == spec G1 (20 offers, exact per-domain/
+        per-work-mode/cross-cutting counts, explorationReserved=20); byte-identical across seeds (SC-001, §14.4.3 #5).
 
 buildCoverageMatrix(offers, config) -> CoverageMatrix
   Pure read: per-dimension met/gap; `gaps` enumerated explicitly; NO scalar score (IL-005, §14.4.3 #3).
@@ -288,6 +296,8 @@ interface AssentRecordPort { isWithdrawn(learnerRef, reflectionId): Promise<bool
 interface ArtifactSignalSource { next(): Promise<ArtifactTransition | null> }   // coarse transitions ONLY (PASS-007)
 interface OfferDecisionLog { record(entry: { eligibleSet, policyVersion, coverageConstraints }): Promise<void> } // fwd-compat w/ PASS-009 bandit
 interface Clock { dayOffset(): number }   // injected; core reads no wall clock
+// DEFERRED (IL-021, not implemented in MVP; shape reserved so buildLab's optional `selector` can slot in):
+interface OfferSelector { pick(eligible: Probe[], ctx): Probe[] }   // bandit; MUST NOT violate rules-engine constraints
 ```
 
 ### Contract test obligations (map to PASS-00x / IL-xxx / §14.4.3)
@@ -304,6 +314,9 @@ interface Clock { dayOffset(): number }   // injected; core reads no wall clock
 - `acceptArtifactSignal` ⇒ rejects raw content (PASS-007); `promoteTeamArtifact` ⇒ refuses w/o solo proof (IL-010).
 - withdrawn optional reflection ⇒ absent from next summary + replay (PASS-008; §14.4.3 #6; SC-006).
 - hypothesis is append-only + versioned + bitemporal; all revisions replayable (IL-006).
+- **Golden-value obligations (exact equality, ±0):** `buildLab` == G1; `buildCoverageMatrix` == G2 (complete) and == G3 (gappy, exact gap strings); `summarizeSignals(EVENTS_GOLDEN_V1)` == G4; `evaluateCandidateGate` == G5 table; state transitions == G6. These are the acceptance tests verbatim (spec *Golden Values*).
+- competence-only summary ⇒ gate `missing:["no delayed-discretionary signal"]` (SC-011); `promoteTeamArtifact` refuses w/o solo proof, accepts with (SC-012); ≥2 `candidateDomains` co-primary revision valid (SC-013); `DISAGREE`+model evidence both retained (SC-014); `familyContext` contributes 0 to families/magnitudes (SC-015); `CONTESTED→PARKED→REOPENED` replayable (SC-016).
+- selection-under-surplus: a catalog with more eligible probes than target ⇒ a coverage-satisfying subset chosen by the documented deterministic order, byte-identical by seed (IL-018).
 
 ## Complexity Tracking
 
