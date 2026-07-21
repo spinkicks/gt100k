@@ -144,3 +144,15 @@
 
 - T014 + T022 — Add the `CohortRepository` adapter contract first, then scaffold and implement `adapters/cohort-repo-memory`.
 - Acceptance: `commitAtomic` is whole-roster-or-nothing; `activeFor` enforces one active assignment per learner; `getSnapshot`/`restore` retain and return the exact prior snapshot; all reads/writes have deep-copy isolation; the focused test demonstrates RED before implementation; repository typecheck/test/lint remain green.
+
+## 2026-07-20 — P3 / T014 + T022
+
+- Added the `@gt100k/cohort-repo-memory` adapter package and its `CohortRepository` contract suite over Golden Fixture C.
+- Implemented atomic whole-roster commits with full conflict preflight, one active assignment per learner, retained snapshots, prior-roster supersession, exact rollback, and deep-copy isolation across commit and every read boundary; PostgreSQL remains explicitly deferred.
+- TDD status: the focused suite first failed because `src/index.ts` was absent, then passed 4/4 after implementation. Completion review added a rollback-return isolation assertion and proved it fails against a by-reference return before restoring the clone boundary.
+- Gate status: adapter-local composite TypeScript passes; repository `pnpm typecheck`, `pnpm test` (69/69), and `pnpm lint` pass. P3/SC-003 now has the persistence adapter foundation; domain churn enforcement and lifecycle results remain for T015/T023. No blocker.
+
+## NEXT
+
+- T015 + T023 — Add the Golden Fixture C `commit`/`rollback` domain contract first, then implement `packages/cohort-compiler/src/commit.ts`.
+- Acceptance: asg-1 commits with the pinned result; A6→A7 churn 2 is allowed at cap 2, refused at cap 1, and allowed with the recorded exception; duplicate-active refusal leaves the repository unchanged; `rollback("asg-2")` restores asg-1 byte-identically; focused RED/GREEN and repository typecheck/test/lint remain green.

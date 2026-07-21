@@ -53,3 +53,9 @@
 - Chose at most two deterministic cross-cohort swap passes after construction. Every proposed assignment is lexically normalized, every cohort is rechecked against all hard constraints, and assignment-level churn is checked before a swap is accepted. Rejected cohort-local-only churn checks because multiple individually allowed swaps can exceed the weekly cap in aggregate.
 - Derived unpinned snapshot metadata without time or I/O: FNV-1a over the complete candidate-set preimage, a content-derived `asg-*` id, ISO-week Monday as `start`, one week later as `plannedReview`, and arithmetic-mean cohort objective terms. Rejected wall-clock reads and additional function parameters because the settled `assignCohorts` signature supplies only the week key and domain inputs.
 - Kept solver exports internal until the ordered T028 public-surface task. Rejected exporting them early because `tasks.md` explicitly groups all remaining US2 exports into that later checkpoint.
+
+## 2026-07-20 — T014/T022 repository atomicity
+
+- Preflight the full incoming roster against the active-assignment map, build replacement maps off to the side, and publish them only after validation. Rejected mutating learner-by-learner because a later duplicate conflict could leave a partial roster active.
+- Preserve the injected `benefitOf` function while recursively copying every mutable assignment collection and record. Rejected `structuredClone` because `HardConstraints` deliberately carries that function and the platform clone algorithm cannot clone functions; rejected JSON cloning for the same reason and because it obscures the domain shape.
+- Interpret `restore(currentAssignmentId)` through the retained `rollbackRef` (falling back to `priorAssignmentId`), reactivate the exact prior roster, and retain both historical snapshots. Rejected deleting the superseded snapshot because `getSnapshot` and later lifecycle work require immutable history.
