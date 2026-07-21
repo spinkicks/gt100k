@@ -125,3 +125,7 @@
 - Carried the rollback membership diff in `LedgerView.announce` as `removed:[…]; added:[…]`. Rejected adding an unpinned diff field to the settled Ledger shape; the existing polite live-region carrier is the accessible place for a display-only assignment change.
 - Use the accepted hard floor as the conservative displayed lower bound when `pool` is omitted or incomplete; when the optional synthetic pool is present, compute the exact minimum through the injected domain `hard.benefitOf` function. Rejected inventing missing learner profiles or making the spec-explicit optional pool mandatory.
 - Use stable kebab-case identifiers for the seven satisfied badge rows and require both the view flag and the optional standings payload's opt-in marker before exposing standings. Rejected human-label-only badge values and either opt-in source unilaterally enabling a comparison surface.
+
+## 2026-07-21 — T108 structural guardrail scope
+
+- Treat `position` as prohibited specifically on the public `StandingsView` ranking surface, while retaining the spec-required camera and 3D geometry positions in `ConstellationView`. The guardrail contract imports the public entrypoint types, recursively checks output keys, and scans the owning standings/RivalryMix source modules for forbidden field declarations. Rejected a package-wide text ban on `position` because it would directly contradict FR-028/FR-031 and the pinned 3D layout contract.

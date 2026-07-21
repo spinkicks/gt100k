@@ -376,3 +376,15 @@
 
 - T108 — Add `packages/cohort-arena-view/test/guardrails.test.ts` for the pure view-model source and structural public types.
 - Acceptance: the package source contains no `Math.random`, dark-pattern, loss/decay/gacha/purchase/currency, or engagement-timer construct; public view types cannot carry price/currency/rank/position/percentile/out-of or honesty/emotion/personality/motivation fields; the focused test, forced feature TypeScript, package tests, and repository typecheck/test/lint remain green.
+
+## 2026-07-21 — P7 / T108
+
+- Added the SC-017 guardrail contract with a recursive scan across the pure view package source for `Math.random`, loss/streak, decay/absence, scarcity/FOMO, gacha/loot, purchase/currency, and engagement-timer constructs plus commerce field declarations.
+- Added public-entrypoint structural checks that recursively exclude price/currency from `CohortArenaView`, rank/position/percentile/out-of from `StandingsView`, and honesty/emotion/personality/motivation from `ArenaRoomView`; runtime source checks cover the owning standings and RivalryMix declarations as well.
+- TDD status: T108 is a validation-only checkpoint over the already-landed pure view model, so its focused four-test suite passed on the first run; no production code was added. Inline completion review hardened the scan to recurse into future source subdirectories and recognize camel/kebab/snake-case construct names.
+- Gate status: forced compiler/view composite TypeScript passes; the view package passes 27/27 tests; repository `pnpm typecheck`, `pnpm test` (140/140), and `pnpm lint` pass. P7/SC-017 is complete; P7 remains in progress only for the typed view fixtures and seeded smoke in T113. No blocker.
+
+## NEXT
+
+- T113 — Commit the typed V1 `view-cohort-12`, V2 `view-standings`, V3 `view-rivalry`, and V4 `motion-golden` fixtures under `packages/cohort-arena-view/test/fixtures/`, then add `test/smoke.test.ts` through the public entrypoint.
+- Acceptance: every fixture is typed against the domain and view contracts and preserves the pinned UI golden values; the smoke builds Fixture V1 through `@gt100k/cohort-arena-view`; forced feature TypeScript, the view package suite, and repository typecheck/test/lint remain green, completing the P7 checkpoint.
