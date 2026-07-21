@@ -1,0 +1,26 @@
+# Skill Observation Log
+
+Observations captured during task-oriented work.
+
+**Status key:** OPEN = not yet actioned | ACTIONED (YYYY-MM-DD) = skill
+updated/created | DECLINED (YYYY-MM-DD) = user decided not to pursue —
+resolved statuses always carry their resolution date
+
+---
+
+## 2026-07-20
+
+### Observation 1: Recognize pre-approved autonomous specifications
+
+**Status:** ACTIONED (2026-07-20) — Applied to brainstorming (weekly review)
+**Date:** 2026-07-20
+**Session context:** Implementing one ordered task from an existing approved specification in an unattended loop.
+**Skill:** brainstorming
+**Type:** open-source
+**Phase/Area:** Approval gate and transition to implementation
+
+**Issue:** The skill requires fresh questions, a duplicate design document, a commit, and another user approval even when the user has already approved an exact repository specification and explicitly instructed the agent to proceed autonomously without pausing.
+
+**Suggested improvement:** Add a preflight branch that recognizes an explicit implementation request against an existing accepted design as approval. Require a brief scope and test-seam summary, then transition directly to the existing plan while preserving any user prohibition on commits.
+
+**Principle:** Workflow gates should recognize equivalent evidence already supplied by the user so they preserve intent without duplicating approval rituals.

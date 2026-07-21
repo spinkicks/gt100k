@@ -1,0 +1,90 @@
+name: foundation spine
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'proto/**'
+      - 'pkg/**'
+      - 'services/**'
+      - 'policies/**'
+      - 'workflows/**'
+      - 'infra/terraform/**'
+      - 'go.*'
+      - 'Makefile'
+      - 'buf.yaml'
+      - 'buf.gen.yaml'
+      - '.github/workflows/foundation-spine.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'proto/**'
+      - 'pkg/**'
+      - 'services/**'
+      - 'policies/**'
+      - 'workflows/**'
+      - 'infra/terraform/**'
+      - 'go.*'
+      - 'Makefile'
+      - 'buf.yaml'
+      - 'buf.gen.yaml'
+      - '.github/workflows/foundation-spine.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: foundation-spine-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: foundation spine gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.5'
+
+      - name: Set up buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          version: '1.50.0'
+
+      - name: Set up OPA
+        uses: open-policy-agent/setup-opa@v2
+        with:
+          version: '1.4.0'
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.11.4'
+
+      - name: Run mandatory gate
+        run: make gate
+
+  integration:
+    name: foundation spine integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.5'
+
+      - name: Verify Docker
+        run: docker version
+
+      - name: Run integration gate
+        run: make gate-integration

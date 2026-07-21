@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package gt100k.platform.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/gt100k/platform/proto/gen/go/gt100k/platform/v1;platformv1";
+
+// ActorClass identifies the authority class of a pseudonymous actor.
+enum ActorClass {
+  ACTOR_CLASS_UNSPECIFIED = 0;
+  HUMAN = 1;
+  GUARDIAN = 2;
+  CHILD = 3;
+  STAFF = 4;
+  MODEL = 5;
+  SYSTEM = 6;
+}
+
+// ActorRef is a stable pseudonymous reference used instead of legal identity.
+message ActorRef {
+  // ref is the stable pseudonymous actor handle.
+  string ref = 1;
+  // class identifies the actor's authority class.
+  ActorClass class = 2;
+  // role identifies the actor's authorization role.
+  string role = 3;
+}
+
+// Envelope is the common traceability header on every platform contract.
+message Envelope {
+  // contract_id is the append-only contract identifier.
+  string contract_id = 1;
+  // schema_version identifies the contract schema version.
+  string schema_version = 2;
+  // tenant_id scopes the contract to a tenant.
+  string tenant_id = 3;
+  // actor_ref identifies who or what produced the record.
+  ActorRef actor_ref = 4;
+  // occurred_at is the event time.
+  google.protobuf.Timestamp occurred_at = 5;
+  // recorded_at is the ingest time.
+  google.protobuf.Timestamp recorded_at = 6;
+  // correlation_id ties a command's records together.
+  string correlation_id = 7;
+  // causation_id identifies the record that caused this record.
+  string causation_id = 8;
+  // consent_purpose binds the action to its authorizing consent.
+  string consent_purpose = 9;
+  // policy_version identifies the policy that allowed the action.
+  string policy_version = 10;
+  // model_version identifies the model that produced supporting evidence.
+  string model_version = 11;
+  // evidence_refs contains references to evidence, never raw payloads.
+  repeated string evidence_refs = 12;
+}

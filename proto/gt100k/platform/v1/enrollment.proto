@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package gt100k.platform.v1;
+
+option go_package = "github.com/gt100k/platform/proto/gen/go/gt100k/platform/v1;platformv1";
+
+enum Track {
+  TRACK_UNSPECIFIED = 0;
+  TRACK_A = 1;
+  TRACK_B = 2;
+}
+
+message EligibleLearner {
+  string learner_ref = 1;
+  string accommodation_profile_ref = 2;
+  string eligibility_evidence_ref = 3;
+  Track track = 4;
+}

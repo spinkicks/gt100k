@@ -1,0 +1,6 @@
+# terraform.tfvars.example — placeholders; validate-only needs none of these
+aws_region        = "us-east-1"       # US region only
+org_email_domain  = "example.invalid" # placeholder — no real organization
+core_account_name = "gt100k-core"
+identity_account_name = "gt100k-identity"
+# Reserved boundaries are created empty: public-release, workload-sandbox, sensitive-research.

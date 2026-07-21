@@ -1,5 +1,6 @@
 # ===== Secrets / env (repo is PUBLIC — never commit) =====
 .env
+.env.local
 .env.*
 !.env.example
 secrets/
@@ -33,6 +34,10 @@ venv/
 target/
 /bin/
 
+# ===== Terraform local inputs / state =====
+**/terraform.tfvars
+**/*.tfstate*
+
 # ===== OS / editor =====
 .DS_Store
 Thumbs.db
@@ -47,3 +52,9 @@ Thumbs.db
 # ===== Setup/planning docs (live in the private vault, not this public repo) =====
 /workflow*.md
 /workflowPlan.md
+
+# terraform provider binaries / state — never commit
+.terraform/
+**/.terraform/
+*.tfstate
+*.tfstate.*

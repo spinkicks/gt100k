@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package gt100k.platform.v1;
+
+import "google/protobuf/timestamp.proto";
+import "gt100k/platform/v1/envelope.proto";
+
+option go_package = "github.com/gt100k/platform/proto/gen/go/gt100k/platform/v1;platformv1";
+
+message OverrideRecord {
+  Envelope header = 1;
+  string target_decision = 2;
+  string override_class = 3;
+  string prior_outcome = 4;
+  string new_outcome = 5;
+  string authorized_role = 6;
+  string rationale = 7;
+  repeated string evidence_refs = 8;
+  repeated ActorRef approvers = 9;
+  google.protobuf.Timestamp review_at = 10;
+}

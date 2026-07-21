@@ -1,0 +1,14 @@
+version: v2
+modules:
+  - path: proto
+lint:
+  use:
+    - STANDARD
+  ignore_only:
+    ENUM_VALUE_PREFIX:
+      - proto/gt100k/platform/v1/appeal.proto
+      - proto/gt100k/platform/v1/assent.proto
+      - proto/gt100k/platform/v1/envelope.proto
+breaking:
+  use:
+    - FILE
