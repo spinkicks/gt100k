@@ -14,3 +14,8 @@
 - Decision: keep the domain `EvidenceRepository` port exactly as specified and add `getEdges()` only to the concrete `InMemoryEvidenceRepository` adapter as a copy-isolated inspection seam.
 - Why: T006 requires an edge save/get round-trip, but the settled port exposes `saveEdge` without an edge reader. The adapter-local method makes the acceptance behavior observable without changing the domain contract or exposing mutable storage.
 - Rejected: adding `getEdge`/`getEdges` to the domain port, which would contradict its exact settled shape; casting through private adapter state in the test, which would couple the contract test to implementation details.
+
+## 2026-07-20 — T007a hash-independent synthetic seed
+- Decision: represent `syntheticMilestone` as declarative node content plus stable fixture keys, with edges referencing those keys or pseudonymous actor/tool refs. Callers resolve node keys to content hashes after `addNode` exists. Use the unrelated `Claim` island to cover the eighth node type without joining the milestone.
+- Why: P0 intentionally precedes canonicalization and `addNode`, so a pure fixture cannot derive content-addressed ids yet. Stable keys keep the seed deterministic and reusable by later graph, packet, demo, and explorer builders without embedding ids that violate the hash invariant.
+- Rejected: a prebuilt `EvidenceGraph` with fake ids, which would contradict content addressing; a runtime fixture builder that imports crypto or performs I/O, which would violate the pure-fixture requirement; moving test seeds into the domain source API, which would broaden production scope.

@@ -56,3 +56,14 @@
 
 ## NEXT
 - T007a: add the pure synthetic seed fixtures under `packages/evidence-graph/test/fixtures/` (`goldenArtifact`, `goldenAttempt`, `goldenLeaves`, and `syntheticMilestone` with a coherent graph plus one unrelated island node); acceptance is exact G1/G2/G3 source values, pseudonymous actors only, no PII, and a green workspace gate.
+
+## 2026-07-20 — P0 synthetic seed fixtures (T007a)
+- Added pure, in-repo `goldenArtifact`, `goldenAttempt`, and `goldenLeaves` fixtures with the exact G1/G2/G3 source values.
+- Added the declarative `syntheticMilestone` seed covering all eight node types, the required provenance relation types, cited model assistance, a human-owned grade, and one edge-free unrelated island. Actor refs are pseudonymous and every consent scope is synthetic.
+- Added three fixture acceptance tests. Confirmed RED on the missing seed module, then GREEN after the minimal fixture implementation.
+- Gate evidence: workspace `pnpm typecheck`, workspace `pnpm test` (31/31), and `pnpm lint` over 43 files all pass.
+- Phase status: P0 complete; T001, T001a, T002–T007, and T007a are complete. SC-011 remains passing, and the deterministic inputs for SC-007/SC-008/SC-012 are now committed.
+- Blockers: none.
+
+## NEXT
+- T008/T011: write the canonical serialization contract test first, confirm RED on the missing `canonicalize`, then implement the minimal stable-key encoder in `packages/evidence-graph/src/canonicalize.ts`; acceptance is key-order/formatting invariance and the exact G1 canonical string, with a green workspace gate.
