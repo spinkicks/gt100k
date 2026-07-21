@@ -46,3 +46,14 @@
 
 - T039 — Add `packages/cohort-compiler/test/smoke.test.ts` importing the package entrypoint and `caliper-8` fixture.
 - Acceptance: the entrypoint loads as an object; `caliper8.pool` contains exactly eight learners with eight unique `learnerRef`s; the focused smoke test and repository typecheck/test/lint gate remain green.
+
+## 2026-07-20 — P0 / T039
+
+- Added the exact seeded smoke test for the package namespace entrypoint and Golden Fixture A (`caliper-8`), asserting eight learners and eight unique `learnerRef`s.
+- TDD status: T039 is the spec-pinned test-only checkpoint over the already-landed scaffold and fixture, so the focused two-test smoke suite passed on its first run; no production code was added.
+- Gate status: focused smoke test passes (2/2); repository `pnpm typecheck`, `pnpm test` (30/30), and `pnpm lint` pass. The P0 Setup & Foundational checkpoint is complete; SC-008's seam-shape foundation is present, with full adapter substitution coverage remaining in later phases. No blocker.
+
+## NEXT
+
+- T004 — Add `packages/cohort-compiler/test/caliper.test.ts` with the contract tests for `withinCaliper` (FR-002).
+- Acceptance: tests prove both level and velocity tolerances are enforced independently, equality at either tolerance is inside the caliper, and any value above either tolerance is outside; the new test first fails because `src/caliper.ts` is absent, while the existing repository gate remains green until the paired implementation task.
