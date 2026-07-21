@@ -230,3 +230,15 @@
 ## NEXT
 - Complete T026 and its minimal T029 implementation in `packages/interest-lab/test/hypothesis.test.ts` and `packages/interest-lab/src/hypothesis.ts`.
 - Acceptance: tests first prove append-only versioned and bitemporal current-view behavior, interval/grade uncertainty without a scalar, paired supporting/disconfirming evidence, valid co-primary candidate domains, and retention of both `DISAGREE` child position and model evidence; preserve a focused red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-20 — P5 / T026 + T029
+- Added five hypothesis-record acceptance tests covering immutable append, operative/shadow version rules, bitemporal replay, interval/grade uncertainty, paired supporting/disconfirming evidence, co-primary candidates, and preserved child/model disagreement.
+- Confirmed the test-first red state: all five focused tests failed because the three hypothesis helpers were absent, then passed after the minimal implementation.
+- Implemented pure `createHypothesis`, `appendRevision`, and `currentFor` helpers with identity/authorship validation, monotonic operative versions and record time, non-scalar uncertainty validation, shadow exclusion, and explicit valid-time/record-time views without wall-clock access.
+- Self-reviewed the T026/T029 clauses and corrected formatter feedback plus strict runtime grade validation; no critical or important issue remained.
+- Verified the focused suite (5 tests), forced package compiler, `pnpm typecheck`, `pnpm test` (79 tests across 18 files), and `pnpm lint` (63 files) all pass.
+- Status: T026 and T029 complete; P5 remains in progress. SC-013 and SC-014 are green, and IL-006/IL-012 hypothesis replay behavior is encoded. No blocker.
+
+## NEXT
+- Complete T027 and its minimal T030 implementation in `adapters/interest-repo-memory/test/repo.test.ts` and `adapters/interest-repo-memory/src/index.ts`.
+- Acceptance: tests first prove append-only deep-copy-on-write storage, `load`/`currentFor` isolation, full revision replay by version, and the operative `CONTESTED→PARKED→REOPENED` chain with no overwritten revision; preserve a focused red run and keep adapter/package compilation, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
