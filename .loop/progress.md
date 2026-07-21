@@ -425,3 +425,17 @@
 ## NEXT
 - T025: add `packages/arena-world/test/guardrails.test.ts` as the next ordered P2 acceptance task.
 - Acceptance: statically prove no `Math.random` or 3D/render imports exist anywhere in `packages/arena-world/src`; `Cosmetic` exposes none of `price|currency|dropRate|rarity`; standings expose none of `rank|position|percentile|outOf`; every sound cue is muted by default and carries no `negative|alarm|loop` flag; focused and repository gates remain green (FR-008/019/037, SC-002/021/022).
+
+## 2026-07-21 — P2 / T025
+- Added `guardrails.test.ts` through the public package API, combining a scan of every domain source file with exact type-level commerce/caste/sound contracts and runtime checks over every sound cue.
+- The source scan rejects `Math.random` and every external package import except the approved `@gt100k/learning-loop` domain dependency, keeping React/Next/Three/r3f/Motion and other renderer dependencies out by construction.
+- The focused suite passed on its first run because T003/T004b had already made the forbidden fields and sound flags unrepresentable; no production change was needed or manufactured for this acceptance-only task.
+- Direct package TypeScript validation exposed an existing T024 test-fixture issue: under `noUncheckedIndexedAccess`, three fixed `CATALOG[n]` spreads could be `undefined`. Added narrow non-null assertions at the already-covered canonical indices; direct package validation and the 12 affected guardrail/cosmetic tests then passed.
+- Review status: checked the suite against T025, FR-008/019/037, SC-002/021/022, and the full current domain source set; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: `pnpm lint` passed (99 files); direct arena-world TypeScript validation passed; `pnpm typecheck` passed; `pnpm test` passed (35 files, 143 tests). No app changed, so no Next.js build was required.
+- SC status: SC-002 and SC-022 are complete; T025 completes the structural/muted-default portion of SC-021, while deterministic cue selection remains scheduled for P3/T032a.
+- Blockers: none.
+
+## NEXT
+- T026: add `packages/arena-world/test/zero-power.test.ts` as the next ordered P2 acceptance task.
+- Acceptance: mastery, node-state, matchmaking, and standing outcomes are byte-identical across cosmetic/tier states; `equipCosmetic` changes only cosmetic fields; world-theme lighting cannot reach any outcome function; avatars remain pseudonymous; focused and repository gates remain green (FR-009/010, SC-003).

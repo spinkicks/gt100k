@@ -84,17 +84,17 @@ describe("deriveCosmeticEligibility", () => {
 
     const ruleCatalog: Cosmetic[] = [
       {
-        ...CATALOG[0],
+        ...CATALOG[0]!,
         id: "tier-rule",
         eligibility: { type: "min-tier", tierIndex: 2 },
       },
       {
-        ...CATALOG[2],
+        ...CATALOG[2]!,
         id: "unlock-rule",
         eligibility: { type: "min-unlocks", count: 4 },
       },
       {
-        ...CATALOG[5],
+        ...CATALOG[5]!,
         id: "region-rule",
         eligibility: { type: "region-complete", region: "tinker-bluffs" },
       },
