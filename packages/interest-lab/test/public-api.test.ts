@@ -2,6 +2,7 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 import {
   AUDIENCE_CONDITIONS,
   CHILD_POSITIONS,
+  DEFAULT_LAB_CONFIG,
   DIFFICULTY_BANDS,
   EVENT_TYPES,
   FORBIDDEN_PURPOSES,
@@ -11,6 +12,11 @@ import {
   SIGNAL_FAMILIES,
   SOCIAL_MODES,
   WORK_MODES,
+  buildCoverageMatrix,
+  buildLab,
+  isProbeEligible,
+  rotateBySeed,
+  selectEligibleFamilyVariants,
 } from "../src/index";
 import type {
   ArtifactSignalSource,
@@ -18,6 +24,8 @@ import type {
   AudienceCondition,
   ChildPosition,
   Clock,
+  CoverageConfig,
+  CoverageItem,
   CoverageMatrix,
   DifficultyBand,
   Domain,
@@ -31,6 +39,10 @@ import type {
   InterestHypothesisRepository,
   InterventionContext,
   InterventionSource,
+  Lab,
+  LabConfig,
+  LearnerEligibility,
+  Offer,
   OfferDecisionLog,
   OfferDecisionLogEntry,
   OfferSelector,
@@ -80,6 +92,8 @@ type FoundationalTypeExports = [
   WorkMode,
 ];
 
+type OfferTypeExports = [CoverageConfig, CoverageItem, Lab, LabConfig, LearnerEligibility, Offer];
+
 describe("interest lab public API", () => {
   it("exports every foundational runtime vocabulary", () => {
     const vocabularies = [
@@ -102,5 +116,23 @@ describe("interest lab public API", () => {
 
   it("exports every foundational type", () => {
     expectTypeOf<FoundationalTypeExports>().toEqualTypeOf<FoundationalTypeExports>();
+  });
+
+  it("exports the complete P3 offer, coverage, and catalog API", () => {
+    const functions = [
+      buildCoverageMatrix,
+      buildLab,
+      isProbeEligible,
+      rotateBySeed,
+      selectEligibleFamilyVariants,
+    ];
+
+    expect(functions.every((exported) => typeof exported === "function")).toBe(true);
+    expect(DEFAULT_LAB_CONFIG).toMatchObject({
+      probeCountTarget: 20,
+      probeCountRange: { min: 18, max: 24 },
+      explorationFloor: 4,
+    });
+    expectTypeOf<OfferTypeExports>().toEqualTypeOf<OfferTypeExports>();
   });
 });

@@ -1,1 +1,1 @@
-test: harden interest lab determinism smoke
+feat(interest-lab): expose rules-engine API

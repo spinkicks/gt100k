@@ -1,3 +1,6 @@
+export { isProbeEligible, rotateBySeed, selectEligibleFamilyVariants } from "./catalog";
+export { buildCoverageMatrix } from "./coverage";
+export type { CoverageConfig, CoverageItem } from "./coverage";
 export { EVENT_TYPES, SIGNAL_FAMILIES } from "./events";
 export type {
   EngagementEvent,
@@ -18,6 +21,8 @@ export type {
   InterestHypothesis,
   Uncertainty,
 } from "./hypothesis";
+export { DEFAULT_LAB_CONFIG, buildLab } from "./offer";
+export type { Lab, LabConfig, LearnerEligibility, Offer } from "./offer";
 export type {
   ArtifactSignalSource,
   AssentRecordPort,

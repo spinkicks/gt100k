@@ -153,3 +153,14 @@
 ## NEXT
 - Complete T017: export the offer, coverage, and catalog API explicitly from `packages/interest-lab/src/index.ts`.
 - Acceptance: a consumer-facing test imports the P3 functions, constants, and public types from `@gt100k/interest-lab`; the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` remain green.
+
+## 2026-07-20 — P3 / T017
+- Exported the complete P3 catalog, coverage, and offer API through explicit named entry-point exports: five functions, `DEFAULT_LAB_CONFIG`, and six public data types.
+- Expanded the consumer-facing public API suite and confirmed its test-first red state against the missing exports before the minimal entry-point implementation made it green.
+- Traced and corrected a strict TypeScript mismatch in the initial Vitest matcher without weakening the runtime export assertion.
+- Verified the focused public API suite (3 tests), forced package compiler, `pnpm typecheck`, `pnpm test` (54 tests), and `pnpm lint` all pass.
+- Status: T017 complete; P3 and the rules-engine MVP checkpoint are complete. SC-001 and SC-002 remain green. No blocker.
+
+## NEXT
+- Complete T018: add the `recordEvent` contract suite in `packages/interest-lab/test/events.test.ts` and pair it with the minimal implementation needed to preserve the green-only harness boundary.
+- Acceptance: event recording is idempotent by id; `PROMPTED_RETURN` requires `interventionContext` and never contributes to voluntary return; voluntary-return 7-day and 30-day horizons are represented correctly; preserve a focused red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
