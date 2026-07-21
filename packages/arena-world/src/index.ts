@@ -57,5 +57,6 @@ export { QUALITY_TIERS } from "./quality";
 export { CAMERA3D, LIGHTING, PARALLAX3D, POSTFX, WATER, WORLD_SCALE } from "./scene3d";
 export { SOUND_CUES } from "./sound";
 export { layoutQuestWorld } from "./layout";
+export { deriveNodeStates } from "./nodes";
 export { buildQuestWorld } from "./world";
 export { resolveWorldTransform } from "./worldTransform";

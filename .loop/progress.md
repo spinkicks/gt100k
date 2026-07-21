@@ -179,3 +179,16 @@
 ## NEXT
 - T012 + T015: add `packages/arena-world/test/nodes.test.ts` for scenario S1, then implement the minimal pure `deriveNodeStates(world, signals)` resolver in `packages/arena-world/src/nodes.ts` and export it explicitly.
 - Acceptance: the test fails first, then proves `blend-bay` remains locked while `place-value-point` is available; a node is `unlocked` iff every prerequisite is mastered and its own gate is cleared; output is deterministic and the API has no time/visit input (FR-002/003/004, SC-001); direct package and repository gates remain green.
+
+## 2026-07-20 — P1 / T012 + T015
+- Added `nodes.test.ts` through the public package API, proving all nine exact S1 states in world order, gate-before-prerequisite behavior, all-gates-cleared unlock behavior, two-run determinism, and an exact two-input API with no time/visit parameter.
+- Followed red-green TDD: all three acceptance tests failed with `deriveNodeStates is not a function`, then passed after the minimal resolver and explicit package export landed.
+- Added a pure `deriveNodeStates(world, signals)` implementation that treats missing signals as uncleared, derives prerequisite mastery only from `masteryCleared`, and preserves deterministic world-node order in the returned map.
+- Review status: checked T012/T015 line-by-line against spec §§4/6/8.2/10, the public contract, and data-model `NodeState`; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was intentionally not used because this loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused node-state tests passed (3 tests); Biome checked all three changed feature files; `pnpm typecheck` passed; `pnpm test` passed (17 files, 54 tests). No app changed, so no Next.js build was required.
+- SC status: SC-001 is complete; P1 remains in progress with the motion/art/avatar/scene/assets/quality/lighting resolver tests and renderer/Ledger tasks still open.
+- Blockers: none.
+
+## NEXT
+- T012a + the `resolveMotion` slice of T016a: add `packages/arena-world/test/motion-tokens.test.ts`, then implement and explicitly export the minimal pure motion-token resolver.
+- Acceptance: exact `MOTION`/`EASINGS`/`LAMBDAS` golden values remain stable; every motion kind has a reduced equivalent; `reducedMotion:true` returns `mode:"reduced"`, `easing:"Linear"`, and the exact reduced durations from §§8.10/8.21 (FR-034, SC-015); focused checks and repository gates remain green.
