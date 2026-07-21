@@ -1,1 +1,0 @@
-{"id": "d-ed330dd3", "question": "T031 has been blocked for four consecutive loop turns because the required repository-wide `pnpm exec biome check .` reports 33 diagnostics only in shared/root files this feature may not edit. How should the cross-lane baseline be resolved?", "answer": "A"}

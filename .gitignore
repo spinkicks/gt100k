@@ -47,3 +47,9 @@ Thumbs.db
 # ===== Setup/planning docs (live in the private vault, not this public repo) =====
 /workflow*.md
 /workflowPlan.md
+
+# loop-harness scratch
+.loop/
+.loop-done
+.loop-stop
+.loop-blocked
