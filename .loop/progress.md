@@ -398,3 +398,16 @@
 ## NEXT
 - T023 + T027: add `packages/arena-world/test/progression.test.ts` first, then implement and explicitly export `tierForReward` and `computeProgression` in `packages/arena-world/src/progression.ts`.
 - Acceptance: exact reward boundaries `99/100/249/250/500/899/900/1500`; scenario S1 cumulative reward `300` resolves to tier 2 with `regionsComplete=["tinker-bluffs"]` and populated growth-vs-past; deterministic focused checks and repository gates remain green (FR-005/006).
+
+## 2026-07-21 — P2 / T023 + T027
+- Added `progression.test.ts` through the public package API, covering all eight exact inclusive tier boundaries, the complete S1 progression state, a supplied personal baseline, deterministic replay, and fresh results.
+- Followed red-green TDD: all three acceptance tests failed only because `tierForReward` and `computeProgression` were absent, then passed after the minimal implementation and explicit exports landed.
+- Added pure progression resolvers that select the greatest eligible tier threshold, count rewards once per unlocked world node, preserve canonical region order, and compute growth against `previousReward ?? 0` without time, randomness, or renderer dependencies.
+- Review status: checked T023/T027 line-by-line against spec §§7.2/8.2–8.4, FR-005/006, the domain contract, and data-model shapes; no Critical, Important, or Minor issues found. Subagent/Git-SHA review was not used because the loop prohibits unrequested subagents and all Git commands.
+- Gate status: focused progression tests passed (3 tests); the domain-purity scan passed; `pnpm lint` passed (96 files); `pnpm typecheck` passed; `pnpm test` passed (33 files, 131 tests). No app changed, so no Next.js build was required.
+- SC status: the deterministic progression/tier foundation for P2 is complete; cosmetic determinism SC-002 and zero-power SC-003 remain open for T024–T026/T028.
+- Blockers: none.
+
+## NEXT
+- T024 + T028: add `packages/arena-world/test/cosmetics.test.ts` first, then implement and explicitly export `deriveCosmeticEligibility` and `equipCosmetic` in `packages/arena-world/src/cosmetics.ts`.
+- Acceptance: S1 eligible/locked IDs match §8.4 exactly in catalog order; identical inputs replay identically; every cosmetic retains stable `look`/`equipEffect`; appearance never changes eligibility; equipping `avatar-cape-aurora` in S1 rejects; no money/randomness parameter or behavior enters the API; focused and repository gates remain green (FR-007/035, SC-002/022).

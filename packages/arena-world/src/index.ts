@@ -64,6 +64,7 @@ export { resolveAvatarAnimation } from "./avatar";
 export { createSyntheticMasteryFeed } from "./feed";
 export { resolveNodeLightContributions } from "./lighting";
 export { EASINGS, LAMBDAS, MOTION, resolveMotion } from "./motion";
+export { computeProgression, tierForReward } from "./progression";
 export { QUALITY_TIERS, nextLowerTier, resolveQualityTier } from "./quality";
 export {
   CAMERA3D,
