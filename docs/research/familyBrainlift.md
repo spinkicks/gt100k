@@ -217,6 +217,14 @@ The real objection is not that the child ends up unhappy. The long-term accelera
 - DOK 2 summary: How the home's adults coordinate, including how much they agree, carries its own weight beyond each parent's own parenting. It is the closest construct to "interparental agreement," and it supports requiring alignment among the household's adults.
 - Link: https://doi.org/10.1080/15295192.2010.492040
 
+**Buehler et al. (1997). Interparental conflict and youth problem behaviors: a meta-analysis. *Journal of Child and Family Studies*, 6(2), 233–247.**
+- DOK 1 facts:
+  - 68 studies and 348 statistical effects; youth ages 5 to 18.
+  - Interparental conflict was linked to youth internalizing and externalizing problems at d = 0.32.
+  - The size varied with SES, parental education, and which informant reported it.
+- DOK 2 summary: Conflict between the adults in a home predicts worse child adjustment, at a small-to-moderate size. It is the basis for treating one dissenting or holdout adult as a measurable standing risk across eight years rather than a paperwork detail.
+- Link: https://doi.org/10.1023/A:1025006909538
+
 **Amato (2005). The impact of family formation change on the next generation. *The Future of Children*, 15(2), 75–96.**
 - DOK 1 facts:
   - Add Health, over 17,000 adolescents; two-parent vs. single-parent gaps (repeated a grade 18.8% vs. 30.3%; suspended 21.2% vs. 39.8%).
