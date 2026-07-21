@@ -219,3 +219,8 @@
 - Chose: give the 6-8 auto-tour an 8-second dwell, starting only after the 1400ms establishing drift plus one full dwell; traverse islands in catalog order, let DOM focus override the tour, and fail stale focus safely to home. Focus retargets from the live camera pose, preserves the exact first-frame `focusLerp:0.075`, and smoothly closes its residual by the pinned 520ms boundary.
 - Why: the spec pins auto-tour behavior but not cadence. Eight seconds keeps a large moving viewport calm and readable for the youngest band, while catalog order is deterministic and needs no timer state or randomness. Completing the damped residual gradually avoids the visible endpoint snap produced by raw 0.075 damping while retaining the exact golden response and duration.
 - Rejected: continuous orbit would violate the no-free-orbit 6-8 contract; a 3–5 second cycle is unnecessarily busy; randomized order breaks determinism; raw damping leaves 8.8% of a move at 520ms and would require a visible snap.
+
+## D045 — Runtime performance decline re-enters the canonical tier resolver
+- Chose: treat a sustained `<55fps` `PerformanceMonitor` decline as a client capability floor, then rebuild the same view through `resolveRenderTier` so full quality steps to `quest-world-3d-lite`.
+- Why: the parent status, scene quality, DPR, shadows, motes, and procedural detail all remain derived from one view model, while the mounted DOM ledger keeps focus and pick state across the presentation-only change.
+- Rejected: mutating `SceneView` locally inside `QuestWorld` would duplicate tier policy and let the parent status drift from the rendered scene; falling directly to `board-2d` would discard the specified lite degradation step.

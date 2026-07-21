@@ -2,7 +2,7 @@
 
 import type { ProbeCardView, ProbePickerView } from "@gt100k/interest-lab-view";
 import { LayoutGroup } from "motion/react";
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Board2D } from "./Board2D";
 import { QuestTray } from "./QuestTray";
 
@@ -30,6 +30,7 @@ export function QuestLedger({
 }: QuestLedgerProps) {
   const [pickedProbeIds, dispatch] = useReducer(updatePickedProbeIds, []);
   const [focusedProbeId, setFocusedProbeId] = useState<string | null>(null);
+  const pickedProbeIdsChangeRef = useRef(onPickedProbeIdsChange);
   const questById = useMemo(
     () => new Map(picker.quests.map((quest) => [quest.probeId, quest] as const)),
     [picker.quests],
@@ -39,10 +40,11 @@ export function QuestLedger({
     .filter((quest): quest is ProbeCardView => quest !== undefined);
   const reducedMotion = picker.quests[0]?.motion.mode === "reduced";
 
-  useEffect(
-    () => onPickedProbeIdsChange?.(pickedProbeIds),
-    [onPickedProbeIdsChange, pickedProbeIds],
-  );
+  useEffect(() => {
+    pickedProbeIdsChangeRef.current = onPickedProbeIdsChange;
+  }, [onPickedProbeIdsChange]);
+
+  useEffect(() => pickedProbeIdsChangeRef.current?.(pickedProbeIds), [pickedProbeIds]);
 
   const pick = (probeId: string) => {
     dispatch({ type: pickedProbeIds.includes(probeId) ? "return" : "pick", probeId });

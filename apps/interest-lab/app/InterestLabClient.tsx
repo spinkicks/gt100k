@@ -11,6 +11,7 @@ import {
   type MotionPreference,
   type RenderTierOverride,
   applyRenderTierOverride,
+  applySustainedPerformanceFloor,
   readInterestLabClientDefaults,
   resolveHydrationSafeReducedMotionPreference,
 } from "./ui/controls/settings";
@@ -45,6 +46,7 @@ export function InterestLabClient() {
   const [clientReady, setClientReady] = useState(false);
   const [deviceCaps, setDeviceCaps] = useState<DeviceCaps>(SERVER_DEVICE_CAPS);
   const [webglContextLost, setWebglContextLost] = useState(false);
+  const [performanceDegraded, setPerformanceDegraded] = useState(false);
 
   useEffect(() => {
     setDeviceCaps(detectDeviceCaps());
@@ -59,10 +61,13 @@ export function InterestLabClient() {
   const effectiveDeviceCaps = useMemo(
     () =>
       applyRenderTierOverride(
-        webglContextLost ? { ...deviceCaps, webglAvailable: false } : deviceCaps,
+        applySustainedPerformanceFloor(
+          webglContextLost ? { ...deviceCaps, webglAvailable: false } : deviceCaps,
+          performanceDegraded,
+        ),
         renderTierOverride,
       ),
-    [deviceCaps, renderTierOverride, webglContextLost],
+    [deviceCaps, performanceDegraded, renderTierOverride, webglContextLost],
   );
   const seed = useMemo(
     () =>
@@ -76,6 +81,7 @@ export function InterestLabClient() {
   );
   const activeRenderTier = seed.view.presentation.renderTier;
   const handleContextLost = useCallback(() => setWebglContextLost(true), []);
+  const handlePerformanceDecline = useCallback(() => setPerformanceDegraded(true), []);
 
   return (
     <>
@@ -122,7 +128,11 @@ export function InterestLabClient() {
 
         <section className="quest-workspace material" id="interest-lab-content">
           {surface === "child" ? (
-            <QuestWorld view={seed.view} onContextLost={handleContextLost} />
+            <QuestWorld
+              view={seed.view}
+              onContextLost={handleContextLost}
+              onPerformanceDecline={handlePerformanceDecline}
+            />
           ) : (
             <section className="surface-placeholder" aria-live="polite">
               <p className="surface-name">Guide surface</p>

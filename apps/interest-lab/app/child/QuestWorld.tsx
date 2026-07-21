@@ -1,6 +1,7 @@
 "use client";
 
 import type { ChildInterestLabView } from "@gt100k/interest-lab-view";
+import { PerformanceMonitor } from "@react-three/drei";
 import { type ReactElement, useCallback, useEffect, useMemo, useState } from "react";
 import type { Texture } from "three";
 import { QuestLedger } from "./QuestLedger";
@@ -11,12 +12,14 @@ import { World3D } from "./world3d/World3D";
 import { createGlowTexture } from "./world3d/glow-texture";
 
 const EMPTY_PICKED_PROBE_IDS: ReadonlySet<string> = new Set();
+export const PERFORMANCE_FPS_FLOOR = 55;
 
 export interface BuildQuestWorldSceneGraphOptions {
   view: ChildInterestLabView;
   focusedProbeId: string | null;
   pickedProbeIds: ReadonlySet<string>;
   haloTexture: Texture;
+  onPerformanceDecline?: () => void;
 }
 
 export function buildQuestWorldSceneGraph({
@@ -24,8 +27,14 @@ export function buildQuestWorldSceneGraph({
   focusedProbeId,
   pickedProbeIds,
   haloTexture,
+  onPerformanceDecline,
 }: Readonly<BuildQuestWorldSceneGraphOptions>): ReactElement[] {
   return [
+    <PerformanceMonitor
+      key="performance-monitor"
+      bounds={(refreshRate) => [PERFORMANCE_FPS_FLOOR, refreshRate]}
+      onDecline={onPerformanceDecline}
+    />,
     <Motes key="motes" quality={view.scene.quality} />,
     ...view.scene.islands.map((island) => (
       <Island
@@ -52,21 +61,34 @@ interface QuestWorldSceneProps {
   view: ChildInterestLabView;
   focusedProbeId: string | null;
   pickedProbeIds: ReadonlySet<string>;
+  onPerformanceDecline?: () => void;
 }
 
-function QuestWorldScene({ view, focusedProbeId, pickedProbeIds }: QuestWorldSceneProps) {
+function QuestWorldScene({
+  view,
+  focusedProbeId,
+  pickedProbeIds,
+  onPerformanceDecline,
+}: QuestWorldSceneProps) {
   const haloTexture = useMemo(() => createGlowTexture(() => document.createElement("canvas")), []);
   useEffect(() => () => haloTexture.dispose(), [haloTexture]);
 
-  return buildQuestWorldSceneGraph({ view, focusedProbeId, pickedProbeIds, haloTexture });
+  return buildQuestWorldSceneGraph({
+    view,
+    focusedProbeId,
+    pickedProbeIds,
+    haloTexture,
+    onPerformanceDecline,
+  });
 }
 
 export interface QuestWorldProps {
   view: ChildInterestLabView;
   onContextLost?: () => void;
+  onPerformanceDecline?: () => void;
 }
 
-export function QuestWorld({ view, onContextLost }: QuestWorldProps) {
+export function QuestWorld({ view, onContextLost, onPerformanceDecline }: QuestWorldProps) {
   const [focusedProbeId, setFocusedProbeId] = useState<string | null>(null);
   const [pickedProbeIds, setPickedProbeIds] = useState<ReadonlySet<string>>(EMPTY_PICKED_PROBE_IDS);
   const [contextLost, setContextLost] = useState(false);
@@ -92,6 +114,7 @@ export function QuestWorld({ view, onContextLost }: QuestWorldProps) {
               view={view}
               focusedProbeId={focusedProbeId}
               pickedProbeIds={pickedProbeIds}
+              onPerformanceDecline={onPerformanceDecline}
             />
           </World3D>
           <p className="quest-world-instruction">

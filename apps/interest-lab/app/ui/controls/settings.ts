@@ -72,6 +72,19 @@ const TIER_FIDELITY: Record<RenderTier, number> = {
   "board-2d": 2,
 };
 
+/** Applies the P10 sustained-performance floor without changing domain or quest state. */
+export function applySustainedPerformanceFloor(
+  caps: Readonly<DeviceCaps>,
+  performanceDegraded: boolean,
+): DeviceCaps {
+  if (!performanceDegraded) return { ...caps };
+
+  return {
+    ...caps,
+    hardwareConcurrency: Math.min(caps.hardwareConcurrency ?? 8, 4),
+  };
+}
+
 /** Applies an explicit presentation request without bypassing the detected capability floor. */
 export function applyRenderTierOverride(
   caps: Readonly<DeviceCaps>,

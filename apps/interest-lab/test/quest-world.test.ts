@@ -1,4 +1,5 @@
 import { type DeviceCaps, QUALITY_TIERS, type RenderTier } from "@gt100k/interest-lab-view";
+import { PerformanceMonitor } from "@react-three/drei";
 import { type ReactNode, createElement, isValidElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Texture } from "three";
@@ -9,7 +10,10 @@ import { CameraRig } from "../app/child/world3d/CameraRig";
 import { Island } from "../app/child/world3d/Island";
 import { Motes } from "../app/child/world3d/Motes";
 import { buildSyntheticInterestLabSeed } from "../app/seed";
-import { applyRenderTierOverride } from "../app/ui/controls/settings";
+import {
+  applyRenderTierOverride,
+  applySustainedPerformanceFloor,
+} from "../app/ui/controls/settings";
 
 const captures = vi.hoisted(() => ({
   worldProps: null as {
@@ -69,6 +73,16 @@ describe("QuestWorld tier switch", () => {
     }
   });
 
+  it("steps a full-capability world down to lite after sustained low frame rate", () => {
+    expect(viewFor(applySustainedPerformanceFloor(FULL_CAPS, false)).scene.renderTier).toBe(
+      "quest-world-3d",
+    );
+    expect(viewFor(applySustainedPerformanceFloor(FULL_CAPS, true)).scene).toMatchObject({
+      renderTier: "quest-world-3d-lite",
+      quality: QUALITY_TIERS.lite,
+    });
+  });
+
   it.each([
     ["quest-world-3d", FULL_CAPS],
     ["quest-world-3d-lite", LITE_CAPS],
@@ -115,15 +129,18 @@ describe("QuestWorld tier switch", () => {
     const focusedProbeId = view.scene.islands[1]?.markers[0]?.probeId ?? null;
     const pickedProbeIds = new Set([view.scene.islands[0]?.markers[0]?.probeId ?? "missing"]);
     const haloTexture = new Texture();
+    const onPerformanceDecline = vi.fn();
     const graph = buildQuestWorldSceneGraph({
       view,
       focusedProbeId,
       pickedProbeIds,
       haloTexture,
+      onPerformanceDecline,
     });
     const islands = graph.filter((element) => element.type === Island);
     const camera = graph.find((element) => element.type === CameraRig);
     const motes = graph.find((element) => element.type === Motes);
+    const performanceMonitor = graph.find((element) => element.type === PerformanceMonitor);
 
     expect(islands).toHaveLength(8);
     expect(islands.reduce((count, element) => count + element.props.island.markers.length, 0)).toBe(
@@ -139,6 +156,8 @@ describe("QuestWorld tier switch", () => {
       worldCameraMode: view.probePicker.staging.worldCameraMode,
     });
     expect(motes?.props).toEqual({ quality: view.scene.quality });
+    expect(performanceMonitor?.props.onDecline).toBe(onPerformanceDecline);
+    expect(performanceMonitor?.props.bounds(120)).toEqual([55, 120]);
   });
 
   it("moves arrow focus deterministically while native Tab remains available", () => {

@@ -609,3 +609,16 @@
 ## NEXT
 - Complete U029: add `QuestWorld.tsx` and wire the three-tier child renderer through `InterestLabClient.tsx`, with the DOM `QuestLedger` driving 3D focus and picks.
 - Acceptance: full/lite tiers compose `World3D`, islands, markers, motes, the camera rig, and the always-operable DOM ledger from one view; `board-2d`, no-WebGL, lost-context, and reduced-motion fallbacks preserve identical quest state; focused tests, app tests, `pnpm typecheck`, `pnpm test`, `pnpm lint`, both production builds, and the P10 mounted-canvas smoke remain green.
+
+## 2026-07-21 — P10 / U029
+- Added the three-tier `QuestWorld` composition: full/lite scenes share `World3D`, procedural islands and markers, ambient motes, the camera rig, and one always-operable DOM quest ledger; board mode removes only the decorative canvas.
+- Added seven tier/scene contracts covering capability floors, full/lite composition, exact no-WebGL parity, shared focus/pick graph state, keyboard arrow behavior, and sustained `<55fps` degradation through drei `PerformanceMonitor`. Confirmed focused RED states for the absent performance-floor resolver and monitor callback before both returned green.
+- Wired performance decline and WebGL context loss through `InterestLabClient` so the canonical view resolver owns every tier change. Hardened the ledger's picked-state notification with a latest-callback ref, preventing callback identity from causing a hydration update loop.
+- Mounted the real app in headless Chromium: the lite/full canvas was `aria-hidden`, six DOM quest cards remained operable, focus mirrored to `p01`, and a picked quest survived both `3D→reduced-motion board→3D` and a cancelable `webglcontextlost` fallback. The final fresh load had zero application console errors; headless SwiftShader emitted only its environment-specific `ReadPixels` performance warnings.
+- Added the app icon to eliminate the only console error (a missing favicon) and moved the world instruction above the ledger overlap after visual inspection found its bottom placement obscured.
+- Verified app tests (48 across 11 files), `pnpm typecheck`, `pnpm test` (159 across 35 files), `pnpm lint` (135 files), the Interest Lab production build, and `pnpm build`; all pass.
+- Status: U029 and P10 complete. SC-UI-13/14/16 and UI-US2's one-view 3D/2D accessibility, degradation, focus, pick, context-loss, and reduced-motion boundaries are green. No blocker.
+
+## NEXT
+- Complete U030 with the minimal U031 implementation: add `packages/interest-lab-view/test/return-delight.test.ts` and derive voluntary-versus-prompted return presentation in the picker and scene view models.
+- Acceptance: voluntary return at day 7 or 30 yields card/marker `returnState:"voluntary-return"`, `spark` tone, label-free concrete copy, and `welcomeBack` motion (static warm-halo text under reduced motion); prompted return yields `returnState:"prompted-return"`, recessed `prompted` tone, and no welcome-back delight; card/marker parity, focused RED evidence, and the full green gate are preserved.
