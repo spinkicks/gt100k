@@ -106,3 +106,37 @@ existing tests meaningful — update them as behavior changes; DO NOT weaken the
   keep `tsc`/`test`/`build` green. NOTE: P1.7 (stage the WORLD by age band) will later reduce world
   markers below `quests.length` — when that lands, keep parity by staging the BOARD's `revealAll`
   baseline to the same set, so world-reachable == board-reachable stays true (see the D-VP19 caveat).
+
+- **Turn 3 (v2) — P0.4 DONE.** Give "visit" a payoff (beacon + hop-travel + island-name banner).
+  Gate green: `tsc -b` 0 · full `pnpm test` **362/362** · app **98/98** (+10) · `next build` ✓ (route `/`
+  static, 286 kB) · biome clean. **Browser-verified** (chromium → full `quest-world-3d` mounted):
+  island + 3 orbs render (the prompted-return orb correctly dims/recedes), **zero console/page errors**
+  on load + interaction; clicking a card focused `p01` → DOM banner **"Visiting Making"** rendered,
+  `data-picked-count` incremented (drives the hop + beacon brighten).
+  - **My-quests beacon** (`world3d/beacon.ts` + `Beacon.tsx`): a fixed warm landmark at
+    `BEACON_TARGET=[0,-1.1,7]` toward the viewer, wired into `buildQuestWorldSceneGraph` with
+    `pickedCount={pickedProbeIds.size}`. `resolveBeaconRender(count)` brightens emissive/halo per
+    collected quest then plateaus at 6 — a tap lands somewhere that visibly grows (D-VP20).
+  - **Hop-travels to the beacon**: `resolvePickHopPosition(marker, beacon, hopValue)` (pure) rises the
+    orb by the spring value AND leans it a fraction (`0.32` at peak) toward the beacon, then settles
+    home. `QuestMarker` now computes this in island-local space each frame; `PICK_HOP_HEIGHT` is a
+    single source of truth exported from `beacon.ts` (was duplicated). The card, not the orb, stays in
+    the tray — the gesture reads as "sent to my quests" (D-VP20).
+  - **Arrival meaning**: focusing an orb (a) raises its island via `IslandLift` (own component so the
+    `useFrame` lives in a real R3F render — `Island` stays a hook-free function its direct-call unit
+    test still uses); (b) shows a DOM `IslandBanner` (`<output>`, `aria-live=polite`) reading
+    "Visiting <Domain>" — legible on every tier + announced to AT. `resolveIslandBannerLabel` maps the
+    focused probeId → island domain → title-cased label (`sound_music` → "Sound Music").
+  - Tests: `test/pick-payoff.test.ts` (10) — hop rests/peaks/clamps toward the beacon; beacon render
+    brightens+plateaus + is in the scene graph with the count; banner title-cases + resolves the
+    focused domain + renders DOM markup + is hidden until an island is visited.
+
+## NEXT
+- **P1.5 — the world is 8 look-alike islands.** Every island uses the same low-poly cap+cone+rim in a
+  domain hue; give each domain a **distinct silhouette/props** so the world reads as places, not
+  repeated primitives. Start with per-domain accent props (a small emissive motif keyed off
+  `island.domain`) layered on the existing island in `Island.tsx`, driven by a pure
+  `resolveDomainMotif(domain)` so it's unit-testable. Acceptance: a pure function maps each of the 8
+  domains → a distinct motif descriptor (assert 8 distinct); the Island renders the motif; keep
+  `tsc`/`test`/`build`/biome green. (P1.7 later stages the WORLD by age band — when it lands, keep
+  world-reachable == board-reachable per the D-VP19 caveat.)

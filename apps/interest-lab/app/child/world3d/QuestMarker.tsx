@@ -19,6 +19,7 @@ import {
   type Texture,
 } from "three";
 import { WelcomeBloom, resolveWelcomeBloomFrame } from "./WelcomeBloom";
+import { BEACON_TARGET, PICK_HOP_HEIGHT, resolvePickHopPosition } from "./beacon";
 
 const HOVER_RAISE = 0.18;
 const REST_HALO_OPACITY = 0.36;
@@ -26,7 +27,6 @@ const ACTIVE_HALO_OPACITY = 0.62;
 const PROMPTED_SCALE = 0.92;
 const PROMPTED_EMISSIVE_INTENSITY = 0.14;
 const PROMPTED_HALO_OPACITY = 0.12;
-const PICK_HOP_HEIGHT = 0.5;
 const SPRING_SETTLE_EXPONENT = 4;
 
 export interface QuestMarkerInteraction {
@@ -159,6 +159,7 @@ export interface QuestMarkerProps {
   scene3d: Scene3DView;
   haloTexture: Texture;
   origin?: Vector3;
+  beaconTarget?: Vector3;
   focused?: boolean;
   picked?: boolean;
   onPick?: (probeId: string) => void;
@@ -171,6 +172,7 @@ export function QuestMarker({
   scene3d,
   haloTexture,
   origin = WORLD_ORIGIN,
+  beaconTarget = BEACON_TARGET,
   focused = false,
   picked = false,
   onPick,
@@ -204,17 +206,23 @@ export function QuestMarker({
         MOTION.welcomeBack,
       );
     }
-    const hopOffset = hopSpringRef.current?.step(delta) ?? 0;
+    const hopValue = hopSpringRef.current?.step(delta) ?? 0;
     const frameVisual = resolveQuestMarkerVisual(baseMarker, scene3d, {
       ...interaction,
       focused,
       picked,
-      hopOffset,
       welcomeElapsedMs: welcomeElapsedMsRef.current,
     });
+    // Hop toward the my-quests beacon (in island-local space) so a pick has a visible destination.
+    const beaconLocal: Vector3 = [
+      beaconTarget[0] - origin[0],
+      beaconTarget[1] - origin[1],
+      beaconTarget[2] - origin[2],
+    ];
+    const hopPosition = resolvePickHopPosition(frameVisual.position, beaconLocal, hopValue);
     const group = groupRef.current;
     if (group) {
-      group.position.set(...frameVisual.position);
+      group.position.set(...hopPosition);
       const scale = MathUtils.damp(group.scale.x, frameVisual.scale, 28, delta);
       group.scale.setScalar(scale);
     }

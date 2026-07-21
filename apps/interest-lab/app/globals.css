@@ -829,6 +829,55 @@ footer {
   font-size: var(--type-label-size);
 }
 
+/* Island-name banner — names the island the child is visiting when an orb is focused.
+   Warm beacon accent + a soft lift-in so arrival feels like landing somewhere. */
+.quest-world-banner {
+  position: absolute;
+  z-index: 2;
+  top: 1rem;
+  left: 1rem;
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--beacon) 45%, var(--line));
+  border-radius: 0.75rem;
+  background: rgb(18 11 30 / 90%);
+  box-shadow: 0 0.75rem 1.75rem rgb(6 4 12 / 45%), 0 0 0.9rem color-mix(in srgb, var(--beacon) 22%, transparent);
+  animation: quest-world-banner-in var(--card-ease, 220ms) both;
+}
+
+.quest-world-banner__eyebrow {
+  color: color-mix(in srgb, var(--beacon) 80%, var(--ink-muted));
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.quest-world-banner__name {
+  color: var(--ink);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+@keyframes quest-world-banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quest-world-banner {
+    animation: none;
+  }
+}
+
 .quest-world--3d .quest-ledger-shell {
   z-index: 2;
   margin: -5rem 1rem 0;

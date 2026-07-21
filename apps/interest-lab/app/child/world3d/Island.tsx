@@ -9,7 +9,9 @@ import {
 } from "@gt100k/interest-lab-view";
 import { Float } from "@react-three/drei";
 import type { Texture } from "three";
+import { IslandLift } from "./IslandLift";
 import { QuestMarker } from "./QuestMarker";
+import { BEACON_TARGET } from "./beacon";
 
 const FULL_SEGMENTS = 10;
 const LITE_SEGMENTS = 6;
@@ -92,6 +94,7 @@ export interface IslandProps {
   haloTexture: Texture;
   pickedProbeIds?: ReadonlySet<string>;
   focusedProbeId?: string | null;
+  beaconTarget?: Vector3;
   onPick?: (probeId: string) => void;
 }
 
@@ -102,10 +105,15 @@ export function Island({
   haloTexture,
   pickedProbeIds = EMPTY_PICKED_PROBES,
   focusedProbeId = null,
+  beaconTarget = BEACON_TARGET,
   onPick,
 }: IslandProps) {
   const render = resolveIslandRender(island, quality);
   if (!render) return null;
+
+  // The island rises when the child visits any of its orbs — arrival reads spatially.
+  const focused =
+    focusedProbeId !== null && island.markers.some((marker) => marker.probeId === focusedProbeId);
 
   return (
     <Float
@@ -115,45 +123,53 @@ export function Island({
       floatingRange={render.float.floatingRange}
     >
       <group position={render.position}>
-        <mesh
-          castShadow={render.shadows}
-          receiveShadow={render.shadows}
-          position={render.geometry.cap.position}
-        >
-          <cylinderGeometry args={render.geometry.cap.args} />
-          <meshStandardMaterial color={render.hue} flatShading metalness={0.04} roughness={0.72} />
-        </mesh>
-        <mesh
-          castShadow={render.shadows}
-          receiveShadow={render.shadows}
-          position={render.geometry.underside.position}
-          rotation={render.geometry.underside.rotation}
-        >
-          <coneGeometry args={render.geometry.underside.args} />
-          <meshStandardMaterial color={render.hue} flatShading metalness={0} roughness={0.96} />
-        </mesh>
-        <mesh position={render.geometry.rim.position} rotation={render.geometry.rim.rotation}>
-          <torusGeometry args={render.geometry.rim.args} />
-          <meshStandardMaterial
-            color={scene3d.keyHex}
-            emissive={scene3d.keyHex}
-            emissiveIntensity={0.15}
-            metalness={0.08}
-            roughness={0.45}
-          />
-        </mesh>
-        {island.markers.map((marker) => (
-          <QuestMarker
-            key={marker.probeId}
-            marker={marker}
-            scene3d={scene3d}
-            haloTexture={haloTexture}
-            origin={island.center}
-            focused={focusedProbeId === marker.probeId}
-            picked={pickedProbeIds.has(marker.probeId)}
-            onPick={onPick}
-          />
-        ))}
+        <IslandLift focused={focused}>
+          <mesh
+            castShadow={render.shadows}
+            receiveShadow={render.shadows}
+            position={render.geometry.cap.position}
+          >
+            <cylinderGeometry args={render.geometry.cap.args} />
+            <meshStandardMaterial
+              color={render.hue}
+              flatShading
+              metalness={0.04}
+              roughness={0.72}
+            />
+          </mesh>
+          <mesh
+            castShadow={render.shadows}
+            receiveShadow={render.shadows}
+            position={render.geometry.underside.position}
+            rotation={render.geometry.underside.rotation}
+          >
+            <coneGeometry args={render.geometry.underside.args} />
+            <meshStandardMaterial color={render.hue} flatShading metalness={0} roughness={0.96} />
+          </mesh>
+          <mesh position={render.geometry.rim.position} rotation={render.geometry.rim.rotation}>
+            <torusGeometry args={render.geometry.rim.args} />
+            <meshStandardMaterial
+              color={scene3d.keyHex}
+              emissive={scene3d.keyHex}
+              emissiveIntensity={0.15}
+              metalness={0.08}
+              roughness={0.45}
+            />
+          </mesh>
+          {island.markers.map((marker) => (
+            <QuestMarker
+              key={marker.probeId}
+              marker={marker}
+              scene3d={scene3d}
+              haloTexture={haloTexture}
+              origin={island.center}
+              beaconTarget={beaconTarget}
+              focused={focusedProbeId === marker.probeId}
+              picked={pickedProbeIds.has(marker.probeId)}
+              onPick={onPick}
+            />
+          ))}
+        </IslandLift>
       </group>
     </Float>
   );

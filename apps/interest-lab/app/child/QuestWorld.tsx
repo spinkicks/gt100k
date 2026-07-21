@@ -5,11 +5,14 @@ import { PerformanceMonitor } from "@react-three/drei";
 import { type ReactElement, useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import type { Texture } from "three";
 import { QuestLedger, updatePickedProbeIds } from "./QuestLedger";
+import { Beacon } from "./world3d/Beacon";
 import { CameraRig } from "./world3d/CameraRig";
 import { Island } from "./world3d/Island";
+import { IslandBanner } from "./world3d/IslandBanner";
 import { Motes } from "./world3d/Motes";
 import { World3D } from "./world3d/World3D";
 import { World3DBoundary } from "./world3d/World3DBoundary";
+import { resolveIslandBannerLabel } from "./world3d/beacon";
 import { createGlowTexture } from "./world3d/glow-texture";
 
 const EMPTY_PICKED_PROBE_IDS: readonly string[] = [];
@@ -54,6 +57,12 @@ export function buildQuestWorldSceneGraph({
         onPick={onPick}
       />
     )),
+    <Beacon
+      key="beacon"
+      scene3d={view.scene.scene3d}
+      haloTexture={haloTexture}
+      pickedCount={pickedProbeIds.size}
+    />,
     <CameraRig
       key="camera"
       scene={view.scene}
@@ -102,7 +111,10 @@ export interface QuestWorldProps {
 export function QuestWorld({ view, onContextLost, onPerformanceDecline }: QuestWorldProps) {
   // Single source of truth for picks + focus, shared by the 3D orbs and the DOM ledger
   // so clicking an island orb toggles the exact same tray as clicking its card ("one truth").
-  const [pickedProbeIds, dispatch] = useReducer(updatePickedProbeIds, EMPTY_PICKED_PROBE_IDS as string[]);
+  const [pickedProbeIds, dispatch] = useReducer(
+    updatePickedProbeIds,
+    EMPTY_PICKED_PROBE_IDS as string[],
+  );
   const [focusedProbeId, setFocusedProbeId] = useState<string | null>(null);
   const [worldUnavailable, setWorldUnavailable] = useState(false);
   const pickedProbeIdSet = useMemo<ReadonlySet<string>>(
@@ -123,16 +135,18 @@ export function QuestWorld({ view, onContextLost, onPerformanceDecline }: QuestW
   }, []);
   // A 3D orb click focuses its island AND drops the quest in the tray — a real payoff for
   // reaching out and touching the hero object, wired to the same reducer as the card.
-  const pickFromWorld = useCallback(
-    (probeId: string) => {
-      setFocusedProbeId(probeId);
-      dispatch({ type: "pick", probeId });
-    },
-    [],
-  );
+  const pickFromWorld = useCallback((probeId: string) => {
+    setFocusedProbeId(probeId);
+    dispatch({ type: "pick", probeId });
+  }, []);
 
   const renderTier = worldUnavailable ? "board-2d" : view.scene.renderTier;
   const renders3D = renderTier !== "board-2d";
+  // Name the island the child is visiting — arrival gains a legible, announced label (P0.4).
+  const bannerLabel = useMemo(
+    () => resolveIslandBannerLabel(view.scene.islands, focusedProbeId),
+    [view.scene.islands, focusedProbeId],
+  );
 
   return (
     <section
@@ -158,6 +172,7 @@ export function QuestWorld({ view, onContextLost, onPerformanceDecline }: QuestW
               />
             </World3D>
           </World3DBoundary>
+          {bannerLabel ? <IslandBanner label={bannerLabel} /> : null}
           <p className="quest-world-instruction">
             Tap an island to visit it, or choose a quest below.
           </p>

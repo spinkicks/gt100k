@@ -825,3 +825,42 @@
   `maxVisibleQuests`), world markers will drop below `quests.length`. To keep parity then, the board's
   `revealAll` baseline must stage to the SAME set the world shows — world-reachable == board-reachable
   must remain the invariant. Flagged in progress NEXT so P1.7 doesn't silently re-break parity.
+
+## D-VP20 — Pick payoff: hop orbs to a my-quests beacon + island-name banner (interest-lab-v2 Turn 3 · P0.4)
+- Context: picking an orb previously just bounced it in place (vertical `PICK_HOP_HEIGHT` spring) and
+  dropped the quest in the DOM tray; "visit" had no spatial destination and focusing an island gave no
+  arrival cue. P0.4 asks for a real payoff: a beacon target, a hop *to* it, and island arrival meaning.
+- Chose:
+  1. **Beacon = fixed scene landmark** at `BEACON_TARGET=[0,-1.1,7]` (toward the viewer, below the
+     island ring), rendered by `Beacon.tsx` and placed in `buildQuestWorldSceneGraph` carrying
+     `pickedCount={pickedProbeIds.size}`. `resolveBeaconRender(count)` (pure) ramps emissive/halo/scale
+     with each collected quest and plateaus at 6 so the grade never blows out. It represents the DOM
+     tray's "home" in 3D — a tap lands somewhere that visibly grows.
+  2. **Hop leans toward the beacon, then returns.** `resolvePickHopPosition(marker, beacon, hopValue)`
+     (pure) = marker.y + hopValue for the rise, plus a horizontal lean of `progress*0.32` toward the
+     beacon where `progress=clamp(hopValue/PICK_HOP_HEIGHT,0..1)`. The orb leaps toward the beacon at
+     the spring peak and settles home as the spring returns to 0 — the ORB stays on its island (the
+     CARD is what lives in the tray), so the gesture reads as "sent to my quests" without vacating the
+     hero object. Computed in island-local space in `QuestMarker`'s frame (beacon converted by
+     subtracting `origin`). `PICK_HOP_HEIGHT` now lives once in `beacon.ts` (was duplicated in
+     QuestMarker).
+  3. **Arrival meaning**: `IslandLift` raises the focused island (`ISLAND_FOCUS_LIFT=0.42`, damped),
+     and a DOM `IslandBanner` ("Visiting <Domain>") names it. `resolveIslandBannerLabel(islands,
+     focusedProbeId)` maps probeId→domain→title-case (`sound_music`→"Sound Music").
+- Why: `resolvePickHopPosition`/`resolveBeaconRender`/`resolveIslandBannerLabel` are pure, so the
+  hop→beacon wiring and the banner are unit-testable without a GPU (the headless-3D gap flagged in
+  prior turns). `IslandLift` is a separate component ONLY so its `useFrame` runs inside a real R3F
+  render — `Island` stays a hook-free function that `world-objects.test.ts` calls directly as
+  `Island({...})` (adding hooks to Island itself would throw "invalid hook call" in that test). The
+  banner is a DOM `<output aria-live="polite">` (not a canvas label) so it is announced to assistive
+  tech and legible even on the board-2d tier; `<output>` over `role="status"` satisfies biome's
+  `useSemanticElements`.
+- Verified: `pick-payoff.test.ts` (10) + browser (chromium resolved full `quest-world-3d`, so the 3D
+  world genuinely mounted): island + 3 orbs render (prompted-return orb dims/recedes correctly), ZERO
+  console/page errors, card click → focus `p01` → DOM banner "Visiting Making", `data-picked-count`
+  incremented. Gate: tsc 0 · full test 362 · app 98 · next build OK · biome clean.
+- Rejected: (a) hopping to a screen-space HUD element — not unit-testable and fights the R3F scene
+  graph; (b) permanently moving the picked orb to the beacon — would leave dead gaps on islands and
+  break world↔board parity (D-VP19: markers==quests); (c) a canvas-drawn island label — invisible to
+  AT and gone on board-2d; (d) animating the island lift inside `Island` — breaks the hook-free
+  direct-call unit test.
