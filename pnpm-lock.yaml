@@ -24,6 +24,14 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.1)
 
+  adapters/evidence-deferred: {}
+
+  adapters/evidence-hash-node: {}
+
+  adapters/evidence-repo-memory: {}
+
+  adapters/evidence-verifier-stub: {}
+
   adapters/repo-memory:
     dependencies:
       '@gt100k/learning-loop':
@@ -60,6 +68,8 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.1
         version: 18.3.7(@types/react@18.3.31)
+
+  packages/evidence-graph: {}
 
   packages/learning-loop: {}
 
