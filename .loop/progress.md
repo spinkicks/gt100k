@@ -118,3 +118,14 @@
 
 ## NEXT
 - T018/T022: write the `merkleRoot` contract test first, confirm RED on the missing API, then implement the injected-hasher RFC-6962 raw-byte algorithm; acceptance is deterministic/permutation-independent roots, single-leaf hashing, odd-node promotion unchanged, leaf/interior domain separation, and a green workspace gate.
+
+## 2026-07-20 — P3 RFC-6962 Merkle root (T018/T022)
+- Added the pure, injected-hasher `merkleRoot` implementation with 32-byte digest decoding, bytewise canonical sorting, `0x00` leaf and `0x01` interior domain separation, and unchanged promotion of an odd right-most node.
+- Added eight contract cases for empty/malformed input rejection, deterministic permutation-independent roots, single-leaf hashing, the RFC-6962 odd-count rule, exact raw-byte concatenation, and leaf/interior second-preimage separation. Confirmed RED on the missing module, then GREEN after the minimal implementation.
+- Independently exercised the implementation with `NodeCryptoHasher`; the exact pinned G2 one-, two-, and three-leaf roots matched, and the shuffled input reproduced the three-leaf root.
+- Gate evidence: package composite `tsc -b`, workspace `pnpm typecheck`, workspace `pnpm test` (72/72), and `pnpm lint` over 53 files all pass.
+- Phase status: P3 in progress; T018 and T022 are complete. SC-010 is passing; the Merkle portion of SC-004 is passing. The implementation reproduces SC-008's G2 values, with the permanent T018a golden assertions next.
+- Blockers: none.
+
+## NEXT
+- T018a: extend `packages/evidence-graph/test/golden.test.ts` with exact G2 assertions for the pinned one-, two-, and three-leaf roots plus shuffled-input equality; acceptance is `===` matches for all four values through `merkleRoot`, followed by a green workspace gate.
