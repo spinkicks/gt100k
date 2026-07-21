@@ -13,10 +13,13 @@ import {
 } from "@react-three/postprocessing";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
+  AdditiveBlending,
+  Color,
   Group,
   IcosahedronGeometry,
   MeshPhysicalMaterial,
   OctahedronGeometry,
+  ShaderMaterial,
   Vector3,
 } from "three";
 
@@ -35,7 +38,39 @@ interface SceneResources {
   readonly starMaterial: MeshPhysicalMaterial;
   readonly badgeGeometry: OctahedronGeometry;
   readonly badgeMaterial: MeshPhysicalMaterial;
+  readonly haloMaterial: ShaderMaterial;
 }
+
+// Floor halos as pooled light, not flat decals: a radial falloff (bright core -> transparent
+// rim) additively blended over the void reads as genuine light on a surface. Fed by Bloom so
+// the core blooms softly, cohesive with the emissive-gem language rather than a uniform disc.
+const HALO_VERTEX_SHADER = /* glsl */ `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const HALO_FRAGMENT_SHADER = /* glsl */ `
+  precision mediump float;
+  varying vec2 vUv;
+  uniform vec3 uColor;
+  uniform float uOpacity;
+  void main() {
+    float d = length(vUv - 0.5) * 2.0;        // 0 at center -> 1 at rim
+    if (d > 1.0) discard;                      // clean circular edge
+    float glow = pow(1.0 - d, 1.8);            // soft radial falloff
+    float core = smoothstep(0.42, 0.0, d);     // brighter pooled center
+    float alpha = (glow * 0.55 + core * 0.6) * uOpacity;
+    vec3 col = uColor * (0.85 + core * 0.75);
+    gl_FragColor = vec4(col, alpha);
+  }
+`;
+
+const HALO_BASE_OPACITY = 0.4;
+const HALO_BREATH_AMPLITUDE = 0.09;
+const HALO_BREATH_PERIOD_MS = 3600;
 
 function toTuple(position: Vec3): [number, number, number] {
   return [position.x, position.y, position.z];
@@ -123,6 +158,17 @@ export function ObservatoryScene({
         flatShading: true,
         toneMapped: false,
       }),
+      haloMaterial: new ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        blending: AdditiveBlending,
+        vertexShader: HALO_VERTEX_SHADER,
+        fragmentShader: HALO_FRAGMENT_SHADER,
+        uniforms: {
+          uColor: { value: new Color(view.presentation.palette.floor) },
+          uOpacity: { value: HALO_BASE_OPACITY },
+        },
+      }),
     }),
     [view.presentation.markerScale, view.presentation.palette],
   );
@@ -162,6 +208,7 @@ export function ObservatoryScene({
       resources.starMaterial.dispose();
       resources.badgeGeometry.dispose();
       resources.badgeMaterial.dispose();
+      resources.haloMaterial.dispose();
     },
     [resources],
   );
@@ -207,6 +254,14 @@ export function ObservatoryScene({
       easeSceneProgress(motion.camera.easing, cameraProgress),
     );
     camera.lookAt(cameraTarget);
+
+    // Floor light breathes so the pooled glow is never a static decal (frameloop is always).
+    const haloOpacity = resources.haloMaterial.uniforms.uOpacity;
+    if (haloOpacity) {
+      haloOpacity.value =
+        HALO_BASE_OPACITY +
+        Math.sin((elapsedMs / HALO_BREATH_PERIOD_MS) * Math.PI * 2) * HALO_BREATH_AMPLITUDE;
+    }
   });
 
   return (
@@ -314,18 +369,11 @@ export function ObservatoryScene({
       {scene.floorHalos.map((halo) => (
         <mesh
           key={`floor-${halo.cohortIndex}`}
+          material={resources.haloMaterial}
           position={toTuple(halo.position)}
           rotation={[-Math.PI / 2, 0, 0]}
         >
           <circleGeometry args={[halo.radius, 64]} />
-          <meshStandardMaterial
-            color={view.presentation.palette.floor}
-            depthWrite={false}
-            emissive={view.presentation.palette.floor}
-            emissiveIntensity={0.48}
-            opacity={0.14}
-            transparent
-          />
         </mesh>
       ))}
 
