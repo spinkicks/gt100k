@@ -196,3 +196,14 @@
 ## NEXT
 - Complete T023 and the minimal `evaluateCandidateGate` portion of T028 in `packages/interest-lab/test/state-machine.test.ts` and `packages/interest-lab/src/state-machine.ts`.
 - Acceptance: all five G5 rows deep-equal the pinned eligibility and ordered `missing` outcomes, including novelty's exact three reasons, competence-only's delayed-discretionary reason, no-artifact's artifact/competence reason, and the two eligible cases; preserve a focused red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
+
+## 2026-07-20 — P5 / T023 + partial T028
+- Added a five-row `evaluateCandidateGate` acceptance table covering the exact G5 G4, novelty, competence-only, no-artifact, and minimal-pass outcomes.
+- Confirmed the test-first red state: the focused suite failed because `src/state-machine.ts` did not exist, then passed all five cases after the minimal evaluator implementation.
+- Implemented the pure fixed promotion gate over distinct signal families, preserving the pinned missing-reason text and order; later lifecycle behavior from T024–T025 remains unimplemented.
+- Verified the focused suite, forced package compiler, `pnpm typecheck`, `pnpm test` (69 tests), and `pnpm lint` all pass.
+- Status: T023 complete; T028 is partial; P5 remains in progress. SC-003, SC-004, and SC-011 candidate-gate outcomes are green. No blocker.
+
+## NEXT
+- Complete T024 and the minimal `applyMissingData` portion of T028 in `packages/interest-lab/test/state-machine.test.ts` and `packages/interest-lab/src/state-machine.ts`.
+- Acceptance: a missing-data window appends a versioned recorded no-op with state and uncertainty unchanged, and low-interest inference is refused unless a human has ruled out access, health, schedule, equipment, and consent causes per G6/IL-009; preserve a focused red run and keep the package compiler, `pnpm typecheck`, `pnpm test`, and `pnpm lint` green.
