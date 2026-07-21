@@ -400,3 +400,15 @@
 
 - T114 — Scaffold `apps/cohort-arena` as the pinned Next.js 14 / React 18 app without touching shared root files.
 - Acceptance: the app manifest contains the exact pinned Next/r3f/drei/three/postprocessing/motion/view dependencies; App Router layout, global accessibility/plain-mode CSS, `next.config.mjs`, app-local TypeScript configuration, placeholder-only env example, and gitignore exist; `pnpm --filter @gt100k/cohort-arena build`, repository typecheck/test/lint, and the existing P7 view package gate remain green.
+
+## 2026-07-21 — P8 / T114
+
+- Scaffolded `apps/cohort-arena` as the pinned private Next.js 14 / React 18 workspace app with the exact react-three-fiber v8, drei v9, three, postprocessing, motion, and `@gt100k/cohort-arena-view` dependencies; added the source-workspace transpilation boundary and an app-local non-composite TypeScript configuration.
+- Added the App Router root layout and global shell styles using every committed `PALETTE`/`TYPOGRAPHY` value, visible focus rings, screen-reader utility, reduced-motion and reduced-transparency preferences, plain-mode hooks, placeholder-only public defaults, and local ignores for build output, dependencies, and environment files. No external font or asset fetch was introduced.
+- Build diagnosis: the first real app build failed with `next: not found` because the new workspace had no local dependency links. A scoped `pnpm install --filter @gt100k/cohort-arena... --lockfile=false` created only local install state; before/after checksums prove `pnpm-lock.yaml`, root `package.json`, and `pnpm-workspace.yaml` were unchanged.
+- Gate status: `pnpm --filter @gt100k/cohort-arena build` succeeds with an empty environment; `pnpm typecheck`, `pnpm test` (144/144), `pnpm lint` (110 files), and `pnpm --filter @gt100k/cohort-arena-view test` (31/31) pass. P8 has started and the app-shell foundation for SC-014/SC-015 is present; the first rendered route remains T115. No blocker.
+
+## NEXT
+
+- T115 — Add the server `app/page.tsx` shell and client-only `components/CohortArena.client.tsx` composition from a synthetic assignment and pool.
+- Acceptance: the server route uses `next/dynamic` with `ssr: false`; the client component builds one deterministic `CohortArenaView` from synthetic-only domain inputs and exposes the 3D scene, HUD, 2D-tier, and Ledger regions for the dedicated T116–T119 renderers; the app build and repository typecheck/test/lint gates remain green.

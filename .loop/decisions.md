@@ -133,3 +133,7 @@
 ## 2026-07-21 — T113 fixture isolation
 
 - Build Fixture V1's input from the already-typed synthetic domain Fixture B and deterministic public domain functions, while pinning every asserted view value explicitly in the view fixture. Rejected copying a second learner/assignment dataset that could drift from Fixture B, and rejected generating expected view output through `buildCohortArenaView` because that would make the golden self-validating.
+
+## 2026-07-21 — T114 accessibility media hook
+
+- Keep the spec-required `prefers-reduced-transparency` media query and suppress Biome's `noUnknownMediaFeatureName` diagnostic only on that at-rule. Rejected removing the accessibility preference or disabling the rule globally; Biome 1.9's CSS registry lags the Safari-exposed preference, while the fallback declaration remains harmless in browsers that do not support it.
