@@ -107,6 +107,108 @@
   font-weight: 700;
 }
 
+.cosmetics {
+  border-top: 1px solid var(--surface-border);
+}
+
+.cosmeticsHeader {
+  padding: 1rem;
+}
+
+.cosmeticsHeader h3,
+.cosmeticsHeader p {
+  margin: 0;
+}
+
+.cosmeticsHeader h3 {
+  font-size: var(--text-body-size);
+  line-height: 1.3;
+}
+
+.cosmeticsHeader p {
+  max-width: 42ch;
+  margin-top: 0.25rem;
+  color: rgb(245 249 252 / 82%);
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line-height);
+}
+
+.cosmeticListbox {
+  max-height: 22rem;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  list-style: none;
+  outline: none;
+}
+
+.cosmeticOption {
+  display: grid;
+  min-height: 3.5rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--surface-border);
+  cursor: pointer;
+  gap: 0.75rem;
+  grid-template-columns: 1.25rem minmax(0, 1fr);
+}
+
+.cosmeticOption:focus-visible {
+  position: relative;
+  z-index: 1;
+  background: rgb(245 249 252 / 12%);
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.cosmeticOption[data-active="true"] {
+  background: rgb(245 249 252 / 12%);
+}
+
+.cosmeticOption[data-eligible="false"] {
+  cursor: not-allowed;
+}
+
+.cosmeticIcon {
+  color: var(--sun-hi);
+  font-weight: 900;
+  text-align: center;
+}
+
+.cosmeticOption[data-eligible="false"] .cosmeticIcon {
+  color: rgb(245 249 252 / 68%);
+}
+
+.cosmeticContent {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.cosmeticContent strong {
+  line-height: 1.3;
+  text-wrap: pretty;
+}
+
+.cosmeticContent > span {
+  color: rgb(245 249 252 / 82%);
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line-height);
+  text-wrap: pretty;
+}
+
+.cosmeticContent .cosmeticGoal {
+  color: var(--not-yet);
+  font-weight: 800;
+}
+
+.cosmeticContent .cosmeticEquipped,
+.cosmeticContent .cosmeticEarned {
+  color: var(--sun-hi);
+  font-weight: 800;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .treeItem {
     transition: none;
@@ -119,7 +221,9 @@
   }
 
   .header,
-  .treeItem {
+  .treeItem,
+  .cosmetics,
+  .cosmeticOption {
     border-color: var(--ink-hi);
   }
 }

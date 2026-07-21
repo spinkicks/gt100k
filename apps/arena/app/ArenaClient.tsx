@@ -2,6 +2,7 @@
 
 import {
   type AgeBand,
+  type AvatarState,
   CATALOG,
   type DeviceCaps,
   FIXTURE,
@@ -9,9 +10,11 @@ import {
   TIERS,
   buildArenaView,
   createSyntheticMasteryFeed,
+  equipCosmetic,
 } from "@gt100k/arena-world";
 import dynamic from "next/dynamic";
 import * as React from "react";
+import Hud from "./hud/Hud";
 import ArenaLedger from "./ledger/ArenaLedger";
 import Fallback2D from "./scene/Fallback2D";
 import { createArenaEventBus } from "./scene/eventBus";
@@ -23,6 +26,10 @@ const DEFAULT_AGE_BAND: AgeBand = "9-11";
 const AGE_BANDS: readonly AgeBand[] = ["6-8", "9-11", "12-14"];
 const QUALITY_PREFERENCES = ["auto", "A", "B", "C", "D"] as const;
 const REDUCED_MOTION_DEFAULTS = ["system", "on", "off"] as const;
+const DEFAULT_AVATAR: AvatarState = {
+  learnerRef: "learner-synthetic-001",
+  equipped: [],
+};
 
 type QualityPreference = (typeof QUALITY_PREFERENCES)[number];
 type ReducedMotionDefault = (typeof REDUCED_MOTION_DEFAULTS)[number];
@@ -175,6 +182,7 @@ export function createArenaClientSnapshot(
   caps: DeviceCaps,
   config: ArenaPublicConfig,
   runtimeTier?: QualityTier,
+  avatar: AvatarState = DEFAULT_AVATAR,
 ) {
   const effective = resolveEffectiveCaps(caps, config, runtimeTier);
   const view = buildArenaView({
@@ -182,7 +190,7 @@ export function createArenaClientSnapshot(
     signals: createSyntheticMasteryFeed(),
     tierTable: TIERS,
     catalog: CATALOG,
-    avatar: { learnerRef: "learner-synthetic-001", equipped: [] },
+    avatar,
     caps: effective.caps,
     options: {
       ageBand: config.ageBand,
@@ -217,6 +225,10 @@ export default function ArenaClient() {
   const [caps, setCaps] = React.useState<DeviceCaps>(SERVER_SAFE_CAPS);
   const [runtimeTier, setRuntimeTier] = React.useState<QualityTier>();
   const [targetNodeId, setTargetNodeId] = React.useState<string>();
+  const [avatar, setAvatar] = React.useState<AvatarState>(() => ({
+    learnerRef: DEFAULT_AVATAR.learnerRef,
+    equipped: [...DEFAULT_AVATAR.equipped],
+  }));
 
   React.useEffect(() => {
     setCaps(gatherDeviceCaps(createBrowserCapabilityProbe()));
@@ -234,11 +246,20 @@ export default function ArenaClient() {
   }, [eventBus]);
 
   const snapshot = React.useMemo(
-    () => createArenaClientSnapshot(caps, PUBLIC_CONFIG, runtimeTier),
-    [caps, runtimeTier],
+    () => createArenaClientSnapshot(caps, PUBLIC_CONFIG, runtimeTier, avatar),
+    [avatar, caps, runtimeTier],
   );
   const { renderer, view } = snapshot;
   const handleCanvasFallback = React.useCallback(() => setRuntimeTier("D"), []);
+
+  React.useEffect(
+    () =>
+      eventBus.subscribe("equip-cosmetic", ({ cosmeticId }) => {
+        if (!view.eligibility.eligibleIds.includes(cosmeticId)) return;
+        setAvatar((current) => equipCosmetic(current, cosmeticId, view.eligibility));
+      }),
+    [eventBus, view.eligibility],
+  );
 
   return (
     <section
@@ -247,19 +268,22 @@ export default function ArenaClient() {
       data-quality-tier={view.presentation.qualityTier}
       data-reduced-motion={view.flags.reducedMotion ? "true" : "false"}
     >
-      <div className="arena-visual">
-        {renderer === "canvas" ? (
-          <DynamicArenaCanvas
-            eventBus={eventBus}
-            onFallback={handleCanvasFallback}
-            targetNodeId={targetNodeId}
-            view={view}
-          />
-        ) : (
-          <Fallback2D view={view} />
-        )}
+      <div className="arena-stage">
+        <div className="arena-visual">
+          {renderer === "canvas" ? (
+            <DynamicArenaCanvas
+              eventBus={eventBus}
+              onFallback={handleCanvasFallback}
+              targetNodeId={targetNodeId}
+              view={view}
+            />
+          ) : (
+            <Fallback2D view={view} />
+          )}
+        </div>
+        <Hud catalog={CATALOG} eventBus={eventBus} view={view} />
       </div>
-      <ArenaLedger eventBus={eventBus} view={view} />
+      <ArenaLedger eventBus={eventBus} view={view} catalog={CATALOG} />
     </section>
   );
 }

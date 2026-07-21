@@ -1,7 +1,8 @@
 "use client";
 
-import type { InitialArenaView, NodeState } from "@gt100k/arena-world";
+import { CATALOG, type Cosmetic, type InitialArenaView, type NodeState } from "@gt100k/arena-world";
 import * as React from "react";
+import { buildHudCosmeticEntries } from "../hud/Hud";
 import type { ArenaEventBus } from "../scene/eventBus";
 import styles from "./ArenaLedger.module.css";
 
@@ -17,6 +18,9 @@ const STATE_LABEL: Readonly<Record<NodeState, string>> = {
   unlocked: "Unlocked",
 };
 
+const COSMETIC_LISTBOX_ROLE: React.AriaRole = "listbox";
+const COSMETIC_OPTION_ROLE: React.AriaRole = "option";
+
 export interface LedgerEntry {
   nodeId: string;
   landmark: string;
@@ -30,6 +34,11 @@ export interface LedgerEntry {
 export interface LedgerTreeCommand {
   nextIndex: number;
   activate: boolean;
+}
+
+export interface LedgerCosmeticCommand {
+  nextIndex: number;
+  equip: boolean;
 }
 
 function labelRegion(region: string): string {
@@ -80,15 +89,40 @@ export function resolveLedgerTreeCommand(
   return null;
 }
 
+export function resolveCosmeticListboxCommand(
+  currentIndex: number,
+  key: string,
+  itemCount: number,
+): LedgerCosmeticCommand | null {
+  if (itemCount <= 0) return null;
+
+  const boundedIndex = Math.max(0, Math.min(currentIndex, itemCount - 1));
+  if (key === "ArrowDown") {
+    return { nextIndex: Math.min(boundedIndex + 1, itemCount - 1), equip: false };
+  }
+  if (key === "ArrowUp") {
+    return { nextIndex: Math.max(boundedIndex - 1, 0), equip: false };
+  }
+  if (key === "Home") return { nextIndex: 0, equip: false };
+  if (key === "End") return { nextIndex: itemCount - 1, equip: false };
+  if (key === "Enter" || key === " ") return { nextIndex: boundedIndex, equip: true };
+
+  return null;
+}
+
 export interface ArenaLedgerProps {
   view: InitialArenaView;
+  catalog?: readonly Cosmetic[];
   eventBus: Pick<ArenaEventBus, "emit">;
 }
 
-export default function ArenaLedger({ view, eventBus }: ArenaLedgerProps) {
+export default function ArenaLedger({ view, catalog = CATALOG, eventBus }: ArenaLedgerProps) {
   const entries = buildLedgerEntries(view);
+  const cosmetics = buildHudCosmeticEntries(view, catalog);
   const [activeIndex, setActiveIndex] = React.useState(0);
+  const [activeCosmeticIndex, setActiveCosmeticIndex] = React.useState(0);
   const itemRefs = React.useRef<Array<HTMLLIElement | null>>([]);
+  const cosmeticRefs = React.useRef<Array<HTMLDivElement | null>>([]);
 
   const activateNode = (nodeId: string) => {
     eventBus.emit("focus-node", { nodeId });
@@ -110,6 +144,25 @@ export default function ArenaLedger({ view, eventBus }: ArenaLedgerProps) {
 
     setActiveIndex(command.nextIndex);
     itemRefs.current[command.nextIndex]?.focus();
+  };
+
+  const equipCosmetic = (index: number) => {
+    const cosmetic = cosmetics[index];
+    if (!cosmetic?.eligible || cosmetic.equipped) return;
+    eventBus.emit("equip-cosmetic", { cosmeticId: cosmetic.id });
+  };
+
+  const handleCosmeticKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, index: number) => {
+    const command = resolveCosmeticListboxCommand(index, event.key, cosmetics.length);
+    if (!command) return;
+
+    event.preventDefault();
+    setActiveCosmeticIndex(command.nextIndex);
+    if (command.equip) {
+      equipCosmetic(command.nextIndex);
+      return;
+    }
+    cosmeticRefs.current[command.nextIndex]?.focus();
   };
 
   return (
@@ -164,6 +217,69 @@ export default function ArenaLedger({ view, eventBus }: ArenaLedgerProps) {
           </li>
         ))}
       </ul>
+
+      <section className={styles.cosmetics} aria-labelledby="arena-ledger-cosmetics-title">
+        <header className={styles.cosmeticsHeader}>
+          <h3 id="arena-ledger-cosmetics-title">Cosmetics</h3>
+          <p id="arena-ledger-cosmetics-help">
+            Use Arrow keys to browse. Press Enter to equip an earned look.
+          </p>
+        </header>
+        <div
+          aria-describedby="arena-ledger-cosmetics-help"
+          aria-label="Competence-earned cosmetics"
+          aria-orientation="vertical"
+          className={styles.cosmeticListbox}
+          role={COSMETIC_LISTBOX_ROLE}
+          tabIndex={-1}
+        >
+          {cosmetics.map((cosmetic, index) => (
+            <div
+              aria-disabled={!cosmetic.eligible}
+              aria-label={`${cosmetic.look}, ${
+                cosmetic.equipped
+                  ? "equipped"
+                  : cosmetic.eligible
+                    ? "earned, press Enter to equip"
+                    : `locked, earn goal: ${cosmetic.earnGoal}`
+              }`}
+              aria-selected={cosmetic.equipped}
+              className={styles.cosmeticOption}
+              data-active={index === activeCosmeticIndex ? "true" : "false"}
+              data-eligible={cosmetic.eligible ? "true" : "false"}
+              id={`arena-cosmetic-option-${cosmetic.id}`}
+              key={cosmetic.id}
+              onClick={() => {
+                setActiveCosmeticIndex(index);
+                equipCosmetic(index);
+              }}
+              onMouseEnter={() => setActiveCosmeticIndex(index)}
+              onFocus={() => setActiveCosmeticIndex(index)}
+              onKeyDown={(event) => handleCosmeticKeyDown(event, index)}
+              ref={(element) => {
+                cosmeticRefs.current[index] = element;
+              }}
+              role={COSMETIC_OPTION_ROLE}
+              tabIndex={index === activeCosmeticIndex ? 0 : -1}
+            >
+              <span aria-hidden="true" className={styles.cosmeticIcon}>
+                {cosmetic.equipped ? "✓" : cosmetic.eligible ? "✦" : "■"}
+              </span>
+              <span className={styles.cosmeticContent}>
+                <strong>{cosmetic.look}</strong>
+                <span>{cosmetic.equipEffect}</span>
+                {!cosmetic.eligible ? (
+                  <span className={styles.cosmeticGoal}>Earn goal: {cosmetic.earnGoal}</span>
+                ) : cosmetic.equipped ? (
+                  <span className={styles.cosmeticEquipped}>Equipped</span>
+                ) : (
+                  <span className={styles.cosmeticEarned}>Earned · press Enter to equip</span>
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
     </aside>
   );
 }

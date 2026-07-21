@@ -12,6 +12,7 @@ import type {
   QuestWorld,
   RewardRepresentation,
   Tier,
+  WorldTheme,
 } from "./model";
 import { deriveNodeStates } from "./nodes";
 import { computeProgression } from "./progression";
@@ -58,6 +59,7 @@ export function buildArenaView(inputs: BuildArenaViewInputs) {
     ...inputs.caps,
     prefersReducedMotion: reducedMotion,
   });
+  const worldTheme = resolveEquippedWorldTheme(inputs.avatar.equipped);
 
   return {
     world,
@@ -81,7 +83,7 @@ export function buildArenaView(inputs: BuildArenaViewInputs) {
       worldTransform: resolveWorldTransform(layout),
       camera: { ...CAMERA3D, restTarget: { ...CAMERA3D.restTarget } },
       parallax: resolveParallaxLayers(),
-      lighting: resolveLighting(qualityTier, "default"),
+      lighting: resolveLighting(qualityTier, worldTheme),
       water: resolveWater(qualityTier),
       postfx: resolvePostFx(qualityTier),
       avatarAnim: resolveAvatarAnimation(inputs.options.avatarIntent ?? "idle", {
@@ -105,6 +107,22 @@ export function buildArenaView(inputs: BuildArenaViewInputs) {
       ageBand: inputs.options.ageBand,
     },
   };
+}
+
+const WORLD_THEME_BY_COSMETIC_ID: Readonly<Record<string, WorldTheme>> = {
+  "world-theme-dawn": "dawn",
+  "world-theme-dusk": "dusk",
+};
+
+function resolveEquippedWorldTheme(equipped: readonly string[]): WorldTheme {
+  for (let index = equipped.length - 1; index >= 0; index -= 1) {
+    const cosmeticId = equipped[index];
+    if (!cosmeticId) continue;
+    const theme = WORLD_THEME_BY_COSMETIC_ID[cosmeticId];
+    if (theme) return theme;
+  }
+
+  return "default";
 }
 
 function buildProgressionRepresentation(ageBand: AgeBand): RewardRepresentation {

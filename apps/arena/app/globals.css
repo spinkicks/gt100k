@@ -109,7 +109,14 @@ textarea {
   grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
 }
 
+.arena-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
 .arena-visual {
+  height: 100%;
   min-height: 36rem;
   overflow: hidden;
   border-radius: 16px;
