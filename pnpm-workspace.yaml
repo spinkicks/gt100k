@@ -1,4 +1,4 @@
 packages:
-  - "packages/*"
-  - "adapters/*"
-  - "apps/*"
+  - "passion/packages/*"
+  - "passion/adapters/*"
+  - "passion/apps/*"

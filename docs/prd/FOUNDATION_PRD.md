@@ -73,7 +73,7 @@ This is **feature PRD #1** in a series of baby PRDs decomposed from [`PRD.md`](P
 - **Telemetry** — OpenTelemetry, Prometheus, Grafana wired from the first service (§16).
 - **AWS runtime** — EKS, RDS + pgvector, S3, KMS, CloudFront, and isolated per-purpose AWS accounts, all provisioned by Terraform (§4).
 - **Application shells** — the minimal Next.js/TypeScript shells needed to drive the spine end-to-end (not feature UIs).
-- **Stubbed enrollment handoff** — a stub of the admissions team's Track A / Track B eligibility contract, sufficient to provision a synthetic fixture learner (parent §3.5, §32.1).
+- **Stubbed enrollment handoff** — a stub of the external eligibility contract, sufficient to provision a synthetic fixture learner (parent §3.5, §32.1).
 
 ### 3.2 Out of scope (built later)
 
@@ -82,7 +82,7 @@ This is **feature PRD #1** in a series of baby PRDs decomposed from [`PRD.md`](P
 - The Phase-1 in-house Academic Mastery OS, answer-blind tutor, grader, help receipts, Practice-Item Foundry (Month 3; parent §12, §32.3).
 - Passion/Interest Lab, Motivation dose ledger, Cohorts, Foundry workspaces, EvidenceGraph, Reality Gateway, credentials (Month 2–3).
 - LiveKit/WebRTC media, Triton/vLLM model serving, Flink/Feast feature store (later; the AWS **account and region policy** in §4 still governs them when they arrive).
-- The admissions pipeline itself — owned and built by the admissions team ([`ADMISSIONS_PRD.md`](ADMISSIONS_PRD.md)); this feature integrates only against a stub of their eligibility contract.
+- The admission/selection process itself — external and owned by a separate team, out of scope for this repository (parent §3.4); this feature integrates only against a stub of the external eligibility contract.
 
 ### 3.3 Non-goals
 
@@ -156,7 +156,7 @@ Terraform is the only way production infrastructure comes into existence. The mo
 
 ### 4.7 What is deliberately not on this AWS boundary
 
-The **admissions pipeline** ([`ADMISSIONS_PRD.md`](ADMISSIONS_PRD.md)) is owned by a separate team and runs on its **own, different stack (Next.js + Supabase)**. That is intentional and does not weaken the AWS commitment: GT100K's platform never hosts admissions, and the two systems meet only at the enrollment-handoff contract (§10.4, parent §3.5). Nothing in *this* platform runs off AWS.
+The **external admission/selection process** is owned by a separate team and is **out of scope for this repository** (parent §3.4). It is not hosted on GT100K's AWS platform; the two systems meet only at the enrollment-handoff contract (§10.4, parent §3.5). Nothing in *this* platform runs off AWS.
 
 ### 4.8 Region, residency, and cost posture
 
@@ -239,13 +239,13 @@ These are the contracts implemented **first** (parent §32.1). Fields and invari
 | `ConsentGrant` | `subject_ref`, guardian authority, purpose, data categories, processors, jurisdiction, effective and expiry time, collection method, document hash, withdrawal state. | A service may use data only for an active matching purpose. Withdrawal blocks new processing and starts the applicable deletion workflow (§13). |
 | `AssentRecord` | `child_ref`, age band, plain-language notice version, choices shown, response, facilitator, timestamp, renewal date. | Guardian consent cannot substitute for child assent where the product can honor a refusal. Staff record dissent and stop optional collection. |
 | `DecisionRecord` | `decision_type`, subject, candidates considered, outcome, reason codes, evidence snapshot, uncertainty, policy and model versions, authorized human, effective time. | Consequential records require a named human and a policy result. Records remain append-only and replayable. **A model output cannot fill `authorized_human`.** |
-| `OverrideRecord` | target decision, prior outcome, new outcome, authorized role, rationale, evidence, expiry or review date. | Four-eyes approval applies to admissions, public exposure, safeguarding, and credential revocation. An override creates a new record and preserves the original. |
+| `OverrideRecord` | target decision, prior outcome, new outcome, authorized role, rationale, evidence, expiry or review date. | Four-eyes approval applies to public exposure, safeguarding, and credential revocation. An override creates a new record and preserves the original. |
 | `Appeal` | appellant role, target decision, grounds, submitted evidence, requested remedy, status, independent reviewer, deadlines, resolution. | The reviewer cannot be the original decision owner. Filing an appeal cannot reduce access or trigger retaliation. The system records late and reopened cases. |
 | Audit log | append-only record of every consequential action with its full envelope header, actor, policy result, and outcome. | Append-only and tamper-evident. Tenant-scoped. Every `DecisionRecord`, `OverrideRecord`, consent change, and deletion writes an audit entry. Supports decision replay with the evidence, policy, and (if any) model version available at that time. |
 
 ### 7.3 Handoff contract (stubbed)
 
-The spine consumes — but does not build — the admissions team's **Track A / Track B eligibility determination** (parent §3.5, §8.4). Until their interface exists, the spine runs against a **stub** producing a synthetic eligible-learner roster, accommodation profile, and eligibility-evidence reference (parent §32.1). The stub honors the same contract shape so cutover to the real interface is a configuration change, not a rewrite.
+The spine consumes — but does not build — the external admission process's **eligibility determination** (parent §3.4–§3.5). Until that interface exists, the spine runs against a **stub** producing a synthetic eligible-learner roster, accommodation profile, and eligibility-evidence reference (parent §32.1). The stub honors the same contract shape so cutover to the real interface is a configuration change, not a rewrite.
 
 ### 7.4 Contract registry mechanics
 
@@ -315,7 +315,7 @@ Boundaries owned in the spine (parent §27 table):
 | Boundary | Owned state and responsibility |
 |---|---|
 | Identity & Consent | Legal-identity crosswalk, guardian authority, child assent, consent purposes, retention clocks, account recovery, and revocation. |
-| Enrollment Integration *(stubbed handoff, §7.3)* | Consumes the admissions team's Track A / Track B eligibility determination: eligible-learner provisioning, accommodation-profile intake, and eligibility-evidence reference. The pipeline itself is the admissions team's boundary (parent §3.4). |
+| Enrollment Integration *(stubbed handoff, §7.3)* | Consumes the external admission process's eligibility determination: eligible-learner provisioning, accommodation-profile intake, and eligibility-evidence reference. The admission/selection process itself is external and out of scope (parent §3.4). |
 
 ---
 
@@ -341,7 +341,7 @@ Owns the legal-identity crosswalk, guardian authority, child assent, consent pur
 Role and purpose authorization happens at the edge: the session resolves to a pseudonymous actor, and the declared purpose is confirmed against active consent before OPA is consulted (§8). Revocation lists live in Redis for low-latency checks (§12).
 
 ### 10.4 Enrollment handoff (stub)
-Consumes the eligibility contract (§7.3). Identity, consent scope, accommodation profile, and an eligibility-evidence *reference* (never raw responses, artifacts, or CogAT items) transfer into the platform so they are not re-collected (parent §3.5). Runs against a stub until the admissions interface is available.
+Consumes the eligibility contract (§7.3). Identity, consent scope, accommodation profile, and an eligibility-evidence *reference* (never raw responses or artifacts) transfer into the platform so they are not re-collected (parent §3.5). Runs against a stub until the external interface is available.
 
 ---
 
@@ -458,7 +458,7 @@ This is a **spine-scoped subset** of the parent Month 1 construction gate (paren
 
 A run passes when, for a **synthetic fixture learner**:
 
-1. **Provisioning.** The fixture arrives through the **stubbed enrollment handoff** — eligible-learner roster and accommodation profile consumed from the admissions contract stub (§7.3, §10.4).
+1. **Provisioning.** The fixture arrives through the **stubbed enrollment handoff** — eligible-learner roster and accommodation profile consumed from the external eligibility contract stub (§7.3, §10.4).
 2. **Consent lifecycle.** A guardian can **grant and withdraw** consent, and a child **assent** is recorded; a service refuses to process data lacking an active matching purpose (§10).
 3. **Traceability.** Every consequential action produces a **signed, idempotent `LearnerEvent`** whose envelope traces to `consent_purpose`, `policy_version`, `evidence_refs`, `schema_version` (software version), and the responsible actor (§7, §8).
 4. **Human authority.** A `DecisionRecord` **cannot be finalized** without a named `authorized_human` and a policy result; a model output cannot fill that field (§7.2).
@@ -487,16 +487,16 @@ Developers can **trace each consequential action** to consent, policy, evidence,
 ### 19.1 Dependencies
 - **AWS Organization** with permission to create the account set (§4.3).
 - Managed **Redpanda** and **Temporal** in US regions with child-data DPAs (§4.5).
-- The admissions team's **eligibility contract shape** — consumed via stub until their interface ships (§7.3).
+- The external admission process's **eligibility contract shape** — consumed via stub until that interface ships (§7.3).
 
 ### 19.2 Assumptions
 - All Month 1 data is **synthetic**; no live child data crosses any boundary (§3.3).
-- The admissions team's **Prohibited Eligibility Inputs** hold across the handoff, so no household-income or protected-attribute data enters the platform (parent §3.5).
+- The external process's **prohibited eligibility inputs** hold across the handoff, so no household-income or protected-attribute data enters the platform (parent §3.5).
 
 ### 19.3 Risks
 | Risk | Mitigation |
 |---|---|
-| Admissions contract drifts from the stub | Stub mirrors the agreed contract shape; cutover is config, not rewrite (§7.3). Confirm shape with admissions team early. |
+| Eligibility contract drifts from the stub | Stub mirrors the agreed contract shape; cutover is config, not rewrite (§7.3). Confirm shape with the external admission team early. |
 | Dual-write races (DB vs. event log) | Transactional outbox + idempotent consumers (§9). |
 | Deletion misses a store | Automated cross-store deletion test in the gate; append-only stores use crypto-shred (§13, §17). |
 | Account-boundary retrofit later | Reserve Public/Sandbox/Sensitive accounts now so later features land inside an existing boundary (§4.3). |
@@ -519,7 +519,7 @@ The spine is built in dependency order so each step can be exercised as soon as 
 | 7 | **Data plane** — per-service PostgreSQL (bitemporal), Redis, S3/Iceberg (§12). | Durable state + projections. |
 | 8 | **Temporal deletion workflow** — cross-store erasure + crypto-shred (§13). | Withdrawal → deletion. |
 | 9 | **CI/CD + telemetry** — GitHub Actions sign, Argo CD deploy, OpenFeature rings, OTel/Prometheus/Grafana (§15, §16). | Repeatable, observable delivery. |
-| 10 | **Stubbed enrollment handoff** — synthetic eligible-learner provisioning against the admissions contract shape (§7.3, §10.4). | Construction-gate fixture. |
+| 10 | **Stubbed enrollment handoff** — synthetic eligible-learner provisioning against the external eligibility contract shape (§7.3, §10.4). | Construction-gate fixture. |
 | 11 | **Construction gate run** — the acceptance criteria in §17. | Sign-off to build consumers (Weeks 3–4). |
 
 Steps 1–3 are the literal "first because all later work depends on them" (parent §32.1). Weeks 3–4 consumers (partner-engine integration, Student Compass shell, Foundry skeleton) are specified in their own baby PRDs and are out of scope here (§3.2).
@@ -544,4 +544,4 @@ Per [`AGENTS.md`](../../AGENTS.md), this feature is done when:
 - **Pseudonymous actor reference** — the non-identifying handle downstream services receive instead of legal identity (§10).
 - **Construction gate** — the acceptance run that proves the spine works end-to-end (§17).
 
-**Canonical cross-references:** parent §26 (architecture/tech stack, **§26.6 Cloud = AWS committed**), §27 (service boundaries + command path), §28 (versioned contracts), §30 (reliability/security/ops), §32.1 (Month 1 foundation + construction gate). Rights/consent/governance content: [`GOVERNANCE.md`](GOVERNANCE.md). Admissions boundary: [`ADMISSIONS_PRD.md`](ADMISSIONS_PRD.md), parent §3.4–§3.5.
+**Canonical cross-references:** parent §26 (architecture/tech stack, **§26.6 Cloud = AWS committed**), §27 (service boundaries + command path), §28 (versioned contracts), §30 (reliability/security/ops), §32.1 (Month 1 foundation + construction gate). Rights/consent/governance content: [`GOVERNANCE.md`](GOVERNANCE.md). Admissions boundary: external admission process (out of scope), parent §3.4–§3.5.

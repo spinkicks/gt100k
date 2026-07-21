@@ -1,15 +1,14 @@
 {
   "files": [],
   "references": [
-    { "path": "packages/learning-loop" },
-    { "path": "packages/evidence-explorer-view" },
-    { "path": "packages/interest-lab" },
-    { "path": "packages/interest-lab-view" },
-    { "path": "adapters/repo-memory" },
-    { "path": "adapters/timeback-stub" },
-    { "path": "adapters/interest-repo-memory" },
-    { "path": "adapters/interest-probe-catalog" },
-    { "path": "adapters/interest-assent-stub" },
-    { "path": "adapters/interest-artifact-stub" }
+    { "path": "passion/packages/evidence-explorer-view" },
+    { "path": "passion/packages/interest-lab" },
+    { "path": "passion/packages/interest-lab-view" },
+    { "path": "passion/packages/passion-tutor" },
+    { "path": "passion/adapters/passion-tutor-memory" },
+    { "path": "passion/adapters/interest-repo-memory" },
+    { "path": "passion/adapters/interest-probe-catalog" },
+    { "path": "passion/adapters/interest-assent-stub" },
+    { "path": "passion/adapters/interest-artifact-stub" }
   ]
 }
