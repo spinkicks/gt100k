@@ -2490,6 +2490,30 @@ body:has(.interest-lab-client[data-active-surface="child"]) {
   color: var(--ink-muted);
 }
 
+/* P-A2 — the doorway room stage. The frozen CanvasHost renders <div data-canvas-host><Canvas/></div>
+   with no size of its own, so give it a composed golden-hour panel: you look *through the cabin door*
+   into the firelit Atelier. Warm walnut frame + soft inset so the 3D warm haze meets the cream page
+   cleanly (never a 0px strip, never a black rectangle). */
+.interest-lab-client[data-active-surface="child"] [data-canvas-host="true"] {
+  position: relative;
+  width: 100%;
+  max-width: 62rem;
+  margin: 1.25rem auto 0;
+  aspect-ratio: 16 / 10;
+  border-radius: 20px;
+  overflow: hidden;
+  background: radial-gradient(120% 100% at 32% 24%, #f3ddac 0%, #e6d2a2 58%, #d3b982 100%);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 55%) inset,
+    0 24px 54px -28px rgb(74 51 32 / 58%),
+    0 0 0 7px rgb(107 74 46 / 24%);
+}
+.interest-lab-client[data-active-surface="child"] [data-canvas-host="true"] canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   body:has(.interest-lab-client[data-active-surface="child"]) {
     background:
