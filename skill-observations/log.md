@@ -178,3 +178,5 @@ resolved statuses always carry their resolution date
 
 - 2026-07-21 Interest Lab core P0 implementation checkpoint: no additional observations.
 - 2026-07-21 Interest Lab core P0 completion checkpoint: no additional observations.
+- 2026-07-21 Interest Lab core P1 RED-GREEN checkpoint: no additional observations.
+- 2026-07-21 Interest Lab core P1 completion checkpoint: no additional observations.

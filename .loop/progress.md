@@ -275,3 +275,27 @@ non-negotiable.
   assistive/withdrawn dropping; implement `toEngagementEvents` so `summarizeSignals` matches §8.5.
   Acceptance: **SC-CORE-02/03/04/07**, exact §8.1–8.3/8.5 goldens, all existing tests, typecheck, and app
   production build green.
+
+## Done this turn — P1 return grid + novelty gate + engagement bridge
+- Added the exact `ACTIVITY_GOLDEN_V1`, `ACTIVITY_GOLDEN_WORKMODE_V1`, and
+  `ACTIVITY_GOLDEN_INSUFFICIENT_V1` domain fixtures and exported them from
+  `@gt100k/interest-lab`.
+- Replaced the P0 grid placeholder with the pinned domain × work-mode algorithm: deterministic
+  aggregation/sorting, novelty and intervention buckets, assistive/withdrawn exclusion, configurable
+  thresholds, and row/column spike detection with spread and lead-margin gates.
+- Added `toEngagementEvents` with deterministic provenance ids, exact activity-kind mapping, novelty
+  suppression, intervention carry-through, assistance handling, and withdrawal dropping.
+- Added RED-first acceptance suites for exact `GRID_GOLDEN_A/B`, all SC-CORE-03 exclusions, the exact
+  §8.5 signal summary, and every bridge mapping.
+- SC status: **SC-CORE-01/02/03/04/07/13 green**, **SC-CORE-15 remains green at its P0 shape level**;
+  SC-CORE-05/06/08…12/14 remain assigned to P2…P6, and manual SC-CORE-16 is excluded.
+- Gate evidence: `pnpm typecheck` ✓; `pnpm test` ✓ (**101 files, 472 tests**); lane-owned Biome check ✓;
+  `pnpm --filter @gt100k/interest-lab-app build` ✓ (static `/` prerender).
+- `.loop-done` remains absent because P2–P7 are not complete.
+
+## NEXT
+- **P2 — implement the revisable hypothesis and guardrails test-first.** Make
+  `buildRevisableHypothesis` equal `HYP_GOLDEN_A/B/C` exactly for the three P1 fixtures, including
+  supporting/disconfirming copy, ordered coverage gaps, and offered-cell-only distinguishing probes;
+  add deep-key and copy guardrails for all domain/view outputs. Acceptance: **SC-CORE-05/06**, exact
+  §4.5/§8.4 goldens, all existing tests, typecheck, lane lint, and app production build green.

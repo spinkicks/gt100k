@@ -990,3 +990,12 @@ _Legacy scratch below (prior interest-lab loop — not applicable to evidence-ex
   `code-brackets`, and `art-brush`; 3D stubs are unlit labeled boxes and DOM stubs are labeled buttons.
 - **Why:** the core spec pins labels and grid cells but leaves glyph ids and the exact verb unspecified.
   These values are deterministic, accessible, and intentionally leave all visual craft to the world lane.
+
+## IL-CORE-003 — The activity bridge uses contract-local provenance defaults
+- **Chose:** default `learnerRef` to `synthetic-interest-lab-learner` when the caller omits it, and project
+  `familyId` from `probeId`.
+- **Why:** the bridge signature has no catalog input, so it cannot inspect a separately declared probe
+  family; every v1 stub already pins `familyId === probeId`. The synthetic default is deterministic and
+  makes the zero-option bridge usable without introducing wall-clock or ambient state.
+- **Rejected:** importing the zone catalog into the pure domain package would invert the dependency graph;
+  accepting an undeclared global registry would make a pure projection depend on ambient mutable state.

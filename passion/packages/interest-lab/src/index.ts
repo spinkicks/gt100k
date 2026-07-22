@@ -1,5 +1,11 @@
 export { isProbeEligible, rotateBySeed, selectEligibleFamilyVariants } from "./catalog";
 export {
+  ACTIVITY_GOLDEN_INSUFFICIENT_V1,
+  ACTIVITY_GOLDEN_V1,
+  ACTIVITY_GOLDEN_WORKMODE_V1,
+} from "./activity-fixtures";
+export { toEngagementEvents } from "./activity-bridge";
+export {
   DEFAULT_RETURN_GRID_CONFIG,
   buildReturnGrid,
   buildRevisableHypothesis,
