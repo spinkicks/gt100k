@@ -220,3 +220,20 @@ resolved statuses always carry their resolution date
 - 2026-07-21 Interest Lab core P5 completion checkpoint: Observation 12 captured; no additional observations.
 - 2026-07-21 Interest Lab core P6 RED-GREEN checkpoint: no additional observations.
 - 2026-07-21 Interest Lab core P6 completion checkpoint: no additional observations.
+
+### Observation 13: Pair pure integration smoke with a mounted boundary test
+
+**Status:** OPEN
+**Date:** 2026-07-21
+**Session context:** Completing a phased React integration after every pure engine and view builder was already implemented and tested.
+**Skill:** test-driven-development
+**Type:** open-source
+**Phase/Area:** RED selection for integration phases
+
+**Issue:** Tightening a pure seeded smoke to exact values passed immediately because the underlying functions were already correct, while the actual application still had no live composition of those functions. The pure chain could not provide a meaningful RED for the remaining adapter work.
+
+**Suggested improvement:** For an integration phase whose pure units are already green, pair the deterministic pure smoke with a mounted boundary test that drives one real user action across the adapter and asserts the externally visible state transition. Use the mounted failure as the RED for wiring work while retaining the pure smoke for exact-value coverage.
+
+**Principle:** Exact pure composition proves compatible functions; only a boundary-level interaction proves that the running application actually connects them.
+
+- 2026-07-21 Interest Lab core P7 completion checkpoint: Observation 13 captured; no additional observations.

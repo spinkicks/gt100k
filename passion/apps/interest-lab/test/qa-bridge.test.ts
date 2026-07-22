@@ -9,13 +9,21 @@ import {
   zoneHostReducer,
 } from "@gt100k/interest-lab-view";
 import type { Qa } from "@gt100k/interest-lab-view";
-import { type ComponentType, act, createElement } from "react";
+import { type ComponentType, type ReactNode, act, createElement } from "react";
 import { type Root, createRoot } from "react-dom/client";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import * as AppShell from "../app/InterestLabClient";
 
 vi.mock("../app/child/QuestWorld", () => ({ QuestWorld: () => null }));
 vi.mock("../app/guide/GuideConsole", () => ({ GuideConsole: () => null }));
+vi.mock("@react-three/fiber", () => ({
+  Canvas: ({ children }: { children?: ReactNode }) =>
+    createElement("div", { "data-testid": "core-canvas" }, children),
+}));
+vi.mock("@react-three/drei", () => ({
+  AdaptiveDpr: () => null,
+  PerformanceMonitor: () => null,
+}));
 
 const V1_DOMAIN_ORDER = ["sound_music", "symbols_math", "visual_design"] as const;
 
@@ -130,5 +138,57 @@ describe("Interest Lab window.__qa bridge", () => {
     await act(async () => root?.unmount());
     root = null;
     expect(Reflect.has(window, "__qa")).toBe(false);
+  });
+
+  it("drives the live core shell from map entry through a delayed activity", async () => {
+    container = document.createElement("div");
+    document.body.append(container);
+    root = createRoot(container);
+
+    await act(async () => root?.render(createElement(AppShell.InterestLabClient)));
+
+    const map = container.querySelector('[data-primary-surface="curiosity-map"]');
+    const music = container.querySelector<HTMLButtonElement>(
+      'button[aria-label^="Music Studio, discovery zone"]',
+    );
+    expect(map).not.toBeNull();
+    expect(music).not.toBeNull();
+
+    await act(async () => music?.click());
+    let qa = Reflect.get(window, "__qa") as Qa;
+    expect(qa.activeZoneId).toBe("music");
+    expect(qa.interactives().map(({ id }) => id)).toEqual([
+      "map:music",
+      "map:code",
+      "map:art",
+      "control:time-lapse",
+      "action:m_build",
+      "action:m_debug",
+      "action:m_perform",
+    ]);
+
+    const nextWeek = container.querySelector<HTMLButtonElement>(
+      'button[aria-label="A week later…"]',
+    );
+    await act(async () => nextWeek?.click());
+    const build = [...container.querySelectorAll<HTMLButtonElement>("button")].find(
+      (button) => button.textContent === "Build",
+    );
+    expect(build).toBeDefined();
+
+    await act(async () => build?.click());
+    qa = Reflect.get(window, "__qa") as Qa;
+    expect(qa.grid().cells).toEqual([
+      expect.objectContaining({
+        domain: "sound_music",
+        workMode: "build",
+        visits: 1,
+        noveltyVisits: 0,
+        voluntaryReturns: 1,
+      }),
+    ]);
+    expect(qa.stateHash()).toBe(
+      '{"activeZoneId":"music","cells":[["sound_music","build",1,0]],"reading":"insufficient"}',
+    );
   });
 });

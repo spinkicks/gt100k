@@ -1,23 +1,9 @@
 "use client";
 
-import { buildLab, buildReturnGrid, buildRevisableHypothesis } from "@gt100k/interest-lab";
-import {
-  type DeviceCaps,
-  INITIAL_ZONE_HOST_STATE,
-  type InterestLabView,
-  type Qa,
-  type RenderTier,
-  buildCuriosityMapView,
-  buildQaSnapshot,
-} from "@gt100k/interest-lab-view";
-import {
-  STUB_MANIFESTS,
-  STUB_ZONE_CATALOG_V1,
-  V1_DOMAIN_ORDER,
-  ZONE_LAB_CONFIG_V1,
-} from "@gt100k/interest-zone-kit";
+import type { DeviceCaps, InterestLabView, RenderTier } from "@gt100k/interest-lab-view";
 import { useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { InterestLabCoreShell } from "./InterestLabCoreShell";
 import { QuestWorld } from "./child/QuestWorld";
 import { GuideConsole } from "./guide/GuideConsole";
 import type { GuideAuthoringInput } from "./guide/authoring";
@@ -35,6 +21,8 @@ import {
 } from "./ui/controls/settings";
 import { detectDeviceCaps } from "./ui/deviceCaps";
 
+export { InterestLabQaBridge } from "./InterestLabQaBridge";
+
 const DEFAULTS = readInterestLabClientDefaults({
   NEXT_PUBLIC_DEFAULT_AGE_BAND: process.env.NEXT_PUBLIC_DEFAULT_AGE_BAND,
   NEXT_PUBLIC_REDUCED_MOTION_DEFAULT: process.env.NEXT_PUBLIC_REDUCED_MOTION_DEFAULT,
@@ -43,51 +31,6 @@ const DEFAULTS = readInterestLabClientDefaults({
 });
 
 const SERVER_DEVICE_CAPS: DeviceCaps = { webglAvailable: false };
-
-declare global {
-  interface Window {
-    __qa?: Qa;
-  }
-}
-
-const buildInitialCoreQa = (): Qa => {
-  const lab = buildLab(
-    "synthetic-interest-lab-core",
-    STUB_ZONE_CATALOG_V1,
-    { metPrereqs: [], engagedDomains: [] },
-    ZONE_LAB_CONFIG_V1,
-  );
-  const grid = buildReturnGrid([], { domainOrder: V1_DOMAIN_ORDER });
-  const map = buildCuriosityMapView(STUB_MANIFESTS, [], { domainOrder: V1_DOMAIN_ORDER });
-  const hypothesis = buildRevisableHypothesis(
-    grid,
-    lab.coverage,
-    lab.offers.map(({ domain, workMode }) => ({ domain, workMode })),
-  );
-
-  return buildQaSnapshot({
-    ready: true,
-    host: INITIAL_ZONE_HOST_STATE,
-    map,
-    grid,
-    hypothesis,
-    interactives: [
-      ...map.buildings.map(({ zoneId, label, domain }) => ({
-        id: `map:${zoneId}`,
-        kind: "map-building" as const,
-        label,
-        domain,
-      })),
-      {
-        id: "control:time-lapse",
-        kind: "map-control",
-        label: "A week later…",
-      },
-    ],
-  });
-};
-
-const INITIAL_CORE_QA = buildInitialCoreQa();
 
 const TIER_STATUS: Record<RenderTier, string> = {
   "quest-world-3d": "Full 3D world",
@@ -100,20 +43,6 @@ export interface InterestLabSurfaceProps {
   onContextLost?: () => void;
   onPerformanceDecline?: () => void;
   onAuthorRevision?: (input: GuideAuthoringInput) => void;
-}
-
-export function InterestLabQaBridge({ qa }: { qa: Qa }) {
-  useEffect(() => {
-    window.__qa = qa;
-
-    return () => {
-      if (window.__qa === qa) {
-        Reflect.deleteProperty(window, "__qa");
-      }
-    };
-  }, [qa]);
-
-  return null;
 }
 
 export function InterestLabSurface({
@@ -197,8 +126,6 @@ export function InterestLabClient() {
 
   return (
     <>
-      <InterestLabQaBridge qa={INITIAL_CORE_QA} />
-
       <a className="skip-link" href="#interest-lab-content">
         Skip to Interest Lab
       </a>
@@ -238,6 +165,11 @@ export function InterestLabClient() {
         />
 
         <section className="quest-workspace material" id="interest-lab-content">
+          <InterestLabCoreShell
+            renderTier={activeRenderTier}
+            reducedMotion={reducedMotion}
+            onPerformanceDecline={handlePerformanceDecline}
+          />
           <InterestLabSurface
             view={seed.view}
             onContextLost={handleContextLost}

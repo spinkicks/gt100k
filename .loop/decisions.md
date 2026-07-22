@@ -1067,3 +1067,15 @@ _Legacy scratch below (prior interest-lab loop — not applicable to evidence-ex
   The loop gate must execute SC-CORE-08/10/11 itself rather than relying on an extra package command.
 - **Rejected:** documenting a second required test command would leave the stated root gate incomplete and
   allow later harness runs to skip the accessible DOM and persistent-Canvas acceptance tests again.
+
+## IL-CORE-010 — Runtime activity starts empty; exact golden history stays in the smoke
+- **Chose:** mount the core shell with an empty append-only activity log, derive every engine and QA read
+  from it, and keep `ACTIVITY_GOLDEN_V1` as the deterministic seeded smoke input rather than silently
+  preloading it into the learner-facing runtime. The primary DOM map is composed before the existing app
+  preview, and the app's static `ZONES` registry is the sole downstream replacement point.
+- **Why:** an empty runtime preserves the exact initial QA golden and ensures every later signal comes from
+  an operable action. The seeded smoke still proves the complete topic-leaning chain without making a new
+  session appear to contain prior behavior. Keeping the existing preview preserves SC-CORE-01 while the
+  core map remains the explicitly declared primary surface.
+- **Safety:** the app uses only synthetic fixtures, injected day offsets, and append-only local state; it
+  introduces no wall-clock, randomness, child records, or identity-defining copy.

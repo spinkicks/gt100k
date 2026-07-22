@@ -442,3 +442,26 @@ non-negotiable.
   `MAP_GOLDEN`, entered `stateHash`, and full interactive ids. Acceptance: full **SC-CORE-15**, all
   automated **SC-CORE-01…15**, typecheck, root tests, changed-file lint, and app production build green;
   then create `.loop-done` (SC-CORE-16 remains manual/excluded).
+
+## Done this turn — P7 integrated shared core + exact seeded smoke
+- Added the app's single zone merge point (`app/zones.ts`) and a controlled shared-core shell that composes
+  the primary DOM Curiosity Map, persistent `CanvasHost`, stub registry, reducer-owned host state, and an
+  append-only activity log. Grid, map, revisable hypothesis, active action ids, and `window.__qa` now derive
+  live from that state.
+- Preserved the exact initial QA hash, then added a RED-first mounted acceptance proving the real DOM path:
+  enter Music, advance to day 7, activate Build, and observe the voluntary-return cell and changed QA hash.
+- Tightened `core-smoke.test.ts` to the complete `GRID_GOLDEN_A`, `HYP_GOLDEN_A`, `MAP_GOLDEN`, entered
+  `stateHash`, and all map/control/Music action ids through the frozen public contracts.
+- Freeze point reached: `ZonePlugin`, `RoomProps`, and `ActivityEvent` are now lane-0 frozen; downstream
+  zones replace only the `ZONES` registry inputs and must not change these contracts.
+- SC status: **all automated SC-CORE-01…15 green**. **SC-CORE-16 remains manual/excluded** and is recorded
+  as Partial for the downstream visual review, not an automated lane-0 blocker.
+- Gate evidence: focused RED = missing primary Curiosity Map; focused GREEN = **2 files, 4 tests**;
+  changed-file Biome = **6 files clean**; `pnpm typecheck` ✓; `pnpm test` ✓ (**112 files, 506 tests**);
+  `pnpm --filter @gt100k/interest-lab-app build` ✓ (static `/` prerender).
+- `.loop-done` created: P0–P7 and the automated definition of done are complete.
+
+## NEXT
+- **World-lane handoff only:** replace `STUB_ZONES` at `app/zones.ts` with the three real zone plugins while
+  keeping the frozen `ZonePlugin` / `RoomProps` / `ActivityEvent` contracts byte-for-byte compatible.
+  Acceptance: SC-CORE-01…15 and the full gate remain green; SC-CORE-16 receives the operator's manual review.
