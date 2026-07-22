@@ -795,16 +795,25 @@ const ART:   MapBuildingView = { label: "The Atelier Cabin",   glyph: "brush-fra
 
 ```ts
 window.__qa = {
+  // ── frozen core §7 Qa shape (unchanged) ──
   primarySurface: "curiosity-map",                     // the DOM map is primary (not the canvas)
   canvas: { present: true, ariaHidden: false, primary: false, hasDomAlternative: true }, // suspended on the clearing
   activeZoneId: null,                                   // null = overworld; set on enter
   interactives(): QaInteractive[],                      // 3 cabin buildings (map-building) + the time-lapse (map-control)
   stateHash(): string,                                  // changes on cabin ENTER / on a return; NEVER on a clearing delight
-  getEmittedSignals(): Array<...>,                      // records ZERO from any clearing delight (the firewall)
   settle(frames?): Promise<void>,
   grid(): ReturnGrid, hypothesis(): RevisableHypothesis,
+  // ── ADDITIVE QA-only accessor (NOT a core §7 shape change) ──
+  getEmittedSignals(): Array<...>,                      // records ZERO from any clearing delight (the firewall)
 };
 ```
+
+> **On `getEmittedSignals()`.** This is an **additive, QA-only** accessor layered on top of the frozen core
+> §7 `window.__qa` shape — it does **not** change the frozen contract. It makes the firewall test direct;
+> the firewall is **equivalently** provable with the frozen shape alone (fire every delight → the frozen
+> `grid()` / `hypothesis()` / `stateHash()` are **unchanged**). Either assertion satisfies §8.8 / §5.5.
+> *(Flagged: the frozen core §7 `Qa` has no firewall accessor — see the audit report; if the harness needs
+> one at contract level, the core spec owns that addition, not this doc.)*
 
 ### 9.5 CC0 sourcing + the bake pipeline (bible §10; pipeline §6–7)
 

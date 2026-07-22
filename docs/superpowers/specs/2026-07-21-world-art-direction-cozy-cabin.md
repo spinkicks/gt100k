@@ -88,7 +88,7 @@ glyph · signature dressing) so a color-blind child reads them at a glance:
 | Cabin | Identity hue (`HUE_RAMP`, KEPT) | Silhouette / roof | Hanging sign | Signature dressing (map + interior) |
 |---|---|---|---|---|
 | **The Sounding Cabin** (Music, `sound_music`) | terracotta `#E8825A` | a snug log cabin with a **gramophone-horn cupola** on the roof and a stout stone chimney | a carved **♪ note** on an iron bracket | notes drift up *with* the chimney smoke; the warmest, amberest window on the map |
-| **The Tinker Workshop** (Code, `computation`) | sage-green `#5FB98C` | a **greenhouse-workshop**: log walls, a **glass gable roof**, a **gear-sprout weathervane** | a **cog sprouting a leaf** ("logic that grows") | potted sprouts on the sill, a wind-up bot on the porch, a lantern, cool cyan tool-glow inside |
+| **The Tinker Workshop** (Code, `symbols_math`) | sage-green `#5FB98C` | a **greenhouse-workshop**: log walls, a **glass gable roof**, a **gear-sprout weathervane** | a **cog sprouting a leaf** ("logic that grows") | potted sprouts on the sill, a wind-up bot on the porch, a lantern, cool cyan tool-glow inside |
 | **The Atelier Cabin** (Art, `visual_design`) | periwinkle `#6C8CE8` | a gable cabin with a big **north-light skylight** and an **easel on the porch** | a **paintbrush + frame** | a hanging painting, a paint-splash doormat, the coolest "lit-window-at-dusk" glow (the one cool accent) |
 
 **Room to grow (composition, not redesign).** The clearing is drawn with visible *empty lots* — a stump
@@ -329,9 +329,10 @@ shadows, one bloom job.
 from the window/skylight, carrying **dust motes** (`<Sparkles>`, sparse). This one detail sells "cabin at
 golden hour" more than any prop.
 
-**Mood LUT (cheap emotional reframe, optional).** A per-scene dial — dawn / golden day / **dusk (default)**
+**Mood LUT (cheap emotional reframe, optional).** A per-scene dial — dawn / **golden day (default)** / dusk
 / night / hearth-storm — is just a swap of {fog tint, key intensity+rotation, `dusk.skylight` strength,
-`<Stars>`/`<Cloud>` toggles, fire dominance}; **no new geometry.** Resting state is **warm golden hour**;
+`<Stars>`/`<Cloud>` toggles, fire dominance}; **no new geometry.** Resting state is **warm golden hour**
+(the time-lapse `dayOffset` 7/30 settles it *toward* dusk — but golden hour is home base);
 "moody/night as the default" is a banned outcome.
 
 ---

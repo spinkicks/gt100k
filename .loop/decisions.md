@@ -999,3 +999,12 @@ _Legacy scratch below (prior interest-lab loop — not applicable to evidence-ex
   makes the zero-option bridge usable without introducing wall-clock or ambient state.
 - **Rejected:** importing the zone catalog into the pure domain package would invert the dependency graph;
   accepting an undeclared global registry would make a pure projection depend on ambient mutable state.
+
+## IL-CORE-004 — Hypothesis goldens keep domain tests dependency-local
+- **Chose:** construct the complete nine-cell coverage matrix inside the domain acceptance test with
+  `buildCoverageMatrix`, while mirroring the frozen stub cell attributes and offered-cell order.
+- **Why:** the §8.4 goldens require complete stub coverage, but making `@gt100k/interest-lab` tests import
+  the React-aware zone kit would reverse the production dependency direction. The local structural input
+  exercises the real coverage builder and keeps the domain package independently testable.
+- **Rejected:** casting a gaps-only object would bypass the coverage contract; importing
+  `@gt100k/interest-zone-kit` would couple the pure engine's test suite to the UI seam.

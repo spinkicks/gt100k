@@ -1,3 +1,10 @@
+> # ⚠️ SUPERSEDED — DO NOT BUILD FROM THIS FILE
+> This v1 single-surface "Storybox" design is **superseded** by:
+> - **[`2026-07-21-zone-art-design-v2.md`](./2026-07-21-zone-art-design-v2.md)** — the current two-layer (discovery world + content app) design, and
+> - **[`2026-07-21-cabin-interior-art.md`](./2026-07-21-cabin-interior-art.md)** — the enriched, buildable **"Atelier"** interior (the grand-easel doorway + art in ALL its forms: a drawing tablet, a warm **"digital easel,"** a kindly **Bob-Ross homage**, and framed **meme** prints — the digital tools are **ambient live-tastes, never a second doorway**).
+>
+> Kept only for git history. **Canonical binding now:** domain = **`visual_design`** (not the `visual` used below). If anything below disagrees with the v2 / cabin specs or [`2026-07-21-interest-lab-reconciliation.md`](./2026-07-21-interest-lab-reconciliation.md), **those win.**
+
 # Interest Lab — Zone: ART STUDIO (domain `visual`) — design
 
 **Date:** 2026-07-21 · **Owner:** David · **Lane:** 3 (parallel zone loop) · **Domain:** `visual` · **Zone id:** `art`

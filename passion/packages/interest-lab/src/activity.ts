@@ -239,17 +239,164 @@ export interface RevisableHypothesis {
 }
 
 export function buildRevisableHypothesis(
-  _grid: ReturnGrid,
+  grid: ReturnGrid,
   coverage: CoverageMatrix,
-  _offeredCells: readonly { domain: Domain; workMode: WorkMode }[],
+  offeredCells: readonly { domain: Domain; workMode: WorkMode }[],
 ): RevisableHypothesis {
+  const topicRow = grid.rows.find(({ domain }) => domain === grid.rowSpike);
+  const workModeColumn = grid.columns.find(({ workMode }) => workMode === grid.columnSpike);
+  const topicSpike = topicRow
+    ? {
+        axis: topicRow.domain,
+        voluntaryReturns: topicRow.voluntaryReturns,
+        spans: [...topicRow.workModesTouched],
+      }
+    : null;
+  const workModeSpike = workModeColumn
+    ? {
+        axis: workModeColumn.workMode,
+        voluntaryReturns: workModeColumn.voluntaryReturns,
+        spans: [...workModeColumn.domainsTouched],
+      }
+    : null;
+  const reading = hypothesisReading(topicSpike !== null, workModeSpike !== null);
+  const topMode = topicSpike ? topWorkModeInDomain(grid, topicSpike.axis) : null;
+  const topDomain = workModeSpike ? topDomainInWorkMode(grid, workModeSpike.axis) : null;
+
+  const supporting: string[] = [];
+  if (topicSpike) {
+    supporting.push(
+      `Returned to ${topicSpike.axis} across ${topicSpike.spans.length} kinds of work (${formatList(topicSpike.spans)}) without prompting.`,
+    );
+  }
+  if (workModeSpike) {
+    supporting.push(
+      `Returned to ${workModeSpike.axis} across ${workModeSpike.spans.length} topics (${formatList(workModeSpike.spans)}) without prompting.`,
+    );
+  }
+
+  const disconfirming: string[] = [];
+  if (reading === "topic-leaning" && topicSpike && topMode) {
+    const column = grid.columns.find(({ workMode }) => workMode === topMode);
+    if (column?.domainsTouched.length === 1) {
+      disconfirming.push(
+        `'${topMode}' returns so far appear only in ${topicSpike.axis} — a work-mode preference across topics is not ruled out.`,
+      );
+    }
+  } else if (reading === "work-mode-leaning" && workModeSpike && topDomain) {
+    disconfirming.push(
+      `'${workModeSpike.axis}' returns are strongest in ${topDomain.domain} (${topDomain.voluntaryReturns}) — a pull toward the ${topDomain.domain} topic is not ruled out.`,
+    );
+  }
+
+  const offeredDomains = new Set(offeredCells.map(({ domain }) => domain));
+  const offeredWorkModes = new Set(offeredCells.map(({ workMode }) => workMode));
+  const coverageGaps = [
+    ...grid.rows
+      .filter(
+        ({ domain, voluntaryReturns }) => offeredDomains.has(domain) && voluntaryReturns === 0,
+      )
+      .map(({ domain }) => `No return data yet for ${domain}.`),
+    ...grid.columns
+      .filter(
+        ({ workMode, voluntaryReturns }) =>
+          offeredWorkModes.has(workMode) && voluntaryReturns === 0,
+      )
+      .map(({ workMode }) => `No return data yet for ${workMode}.`),
+    ...coverage.gaps,
+  ];
+
+  let nextDistinguishingProbe: RevisableHypothesis["nextDistinguishingProbe"] = null;
+  if (reading === "topic-leaning" && topicSpike && topMode) {
+    const domain = grid.domainOrder.find(
+      (candidate) =>
+        candidate !== topicSpike.axis &&
+        offeredCells.some((cell) => cell.domain === candidate && cell.workMode === topMode),
+    );
+    if (domain !== undefined) {
+      nextDistinguishingProbe = {
+        domain,
+        workMode: topMode,
+        why: `Offer ${topMode} in another topic to test whether the work-mode travels or the pull is specific to ${topicSpike.axis}.`,
+      };
+    }
+  } else if (reading === "work-mode-leaning" && workModeSpike && topDomain) {
+    const workMode = WORK_MODES.find(
+      (candidate) =>
+        candidate !== workModeSpike.axis &&
+        offeredCells.some(
+          (cell) => cell.domain === topDomain.domain && cell.workMode === candidate,
+        ),
+    );
+    if (workMode !== undefined) {
+      nextDistinguishingProbe = {
+        domain: topDomain.domain,
+        workMode,
+        why: "Offer a different kind of work in the strongest topic to test whether the pull is the topic or the making.",
+      };
+    }
+  }
+
   return {
-    reading: "insufficient",
-    topicSpike: null,
-    workModeSpike: null,
-    supporting: [],
-    disconfirming: [],
-    coverageGaps: [...coverage.gaps],
-    nextDistinguishingProbe: null,
+    reading,
+    topicSpike,
+    workModeSpike,
+    supporting,
+    disconfirming,
+    coverageGaps,
+    nextDistinguishingProbe,
   };
+}
+
+function hypothesisReading(hasTopicSpike: boolean, hasWorkModeSpike: boolean): HypothesisReading {
+  if (hasTopicSpike && hasWorkModeSpike) {
+    return "mixed";
+  }
+  if (hasTopicSpike) {
+    return "topic-leaning";
+  }
+  return hasWorkModeSpike ? "work-mode-leaning" : "insufficient";
+}
+
+function voluntaryReturnsFor(grid: ReturnGrid, domain: Domain, workMode: WorkMode): number {
+  return (
+    grid.cells.find((cell) => cell.domain === domain && cell.workMode === workMode)
+      ?.voluntaryReturns ?? 0
+  );
+}
+
+function topWorkModeInDomain(grid: ReturnGrid, domain: Domain): WorkMode {
+  return WORK_MODES.reduce((top, candidate) =>
+    voluntaryReturnsFor(grid, domain, candidate) > voluntaryReturnsFor(grid, domain, top)
+      ? candidate
+      : top,
+  );
+}
+
+function topDomainInWorkMode(
+  grid: ReturnGrid,
+  workMode: WorkMode,
+): { domain: Domain; voluntaryReturns: number } | null {
+  const firstDomain = grid.domainOrder[0];
+  if (firstDomain === undefined) {
+    return null;
+  }
+
+  const domain = grid.domainOrder.reduce((top, candidate) =>
+    voluntaryReturnsFor(grid, candidate, workMode) > voluntaryReturnsFor(grid, top, workMode)
+      ? candidate
+      : top,
+  );
+  return { domain, voluntaryReturns: voluntaryReturnsFor(grid, domain, workMode) };
+}
+
+function formatList(items: readonly string[]): string {
+  if (items.length < 2) {
+    return items[0] ?? "";
+  }
+  if (items.length === 2) {
+    return `${items[0]} and ${items[1]}`;
+  }
+
+  return `${items.slice(0, -1).join(", ")}, and ${items.at(-1)}`;
 }

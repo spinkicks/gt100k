@@ -673,7 +673,7 @@ Movement must never cost what the art can't afford (art bible §9; world-visual-
 | Map traversal | **DOM only** — avatar is a transform/`motion` tween along a baked spline; Canvas **asleep** on the clearing (~0 GPU) |
 | Room loop | one persistent `<Canvas frameloop="demand">`; idle room ≈ 0 GPU; `dpr ≤ 1.5`; `<50` draw calls; frozen shadows |
 | Transition | preload GLB under the wipe; reveal on `ready`; **never** remount the Canvas |
-| `RenderTier` map | `quest-world-3d` → full room; `quest-world-3d-lite` → room-3d-lite (fewer motes, no bloom); `board-2d` → **`ActivityDOM` room + the DOM map** (the a11y floor); **the clearing + stroll are identical DOM at every tier** |
+| `RenderTier` map | legacy shipped `quest-world-3d` → `room-3d` (full room); `quest-world-3d-lite` → `room-3d-lite` (fewer motes, no bloom); `board-2d` → **`ActivityDOM` room + the DOM map** (the a11y floor). Room-facing names are the frozen `RoomProps.tier` (`room-3d` \| `room-3d-lite`); **the clearing + stroll are identical DOM at every tier** |
 | Reduced-motion | strolls/wipes/camera → instant cuts; ambient motion → calm still; motes off (`resolveMotion(...,{reducedMotion:true})`) |
 | Coarse-pointer / touch | targets ≥ `ChildStaging.touchTargetPx`; tap-to-walk with tap-again-to-skip |
 

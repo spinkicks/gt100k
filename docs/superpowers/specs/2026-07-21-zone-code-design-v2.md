@@ -28,13 +28,34 @@ plugin in the app's zone registry.
 
 ---
 
+## 0.0 Enrichment & naming reconciliation (binding — read once)
+
+This v2 doc predates the enriched, buildable interior in
+[`2026-07-21-cabin-interior-code.md`](./2026-07-21-cabin-interior-code.md) ("The Tinker Workshop"). Where the
+two describe the same object, **the cabin interior + the frozen core win**; the bindings below are canonical
+and are applied throughout this doc:
+
+| Was (v1/early-v2) | **Canonical now** | Why |
+|---|---|---|
+| `domain: "computation"` | **`domain: "symbols_math"`** | The **frozen** lane-0 core (core-spec §2, `V1_DOMAIN_ORDER`, the §8 goldens) and [`…-reconciliation.md`](./2026-07-21-interest-lab-reconciliation.md) §1 use `symbols_math`; `createZoneRegistry` throws if `plugin.domain`/`probes[].domain` is absent from `domainOrder`, and the QA `stateHash` goldens bake in `symbols_math`. The child-facing label stays **"Code Lab"**; the craft is coding / computational thinking. |
+| the **"Build Bench"** (room doorway) | **The Coding Desk** | The old "Build Bench," retro-terminal, and floating blueprint-hologram are **fused into one real, kid-recognizable workstation** — a warm-wood desk with a monitor glowing colorful code, a mechanical keyboard with an amber **RUN** key, and a laptop. The doorway hotspot is `coding-desk`; its handler is `openDesk()`. (cabin-code §4.) |
+| **"Pip"** the wind-up automaton | **Sprout**, the codeable robot | Recast per the cabin. A friendly **Claude** AI desk-buddy is a *new, separate* companion (not the doorway, not the robot). |
+
+Everything else in this doc (the two-layer split, the concept ladder, the signal model, the a11y peers) is
+unchanged. **Content-deferred v1 firewall:** in v1 the room's cozy live-taste + micro-interactions are
+**signal-free** (juice ≠ signal — aliveness §1.2); the room contributes only the **coarse domain-return**
+(entering/revisiting the Code Lab). The fine `{symbols_math, workMode}` `ActivityEvent`s tabulated below
+arrive with the **deferred content app** opened *through* the Coding Desk (reconciliation §5, §7).
+
+---
+
 ## 0. The architecture pivot (why v2 exists)
 
 v1 put the *entire* learning experience — arrange command tiles, run the bot, watch it fail, fix it —
 **inside the bounded 3D room**. That conflates two jobs that want opposite designs:
 
 - **Discovery** wants *atmosphere, invitation, and a legible interest signal* — a beautiful cozy place you
-  wander into, that says "computation lives here," and quietly records that you approached, dwelled, and
+  wander into, that says "coding lives here," and quietly records that you approached, dwelled, and
   came back. It must be gorgeous and it must be **fast on a Chromebook**, so it must stay small.
 - **Deep learning** wants *hands-on interactive density, a concept ladder, immediate visual results, and
   productive failure* — a Brilliant-style experience where **manipulating the thing is the explanation**.
@@ -46,15 +67,15 @@ v1 put the *entire* learning experience — arrange command tiles, run the bot, 
 ┌──────────────────────────── THE DISCOVERY WORLD (Part A) ─────────────────────────────┐
 │  2D Curiosity Map building  ──enter──▶  bounded 3D "Code Lab" workshop (cozy, beautiful)│
 │  • exploration + atmosphere + interest signal (approach / dwell / voluntary return)     │
-│  • ONE obvious verb: step up to the glowing BUILD BENCH                                  │
+│  • ONE obvious verb: step up to the glowing CODING DESK                                  │
 └──────────────────────────────────────────┬─────────────────────────────────────────────┘
-                                            │  THE SEAM (Part C): open the bench
+                                            │  THE SEAM (Part C): open the Coding Desk
                                             ▼
 ┌──────────────────────────── THE DOMAIN CONTENT APP (Part B) ─────────────────────────────┐
 │  Brilliant-style, hands-on, interactive computational-thinking app (2D/DOM + light canvas)│
 │  • block/visual programming · immediate visual results · puzzles that teach by DOING       │
 │  • the four work-modes: build · debug · investigate · compose                              │
-│  • emits {domain:"computation", workMode} → the return grid                                │
+│  • emits {domain:"symbols_math", workMode} → the return grid                               │
 └───────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -89,24 +110,30 @@ verbatim**:
 | **B** | **Light transport, cozy-grade** | **No black shadows, ever.** Warm key (window sun) + cool sky fill; shadowed wood/brass reads warm-brown, never desaturated gray. *Sample any shadowed pixel — if it's flat gray, lighting has failed.* |
 | **C** | **Nothing is bare / everything is hand-made** | Every surface class carries a maker's marks: tools, shavings, blueprints, half-built contraptions, plants, mugs, jars, string-lights. The room reads as a place where someone has been *building things for years*. |
 | **D** | **One obvious verb** | The room teaches by affordance (World 1-1) that you *step up to the bench*. Exactly one primary interactive; everything else is beautiful, legible atmosphere. No tutorial wall. |
-| **E** | **Art direction is enforced** | One locked palette (the engine `PALETTE` + the computation hue), one shading model, one HDRI, a warm/cool split, controlled value structure (dark frame · lit bench subject · soft background). Showcase views are *composed*, not found. |
+| **E** | **Art direction is enforced** | One locked palette (the engine `PALETTE` + the Code (`symbols_math`) hue `#5FB98C`), one shading model, one HDRI, a warm/cool split, controlled value structure (dark frame · lit desk subject · soft background). Showcase views are *composed*, not found. |
 | **F** | **The room breathes** | Dust motes in the sunbeam, one slow-turning gear, a swaying plant, the bench glow pulsing, a wind-up toy idling. A frozen frame feels one second from motion. |
 
 ### 0.2 Shared foundations (fiction · palette · engine types · domain binding)
 
-**Fiction (one warm workshop, two depths).** The **Code Lab** is a sunlit inventor's workshop — a cozy
-maker's nook where someone builds little wind-up automata and logic contraptions. You wander in (the 3D
-room), you're drawn to the **Build Bench** glowing at the window, you *step up to it* — and the bench opens
-into **the Build Bench app** (the content app) where you actually build, run, and debug little programs that
-bring the workshop's creations to life. Your finished creations come back to live on **the Shelf** in the
-room.
+**Fiction (one warm workshop, two depths).** The **Code Lab** (interior: **"The Tinker Workshop,"**
+cabin-code) is a sunlit, greenhouse-cornered log **coding nook** — a cozy maker's desk where a kid codes the
+way kids code today: a real computer, a mechanical keyboard, a sticker-covered laptop, a friendly **Claude**
+AI desk-buddy, and **Sprout**, a little robot you drive with snap-together code blocks. You wander in (the 3D
+room), you're drawn to the **Coding Desk** glowing at the window, you *step up to it* — and the desk opens
+into **the Coding Desk app** (the content app) where you actually build, run, and debug little programs that
+make the workshop's creations (Sprout and friends) come to life. Your finished creations come back to live on
+**the Shelf** in the room.
 
-**Palette lock (from `interest-lab-view/src/art.ts`, do not invent new hues).**
-`PALETTE.spark #FF9E5E` (warm invitation / the bench glow), `PALETTE.beacon #FFD166` (success / focal
-warmth), `PALETTE.tide #5EC8D8` (cool accent / cyan practical light), `PALETTE.sprout #7BD88F` (plant life /
-"go"), `PALETTE.night #181026` / `nightSunk #120B1E` (shadow frame). The **computation domain hue** comes
-from `resolveDomainHue(domainOrder, "computation")` / `HUE_RAMP` (the marker + building tint). Typography
-from `TYPOGRAPHY` (Fredoka display · Iowan reading · Inter body). Motion from `resolveMotion(...)` tokens
+**Palette lock (the warm Emberwood pack — art bible §3; do not invent new hues).**
+`PALETTE.spark #FF9E5E` (warm invitation / the desk + RUN-key glow), `PALETTE.beacon #FFD166` (success /
+focal warmth), `PALETTE.sprout #7BD88F` (plant life / "go"), and the additive `CABIN` material tokens. The
+dark foreground frame is the **warm** `CABIN.woodCocoa #4A3320` — **not** the retired midnight
+`PALETTE.night #181026` (a **banned outcome** now; reconciliation §6, art bible §11). `PALETTE.tide #5EC8D8`
+is permitted **only** as a tiny status-LED desaturated toward `verdigris #7F9E8E`, off the hero — **never a
+cold-blue screen wash or an RGB glow** (the no-cold-blue-screen rule, cabin-code §6.4). The **Code
+(`symbols_math`) domain hue** comes from `resolveDomainHue(domainOrder, "symbols_math")` = `HUE_RAMP[1]`
+**`#5FB98C`** (warm-leaning sage — the marker + building tint + the screen glow). Typography from
+`TYPOGRAPHY` (Fredoka display · Iowan reading · Inter body). Motion from `resolveMotion(...)` tokens
 (`MOTION`/`EASINGS`), reduced-motion honored.
 
 **Engine types (frozen, from the repo — reference, do not redefine):** `Probe`/`ProbeFamily`/`Domain`,
@@ -116,13 +143,15 @@ from `TYPOGRAPHY` (Fredoka display · Iowan reading · Inter body). Motion from 
 lets the core's `toEngagementEvents` bridge to the six families (this corrects v1 §11, which emitted
 `EngagementEvent` directly and predates the frozen contract).
 
-**Domain binding (decision).** This zone declares `domain: "computation"` (per the world design and this
-task's signal `{domain:"computation", workMode}`). `Domain` is an open `string`; `createZoneRegistry`
-only requires `probes[].domain === plugin.domain`. **Reconciliation note for lane 0:** the core-spec stub
-vocabulary used `symbols_math` for Code; the real zone uses `computation`. Whichever string the *registered
-catalog* adopts, all three zones must share the **same** work-mode column strings (`build`/`debug`/
-`investigate`/`compose`) or the cross-domain column signal breaks. The domain string is a one-line registry
-decision; the design here is invariant to it.
+**Domain binding (decision — see §0.0).** This zone declares **`domain: "symbols_math"`** and every emitted
+`ActivityEvent.domain = "symbols_math"`. This is **not** optional: the **frozen** lane-0 core
+(`V1_DOMAIN_ORDER = ["sound_music","symbols_math","visual_design"]`, the §8 goldens, the `stateHash`
+goldens) and [`…-reconciliation.md`](./2026-07-21-interest-lab-reconciliation.md) §1 fix the wire key as
+`symbols_math`, and `createZoneRegistry` throws if `plugin.domain`/`probes[].domain` is absent from
+`domainOrder`. The earlier `computation` divergence is **dropped** (reconciliation §1). The **child-facing
+label stays "Code Lab"** and the craft is *coding / computational thinking* — that concept name is fine in
+prose; only the **wire key** must be `symbols_math`. All three zones share the same work-mode column strings
+(`build`/`debug`/`investigate`/`compose`) so the cross-domain column signal holds.
 
 ---
 
@@ -133,34 +162,45 @@ decision; the design here is invariant to it.
 Assemble `passion/packages/interest-zone-code/reference/` with real screenshots for each frame below, from
 the named touchstones. **Each phase renders the closest shot and runs the delta loop against these.**
 
-### RF-W1 — "The sunlit maker's nook" (hero establishing shot of the 3D room)
-*Touchstones:* A Short Hike interiors, Cozy Grove tents, Alba's cottages, Animal Crossing rooms, Luma
-Island workshops, "cozy inventor workshop lowpoly" (ArtStation/itch).
-**What the frame must contain:** a 3/4 view into a small wooden workshop; a **big window** on the left
-spilling a warm afternoon **sunbeam** with visible **dust motes**; a central **workbench** carrying a
-**half-built wind-up automaton**, scattered tools, blueprints, and a glowing focal object; a **pegboard**
-of hand tools behind; a **shelf** of little finished creations on the right; **plants** (a trailing vine,
-a potted sprout); **string-lights** or a warm bench lamp; a mug, jars of gears/screws, curled blueprint
-paper, wood shavings on the floor. Warm honey wood + brass, cool cyan/violet in the shadows. The eye lands
-on the glowing bench within one second.
-**FAIL if the frame looks like:** an empty room with one table and a button; bare untextured walls; a cold
-gray box; a lobby.
+### RF-W1 — "The sunlit coding nook" (hero establishing shot of the 3D room)
+*Touchstones:* A Short Hike interiors, Studio-Ghibli desks, Stardew greenhouse/workshop, Animal Crossing
+rooms, **a warm "cozy coding desk setup"** (honey wood + plants + string-lights + a warm-backlit keyboard —
+deliberately **NOT** an RGB battlestation), a kid's **Scratch / micro:bit / Raspberry Pi maker corner**.
+(Deepened in [cabin-code](./2026-07-21-cabin-interior-code.md) RF-INT-CODE "The Sunlit Coding Nook.")
+**What the frame must contain:** a 3/4 view into a small warm log **coding nook** with a glass greenhouse
+gable; a **big window** on the left spilling a warm afternoon **sunbeam** with visible **dust motes**; a
+central **Coding Desk** carrying a **real, kid-recognizable computer** — a warm-bezel **monitor glowing with
+big, colorful, legible code** (warm sage `#5FB98C` + amber, **never cold blue**), a chunky **mechanical
+keyboard** with an oversized amber **RUN** key, and a **sticker-covered laptop** showing block-code; a
+**plush Python** and a friendly **Claude** AI desk-buddy beside it; a **language nook** of JS/HTML/CSS/Python
+books; **Sprout** the codeable robot on a mat with a tray of colorful code blocks; a **wood-stove** glowing
+amber; a **shelf** of little finished creations; **plants** (a trailing vine, a potted sprout);
+**string-lights**; a mug, a chalkboard start→loop→goal sketch, and a cat asleep on the sill. Warm honey wood
++ brass; shadows tint **blue-violet**. The eye lands on the glowing monitor within one second.
+**FAIL if the frame looks like:** an empty room with one table and a button; a **generic steampunk inventor's
+shop with no visible computer/keyboard/code**; a **cold-blue "hacker" room** or a **cold RGB gamer
+battlestation**; bare untextured walls; a cold gray box; a lobby.
 
-### RF-W2 — "The bench, ready" (the primary affordance, close)
-*Touchstones:* the glowing anvil/portal in cozy games; Monument Valley's warm focal geometry; a lit forge.
-**What the frame must contain:** the **Build Bench** as the single brightest warm focal point — a workbench
-with a **hovering, gently-pulsing blueprint/hologram of a tiny program** (icon-blocks floating a few cm
-above the bench), a chunky **wind-up "GO" key** or lever, `spark #FF9E5E` rim-glow, warm bloom, and a
-clearly-implied "step up here" affordance (a worn spot, an inviting stool, an arrow of light). It reads as
-*the one thing to do* without any text label.
-**FAIL if the frame looks like:** a flat button floating in 3D; a generic "Enter" sign; nothing obviously
-primary; two competing focal points.
+### RF-W2 — "The Coding Desk, ready" (the primary affordance, close)
+*Touchstones:* a warm developer desk backlit by a low lamp; the glowing forge/portal in cozy games;
+Monument Valley's warm focal geometry. (Deepened in [cabin-code](./2026-07-21-cabin-interior-code.md)
+RF-INT-CODE-2 "The Desk, ready.")
+**What the frame must contain:** the **Coding Desk** as the single brightest warm focal point — a warm-wood
+desk carrying a **friendly warm-bezel monitor glowing with big, colorful, legible code** (warm-dark
+background, sage `#5FB98C` + amber syntax — **never cold blue**), a chunky **mechanical keyboard with one
+oversized amber RUN key** catching a candle-warm glint, and a sticker-covered laptop; a gently **blinking
+amber cursor**; `spark #FF9E5E` rim-glow; warm bloom; **Claude** the desk-buddy doing a tiny idle blink; and
+a clearly-implied "step up here" affordance (a worn stool, a light-worn spot on the floor). It reads as *the
+one thing to do* without any text label.
+**FAIL if the frame looks like:** a flat button floating in 3D; a generic "Enter" sign; a **cold-blue screen**
+or a **cold RGB glow**; a steampunk shop with no visible computer; nothing obviously primary; two competing
+focal points.
 
 ### RF-W3 — "The Code Lab on the map" (the 2D building tile)
 *Touchstones:* Animal Crossing map icons, A Short Hike map, cozy isometric building tiles, the existing
 Curiosity-Map buildings.
 **What the frame must contain:** a small, warm, hand-drawn-feeling **workshop building** with a gear-sprout
-sign, tinted to the computation hue, sitting in its island slot; a soft **shelf-glow** cue *iff* the child
+sign, tinted to the Code (`symbols_math`) hue, sitting in its island slot; a soft **shelf-glow** cue *iff* the child
 has kept/unfinished creations (the return cue); a clear one-verb label ("Step inside"); a legible
 return-state cue (new / you've been here / you came back). Focusable, keyboard-navigable, never
 `aria-hidden`.
@@ -182,7 +222,7 @@ as a **real focusable button** (never `aria-hidden`).
 | `label` | "Code Lab" | |
 | `glyph` | `gear-sprout` | a cog with a leaf — "logic that grows"; decorative only |
 | `enterVerb` | "Step inside" | World-1-1 single verb |
-| `art.hue` | `resolveDomainHue(order,"computation")` | else derived from catalog order |
+| `art.hue` | `resolveDomainHue(order,"symbols_math")` = `HUE_RAMP[1]` `#5FB98C` | else derived from catalog order |
 | `sprite` | `workshop` | cozy workshop/greenhouse silhouette |
 | `ambientCue` | `shelf-glow` | soft `spark` glow **iff** saved/unfinished creations exist |
 
@@ -201,12 +241,16 @@ item below is a required occupant (Pillar C).
 cone) landing on the bench; **dust motes** drifting in it (`<Sparkles>`); a **windowsill** with 2–3 potted
 sprouts and a small watering can; a **trailing vine** framing the top-left.
 
-**Zone 2 — The Build Bench (center, the hero / primary affordance).** A solid **workbench**; on it: a
-**half-built wind-up automaton** ("Pip" mid-assembly — the content app's protagonist, foreshadowed), an
-open **blueprint** with faint icon-blocks, a **jar of gears**, a **brass "GO" wind-up key/lever**, a small
-**vise**, wood shavings. Floating a few cm above the bench: the **program hologram** — 3–5 translucent
-icon-blocks gently bobbing (`<Float>`) with a `spark` rim-glow and soft bloom. **This is the one primary
-interactive** (`go-bench`): approaching/activating it opens the content app.
+**Zone 2 — The Coding Desk (center, the hero / primary affordance).** A chunky **warm-wood desk**; on it, the
+heart of the room: a **friendly warm-bezel monitor** glowing with **big, colorful, legible code** (sage
+`#5FB98C` + amber syntax on a warm-dark background — **never cold blue**, cabin-code §6.4), a chunky
+**mechanical keyboard** with one oversized amber **RUN** key, a **sticker-covered laptop** showing block-code,
+a **plush Python**, and **Claude** the AI desk-buddy blinking beside it. On a low mat nearby: **Sprout**, the
+codeable robot, with a tray of colorful snap-together code blocks. The monitor's glowing code + the amber RUN
+key are the doorway's invitation — a `spark` rim-glow and soft bloom on the screen and key. **This is the one
+primary interactive** (`coding-desk`): approaching/activating it opens the content app. *(The old "Build
+Bench / floating blueprint-hologram / wind-up GO key" are **fused into** this one real workstation — the
+hologram is now the actual colorful code on the monitor, the GO key is the amber RUN key; cabin-code §4.1.)*
 
 **Zone 3 — The pegboard & tool wall (back).** A **pegboard** with hand tools (screwdrivers, pliers,
 calipers, a soldering iron), each on its silhouette outline; pinned notes and a small **chalkboard** with a
@@ -217,10 +261,13 @@ creation** appears as a tiny finished automaton or a labeled ribbon ("★ solved
 are visible** (room to make more). The shelf **glows softly** iff kept/unfinished work exists. This is the
 diegetic form of `unfinished`/artifacts — the room saying "your things are still here."
 
-**Zone 5 — The floor & cozy dressing.** A **rug**; a **stool** worn where you'd stand at the bench (the
-"step up here" affordance); a **crate** of spare parts; a **mug** on a side table; a stack of **books**; a
-**string-light** garland; scattered **wood shavings** and a curled blueprint on the floor. A **desk lamp**
-(warm practical) and a small **cyan monitor/oscilloscope glow** (cool practical) for the warm/cool split.
+**Zone 5 — The floor & cozy dressing.** A **rug**; a **stool** worn where you'd stand at the desk (the
+"step up here" affordance); a **cable/parts crate**; a **mug** on a side table; a stack of **books**; a
+**string-light** garland; scattered **spare cables, a sticker sheet, and a printout of colorful code** on the
+floor. A **desk lamp** (warm practical). **The warm/cool split is carried by *light*, not by a cold screen**
+(the golden window key + the wood-stove vs. the cool dusk-blue skylight fill) — the only cool practical is a
+tiny **verdigris `#7F9E8E`** status-LED on Sprout's charging dock (cabin-code §6.4). **No cyan/cold-blue
+monitor glow, no RGB.**
 
 **Overworld idle (activeZoneId === null).** Before entering, the shared canvas shows a calm ambient
 backdrop (soft interior bokeh or the island exterior); no dead objects.
@@ -235,8 +282,10 @@ or rim. **Single-flat-color hero surfaces are banned.** **Per-instance variation
 
 **Lighting (Pillar B, cozy no-black-shadows law).** One warm **key** `directionalLight` (the window sun,
 the only shadow-caster) + a low cool **hemisphere/sky fill** so shadows read warm-brown, never gray. **≥2
-diegetic practicals:** the warm bench lamp and the cool cyan monitor/oscilloscope glow (+ optional
-string-lights). One self-hosted **CC0 warm-interior HDRI** (Poly Haven, 1–2K) via `<Environment>` for
+diegetic practicals:** the warm desk lamp + the **warm sage/amber monitor glow** (the screen reads **warm,
+never cold-blue** — the warm/cool split is carried by light, cabin-code §6.4) (+ string-lights); the only
+cool note is a tiny **verdigris status-LED** off the hero (never a cyan wash). One self-hosted **CC0
+warm-interior HDRI** (Poly Haven, 1–2K) via `<Environment>` for
 consistent ambient + brass reflections; `<Lightformer>` rects for cheap glints on metal.
 
 **Shadows (bake/freeze, Pillar B).** `<AccumulativeShadows>` + `<RandomizedLight>` for the settled soft
@@ -246,11 +295,11 @@ stool; `<BakeShadows>` elsewhere. **No per-frame shadow maps.**
 **Atmosphere (Pillar A/F).** Palette-matched soft **fog** for depth (never to hide an empty room); the
 **sunbeam** volume; **dust motes** (`<Sparkles>`); optional faint `<Cloud>` outside the window.
 
-**Motion (Pillar F, ≥4 independent idle motions).** (1) dust motes drift; (2) one **slow-turning gear** on
-the bench; (3) a **plant sway** / `<Float>` on a hanging pot; (4) the **bench hologram** bobs + glow
-**pulses** (`spark`); (+) the half-built automaton does a tiny wind-up twitch every few seconds. All via
-`resolveMotion`; **reduced-motion → instant/settled** (no essential motion; the bench glow becomes a static
-highlight).
+**Motion (Pillar F, ≥4 independent idle motions).** (1) dust motes drift; (2) the **blinking amber cursor** +
+a gently scrolling line on the monitor; (3) a **plant sway** / `<Float>` on a hanging pot; (4) the **monitor
+code + amber RUN key** glow **pulses** (`spark`); (+) **Sprout** does a tiny wind-up twitch and **Claude**
+blinks every few seconds. All via `resolveMotion`; **reduced-motion → instant/settled** (no essential motion;
+the desk glow becomes a static highlight).
 
 **Post (budgeted).** `EffectComposer` → `Bloom(mipmapBlur, luminanceThreshold ~1.0)` (bench glow +
 practicals) + `Vignette` + `ToneMapping(ACES)`, renderer `NoToneMapping`. SMAA (not MSAA).
@@ -294,7 +343,7 @@ That is the room's entire job: be beautiful, say "building happens here," and ha
 | Workshop shell, bench, shelf, pegboard, crates, furniture | Kenney (Furniture/Building kits) + KayKit modular | merged/instanced; one gradient atlas |
 | Tools, gears, jars, mugs, books, lamps, props | Kenney + Quaternius + Poly Pizza (verify per-model CC0) | instanced repeats w/ per-instance jitter |
 | Plants / vines / sprouts | Quaternius nature | `<Float>` on one hanging pot |
-| Half-built "Pip" automaton (foreshadow) | Quaternius/KayKit robot + CC0 anim set | the lone skinned mesh; idle twitch anim |
+| Sprout the codeable robot + Claude the AI desk-buddy (foreshadow) | Quaternius/KayKit robot + CC0 anim set; authored/CC0 friendly buddy mesh | Sprout = the lone skinned mesh (idle twitch); Claude = small static + tiny idle |
 | Warm-interior HDRI | Poly Haven (1–2K, self-hosted) | `<Environment>` IBL |
 | Bench hologram icon-blocks | authored flat SVG/atlas | shared with the content app's block icons |
 
@@ -315,11 +364,12 @@ The world layer's `ActivityDOM` is a **described room** that preserves the *act 
 the *return cue* (Surveyor: don't railroad; AGI/MS tags: focus one item at a time, narrate name/role/state).
 It is **not** the block editor (that lives in the content app, which is already keyboard/SR-first):
 
-- A labeled region: *"Code Lab — a maker's workshop. On the bench: a half-built wind-up robot and a glowing
-  blueprint."*
-- One primary button: **"Step up to the Build Bench"** (opens the content app — the same seam).
-- A **Shelf list**: *"Your creations: 'Pip's first walk' (kept), 1 unfinished."* — the child still **chooses
-  what to reopen**.
+- A labeled region: *"Code Lab — a cozy cabin where you code. On the desk: a computer whose screen glows with
+  colorful code, a mechanical keyboard with a RUN key, and a sticker-covered laptop; Claude, your AI coding
+  friend, blinks beside it; Sprout the robot waits with a tray of code blocks."*
+- One primary button: **"Step up to the Coding Desk"** (opens the content app — the same seam).
+- A **Shelf list**: *"Your creations: 'Sprout's first walk' (kept), 1 unfinished."* — the child still
+  **chooses what to reopen**.
 - Parity by construction: identical `probeId` / `workMode` / `returnState` / `tone` per `plainZoneEquals`;
   reduced-motion → instant framing.
 

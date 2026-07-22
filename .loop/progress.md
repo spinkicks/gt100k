@@ -299,3 +299,30 @@ non-negotiable.
   supporting/disconfirming copy, ordered coverage gaps, and offered-cell-only distinguishing probes;
   add deep-key and copy guardrails for all domain/view outputs. Acceptance: **SC-CORE-05/06**, exact
   §4.5/§8.4 goldens, all existing tests, typecheck, lane lint, and app production build green.
+
+## Done this turn — P2 revisable hypothesis + guardrails
+- Added RED-first acceptance cases for exact `HYP_GOLDEN_A/B/C`; all three failed against the P0
+  insufficient placeholder for the expected object differences before implementation.
+- Replaced the placeholder with the exact deterministic hypothesis read: topic/work-mode/mixed/
+  insufficient classification, stable axis spikes, human-readable supporting and disconfirming evidence,
+  domain-then-work-mode coverage gaps, and alternative-testing probes restricted to offered cells.
+- Preserved canonical tie-breaking through `WORK_MODES` and `domainOrder`, including the golden
+  `symbols_math × investigate` work-mode distinguisher.
+- Added deep output-key and fixed-label copy guardrails in the domain package; the existing pure-view
+  guardrails continue to statically cover every view type and authored copy literal.
+- Updated the domain README to describe the now-real activity and revisable-hypothesis engine.
+- SC status: **SC-CORE-01/02/03/04/05/06/07/13 green**; **SC-CORE-15 remains green at its P0 shape
+  level**; SC-CORE-08…12/14 remain assigned to P3…P6, and manual SC-CORE-16 is excluded.
+- Gate evidence: RED run = 3 expected failures; focused GREEN = **2 files, 5 tests**; package suite =
+  **19 files, 92 tests**; `pnpm typecheck` ✓; `pnpm test` ✓ (**103 files, 477 tests**);
+  `pnpm exec biome check passion/packages/interest-lab` ✓ (**39 files**);
+  `pnpm --filter @gt100k/interest-lab-app build` ✓ (static `/` prerender).
+- `.loop-done` remains absent because P3–P7 are not complete.
+
+## NEXT
+- **P3 — implement the time-lapse and Curiosity Map view model test-first.** Make
+  `buildTimeLapse(ACTIVITY_GOLDEN_V1)` equal §8.7 exactly for day 0/7/30 phases, stable active-cell
+  ordering, quieted flags, and latest phase; make `buildCuriosityMapView` equal `MAP_GOLDEN`, including
+  return states, unfinished counts, hues, exact aria-label phrases, and unknown-domain rejection.
+  Acceptance: **SC-CORE-09/12**, exact §8.6/§8.7 goldens, all existing tests, typecheck, lane lint, and
+  app production build green.

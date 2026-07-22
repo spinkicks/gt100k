@@ -106,8 +106,10 @@ nothing is making them* — reveals an emerging interest, and that **rewarding t
   or won't use them loses nothing measurable.
 
 **QA enforces this as a negative assertion** ([§14](#14-verification-battery)): a scripted round-trip fires
-every micro-interaction and asserts `window.__qa.getEmittedSignals()` records **zero** new events from
-them. A delight that leaks a signal is an **instant fail**.
+every micro-interaction and asserts `window.__qa.getEmittedSignals()` records **zero** new events from them
+(this is an **additive QA-only accessor** on top of the frozen core §7 `window.__qa`, not a contract change —
+equivalently, assert the frozen `grid()` / `stateHash()` stay **unchanged**). A delight that leaks a signal
+is an **instant fail**.
 
 ---
 

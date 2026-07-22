@@ -46,6 +46,15 @@ each zone. **Extends (does not replace):**
 
 # PART A — THE WORLD VISUAL BAR (LAAS-deep)
 
+> **Theme + palette note (read together).** This Part A sets the *visual bar*; the concrete, locked theme
+> that realizes it is **Emberwood** — a warm golden-hour hamlet of log cabins in a forest **clearing** (a
+> central **Lodge + hearth** "you are here" plus the Sounding / Tinker / Atelier cabins). The canonical
+> palette tokens (the warm `SCENE3D` pack, `MAP_COLOR_SCRIPT`, `CABIN`, `HUE_RAMP`) live in
+> [`2026-07-21-world-art-direction-cozy-cabin.md`](./2026-07-21-world-art-direction-cozy-cabin.md) §3, and
+> the concrete 2D surface in [`2026-07-21-world-clearing-and-map.md`](./2026-07-21-world-clearing-and-map.md).
+> The hexes below have been **reconciled to the bible's canonical values**; where any framing or token here
+> ever diverges, **the bible + clearing spec win.**
+
 ## A1. The bar (reference frames)
 
 > The visual target is **best-in-class cozy stylized games and storybook illustration** — not "pretty good
@@ -75,9 +84,9 @@ LAAS screen.
 **Two surfaces, two aesthetics that must feel like one place:**
 
 - **The 2D Curiosity Map** — real **DOM** (SVG/CSS + baked sprites + `motion@^12`), **zero WebGL**. Primary,
-  accessible, the return-signal surface. Reads like a **cozy isometric picture-book campus** ([§A3](#a3-the-2d-curiosity-map--exactly-whats-on-screen)).
+  accessible, the return-signal surface. Reads like a **cozy isometric picture-book hamlet clearing** ([§A3](#a3-the-2d-curiosity-map--exactly-whats-on-screen)).
 - **The bounded 3D rooms** — one persistent `<Canvas frameloop="demand">`, contents swap on enter/exit.
-  Reads like a **warm, lived-in little studio at golden hour** ([§A4](#a4-the-3d-rooms--lighting-recipe-palette-atmosphere)).
+  Reads like a **warm, lived-in little cabin studio at golden hour** ([§A4](#a4-the-3d-rooms--lighting-recipe-palette-atmosphere)).
 
 The bridge between them is **identity continuity**: the same building (same silhouette, same hue, same sign
 glyph) that you see baked on the map is the room you step *into* ([§A5](#a5-transitions-map--room)).
@@ -109,31 +118,32 @@ Every requirement below serves one pillar; resolve any uncovered decision in fav
 
 ## A3. The 2D Curiosity Map — exactly what's on screen
 
-**The shot.** A **cozy isometric picture-book campus** on a small round island, lit by a low golden-hour
-sun. A soft dirt **path** (warm sand `#E7C9A0`) curves through the middle; a little **pond** (`#8FD3D8`
-with one warm sun-glint) sits off to one side; **rounded trees, a few lanterns, tufts of grass, a wandering
-cat and an occasional bird** dress the space. Along the path sit the **discovery buildings — one per
-domain**, each an unmistakable little studio. Long, soft, **blue-violet** shadows stretch off everything
-(never gray/black). The sky is a warm cream-to-peach vertical gradient (`#FCE7BE → #F6B87A`). It looks like
-a place a child wants to walk around in.
+**The shot.** A **cozy isometric picture-book clearing** in a golden-hour forest, lit by a low raking sun.
+A central **Lodge with a lit stone hearth** ("you are here") anchors it; a soft dirt **path** (`#D8B888`)
+winds out to the cabins; a little **pond** (`#8FC7CE` with one warm sun-glint) sits off to one side;
+**rounded pines, a few lanterns, tufts of grass, a wandering cat and an occasional bird** dress the space.
+Along the path sit the **domain buildings — one cabin per domain**, each an unmistakable little workshop.
+Long, soft, **blue-violet** shadows (`#5E5880`) stretch off everything (never gray/black). The sky is a
+warm cream-to-peach vertical gradient (`#FCEAC2 → #F4B074`). It looks like a place a child wants to walk
+around in at the end of a good day.
 
 **Layout (drives, and is driven by, `MapBuildingView.cell`).** Buildings sit on a gentle isometric grid;
-`buildCuriosityMapView` sorts by `(cell.row, cell.col)`. v1 = three studios along one path segment: **Music
-Studio** `(0,0)`, **Code Lab** `(1,0)`, **Art Studio** `(2,0)`. The composition is designed to **grow**:
-new domains extend the campus (more path, a second row, a bridge over the pond) without a redesign — the
-island has visible "room to build."
+`buildCuriosityMapView` sorts by `(cell.row, cell.col)`. v1 = three cabins along the winding path: the
+**Sounding Cabin** (Music) `(0,0)`, the **Tinker Workshop** (Code) `(1,0)`, the **Atelier Cabin** (Art)
+`(2,0)`. The composition is designed to **grow**: new domains extend the hamlet (more path, a second
+cluster, a footbridge over the stream) without a redesign — the clearing has visible "room to grow."
 
 **How each zone reads as its own domain (Pillar D — the whole point).** Each building is distinguished on
 **four independent channels** so it's legible even to a color-blind child at a glance:
 
-| Zone | Domain hue (`HUE_RAMP`) | Silhouette / roof | Sign glyph | Signature dressing |
+| Cabin (domain) | Domain hue (`HUE_RAMP`) | Silhouette / roof | Sign glyph | Signature dressing |
 |---|---|---|---|---|
-| **Music Studio** | terracotta `#E8825A` | warm cottage w/ a rounded speaker-horn cupola | ♪ note on a hanging sign | a bench, a glowing window, notes drifting up |
-| **Code Lab** | sage-green `#5FB98C` | a little **greenhouse/workshop** (glass roof, gear-sprout weathervane) | a sprout-in-a-gear | potted plants, a lantern, a wind-up bot on the sill |
-| **Art Studio** | periwinkle `#6C8CE8` | a gable studio w/ a skylight + an easel out front | a paintbrush + frame | an easel, a hanging painting, a paint-splash doormat |
+| **The Sounding Cabin** (Music, `sound_music`) | terracotta `#E8825A` | snug log cabin w/ a **gramophone-horn cupola** + stone chimney | ♪ note on an iron bracket | the warmest amber window; notes drifting up with the chimney smoke |
+| **The Tinker Workshop** (Code, `symbols_math`) | sage-green `#5FB98C` | a **greenhouse-workshop** (glass gable roof, gear-sprout weathervane) | a cog sprouting a leaf | potted sprouts, a lantern, a wind-up bot on the porch |
+| **The Atelier Cabin** (Art, `visual_design`) | periwinkle `#6C8CE8` | gable cabin w/ a **north-light skylight** + an easel on the porch | a paintbrush + frame | a hanging painting, a paint-splash doormat, the cool dusk-lit window |
 
 **Art style + how it's actually built (Chromebook-safe, accessible, coder-buildable).** The map is **DOM,
-not a canvas**. Achieve the "3D-looking" cozy island by **baking**, offline, an isometric ortho render of
+not a canvas**. Achieve the "3D-looking" cozy clearing by **baking**, offline, an isometric ortho render of
 each building **from the same CC0 kit through the same warm art pack** used by the rooms → export to
 `webp/png` sprite (+ a lit ground/pond/path plate). Compose in DOM: layered `<img>`/SVG for
 sky→ground→shadows→buildings→foliage→light-motes, with `motion@^12` for parallax + idle motion. This gives
@@ -146,7 +156,7 @@ buildings, same light), at ~0 GPU cost. (Vector/CSS-only is the fallback if baki
 
 **Wayfinding (legible for 8–14, per the precedents memo).**
 
-- **Label + one verb** under each building: "**Music Studio** · *Step inside*" (World-1-1 clarity, one verb).
+- **Label + one verb** under each building: "**The Sounding Cabin** · *Step inside*" (World-1-1 clarity, one verb).
 - **"You are here"** never ambiguous: the map is home; a soft footprint/marker shows last-entered building.
 - **Return-glow (the signal, made visible but NOT gamified):** a building the child came back to *unprompted*
   gets a gentle warm halo (`voluntary-return`); a prompted return gets a cooler, quieter cue
@@ -155,18 +165,20 @@ buildings, same light), at ~0 GPU cost. (Vector/CSS-only is the fallback if baki
 - **"Your half-built thing is still here"** — an `unfinished` building shows a single soft glint at its
   window (opt-in invite to revisit, never a countdown).
 - **The time-lapse control** ("Right now → A week later… → A month later…") is a labeled DOM control on the
-  map; stepping it **visibly quiets** the island (the "new" shimmers fade, the light lowers a notch) then
-  asks what the child drifts back to — the honest synthetic-return device, on screen.
+  map; stepping it **visibly quiets** the clearing (the "new" shimmers fade, the light lowers a notch toward
+  dusk, the fireflies come out) then asks what the child drifts back to — the honest synthetic-return device,
+  on screen.
 
 **Map color script (concrete).**
 
 ```
-skyTop #FCE7BE   skyLow #F6B87A          (warm cream → peach, golden hour)
-ground-lit #CFE0A0   ground-shade #8FB37A
-path #E7C9A0     pond #8FD3D8 (+ #FFD8A0 glint)
-soft shadow #6E5A7E @ 22–34% alpha        (blue-violet, NEVER gray/black — Pillar B)
+# canonical MAP_COLOR_SCRIPT — see art bible §3.4 (single source; values reconciled)
+skyTop #FCEAC2   skyLow #F4B074          (warm cream → peach, golden hour)
+ground-lit #C9B583   ground-shade #8E8A5E   grassTuft #9FB56A
+path #D8B888   pathPlank #B98A5E   pond #8FC7CE (+ #FFD8A0 glint)
+soft shadow #5E5880 @ 22–34% alpha        (blue-violet, NEVER gray/black — Pillar B)
 building hues = HUE_RAMP (music #E8825A · code #5FB98C · art #6C8CE8)
-accents: lantern/beacon #FFD166 · spark #FF9E5E   (reuse PALETTE)
+accents: lantern #FFD166 · window #FFC08A · spark/hearth #FF9E5E   (MAP_COLOR_SCRIPT / PALETTE)
 ```
 
 ## A4. The 3D rooms — lighting recipe, palette, atmosphere
@@ -181,15 +193,15 @@ code contract breaks; the map goldens `#E8825A/#5FB98C/#6C8CE8` stay valid) and 
 **The warm art pack (concrete `Scene3DView` values):**
 
 ```ts
-const SCENE3D = {
-  bgHex:  "#EAD6B8",   // warm haze seen past the window   (was #181026)
-  fogHex: "#E7C9A0",   // palette-matched warm fog          (was #181026)
+const SCENE3D = {                          // canonical warm pack — single source: art bible §3.2
+  bgHex:  "#E6D2A2",   // golden-hour forest haze past the window   (was #181026)
+  fogHex: "#E0C79A",   // warm honey fog, palette-matched            (was #181026)
   fogNear: 14, fogFar: 46,                 // unchanged: bounded room depth
-  ambientHex: "#5A4632", ambientIntensity: 0.40,   // low warm ambient (was night-purple)
-  hemiSkyHex:    "#BFD8F0",   // COOL skylight from above  → shadows tint blue-violet (Pillar B)
-  hemiGroundHex: "#C98A5A",   // WARM floor bounce
-  hemiIntensity: 0.50,
-  keyHex: "#FFDDA6", keyIntensity: 1.25, keyPos: [6,10,6],  // low raking golden-hour sun = long soft shadows
+  ambientHex: "#52402E", ambientIntensity: 0.38,   // low warm cocoa ambient (was night-purple)
+  hemiSkyHex:    "#A9C2E8",   // COOL dusk-blue skylight  → shadows tint blue-violet (Pillar B)
+  hemiGroundHex: "#C67B48",   // WARM rust/wood + firelight floor bounce
+  hemiIntensity: 0.52,
+  keyHex: "#FFD8A3", keyIntensity: 1.2, keyPos: [6,8,5],  // low RAKING golden-hour sun = long soft shadows
   toneMapping: "ACESFilmic", exposure: 1.05,
   markerEmissiveHex: "#FF9E5E", markerEmissiveRest: 0.35, markerEmissivePulse: 0.5, // spark glow, kept
   bloomPeak: 1.4,
@@ -214,8 +226,8 @@ const SCENE3D = {
    for the emissive glow (the playhead, the goal, the "it's alive" light) + `Vignette` + `ToneMapping(ACES)`;
    **SMAA not MSAA**. 2–3 passes, no more.
 
-**What a room looks like on screen (Music Studio, concretely).** The Canvas swaps to a **warm dusk-lit
-studio**, fixed camera framing a low console head-on (fov ~40–42, `CAMERA3D` orbit clamps). A **golden shaft**
+**What a room looks like on screen (the Sounding Cabin — Music, concretely).** The Canvas swaps to a **warm
+firelit cabin studio**, fixed camera framing a low console head-on (fov ~40–42, `CAMERA3D` orbit clamps). A **golden shaft**
 from a window rakes across the desk; **dust motes** drift in it (`<Sparkles>`, sparse). A **pad grid**
 (one `InstancedMesh`, 1 draw call) sits center; lit pads **breathe** with `emissiveIntensity` and a
 **luminous playhead** sweeps in time. A **shelf of glowing little cassettes** (the saved-loops artifact)
@@ -319,10 +331,10 @@ research):
 
 Produce two frames and place each beside its reference:
 
-1. **The Curiosity Map at golden hour** — three distinct, instantly-legible studios along a warm path, a
+1. **The Curiosity Map at golden hour** — three distinct, instantly-legible cabins along a warm path, a
    pond, trees, a cat, long blue-violet shadows, and a gentle **return-glow** on one building. *(Ref: A
    Short Hike / Alba.)*
-2. **A room interior (Music Studio)** — a warm window shaft with dust motes, a **glowing pad grid mid-beat**
+2. **A cabin interior (the Sounding Cabin — Music)** — a warm window shaft with dust motes, a **glowing pad grid mid-beat**
    with a sweeping playhead, a shelf of saved loops, a sleeping cat, and **one obvious primary verb**.
    *(Ref: Chrome Music Lab × A-Short-Hike interior.)*
 
@@ -481,7 +493,7 @@ still runs on its own domain for its own team's dev/QA).
 import { connectInterestSignal } from "@gt100k/interest-signal-client";
 const signal = connectInterestSignal({ expectOrigin: "https://interest-lab.gt100k…" });
 // signal.context -> ContentLaunchContext | null (null when standalone)
-signal.emit({ zoneId: "music", probeId: "audio.filters.hpf", domain: "audio",
+signal.emit({ zoneId: "music", probeId: "audio.filters.hpf", domain: "sound_music",
               workMode: "investigate", action: "solved-filter-puzzle",
               kind: "artifact", dayOffset: signal.context?.dayOffset ?? 0 });
 ```
