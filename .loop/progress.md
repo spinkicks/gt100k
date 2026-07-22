@@ -110,10 +110,19 @@ the portal (top DELTA items for the atelier).
   tree (typecheck · 516 tests · app build). Doorways provably live; a11y peer real; `window.__qa`
   present. → **DoD met for the map + first cabin core; creating `.loop-done`.**
 
-## NEXT (best-effort polish on a bar-passing core — for future turns)
-- **Atelier top deltas:** clearer mullioned window at the shaft origin · soft halo behind the
-  periwinkle portal · nudge the wood-stove into a distinct corner · vary gallery-frame sizes/tilt.
-- **Clearing top deltas:** distinct cabin rooflines (horn/glass-gable/skylight) · bolder path
-  contrast · tighter sun disc + denser foliage.
-- **Other cabin interiors (Music "Sounding Cabin", Code "Sunlit Workshop"):** deepen the stubs to the
-  §8.1 shared kit + craft layer, reusing the now-proven `ProceduralEnvironment` + atelier-scene pattern.
+## NEXT — CONTINUE TO THE FULL WORLD (operator directive: build all three cabins, not just the minimum)
+The clearing + the **Atelier (Art)** cabin are DONE and gate-verified (QA + VLM both PASSED) — **do NOT
+redo them.** The **Music and Code cabins are still core STUBS** — build them to the bar next, then polish.
+**Do NOT create `.loop-done` until ALL THREE cabin interiors are to the bar** (self-score ≥7, QA + VLM).
+Reuse the now-proven **crash-free `ProceduralEnvironment` + atelier-scene pattern** for both.
+- **1) Music — "The Sounding Cabin" (`sound_music`)** — build the interior to the bar per
+  `docs/superpowers/specs/2026-07-21-cabin-interior-music.md` (warm-wood upright piano hero, hi-fi corner,
+  the glowing console screen doorway; distinct **gramophone-horn cupola** roofline).
+- **2) Code — "The Tinker Workshop" (`symbols_math`)** — build per
+  `docs/superpowers/specs/2026-07-21-cabin-interior-code.md`: the doorway is **The Coding Desk** (a warm-
+  glowing monitor + mechanical keyboard, **never cold-blue**), the little robot is **Sprout**, plus the
+  **Claude** desk-buddy; language toys/books; distinct **glass-gable** roofline.
+- **3) Then polish** — Atelier deltas (mullioned window at the shaft origin · soft halo behind the
+  periwinkle portal · distinct wood-stove corner · vary gallery-frame sizes/tilt) and clearing deltas
+  (distinct cabin rooflines so silhouette names the craft · bolder path contrast · tighter sun disc +
+  denser foliage). Screenshot + delta-loop each surface every turn; keep the gate green.
