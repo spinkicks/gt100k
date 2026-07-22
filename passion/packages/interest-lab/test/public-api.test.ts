@@ -3,6 +3,7 @@ import {
   AUDIENCE_CONDITIONS,
   CHILD_POSITIONS,
   DEFAULT_LAB_CONFIG,
+  DEFAULT_RETURN_GRID_CONFIG,
   DIFFICULTY_BANDS,
   EVENT_TYPES,
   FORBIDDEN_PURPOSES,
@@ -18,6 +19,8 @@ import {
   authorRevision,
   buildCoverageMatrix,
   buildLab,
+  buildReturnGrid,
+  buildRevisableHypothesis,
   createHypothesis,
   currentFor,
   evaluateCandidateGate,
@@ -29,9 +32,12 @@ import {
   summarizeSignals,
 } from "../src/index";
 import type {
+  ActivityEvent,
+  ActivityKind,
   ArtifactSignalSource,
   AssentRecordPort,
   AudienceCondition,
+  AxisSpike,
   CandidateGateEvaluation,
   ChildPosition,
   Clock,
@@ -40,10 +46,13 @@ import type {
   CoverageMatrix,
   DifficultyBand,
   Domain,
+  DomainRow,
   EngagementEvent,
   EventType,
   ForbiddenPurpose,
+  GridCell,
   GuideReview,
+  HypothesisReading,
   HypothesisRevision,
   HypothesisState,
   HypothesisViewTime,
@@ -62,6 +71,9 @@ import type {
   ProbeCatalog,
   ProbeFamily,
   Provenance,
+  ReturnGrid,
+  ReturnGridConfig,
+  RevisableHypothesis,
   SafetyClass,
   ShadowProvenance,
   SignalFamily,
@@ -70,6 +82,7 @@ import type {
   TransitionVersions,
   Uncertainty,
   WorkMode,
+  WorkModeColumn,
 } from "../src/index";
 
 type FoundationalTypeExports = [
@@ -113,6 +126,19 @@ type HypothesisStateMachineTypeExports = [
   HypothesisViewTime,
   ShadowProvenance,
   TransitionVersions,
+];
+
+type CoreActivityTypeExports = [
+  ActivityEvent,
+  ActivityKind,
+  AxisSpike<Domain, WorkMode>,
+  DomainRow,
+  GridCell,
+  HypothesisReading,
+  ReturnGrid,
+  ReturnGridConfig,
+  RevisableHypothesis,
+  WorkModeColumn,
 ];
 
 describe("interest lab public API", () => {
@@ -176,5 +202,17 @@ describe("interest lab public API", () => {
     expect(functions.every((exported) => typeof exported === "function")).toBe(true);
     expect(LEGAL_TRANSITIONS).toHaveLength(19);
     expectTypeOf<HypothesisStateMachineTypeExports>().toEqualTypeOf<HypothesisStateMachineTypeExports>();
+  });
+
+  it("exports the P0 shared-core activity contracts", () => {
+    expect(buildReturnGrid).toBeTypeOf("function");
+    expect(buildRevisableHypothesis).toBeTypeOf("function");
+    expect(DEFAULT_RETURN_GRID_CONFIG).toEqual({
+      noveltyHorizon: 7,
+      minAxisReturns: 2,
+      spikeLeadMargin: 1,
+      minAxisSpread: 2,
+    });
+    expectTypeOf<CoreActivityTypeExports>().toEqualTypeOf<CoreActivityTypeExports>();
   });
 });

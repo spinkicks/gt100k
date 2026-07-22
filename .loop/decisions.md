@@ -975,3 +975,18 @@ _Legacy scratch below (prior interest-lab loop — not applicable to evidence-ex
   star primitives) against the now-serious instrument chrome — a *scene* taste-tune (glowing-nodes is the
   committed concept; changing node representation is larger scope + GPU-eyes work). Accent usage (cyan
   eyebrow/labels) kept for restrained life in the palette — judged tasteful, not accent-spam.
+
+## IL-CORE-001 — P0 placeholders are deterministic and deliberately inert
+- **Chose:** expose the spec-pinned P0 types now, while placeholder builders return only stable shape-level
+  states (`new`, `insufficient`, zero return aggregates). The registry validation and host navigation are
+  already real because their behavior is small and required by the seeded smoke.
+- **Why:** P0 must keep the whole seam compilable and green without pre-empting the exact P1–P5 algorithms;
+  inert outputs cannot accidentally be mistaken for inferred evidence.
+- **Rejected:** partially approximating later goldens would create behavior that later phases must unwind
+  and could let a plausible but incorrect algorithm survive until P7.
+
+## IL-CORE-002 — Minimal stub presentation defaults
+- **Chose:** use `Step inside` as the shared enter verb and stable decorative glyph ids `music-note`,
+  `code-brackets`, and `art-brush`; 3D stubs are unlit labeled boxes and DOM stubs are labeled buttons.
+- **Why:** the core spec pins labels and grid cells but leaves glyph ids and the exact verb unspecified.
+  These values are deterministic, accessible, and intentionally leave all visual craft to the world lane.

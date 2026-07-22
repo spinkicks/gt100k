@@ -1,4 +1,21 @@
 export { isProbeEligible, rotateBySeed, selectEligibleFamilyVariants } from "./catalog";
+export {
+  DEFAULT_RETURN_GRID_CONFIG,
+  buildReturnGrid,
+  buildRevisableHypothesis,
+} from "./activity";
+export type {
+  ActivityEvent,
+  ActivityKind,
+  AxisSpike,
+  DomainRow,
+  GridCell,
+  HypothesisReading,
+  ReturnGrid,
+  ReturnGridConfig,
+  RevisableHypothesis,
+  WorkModeColumn,
+} from "./activity";
 export { buildCoverageMatrix } from "./coverage";
 export type { CoverageConfig, CoverageItem } from "./coverage";
 export { EVENT_TYPES, SIGNAL_FAMILIES, recordEvent } from "./events";

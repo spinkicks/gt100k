@@ -124,6 +124,9 @@ importers:
       '@gt100k/interest-probe-catalog':
         specifier: workspace:*
         version: link:../../adapters/interest-probe-catalog
+      '@gt100k/interest-zone-kit':
+        specifier: workspace:*
+        version: link:../../packages/interest-zone-kit
       '@react-three/drei':
         specifier: ^9.114.0
         version: 9.122.0(@react-three/fiber@8.18.0(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.169.0))(@types/react@18.3.31)(@types/three@0.169.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.169.0)(use-sync-external-store@1.6.0(react@18.3.1))
@@ -213,6 +216,28 @@ importers:
       '@gt100k/interest-probe-catalog':
         specifier: workspace:*
         version: link:../../adapters/interest-probe-catalog
+
+  passion/packages/interest-zone-kit:
+    dependencies:
+      '@gt100k/interest-lab':
+        specifier: workspace:*
+        version: link:../interest-lab
+      '@gt100k/interest-lab-view':
+        specifier: workspace:*
+        version: link:../interest-lab-view
+      '@react-three/fiber':
+        specifier: ^8.17.10
+        version: 8.18.0(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.169.0)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.12
+        version: 18.3.31
+      '@types/three':
+        specifier: ^0.169.0
+        version: 0.169.0
 
   passion/packages/passion-tutor: {}
 

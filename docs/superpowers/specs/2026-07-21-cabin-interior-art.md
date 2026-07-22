@@ -44,11 +44,15 @@ list, a reference-anchored self-score, and a mandatory reference-delta loop — 
 ## 0. TL;DR — what this doc decides
 
 1. **The set is a real artist's atelier that a child wants to live in — cozy log cabin FUSED with the tools and mess of
-   making pictures.** Warm honey wood + beams + a glowing wood-stove, and everywhere the evidence of a painter mid-work:
-   a **grand easel** with a luminous canvas (the doorway), a **paint-cluttered drafting desk**, a **gallery wall** of
-   little framed paintings and pinned sketches, **shelves of pigment jars & sketchbooks**, a **pottery wheel** with wet
-   clay, a **still-life corner** (fruit bowl + draped cloth + wooden mannequin), **string-lights**, a hanging **mobile**,
-   and **paint-splattered stools**. Colorful but cohesive; warm and lived-in one second ago.
+   making pictures, in ALL their forms.** Warm honey wood + beams + a glowing wood-stove, and everywhere the evidence of
+   a painter mid-work — *traditional AND digital*: a **grand easel** with a luminous canvas (the doorway), a
+   **paint-cluttered drafting desk** that also holds a **drawing tablet + stylus**, a warm-glowing **"digital easel"
+   monitor** mid-painting in the making-corner beside it, a **gallery wall** that runs from little framed oil paintings
+   and pinned sketches to a **kindly TV-painter portrait** (happy little trees) and a warm cluster of framed
+   **internet-art / meme prints**, **shelves of pigment jars & sketchbooks**, a **pottery wheel** with wet clay, a
+   **still-life corner** (fruit bowl + draped cloth + wooden mannequin), **string-lights**, a hanging **mobile**, and
+   **paint-splattered stools**. Colorful but cohesive; warm and lived-in one second ago. The room says, in one glance:
+   *art is oil paint AND a tablet AND the memes you send your friends* — all hung as one warm family.
 2. **The signature is the one thing a real atelier has that no other cabin does: TWO lights that meet.** A **warm
    golden-hour raking key** (the hero shaft, with dust motes) makes it cozy; a **cool, even NORTH-LIGHT window** makes
    the colors *read true* — the exact reason painters build north-facing studios. This diegetically justifies the art
@@ -58,23 +62,30 @@ list, a reference-anchored self-score, and a mandatory reference-delta loop — 
    `SCENE3D.markerEmissiveRest` (0.35) and breathes to `…Pulse` (0.5) in the art hue `#6C8CE8`, with a warm
    `light.window #FFC08A` inner glow; the ONE verb *"Step up to the easel"* floats above it. It is the single obvious
    primary affordance and is **provably live** (`window.__qa.stateHash()` changes on contact) *before any content
-   exists*.
+   exists*. The warm **digital easel** monitor and the drawing tablet are *ambient live-tastes* (§3.K), **never
+   doorways** — deliberately softer and warmer than the periwinkle portal, floating no verb; one primary focal point only.
 4. **The camera never moves off its rails.** Fixed composed `CAMERA3D` (fov 42, home `[0,4.5,15]` → target
    `[0,0.4,0]`), gentle clamped look-around, and **step-to-hotspots** (hero desk → doorway easel → ambient stove /
    wheel / gallery / still-life / cat / shaft). Three authored poses map to the reference frames: `wide` · `cozy` ·
    `hero`.
 5. **It survives a Chromebook.** One HDRI + one shadow-caster + emissive practicals; frozen shadows; palette fog; Bloom
-   + Vignette + ACES; **~38 draw calls (hard cap < 50)** via `<Merged>` shell + instanced sets (the gallery frames, the
-   pigment jars, the string-light bulbs are each ONE draw call); degrades `room-3d` → `room-3d-lite` → the **`ActivityDOM`
-   accessible peer**.
+   + Vignette + ACES; **~40 draw calls (hard cap < 50)** via `<Merged>` shell + instanced sets (the gallery frames — now
+   oils + memes + the TV-painter portrait — the pigment jars, the string-light bulbs are each ONE draw call); degrades
+   `room-3d` → `room-3d-lite` → the **`ActivityDOM` accessible peer**.
 6. **Aliveness is signal-free.** ≥8 always-on motions on one breath clock; the art-flavored micro-interactions —
-   **spin the pottery wheel · the mobile turns · a brush sways in the water jar · stoke the stove · pet the sill-cat** —
-   are cozy, satisfying, and emit **zero** `ActivityEvent` (the firewall). The easel doorway is *not* a delight and no
-   delight is a doorway.
+   **spin the pottery wheel · the mobile turns · a brush sways in the water jar · stoke the stove · pet the sill-cat ·
+   paint on the tablet → a warm brushstroke blooms on the digital easel** — are cozy, satisfying, and emit **zero**
+   `ActivityEvent` (the firewall). The easel doorway is *not* a delight and no delight (not the tablet, not the digital
+   easel) is a doorway.
 
 **The doorway object (headline):** **the grand easel's luminous periwinkle canvas → *"Step up to the easel."*** Warm
 `light.window` inner glow inside a periwinkle `#6C8CE8` rim; breathes 0.35↔0.5; the one primary, host-ready, live
 affordance of the room.
+
+**The added layer (headline):** **art in ALL its forms, in one cozy cabin** — classic (oils, pottery, still-life),
+**digital** (a drawing tablet + a warm-glowing "digital easel" mid-painting), and **internet culture** (a kindly
+TV-painter homage + framed meme prints in the gallery). All warm, all cohesive; the digital tools are ambient
+live-tastes, never a second doorway; screens glow **warm**, never cold-blue.
 
 ---
 
@@ -93,11 +104,16 @@ ceramics, jars).
 > window on the **left**, crossing the room and landing on the **grand easel** on the right — its canvas glowing a soft
 > luminous **periwinkle**, warm on one edge where the sun kisses it. **Dust motes drift** in the shaft. Overhead, dark
 > **cocoa beams** frame the top of the shot and carry a swag of **warm string-lights** and a slowly-turning **paper
-> mobile**. Center-back, a tall **north-light window** pours a cool, even, true-color light over the **gallery wall** of
-> little framed paintings and pinned sketches — one **half-finished frame glows** warm. Far-right corner, a cast-iron
-> **wood-stove glows amber**, a kettle steaming on top. Left-center sits the **drafting desk**, a joyful mess of brush
-> jars, squeezed paint tubes, a wet palette, a murky water jar with a brush soaking, an open sketchbook, and a warm desk
-> lamp pooling light. Front-left, a **pottery wheel** with a half-thrown pot; front-right, a **still-life corner** — a
+> mobile**. Center-back, a tall **north-light window** pours a cool, even, true-color light over the **gallery wall** —
+> framed oil paintings and pinned sketches beside a **kindly afro'd TV-painter's portrait**, a small canvas of **happy
+> little trees, a mountain and one friendly cloud**, and a warm cluster of framed **internet-art / meme prints** — one
+> **half-finished frame glows** warm (old masters, a gentle TV painter, and the memes a kid loves, hung as one family).
+> Far-right corner, a cast-iron **wood-stove glows amber**, a kettle steaming on top. Left-center, the **making-corner**:
+> the **drafting desk**, a joyful mess of brush jars, squeezed paint tubes, a wet palette, a murky water jar with a brush
+> soaking, an open sketchbook, a **drawing tablet + stylus** glowing soft-warm, and a warm desk lamp — and just left, a
+> **warm-glowing "digital easel" monitor** showing a bright, joyful digital painting mid-stroke (a Procreate-style canvas
+> on a friendly warm UI, *never* a cold screen). Front-left, a **pottery wheel** with a half-thrown pot; front-right, a
+> **still-life corner** — a
 > fruit bowl on a draped cloth, a wooden mannequin mid-pose. A knit **rug** anchors the floor, a **paint-splattered
 > stool** waits at the easel, potted **plants** soften the corners, and a **cat sleeps on the north-light sill**. Warm
 > honey fog ties it together; a soft **bloom** haloes every flame, bulb, lamp, and the periwinkle portal. Long
@@ -108,9 +124,10 @@ ceramics, jars).
 
 - **"The Drafting Desk" (`cozy` pose).** Close on the desk (the most detailed 30 cm of the room; §3.B). The **Storybox**
   diorama glows mid-scene (a tiny lit forest, a fox on the near lip); a jar of brushes, four paint tubes, a wet palette,
-  a water jar with a soaking brush, an open sketchbook + pencil, a chipped mug with faint steam, a warm lamp, two
-  crumpled sketch-balls, a paint rag. The cat's tail curls into frame from the sill. *(Ref: Whisper of the Heart's desk
-  × Unpacking object-feel.)*
+  a water jar with a soaking brush, an open sketchbook + pencil, a chipped mug with faint steam, a warm lamp, a **drawing
+  tablet + stylus** (its screen a warm colorful sketch, the stylus resting in its groove), two crumpled sketch-balls, a
+  paint rag; the **digital easel's** warm in-progress painting glows just past the desk's left edge. The cat's tail curls
+  into frame from the sill. *(Ref: Whisper of the Heart's desk × Unpacking object-feel × Procreate-on-a-cozy-desk.)*
 - **"The Easel Portal" (`hero` pose).** The grand easel dead-center, its canvas a **soft luminous periwinkle portal**
   breathing warm, a paint-splattered stool before it, the ONE verb floating in the display font (*"Step up to the
   easel"*), string-light bokeh above, gentle bloom, a warm sun-kiss on the frame's left edge, a periwinkle rim-light.
@@ -164,6 +181,8 @@ bounded box opening toward the camera (the "fourth wall" is the camera side).
    └──────────────────────────────────────────────────────────────┘
                     ↑ open fourth wall — CAMERA at [0, 4.5, 15] looking −z ↑
        overhead everywhere: beams ▬▬▬ · string-lights ✷✷✷ · slow mobile ✺ · drying-line canvases
+       making corner (left): [shelves] · 🖥 digital-easel monitor (AMBIENT, x≈−5.3 z≈−3.6) · drafting desk + 📱 tablet
+       gallery wall (center-back): oils + 🧑‍🎨 kindly-TV-painter portrait + 🖼 framed meme prints — ONE instanced set
 ```
 
 ### 2.3 Focal path, foreground framing, value structure (art bible Pillar E)
@@ -176,14 +195,18 @@ path:
    is the cozy "you are looking *into* a room" vignette — never bright, never bare.
 2. **Lit mid subjects (the golden band, z ∈ [−4,0]):** the **drafting desk (hero)** on the left and the **grand easel
    (doorway)** on the right, both raked by the warm shaft — the two focal points, deliberately separated so they never
-   fight (desk = "make a little something now," easel = "go deeper"). The knit rug visually links them.
+   fight (desk = "make a little something now," easel = "go deeper"). The knit rug visually links them. The **digital
+   easel** (a warm screen, §3.K) sits in the left making-corner as an *ambient* glow — deliberately **softer and warmer**
+   than the periwinkle portal, so it enriches the "make now" side (traditional tools + a tablet + a screen, together)
+   **without becoming a second focal point**; the shaft kisses its wooden frame warm, never a cold cast.
 3. **Luminous background (z ≈ −7):** the **north-light window** (cool, even, true-color) behind the gallery wall, the
    **glowing half-finished frame**, and the **amber wood-stove** in the corner — the warm/cool luminous backdrop that
    makes the mid-ground read.
 
 **The focal read (≤1 s):** the warm shaft points the eye from the bright north window → down to the easel's glowing
-periwinkle canvas (the brightest cool accent, haloed by bloom) → the floating verb. Second glance: the cozy desk, the
-stove, the wheel, the cat. The doorway wins the first glance; the room rewards the second.
+periwinkle canvas (the brightest cool accent, haloed by bloom) → the floating verb. Second glance: the cozy desk and its
+warm tablet, the **digital easel's** joyful painting, the gallery's oils-to-memes span, the stove, the wheel, the cat.
+The doorway wins the first glance; the room rewards the second with *art in every form*.
 
 **Camera poses** (eased via `resolveCamera3D`; reduced-motion → `cut`): entry drifts `establishStart → home` (=
 `wide`); tapping the desk eases to `cozy`; tapping the easel eases to `hero` (`focusFillDistance 6.5` in front). A
@@ -231,6 +254,7 @@ top at y≈1.9, ~1.4 m long, facing camera-right (slightly angled).
 | B9 | Warm **desk lamp** (emissive) | 1 | 0.4 | desk back-left, arm bent over Storybox | shade `brass`; bulb `light.lantern` (emissive) | — | desk |
 | B10 | **Crumpled sketch-balls** (instanced) | **≥2** | 0.06 | on desk + one on floor | `paper.parchment` | — | desk-props |
 | B11 | Jar of **pencils/charcoal** + a putty/palette knife + a paint rag | 1 set | 0.12 | desk right cluster | mixed; rag smeared `HUE_RAMP` | — | desk-props |
+| B12 | **Drawing tablet + stylus** (the digital-make tool — how kids draw now; sits with the brushes) | 1 tablet + 1 stylus | tablet 0.30; stylus 0.16 | desk right-center, stylus in its groove | body `wood.walnut`/graphite + `brass` trim; **warm emissive screen** = a colorful sketch on a cream UI (**never** cold-blue) | **paint-on-tap** → digital-easel bloom (§6.3); idle color-breath | digital-screens |
 
 ### 3.C — The grand easel (the **doorway** hotspot; the `hero` pose) — see §4 for the portal spec
 
@@ -246,15 +270,21 @@ Studio H-frame easel, **x +3.0, y0, z −3.2**, ~1.7 m tall, canvas angled ~30°
 
 ### 3.D — The gallery wall (center-back; the payoff + the "half-made thing is still here" cue)
 
-Back wall right of the north window, **x [0.5, 5.0], y [1.6, 4.6], z −6.95**.
+Back wall right of the north window, **x [0.5, 5.0], y [1.6, 4.6], z −6.95**. **This wall is the room's thesis — art as
+one living family across forms and eras:** hand-painted oils, a gentle TV painter, *and* the internet's own folk art
+(memes), hung together, warm and equal. **All frames are ONE instanced set** (memes + portrait included) — one geometry,
+per-instance scale + atlas-UV + frame-tint jitter, images on a shared gallery atlas (§7.2); zero extra draw calls.
 
 | # | Prop | Count | Scale (m) | Placement | Tint | Motion | DC group |
 |---|---|---|---|---|---|---|---|
-| D1 | Framed **little paintings** (instanced frames; art on a shared atlas) | **≥8** | 0.2–0.4 | gridded-but-jittered on wall | frames `wood.honey`/`brass`, jittered; images cohesive-warm | — | gallery-frames |
+| D1 | Framed **little paintings** (oils · landscapes · portraits; instanced frames, art on a shared atlas) | **≥8** | 0.2–0.4 | gridded-but-jittered on wall | frames `wood.honey`/`brass`, jittered; images cohesive-warm | — | gallery-frames |
 | D2 | **Half-finished frame that GLOWS** (the return cue) | 1 | 0.35 | wall, eye-height | warm `light.window` halo + `#6C8CE8` edge | glow-breath | gallery-frames |
 | D3 | **Pinned sketches / studies** (instanced, tacked to plaster) | **≥6** | 0.15–0.25 | around the frames | `paper.parchment`; pins `brass` | corner curl breath | gallery-pins |
 | D4 | Small **shelf-ledge** + trinkets (mini sculpture, seashell, color-swatch fan) | 1 ledge, **≥3** | 0.1 | below the frames | mixed; swatch fan bright | — | gallery |
 | D5 | String of little **pennants / bunting** | 1 | 1.5 | swagged above frames | fabric jittered warm | breath sway | gallery |
+| D6 | **Kindly TV-painter portrait** (a warm Bob-Ross homage — a gentle, afro'd painter) + beside it a canvas of **happy little trees, a mountain & one friendly cloud** | 1 portrait + 1 landscape | 0.4 each | featured, eye-height, center-left of the wall | frame `wood.honey`; warm images on the shared atlas | — | gallery-frames |
+| D7 | Framed **internet-art / meme prints** (recognizable, kid-appropriate formats: an impact top/bottom caption, a pixel reaction-face grid, a wholesome shiba, a rage-comic smiley, an emoji mosaic) | **≥5** | 0.15–0.3 | warm cluster, lower-right of the wall | thin `brass`/`wood.honey` frames, jittered; images warm + playful, on the shared atlas | tap-flip (supporting §6.3) | gallery-frames |
+| D8 | Hand-lettered **"happy little accidents" note** (pinned by the portrait) | 1 | 0.15 | beside D6 | `paper.parchment`; pin `brass` | corner curl breath | gallery-pins |
 
 ### 3.E — Shelves of pigments & sketchbooks (left wall; the colorful-cohesive pop)
 
@@ -321,10 +351,25 @@ A step-to hotspot, **x +5.0, y0, z −1.0**, under a small aimed lamp.
 | J5 | Breathing **curtains** (light linen) | 1 | 1.4 | north window | `plaster.cream`, soft | slow vertex sway (breath) | window |
 | J6 | Painter's **smock/apron on a peg** (paint-smeared; "someone just stepped out") | 1 | 0.6 | left wall by shelf | `wool.cream` smeared `HUE_RAMP` | — | shell |
 
-**Tally:** ~**60+ discrete visible objects** across **11 surface classes** (floor · walls/beams · window+sill · stove ·
-drafting desk · easel · gallery wall · shelves · pottery wheel · still-life · ceiling) — comfortably clears the **≥45
-objects / all-8 surface-classes** floor (zone-art §4.6) and the world bible's ≥30 / ≥5-classes floor (§9). Under-dressing
-to hit the budget is itself a failure — **instance instead** (§7.2).
+### 3.K — The digital-art station (the "digital easel"; art's modern form — an ambient live-taste, NOT a doorway)
+
+How a huge share of kids make art today, folded into the cozy cabin so the room reads as *art in every form*. It is a
+**step-to ambient hotspot** (`role:"ambient"`, §11.1): live and touchable, but its glow is **warm and deliberately softer
+than the periwinkle portal**, it floats **no verb**, and it **never** changes `primaryAction` — one doorway only. Sits at
+the left end of the making-corner, **x −5.3, y0, z −3.6**, angled ~35° toward camera-right so the screen reads (well
+forward of the shelf E1, well back of the pottery wheel F1 — no overlap; the golden shaft kisses its wooden frame).
+
+| # | Prop | Count | Scale (m) | Placement | Tint | Motion | DC group |
+|---|---|---|---|---|---|---|---|
+| K1 | **"Digital easel" monitor** (chunky warm-wood-framed screen on a tilt-stand) | 1 | screen 0.5 × 0.36; ~0.9 tall w/ stand | anchor above | frame `wood.walnut` + `brass` knobs; stand `wood.oak` waxed | — | digital |
+| K2 | **The warm digital canvas** (emissive screen: a bright, joyful in-progress digital painting, Procreate/Photoshop-style, on a friendly warm/cream UI) | 1 | 0.5 × 0.36 | on K1, facing camera | **emissive** — colorful art (`HUE_RAMP`+`PALETTE`) on `paper.parchment`/`light.window` UI chrome; **NEVER cold-blue / cold-chrome** | **brush-bloom on tap** (§6.3) + idle color-breath | digital-screens |
+| K3 | **Small side-desk / stand** under the monitor (a chipped mug, a spare stylus, a sticky-note doodle, a mini figurine) | 1 set | 0.7 × 0.5 | under/around K1 | `wood.oak`; contents mixed, jittered | — | digital |
+| K4 | **Clip-on warm work-light** on the monitor (+ its warm UI glow-spill onto the desk) | 1 | 0.2 | on K1 | arm `brass`; bulb `light.lantern` (emissive) | — | digital |
+
+**Tally:** ~**72+ discrete visible objects** across **12 surface classes** (floor · walls/beams · window+sill · stove ·
+drafting desk · **digital-art station** · easel · gallery wall · shelves · pottery wheel · still-life · ceiling) —
+comfortably clears the **≥45 objects / all-8 surface-classes** floor (zone-art §4.6) and the world bible's ≥30 /
+≥5-classes floor (§9). Under-dressing to hit the budget is itself a failure — **instance instead** (§7.2).
 
 ---
 
@@ -349,9 +394,16 @@ The single primary affordance; a **host-ready warm placeholder** (gameflow §4.3
   machine-checkable "primary action is live" proof (SC-CORE-14) holds *before content exists*. When content lands, this
   same hotspot swaps its handler to launch the content app (`role:"doorway"`, `window.__qa.primaryAction =
   "open-atelier"`) — **no layout, camera, or flow change** (zone-art §10; gameflow §4.3).
+- **One doorway, many ways to make.** The room now celebrates art in *all* its forms, but the affordance hierarchy stays
+  singular. The **drawing tablet (B12)** and the warm **digital easel (§3.K)** are *ambient live-tastes* — they respond
+  warmly to touch (§6.3) and emit nothing, but they float **no verb**, launch nothing, and leave `primaryAction`
+  untouched. The **grand easel is the one doorway**: the one floating verb, the one host-ready portal, the brightest cool
+  accent. Two focal points never compete (the making-corner = "make a little something now, in any medium"; the grand
+  easel = "go deeper"); the digital easel's glow is kept **warmer and softer** than the periwinkle portal so the eye
+  lands on the portal first. Promoting the tablet/digital easel to a second doorway is a banned outcome (§9).
 - **Firewall separation.** The easel is **not** a delight and no delight is a doorway (aliveness §7.5). Stepping to the
   easel is the primary action; it does not emit a work-mode signal in v1 (the row already lit on cabin entry), and the
-  micro-interactions (§6.3) never touch it.
+  micro-interactions (§6.3) — including painting on the tablet — never touch it.
 
 ---
 
@@ -366,6 +418,14 @@ toon globally — but never `MeshBasicMaterial`, ever.) The look is **satin**: l
 sheen only on brass/ceramic/leather/waxed-wood handled edges. **No roughness below ~0.35** except the single brightest
 brass glint under a lamp. Every hero surface shows the **macro→meso→micro** three bands (art bible §4): e.g. the
 drafting desk = plank silhouette → visible seams/tool-chamfers/paint-stains → grain + waxed sheen.
+
+**Two new recipes for the digital + pop-culture layer.** (a) **Warm screens (tablet B12 + digital easel K2):** an
+**emissive** screen material showing a colorful artwork on a friendly warm/cream UI (`paper.parchment`/`light.window`
+chrome, the art in `HUE_RAMP`+`PALETTE`), luminance tuned **below** the periwinkle portal so it never out-shouts the
+doorway, with a faint satin glass sheen over it; **cold-blue / cold-chrome glow is banned** (§9) — the "digital" must read
+as *a lit painting*, not a device. (b) **Framed prints (the oils, the kindly-TV-painter portrait, the memes):** matte-satin
+images under glass on ONE shared gallery atlas, frames warm-jittered (`wood.honey`/`brass`) — the meme prints get the
+*same* loving frame, glass, and warm light as the oils (that equality is the point).
 
 ### 5.2 The lighting rig (art bible §5, with the ART-cabin two-window twist)
 
@@ -388,7 +448,10 @@ The one distinctive move: **two window characters that meet.**
    sine + noise on the breath clock (reduced-motion → steady glow). The same amber as the Lodge hearth and every cabin
    window (cohesion — you stepped *toward the same fire*).
 5. **Warm practicals (emissive only, no extra real lights).** Desk lamp **B9**, still-life lamp **G5**, string-lights
-   **I1**, and the **easel portal C2** — all emissive `light.lantern`/`light.window`, giving bloom its sparkle.
+   **I1**, the **tablet + digital-easel screens (B12/K2)** + the digital clip-light **K4**, and the **easel portal C2** —
+   all emissive `light.lantern`/`light.window`, giving bloom its sparkle. The **digital screens read as *soft warm
+   practicals*** (a lit painting on a screen), **dimmer than the portal**, adding warm bounce onto the making-corner —
+   **never a cold monitor casting blue** into the room.
 6. **Frozen shadows.** `<ContactShadows frames={1}>` under each hero prop (desk, easel, wheel, still-life, stove) +
    `<BakeShadows>` elsewhere; `<AccumulativeShadows>` + `<RandomizedLight>` for a settled hero shadow that costs zero
    once composed. **≤1 shadow-caster, never per-frame.**
@@ -403,7 +466,9 @@ The one distinctive move: **two window characters that meet.**
 The ART room runs the warm cabin pack (shape unchanged from the shipped `Scene3DView`; **swap values only**): `bgHex
 #E6D2A2`, `fogHex #E0C79A`, `ambientHex #52402E` @ 0.38, `hemiSkyHex #A9C2E8` / `hemiGroundHex #C67B48` @ 0.52, `keyHex
 #FFD8A3` @ 1.2 `keyPos [6,8,5]`, `markerEmissiveHex #FF9E5E` (rest 0.35 / pulse 0.5), `bloomPeak 1.4`, ACES @ 1.05.
-`HUE_RAMP` is untouched (art stays `#6C8CE8`). Night-as-default is a **banned outcome**.
+`HUE_RAMP` is untouched (art stays `#6C8CE8`). Night-as-default is a **banned outcome**. The new warm-screen practicals
+(tablet/digital easel) reuse `light.window`/`light.candle` UI + `HUE_RAMP`/`PALETTE` art — **no new tokens, and never a
+cold-blue screen.**
 
 ---
 
@@ -414,7 +479,7 @@ The ART room runs the warm cabin pack (shape unchanged from the shipped `Scene3D
 All ambient motion samples **one** slow oscillator (`AMBIENCE.breathMs` default 8000) with per-element phase offsets, so
 the room reads as one living body for the cost of one clock. Amplitudes stay tiny (window/string flicker ≤3%, stove glow
 ±8%, sway a few px/deg). In the 3D room, one uniform updated in a single throttled `useFrame` feeds fire + motes +
-portal; DOM overlays (where cheaper) read a CSS `--breath` var. **Reduced-motion → freeze at 0.5** (a serene, complete
+portal + the warm screens; DOM overlays (where cheaper) read a CSS `--breath` var. **Reduced-motion → freeze at 0.5** (a serene, complete
 still — never a hollowed-out frame).
 
 ### 6.2 Always-on motions (≥8; floor is ≥6, zone-art §4.5)
@@ -429,6 +494,7 @@ still — never a hollowed-out frame).
 8. **The easel portal shimmers** (C2, periwinkle color-breathing).
 9. **Drying-line canvases + pennants** sway a touch on the gust (I3/D5).
 10. **Kettle/mug steam** wisps (A7/B8).
+11. **The digital easel's canvas color-breathes** (K2, warm — a living in-progress painting; the tablet screen too).
 
 ### 6.3 The art-flavored micro-interactions (cozy-juice grammar; the firewall holds)
 
@@ -444,13 +510,16 @@ warmth-bump.
 | 3 | **Brush sways in the water jar** (B6) | tap the water jar → the soaking brush sways, a periwinkle ink-swirl blooms in the water | `brushSway` spring; `dusk.window` swirl particle | soft water *plip* | transient | **NONE** |
 | 4 | **Stoke the wood-stove** (A6) | tap the stove → a poke, embers swirl up, the fire swells brighter ~2s then eases; **cohesion beat: every warm emissive in the room breathes +8% for one beat** | `hearthStoke`; ember burst `fire.ember→fire.flame`; emissive + point-light bump | crackle-pop + low *whoomph* | transient invalidate ~2s | **NONE** |
 | 5 | **Pet the sill-cat** (J4) | tap the cat → it stirs, leans, slow-blinks, tail curls | `catPet` spring; warm halo `light.window`; a couple of drifting motes (not hearts) | purr fade + soft *mrrp* | 1 sprite/pose swap | **NONE** |
+| 6 | **Paint on the tablet → the digital easel blooms** (B12/K2) | tap/drag the tablet → a warm brushstroke *blooms* across the digital-easel canvas; the color-wheel spins a notch | `brushBloom` spring; a warm stroke grows (`HUE_RAMP` jittered) on the screen; a soft glow-bump on both screens | soft *brush whisper* + a tiny warm UI *blip* | transient invalidate <~1.5s | **NONE** |
 
 Supporting (lighter, same grammar): click the **still-life lamp** (G5) on/off; nudge a **paint tube** (B4); tap a
-**drying-line canvas** (I3) to set it swinging. **Anti-dead-prop rule:** anything that *looks* tappable must respond;
-pure scenery must not invite a tap.
+**drying-line canvas** (I3) to set it swinging; **tap a framed meme print** (D7) → it gently flips to another
+kid-favorite; tap the **digital easel's color-wheel** → the on-screen painting shifts palette a touch. **Anti-dead-prop
+rule:** anything that *looks* tappable must respond; pure scenery must not invite a tap. (All still `emitsSignal: false`.)
 
 **The firewall (aliveness §1.2, the single most important rule):** none of these call `emit`; nothing is counted,
-collected, badged, streaked, or FOMO'd. A child who visits daily just to spin the wheel is returning to *the world*, and
+collected, badged, streaked, or FOMO'd. A child who visits daily just to spin the wheel or paint one warm stroke on the
+tablet is returning to *the world*, and
 the engine correctly reads that as **nothing about their interests** — which is exactly what protects the
 voluntary-return signal. QA asserts `window.__qa.getEmittedSignals()` records **zero** new events after firing every
 delight; a leak **hard-fails**.
@@ -473,15 +542,18 @@ Pipeline per research §6–7: `gltf-transform optimize --compress meshopt --tex
 | Ceramics (brush jar, mug, pigment jars, pots, bowl, vase), fruit | **Kenney** + **Quaternius** props | instanced, per-instance glaze/hue jitter |
 | **Easel, pottery wheel, artist mannequin, paint tubes, palette, mahl stick** | **Poly Pizza** one-offs (**verify per-model CC0**) or **stylized stand-ins** | if no clean CC0: easel = 3 tinted beams + a plane; wheel = cylinder + disc + splash-pan; tubes = capsule + cap; palette = a lofted blob — cheaper *and* fully controllable |
 | Books, sketchbooks, parchment, pinned sketches, canvases, bunting, apron, rug, blanket, curtains | **Kenney** props + authored planes | textiles instanced w/ tint jitter |
-| Framed paintings + drying-line images + Storybox interior + portal glow + the verb/signage | **authored** flat SVG/atlas (shared with content apps) | frames instanced; images on ONE shared atlas; portal + verb emissive |
+| Framed paintings + **the meme/internet-art prints + the kindly-TV-painter portrait + happy-little-trees** + drying-line images + Storybox interior + **the tablet & digital-easel artworks (warm UI)** + portal glow + the verb/signage | **authored** flat SVG/atlas (shared with content apps) | frames + memes + portrait all instanced on ONE shared gallery atlas; the warm-screen art on a small emissive atlas; portal + verb emissive |
+| **Digital-art station** (monitor / all-in-one, drawing tablet, stylus, side-desk, clip-light) | **Kenney** (electronics/desk props) + stylized stand-ins | **verify per-model CC0**; screens = **emissive material** (warm art on a warm UI); if no clean CC0: monitor = a beveled box + a plane, tablet = a rounded slab + a plane, stylus = a capsule — cheap + fully controllable |
 | Warm-interior/golden-window **HDRI**; wood/plaster/ceramic/wool/canvas/leather **PBR textures** | **Poly Haven** + **ambientCG** (CC0) | 512–1K → KTX2; the meso/micro bands |
 
-### 7.2 Draw-call budget (target ~**38**, hard cap **< 50**)
+### 7.2 Draw-call budget (target ~**40**, hard cap **< 50**)
 
 The world bible (§9) grants the room `≤ 50` (hard 80); the ART cabin — highest bar — uses that headroom, but instancing
 keeps the *base dressing* near the zone-art-v2 original `≤30` spirit. **Reconciliation:** target **< 50** (task
-contract) with **~12 calls of headroom**; the gallery frames, pinned sketches, pigment jars, drying-line canvases,
-string-light bulbs, and greenware are **each one instanced draw call for the whole set**.
+contract) with **~10 calls of headroom**; the gallery frames (**oils + memes + the TV-painter portrait, ONE set**),
+pinned sketches, pigment jars, drying-line canvases, string-light bulbs, and greenware are **each one instanced draw call
+for the whole set**; the two warm screens (tablet + digital easel) share **one** emissive atlas call — the digital +
+pop-culture layer costs only **~2 draw calls** total.
 
 | Group | DC | What it covers |
 |---|---:|---|
@@ -490,10 +562,12 @@ string-light bulbs, and greenware are **each one instanced draw call for the who
 | `stove` (stove + pipe + kettle + logs + blanket) | 2 | + emissive firebox material |
 | `desk` (table + Storybox body + lamp) | 2 | |
 | `desk-props` (brushes / tubes / jars+mug / misc — instanced by type) | 4 | ~30 items |
+| `digital` (`<Merged>`: digital-easel monitor + stand + side-desk + tablet body + clip-light) | 1 | the making-corner's digital furniture |
+| `digital-screens` (tablet + digital-easel emissive canvases, ONE warm atlas) | 1 | warm art-on-warm-UI; **never cold-blue** |
 | `easel` (easel + taboret) | 1 | |
 | `easel-portal` (the canvas emissive) | 1 | the doorway glow |
 | `stools` (instanced) | 1 | |
-| `gallery-frames` (instanced) + gallery images atlas | 2 | ≥8 frames + the glowing one |
+| `gallery-frames` (instanced — oils + memes + the TV-painter portrait, ONE set) + gallery images atlas | 2 | ≥8 frames + memes + portrait + the glowing one, all one instanced draw |
 | `gallery-pins` (instanced sketches) + `gallery` (ledge, trinkets, bunting) | 2 | |
 | `shelf` (unit + bust + canvas-roll bin) | 1 | |
 | `shelf-jars` (instanced pigments) + `shelf-books` (instanced) | 2 | |
@@ -509,17 +583,19 @@ string-light bulbs, and greenware are **each one instanced draw call for the who
 | `shaft` (god-ray quad / emissive) | 1 | |
 | `signage` (the floating verb SVG plane) | 1 | |
 | contact shadows (frozen, batched) | ~1 | |
-| **Total** | **~38** | **< 50 hard cap, ~12 headroom** |
+| **Total** | **~40** | **< 50 hard cap, ~10 headroom** |
 
 ### 7.3 Tier degradation (`resolveRenderTier`)
 
 - **`room-3d` (quest-world-3d, full):** everything above; HDRI + shaft + motes 60 + bloom + frozen shadows; all ≥8
-  motions + all 5 micro-interactions; `dpr ≤ 1.5`; `frameloop="demand"` (idle room ≈ 0 GPU, a foreground room runs a
-  throttled loop only for fire + motes).
+  motions + all 6 micro-interactions; `dpr ≤ 1.5`; `frameloop="demand"` (idle room ≈ 0 GPU, a foreground room runs a
+  throttled loop only for fire + motes + the warm screens).
 - **`room-3d-lite` (quest-world-3d-lite):** **no shadows, no bloom** (per `QUALITY_TIERS.lite`), **motes 24**, thinned
-  foliage, **gallery frames capped ~5**, still-life reduced to bowl+drape+mannequin, string-lights = flat emissive
-  (no twinkle), mobile static, cat static; the shaft becomes a static emissive gradient; micro-interactions still fire
-  (near-instant). Draw calls drop further by merging the instanced sets.
+  foliage, **gallery frames capped ~5 (always keeping the TV-painter portrait + ≥1 meme print — the pop-culture read must
+  survive)**, still-life reduced to bowl+drape+mannequin, string-lights = flat emissive (no twinkle), mobile static, cat
+  static; **the digital easel becomes a static warm image (no color-breath) and the tablet screen goes static** (both
+  still warm, never cold-blue); the shaft becomes a static emissive gradient; micro-interactions still fire (near-instant,
+  incl. paint-on-tablet). Draw calls drop further by merging the instanced sets.
 - **`board-2d` → `ActivityDOM` (the a11y floor, primary AT surface):** the **described, ordered hotspot list** — never a
   lesser menu (zone-art §12; gameflow §4.5):
   1. **"← Back to the clearing"** (always first, never trapped).
@@ -527,8 +603,10 @@ string-light bulbs, and greenware are **each one instanced draw call for the who
      little something."*
   3. **Doorway** — *"The grand easel — its canvas glows soft periwinkle. Step up to the easel."* (the primary control).
   4. **Ambient (described, focusable "look" entries)** — the wood-stove glowing amber; the pottery wheel with a
-     half-thrown pot (spin it); the gallery wall (one frame half-finished, glowing); the still-life corner; the cat
-     asleep on the sill (pet it); the golden shaft with dust motes.
+     half-thrown pot (spin it); **the digital easel — a warm screen with a colorful painting in progress (paint a stroke
+     on the tablet)**; the gallery wall (**framed oil paintings, a kindly TV-painter's happy little trees, and a cluster
+     of internet-art meme prints; one frame half-finished, glowing**); the still-life corner; the cat asleep on the sill
+     (pet it); the golden shaft with dust motes.
   - Nameable positions (`left|center|right` × `near|mid|far`), named colors (name + value + role, never color-only), a
     **live-region narration** that *is* the alt-text, keyboard one-item-at-a-time nav, visible focus ring, reduced-motion
     honored. **Parity by construction:** the `{hotspotId, label, role}` set in `ActivityDOM` equals the `Room3D`
@@ -540,22 +618,24 @@ string-light bulbs, and greenware are **each one instanced draw call for the who
 
 | Budget | The Atelier (3D) |
 |---|---|
-| **Draw calls / frame** | **< 50** (target ~38) — `<Merged>` shell + instanced sets + one shared atlas |
-| Visible dressing objects | **≥ 45** (this doc: ~60+) across **all surface classes** — none bare |
-| Surface classes occupied | **all** (floor · walls/beams · window+sill · stove · drafting desk · easel · gallery · shelves · pottery · still-life · ceiling) |
-| Warm sources | **≥ 2** (golden window key + wood-stove) + emissive lamps/string-lights/portal |
+| **Draw calls / frame** | **< 50** (target ~40) — `<Merged>` shell + instanced sets + one shared atlas |
+| Visible dressing objects | **≥ 45** (this doc: ~72+) across **all surface classes** — none bare |
+| Surface classes occupied | **all** (floor · walls/beams · window+sill · stove · drafting desk · **digital-art station** · easel · gallery · shelves · pottery · still-life · ceiling) |
+| Warm sources | **≥ 2** (golden window key + wood-stove) + emissive lamps/string-lights/portal + the **warm digital screens** |
 | Cool fill | the **north-light** dusk-blue hemisphere (no dead shadow) — *and* it reads true-color |
 | Shadow-casters | **≤ 1** (the golden sun), frozen |
 | No-dead-shadow law | **0** desaturated-gray shadow samples (blue-violet tint required) |
 | The golden shaft + motes | **required** (the soul of the room) |
 | Always-on motions | **≥ 6** (this doc: ≥8) on one breath clock |
-| Micro-interactions | **≥ 2** art-flavored, live + satisfying + **signal-free** (this doc: 5) |
+| Micro-interactions | **≥ 2** art-flavored, live + satisfying + **signal-free** (this doc: 6, incl. paint-on-tablet) |
 | Lights | exactly **1 HDRI env + 1 key dir (shadow) + 1 hemi fill**; warm accents are **emissive**, + one non-shadow stove point-light |
 | Post passes | Bloom + Vignette + ACES (2–3); SMAA |
 | Textures | props 256–512²; hero ≤ 1024²; **KTX2**; one shared atlas |
 | dpr / loop | `dpr ≤ 1.5`; `frameloop="demand"` (idle ≈ 0 GPU) |
 | Frame rate | 60 target / **≥ 30 sustained** on a real iGPU under 10-min load |
-| Doorway object | exactly **1** (the easel portal), primary + host-ready + **provably live** (`window.__qa`) |
+| Doorway object | exactly **1** (the easel portal), primary + host-ready + **provably live** (`window.__qa`); the digital easel + tablet are **ambient, never a 2nd doorway** |
+| **Art in all forms** | traditional **and** digital **and** internet-culture all present: a drawing tablet + a **warm** digital easel, a kindly-TV-painter homage (happy little trees), and **≥5** framed meme prints in the gallery |
+| **Warm screens** | tablet + digital-easel screens glow **warm** (colorful art on a friendly warm/cream UI); **0** cold-blue/cold-chrome screen pixels |
 | Firewall | **0** `ActivityEvent`s from any delight (QA-asserted) |
 
 ---
@@ -575,13 +655,24 @@ Any one fails the surface (art bible §11 + zone-art §4.7 + gameflow §12 + ali
 - **Incoherence / asset-soup.** Mixed CC0 kits at different scales/palettes, untinted; **cloned props** (shared mesh
   varied only by rotation/scale — a grid of identical jars/frames/tubes); grid-perfect placement; visible texture
   tiling; a stove lit by a different fire than the Lodge.
-- **Illegibility.** A room you can't read as *an artist's atelier* in 1 second; two competing focal points (the desk and
-  easel must not fight); no obvious doorway; tutorial-text walls.
+- **Illegibility.** A room you can't read as *an artist's atelier* in 1 second; two competing focal points (the desk, the
+  digital easel, and the grand easel must not fight — the digital easel is ambient, never a second focal point); no
+  obvious doorway; tutorial-text walls.
 - **A dead or dishonest doorway.** The easel that changes nothing on contact (a static `stateHash()` — SC-CORE-14 fail);
-  a "coming soon" wall that does nothing; a placeholder that **fakes** a lesson/quiz behind the canvas.
+  a "coming soon" wall that does nothing; a placeholder that **fakes** a lesson/quiz behind the canvas; the **digital
+  easel or tablet promoted to a second doorway** (a floating verb, a portal, a content-launch, or any change to
+  `primaryAction`) — one doorway only.
+- **A purely old-fashioned atelier.** Traditional-only (easel, oils, pottery, still-life) with **no digital art** (no
+  drawing tablet, no digital easel) and **no internet culture** (no memes) — the operator asked for art in ALL its forms;
+  a period piece that ignores how kids actually make and share art today is a fail.
+- **A cold screen.** Any cold-blue or cold-chrome monitor/tablet glow; a device that casts blue light into the warm room;
+  a dark-UI "pro" screen. Screens glow **warm** — a colorful artwork on a friendly warm/cream UI — or they have failed
+  (§5.1).
+- **No pop-culture when it was asked for.** A gallery of only oil paintings; the meme prints omitted, hidden, tiny, or
+  treated as junk instead of framed and lit as living art; the kindly-TV-painter homage (happy little trees) missing.
 - **Firewall breach (the single most important fail).** Any micro-interaction that **emits a signal**, or is counted /
-  rewarded / gated / collected / badged / streaked; a "pots thrown: n"; turning the easel into a delight or a delight
-  into a doorway.
+  rewarded / gated / collected / badged / streaked; a "pots thrown: n" or "brushstrokes painted: n"; turning the easel
+  into a delight or a delight (the tablet, the digital easel, a meme-flip) into a doorway.
 - **Arcade juice.** Screenshake, confetti, big pops, saturated flashes on any interaction — juice must be soft and warm.
 - **Camera crimes.** Free-fly / orbit-that-loses-you / pan / zoom; remounting the `<Canvas>` per room.
 - **Chromebook slideshow.** > 50 draw calls, `dpr > 1.5`, per-frame shadows, unbounded/streamed assets, fog hiding the
@@ -607,7 +698,14 @@ default-material CC0 assets.
 - **Material quality** — aged wood/knit/leather/brass/parchment/ceramic; **satin, not plastic**; ≥ 3 bands.
 - **Palette / color-script discipline** — everything on the §3.1 scale; warm/cool split holds; periwinkle is the one
   cool accent.
-- **Doorway-object obviousness** — the glowing easel is unmistakably the one thing to do.
+- **Doorway-object obviousness** — the glowing easel is unmistakably the one thing to do; the digital easel/tablet stay
+  ambient (no second doorway).
+- **Art in all its forms (the operator's ask)** — does the room read as traditional AND digital AND internet culture (a
+  drawing tablet + a warm digital easel + a kindly-TV-painter homage + framed memes), not a period piece?
+- **Warm screens** — do the tablet + digital easel glow *warm* (colorful art on a friendly warm/cream UI), **never**
+  cold-blue/cold-chrome?
+- **Pop-culture warmth & taste** — do the memes read as *beloved, framed, kid-appropriate living art* (celebrated beside
+  the oils), not ironic clutter?
 - **The golden shaft + motes** — the soul detail present and gorgeous.
 - **Ambient life & micro-interaction satisfaction** — one second from motion; spinning the wheel / petting the cat feels
   *good*; cozy not arcade.
@@ -630,16 +728,24 @@ without the reference wired in* (author §1 frames in phase 0).
 4. **Cohesion / palette test** — sample surface hues across the scene; each lands in the §3.1 palette (catches untinted
    kit-pile gray).
 5. **Satin test** — sample specular on wood/wool/ceramic; a plastic-gloss highlight fails.
-6. **Primary-action-live test** — raycast the easel → `window.__qa.stateHash()` **changes** (a dead doorway hard-fails).
-7. **Firewall negative assertion** — fire every micro-interaction (§6.3) → `getEmittedSignals()` records **zero** new
-   events; the return grid/hypothesis unchanged.
+6. **Primary-action-live test** — raycast the easel → `window.__qa.stateHash()` **changes** (a dead doorway hard-fails);
+   the digital easel is ambient — its tap fires a delight but does **not** change `stateHash()` or `primaryAction`.
+7. **Firewall negative assertion** — fire every micro-interaction (§6.3, incl. paint-on-tablet + meme-flip) →
+   `getEmittedSignals()` records **zero** new events; the return grid/hypothesis unchanged.
 8. **Breath-cohesion test** — assert one breath source drives multiple elements (no N-timer chaos).
 9. **Reduced-motion test** — with `prefers-reduced-motion`: a static, complete frame; camera cuts; delights still work
    (instant + sound + static warmth-bump).
 10. **Perf HUD** — draw calls < 50, fps p95 ≥ 30, `dpr ≤ 1.5`, shadow-casters ≤ 1, on a real low-end device under
     sustained load.
-11. **Contact sheet** — "The Atelier at Golden Hour" (wide) · the drafting-desk close-up (cozy) · the easel-portal
-    (hero) · the reduced-motion/`board-2d` a11y floor.
+11. **Warm-screen test (ART-specific)** — sample the tablet + digital-easel screen pixels: **warm/colorful on a warm UI**;
+    any cold-blue or dark-chrome screen **fails** (§5.1).
+12. **Art-in-all-forms test** — assert the scene contains the digital station (tablet + digital easel), the kindly
+    TV-painter homage (happy little trees), and **≥5** framed meme prints (VLM + prop manifest); a traditional-only
+    atelier **fails** the operator's ask.
+13. **One-doorway test (extended)** — assert **exactly one** `role:"doorway"` (the grand easel); the digital easel is
+    `role:"ambient"`, floats no verb, and firing its delight leaves `window.__qa.primaryAction` unchanged.
+14. **Contact sheet** — "The Atelier at Golden Hour" (wide) · the drafting-desk close-up (cozy) · the easel-portal
+    (hero) · the digital-easel/making-corner (a warm screen mid-painting) · the reduced-motion/`board-2d` a11y floor.
 
 ---
 
@@ -655,7 +761,8 @@ const ATELIER_HOTSPOTS: RoomHotspot[] = [
   { id: "easel",      label: "The grand easel",     role: "doorway", focus: { target: [ 3.0, 2.2, -3.2] }, live: true },  // THE portal — primaryAction
   { id: "stove",      label: "The wood-stove",      role: "ambient", focus: { target: [ 5.5, 1.2, -6.2] }, live: true },  // stoke (delight)
   { id: "wheel",      label: "The pottery wheel",   role: "ambient", focus: { target: [-4.8, 1.0, -0.5] }, live: true },  // spin (delight)
-  { id: "gallery",    label: "The gallery wall",    role: "ambient", focus: { target: [ 2.5, 3.1, -6.9] }, live: false }, // one frame glows
+  { id: "digital",    label: "The digital easel",   role: "ambient", focus: { target: [-5.3, 1.7, -3.6] }, live: true },  // paint on the tablet (delight) — NEVER a doorway
+  { id: "gallery",    label: "The gallery wall",    role: "ambient", focus: { target: [ 2.5, 3.1, -6.9] }, live: false }, // oils + TV-painter homage + memes; one frame glows
   { id: "stilllife",  label: "The still-life",      role: "ambient", focus: { target: [ 5.0, 1.5, -1.0] }, live: false },
   { id: "cat",        label: "The cat on the sill", role: "ambient", focus: { target: [-2.5, 3.2, -6.9] }, live: true },  // pet (delight)
 ];
@@ -666,12 +773,12 @@ const ATELIER_HOTSPOTS: RoomHotspot[] = [
 ```ts
 window.__qa = {
   zone: "art",
-  primaryAction: "open-atelier",              // the easel doorway must be LIVE (hard-fail if dead)
+  primaryAction: "open-atelier",              // the easel doorway must be LIVE (hard-fail if dead); the digital easel is ambient, never sets this
   interactives(): QaInteractive[],            // the hotspots above + the delights
   peekEasel(): { ok: boolean },               // v1 host-ready: contact toggles `peeked` → stateHash changes
-  fireDelight(id): { ok; changedPixels },     // spin-wheel / mobile / brush / stoke / pet — must change state
+  fireDelight(id): { ok; changedPixels },     // spin-wheel / mobile / brush / stoke / pet / paint-tablet / meme-flip — change pixels, NOT stateHash/primaryAction
   getEmittedSignals(): Array<{...}>,          // MUST record ZERO from any delight (the firewall)
-  stateHash(): string,                        // changes on enter / peek-easel; NEVER on a delight
+  stateHash(): string,                        // changes on enter / peek-easel; NEVER on a delight (incl. paint-tablet)
   canvas: { primary: false, hasDomAlternative: true },
   domActivityOperable: true,
 };
@@ -683,17 +790,22 @@ window.__qa = {
   expose `window.__qa`; stand up the shadow-color / true-color / cohesion / firewall tests. *Gate: tests green on a stub.*
 - **P1 — Shell + warm pack + the shaft.** `<Merged>` cabin shell, the two windows, the warm `SCENE3D` pack, the HDRI,
   the golden shaft + motes, palette fog, frozen shadows, post. *Gate: firelight + shadow-color + the `wide` frame.*
-- **P2 — Nothing-is-bare dressing.** Every station (§3.A–J) instanced to the budget: desk, easel, gallery, shelves,
-  wheel, still-life, stove, ceiling, floor, sill. *Gate: ≥45 objects; cohesion/satin; delta loop vs "The Atelier at
-  Golden Hour."*
+- **P2 — Nothing-is-bare dressing.** Every station (§3.A–K) instanced to the budget: desk, easel, gallery, shelves,
+  wheel, still-life, stove, ceiling, floor, sill, **the digital-art station (tablet + warm digital easel) and the
+  full-spectrum gallery (oils + the kindly-TV-painter homage + framed memes)**. *Gate: ≥45 objects; cohesion/satin;
+  **art-in-all-forms + warm-screen tests**; delta loop vs "The Atelier at Golden Hour."*
 - **P3 — The doorway + hero.** The easel portal (host-ready, live, honest) + the Storybox hero; the `hero`/`cozy` poses;
-  `window.__qa.primaryAction` live. *Gate: primary-action-live; the `hero` + `cozy` frames.*
-- **P4 — Aliveness.** The breath clock + ≥8 motions + the 5 signal-free micro-interactions with the cozy-juice grammar.
-  *Gate: breath-cohesion + micro-interaction liveness + firewall negative assertion; cozy-restraint self-score.*
+  `window.__qa.primaryAction` live; **exactly one doorway** (the digital easel stays ambient). *Gate: primary-action-live
+  + one-doorway test; the `hero` + `cozy` frames.*
+- **P4 — Aliveness.** The breath clock + ≥8 motions + the **6** signal-free micro-interactions with the cozy-juice grammar
+  (incl. **paint-on-tablet → digital-easel bloom**). *Gate: breath-cohesion + micro-interaction liveness + firewall
+  negative assertion; cozy-restraint self-score.*
 - **P5 — Tiers + a11y.** `room-3d-lite` degrade + the `ActivityDOM` peer (described hotspot list, live-region narration,
   parity). *Gate: parity + reduced-motion + perf HUD (< 50 dc, ≥ 30 fps).*
 
 **Definition of done:** the two-frame test — "The Atelier at Golden Hour" (wide) + "The Easel Portal" (hero) — snags no
-category error (cold/bare/dead-shadow/plastic/cloned/dead-doorway/moody) at a one-second glance beside the references;
-every self-score row ≥ 7; the doorway is provably live; every delight is provably signal-free; < 50 draw calls sustained;
-a child can reach, read, and step up to the easel by keyboard alone.
+category error (cold/bare/dead-shadow/plastic/cloned/dead-doorway/moody/**old-fashioned-only/cold-screen/no-memes**) at a
+one-second glance beside the references; every self-score row ≥ 7; **the room reads as art in ALL its forms (traditional +
+digital + internet culture), the screens glow warm, and there is exactly one doorway (the digital easel stays ambient)**;
+the doorway is provably live; every delight is provably signal-free; < 50 draw calls sustained; a child can reach, read,
+and step up to the easel by keyboard alone.

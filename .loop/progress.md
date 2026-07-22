@@ -245,3 +245,33 @@ non-negotiable.
   variant is prototyped and clearly reads better.
 - Do NOT revert to blue-black + neon-glow + frosted-glass chrome (EE-007): that is the exact vibe-coded look
   the operator rejected. The matte-graphite instrument palette is the committed direction now.
+
+---
+
+# Interest Lab shared core (lane 0) — 2026-07-21
+
+## Done this turn — P0 scaffolding + green seeded smoke
+- Reconciled the stale Evidence Explorer ledger with the requested Interest Lab lane and started at P0;
+  no prior Interest Lab core gate failure existed.
+- Added the exact P0 domain contracts (`ActivityEvent`, `ActivityKind`, `ReturnGrid`, and revisable-
+  hypothesis shapes) with deterministic shape-level placeholders in `@gt100k/interest-lab`.
+- Added the pure Curiosity Map, time-lapse, host, activity-model, and `Qa` contracts/placeholders in
+  `@gt100k/interest-lab-view`; kept the package React/Three-free and documented the public surface.
+- Created `@gt100k/interest-zone-kit` with the frozen `ZonePlugin` / `RoomProps` / `ActivityEmit` seam,
+  registry validation, exact nine-probe synthetic catalog/config, and three deliberately plain stub zones.
+- Added the app-level seeded P0 smoke and static import-graph guard. Root Vitest now runs the Interest Lab
+  app suite with the automatic JSX runtime, so SC-CORE-01 and SC-CORE-15 are part of `pnpm test`.
+- SC status: **SC-CORE-01 green**, **SC-CORE-13 green**, **SC-CORE-15 green at its P0 shape level**;
+  SC-CORE-02…12/14 remain assigned to P1…P6, and manual SC-CORE-16 is excluded.
+- Gate evidence: `pnpm typecheck` ✓; `pnpm test` ✓ (**99 files, 467 tests**); lane-owned Biome check ✓;
+  `pnpm --filter @gt100k/interest-lab-app build` ✓ (static `/` prerender). Repo-wide `pnpm lint` still
+  reports unrelated pre-existing Evidence Explorer formatting diagnostics; no unrelated files were changed.
+- `.loop-done` remains absent because only P0 of P0–P7 is complete.
+
+## NEXT
+- **P1 — implement the exact return grid, novelty gate, and engagement-event bridge test-first.** Add
+  `ACTIVITY_GOLDEN_V1`, `ACTIVITY_GOLDEN_WORKMODE_V1`, and `ACTIVITY_GOLDEN_INSUFFICIENT_V1`; make
+  `buildReturnGrid` equal `GRID_GOLDEN_A/B` exactly; prove day-0 novelty, intervention exclusion, and
+  assistive/withdrawn dropping; implement `toEngagementEvents` so `summarizeSignals` matches §8.5.
+  Acceptance: **SC-CORE-02/03/04/07**, exact §8.1–8.3/8.5 goldens, all existing tests, typecheck, and app
+  production build green.

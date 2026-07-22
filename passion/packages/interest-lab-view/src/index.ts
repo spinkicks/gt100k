@@ -1,4 +1,19 @@
 export { HUE_RAMP, PALETTE, TYPOGRAPHY, resolveDomainHue } from "./art";
+export { buildCuriosityMapView } from "./curiosity-map";
+export type {
+  CuriosityMapBuilding,
+  CuriosityMapReturnState,
+  CuriosityMapView,
+  MapBuildingView,
+  ZoneId,
+} from "./curiosity-map";
+export { buildQaSnapshot } from "./qa";
+export type { Qa, QaInteractive } from "./qa";
+export { buildTimeLapse } from "./time-lapse";
+export type { TimeLapsePhase, TimeLapsePhaseId, TimeLapseView } from "./time-lapse";
+export type { ZoneActionModel, ZoneActivityManifest, ZoneActivityModel } from "./zone-activity";
+export { INITIAL_ZONE_HOST_STATE, zoneHostReducer } from "./zone-host";
+export type { ZoneHostAction, ZoneHostState } from "./zone-host";
 export { buildEvidenceConstellationView } from "./constellation";
 export { buildCoverageMatrixView } from "./coverage-view";
 export { buildExplanationsView } from "./explanations";

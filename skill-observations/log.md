@@ -175,3 +175,6 @@ resolved statuses always carry their resolution date
 **Suggested improvement:** Require the workflow to assign exactly one reconciliation path for shared dependency metadata: either the feature lane owns an atomic importer update, a central aggregation job regenerates the lock before CI, or a lockfile merge queue serializes updates. Verify `pnpm install --frozen-lockfile` from the reconciled state and surface any pending reconciliation as an explicit integration handoff.
 
 **Principle:** Isolation policy must assign ownership of shared build metadata; forbidding a mutation does not remove the build contract that metadata satisfies.
+
+- 2026-07-21 Interest Lab core P0 implementation checkpoint: no additional observations.
+- 2026-07-21 Interest Lab core P0 completion checkpoint: no additional observations.
