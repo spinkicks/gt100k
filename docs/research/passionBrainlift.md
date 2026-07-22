@@ -8,7 +8,7 @@
 
 ## Purpose
 
-This BrainLift is about what happens *after* a student clears the academic floor (SAT 1570+, 5s on BC Calculus, Physics C, Literature, and Language). The scores are table stakes: necessary and indifferentiable. Two questions decide an elite outcome from there: *what makes this student singular*, and *how do we prove that to an outside viewer*. GT100K answers both. It builds a differentiating spike, measured by voluntary return rather than a locked-in path, and it proves the spike is the child's own work through the Evidence Graph (a tamper-evident record of the real process) plus a short human defense. I measure engagement to find the spike, I engineer deep absorption without engineering pressure, I grade the process rather than the polish, and I never point an accusation engine at a child.
+This BrainLift is about what happens *after* a student clears the academic floor (SAT 1570+, 5s on BC Calculus, Physics C, Literature, and Language). The scores are table stakes: necessary and indifferentiable. Two questions decide an elite outcome from there: *what makes this student singular*, and *how do we prove that to an outside viewer*. GT100K answers both. It builds a differentiating spike, measured by voluntary return rather than a locked-in path, and it proves the spike is the child's own work through the Evidence Graph (a tamper-evident record of the real process) plus a short human defense. We measure engagement to find the spike, we engineer deep absorption without engineering pressure, we grade the process rather than the polish, and we never point an accusation engine at a child.
 
 ### In Scope
 
@@ -19,8 +19,8 @@ This BrainLift is about what happens *after* a student clears the academic floor
 
 ### Out of Scope
 
-- The academic floor itself: mastery pedagogy, tutoring, and acceleration. I assume the student has cleared it and do not re-litigate how. Core academic breadth is met there, not here.
-- AI-detection and plagiarism-scoring as an integrity mechanism. I reject it on the evidence (see SPOV 7).
+- The academic floor itself: mastery pedagogy, tutoring, and acceleration. We assume the student has cleared it and do not re-litigate how. Core academic breadth is met there, not here.
+- AI-detection and plagiarism-scoring as an integrity mechanism. We reject it on the evidence (see SPOV 7).
 - The 100,000-learner operations machine, admissions selection, cohort/rivalry systems, and family-fidelity screening from the earlier GT100K scope.
 
 ---
@@ -31,47 +31,47 @@ Each one is an operator bet that breaks with the current consensus and holds up 
 
 ### On finding the spike
 
-- **Spiky POV 1: I never ask a child what they love; I manufacture candidate interests and cull them.**
-   - **Elaboration:** I do not run a passion quiz or wait for a calling to surface. I mass-produce candidate interests through repeated, varied exposure, hold each as a disposable hypothesis the child must never pin an identity to, and kill the ones that do not take. A named passion is a liability: a child told "this is your thing" reads the first hard day as proof it was never theirs and quits (O'Keefe, Dweck & Walton, 2018), while real interest grows through phased exposure and survived difficulty (Hidi & Renninger, 2006). The job is to manufacture and prune, not to discover.
+- **Spiky POV 1: We never ask a child what they love; we manufacture candidate interests and cull them.**
+   - **Elaboration:** We do not run a passion quiz or wait for a calling to surface. We mass-produce candidate interests through repeated, varied exposure, hold each as a disposable hypothesis the child must never pin an identity to, and kill the ones that do not take. A named passion is a liability: a child told "this is your thing" reads the first hard day as proof it was never theirs and quits (O'Keefe, Dweck & Walton, 2018), while real interest grows through phased exposure and survived difficulty (Hidi & Renninger, 2006). The job is to manufacture and prune, not to discover.
    - **Consensus it breaks:** every child has a latent passion to be found by introspection or a quiz.
-   - **Backing:** Hidi & Renninger (2006); O'Keefe, Dweck & Walton (2018). Honest limit: the broader growth-mindset literature is weak on average (Sisk et al. 2018: r = .10, most interventions null; Macnamara & Burgoyne 2023: near zero after correction), so I lean on the narrow "interest is built and difficulty is not disproof" result, not a mindset promise.
+   - **Backing:** Hidi & Renninger (2006); O'Keefe, Dweck & Walton (2018). Honest limit: the broader growth-mindset literature is weak on average (Sisk et al. 2018: r = .10, most interventions null; Macnamara & Burgoyne 2023: near zero after correction), so we lean on the narrow "interest is built and difficulty is not disproof" result, not a mindset promise.
 
-- **Spiky POV 2: I ignore what the child and the parent say they love, and when the stated dream fights the revealed spike, I defund the dream.**
-   - **Elaboration:** I switch off praise, deadlines, and nudges and score interest only on what a child returns to when nothing is making them, because stated interest predicts behavior only modestly (Nye et al. 2012: r ≈ .20–.36) while in-the-moment interest predicts real choices years out (Harackiewicz et al. 2008). A six-year-old's stated dream is usually a borrowed adult identity; the revealed spike is theirs. So when the two disagree, I move the hours off the dream and onto what the trace shows, and I keep it consensual by re-exposing and letting return re-confirm, not by decree.
+- **Spiky POV 2: We ignore what the child and the parent say they love, and when the stated dream fights the revealed spike, we defund the dream.**
+   - **Elaboration:** We switch off praise, deadlines, and nudges and score interest only on what a child returns to when nothing is making them, because stated interest predicts behavior only modestly (Nye et al. 2012: r ≈ .20–.36) while in-the-moment interest predicts real choices years out (Harackiewicz et al. 2008). A six-year-old's stated dream is usually a borrowed adult identity; the revealed spike is theirs. So when the two disagree, we move the hours off the dream and onto what the trace shows, and we keep it consensual by re-exposing and letting return re-confirm, not by decree.
    - **Consensus it breaks:** honor the child's stated aspiration (and the paying parent's) and build on it.
    - **Backing:** Nye et al. (2012); Harackiewicz et al. (2008); Boeder et al. (2021); Ryan & Deci (2000). Honest limit: self-report is not worthless, and overriding a stated dream sits in real tension with autonomy, which the re-exposure step exists to absorb.
 
-- **Spiky POV 3: I instrument a child's engagement on purpose, and I chase the deep absorption the field treats as a warning sign.**
-   - **Elaboration:** The field bans engagement detection by conflating it with failed facial-emotion AI. The EU AI Act and Barrett target inferring *emotion* from *biometric* data; behavioral engagement is neither, its behavioral and cognitive channels are measurable (Fredricks, Blumenfeld & Paris 2004), and behavioral traces predict learning at r ≈ 0.3–0.5 (Saqr et al. 2022). So I mine return, depth, persistence, and self-initiated iteration hard, add a narrow consented affect layer only where it earns its place, and I treat the highest-value signal as the one parents suppress and clinicians flag: the child who loses track of time and melts down at interruption. Deep absorption is the eminence engine, not a disorder to sand down, and "on-task" instruments miss it entirely.
+- **Spiky POV 3: We instrument a child's engagement on purpose, and we chase the deep absorption the field treats as a warning sign.**
+   - **Elaboration:** The field bans engagement detection by conflating it with failed facial-emotion AI. The EU AI Act and Barrett target inferring *emotion* from *biometric* data; behavioral engagement is neither, its behavioral and cognitive channels are measurable (Fredricks, Blumenfeld & Paris 2004), and behavioral traces predict learning at r ≈ 0.3–0.5 (Saqr et al. 2022). So we mine return, depth, persistence, and self-initiated iteration hard, add a narrow consented affect layer only where it earns its place, and we treat the highest-value signal as the one parents suppress and clinicians flag: the child who loses track of time and melts down at interruption. Deep absorption is the eminence engine, not a disorder to sand down, and "on-task" instruments miss it entirely.
    - **Consensus it breaks:** engagement detection is junk science and banned, and intense absorption in a child is a red flag to manage.
-   - **Backing:** Fredricks, Blumenfeld & Paris (2004); Saqr et al. (2022); Regulation (EU) 2024/1689 (Art. 5(1)(f), Recital 18); Barrett et al. (2019); Vallerand et al. (2003) and Mageau et al. (2009) on absorption staying harmonious under autonomy support. Honest limit: the affect layer is weak (camera engagement ≈ AUC 0.68, dropping 12+ points on a new child; Bosch et al. 2016) and biometric emotion inference is illegal in EU education, so affect stays consented, non-emotional, and low-stakes; and absorption is safe only when I engineer conditions, never pressure.
+   - **Backing:** Fredricks, Blumenfeld & Paris (2004); Saqr et al. (2022); Regulation (EU) 2024/1689 (Art. 5(1)(f), Recital 18); Barrett et al. (2019); Vallerand et al. (2003) and Mageau et al. (2009) on absorption staying harmonious under autonomy support. Honest limit: the affect layer is weak (camera engagement ≈ AUC 0.68, dropping 12+ points on a new child; Bosch et al. 2016) and biometric emotion inference is illegal in EU education, so affect stays consented, non-emotional, and low-stakes; and absorption is safe only when we engineer conditions, never pressure.
 
-- **Spiky POV 4: "They could be anything" is a testing illusion, so I refuse to protect a child's optionality.**
-   - **Elaboration:** Multipotentiality is mostly a ceiling artifact from tests too easy to separate top abilities. Above-level testing breaks the tie: a differentiated ability tilt shows up in more than 95% of top-1% youth (SMPY). So I do not guard a child's "open future." I spend on above-level testing to find the one domain they are already tilted toward and commit there, because protecting optionality is just refusing to look.
+- **Spiky POV 4: "They could be anything" is a testing illusion, so we refuse to protect a child's optionality.**
+   - **Elaboration:** Multipotentiality is mostly a ceiling artifact from tests too easy to separate top abilities. Above-level testing breaks the tie: a differentiated ability tilt shows up in more than 95% of top-1% youth (SMPY). So we do not guard a child's "open future." We spend on above-level testing to find the one domain they are already tilted toward and commit there, because protecting optionality is just refusing to look.
    - **Consensus it breaks:** gifted kids are well-rounded and could excel at anything, so keep their options open.
    - **Backing:** Lubinski & Benbow (SMPY). Honest limit: ability tilt channels *which* domain, not the ceiling, and pursuing more than one genuine interest was not linked to indecision, so "commit" means one or two, not a life sentence.
 
-- **Spiky POV 5: I specialize a six-year-old hard into one or two passions and delete the passion buffet, even over the paying parent's objection.**
-   - **Elaboration:** Two defaults fail a talented child: the well-rounded default that delays depth until the years of cheap practice are gone, and the hothouse that locks one lane for life and burns the child out. I take the early start and cut the lock-in. I open exploration at 6–8, then specialize hard into one or two genuine pursuits and engineer the deep, uninterrupted dose that makes a spike singular. Core academic breadth is non-negotiable and always met at MIT-level readiness; what I refuse is a wide range of *passions*, the violin-plus-soccer-plus-second-language buffet, because far transfer is a myth (Sala et al. 2019: far g ≈ 0.12; Sala & Gobet 2017) so a "backup" passion is a second full pursuit that starves the first and dilutes the exact angularity elite admissions reward. I will lose a family that demands passion-breadth before I dilute the spike. The only thing that stays reversible is my bet on *which* passion, never the depth: if the pursuit turns out not to be theirs, I revise and re-find, which is what keeps the passion harmonious rather than obsessive and controlled (Vallerand et al. 2003; Mageau et al. 2009).
+- **Spiky POV 5: We specialize a six-year-old hard into one or two passions and delete the passion buffet, even over the paying parent's objection.**
+   - **Elaboration:** Two defaults fail a talented child: the well-rounded default that delays depth until the years of cheap practice are gone, and the hothouse that locks one lane for life and burns the child out. We take the early start and cut the lock-in. We open exploration at 6–8, then specialize hard into one or two genuine pursuits and engineer the deep, uninterrupted dose that makes a spike singular. Core academic breadth is non-negotiable and always met at MIT-level readiness; what we refuse is a wide range of *passions*, the violin-plus-soccer-plus-second-language buffet, because far transfer is a myth (Sala et al. 2019: far g ≈ 0.12; Sala & Gobet 2017) so a "backup" passion is a second full pursuit that starves the first and dilutes the exact angularity elite admissions reward. We will lose a family that demands passion-breadth before we dilute the spike. The only thing that stays reversible is our bet on *which* passion, never the depth: if the pursuit turns out not to be theirs, we revise and re-find, which is what keeps the passion harmonious rather than obsessive and controlled (Vallerand et al. 2003; Mageau et al. 2009).
    - **Consensus it breaks:** choose a protected well-rounded childhood or early hothousing, keep a spiking child balanced, and treat the paying family's wishes as sovereign.
    - **Backing:** Vallerand et al. (2003); Mageau et al. (2009); Sala et al. (2019); Sala & Gobet (2017); Frontiers in Sports & Active Living (2023); Gentner, Loewenstein & Thompson (2003). Honest limit: this reconciles with the parent brainlift's "burn breadth" by target: breadth is burned on *passions*, never on the academic spine. Refusing a paying family trades option value, defensible only because the depth is held as a revisable bet.
 
-- **Spiky POV 6: I will bank a world-class talent in a "useless" domain, because I sell the authored ascent, not the subject.**
-   - **Elaboration:** When a child's voluntary return lands on a low-status domain, Geoguessr, speedrunning, redstone, I develop it rather than steer them toward something prestigious. The domain is disposable inventory. What transfers and sells was never the subject: far transfer of skill fails (Sala et al. 2019), so the portable assets are the psychosocial skills of reaching the top of any domain (Subotnik's Talent-Development Megamodel), the demonstrated angularity elite admissions reward (a deep spike beats a well-rounded profile), and the tamper-evident record of an authored ascent (the Evidence Graph). All three are domain-independent, so a child who ranks first in the world at something "useless" banks the same asset as a young researcher.
+- **Spiky POV 6: We will bank a world-class talent in a "useless" domain, because we sell the authored ascent, not the subject.**
+   - **Elaboration:** When a child's voluntary return lands on a low-status domain, Geoguessr, speedrunning, redstone, we develop it rather than steer them toward something prestigious. The domain is disposable inventory. What transfers and sells was never the subject: far transfer of skill fails (Sala et al. 2019), so the portable assets are the psychosocial skills of reaching the top of any domain (Subotnik's Talent-Development Megamodel), the demonstrated angularity elite admissions reward (a deep spike beats a well-rounded profile), and the tamper-evident record of an authored ascent (the Evidence Graph). All three are domain-independent, so a child who ranks first in the world at something "useless" banks the same asset as a young researcher.
    - **Consensus it breaks:** passion programs steer children toward prestigious, marketable domains and treat a low-status obsession as a hobby to outgrow.
    - **Backing:** Sala et al. (2019); Subotnik, Olszewski-Kubilius & Worrell (2011/2021); College Board holistic-review guidance and the angularity evidence. Honest limit: the market still prices some domains higher, so "useless" means low-status, not zero-opportunity, and the bet rides on the authored-ascent record being legible to gatekeepers.
 
 ### On proving the spike
 
-- **Spiky POV 7: No detector ever touches a child. I prove authorship from the Evidence Graph plus a five-minute defense, and I grade the dead ends, not the polish.**
-   - **Elaboration:** No artifact-level check can establish who made something. Detectors are noise (fourteen tools "neither accurate nor reliable," Weber-Wulff 2023; non-native English false-flagged at 61.3%, Liang 2023; OpenAI pulled its own at a 26% true-positive rate; Vanderbilt disabled Turnitin's), C2PA "does not attest human authorship" by its own spec, and strong watermarking is impossible (Zhang et al. 2024). So I refuse detection entirely and move the whole authorship burden onto two things a file cannot fake. The first is the **Evidence Graph**: a content-addressed, tamper-evident record of the real process where every attempt, dead end, declared AI step, and human review is a node tied to an accountable actor, a human owns every grade, and the system refuses to assemble a record without one (the in-toto and Merkle machinery it reuses proves integrity, not authorship). The second is a sampled **five-minute human defense** an AI cannot sit for the student. Then I invert what gets graded: the ranked object is the process, so a clean shallow artifact scores below a messy deep one, and sometimes below an honest, well-reasoned failure. Faking a multi-day trail of plans, dead ends, and recovery costs about as much as doing the work, and the dead ends are where perseverance and reasoning actually show (Kapur 2008).
+- **Spiky POV 7: No detector ever touches a child. We prove authorship from the Evidence Graph plus a five-minute defense, and we grade the dead ends, not the polish.**
+   - **Elaboration:** No artifact-level check can establish who made something. Detectors are noise (fourteen tools "neither accurate nor reliable," Weber-Wulff 2023; non-native English false-flagged at 61.3%, Liang 2023; OpenAI pulled its own at a 26% true-positive rate; Vanderbilt disabled Turnitin's), C2PA "does not attest human authorship" by its own spec, and strong watermarking is impossible (Zhang et al. 2024). So we refuse detection entirely and move the whole authorship burden onto two things a file cannot fake. The first is the **Evidence Graph**: a content-addressed, tamper-evident record of the real process where every attempt, dead end, declared AI step, and human review is a node tied to an accountable actor, a human owns every grade, and the system refuses to assemble a record without one (the in-toto and Merkle machinery it reuses proves integrity, not authorship). The second is a sampled **five-minute human defense** an AI cannot sit for the student. Then we invert what gets graded: the ranked object is the process, so a clean shallow artifact scores below a messy deep one, and sometimes below an honest, well-reasoned failure. Faking a multi-day trail of plans, dead ends, and recovery costs about as much as doing the work, and the dead ends are where perseverance and reasoning actually show (Kapur 2008).
    - **Consensus it breaks:** judge authorship and ability from the finished artifact, authorship by forensic detection and ability by polish.
    - **Backing:** Weber-Wulff et al. (2023); Krishna et al. (2023); Liang et al. (2023); C2PA v2.2 spec; Zhang et al. (2024, ICML); Sotiriadou et al. (2020) with Dawson (2023) and TEQSA (2023) on oral defense; Crossley et al. (2024) on keystroke process signals; in-toto/SLSA/Sigstore for the integrity machinery; Kapur (2008) on productive failure behind grading the dead ends. Honest limit: process scores track task and occasion far more than a stable trait (about 49% task/occasion variance; Shavelson, Baxter & Gao 1993), so the graph is strong on authorship and effort and only suggestive about ability; the oral evidence is mostly higher-ed, so the defense must be sampled, multi-reviewer, and designed against anxiety; and grading struggle creates an incentive to perform struggle, which the graph plus the live defense have to catch.
 
 ### The unifying idea
 
-- **Spiky POV 8: Declared AI help is status-neutral provenance. Only concealment is cheating, and I refuse to reward the "I did it without AI" flex.**
-   - **Elaboration:** Schools treat any AI touch as misconduct, which teaches children to hide it. I invert that. Declared AI help is a neutral node in the Evidence Graph, the same as citing a source or a collaborator, and it costs the child nothing. Equal defended understanding earns an equal grade whether the path was AI-heavy or AI-free; I give no bonus for doing it the hard way, because the graded object is what a child understands and can defend, not their tool asceticism. The only thing that counts as cheating is undeclared help passed off as unaided. Honesty is then structural: every step ties to an accountable actor, failed attempts are kept as first-class proof rather than hidden, and a human owns every grade. (This holds at the spike; on the academic floor, where offloading blocks the learning itself, an AI rescue is still taxed.)
+- **Spiky POV 8: Declared AI help is status-neutral provenance. Only concealment is cheating, and we refuse to reward the "I did it without AI" flex.**
+   - **Elaboration:** Schools treat any AI touch as misconduct, which teaches children to hide it. We invert that. Declared AI help is a neutral node in the Evidence Graph, the same as citing a source or a collaborator, and it costs the child nothing. Equal defended understanding earns an equal grade whether the path was AI-heavy or AI-free; we give no bonus for doing it the hard way, because the graded object is what a child understands and can defend, not their tool asceticism. The only thing that counts as cheating is undeclared help passed off as unaided. Honesty is then structural: every step ties to an accountable actor, failed attempts are kept as first-class proof rather than hidden, and a human owns every grade. (This holds at the spike; on the academic floor, where offloading blocks the learning itself, an AI rescue is still taxed.)
    - **Consensus it breaks:** any AI use is misconduct, and unaided work is worth more.
    - **Backing:** follows from SPOV 7 and the provenance machinery (in-toto, SLSA, Sigstore); a design stance, not an empirical finding. Honest limit: it works only if declaration is cheap and concealment carries a real cost, so the incentive runs toward disclosure.
 
@@ -82,13 +82,13 @@ Each one is an operator bet that breaks with the current consensus and holds up 
 - **Suzanne Hidi & K. Ann Renninger**
    - **Who:** Educational psychologists; Renninger is at Swarthmore College.
    - **Focus:** The four-phase model of interest development, and interest defined as a predisposition to *reengage* over time.
-   - **Why Follow:** The developmental spine of the Passion Engine. Their model is why I manufacture interest through phased exposure and measure it by return, not by a survey (SPOV 1/2).
+   - **Why Follow:** The developmental spine of the Passion Engine. Their model is why we manufacture interest through phased exposure and measure it by return, not by a survey (SPOV 1/2).
    - **Where:** https://doi.org/10.1207/s15326985ep4102_4
 
 - **Edward Deci & Richard Ryan**
    - **Who:** Founders of Self-Determination Theory (University of Rochester).
    - **Focus:** Autonomy, competence, and relatedness as the supports for internalized motivation; the autonomous-versus-controlled distinction; how rewards can undermine intrinsic motivation.
-   - **Why Follow:** The motivation foundation under the Passion Engine, and the reason I meter pressure rather than maximize engagement (SPOV 2/3 and the guardrails).
+   - **Why Follow:** The motivation foundation under the Passion Engine, and the reason we meter pressure rather than maximize engagement (SPOV 2/3 and the guardrails).
    - **Where:** https://selfdeterminationtheory.org/
 
 - **Paul O'Keefe, Carol Dweck & Gregory Walton**
@@ -100,13 +100,13 @@ Each one is an operator bet that breaks with the current consensus and holds up 
 - **Robert Vallerand & Geneviève Mageau**
    - **Who:** Passion researchers (Université du Québec à Montréal; Université de Montréal).
    - **Focus:** The dualistic model of passion, harmonious versus obsessive, and how it develops in children and adolescents.
-   - **Why Follow:** Their key point is that obsession's harm comes from *how* a pursuit is internalized, not from its intensity, which is what lets me engineer deep absorption while keeping it harmonious (SPOV 3/5).
+   - **Why Follow:** Their key point is that obsession's harm comes from *how* a pursuit is internalized, not from its intensity, which is what lets us engineer deep absorption while keeping it harmonious (SPOV 3/5).
    - **Where:** https://doi.org/10.1037/0022-3514.85.4.756
 
 - **Jennifer Fredricks**
    - **Who:** Educational psychologist (Connecticut College).
    - **Focus:** The engagement construct: behavioral, emotional, and cognitive engagement as separable, measurable dimensions.
-   - **Why Follow:** Her tri-partite model is what lets me separate measurable behavioral engagement from unreliable facial emotion (SPOV 3).
+   - **Why Follow:** Her tri-partite model is what lets us separate measurable behavioral engagement from unreliable facial emotion (SPOV 3).
    - **Where:** https://doi.org/10.3102/00346543074001059
 
 - **Mohammed Saqr, Ryan Baker & Dragan Gašević**
@@ -118,7 +118,7 @@ Each one is an operator bet that breaks with the current consensus and holds up 
 - **Lisa Feldman Barrett**
    - **Who:** Psychologist and neuroscientist (Northeastern University).
    - **Focus:** The science of emotion; that emotion cannot be reliably read from facial configurations.
-   - **Why Follow:** The exact boundary of SPOV 3. Barrett's finding is about *emotion* from faces, not behavioral engagement, so I cite her to concede the real point and expose the category error in the blanket ban.
+   - **Why Follow:** The exact boundary of SPOV 3. Barrett's finding is about *emotion* from faces, not behavioral engagement, so we cite her to concede the real point and expose the category error in the blanket ban.
    - **Where:** https://doi.org/10.1177/1529100619832930
 
 - **Debora Weber-Wulff and the Stanford / Liang group**
@@ -142,7 +142,7 @@ Each one is an operator bet that breaks with the current consensus and holds up 
 - **The in-toto / SLSA / Sigstore communities and the C2PA critics**
    - **Who:** Software supply-chain security projects (in-toto, SLSA, Sigstore/Rekor); provenance-standards critics.
    - **Focus:** Content-addressed integrity, signed attestations, transparency logs, and the limits of provenance metadata.
-   - **Why Follow:** The mature machinery the Evidence Graph reuses, and the truth claims I reject (crypto proves integrity, not human authorship; SPOV 7/8).
+   - **Why Follow:** The mature machinery the Evidence Graph reuses, and the truth claims we reject (crypto proves integrity, not human authorship; SPOV 7/8).
    - **Where:** https://slsa.dev/spec/v1.0/about ; https://c2pa.org/
 
 - **The EDPB (European Data Protection Board)**
@@ -179,25 +179,25 @@ Each one is an operator bet that breaks with the current consensus and holds up 
 
 ## DOK 3: Insights
 
-Original conclusions I reached after processing the sources. These are the bridge from the Knowledge Tree to the SPOVs.
+Original conclusions we reached after processing the sources. These are the bridge from the Knowledge Tree to the SPOVs.
 
 ### Finding the spike
 
-- **Insight 1:** A named passion is a liability, so interest must be manufactured and pruned, never labeled. Because a fixed "this is your thing" frame makes a child quit at the first difficulty, I mass-produce candidate interests through exposure and forbid identity-pinning until return proves it out. (→ SPOV 1)
-- **Insight 2:** A child's stated interest is a weak signal and the reliable one is voluntary return after pressure is removed, so when the two conflict I follow the trace, not the words. Self-report predicts behavior only modestly (r ≈ .20–.36) while in-the-moment interest predicted real re-engagement years out, which is what licenses defunding a stated dream for a revealed one. (→ SPOV 2)
-- **Insight 3:** Engagement and emotion are different channels, and the field's rejection of engagement detection is a category error I exploit. Barrett and the EU AI Act target *emotion from biometric data*; behavioral engagement (return, depth, persistence) is neither and predicts learning at r ≈ 0.3–0.5, so I instrument behavior aggressively and keep any affect layer narrow, consented, and low-stakes. (→ SPOV 3)
-- **Insight 4:** Deep absorption is the eminence engine, not a disorder, because obsession's harm comes from *how* a pursuit is internalized (controlled vs. autonomous), not from intensity. So I engineer the conditions for absorption and chase the "can't put it down" signature the field suppresses, while holding the line at conditions, never pressure. (→ SPOV 3/5)
-- **Insight 5:** Rewards can corrupt the voluntary-return signal, worse in children, so I do not gamify the measurement itself. This is not a blanket verdict on gamification: rewards genuinely help low-interest drills and mechanics (Cameron & Pierce), so I scope gamification away from the passion signal rather than banning it. (→ SPOV 3, guardrails)
+- **Insight 1:** A named passion is a liability, so interest must be manufactured and pruned, never labeled. Because a fixed "this is your thing" frame makes a child quit at the first difficulty, we mass-produce candidate interests through exposure and forbid identity-pinning until return proves it out. (→ SPOV 1)
+- **Insight 2:** A child's stated interest is a weak signal and the reliable one is voluntary return after pressure is removed, so when the two conflict we follow the trace, not the words. Self-report predicts behavior only modestly (r ≈ .20–.36) while in-the-moment interest predicted real re-engagement years out, which is what licenses defunding a stated dream for a revealed one. (→ SPOV 2)
+- **Insight 3:** Engagement and emotion are different channels, and the field's rejection of engagement detection is a category error we exploit. Barrett and the EU AI Act target *emotion from biometric data*; behavioral engagement (return, depth, persistence) is neither and predicts learning at r ≈ 0.3–0.5, so we instrument behavior aggressively and keep any affect layer narrow, consented, and low-stakes. (→ SPOV 3)
+- **Insight 4:** Deep absorption is the eminence engine, not a disorder, because obsession's harm comes from *how* a pursuit is internalized (controlled vs. autonomous), not from intensity. So we engineer the conditions for absorption and chase the "can't put it down" signature the field suppresses, while holding the line at conditions, never pressure. (→ SPOV 3/5)
+- **Insight 5:** Rewards can corrupt the voluntary-return signal, worse in children, so we do not gamify the measurement itself. This is not a blanket verdict on gamification: rewards genuinely help low-interest drills and mechanics (Cameron & Pierce), so we scope gamification away from the passion signal rather than banning it. (→ SPOV 3, guardrails)
 - **Insight 6:** Multipotentiality is mostly a measurement artifact: above-level testing reveals a differentiated profile in >95% of top-1% youth, so almost every child has a genuine strongest domain, and protecting "optionality" is really refusing to look. (→ SPOV 4)
-- **Insight 7:** The harm attributed to "early specialization" is really the harm of *irreversible, controlled* commitment, so I separate the early start from the lock-in: specialize in one or two, burn *passion* breadth (never academic breadth), and hold the choice as a revisable hypothesis. (→ SPOV 5)
+- **Insight 7:** The harm attributed to "early specialization" is really the harm of *irreversible, controlled* commitment, so we separate the early start from the lock-in: specialize in one or two, burn *passion* breadth (never academic breadth), and hold the choice as a revisable hypothesis. (→ SPOV 5)
 - **Insight 8:** The domain is disposable and the authored ascent is the asset, because far transfer fails so the subject was never what transferred or sold. The portable, sellable assets, the psychosocial skills of reaching the top, demonstrated angularity, and the tamper-evident record, are domain-independent, so a "useless" spike banks the same asset as a prestigious one. (→ SPOV 6)
 
 ### Proving the spike
 
 - **Insight 9:** No artifact-level test (detector, watermark, signature) can establish human authorship, because authorship is a property of a *process and an understanding*, not of the finished bytes. Every artifact-level "solution" is a category error. (→ SPOV 7)
-- **Insight 10:** A process is both harder to fake and richer in signal than a product, so I grade the process, not the polish. Faking a multi-day lineage costs about as much as doing the work, and the dead ends expose perseverance and recovery a clean result erases (Kapur's productive failure), though process scores track task and occasion (about 49% of variance; Shavelson 1993) more than a stable trait, so this is strong on authorship and effort and only suggestive about ability. (→ SPOV 7)
+- **Insight 10:** A process is both harder to fake and richer in signal than a product, so we grade the process, not the polish. Faking a multi-day lineage costs about as much as doing the work, and the dead ends expose perseverance and recovery a clean result erases (Kapur's productive failure), though process scores track task and occasion (about 49% of variance; Shavelson 1993) more than a stable trait, so this is strong on authorship and effort and only suggestive about ability. (→ SPOV 7)
 - **Insight 11:** Cryptographic integrity is not authenticity. A self-consistent Evidence Graph can still be fabricated, so trust roots outside the packet, in named signing parties and, above all, in a human defense. (→ SPOV 7)
-- **Insight 12:** An in-person academy has a structural moat for authorship: it can run the five-minute human defense that remote, artifact-only products cannot. What competitors treat as an unscalable cost is my advantage. (→ SPOV 7)
+- **Insight 12:** An in-person academy has a structural moat for authorship: it can run the five-minute human defense that remote, artifact-only products cannot. What competitors treat as an unscalable cost is our advantage. (→ SPOV 7)
 - **Insight 13:** Declared AI help should be status-neutral provenance, not a verdict, and unaided work earns no bonus. If declaration is cheap and only concealment is punished, honesty becomes the low-friction path and the record of who did what is enforced by construction. (→ SPOV 8)
 
 ### Composition and honest limits
@@ -213,7 +213,7 @@ Original conclusions I reached after processing the sources. These are the bridg
 
 ## DOK 2: Knowledge Tree
 
-Organized sources and the facts and summaries I built the insights on. DOK 1 facts are raw from the source; DOK 2 summaries are in my own words.
+Organized sources and the facts and summaries we built the insights on. DOK 1 facts are raw from the source; DOK 2 summaries are in our own words.
 
 ### Category 1: Interest and passion development
 
@@ -235,7 +235,7 @@ Organized sources and the facts and summaries I built the insights on. DOK 1 fac
       - Replication caveat: the broader growth-mindset literature is weak. Sisk et al. (2018) found mindset-achievement r = .10 and most interventions null; Macnamara & Burgoyne (2023) found a near-zero mean effect after bias correction.
    - **DOK 2 - Summary:**
       - The specific, robust result is that a "find it" frame breaks resilience while a "build it" frame keeps a pursuit switchable, which is what SPOV 1 rests on.
-      - I use that narrow finding, not a general mindset promise, because the wider mindset effects do not hold up.
+      - We use that narrow finding, not a general mindset promise, because the wider mindset effects do not hold up.
    - **Link:** https://doi.org/10.1177/0956797618780643 ; https://doi.org/10.1177/0956797617739704
 
 - **Source: Harackiewicz et al. (2008), interest and course choice**
@@ -272,8 +272,8 @@ Organized sources and the facts and summaries I built the insights on. DOK 1 fac
       - Expected, contingent tangible rewards undermined free-choice intrinsic motivation (engagement d = −0.40), and the effect was worse for children than college students.
       - Cameron & Pierce and others argue the undermining is narrow and non-universal, and that rewards can raise motivation for low-interest tasks.
    - **DOK 2 - Summary:**
-      - Rewarding an already-interesting activity reduces later voluntary engagement in it, and worse in children, so I do not gamify the voluntary-return measurement.
-      - Gamification is not malpractice in general; it helps low-interest drills and mechanics, so I scope it away from the passion signal rather than banning it.
+      - Rewarding an already-interesting activity reduces later voluntary engagement in it, and worse in children, so we do not gamify the voluntary-return measurement.
+      - Gamification is not malpractice in general; it helps low-interest drills and mechanics, so we scope it away from the passion signal rather than banning it.
    - **Link:** https://doi.org/10.1037/0033-2909.125.6.627
 
 #### Subcategory 1.3: Passion, specialization, and burnout
@@ -284,7 +284,7 @@ Organized sources and the facts and summaries I built the insights on. DOK 1 fac
       - Harmonious passion is associated with positive affect and flexible engagement; obsessive with rigid persistence, conflict, and burnout.
       - In children/adolescents, autonomy support from parents and teachers predicted harmonious passion and negatively predicted obsessive passion.
    - **DOK 2 - Summary:**
-      - Whether a pursuit is healthy depends on *how* it is internalized, not how intense it is, which is what lets me engineer deep absorption while keeping it harmonious.
+      - Whether a pursuit is healthy depends on *how* it is internalized, not how intense it is, which is what lets us engineer deep absorption while keeping it harmonious.
       - Autonomy support and the freedom to revise the choice are what keep an early, deep pursuit from tipping into burnout.
    - **Link:** https://doi.org/10.1037/0022-3514.85.4.756
 
@@ -351,7 +351,7 @@ Organized sources and the facts and summaries I built the insights on. DOK 1 fac
       - OpenAI discontinued its own classifier (26% true-positive rate at launch); Vanderbilt disabled Turnitin's AI detector in Aug 2023.
    - **DOK 2 - Summary:**
       - AI-text detection is inaccurate, trivially defeated, and biased against the most vulnerable students.
-      - Any nonzero false-positive rate produces large numbers of wrongful accusations at school scale, so I never aim one at a child.
+      - Any nonzero false-positive rate produces large numbers of wrongful accusations at school scale, so we never aim one at a child.
    - **Link:** https://doi.org/10.1007/s40979-023-00146-z
 
 #### Subcategory 2.2: What cryptography can and cannot prove
