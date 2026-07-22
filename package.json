@@ -9,6 +9,7 @@
     "lint": "biome check passion",
     "lint:fix": "biome check --write passion",
     "demo": "pnpm --filter @gt100k/evidence-repo-memory demo",
+    "demo:passion": "tsx passion/demo.ts",
     "build": "pnpm --filter @gt100k/evidence-explorer --filter @gt100k/interest-lab --filter @gt100k/passion-tutor build"
   },
   "devDependencies": {
