@@ -1,0 +1,19 @@
+{
+  "name": "@gt100k/admissions-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./admission": "./src/admission.ts",
+    "./allocation": "./src/allocation.ts",
+    "./hash": "./src/hash.ts",
+    "./registers": "./src/registers.ts",
+    "./review": "./src/review.ts",
+    "./routing": "./src/routing.ts",
+    "./snapshot": "./src/snapshot.ts",
+    "./versioning": "./src/versioning.ts"
+  },
+  "scripts": {
+    "test": "vitest run --root ../.. packages/admissions-contracts/test"
+  }
+}
