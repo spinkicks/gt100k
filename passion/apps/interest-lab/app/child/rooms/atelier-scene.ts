@@ -151,7 +151,7 @@ export function buildAtelierScene(): AtelierScene {
 
   // — Window (back-left, the golden shaft's source) + sill + cool dusk seen through the glass —
   push({ key: "window-frame", surfaceClass: "window", geom: "box", args: [2.9, 3.4, 0.4], position: [-3.1, 3.0, backZ + 0.3], color: CABIN.woodHoney, roughness: 0.7, metalness: 0, flat: true });
-  push({ key: "window-glass", surfaceClass: "window", geom: "plane", args: [2.4, 2.9], position: [-3.1, 3.0, backZ + 0.52], color: CABIN.windowSpill, roughness: 0.5, metalness: 0, emissive: CABIN.windowSpill, emissiveIntensity: 1.1, flat: false });
+  push({ key: "window-glass", surfaceClass: "window", geom: "plane", args: [2.4, 2.9], position: [-3.1, 3.0, backZ + 0.52], color: CABIN.windowSpill, roughness: 0.5, metalness: 0, emissive: CABIN.windowSpill, emissiveIntensity: 0.62, flat: false });
   push({ key: "window-dusk", surfaceClass: "window", geom: "plane", args: [2.4, 1.0], position: [-3.1, 4.05, backZ + 0.5], color: CABIN.duskWindow, roughness: 0.6, metalness: 0, emissive: CABIN.duskSkylight, emissiveIntensity: 0.7, flat: false });
   push({ key: "window-mullion-v", surfaceClass: "window", geom: "box", args: [0.12, 2.9, 0.12], position: [-3.1, 3.0, backZ + 0.55], color: CABIN.woodWalnut, roughness: 0.7, metalness: 0, flat: true });
   push({ key: "window-mullion-h", surfaceClass: "window", geom: "box", args: [2.4, 0.12, 0.12], position: [-3.1, 3.0, backZ + 0.55], color: CABIN.woodWalnut, roughness: 0.7, metalness: 0, flat: true });
@@ -208,9 +208,18 @@ export function buildAtelierScene(): AtelierScene {
   push({ key: "easel-leg-back", surfaceClass: "easel", geom: "box", args: [0.14, 3.4, 0.14], position: [2.2, 1.7, 0.4], rotation: [0.2, 0, 0], color: CABIN.woodWalnut, roughness: 0.6, metalness: 0, flat: true });
   push({ key: "easel-tray", surfaceClass: "easel", geom: "box", args: [1.5, 0.14, 0.24], position: [2.2, 1.5, 1.06], color: CABIN.woodHoney, roughness: 0.55, metalness: 0.05, flat: true });
   push({ key: "easel-brace", surfaceClass: "easel", geom: "box", args: [0.5, 0.12, 0.12], position: [2.2, 3.1, 0.7], color: CABIN.brass, roughness: 0.45, metalness: 0.5, flat: true });
-  // The canvas — the one obvious warm/periwinkle doorway glow (the second focal point after the fire).
-  push({ key: "easel-canvas", surfaceClass: "easel", geom: "plane", args: [1.6, 2.0], position: [2.2, 2.5, 1.12], color: ATELIER_HUE, roughness: 0.5, metalness: 0, emissive: ATELIER_HUE, emissiveIntensity: 1.9, flat: false, role: "easel-canvas" });
+  // The canvas — a HALF-FINISHED golden-hour painting: a warm, softly self-lit parchment ground
+  //   (the doorway that INVITES, not a cold blank slab). It is the action mesh (role easel-canvas).
+  push({ key: "easel-canvas", surfaceClass: "easel", geom: "plane", args: [1.6, 2.0], position: [2.2, 2.5, 1.12], color: CABIN.parchment, roughness: 0.6, metalness: 0, emissive: CABIN.candle, emissiveIntensity: 0.7, flat: false, role: "easel-canvas" });
   push({ key: "easel-canvas-back", surfaceClass: "easel", geom: "box", args: [1.72, 2.12, 0.08], position: [2.2, 2.5, 1.06], color: CABIN.woodDrift, roughness: 0.7, metalness: 0, flat: true });
+  // The painting-in-progress ON the canvas — a little Emberwood sunset (warm sky → hill → ground),
+  //   a glowing sun, and one wet periwinkle stroke (the cool art accent). Left ~2/3 painted, right
+  //   edge still bare parchment (the honest "unfinished" read). Opaque, z just toward the camera.
+  push({ key: "paint-sky", surfaceClass: "easel", geom: "box", args: [1.16, 0.78, 0.02], position: [2.02, 2.82, 1.15], color: CABIN.candle, roughness: 0.7, metalness: 0, emissive: CABIN.candle, emissiveIntensity: 0.5, flat: true, jittered: true });
+  push({ key: "paint-hill", surfaceClass: "easel", geom: "box", args: [1.16, 0.42, 0.02], position: [2.02, 2.34, 1.16], color: CABIN.leafRust, roughness: 0.8, metalness: 0, emissive: CABIN.fireEmber, emissiveIntensity: 0.28, flat: true, jittered: true });
+  push({ key: "paint-ground", surfaceClass: "easel", geom: "box", args: [1.16, 0.4, 0.02], position: [2.02, 1.98, 1.16], color: CABIN.terracotta, roughness: 0.85, metalness: 0, emissive: CABIN.fireEmber, emissiveIntensity: 0.32, flat: true });
+  push({ key: "paint-sun", surfaceClass: "easel", geom: "sphere", args: [0.17, 10, 8], position: [1.72, 2.88, 1.18], color: CABIN.lantern, roughness: 0.5, metalness: 0, emissive: CABIN.lantern, emissiveIntensity: 1.7, flat: false });
+  push({ key: "paint-stroke", surfaceClass: "easel", geom: "box", args: [0.5, 0.12, 0.02], position: [2.36, 2.5, 1.17], rotation: [0, 0, -0.22], color: ATELIER_HUE, roughness: 0.6, metalness: 0, emissive: ATELIER_HUE, emissiveIntensity: 0.6, flat: true, jittered: true });
 
   // — Floor + wall dressing: rug · potted plants · trailing vine · lanterns · string-lights · mug · blanket · books —
   push({ key: "rug", surfaceClass: "textile", geom: "cyl", args: [2.3, 2.3, 0.05, 20], position: [0.2, 0.06, 1.2], color: CABIN.woolWarm, roughness: 0.95, metalness: 0, flat: true, jittered: true });
@@ -246,7 +255,7 @@ export function buildAtelierScene(): AtelierScene {
       // Cool dusk-blue skylight over a warm firelight floor bounce → no dead shadow (Pillar B).
       { kind: "hemisphere", color: CABIN.duskSkylight, groundColor: CABIN.terracotta, intensity: 0.62 },
       // Warm key #1: the low raking golden-hour sun through the window.
-      { kind: "directional", color: CABIN.candle, intensity: 1.35, position: [-5, 7, 4] },
+      { kind: "directional", color: CABIN.candle, intensity: 1.2, position: [-5, 7, 4] },
       // Warm key #2: the wood-stove fire (diegetic heartbeat, non-shadow point light).
       { kind: "point", color: CABIN.fireFlame, intensity: 2.4, position: [4.0, 1.1, backZ + 2.0] },
       // A soft warm bounce off the easel so the doorway reads as the second focal point.
@@ -260,8 +269,9 @@ export function buildAtelierScene(): AtelierScene {
     shaft: {
       color: CABIN.candle,
       emissive: CABIN.candle,
-      emissiveIntensity: 1.5,
-      opacity: 0.16,
+      // Soft volumetric god-ray, not a hard opaque wedge: low opacity + gentle emissive.
+      emissiveIntensity: 1.15,
+      opacity: 0.1,
       position: [-2.0, 2.4, backZ + 3.2],
       rotation: [0.5, 0.35, 0.28],
       args: [2.0, 6.2, 1.6],

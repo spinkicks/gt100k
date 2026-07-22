@@ -98,22 +98,41 @@ function PropMesh({ prop }: { prop: AtelierProp }) {
   );
 }
 
-// ── the golden shaft (the hero detail): a soft warm additive-ish volume from the window ──
+// ── the golden shaft (the hero detail): SOFT feathered god-rays from the window ──
+// Two nested open cones — a wide, barely-there halo + a slightly brighter narrower core — read as a
+// soft volumetric beam rather than one hard opaque wedge. High radial segments keep the edge round.
 function GoldenShaft({ shaft }: { shaft: AtelierScene["shaft"] }) {
+  const pos = shaft.position as [number, number, number];
+  const rot = shaft.rotation as [number, number, number];
   return (
-    <mesh position={shaft.position as [number, number, number]} rotation={shaft.rotation as [number, number, number]}>
-      <coneGeometry args={[shaft.args[0], shaft.args[1], 6, 1, true]} />
-      <meshStandardMaterial
-        color={shaft.color}
-        emissive={shaft.emissive}
-        emissiveIntensity={shaft.emissiveIntensity}
-        transparent
-        opacity={shaft.opacity}
-        depthWrite={false}
-        toneMapped={false}
-        roughness={1}
-      />
-    </mesh>
+    <group position={pos} rotation={rot}>
+      <mesh>
+        <coneGeometry args={[shaft.args[0] * 1.18, shaft.args[1], 20, 1, true]} />
+        <meshStandardMaterial
+          color={shaft.color}
+          emissive={shaft.emissive}
+          emissiveIntensity={shaft.emissiveIntensity * 0.7}
+          transparent
+          opacity={shaft.opacity * 0.55}
+          depthWrite={false}
+          toneMapped={false}
+          roughness={1}
+        />
+      </mesh>
+      <mesh>
+        <coneGeometry args={[shaft.args[0] * 0.6, shaft.args[1], 20, 1, true]} />
+        <meshStandardMaterial
+          color={shaft.color}
+          emissive={shaft.emissive}
+          emissiveIntensity={shaft.emissiveIntensity}
+          transparent
+          opacity={shaft.opacity}
+          depthWrite={false}
+          toneMapped={false}
+          roughness={1}
+        />
+      </mesh>
+    </group>
   );
 }
 
@@ -140,6 +159,32 @@ function AtelierStage({ scene, reducedMotion }: { scene: AtelierScene; reducedMo
   const catRef = useRef<Mesh>(null);
   const plantRef = useRef<Mesh>(null);
   const t = useRef(0);
+  const invalidate = useThree((s) => s.invalidate);
+
+  // Paint a COMPLETE, settled still even when the animation loop never runs. Under
+  // frameloop="demand" the scene only repaints on invalidate(); the motion useFrame supplies that
+  // during motion, but under reduced-motion it early-returns — so without this the room freezes on
+  // its blank pre-settle first frame (a §11 broken still). Only under reduced-motion, pump a
+  // bounded burst of invalidations so the camera, IBL, contact shadow and post chain fully resolve,
+  // then stop → an instant calm still at ~0 ongoing GPU. The pump is DEFERRED past the initial
+  // mount render (two rAFs) so it never invalidates while the drei <Environment> portal is still
+  // initializing — invalidating mid-mount races EnvironmentPortal → the "reading '0'" crash.
+  useEffect(() => {
+    if (!reducedMotion) return; // the motion path already settles via the useFrame loop
+    let frame = 0;
+    let raf = 0;
+    const pump = () => {
+      invalidate();
+      if (++frame < 10) raf = requestAnimationFrame(pump);
+    };
+    const start = requestAnimationFrame(() => {
+      raf = requestAnimationFrame(pump);
+    });
+    return () => {
+      cancelAnimationFrame(start);
+      cancelAnimationFrame(raf);
+    };
+  }, [invalidate, reducedMotion]);
 
   // Ambient life (Pillar F): fire flicker · cat breathing · plant sway · drifting motes. Under
   // frameloop="demand" the loop self-sustains via invalidate(); reduced-motion never invalidates
