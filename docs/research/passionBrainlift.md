@@ -8,14 +8,12 @@
 
 ## Purpose
 
-The purpose of this BrainLift is to redefine what happens *after* a student clears the academic floor (SAT 1570+, 5s on BC Calculus, Physics C, Literature, and Language). It is built on the belief that the scores are table stakes, necessary but indifferentiable. And that the two questions that decide an elite outcome are *what makes this student singular* and *how can we prove this to an external viewer*. GT100K answers both by helping a child develop a differentiating spike (measured by voluntary return, not locking them into a specific path) and prove that spike is their own work (a tamper-evident record of the process plus a short human defense), without pressure, burnout, surveillance, or accusation.
+What does a student need beyond the academic floor (SAT 1570+, 5s on BC Calculus, Physics C, Literature, and Language)? We believe that the scores are table stakes, necessary but indifferentiable. And that the two questions that decide an elite outcome are *what makes this student singular* and *how can we prove this to an external viewer*. GT100K answers both by helping a child develop a differentiating spike (measured by voluntary return, not locking them into a specific path) and prove that spike is their own work (a tamper-evident record of the process plus a short human defense), without pressure, burnout, surveillance, or accusation.
 
 ### In Scope
 
 - Developing durable interest and a singular spike through repeated, varied work, tracked as a revisable hypothesis (the Passion Engine).
 - Proving authorship and understanding from a project's process and a human defense rather than from the finished artifact (the Evidence Graph).
-- Spiky points of view about motivation, specialization, provenance, and assessment that a standard AI model would not produce.
-- Structured context (facts, sources, insights) to hand directly to an AI in a conversation.
 
 ### Out of Scope
 
