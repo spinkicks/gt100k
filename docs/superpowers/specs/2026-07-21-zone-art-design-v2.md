@@ -48,6 +48,19 @@ and the content app (which *lessons* pull you back over days).
 > emissive, the portal's edge light). The room *interior* is warm gold; the cool identity-hue reads as an inviting
 > lit-window-at-dusk contrast, not a cold room. See §4.4.
 
+> **Enrichment reconciliation (binding — "art in all its forms").** The enriched interior
+> [`cabin-interior-art.md`](./2026-07-21-cabin-interior-art.md) deepens this room with **digital + internet-culture**
+> art alongside the traditional: a **drawing tablet + stylus** on the desk, a warm **"digital easel"** monitor
+> mid-painting in the making-corner, a kindly **Bob-Ross homage** (happy little trees), and a warm cluster of framed
+> **meme / internet-art prints** in the gallery — hung as one warm family. **Two rules carry into this doc:** (1)
+> **One doorway only** — the **grand easel** stays the single `role:"doorway"`; the digital easel + tablet are
+> **ambient live-tastes** on a `digital` hotspot (`role:"ambient"`), deliberately warmer/softer than the periwinkle
+> portal, floating **no verb** and never touching `primaryAction`; promoting either to a second doorway is a **banned
+> outcome**. (2) **Warm screens, never cold-blue** — every screen glows *warm* (colorful art on a friendly warm/cream
+> UI); a cold-blue/cold-chrome device glow is banned. The §7 lessons, §8 `SceneCard`, and §11 signal model are
+> unchanged; the digital/pop-culture layer is world-layer **dressing + signal-free delights** (the firewall,
+> reconciliation §3).
+
 ---
 
 ## 1. Architecture at a glance (two layers, one seam, one signal)
@@ -273,7 +286,7 @@ return = `welcomeBack`, prompted return = `promptedRecede`.
 ### 4.8 The Storybox — the world-layer "make" tickle (kept from v1, re-scoped)
 
 The Storybox is **no longer the deep container**; it is the **cozy on-desk toy** that gives an immediate "*I* made
-something pretty" hit and captures a light `build` signal, then *points at the easel* for depth. A shadow-box diorama
+something pretty" hit, then *points at the easel* for depth. **In content-deferred v1 the Storybox is signal-free** (a live-taste, not an emitter — the firewall; reconciliation §3); the `build` cell it foreshadows is lit by the content app when it lands. A shadow-box diorama
 with three depth slots (`backdrop`/`stage`/`foreground`); pull a **glowing prop** off the supply shelf, drop it in, and
 the shared art pack **auto-beautifies it on contact** (HDRI key + palette tint + fog + contact shadow + bloom) so a
 9-year-old's first drop already looks like a storybook illustration (intrinsic integration; the "wow, *I* made that" is

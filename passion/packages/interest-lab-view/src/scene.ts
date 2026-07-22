@@ -14,25 +14,29 @@ import type {
 } from "./model";
 import { buildProbePickerView } from "./picker";
 
+// Emberwood warm golden-hour cabin pack (art bible §3.2). The Scene3DView SHAPE is unchanged —
+// only the VALUES swap from the banned v1 midnight look (#181026) to warm cozy golden hour. The
+// firelight law (Pillar B): warm key + hearth over a COOL dusk-blue skylight fill so every shadow
+// reads blue-violet, never gray. See docs/superpowers/specs/2026-07-21-world-art-direction-cozy-cabin.md.
 export const SCENE3D = {
-  bgHex: "#181026",
-  fogHex: "#181026",
+  bgHex: "#E6D2A2", // golden-hour forest haze past the window (was #181026)
+  fogHex: "#E0C79A", // warm honey fog, palette-matched (was #181026)
   fogNear: 14,
-  fogFar: 46,
-  ambientHex: "#3A2E5C",
-  ambientIntensity: 0.35,
-  hemiSkyHex: "#2A2140",
-  hemiGroundHex: "#0E0A18",
-  hemiIntensity: 0.4,
-  keyHex: "#FFC08A",
-  keyIntensity: 1.15,
-  keyPos: [6, 10, 6],
+  fogFar: 46, // bounded room depth — cohesion, never to hide the far clip
+  ambientHex: "#52402E", // low warm cocoa ambient (was night-purple #3A2E5C)
+  ambientIntensity: 0.38,
+  hemiSkyHex: "#A9C2E8", // COOL dusk-blue skylight → shadows tint blue-violet, Pillar B (was #2A2140)
+  hemiGroundHex: "#C67B48", // WARM rust/wood + firelight floor bounce (was #0E0A18)
+  hemiIntensity: 0.52,
+  keyHex: "#FFD8A3", // golden-hour window sun (was #FFC08A)
+  keyIntensity: 1.2,
+  keyPos: [6, 8, 5], // lower, more RAKING sun → long soft golden-hour shadows (was [6,10,6])
   toneMapping: "ACESFilmic",
   exposure: 1.05,
-  markerEmissiveHex: "#FF9E5E",
+  markerEmissiveHex: "#FF9E5E", // firelight/doorway spark — KEPT
   markerEmissiveRest: 0.35,
   markerEmissivePulse: 0.5,
-  bloomPeak: 1.4,
+  bloomPeak: 1.4, // firelight/lantern bloom — KEPT
 } satisfies Scene3DView;
 
 export const CAMERA3D = {

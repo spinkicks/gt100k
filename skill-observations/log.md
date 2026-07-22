@@ -175,3 +175,65 @@ resolved statuses always carry their resolution date
 **Suggested improvement:** Require the workflow to assign exactly one reconciliation path for shared dependency metadata: either the feature lane owns an atomic importer update, a central aggregation job regenerates the lock before CI, or a lockfile merge queue serializes updates. Verify `pnpm install --frozen-lockfile` from the reconciled state and surface any pending reconciliation as an explicit integration handoff.
 
 **Principle:** Isolation policy must assign ownership of shared build metadata; forbidding a mutation does not remove the build contract that metadata satisfies.
+
+- 2026-07-21 Interest Lab core P0 implementation checkpoint: no additional observations.
+- 2026-07-21 Interest Lab core P0 completion checkpoint: no additional observations.
+- 2026-07-21 Interest Lab core P1 RED-GREEN checkpoint: no additional observations.
+- 2026-07-21 Interest Lab core P1 completion checkpoint: no additional observations.
+- 2026-07-21 Interest Lab core P2 RED-GREEN checkpoint: no additional observations.
+- 2026-07-21 Interest Lab core P2 completion checkpoint: no additional observations.
+- 2026-07-21 Interest Lab core P4 focused RED-GREEN checkpoint: no additional observations.
+
+### Observation 11: Make DOM cleanup explicit when test globals are disabled
+
+**Status:** OPEN
+**Date:** 2026-07-21
+**Session context:** Adding React Testing Library acceptance tests to a Vitest package configured without global lifecycle hooks.
+**Skill:** ui-styling
+**Type:** open-source
+**Phase/Area:** Accessibility testing harness
+
+**Issue:** React Testing Library's automatic cleanup did not register because Vitest lifecycle hooks were imported rather than installed as globals. Individually correct tests leaked rendered containers into later cases, producing misleading duplicate-role failures.
+
+**Suggested improvement:** In the accessibility testing reference, note that projects with disabled test globals should import `cleanup` and register it with the runner's explicit `afterEach`; verify isolation with sequential role queries before diagnosing component behavior.
+
+**Principle:** Component-test isolation must be wired to the runner configuration explicitly instead of assuming global lifecycle hooks exist.
+
+- 2026-07-21 Interest Lab core P4 completion checkpoint: Observation 11 captured; no additional observations.
+- 2026-07-21 Interest Lab core P5 pure-QA RED-GREEN checkpoint: no additional observations.
+
+### Observation 12: Separate changed-file lint from inherited workspace diagnostics
+
+**Status:** OPEN
+**Date:** 2026-07-21
+**Session context:** Verifying a narrow implementation increment in a shared repository with known formatting diagnostics outside the files changed by the increment.
+**Skill:** verification-before-completion
+**Type:** open-source
+**Phase/Area:** Scope-aware static verification
+
+**Issue:** A broad directory lint surfaced inherited diagnostics in unrelated files after the increment's own files were clean. Treating the broad result as wholly caused by the current change would either misreport the increment or invite out-of-scope edits.
+
+**Suggested improvement:** Verification guidance for dirty or shared workspaces should run a broad scan for awareness, then run an exact changed-file or ownership-scoped scan as the increment's acceptance evidence. Report inherited failures separately and never silently normalize them.
+
+**Principle:** Verification must distinguish defects introduced by the current work from pre-existing workspace state while preserving visibility into both.
+
+- 2026-07-21 Interest Lab core P5 completion checkpoint: Observation 12 captured; no additional observations.
+- 2026-07-21 Interest Lab core P6 RED-GREEN checkpoint: no additional observations.
+- 2026-07-21 Interest Lab core P6 completion checkpoint: no additional observations.
+
+### Observation 13: Pair pure integration smoke with a mounted boundary test
+
+**Status:** OPEN
+**Date:** 2026-07-21
+**Session context:** Completing a phased React integration after every pure engine and view builder was already implemented and tested.
+**Skill:** test-driven-development
+**Type:** open-source
+**Phase/Area:** RED selection for integration phases
+
+**Issue:** Tightening a pure seeded smoke to exact values passed immediately because the underlying functions were already correct, while the actual application still had no live composition of those functions. The pure chain could not provide a meaningful RED for the remaining adapter work.
+
+**Suggested improvement:** For an integration phase whose pure units are already green, pair the deterministic pure smoke with a mounted boundary test that drives one real user action across the adapter and asserts the externally visible state transition. Use the mounted failure as the RED for wiring work while retaining the pure smoke for exact-value coverage.
+
+**Principle:** Exact pure composition proves compatible functions; only a boundary-level interaction proves that the running application actually connects them.
+
+- 2026-07-21 Interest Lab core P7 completion checkpoint: Observation 13 captured; no additional observations.

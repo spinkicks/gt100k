@@ -61,20 +61,29 @@ interface ZonePlugin {
 ```
 
 Because every activity emits `{domain, workMode}` events, **return clusters resolve topic vs work-mode
-automatically** (a child who "makes" in music *and* code *and* art lights up the *make* column; one who
-stays in music across make/fix/perform lights up the *music* row).
+automatically** (a child who *builds* in music *and* code *and* art lights up the *build* column; one who
+stays in music across build/perform/debug lights up the *music* row).
 
 ## 5. v1 scope — 3 zones, each at MAXIMUM depth
 Three domains chosen so the *same* work-modes recur across them (required for the row/column signal):
 
-| Zone | Domain | Signature activity (the game) | Work-modes it exposes |
+| Zone | Domain (wire key) | Signature activity (the game) | Work-modes it exposes |
 |---|---|---|---|
-| **Music Studio** | audio | build a short beat on a step-sequencer / pad | make · perform · fix |
-| **Code Lab** | computation | make a little bot move through a puzzle (block-based) | make · fix/debug · solve |
-| **Art Studio** | visual | compose a scene / constrained paint | make · compose · express |
+| **Music Studio** | `sound_music` | build a short beat on a step-sequencer / pad | build · perform · debug |
+| **Code Lab** | `symbols_math` | make a little bot move through a puzzle (block-based) | build · debug · investigate |
+| **Art Studio** | `visual_design` | compose a scene / constrained paint | build · compose · explain |
 
 Each is built to the quality bar as if it were the *only* zone. **Discovery needs ≥2–3 comparable
 options**, which is why three (not one) — but depth is non-negotiable per zone.
+
+> **Canonical bindings (frozen engine — core-spec §2 + reconciliation §1).** Wire keys are `sound_music`
+> (Music) / `symbols_math` (Code) / `visual_design` (Art). Per-zone work-modes (core-spec §2 + §8/§9
+> goldens): Music `build·perform·debug`, Code `build·debug·investigate`, Art `build·compose·explain` —
+> **`build` is the one column shared by all three** zones (the lever that lets the grid separate a topic
+> row-spike from a work-mode column-spike). The concrete cozy theme is **Emberwood** — a golden-hour hamlet
+> of log cabins (the Sounding Cabin / Tinker Workshop / Atelier Cabin around a central Lodge + hearth) — per
+> [`2026-07-21-world-art-direction-cozy-cabin.md`](./2026-07-21-world-art-direction-cozy-cabin.md); all
+> child-facing labels, signage, and palette live there.
 
 ## 6. The signal → hypothesis (the actual point)
 - Every activity action → a `{domain, workMode, probeId}` event.

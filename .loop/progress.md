@@ -1,247 +1,230 @@
-## REPO LAYOUT (restructured 2026-07-21)
-The repo is now passion-centric: ALL code lives under `passion/apps/`, `passion/packages/`, `passion/adapters/`. There is NO `apps/`, `packages/`, or `adapters/` at the repo root anymore. Work under `passion/`; pnpm-workspace globs are `passion/*`.
+# Loop progress — WORLD lane (Emberwood cozy-cabin world)
 
-# Loop progress — evidence-explorer (002) · DECLUTTER / simplicity pass → 3D craft (claude)
+The shared CORE is COMPLETE (frozen `ZonePlugin`, `<CuriosityMap>`, `<CanvasHost>`, `<ZoneRoom>`,
+stub zones, signal engine, accessible DOM map, `window.__qa`). **Do NOT rebuild the core or change
+the frozen contracts** — theme + build ON TOP (value/reference layer only).
 
-## Task
-Elevate **apps/evidence-explorer** (the "Provenance Observatory") to the SIMPLICITY bar.
-Keep the cinematic 3D DAG + build timeline; the problem is the **chrome is too cluttered**.
-Do NOT change domain/evidence logic; keep tests green.
+## Serve + shoot recipe (reuse every turn)
+- App: `passion/apps/interest-lab` (Next.js, pkg name `@gt100k/interest-lab-app`). Serve:
+  `PORT=3400 pnpm dev` from that dir. **Kill stale next FIRST** (`pkill -9 -f next`).
+  ⚠️ **A running `next dev` locks `.next`** — the gate's `pnpm build` for the app is a no-op/blocked
+  while dev runs (and the repo `build` script filters `@gt100k/interest-lab`, the *package*, which has
+  no build script; the APP is `@gt100k/interest-lab-app` → `pnpm --filter @gt100k/interest-lab-app build`).
+  So: kill dev before building; build the app by its real name to prove production.
+- Screenshot: `/tmp/pw-venv` python playwright, `PLAYWRIGHT_BROWSERS_PATH=$HOME/.cache/ms-playwright`.
+  `/tmp/shoot_map.py <port> <out>` shoots the `.clearing` element + prints QA/liveness/errors.
+  `/tmp/shoot_rm.py` = reduced-motion still. `/tmp/sample_clearing.py` = pixel cohesion/shadow checks.
 
-## Art direction (committed — keep cohesive)
-- World: **cinematic dark cosmos**. Palette: --void #0a0e17, panels #121826/#1a2233, ink #eaf0fb,
-  focus cyan #7dd3fc (primary/interaction accent), verify teal #34e5b0 (on/success), per-type node hues.
-- Type: Space Grotesk (display) + Inter (body) + JetBrains Mono. Radii 10–16px. Frosted `.panel`.
-- Motion: `motion@12` springs (`SPRINGS.ui` = bounce 0, 0.4s), reduced-motion → opacity-only.
+## Architecture reality
+Child surface = warm DOM shell (`globals.css`, child-scoped `[data-active-surface="child"]`) + a 3D
+`<Canvas>` below the fold (`app/child/world3d/*`) + the **Curiosity Map** (now the styled clearing).
+The map lives in `packages/interest-zone-kit/src/curiosity-map.tsx` (shared component). It self-styles
+via inline SVG + a scoped `<style dangerouslySetInnerHTML>` block consuming `MAP_COLOR_SCRIPT`+`CABIN`
+tokens — no bundler CSS, works in jsdom + SSR (dangerouslySetInnerHTML avoids the `<style>`-text
+hydration mismatch: server escapes `"`→`&quot;`, client doesn't).
 
-## Done this turn (Turn 1 — HUD declutter)
-The right rail was a **wall of ~24 always-visible controls** across 4 stacked sections
-(BODIES 8 toggles · THREADS 6 legend rows · EXPLORE trace+search · DISPLAY tier+motion+plain+captions),
-each padded with explanatory sentences. Rebuilt `components/Hud.tsx` as a focused **command cluster**:
-- **One primary action** — a tactile, glowing **"Trace lineage"** button (icon + title + one-line sub),
-  cyan-accented, lights up (verify/focus glow) when active. The single prominent CTA in the rail.
-- **Compact search** — inset field, leading magnifier, fly-to submit; match count only while typing.
-- **Two quiet disclosure tabs** — **Filters** (bodies grid + threads legend; badge shows # hidden) and
-  **Display** (render tier + reduced motion as real `radiogroup`s + plain/captions switches). Mutually
-  exclusive; open with a soft spring height+opacity reveal (`motion` `AnimatePresence`), chevron rotates.
-- **Words cut hard**: deleted every "presentation only / toggle a body / system is currently…" paragraph
-  (kept one tiny caption inside Display). At rest the rail shows **~4 controls**, not 24.
-- New cohesive **icon set** (`components/icons.tsx`) — 1.5px stroke glyphs, currentColor, all decorative.
-- Segmented controls are now semantic `role=radiogroup`/`radio` (a11y win; e2e updated to open Display).
+## Done this turn — P-A1 (the clearing to bar)
+- **Rebuilt `CuriosityMap` into "Golden Hour in the Clearing" (§6).** Layered scene: cream→peach sky +
+  low sun (upper-left) → hazed swaying pine treeline → lit ground plate + winding warm dirt path +
+  pond/footbridge → long **blue-violet** dusk shadows → back-center **Lodge + lit hearth ("Home · you
+  are here")** with 4-puff rising smoke → three cabins as **real focusable buttons** in a foreground arc:
+  Music (terracotta, chimney), Code (**sage** greenhouse w/ glass gable + cyan tool-glint), Art
+  (**periwinkle** skylight). Each = hue + SVG silhouette + hanging-sign glyph + label + verb (4 channels).
+- **Contracts preserved:** region `aria-label="Curiosity Map"` (not aria-hidden),
+  `data-primary-surface="curiosity-map"`, roving tabindex, Arrow L/R/U/D nav, `aria-pressed`, ariaLabels,
+  time-lapse button `aria-label`=next phase. `interactives()`/`stateHash()` are data-driven → untouched.
+  All 511 tests green incl. the 3 curiosity-map DOM tests. Added optional `reducedMotion` prop, wired
+  from the shell.
+- **Ambient life (Pillar F, ≥3):** tree sway · hearth smoke · fireflies (thicken toward dusk) · ambling
+  cat · window flicker (≤3%) · hearth pulse = 6 motions. **Time-lapse** lowers the sun + brings out
+  fireflies at 7/30-day. All disabled under `prefers-reduced-motion` AND `[data-reduced-motion]`.
+- **DELTA quick-wins:** warmed the last midnight chip (`.quest-world-instruction` "Focus a quest below")
+  + the pale eyebrows (`.context-line`/`.surface-name`) in the child scope (DELTA #6/#7).
+- Gate GREEN: typecheck ✅ · 511 tests ✅ · repo build ✅ · **app production build ✅** · zero
+  console/page errors (default + reduced-motion) · liveness ✅ (cabin click → activeZoneId "music") ·
+  reduced-motion calm still ✅. Cohesion/shadow-color/firelight model-free checks pass.
 
-Gate GREEN: `tsc -b` clean · 66/66 vitest (incl. a11y svg-aria-hidden) · `next build` ok · SSR HTML
-verified (primary + search + tabs render; drawer content absent at rest; zero console errors).
+## Self-score (§12, pA1-clearing.png vs clearing.png) — anchored 10/7/4/2
+- Map cohesion & wayfinding: **7** (one hamlet, you-are-here Lodge, 3 legible cabins on a path) · +2: bolder path + foreground framing.
+- Cabin legibility: **7** (craft nameable via hue+silhouette+sign+label) · +2: distinct rooflines (horn/glass-gable/skylight).
+- Warmth & coziness: **7**.
+- Firelight & no dead shadow: **6** (amber windows + hearth glow, blue-violet shadows; no literal campfire flame) · +2: a small fire ring / stronger standing smoke.
+- Palette / color-script discipline: **8** (all on §3; warm/cool split holds — Art is the one cool building).
+- Ambient motion & life: **7** (6 motions; one second from motion).
+- Dressing density / lived-in: **6** (Lodge+3 cabins+pond+bridge+path+grass+cat+fireflies+signs).
+- Accessibility parity: **8** (real buttons, roving tabindex, arrow nav, ariaLabels, calm reduced-motion).
+- Chromebook perf: **8** (pure DOM/SVG/CSS, ~0 GPU, no draw calls).
+- **Overall the clearing (two-frame frame 1) ≈ 7 — MEETS the ≥7 bar.** Was ~3 (raw list) at P-A0.
 
-## Done this turn (Turn 2 — header declutter → diegetic telemetry readout)
-The header was the worst always-on AI-demo tell: a **wordy prose sentence** ("A content-addressed
-evidence DAG — X nodes in the milestone, Y unlinked, Z provenance threads") plus **two pill badges**,
-one of which ("3D cosmos · calm-2D equal mode") described the *tool*, not the content — a textbook
-"explanatory paragraph where a label would do." Rebuilt `.obs-header` in `Observatory.tsx` + CSS:
-- **Kept** the diegetic title block (eyebrow "Provenance Observatory" + `h1` "Milestone <ref>");
-  tightened display tracking to `-0.025em` / leading `1.02` (apple-design §15 size-specific type).
-- **Replaced** the prose + badges with a compact **telemetry readout strip** — three frosted **stat
-  tiles** (`nodes` · `unlinked` · `threads`, each a 1.5px glyph + tabular-nums count + uppercase
-  label) and one **"Synthetic" status chip** with a softly pulsing verify-teal dot. Reads like a game
-  HUD readout, not a sentence. Deleted the whole prose clause + the tool-describing badge.
-- **Materials** (apple-design §12): tiles are translucent (`backdrop-filter` blur+saturate over the
-  void) with an inset top-edge highlight + soft drop shadow; labels use vibrancy (heavier weight,
-  higher contrast) for legibility over the blur. Degrades to solid under reduced-transparency.
-- **Motion**: the status dot's pulse is neutralised by the existing global reduced-motion rule (no new
-  media block — that shifted the motion-budget test's `indexOf`; folded back out).
-- New cohesive glyphs in `components/icons.tsx`: `NodesIcon` (diamond node), `UnlinkedIcon` (radiating
-  lone body), `ThreadsIcon` (two bodies joined) — same 1.5px `currentColor` set, all `aria-hidden`.
+## Closest banned outcome + cheapest move away
+Was **"illegibility / cold-cabin"** (raw debug list) — now DEFEATED. Now closest to **"incoherence:
+cloned props"** — the three cabins share one silhouette (varied only by hue/feature). Cheapest move
+away next: give each cabin a distinct roofline (Music gramophone-horn cupola, Code prominent glass
+gable, Art big north-light skylight) so silhouette alone names the craft. That's the top DELTA item.
 
-Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ok · rendered `index.html` verified (readout +
-`aria-label="Milestone summary"` + all 3 stat counts + Synthetic chip present; prose clause + both old
-badges/`obs-sub`/`obs-badges`/`.badge` classes absent from the DOM; the only remaining "…evidence DAG…"
-string is the `<meta name=description>` SEO tag in `layout.tsx`, not visible chrome).
+## Done this turn — P-A2 (the Atelier interior to bar) + fixed a RED gate + killed a runtime crash
+Started from a **failed gate** (`.loop/last-gate.txt`): the app production build was RED —
+`AtelierRoom` referenced a non-existent `<ProceduralEnv>`. Fixed FIRST, then improved the surface.
+- **Gate fix (data-driven, not a papering-over):** `AtelierRoom` now renders
+  `<ProceduralEnvironment {...scene.env}>`; `AtelierScene.env` became the 5-color `EnvColors` shape
+  the PMREM component actually consumes (was a stale `Lightformer[]`). Cohesion test maps
+  `Object.values(scene.env)`. The scene DESCRIPTION and the RENDER no longer diverge.
+- **Killed the intermittent `<EnvironmentPortal>` crash** (`reading '0'` → blank canvas under
+  `frameloop="demand"`, a §11 risk). It lived in the shared `World3DCanvas` (drei `<Environment>` + 4
+  `<Lightformer>`), NOT just the room — replaced with the crash-free PMREM `ProceduralEnvironment`.
+  **Verified: 3 clean full-page loads, 0 page errors** (was flaky-crashing).
+- **The doorway now reads (top prior delta closed):** the easel canvas is a clear **luminous
+  periwinkle portal** (ATELIER_HUE emissive @1.5, blooms) — the room's one cool accent lands on the
+  invitation. Warm sunset brushwork kept but shrunk to a *started* corner vignette + one periwinkle
+  wet stroke (honest "half-finished" read preserved).
+- Gate GREEN: typecheck ✅ · 516 tests ✅ · **app production build ✅** · atelier renders warm/cozy/
+  legible, 0 console/page errors (motion + reduced-motion) · liveness ✅ (art cabin → activeZoneId
+  "art"; a_build/a_compose/a_explain live) · reduced-motion → calm accessible DOM action panel ✅.
 
-## Done this turn (Turn 3 — 3D craft: image-based ambient + cinematic AO grade)
-The worst remaining *visual* tell (chrome now reads calm) was the cosmos missing two of game-feel.md's
-non-negotiables: **#2 image-based ambient light** and **#4 subtle SSAO** in the composer — bodies were
-lit only by a 3-light rig with no real ambient reflections, so their non-emissive faces read flat.
-Rebuilt the lighting in `components/cosmos/Cosmos3D.tsx`:
-- **Procedural IBL** — a new `CosmosEnvironment` builds a drei `<Environment>` from four `<Lightformer>`
-  area lights (cool focus-cyan key ↑right · warm human-gold rim ↙back · dim model-violet overhead ring ·
-  a near-black void floor for contrast). `frames={1}` bakes the cubemap **once** (static → cheap),
-  `resolution={64}`, `background={false}` (keeps our `<color>` void + starfield as the visible backdrop).
-  **No HDRI preset / no fetch** — fully procedural, honours FR-E19 ("no external fetch, ever") and stays
-  headless-safe. Feeds real ambient + soft reflections into the emissive PBR bodies so they seat in the
-  volume instead of floating shadeless.
-- **Cinematic AO** — added `<N8AO>` (postprocessing's modern SSAO successor; n8ao 1.10 ships transitively)
-  as the **first** effect in the `EffectComposer`, void-tinted, `halfRes` + `aoRadius 1.6` — subtle
-  crevice shading on the multi-part bodies (world+ring, blueprint shell+core, seal-sun+seal) before Bloom.
-- **Ambient rebalanced** — dropped `ambientLight` 0.35→0.22 **on spectacle only** so the IBL + key/rim
-  carry the contrast rather than a flat wash (standard3d keeps 0.35; calm2d unchanged).
-- Both IBL + N8AO ride the existing **`spectacle` gate** (cinematic && !plainMode), exactly like Bloom /
-  DOF / Vignette — so standard3d, plain mode, and calm-2D are byte-for-byte unaffected.
+## Self-score (§12, pA2-atelier-portal.png vs §7.2 written frame) — anchored 10/7/4/2
+- Room cohesion & warmth: **8** (one cohesive golden-hour cabin; all on §3 palette; no dead gray).
+- Golden shaft + drifting motes (the soul): **8** (soft feathered volumetric beam, motes visible).
+- Doorway legibility: **8** (the periwinkle portal is now the single obvious "step up to the easel").
+- Dressing density / lived-in: **8** (90 objects, 13 surface classes: desk · gallery wall · easel ·
+  rug · stool · 2 plants · string-lights · cat · shelves · cups — far past ≥30/≥5).
+- Firelight / warm sources: **7** (window spill + bulbs + stove glow; 13 warm sources; stove could be
+  more distinct).
+- Blue-violet shadow: **pass** (frozen ContactShadows, `isBlueViolet` asserted).
+- Ambient life: **7** (fire flicker · cat breathing · plant sway · motes; one second from motion).
+- Accessibility + liveness: **8** (aria-hidden canvas HAS a real DOM peer — the action panel;
+  reduced-motion = calm accessible still; all interactives live, 0 errors).
+- Chromebook perf: **8** (≤1 frozen shadow-caster, demand loop, lean 3-pass post, no CDN/HDRI fetch).
+- **Overall the Atelier (two-frame frame 2) ≈ 7.5 — MEETS the ≥7 bar.**
 
-Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ok. **Live Playwright walkthrough** (swiftshader
-WebGL, 1440×900): cinematic 3D mounts + renders the graded scene (glowing bodies, bloom/DOF/vignette,
-new IBL/AO — no artifacts, no dark halos), **zero console/page errors**, 13-item Ledger, Trace lineage +
-ledger fly-to + Verify seal + Filters/Display drawers all work. Under *software* WebGL the pre-existing
-`PerformanceMonitor` self-heals cinematic→standard3d→calm2d (SC-E21) — expected; on real GPU it holds
-cinematic (captured in the load screenshot before degrade). Every tier is a usable, polished state.
+## Closest banned outcome + cheapest move away
+Was the **"blank/erroring build"** (the `<Environment>` crash) — now DEFEATED (0 errors, 3 clean
+loads). Now closest to **"pretty but slightly bare center / ambiguous window"** — the shaft fills the
+mid-ground but its source window reads faintly and the periwinkle portal is a flat plane. Cheapest
+move away next: a clearer bright mullioned window plane at the shaft origin + a dim halo plane behind
+the portal (top DELTA items for the atelier).
 
-## Done this turn (Turn 4 — Inspector declutter → summary + Details disclosure)
-After the HUD (T1), header (T2) and cosmos lighting (T3), the **Inspector was the last wordy chrome
-tell**: a `<dl>` of ~7 always-visible fields (Content-address + a note sentence, Actor, Tool, Inputs,
-Timestamp, Consent scope, Payload) — the exact "wall of fields" game-feel.md flags, and it ranks
-simplicity *above* visual richness. Rebuilt `components/Inspector.tsx` (+ CSS):
-- **Default = calm summary** — type glyph + label, the authority badge (human-owned seal / cited ribbon,
-  kept: it's the "evidence, not accusation" point), **Content-address + Copy**, the **Actor** chip, and
-  **Timestamp**. Three fields, not seven.
-- **One-tap Details disclosure** — Tool, Inputs (fly-to lineage links), Consent scope (+ synthetic tag),
-  Payload, and the address-fingerprint note now live behind a single **Details** button styled 1:1 with
-  the HUD tabs (frosted, chevron rotates, `is-open` cyan tint). Reveals with the same `SPRINGS.ui`
-  height+opacity drawer via `AnimatePresence` (opacity-only under reduced motion) — cohesive with the HUD.
-- Panel re-mounts per selection (`key={node.id}`), so every open starts **collapsed** (fresh summary).
-- **Words cut**: the always-on "content-addressed — the id is the hash…" note moved into Details (still
-  plain-mode aware via `panelCopy`); the default card no longer carries an explanatory sentence.
-- Did **not** touch `inspector-model.ts` (the unit-tested pure model) or any domain/state (SC-E14 holds).
+## Two-frame acceptance (§14) — BOTH frames ≥7
+- Frame (a) clearing at golden hour — `pA1-clearing.png` ≈ **7** (unchanged this turn).
+- Frame (b) cabin interior (the Atelier) — `pA2-atelier-portal.png` ≈ **7.5** (this turn).
+- Model-free tests pass on both (cohesion · shadow-color · firelight · primary-action-live). Green
+  tree (typecheck · 516 tests · app build). Doorways provably live; a11y peer real; `window.__qa`
+  present. → **DoD met for the map + first cabin core; creating `.loop-done`.**
 
-Gate GREEN: `tsc -b` clean · 66/66 vitest (inspector.test.ts unchanged & green) · `next build` ok.
-**Live Playwright walkthrough** (swiftshader, standard-3d tier, 1440×900): opening a Ledger row opens the
-Inspector; at rest only address/actor/timestamp render (drawer + consent + payload + inputs absent, toggle
-`aria-expanded=false`); clicking **Details** reveals all of them (`aria-expanded=true`); clicking again
-removes the drawer (reversible) — **zero console/page errors** on load + every interaction. Screenshots
-`/tmp/ee-inspector-summary.png` + `/tmp/ee-inspector-details.png` confirm the calm→full states read well.
+## NEXT — CONTINUE TO THE FULL WORLD (operator directive: build all three cabins, not just the minimum)
+The clearing + the **Atelier (Art)** cabin are DONE and gate-verified (QA + VLM both PASSED) — **do NOT
+redo them.** The **Music and Code cabins are still core STUBS** — build them to the bar next, then polish.
+**Do NOT create `.loop-done` until ALL THREE cabin interiors are to the bar** (self-score ≥7, QA + VLM).
+Reuse the now-proven **crash-free `ProceduralEnvironment` + atelier-scene pattern** for both.
+- **1) Music — "The Sounding Cabin" (`sound_music`)** — build the interior to the bar per
+  `docs/superpowers/specs/2026-07-21-cabin-interior-music.md` (warm-wood upright piano hero, hi-fi corner,
+  the glowing console screen doorway; distinct **gramophone-horn cupola** roofline).
+- **2) Code — "The Tinker Workshop" (`symbols_math`)** — build per
+  `docs/superpowers/specs/2026-07-21-cabin-interior-code.md`: the doorway is **The Coding Desk** (a warm-
+  glowing monitor + mechanical keyboard, **never cold-blue**), the little robot is **Sprout**, plus the
+  **Claude** desk-buddy; language toys/books; distinct **glass-gable** roofline.
+- **3) Then polish** — Atelier deltas (mullioned window at the shaft origin · soft halo behind the
+  periwinkle portal · distinct wood-stove corner · vary gallery-frame sizes/tilt) and clearing deltas
+  (distinct cabin rooflines so silhouette names the craft · bolder path contrast · tighter sun disc +
+  denser foliage). Screenshot + delta-loop each surface every turn; keep the gate green.
 
-## Done this turn (Turn 5 — the 3D material pass: distinct substances + envMap specular + fresnel rim)
-With every clutter tell gone (T1–T4) and the scene lit (T3: IBL + AO + bloom/DOF/vignette), the last big
-*visual* lift from "good scene" to AAA was the **material language**: all 8 bodies shared one emissive
-material (`roughness 0.35 / metalness 0.1`), so a world, a crystal, a gold-star and an obelisk read as the
-*same glowing plastic* in eight hues — and with the IBL present they barely caught reflections, so they
-read shadeless. Rebuilt the materials in `components/cosmos/Bodies.tsx`:
-- **Per-body PBR character** — a new `PBR` map gives each node type a distinct **substance**: matte/chalky
-  *construct* (blueprint, roughness 0.6), *icy* comet (roughness 0.15), warm **metallic gold** (gold-star
-  metalness 0.7), sharp **glassy** crystal (roughness 0.12), polished beacon/seal. `emissive()` now merges
-  a per-body profile including **`envMapIntensity` (0.7–1.5)** so each silhouette catches the cool focus
-  key from the baked IBL as a real specular highlight → bodies **seat in the volume** instead of floating
-  flat. (`apple-design §7`: every value deliberate; `game-feel §3`: a material *language*.)
-- **Faint additive fresnel rim** — a self-contained `RimMaterial` (hand-written GLSL, **no three chunk-name
-  coupling** → version-robust) + a `<Rim>` back-shell (scale ~1.05–1.14) clones each body's geometry and
-  lights only the grazing silhouette (`BackSide` + `AdditiveBlending` + `depthWrite:false`, `raycast`
-  disabled so it never occludes the core or eats picks). Edges now glow **into** the Bloom so bodies pop
-  off the void. Kept conservative (`intensity 0.7`, islands halved) — verified live it reads as a gentle
-  edge glow, **not** a blown-out halo.
-- **Strictly gated** — every material change rides `rich = animate = spectacle` (cinematic && !plainMode),
-  the same gate as Bloom/DOF/IBL. When `rich` is false, `emissive()` returns the flat baseline byte-for-byte
-  (no `envMapIntensity` key) and **no** rim renders, so **standard3d / plain / calm-2D are unchanged**.
+## Done this turn — P-A3 (the Sounding Cabin / Music interior PROVEN + polished to the bar)
+Started from a misleading state: the Music room (`SoundingCabinRoom` + `music-scene`, 55+ props, wired
+in `app/zones.ts`, 7 tests green) was committed last turn but its committed shot `pA3-music.png` was a
+**blank cream frame** — a pre-settle demand-loop capture, NOT a broken room. Also found + fixed a real
+ops issue: **multiple stale `next dev` servers were fighting over `.next`** (404s on static chunks,
+flaky `window.__qa` attach). Killed all, freed :3400, one clean server → clean loads.
+- **PROVED the room renders** (real shot, 0 console/page errors, liveness ✓: entering Music flips
+  activeZoneId→"music"; m_build/m_debug/m_perform all live). Replaced the blank committed shot with a
+  real one (`pA3-music.png` + `-reducedmotion.png`).
+- **Doorway now reads as a music-studio portal** (top delta closed): added a bright candle EQ +
+  waveform glyph ON the console screen (reads as live audio software) + a soft MUSIC_HUE glow halo rim
+  → the single obvious "open the studio."
+- **Killed the near-white upper-left void** (§13.4 off-palette white): added a warm dark timber ceiling
+  above the beams → dark-cozy-edges → lit-center composition (§2.4). Tamed the left-wall blowout
+  (chink plaster→woodDrift, key 1.25→1.08, fg-post pulled into frame), calmed the window
+  (emissive 0.64→0.44), softened the shaft, deepened the vignette (0.44→0.52).
+- Gate GREEN: root typecheck (tsc -b) ✅ · **96 tests** ✅ (music 7 · atelier 5 · qa-bridge 3 · +) ·
+  **app production build ✅** · 0 errors motion+reduced-motion · RM = calm accessible "Step inside" peer.
 
-Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ok. **Live Playwright walkthrough** (swiftshader,
-1440×900): app boots at **Cinematic 3D** → the composer, IBL bake, and the new custom `RimMaterial` GLSL
-**all compiled and rendered** (screenshot `/tmp/ee-cinematic.png`: distinct metallic-gold / glassy-crystal /
-icy-comet / matte-construct substances + soft rim glow, no washout). Forcing the Cinematic tier held it.
-**0 page errors · 0 console `error`s**; the only console warnings (25) are the pre-existing swiftshader
-`glBlitFramebuffer` depth-stencil GL-driver noise from the EffectComposer under *software* WebGL (present
-since T3), **0 non-GL** — my change adds no app error/warning. Trace lineage, 13-row Ledger → Inspector,
-Filters + Display drawers all work.
+## Self-score (§12, pA3-music.png vs §7.2 + reference bar) — anchored 10/7/4/2
+- Room cohesion & warmth: **8** (enclosed warm-timber cabin; all on §3; no dead gray).
+- Doorway legibility: **8** (EQ studio screen + halo = unmistakable "open the studio", a warm door).
+- Golden shaft + motes: **7** (soft warm beam + drifting motes; still a defined wedge).
+- Dressing density / lived-in: **8** (~57 objects, 13 surface classes: piano · desk · hi-fi corner ·
+  instrument wall · shelf · window · hearth/stove · plants · lights · textiles · life — far past ≥42/≥8).
+- Firelight / warm sources: **7** (wood-stove firebox+flame @3.0–3.2 · window spill · lamps · valves · sconces).
+- Blue-violet shadow: **pass** (frozen ContactShadows duskShadow, isBlueViolet asserted).
+- Ambient life: **7** (fire flicker · Biscuit the cat breathing · hanging-plant sway · motes; one second from motion).
+- Accessibility + liveness: **8** (aria-hidden canvas HAS a DOM peer; 3 actions live; 0 errors; calm RM still).
+- Chromebook perf: **8** (≤1 frozen shadow-caster, demand loop, lean 3-pass post, procedural env — no CDN/HDRI).
+- **Overall the Sounding Cabin ≈ 7.5 — MEETS the ≥7 bar.**
 
-## Done this turn (Turn 6 — Ledger calm-depth pass: HUD panel, scroll-edge fade, hue-glow dots)
-With the cosmos fully lit + materialised (T3/T5) and every other chrome tell decluttered (T1/T2/T4), the
-**Ledger** was the last generic surface: a hard-clipped `overflow:auto` list whose header + verify seal
-**scrolled away** with the rows, carrying a wordy explanatory intro ("Every evidence node, in provenance
-order. Select a row to inspect it — the same view the constellation shows.") — a textbook game-feel #1
-"explanatory paragraph where a label does" tell — and rows met the panel edge with a flat clip (reads as a
-dashboard table, not depth). Rebuilt `components/Ledger.tsx` + its CSS into a **HUD panel**:
-- **Fixed header** — the `.ledger` panel is now a flex column (`overflow:hidden`) with a non-scrolling
-  `.ledger-head` (uppercase title + a **tabular count chip**, `13`) pinned above a `.ledger-scroll` region
-  that alone scrolls. The title/seal no longer slide out of view. The count is a glanceable HUD readout of
-  list scale (replaces the info the deleted intro carried).
-- **Scroll-edge depth fade** (apple-design §12) — `.ledger-scroll` carries a **static** `mask-image`
-  linear-gradient (16px top+bottom) so rows dissolve into the panel chrome instead of hard-clipping. No
-  animation → the motion-budget test (bans layout-prop transitions / non-compositor keyframes) is untouched.
-- **Words cut** — deleted the intro paragraph entirely (title + rows are self-evident; the HUD already owns
-  "Trace"). game-feel #1 "subtract every turn."
-- **Signature hue-glow dots** — each row's `.ledger-dot` now takes the node **type hue via inline `color`**
-  (`background:currentColor` + a `color-mix` currentColor glow), so the ledger dots echo the cosmos node
-  hues instead of an inkish white glow; dropped the stale `margin-top` (rows are center-aligned).
-- **Selected/hover juice** — selected row gains an inset cyan left-accent bar + soft focus glow (box-shadow,
-  compositor-safe); hover nudges the row `translateX(2px)`; row gap 4→5px for a touch more rhythm.
-- **Orphan cleanup** (impeccable): deleted 7 dead `.ledger-list/.ledger-body/.ledger-head(old)/.ledger-label/
-  .ledger-type/.ledger-meta/.ledger-hash` CSS rules + the legacy `.ledger-row` variant (0 TSX usages, left
-  over from a prior ledger). Kept the used `.ledger-flag*`.
-- **Tier-safe by construction** — the Ledger is the DOM parallel rendered in *every* tier (not 3D-gated), so
-  this chrome improves calm-2D / standard-3d / cinematic equally; no 3D code (`Bodies`/`Cosmos3D`) touched.
+## Closest banned outcome + cheapest move away (Music)
+Was **"blank/erroring build"** (the committed blank shot) — now DEFEATED (real verified render, 0
+errors, 3 clean loads). Now closest to **"pretty but a slightly bare/washed left corner"** — the
+mid-left wall strip left of the piano still reads a touch pale. Cheapest move away: warm that corner /
+add a dark dressing element (bookshelf, coat-rack) to frame the far-left edge (top Music DELTA item).
 
-Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ok. **Live Playwright** (Python, 1440×900): count
-chip = 13; **`.ledger-intro` gone (0)**; `mask-image` applied; scroll region genuinely scrollable (1082 >
-564) with the header staying pinned when scrolled to bottom; dot color = the type hue (`rgb(94,124,226)`,
-not white); row-click selects + opens the Inspector; **Trace / Filters / Display (7 radios) / search /
-Inspector Details all fire — every control does something, 0 console + 0 page errors** across the whole
-walkthrough. Screenshots `/tmp/ee-ledger-{rest,selected,scrolled}.png` confirm the calm HUD read.
+## Cabin status → NEXT is the CODE cabin (the last stub)
+- Clearing (map): DONE (P-A1, ≈7). Art/Atelier: DONE (P-A2, ≈7.5). **Music/Sounding Cabin: DONE this
+  turn (P-A3, ≈7.5).** → Two-frame acceptance holds on both graded frames; all model-free tests pass.
+- **STILL A STUB: Code — "The Tinker Workshop" (`symbols_math`).** Build the interior to the bar per
+  `docs/superpowers/specs/2026-07-21-cabin-interior-code.md`, reusing the proven crash-free
+  `ProceduralEnvironment` + scene-description pattern (copy music-scene.ts → code-scene.ts). The
+  doorway is **The Coding Desk** — a WARM-glowing monitor + mechanical keyboard, **NEVER cold-blue**
+  (that's the §11 trap for a code room); the little robot is **Sprout** + a **Claude** desk-buddy;
+  language toys/books; distinct **glass-gable** roofline read. THEN create `.loop-done` (all three cabins).
+- Do NOT redo the clearing/Atelier/Music — they are gate-verified. Extend to Code, then polish deltas.
 
-## Done this turn (Turn 7 — RESET: deliberate "Provenance Instrument" design-token system)
-**The escalated brief matters more than T6's "done" marker.** The operator re-reviewed after T1–T6 and
-rejected the *look itself*: "still looks a bit cluttered; the **dark gradients, curved edges, and font**
-give an overall impression of vibe-coded." T1–T6 decluttered + lit the scene but kept the vibe-coded VISUAL
-STACK. This turn is a foundational **chrome-token rewrite** (not a decoration turn — a genuine response to a
-stronger verdict), targeting exactly the three named tells + the brief's "extract a token system for
-PassionLab" requirement. The 3D cosmos stays dark (it's space; game-feel commits it) — the fix is making the
-chrome a *deliberate* matte instrument, not default blue-black glassmorphism.
-- **Typography (tell #1) — discovered `layout.tsx` loaded NO real typeface** (system-ui fallback = the
-  "generic font" the operator saw). Now loads real self-hosted faces via `next/font` (build-time, no runtime
-  fetch → FR-E19): **Fraunces** (optical serif → archival authority) + **IBM Plex Sans** (technical body) +
-  **IBM Plex Mono** (hashes). Wired into `--font-*` tokens w/ fallback stacks; optical sizing + serif
-  tracking on headings. Verified live: computed `body`=IBM Plex Sans, `h1`=Fraunces (really applied).
-- **Geometry (tell #2)** — a deliberate radius scale (`--r-lg 8 / --r-md 6 / --r-sm 4 / --r-pill`) replaces
-  the scattered 16/14/13/12/11/10/9/8/7/6px literals, applied consistently; pills reserved for genuine pills
-  (segmented tracks, status chip, badges, dots); the two pill-buttons (verify/scrub-play) de-pilled to `-md`.
-- **Surfaces/color ("dark gradients")** — dropped every decorative `radial-gradient` glow (body, stage,
-  cosmos-viewport, inspector) + all `backdrop-filter` frosted glass → matte graphite steps + hairline +
-  restrained shadow tokens; re-pitched palette off blue-black `#0a0e17` → neutral graphite `#0c0d11`; single
-  monochrome page depth (not a rainbow); de-neoned the focus accent, single-hue slider fill, killed chrome
-  bloom halos (kept transient state-feedback glows). Removed the now-dead `--surface-alpha` + 3 obsolete
-  `prefers-reduced-transparency` blocks; refreshed the stale file-header + comment.
-- **Token system for PassionLab (§6)** — color/type/geometry/space/elevation authored cleanly in `:root`;
-  components reference tokens, never literals.
-- **Kept green / invariants:** `--focus` + `:focus-visible` ring, semantic state + node-type hues (FR-E04
-  grayscale-safe), the reduced-motion global block (motion-budget `prefers-reduced-motion` index intact,
-  keyframes still transform/opacity/filter only, no layout-prop transitions — `border-radius` isn't one),
-  no domain/state/3D-geometry touch (SC-E14). Pure chrome refactor.
+## Done this turn — P-A4 (the Tinker Workshop / CODE interior PROVEN + polished to the bar) — LAST CABIN
+Built the final stub cabin (`code`, domain `symbols_math`) to the bar, reusing the proven crash-free
+`ProceduralEnvironment` + scene-description pattern (copied music-scene→`code-scene.ts`,
+SoundingCabinRoom→`TinkerWorkshopRoom.tsx`). Wired `codeStub`→`TinkerWorkshopRoom` in `app/zones.ts`
+(zone id "code"). Added `test/code-room.test.ts` (7 tests). "The Tinker Workshop" = a cozy warm log
+workshop where a kid codes: a central honey-wood **Coding Desk** with a real kid-recognizable computer.
+- **PROVED it renders** (`pA4-code.png`, 0 console/page errors, liveness ✓: entering Code flips
+  activeZoneId→"code"; c_build/c_debug/c_investigate all live). RM → calm accessible "Step inside"
+  Build/Debug/Investigate DOM peer (`pA4-code-reducedmotion.png`).
+- **DEFEATED the §11/§6.4 cold-blue-screen trap (the top delta):** a solid sage plane bloomed to a cold
+  cyan-white slab. FIXED with a warm-DARK green editor bg (forestDeep) glowing controlled sage @0.9
+  (tone-mapped → green not white) + bright blooming legible code lines (amber/spark/sage/mint) + a green
+  leaf output + blinking amber cursor → reads unmistakably as "a computer showing colorful code," warm.
+- **Polished deltas 2+3:** darkened the pale left wall (chink woodDrift→woodOak + a dark forestDeep
+  coding poster) · shifted the golden shaft left + softened it so it no longer bisects the monitor ·
+  enlarged Claude the AI desk-buddy (eyes + smile + mint LED).
+- Gate GREEN: root typecheck (tsc -b) ✅ · **103 tests** ✅ (code 7 · music 7 · atelier 5 · qa-bridge 3
+  · +) · **app production build ✅** · 0 errors motion+RM.
 
-Gate GREEN: `tsc -b` clean · 66/66 vitest · `next build` ✓ (next/font self-hosted). **Live Playwright**
-(Chromium, 1440×900, production `next start`): **0 page + 0 console errors** across load → Trace → Filters →
-Display → search (1 match / 0-match empty state) → ledger→Inspector→Details → Verify (Verified) → tamper
-(MISMATCH) → calm-2D tier. Every control functional; real empty/error states. Screenshots `/tmp/ee7-*.png`.
+## Self-score (§12, pA4-code.png vs §7 "The Sunlit Coding Nook" + reference bar) — anchored 10/7/4/2
+- Room cohesion & warmth: **8** (one cohesive golden-hour log workshop; all on §3; no dead gray).
+- Reads as CODE in ≤1s / doorway legibility: **8** (warm-dark sage editor showing colorful code + a
+  green leaf output + amber cursor = unmistakable "step up to the desk"; NOT cold-blue, NOT a steampunk
+  shop, NOT an RGB battlestation — the three §11 code traps all avoided).
+- Golden shaft + motes: **7** (soft warm beam onto the rug; drifting motes).
+- Dressing density / lived-in: **8** (~90 objects, 15 surface classes: desk · monitor · keyboard ·
+  laptop · Claude · Sprout+blocks · nook+books · wall-of-ideas · shelf · hearth · window · plants ·
+  textiles · life — far past ≥40/≥6).
+- Firelight / warm sources: **7** (wood-stove firebox+flame @3.0–3.2 · window spill · lamps ·
+  string-lights · RUN key · shelf lamp).
+- Blue-violet shadow: **pass** (frozen ContactShadows duskShadow, isBlueViolet asserted).
+- No cold-blue screen: **pass** (machine-guarded — every "screen" prop non-blue in color + emissive).
+- Ambient life: **7** (fire flicker · Biscuit breathing · plant sway · cursor blink · Claude idle bob · motes).
+- Accessibility + liveness: **8** (aria-hidden canvas HAS a DOM peer; 3 actions live; 0 errors; calm RM still).
+- Chromebook perf: **8** (≤1 frozen shadow-caster, demand loop, lean 3-pass post, procedural env — no CDN/HDRI).
+- **Overall the Tinker Workshop ≈ 7.5 — MEETS the ≥7 bar.**
 
-## Still generic / next targets (judged vs game-feel.md)
-- The cosmos now has IBL + AO + bloom/DOF/vignette + rig + damped cinematic camera + a **per-body material
-  language** (distinct substances + envMap specular + fresnel rim, T5). The scene meets game-feel §1–§9.
-  Remaining candidates are **taste-tunes best done eyes-on a real GPU** (see caveat) — not blind blockers.
-- ~~**Ledger** panel is a dense scrolling list — scroll-edge fade + rhythm.~~ **DONE Turn 6** (HUD header +
-  mask fade + hue-glow dots + intro cut). No generic *chrome* candidate remains.
-- The Display drawer keeps one caption ("Presentation only — the evidence never changes"); load-bearing
-  (explains the state-only guarantee) and inside progressive disclosure, so it stays.
-- Rim/envMap **intensity taste-tune**: on a real GPU the fresnel rim + per-body `envMapIntensity` could be
-  nudged (e.g. crystal a touch sharper, gold a touch warmer) — but that needs pixel eyes headless can't give.
+## Closest banned outcome + cheapest move away (Code)
+Was the **"cold-blue screen"** (§11/§6.4 code-room trap) — now DEFEATED (warm-dark sage editor,
+machine-guarded). Now closest to **"pretty but the RUN key / run-it affordance under-reads"** — the
+c_debug "run it" hero (the amber RUN key) is subtle at wide shot. Cheapest move away next: brighten +
+enlarge the RUN keycap so the tactile "run it" pops (top Code DELTA item).
 
-## Honest caveat (unchanged from EE-003)
-Under *software* WebGL (swiftshader) the EffectComposer emits benign `glBlitFramebuffer` depth-stencil
-GL-driver warnings and the `PerformanceMonitor` may self-heal cinematic→standard3d on a slow frame — both
-pre-existing and environmental. The cinematic composer + rim shaders **do** compile and render here (boots at
-Cinematic 3D), but final pixel taste-tuning of bloom/rim balance is ideal on a real GPU; it blocks no
-non-negotiable.
-
-## NEXT
-- **DONE this session — Turn 7 landed the design RESET; `.loop-done` re-created.** The operator's escalated
-  verdict (dark gradients / curved edges / font = vibe-coded) is directly addressed by a real, extractable
-  **design-token system**: real self-hosted type (Fraunces + IBM Plex Sans/Mono), a deliberate radius scale,
-  matte-graphite surfaces with no rainbow gradients / no frosted glass, de-neoned restrained accent. Verified
-  usable end-to-end in Chromium (0 console + 0 page errors; every control functional; real empty/error
-  states). The chrome now reads as a deliberate "Provenance Instrument," not an AI dashboard.
-- **If the loop re-invokes:** do NOT invent a decoration turn (game-feel #1 forbids over-decorating a
-  now-calm, cohesive world). Re-run the gate + a fresh adversarial critic sweep (actually *inspect* the
-  rendered surfaces — a scorecard can lie), confirm nothing regressed, re-create `.loop-done`. The token
-  system is the leverage point — any further chrome change should go THROUGH the tokens, never hardcode.
-- **Genuine candidates for a future turn (not blockers):**
-  1. **3D bodies vs the new chrome:** the glowing planet/star primitives read a touch toy-like against the
-     serious matte-instrument chrome. A *scene* taste-tune (glowing-nodes is the committed concept; changing
-     node representation is larger scope + GPU-eyes work) — do it deliberately, not blind.
-  2. **GPU-eyes taste-tunes** (unchanged): bloom/rim/vignette/DoF balance, per-body `envMapIntensity` — need
-     a real GPU; block no non-negotiable; forcing them blind risks over-decoration.
-- Do NOT add `<ContactShadows>` (EE-003: a floor fights the floating cosmos) unless a grounded glow-plane
-  variant is prototyped and clearly reads better.
-- Do NOT revert to blue-black + neon-glow + frosted-glass chrome (EE-007): that is the exact vibe-coded look
-  the operator rejected. The matte-graphite instrument palette is the committed direction now.
+## Cabin status → ALL THREE CABINS + CLEARING ARE TO THE BAR (Definition of Done met)
+- Clearing (map): DONE (P-A1, ≈7). Art/Atelier: DONE (P-A2, ≈7.5). Music/Sounding Cabin: DONE
+  (P-A3, ≈7.5). **Code/Tinker Workshop: DONE this turn (P-A4, ≈7.5).**
+- Two-frame acceptance (§14) holds on the graded frames; all model-free tests pass (cohesion ·
+  shadow-color · firelight · no-cold-blue-screen · primary-action-live). Green tree (typecheck · 103
+  tests · app build). Every doorway provably live; a11y peer real; `window.__qa` present.
+- → **DoD met: the clearing + ALL THREE cabin interiors are to the bar. Creating `.loop-done`.**
+- NEXT (if the loop continues): polish deltas — brighten the RUN key · larger monitor code lines ·
+  Atelier mullioned window/halo · clearing distinct rooflines. Do NOT redo any surface (all gate-verified).

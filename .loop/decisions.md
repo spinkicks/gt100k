@@ -975,3 +975,264 @@ _Legacy scratch below (prior interest-lab loop — not applicable to evidence-ex
   star primitives) against the now-serious instrument chrome — a *scene* taste-tune (glowing-nodes is the
   committed concept; changing node representation is larger scope + GPU-eyes work). Accent usage (cyan
   eyebrow/labels) kept for restrained life in the palette — judged tasteful, not accent-spam.
+
+## IL-CORE-001 — P0 placeholders are deterministic and deliberately inert
+- **Chose:** expose the spec-pinned P0 types now, while placeholder builders return only stable shape-level
+  states (`new`, `insufficient`, zero return aggregates). The registry validation and host navigation are
+  already real because their behavior is small and required by the seeded smoke.
+- **Why:** P0 must keep the whole seam compilable and green without pre-empting the exact P1–P5 algorithms;
+  inert outputs cannot accidentally be mistaken for inferred evidence.
+- **Rejected:** partially approximating later goldens would create behavior that later phases must unwind
+  and could let a plausible but incorrect algorithm survive until P7.
+
+## IL-CORE-002 — Minimal stub presentation defaults
+- **Chose:** use `Step inside` as the shared enter verb and stable decorative glyph ids `music-note`,
+  `code-brackets`, and `art-brush`; 3D stubs are unlit labeled boxes and DOM stubs are labeled buttons.
+- **Why:** the core spec pins labels and grid cells but leaves glyph ids and the exact verb unspecified.
+  These values are deterministic, accessible, and intentionally leave all visual craft to the world lane.
+
+## IL-CORE-003 — The activity bridge uses contract-local provenance defaults
+- **Chose:** default `learnerRef` to `synthetic-interest-lab-learner` when the caller omits it, and project
+  `familyId` from `probeId`.
+- **Why:** the bridge signature has no catalog input, so it cannot inspect a separately declared probe
+  family; every v1 stub already pins `familyId === probeId`. The synthetic default is deterministic and
+  makes the zero-option bridge usable without introducing wall-clock or ambient state.
+- **Rejected:** importing the zone catalog into the pure domain package would invert the dependency graph;
+  accepting an undeclared global registry would make a pure projection depend on ambient mutable state.
+
+## IL-CORE-004 — Hypothesis goldens keep domain tests dependency-local
+- **Chose:** construct the complete nine-cell coverage matrix inside the domain acceptance test with
+  `buildCoverageMatrix`, while mirroring the frozen stub cell attributes and offered-cell order.
+- **Why:** the §8.4 goldens require complete stub coverage, but making `@gt100k/interest-lab` tests import
+  the React-aware zone kit would reverse the production dependency direction. The local structural input
+  exercises the real coverage builder and keeps the domain package independently testable.
+- **Rejected:** casting a gaps-only object would bypass the coverage contract; importing
+  `@gt100k/interest-zone-kit` would couple the pure engine's test suite to the UI seam.
+
+## IL-CORE-005 — Time-lapse ordering and pre-activity fallback stay deterministic
+- **Chose:** derive the time-lapse domain order from first appearance in the activity log (matching the
+  return-grid default), sort work modes by `WORK_MODES`, and emit only the pinned day 0/7/30 phases that
+  contain eligible activity. With no eligible phase, return `phases:[]` and the contract-required
+  `currentPhaseId:"first-session"` sentinel.
+- **Why:** `buildTimeLapse` has no `domainOrder` option and its non-null `currentPhaseId` type cannot
+  represent an empty log. First appearance is the existing engine convention; the sentinel is the
+  simplest deterministic pre-activity state without inventing a fourth phase.
+- **Safety:** assistive and withdrawn actions do not create map-return cues or time-lapse return activity.
+  Assistance never creates a signal, and the frozen event contract requires withdrawn actions to be
+  excluded everywhere.
+- **Test boundary:** the Curiosity Map golden mirrors the three stub manifests locally so the pure-view
+  package's tests do not acquire a reverse dependency on the React-aware zone kit.
+
+## IL-CORE-006 — The P4 shell keeps host state injected and the Canvas structurally stable
+- **Chose:** keep `CuriosityMap` controlled by the pure map view plus `activeZoneId`, `dayOffset`, and
+  callbacks; keep `CanvasHost` controlled by the registry, current zone id/actions, day, tier, and event
+  emitter. The Canvas is an unconditional child of the host, while only `ZoneRoom` or the sibling
+  `ActivityDOM` changes as host state changes.
+- **Why:** the spec freezes the domain and plugin contracts but not React prop names. Controlled inputs
+  keep navigation state in the app, make the persistent-mount invariant directly testable, and avoid a
+  second source of truth inside the react-aware seam.
+- **Time-lapse default:** the DOM control cycles deterministically through `0 → 7 → 30 → 0` using the
+  exact phase labels, even when the activity-derived time-lapse view has no populated phases. This keeps
+  the required control available before any activity without inventing wall-clock state.
+- **Board-tier bridge:** `ActivityDOM` receives `tier:"room-3d-lite"` at the no-WebGL floor because the
+  frozen `RoomProps.tier` deliberately contains only the two room tiers. DOM behavior must remain tier-
+  independent; P6 parity tests will enforce that the same action model and events are exposed.
+
+## IL-CORE-007 — QA snapshots are canonical values behind a replaceable app bridge
+- **Chose:** canonicalize `stateHash()` from a copied salient-cell list using `grid.domainOrder` and
+  `WORK_MODES`, even when a caller supplies cells in a different order. The app installs a deterministic
+  empty-activity snapshot through a small effect component that replaces `window.__qa` whenever its `Qa`
+  input changes and removes only the value it installed.
+- **Why:** the QA string is a cross-process contract and must not inherit incidental collection order.
+  P5 precedes P7's live map/event composition, so a replaceable bridge exposes the exact initial contract
+  now without inventing duplicate host state; P7 can pass each newly derived snapshot through the same seam.
+- **Safety:** the initial snapshot is built only from the frozen stub catalog/config and explicit empty
+  activity. It uses no wall clock, randomness, browser capability, or hidden mutable state.
+
+## IL-CORE-008 — Generated stub actions use neutral artifact semantics
+- **Chose:** generate one action per probe with `actionId === probeId`, a title-cased work-mode label,
+  `kind:"artifact"`, action-id sorting, and only the first sorted action marked primary. `CanvasHost`
+  derives this model from the active plugin instead of accepting a caller-supplied action array.
+- **Why:** the frozen model pins every field but leaves generated defaults unspecified. A probe represents
+  making, testing, or explaining an artifact; stable probe ids and work-mode copy are the smallest honest
+  defaults. Host-side derivation makes DOM/3D parity structural rather than caller-dependent.
+- **Rejected:** `explore` would make every action novelty-only regardless of day; caller-supplied actions
+  could diverge across surfaces; marking every generated action primary would violate the one-primary-room
+  invariant.
+
+## IL-CORE-009 — The root gate discovers package React acceptance suites
+- **Chose:** add package `*.test.tsx` discovery to the root Vitest config and a source-level regression
+  test that preserves the include pattern.
+- **Why:** package-local tests were green, but `pnpm test` silently omitted every zone-kit component suite.
+  The loop gate must execute SC-CORE-08/10/11 itself rather than relying on an extra package command.
+- **Rejected:** documenting a second required test command would leave the stated root gate incomplete and
+  allow later harness runs to skip the accessible DOM and persistent-Canvas acceptance tests again.
+
+## IL-CORE-010 — Runtime activity starts empty; exact golden history stays in the smoke
+- **Chose:** mount the core shell with an empty append-only activity log, derive every engine and QA read
+  from it, and keep `ACTIVITY_GOLDEN_V1` as the deterministic seeded smoke input rather than silently
+  preloading it into the learner-facing runtime. The primary DOM map is composed before the existing app
+  preview, and the app's static `ZONES` registry is the sole downstream replacement point.
+- **Why:** an empty runtime preserves the exact initial QA golden and ensures every later signal comes from
+  an operable action. The seeded smoke still proves the complete topic-leaning chain without making a new
+  session appear to contain prior behavior. Keeping the existing preview preserves SC-CORE-01 while the
+  core map remains the explicitly declared primary surface.
+- **Safety:** the app uses only synthetic fixtures, injected day offsets, and append-only local state; it
+  introduces no wall-clock, randomness, child records, or identity-defining copy.
+
+## WORLD-A0-001 — Warm art pack: SCENE3D value swap + additive CABIN / MAP_COLOR_SCRIPT
+- **Chose:** swap `SCENE3D` VALUES to the Emberwood golden-hour pack (bible §3.2) with the shape
+  unchanged; keep `HUE_RAMP` verbatim; add two NEW named exports — `CABIN` (material tint palette
+  §3.1) and `MAP_COLOR_SCRIPT` (DOM map color script §6). Golden tests pin all three exactly plus
+  invariants (cool sky > warm ground, hearthGlow == fireSpark == PALETTE.spark, cabin hues == HUE_RAMP[0..2]).
+- **Why:** the shipped pack was the BANNED midnight `#181026`. This is a pure value+reference layer on
+  frozen shapes — no contract break; the map goldens stay valid. Additive exports give zone builders +
+  the DOM map one warm palette without touching existing consumers.
+- **Rejected:** editing `PALETTE` (kept — it themes the professional guide console, and its contrast
+  goldens are pinned); a `SCENE3D_NIGHT` flag (night is banned as default, migration not needed here).
+
+## WORLD-A0-002 — Warm the CHILD DOM shell only, via scoped CSS-var remap
+- **Chose:** append a theme block to `app/globals.css` scoped to
+  `.interest-lab-client[data-active-surface="child"]`: remap `--night`/ink/surface tokens to warm
+  cream+wood, warm the body+html base via `:has()`, re-declare `color` on the wrapper (it's set on
+  <body> outside scope so headings inherited the light root ink), and warm the few hardcoded dark
+  pills (`.hud-status`, `.status-pill`, `.quest-ledger`).
+- **Why:** the child surface's shell is the DOMINANT pixels and it was midnight (banned). Remapping the
+  custom properties on the wrapper warms the whole subtree with no per-selector rewrite. The guide
+  console keeps the midnight PALETTE (a pro evidence surface, dark by design + pinned contrast).
+- **Rejected:** flipping `:root --night` globally (would wreck the guide console + break contrast
+  goldens); a JS body-class toggle (CSS `:has()` is cleaner + no component change).
+
+## WORLD-A0-003 — Kill the 3D black void: midnight PALETTE leftovers → warm/dusk CABIN
+- **Chose:** in `world3d/World3DCanvas.tsx` + `WorldPostFX.tsx`, swap the hardcoded midnight
+  `PALETTE.nightSunk/nightRaised` used by the "misty sea" floor, ContactShadows, N8AO, and a floor
+  Lightformer → `CABIN.woodWalnut` (warm floor) + `CABIN.duskDeep` (blue-violet shadow/AO); rim light
+  → `CABIN.duskSkylight`; vignette darkness 0.55 → 0.4.
+- **Why:** the lower canvas rendered near-black `#030104` — the banned dead-black-shadow / void.
+  Retinting to warm floor + blue-violet dusk shadow satisfies the §13.2 no-dead-shadow law and gives a
+  warm horizon instead of a void. Verified by pixel sample (`#030104` → `#56251f`).
+- **Note:** the 3D scene is still abstract islands/spheres — geometry (cabin/clearing) is P-A1/P-A2,
+  deliberately out of this value-layer turn.
+
+---
+
+## P-A1 — "Golden Hour in the Clearing" DOM map (art-direction decisions)
+
+**Where the map art lives.** The clearing is authored *inside* the shared `CuriosityMap` component
+(`packages/interest-zone-kit/src/curiosity-map.tsx`), not in the app's `globals.css`. Rationale: the
+map is the shared primary surface, and §3.4 made `MAP_COLOR_SCRIPT`/`CABIN` the map's art contract —
+keeping the illustration in the component that owns the surface preserves identity-continuity with the
+rooms and keeps the app CSS from ballooning. Self-contained via inline SVG + a scoped
+`<style dangerouslySetInnerHTML>` block (no bundler CSS-module support needed; works in jsdom + SSR).
+
+**CSS-only / SVG illustration (not baked sprites).** §6 sanctions "Vector/CSS-only is the fallback if
+baking is deferred." Baking iso cabin sprites offline through a 3D kit is not feasible headless this
+turn, so the clearing is hand-authored SVG + CSS. Chromebook-perfect: pure DOM, ~0 GPU, 0 draw calls.
+
+**Hydration:** inject the stylesheet with `dangerouslySetInnerHTML`, NOT `<style>{cssString}</style>`.
+A `<style>` text-node child is HTML-escaped differently server (`&quot;`) vs client (`"`) → React
+hydration mismatch (it replaced the DOM and broke the first-render liveness probe). Standard fix.
+
+**Composition (impeccable pass): one focal anchor + a legible arc.** The **Lodge with lit hearth** is
+the back-center "you are here" landmark (smaller/higher = further back); the **three workshop cabins**
+sit in a foreground arc (Music left, Code front-center-nearest, Art right). First draft stacked the
+Lodge on the Code cabin at dead-center → two competing focal points + Code's sage identity hidden;
+fixed by separating depth (Lodge top:24% w:15%; Code lot top:88%). Reads as a hamlet: home in back,
+workshops in front.
+
+**Light direction + shadows.** Low sun placed **upper-left**; long **blue-violet** shadows
+(`softShadow #5E5880`, ~42–44% alpha) skew **east/right** off every structure — coherent with the sun
+and with §6 "shadows stretch east." Blue-violet over warm ground blends to muted brown-violet, never
+gray (§13.2). This supersedes any stale dark-instrument decision — Emberwood is warm golden-hour.
+
+**Cabin identity = four channels (§11 no color-only).** hue (terracotta/sage/periwinkle) + SVG
+silhouette/roof feature (chimney / glass-gable + cyan tool-glint / periwinkle skylight) + hanging-sign
+glyph (♪ / </> / brush) + DOM label+verb. Warm amber windows on all (the amber that also burns in the
+Lodge — map↔cabin light continuity). Art is the single **cool** building (periwinkle skylight at dusk).
+
+**Return-glow = signal made visible, not gamified.** voluntary-return → warm pulsing window halo;
+prompted-return → cooler static ring; explored → one-time faint shimmer; new → dimmed, no glow.
+unfinished>0 → a single soft window glint (NO number/streak/star — the "{n} unfinished" text was
+dropped from the visible cabin; the count stays only in the ariaLabel for AT). Active zone → footprint.
+
+**Ambient motion (Pillar F):** tree sway · 4-puff hearth smoke · fireflies (thicken toward dusk via
+`[data-day-offset]`) · ambling cat · ≤3% window flicker · hearth pulse. All gated by BOTH
+`@media (prefers-reduced-motion: reduce)` and `[data-reduced-motion="true"]` (prop from the shell) →
+a calm, complete still, never broken.
+
+**Time-lapse** = a labeled calm control; stepping Right now → week → month lowers the sun a notch,
+cools the sky slightly (small hue-rotate), and brings the fireflies out — the honest synthetic-return
+device on screen, never a countdown.
+
+## P-A2 fix — the Atelier interior, the periwinkle portal, and killing the <Environment> crash
+
+**Procedural IBL replaces the drei `<Environment>` portal EVERYWHERE (not just the room).** The
+intermittent `<EnvironmentPortal>` crash — `Cannot read properties of undefined (reading '0')`, which
+blanks the whole Canvas subtree under `frameloop="demand"` — lived in `World3DCanvas.tsx` (the shared
+overworld canvas, 4 `<Lightformer>`s), NOT only in the room. `world3d/procedural-env.tsx`
+(`ProceduralEnvironment`) bakes a warm/cool equirect gradient once via `PMREMGenerator` and assigns
+`scene.environment` — no portal, no cube-camera, no per-frame render, no race. Both `AtelierRoom` and
+`World3DCanvas` now use it. Overworld env colors: cool `duskSkylight` sky · warm `sparkHi` horizon ·
+`terracotta` floor bounce · warm key bands `sparkHi` (L) + `beacon` (R), `intensity 0.5`. Verified 3
+clean full-page loads, zero page errors (was intermittently crashing).
+
+**`AtelierScene.env` is now the 5-color `EnvColors` shape, not a `Lightformer[]`.** The scene DESCRIBES
+the procedural env it renders (the file's philosophy), and the render/description no longer diverge
+(the divergence was the P-A2 build break: `<ProceduralEnv env={…}>` vs a component that takes spread
+colors). Cohesion test maps `Object.values(scene.env)`.
+
+**The easel canvas IS the doorway = a luminous PERIWINKLE portal (§7.2/§8.2), not a finished warm
+painting.** The room's one deliberately-cool accent (ATELIER_HUE `#6C8CE8`) now lands on the doorway
+object as the single brightest cool focal (`emissive` @1.5 → blooms + tone-map off), so "the one
+obvious glowing doorway" reads unambiguously. The warm sunset brushwork is kept but shrunk to a small
+*started* vignette lower-left + one periwinkle wet stroke — preserving the honest "half-finished" read
+while the portal glows open. (Was: whole canvas a warm parchment landscape → periwinkle invisible.)
+
+## P-A3 — the Sounding Cabin (Music) doorway + composition decisions
+
+**A warm doorway pops by CONTENT + glow-rim, not cool-in-warm.** The Atelier's periwinkle portal read
+as "the door" because it was the one cool accent in a warm room. The Music doorway is deliberately
+WARM (spec §7.2: "a warm door, not a cool one"), so it can't use that trick. Instead it reads as a
+doorway via CONTENT: a bright candle EQ/equalizer + waveform glyph on the console screen → the eye
+parses "live audio software = the studio you open." Reinforced with a soft MUSIC_HUE glow-halo plane
+(emissive 0.75, opacity 0.6) behind the bezel so the monitor *radiates* rather than sits flat.
+
+**Close the room box with a ceiling.** A camera that tilts up in a walled-but-open-topped low-poly room
+looks into the scene background/fog — a near-white void that fails §13.4 cohesion. Fix: a warm dark
+`woodCocoa` ceiling plane ABOVE the exposed beams (y≈5.75, beams at y≈5.1) so the timber still reads
+against it. This is the §2.4 "dark cozy foreground/edges → lit center" composition and matches Ghibli
+cabin ceilings. Applied to Music; carry the same ceiling into the Code cabin.
+
+**Directional key at ~1.05–1.1, not 1.25.** With bloom (threshold 0.9) + hemisphere + point lights
+stacking, a directional key ≥1.2 blows near-camera foreground faces to white. 1.08 keeps the warm key
+read without washing the left frame post. General cabin lighting default going forward.
+
+**Ops: exactly ONE `next dev` at a time.** Multiple dev servers stomp `.next` → 404 static chunks +
+flaky `window.__qa`. Recipe: `pkill -9 -f "next dev"; fuser -k 3400/tcp` before serving; build with
+dev killed (`pnpm --filter @gt100k/interest-lab-app build`).
+
+## P-A4 — The Tinker Workshop (Code cabin interior) art-direction choices
+- **Reused the proven crash-free pattern verbatim:** `code-scene.ts` (testable palette-driven scene
+  description) + `TinkerWorkshopRoom.tsx` (r3f render) mirror music-scene/SoundingCabinRoom exactly —
+  PMREM `ProceduralEnvironment` (no drei `<Environment>` portal → no "reading '0'" crash), one frozen
+  blue-violet `ContactShadows`, warm window key + wood-stove + cool dusk hemisphere fill, lean
+  Bloom→ACES→Vignette. Pure-function room (hooks only in the mounted Stage) so it's test-walkable.
+- **CODE_HUE = HUE_RAMP[1] = #5FB98C (sage).** The code identity hue; lands on the doorway monitor.
+- **THE COLD-BLUE-SCREEN FIX (§6.4/§11 code-room trap):** a solid sage plane at emissive 1.5 +
+  toneMapped-off blooms to a cold CYAN-WHITE slab (the banned outcome). SOLUTION = a **warm-DARK green
+  editor background** (`forestDeep #37503E`) that glows sage at a controlled **0.9 emissive
+  (tone-mapped ON so it reads green, not white)**; the **bright, blooming, legible code lines**
+  (amber/spark/sage/mint/parchment @1.7, toneMapped-off) sit ON the dark screen — "colorful syntax on
+  a warm-dark bg" = the reference read. A soft CODE_HUE halo behind supplies the portal glow rim. This
+  is the general rule for any COOL craft hue on a screen: dark base + controlled glow + bright content,
+  never a full-bright cool plane. (Warm hues like MUSIC_HUE terracotta can bloom bright and still read
+  warm; cool/green hues cannot.)
+- **One doorway, not two (§4.1):** the monitor IS the desk's screen — the single warm-glowing primary.
+  Claude, the keyboard, Sprout, the laptop are lower/matte/non-competing.
+- **Role bindings (alphabetical action sort c_build<c_debug<c_investigate):** [0] c_build → monitor
+  (doorway), [1] c_debug → keyboard/RUN (run-it hero), [2] c_investigate → Sprout (run-the-program).
+- **The one cool practical = verdigris #7F9E8E status-LED on Sprout's dock** (§6.4) — a "light" class,
+  never a screen, so it never trips the no-cold-blue-screen guard.
+- **Camera:** central Coding Desk hero (dx=0), pos [0.1,2.72,9.1] target [0,1.7,-1.2] fov 46.
+- **noColdBlueScreen floor added to the test battery** (code-scene `measureCodeFloors`): every
+  surface-class "screen" prop must be non-blue in both color + emissive — a machine guard on the trap.

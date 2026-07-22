@@ -240,8 +240,11 @@ default groove is armed; a breathing **"▶ tap to start"** pad unlocks `AudioCo
 the grid, quantized, in the child's current instrument voice** — audible next pass, always in time,
 always in tune (v1 §4 guardrails: quantized grid, synthesized/curated kit, pentatonic-locked melody,
 reversible, no fail state). This is a *doorway-depth* teaser, **not** the deep activity — it exists to (a)
-hook, (b) be a provably-live primary action for QA, and (c) seed the `build` cell. It is deliberately
-shallow; **the "why does it sound like that?" depth is behind the door.**
+hook, and (b) be a provably-live **delight** for QA (it moves `stateHash()`; it does **not** call `emit`). It
+is deliberately shallow **and signal-free** (the firewall — juice ≠ signal, aliveness §1.2; reconciliation
+§3): in content-deferred v1 the room emits **zero** `ActivityEvent`s, so only the **coarse domain-return**
+(entering the studio) counts and the `build`/work-mode cells are lit by the deferred content app.
+**The "why does it sound like that?" depth is behind the door.**
 
 ## A.8 The doorway (into Part B)
 
@@ -411,11 +414,13 @@ budget.**
 
 ## C.2 Signal capture across both surfaces (one contract, two return grains)
 
-- **One `emit` sink, two surfaces.** Both the room's taste actions **and** the app's lesson/tool actions
-  call the **same** `RoomProps.emit(ActivityEvent)` with `{ zoneId:"music", domain:"sound_music",
-  workMode, probeId, kind, dayOffset, intervention?, assistive?, withdrawn? }`. The core
-  (`buildReturnGrid`) is **surface-agnostic** — it only sees `{domain, workMode}` — so splitting into two
-  layers does **not** fragment the signal; it **enriches** it.
+- **One `emit` sink.** The **content app's** lesson/tool actions call
+  `RoomProps.emit(ActivityEvent)` with `{ zoneId:"music", domain:"sound_music",
+  workMode, probeId, kind, dayOffset, intervention?, assistive?, withdrawn? }`. **The room's cozy live-taste
+  is signal-free in content-deferred v1** (the firewall, §A.7; reconciliation §3) — the room's only v1 signal
+  is the **coarse domain-return** on studio entry. The core
+  (`buildReturnGrid`) is **surface-agnostic** — it only sees `{domain, workMode}` — so the two
+  layers do **not** fragment the signal; they **enrich** it.
 - **Two return grains (both are `voluntary_return` at day ≥ 7/30, both obey the novelty gate + prompted
   exclusion):**
   1. **World-return** — revisiting the **Music Studio building** on the map after novelty (a directly

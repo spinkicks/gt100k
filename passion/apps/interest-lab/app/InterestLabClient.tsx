@@ -3,6 +3,7 @@
 import type { DeviceCaps, InterestLabView, RenderTier } from "@gt100k/interest-lab-view";
 import { useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { InterestLabCoreShell } from "./InterestLabCoreShell";
 import { QuestWorld } from "./child/QuestWorld";
 import { GuideConsole } from "./guide/GuideConsole";
 import type { GuideAuthoringInput } from "./guide/authoring";
@@ -19,6 +20,8 @@ import {
   resolveHydrationSafeReducedMotionPreference,
 } from "./ui/controls/settings";
 import { detectDeviceCaps } from "./ui/deviceCaps";
+
+export { InterestLabQaBridge } from "./InterestLabQaBridge";
 
 const DEFAULTS = readInterestLabClientDefaults({
   NEXT_PUBLIC_DEFAULT_AGE_BAND: process.env.NEXT_PUBLIC_DEFAULT_AGE_BAND,
@@ -162,6 +165,11 @@ export function InterestLabClient() {
         />
 
         <section className="quest-workspace material" id="interest-lab-content">
+          <InterestLabCoreShell
+            renderTier={activeRenderTier}
+            reducedMotion={reducedMotion}
+            onPerformanceDecline={handlePerformanceDecline}
+          />
           <InterestLabSurface
             view={seed.view}
             onContextLost={handleContextLost}

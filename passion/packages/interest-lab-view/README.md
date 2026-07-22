@@ -53,6 +53,12 @@ Use `plainViewEquals` to compare domain-derived state across surfaces, age bands
 
 ### Composed and domain-derived builders
 
+- `buildCuriosityMapView` builds the primary DOM-map model from registered zone manifests and activity.
+- `buildTimeLapse` builds the deterministic first-session, week-later, and month-later phases.
+- `INITIAL_ZONE_HOST_STATE` and `zoneHostReducer` describe navigation without owning a renderer.
+- `buildZoneActivityModel` creates the canonical, sorted action list shared by a zone's DOM and 3D surfaces.
+- `plainZoneEquals` verifies complete zone-action parity independently of incoming action order.
+- `buildQaSnapshot` exposes the pure `Qa` state read by the app's `window.__qa` adapter.
 - `buildInterestLabView` builds the shared child and guide view.
 - `plainViewEquals` checks one-view parity across presentation modes.
 - `buildProbePickerView` maps Lab offers and return history to child quest cards.
@@ -66,6 +72,7 @@ Use `plainViewEquals` to compare domain-derived state across surfaces, age bands
 ### Art, motion, and staging
 
 - `PALETTE`, `TYPOGRAPHY`, and `HUE_RAMP` hold the visual tokens; `resolveDomainHue` assigns hues from catalog order.
+- `CABIN` holds the Emberwood cozy-cabin material tint palette (warm woods · firelight · forest · cool dusk fills) and `MAP_COLOR_SCRIPT` the golden-hour DOM color script for the 2D Curiosity Map — the warm value + reference layer over the frozen shapes.
 - `WORK_MODE_GLYPHS` maps the fixed work-mode verbs to accessible glyph identifiers.
 - `MOTION` and `EASINGS` hold motion tokens; `resolveMotion` returns animated or reduced equivalents.
 - `resolveChildStaging` returns age-band presentation settings.
@@ -80,7 +87,7 @@ Use `plainViewEquals` to compare domain-derived state across surfaces, age bands
 - `resolveRenderTier` and `resolveQualityTier` choose presentation from device capabilities and user flags.
 - `buildSceneView` combines Lab offers, return history, camera state, and tier settings into a deterministic `SceneView`.
 
-The entry point exports the view-model types used by these functions, including `AgeBand`, `DeviceCaps`, `RenderTier`, `QualityTier`, `ChildStaging`, `MotionToken`, `ProbeCardView`, `ProbePickerView`, `SceneView`, `QuestMarkerView`, `IslandView`, `CameraView`, `EvidenceConstellationView`, `CoverageMatrixView`, `ExplanationsView`, `ReturnTimelineView`, `LifecycleStateView`, `RevisionHistoryView`, and `InterestLabView`.
+The entry point exports the view-model types used by these functions, including `AgeBand`, `DeviceCaps`, `RenderTier`, `QualityTier`, `ChildStaging`, `MotionToken`, `ProbeCardView`, `ProbePickerView`, `SceneView`, `QuestMarkerView`, `IslandView`, `CameraView`, `EvidenceConstellationView`, `CoverageMatrixView`, `ExplanationsView`, `ReturnTimelineView`, `LifecycleStateView`, `RevisionHistoryView`, `InterestLabView`, `ZoneId`, `MapBuildingView`, `CuriosityMapBuilding`, `CuriosityMapReturnState`, `CuriosityMapView`, `TimeLapsePhaseId`, `TimeLapsePhase`, `TimeLapseView`, `ZoneHostAction`, `ZoneHostState`, `ZoneActionModel`, `ZoneActivityManifest`, `ZoneActivityModel`, `QaInteractive`, and `Qa`.
 
 ## Guardrails
 

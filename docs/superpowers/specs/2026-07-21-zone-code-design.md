@@ -1,3 +1,10 @@
+> # ⚠️ SUPERSEDED — DO NOT BUILD FROM THIS FILE
+> This v1 single-surface design is **superseded** by:
+> - **[`2026-07-21-zone-code-design-v2.md`](./2026-07-21-zone-code-design-v2.md)** — the current two-layer (discovery world + content app) design, and
+> - **[`2026-07-21-cabin-interior-code.md`](./2026-07-21-cabin-interior-code.md)** — the enriched, buildable **"Tinker Workshop"** interior (a real kid-recognizable computer + **Sprout** the codeable robot + a **Claude** AI desk-buddy + the **"Coding Desk"** doorway).
+>
+> Kept only for git history. **Canonical bindings now:** domain = **`symbols_math`** (not the `computation` used below); doorway = **The Coding Desk** (not the "Build Bench"); robot = **Sprout** (recast of "Pip"). If anything below disagrees with the v2 / cabin specs or [`2026-07-21-interest-lab-reconciliation.md`](./2026-07-21-interest-lab-reconciliation.md), **those win.**
+
 # Code Lab — Zone Design (domain: `computation`)
 
 **Date:** 2026-07-21 · **Owner:** David · **Lane:** 3 (parallel zone loop) · **Implements:**

@@ -105,6 +105,42 @@ const expectVectorClose = (actual: Vector3, expected: Vector3): void => {
   });
 };
 
+describe("scene warm art pack", () => {
+  it("pins the exact Emberwood warm golden-hour SCENE3D values (never midnight)", () => {
+    // The banned v1 midnight pack was #181026. Lock the warm cabin values (art bible §3.2) so the
+    // world can never regress to the banned moody/night default.
+    expect(SCENE3D).toEqual({
+      bgHex: "#E6D2A2",
+      fogHex: "#E0C79A",
+      fogNear: 14,
+      fogFar: 46,
+      ambientHex: "#52402E",
+      ambientIntensity: 0.38,
+      hemiSkyHex: "#A9C2E8",
+      hemiGroundHex: "#C67B48",
+      hemiIntensity: 0.52,
+      keyHex: "#FFD8A3",
+      keyIntensity: 1.2,
+      keyPos: [6, 8, 5],
+      toneMapping: "ACESFilmic",
+      exposure: 1.05,
+      markerEmissiveHex: "#FF9E5E",
+      markerEmissiveRest: 0.35,
+      markerEmissivePulse: 0.5,
+      bloomPeak: 1.4,
+    });
+  });
+
+  it("keeps the dusk-blue skylight fill cooler than the warm ground bounce (no dead shadow)", () => {
+    // Pillar B firelight law: the hemisphere sky must be COOL (high blue) and the ground WARM
+    // (high red) so shadowed surfaces resolve blue-violet, never gray.
+    const blue = (hex: string) => Number.parseInt(hex.slice(5, 7), 16);
+    const red = (hex: string) => Number.parseInt(hex.slice(1, 3), 16);
+    expect(blue(SCENE3D.hemiSkyHex)).toBeGreaterThan(red(SCENE3D.hemiSkyHex));
+    expect(red(SCENE3D.hemiGroundHex)).toBeGreaterThan(blue(SCENE3D.hemiGroundHex));
+  });
+});
+
 describe("scene layout", () => {
   it("places the eight seed domains on the catalog-ordered golden ring deterministically", () => {
     const first = resolveIslandLayout(SEED_DOMAINS);

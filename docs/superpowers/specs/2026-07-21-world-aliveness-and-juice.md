@@ -106,8 +106,10 @@ nothing is making them* — reveals an emerging interest, and that **rewarding t
   or won't use them loses nothing measurable.
 
 **QA enforces this as a negative assertion** ([§14](#14-verification-battery)): a scripted round-trip fires
-every micro-interaction and asserts `window.__qa.getEmittedSignals()` records **zero** new events from
-them. A delight that leaks a signal is an **instant fail**.
+every micro-interaction and asserts `window.__qa.getEmittedSignals()` records **zero** new events from them
+(this is an **additive QA-only accessor** on top of the frozen core §7 `window.__qa`, not a contract change —
+equivalently, assert the frozen `grid()` / `stateHash()` stay **unchanged**). A delight that leaks a signal
+is an **instant fail**.
 
 ---
 
@@ -469,7 +471,7 @@ shipped `canHoverQuestMarker("touch") === false`), so touch relies on the press 
 
 ### 7.5 The doorway-object handshake
 
-Inside the room, the **doorway object** (the console screen / the Build Bench blueprint+GO key / the easel
+Inside the room, the **doorway object** (the console screen / the Coding Desk's warm glowing monitor / the easel
 portal) is **owned by the zone specs** and is the one thing that *does* emit + open content later. The
 aliveness layer's job is only the **frame around it**: the warm reveal, the composed camera settle, the
 "this is the one warm thing to do" glow-pulse grammar, and the guilt-free exit. This doc never turns the

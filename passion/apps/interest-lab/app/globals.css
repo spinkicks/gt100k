@@ -2416,3 +2416,210 @@ footer {
     backdrop-filter: none;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════
+   EMBERWOOD — warm golden-hour theme, scoped to the CHILD world surface ONLY.
+   The guide console keeps the midnight PALETTE (a professional evidence surface, dark by
+   design + pinned contrast goldens). The child surface is a cozy clearing at golden hour
+   (art bible §6): a cream→peach sky, warm-plaster cards, dark warm-wood ink. We remap the
+   shell tokens on the child wrapper so every descendant inherits warm values (no per-
+   selector rewrite), then warm the few hardcoded dark panels that the remap can't reach.
+   ══════════════════════════════════════════════════════════════════════════════════════ */
+/* Warm the html base too, so a tall page never reveals the midnight --night-sunk behind the
+   viewport-sized body glow (otherwise the banned #120b1e leaks below the fold). */
+html:has(.interest-lab-client[data-active-surface="child"]) {
+  background: #e89a63;
+}
+
+body:has(.interest-lab-client[data-active-surface="child"]) {
+  background:
+    radial-gradient(140% 90% at 50% -12%, #fceac2 0%, #f7c489 46%, #f4b074 74%, #e89a63 100%);
+}
+
+.interest-lab-client[data-active-surface="child"] {
+  color-scheme: light;
+  /* `color` is set on <body> (outside this scope) so it resolves the ROOT light ink and
+     inherits down as a literal — headings (h1/h2) that don't redeclare color would stay pale.
+     Re-declaring color here re-resolves --ink-hi to the warm value for the whole child subtree. */
+  color: var(--ink-hi);
+  /* warm woods + plaster remap of the shell's neutral ramp */
+  --night: #f2e2bc; /* warm cream "paper" base */
+  --night-raised: #fbf0d6; /* lifted warm card */
+  --night-sunk: #e7d2a6; /* recessed warm */
+  --ink-hi: #4a3320; /* wood.cocoa — dark warm ink (≈9:1 on cream) */
+  --ink-muted: #6b4a2e; /* wood.walnut — muted ink (≈6:1 on cream) */
+  --surface-translucent: rgb(250 238 210 / 88%);
+  --surface-solid: #fbf0d6;
+  --line: rgb(107 74 46 / 26%); /* walnut hairline */
+  --line-strong: rgb(74 51 32 / 46%);
+  /* --spark #FF9E5E and --beacon #FFD166 are already the firelight amber — kept */
+}
+
+/* Warm the hardcoded dark panels that live on the child surface (token remap can't reach a
+   baked hex). These read blue-violet-dark on midnight; here they become warm plaster so the
+   surface stays coherent (Pillar A) rather than half-warm/half-dark asset-soup. */
+.interest-lab-client[data-active-surface="child"] .status-pill,
+.interest-lab-client[data-active-surface="child"] .hud-status,
+.interest-lab-client[data-active-surface="child"] .quest-ledger {
+  background: rgb(250 238 210 / 90%);
+  color: var(--ink-muted);
+}
+
+/* Soften the theme's near-black drop shadows to a warm walnut for the child cards, so depth
+   reads as golden-hour shade (blue-violet/brown), never a muddy black hole (Pillar B). */
+.interest-lab-client[data-active-surface="child"] .quest-workspace,
+.interest-lab-client[data-active-surface="child"] .material {
+  box-shadow: 0 1px 0 rgb(255 255 255 / 55%) inset, 0 18px 44px -26px rgb(74 51 32 / 46%);
+}
+
+/* DELTA #6 — the "Focus a quest below" hint pill was the last baked-midnight chip (rgb(18 11 30))
+   floating over the 3D canvas; warm it to a golden-hour glass plate so nothing reads night-default. */
+.interest-lab-client[data-active-surface="child"] .quest-world-instruction {
+  background: rgb(250 238 210 / 90%);
+  color: var(--ink-muted);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 55%) inset, 0 10px 24px -16px rgb(74 51 32 / 55%);
+}
+.interest-lab-client[data-active-surface="child"] .quest-world--3d .quest-ledger {
+  background: rgb(250 238 210 / 94%);
+}
+
+/* DELTA #7 — the eyebrow/section labels rendered in pale --spark-hi (#FFC08A), near-invisible on
+   cream. Re-tint to warm walnut so "Interest Lab · synthetic preview" / "Choose what to try" read. */
+.interest-lab-client[data-active-surface="child"] .context-line,
+.interest-lab-client[data-active-surface="child"] .surface-name {
+  color: var(--ink-muted);
+}
+
+/* P-A2 — the doorway room stage. The frozen CanvasHost renders <div data-canvas-host><Canvas/></div>
+   with no size of its own, so give it a composed golden-hour panel: you look *through the cabin door*
+   into the firelit Atelier. Warm walnut frame + soft inset so the 3D warm haze meets the cream page
+   cleanly (never a 0px strip, never a black rectangle). */
+.interest-lab-client[data-active-surface="child"] [data-canvas-host="true"] {
+  position: relative;
+  width: 100%;
+  max-width: 62rem;
+  margin: 1.25rem auto 0;
+  aspect-ratio: 16 / 10;
+  border-radius: 20px;
+  overflow: hidden;
+  background: radial-gradient(120% 100% at 32% 24%, #f3ddac 0%, #e6d2a2 58%, #d3b982 100%);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 55%) inset,
+    0 24px 54px -28px rgb(74 51 32 / 58%),
+    0 0 0 7px rgb(107 74 46 / 24%);
+}
+.interest-lab-client[data-active-surface="child"] [data-canvas-host="true"] canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ── Board-2D tier (low-end devices + reduced-motion) — the accessible peer, made real ──
+   In this tier the frozen CanvasHost mounts an EMPTY <canvas> (ZoneRoom returns null for board-2d)
+   and, below it, the zone's ActivityDOM <fieldset>. Left alone that reads as a giant cream void
+   over three bare buttons — a §11 "cold/empty room" + "lesser flat menu" + a broken reduced-motion
+   still. So here we HIDE the empty canvas and dress the fieldset into a warm, cozy affordance board:
+   a true peer that still lets the child choose what to try, the primary "doorway" action
+   emphasised — a calm still, never a lesser flat menu. Scoped to the board-2d tier only, so the
+   room-3d / room-3d-lite canvas is untouched. */
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"] {
+  aspect-ratio: auto;
+  padding: 1.15rem 1.25rem 1.35rem;
+}
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > div:has(canvas) {
+  display: none;
+}
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  min-inline-size: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem;
+}
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset::before {
+  content: "Step inside";
+  grid-column: 1 / -1;
+  margin-bottom: 0.1rem;
+  font-weight: 640;
+  font-size: 0.98rem;
+  letter-spacing: 0.01em;
+  color: #6b4a2e;
+}
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset
+  button {
+  cursor: pointer;
+  text-align: left;
+  padding: 0.85rem 0.95rem;
+  border-radius: 14px;
+  border: 1px solid rgb(107 74 46 / 22%);
+  background: linear-gradient(155deg, #fdf1d4 0%, #f3ddac 62%, #eccf98 100%);
+  color: #5a3d26;
+  font-size: 1.02rem;
+  font-weight: 600;
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 70%) inset,
+    0 10px 22px -16px rgb(74 51 32 / 55%);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset
+  button::after {
+  content: "→";
+  float: right;
+  opacity: 0.45;
+  font-weight: 700;
+}
+/* Primary action = the warm "doorway" (emphasised, glowing), mirroring the 3D easel. */
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset
+  button[data-primary="true"] {
+  background: linear-gradient(155deg, #ffe6bf 0%, #f7c489 58%, #eda86a 100%);
+  border-color: rgb(196 116 54 / 45%);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 75%) inset,
+    0 14px 26px -14px rgb(150 82 40 / 60%),
+    0 0 0 3px rgb(240 176 116 / 30%);
+}
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset
+  button[data-primary="true"]::after {
+  opacity: 0.8;
+}
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset
+  button:hover,
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset
+  button:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgb(196 116 54 / 55%);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 80%) inset,
+    0 18px 30px -14px rgb(74 51 32 / 60%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:has(.interest-lab-client[data-active-surface="child"]) {
+    background:
+      radial-gradient(140% 90% at 50% -12%, #fceac2 0%, #f7c489 46%, #f4b074 74%, #e89a63 100%);
+  }
+}

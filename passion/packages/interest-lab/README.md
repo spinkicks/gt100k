@@ -38,6 +38,7 @@ Domains come from the injected catalog. The package fixes the nine work-mode ver
 ## Public API
 
 - Lab assembly: `buildLab`, `DEFAULT_LAB_CONFIG`, `buildCoverageMatrix`, `isProbeEligible`, `selectEligibleFamilyVariants`, and `rotateBySeed`.
+- Shared-core activity engine: `buildReturnGrid`, `DEFAULT_RETURN_GRID_CONFIG`, `toEngagementEvents`, and `buildRevisableHypothesis`; return and hypothesis reads are deterministic, label-free, and covered by exact synthetic goldens.
 - Event and signal projection: `recordEvent`, `summarizeSignals`, `EVENT_TYPES`, and `SIGNAL_FAMILIES`.
 - Hypothesis records: `createHypothesis`, `appendRevision`, and `currentFor`.
 - Lifecycle: `evaluateCandidateGate`, `applyMissingData`, `proposeTransition`, `authorRevision`, and `LEGAL_TRANSITIONS`.

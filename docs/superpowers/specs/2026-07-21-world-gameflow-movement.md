@@ -377,8 +377,9 @@ Because learning content is deferred (reconciliation §5/§7), the doorway objec
 QA gate, core-spec SC-CORE-14).
 
 - **It glows and invites.** The doorway object (the Sounding Cabin's lit gramophone horn / the Tinker
-  Workshop's blueprint-hologram + brass GO key / the Atelier's luminous periwinkle canvas — art bible §8.2)
-  rests at `markerEmissiveRest` and breathes to `…Pulse` in the domain hue — the single obvious focal point.
+  Workshop's Coding Desk — the warm glowing monitor + amber RUN key / the Atelier's luminous periwinkle canvas
+  — art bible §8.2) rests at `markerEmissiveRest` and breathes to `…Pulse` in the domain hue — the single obvious
+  focal point.
 - **It responds, honestly.** Selecting it eases the camera in and plays a **warm acknowledgment**: the
   object pulses, the room brightens a touch, a soft chime, and an **honest** line appears —
   *"The studio's warming up — new things are coming. For now, look around."* (copy is honest about deferral;
@@ -581,8 +582,9 @@ wayfinding" lesson).
 
 - **The Lodge = "you are here."** Center of the clearing, the always-lit hearth, the traveler's home; the
   one unambiguous anchor. A soft footprint/marker shows the **last-entered cabin**.
-- **Labels + one verb.** Every cabin shows **name + one enter-verb** ("**The Sounding Cabin** · *Step
-  inside*") as DOM text (never baked into the sprite) — World-1-1 clarity.
+- **Labels + one verb.** Every cabin shows its **craft-name `label` + one enter-verb** ("**Music Studio** · *Step
+  inside*") as DOM text (never baked into the sprite) — World-1-1 clarity; the button reads the craft (child/AT
+  legibility; core §8.6), while the cabin's proper name ("The Sounding Cabin") rides on its sign.
 - **Return-glow (ambient, NOT a score).** A cabin the child came back to *unprompted* gets a gentle warm
   window-halo (`voluntary-return`); a **prompted** return gets a cooler, quieter cue (`prompted-return`); a
   first visit shows a fading **"new"** shimmer (`explored`). **No number, streak, star, or score ever sits on
@@ -673,7 +675,7 @@ Movement must never cost what the art can't afford (art bible §9; world-visual-
 | Map traversal | **DOM only** — avatar is a transform/`motion` tween along a baked spline; Canvas **asleep** on the clearing (~0 GPU) |
 | Room loop | one persistent `<Canvas frameloop="demand">`; idle room ≈ 0 GPU; `dpr ≤ 1.5`; `<50` draw calls; frozen shadows |
 | Transition | preload GLB under the wipe; reveal on `ready`; **never** remount the Canvas |
-| `RenderTier` map | `quest-world-3d` → full room; `quest-world-3d-lite` → room-3d-lite (fewer motes, no bloom); `board-2d` → **`ActivityDOM` room + the DOM map** (the a11y floor); **the clearing + stroll are identical DOM at every tier** |
+| `RenderTier` map | legacy shipped `quest-world-3d` → `room-3d` (full room); `quest-world-3d-lite` → `room-3d-lite` (fewer motes, no bloom); `board-2d` → **`ActivityDOM` room + the DOM map** (the a11y floor). Room-facing names are the frozen `RoomProps.tier` (`room-3d` \| `room-3d-lite`); **the clearing + stroll are identical DOM at every tier** |
 | Reduced-motion | strolls/wipes/camera → instant cuts; ambient motion → calm still; motes off (`resolveMotion(...,{reducedMotion:true})`) |
 | Coarse-pointer / touch | targets ≥ `ChildStaging.touchTargetPx`; tap-to-walk with tap-again-to-skip |
 

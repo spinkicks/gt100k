@@ -1,10 +1,11 @@
 "use client";
 
-import { CAMERA3D, PALETTE, type SceneView } from "@gt100k/interest-lab-view";
-import { AdaptiveDpr, ContactShadows, Environment, Lightformer } from "@react-three/drei";
+import { CABIN, CAMERA3D, PALETTE, type SceneView } from "@gt100k/interest-lab-view";
+import { AdaptiveDpr, ContactShadows } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { type ReactNode, useEffect, useMemo } from "react";
 import { ACESFilmicToneMapping } from "three";
+import { ProceduralEnvironment } from "./procedural-env";
 import { WorldPostFX } from "./WorldPostFX";
 
 // Grounding + rig constants for the "Curiosity Quest World" dusk atelier (see .loop/decisions.md D-VP1).
@@ -114,69 +115,43 @@ export function World3DCanvas({ scene, children, onContextLost }: World3DCanvasP
         intensity={scene.scene3d.keyIntensity}
         position={scene.scene3d.keyPos}
       />
-      {/* Cool tide rim/back light — separates the warm islands from the plum night and
-          traces their silhouettes, completing the key + fill + rim rig. */}
+      {/* Cool dusk-blue rim/back light — the Pillar B cool fill; separates the warm islands
+          from the golden haze and traces their silhouettes, completing key + fill + rim. */}
       <directionalLight
-        color={PALETTE.tide}
+        color={CABIN.duskSkylight}
         intensity={RIM_LIGHT_INTENSITY}
         position={RIM_LIGHT_POSITION}
       />
-      {/* Local image-based ambient built from palette Lightformers — no remote HDRI fetch,
-          bakes once (frames=1). This lifts the matte island materials into readable PBR and
-          removes the flat, self-lit "gray primitive" look. */}
-      <Environment
-        frames={1}
-        resolution={256}
-        background={false}
-        environmentIntensity={ENVIRONMENT_INTENSITY}
-      >
-        <Lightformer
-          form="rect"
-          intensity={2.2}
-          color={PALETTE.beacon}
-          scale={[18, 10, 1]}
-          position={[9, 9, 6]}
-          rotation={[0, -Math.PI / 4, 0]}
-        />
-        <Lightformer
-          form="circle"
-          intensity={1.4}
-          color={PALETTE.sparkHi}
-          scale={[12, 12, 1]}
-          position={[0, 13, 2]}
-          rotation={[Math.PI / 2, 0, 0]}
-        />
-        <Lightformer
-          form="rect"
-          intensity={1.1}
-          color={PALETTE.tide}
-          scale={[16, 9, 1]}
-          position={[-9, 6, -6]}
-          rotation={[0, Math.PI / 3, 0]}
-        />
-        <Lightformer
-          form="rect"
-          intensity={0.5}
-          color={PALETTE.nightRaised}
-          scale={[26, 26, 1]}
-          position={[0, -8, 0]}
-          rotation={[-Math.PI / 2, 0, 0]}
-        />
-      </Environment>
-      {/* Misty sea — a faintly glowing floor the islands hover over; its far edge dissolves
-          into the dusk fog, giving the world a horizon instead of a void. */}
+      {/* Local image-based ambient — a warm/cool equirect gradient baked ONCE via PMREM (cool dusk
+          sky above → warm terracotta floor bounce below, warm peach + golden key bands at the
+          horizon). This lifts the matte island materials into readable PBR and removes the flat,
+          self-lit "gray primitive" look. Replaces the drei <Environment><Lightformer/> portal, whose
+          cube-camera setup intermittently threw "Cannot read properties of undefined (reading '0')"
+          → a BLANK canvas under frameloop="demand" (see procedural-env.tsx). No portal, no race. */}
+      <ProceduralEnvironment
+        cool={CABIN.duskSkylight}
+        warm={PALETTE.sparkHi}
+        floor={CABIN.terracotta}
+        accentL={PALETTE.sparkHi}
+        accentR={PALETTE.beacon}
+        intensity={ENVIRONMENT_INTENSITY}
+      />
+      {/* Warm forest floor — a soft golden-hour ground the islands rest on; its far edge
+          dissolves into the honey fog, giving the world a warm horizon instead of a black void
+          (was the banned midnight #120b1e sea). Warm walnut, faint ember glow in the mist. */}
       <mesh receiveShadow={scene.quality.shadows} rotation={[-Math.PI / 2, 0, 0]} position={[0, SEA_Y, 0]}>
         <circleGeometry args={[SEA_RADIUS, 64]} />
         <meshStandardMaterial
-          color={PALETTE.nightSunk}
-          emissive={PALETTE.nightRaised}
-          emissiveIntensity={0.08}
+          color={CABIN.woodWalnut}
+          emissive={CABIN.terracotta}
+          emissiveIntensity={0.1}
           metalness={0.1}
           roughness={0.95}
         />
       </mesh>
-      {/* Soft contact shadows ground the floating islands on the sea. Full tier only,
-          matching the existing shadow budget; blurred + tinted to the deep-night palette. */}
+      {/* Soft contact shadows ground the floating islands on the warm floor. Full tier only,
+          matching the existing shadow budget; tinted to the cool dusk-blue-violet so shadows
+          read blue-violet, NEVER dead black (Pillar B / §13.2 shadow-color law). */}
       {scene.quality.shadows ? (
         <ContactShadows
           position={[0, SEA_Y + 0.02, 0]}
@@ -185,7 +160,7 @@ export function World3DCanvas({ scene, children, onContextLost }: World3DCanvasP
           far={8}
           blur={2.8}
           opacity={0.55}
-          color={PALETTE.nightSunk}
+          color={CABIN.duskDeep}
         />
       ) : null}
       <AdaptiveDpr />

@@ -1,3 +1,10 @@
+> # ⚠️ SUPERSEDED — DO NOT BUILD FROM THIS FILE
+> This v1 single-surface "Groovebox" design is **superseded** by:
+> - **[`2026-07-21-zone-music-design-v2.md`](./2026-07-21-zone-music-design-v2.md)** — the current two-layer (discovery world + content app) design, and
+> - **[`2026-07-21-cabin-interior-music.md`](./2026-07-21-cabin-interior-music.md)** — the enriched, buildable **"Sounding Cabin"** interior (the piano hero · the hi-fi listening corner · the production-nook screen doorway).
+>
+> Kept only for git history. **Canonical binding now:** domain = **`sound_music`** (not the `"audio"` used below). If anything below disagrees with the v2 / cabin specs or [`2026-07-21-interest-lab-reconciliation.md`](./2026-07-21-interest-lab-reconciliation.md), **those win.**
+
 # Interest Lab — Zone: Music Studio (design)
 
 **Date:** 2026-07-21 · **Owner:** David · **Zone:** `passion/packages/interest-zone-music`
