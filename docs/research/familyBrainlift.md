@@ -25,7 +25,7 @@ The child's intake score is a floor, and the standard eight-year cost is another
 **Backing:** Pinquart & Ebeling (2020); Hill & Tyson (2009); Fan & Chen (2001). Honest limit: this evidence is correlational with moderate effects, so I treat family commitment as the best available pre-enrollment signal, not a guarantee.
 
 ### SPOV 2: Twin studies can't see the home I select for.
-"Shared environment barely moves IQ" holds only across ordinary homes. Polderman's own number is a 17% shared-environment share on average, not zero, and it climbs where environments actually differ: adopting a child out of a deprived home into a rich one moves measured IQ by double digits, and shared environment dominates in low-resource homes. No twin sample contains an all-in home that strips distraction and runs the dose for eight years, so the estimate is blind to it. I am not claiming I raise a child's adult IQ ceiling. I am claiming the all-in home converts a given ceiling into the SAT and AP achievement that ordinary homes leave on the table.
+"Shared environment barely moves IQ" holds only across ordinary homes. Polderman's own number is a 17% shared-environment share on average, not zero, and it climbs where environments differ: adopting a child out of a deprived home into a rich one moves measured IQ by double digits, and shared environment dominates in low-resource homes. No twin sample contains an all-in home that strips distraction and runs the dose for eight years, so the estimate is blind to it. I am not claiming I raise a child's adult IQ ceiling. I am claiming the all-in home converts a given ceiling into the SAT and AP achievement that ordinary homes leave on the table.
 
 **Consensus it breaks:** the field reads "low shared-environment heritability" as "the home does not matter."
 **Backing:** Polderman et al. (2015); Capron & Duyme (1989); Turkheimer et al. (2003). Honest limit: the strongest gene-by-SES effect is a US low-income finding, and the Wilson effect shows heritability rises with age, so I scope the claim to childhood achievement rather than the adult ceiling.
@@ -94,7 +94,7 @@ The real objection is not that the child ends up unhappy. The long-term accelera
 
 ### Edward Deci and Richard Ryan
 - **Who:** Psychologists, University of Rochester; founders of Self-Determination Theory.
-- **Focus:** Autonomy, intrinsic motivation, and how external goals become genuinely one's own.
+- **Focus:** Autonomy, intrinsic motivation, and how external goals become one's own.
 - **Why follow:** SDT is the mechanism behind SPOV 5's answer to the consent objection.
 - **Where:** https://selfdeterminationtheory.org
 
@@ -167,7 +167,7 @@ The real objection is not that the child ends up unhappy. The long-term accelera
 - DOK 1 facts:
   - French cross-fostering design crossing biological and adoptive-parent SES.
   - Being raised in a high-SES vs. low-SES adoptive home shifted childhood IQ by roughly 12 points, at both high and low biological backgrounds.
-- DOK 2 summary: The cleanest evidence that rearing environment moves measured IQ by double digits when the environments genuinely differ. It shows the home lever is real, and it is largest across a wide environmental range, which is the range twin samples miss.
+- DOK 2 summary: The cleanest evidence that rearing environment moves measured IQ by double digits when the environments differ. It shows the home lever is real, and it is largest across a wide environmental range, which is the range twin samples miss.
 - Link: https://doi.org/10.1038/340552a0
 
 **Turkheimer et al. (2003). Socioeconomic status modifies heritability of IQ in young children. *Psychological Science*, 14(6), 623–628.**
@@ -184,7 +184,7 @@ The real objection is not that the child ends up unhappy. The long-term accelera
   - 444 Chinese American families across three waves over eight years.
   - Profiles: supportive (~45%), tiger (~28%), easygoing, harsh.
   - Supportive parenting produced the best outcomes; children of tiger parents had lower GPA and attainment and more depressive symptoms than children of supportive parents.
-- DOK 2 summary: The study SPOV 3 must obey. Warm-and-demanding beat cold-controlling on the very outcome the program cares about. "Recruit the obsessive parent" only survives if obsession means committed and warm.
+- DOK 2 summary: The study SPOV 3 must obey. Warm-and-demanding beat cold-controlling on the outcome the program cares about. "Recruit the obsessive parent" only survives if obsession means committed and warm.
 - Link: https://doi.org/10.1037/a0030612
 
 **Poropat (2009). A meta-analysis of the five-factor model of personality and academic performance. *Psychological Bulletin*, 135(2), 322–338.**
@@ -205,7 +205,7 @@ The real objection is not that the child ends up unhappy. The long-term accelera
 - DOK 1 facts:
   - Excessive achievement pressure now sits among the top risk factors for adolescent mental health, alongside poverty and trauma.
   - The damage runs through self-worth made contingent on performance.
-- DOK 2 summary: The harm objection and the "hazard" framing in one place. Intensity is genuinely dangerous when worth rides on results, which is the exact channel a program can design against while keeping expectations high.
+- DOK 2 summary: The harm objection and the "hazard" framing in one place. Intensity is dangerous when worth rides on results, which is the exact channel a program can design against while keeping expectations high.
 - Link: https://doi.org/10.1037/amp0000556
 
 ### The household as the committed unit (SPOV 4)
@@ -251,7 +251,7 @@ The real objection is not that the child ends up unhappy. The long-term accelera
 - DOK 1 facts:
   - Autonomy, competence, and relatedness support drive motivation quality.
   - Organismic Integration Theory describes how external goals internalize along a continuum toward autonomous, integrated regulation.
-- DOK 2 summary: The mechanism by which a goal introduced by a family becomes genuinely the child's own. It is the backbone of the claim that consent here can be real rather than imposed.
+- DOK 2 summary: The mechanism by which a goal introduced by a family becomes the child's own. It is the backbone of the claim that consent here can be real rather than imposed.
 - Link: https://doi.org/10.1037/0003-066X.55.1.68
 
 **Vallerand et al. (2003). Les passions de l'âme: on obsessive and harmonious passion. *Journal of Personality and Social Psychology*, 85(4), 756–767.**
@@ -273,7 +273,7 @@ The real objection is not that the child ends up unhappy. The long-term accelera
 **Robertson, Smeets, Lubinski & Benbow (2010). Beyond the threshold hypothesis. *Current Directions in Psychological Science*, 19(6), 346–351.**
 - DOK 1 facts:
   - Within the top 1% of ability, more ability still predicted more elite output, with no threshold.
-- DOK 2 summary: Ability keeps paying off even among the gifted, which is why the child's score is a real floor worth setting. It supports "floor on the child, rank on the family" and warns against dismissing the score entirely.
+- DOK 2 summary: Ability keeps paying off even among the gifted, which is why the child's score is a real floor worth setting. It supports "floor on the child, rank on the family" and warns against dismissing the score.
 - Link: https://doi.org/10.1177/0963721410391442
 
 **Macnamara, Hambrick & Oswald (2014). Deliberate practice and performance: a meta-analysis. *Psychological Science*, 25(8), 1608–1618.**
