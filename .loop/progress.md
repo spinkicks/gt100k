@@ -175,3 +175,56 @@ add a dark dressing element (bookshelf, coat-rack) to frame the far-left edge (t
   (that's the §11 trap for a code room); the little robot is **Sprout** + a **Claude** desk-buddy;
   language toys/books; distinct **glass-gable** roofline read. THEN create `.loop-done` (all three cabins).
 - Do NOT redo the clearing/Atelier/Music — they are gate-verified. Extend to Code, then polish deltas.
+
+## Done this turn — P-A4 (the Tinker Workshop / CODE interior PROVEN + polished to the bar) — LAST CABIN
+Built the final stub cabin (`code`, domain `symbols_math`) to the bar, reusing the proven crash-free
+`ProceduralEnvironment` + scene-description pattern (copied music-scene→`code-scene.ts`,
+SoundingCabinRoom→`TinkerWorkshopRoom.tsx`). Wired `codeStub`→`TinkerWorkshopRoom` in `app/zones.ts`
+(zone id "code"). Added `test/code-room.test.ts` (7 tests). "The Tinker Workshop" = a cozy warm log
+workshop where a kid codes: a central honey-wood **Coding Desk** with a real kid-recognizable computer.
+- **PROVED it renders** (`pA4-code.png`, 0 console/page errors, liveness ✓: entering Code flips
+  activeZoneId→"code"; c_build/c_debug/c_investigate all live). RM → calm accessible "Step inside"
+  Build/Debug/Investigate DOM peer (`pA4-code-reducedmotion.png`).
+- **DEFEATED the §11/§6.4 cold-blue-screen trap (the top delta):** a solid sage plane bloomed to a cold
+  cyan-white slab. FIXED with a warm-DARK green editor bg (forestDeep) glowing controlled sage @0.9
+  (tone-mapped → green not white) + bright blooming legible code lines (amber/spark/sage/mint) + a green
+  leaf output + blinking amber cursor → reads unmistakably as "a computer showing colorful code," warm.
+- **Polished deltas 2+3:** darkened the pale left wall (chink woodDrift→woodOak + a dark forestDeep
+  coding poster) · shifted the golden shaft left + softened it so it no longer bisects the monitor ·
+  enlarged Claude the AI desk-buddy (eyes + smile + mint LED).
+- Gate GREEN: root typecheck (tsc -b) ✅ · **103 tests** ✅ (code 7 · music 7 · atelier 5 · qa-bridge 3
+  · +) · **app production build ✅** · 0 errors motion+RM.
+
+## Self-score (§12, pA4-code.png vs §7 "The Sunlit Coding Nook" + reference bar) — anchored 10/7/4/2
+- Room cohesion & warmth: **8** (one cohesive golden-hour log workshop; all on §3; no dead gray).
+- Reads as CODE in ≤1s / doorway legibility: **8** (warm-dark sage editor showing colorful code + a
+  green leaf output + amber cursor = unmistakable "step up to the desk"; NOT cold-blue, NOT a steampunk
+  shop, NOT an RGB battlestation — the three §11 code traps all avoided).
+- Golden shaft + motes: **7** (soft warm beam onto the rug; drifting motes).
+- Dressing density / lived-in: **8** (~90 objects, 15 surface classes: desk · monitor · keyboard ·
+  laptop · Claude · Sprout+blocks · nook+books · wall-of-ideas · shelf · hearth · window · plants ·
+  textiles · life — far past ≥40/≥6).
+- Firelight / warm sources: **7** (wood-stove firebox+flame @3.0–3.2 · window spill · lamps ·
+  string-lights · RUN key · shelf lamp).
+- Blue-violet shadow: **pass** (frozen ContactShadows duskShadow, isBlueViolet asserted).
+- No cold-blue screen: **pass** (machine-guarded — every "screen" prop non-blue in color + emissive).
+- Ambient life: **7** (fire flicker · Biscuit breathing · plant sway · cursor blink · Claude idle bob · motes).
+- Accessibility + liveness: **8** (aria-hidden canvas HAS a DOM peer; 3 actions live; 0 errors; calm RM still).
+- Chromebook perf: **8** (≤1 frozen shadow-caster, demand loop, lean 3-pass post, procedural env — no CDN/HDRI).
+- **Overall the Tinker Workshop ≈ 7.5 — MEETS the ≥7 bar.**
+
+## Closest banned outcome + cheapest move away (Code)
+Was the **"cold-blue screen"** (§11/§6.4 code-room trap) — now DEFEATED (warm-dark sage editor,
+machine-guarded). Now closest to **"pretty but the RUN key / run-it affordance under-reads"** — the
+c_debug "run it" hero (the amber RUN key) is subtle at wide shot. Cheapest move away next: brighten +
+enlarge the RUN keycap so the tactile "run it" pops (top Code DELTA item).
+
+## Cabin status → ALL THREE CABINS + CLEARING ARE TO THE BAR (Definition of Done met)
+- Clearing (map): DONE (P-A1, ≈7). Art/Atelier: DONE (P-A2, ≈7.5). Music/Sounding Cabin: DONE
+  (P-A3, ≈7.5). **Code/Tinker Workshop: DONE this turn (P-A4, ≈7.5).**
+- Two-frame acceptance (§14) holds on the graded frames; all model-free tests pass (cohesion ·
+  shadow-color · firelight · no-cold-blue-screen · primary-action-live). Green tree (typecheck · 103
+  tests · app build). Every doorway provably live; a11y peer real; `window.__qa` present.
+- → **DoD met: the clearing + ALL THREE cabin interiors are to the bar. Creating `.loop-done`.**
+- NEXT (if the loop continues): polish deltas — brighten the RUN key · larger monitor code lines ·
+  Atelier mullioned window/halo · clearing distinct rooflines. Do NOT redo any surface (all gate-verified).

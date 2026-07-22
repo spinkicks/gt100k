@@ -1210,3 +1210,29 @@ read without washing the left frame post. General cabin lighting default going f
 **Ops: exactly ONE `next dev` at a time.** Multiple dev servers stomp `.next` → 404 static chunks +
 flaky `window.__qa`. Recipe: `pkill -9 -f "next dev"; fuser -k 3400/tcp` before serving; build with
 dev killed (`pnpm --filter @gt100k/interest-lab-app build`).
+
+## P-A4 — The Tinker Workshop (Code cabin interior) art-direction choices
+- **Reused the proven crash-free pattern verbatim:** `code-scene.ts` (testable palette-driven scene
+  description) + `TinkerWorkshopRoom.tsx` (r3f render) mirror music-scene/SoundingCabinRoom exactly —
+  PMREM `ProceduralEnvironment` (no drei `<Environment>` portal → no "reading '0'" crash), one frozen
+  blue-violet `ContactShadows`, warm window key + wood-stove + cool dusk hemisphere fill, lean
+  Bloom→ACES→Vignette. Pure-function room (hooks only in the mounted Stage) so it's test-walkable.
+- **CODE_HUE = HUE_RAMP[1] = #5FB98C (sage).** The code identity hue; lands on the doorway monitor.
+- **THE COLD-BLUE-SCREEN FIX (§6.4/§11 code-room trap):** a solid sage plane at emissive 1.5 +
+  toneMapped-off blooms to a cold CYAN-WHITE slab (the banned outcome). SOLUTION = a **warm-DARK green
+  editor background** (`forestDeep #37503E`) that glows sage at a controlled **0.9 emissive
+  (tone-mapped ON so it reads green, not white)**; the **bright, blooming, legible code lines**
+  (amber/spark/sage/mint/parchment @1.7, toneMapped-off) sit ON the dark screen — "colorful syntax on
+  a warm-dark bg" = the reference read. A soft CODE_HUE halo behind supplies the portal glow rim. This
+  is the general rule for any COOL craft hue on a screen: dark base + controlled glow + bright content,
+  never a full-bright cool plane. (Warm hues like MUSIC_HUE terracotta can bloom bright and still read
+  warm; cool/green hues cannot.)
+- **One doorway, not two (§4.1):** the monitor IS the desk's screen — the single warm-glowing primary.
+  Claude, the keyboard, Sprout, the laptop are lower/matte/non-competing.
+- **Role bindings (alphabetical action sort c_build<c_debug<c_investigate):** [0] c_build → monitor
+  (doorway), [1] c_debug → keyboard/RUN (run-it hero), [2] c_investigate → Sprout (run-the-program).
+- **The one cool practical = verdigris #7F9E8E status-LED on Sprout's dock** (§6.4) — a "light" class,
+  never a screen, so it never trips the no-cold-blue-screen guard.
+- **Camera:** central Coding Desk hero (dx=0), pos [0.1,2.72,9.1] target [0,1.7,-1.2] fov 46.
+- **noColdBlueScreen floor added to the test battery** (code-scene `measureCodeFloors`): every
+  surface-class "screen" prop must be non-blue in both color + emissive — a machine guard on the trap.
