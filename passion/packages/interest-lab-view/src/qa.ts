@@ -1,4 +1,10 @@
-import type { Domain, ReturnGrid, RevisableHypothesis, WorkMode } from "@gt100k/interest-lab";
+import {
+  type Domain,
+  type ReturnGrid,
+  type RevisableHypothesis,
+  WORK_MODES,
+  type WorkMode,
+} from "@gt100k/interest-lab";
 import type { CuriosityMapView, ZoneId } from "./curiosity-map";
 import type { ZoneHostState } from "./zone-host";
 
@@ -34,6 +40,29 @@ export function buildQaSnapshot(input: {
   interactives: QaInteractive[];
 }): Qa {
   const { ready, error = null, host, grid, hypothesis, interactives } = input;
+  const domainIndex = new Map(grid.domainOrder.map((domain, index) => [domain, index]));
+  const workModeIndex = new Map(WORK_MODES.map((workMode, index) => [workMode, index]));
+  const cells = grid.cells
+    .filter(({ voluntaryReturns, promptedReturns }) => Boolean(voluntaryReturns || promptedReturns))
+    .map(({ domain, workMode, voluntaryReturns, promptedReturns }) => ({
+      domain,
+      workMode,
+      voluntaryReturns,
+      promptedReturns,
+    }))
+    .sort(
+      (left, right) =>
+        (domainIndex.get(left.domain) ?? grid.domainOrder.length) -
+          (domainIndex.get(right.domain) ?? grid.domainOrder.length) ||
+        (workModeIndex.get(left.workMode) ?? WORK_MODES.length) -
+          (workModeIndex.get(right.workMode) ?? WORK_MODES.length),
+    )
+    .map(({ domain, workMode, voluntaryReturns, promptedReturns }) => [
+      domain,
+      workMode,
+      voluntaryReturns,
+      promptedReturns,
+    ]);
 
   return {
     ready,
@@ -46,16 +75,7 @@ export function buildQaSnapshot(input: {
     stateHash: () =>
       JSON.stringify({
         activeZoneId: host.activeZoneId,
-        cells: grid.cells
-          .filter(({ voluntaryReturns, promptedReturns }) =>
-            Boolean(voluntaryReturns || promptedReturns),
-          )
-          .map(({ domain, workMode, voluntaryReturns, promptedReturns }) => [
-            domain,
-            workMode,
-            voluntaryReturns,
-            promptedReturns,
-          ]),
+        cells,
         reading: hypothesis.reading,
       }),
     grid: () => grid,

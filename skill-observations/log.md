@@ -200,3 +200,21 @@ resolved statuses always carry their resolution date
 **Principle:** Component-test isolation must be wired to the runner configuration explicitly instead of assuming global lifecycle hooks exist.
 
 - 2026-07-21 Interest Lab core P4 completion checkpoint: Observation 11 captured; no additional observations.
+- 2026-07-21 Interest Lab core P5 pure-QA RED-GREEN checkpoint: no additional observations.
+
+### Observation 12: Separate changed-file lint from inherited workspace diagnostics
+
+**Status:** OPEN
+**Date:** 2026-07-21
+**Session context:** Verifying a narrow implementation increment in a shared repository with known formatting diagnostics outside the files changed by the increment.
+**Skill:** verification-before-completion
+**Type:** open-source
+**Phase/Area:** Scope-aware static verification
+
+**Issue:** A broad directory lint surfaced inherited diagnostics in unrelated files after the increment's own files were clean. Treating the broad result as wholly caused by the current change would either misreport the increment or invite out-of-scope edits.
+
+**Suggested improvement:** Verification guidance for dirty or shared workspaces should run a broad scan for awareness, then run an exact changed-file or ownership-scoped scan as the increment's acceptance evidence. Report inherited failures separately and never silently normalize them.
+
+**Principle:** Verification must distinguish defects introduced by the current work from pre-existing workspace state while preserving visibility into both.
+
+- 2026-07-21 Interest Lab core P5 completion checkpoint: Observation 12 captured; no additional observations.

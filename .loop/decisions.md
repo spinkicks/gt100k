@@ -1037,3 +1037,14 @@ _Legacy scratch below (prior interest-lab loop — not applicable to evidence-ex
 - **Board-tier bridge:** `ActivityDOM` receives `tier:"room-3d-lite"` at the no-WebGL floor because the
   frozen `RoomProps.tier` deliberately contains only the two room tiers. DOM behavior must remain tier-
   independent; P6 parity tests will enforce that the same action model and events are exposed.
+
+## IL-CORE-007 — QA snapshots are canonical values behind a replaceable app bridge
+- **Chose:** canonicalize `stateHash()` from a copied salient-cell list using `grid.domainOrder` and
+  `WORK_MODES`, even when a caller supplies cells in a different order. The app installs a deterministic
+  empty-activity snapshot through a small effect component that replaces `window.__qa` whenever its `Qa`
+  input changes and removes only the value it installed.
+- **Why:** the QA string is a cross-process contract and must not inherit incidental collection order.
+  P5 precedes P7's live map/event composition, so a replaceable bridge exposes the exact initial contract
+  now without inventing duplicate host state; P7 can pass each newly derived snapshot through the same seam.
+- **Safety:** the initial snapshot is built only from the frozen stub catalog/config and explicit empty
+  activity. It uses no wall clock, randomness, browser capability, or hidden mutable state.

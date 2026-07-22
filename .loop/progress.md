@@ -382,3 +382,32 @@ non-negotiable.
   buildings + time-lapse control (and active-zone actions when entered), and live grid/hypothesis reads.
   Acceptance: **SC-CORE-14**, exact initial/entered hashes and interactive ids, existing tests/typecheck,
   lane lint, and app production build green.
+
+## Done this turn — P5 exact `window.__qa` contract + app bridge
+- Added RED-first `buildQaSnapshot` acceptance for the exact initial and entered §8.8 hashes, the pinned
+  map/control/music-action ids, Canvas/DOM-primary metadata, live grid/hypothesis reads, and `settle()`.
+  The entered case failed for the intended reverse-cell-order mismatch before implementation.
+- Made `stateHash()` canonical independently of incoming `grid.cells` order by sorting salient cells with
+  `domainOrder × WORK_MODES`; the hash now matches both exact goldens while `grid()` and `hypothesis()`
+  continue to return the supplied live reads.
+- Added a RED-first jsdom app acceptance: the mounted app initially exposed no `window.__qa`, and the
+  bridge export was absent. Added `InterestLabQaBridge` with replace-on-update and owner-safe cleanup,
+  then installed a deterministic empty-activity snapshot built from the frozen stub catalog/config.
+- The mounted app now reports `ready:true`, `primarySurface:"curiosity-map"`, a non-primary Canvas with a
+  DOM alternative, `map:music` / `map:code` / `map:art` / `control:time-lapse`, and the exact initial hash.
+  The bridge test proves a later entered snapshot replaces the global live and is removed on unmount.
+- SC status: **SC-CORE-01/02/03/04/05/06/07/08/09/10/12/13/14 green**; **SC-CORE-15 remains green at its
+  P0 shape level**; SC-CORE-11 remains assigned to P6, and manual SC-CORE-16 is excluded.
+- Gate evidence: pure/app focused RED = **1 + 2 intended failures**; focused GREEN = **2 files, 4 tests**;
+  `pnpm typecheck` ✓; `pnpm test` ✓ (**108 files, 488 tests**); changed-file Biome check ✓ (**4 files**);
+  `pnpm --filter @gt100k/interest-lab-app build` ✓ (static `/` prerender). A broad app Biome scan still
+  reports unrelated pre-existing formatting in world/UI files; this increment did not modify them.
+- `.loop-done` remains absent because P6–P7 are not complete.
+
+## NEXT
+- **P6 — implement stub action-model parity and tighten accessibility test-first.** Implement
+  `buildZoneActivityModel` and `plainZoneEquals`; derive every stub `ActivityDOM` and `Room3D` action from
+  that one model; prove each labeled DOM control emits the exact `ActivityEvent`, and prove DOM/3D/model
+  action sets remain equal for music, code, and art. Re-run the Curiosity Map keyboard contract while
+  tightening any remaining a11y assertions. Acceptance: **SC-CORE-11** plus tightened **SC-CORE-10**,
+  existing tests/typecheck, changed-file lane lint, and app production build green.
