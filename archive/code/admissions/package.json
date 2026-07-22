@@ -1,0 +1,21 @@
+{
+  "name": "@gt100k/admissions",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./admission": "./src/admission.ts",
+    "./allocation": "./src/allocation.ts",
+    "./decision-trace": "./src/decision-trace.ts",
+    "./review": "./src/review.ts",
+    "./routing": "./src/routing.ts",
+    "./snapshot": "./src/snapshot.ts",
+    "./state-machine": "./src/state-machine.ts"
+  },
+  "scripts": {
+    "test": "vitest run --root ../.. packages/admissions/test"
+  },
+  "dependencies": {
+    "@gt100k/admissions-contracts": "workspace:*"
+  }
+}
