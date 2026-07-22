@@ -113,6 +113,7 @@ export function InterestLabCoreShell({
         dayOffset={host.dayOffset}
         onEnterZone={enterZone}
         onSetDayOffset={setDayOffset}
+        reducedMotion={reducedMotion}
       />
       {host.activeZoneId === null ? null : (
         <button type="button" onClick={exitZone}>

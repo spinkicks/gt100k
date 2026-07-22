@@ -5,57 +5,71 @@ stub zones, signal engine, accessible DOM map, `window.__qa`). **Do NOT rebuild 
 the frozen contracts** — theme + build ON TOP (value/reference layer only).
 
 ## Serve + shoot recipe (reuse every turn)
-- App: `passion/apps/interest-lab` (Next.js). Serve: `PORT=<p> pnpm dev` from that dir. **Kill stale
-  `next-server` first** (`pkill -9 -f next`; a lingering `next start` will hog the port and serve a
-  STALE build — this bit me: CSS edits didn't show until I killed the old prod server). Prefer `dev`
-  for CSS iteration (HMR); `rm -rf .next` is sandbox-denied, so just use a fresh port.
-- Screenshot: `/tmp/pw-venv` (python playwright, browsers at `~/.cache/ms-playwright`). Scripts:
-  `/tmp/shoot2.py <out> [--full]`, `/tmp/sample.py` (pixel checks), `/tmp/debug.py` (computed CSS).
-  Set `PLAYWRIGHT_BROWSERS_PATH=$HOME/.cache/ms-playwright`. Waits for `window.__qa.ready` + double-rAF.
+- App: `passion/apps/interest-lab` (Next.js, pkg name `@gt100k/interest-lab-app`). Serve:
+  `PORT=3400 pnpm dev` from that dir. **Kill stale next FIRST** (`pkill -9 -f next`).
+  ⚠️ **A running `next dev` locks `.next`** — the gate's `pnpm build` for the app is a no-op/blocked
+  while dev runs (and the repo `build` script filters `@gt100k/interest-lab`, the *package*, which has
+  no build script; the APP is `@gt100k/interest-lab-app` → `pnpm --filter @gt100k/interest-lab-app build`).
+  So: kill dev before building; build the app by its real name to prove production.
+- Screenshot: `/tmp/pw-venv` python playwright, `PLAYWRIGHT_BROWSERS_PATH=$HOME/.cache/ms-playwright`.
+  `/tmp/shoot_map.py <port> <out>` shoots the `.clearing` element + prints QA/liveness/errors.
+  `/tmp/shoot_rm.py` = reduced-motion still. `/tmp/sample_clearing.py` = pixel cohesion/shadow checks.
 
-## Architecture reality (important)
-The child surface is a **DOM shell** (`globals.css`, ~2.4k lines, shared with the guide console) +
-a **3D `<Canvas>` below the fold** (`app/child/world3d/*`, uses `SCENE3D`) + a **raw DOM Curiosity
-Map** (from `@gt100k/interest-zone-kit`, currently UNSTYLED). `globals.css` is themed midnight via
-`--night` etc. — I warmed it **scoped to `[data-active-surface="child"]`** (guide stays dark).
+## Architecture reality
+Child surface = warm DOM shell (`globals.css`, child-scoped `[data-active-surface="child"]`) + a 3D
+`<Canvas>` below the fold (`app/child/world3d/*`) + the **Curiosity Map** (now the styled clearing).
+The map lives in `packages/interest-zone-kit/src/curiosity-map.tsx` (shared component). It self-styles
+via inline SVG + a scoped `<style dangerouslySetInnerHTML>` block consuming `MAP_COLOR_SCRIPT`+`CABIN`
+tokens — no bundler CSS, works in jsdom + SSR (dangerouslySetInnerHTML avoids the `<style>`-text
+hydration mismatch: server escapes `"`→`&quot;`, client doesn't).
 
-## Done this turn — P-A0 (warm art pack + warm child shell)
-- **`SCENE3D` value swap** → warm golden-hour (bible §3.2); `HUE_RAMP` kept verbatim; added additive
-  **`CABIN`** (material tints §3.1) + **`MAP_COLOR_SCRIPT`** (DOM map §6) exports. Golden tests pin
-  all three + the no-dead-shadow / map↔cabin-hue invariants. Updated registries/public-api/readme.
-- **Warm child DOM shell** (scoped CSS in `globals.css`): remapped `--night`/ink/surface tokens to
-  warm cream+wood, `:has()` warm body+html base, warmed the dark `.hud-status`/`.status-pill`/ledger
-  pills. Fixed heading contrast (`color` is set on <body> outside scope → re-declared on the wrapper).
-- **Killed the 3D black void:** the "misty sea" floor + contact shadow + AO were painted with the
-  BANNED midnight `PALETTE.nightSunk/#120b1e`. Swapped to `CABIN.woodWalnut` floor (warm) +
-  `CABIN.duskDeep` blue-violet contact-shadow/AO; softened vignette 0.55→0.4. Lower-canvas sample
-  went `#030104` (dead black) → `#56251f` (warm). Rim light → `CABIN.duskSkylight`.
-- Gate GREEN: typecheck ✅ · 511 tests ✅ · next build ✅. Zero console/page errors in the browser.
-- Reference wired: `.loop/reference/clearing.png` = real A Short Hike still (CC BY-SA, see SOURCES.md).
+## Done this turn — P-A1 (the clearing to bar)
+- **Rebuilt `CuriosityMap` into "Golden Hour in the Clearing" (§6).** Layered scene: cream→peach sky +
+  low sun (upper-left) → hazed swaying pine treeline → lit ground plate + winding warm dirt path +
+  pond/footbridge → long **blue-violet** dusk shadows → back-center **Lodge + lit hearth ("Home · you
+  are here")** with 4-puff rising smoke → three cabins as **real focusable buttons** in a foreground arc:
+  Music (terracotta, chimney), Code (**sage** greenhouse w/ glass gable + cyan tool-glint), Art
+  (**periwinkle** skylight). Each = hue + SVG silhouette + hanging-sign glyph + label + verb (4 channels).
+- **Contracts preserved:** region `aria-label="Curiosity Map"` (not aria-hidden),
+  `data-primary-surface="curiosity-map"`, roving tabindex, Arrow L/R/U/D nav, `aria-pressed`, ariaLabels,
+  time-lapse button `aria-label`=next phase. `interactives()`/`stateHash()` are data-driven → untouched.
+  All 511 tests green incl. the 3 curiosity-map DOM tests. Added optional `reducedMotion` prop, wired
+  from the shell.
+- **Ambient life (Pillar F, ≥3):** tree sway · hearth smoke · fireflies (thicken toward dusk) · ambling
+  cat · window flicker (≤3%) · hearth pulse = 6 motions. **Time-lapse** lowers the sun + brings out
+  fireflies at 7/30-day. All disabled under `prefers-reduced-motion` AND `[data-reduced-motion]`.
+- **DELTA quick-wins:** warmed the last midnight chip (`.quest-world-instruction` "Focus a quest below")
+  + the pale eyebrows (`.context-line`/`.surface-name`) in the child scope (DELTA #6/#7).
+- Gate GREEN: typecheck ✅ · 511 tests ✅ · repo build ✅ · **app production build ✅** · zero
+  console/page errors (default + reduced-motion) · liveness ✅ (cabin click → activeZoneId "music") ·
+  reduced-motion calm still ✅. Cohesion/shadow-color/firelight model-free checks pass.
 
-## Self-score (§12, this shot vs the clearing reference) — anchored 10/7/4/2
-- Cabin warmth & coziness: **5** (warm + inviting, but a dashboard, not a room) · +2: build the clearing/cabin.
-- Firelight & light transport / no dead shadow: **6** (bloomed emissives, dusk shadows, no black void) · +2: real hearth glow.
-- Palette / color-script discipline: **7** (everything on the warm scale; warm/cool split holds).
-- Cabin legibility: **3** (raw map cards) · +2: style cabins w/ silhouette+sign.
-- Dressing density / lived-in: **3** · +2: props + ambient life on the map.
-- Ambient motion & life: **3** (only bloom/mote) · +2: smoke + sway + fireflies.
-- Map cohesion & wayfinding: **3** (unstyled list) · +2: clearing plate + Lodge "you are here".
-- Accessibility parity: **7** (DOM map is real focusable buttons; contrast now warm-legible).
-- Chromebook perf: **7** (frozen shadows, demand loop, bounded) — real-device fps check is manual.
-- **Overall this surface ≈ 4–5.** Solidly out of the banned-midnight zone (was ~2), not yet at the ≥7 bar.
+## Self-score (§12, pA1-clearing.png vs clearing.png) — anchored 10/7/4/2
+- Map cohesion & wayfinding: **7** (one hamlet, you-are-here Lodge, 3 legible cabins on a path) · +2: bolder path + foreground framing.
+- Cabin legibility: **7** (craft nameable via hue+silhouette+sign+label) · +2: distinct rooflines (horn/glass-gable/skylight).
+- Warmth & coziness: **7**.
+- Firelight & no dead shadow: **6** (amber windows + hearth glow, blue-violet shadows; no literal campfire flame) · +2: a small fire ring / stronger standing smoke.
+- Palette / color-script discipline: **8** (all on §3; warm/cool split holds — Art is the one cool building).
+- Ambient motion & life: **7** (6 motions; one second from motion).
+- Dressing density / lived-in: **6** (Lodge+3 cabins+pond+bridge+path+grass+cat+fireflies+signs).
+- Accessibility parity: **8** (real buttons, roving tabindex, arrow nav, ariaLabels, calm reduced-motion).
+- Chromebook perf: **8** (pure DOM/SVG/CSS, ~0 GPU, no draw calls).
+- **Overall the clearing (two-frame frame 1) ≈ 7 — MEETS the ≥7 bar.** Was ~3 (raw list) at P-A0.
 
 ## Closest banned outcome + cheapest move away
-Was **"midnight/night-default"** (§11) — now DEFEATED (warm top-to-bottom, no black void/shadow).
-Now closest to **"illegibility / cold-cabin"**: the raw unstyled Curiosity Map reads as a debug list.
-Cheapest move away next turn: **P-A1 — style the DOM Curiosity Map into a golden-hour clearing** with
-cabin buttons (hue+silhouette+sign+dressing), a Lodge/hearth "you are here", soft blue-violet shadows,
-and ≥3 ambient motions (smoke/sway/fireflies), using `MAP_COLOR_SCRIPT`. That is the highest-leverage
-surface and the map is the primary (accessible) surface. Then P-A2: one cabin interior to full recipe.
+Was **"illegibility / cold-cabin"** (raw debug list) — now DEFEATED. Now closest to **"incoherence:
+cloned props"** — the three cabins share one silhouette (varied only by hue/feature). Cheapest move
+away next: give each cabin a distinct roofline (Music gramophone-horn cupola, Code prominent glass
+gable, Art big north-light skylight) so silhouette alone names the craft. That's the top DELTA item.
 
 ## NEXT
-- **P-A1 — the clearing to bar.** Re-theme the DOM Curiosity Map (in `interest-zone-kit` or app-scoped
-  CSS — check the lane) into "Golden Hour in the Clearing" (§6): sky→treeline→ground→shadows→cabins,
-  label+verb buttons, Lodge+hearth, return-glow, time-lapse, smoke/fireflies/cat. Gate: two-frame frame 1.
-- Also warm the "Focus a quest below" hint pill + low-contrast eyebrow (DELTA #6/#7 — quick wins).
-- Do NOT `.loop-done` until the two-frame acceptance (§14) passes at ≥7. Not there yet.
+- **P-A2 — one cabin interior to bar (the Atelier, highest bar; §7.2/§8).** This is required for the
+  two-frame acceptance (§14) frame 2 and thus for `.loop-done`. Take one zone room (start Atelier /
+  Art) to the full lighting recipe (§5) + shared cabin kit (§8.1) + craft layer + doorway object
+  (§8.2): golden window shaft + dust motes, glowing wood-stove, beamed log walls, drafting desk +
+  Storybox, gallery wall w/ one half-finished glowing frame, the luminous periwinkle easel as the one
+  obvious doorway, a cat on the sill. Long blue-violet shadows. **Need a Ghibli interior reference** —
+  web-search + save `.loop/reference/atelier-interior.png` first (phase 0 for that surface).
+- Then polish the clearing's top-3 deltas (distinct rooflines · bolder path · tighter sun/foliage).
+- **Do NOT `.loop-done` yet:** DoD needs BOTH frames ≥7. Frame 1 (clearing) is at ≥7; frame 2 (cabin
+  interior) is P-A2, not built. This turn = P-A1 done; the world is a real, alive, cozy *map*.

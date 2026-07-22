@@ -1113,3 +1113,53 @@ _Legacy scratch below (prior interest-lab loop — not applicable to evidence-ex
   warm horizon instead of a void. Verified by pixel sample (`#030104` → `#56251f`).
 - **Note:** the 3D scene is still abstract islands/spheres — geometry (cabin/clearing) is P-A1/P-A2,
   deliberately out of this value-layer turn.
+
+---
+
+## P-A1 — "Golden Hour in the Clearing" DOM map (art-direction decisions)
+
+**Where the map art lives.** The clearing is authored *inside* the shared `CuriosityMap` component
+(`packages/interest-zone-kit/src/curiosity-map.tsx`), not in the app's `globals.css`. Rationale: the
+map is the shared primary surface, and §3.4 made `MAP_COLOR_SCRIPT`/`CABIN` the map's art contract —
+keeping the illustration in the component that owns the surface preserves identity-continuity with the
+rooms and keeps the app CSS from ballooning. Self-contained via inline SVG + a scoped
+`<style dangerouslySetInnerHTML>` block (no bundler CSS-module support needed; works in jsdom + SSR).
+
+**CSS-only / SVG illustration (not baked sprites).** §6 sanctions "Vector/CSS-only is the fallback if
+baking is deferred." Baking iso cabin sprites offline through a 3D kit is not feasible headless this
+turn, so the clearing is hand-authored SVG + CSS. Chromebook-perfect: pure DOM, ~0 GPU, 0 draw calls.
+
+**Hydration:** inject the stylesheet with `dangerouslySetInnerHTML`, NOT `<style>{cssString}</style>`.
+A `<style>` text-node child is HTML-escaped differently server (`&quot;`) vs client (`"`) → React
+hydration mismatch (it replaced the DOM and broke the first-render liveness probe). Standard fix.
+
+**Composition (impeccable pass): one focal anchor + a legible arc.** The **Lodge with lit hearth** is
+the back-center "you are here" landmark (smaller/higher = further back); the **three workshop cabins**
+sit in a foreground arc (Music left, Code front-center-nearest, Art right). First draft stacked the
+Lodge on the Code cabin at dead-center → two competing focal points + Code's sage identity hidden;
+fixed by separating depth (Lodge top:24% w:15%; Code lot top:88%). Reads as a hamlet: home in back,
+workshops in front.
+
+**Light direction + shadows.** Low sun placed **upper-left**; long **blue-violet** shadows
+(`softShadow #5E5880`, ~42–44% alpha) skew **east/right** off every structure — coherent with the sun
+and with §6 "shadows stretch east." Blue-violet over warm ground blends to muted brown-violet, never
+gray (§13.2). This supersedes any stale dark-instrument decision — Emberwood is warm golden-hour.
+
+**Cabin identity = four channels (§11 no color-only).** hue (terracotta/sage/periwinkle) + SVG
+silhouette/roof feature (chimney / glass-gable + cyan tool-glint / periwinkle skylight) + hanging-sign
+glyph (♪ / </> / brush) + DOM label+verb. Warm amber windows on all (the amber that also burns in the
+Lodge — map↔cabin light continuity). Art is the single **cool** building (periwinkle skylight at dusk).
+
+**Return-glow = signal made visible, not gamified.** voluntary-return → warm pulsing window halo;
+prompted-return → cooler static ring; explored → one-time faint shimmer; new → dimmed, no glow.
+unfinished>0 → a single soft window glint (NO number/streak/star — the "{n} unfinished" text was
+dropped from the visible cabin; the count stays only in the ariaLabel for AT). Active zone → footprint.
+
+**Ambient motion (Pillar F):** tree sway · 4-puff hearth smoke · fireflies (thicken toward dusk via
+`[data-day-offset]`) · ambling cat · ≤3% window flicker · hearth pulse. All gated by BOTH
+`@media (prefers-reduced-motion: reduce)` and `[data-reduced-motion="true"]` (prop from the shell) →
+a calm, complete still, never broken.
+
+**Time-lapse** = a labeled calm control; stepping Right now → week → month lowers the sun a notch,
+cools the sky slightly (small hue-rotate), and brings the fireflies out — the honest synthetic-return
+device on screen, never a countdown.

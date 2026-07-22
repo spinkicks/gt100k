@@ -2472,6 +2472,24 @@ body:has(.interest-lab-client[data-active-surface="child"]) {
   box-shadow: 0 1px 0 rgb(255 255 255 / 55%) inset, 0 18px 44px -26px rgb(74 51 32 / 46%);
 }
 
+/* DELTA #6 — the "Focus a quest below" hint pill was the last baked-midnight chip (rgb(18 11 30))
+   floating over the 3D canvas; warm it to a golden-hour glass plate so nothing reads night-default. */
+.interest-lab-client[data-active-surface="child"] .quest-world-instruction {
+  background: rgb(250 238 210 / 90%);
+  color: var(--ink-muted);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 55%) inset, 0 10px 24px -16px rgb(74 51 32 / 55%);
+}
+.interest-lab-client[data-active-surface="child"] .quest-world--3d .quest-ledger {
+  background: rgb(250 238 210 / 94%);
+}
+
+/* DELTA #7 — the eyebrow/section labels rendered in pale --spark-hi (#FFC08A), near-invisible on
+   cream. Re-tint to warm walnut so "Interest Lab · synthetic preview" / "Choose what to try" read. */
+.interest-lab-client[data-active-surface="child"] .context-line,
+.interest-lab-client[data-active-surface="child"] .surface-name {
+  color: var(--ink-muted);
+}
+
 @media (prefers-reduced-motion: reduce) {
   body:has(.interest-lab-client[data-active-surface="child"]) {
     background:
