@@ -326,3 +326,30 @@ non-negotiable.
   return states, unfinished counts, hues, exact aria-label phrases, and unknown-domain rejection.
   Acceptance: **SC-CORE-09/12**, exact §8.6/§8.7 goldens, all existing tests, typecheck, lane lint, and
   app production build green.
+
+## Done this turn — P3 time-lapse + Curiosity Map view model
+- Added RED-first acceptance suites for the exact §8.7 day 0/7/30 time-lapse and the complete §8.6
+  `MAP_GOLDEN`; both failed against the P0 placeholders for the expected phase and building-state diffs.
+- Implemented deterministic time-lapse phases with first-appearance domain ordering, canonical
+  `WORK_MODES` ordering, cell deduplication, quieted flags, and latest-phase selection.
+- Implemented the Curiosity Map signal projection: eager unknown-domain rejection, catalog/override hues,
+  strongest return state, unique explored-probe unfinished counts, row/column building sorting, and the
+  exact accessible return-state phrases.
+- Kept assistance and withdrawn actions out of map-return/time-lapse signals, with a second verified
+  RED→GREEN cycle covering both exclusions.
+- Kept the pure-view boundary intact: no React/Three imports, and the acceptance fixture mirrors the stub
+  manifest structure locally instead of introducing a reverse dependency on `interest-zone-kit`.
+- SC status: **SC-CORE-01/02/03/04/05/06/07/09/12/13 green**; **SC-CORE-15 remains green at its P0 shape
+  level**; SC-CORE-08/10/11/14 remain assigned to P4–P6, and manual SC-CORE-16 is excluded.
+- Gate evidence: focused RED = **2 intended failures**; exclusion RED = **2 intended failures**; focused
+  GREEN = **2 files, 5 tests**; view package = **24 files, 107 tests**; `pnpm typecheck` ✓;
+  `pnpm test` ✓ (**105 files, 482 tests**); `pnpm exec biome check passion/packages/interest-lab-view` ✓
+  (**46 files**); `pnpm --filter @gt100k/interest-lab-app build` ✓ (static `/` prerender).
+- `.loop-done` remains absent because P4–P7 are not complete.
+
+## NEXT
+- **P4 — implement the persistent Canvas host and primary DOM Curiosity Map test-first.** Complete the
+  `zoneHostReducer` transition table, add `<CanvasHost>` / `<ZoneRoom>` without remounting the one Canvas,
+  and add the real-button `<CuriosityMap>` with roving tabindex, arrow-key focus, live selection, and no
+  `aria-hidden`. Acceptance: **SC-CORE-08/10**, Canvas mount counter remains exactly 1 across
+  `enter→exit→enter`, all exact golden aria labels render, existing tests/typecheck/lane lint/app build green.

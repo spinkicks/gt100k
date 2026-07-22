@@ -1008,3 +1008,17 @@ _Legacy scratch below (prior interest-lab loop — not applicable to evidence-ex
   exercises the real coverage builder and keeps the domain package independently testable.
 - **Rejected:** casting a gaps-only object would bypass the coverage contract; importing
   `@gt100k/interest-zone-kit` would couple the pure engine's test suite to the UI seam.
+
+## IL-CORE-005 — Time-lapse ordering and pre-activity fallback stay deterministic
+- **Chose:** derive the time-lapse domain order from first appearance in the activity log (matching the
+  return-grid default), sort work modes by `WORK_MODES`, and emit only the pinned day 0/7/30 phases that
+  contain eligible activity. With no eligible phase, return `phases:[]` and the contract-required
+  `currentPhaseId:"first-session"` sentinel.
+- **Why:** `buildTimeLapse` has no `domainOrder` option and its non-null `currentPhaseId` type cannot
+  represent an empty log. First appearance is the existing engine convention; the sentinel is the
+  simplest deterministic pre-activity state without inventing a fourth phase.
+- **Safety:** assistive and withdrawn actions do not create map-return cues or time-lapse return activity.
+  Assistance never creates a signal, and the frozen event contract requires withdrawn actions to be
+  excluded everywhere.
+- **Test boundary:** the Curiosity Map golden mirrors the three stub manifests locally so the pure-view
+  package's tests do not acquire a reverse dependency on the React-aware zone kit.

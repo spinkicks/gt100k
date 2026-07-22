@@ -791,6 +791,18 @@ const ART:   MapBuildingView = { label: "The Atelier Cabin",   glyph: "brush-fra
 // buildCuriosityMapView() computes returnState/unfinished/hue/ariaLabel per building (unchanged).
 ```
 
+> **Label reconciliation (must resolve — cross-spec flag).** The `label` values above are the **Emberwood
+> cabin names** (the locked theme; used identically across the art bible §1/§6, gameflow, aliveness, and
+> world-visual §A3). The frozen core §8.6 **stub** golden (`MAP_GOLDEN`), the reconciliation §1
+> "child-facing label" column, and the current **zone-v2** specs' `plugin.mapBuilding.label` still use the
+> plainer **"Music Studio" / "Code Lab" / "Art Studio."** The stub golden is throwaway and the real `label`
+> is **zone-supplied**, so this is **not** a frozen-shape/golden break — the `MapBuildingView` shape, cells,
+> glyphs, hues, and `enterVerb` all agree. But the **child-facing label must be ONE set**: the theme's intent
+> is the cabin names, so the **zone specs + reconciliation §1 should adopt them** (the cabin name *is* the
+> button text + the `ariaLabel` prefix). If instead the plainer names win as button text, the cabin names
+> become sign/prose fiction only. Flagged here + in the audit report; the fix lives in read-only/out-of-lane
+> files (core golden is stub-scoped; reconciliation §1; the zone specs), not this doc.
+
 ### 9.4 `window.__qa` on the clearing (core §7; the gate can't be fooled)
 
 ```ts

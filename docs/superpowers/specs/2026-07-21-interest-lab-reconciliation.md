@@ -27,10 +27,19 @@ v1 uses six. **Shared columns (all three zones): `build · debug · compose`.** 
 Music = `perform`, Code = `investigate`, Art = `explain`. This is exactly what lets the grid separate a
 **row** spike (a topic child) from a **column** spike (a work-mode child). ✓ No reconciliation needed here.
 
-## 3. Event contract
-Every activity action — in **both** the world room and the content app — emits the frozen **`ActivityEvent`**
-(core spec), carrying `{domain, workMode, probeId, dayOffset, intervention?, assistive?}`. **Not** the raw
-`EngagementEvent` (that was a v1 error; Code v2 already corrected it — Music/Art must match).
+## 3. Event contract + the firewall (what emits vs what stays silent)
+Every genuine **activity action** — a deep action in a cabin's **content app** — emits the frozen
+**`ActivityEvent`** (core spec), carrying `{domain, workMode, probeId, dayOffset, intervention?, assistive?}`.
+**Not** the raw `EngagementEvent` (that was a v1 error; Code v2 already corrected it — Music/Art must match).
+
+**The firewall (non-negotiable — aliveness §1.2; every cabin honors it).** A cabin's cozy **micro-interactions
+/ live-taste / juice** (tap the piano, wave at Claude, snap a code block, spin the pottery wheel, paint on the
+tablet, stoke the stove, pet the cat…) emit **ZERO** `ActivityEvent` — *juice is never signal*. In
+**content-deferred v1** the room therefore contributes only the **coarse domain-return** (which cabin a child
+enters / revisits, observed as a Curiosity-Map building selection), and each cabin's **doorway is a host-ready
+placeholder that emits nothing yet** (it toggles a `peeked` room-state so `window.__qa.stateHash()` proves it
+*live*). The fine `{domain, workMode}` `ActivityEvent`s in the zone-v2 emission tables arrive **with the
+deferred content app** (§5), opened *through* the doorway. A delight that leaks a signal is an instant fail.
 
 ## 4. Imports / the shared seam
 Zones import `ZonePlugin` + `<CanvasHost>` + `<CuriosityMap>` from **`@gt100k/interest-zone-kit`** (never from
@@ -71,3 +80,29 @@ game on its own.*
 - **Lane G — game-flow + movement + world aliveness:** traversal, camera, transitions, controls, ambient life + juice.
 - **Lanes 1–3 — cabin rooms (parallel, after the freeze):** Music / Code / Art cozy interiors + their host-ready
   doorway, gated by the upgraded QA. **Content behind the doorway = deferred.**
+
+## 8. Canonical per-cabin doorway · hero · ambient (reflects the enriched cabin interiors)
+The `…-cabin-interior-*.md` specs enrich each room; this table **locks the one doorway per cabin** and the named
+live-tastes so every spec agrees. **Exactly one `role:"doorway"` per cabin; everything else is `hero` (a live
+taste) or `ambient` (a signal-free delight, §3 firewall).**
+
+| Cabin | Domain (wire) | The ONE doorway (primary) | Hero live-taste | Ambient live delights (signal-free) |
+|---|---|---|---|---|
+| **The Sounding Cabin** (Music) | `sound_music` | the **production-nook console screen** → *"open the studio"* | the **upright piano** (tap → warm chord) | the gramophone/turntable · the wood-stove · Biscuit the cat · the hung instruments |
+| **The Tinker Workshop** (Code) | `symbols_math` | **The Coding Desk** — a real monitor glowing colorful code + keyboard w/ amber **RUN** key → *"step up to the desk"* (`coding-desk` → `openDesk()`) | the desk's live code (type a line / press RUN) | **Claude** the AI desk-buddy · **Sprout** the codeable robot · the keyboard · the string-lights · the wood-stove |
+| **The Atelier** (Art) | `visual_design` | the **grand easel's periwinkle canvas** → *"step up to the easel"* | the **Storybox** desk toy | the **digital easel** monitor + **drawing tablet** (warm screens — **ambient, NEVER a 2nd doorway**) · the pottery wheel · the mobile · the cat |
+
+**Enrichment locks (so no spec drifts):**
+- **Code:** the old **"Build Bench"** grew into **The Coding Desk** (a real computer/keyboard/laptop); the
+  wind-up automaton **"Pip"** is recast as **Sprout**; **Claude** is a *new* AI desk-buddy; wire key
+  **`symbols_math`** (the earlier `computation` is dropped, §1). Screens glow **warm sage `#5FB98C` + amber**,
+  never cold-blue. (`zone-code-design-v2.md` + `cabin-interior-code.md` agree.)
+- **Art:** the Atelier shows art in **all** its forms — traditional (oils · pottery · still-life) **and
+  digital** (a drawing tablet + a warm **"digital easel"**) **and internet culture** (a kindly **Bob-Ross
+  homage** + framed **meme** prints). The digital tools sit on a `digital` **ambient** hotspot, deliberately
+  warmer/softer than the periwinkle portal — **one doorway only** (the grand easel). Screens glow **warm**,
+  never cold-blue. (`zone-art-design-v2.md` + `cabin-interior-art.md` agree.)
+- **Music:** the abstract "pad wall" is realized as the pad-grid on the production-nook **screen** (the doorway)
+  + the physical **piano**/MIDI keys (the hero live-taste); the gramophone is an ambient delight.
+- **All three:** one doorway · `<50` draw calls · tier `room-3d → room-3d-lite → ActivityDOM` peer · the shared
+  warm Emberwood palette + the "warm screens, never cold-blue" rule · the firewall (§3).

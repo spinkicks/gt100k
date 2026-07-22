@@ -1,4 +1,4 @@
-# Emberwood Cabin Interiors — the CODE cabin: **The Tinker Workshop** (buildable interior set)
+# Emberwood Cabin Interiors — the CODE cabin: **The Tinker Workshop** (Code · `symbols_math` · buildable interior set)
 
 **Date:** 2026-07-21 · **Owner:** David · **Scope:** the *concrete, buildable, set-dressed 3D interior* of
 the Code cabin — **"The Tinker Workshop"** — in **Emberwood** (the Interest Lab discovery world). This is a
@@ -58,11 +58,12 @@ reference-delta loop — **judged against images (A Short Hike interiors · Ghib
    ([§4.1](#41-decision-one-doorway-not-two)).
 4. **Programming is visible and playful for a child.** Colorful syntax on the monitor; block-code on the
    laptop; a **plush Python** snake on the desk; a warm-bound **JS/HTML/CSS/Python** book set on the shelf;
-   language-logo **stickers** on the laptop lid; and **Sprout**, a little robot you drive with **snap-together
-   code blocks**. A kid points and says *"that's coding."*
+   language-logo **stickers** on the laptop lid; and **Sprout** (the recast of the old wind-up automaton
+   "Pip"), a little robot you drive with **snap-together code blocks**. A kid points and says *"that's coding."*
 5. **A friendly AI companion.** **Claude** — a warm little desk-buddy ("your AI coding friend") — sits beside
    the monitor and **blinks/waves back**; a **framed Claude illustration** hangs on the log wall above the
-   desk. Wholesome and warm. (This is the recast of the old wind-up automaton "Pip.")
+   desk. Wholesome and warm. Claude is a **new** companion — not the doorway and not the robot (the wind-up
+   automaton "Pip" is recast as **Sprout**, §0.4).
 6. **Screens/LEDs stay warm, never cold blue.** The warm/cool split is carried by *light* (golden window key +
    stove glow vs the cool dusk-blue skylight fill), and every screen glows in the **sage domain hue + amber**.
    The one cool practical is a tiny, restrained **verdigris** status-LED off the hero — never a cold-blue wash
@@ -294,7 +295,7 @@ The one primary — a real, kid-recognizable computer on a warm-wood maker's des
 | **Mechanical keyboard** w/ cream keycaps + one oversized amber **RUN** key (the "run it" affordance) | 0.42×0.14×0.03 | (0, 0.92, 0.30) | flat, faces camera | case `woodDrift`; keycaps `woolCream`/`ceramic` + accents `sprout`/`beacon`; **RUN key `brass`/`spark` (brightest glint)** | keycaps instanced |
 | **Mouse + fabric mousepad** | mouse 0.06×0.11×0.035 | (0.45, 0.92, 0.30) | — | mouse `woodDrift`; pad `woolWarm` (jitter) | instanced-desk |
 | **Warm-cased laptop** (lid covered in **language stickers**; screen shows **colorful block-code**) | 0.34×0.24×0.02 open | (−0.72, 0.95, 0.10) | ~20° open, ¾ to camera | case `ceramic`/`woodHoney`; hinge `brass`; **stickers atlas (Python/JS/HTML5/CSS/Git/♥)**; screen block-code emissive | +1 screen (shared atlas) |
-| **Claude, the AI desk-buddy** (a friendly little character; warm amber face; the recast of "Pip") | 0.20×0.18×0.26 | (0.60, 0.98, 0.15) | ¾ to camera | soft `woolCream`/`candle` body; **warm amber face-glow**; one `sprout` LED | +1 (small static + tiny idle) |
+| **Claude, the AI desk-buddy** (a friendly little character; warm amber face; a **new** AI-friend companion) | 0.20×0.18×0.26 | (0.60, 0.98, 0.15) | ¾ to camera | soft `woolCream`/`candle` body; **warm amber face-glow**; one `sprout` LED | +1 (small static + tiny idle) |
 | **Plush Python snake** curled by the monitor (language mascot) | ⌀0.10 coil ×0.5 | (−0.40, 0.98, −0.02) | curled | felted `sprout #7BD88F`/`forestPine` (warm-leaning), `beacon` eyes | instanced-toys |
 | **Warm desk lamp** on a bendy arm (a warm bench practical) | arm 0.5; head ⌀0.12 | (0.85, 0.95→1.4, −0.10) | over the keyboard | `brass` arm; shade glow `candle #FFE0A8` | +1 |
 | **Mug of pens/markers** + a coiled **headphone** on a hook | mug ⌀0.09; can ⌀0.10 | (0.78, 0.98, 0.36) | — | mug `ceramic`; pens jittered warm; cans `leather` | instanced-desk |
@@ -351,7 +352,7 @@ move"* — exactly how a kid meets code today.
 | Prop | Scale (m) | Pos (x,y,z) | Rot | Tint | Draw |
 |---|---|---|---|---|---|
 | **The maker mat / low kids' table** w/ a little run-track + a goal flag | 0.9×0.6×0.4 | (−1.4, 0, −1.7) | ¾ to camera | top `woodHoney`; track `woodOak`; flag `beacon` | +1 |
-| **Sprout, the codeable robot** (the lone skinned mesh — toddles/turns when a program runs) | 0.28×0.24×0.30 | (−1.2, 0.42, −1.7) | ¾ to camera | `woodHoney`/`ceramic` shell; one `sprout #7BD88F` LED; a tiny verdigris status-LED on its dock (§6.4) | +1 (skinned) |
+| **Sprout, the codeable robot** (the recast of the old wind-up automaton "Pip"; the lone skinned mesh — toddles/turns when a program runs) | 0.28×0.24×0.30 | (−1.2, 0.42, −1.7) | ¾ to camera | `woodHoney`/`ceramic` shell; one `sprout #7BD88F` LED; a tiny verdigris status-LED on its dock (§6.4) | +1 (skinned) |
 | **Tray of snap-together code blocks** (colorful "when clicked / move / repeat / if" bricks) | tray 0.3×0.2×0.06; bricks ⌀0.05 | (−1.7, 0.44, −1.6) | — | bricks `spark`/`sprout`/`beacon`/`tide→verdigris` (jitter, warm-tuned) | 1 InstancedMesh (blocks) |
 | **A charging dock** for Sprout (the one cool practical lives here) | 0.14×0.10×0.06 | (−1.0, 0.42, −1.85) | — | `woodDrift`; **tiny `verdigris #7F9E8E` status-LED** (§6.4) | instanced-props |
 
@@ -429,7 +430,7 @@ Learning content is **deferred**. The doorway must be a warm, honest, **live** p
 - **It is provably live.** The interaction toggles a small `peeked` room-state so
   `window.__qa.stateHash()` **changes** on contact (SC-CORE-14) — *before any content exists*.
 - **When content lands** this same hotspot swaps its handler to `openDesk()` → `<ContentHost>` (the
-  Brilliant-style Build Bench app, zone-code-v2 Part B) — **no movement/layout/flow change.**
+  Brilliant-style Coding Desk app, zone-code-v2 Part B) — **no movement/layout/flow change.**
 - **Never coercive.** No countdown, no "check back in N days," no badge, no score. Warmth is invitation.
 
 ### 4.4 Why the desk, not a bare computer
@@ -656,7 +657,10 @@ shell + furniture.
 
 ### 8.4 Tier degradation — the accessible floor
 
-`RoomProps.tier` (`quest-world-3d | quest-world-3d-lite | board-2d`):
+Driven by the resolved render tier. The **frozen** `RoomProps.tier` is `"room-3d" | "room-3d-lite"` (core-spec
+§3.2); **below** the 3D floor the host renders `ActivityDOM` instead (the a11y peer). The shipped
+`resolveRenderTier`/`RenderTier` alias is `quest-world-3d` / `quest-world-3d-lite` / `board-2d` (the naming nit,
+art bible §15):
 
 - **`room-3d` (full):** everything above; motes 60; bloom on; frozen shadows; the shaft + god-ray.
 - **drop step:** drop `<Sparkles>` → drop `Bloom` → flatten lights.
