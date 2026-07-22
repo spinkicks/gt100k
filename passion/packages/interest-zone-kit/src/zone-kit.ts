@@ -1,4 +1,12 @@
+export { CanvasHost, ZoneRoom } from "./canvas-host";
+export type {
+  CanvasHostProps,
+  ZonePresentationTier,
+  ZoneRoomProps,
+} from "./canvas-host";
 export type { ActivityEmit, RoomProps, ZonePlugin } from "./contracts";
+export { CuriosityMap } from "./curiosity-map";
+export type { CuriosityMapProps } from "./curiosity-map";
 export { createZoneRegistry } from "./registry";
 export type { ZoneManifest, ZoneRegistry } from "./registry";
 export { artStub } from "./stubs/art";

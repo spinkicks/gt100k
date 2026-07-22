@@ -324,8 +324,9 @@ exactly (structures-layer transform).
 | C2 | **The Tinker Workshop** (Code, `symbols_math`) | (1,0) | (0.50, 0.31) | 0.14 w | sage `cabinCode #5FB98C` | **greenhouse-workshop**: log base, **glass gable roof**, **gear-sprout weathervane** | a **cog sprouting a leaf** | potted sprouts on the sill, a **wind-up bot ("Sprout")** on the porch, a lantern by the door | warm sage + a cool cyan tool-glow leak |
 | C3 | **The Atelier Cabin** (Art, `visual_design`) | (2,0) | (0.81, 0.39) | 0.14 w | periwinkle `cabinArt #6C8CE8` | gable cabin, big **north-light skylight**, **easel on the porch** | a **paintbrush + frame** | a hanging painting under the eave, a paint-splash doormat | the **coolest** "lit-window-at-dusk" glow (the one deliberate cool accent — inviting, not cold) |
 
-- **Hanging signs** (C*-sign): each on an iron bracket, swaying on the breath/gust; the glyph is baked, the **label +
-  enter-verb are DOM text** under the button (never baked) — "**The Sounding Cabin** · *Step inside*."
+- **Hanging signs** (C*-sign): each on an iron bracket, swaying on the breath/gust; the **cabin's proper name** (e.g.
+  "The Sounding Cabin") + the glyph are baked on the sign, while the **button's `label` (the craft name) + enter-verb
+  are DOM text** under the button (never baked) — "**Music Studio** · *Step inside*."
 - **Doors/thresholds:** each cabin's door + a warm rug of window-light spilling out; on hover/focus/approach the door
   glows up and a **"Step inside"** chip appears (the "Warm Window" sub-frame, §1.2).
 - **Room to grow:** the cabin sprites sit in the shallow arc with **deliberate empty space** to the sides (across the
@@ -781,27 +782,29 @@ const NODES = {
 ### 9.3 The per-cabin `MapBuildingView` (supplied by each `ZonePlugin`; core §5.1 — shape unchanged)
 
 ```ts
-// each zone exports these on its plugin.mapBuilding (label/verb are DOM text, hue = HUE_RAMP)
-const MUSIC: MapBuildingView = { label: "The Sounding Cabin",  glyph: "note",   enterVerb: "Step inside",
+// each zone exports these on its plugin.mapBuilding (label = the craft name = the button text + ariaLabel
+// prefix; verb = DOM text; the cabin's proper name is its sign/scene name, not the label; hue = HUE_RAMP)
+const MUSIC: MapBuildingView = { label: "Music Studio", glyph: "note",        enterVerb: "Step inside",
   cell: { col: 0, row: 0 }, art: { sprite: "clearing/cabin-music.webp", hue: "#E8825A" } };
-const CODE:  MapBuildingView = { label: "The Tinker Workshop", glyph: "cog-leaf", enterVerb: "Step inside",
+const CODE:  MapBuildingView = { label: "Code Lab",     glyph: "cog-leaf",    enterVerb: "Step inside",
   cell: { col: 1, row: 0 }, art: { sprite: "clearing/cabin-code.webp",  hue: "#5FB98C" } };
-const ART:   MapBuildingView = { label: "The Atelier Cabin",   glyph: "brush-frame", enterVerb: "Step inside",
+const ART:   MapBuildingView = { label: "Art Studio",   glyph: "brush-frame", enterVerb: "Step inside",
   cell: { col: 2, row: 0 }, art: { sprite: "clearing/cabin-art.webp",   hue: "#6C8CE8" } };
 // buildCuriosityMapView() computes returnState/unfinished/hue/ariaLabel per building (unchanged).
 ```
 
-> **Label reconciliation (must resolve — cross-spec flag).** The `label` values above are the **Emberwood
-> cabin names** (the locked theme; used identically across the art bible §1/§6, gameflow, aliveness, and
-> world-visual §A3). The frozen core §8.6 **stub** golden (`MAP_GOLDEN`), the reconciliation §1
-> "child-facing label" column, and the current **zone-v2** specs' `plugin.mapBuilding.label` still use the
-> plainer **"Music Studio" / "Code Lab" / "Art Studio."** The stub golden is throwaway and the real `label`
-> is **zone-supplied**, so this is **not** a frozen-shape/golden break — the `MapBuildingView` shape, cells,
-> glyphs, hues, and `enterVerb` all agree. But the **child-facing label must be ONE set**: the theme's intent
-> is the cabin names, so the **zone specs + reconciliation §1 should adopt them** (the cabin name *is* the
-> button text + the `ariaLabel` prefix). If instead the plainer names win as button text, the cabin names
-> become sign/prose fiction only. Flagged here + in the audit report; the fix lives in read-only/out-of-lane
-> files (core golden is stub-scoped; reconciliation §1; the zone specs), not this doc.
+> **Label decision (RESOLVED — locked operator decision).** The `label` values above are the **clear craft
+> names** — **"Music Studio" / "Code Lab" / "Art Studio"** — matching the frozen core §8.6 golden (`MAP_GOLDEN`),
+> the reconciliation §1 "child-facing label" column, and the zone-v2 specs' `plugin.mapBuilding.label`. The
+> child-facing `label` **is** the button text **and** the `ariaLabel` prefix (core §8.6:
+> `"<label>, discovery zone, …"`), and it is the plain **craft name** on purpose: a child/AT user must be
+> able to name the domain **instantly** (screen-reader legibility), so the button reads its craft, not the
+> evocative cabin name. The **Emberwood cabin proper names** — "The Sounding Cabin" / "The Tinker Workshop" /
+> "The Atelier Cabin" — remain the cabin's **name on its hanging sign, in the cabin table's identity column
+> (§3.C), in hero-frame prose, and in scene/room descriptions** (art bible §1/§6, gameflow, aliveness,
+> world-visual §A3). Two registers — the **button label = craft name**, the **world's flavor = cabin name** —
+> with **no contract break**: the `MapBuildingView` shape, cells, glyphs, hues, and `enterVerb` are unchanged
+> and the `label` now agrees with the golden across every spec.
 
 ### 9.4 `window.__qa` on the clearing (core §7; the gate can't be fooled)
 

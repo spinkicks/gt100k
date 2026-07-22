@@ -377,8 +377,9 @@ Because learning content is deferred (reconciliation §5/§7), the doorway objec
 QA gate, core-spec SC-CORE-14).
 
 - **It glows and invites.** The doorway object (the Sounding Cabin's lit gramophone horn / the Tinker
-  Workshop's blueprint-hologram + brass GO key / the Atelier's luminous periwinkle canvas — art bible §8.2)
-  rests at `markerEmissiveRest` and breathes to `…Pulse` in the domain hue — the single obvious focal point.
+  Workshop's Coding Desk — the warm glowing monitor + amber RUN key / the Atelier's luminous periwinkle canvas
+  — art bible §8.2) rests at `markerEmissiveRest` and breathes to `…Pulse` in the domain hue — the single obvious
+  focal point.
 - **It responds, honestly.** Selecting it eases the camera in and plays a **warm acknowledgment**: the
   object pulses, the room brightens a touch, a soft chime, and an **honest** line appears —
   *"The studio's warming up — new things are coming. For now, look around."* (copy is honest about deferral;
@@ -581,8 +582,9 @@ wayfinding" lesson).
 
 - **The Lodge = "you are here."** Center of the clearing, the always-lit hearth, the traveler's home; the
   one unambiguous anchor. A soft footprint/marker shows the **last-entered cabin**.
-- **Labels + one verb.** Every cabin shows **name + one enter-verb** ("**The Sounding Cabin** · *Step
-  inside*") as DOM text (never baked into the sprite) — World-1-1 clarity.
+- **Labels + one verb.** Every cabin shows its **craft-name `label` + one enter-verb** ("**Music Studio** · *Step
+  inside*") as DOM text (never baked into the sprite) — World-1-1 clarity; the button reads the craft (child/AT
+  legibility; core §8.6), while the cabin's proper name ("The Sounding Cabin") rides on its sign.
 - **Return-glow (ambient, NOT a score).** A cabin the child came back to *unprompted* gets a gentle warm
   window-halo (`voluntary-return`); a **prompted** return gets a cooler, quieter cue (`prompted-return`); a
   first visit shows a fading **"new"** shimmer (`explored`). **No number, streak, star, or score ever sits on

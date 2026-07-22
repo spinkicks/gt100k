@@ -182,3 +182,21 @@ resolved statuses always carry their resolution date
 - 2026-07-21 Interest Lab core P1 completion checkpoint: no additional observations.
 - 2026-07-21 Interest Lab core P2 RED-GREEN checkpoint: no additional observations.
 - 2026-07-21 Interest Lab core P2 completion checkpoint: no additional observations.
+- 2026-07-21 Interest Lab core P4 focused RED-GREEN checkpoint: no additional observations.
+
+### Observation 11: Make DOM cleanup explicit when test globals are disabled
+
+**Status:** OPEN
+**Date:** 2026-07-21
+**Session context:** Adding React Testing Library acceptance tests to a Vitest package configured without global lifecycle hooks.
+**Skill:** ui-styling
+**Type:** open-source
+**Phase/Area:** Accessibility testing harness
+
+**Issue:** React Testing Library's automatic cleanup did not register because Vitest lifecycle hooks were imported rather than installed as globals. Individually correct tests leaked rendered containers into later cases, producing misleading duplicate-role failures.
+
+**Suggested improvement:** In the accessibility testing reference, note that projects with disabled test globals should import `cleanup` and register it with the runner's explicit `afterEach`; verify isolation with sequential role queries before diagnosing component behavior.
+
+**Principle:** Component-test isolation must be wired to the runner configuration explicitly instead of assuming global lifecycle hooks exist.
+
+- 2026-07-21 Interest Lab core P4 completion checkpoint: Observation 11 captured; no additional observations.

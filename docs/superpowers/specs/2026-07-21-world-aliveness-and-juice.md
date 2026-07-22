@@ -471,7 +471,7 @@ shipped `canHoverQuestMarker("touch") === false`), so touch relies on the press 
 
 ### 7.5 The doorway-object handshake
 
-Inside the room, the **doorway object** (the console screen / the Build Bench blueprint+GO key / the easel
+Inside the room, the **doorway object** (the console screen / the Coding Desk's warm glowing monitor / the easel
 portal) is **owned by the zone specs** and is the one thing that *does* emit + open content later. The
 aliveness layer's job is only the **frame around it**: the warm reveal, the composed camera settle, the
 "this is the one warm thing to do" glow-pulse grammar, and the guilt-free exit. This doc never turns the

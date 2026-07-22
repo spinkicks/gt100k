@@ -5,8 +5,8 @@ Map + bounded 3D zones) **and** the architecture that embeds per-domain, Brillia
 each zone. **Extends (does not replace):**
 [`2026-07-21-interest-lab-world-design.md`](./2026-07-21-interest-lab-world-design.md),
 [`2026-07-21-interest-lab-core-spec.md`](./2026-07-21-interest-lab-core-spec.md), and the three zone specs
-([music](./2026-07-21-zone-music-design.md) · [code](./2026-07-21-zone-code-design.md) ·
-[art](./2026-07-21-zone-art-design.md)).
+([music](./2026-07-21-zone-music-design-v2.md) · [code](./2026-07-21-zone-code-design-v2.md) ·
+[art](./2026-07-21-zone-art-design-v2.md)).
 **Depth model:** [LAAS / `PROJECT_LAAS_v2.md`](https://github.com/Braffolk/fable5-world-demo/blob/main/PROJECT_LAAS_v2.md)
 — reference frames, hard floors, banned outcomes, a reference-delta loop, and an anchored self-score.
 **Grounding research:** [`stylizedWorldAssetPipeline.md`](../../research/stylizedWorldAssetPipeline.md),
@@ -156,7 +156,9 @@ buildings, same light), at ~0 GPU cost. (Vector/CSS-only is the fallback if baki
 
 **Wayfinding (legible for 8–14, per the precedents memo).**
 
-- **Label + one verb** under each building: "**The Sounding Cabin** · *Step inside*" (World-1-1 clarity, one verb).
+- **Label + one verb** under each building: "**Music Studio** · *Step inside*" (World-1-1 clarity, one verb) — the
+  `label` is the plain **craft name** (the button text + `ariaLabel` prefix; core §8.6); the evocative cabin name
+  ("The Sounding Cabin") rides on the cabin's **sign** and in prose, never the button.
 - **"You are here"** never ambiguous: the map is home; a soft footprint/marker shows last-entered building.
 - **Return-glow (the signal, made visible but NOT gamified):** a building the child came back to *unprompted*
   gets a gentle warm halo (`voluntary-return`); a prompted return gets a cooler, quieter cue

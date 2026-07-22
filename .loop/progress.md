@@ -353,3 +353,32 @@ non-negotiable.
   and add the real-button `<CuriosityMap>` with roving tabindex, arrow-key focus, live selection, and no
   `aria-hidden`. Acceptance: **SC-CORE-08/10**, Canvas mount counter remains exactly 1 across
   `enter→exit→enter`, all exact golden aria labels render, existing tests/typecheck/lane lint/app build green.
+
+## Done this turn — P4 persistent Canvas host + primary DOM Curiosity Map
+- Added RED-first acceptance suites for the complete host reducer transition table, a mocked Canvas mount
+  counter across `enter→exit→enter`, the board-tier DOM fallback boundary, exact golden map aria labels,
+  roving arrow-key focus, live selection, and time-lapse stepping. The five component assertions failed
+  for the expected missing P4 exports before implementation.
+- Added controlled `<CuriosityMap>` / `<CanvasHost>` / `<ZoneRoom>` components to the shared zone kit.
+  The map uses native buttons, one roving tab stop, all four arrow keys, visible return/unfinished cues,
+  `aria-pressed` selection, decorative-only glyph hiding, and an always-available `0→7→30` DOM control.
+- The host now owns one unconditional `<Canvas frameloop="demand">` with a fixed camera,
+  `<AdaptiveDpr>`, and `<PerformanceMonitor>`; room children swap by registry id while `board-2d` renders
+  `ActivityDOM` as a sibling outside the still-mounted Canvas.
+- Added the React Testing Library/jsdom harness and the zone kit's direct Drei dependency; the lockfile
+  importer is complete and a frozen filtered install succeeds.
+- SC status: **SC-CORE-01/02/03/04/05/06/07/08/09/10/12/13 green**; **SC-CORE-15 remains green at its P0
+  shape level**; SC-CORE-11/14 remain assigned to P5–P6, and manual SC-CORE-16 is excluded.
+- Gate evidence: focused RED = **5 intended failures**; focused GREEN = **3 files, 7 tests**; zone-kit
+  suite = **4 files, 9 tests**; `pnpm typecheck` ✓; `pnpm test` ✓ (**106 files, 484 tests**);
+  `pnpm exec biome check passion/packages/interest-zone-kit` ✓ (**18 files**); frozen zone-kit install ✓;
+  `pnpm --filter @gt100k/interest-lab-app build` ✓ (static `/` prerender).
+- `.loop-done` remains absent because P5–P7 are not complete.
+
+## NEXT
+- **P5 — implement and wire the exact `window.__qa` contract test-first.** Make `buildQaSnapshot` and
+  `stateHash()` match §7/§8.8 before and after entering Music; expose `window.__qa` from the app with
+  `ready:true`, `primarySurface:"curiosity-map"`, non-primary Canvas plus DOM alternative, three map
+  buildings + time-lapse control (and active-zone actions when entered), and live grid/hypothesis reads.
+  Acceptance: **SC-CORE-14**, exact initial/entered hashes and interactive ids, existing tests/typecheck,
+  lane lint, and app production build green.

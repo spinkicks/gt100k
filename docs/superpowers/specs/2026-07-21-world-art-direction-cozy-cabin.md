@@ -99,9 +99,9 @@ path, a second cluster of cabins across the bridge) without ever re-drawing the 
 ### The story the child lives (the loop, themed)
 
 Wander the clearing → a warm window pulls you toward a cabin → **push open the door** into a cozy firelit
-room where *a real thing is already happening* (a beat breathing on the wall, a wind-up bot mid-hop on the
-bench, a little scene glowing on the drafting desk) → the room's **doorway object glows** ("open the
-studio / step up to the bench / step up to the easel") → you go deeper into the craft → later, unprompted,
+room where *a real thing is already happening* (a beat breathing on the wall, colorful code typing itself on
+a warm-lit screen, a little scene glowing on the drafting desk) → the room's **doorway object glows** ("open the
+studio / step up to the desk / step up to the easel") → you go deeper into the craft → later, unprompted,
 you drift back to *that cabin* over days. The world reads *that* you came back; the craft reads *what kind
 of making* pulled you. **The cabin is the doorway and the signal; the fire is why you came in.**
 
@@ -364,7 +364,9 @@ fallback if baking is deferred.)
 
 **Wayfinding (legible for 8–14).**
 
-- **Label + one verb** under each cabin: "**The Sounding Cabin** · *Step inside*" (World-1-1 clarity).
+- **Label + one verb** under each cabin: "**Music Studio** · *Step inside*" (World-1-1 clarity) — the button `label`
+  is the plain **craft name** (child/AT legibility; core §8.6); the cabin's proper name ("The Sounding Cabin") is the
+  **sign/scene** name.
 - **"You are here" = the Lodge/hearth** — the clearing is home; a soft footprint/marker shows the
   last-entered cabin.
 - **Return-glow (the signal made visible, NOT gamified):** a cabin the child came back to *unprompted* gets
@@ -453,12 +455,14 @@ zone-music v2 §A.1 into the cabin.)*
 
 **Code cabin — interior: "The Sunlit Workshop."** A 3/4 view into a small **log workshop / greenhouse
 corner**: a **big window/glass-roof** pours a warm afternoon sunbeam with dust motes; a **wood-stove**
-glows; a central **timber Build Bench** carries a **half-built wind-up automaton ("Pip")**, an open
-blueprint, a jar of gears, a brass **GO** wind-up key, wood shavings; a **pegboard** of brass tools on the
-log wall; a **shelf** of little finished creations; **potted sprouts** and a trailing vine (the greenhouse
-warmth); string-lights; a mug; a rug; a worn stool. The **doorway object** = the bench's **glowing blueprint
-hologram + the brass GO key** ("step up to the bench"), the single brightest warm focal point. *(Refs: A
-Short Hike interiors × Stardew × "cozy inventor workshop lowpoly"; deepens zone-code v2 §A1.)*
+glows; a central **warm-wood Coding Desk** carries a **friendly warm-bezel monitor glowing with big, colorful,
+legible code** (warm **sage `#5FB98C` + amber**, **never cold-blue**), a chunky **mechanical keyboard** with an
+oversized amber **RUN** key, a sticker-covered laptop, and beside it **Sprout** — a little friendly robot the kid
+drives with snap-together code blocks; **Claude**, a warm AI desk-buddy, watches from the desk corner; a
+**pegboard** of brass tools on the log wall; a **shelf** of little finished creations; **potted sprouts** and a
+trailing vine (the greenhouse warmth); string-lights; a mug; a rug; a worn stool. The **doorway object** = the
+Coding Desk's **glowing monitor + amber RUN key** ("step up to the desk"), the single brightest warm focal point.
+*(Refs: A Short Hike interiors × Stardew × "cozy coding-desk setup"; deepens zone-code v2 §A1 + cabin-interior-code.md.)*
 
 **Art cabin — interior: "The Atelier at Golden Hour."** The warmest, most lovingly-dressed room in the
 world (the bar is highest here). A tall **skylight/window** pours a **golden shaft with drifting motes**
@@ -496,7 +500,7 @@ room's accent light + sign (identity continuity; world-design §A5).
 | Cabin | Craft hero (the live taste) | The doorway object (glows warmly) | Craft dressing (vintage props) |
 |---|---|---|---|
 | **Sounding Cabin** (Music) | the **pad wall** in reclaimed-wood panels (`InstancedMesh`) + luminous playhead — tap a pad, hear + see it change | the **console screen / lit brass gramophone horn** → *"open the studio"* (opens the audio content app) | gramophone, fiddle/banjo on the wall, plank shelf of vinyl+cassettes (the saved-loops Shelf), acoustic-felt panel, sticky notes |
-| **Tinker Workshop** (Code) | the **Build Bench**: a half-built wind-up automaton + a floating **icon-block blueprint hologram** — the one primary interactive | the **glowing blueprint hologram + brass GO key** → *"step up to the bench"* (opens the code content app) | pegboard of brass tools, jar of gears, chalkboard flow-sketch, crate of parts, the Shelf of finished automata, greenhouse sprouts |
+| **Tinker Workshop** (Code) | the **Coding Desk**: a warm-bezel monitor glowing with big, colorful, legible code (warm sage + amber, never cold-blue) + a chunky keyboard — the one primary interactive; **Sprout** the codeable robot beside it | the **glowing monitor + amber RUN key** → *"step up to the desk"* (opens the code content app) | pegboard of brass tools + coiled cables, chalkboard flow-sketch, crate of parts, the Shelf of finished creations, JS/HTML/CSS/Python books, **Claude** the AI desk-buddy, greenhouse sprouts |
 | **Atelier Cabin** (Art) | the **Storybox** on the drafting desk (a shadow-box diorama that auto-beautifies on contact) — the light "make" tickle | the **grand easel's luminous periwinkle canvas** → *"step up to the easel"* (opens the art content app) | brush jar, paint tubes, palette, open sketchbook, the **gallery wall** of framed artifacts (one half-finished frame glows), a hanging mobile |
 
 **The firelight tie (cohesion + warmth).** In each room the **stove/hearth** is the same amber as the
@@ -552,7 +556,7 @@ optimize --compress meshopt --texture-compress ktx2` → `gltfjsx --transform --
 | **Interior furniture** (bench, desk, console, shelves, stool, table, cabinets, rug) | **Kenney Furniture Kit** + **KayKit** furniture bits | instanced repeats; tint to the palette |
 | **Hearth / wood-stove / campfire / logs / lantern / string-lights** | **Kenney** (Survival / Holiday kits) + **KayKit** props | stove/lantern = emissive material; string-lights instanced bulbs |
 | **Trees, pines, rocks, stumps, mushrooms, moss, plants, vines** | **Quaternius** (Stylized/Ultimate Nature) + **Kenney Nature Kit** | trees instanced (`InstancedMesh`) for the map bake + any exterior; foliage sway |
-| **The cat, birds, listener characters, the wind-up bot ("Pip")** | **Quaternius** (Animated Animals / characters) + **KayKit** (160+ CC0 animations) | one skinned mesh max per room; the rest placed static |
+| **The cat, birds, listener characters, the wind-up bot ("Sprout")** | **Quaternius** (Animated Animals / characters) + **KayKit** (160+ CC0 animations) | one skinned mesh max per room; the rest placed static |
 | **Vintage props** (gramophone, fiddle, kettle, jars, mugs, books, gears, brass tools, blueprints, easel, paint tubes, ceramics) | **Kenney** + **Quaternius** props; **Poly Pizza** for one-off gap-fillers | **verify per-model CC0** on Poly Pizza; record in the manifest |
 | **Warm-interior / golden-window HDRI** | **Poly Haven** (1–2K, self-hosted) | the single `<Environment>` IBL — the whole cohesion lever |
 | **PBR textures** (wood grain, knit/wool, leather, parchment, brass, plaster, stone) | **Poly Haven** + **ambientCG** (CC0) | 512–1K → KTX2; the meso/micro material bands (§4) |

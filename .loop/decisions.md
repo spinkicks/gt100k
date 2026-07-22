@@ -1022,3 +1022,18 @@ _Legacy scratch below (prior interest-lab loop — not applicable to evidence-ex
   excluded everywhere.
 - **Test boundary:** the Curiosity Map golden mirrors the three stub manifests locally so the pure-view
   package's tests do not acquire a reverse dependency on the React-aware zone kit.
+
+## IL-CORE-006 — The P4 shell keeps host state injected and the Canvas structurally stable
+- **Chose:** keep `CuriosityMap` controlled by the pure map view plus `activeZoneId`, `dayOffset`, and
+  callbacks; keep `CanvasHost` controlled by the registry, current zone id/actions, day, tier, and event
+  emitter. The Canvas is an unconditional child of the host, while only `ZoneRoom` or the sibling
+  `ActivityDOM` changes as host state changes.
+- **Why:** the spec freezes the domain and plugin contracts but not React prop names. Controlled inputs
+  keep navigation state in the app, make the persistent-mount invariant directly testable, and avoid a
+  second source of truth inside the react-aware seam.
+- **Time-lapse default:** the DOM control cycles deterministically through `0 → 7 → 30 → 0` using the
+  exact phase labels, even when the activity-derived time-lapse view has no populated phases. This keeps
+  the required control available before any activity without inventing wall-clock state.
+- **Board-tier bridge:** `ActivityDOM` receives `tier:"room-3d-lite"` at the no-WebGL floor because the
+  frozen `RoomProps.tier` deliberately contains only the two room tiers. DOM behavior must remain tier-
+  independent; P6 parity tests will enforce that the same action model and events are exposed.
