@@ -5,18 +5,21 @@ consistent. **Source of truth:** `@gt100k/interest-lab` (`src/probe.ts`) + `2026
 If a zone spec disagrees with this file, this file wins.
 
 ## 1. Canonical DOMAIN keys (wire) + child-facing labels
-`Domain` is an open `string` (`probe.ts`). v1 zones register:
+`Domain` is an open `string` (`probe.ts`). v1 zones register — **matching the frozen engine's established set**
+(the interest-lab smoke/offer/coverage tests already use `symbols_math` / `sound_music` / `visual_design`), so
+**no core-spec golden changes are needed**:
 
 | wire key | child-facing label | zone |
 |---|---|---|
 | `sound_music` | Music Studio | Music |
-| `computation` | Code Lab | Code |
+| `symbols_math` | Code Lab | Code |
 | `visual_design` | Art Studio | Art |
 
-Reserved for future zones (established catalog keys — do not reuse for these three): `symbols_math` (Math),
-`making` (Build/Engineering), `living_systems` (Life Science), `word_craft` (Writing). **Action:** update the
-core registry stub (its `symbols_math` placeholder → the three keys above). Child-facing text uses the labels;
-the wire/grid uses the keys.
+`symbols_math` is the broad quantitative/computational domain (child-facing **"Code Lab"** in v1). Reserved for
+future zones: `making` (Build/Engineering), `living_systems` (Life Science), `word_craft` (Writing). *(A future
+dedicated **Math** zone, if ever split off, takes a new key like `quant_reasoning` — `symbols_math` currently
+backs the Code Lab.)* Child-facing text uses the labels; the wire/grid uses the keys. **Resolved:** the earlier
+`computation` divergence is dropped in favor of the frozen `symbols_math`.
 
 ## 2. Canonical WORK_MODES (from `probe.ts` — all valid, none invented)
 `build · investigate · compose · explain · perform · debug · collaborate · care · persuade`.
@@ -35,10 +38,12 @@ each other or the app). The only shared-root edit is the app's `ZONES` registry 
 Content apps connect via `<ContentHost>` + **`@gt100k/interest-signal-client`** (postMessage → `ActivityEvent`),
 in a **PII-free embedded mode** (the world is the identity layer).
 
-## 5. Content-app strategy (v1)
-**Prefer ADAPT over build-fresh wherever we own or may use the source.** Every content app (owned, adapted,
-or fresh) must meet the same bar: a headless-testable core, WCAG-AA a11y, the `ActivityEvent` signal, world/DOM
-parity, and the Chromebook budget.
+## 5. Content-app strategy — DEFERRED (post-v1; from the intern repos)
+**The learning content is NOT built by the v1 world loops.** It comes from the intern repositories/sites and
+slots behind each cabin's doorway in a later phase; for v1 the doorways are **host-ready with a warm placeholder**
+(e.g. a "coming soon" hearth-glow / taster). When we do integrate content, **prefer ADAPT over build-fresh
+wherever we own or may use the source.** Every content app (owned, adapted, or fresh) must then meet the same
+bar: a headless-testable core, WCAG-AA a11y, the `ActivityEvent` signal, world/DOM parity, and the Chromebook budget.
 - **Music = adapt Blazing Audio (OWNED — full codebase, free to use).** Fork it into the pipeline: **drop the
   leaderboard** (don't gamify the return signal), add `@gt100k/interest-signal-client`, run it in PII-free
   embedded mode (the world is the identity layer), bring it to a11y + parity.
@@ -53,9 +58,16 @@ Retire v1's **midnight-cosmos** tokens (`SCENE3D.bg #181026` is now a *banned ou
 golden-hour cozy** pack (warm raking key + a cool skylight fill so shadows tint blue-violet, never dead gray).
 Keep the `Scene3DView` shape + `HUE_RAMP` (no contract break) — swap values only.
 
-## 7. Build lanes (parallel-safe)
-- **Lane 0 — core (first):** `@gt100k/interest-zone-kit` + signal engine + Curiosity Map + `<CanvasHost>` +
-  `<ContentHost>` + `window.__qa` + a green end-to-end smoke. **Freezes** the interface + the keys above.
-- **Lane W — world visuals** (can run alongside lane 0): the golden-hour repalette + the map/world look.
-- **Lanes 1–3 — zones (parallel, after the freeze):** Music / Code / Art. Each = the cozy 3D **doorway room**
-  + its Brilliant-style **content app**, built against the frozen contract, **gated by the upgraded QA**.
+## 7. v1 BUILD SCOPE + lanes — the GAME only; learning content DEFERRED
+**The v1 loops build ONLY the explorable game:** the Emberwood world (2D cabin-village map + 3D cabin
+interiors), movement, game-flow, cozy visuals + juice, the doorways (host-ready + a warm placeholder), and the
+**coarse domain-return signal** (which cabins a child visits and returns to). The **learning content behind the
+doorways is DEFERRED** (§5) — it arrives later from the intern repos, and the fine work-mode signal comes with
+it. *Everything except the learning material is in scope now — and the world must be a smooth, delightful, real
+game on its own.*
+- **Lane 0 — core (first):** `@gt100k/interest-zone-kit` + signal engine (domain-level for v1) + Curiosity Map
+  + `<CanvasHost>` + `<ContentHost>` (host-ready, no content yet) + `window.__qa` + green smoke. Freezes the interface + keys.
+- **Lane W — world visuals:** the Emberwood cozy repalette + the cabin-village map + 3D cabin looks (per the art bible).
+- **Lane G — game-flow + movement + world aliveness:** traversal, camera, transitions, controls, ambient life + juice.
+- **Lanes 1–3 — cabin rooms (parallel, after the freeze):** Music / Code / Art cozy interiors + their host-ready
+  doorway, gated by the upgraded QA. **Content behind the doorway = deferred.**
