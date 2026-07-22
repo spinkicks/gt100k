@@ -60,7 +60,7 @@ describe("Atelier — the Art cabin interior (§7.2 / §9 hard floors)", () => {
     const scene = buildAtelierScene();
     const hues = [
       ...scene.lights.flatMap((l) => [l.color, l.groundColor].filter((c): c is string => Boolean(c))),
-      ...scene.env.map((l) => l.color),
+      ...Object.values(scene.env),
       scene.shadow.color,
       scene.shaft.color,
       scene.shaft.emissive,

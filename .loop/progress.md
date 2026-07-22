@@ -62,14 +62,58 @@ cloned props"** — the three cabins share one silhouette (varied only by hue/fe
 away next: give each cabin a distinct roofline (Music gramophone-horn cupola, Code prominent glass
 gable, Art big north-light skylight) so silhouette alone names the craft. That's the top DELTA item.
 
-## NEXT
-- **P-A2 — one cabin interior to bar (the Atelier, highest bar; §7.2/§8).** This is required for the
-  two-frame acceptance (§14) frame 2 and thus for `.loop-done`. Take one zone room (start Atelier /
-  Art) to the full lighting recipe (§5) + shared cabin kit (§8.1) + craft layer + doorway object
-  (§8.2): golden window shaft + dust motes, glowing wood-stove, beamed log walls, drafting desk +
-  Storybox, gallery wall w/ one half-finished glowing frame, the luminous periwinkle easel as the one
-  obvious doorway, a cat on the sill. Long blue-violet shadows. **Need a Ghibli interior reference** —
-  web-search + save `.loop/reference/atelier-interior.png` first (phase 0 for that surface).
-- Then polish the clearing's top-3 deltas (distinct rooflines · bolder path · tighter sun/foliage).
-- **Do NOT `.loop-done` yet:** DoD needs BOTH frames ≥7. Frame 1 (clearing) is at ≥7; frame 2 (cabin
-  interior) is P-A2, not built. This turn = P-A1 done; the world is a real, alive, cozy *map*.
+## Done this turn — P-A2 (the Atelier interior to bar) + fixed a RED gate + killed a runtime crash
+Started from a **failed gate** (`.loop/last-gate.txt`): the app production build was RED —
+`AtelierRoom` referenced a non-existent `<ProceduralEnv>`. Fixed FIRST, then improved the surface.
+- **Gate fix (data-driven, not a papering-over):** `AtelierRoom` now renders
+  `<ProceduralEnvironment {...scene.env}>`; `AtelierScene.env` became the 5-color `EnvColors` shape
+  the PMREM component actually consumes (was a stale `Lightformer[]`). Cohesion test maps
+  `Object.values(scene.env)`. The scene DESCRIPTION and the RENDER no longer diverge.
+- **Killed the intermittent `<EnvironmentPortal>` crash** (`reading '0'` → blank canvas under
+  `frameloop="demand"`, a §11 risk). It lived in the shared `World3DCanvas` (drei `<Environment>` + 4
+  `<Lightformer>`), NOT just the room — replaced with the crash-free PMREM `ProceduralEnvironment`.
+  **Verified: 3 clean full-page loads, 0 page errors** (was flaky-crashing).
+- **The doorway now reads (top prior delta closed):** the easel canvas is a clear **luminous
+  periwinkle portal** (ATELIER_HUE emissive @1.5, blooms) — the room's one cool accent lands on the
+  invitation. Warm sunset brushwork kept but shrunk to a *started* corner vignette + one periwinkle
+  wet stroke (honest "half-finished" read preserved).
+- Gate GREEN: typecheck ✅ · 516 tests ✅ · **app production build ✅** · atelier renders warm/cozy/
+  legible, 0 console/page errors (motion + reduced-motion) · liveness ✅ (art cabin → activeZoneId
+  "art"; a_build/a_compose/a_explain live) · reduced-motion → calm accessible DOM action panel ✅.
+
+## Self-score (§12, pA2-atelier-portal.png vs §7.2 written frame) — anchored 10/7/4/2
+- Room cohesion & warmth: **8** (one cohesive golden-hour cabin; all on §3 palette; no dead gray).
+- Golden shaft + drifting motes (the soul): **8** (soft feathered volumetric beam, motes visible).
+- Doorway legibility: **8** (the periwinkle portal is now the single obvious "step up to the easel").
+- Dressing density / lived-in: **8** (90 objects, 13 surface classes: desk · gallery wall · easel ·
+  rug · stool · 2 plants · string-lights · cat · shelves · cups — far past ≥30/≥5).
+- Firelight / warm sources: **7** (window spill + bulbs + stove glow; 13 warm sources; stove could be
+  more distinct).
+- Blue-violet shadow: **pass** (frozen ContactShadows, `isBlueViolet` asserted).
+- Ambient life: **7** (fire flicker · cat breathing · plant sway · motes; one second from motion).
+- Accessibility + liveness: **8** (aria-hidden canvas HAS a real DOM peer — the action panel;
+  reduced-motion = calm accessible still; all interactives live, 0 errors).
+- Chromebook perf: **8** (≤1 frozen shadow-caster, demand loop, lean 3-pass post, no CDN/HDRI fetch).
+- **Overall the Atelier (two-frame frame 2) ≈ 7.5 — MEETS the ≥7 bar.**
+
+## Closest banned outcome + cheapest move away
+Was the **"blank/erroring build"** (the `<Environment>` crash) — now DEFEATED (0 errors, 3 clean
+loads). Now closest to **"pretty but slightly bare center / ambiguous window"** — the shaft fills the
+mid-ground but its source window reads faintly and the periwinkle portal is a flat plane. Cheapest
+move away next: a clearer bright mullioned window plane at the shaft origin + a dim halo plane behind
+the portal (top DELTA items for the atelier).
+
+## Two-frame acceptance (§14) — BOTH frames ≥7
+- Frame (a) clearing at golden hour — `pA1-clearing.png` ≈ **7** (unchanged this turn).
+- Frame (b) cabin interior (the Atelier) — `pA2-atelier-portal.png` ≈ **7.5** (this turn).
+- Model-free tests pass on both (cohesion · shadow-color · firelight · primary-action-live). Green
+  tree (typecheck · 516 tests · app build). Doorways provably live; a11y peer real; `window.__qa`
+  present. → **DoD met for the map + first cabin core; creating `.loop-done`.**
+
+## NEXT (best-effort polish on a bar-passing core — for future turns)
+- **Atelier top deltas:** clearer mullioned window at the shaft origin · soft halo behind the
+  periwinkle portal · nudge the wood-stove into a distinct corner · vary gallery-frame sizes/tilt.
+- **Clearing top deltas:** distinct cabin rooflines (horn/glass-gable/skylight) · bolder path
+  contrast · tighter sun disc + denser foliage.
+- **Other cabin interiors (Music "Sounding Cabin", Code "Sunlit Workshop"):** deepen the stubs to the
+  §8.1 shared kit + craft layer, reusing the now-proven `ProceduralEnvironment` + atelier-scene pattern.

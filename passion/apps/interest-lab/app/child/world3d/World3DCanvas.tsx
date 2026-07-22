@@ -1,10 +1,11 @@
 "use client";
 
 import { CABIN, CAMERA3D, PALETTE, type SceneView } from "@gt100k/interest-lab-view";
-import { AdaptiveDpr, ContactShadows, Environment, Lightformer } from "@react-three/drei";
+import { AdaptiveDpr, ContactShadows } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { type ReactNode, useEffect, useMemo } from "react";
 import { ACESFilmicToneMapping } from "three";
+import { ProceduralEnvironment } from "./procedural-env";
 import { WorldPostFX } from "./WorldPostFX";
 
 // Grounding + rig constants for the "Curiosity Quest World" dusk atelier (see .loop/decisions.md D-VP1).
@@ -121,48 +122,20 @@ export function World3DCanvas({ scene, children, onContextLost }: World3DCanvasP
         intensity={RIM_LIGHT_INTENSITY}
         position={RIM_LIGHT_POSITION}
       />
-      {/* Local image-based ambient built from palette Lightformers — no remote HDRI fetch,
-          bakes once (frames=1). This lifts the matte island materials into readable PBR and
-          removes the flat, self-lit "gray primitive" look. */}
-      <Environment
-        frames={1}
-        resolution={256}
-        background={false}
-        environmentIntensity={ENVIRONMENT_INTENSITY}
-      >
-        <Lightformer
-          form="rect"
-          intensity={2.2}
-          color={PALETTE.beacon}
-          scale={[18, 10, 1]}
-          position={[9, 9, 6]}
-          rotation={[0, -Math.PI / 4, 0]}
-        />
-        <Lightformer
-          form="circle"
-          intensity={1.4}
-          color={PALETTE.sparkHi}
-          scale={[12, 12, 1]}
-          position={[0, 13, 2]}
-          rotation={[Math.PI / 2, 0, 0]}
-        />
-        <Lightformer
-          form="rect"
-          intensity={1.1}
-          color={PALETTE.tide}
-          scale={[16, 9, 1]}
-          position={[-9, 6, -6]}
-          rotation={[0, Math.PI / 3, 0]}
-        />
-        <Lightformer
-          form="rect"
-          intensity={0.5}
-          color={CABIN.terracotta}
-          scale={[26, 26, 1]}
-          position={[0, -8, 0]}
-          rotation={[-Math.PI / 2, 0, 0]}
-        />
-      </Environment>
+      {/* Local image-based ambient — a warm/cool equirect gradient baked ONCE via PMREM (cool dusk
+          sky above → warm terracotta floor bounce below, warm peach + golden key bands at the
+          horizon). This lifts the matte island materials into readable PBR and removes the flat,
+          self-lit "gray primitive" look. Replaces the drei <Environment><Lightformer/> portal, whose
+          cube-camera setup intermittently threw "Cannot read properties of undefined (reading '0')"
+          → a BLANK canvas under frameloop="demand" (see procedural-env.tsx). No portal, no race. */}
+      <ProceduralEnvironment
+        cool={CABIN.duskSkylight}
+        warm={PALETTE.sparkHi}
+        floor={CABIN.terracotta}
+        accentL={PALETTE.sparkHi}
+        accentR={PALETTE.beacon}
+        intensity={ENVIRONMENT_INTENSITY}
+      />
       {/* Warm forest floor — a soft golden-hour ground the islands rest on; its far edge
           dissolves into the honey fog, giving the world a warm horizon instead of a black void
           (was the banned midnight #120b1e sea). Warm walnut, faint ember glow in the mist. */}

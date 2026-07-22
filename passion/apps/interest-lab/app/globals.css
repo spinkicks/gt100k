@@ -2514,6 +2514,109 @@ body:has(.interest-lab-client[data-active-surface="child"]) {
   height: 100% !important;
 }
 
+/* ── Board-2D tier (low-end devices + reduced-motion) — the accessible peer, made real ──
+   In this tier the frozen CanvasHost mounts an EMPTY <canvas> (ZoneRoom returns null for board-2d)
+   and, below it, the zone's ActivityDOM <fieldset>. Left alone that reads as a giant cream void
+   over three bare buttons — a §11 "cold/empty room" + "lesser flat menu" + a broken reduced-motion
+   still. So here we HIDE the empty canvas and dress the fieldset into a warm, cozy affordance board:
+   a true peer that still lets the child choose what to try, the primary "doorway" action
+   emphasised — a calm still, never a lesser flat menu. Scoped to the board-2d tier only, so the
+   room-3d / room-3d-lite canvas is untouched. */
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"] {
+  aspect-ratio: auto;
+  padding: 1.15rem 1.25rem 1.35rem;
+}
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > div:has(canvas) {
+  display: none;
+}
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  min-inline-size: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem;
+}
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset::before {
+  content: "Step inside";
+  grid-column: 1 / -1;
+  margin-bottom: 0.1rem;
+  font-weight: 640;
+  font-size: 0.98rem;
+  letter-spacing: 0.01em;
+  color: #6b4a2e;
+}
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset
+  button {
+  cursor: pointer;
+  text-align: left;
+  padding: 0.85rem 0.95rem;
+  border-radius: 14px;
+  border: 1px solid rgb(107 74 46 / 22%);
+  background: linear-gradient(155deg, #fdf1d4 0%, #f3ddac 62%, #eccf98 100%);
+  color: #5a3d26;
+  font-size: 1.02rem;
+  font-weight: 600;
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 70%) inset,
+    0 10px 22px -16px rgb(74 51 32 / 55%);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset
+  button::after {
+  content: "→";
+  float: right;
+  opacity: 0.45;
+  font-weight: 700;
+}
+/* Primary action = the warm "doorway" (emphasised, glowing), mirroring the 3D easel. */
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset
+  button[data-primary="true"] {
+  background: linear-gradient(155deg, #ffe6bf 0%, #f7c489 58%, #eda86a 100%);
+  border-color: rgb(196 116 54 / 45%);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 75%) inset,
+    0 14px 26px -14px rgb(150 82 40 / 60%),
+    0 0 0 3px rgb(240 176 116 / 30%);
+}
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset
+  button[data-primary="true"]::after {
+  opacity: 0.8;
+}
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset
+  button:hover,
+.interest-lab-client[data-active-surface="child"][data-active-render-tier="board-2d"]
+  [data-canvas-host="true"]
+  > fieldset
+  button:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgb(196 116 54 / 55%);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 80%) inset,
+    0 18px 30px -14px rgb(74 51 32 / 60%);
+}
+
 @media (prefers-reduced-motion: reduce) {
   body:has(.interest-lab-client[data-active-surface="child"]) {
     background:

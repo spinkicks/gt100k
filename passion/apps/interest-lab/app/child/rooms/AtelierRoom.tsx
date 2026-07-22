@@ -17,21 +17,15 @@
 // walkable in tests exactly like Island(); all hooks live in <AtelierStage>.
 
 import type { ActivityEvent } from "@gt100k/interest-lab";
-import { SCENE3D, type ZoneActionModel, type ZoneId } from "@gt100k/interest-lab-view";
+import { CABIN, SCENE3D, type ZoneActionModel, type ZoneId } from "@gt100k/interest-lab-view";
 import type { RoomProps } from "@gt100k/interest-zone-kit";
-import {
-  BakeShadows,
-  ContactShadows,
-  Environment,
-  Lightformer,
-  PerspectiveCamera,
-  Sparkles,
-} from "@react-three/drei";
+import { BakeShadows, ContactShadows, PerspectiveCamera, Sparkles } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Bloom, EffectComposer, ToneMapping, Vignette } from "@react-three/postprocessing";
 import { BlendFunction, ToneMappingMode } from "postprocessing";
 import { type RefObject, useEffect, useMemo, useRef } from "react";
 import { Color, type Mesh, type PointLight } from "three";
+import { ProceduralEnvironment } from "../world3d/procedural-env";
 import {
   type AtelierProp,
   type AtelierScene,
@@ -165,10 +159,9 @@ function AtelierStage({ scene, reducedMotion }: { scene: AtelierScene; reducedMo
   // frameloop="demand" the scene only repaints on invalidate(); the motion useFrame supplies that
   // during motion, but under reduced-motion it early-returns — so without this the room freezes on
   // its blank pre-settle first frame (a §11 broken still). Only under reduced-motion, pump a
-  // bounded burst of invalidations so the camera, IBL, contact shadow and post chain fully resolve,
-  // then stop → an instant calm still at ~0 ongoing GPU. The pump is DEFERRED past the initial
-  // mount render (two rAFs) so it never invalidates while the drei <Environment> portal is still
-  // initializing — invalidating mid-mount races EnvironmentPortal → the "reading '0'" crash.
+  // bounded burst of invalidations so the camera, PMREM IBL (assigned in ProceduralEnv's effect),
+  // the frozen contact shadow and the post chain fully resolve, then stop → an instant calm still
+  // at ~0 ongoing GPU. Deferred one rAF so the env/scene effects have committed before the burst.
   useEffect(() => {
     if (!reducedMotion) return; // the motion path already settles via the useFrame loop
     let frame = 0;
@@ -185,6 +178,20 @@ function AtelierStage({ scene, reducedMotion }: { scene: AtelierScene; reducedMo
       cancelAnimationFrame(raf);
     };
   }, [invalidate, reducedMotion]);
+
+  // Reduced-motion still safety: any event that can blank a demand-loop canvas (tab restore,
+  // resize, DPR settle) must trigger a repaint, or the child is left on a cleared buffer. Cheap +
+  // event-driven → still ~0 idle GPU. (The motion path self-heals via the useFrame loop below.)
+  useEffect(() => {
+    if (!reducedMotion || typeof window === "undefined") return;
+    const repaint = () => invalidate();
+    window.addEventListener("resize", repaint);
+    document.addEventListener("visibilitychange", repaint);
+    return () => {
+      window.removeEventListener("resize", repaint);
+      document.removeEventListener("visibilitychange", repaint);
+    };
+  }, [reducedMotion, invalidate]);
 
   // Ambient life (Pillar F): fire flicker · cat breathing · plant sway · drifting motes. Under
   // frameloop="demand" the loop self-sustains via invalidate(); reduced-motion never invalidates
@@ -247,21 +254,10 @@ function AtelierStage({ scene, reducedMotion }: { scene: AtelierScene; reducedMo
         );
       })}
 
-      {/* Procedural IBL: a warm window + hearth + a cool sky, rendered once — the cohesion lever
-          (§5.1) with NO external HDRI/CDN (avoids the <Environment> preset crash, r3f pitfalls). */}
-      <Environment resolution={64} frames={1}>
-        <color attach="background" args={[SCENE3D.bgHex]} />
-        {scene.env.map((lf, i) => (
-          <Lightformer
-            key={i}
-            form="rect"
-            color={lf.color}
-            intensity={lf.intensity}
-            position={lf.position as [number, number, number]}
-            scale={lf.scale as [number, number, number]}
-          />
-        ))}
-      </Environment>
+      {/* Procedural IBL — a warm window + hearth + a cool sky, baked once via PMREM (the §5.1
+          cohesion lever) with NO drei <Environment> portal and NO external HDRI/CDN, so the
+          "reading '0'" crash / blank-canvas race cannot happen (see procedural-env.tsx). */}
+      <ProceduralEnvironment {...scene.env} intensity={0.9} />
 
       {/* Palette-matched warm fog for cohesion (never to hide the far clip, §5.7). */}
       <fog attach="fog" args={[SCENE3D.fogHex, 12, 34]} />

@@ -1163,3 +1163,27 @@ a calm, complete still, never broken.
 **Time-lapse** = a labeled calm control; stepping Right now → week → month lowers the sun a notch,
 cools the sky slightly (small hue-rotate), and brings the fireflies out — the honest synthetic-return
 device on screen, never a countdown.
+
+## P-A2 fix — the Atelier interior, the periwinkle portal, and killing the <Environment> crash
+
+**Procedural IBL replaces the drei `<Environment>` portal EVERYWHERE (not just the room).** The
+intermittent `<EnvironmentPortal>` crash — `Cannot read properties of undefined (reading '0')`, which
+blanks the whole Canvas subtree under `frameloop="demand"` — lived in `World3DCanvas.tsx` (the shared
+overworld canvas, 4 `<Lightformer>`s), NOT only in the room. `world3d/procedural-env.tsx`
+(`ProceduralEnvironment`) bakes a warm/cool equirect gradient once via `PMREMGenerator` and assigns
+`scene.environment` — no portal, no cube-camera, no per-frame render, no race. Both `AtelierRoom` and
+`World3DCanvas` now use it. Overworld env colors: cool `duskSkylight` sky · warm `sparkHi` horizon ·
+`terracotta` floor bounce · warm key bands `sparkHi` (L) + `beacon` (R), `intensity 0.5`. Verified 3
+clean full-page loads, zero page errors (was intermittently crashing).
+
+**`AtelierScene.env` is now the 5-color `EnvColors` shape, not a `Lightformer[]`.** The scene DESCRIBES
+the procedural env it renders (the file's philosophy), and the render/description no longer diverge
+(the divergence was the P-A2 build break: `<ProceduralEnv env={…}>` vs a component that takes spread
+colors). Cohesion test maps `Object.values(scene.env)`.
+
+**The easel canvas IS the doorway = a luminous PERIWINKLE portal (§7.2/§8.2), not a finished warm
+painting.** The room's one deliberately-cool accent (ATELIER_HUE `#6C8CE8`) now lands on the doorway
+object as the single brightest cool focal (`emissive` @1.5 → blooms + tone-map off), so "the one
+obvious glowing doorway" reads unambiguously. The warm sunset brushwork is kept but shrunk to a small
+*started* vignette lower-left + one periwinkle wet stroke — preserving the honest "half-finished" read
+while the portal glows open. (Was: whole canvas a warm parchment landscape → periwinkle invisible.)

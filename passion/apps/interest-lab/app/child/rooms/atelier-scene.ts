@@ -66,11 +66,23 @@ export interface AtelierLight {
   groundColor?: string;
 }
 
-export interface Lightformer {
-  color: string;
-  intensity: number;
-  position: readonly [number, number, number];
-  scale: readonly [number, number, number];
+/**
+ * Procedural IBL colors — a warm/cool equirect gradient baked ONCE via PMREM (no external HDRI/CDN),
+ * the r3f-pitfall-safe drop-in for the drei `<Environment>` portal that intermittently throws the
+ * "Cannot read properties of undefined (reading '0')" crash → blank canvas. Consumed by
+ * `<ProceduralEnvironment>` in world3d/procedural-env.tsx.
+ */
+export interface EnvColors {
+  /** Cool dusk skylight from above — keeps shadows blue-violet, never dead (Pillar B). */
+  cool: string;
+  /** Warm golden-hour horizon band the room bathes in. */
+  warm: string;
+  /** Warm floor bounce from below (terracotta / walnut). */
+  floor: string;
+  /** Warm key band, left — the golden window (the beacon). */
+  accentL: string;
+  /** Warm key band, right — the wood-stove hearth (the spark). */
+  accentR: string;
 }
 
 export interface AtelierScene {
@@ -79,7 +91,7 @@ export interface AtelierScene {
   shadow: { color: string; opacity: number; scale: number; blur: number; y: number };
   lights: readonly AtelierLight[];
   /** Procedural IBL — a warm window + hearth + cool sky, no external HDRI/CDN (r3f pitfall-safe). */
-  env: readonly Lightformer[];
+  env: EnvColors;
   /** The hero detail — the golden window shaft carrying dust motes (§5). */
   shaft: {
     color: string;
@@ -208,18 +220,22 @@ export function buildAtelierScene(): AtelierScene {
   push({ key: "easel-leg-back", surfaceClass: "easel", geom: "box", args: [0.14, 3.4, 0.14], position: [2.2, 1.7, 0.4], rotation: [0.2, 0, 0], color: CABIN.woodWalnut, roughness: 0.6, metalness: 0, flat: true });
   push({ key: "easel-tray", surfaceClass: "easel", geom: "box", args: [1.5, 0.14, 0.24], position: [2.2, 1.5, 1.06], color: CABIN.woodHoney, roughness: 0.55, metalness: 0.05, flat: true });
   push({ key: "easel-brace", surfaceClass: "easel", geom: "box", args: [0.5, 0.12, 0.12], position: [2.2, 3.1, 0.7], color: CABIN.brass, roughness: 0.45, metalness: 0.5, flat: true });
-  // The canvas — a HALF-FINISHED golden-hour painting: a warm, softly self-lit parchment ground
-  //   (the doorway that INVITES, not a cold blank slab). It is the action mesh (role easel-canvas).
-  push({ key: "easel-canvas", surfaceClass: "easel", geom: "plane", args: [1.6, 2.0], position: [2.2, 2.5, 1.12], color: CABIN.parchment, roughness: 0.6, metalness: 0, emissive: CABIN.candle, emissiveIntensity: 0.7, flat: false, role: "easel-canvas" });
+  // The canvas — the DOORWAY object (§7.2 / §8.2): a soft LUMINOUS PERIWINKLE PORTAL ("step up to
+  //   the easel"). The room's one deliberately-cool accent lands HERE, as the single brightest cool
+  //   focal point — emissive ≥1.2 so MaterialEl blooms it + drops tone-mapping. It is the action mesh
+  //   (role easel-canvas). The warm sunset brushwork below is only *started* in one corner (the
+  //   honest "half-finished" read), leaving most of the portal glowing open + inviting.
+  push({ key: "easel-canvas", surfaceClass: "easel", geom: "plane", args: [1.6, 2.0], position: [2.2, 2.5, 1.12], color: ATELIER_HUE, roughness: 0.55, metalness: 0, emissive: ATELIER_HUE, emissiveIntensity: 1.5, flat: false, role: "easel-canvas" });
   push({ key: "easel-canvas-back", surfaceClass: "easel", geom: "box", args: [1.72, 2.12, 0.08], position: [2.2, 2.5, 1.06], color: CABIN.woodDrift, roughness: 0.7, metalness: 0, flat: true });
-  // The painting-in-progress ON the canvas — a little Emberwood sunset (warm sky → hill → ground),
-  //   a glowing sun, and one wet periwinkle stroke (the cool art accent). Left ~2/3 painted, right
-  //   edge still bare parchment (the honest "unfinished" read). Opaque, z just toward the camera.
-  push({ key: "paint-sky", surfaceClass: "easel", geom: "box", args: [1.16, 0.78, 0.02], position: [2.02, 2.82, 1.15], color: CABIN.candle, roughness: 0.7, metalness: 0, emissive: CABIN.candle, emissiveIntensity: 0.5, flat: true, jittered: true });
-  push({ key: "paint-hill", surfaceClass: "easel", geom: "box", args: [1.16, 0.42, 0.02], position: [2.02, 2.34, 1.16], color: CABIN.leafRust, roughness: 0.8, metalness: 0, emissive: CABIN.fireEmber, emissiveIntensity: 0.28, flat: true, jittered: true });
-  push({ key: "paint-ground", surfaceClass: "easel", geom: "box", args: [1.16, 0.4, 0.02], position: [2.02, 1.98, 1.16], color: CABIN.terracotta, roughness: 0.85, metalness: 0, emissive: CABIN.fireEmber, emissiveIntensity: 0.32, flat: true });
-  push({ key: "paint-sun", surfaceClass: "easel", geom: "sphere", args: [0.17, 10, 8], position: [1.72, 2.88, 1.18], color: CABIN.lantern, roughness: 0.5, metalness: 0, emissive: CABIN.lantern, emissiveIntensity: 1.7, flat: false });
-  push({ key: "paint-stroke", surfaceClass: "easel", geom: "box", args: [0.5, 0.12, 0.02], position: [2.36, 2.5, 1.17], rotation: [0, 0, -0.22], color: ATELIER_HUE, roughness: 0.6, metalness: 0, emissive: ATELIER_HUE, emissiveIntensity: 0.6, flat: true, jittered: true });
+  // The painting-in-progress ON the portal — a small STARTED Emberwood sunset vignette clustered
+  //   lower-left (warm sky → hill → ground + a glowing sun) and one wet periwinkle stroke floating in
+  //   the open portal (the cool art accent). Most of the canvas is still glowing periwinkle — the
+  //   honest "just begun" read. Opaque, z just toward the camera.
+  push({ key: "paint-sky", surfaceClass: "easel", geom: "box", args: [0.62, 0.34, 0.02], position: [1.85, 2.5, 1.15], color: CABIN.candle, roughness: 0.7, metalness: 0, emissive: CABIN.candle, emissiveIntensity: 0.4, flat: true, jittered: true });
+  push({ key: "paint-hill", surfaceClass: "easel", geom: "box", args: [0.62, 0.2, 0.02], position: [1.85, 2.27, 1.16], color: CABIN.leafRust, roughness: 0.8, metalness: 0, emissive: CABIN.fireEmber, emissiveIntensity: 0.28, flat: true, jittered: true });
+  push({ key: "paint-ground", surfaceClass: "easel", geom: "box", args: [0.62, 0.18, 0.02], position: [1.85, 2.1, 1.16], color: CABIN.terracotta, roughness: 0.85, metalness: 0, emissive: CABIN.fireEmber, emissiveIntensity: 0.32, flat: true });
+  push({ key: "paint-sun", surfaceClass: "easel", geom: "sphere", args: [0.1, 10, 8], position: [1.68, 2.6, 1.18], color: CABIN.lantern, roughness: 0.5, metalness: 0, emissive: CABIN.lantern, emissiveIntensity: 1.7, flat: false });
+  push({ key: "paint-stroke", surfaceClass: "easel", geom: "box", args: [0.46, 0.11, 0.02], position: [2.5, 2.74, 1.17], rotation: [0, 0, -0.22], color: ATELIER_HUE, roughness: 0.6, metalness: 0, emissive: ATELIER_HUE, emissiveIntensity: 1.3, flat: true, jittered: true });
 
   // — Floor + wall dressing: rug · potted plants · trailing vine · lanterns · string-lights · mug · blanket · books —
   push({ key: "rug", surfaceClass: "textile", geom: "cyl", args: [2.3, 2.3, 0.05, 20], position: [0.2, 0.06, 1.2], color: CABIN.woolWarm, roughness: 0.95, metalness: 0, flat: true, jittered: true });
@@ -261,11 +277,16 @@ export function buildAtelierScene(): AtelierScene {
       // A soft warm bounce off the easel so the doorway reads as the second focal point.
       { kind: "point", color: CABIN.fireSpark, intensity: 0.7, position: [2.2, 2.5, 1.6] },
     ],
-    env: [
-      { color: CABIN.windowSpill, intensity: 2.4, position: [-3.1, 3.0, backZ + 1.5], scale: [3, 4, 1] },
-      { color: CABIN.duskSkylight, intensity: 0.7, position: [0, 7, -2], scale: [12, 8, 1] },
-      { color: CABIN.fireFlame, intensity: 1.4, position: [4.0, 1.2, backZ + 2.4], scale: [2, 2, 1] },
-    ],
+    // Procedural IBL colors: warm window (left) + hearth (right) key bands over a cool dusk sky,
+    // with a warm terracotta floor bounce below. Baked once via PMREM (world3d/procedural-env.tsx)
+    // → the drei <Environment> "reading '0'" crash / blank-canvas race cannot happen.
+    env: {
+      cool: CABIN.duskSkylight,
+      warm: CABIN.candle,
+      floor: CABIN.terracotta,
+      accentL: CABIN.windowSpill,
+      accentR: CABIN.fireFlame,
+    },
     shaft: {
       color: CABIN.candle,
       emissive: CABIN.candle,
