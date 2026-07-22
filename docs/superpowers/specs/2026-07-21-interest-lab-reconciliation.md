@@ -36,11 +36,17 @@ Content apps connect via `<ContentHost>` + **`@gt100k/interest-signal-client`** 
 in a **PII-free embedded mode** (the world is the identity layer).
 
 ## 5. Content-app strategy (v1)
-**Build fresh per domain** over a headless core (guarantees a11y + the signal contract + world/DOM parity +
-the Chromebook budget). Existing apps (**Blazing Audio**, **Chrome Music Lab**) are **north-star / reusable
-parts, NOT embedded** — they're auth-walled / PII-bound / closed. The iframe + signal-SDK contract (§4) stays
-in place for **future** integration of *open, embeddable* intern apps: coarse return-signal is free even for
-un-instrumented apps; the rich work-mode signal needs the ~10-line SDK added inside the app.
+**Prefer ADAPT over build-fresh wherever we own or may use the source.** Every content app (owned, adapted,
+or fresh) must meet the same bar: a headless-testable core, WCAG-AA a11y, the `ActivityEvent` signal, world/DOM
+parity, and the Chromebook budget.
+- **Music = adapt Blazing Audio (OWNED — full codebase, free to use).** Fork it into the pipeline: **drop the
+  leaderboard** (don't gamify the return signal), add `@gt100k/interest-signal-client`, run it in PII-free
+  embedded mode (the world is the identity layer), bring it to a11y + parity.
+- **Code / Art (+ future domains) = per the operator's intern-app list.** Most intern apps are expected to be
+  codebase-accessible + free to use → **adapt** them the same way; **build fresh** only where no suitable app
+  exists. `Chrome Music Lab` (Apache-2.0) remains a parts/reference source.
+The iframe + signal-SDK contract (§4) also covers any *open, deployed* app: coarse return-signal is free even
+un-instrumented; the rich work-mode signal needs the ~10-line SDK inside the app.
 
 ## 6. World art direction
 Retire v1's **midnight-cosmos** tokens (`SCENE3D.bg #181026` is now a *banned outcome*). Repalette to a **warm
