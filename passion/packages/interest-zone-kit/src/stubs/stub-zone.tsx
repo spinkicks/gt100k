@@ -23,6 +23,7 @@ function createRoom3D(zoneId: ZoneId) {
             key={action.actionId}
             name={action.label}
             position={[index * 1.5 - 1.5, 0, 0]}
+            userData={{ action }}
             onClick={() => emit(eventFor(action, zoneId, dayOffset))}
           >
             <boxGeometry args={[1, 1, 0.2]} />
@@ -37,17 +38,23 @@ function createRoom3D(zoneId: ZoneId) {
 function createActivityDOM(zoneId: ZoneId) {
   return function StubActivityDOM({ actions, dayOffset, emit }: RoomProps) {
     return (
-      <div aria-label={`${zoneId} activities`}>
+      <fieldset aria-label={`${zoneId} activities`}>
         {actions.map((action) => (
           <button
             key={action.actionId}
             type="button"
+            data-action-id={action.actionId}
+            data-domain={action.domain}
+            data-kind={action.kind}
+            data-primary={action.primary}
+            data-probe-id={action.probeId}
+            data-work-mode={action.workMode}
             onClick={() => emit(eventFor(action, zoneId, dayOffset))}
           >
             {action.label}
           </button>
         ))}
-      </div>
+      </fieldset>
     );
   };
 }

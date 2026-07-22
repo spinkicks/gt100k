@@ -78,6 +78,12 @@ describe("CuriosityMap", () => {
     expect(document.activeElement).toBe(art);
     fireEvent.keyDown(art as HTMLButtonElement, { key: "ArrowLeft" });
     expect(document.activeElement).toBe(code);
+    fireEvent.keyDown(code as HTMLButtonElement, { key: "ArrowUp" });
+    expect(document.activeElement).toBe(music);
+    fireEvent.keyDown(music as HTMLButtonElement, { key: "ArrowLeft" });
+    expect(document.activeElement).toBe(art);
+    fireEvent.keyDown(art as HTMLButtonElement, { key: "ArrowRight" });
+    expect(document.activeElement).toBe(music);
 
     fireEvent.click(code as HTMLButtonElement);
     expect(onEnterZone).toHaveBeenCalledTimes(1);

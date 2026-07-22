@@ -411,3 +411,34 @@ non-negotiable.
   action sets remain equal for music, code, and art. Re-run the Curiosity Map keyboard contract while
   tightening any remaining a11y assertions. Acceptance: **SC-CORE-11** plus tightened **SC-CORE-10**,
   existing tests/typecheck, changed-file lane lint, and app production build green.
+
+## Done this turn — P6 stub action parity + accessible action surfaces
+- Added RED-first acceptance for the canonical stub action model, order-independent `plainZoneEquals`,
+  exact per-button emissions, and DOM/3D/model parity across music, code, and art. All ten cases first
+  failed on the missing P6 runtime export.
+- Implemented pure `buildZoneActivityModel` / `plainZoneEquals` in `@gt100k/interest-lab-view`: default
+  actions are stable probe-id actions, sorted by id, artifact-kind, title-cased by work mode, and carry
+  exactly one primary action per non-empty stub room.
+- Made `CanvasHost` inject `buildZoneActivityModel(activePlugin).actions` into both render surfaces, with
+  a second RED→GREEN host test proving callers cannot supply a divergent action list.
+- Kept each stub deliberately plain: accessible fieldset + labeled native buttons in DOM, labeled box
+  meshes in 3D, and exact shared `ActivityEvent` emission from either surface.
+- Tightened SC-CORE-10 to exercise all four arrow keys plus wraparound while retaining one roving tab stop,
+  native buttons, visible labels, live selection, and a non-hidden primary map.
+- Fixed the root gate's silent TSX omission test-first: `pnpm test` now discovers all three zone-kit React
+  acceptance suites, with a regression guard for the root Vitest include.
+- SC status: **SC-CORE-01…14 green** (all automated criteria through P6); **SC-CORE-15 remains green at its
+  P0 shape level** pending P7 exact integration; manual SC-CORE-16 remains excluded.
+- Gate evidence: focused RED = **10 missing-model failures + 1 host-derivation failure + 1 root-discovery
+  failure**; zone-kit = **5 files, 20 tests**; view = **25 files, 109 tests**; `pnpm typecheck` ✓;
+  `pnpm test` ✓ (**112 files, 505 tests**, including component TSX); changed-file Biome check ✓
+  (**10 files**); `pnpm --filter @gt100k/interest-lab-app build` ✓ (static `/` prerender).
+- `.loop-done` remains absent because P7 is not complete.
+
+## NEXT
+- **P7 — integrate the shared core shell and tighten the seeded smoke to every exact golden.** Compose the
+  DOM Curiosity Map, persistent `CanvasHost`, registry, append-only activity log, live grid/hypothesis, and
+  replaceable QA bridge in the app; tighten `core-smoke.test.ts` to exact `GRID_GOLDEN_A`, `HYP_GOLDEN_A`,
+  `MAP_GOLDEN`, entered `stateHash`, and full interactive ids. Acceptance: full **SC-CORE-15**, all
+  automated **SC-CORE-01…15**, typecheck, root tests, changed-file lint, and app production build green;
+  then create `.loop-done` (SC-CORE-16 remains manual/excluded).

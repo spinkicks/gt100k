@@ -1,7 +1,6 @@
 // @vitest-environment jsdom
 
 import type { ActivityEvent } from "@gt100k/interest-lab";
-import type { ZoneActionModel } from "@gt100k/interest-lab-view";
 import { cleanup, render, screen } from "@testing-library/react";
 import { type ComponentType, type ReactNode, useEffect } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -27,7 +26,6 @@ vi.mock("@react-three/drei", () => ({
 interface CanvasHostProps {
   activeZoneId: string | null;
   registry: ZoneRegistry;
-  actions: readonly ZoneActionModel[];
   emit: (event: ActivityEvent) => void;
   dayOffset: number;
   tier: "room-3d" | "room-3d-lite" | "board-2d";
@@ -57,7 +55,6 @@ const registry = ZoneKit.createZoneRegistry([
 const defaultProps: CanvasHostProps = {
   activeZoneId: null,
   registry,
-  actions: [],
   emit: vi.fn(),
   dayOffset: 0,
   tier: "room-3d",
@@ -107,5 +104,27 @@ describe("CanvasHost", () => {
     expect(canvas.mounts).toBe(1);
     expect(screen.queryByTestId("room-3d-music")).toBeNull();
     expect(persistentCanvas.contains(activityDom)).toBe(false);
+  });
+
+  it("injects the active plugin's canonical action model into both room surfaces", () => {
+    const CanvasHost = canvasHost();
+    const actionAwarePlugin = {
+      ...ZoneKit.musicStub,
+      Room3D: ({ actions }: { actions?: readonly { label: string }[] }) => (
+        <div data-testid="derived-room-actions">{actions?.map(({ label }) => label).join(",")}</div>
+      ),
+      ActivityDOM: ({ actions }: { actions?: readonly { label: string }[] }) => (
+        <div data-testid="derived-dom-actions">{actions?.map(({ label }) => label).join(",")}</div>
+      ),
+    };
+    const actionRegistry = ZoneKit.createZoneRegistry([actionAwarePlugin]);
+    const props = { ...defaultProps, activeZoneId: "music", registry: actionRegistry };
+    const expectedLabels = "Build,Debug,Perform";
+
+    const rendered = render(<CanvasHost {...props} />);
+    expect(screen.getByTestId("derived-room-actions").textContent).toBe(expectedLabels);
+
+    rendered.rerender(<CanvasHost {...props} tier="board-2d" />);
+    expect(screen.getByTestId("derived-dom-actions").textContent).toBe(expectedLabels);
   });
 });

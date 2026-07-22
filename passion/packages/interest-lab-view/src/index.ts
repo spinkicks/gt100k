@@ -11,6 +11,7 @@ export { buildQaSnapshot } from "./qa";
 export type { Qa, QaInteractive } from "./qa";
 export { buildTimeLapse } from "./time-lapse";
 export type { TimeLapsePhase, TimeLapsePhaseId, TimeLapseView } from "./time-lapse";
+export { buildZoneActivityModel, plainZoneEquals } from "./zone-activity";
 export type { ZoneActionModel, ZoneActivityManifest, ZoneActivityModel } from "./zone-activity";
 export { INITIAL_ZONE_HOST_STATE, zoneHostReducer } from "./zone-host";
 export type { ZoneHostAction, ZoneHostState } from "./zone-host";

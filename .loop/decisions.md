@@ -1048,3 +1048,22 @@ _Legacy scratch below (prior interest-lab loop — not applicable to evidence-ex
   now without inventing duplicate host state; P7 can pass each newly derived snapshot through the same seam.
 - **Safety:** the initial snapshot is built only from the frozen stub catalog/config and explicit empty
   activity. It uses no wall clock, randomness, browser capability, or hidden mutable state.
+
+## IL-CORE-008 — Generated stub actions use neutral artifact semantics
+- **Chose:** generate one action per probe with `actionId === probeId`, a title-cased work-mode label,
+  `kind:"artifact"`, action-id sorting, and only the first sorted action marked primary. `CanvasHost`
+  derives this model from the active plugin instead of accepting a caller-supplied action array.
+- **Why:** the frozen model pins every field but leaves generated defaults unspecified. A probe represents
+  making, testing, or explaining an artifact; stable probe ids and work-mode copy are the smallest honest
+  defaults. Host-side derivation makes DOM/3D parity structural rather than caller-dependent.
+- **Rejected:** `explore` would make every action novelty-only regardless of day; caller-supplied actions
+  could diverge across surfaces; marking every generated action primary would violate the one-primary-room
+  invariant.
+
+## IL-CORE-009 — The root gate discovers package React acceptance suites
+- **Chose:** add package `*.test.tsx` discovery to the root Vitest config and a source-level regression
+  test that preserves the include pattern.
+- **Why:** package-local tests were green, but `pnpm test` silently omitted every zone-kit component suite.
+  The loop gate must execute SC-CORE-08/10/11 itself rather than relying on an extra package command.
+- **Rejected:** documenting a second required test command would leave the stated root gate incomplete and
+  allow later harness runs to skip the accessible DOM and persistent-Canvas acceptance tests again.

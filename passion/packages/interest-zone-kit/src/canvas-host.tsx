@@ -1,5 +1,5 @@
 import type { ActivityEvent } from "@gt100k/interest-lab";
-import type { ZoneActionModel, ZoneId } from "@gt100k/interest-lab-view";
+import { type ZoneId, buildZoneActivityModel } from "@gt100k/interest-lab-view";
 import { AdaptiveDpr, PerformanceMonitor } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import type { RoomProps } from "./contracts";
@@ -10,7 +10,6 @@ export type ZonePresentationTier = RoomProps["tier"] | "board-2d";
 export interface ZoneRoomProps {
   activeZoneId: ZoneId | null;
   registry: ZoneRegistry;
-  actions: readonly ZoneActionModel[];
   emit: (event: ActivityEvent) => void;
   dayOffset: number;
   tier: ZonePresentationTier;
@@ -26,7 +25,7 @@ const roomProps = (props: ZoneRoomProps, tier: RoomProps["tier"]): RoomProps => 
   return {
     emit: props.emit,
     probes: plugin.probes,
-    actions: props.actions,
+    actions: buildZoneActivityModel(plugin).actions,
     dayOffset: props.dayOffset,
     tier,
     reducedMotion: props.reducedMotion,

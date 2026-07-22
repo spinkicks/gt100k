@@ -56,6 +56,8 @@ Use `plainViewEquals` to compare domain-derived state across surfaces, age bands
 - `buildCuriosityMapView` builds the primary DOM-map model from registered zone manifests and activity.
 - `buildTimeLapse` builds the deterministic first-session, week-later, and month-later phases.
 - `INITIAL_ZONE_HOST_STATE` and `zoneHostReducer` describe navigation without owning a renderer.
+- `buildZoneActivityModel` creates the canonical, sorted action list shared by a zone's DOM and 3D surfaces.
+- `plainZoneEquals` verifies complete zone-action parity independently of incoming action order.
 - `buildQaSnapshot` exposes the pure `Qa` state read by the app's `window.__qa` adapter.
 - `buildInterestLabView` builds the shared child and guide view.
 - `plainViewEquals` checks one-view parity across presentation modes.

@@ -218,3 +218,5 @@ resolved statuses always carry their resolution date
 **Principle:** Verification must distinguish defects introduced by the current work from pre-existing workspace state while preserving visibility into both.
 
 - 2026-07-21 Interest Lab core P5 completion checkpoint: Observation 12 captured; no additional observations.
+- 2026-07-21 Interest Lab core P6 RED-GREEN checkpoint: no additional observations.
+- 2026-07-21 Interest Lab core P6 completion checkpoint: no additional observations.
