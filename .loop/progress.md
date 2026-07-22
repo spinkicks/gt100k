@@ -126,3 +126,52 @@ Reuse the now-proven **crash-free `ProceduralEnvironment` + atelier-scene patter
   periwinkle portal · distinct wood-stove corner · vary gallery-frame sizes/tilt) and clearing deltas
   (distinct cabin rooflines so silhouette names the craft · bolder path contrast · tighter sun disc +
   denser foliage). Screenshot + delta-loop each surface every turn; keep the gate green.
+
+## Done this turn — P-A3 (the Sounding Cabin / Music interior PROVEN + polished to the bar)
+Started from a misleading state: the Music room (`SoundingCabinRoom` + `music-scene`, 55+ props, wired
+in `app/zones.ts`, 7 tests green) was committed last turn but its committed shot `pA3-music.png` was a
+**blank cream frame** — a pre-settle demand-loop capture, NOT a broken room. Also found + fixed a real
+ops issue: **multiple stale `next dev` servers were fighting over `.next`** (404s on static chunks,
+flaky `window.__qa` attach). Killed all, freed :3400, one clean server → clean loads.
+- **PROVED the room renders** (real shot, 0 console/page errors, liveness ✓: entering Music flips
+  activeZoneId→"music"; m_build/m_debug/m_perform all live). Replaced the blank committed shot with a
+  real one (`pA3-music.png` + `-reducedmotion.png`).
+- **Doorway now reads as a music-studio portal** (top delta closed): added a bright candle EQ +
+  waveform glyph ON the console screen (reads as live audio software) + a soft MUSIC_HUE glow halo rim
+  → the single obvious "open the studio."
+- **Killed the near-white upper-left void** (§13.4 off-palette white): added a warm dark timber ceiling
+  above the beams → dark-cozy-edges → lit-center composition (§2.4). Tamed the left-wall blowout
+  (chink plaster→woodDrift, key 1.25→1.08, fg-post pulled into frame), calmed the window
+  (emissive 0.64→0.44), softened the shaft, deepened the vignette (0.44→0.52).
+- Gate GREEN: root typecheck (tsc -b) ✅ · **96 tests** ✅ (music 7 · atelier 5 · qa-bridge 3 · +) ·
+  **app production build ✅** · 0 errors motion+reduced-motion · RM = calm accessible "Step inside" peer.
+
+## Self-score (§12, pA3-music.png vs §7.2 + reference bar) — anchored 10/7/4/2
+- Room cohesion & warmth: **8** (enclosed warm-timber cabin; all on §3; no dead gray).
+- Doorway legibility: **8** (EQ studio screen + halo = unmistakable "open the studio", a warm door).
+- Golden shaft + motes: **7** (soft warm beam + drifting motes; still a defined wedge).
+- Dressing density / lived-in: **8** (~57 objects, 13 surface classes: piano · desk · hi-fi corner ·
+  instrument wall · shelf · window · hearth/stove · plants · lights · textiles · life — far past ≥42/≥8).
+- Firelight / warm sources: **7** (wood-stove firebox+flame @3.0–3.2 · window spill · lamps · valves · sconces).
+- Blue-violet shadow: **pass** (frozen ContactShadows duskShadow, isBlueViolet asserted).
+- Ambient life: **7** (fire flicker · Biscuit the cat breathing · hanging-plant sway · motes; one second from motion).
+- Accessibility + liveness: **8** (aria-hidden canvas HAS a DOM peer; 3 actions live; 0 errors; calm RM still).
+- Chromebook perf: **8** (≤1 frozen shadow-caster, demand loop, lean 3-pass post, procedural env — no CDN/HDRI).
+- **Overall the Sounding Cabin ≈ 7.5 — MEETS the ≥7 bar.**
+
+## Closest banned outcome + cheapest move away (Music)
+Was **"blank/erroring build"** (the committed blank shot) — now DEFEATED (real verified render, 0
+errors, 3 clean loads). Now closest to **"pretty but a slightly bare/washed left corner"** — the
+mid-left wall strip left of the piano still reads a touch pale. Cheapest move away: warm that corner /
+add a dark dressing element (bookshelf, coat-rack) to frame the far-left edge (top Music DELTA item).
+
+## Cabin status → NEXT is the CODE cabin (the last stub)
+- Clearing (map): DONE (P-A1, ≈7). Art/Atelier: DONE (P-A2, ≈7.5). **Music/Sounding Cabin: DONE this
+  turn (P-A3, ≈7.5).** → Two-frame acceptance holds on both graded frames; all model-free tests pass.
+- **STILL A STUB: Code — "The Tinker Workshop" (`symbols_math`).** Build the interior to the bar per
+  `docs/superpowers/specs/2026-07-21-cabin-interior-code.md`, reusing the proven crash-free
+  `ProceduralEnvironment` + scene-description pattern (copy music-scene.ts → code-scene.ts). The
+  doorway is **The Coding Desk** — a WARM-glowing monitor + mechanical keyboard, **NEVER cold-blue**
+  (that's the §11 trap for a code room); the little robot is **Sprout** + a **Claude** desk-buddy;
+  language toys/books; distinct **glass-gable** roofline read. THEN create `.loop-done` (all three cabins).
+- Do NOT redo the clearing/Atelier/Music — they are gate-verified. Extend to Code, then polish deltas.

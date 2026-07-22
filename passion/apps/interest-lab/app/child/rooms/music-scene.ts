@@ -149,7 +149,11 @@ export function buildMusicScene(): MusicScene {
   push({ key: "wall-back", surfaceClass: "wall", geom: "box", args: [12, 6, 0.3], position: [0, 2.7, backZ], color: CABIN.woodWalnut, roughness: 0.88, metalness: 0, flat: true });
   push({ key: "wall-back-chink", surfaceClass: "wall", geom: "box", args: [12, 5.4, 0.16], position: [0, 2.7, backZ + 0.16], color: CABIN.plaster, roughness: 0.94, metalness: 0, flat: true });
   push({ key: "wall-left", surfaceClass: "wall", geom: "box", args: [0.3, 6, 13], position: [-5.4, 2.7, -1], color: CABIN.woodWalnut, roughness: 0.88, metalness: 0, flat: true });
-  push({ key: "wall-left-chink", surfaceClass: "wall", geom: "box", args: [0.16, 5.4, 13], position: [-5.24, 2.7, -1], color: CABIN.plaster, roughness: 0.94, metalness: 0, flat: true });
+  push({ key: "wall-left-chink", surfaceClass: "wall", geom: "box", args: [0.16, 5.4, 13], position: [-5.24, 2.7, -1], color: CABIN.woodDrift, roughness: 0.94, metalness: 0, flat: true });
+  // Warm dark ceiling closing the room box — without it the camera looks up-left into the cream
+  // background/fog void (a near-white expanse that breaks the §2.4 dark-cozy-edges composition).
+  // Sits ABOVE the exposed beams (y≈5.1) so the timber still reads against it (Ghibli cabin ceiling).
+  push({ key: "ceiling", surfaceClass: "beam", geom: "box", args: [12, 0.3, 14], position: [0, 5.75, -1], color: CABIN.woodCocoa, roughness: 0.9, metalness: 0, flat: true });
   push({ key: "wall-right", surfaceClass: "wall", geom: "box", args: [0.3, 6, 13], position: [5.4, 2.7, -1], color: CABIN.woodWalnut, roughness: 0.88, metalness: 0, flat: true });
   // Log courses on the back wall (round beam ends) — meso band, per-instance value jitter.
   for (let i = 0; i < 5; i += 1) {
@@ -163,12 +167,12 @@ export function buildMusicScene(): MusicScene {
   push({ key: "beam-ridge", surfaceClass: "beam", geom: "box", args: [0.5, 0.5, 12], position: [0, 5.35, -1], color: CABIN.woodCocoa, roughness: 0.8, metalness: 0, flat: true });
   // Dark cozy FOREGROUND frame (value structure §2.4 — the deepest wood, near the camera top edge).
   push({ key: "fg-beam", surfaceClass: "beam", geom: "box", args: [13, 0.7, 0.7], position: [0, 4.7, 4.4], color: CABIN.woodCocoa, roughness: 0.85, metalness: 0, flat: true });
-  push({ key: "fg-post-l", surfaceClass: "beam", geom: "box", args: [0.7, 6, 0.7], position: [-5.6, 2.6, 4.2], color: CABIN.woodCocoa, roughness: 0.85, metalness: 0, flat: true });
+  push({ key: "fg-post-l", surfaceClass: "beam", geom: "box", args: [0.9, 6.4, 0.7], position: [-5.15, 2.6, 4.3], color: CABIN.woodCocoa, roughness: 0.85, metalness: 0, flat: true });
   push({ key: "fg-post-r", surfaceClass: "beam", geom: "box", args: [0.7, 6, 0.7], position: [5.6, 2.6, 4.2], color: CABIN.woodCocoa, roughness: 0.85, metalness: 0, flat: true });
 
   // — Window (back center-left, the golden shaft's source) + sill + cool dusk seen through the glass —
   push({ key: "window-frame", surfaceClass: "window", geom: "box", args: [2.9, 3.4, 0.4], position: [-1.4, 3.0, backZ + 0.3], color: CABIN.woodDrift, roughness: 0.7, metalness: 0, flat: true });
-  push({ key: "window-glass", surfaceClass: "window", geom: "plane", args: [2.4, 2.9], position: [-1.4, 3.0, backZ + 0.52], color: CABIN.windowSpill, roughness: 0.5, metalness: 0, emissive: CABIN.windowSpill, emissiveIntensity: 0.64, flat: false });
+  push({ key: "window-glass", surfaceClass: "window", geom: "plane", args: [2.4, 2.9], position: [-1.4, 3.0, backZ + 0.52], color: CABIN.windowSpill, roughness: 0.5, metalness: 0, emissive: CABIN.windowSpill, emissiveIntensity: 0.44, flat: false });
   push({ key: "window-dusk", surfaceClass: "window", geom: "plane", args: [2.4, 1.0], position: [-1.4, 4.05, backZ + 0.5], color: CABIN.duskWindow, roughness: 0.6, metalness: 0, emissive: CABIN.duskSkylight, emissiveIntensity: 0.7, flat: false });
   push({ key: "window-mullion-v", surfaceClass: "window", geom: "box", args: [0.12, 2.9, 0.12], position: [-1.4, 3.0, backZ + 0.55], color: CABIN.woodWalnut, roughness: 0.7, metalness: 0, flat: true });
   push({ key: "window-mullion-h", surfaceClass: "window", geom: "box", args: [2.4, 0.12, 0.12], position: [-1.4, 3.0, backZ + 0.55], color: CABIN.woodWalnut, roughness: 0.7, metalness: 0, flat: true });
@@ -228,8 +232,20 @@ export function buildMusicScene(): MusicScene {
   push({ key: "desk-leg-2", surfaceClass: "desk", geom: "box", args: [0.16, 1.4, 0.16], position: [dx + 1.3, 0.7, dz + 0.5], color: CABIN.woodWalnut, roughness: 0.7, metalness: 0, flat: true });
   // The console screen bezel + THE DOORWAY (role: console-screen) — the single brightest, MUSIC_HUE,
   // pulsing emissive focal point ("open the studio"). emissive ≥1.2 → MaterialEl blooms + drops tone-map.
+  // Soft radiant halo BEHIND the bezel (larger, dim MUSIC_HUE, tone-mapped) — its rim shows around
+  // the monitor so the doorway reads as *radiating* light, not a flat lit rectangle (the "portal"
+  // read the Atelier got from cool-in-warm; here it comes from a glow rim on a warm door instead).
+  push({ key: "screen-halo", surfaceClass: "light", geom: "plane", args: [2.15, 1.6], position: [dx - 0.1, 2.16, dz - 0.26], color: MUSIC_HUE, roughness: 1, metalness: 0, emissive: MUSIC_HUE, emissiveIntensity: 0.75, flat: false, opacity: 0.6 });
   push({ key: "screen-bezel", surfaceClass: "desk", geom: "box", args: [1.5, 1.05, 0.12], position: [dx - 0.1, 2.15, dz - 0.2], color: CABIN.woodWalnut, roughness: 0.5, metalness: 0.15, flat: true });
-  push({ key: "console-screen", surfaceClass: "desk", geom: "plane", args: [1.3, 0.86], position: [dx - 0.1, 2.15, dz - 0.12], color: MUSIC_HUE, roughness: 0.5, metalness: 0, emissive: MUSIC_HUE, emissiveIntensity: 1.6, flat: false, role: "console-screen" });
+  push({ key: "console-screen", surfaceClass: "desk", geom: "plane", args: [1.3, 0.86], position: [dx - 0.1, 2.15, dz - 0.12], color: MUSIC_HUE, roughness: 0.5, metalness: 0, emissive: MUSIC_HUE, emissiveIntensity: 1.5, flat: false, role: "console-screen" });
+  // The screen CONTENT: a bright candle equalizer + a waveform baseline → the screen reads as live
+  // audio software (the studio you can open), not a blank glowing monitor. Varied bar heights (Pillar
+  // C anti-clone). candle @1.4 emissive (≥1.2 → blooms, tone-map off) pops on the terracotta glow.
+  for (let i = 0; i < 7; i += 1) {
+    const h = 0.16 + ((i * 3 + 1) % 4) * 0.12; // deterministic varied EQ heights
+    push({ key: `eq-bar-${i}`, surfaceClass: "desk", geom: "box", args: [0.1, h, 0.02], position: [dx - 0.1 + (i - 3) * 0.16, 1.99 + h / 2, dz - 0.1], color: CABIN.candle, roughness: 0.5, metalness: 0, emissive: CABIN.candle, emissiveIntensity: 1.4, flat: true, jittered: true });
+  }
+  push({ key: "screen-waveform", surfaceClass: "desk", geom: "box", args: [1.14, 0.05, 0.02], position: [dx - 0.1, 2.4, dz - 0.1], color: CABIN.candle, roughness: 0.5, metalness: 0, emissive: CABIN.candle, emissiveIntensity: 1.3, flat: true });
   push({ key: "screen-stand", surfaceClass: "desk", geom: "box", args: [0.16, 0.5, 0.16], position: [dx - 0.1, 1.66, dz - 0.16], color: CABIN.woodWalnut, roughness: 0.5, metalness: 0.15, flat: true });
   // MIDI keyboard (2-octave) on the desk front — body + a candle key strip.
   push({ key: "midi-body", surfaceClass: "desk", geom: "box", args: [1.4, 0.14, 0.4], position: [dx - 0.1, 1.56, dz + 0.42], color: CABIN.woodWalnut, roughness: 0.55, metalness: 0.1, flat: true });
@@ -337,7 +353,7 @@ export function buildMusicScene(): MusicScene {
       // Cool dusk-blue skylight over a warm firelight floor bounce → no dead shadow (Pillar B).
       { kind: "hemisphere", color: CABIN.duskSkylight, groundColor: CABIN.terracotta, intensity: 0.62 },
       // Warm key #1: the low raking golden-hour sun through the window (the ≤1 shadow-caster region).
-      { kind: "directional", color: CABIN.candle, intensity: 1.25, position: [-4, 7, 4] },
+      { kind: "directional", color: CABIN.candle, intensity: 1.08, position: [-4, 7, 4] },
       // Warm key #2: the wood-stove fire (diegetic heartbeat, non-shadow point light).
       { kind: "point", color: CABIN.fireFlame, intensity: 2.4, position: [-3.6, 1.1, hz + 1.4] },
       // A soft warm bounce off the console screen so the doorway reads as the brightest focal point.
@@ -356,11 +372,11 @@ export function buildMusicScene(): MusicScene {
       color: CABIN.candle,
       emissive: CABIN.candle,
       // Soft volumetric god-ray raking down-right from the window onto the piano lid + rug.
-      emissiveIntensity: 1.15,
-      opacity: 0.1,
+      emissiveIntensity: 1.08,
+      opacity: 0.08,
       position: [-1.2, 2.4, backZ + 3.2],
       rotation: [0.5, -0.15, -0.3],
-      args: [2.0, 6.2, 1.6],
+      args: [1.7, 6.2, 1.6],
     },
     motes: { count: 46, color: CABIN.candle, size: 2.4, speed: 0.22, scale: [7, 6, 6] },
     props,

@@ -303,7 +303,7 @@ function SoundingCabinStage({ scene, reducedMotion }: { scene: MusicScene; reduc
       <EffectComposer multisampling={2}>
         <Bloom intensity={SCENE3D.bloomPeak * 0.7} luminanceThreshold={0.9} luminanceSmoothing={0.35} radius={0.8} mipmapBlur />
         <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-        <Vignette offset={0.3} darkness={0.44} blendFunction={BlendFunction.NORMAL} />
+        <Vignette offset={0.28} darkness={0.52} blendFunction={BlendFunction.NORMAL} />
       </EffectComposer>
     </group>
   );

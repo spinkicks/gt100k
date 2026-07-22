@@ -1187,3 +1187,26 @@ object as the single brightest cool focal (`emissive` @1.5 → blooms + tone-map
 obvious glowing doorway" reads unambiguously. The warm sunset brushwork is kept but shrunk to a small
 *started* vignette lower-left + one periwinkle wet stroke — preserving the honest "half-finished" read
 while the portal glows open. (Was: whole canvas a warm parchment landscape → periwinkle invisible.)
+
+## P-A3 — the Sounding Cabin (Music) doorway + composition decisions
+
+**A warm doorway pops by CONTENT + glow-rim, not cool-in-warm.** The Atelier's periwinkle portal read
+as "the door" because it was the one cool accent in a warm room. The Music doorway is deliberately
+WARM (spec §7.2: "a warm door, not a cool one"), so it can't use that trick. Instead it reads as a
+doorway via CONTENT: a bright candle EQ/equalizer + waveform glyph on the console screen → the eye
+parses "live audio software = the studio you open." Reinforced with a soft MUSIC_HUE glow-halo plane
+(emissive 0.75, opacity 0.6) behind the bezel so the monitor *radiates* rather than sits flat.
+
+**Close the room box with a ceiling.** A camera that tilts up in a walled-but-open-topped low-poly room
+looks into the scene background/fog — a near-white void that fails §13.4 cohesion. Fix: a warm dark
+`woodCocoa` ceiling plane ABOVE the exposed beams (y≈5.75, beams at y≈5.1) so the timber still reads
+against it. This is the §2.4 "dark cozy foreground/edges → lit center" composition and matches Ghibli
+cabin ceilings. Applied to Music; carry the same ceiling into the Code cabin.
+
+**Directional key at ~1.05–1.1, not 1.25.** With bloom (threshold 0.9) + hemisphere + point lights
+stacking, a directional key ≥1.2 blows near-camera foreground faces to white. 1.08 keeps the warm key
+read without washing the left frame post. General cabin lighting default going forward.
+
+**Ops: exactly ONE `next dev` at a time.** Multiple dev servers stomp `.next` → 404 static chunks +
+flaky `window.__qa`. Recipe: `pkill -9 -f "next dev"; fuser -k 3400/tcp` before serving; build with
+dev killed (`pnpm --filter @gt100k/interest-lab-app build`).
