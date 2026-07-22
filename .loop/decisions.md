@@ -1079,3 +1079,37 @@ _Legacy scratch below (prior interest-lab loop — not applicable to evidence-ex
   core map remains the explicitly declared primary surface.
 - **Safety:** the app uses only synthetic fixtures, injected day offsets, and append-only local state; it
   introduces no wall-clock, randomness, child records, or identity-defining copy.
+
+## WORLD-A0-001 — Warm art pack: SCENE3D value swap + additive CABIN / MAP_COLOR_SCRIPT
+- **Chose:** swap `SCENE3D` VALUES to the Emberwood golden-hour pack (bible §3.2) with the shape
+  unchanged; keep `HUE_RAMP` verbatim; add two NEW named exports — `CABIN` (material tint palette
+  §3.1) and `MAP_COLOR_SCRIPT` (DOM map color script §6). Golden tests pin all three exactly plus
+  invariants (cool sky > warm ground, hearthGlow == fireSpark == PALETTE.spark, cabin hues == HUE_RAMP[0..2]).
+- **Why:** the shipped pack was the BANNED midnight `#181026`. This is a pure value+reference layer on
+  frozen shapes — no contract break; the map goldens stay valid. Additive exports give zone builders +
+  the DOM map one warm palette without touching existing consumers.
+- **Rejected:** editing `PALETTE` (kept — it themes the professional guide console, and its contrast
+  goldens are pinned); a `SCENE3D_NIGHT` flag (night is banned as default, migration not needed here).
+
+## WORLD-A0-002 — Warm the CHILD DOM shell only, via scoped CSS-var remap
+- **Chose:** append a theme block to `app/globals.css` scoped to
+  `.interest-lab-client[data-active-surface="child"]`: remap `--night`/ink/surface tokens to warm
+  cream+wood, warm the body+html base via `:has()`, re-declare `color` on the wrapper (it's set on
+  <body> outside scope so headings inherited the light root ink), and warm the few hardcoded dark
+  pills (`.hud-status`, `.status-pill`, `.quest-ledger`).
+- **Why:** the child surface's shell is the DOMINANT pixels and it was midnight (banned). Remapping the
+  custom properties on the wrapper warms the whole subtree with no per-selector rewrite. The guide
+  console keeps the midnight PALETTE (a pro evidence surface, dark by design + pinned contrast).
+- **Rejected:** flipping `:root --night` globally (would wreck the guide console + break contrast
+  goldens); a JS body-class toggle (CSS `:has()` is cleaner + no component change).
+
+## WORLD-A0-003 — Kill the 3D black void: midnight PALETTE leftovers → warm/dusk CABIN
+- **Chose:** in `world3d/World3DCanvas.tsx` + `WorldPostFX.tsx`, swap the hardcoded midnight
+  `PALETTE.nightSunk/nightRaised` used by the "misty sea" floor, ContactShadows, N8AO, and a floor
+  Lightformer → `CABIN.woodWalnut` (warm floor) + `CABIN.duskDeep` (blue-violet shadow/AO); rim light
+  → `CABIN.duskSkylight`; vignette darkness 0.55 → 0.4.
+- **Why:** the lower canvas rendered near-black `#030104` — the banned dead-black-shadow / void.
+  Retinting to warm floor + blue-violet dusk shadow satisfies the §13.2 no-dead-shadow law and gives a
+  warm horizon instead of a void. Verified by pixel sample (`#030104` → `#56251f`).
+- **Note:** the 3D scene is still abstract islands/spheres — geometry (cabin/clearing) is P-A1/P-A2,
+  deliberately out of this value-layer turn.

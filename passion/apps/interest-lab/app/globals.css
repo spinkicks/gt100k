@@ -2416,3 +2416,65 @@ footer {
     backdrop-filter: none;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════
+   EMBERWOOD — warm golden-hour theme, scoped to the CHILD world surface ONLY.
+   The guide console keeps the midnight PALETTE (a professional evidence surface, dark by
+   design + pinned contrast goldens). The child surface is a cozy clearing at golden hour
+   (art bible §6): a cream→peach sky, warm-plaster cards, dark warm-wood ink. We remap the
+   shell tokens on the child wrapper so every descendant inherits warm values (no per-
+   selector rewrite), then warm the few hardcoded dark panels that the remap can't reach.
+   ══════════════════════════════════════════════════════════════════════════════════════ */
+/* Warm the html base too, so a tall page never reveals the midnight --night-sunk behind the
+   viewport-sized body glow (otherwise the banned #120b1e leaks below the fold). */
+html:has(.interest-lab-client[data-active-surface="child"]) {
+  background: #e89a63;
+}
+
+body:has(.interest-lab-client[data-active-surface="child"]) {
+  background:
+    radial-gradient(140% 90% at 50% -12%, #fceac2 0%, #f7c489 46%, #f4b074 74%, #e89a63 100%);
+}
+
+.interest-lab-client[data-active-surface="child"] {
+  color-scheme: light;
+  /* `color` is set on <body> (outside this scope) so it resolves the ROOT light ink and
+     inherits down as a literal — headings (h1/h2) that don't redeclare color would stay pale.
+     Re-declaring color here re-resolves --ink-hi to the warm value for the whole child subtree. */
+  color: var(--ink-hi);
+  /* warm woods + plaster remap of the shell's neutral ramp */
+  --night: #f2e2bc; /* warm cream "paper" base */
+  --night-raised: #fbf0d6; /* lifted warm card */
+  --night-sunk: #e7d2a6; /* recessed warm */
+  --ink-hi: #4a3320; /* wood.cocoa — dark warm ink (≈9:1 on cream) */
+  --ink-muted: #6b4a2e; /* wood.walnut — muted ink (≈6:1 on cream) */
+  --surface-translucent: rgb(250 238 210 / 88%);
+  --surface-solid: #fbf0d6;
+  --line: rgb(107 74 46 / 26%); /* walnut hairline */
+  --line-strong: rgb(74 51 32 / 46%);
+  /* --spark #FF9E5E and --beacon #FFD166 are already the firelight amber — kept */
+}
+
+/* Warm the hardcoded dark panels that live on the child surface (token remap can't reach a
+   baked hex). These read blue-violet-dark on midnight; here they become warm plaster so the
+   surface stays coherent (Pillar A) rather than half-warm/half-dark asset-soup. */
+.interest-lab-client[data-active-surface="child"] .status-pill,
+.interest-lab-client[data-active-surface="child"] .hud-status,
+.interest-lab-client[data-active-surface="child"] .quest-ledger {
+  background: rgb(250 238 210 / 90%);
+  color: var(--ink-muted);
+}
+
+/* Soften the theme's near-black drop shadows to a warm walnut for the child cards, so depth
+   reads as golden-hour shade (blue-violet/brown), never a muddy black hole (Pillar B). */
+.interest-lab-client[data-active-surface="child"] .quest-workspace,
+.interest-lab-client[data-active-surface="child"] .material {
+  box-shadow: 0 1px 0 rgb(255 255 255 / 55%) inset, 0 18px 44px -26px rgb(74 51 32 / 46%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:has(.interest-lab-client[data-active-surface="child"]) {
+    background:
+      radial-gradient(140% 90% at 50% -12%, #fceac2 0%, #f7c489 46%, #f4b074 74%, #e89a63 100%);
+  }
+}

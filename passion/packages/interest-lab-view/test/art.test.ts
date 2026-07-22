@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { HUE_RAMP, PALETTE, TYPOGRAPHY, resolveDomainHue } from "../src/index";
+import {
+  CABIN,
+  HUE_RAMP,
+  MAP_COLOR_SCRIPT,
+  PALETTE,
+  TYPOGRAPHY,
+  resolveDomainHue,
+} from "../src/index";
 
 const SEED_DOMAINS = [
   "making",
@@ -108,5 +115,71 @@ describe("interest lab art", () => {
 
   it("rejects a domain absent from the supplied catalog order", () => {
     expect(() => resolveDomainHue(SEED_DOMAINS, "unknown_domain")).toThrow();
+  });
+
+  it("pins the additive Emberwood CABIN material tint palette (art bible §3.1/§3.4)", () => {
+    expect(CABIN).toEqual({
+      woodHoney: "#C89A5E",
+      woodOak: "#A87C4A",
+      woodWalnut: "#6B4A2E",
+      woodCocoa: "#4A3320",
+      woodDrift: "#B9A484",
+      fireEmber: "#FF7A3C",
+      fireFlame: "#FFB25A",
+      fireSpark: "#FF9E5E",
+      lantern: "#FFD166",
+      windowSpill: "#FFC08A",
+      candle: "#FFE0A8",
+      forestPine: "#5E7B4E",
+      forestDeep: "#37503E",
+      moss: "#8CA55E",
+      terracotta: "#B5623A",
+      leafRust: "#9C5A32",
+      verdigris: "#7F9E8E",
+      duskSkylight: "#A9C2E8",
+      duskShadow: "#6E6A8E",
+      duskDeep: "#514D74",
+      duskWindow: "#7C93B8",
+      plaster: "#EAD7B4",
+      parchment: "#F0E4C8",
+      ceramic: "#D8B48C",
+      brass: "#B98A4E",
+      leather: "#8B5A3C",
+      woolWarm: "#C48A6A",
+      woolCream: "#E6D3B0",
+    });
+  });
+
+  it("keeps the cabin identity hues aligned with HUE_RAMP[0..2] across map + material tokens", () => {
+    // Map↔cabin continuity (§12): the same three hues identify the cabins on the DOM map, in the
+    // material palette, and in the shipped HUE_RAMP. If these ever drift, the cut breaks.
+    expect([MAP_COLOR_SCRIPT.cabinMusic, MAP_COLOR_SCRIPT.cabinCode, MAP_COLOR_SCRIPT.cabinArt]).toEqual(
+      [HUE_RAMP[0], HUE_RAMP[1], HUE_RAMP[2]],
+    );
+    expect(MAP_COLOR_SCRIPT.hearthGlow).toBe(CABIN.fireSpark);
+    expect(CABIN.fireSpark).toBe(PALETTE.spark);
+  });
+
+  it("pins the DOM map color script — a warm golden-hour clearing, blue-violet shadow (§6)", () => {
+    expect(MAP_COLOR_SCRIPT).toEqual({
+      skyTop: "#FCEAC2",
+      skyLow: "#F4B074",
+      treeline: "#6E5A4E",
+      groundLit: "#C9B583",
+      groundShade: "#8E8A5E",
+      grassTuft: "#9FB56A",
+      path: "#D8B888",
+      pathPlank: "#B98A5E",
+      waterPond: "#8FC7CE",
+      waterGlint: "#FFD8A0",
+      softShadow: "#5E5880",
+      chimneySmoke: "#CDBBA6",
+      firefly: "#FFD98A",
+      emberSpark: "#FF7A3C",
+      hearthGlow: "#FF9E5E",
+      cabinMusic: "#E8825A",
+      cabinCode: "#5FB98C",
+      cabinArt: "#6C8CE8",
+    });
   });
 });

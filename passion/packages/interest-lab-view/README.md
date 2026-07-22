@@ -72,6 +72,7 @@ Use `plainViewEquals` to compare domain-derived state across surfaces, age bands
 ### Art, motion, and staging
 
 - `PALETTE`, `TYPOGRAPHY`, and `HUE_RAMP` hold the visual tokens; `resolveDomainHue` assigns hues from catalog order.
+- `CABIN` holds the Emberwood cozy-cabin material tint palette (warm woods · firelight · forest · cool dusk fills) and `MAP_COLOR_SCRIPT` the golden-hour DOM color script for the 2D Curiosity Map — the warm value + reference layer over the frozen shapes.
 - `WORK_MODE_GLYPHS` maps the fixed work-mode verbs to accessible glyph identifiers.
 - `MOTION` and `EASINGS` hold motion tokens; `resolveMotion` returns animated or reduced equivalents.
 - `resolveChildStaging` returns age-band presentation settings.

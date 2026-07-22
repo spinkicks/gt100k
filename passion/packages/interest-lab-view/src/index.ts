@@ -1,4 +1,4 @@
-export { HUE_RAMP, PALETTE, TYPOGRAPHY, resolveDomainHue } from "./art";
+export { CABIN, HUE_RAMP, MAP_COLOR_SCRIPT, PALETTE, TYPOGRAPHY, resolveDomainHue } from "./art";
 export { buildCuriosityMapView } from "./curiosity-map";
 export type {
   CuriosityMapBuilding,

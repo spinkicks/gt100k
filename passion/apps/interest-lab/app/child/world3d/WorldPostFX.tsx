@@ -1,6 +1,6 @@
 "use client";
 
-import { PALETTE, type QualityTier, type Scene3DView } from "@gt100k/interest-lab-view";
+import { CABIN, PALETTE, type QualityTier, type Scene3DView } from "@gt100k/interest-lab-view";
 import {
   Bloom,
   BrightnessContrast,
@@ -42,7 +42,7 @@ export function WorldPostFX({ scene3d, quality }: WorldPostFXProps) {
         distanceFalloff={1}
         intensity={1.25}
         quality="medium"
-        color={PALETTE.nightSunk}
+        color={CABIN.duskDeep}
         halfRes
         depthAwareUpsampling
       />
@@ -64,8 +64,9 @@ export function WorldPostFX({ scene3d, quality }: WorldPostFXProps) {
       <HueSaturation hue={0} saturation={0.08} />
       <BrightnessContrast brightness={-0.015} contrast={0.07} />
       <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-      {/* Draw the eye to the floating islands and seat the world in its dusk. */}
-      <Vignette offset={0.32} darkness={0.55} blendFunction={BlendFunction.NORMAL} />
+      {/* Draw the eye to the floating islands and seat the world in its golden dusk. Kept gentle
+          so edges settle into warm haze, never crush to a black frame (§11 no dead lighting). */}
+      <Vignette offset={0.34} darkness={0.4} blendFunction={BlendFunction.NORMAL} />
     </EffectComposer>
   );
 }

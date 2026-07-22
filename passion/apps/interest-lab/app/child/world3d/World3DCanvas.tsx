@@ -1,6 +1,6 @@
 "use client";
 
-import { CAMERA3D, PALETTE, type SceneView } from "@gt100k/interest-lab-view";
+import { CABIN, CAMERA3D, PALETTE, type SceneView } from "@gt100k/interest-lab-view";
 import { AdaptiveDpr, ContactShadows, Environment, Lightformer } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { type ReactNode, useEffect, useMemo } from "react";
@@ -114,10 +114,10 @@ export function World3DCanvas({ scene, children, onContextLost }: World3DCanvasP
         intensity={scene.scene3d.keyIntensity}
         position={scene.scene3d.keyPos}
       />
-      {/* Cool tide rim/back light — separates the warm islands from the plum night and
-          traces their silhouettes, completing the key + fill + rim rig. */}
+      {/* Cool dusk-blue rim/back light — the Pillar B cool fill; separates the warm islands
+          from the golden haze and traces their silhouettes, completing key + fill + rim. */}
       <directionalLight
-        color={PALETTE.tide}
+        color={CABIN.duskSkylight}
         intensity={RIM_LIGHT_INTENSITY}
         position={RIM_LIGHT_POSITION}
       />
@@ -157,26 +157,28 @@ export function World3DCanvas({ scene, children, onContextLost }: World3DCanvasP
         <Lightformer
           form="rect"
           intensity={0.5}
-          color={PALETTE.nightRaised}
+          color={CABIN.terracotta}
           scale={[26, 26, 1]}
           position={[0, -8, 0]}
           rotation={[-Math.PI / 2, 0, 0]}
         />
       </Environment>
-      {/* Misty sea — a faintly glowing floor the islands hover over; its far edge dissolves
-          into the dusk fog, giving the world a horizon instead of a void. */}
+      {/* Warm forest floor — a soft golden-hour ground the islands rest on; its far edge
+          dissolves into the honey fog, giving the world a warm horizon instead of a black void
+          (was the banned midnight #120b1e sea). Warm walnut, faint ember glow in the mist. */}
       <mesh receiveShadow={scene.quality.shadows} rotation={[-Math.PI / 2, 0, 0]} position={[0, SEA_Y, 0]}>
         <circleGeometry args={[SEA_RADIUS, 64]} />
         <meshStandardMaterial
-          color={PALETTE.nightSunk}
-          emissive={PALETTE.nightRaised}
-          emissiveIntensity={0.08}
+          color={CABIN.woodWalnut}
+          emissive={CABIN.terracotta}
+          emissiveIntensity={0.1}
           metalness={0.1}
           roughness={0.95}
         />
       </mesh>
-      {/* Soft contact shadows ground the floating islands on the sea. Full tier only,
-          matching the existing shadow budget; blurred + tinted to the deep-night palette. */}
+      {/* Soft contact shadows ground the floating islands on the warm floor. Full tier only,
+          matching the existing shadow budget; tinted to the cool dusk-blue-violet so shadows
+          read blue-violet, NEVER dead black (Pillar B / §13.2 shadow-color law). */}
       {scene.quality.shadows ? (
         <ContactShadows
           position={[0, SEA_Y + 0.02, 0]}
@@ -185,7 +187,7 @@ export function World3DCanvas({ scene, children, onContextLost }: World3DCanvasP
           far={8}
           blur={2.8}
           opacity={0.55}
-          color={PALETTE.nightSunk}
+          color={CABIN.duskDeep}
         />
       ) : null}
       <AdaptiveDpr />

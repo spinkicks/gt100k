@@ -115,10 +115,12 @@ type PublicViewTypeExports = [
 describe("interest lab view public API", () => {
   it("exports the registries and implemented pure resolvers", () => {
     expect(Object.keys(viewApi).sort()).toEqual([
+      "CABIN",
       "CAMERA3D",
       "EASINGS",
       "HUE_RAMP",
       "INITIAL_ZONE_HOST_STATE",
+      "MAP_COLOR_SCRIPT",
       "MOTION",
       "PALETTE",
       "QUALITY_TIERS",
