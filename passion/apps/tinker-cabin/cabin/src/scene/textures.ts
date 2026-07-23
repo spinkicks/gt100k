@@ -219,7 +219,7 @@ function stoneAlbedoCanvas(size: number, seed: number): HTMLCanvasElement {
   c.width = c.height = size;
   const ctx = c.getContext("2d")!;
   const rand = mulberry32(seed);
-  ctx.fillStyle = "#2b2622"; // mortar
+  ctx.fillStyle = "#211915"; // deep recessed mortar (darker → the joints read as real gaps)
   ctx.fillRect(0, 0, size, size);
   const rows = 9;
   const rh = size / rows;
@@ -230,23 +230,32 @@ function stoneAlbedoCanvas(size: number, seed: number): HTMLCanvasElement {
     const cw = size / cols;
     for (let cx = -1; cx <= cols; cx++) {
       const x0 = (cx + offset) * cw + rand() * 6 - 3;
-      const g = 92 + Math.floor(rand() * 60);
-      const rr = g + Math.floor(rand() * 18);
-      const bb = g - Math.floor(rand() * 14);
-      ctx.fillStyle = `rgb(${rr},${g},${bb})`;
+      // warm taupe granite tones (more red, less blue) so the hearth reads warm, not cold grey
+      const g = 96 + Math.floor(rand() * 58);
+      const rr = g + 16 + Math.floor(rand() * 22);
+      const bb = g - 10 - Math.floor(rand() * 16);
       const pad = 2 + rand() * 2;
       const bw = cw - pad * 2;
       const bh = rh - pad * 2;
-      // rounded-ish block
-      ctx.fillRect(x0 + pad, y0 + pad, bw, bh);
+      const bx = x0 + pad;
+      const by = y0 + pad;
+      ctx.fillStyle = `rgb(${rr},${g},${bb})`;
+      ctx.fillRect(bx, by, bw, bh);
       // speckle/mottling
-      for (let s = 0; s < 24; s++) {
-        const sx = x0 + pad + rand() * bw;
-        const sy = y0 + pad + rand() * bh;
-        const d = rand() > 0.5 ? 22 : -22;
+      for (let s = 0; s < 30; s++) {
+        const sx = bx + rand() * bw;
+        const sy = by + rand() * bh;
+        const d = rand() > 0.5 ? 26 : -26;
         ctx.fillStyle = `rgba(${rr + d},${g + d},${bb + d},0.25)`;
         ctx.fillRect(sx, sy, 1 + rand() * 2, 1 + rand() * 2);
       }
+      // chiseled bevel: lit top+left edges, shadowed bottom+right → each block reads as raised stone
+      ctx.fillStyle = "rgba(255,238,210,0.16)";
+      ctx.fillRect(bx, by, bw, 1.5);
+      ctx.fillRect(bx, by, 1.5, bh);
+      ctx.fillStyle = "rgba(0,0,0,0.32)";
+      ctx.fillRect(bx, by + bh - 1.5, bw, 1.5);
+      ctx.fillRect(bx + bw - 1.5, by, 1.5, bh);
     }
   }
   return c;
