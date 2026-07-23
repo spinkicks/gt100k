@@ -296,6 +296,69 @@ export function duskVistaTexture(): THREE.CanvasTexture {
   return t;
 }
 
+/** Opaque dusk sky gradient + soft low sun — the far backdrop plane of the parallax window view. */
+export function skyGradientTexture(): THREE.CanvasTexture {
+  const w = 256;
+  const h = 256;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d")!;
+  const sky = ctx.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, "#4a6ea8");
+  sky.addColorStop(0.5, "#8fa9d0");
+  sky.addColorStop(0.78, "#eac79a");
+  sky.addColorStop(1, "#f0cf9c");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, w, h);
+  const sun = ctx.createRadialGradient(w * 0.62, h * 0.72, 3, w * 0.62, h * 0.72, w * 0.4);
+  sun.addColorStop(0, "rgba(255,244,214,0.95)");
+  sun.addColorStop(0.35, "rgba(255,228,175,0.4)");
+  sun.addColorStop(1, "rgba(255,228,175,0)");
+  ctx.fillStyle = sun;
+  ctx.fillRect(0, 0, w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+/**
+ * One transparent mountain-ridge layer (ridge + everything below it filled with `color`, sky above
+ * transparent). Stack several at increasing distance behind the window for real parallax as the
+ * camera moves. `baseY` (0..1) sets the ridge height, `amp` its jaggedness, `seed` its shape.
+ */
+export function mountainLayerTexture(
+  color: string,
+  baseY: number,
+  amp: number,
+  seed: number,
+): THREE.CanvasTexture {
+  const w = 512;
+  const h = 256;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d")!;
+  ctx.clearRect(0, 0, w, h);
+  const rand = mulberry32(seed);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(0, h);
+  let y = baseY * h;
+  ctx.lineTo(0, y);
+  for (let x = 0; x <= w; x += 14) {
+    y += (rand() - 0.5) * amp;
+    y = Math.max(baseY * h - amp, Math.min(baseY * h + amp * 0.5, y));
+    ctx.lineTo(x, y);
+  }
+  ctx.lineTo(w, h);
+  ctx.closePath();
+  ctx.fill();
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
 /**
  * Warm flame-tongue sprite for additive fire: a tapered teardrop (wide hot base → pointed cooler
  * tip), drawn as stacked ellipses so a vertically-stretched sprite reads as a flame, not an orb.

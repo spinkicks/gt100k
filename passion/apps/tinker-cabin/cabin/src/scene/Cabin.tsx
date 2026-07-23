@@ -13,11 +13,12 @@ import { updateStats } from "../core/hook";
 import { EnvLight } from "./EnvLight";
 import { ANCHORS, ROOM } from "./layout";
 import {
-  duskVistaTexture,
   flameTexture,
   floorTextures,
+  mountainLayerTexture,
   propTextures,
   rugTexture,
+  skyGradientTexture,
   stoneTextures,
   wallTextures,
 } from "./textures";
@@ -79,9 +80,23 @@ function Shell(): JSX.Element {
         <boxGeometry args={[tw, height, hz * 2]} />
         <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
       </mesh>
-      {/* right wall (+X) — holds the window */}
-      <mesh position={[hx, height / 2, 0]} receiveShadow>
-        <boxGeometry args={[tw, height, hz * 2]} />
+      {/* right wall (+X) — built as 4 segments AROUND a real window opening
+          (opening: y∈[1.0,2.5], z∈[-0.95,0.95]) so exterior light only enters through the hole
+          and the mountain view behind it parallaxes. Segments cast shadow to form the light shaft. */}
+      <mesh position={[hx, 0.5, 0]} receiveShadow castShadow>
+        <boxGeometry args={[tw, 1.0, hz * 2]} />
+        <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
+      </mesh>
+      <mesh position={[hx, 2.75, 0]} receiveShadow castShadow>
+        <boxGeometry args={[tw, 0.5, hz * 2]} />
+        <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
+      </mesh>
+      <mesh position={[hx, 1.75, -1.975]} receiveShadow castShadow>
+        <boxGeometry args={[tw, 1.5, 2.05]} />
+        <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
+      </mesh>
+      <mesh position={[hx, 1.75, 1.975]} receiveShadow castShadow>
+        <boxGeometry args={[tw, 1.5, 2.05]} />
         <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
       </mesh>
     </group>
@@ -234,32 +249,76 @@ function Cat(): JSX.Element {
   );
 }
 
+/**
+ * The window: a wooden frame + muntins around the wall opening (no glass pane), plus the mountain
+ * view rendered as separate unlit layers OUTSIDE the wall at increasing distance — so the view
+ * parallaxes as you move (real depth, not a painting). Muntins cast shadow into the light shaft.
+ */
 function Window(): JSX.Element {
-  const [x, y, z] = ANCHORS.window;
-  const vista = useMemo(() => duskVistaTexture(), []);
-  // picture window set into the +X wall's interior face (x ≈ 3.34); rotated so it faces the room (-X).
+  const [x] = ANCHORS.window;
+  const cy = 1.75; // opening centre height
+  const iface = x - 0.15; // interior wall face
+  const sky = useMemo(() => skyGradientTexture(), []);
+  const far = useMemo(() => mountainLayerTexture("#8aa0c4", 0.5, 26, 11), []);
+  const mid = useMemo(() => mountainLayerTexture("#5d6f92", 0.62, 40, 23), []);
+  const near = useMemo(() => mountainLayerTexture("#3a465f", 0.74, 60, 37), []);
+
   return (
-    <group position={[x - 0.16, y + 0.15, z]} rotation={[0, -Math.PI / 2, 0]}>
-      {/* outer frame (solid box set into the wall; the pane sits in FRONT of it, room-side) */}
-      <mesh castShadow>
-        <boxGeometry args={[2.1, 1.7, 0.14]} />
-        <meshStandardMaterial color="#4a3320" roughness={0.6} metalness={0} />
-      </mesh>
-      {/* the dusk mountain vista — a window view is effectively unlit, so render it with a basic
-          (unlit) map at full vividness in front of the frame. Bloom threshold keeps it from clipping. */}
-      <mesh position={[0, 0, 0.09]}>
-        <planeGeometry args={[1.9, 1.5]} />
-        <meshBasicMaterial map={vista} toneMapped={true} />
-      </mesh>
-      {/* muntins (cross bars) — in front of the glass */}
-      <mesh position={[0, 0, 0.11]}>
-        <boxGeometry args={[0.05, 1.5, 0.03]} />
-        <meshStandardMaterial color="#3a2818" roughness={0.6} />
-      </mesh>
-      <mesh position={[0, 0, 0.11]}>
-        <boxGeometry args={[1.9, 0.05, 0.03]} />
-        <meshStandardMaterial color="#3a2818" roughness={0.6} />
-      </mesh>
+    <group>
+      {/* view layers OUTSIDE the opening (x > wall), facing the room; different depths → parallax */}
+      <group>
+        <mesh position={[x + 11, 5.5, 0.4]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[34, 22]} />
+          <meshBasicMaterial map={sky} toneMapped />
+        </mesh>
+        <mesh position={[x + 7.5, 2.8, 0.3]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[26, 9]} />
+          <meshBasicMaterial map={far} transparent toneMapped />
+        </mesh>
+        <mesh position={[x + 5, 2.4, 0.1]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[20, 8]} />
+          <meshBasicMaterial map={mid} transparent toneMapped />
+        </mesh>
+        <mesh position={[x + 3.1, 2.1, -0.2]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[15, 7]} />
+          <meshBasicMaterial map={near} transparent toneMapped />
+        </mesh>
+      </group>
+
+      {/* wooden frame ring + muntins on the interior face of the opening (1.9 wide × 1.5 tall) */}
+      <group position={[iface, cy, 0]} rotation={[0, -Math.PI / 2, 0]}>
+        {(
+          [
+            [0, 0.83, 2.16, 0.16],
+            [0, -0.83, 2.16, 0.16],
+          ] as Array<[number, number, number, number]>
+        ).map(([px, py, bw, bh]) => (
+          <mesh key={`fh-${py}`} position={[px, py, 0]} castShadow>
+            <boxGeometry args={[bw, bh, 0.16]} />
+            <meshStandardMaterial color="#4a3320" roughness={0.6} metalness={0} />
+          </mesh>
+        ))}
+        {(
+          [
+            [-1.0, 0, 0.16, 1.5],
+            [1.0, 0, 0.16, 1.5],
+          ] as Array<[number, number, number, number]>
+        ).map(([px, py, bw, bh]) => (
+          <mesh key={`fv-${px}`} position={[px, py, 0]} castShadow>
+            <boxGeometry args={[bw, bh, 0.16]} />
+            <meshStandardMaterial color="#4a3320" roughness={0.6} metalness={0} />
+          </mesh>
+        ))}
+        {/* muntin cross — casts the window-pane shadow in the light shaft */}
+        <mesh position={[0, 0, 0.02]} castShadow>
+          <boxGeometry args={[0.05, 1.5, 0.05]} />
+          <meshStandardMaterial color="#3a2818" roughness={0.6} />
+        </mesh>
+        <mesh position={[0, 0, 0.02]} castShadow>
+          <boxGeometry args={[1.9, 0.05, 0.05]} />
+          <meshStandardMaterial color="#3a2818" roughness={0.6} />
+        </mesh>
+      </group>
     </group>
   );
 }
@@ -392,6 +451,48 @@ function SetDressing(): JSX.Element {
   );
 }
 
+function Door(): JSX.Element {
+  const plank = useMemo(() => propTextures(), []);
+  const inZ = ROOM.hz - 0.15; // interior face of the front (+Z) wall
+  // a closed plank door with a frame + handle, set against the front wall, camera-right of centre
+  return (
+    <group position={[1.35, 0, inZ]}>
+      {/* frame: two jambs + a head */}
+      <mesh position={[-0.62, 1.05, 0]} castShadow>
+        <boxGeometry args={[0.12, 2.15, 0.16]} />
+        <meshStandardMaterial color="#43301c" roughness={0.7} metalness={0} />
+      </mesh>
+      <mesh position={[0.62, 1.05, 0]} castShadow>
+        <boxGeometry args={[0.12, 2.15, 0.16]} />
+        <meshStandardMaterial color="#43301c" roughness={0.7} metalness={0} />
+      </mesh>
+      <mesh position={[0, 2.12, 0]} castShadow>
+        <boxGeometry args={[1.36, 0.12, 0.16]} />
+        <meshStandardMaterial color="#43301c" roughness={0.7} metalness={0} />
+      </mesh>
+      {/* the closed door slab (planked wood), proud of the wall into the room */}
+      <mesh position={[0, 1.02, -0.06]} castShadow receiveShadow>
+        <boxGeometry args={[1.02, 2.0, 0.08]} />
+        <meshStandardMaterial {...plank} roughness={0.75} metalness={0} />
+      </mesh>
+      {/* two cross rails for a plank-door look */}
+      <mesh position={[0, 0.5, -0.11]} castShadow>
+        <boxGeometry args={[0.98, 0.12, 0.03]} />
+        <meshStandardMaterial color="#3a2716" roughness={0.7} />
+      </mesh>
+      <mesh position={[0, 1.55, -0.11]} castShadow>
+        <boxGeometry args={[0.98, 0.12, 0.03]} />
+        <meshStandardMaterial color="#3a2716" roughness={0.7} />
+      </mesh>
+      {/* iron handle */}
+      <mesh position={[0.38, 1.0, -0.13]} castShadow>
+        <sphereGeometry args={[0.05, 12, 12]} />
+        <meshStandardMaterial color="#20242a" roughness={0.4} metalness={0.7} />
+      </mesh>
+    </group>
+  );
+}
+
 export function Cabin({ freeze }: { freeze: boolean }): JSX.Element {
   return (
     <group>
@@ -403,27 +504,29 @@ export function Cabin({ freeze }: { freeze: boolean }): JSX.Element {
       <Window />
       <Desk />
       <Lamp />
+      <Door />
       <SetDressing />
 
-      {/* cool window fill (dusk daylight raking from +X) */}
+      {/* cool daylight from OUTSIDE the window, angled down into the room. It casts shadow, so the
+          +X wall blocks it everywhere except through the opening → a real window-shaped light shaft
+          + muntin-cross shadow on the floor. No light touches the interior window wall directly. */}
       <directionalLight
-        position={[6, 4, 1]}
-        color="#6f92d8"
-        intensity={1.5}
+        position={[ROOM.hx + 6, 5, 1.2]}
+        color="#93add8"
+        intensity={3.2}
         castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-bias={-0.0004}
+        shadow-camera-near={0.5}
+        shadow-camera-far={22}
+        shadow-camera-left={-6}
+        shadow-camera-right={6}
+        shadow-camera-top={6}
+        shadow-camera-bottom={-6}
       />
       {/* soft cool ambient so shadows read, never crush to black */}
-      <ambientLight color="#33425f" intensity={0.5} />
-      {/* gentle cool fill spilling from the window into the room (offset off the pane to avoid a hotspot) */}
-      <pointLight
-        position={[ROOM.hx - 1.2, 1.7, 0.4]}
-        color="#7aa0e8"
-        intensity={9}
-        distance={7}
-        decay={2}
-      />
+      <ambientLight color="#33425f" intensity={0.42} />
     </group>
   );
 }
