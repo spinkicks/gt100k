@@ -21,7 +21,7 @@ being developed in the family brainlift.
 **Umbrella:** these unify into ONE **PassionLab** app (evidence graph + Socratic tutor + interest lab
 + new **Motivate** & **Wellbeing** pillars) — see `docs/PASSION-LAB-PLAN.md` (living draft; the two new
 pillars pend Felipe's passion brainlift).
-- **002-evidence-graph** — content-addressed provenance of a student's passion work (PRD §19). **Active** — declutter landed (PR #77); **complete UI revamp in flight** (Claude + design skills; establishes PassionLab's shared design system). **v1 build direction:** `docs/decisions/evidencegraph-v1-design.md` + `-buildspec.md` — one graph per project (packets removed), standalone product to be extracted later.
+- **002-evidence-graph** — content-addressed provenance of a student's passion work (PRD §19). **Active** — declutter landed (PR #77); **complete UI revamp in flight** (Claude + design skills; establishes PassionLab's shared design system).
 - **003-interest-lab** — the Passion / Interest Lab (PRD §14). **Active** (production rebuild in progress).
 - **007-passion-tutor** — Socratic AI that interviews a student about their own passion project (PRD §13-adjacent). **Done (PR #78).**
 - **009-passion-lab** — the unified shell + Motivate + Wellbeing pillars. **Planning** (`docs/PASSION-LAB-PLAN.md`).
