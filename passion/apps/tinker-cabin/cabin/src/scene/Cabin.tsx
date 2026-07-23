@@ -6,7 +6,7 @@
  * Determinism: all animation is a pure function of clock time and is frozen (fixed phase) when
  * `freeze` is set, so `?freeze=1` shots are reproducible. No Math.random in the render loop.
  */
-import { useGLTF } from "@react-three/drei";
+import { useGLTF, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { Component, type ReactNode, Suspense, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
@@ -27,17 +27,60 @@ import {
 
 const FROZEN_T = 1.5; // fixed phase used when freeze=1
 
-function Shell(): JSX.Element {
+const WOOD_TEX = {
+  map: "/assets/textures/wood_diff.jpg",
+  normalMap: "/assets/textures/wood_nor.jpg",
+  roughnessMap: "/assets/textures/wood_rough.jpg",
+};
+
+/** Floor with real scanned CC0 wood when fetched, else the procedural plank material. */
+function ProceduralFloor(): JSX.Element {
+  const { hx, hz } = ROOM;
   const floor = useMemo(() => floorTextures(), []);
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      <planeGeometry args={[hx * 2, hz * 2]} />
+      <meshStandardMaterial {...floor} roughness={0.78} metalness={0} />
+    </mesh>
+  );
+}
+
+function TexturedFloor(): JSX.Element {
+  const { hx, hz } = ROOM;
+  const tex = useTexture(WOOD_TEX);
+  useMemo(() => {
+    for (const [key, t] of Object.entries(tex)) {
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(3, 3);
+      t.colorSpace = key === "map" ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+      t.anisotropy = 8;
+      t.needsUpdate = true;
+    }
+  }, [tex]);
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      <planeGeometry args={[hx * 2, hz * 2]} />
+      <meshStandardMaterial {...tex} roughness={0.85} metalness={0} />
+    </mesh>
+  );
+}
+
+function Floor(): JSX.Element {
+  const hasWood = useAssetReady(WOOD_TEX.map);
+  if (!hasWood) return <ProceduralFloor />;
+  return (
+    <Suspense fallback={<ProceduralFloor />}>
+      <TexturedFloor />
+    </Suspense>
+  );
+}
+
+function Shell(): JSX.Element {
   const wall = useMemo(() => wallTextures(), []);
   const { hx, hz, height, wall: tw } = ROOM;
   return (
     <group>
-      {/* floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[hx * 2, hz * 2]} />
-        <meshStandardMaterial {...floor} roughness={0.78} metalness={0} />
-      </mesh>
+      <Floor />
       {/* ceiling */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, height, 0]} receiveShadow>
         <planeGeometry args={[hx * 2, hz * 2]} />
@@ -409,6 +452,12 @@ function ExteriorTrees({ originX }: { originX: number }): JSX.Element {
   ];
   return (
     <group>
+      {/* exterior forest floor (y=0, coplanar with the tree bases) so the trees are planted, not
+          floating. Starts at the wall and extends outward only — never under the cabin. */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[originX + 28, 0, 0]}>
+        <planeGeometry args={[56, 80]} />
+        <meshStandardMaterial color="#3a4b2e" roughness={1} metalness={0} />
+      </mesh>
       {trees.map(([dx, z, h, green]) => (
         <group key={`tree-${dx}-${z}`} position={[originX + dx, 0, z]}>
           {/* trunk */}
