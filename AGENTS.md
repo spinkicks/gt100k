@@ -6,10 +6,15 @@
 > this file; AGENTS.md governs workflow only (authority order in the Constitution's Governance section).
 
 ## Project
-- **GT100K** — `docs/prd/PRD.md` is the canonical product spec (see `README.md` for the full doc map); `docs/research/` + `docs/proposals/` hold background.
+- **GT100K** — the PassionLab spec lives in `docs/prd/` (`DISCOVERY-APP-PRD.md`, `SPECIALIZATION-PIPELINE-PRD.md`, `passionApps.md`, `passion-roadmap.md`); `docs/research/` (brainlifts + `passion-pipeline/`) holds the evidence base. The prior full-program PRD is archived under `archive/docs/prd/`.
 - **Current stage: active development.** PRD-driven implementation is underway; code ships behind the workflow below. `docs/prd/` remains the canonical spec.
-- **Active scope: see [`docs/SCOPE.md`](docs/SCOPE.md).** Focus is passion development (evidence-graph, interest-lab, passion-tutor) + family selection; the arena/cohort social layer is paused.
+- **Active scope:** PassionLab, rebuilt from the new design (`docs/prd/passion-roadmap.md`) — the Evidence Graph is kept; discovery + specialization are rebuilt. Family selection (`docs/research/familyBrainlift.md`) is the second focus; the arena/cohort social layer is archived.
 - **New here?** Start with `docs/onboarding/` (`README.md` + `teammate-setup.sh`). It sets up the **same factory the operator runs**: Claude Code (`claude-opus-4-8[1m]`) **+** Codex (`gpt-5.6-sol`), 3 MCPs (context7, aws-knowledge, terraform), context hygiene (auto-compaction ~40%), the loop harness, and the consensus + adversarial-QA review gate. One shared pipeline: everyone's work flows through the same gates below.
+
+## Agent skills
+Cross-agent skills are configured for this repo (from [`mattpocock/skills`](https://github.com/mattpocock/skills)). Run **`/grill-with-docs`** before implementation to sharpen a plan and build the domain model.
+- **Issue tracker** — GitHub Issues (`spinkicks/gt100k`) via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+- **Domain docs** — multi-context: root `CONTEXT-MAP.md` → per-context `CONTEXT.md` (e.g. `passion/CONTEXT.md`); ADRs in `docs/adr/`. See `docs/agents/domain.md`.
 
 ## Branching
 - Trunk-based. Branch from latest `origin/main`. Name: `dev/<lane>/<slug>` (e.g. `dev/prd/citation-fixes`). Branches live < 1 day.
@@ -37,4 +42,4 @@
 - Child-data / PII governance applies to product code per the PRD — never put real user data in fixtures.
 
 ## Definition of Done
-- Matches the relevant `docs/prd/PRD.md` section. Tests + docs updated. CI green. Reviewed (human or cross-model). Conventional Commit + `Closes #<id>`.
+- Matches the relevant `docs/prd/` spec (the PassionLab PRDs). Tests + docs updated. CI green. Reviewed (human or cross-model). Conventional Commit + `Closes #<id>`.
