@@ -137,12 +137,13 @@ function Shell(): JSX.Element {
         <boxGeometry args={[tw, 0.5, hz * 2]} />
         <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
       </mesh>
-      <mesh position={[hx, 1.75, -1.975]} receiveShadow castShadow>
-        <boxGeometry args={[tw, 1.5, 2.05]} />
+      {/* jambs run full height and OVERLAP the sill/header (no coplanar seam → no light leak / z-fight) */}
+      <mesh position={[hx, height / 2, -1.975]} receiveShadow castShadow>
+        <boxGeometry args={[tw, height, 2.05]} />
         <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
       </mesh>
-      <mesh position={[hx, 1.75, 1.975]} receiveShadow castShadow>
-        <boxGeometry args={[tw, 1.5, 2.05]} />
+      <mesh position={[hx, height / 2, 1.975]} receiveShadow castShadow>
+        <boxGeometry args={[tw, height, 2.05]} />
         <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
       </mesh>
     </group>
@@ -490,7 +491,7 @@ function ExteriorTrees({ originX }: { originX: number }): JSX.Element {
 function Window(): JSX.Element {
   const [x] = ANCHORS.window;
   const cy = 1.75; // opening centre height
-  const iface = x - 0.15; // interior wall face
+  const iface = x - 0.26; // frame sits PROUD of the interior wall face (3.35) → no frame-in-wall z-fight
   const sky = useMemo(() => skyGradientTexture(), []);
   const far = useMemo(() => mountainLayerTexture("#8397b8", 0.5, 26, 11, 0.85), []);
   const mid = useMemo(() => mountainLayerTexture("#566a90", 0.62, 40, 23, 0.5), []);
@@ -545,8 +546,8 @@ function Window(): JSX.Element {
             <meshStandardMaterial color="#4a3320" roughness={0.6} metalness={0} />
           </mesh>
         ))}
-        {/* muntin cross — casts the window-pane shadow in the light shaft */}
-        <mesh position={[0, 0, 0.02]} castShadow>
+        {/* muntin cross — offset in depth so the two bars don't share a plane at the crossing (z-fight) */}
+        <mesh position={[0, 0, 0.05]} castShadow>
           <boxGeometry args={[0.05, 1.5, 0.05]} />
           <meshStandardMaterial color="#3a2818" roughness={0.6} />
         </mesh>
