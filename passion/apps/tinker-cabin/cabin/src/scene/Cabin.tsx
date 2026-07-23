@@ -10,6 +10,7 @@ import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { updateStats } from "../core/hook";
+import { EnvLight } from "./EnvLight";
 import { ANCHORS, ROOM } from "./layout";
 import {
   duskVistaTexture,
@@ -394,6 +395,7 @@ function SetDressing(): JSX.Element {
 export function Cabin({ freeze }: { freeze: boolean }): JSX.Element {
   return (
     <group>
+      <EnvLight />
       <Shell />
       <Rug />
       <Fireplace freeze={freeze} />
