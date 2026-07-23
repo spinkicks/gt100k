@@ -6,3 +6,4 @@ export * from "./library.js";
 export * from "./safety.js";
 export * from "./ports.js";
 export * from "./stubs.js";
+export * from "./pipeline.js";
