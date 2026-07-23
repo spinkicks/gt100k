@@ -19,11 +19,11 @@ describe("synthetic EvidenceGraph demo", () => {
     );
 
     expect(stderr).toBe("");
-    expect(stdout).toContain("Synthetic milestone: milestone-synthetic-001");
+    expect(stdout).toContain("Synthetic project: speaker-v1");
     expect(stdout).toContain("Graph: 8 nodes, 13 edges");
     expect(stdout).toContain("Human authority: PASS");
-    expect(stdout).toMatch(/Packet: 7 nodes, root [a-f0-9]{64}/u);
-    expect(stdout).toContain("Persisted packet: PASS");
+    expect(stdout).toMatch(/Graph root: [a-f0-9]{64}/u);
+    expect(stdout).toContain("Persisted graph: PASS");
     expect(stdout).toContain("Verification: PASS");
   }, 15_000);
 });

@@ -2,8 +2,8 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 
 import type {
   EvidenceEdge,
+  EvidenceGraph,
   EvidenceNode,
-  EvidencePacket,
   VerificationResult,
 } from "../src/model.js";
 import type {
@@ -22,7 +22,7 @@ describe("EvidenceGraph ports", () => {
       hash(input: Uint8Array): string;
     }>();
     expectTypeOf<Verifier>().toEqualTypeOf<{
-      verify(packet: EvidencePacket, hasher: Hasher): Promise<VerificationResult>;
+      verify(graph: EvidenceGraph, hasher: Hasher): Promise<VerificationResult>;
     }>();
 
     const hasher: Hasher = {
@@ -31,13 +31,14 @@ describe("EvidenceGraph ports", () => {
     expect(hasher.hash(new Uint8Array([1, 2, 3]))).toBe("synthetic-3");
   });
 
-  it("defines the complete asynchronous repository contract", () => {
+  it("defines the complete asynchronous repository contract with per-project graphs", () => {
     expectTypeOf<EvidenceRepository>().toEqualTypeOf<{
       saveNode(node: EvidenceNode): Promise<void>;
       getNode(id: string): Promise<EvidenceNode | null>;
       saveEdge(edge: EvidenceEdge): Promise<void>;
-      savePacket(packet: EvidencePacket): Promise<void>;
-      getPacket(milestoneRef: string): Promise<EvidencePacket | null>;
+      saveGraph(projectId: string, graph: EvidenceGraph): Promise<void>;
+      getGraph(projectId: string): Promise<EvidenceGraph | null>;
+      deleteGraph(projectId: string): Promise<void>;
     }>();
   });
 

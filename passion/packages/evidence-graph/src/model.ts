@@ -110,20 +110,6 @@ export interface Attestation {
   };
 }
 
-export interface EvidencePacket {
-  milestoneRef: string;
-  subjectDigest: string;
-  nodeIds: string[];
-  merkleRoot: string;
-  artifactHashes: string[];
-  failedBranches: string[];
-  assistanceLedger: string[];
-  contributionMap: Record<string, string[]>;
-  reviewAnchors: string[];
-  outcomes: string[];
-  attestation: Attestation;
-}
-
 /** Machine-readable validation result; not persisted. */
 export interface VerificationResult {
   ok: boolean;
