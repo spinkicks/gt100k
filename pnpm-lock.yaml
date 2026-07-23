@@ -32,6 +32,12 @@ importers:
 
   passion/adapters/evidence-verifier-stub: {}
 
+  passion/adapters/profile-store-fs:
+    dependencies:
+      '@gt100k/student-profile':
+        specifier: workspace:*
+        version: link:../../packages/student-profile
+
   passion/adapters/tagger-stub:
     dependencies:
       '@gt100k/two-axis-tagging':
@@ -119,6 +125,9 @@ importers:
       '@gt100k/interest-inference':
         specifier: workspace:*
         version: link:../../packages/interest-inference
+      '@gt100k/student-profile':
+        specifier: workspace:*
+        version: link:../../packages/student-profile
       motion:
         specifier: ^12.42.0
         version: 12.42.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -234,6 +243,21 @@ importers:
       '@gt100k/evidence-graph':
         specifier: workspace:*
         version: link:../evidence-graph
+
+  passion/packages/student-profile:
+    dependencies:
+      '@gt100k/hypothesis-store':
+        specifier: workspace:*
+        version: link:../hypothesis-store
+      '@gt100k/interest-inference':
+        specifier: workspace:*
+        version: link:../interest-inference
+      '@gt100k/signal-pipeline':
+        specifier: workspace:*
+        version: link:../signal-pipeline
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../two-axis-tagging
 
   passion/packages/two-axis-tagging: {}
 

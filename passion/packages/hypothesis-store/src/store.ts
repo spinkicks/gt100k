@@ -59,10 +59,21 @@ export function applyInterestRead(
       // EXPLORING→EMERGING (spec §6 note).
       byId[id] = advance(created, now);
     } else {
-      byId[id] = advance({ ...prev, evidence, version: prev.version + 1, updatedAt: now }, now);
+      const next = advance({ ...prev, evidence, version: prev.version + 1, updatedAt: now }, now);
+      // No-op idempotency (014 SC-2): if re-applying the read changes nothing but version/updatedAt,
+      // keep `prev` verbatim so a full-replay cycle is a true no-op on state (no version churn).
+      byId[id] = sameExceptVersion(next, prev) ? prev : next;
     }
   }
   return { byId };
+}
+
+// True when `a` equals `b` ignoring only `version`/`updatedAt` (the fields a re-apply always bumps).
+// Compares structurally over the JSON-safe hypothesis shape; key order is preserved via the spread
+// in `applyInterestRead`, so a stable stringify is a faithful deep-equal here.
+function sameExceptVersion(a: InterestHypothesis, b: InterestHypothesis): boolean {
+  const normalized = { ...a, version: b.version, updatedAt: b.updatedAt };
+  return JSON.stringify(normalized) === JSON.stringify(b);
 }
 
 // Auto transitions only (system): EXPLORING→EMERGING on confident;

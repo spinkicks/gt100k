@@ -64,6 +64,19 @@ describe("applyInterestRead", () => {
     expect(getForKid(s, "kid-1")[0]!.state).toBe("CONTESTED");
   });
 
+  it("is a no-op on re-apply of an identical read (014 SC-2): version + updatedAt stable, deep-equal", () => {
+    const s1 = applyInterestRead(emptyStore(), "kid-1", read(true, 0.7), NOW);
+    const h1 = getForKid(s1, "kid-1")[0]!;
+    // Re-apply the SAME read at a LATER `now`; nothing in the belief changed, so neither version
+    // nor updatedAt may move — the replay is a true no-op on state.
+    const s2 = applyInterestRead(s1, "kid-1", read(true, 0.7), "2026-05-01T00:00:00.000Z");
+    const h2 = getForKid(s2, "kid-1")[0]!;
+    expect(h2.version).toBe(h1.version);
+    expect(h2.updatedAt).toBe(h1.updatedAt);
+    expect(h2).toEqual(h1);
+    expect(s2.byId).toEqual(s1.byId);
+  });
+
   it("never mutates the input store (immutable value)", () => {
     const s0 = emptyStore();
     const s1 = applyInterestRead(s0, "kid-1", read(true, 0.7), NOW);
