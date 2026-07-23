@@ -1,15 +1,6 @@
 {
   "files": [],
   "references": [
-    { "path": "passion/packages/evidence-explorer-view" },
-    { "path": "passion/packages/interest-lab" },
-    { "path": "passion/packages/interest-lab-view" },
-    { "path": "passion/packages/interest-zone-kit" },
-    { "path": "passion/packages/passion-tutor" },
-    { "path": "passion/adapters/passion-tutor-memory" },
-    { "path": "passion/adapters/interest-repo-memory" },
-    { "path": "passion/adapters/interest-probe-catalog" },
-    { "path": "passion/adapters/interest-assent-stub" },
-    { "path": "passion/adapters/interest-artifact-stub" }
+    { "path": "passion/packages/evidence-explorer-view" }
   ]
 }
