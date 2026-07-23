@@ -50,6 +50,19 @@
   belt-and-suspenders so a non-finite confidence can't slip past the `[0,1]` range check). Both are
   strictly additive — no behavior the spec pins was changed.
 
+- **[T2A-7] Task 9 — public barrel already complete; demo stays out of the barrel; SC-8 "build" = `tsc -b`.**
+  (a) `src/index.ts` was written at Task 7 to the exact Task-9 shape (7 module re-exports: work-modes,
+  taxonomy, records, resolver, ports, pipeline, validity) so the adapters could import from it; Task 9's
+  Step-2 "implement the public index.ts" was therefore a verify-identical no-op, not a rewrite. (b) `demo.ts`
+  is deliberately NOT added to the barrel — the plan's Step-2 index.ts omits it and `runDemo`/`CoverageCell`
+  are a headless entry point, imported directly by `test/demo.test.ts` (`../src/demo.js`), not part of the
+  domain's consumer API. (c) The demo test keeps the plan's loose shape assertion AND adds a golden-count
+  assertion (`music-sound/audio-systems::perform`=1, `::build`=2, length 2) so it asserts the spec's
+  documented coverage-matrix output, not a tautology (loop Self-QA: no hollow tests). (d) SC-8 lists
+  `pnpm --filter @gt100k/two-axis-tagging build`, but the package intentionally has only a `test` script;
+  spec §12 + the plan state `tsc -b` (composite project references) **is** the build check, so a green
+  `tsc -b` satisfies SC-8's build clause — no `build` script is added.
+
 
 ## EE-ART — committed art direction (keep cohesive across turns)
 - World: **cinematic dark cosmos**. Palette: `--void #0a0e17`, panels `#121826`/`#1a2233`,

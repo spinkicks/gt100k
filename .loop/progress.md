@@ -202,11 +202,60 @@ native `fetch`, opt-in only). SYNTHETIC ONLY.
 - **SC-8** (full gate incl. both adapters) — advancing; final consolidation + demo is Task 9.
 - **manual** live TFY call — `tag:live` script + `.env.local.example` shipped; operator-run, outside CI.
 
+## Done this turn — P5 (Task 9): public API + coverage-matrix demo + README (FINAL TASK)
+- `src/demo.ts` — headless `runDemo()`: seed taxonomy (`createTaxonomy`) → inline demo `Tagger` (NOT an
+  adapter import — no domain→adapter cycle) suggests `music-sound/audio-systems` afforded
+  `[perform,build,investigate]` → `acceptSuggestion` mints/accepts an `auto` artifact → runs a 3-action
+  synthetic stream (`play`,`assemble`,`tinker`) → `resolveEngagedModes` → emits the `(domain × work-mode)`
+  coverage matrix `CoverageCell[] = {cell, count}` keyed `serializePath(path)::primary`.
+- `test/demo.test.ts` (2 tests): the plan's shape assertion (every cell matches `.+::<work-mode>`, count ≥1)
+  **plus** a golden-count assertion — `music-sound/audio-systems::perform`=1, `::build`=2 (assemble+tinker
+  both resolve primary=build), matrix length 2 — so the demo test asserts the spec's documented output, not
+  a tautology.
+- `src/index.ts` — verified byte-identical to the plan's Task-9 target barrel (written at Task 7): 7 module
+  re-exports (work-modes · taxonomy · records · resolver · ports · pipeline · validity). `demo.ts` stays
+  OUT of the barrel (headless entry; direct-imported by its test) — see decision [T2A-7].
+- `README.md` — quick start (StubTagger suggest→accept→resolve→cell), public API table (verified every
+  named export exists), ports/adapters table, TFY env note (gate needs no env), `pnpm --filter … test`.
+
+## Gate — GREEN (full DoD trio)
+- `pnpm install` → "Already up to date" (12 workspace projects, lockfile unchanged). `pnpm exec tsc -b` →
+  exit 0. `pnpm test` → **189 passed (45 files)** (+2 from Task 8's 187; new `demo.test.ts`). No network,
+  no env, no external dep. No package regressed.
+
+## FINAL SELF-AUDIT — SC-1 … SC-8 → the exact test that proves each (spec §8, golden §9)
+- **SC-1** stable IDs match the golden list → `packages/two-axis-tagging/test/taxonomy.test.ts` (8 golden
+  cabin IDs + seed sub-topics) + `test/work-modes.test.ts` (9 work-modes in golden order
+  `[build,investigate,compose,perform,debug,explain,persuade,collaborate,care]` + valid defs). **MET.**
+- **SC-2** `engagedModes ⊆ affordedModes` for every valid action; non-intersecting → rejected, not coerced →
+  `test/resolver.test.ts` (subset-invariant loop over all ok results + the two `invalid-for-artifact`
+  cases). **MET.**
+- **SC-3** deterministic resolver golden (exact primary+secondary, priority-ordered) → `test/resolver.test.ts`
+  (9 golden `(RawAction, Artifact)` fixtures in `src/__fixtures__/resolver-cases.ts`, incl. `tinker` →
+  `{primary:build, secondary:investigate}`). **MET.**
+- **SC-4** ambiguous/unknown action → `unresolved`, enqueued for review, never guessed → resolver half:
+  `test/resolver.test.ts` (`wobble` → `{ok:false, reason:"unresolved"}`); enqueue half:
+  `test/validity.test.ts` ("routes an unresolved resolver result to the queue"). **MET.**
+- **SC-5** pipeline: stub suggestion validates → `auto` artifact; novel sub-topic path mints a parented
+  sub-topic; invalid work-mode / unresolvable cabin rejected → `test/pipeline.test.ts` (auto artifact w/
+  `tagConfidence 0.8`; mints `music-sound/modular-synthesis`; rejects unknown-cabin/invalid-mode/
+  `<CONFIDENCE_FLOOR 0.5`) + `adapters/tagger-stub/test/stub.test.ts` (deterministic CI stub `Tagger`). **MET.**
+- **SC-6** Krippendorff α golden (±0.001) + trust gate → `test/validity.test.ts` (α **0.5333** on
+  `DISAGREE_UNITS`, **1.0** on `PERFECT_UNITS`; `topicTrust`/`applyTrust` gate at `ALPHA_BAR=0.667`:
+  0.5333→PROVISIONAL, 0.667/1.0→TRUSTED). **MET.**
+- **SC-7** `tagger-tfy` parses recorded TFY JSON → valid `TagSuggestion`; malformed → failed suggestion
+  routed to review, no throw → `adapters/tagger-tfy/test/parse.test.ts` (recorded fixture →
+  `making-engineering`/`build`/conf≈0.97; null on bad JSON / invalid mode / unknown cabin / out-of-range
+  conf; two-segment path ok). **MET.**
+- **SC-8** gate green: `pnpm exec tsc -b` + `pnpm test` (+ the "build" clause = `tsc -b` composite build per
+  spec §12) → this turn's full trio above is green (tsc -b exit 0; 189 tests). **MET.** (No standalone
+  `build` script — spec §12/plan define `tsc -b` as the build check; see [T2A-7].)
+- **manual** (outside CI): one live TFY call via `tag:live` → `adapters/tagger-tfy/scripts/tag-live.ts` +
+  `.env.local.example` shipped; operator-run, needs `TFY_API_KEY`, never in the gate. **Provided; N/A to
+  automated DoD.**
+
+All SC-1…SC-8 MET with real golden-asserting tests; no network / no external dep / synthetic only. → `.loop-done`.
+
 ## NEXT
-- **Task 9 (P5): public API + demo + final wiring** (`passion/packages/two-axis-tagging`). Re-assert the
-  domain `index.ts` barrel (already written at Task 7 — verify identical, no missing exports), add a
-  headless `runDemo()` that wires seed taxonomy → stub-tag a synthetic artifact set → run a synthetic
-  action stream → resolve engaged modes → compute validity α → emit the `(domain × work-mode)` coverage
-  matrix, a `demo.test.ts` asserting the documented output, a minimal headless review-queue surface, and
-  a package README. This is the last task → then write the full SC-1…SC-8 self-audit mapping each SC to
-  its proving test and create `.loop-done`.
+- **Feature complete.** All 9 plan tasks (P0–P5) landed; SC-1…SC-8 met and self-audited above; `.loop-done`
+  created. No further work in-lane.
