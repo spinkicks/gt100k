@@ -17,6 +17,7 @@ import { applyGuidePrimaryAction, buildQaState, topPromotableId } from "./consol
 import { installQa } from "./qa.js";
 import { CHILDREN, buildRosterGates, buildRosterStore, type Child } from "./console-data.js";
 import { escalationCount, wellbeingForKid } from "./wellbeing.js";
+import { plansForKid } from "./plan.js";
 
 const GUIDE: HumanActor = { id: "guide-synthetic", role: "guide" };
 const isoNow = (): string => new Date().toISOString();
@@ -40,6 +41,9 @@ export function useConsole() {
   // The selected child's per-spike wellbeing reads (016) — derived from the interaction log, not the
   // mutable store, so a human promote/park never changes them.
   const wellbeing = useMemo(() => wellbeingForKid(kid), [kid]);
+  // The selected child's certified-spike specialization plans (018-D1). Derived from the log + the
+  // same wellbeing reads, with the DETERMINISTIC STUB brief — synchronous + offline for LOOP_QA.
+  const plans = useMemo(() => plansForKid(kid), [kid]);
 
   // Switching child resets the transient view state so the detail pane / filter never point at a
   // stale card from the previous kid.
@@ -152,6 +156,7 @@ export function useConsole() {
     counts,
     summaries,
     wellbeing,
+    plans,
     selectedId,
     setSelectedId,
     selectedCard,

@@ -1,11 +1,11 @@
-import { NodeCryptoHasher } from "@gt100k/evidence-hash-node";
 import { buildFixtureGraph, buildGrowthTimeline } from "@gt100k/evidence-explorer-view";
+import { NodeCryptoHasher } from "@gt100k/evidence-hash-node";
 import { describe, expect, it } from "vitest";
 
 /** Growth timeline order (§U8.7). */
 describe("buildGrowthTimeline", () => {
-  const { graph, packet, ids } = buildFixtureGraph(new NodeCryptoHasher());
-  const timeline = buildGrowthTimeline(graph, packet);
+  const { graph, milestoneNodeIds, ids } = buildFixtureGraph(new NodeCryptoHasher());
+  const timeline = buildGrowthTimeline(graph, milestoneNodeIds);
 
   it("reveals the 12 milestone beats; island excluded", () => {
     expect(timeline.count).toBe(12);
@@ -34,7 +34,7 @@ describe("buildGrowthTimeline", () => {
 
   it("is deterministic across runs", () => {
     const rebuilt = buildFixtureGraph(new NodeCryptoHasher());
-    const again = buildGrowthTimeline(rebuilt.graph, rebuilt.packet);
+    const again = buildGrowthTimeline(rebuilt.graph, rebuilt.milestoneNodeIds);
     expect(again.beats.map((b) => b.nodeId)).toEqual(timeline.beats.map((b) => b.nodeId));
   });
 });

@@ -17,8 +17,10 @@ describe("EvidenceGraph package README", () => {
       "addEdge",
       "assertHumanAuthority",
       "merkleRoot",
+      "orderedGraphNodeIds",
+      "graphMerkleRoot",
       "buildAttestation",
-      "assembleEvidencePacket",
+      "buildGraphAttestation",
       "traceEvidence",
     ]) {
       expect(readme).toContain(`\`${apiName}\``);

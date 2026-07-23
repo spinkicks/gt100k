@@ -59,7 +59,10 @@ const BLOOM = {
   luminanceSmoothing: 0.9,
   mipmapBlur: true,
 } as const;
-const DOF = { focalLength: 0.02, bokehScale: 2.4 } as const;
+// Focus tracks the graph center (`target`) with a WIDE world-space sharp band so the whole
+// constellation stays crisp at any zoom — only the far void/starfield softens. (A shallow
+// focal plane blurred the graph when zoomed out.) `bokehScale` kept small for a gentle falloff.
+const DOF = { worldFocusRange: 34, bokehScale: 1.0 } as const;
 /** Cinematic ambient-occlusion grade — cool-tinted crevice shading that seats bodies in the volume. */
 const AO = { aoRadius: 1.6, intensity: 1.35, distanceFalloff: 1.0, halfRes: true } as const;
 
@@ -213,7 +216,7 @@ export function Cosmos3D({
           />
           <DepthOfField
             target={[cx, cy, cz]}
-            focalLength={DOF.focalLength}
+            worldFocusRange={DOF.worldFocusRange}
             bokehScale={DOF.bokehScale}
           />
           <Vignette eskil={false} offset={0.28} darkness={0.72} />

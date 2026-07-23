@@ -1,26 +1,30 @@
-/**
- * Server-side synthetic view builder. Builds the committed "speaker-v1" `ExplorerView` through the
- * real domain API + Node SHA-256 hasher, then hands the plain (serializable) view to the client.
- *
- * IMPORTANT: this module reaches `@gt100k/evidence-hash-node` (`node:crypto`) and MUST only be
- * imported from a Server Component / test — never from a `"use client"` module.
- */
 import {
   type BuildExplorerViewOptions,
   type ExplorerView,
   type VerificationView,
   applyTamper,
   buildExplorerView,
-  buildFixtureGraph,
   buildVerificationView,
-  explorerFixture,
 } from "@gt100k/evidence-explorer-view";
+/**
+ * Server-side synthetic view builder. Builds the committed "tiny-runner-v1" `ExplorerView` — a
+ * student's "build a one-button endless runner" journey — through the real domain API + Node
+ * SHA-256 hasher, then hands the plain (serializable) view to the client.
+ *
+ * IMPORTANT: this module reaches `@gt100k/evidence-hash-node` (`node:crypto`) and MUST only be
+ * imported from a Server Component / test — never from a `"use client"` module.
+ */
+import type { EvidenceGraph } from "@gt100k/evidence-graph";
 import { NodeCryptoHasher } from "@gt100k/evidence-hash-node";
+import { buildTinyGameGraph } from "@gt100k/evidence-tiny-game";
+import { DeterministicStubVerifier } from "@gt100k/evidence-verifier-stub";
 
-/** Build the deterministic Provenance Observatory view for the synthetic milestone. */
+/** Build the deterministic Provenance Observatory view for the tiny-runner-v1 journey. */
 export function buildSyntheticExplorerView(opts: BuildExplorerViewOptions = {}): ExplorerView {
-  const { graph, packet } = buildFixtureGraph(new NodeCryptoHasher());
-  return buildExplorerView(graph, packet, opts);
+  const hasher = new NodeCryptoHasher();
+  const g = buildTinyGameGraph(hasher);
+  const milestoneNodeIds = Object.keys(g.graph.nodes);
+  return buildExplorerView(g.graph, { milestoneNodeIds, projectRef: g.projectId }, opts);
 }
 
 /**
@@ -35,22 +39,57 @@ export interface SyntheticVerification {
   readonly tamperNodeId: string;
 }
 
-/** Derive the untampered + tampered verification views for the synthetic milestone (server-only). */
+/** Derive the untampered + tampered verification views for the tiny-runner-v1 journey (server-only). */
 export async function buildSyntheticVerification(): Promise<SyntheticVerification> {
   const hasher = new NodeCryptoHasher();
-  const fixture = await explorerFixture(hasher);
-  const verified = buildVerificationView(
-    fixture.packet,
-    fixture.verifierResult,
-    fixture.graph,
-    hasher,
-  );
-  const tamperedBundle = applyTamper(fixture);
-  const tampered = buildVerificationView(
-    tamperedBundle.packet,
-    fixture.verifierResult,
-    tamperedBundle.graph,
-    hasher,
-  );
-  return { verified, tampered, tamperNodeId: fixture.ids["released-artifact"] };
+  const g = buildTinyGameGraph(hasher);
+  const bundle = {
+    graph: g.graph,
+    ids: g.ids,
+    milestoneNodeIds: Object.keys(g.graph.nodes),
+    subjectDigest: g.subjectDigest,
+    projectRef: g.projectId,
+  };
+  const verifierResult = await new DeterministicStubVerifier().verify(g.graph, hasher);
+  const verified = buildVerificationView(g.graph, verifierResult, hasher, {
+    subjectDigest: g.subjectDigest,
+  });
+  const tamperedBundle = applyTamper(bundle);
+  const tampered = buildVerificationView(tamperedBundle.graph, verifierResult, hasher, {
+    subjectDigest: tamperedBundle.subjectDigest,
+  });
+  // `subjectDigest` is exactly `ids["released-artifact"]` (typed `string`, no unchecked index access).
+  return { verified, tampered, tamperNodeId: g.subjectDigest };
+}
+
+/**
+ * The full seed the interactive shell is hydrated from (Phase 4): the serializable working `graph`
+ * plus the pre-built `view` + `verification`, and the stable `projectRef` / `subjectDigest` the manual
+ * add server action needs to re-derive the bundle. Built once, server-side (Node SHA-256 hasher), so
+ * the client holds a plain, JSON-serializable snapshot — no hasher and no crypto ever reach it.
+ */
+export interface SyntheticSeed {
+  readonly graph: EvidenceGraph;
+  readonly view: ExplorerView;
+  readonly verification: SyntheticVerification;
+  readonly projectRef: string;
+  readonly subjectDigest: string;
+}
+
+/** Build the complete synthetic seed for the tiny-runner-v1 journey (server-only). */
+export async function buildSyntheticSeed(
+  opts: BuildExplorerViewOptions = {},
+): Promise<SyntheticSeed> {
+  const hasher = new NodeCryptoHasher();
+  const g = buildTinyGameGraph(hasher);
+  const milestoneNodeIds = Object.keys(g.graph.nodes);
+  const view = buildExplorerView(g.graph, { milestoneNodeIds, projectRef: g.projectId }, opts);
+  const verification = await buildSyntheticVerification();
+  return {
+    graph: g.graph,
+    view,
+    verification,
+    projectRef: g.projectId,
+    subjectDigest: g.subjectDigest,
+  };
 }

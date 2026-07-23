@@ -20,14 +20,16 @@ describe("buildLedgerView", () => {
   const verifier = new DeterministicStubVerifier();
 
   const buildView = () => {
-    const { graph, packet } = buildFixtureGraph(hasher);
-    return { view: buildExplorerView(graph, packet), graph, packet };
+    const bundle = buildFixtureGraph(hasher);
+    return { view: buildExplorerView(bundle.graph, bundle), bundle };
   };
 
   const buildVerification = async () => {
-    const { graph, packet } = buildFixtureGraph(hasher);
-    const verifierResult = await verifier.verify(packet, hasher);
-    return buildVerificationView(packet, verifierResult, graph, hasher);
+    const bundle = buildFixtureGraph(hasher);
+    const verifierResult = await verifier.verify(bundle.graph, hasher);
+    return buildVerificationView(bundle.graph, verifierResult, hasher, {
+      subjectDigest: bundle.subjectDigest,
+    });
   };
 
   it("tree has one item per node — parity with the constellation (SC-E10)", () => {

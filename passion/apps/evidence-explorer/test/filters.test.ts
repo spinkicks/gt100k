@@ -1,8 +1,8 @@
-import { buildFixtureGraph } from "@gt100k/evidence-explorer-view";
 import { NODE_TYPES } from "@gt100k/evidence-graph";
 import type { NodeType } from "@gt100k/evidence-graph";
 import { traceEvidence } from "@gt100k/evidence-graph";
 import { NodeCryptoHasher } from "@gt100k/evidence-hash-node";
+import { buildTinyGameGraph } from "@gt100k/evidence-tiny-game";
 import { describe, expect, it } from "vitest";
 import {
   firstSearchMatch,
@@ -60,9 +60,9 @@ describe("HUD trace selector", () => {
     expect(tracedNodeIds(view, null)).toBeNull();
   });
 
-  it("trace equals the domain traceEvidence (supporting-only; island excluded) — SC-012/SC-E14", () => {
+  it("trace equals the domain traceEvidence (supporting-only) — SC-012/SC-E14", () => {
     // The domain is the source of truth; the app's view-only BFS must reproduce it exactly.
-    const { graph } = buildFixtureGraph(new NodeCryptoHasher());
+    const { graph } = buildTinyGameGraph(new NodeCryptoHasher());
     const anchor = outcomeAnchorId(view);
     expect(anchor).not.toBeNull();
     if (anchor === null) return;
@@ -76,10 +76,8 @@ describe("HUD trace selector", () => {
     expect([...traced].sort()).toEqual([...domain].sort());
     // Never includes the anchor itself (supporting-only).
     expect(traced.has(anchor)).toBe(false);
-    // The disconnected island is excluded.
-    const island = view.nodes.find((n) => n.isIsland);
-    expect(island).toBeDefined();
-    if (island) expect(traced.has(island.id)).toBe(false);
+    // The trace is non-trivial: the graded Outcome pulls in supporting provenance.
+    expect(traced.size).toBeGreaterThan(0);
   });
 
   it("trace is deterministic across calls", () => {

@@ -1,0 +1,20 @@
+{
+  "name": "@gt100k/evidence-repo-postgres",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "demo": "tsx src/demo.ts",
+    "seed": "tsx src/seed-cli.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.4",
+    "@gt100k/evidence-tiny-game": "workspace:*"
+  }
+}
