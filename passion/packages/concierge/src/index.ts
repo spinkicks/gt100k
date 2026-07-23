@@ -3,3 +3,4 @@
 // Barrel filled in task-by-task (model → library → safety → ports/stubs → pipeline → promote).
 export * from "./model.js";
 export * from "./library.js";
+export * from "./safety.js";
