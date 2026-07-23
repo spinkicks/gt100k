@@ -15,7 +15,7 @@ native `fetch`, opt-in only). SYNTHETIC ONLY.
 - [x] **P0 — Task 2** domain taxonomy: `CABINS` (8 golden), `SEED_SUBTOPICS`, `createTaxonomy`, `mintSubTopic` (idempotent-by-slug), `serializePath`, `isCabinId`
 - [x] **P1 — Task 3** records: `Artifact`/`ActionEvent`/`RawAction`/`TagSuggestion` + `makeArtifact` validator
 - [x] **P1 — Task 4** engaged-mode resolver (rule table, intersect-afforded, priority, reject-invalid, unresolved→review) + 9 golden fixtures — **the crux**
-- [ ] **P2 — Task 5** `Tagger` port + suggest→validate→accept pipeline (+ sub-topic minting), `CONFIDENCE_FLOOR=0.5`
+- [x] **P2 — Task 5** `Tagger` port + suggest→validate→accept pipeline (+ sub-topic minting), `CONFIDENCE_FLOOR=0.5`
 - [ ] **P3 — Task 6** validity harness: Krippendorff α (nominal, closed form) golden 0.5333 / 1.0, `ALPHA_BAR=0.667` trust gate, review queue
 - [ ] **P2/P4 — Task 7** `@gt100k/tagger-stub` adapter (deterministic, CI) + domain index barrel
 - [ ] **P4 — Task 8** `@gt100k/tagger-tfy` adapter (native fetch, no SDK, opt-in `tag:live`) + recorded-fixture parse test
@@ -74,9 +74,42 @@ native `fetch`, opt-in only). SYNTHETIC ONLY.
   yet wired. SC-4 not fully met until Task 6.
 - SC-1 — still MET (Tasks 1–2). SC-5…SC-8 — not yet (Tasks 5–9).
 
+## Done this turn — P2 (Task 5): Tagger port + tagging pipeline
+- `src/ports.ts` — the async seam: `interface Tagger { suggest(ref: ArtifactRef): Promise<TagSuggestion> }`
+  + `ArtifactRef { id, kind, label, url? }`. This is the ONLY async surface; all domain logic stays
+  pure/sync. Adapters (Task 7 stub, Task 8 tfy) implement this structural contract — domain never
+  imports an adapter (no cycle).
+- `src/pipeline.ts` — `CONFIDENCE_FLOOR = 0.5` (golden); `validateSuggestion(tax, s)` returns
+  `{ok:true}|{ok:false,reason}` rejecting unknown-cabin / no-modes / invalid-mode /
+  low-confidence (`< 0.5`); `acceptSuggestion(tax, ref, s)` validates (throws on invalid), reuses an
+  existing sub-topic or **mints** a novel one via `tax.mintSubTopic` (sets `origin:"minted"`), and
+  produces an `auto` artifact carrying the suggestion's confidence through `makeArtifact`.
+- `test/pipeline.test.ts` (3 tests): valid → `auto` w/ `tagConfidence 0.8`; novel
+  `music-sound/modular-synthesis` mints + `hasPath` true; unknown cabin / invalid mode /
+  `CONFIDENCE_FLOOR-0.01` all rejected.
+- Barrel note: `src/index.ts` still exports work-modes/taxonomy/records only (resolver/ports/pipeline
+  join the public barrel at Task 7/9 per plan); pipeline test imports `../src/pipeline.js` directly.
+
+## Gate — GREEN
+- `pnpm exec tsc -b` → exit 0. `pnpm test` → **173 passed (41 files)** (+3 from last turn's 170);
+  this package's files: smoke 1 · work-modes 3 · taxonomy 4 · records 3 · resolver 10 · pipeline 3.
+  No other package regressed.
+
+## Self-audit → SC coverage so far
+- **SC-1** (stable IDs) — **MET** (Tasks 1–2).
+- **SC-2/SC-3** (resolver invariant + deterministic golden) — **MET** (Task 4; `resolver.test.ts`, 10 golden cases).
+- **SC-4** (unresolved result exists) — resolver returns `{ok:false,reason:"unresolved"}` (Task 4);
+  the review-queue wiring for it is Task 6 (partial → full at Task 6).
+- **SC-5** (pipeline validate/accept/mint/reject) — **MET** this turn (`pipeline.test.ts` asserts
+  auto-artifact + confidence passthrough + minted parented sub-topic + rejection of
+  unknown-cabin/invalid-mode/low-confidence against `CONFIDENCE_FLOOR=0.5`).
+- SC-6 (Krippendorff α + gate + queue), SC-7 (TFY parse), SC-8 (full gate incl. adapters) — not yet
+  (Tasks 6–9).
+
 ## NEXT
-- **Task 5 (P2): `Tagger` port + tagging pipeline.** Test-first per plan: `test/pipeline.test.ts`
-  (accept valid suggestion → `auto` artifact w/ its confidence; mint a novel sub-topic on accept;
-  reject unknown cabin / invalid mode / confidence < `CONFIDENCE_FLOOR=0.5`). Implement `src/ports.ts`
-  (`Tagger`, `ArtifactRef`) + `src/pipeline.ts` (`CONFIDENCE_FLOOR`, `validateSuggestion`,
-  `acceptSuggestion` minting novel sub-topics via `tax.mintSubTopic`). This is where SC-5 gets met.
+- **Task 6 (P3): validity harness.** Test-first per plan: `test/validity.test.ts` +
+  `src/__fixtures__/rater-fixture.ts` (DISAGREE_UNITS golden α **0.5333** ±0.001; PERFECT_UNITS → 1.0).
+  Implement `src/validity.ts`: `krippendorffAlphaNominal(units)` (closed form
+  `α = 1 − (n−1)(n − Σo_cc)/(n² − Σn_c²)`), `ALPHA_BAR = 0.667`, `topicTrust(alpha): TagStatus`,
+  `applyTrust`, and `createReviewQueue` (`enqueue`/`list`/`resolve`). Meets SC-6 and completes SC-4's
+  review-queue half.
