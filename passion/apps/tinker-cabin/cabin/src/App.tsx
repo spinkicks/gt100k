@@ -161,12 +161,12 @@ export function App(): JSX.Element {
           }}
           onSolvedDiscovery={() => {
             const st = store[openSpec.gadgetId];
-            const def = gadgetDef(openSpec.gadgetId);
-            if (!st || !def) return;
+            if (!st) return;
+            // keep the mode the Run just set (worldMode drove the live motion, e.g. the gizmo's
+            // spin speed) — don't clobber it with the static showcase mode.
             const firstTime = !st.discovered;
-            st.mode = def.showcaseMode;
             st.discovered = true;
-            recordDiscovery(openSpec.gadgetId, def.showcaseMode, firstTime);
+            recordDiscovery(openSpec.gadgetId, st.mode, firstTime);
           }}
           onClose={onChallengeClose}
         />

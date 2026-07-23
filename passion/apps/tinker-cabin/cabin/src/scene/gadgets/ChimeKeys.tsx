@@ -29,15 +29,17 @@ export function ChimeKeys({
   freeze: boolean;
 }): JSX.Element {
   const mats = useRef<Array<THREE.MeshStandardMaterial | null>>([]);
+  const bars = useRef<Array<THREE.Mesh | null>>([]);
 
   useFrame((state) => {
     const t = freeze ? GADGET_FROZEN_T : state.clock.elapsedTime;
     const on = (store.chimes?.mode ?? 0) > 0;
     mats.current.forEach((m, i) => {
-      if (!m) return;
-      // a note "strikes" and rings out as the sweep passes each bar
       const strike = Math.max(0, Math.sin(t * 3.2 - i * 0.7));
-      m.emissiveIntensity = on ? 0.1 + 1.1 * strike * strike : i === 0 ? 0.28 : 0.06;
+      // note "strikes" as the sweep passes each bar: it glows AND physically bounces up
+      if (m) m.emissiveIntensity = on ? 0.1 + 1.1 * strike * strike : i === 0 ? 0.28 : 0.06;
+      const bar = bars.current[i];
+      if (bar) bar.position.y = 0.47 + (on ? strike * strike * 0.06 : 0);
     });
   });
 
@@ -70,7 +72,15 @@ export function ChimeKeys({
       ))}
       {/* the bars */}
       {BARS.map((b, i) => (
-        <mesh key={`bar-${b.hue}`} position={[-0.3 + i * 0.12, 0.47, 0]} castShadow receiveShadow>
+        <mesh
+          key={`bar-${b.hue}`}
+          position={[-0.3 + i * 0.12, 0.47, 0]}
+          castShadow
+          receiveShadow
+          ref={(m) => {
+            bars.current[i] = m;
+          }}
+        >
           <boxGeometry args={[0.09, 0.03, b.len]} />
           <meshStandardMaterial
             ref={(m) => {

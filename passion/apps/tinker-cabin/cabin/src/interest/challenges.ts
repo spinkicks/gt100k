@@ -99,7 +99,8 @@ export const GIZMO_CHALLENGE: ChallengeSpec = {
     return Array.from({ length: 6 }, (_, i) => (i < n ? 1 : 0));
   },
   target: [1, 1, 1, 1, 0, 0], // exactly 4 turns
-  worldMode: (_trace, solved) => (solved ? 1 : 0), // gizmo: 0 off · 1 spinning
+  // mode = turn count → the gears spin the moment you Run (any count) and faster with more turns
+  worldMode: (trace) => trace.filter(Boolean).length,
   solvedMsg: "Engaged! The gears are turning.",
 };
 
@@ -125,7 +126,7 @@ export const CHIMES_CHALLENGE: ChallengeSpec = {
   ],
   run: (lines) => lines.map((l) => (l.op === 0 ? 1 : 0)), // PLAY(op0) → note
   target: [1, 0, 1, 1, 0],
-  worldMode: (_trace, solved) => (solved ? 1 : 0), // chimes: 0 quiet · 1 ringing
+  worldMode: (trace) => (trace.some((v) => v === 1) ? 1 : 0), // rings the moment any beat PLAYs
   solvedMsg: "Ringing! The chimes play your loop.",
 };
 
@@ -153,7 +154,7 @@ export const PANEL_CHALLENGE: ChallengeSpec = {
     });
   },
   target: [0, 1, 0, 1], // r > 4
-  worldMode: (_trace, solved) => (solved ? 1 : 0), // panel: 0 idle · 1 online
+  worldMode: (trace) => (trace.some((v) => v === 1) ? 1 : 0), // lights as soon as any check passes
   solvedMsg: "Online! The panel logic checks out.",
 };
 
@@ -181,7 +182,8 @@ export const EASEL_CHALLENGE: ChallengeSpec = {
     return lines.map((l, i) => (l.op === correct[i] ? 1 : 0));
   },
   target: [1, 1, 1],
-  worldMode: (_trace, solved) => (solved ? 2 : 0), // easel: 0 blank · 2 finished painting
+  // reveals progressively: each correct layer paints more of the canvas (0 blank → 2 finished)
+  worldMode: (trace, solved) => (solved ? 2 : trace.some((v) => v === 1) ? 1 : 0),
   solvedMsg: "Painted! The canvas is complete.",
 };
 
