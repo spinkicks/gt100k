@@ -55,7 +55,7 @@ export const GADGETS: readonly GadgetDef[] = [
     domain: "tinker",
     // off · warm · cool · bright — a hands-on light to fiddle with
     target: [-2.8, 0, 0.5],
-    radius: 1.15,
+    radius: 1.5,
     modes: 4,
     defaultMode: 1,
     showcaseMode: 3,
@@ -85,7 +85,7 @@ export const GADGETS: readonly GadgetDef[] = [
     label: "the chime keys",
     domain: "music",
     target: [2.45, 0, 1.95],
-    radius: 1.2,
+    radius: 1.5,
     modes: 2,
     defaultMode: 0,
     showcaseMode: 1,
@@ -94,9 +94,10 @@ export const GADGETS: readonly GadgetDef[] = [
     id: "easel",
     label: "the paint easel",
     domain: "art",
-    // cycles through paint colours
-    target: [2.2, 0, -1.7],
-    radius: 1.2,
+    // zone aligned to the easel's actual footprint (visual sits at ~[2.9,-1.95]) + generous radius,
+    // so walking up to the visible easel reliably triggers it (was offset 0.75m → easy to miss).
+    target: [2.5, 0, -1.85],
+    radius: 1.6,
     modes: 4,
     defaultMode: 0,
     showcaseMode: 2,

@@ -50,7 +50,9 @@ export function InteractiveLamp({
       if (step < seq.length) {
         mode = seq[step] === 1 ? 1 : 0; // blink WARM/OFF through the pattern
       } else {
-        mode = st?.solved ? 3 : seq[seq.length - 1] === 1 ? 1 : 0; // settle (BRIGHT if solved)
+        // settle LIT so exiting the menu never leaves the lamp (and the room) dark: BRIGHT if the
+        // pattern matched, otherwise WARM. The player can always see after a Run.
+        mode = st?.solved ? 3 : 1;
       }
     }
     const [col, intensity, emissive] = MODES[mode] ?? MODES[1]!;
