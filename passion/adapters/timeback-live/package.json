@@ -1,0 +1,18 @@
+{
+  "name": "@gt100k/timeback-live",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@gt100k/timeback": "workspace:*"
+  },
+  "scripts": {
+    "test": "vitest run --root ../.. adapters/timeback-live/test",
+    "timeback:live": "tsx scripts/timeback-live.ts"
+  }
+}

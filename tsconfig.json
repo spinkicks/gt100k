@@ -21,6 +21,8 @@
     { "path": "passion/packages/evidence-tiny-game" },
     { "path": "passion/adapters/evidence-repo-postgres" },
     { "path": "passion/packages/specialization-planner" },
-    { "path": "passion/adapters/planner-live" }
+    { "path": "passion/adapters/planner-live" },
+    { "path": "passion/packages/timeback" },
+    { "path": "passion/adapters/timeback-live" }
   ]
 }
