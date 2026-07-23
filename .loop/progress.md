@@ -18,7 +18,7 @@ native `fetch`, opt-in only). SYNTHETIC ONLY.
 - [x] **P2 — Task 5** `Tagger` port + suggest→validate→accept pipeline (+ sub-topic minting), `CONFIDENCE_FLOOR=0.5`
 - [x] **P3 — Task 6** validity harness: Krippendorff α (nominal, closed form) golden 0.5333 / 1.0, `ALPHA_BAR=0.667` trust gate, review queue + SC-4 resolver→queue wiring
 - [x] **P2/P4 — Task 7** `@gt100k/tagger-stub` adapter (deterministic, CI) + domain index barrel
-- [ ] **P4 — Task 8** `@gt100k/tagger-tfy` adapter (native fetch, no SDK, opt-in `tag:live`) + recorded-fixture parse test
+- [x] **P4 — Task 8** `@gt100k/tagger-tfy` adapter (native fetch, no SDK, opt-in `tag:live`) + recorded-fixture parse test
 - [ ] **P5 — Task 9** public API + `runDemo()` coverage matrix + README
 
 ## Done this turn — P1 (Task 3): records + `makeArtifact` validator
@@ -166,16 +166,47 @@ native `fetch`, opt-in only). SYNTHETIC ONLY.
   (`stub.test.ts`); the pipeline (`pipeline.test.ts`) already proved suggest→validate→accept.
 - **SC-8** (full gate incl. adapters) — advancing: the adapter is now inside the composite build +
   test run and is green. Not yet fully MET until Tasks 8–9 land.
-- SC-7 (TFY parse) — not yet (Task 8).
+- SC-7 (TFY parse) — **MET** (Task 8, see below).
+
+## Task 8 — `@gt100k/tagger-tfy` adapter — 2026-07-22
+- New package `passion/adapters/tagger-tfy` (12th workspace project). Native `fetch`, **no SDK, no new
+  external npm dep** — sole dependency is `@gt100k/two-axis-tagging` (`workspace:*`). `pnpm install`
+  (non-frozen) ran to symlink it before `tsc -b` (else TS2307); lockfile registers the workspace entry,
+  committed.
+- Files: `src/parse.ts` (`parseTfySuggestion(raw): TagSuggestion | null`), `src/index.ts` (`TfyTagger
+  implements Tagger` + `tfyConfigFromEnv` + re-exports `parseTfySuggestion`),
+  `src/__fixtures__/tfy-response.ts` (recorded response as a `.ts` const — NOT `.json`; repo tsconfig
+  has no `resolveJsonModule`), `test/parse.test.ts` (6 tests), `scripts/tag-live.ts` (opt-in),
+  `.env.local.example` (git-ignored template, no token). Appended `{ "path":
+  "passion/adapters/tagger-tfy" }` to root tsconfig references (kept all existing entries).
+- **`parseTfySuggestion` is the SC-7 seam.** try/catch on `JSON.parse` → null (never throws); validates
+  `domainPath` (len 1–2, `isCabinId(path[0])`, optional string sub-topic), `affordedModes`
+  (non-empty, every `isWorkMode`), `confidence` (number, NaN-guarded, ∈ [0,1]). Any failure → null.
+- **`tfyConfigFromEnv` is NEVER called in a test or at import** — only by `tag:live`. So the gate needs
+  no `TFY_API_KEY` and makes no network call. `TfyTagger.suggest` fallback returns confidence 0
+  (< CONFIDENCE_FLOOR 0.5) so an unparseable/error response routes to review, never a fabricated tag.
+- Added a `scripts/**/*.ts` glob to the adapter tsconfig `include` (plan omitted it) so the opt-in
+  `tag-live.ts` is type-checked by the gate (`tsc -b`) without being run — catches script type errors
+  offline. See decision [T2A-6].
+
+## Gate — GREEN (after Task 8)
+- `pnpm install` → 12 workspace projects. `pnpm exec tsc -b` → exit 0.
+- `pnpm test` → **187 passed (44 files)** (+6 from Task 7's 181); new file
+  `passion/adapters/tagger-tfy/test/parse.test.ts` (6). No other package regressed. No network, no env.
+
+## Self-audit → SC coverage after Task 8
+- **SC-1…SC-6** — MET (Tasks 1–6, unchanged).
+- **SC-7** — MET: `parse.test.ts` asserts recorded fixture → valid `TagSuggestion`
+  (cabin `making-engineering`, `affordedModes` contains `build`, confidence ≈ 0.97) and null (no throw)
+  on malformed JSON / invalid work-mode / unknown cabin / out-of-range confidence; two-segment path OK.
+- **SC-8** (full gate incl. both adapters) — advancing; final consolidation + demo is Task 9.
+- **manual** live TFY call — `tag:live` script + `.env.local.example` shipped; operator-run, outside CI.
 
 ## NEXT
-- **Task 8 (P4): `@gt100k/tagger-tfy` adapter** (`passion/adapters/tagger-tfy`) — native `fetch`, NO
-  SDK, NO external dep, so **no `pnpm install` needed for deps** but a `pnpm install` still runs to
-  symlink the new `@gt100k/tagger-tfy` package before `tsc -b` (else TS2307). Files: `src/parse.ts`
-  (`parseTfySuggestion(raw): TagSuggestion | null` — validates cabin via `isCabinId`, modes via
-  `isWorkMode`, confidence ∈ [0,1]; null on malformed/invalid), `src/index.ts` (`TfyTagger` +
-  `tfyConfigFromEnv`), `src/__fixtures__/tfy-response.ts` (recorded response as `.ts`, NOT `.json` —
-  repo tsconfig has no `resolveJsonModule`), `test/parse.test.ts` (SC-7: parses recorded fixture,
-  null on malformed JSON / invalid mode / unknown cabin), `scripts/tag-live.ts` (opt-in, never in
-  gate), `.env.local.example`. Append root tsconfig ref. `tag:live` requires `TFY_API_KEY` — never in
-  the gate. Gate green offline.
+- **Task 9 (P5): public API + demo + final wiring** (`passion/packages/two-axis-tagging`). Re-assert the
+  domain `index.ts` barrel (already written at Task 7 — verify identical, no missing exports), add a
+  headless `runDemo()` that wires seed taxonomy → stub-tag a synthetic artifact set → run a synthetic
+  action stream → resolve engaged modes → compute validity α → emit the `(domain × work-mode)` coverage
+  matrix, a `demo.test.ts` asserting the documented output, a minimal headless review-queue surface, and
+  a package README. This is the last task → then write the full SC-1…SC-8 self-audit mapping each SC to
+  its proving test and create `.loop-done`.

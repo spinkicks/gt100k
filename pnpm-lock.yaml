@@ -38,6 +38,12 @@ importers:
         specifier: workspace:*
         version: link:../../packages/two-axis-tagging
 
+  passion/adapters/tagger-tfy:
+    dependencies:
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../../packages/two-axis-tagging
+
   passion/apps/evidence-explorer:
     dependencies:
       '@gt100k/evidence-deferred':

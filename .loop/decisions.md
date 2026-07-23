@@ -41,6 +41,15 @@
   silently coerced). Both return `{ok:false}` so the `⊆` invariant holds vacuously; the caller decides
   routing. Task 4 emits `unresolved`; wiring it into `createReviewQueue` is Task 6 (SC-4's second half).
 
+- **[T2A-6] `tagger-tfy` tsconfig `include` adds `scripts/**/*.ts` (plan omitted it).** The plan's Task 8
+  tsconfig only globbed `src` + `test`, which would leave `scripts/tag-live.ts` unchecked by `tsc -b`.
+  Including scripts makes the gate *type-check* the opt-in live script (it never *runs* it, so still no
+  network / no `TFY_API_KEY`), catching script type errors offline — mirrors the fix commit 0a11e82 made
+  for the sibling `tutor-tfy` live script. `parseTfySuggestion` also hardened beyond the plan sketch with
+  a `Number.isNaN` guard on `confidence` (JSON can carry `NaN`-like values via non-standard producers;
+  belt-and-suspenders so a non-finite confidence can't slip past the `[0,1]` range check). Both are
+  strictly additive — no behavior the spec pins was changed.
+
 
 ## EE-ART — committed art direction (keep cohesive across turns)
 - World: **cinematic dark cosmos**. Palette: `--void #0a0e17`, panels `#121826`/`#1a2233`,
