@@ -21,6 +21,10 @@ const RES = "1k"; // keep files small (public-repo / web-perf hygiene)
 /** HDRIs for image-based lighting → cabin/public/assets/env/ */
 const HDRIS = [{ id: "kloppenheim_06", out: "env/dusk.hdr" }];
 
+/** Photographic panoramas (tonemapped-JPG of a Poly Haven HDRI) → mapped onto the sky dome as the
+ *  real mountain vista seen through the window. */
+const PANORAMAS = [{ id: "champagne_castle_1", out: "env/vista.jpg" }];
+
 /** PBR textures → cabin/public/assets/textures/<name>_{diff,nor,rough}.jpg */
 const TEXTURES = [{ id: "brown_planks_05", name: "wood" }];
 
@@ -59,6 +63,13 @@ async function fetchHdri({ id, out }) {
   await download(url, out);
 }
 
+async function fetchPanorama({ id, out }) {
+  const files = await getJson(`${API}/${id}`);
+  const url = files?.tonemapped?.url;
+  if (!url) throw new Error(`no tonemapped JPG for ${id}`);
+  await download(url, out);
+}
+
 async function fetchTexture({ id, name }) {
   const files = await getJson(`${API}/${id}`);
   const pick = (key, suffix) => {
@@ -83,6 +94,16 @@ async function main() {
       ok++;
     } catch (e) {
       console.warn(`  ! skipped ${h.id}: ${e instanceof Error ? e.message : e}`);
+      fail++;
+    }
+  }
+  for (const pa of PANORAMAS) {
+    try {
+      console.log(`Panorama ${pa.id}`);
+      await fetchPanorama(pa);
+      ok++;
+    } catch (e) {
+      console.warn(`  ! skipped ${pa.id}: ${e instanceof Error ? e.message : e}`);
       fail++;
     }
   }

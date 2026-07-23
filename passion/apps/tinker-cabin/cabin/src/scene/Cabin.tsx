@@ -13,14 +13,13 @@ import * as THREE from "three";
 import { updateStats } from "../core/hook";
 import { useAssetReady } from "../core/useAssetReady";
 import { EnvLight } from "./EnvLight";
+import { SkyDome } from "./SkyDome";
 import { ANCHORS, ROOM } from "./layout";
 import {
   flameTexture,
   floorTextures,
-  mountainLayerTexture,
   propTextures,
   rugTexture,
-  skyGradientTexture,
   stoneTextures,
   wallTextures,
 } from "./textures";
@@ -468,11 +467,10 @@ function ProceduralCat(): JSX.Element {
 const PINE_MODEL_URL = "/assets/models/pine.glb";
 // tree spots outside the window: [dx from wall, z, height, cone-green]
 const TREE_SPOTS: Array<[number, number, number, string]> = [
-  [2.7, -3.5, 4.6, "#26402b"],
-  [3.5, 3.3, 5.2, "#223a27"],
-  [4.3, -1.5, 5.8, "#2b4630"],
-  [4.8, 1.9, 5.0, "#20361f"],
-  [6.0, -0.2, 6.6, "#1b2f20"],
+  [2.6, -4.4, 4.6, "#26402b"],
+  [3.4, 4.2, 5.2, "#223a27"],
+  [4.6, -2.4, 5.6, "#2b4630"],
+  [5.2, 2.6, 5.0, "#20361f"],
 ];
 
 /** Clone a loaded object, fit its height to `targetH`, centre it on X/Z and drop it to y=0. */
@@ -580,11 +578,11 @@ class TreesBoundary extends Component<
 function ExteriorTrees({ originX }: { originX: number }): JSX.Element {
   return (
     <group>
-      {/* exterior forest floor (y=0, coplanar with the tree bases) so the trees are planted, not
-          floating. Starts at the wall and extends outward only — never under the cabin. */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[originX + 28, 0, 0]}>
-        <planeGeometry args={[56, 80]} />
-        <meshStandardMaterial color="#3a4b2e" roughness={1} metalness={0} />
+      {/* near grassy foreground the trees stand on — kept small/close so it doesn't fog into a teal
+          slab at the horizon; beyond it the photographic panorama's own ground/mountains show. */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[originX + 10, 0, 0]}>
+        <planeGeometry args={[24, 60]} />
+        <meshStandardMaterial color="#6a7a44" roughness={1} metalness={0} />
       </mesh>
       <TreesBoundary originX={originX}>
         <Suspense fallback={<ConeTrees originX={originX} />}>
@@ -604,33 +602,12 @@ function Window(): JSX.Element {
   const [x] = ANCHORS.window;
   const cy = 1.75; // opening centre height
   const iface = x - 0.26; // frame sits PROUD of the interior wall face (3.35) → no frame-in-wall z-fight
-  const sky = useMemo(() => skyGradientTexture(), []);
-  const far = useMemo(() => mountainLayerTexture("#8397b8", 0.5, 26, 11, 0.85), []);
-  const mid = useMemo(() => mountainLayerTexture("#566a90", 0.62, 40, 23, 0.5), []);
-  const near = useMemo(() => mountainLayerTexture("#33405a", 0.74, 60, 37, 0.2), []);
-
   return (
     <group>
-      {/* view OUTSIDE the opening. An all-encompassing sky DOME (back-side sphere) guarantees sky at
-          every viewing angle — no black gap even looking obliquely. Mountain layers + conifer trees
-          sit in front of it at increasing distance for parallax; the trees also mask the plane edges. */}
+      {/* view OUTSIDE the opening: a real CC0 photographic mountain panorama on the sky dome
+          (champagne_castle_1), with conifer trees + forest floor in front for parallax + depth. */}
       <group>
-        <mesh scale={70}>
-          <sphereGeometry args={[1, 32, 16]} />
-          <meshBasicMaterial map={sky} side={THREE.BackSide} toneMapped fog={false} />
-        </mesh>
-        <mesh position={[x + 9, 3.4, 0.3]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[60, 16]} />
-          <meshBasicMaterial map={far} transparent toneMapped />
-        </mesh>
-        <mesh position={[x + 6, 2.7, 0.1]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[40, 13]} />
-          <meshBasicMaterial map={mid} transparent toneMapped />
-        </mesh>
-        <mesh position={[x + 3.6, 2.2, -0.2]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[28, 12]} />
-          <meshBasicMaterial map={near} transparent toneMapped />
-        </mesh>
+        <SkyDome />
         <ExteriorTrees originX={x} />
       </group>
 

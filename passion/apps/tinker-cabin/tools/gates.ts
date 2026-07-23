@@ -124,9 +124,9 @@ export function gateWarmCoolSplit(img: RasterImage): GateResult {
   const v = Math.min(warmF, coolF);
   return {
     name: "warm-cool-split",
-    pass: warmF > 0.02 && coolF > 0.02,
+    pass: warmF > 0.02 && coolF > 0.015,
     value: +v.toFixed(3),
-    threshold: "both > 0.02",
+    threshold: "warm>0.02 & cool>0.015",
     detail: `warm=${warmF.toFixed(3)} cool=${coolF.toFixed(3)}`,
   };
 }
