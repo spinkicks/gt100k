@@ -9,6 +9,7 @@
     "preview": "vite preview --port 5177 --strictPort",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "fetch-assets": "node scripts/fetch-assets.mjs",
     "shoot": "tsx tools/shoot.ts",
     "compare": "tsx tools/compare.ts",
     "battery": "tsx tools/battery.ts"
@@ -17,6 +18,7 @@
     "@react-three/drei": "^9.114.0",
     "@react-three/fiber": "^8.17.10",
     "@react-three/postprocessing": "^2.19.1",
+    "@react-three/rapier": "1.5.0",
     "postprocessing": "^6.39.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

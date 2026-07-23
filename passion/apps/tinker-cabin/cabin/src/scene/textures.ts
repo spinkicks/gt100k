@@ -8,7 +8,7 @@ import * as THREE from "three";
 type RGB = [number, number, number];
 
 /** Small deterministic PRNG so textures look identical every render (determinism gate). */
-function mulberry32(seed: number): () => number {
+export function mulberry32(seed: number): () => number {
   let s = seed;
   return () => {
     s |= 0;
@@ -292,6 +292,249 @@ export function duskVistaTexture(): THREE.CanvasTexture {
     ctx.fill();
   }
   const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+/** Opaque dusk sky gradient + soft low sun — the far backdrop plane of the parallax window view. */
+export function skyGradientTexture(): THREE.CanvasTexture {
+  const w = 1024;
+  const h = 1024;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d")!;
+  const sky = ctx.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, "#3a5890");
+  sky.addColorStop(0.5, "#7f9ac6");
+  sky.addColorStop(0.8, "#e6c194");
+  sky.addColorStop(1, "#ecc896");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, w, h);
+  const sun = ctx.createRadialGradient(w * 0.62, h * 0.74, 4, w * 0.62, h * 0.74, w * 0.42);
+  sun.addColorStop(0, "rgba(255,244,214,0.9)");
+  sun.addColorStop(0.35, "rgba(255,226,172,0.35)");
+  sun.addColorStop(1, "rgba(255,226,172,0)");
+  ctx.fillStyle = sun;
+  ctx.fillRect(0, 0, w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+/**
+ * One transparent mountain-ridge layer for the parallax window view: a smoothed ridge filled with
+ * `color`, then tinted with aerial haze (more `haze` = hazier/lighter toward the ridgeline, for
+ * distant layers). High-res + smoothed so it doesn't read as low-res/jagged.
+ */
+export function mountainLayerTexture(
+  color: string,
+  baseY: number,
+  amp: number,
+  seed: number,
+  haze = 0,
+): THREE.CanvasTexture {
+  const w = 1600;
+  const h = 400;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d")!;
+  ctx.clearRect(0, 0, w, h);
+  const rand = mulberry32(seed);
+  // build + smooth the ridge heights (two averaging passes → gentle silhouette, not jagged)
+  const step = 8;
+  const n = Math.floor(w / step) + 1;
+  let ys: number[] = [];
+  let y = baseY * h;
+  for (let i = 0; i < n; i++) {
+    y += (rand() - 0.5) * amp;
+    y = Math.max(baseY * h - amp, Math.min(baseY * h + amp * 0.5, y));
+    ys.push(y);
+  }
+  for (let pass = 0; pass < 2; pass++) {
+    ys = ys.map((v, i) => {
+      const a = ys[i - 1] ?? v;
+      const b = ys[i + 1] ?? v;
+      return (a + v + b) / 3;
+    });
+  }
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(0, h);
+  ctx.lineTo(0, ys[0]!);
+  for (let i = 0; i < n; i++) ctx.lineTo(i * step, ys[i]!);
+  ctx.lineTo(w, h);
+  ctx.closePath();
+  ctx.fill();
+  // aerial haze: tint only the mountain pixels, lighter toward the ridgeline
+  if (haze > 0) {
+    ctx.globalCompositeOperation = "source-atop";
+    const g = ctx.createLinearGradient(0, baseY * h - amp, 0, h);
+    g.addColorStop(0, `rgba(150,170,205,${0.55 * haze})`);
+    g.addColorStop(1, "rgba(150,170,205,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+    ctx.globalCompositeOperation = "source-over";
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+/** Mottled meadow-grass texture for the exterior foreground (blades + tonal variation so it isn't a
+ *  flat slab and blends into the photographic panorama's grass). */
+export function grassTexture(): THREE.CanvasTexture {
+  const s = 256;
+  const c = document.createElement("canvas");
+  c.width = c.height = s;
+  const ctx = c.getContext("2d")!;
+  const rand = mulberry32(7);
+  ctx.fillStyle = "#7f8c4e";
+  ctx.fillRect(0, 0, s, s);
+  for (let i = 0; i < 220; i++) {
+    const x = rand() * s;
+    const y = rand() * s;
+    const r = 6 + rand() * 26;
+    const g = 70 + Math.floor(rand() * 60);
+    ctx.fillStyle = `rgba(${g - 20},${g + 20},${50 + Math.floor(rand() * 30)},0.12)`;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  for (let i = 0; i < 1400; i++) {
+    const x = rand() * s;
+    const y = rand() * s;
+    const h = 2 + rand() * 5;
+    const g = 90 + Math.floor(rand() * 70);
+    ctx.strokeStyle = `rgba(${g - 40},${g},${40 + Math.floor(rand() * 30)},${0.3 + rand() * 0.4})`;
+    ctx.lineWidth = 0.6 + rand();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + (rand() - 0.5) * 2, y - h);
+    ctx.stroke();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(10, 18);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+/** A small painted mountain landscape for the framed picture on the wall. */
+export function paintingTexture(): THREE.CanvasTexture {
+  const w = 320;
+  const h = 240;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d")!;
+  const sky = ctx.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, "#e8b878");
+  sky.addColorStop(0.5, "#e6cfa0");
+  sky.addColorStop(1, "#dfc58f");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, w, h);
+  // low sun
+  ctx.fillStyle = "rgba(255,240,205,0.9)";
+  ctx.beginPath();
+  ctx.arc(w * 0.7, h * 0.32, 22, 0, Math.PI * 2);
+  ctx.fill();
+  // two mountain ridges
+  const rand = mulberry32(3);
+  const ridge = (baseY: number, amp: number, color: string) => {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(0, h);
+    let y = baseY;
+    ctx.lineTo(0, y);
+    for (let x = 0; x <= w; x += 12) {
+      y += (rand() - 0.5) * amp;
+      y = Math.max(baseY - amp, Math.min(baseY + amp * 0.4, y));
+      ctx.lineTo(x, y);
+    }
+    ctx.lineTo(w, h);
+    ctx.closePath();
+    ctx.fill();
+  };
+  ridge(h * 0.5, 34, "#8898b4");
+  ridge(h * 0.62, 46, "#5d6f92");
+  // snow dabs on the near ridge crest
+  ctx.fillStyle = "rgba(240,244,250,0.8)";
+  for (let i = 0; i < 40; i++) ctx.fillRect(rand() * w, h * 0.6 + rand() * 8, 2 + rand() * 3, 2);
+  // foreground
+  ctx.fillStyle = "#3a4a30";
+  ctx.fillRect(0, h * 0.82, w, h * 0.18);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+/**
+ * Warm flame-tongue sprite for additive fire: a tapered teardrop (wide hot base → pointed cooler
+ * tip), drawn as stacked ellipses so a vertically-stretched sprite reads as a flame, not an orb.
+ * Canvas y=0 is top; we build the tip at top and the base at the bottom.
+ */
+export function flameTexture(): THREE.CanvasTexture {
+  const s = 128;
+  const c = document.createElement("canvas");
+  c.width = c.height = s;
+  const ctx = c.getContext("2d")!;
+  ctx.clearRect(0, 0, s, s);
+  const cx = s / 2;
+  // color by height: tip (top) deep orange → mid amber → base hot white
+  const colorAt = (u: number): string => {
+    // u: 0 at base (bottom), 1 at tip (top)
+    if (u < 0.25) return "rgba(255,248,220,1)";
+    if (u < 0.5) return "rgba(255,205,110,0.92)";
+    if (u < 0.78) return "rgba(255,140,45,0.6)";
+    return "rgba(190,55,10,0.18)";
+  };
+  const steps = 96;
+  for (let i = 0; i < steps; i++) {
+    const u = i / steps; // 0 base → 1 tip
+    const y = s * (0.96 - u * 0.92); // base near bottom, tip near top
+    // width profile: pinched at base, bulge ~20% up, taper to a point at the tip
+    const bulge = Math.sin(Math.min(1, u * 1.2) * Math.PI * 0.5);
+    const halfW = 0.42 * s * bulge * (1 - u * 0.85) + 2;
+    const halfH = (s / steps) * 1.6;
+    ctx.fillStyle = colorAt(u);
+    ctx.beginPath();
+    ctx.ellipse(cx, y, halfW, halfH, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+/** Simple 2-tone woven rug pattern (warm kilim-ish stripes) for the hearth rug. */
+export function rugTexture(): THREE.CanvasTexture {
+  const s = 256;
+  const c = document.createElement("canvas");
+  c.width = c.height = s;
+  const ctx = c.getContext("2d")!;
+  ctx.fillStyle = "#6e3b2a"; // rust base
+  ctx.fillRect(0, 0, s, s);
+  const bands = ["#8a4a33", "#3f2a20", "#b5763f", "#3f2a20", "#8a4a33"];
+  const bh = s / (bands.length * 3);
+  for (let i = 0; i < bands.length * 3; i++) {
+    ctx.fillStyle = bands[i % bands.length]!;
+    ctx.fillRect(0, i * bh, s, bh * 0.6);
+  }
+  // simple zigzag motif rows
+  ctx.strokeStyle = "#d8b98a";
+  ctx.lineWidth = 2;
+  for (let y = bh; y < s; y += bh * 3) {
+    ctx.beginPath();
+    for (let x = 0; x <= s; x += 16) ctx.lineTo(x, y + (Math.floor(x / 16) % 2 ? 6 : -6));
+    ctx.stroke();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
 }

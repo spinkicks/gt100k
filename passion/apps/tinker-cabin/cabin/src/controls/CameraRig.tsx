@@ -5,11 +5,11 @@
  *  - Free (interactive): WASD + pointer-lock look via the intent layer, with room-bound collision.
  */
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { type MutableRefObject, useEffect, useRef } from "react";
 import * as THREE from "three";
 import type { CamPose, Params } from "../core/params";
 import { ANCHORS, ROOM } from "../scene/layout";
-import { KeyboardPointerSource, createIntent } from "./intent";
+import { KeyboardPointerSource, type MoveIntent } from "./intent";
 
 function applyYawPitch(camera: THREE.Camera, yaw: number, pitch: number): void {
   const e = new THREE.Euler(pitch, yaw, 0, "YXZ");
@@ -29,9 +29,12 @@ export function PinnedCamera({ pose }: { pose: CamPose }): null {
   return null;
 }
 
-export function FreeLookController(): null {
+export function FreeLookController({
+  intentRef,
+}: {
+  intentRef: MutableRefObject<MoveIntent>;
+}): null {
   const { camera, gl } = useThree();
-  const intent = useRef(createIntent());
   const yaw = useRef(0);
   const pitch = useRef(-0.03);
 
@@ -40,12 +43,12 @@ export function FreeLookController(): null {
     camera.position.set(sx, sy, sz);
     applyYawPitch(camera, yaw.current, pitch.current);
     const src = new KeyboardPointerSource();
-    src.attach(gl.domElement, intent.current);
+    src.attach(gl.domElement, intentRef.current);
     return () => src.detach();
-  }, [camera, gl]);
+  }, [camera, gl, intentRef]);
 
   useFrame((_, dt) => {
-    const it = intent.current;
+    const it = intentRef.current;
     yaw.current += it.dyaw;
     pitch.current = Math.max(-1.4, Math.min(1.4, pitch.current + it.dpitch));
     it.dyaw = 0;
@@ -72,6 +75,49 @@ export function FreeLookController(): null {
 }
 
 /** Switch: pin the camera for the harness when `?cam` is present, else free-walk. */
-export function CameraRig({ params }: { params: Params }): JSX.Element {
-  return params.cam ? <PinnedCamera pose={params.cam} /> : <FreeLookController />;
+export function CameraRig({
+  params,
+  intentRef,
+}: {
+  params: Params;
+  intentRef: MutableRefObject<MoveIntent>;
+}): JSX.Element {
+  return params.cam ? (
+    <PinnedCamera pose={params.cam} />
+  ) : (
+    <FreeLookController intentRef={intentRef} />
+  );
+}
+
+/**
+ * Watches camera proximity to an anchor and fires `onInteract` on a press-E edge while in range;
+ * reports range changes via `onNear`. Drives the "press E at the desk → open taste app" flow.
+ */
+export function InteractionZone({
+  intentRef,
+  target,
+  radius,
+  onNear,
+  onInteract,
+}: {
+  intentRef: MutableRefObject<MoveIntent>;
+  target: readonly [number, number, number];
+  radius: number;
+  onNear: (near: boolean) => void;
+  onInteract: () => void;
+}): null {
+  const { camera } = useThree();
+  const wasNear = useRef(false);
+  useFrame(() => {
+    const dx = camera.position.x - target[0];
+    const dz = camera.position.z - target[2];
+    const near = dx * dx + dz * dz <= radius * radius;
+    if (near !== wasNear.current) {
+      wasNear.current = near;
+      onNear(near);
+    }
+    if (near && intentRef.current.interact) onInteract();
+    intentRef.current.interact = false; // consume the edge every frame
+  });
+  return null;
 }

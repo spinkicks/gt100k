@@ -15,6 +15,30 @@ then checkpoint (draft PR + honest per-framing scores + remaining gaps).
 
 ---
 
+## Phase 8 — Discovery mechanic: code "first taste" + signal capture (2026-07-22)
+
+The full Discovery loop is now wired (task #5). Walk to the desk (free-look) → **press E** →
+the **"Signal Lamp" debug puzzle** (fix a broken FLIP/HOLD program to match a target pattern) →
+the `SignalRecorder` captures edits / runs / **iterate-past-failure** / dwell / **voluntary return**
+(persisted across sessions) and folds them into a revisable **`InterestHypothesis`**
+(code × debug; EXPLORING → EMERGING → CANDIDATE) exposed on `window.__cabinInterest` + logged.
+Guardrails honored: never scored, never a scalar/label, "iterate past a failure" is the signal,
+missingness ≠ disinterest. 11 unit tests (gates + signals) green; typecheck/build/biome/battery green.
+Harness (pinned-cam) mode never interacts, so all realism gates are unaffected.
+
+---
+
+## Phase 5a — Fire + rug + lamp (2026-07-22) — ALL GATES PASS
+
+Replaced the cone/sphere fire with **soft additive flame-tongue sprites** (tapered teardrop texture,
+deterministic flicker), softened the ember bed, added a **patterned hearth rug**, softened the lamp.
+All gates green, determinism PASS. Fire now reads as tongues (was orbs). Self-scores: hero **7** ·
+wide **7** · window **7** · detail **6.5** · desk **6**. Mean **~6.7**.
+Remaining to 8.5: richer wood variation/trim, a better cat (glTF or sculpt), workbench/tools/shelves
+set-dressing, and the desk needs to read as the coding "first taste" station (ties into the mechanic).
+
+---
+
 ## Phase 2–4 — Structure + materials + window (2026-07-22) — ALL GATES PASS
 
 **Shots judged:** all 5 framings. **All gates green**, determinism PASS, 34–64 fps (SwiftShader).
