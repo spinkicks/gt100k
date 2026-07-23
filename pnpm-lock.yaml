@@ -119,6 +119,9 @@ importers:
       '@gt100k/evidence-hash-node':
         specifier: workspace:*
         version: link:../../adapters/evidence-hash-node
+      '@gt100k/evidence-tiny-game':
+        specifier: workspace:*
+        version: link:../../packages/evidence-tiny-game
       '@gt100k/evidence-verifier-stub':
         specifier: workspace:*
         version: link:../../adapters/evidence-verifier-stub

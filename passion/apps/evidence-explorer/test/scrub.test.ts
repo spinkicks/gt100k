@@ -16,15 +16,15 @@ describe("time-scrub reveal", () => {
   const view = buildSyntheticExplorerView();
   const count = view.growthTimeline.count; // 12 milestone beats.
 
-  it("reveals nothing at t=0 and everything (incl. the island) at full reveal", () => {
+  it("reveals nothing at t=0 and every body at full reveal", () => {
     expect(revealedNodeIds(view, 0).size).toBe(0);
-    expect(revealedNodeIds(view, count).size).toBe(view.nodes.length); // 13 = 12 + island.
+    expect(revealedNodeIds(view, count).size).toBe(view.nodes.length); // 12, all in-milestone.
   });
 
   it("grows exactly one milestone body per step, in birthOrder", () => {
     for (let t = 0; t <= count; t++) {
       const revealed = revealedNodeIds(view, t);
-      // The island (no birthOrder) is absent until full reveal.
+      // Only bodies with a birthOrder count as milestone reveals.
       const milestoneRevealed = [...revealed].filter(
         (id) => view.nodes.find((n) => n.id === id)?.birthOrder !== null,
       );

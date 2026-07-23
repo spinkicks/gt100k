@@ -1,6 +1,7 @@
 /**
- * Server-side synthetic view builder. Builds the committed "speaker-v1" `ExplorerView` through the
- * real domain API + Node SHA-256 hasher, then hands the plain (serializable) view to the client.
+ * Server-side synthetic view builder. Builds the committed "tiny-runner-v1" `ExplorerView` — a
+ * student's "build a one-button endless runner" journey — through the real domain API + Node
+ * SHA-256 hasher, then hands the plain (serializable) view to the client.
  *
  * IMPORTANT: this module reaches `@gt100k/evidence-hash-node` (`node:crypto`) and MUST only be
  * imported from a Server Component / test — never from a `"use client"` module.
@@ -11,16 +12,18 @@ import {
   type VerificationView,
   applyTamper,
   buildExplorerView,
-  buildFixtureGraph,
   buildVerificationView,
-  explorerFixture,
 } from "@gt100k/evidence-explorer-view";
 import { NodeCryptoHasher } from "@gt100k/evidence-hash-node";
+import { buildTinyGameGraph } from "@gt100k/evidence-tiny-game";
+import { DeterministicStubVerifier } from "@gt100k/evidence-verifier-stub";
 
-/** Build the deterministic Provenance Observatory view for the synthetic milestone. */
+/** Build the deterministic Provenance Observatory view for the tiny-runner-v1 journey. */
 export function buildSyntheticExplorerView(opts: BuildExplorerViewOptions = {}): ExplorerView {
-  const bundle = buildFixtureGraph(new NodeCryptoHasher());
-  return buildExplorerView(bundle.graph, bundle, opts);
+  const hasher = new NodeCryptoHasher();
+  const g = buildTinyGameGraph(hasher);
+  const milestoneNodeIds = Object.keys(g.graph.nodes);
+  return buildExplorerView(g.graph, { milestoneNodeIds, projectRef: g.projectId }, opts);
 }
 
 /**
@@ -35,16 +38,25 @@ export interface SyntheticVerification {
   readonly tamperNodeId: string;
 }
 
-/** Derive the untampered + tampered verification views for the synthetic milestone (server-only). */
+/** Derive the untampered + tampered verification views for the tiny-runner-v1 journey (server-only). */
 export async function buildSyntheticVerification(): Promise<SyntheticVerification> {
   const hasher = new NodeCryptoHasher();
-  const fixture = await explorerFixture(hasher);
-  const verified = buildVerificationView(fixture.graph, fixture.verifierResult, hasher, {
-    subjectDigest: fixture.subjectDigest,
+  const g = buildTinyGameGraph(hasher);
+  const bundle = {
+    graph: g.graph,
+    ids: g.ids,
+    milestoneNodeIds: Object.keys(g.graph.nodes),
+    subjectDigest: g.subjectDigest,
+    projectRef: g.projectId,
+  };
+  const verifierResult = await new DeterministicStubVerifier().verify(g.graph, hasher);
+  const verified = buildVerificationView(g.graph, verifierResult, hasher, {
+    subjectDigest: g.subjectDigest,
   });
-  const tamperedBundle = applyTamper(fixture);
-  const tampered = buildVerificationView(tamperedBundle.graph, fixture.verifierResult, hasher, {
+  const tamperedBundle = applyTamper(bundle);
+  const tampered = buildVerificationView(tamperedBundle.graph, verifierResult, hasher, {
     subjectDigest: tamperedBundle.subjectDigest,
   });
-  return { verified, tampered, tamperNodeId: fixture.ids["released-artifact"] };
+  // `subjectDigest` is exactly `ids["released-artifact"]` (typed `string`, no unchecked index access).
+  return { verified, tampered, tamperNodeId: g.subjectDigest };
 }
