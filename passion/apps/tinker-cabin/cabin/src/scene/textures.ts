@@ -384,6 +384,46 @@ export function mountainLayerTexture(
   return t;
 }
 
+/** Mottled meadow-grass texture for the exterior foreground (blades + tonal variation so it isn't a
+ *  flat slab and blends into the photographic panorama's grass). */
+export function grassTexture(): THREE.CanvasTexture {
+  const s = 256;
+  const c = document.createElement("canvas");
+  c.width = c.height = s;
+  const ctx = c.getContext("2d")!;
+  const rand = mulberry32(7);
+  ctx.fillStyle = "#7f8c4e";
+  ctx.fillRect(0, 0, s, s);
+  for (let i = 0; i < 220; i++) {
+    const x = rand() * s;
+    const y = rand() * s;
+    const r = 6 + rand() * 26;
+    const g = 70 + Math.floor(rand() * 60);
+    ctx.fillStyle = `rgba(${g - 20},${g + 20},${50 + Math.floor(rand() * 30)},0.12)`;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  for (let i = 0; i < 1400; i++) {
+    const x = rand() * s;
+    const y = rand() * s;
+    const h = 2 + rand() * 5;
+    const g = 90 + Math.floor(rand() * 70);
+    ctx.strokeStyle = `rgba(${g - 40},${g},${40 + Math.floor(rand() * 30)},${0.3 + rand() * 0.4})`;
+    ctx.lineWidth = 0.6 + rand();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + (rand() - 0.5) * 2, y - h);
+    ctx.stroke();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(10, 18);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
 /**
  * Warm flame-tongue sprite for additive fire: a tapered teardrop (wide hot base → pointed cooler
  * tip), drawn as stacked ellipses so a vertically-stretched sprite reads as a flame, not an orb.

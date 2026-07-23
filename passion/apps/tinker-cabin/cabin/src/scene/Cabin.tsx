@@ -18,6 +18,7 @@ import { ANCHORS, ROOM } from "./layout";
 import {
   flameTexture,
   floorTextures,
+  grassTexture,
   propTextures,
   rugTexture,
   stoneTextures,
@@ -576,6 +577,7 @@ class TreesBoundary extends Component<
 /** Conifers + a forest floor outside the window: near parallax that also masks the mountain-plane
  *  edges (no black at oblique angles). Real pine GLB when present, cone fallback otherwise. */
 function ExteriorTrees({ originX }: { originX: number }): JSX.Element {
+  const grass = useMemo(() => grassTexture(), []);
   return (
     <group>
       {/* near grassy foreground the trees stand on. Starts OUTSIDE the wall (x > hx) and sits a hair
@@ -584,7 +586,7 @@ function ExteriorTrees({ originX }: { originX: number }): JSX.Element {
           than fogging to a teal slab (smooths the synthetic→photographic transition). */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[originX + 17, -0.03, 0]}>
         <planeGeometry args={[34, 64]} />
-        <meshBasicMaterial color="#8a9358" toneMapped={false} fog={false} />
+        <meshBasicMaterial map={grass} color="#aeb884" toneMapped={false} fog={false} />
       </mesh>
       <TreesBoundary originX={originX}>
         <Suspense fallback={<ConeTrees originX={originX} />}>
