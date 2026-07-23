@@ -1,0 +1,11 @@
+{
+  "name": "@gt100k/tutor-stub",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "dependencies": { "@gt100k/socratic-defense": "workspace:*" },
+  "scripts": { "test": "vitest run" }
+}
