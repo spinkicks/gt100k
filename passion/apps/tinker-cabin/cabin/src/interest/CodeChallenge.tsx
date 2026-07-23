@@ -131,13 +131,13 @@ export function CodeChallenge({
         >
           <div style={{ color: "#7f8ba0" }}>{spec.header}</div>
           {lines.map((l, i) => (
-            <div key={`ln-${spec.gadgetId}-${l.label}`} style={{ whiteSpace: "pre" }}>
+            <div key={`ln-${spec.gadgetId}-${l.pre}`} style={{ whiteSpace: "pre" }}>
               {"  "}
-              <span style={{ color: "#7f8ba0" }}>{l.label}: </span>
-              <span style={{ color: "#cfd6e2" }}>on = </span>
+              <span style={{ color: "#9aa4b6" }}>{l.pre}</span>
               <button type="button" onClick={() => cycle(i)} style={opTok(spec.ops[l.op]!, solved)}>
                 {spec.ops[l.op]}
               </button>
+              {l.post ? <span style={{ color: "#9aa4b6" }}>{l.post}</span> : null}
             </div>
           ))}
           <div style={{ color: "#7f8ba0" }}>{spec.footer}</div>
@@ -166,7 +166,7 @@ export function CodeChallenge({
           )}
           <span style={{ color: solved ? "#8fd19e" : "#b6ad9e" }}>
             {solved
-              ? "Lit! The lamp is online."
+              ? spec.solvedMsg
               : runs > 0
                 ? "Not quite — tweak an op and run again."
                 : "Cycle the ops, then Run."}
