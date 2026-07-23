@@ -49,6 +49,9 @@ export function App(): JSX.Element {
         camera={{ position: [sx, sy, sz], fov: params.cam?.fov ?? 60, near: 0.05, far: 100 }}
       >
         <color attach="background" args={["#0a0b10"]} />
+        {/* subtle aerial-perspective fog tinted to the sky — distant trees/mountains fade into it
+            (real depth); density is low so the small interior is barely affected. */}
+        <fogExp2 attach="fog" args={["#9aadc9", 0.016]} />
         <Cabin freeze={params.freeze} />
         {params.cam ? (
           // harness: pin the exact pose, no physics → deterministic screenshots
