@@ -1274,3 +1274,13 @@ dev killed (`pnpm --filter @gt100k/interest-lab-app build`).
 - **Camera:** central Coding Desk hero (dx=0), pos [0.1,2.72,9.1] target [0,1.7,-1.2] fov 46.
 - **noColdBlueScreen floor added to the test battery** (code-scene `measureCodeFloors`): every
   surface-class "screen" prop must be non-blue in both color + emissive — a machine guard on the trap.
+
+## Task 6 (validity harness) — 2026-07-22
+- **SC-4 wired in `validity.test.ts`, not a new file.** The spec's SC-4 ("unresolved → enqueued for
+  review, never guessed") spans the resolver (Task 4) and the review queue (Task 6). Rather than add a
+  standalone wiring module, I proved the seam with a test in `validity.test.ts` that feeds the resolver's
+  `unresolved` fixture result into `createReviewQueue`. Keeps the wiring honest (real assertion, not a
+  hollow test) and in-lane; the full seed→resolve→queue flow is exercised end-to-end by the demo (Task 9).
+- **`applyTrust` covered by its own test.** The plan exports `applyTrust` as the consumer gate helper but
+  its Task-6 test block only exercised `topicTrust`. Added an `applyTrust` test (PROVISIONAL below bar,
+  TRUSTED at α=1.0) so the exported gate helper is not untested dead code ([D6]).

@@ -16,7 +16,7 @@ native `fetch`, opt-in only). SYNTHETIC ONLY.
 - [x] **P1 — Task 3** records: `Artifact`/`ActionEvent`/`RawAction`/`TagSuggestion` + `makeArtifact` validator
 - [x] **P1 — Task 4** engaged-mode resolver (rule table, intersect-afforded, priority, reject-invalid, unresolved→review) + 9 golden fixtures — **the crux**
 - [x] **P2 — Task 5** `Tagger` port + suggest→validate→accept pipeline (+ sub-topic minting), `CONFIDENCE_FLOOR=0.5`
-- [ ] **P3 — Task 6** validity harness: Krippendorff α (nominal, closed form) golden 0.5333 / 1.0, `ALPHA_BAR=0.667` trust gate, review queue
+- [x] **P3 — Task 6** validity harness: Krippendorff α (nominal, closed form) golden 0.5333 / 1.0, `ALPHA_BAR=0.667` trust gate, review queue + SC-4 resolver→queue wiring
 - [ ] **P2/P4 — Task 7** `@gt100k/tagger-stub` adapter (deterministic, CI) + domain index barrel
 - [ ] **P4 — Task 8** `@gt100k/tagger-tfy` adapter (native fetch, no SDK, opt-in `tag:live`) + recorded-fixture parse test
 - [ ] **P5 — Task 9** public API + `runDemo()` coverage matrix + README
@@ -106,10 +106,40 @@ native `fetch`, opt-in only). SYNTHETIC ONLY.
 - SC-6 (Krippendorff α + gate + queue), SC-7 (TFY parse), SC-8 (full gate incl. adapters) — not yet
   (Tasks 6–9).
 
+## Done this turn — P3 (Task 6): validity harness
+- `src/validity.ts` — `krippendorffAlphaNominal(units)` (nominal closed form
+  `α = 1 − (n−1)(n − Σo_cc)/(n² − Σn_c²)`; per-unit coincidence weight `1/(m−1)`, units with <2 ratings
+  skipped, degenerate `n==0`/single-category → 1.0); `ALPHA_BAR = 0.667` (golden); `topicTrust(alpha)`
+  gate; `applyTrust(artifact, α)` consumer helper (PROVISIONAL→TRUSTED only ≥ bar — the gate is not dead
+  code, [D6]); `ReviewItem`/`ReviewQueue` + `createReviewQueue()` (id-keyed Map: idempotent enqueue,
+  resolve removes).
+- `src/__fixtures__/rater-fixture.ts` — `DISAGREE_UNITS` (2 raters × 4 units over {build,perform},
+  hand-verified α **0.5333**) + `PERFECT_UNITS` (3 distinct categories, α **1.0**).
+- `test/validity.test.ts` (6 tests): α golden 0.5333 (±0.001) & 1.0 (±1e-6); `topicTrust` gates at bar
+  (0.5333→PROVISIONAL, 0.667/1.0→TRUSTED); `applyTrust` promotes only above bar; queue enqueue/resolve;
+  **SC-4 wiring** — resolver's `unresolved` fixture result (`wobble`→unresolved) enqueues
+  `{id:"synth-01", reason:"unresolved"}`, proving unresolved actions are routed, never guessed.
+- α re-verified numerically: `1 − 7·2/30 = 0.53333…` exact.
+
+## Gate — GREEN
+- `pnpm exec tsc -b` → exit 0. `pnpm test` → **179 passed (42 files)** (+6 from last turn's 173);
+  this package's files: smoke 1 · work-modes 3 · taxonomy 4 · records 3 · resolver 10 · pipeline 3 ·
+  validity 6. No other package regressed.
+
+## Self-audit → SC coverage after Task 6
+- **SC-1** (stable IDs) — MET (Tasks 1–2).
+- **SC-2/SC-3** (resolver invariant + deterministic golden) — MET (Task 4).
+- **SC-4** (ambiguous action → `unresolved`, enqueued for review, never guessed) — **now fully MET**
+  (`validity.test.ts` "routes an unresolved resolver result to the queue"; resolver half was Task 4).
+- **SC-5** (pipeline validate/accept/mint/reject) — MET (Task 5).
+- **SC-6** (Krippendorff α golden + trust gate) — **MET** this turn (`validity.test.ts` α 0.5333/1.0 +
+  `topicTrust`/`applyTrust` gate at `ALPHA_BAR=0.667`).
+- SC-7 (TFY parse), SC-8 (full gate incl. adapters) — not yet (Tasks 7–9).
+
 ## NEXT
-- **Task 6 (P3): validity harness.** Test-first per plan: `test/validity.test.ts` +
-  `src/__fixtures__/rater-fixture.ts` (DISAGREE_UNITS golden α **0.5333** ±0.001; PERFECT_UNITS → 1.0).
-  Implement `src/validity.ts`: `krippendorffAlphaNominal(units)` (closed form
-  `α = 1 − (n−1)(n − Σo_cc)/(n² − Σn_c²)`), `ALPHA_BAR = 0.667`, `topicTrust(alpha): TagStatus`,
-  `applyTrust`, and `createReviewQueue` (`enqueue`/`list`/`resolve`). Meets SC-6 and completes SC-4's
-  review-queue half.
+- **Task 7 (P2/P4): `@gt100k/tagger-stub` adapter** (`passion/adapters/tagger-stub`) — deterministic
+  seeded `Tagger` implementing `suggest(ref): Promise<TagSuggestion>`, used in CI. Plan Task 7:
+  new `package.json` → **`pnpm install` (non-frozen)** so the workspace symlink exists before `tsc -b`,
+  then append its project reference to root `tsconfig.json`. Also (Task 7 Step 5) write the domain
+  `src/index.ts` public barrel adding `./resolver.js`, `./ports.js`, `./pipeline.js`, `./validity.js`
+  (before the adapters import from it). Test with the stub; gate green.
