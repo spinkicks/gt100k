@@ -38,7 +38,7 @@ export function App(): JSX.Element {
     <>
       <Canvas
         dpr={1}
-        shadows
+        shadows="soft"
         gl={{
           antialias: true,
           toneMapping: THREE.ACESFilmicToneMapping,

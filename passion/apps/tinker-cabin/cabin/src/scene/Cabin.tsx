@@ -137,13 +137,15 @@ function Shell(): JSX.Element {
         <boxGeometry args={[tw, 0.5, hz * 2]} />
         <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
       </mesh>
-      {/* jambs run full height and OVERLAP the sill/header (no coplanar seam → no light leak / z-fight) */}
-      <mesh position={[hx, height / 2, -1.975]} receiveShadow castShadow>
-        <boxGeometry args={[tw, height, 2.05]} />
+      {/* jambs sit BETWEEN the sill and header (partition the wall face without overlap → no
+          coplanar same-facing faces → no z-fight; touching edges are back-to-back). The exterior
+          light's shadow-normalBias (below) closes any thin seam leak. */}
+      <mesh position={[hx, 1.75, -1.975]} receiveShadow castShadow>
+        <boxGeometry args={[tw, 1.5, 2.05]} />
         <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
       </mesh>
-      <mesh position={[hx, height / 2, 1.975]} receiveShadow castShadow>
-        <boxGeometry args={[tw, height, 2.05]} />
+      <mesh position={[hx, 1.75, 1.975]} receiveShadow castShadow>
+        <boxGeometry args={[tw, 1.5, 2.05]} />
         <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
       </mesh>
     </group>
@@ -755,6 +757,7 @@ export function Cabin({ freeze }: { freeze: boolean }): JSX.Element {
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
         shadow-bias={-0.0004}
+        shadow-normalBias={0.05}
         shadow-camera-near={0.5}
         shadow-camera-far={22}
         shadow-camera-left={-6}
