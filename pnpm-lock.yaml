@@ -267,6 +267,24 @@ importers:
 
   passion/packages/evidence-graph: {}
 
+  passion/packages/family:
+    dependencies:
+      '@gt100k/hypothesis-store':
+        specifier: workspace:*
+        version: link:../hypothesis-store
+      '@gt100k/interest-inference':
+        specifier: workspace:*
+        version: link:../interest-inference
+      '@gt100k/student-profile':
+        specifier: workspace:*
+        version: link:../student-profile
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../two-axis-tagging
+      '@gt100k/wellbeing':
+        specifier: workspace:*
+        version: link:../wellbeing
+
   passion/packages/guardrails:
     dependencies:
       '@gt100k/hypothesis-store':
