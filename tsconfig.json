@@ -16,6 +16,8 @@
     { "path": "passion/packages/wellbeing" },
     { "path": "passion/packages/guardrails" },
     { "path": "passion/packages/concierge" },
-    { "path": "passion/adapters/concierge-live" }
+    { "path": "passion/adapters/concierge-live" },
+    { "path": "passion/packages/evidence-tiny-game" },
+    { "path": "passion/adapters/evidence-repo-postgres" }
   ]
 }

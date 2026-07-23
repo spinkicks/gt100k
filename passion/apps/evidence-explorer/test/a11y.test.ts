@@ -21,8 +21,8 @@ const src = (rel: string): string =>
   readFileSync(fileURLToPath(new URL(`../${rel}`, import.meta.url)), "utf8");
 
 function buildView() {
-  const { graph, packet } = buildFixtureGraph(new NodeCryptoHasher());
-  return buildExplorerView(graph, packet);
+  const bundle = buildFixtureGraph(new NodeCryptoHasher());
+  return buildExplorerView(bundle.graph, bundle);
 }
 
 describe("UE047 · decorative layers are aria-hidden (SC-E13)", () => {

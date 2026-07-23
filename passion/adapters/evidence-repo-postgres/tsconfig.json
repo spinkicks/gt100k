@@ -1,0 +1,14 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist"
+  },
+  "references": [
+    { "path": "../../packages/evidence-graph" },
+    { "path": "../../packages/evidence-tiny-game" },
+    { "path": "../evidence-hash-node" },
+    { "path": "../evidence-verifier-stub" }
+  ],
+  "include": ["src/**/*.ts", "test/**/*.ts"]
+}

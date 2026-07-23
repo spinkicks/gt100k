@@ -12,7 +12,6 @@ import {
   type EvidenceEdge,
   type EvidenceGraph,
   type EvidenceNode,
-  type EvidencePacket,
   NODE_TYPES,
   NODE_TYPE_PROV_BASE,
   type NodeType,
@@ -70,7 +69,7 @@ describe("EvidenceGraph domain model", () => {
     expectTypeOf<ActorKind>().toEqualTypeOf<(typeof ACTOR_KINDS)[number]>();
   });
 
-  it("types nodes, edges, graphs, packets, attestations, and verification results", () => {
+  it("types nodes, edges, graphs, attestations, and verification results", () => {
     const actor = {
       kind: "human",
       ref: "actor-reviewer-1",
@@ -112,27 +111,14 @@ describe("EvidenceGraph domain model", () => {
         milestoneRef: "milestone-1",
       },
     } satisfies Attestation;
-    const packet = {
-      milestoneRef: "milestone-1",
-      subjectDigest: "subject-digest",
-      nodeIds: [node.id],
-      merkleRoot: "merkle-root",
-      artifactHashes: [node.id],
-      failedBranches: [],
-      assistanceLedger: [],
-      contributionMap: { [actor.ref]: [] },
-      reviewAnchors: [],
-      outcomes: [],
-      attestation,
-    } satisfies EvidencePacket;
     const result = { ok: true, reasons: [] } satisfies VerificationResult;
 
     expect(graph.nodes[node.id]).toBe(node);
-    expect(packet.attestation).toBe(attestation);
+    expect(attestation.predicate.merkleRoot).toBe("merkle-root");
     expect(result).toEqual({ ok: true, reasons: [] });
     expectTypeOf(node).toMatchTypeOf<EvidenceNode>();
     expectTypeOf(edge).toMatchTypeOf<EvidenceEdge>();
     expectTypeOf(graph).toMatchTypeOf<EvidenceGraph>();
-    expectTypeOf(packet).toMatchTypeOf<EvidencePacket>();
+    expectTypeOf(attestation).toMatchTypeOf<Attestation>();
   });
 });

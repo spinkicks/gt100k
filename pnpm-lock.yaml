@@ -36,6 +36,15 @@ importers:
 
   passion/adapters/evidence-repo-memory: {}
 
+  passion/adapters/evidence-repo-postgres:
+    dependencies:
+      '@electric-sql/pglite':
+        specifier: ^0.5.4
+        version: 0.5.4
+      '@gt100k/evidence-tiny-game':
+        specifier: workspace:*
+        version: link:../../packages/evidence-tiny-game
+
   passion/adapters/evidence-verifier-stub: {}
 
   passion/adapters/profile-store-fs:
@@ -101,6 +110,9 @@ importers:
 
   passion/apps/evidence-explorer:
     dependencies:
+      '@electric-sql/pglite':
+        specifier: ^0.5.4
+        version: 0.5.4
       '@gt100k/evidence-deferred':
         specifier: workspace:*
         version: link:../../adapters/evidence-deferred
@@ -113,6 +125,12 @@ importers:
       '@gt100k/evidence-hash-node':
         specifier: workspace:*
         version: link:../../adapters/evidence-hash-node
+      '@gt100k/evidence-repo-postgres':
+        specifier: workspace:*
+        version: link:../../adapters/evidence-repo-postgres
+      '@gt100k/evidence-tiny-game':
+        specifier: workspace:*
+        version: link:../../packages/evidence-tiny-game
       '@gt100k/evidence-verifier-stub':
         specifier: workspace:*
         version: link:../../adapters/evidence-verifier-stub
@@ -266,6 +284,19 @@ importers:
         version: link:../../adapters/evidence-verifier-stub
 
   passion/packages/evidence-graph: {}
+
+  passion/packages/evidence-tiny-game:
+    dependencies:
+      '@gt100k/evidence-graph':
+        specifier: workspace:*
+        version: link:../evidence-graph
+    devDependencies:
+      '@gt100k/evidence-hash-node':
+        specifier: workspace:*
+        version: link:../../adapters/evidence-hash-node
+      '@gt100k/evidence-verifier-stub':
+        specifier: workspace:*
+        version: link:../../adapters/evidence-verifier-stub
 
   passion/packages/guardrails:
     dependencies:
@@ -509,6 +540,9 @@ packages:
   '@csstools/css-tokenizer@3.0.4':
     resolution: {integrity: sha512-Vd/9EVDiu6PPJt9yAh6roZP6El1xHrdvIVGjyBsHR0RYwNHgL7FJPyIIW4fANJNG6FtyZfvlRPpFI4ZM/lubvw==}
     engines: {node: '>=18'}
+
+  '@electric-sql/pglite@0.5.4':
+    resolution: {integrity: sha512-yYZUyyXrHU7tPlCjwZQJ6hIG9DscdCCn7Uk0mYKwC1FeHX286AbcmFveMiRBEak8e9iPupjsoVImN3yJZVed2g==}
 
   '@emnapi/runtime@1.11.2':
     resolution: {integrity: sha512-kyOl3X0DuTiT1h2ft8r2fYO8JYtU9a9Xis/zBSiGArNaagCOWx90N1k2wxp18czFDH+OgcWGb5ZP/XMt3dcyPA==}
@@ -2278,6 +2312,8 @@ snapshots:
 
   '@csstools/css-tokenizer@3.0.4':
     optional: true
+
+  '@electric-sql/pglite@0.5.4': {}
 
   '@emnapi/runtime@1.11.2':
     dependencies:
