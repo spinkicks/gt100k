@@ -186,6 +186,15 @@ importers:
 
   passion/packages/interest-inference: {}
 
+  passion/packages/signal-pipeline:
+    dependencies:
+      '@gt100k/interest-inference':
+        specifier: workspace:*
+        version: link:../interest-inference
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../two-axis-tagging
+
   passion/packages/socratic-defense:
     dependencies:
       '@gt100k/evidence-graph':
