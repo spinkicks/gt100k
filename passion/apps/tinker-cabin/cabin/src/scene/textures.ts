@@ -8,7 +8,7 @@ import * as THREE from "three";
 type RGB = [number, number, number];
 
 /** Small deterministic PRNG so textures look identical every render (determinism gate). */
-function mulberry32(seed: number): () => number {
+export function mulberry32(seed: number): () => number {
   let s = seed;
   return () => {
     s |= 0;

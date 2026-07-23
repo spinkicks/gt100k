@@ -19,6 +19,7 @@ import {
   flameTexture,
   floorTextures,
   grassTexture,
+  mulberry32,
   propTextures,
   rugTexture,
   stoneTextures,
@@ -576,6 +577,45 @@ class TreesBoundary extends Component<
 
 /** Conifers + a forest floor outside the window: near parallax that also masks the mountain-plane
  *  edges (no black at oblique angles). Real pine GLB when present, cone fallback otherwise. */
+/** Instanced 3D grass blades scattered over the near meadow so it reads as grass, not a flat blob. */
+function GrassTufts({ originX }: { originX: number }): JSX.Element {
+  const ref = useRef<THREE.InstancedMesh>(null);
+  const COUNT = 2600;
+  const data = useMemo(() => {
+    const rand = mulberry32(9);
+    return Array.from({ length: COUNT }, () => ({
+      x: 1.5 + rand() * 17, // just outside the wall, out to the mid-meadow
+      z: (rand() - 0.5) * 22,
+      h: 0.14 + rand() * 0.26,
+      rot: rand() * Math.PI,
+      tint: 0.75 + rand() * 0.5,
+    }));
+  }, []);
+  useEffect(() => {
+    const m = ref.current;
+    if (!m) return;
+    const dummy = new THREE.Object3D();
+    const col = new THREE.Color();
+    data.forEach((d, i) => {
+      dummy.position.set(originX + d.x, d.h / 2, d.z);
+      dummy.rotation.set(0, d.rot, 0);
+      dummy.scale.set(1, d.h / 0.25, 1);
+      dummy.updateMatrix();
+      m.setMatrixAt(i, dummy.matrix);
+      // unlit green (varied) so blades read as grass, not light-washed white spikes
+      m.setColorAt(i, col.setRGB(0.26 * d.tint, 0.4 * d.tint, 0.15 * d.tint));
+    });
+    m.instanceMatrix.needsUpdate = true;
+    if (m.instanceColor) m.instanceColor.needsUpdate = true;
+  }, [data, originX]);
+  return (
+    <instancedMesh ref={ref} args={[undefined, undefined, COUNT]}>
+      <coneGeometry args={[0.035, 0.25, 4]} />
+      <meshBasicMaterial toneMapped={false} />
+    </instancedMesh>
+  );
+}
+
 function ExteriorTrees({ originX }: { originX: number }): JSX.Element {
   const grass = useMemo(() => grassTexture(), []);
   return (
@@ -588,6 +628,7 @@ function ExteriorTrees({ originX }: { originX: number }): JSX.Element {
         <planeGeometry args={[34, 64]} />
         <meshBasicMaterial map={grass} color="#aeb884" toneMapped={false} fog={false} />
       </mesh>
+      <GrassTufts originX={originX} />
       <TreesBoundary originX={originX}>
         <Suspense fallback={<ConeTrees originX={originX} />}>
           <PineTrees originX={originX} />
