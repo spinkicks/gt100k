@@ -34,9 +34,12 @@ function woodAlbedoCanvas(
   for (let p = 0; p < planks; p++) {
     const y0 = p * plankH;
     const shade = 0.82 + rand() * 0.28;
-    ctx.fillStyle = `rgb(${Math.floor(base[0] * shade)},${Math.floor(base[1] * shade)},${Math.floor(base[2] * shade)})`;
+    // per-plank hue jitter (some planks warmer/cooler) so rows don't read as one flat tone
+    const hr = 1 + (rand() - 0.5) * 0.12;
+    const hb = 1 + (rand() - 0.5) * 0.12;
+    ctx.fillStyle = `rgb(${Math.floor(base[0] * shade * hr)},${Math.floor(base[1] * shade)},${Math.floor(base[2] * shade * hb)})`;
     ctx.fillRect(0, y0, size, plankH);
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 44; i++) {
       const gy = y0 + rand() * plankH;
       ctx.strokeStyle = `rgba(${dark[0]},${dark[1]},${dark[2]},${0.04 + rand() * 0.1})`;
       ctx.lineWidth = 0.5 + rand() * 1.5;
@@ -60,8 +63,29 @@ function woodAlbedoCanvas(
       ctx.arc(kx, ky, kr * 2, 0, Math.PI * 2);
       ctx.fill();
     }
-    ctx.fillStyle = "rgba(0,0,0,0.55)";
+    // plank seam: dark groove at the top edge + a thin highlight just below and a soft shadow at the
+    // bottom edge → a beveled tongue-and-groove read (depth) instead of flat painted stripes.
+    ctx.fillStyle = "rgba(0,0,0,0.5)";
     ctx.fillRect(0, y0, size, Math.max(1.5, plankH * 0.03));
+    ctx.fillStyle = "rgba(255,240,210,0.10)";
+    ctx.fillRect(0, y0 + Math.max(1.5, plankH * 0.03), size, Math.max(1, plankH * 0.02));
+    ctx.fillStyle = "rgba(0,0,0,0.16)";
+    ctx.fillRect(0, y0 + plankH - Math.max(1.5, plankH * 0.05), size, Math.max(1.5, plankH * 0.05));
+  }
+  // low-frequency mottling: a few big soft patches of subtle light/dark so the tiled texture doesn't
+  // read as an obviously repeating stamp across a large wall.
+  for (let i = 0; i < 7; i++) {
+    const mx = rand() * size;
+    const my = rand() * size;
+    const mr = size * (0.28 + rand() * 0.35);
+    const up = rand() > 0.5;
+    const g = ctx.createRadialGradient(mx, my, 1, mx, my, mr);
+    g.addColorStop(0, up ? "rgba(255,240,210,0.06)" : "rgba(20,12,6,0.10)");
+    g.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(mx, my, mr, 0, Math.PI * 2);
+    ctx.fill();
   }
   return c;
 }
@@ -166,14 +190,15 @@ export const floorTextures = (): WoodTextureSet =>
 
 export const wallTextures = (): WoodTextureSet =>
   makeSet({
-    planks: 10,
+    size: 1024,
+    planks: 13,
     base: [186, 143, 92],
     dark: [70, 46, 24],
     seed: 21,
     normalStrength: 5,
     roughLo: 0.55,
     roughHi: 0.9,
-    repeat: [3, 2],
+    repeat: [2.2, 1.7],
   });
 
 export const propTextures = (): WoodTextureSet =>
