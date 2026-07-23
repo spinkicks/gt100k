@@ -28,7 +28,9 @@
 | **A2** Cabin 3D Interiors | 🟡 partial | `apps/tinker-cabin` (game-side MVP) | one photoreal cabin + realism-loop harness; the rest of the world is the teammate's track |
 | **A4** Taste Apps + Embedding SDK | 🟡 partial | intern apps exist | the embedding SDK + measurable-panel standard is not built |
 
-**Not started (⬜):** A1 world · A3 asset pipeline · A5 accessibility mirror · A6 resource router/curated library · B1 concierge · B2 child-safe RAG · D1 planner · D2 project workspace · D3 mentor relay · D4 audience broker · D5 PCDE curriculum · F3 family co-engagement · G2 TimeBack integration · G3 consent/privacy · G4 safety/moderation · G5 calibration harness · G6 metrics.
+**In flight (🔨):** **G2** TimeBack Integration — `specs/020-timeback-integration` (`@gt100k/timeback` mapper + fake data source + opt-in `@gt100k/timeback-live` scaffold), spec + plan landed, queued for the loop; turns school signals into real `DomainPrior[]` (prior only, never a gate), **no student-profile/console edits** so it's disjoint from the in-flight 018 + 019. *(D1/018 planner + F3/019 family are also in flight on their own branches.)*
+
+**Not started (⬜):** A1 world · A3 asset pipeline · A5 accessibility mirror · A6 resource router/curated library · B1 concierge · B2 child-safe RAG · D1 planner · D2 project workspace · D3 mentor relay · D4 audience broker · D5 PCDE curriculum · F3 family co-engagement · G3 consent/privacy · G4 safety/moderation · G5 calibration harness · G6 metrics.
 
 **Wiring gap — RESOLVED (014):** the four discovery engines are now wired end-to-end. `Interaction`s → `signal-pipeline` (012) → `interest-inference` (011) → `hypothesis-store` (013) run through the per-kid **Student Profile (G1)** orchestrator, and the guide console renders the derived read (synthetic-pilot roster). Remaining glue is real inputs: the game-side `Interaction` emitter (C1 UI, teammate) and real priors (G2).
 
@@ -81,7 +83,7 @@
 ### Group G — Platform & Cross-Cutting
 
 - **G1. Student Profile / Longitudinal Record** *(net-new)* — The unified per-kid state across Discovery, Specialization, and academics (the shared PassionLab state, above the canvas). *Fits:* the spine every other artifact reads/writes.
-- **G2. TimeBack Integration** *(integration)* — Pulls aptitude tilt + discretionary-XP prior; orchestrates the two-block daily loop. *Fits:* connects academics to the passion signal (prior only, never gate).
+- **G2. TimeBack Integration** *(integration; 🔨 in flight — `specs/020-timeback-integration`)* — Pulls aptitude tilt + discretionary-XP prior; orchestrates the two-block daily loop. *v1 build:* a pure subject→cabin **crosswalk** + `toDomainPriors` mapper (mastery → aptitude tilt, free-choice XP → discretionary tilt), a light one-way daily handoff (reward-neutral, blocks independent), a `withPriors` profile hook, a **deterministic fake data source** (no real API yet), and an **opt-in `@gt100k/timeback-live`** scaffold. **Prior only, never a gate** (011 excludes it from `evidenceMass`; standing test). *Fits:* connects academics to the passion signal (prior only, never gate).
 - **G3. Identity / Consent / Privacy Layer** *(net-new; pre-live gate)* — COPPA, consent scope, retention, parental access, and erasure. *Fits:* gates any live child; the erasure-on-append-only problem is unsolved.
 - **G4. Content Safety / Moderation Service** *(net-new)* — Shared child-safety moderation across concierge, resources, and defense. *Fits:* one safety spine for all child-facing generation/retrieval.
 - **G5. Calibration / Validation Harness** *(net-new)* — Tunes thresholds and validates the inference model as longitudinal outcomes accrue; tracks spike persistence (the ground-truth labels). *Fits:* the answer to "how do we know the measurement works?" — a first-class response to weak-point #1.
