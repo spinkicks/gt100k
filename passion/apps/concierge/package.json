@@ -1,0 +1,24 @@
+{
+  "name": "@gt100k/concierge-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "vitest run --config vitest.config.mts"
+  },
+  "dependencies": {
+    "@gt100k/concierge": "workspace:*",
+    "@gt100k/concierge-live": "workspace:*",
+    "@gt100k/two-axis-tagging": "workspace:*",
+    "motion": "^12.42.0",
+    "next": "^14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1"
+  }
+}

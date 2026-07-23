@@ -24,6 +24,12 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.1)(jsdom@26.1.0)
 
+  passion/adapters/concierge-live:
+    dependencies:
+      '@gt100k/concierge':
+        specifier: workspace:*
+        version: link:../../packages/concierge
+
   passion/adapters/evidence-deferred: {}
 
   passion/adapters/evidence-hash-node: {}
@@ -61,6 +67,37 @@ importers:
       '@gt100k/socratic-defense':
         specifier: workspace:*
         version: link:../../packages/socratic-defense
+
+  passion/apps/concierge:
+    dependencies:
+      '@gt100k/concierge':
+        specifier: workspace:*
+        version: link:../../packages/concierge
+      '@gt100k/concierge-live':
+        specifier: workspace:*
+        version: link:../../adapters/concierge-live
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../../packages/two-axis-tagging
+      motion:
+        specifier: ^12.42.0
+        version: 12.42.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next:
+        specifier: ^14.2.15
+        version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.12
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: ^18.3.1
+        version: 18.3.7(@types/react@18.3.31)
 
   passion/apps/evidence-explorer:
     dependencies:
@@ -205,6 +242,12 @@ importers:
       vitest:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.1)(jsdom@26.1.0)
+
+  passion/packages/concierge:
+    dependencies:
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../two-axis-tagging
 
   passion/packages/evidence-explorer-view:
     dependencies:
