@@ -465,33 +465,73 @@ function ProceduralCat(): JSX.Element {
   );
 }
 
-/** Procedural conifers standing outside the window: near parallax + they mask the mountain-plane
- *  edges so no black shows at oblique angles. Unlit-ish dark greens; static (deterministic). */
-function ExteriorTrees({ originX }: { originX: number }): JSX.Element {
-  // [dx from wall, z, height, green]
-  const trees: Array<[number, number, number, string]> = [
-    [2.7, -3.5, 4.6, "#26402b"],
-    [3.5, 3.3, 5.2, "#223a27"],
-    [4.3, -1.5, 5.8, "#2b4630"],
-    [4.8, 1.9, 5.0, "#20361f"],
-    [6.0, -0.2, 6.6, "#1b2f20"],
-  ];
+const PINE_MODEL_URL = "/assets/models/pine.glb";
+// tree spots outside the window: [dx from wall, z, height, cone-green]
+const TREE_SPOTS: Array<[number, number, number, string]> = [
+  [2.7, -3.5, 4.6, "#26402b"],
+  [3.5, 3.3, 5.2, "#223a27"],
+  [4.3, -1.5, 5.8, "#2b4630"],
+  [4.8, 1.9, 5.0, "#20361f"],
+  [6.0, -0.2, 6.6, "#1b2f20"],
+];
+
+/** Clone a loaded object, fit its height to `targetH`, centre it on X/Z and drop it to y=0. */
+function fitToHeight(src: THREE.Object3D, targetH: number): THREE.Object3D {
+  const s = src.clone(true);
+  s.traverse((o) => {
+    o.castShadow = true;
+    o.receiveShadow = true;
+  });
+  s.updateMatrixWorld(true);
+  const size = new THREE.Vector3();
+  new THREE.Box3().setFromObject(s).getSize(size);
+  s.scale.setScalar(size.y > 0 ? targetH / size.y : 1);
+  s.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(s);
+  const c = new THREE.Vector3();
+  box.getCenter(c);
+  s.position.set(-c.x, -box.min.y, -c.z);
+  return s;
+}
+
+/** Real CC0 pine GLB (Quaternius), one clone auto-fitted per spot. */
+function PineTrees({ originX }: { originX: number }): JSX.Element {
+  const { scene } = useGLTF(PINE_MODEL_URL);
+  const models = useMemo(
+    () =>
+      TREE_SPOTS.map(([, , h]) => {
+        const m = fitToHeight(scene, h);
+        // outside the window → their shadows aren't visible inside; skip the (expensive) shadow
+        // passes over this dense foliage so the fps floor holds even on software-GL.
+        m.traverse((o) => {
+          o.castShadow = false;
+          o.receiveShadow = false;
+        });
+        return m;
+      }),
+    [scene],
+  );
   return (
-    <group>
-      {/* exterior forest floor (y=0, coplanar with the tree bases) so the trees are planted, not
-          floating. Starts at the wall and extends outward only — never under the cabin. */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[originX + 28, 0, 0]}>
-        <planeGeometry args={[56, 80]} />
-        <meshStandardMaterial color="#3a4b2e" roughness={1} metalness={0} />
-      </mesh>
-      {trees.map(([dx, z, h, green]) => (
-        <group key={`tree-${dx}-${z}`} position={[originX + dx, 0, z]}>
-          {/* trunk */}
+    <>
+      {TREE_SPOTS.map(([dx, z], i) => (
+        <group key={`pine-${dx}-${z}`} position={[originX + dx, 0, z]} rotation={[0, i * 1.27, 0]}>
+          <primitive object={models[i] as THREE.Object3D} />
+        </group>
+      ))}
+    </>
+  );
+}
+
+/** Procedural stacked-cone conifers — the fallback when the pine GLB is absent. */
+function ConeTrees({ originX }: { originX: number }): JSX.Element {
+  return (
+    <>
+      {TREE_SPOTS.map(([dx, z, h, green]) => (
+        <group key={`cone-${dx}-${z}`} position={[originX + dx, 0, z]}>
           <mesh position={[0, h * 0.18, 0]}>
             <cylinderGeometry args={[0.06, 0.09, h * 0.36, 8]} />
             <meshStandardMaterial color="#3a2a1a" roughness={0.9} />
           </mesh>
-          {/* stacked foliage cones */}
           {[0, 1, 2].map((tier) => {
             const ty = h * (0.32 + tier * 0.22);
             const r = (0.6 - tier * 0.14) * (h / 5);
@@ -505,6 +545,40 @@ function ExteriorTrees({ originX }: { originX: number }): JSX.Element {
           })}
         </group>
       ))}
+    </>
+  );
+}
+
+/** Renders the cone-tree fallback if the pine GLB is missing / fails. */
+class TreesBoundary extends Component<
+  { originX: number; children: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError(): { failed: boolean } {
+    return { failed: true };
+  }
+  render(): ReactNode {
+    return this.state.failed ? <ConeTrees originX={this.props.originX} /> : this.props.children;
+  }
+}
+
+/** Conifers + a forest floor outside the window: near parallax that also masks the mountain-plane
+ *  edges (no black at oblique angles). Real pine GLB when present, cone fallback otherwise. */
+function ExteriorTrees({ originX }: { originX: number }): JSX.Element {
+  return (
+    <group>
+      {/* exterior forest floor (y=0, coplanar with the tree bases) so the trees are planted, not
+          floating. Starts at the wall and extends outward only — never under the cabin. */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[originX + 28, 0, 0]}>
+        <planeGeometry args={[56, 80]} />
+        <meshStandardMaterial color="#3a4b2e" roughness={1} metalness={0} />
+      </mesh>
+      <TreesBoundary originX={originX}>
+        <Suspense fallback={<ConeTrees originX={originX} />}>
+          <PineTrees originX={originX} />
+        </Suspense>
+      </TreesBoundary>
     </group>
   );
 }

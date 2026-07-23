@@ -10,6 +10,8 @@ All fetched assets below are **CC0 1.0 (public domain)** — no attribution requ
 |---|---|---|---|
 | `env/dusk.hdr` | [Poly Haven](https://polyhaven.com/a/kloppenheim_06) | `kloppenheim_06` (1k HDRI) | CC0 1.0 |
 | `textures/wood_diff.jpg`, `wood_nor.jpg`, `wood_rough.jpg` | [Poly Haven](https://polyhaven.com/a/brown_planks_05) | `brown_planks_05` (1k PBR) | CC0 1.0 |
+| `models/pine.glb` | Quaternius via [Poly Pizza](https://poly.pizza/m/igSu0cPoBz) | Pine (used for the exterior forest) | CC0 |
+| `models/cat.glb` | Quaternius via [Poly Pizza](https://poly.pizza/m/qKICY6xla2) | Cat (opt-in `?cat=glb`; procedural tabby is default) | CC0 |
 
 Poly Haven license: https://polyhaven.com/license (everything is CC0).
 
