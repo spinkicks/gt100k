@@ -32,6 +32,18 @@ importers:
 
   passion/adapters/evidence-verifier-stub: {}
 
+  passion/adapters/tutor-stub:
+    dependencies:
+      '@gt100k/socratic-defense':
+        specifier: workspace:*
+        version: link:../../packages/socratic-defense
+
+  passion/adapters/tutor-tfy:
+    dependencies:
+      '@gt100k/socratic-defense':
+        specifier: workspace:*
+        version: link:../../packages/socratic-defense
+
   passion/apps/evidence-explorer:
     dependencies:
       '@gt100k/evidence-deferred':
@@ -161,6 +173,12 @@ importers:
   passion/packages/evidence-graph: {}
 
   passion/packages/interest-inference: {}
+
+  passion/packages/socratic-defense:
+    dependencies:
+      '@gt100k/evidence-graph':
+        specifier: workspace:*
+        version: link:../evidence-graph
 
 packages:
 
