@@ -11,7 +11,13 @@ import { useEffect, useMemo, useRef } from "react";
 import type * as THREE from "three";
 import { updateStats } from "../core/hook";
 import { ANCHORS, ROOM } from "./layout";
-import { floorTextures, propTextures, wallTextures } from "./textures";
+import {
+  duskVistaTexture,
+  floorTextures,
+  propTextures,
+  stoneTextures,
+  wallTextures,
+} from "./textures";
 
 const FROZEN_T = 1.5; // fixed phase used when freeze=1
 
@@ -29,8 +35,27 @@ function Shell(): JSX.Element {
       {/* ceiling */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, height, 0]} receiveShadow>
         <planeGeometry args={[hx * 2, hz * 2]} />
-        <meshStandardMaterial color="#2a1e14" roughness={0.95} metalness={0} />
+        <meshStandardMaterial color="#241a10" roughness={0.95} metalness={0} />
       </mesh>
+      {/* exposed timber roof beams (ref 07): cross-beams + a ridge purlin */}
+      <group>
+        {Array.from({ length: 7 }, (_, k) => {
+          const z = -hz + 0.35 + (k * (hz * 2 - 0.7)) / 6;
+          return (
+            <mesh key={`beam-${k}`} position={[0, height - 0.16, z]} castShadow receiveShadow>
+              <boxGeometry args={[hx * 2, 0.22, 0.2]} />
+              <meshStandardMaterial color="#3a2817" roughness={0.85} metalness={0} />
+            </mesh>
+          );
+        })}
+        {/* two long purlins along Z */}
+        {[-hx * 0.55, hx * 0.55].map((x) => (
+          <mesh key={`purlin-${x}`} position={[x, height - 0.3, 0]} castShadow receiveShadow>
+            <boxGeometry args={[0.16, 0.16, hz * 2]} />
+            <meshStandardMaterial color="#2f2013" roughness={0.85} metalness={0} />
+          </mesh>
+        ))}
+      </group>
       {/* back wall (-Z) */}
       <mesh position={[0, height / 2, -hz]} receiveShadow castShadow>
         <boxGeometry args={[hx * 2, height, tw]} />
@@ -59,6 +84,7 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
   const keyLight = useRef<THREE.PointLight>(null);
   const flames = useRef<THREE.Group>(null);
   const [ax, , az] = ANCHORS.fireplace;
+  const stone = useMemo(() => stoneTextures(), []);
 
   useEffect(() => {
     updateStats({ fireLit: true });
@@ -82,15 +108,20 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
 
   return (
     <group position={[ax, 0, az + 0.35]}>
-      {/* stone surround */}
-      <mesh position={[0, 1.2, 0]} castShadow receiveShadow>
-        <boxGeometry args={[2.4, 2.4, 0.7]} />
-        <meshStandardMaterial color="#4a423d" roughness={0.95} metalness={0} />
+      {/* full-height stone chimney breast (ref 07) */}
+      <mesh position={[0, 1.5, -0.05]} castShadow receiveShadow>
+        <boxGeometry args={[1.9, 3.0, 0.55]} />
+        <meshStandardMaterial {...stone} roughness={0.95} metalness={0} />
       </mesh>
-      {/* firebox cavity */}
-      <mesh position={[0, 0.85, 0.18]} receiveShadow>
-        <boxGeometry args={[1.4, 1.3, 0.55]} />
-        <meshStandardMaterial color="#100a06" roughness={1} metalness={0} />
+      {/* raised stone hearth slab the fire sits on */}
+      <mesh position={[0, 0.12, 0.32]} castShadow receiveShadow>
+        <boxGeometry args={[2.3, 0.24, 0.7]} />
+        <meshStandardMaterial {...stone} roughness={0.95} metalness={0} />
+      </mesh>
+      {/* firebox cavity (recessed, dark) */}
+      <mesh position={[0, 0.9, 0.12]} receiveShadow>
+        <boxGeometry args={[1.2, 1.15, 0.5]} />
+        <meshStandardMaterial color="#0d0805" roughness={1} metalness={0} />
       </mesh>
       {/* wooden mantle shelf */}
       <mesh position={[0, 2.05, 0.25]} castShadow>
@@ -192,27 +223,61 @@ function Cat(): JSX.Element {
 
 function Window(): JSX.Element {
   const [x, y, z] = ANCHORS.window;
+  const vista = useMemo(() => duskVistaTexture(), []);
+  // picture window set into the +X wall's interior face (x ≈ 3.34); rotated so it faces the room (-X).
   return (
-    <group position={[x - 0.02, y, z]} rotation={[0, -Math.PI / 2, 0]}>
-      {/* frame */}
+    <group position={[x - 0.16, y + 0.15, z]} rotation={[0, -Math.PI / 2, 0]}>
+      {/* outer frame (solid box set into the wall; the pane sits in FRONT of it, room-side) */}
       <mesh castShadow>
-        <boxGeometry args={[1.5, 1.4, 0.12]} />
+        <boxGeometry args={[2.1, 1.7, 0.14]} />
         <meshStandardMaterial color="#4a3320" roughness={0.6} metalness={0} />
       </mesh>
-      {/* cool daylight panel (dusk sky) */}
-      <mesh position={[0, 0, 0.02]}>
-        <planeGeometry args={[1.3, 1.2]} />
-        <meshStandardMaterial color="#9db6e0" emissive="#6a8fd0" emissiveIntensity={1.4} />
+      {/* the dusk mountain vista — a window view is effectively unlit, so render it with a basic
+          (unlit) map at full vividness in front of the frame. Bloom threshold keeps it from clipping. */}
+      <mesh position={[0, 0, 0.09]}>
+        <planeGeometry args={[1.9, 1.5]} />
+        <meshBasicMaterial map={vista} toneMapped={true} />
       </mesh>
-      {/* muntins */}
-      <mesh position={[0, 0, 0.04]}>
-        <boxGeometry args={[0.04, 1.2, 0.06]} />
+      {/* muntins (cross bars) — in front of the glass */}
+      <mesh position={[0, 0, 0.11]}>
+        <boxGeometry args={[0.05, 1.5, 0.03]} />
         <meshStandardMaterial color="#3a2818" roughness={0.6} />
       </mesh>
-      <mesh position={[0, 0, 0.04]}>
-        <boxGeometry args={[1.3, 0.04, 0.06]} />
+      <mesh position={[0, 0, 0.11]}>
+        <boxGeometry args={[1.9, 0.05, 0.03]} />
         <meshStandardMaterial color="#3a2818" roughness={0.6} />
       </mesh>
+    </group>
+  );
+}
+
+function Lamp(): JSX.Element {
+  // warm table lamp beside the desk — cozy secondary key + lifts desk-framing material variance.
+  const [dx, , dz] = ANCHORS.desk;
+  return (
+    <group position={[dx + 0.2, 0, dz + 1.1]}>
+      {/* slim side table */}
+      <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.22, 0.24, 1.0, 16]} />
+        <meshStandardMaterial color="#3a2616" roughness={0.7} metalness={0} />
+      </mesh>
+      {/* lamp base + shade */}
+      <mesh position={[0, 1.12, 0]} castShadow>
+        <cylinderGeometry args={[0.05, 0.07, 0.24, 12]} />
+        <meshStandardMaterial color="#5a4632" roughness={0.5} metalness={0.3} />
+      </mesh>
+      <mesh position={[0, 1.34, 0]}>
+        <coneGeometry args={[0.22, 0.28, 20, 1, true]} />
+        <meshStandardMaterial
+          color="#e8c98a"
+          emissive="#ffcf87"
+          emissiveIntensity={1.6}
+          side={2}
+          roughness={0.8}
+        />
+      </mesh>
+      {/* warm glow */}
+      <pointLight position={[0, 1.34, 0]} color="#ffcf87" intensity={9} distance={6} decay={2} />
     </group>
   );
 }
@@ -262,25 +327,26 @@ export function Cabin({ freeze }: { freeze: boolean }): JSX.Element {
       <Cat />
       <Window />
       <Desk />
+      <Lamp />
 
       {/* cool window fill (dusk daylight raking from +X) */}
       <directionalLight
         position={[6, 4, 1]}
         color="#6f92d8"
-        intensity={2.4}
+        intensity={1.5}
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
       />
       {/* soft cool ambient so shadows read, never crush to black */}
       <ambientLight color="#33425f" intensity={0.5} />
-      {/* localized cool wash around the window */}
+      {/* gentle cool fill spilling from the window into the room (offset off the pane to avoid a hotspot) */}
       <pointLight
-        position={[ROOM.hx - 0.6, 1.7, 0.4]}
+        position={[ROOM.hx - 1.2, 1.7, 0.4]}
         color="#7aa0e8"
-        intensity={16}
-        distance={9}
-        decay={1.8}
+        intensity={9}
+        distance={7}
+        decay={2}
       />
     </group>
   );

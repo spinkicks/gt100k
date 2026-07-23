@@ -34,7 +34,7 @@ export function App(): JSX.Element {
         <CameraRig params={params} />
         <StatsBridge />
         <EffectComposer>
-          <Bloom mipmapBlur luminanceThreshold={0.72} luminanceSmoothing={0.15} intensity={0.6} />
+          <Bloom mipmapBlur luminanceThreshold={0.85} luminanceSmoothing={0.12} intensity={0.5} />
           <Vignette eskil={false} offset={0.28} darkness={0.72} />
         </EffectComposer>
       </Canvas>

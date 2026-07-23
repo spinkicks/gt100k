@@ -15,6 +15,45 @@ then checkpoint (draft PR + honest per-framing scores + remaining gaps).
 
 ---
 
+## Phase 2–4 — Structure + materials + window (2026-07-22) — ALL GATES PASS
+
+**Shots judged:** all 5 framings. **All gates green**, determinism PASS, 34–64 fps (SwiftShader).
+Added: exposed timber ceiling beams + purlins; full-height **stone chimney breast** + hearth slab
+(procedural stone texture); **mountain-view picture window** (procedural dusk vista, unlit map, muntins);
+warm **table lamp**. Fixed: window was buried in the wall / vista occluded by a solid frame + not
+emissive — now a basic-map pane in front of the frame reads as a real view; bloom threshold 0.72→0.85
++ softer cool directional killed the wall specular blowout.
+
+### Resolved (worst-first from Phase 1)
+1. ~~Flat plasticky surround~~ **FIXED**: full-height procedural **stone chimney breast** + hearth.
+2. ~~Bare ceiling~~ **FIXED**: exposed timber cross-beams + 2 purlins.
+3. ~~No view window / blown panel~~ **FIXED**: mountain vista picture window, reads as a real view;
+   window tonemap-highlights now PASS.
+4. ~~material-variance near-miss~~ **FIXED**: passes on every framing (0.11–0.24).
+
+### Carried / new gaps (worst first)
+1. **Fire is stylized** — cone tongues + a bright sphere core read cartoonish vs ref `01`'s tongues.
+   Needs a sprite/shader flame + softer core. **[Phase 5]**
+2. **Cat is a placeholder** (spheres/torus). Real CC0 glTF + idle breathing. **[Phase 5]**
+3. **Walls read a little clean/repetitive** — add grime/variation, maybe a second wood tone + trim.
+   **[Phase 2 polish]**
+4. **Lamp shade blows to white** (emissive 1.6) — soften + add a warm glow gradient. **[Phase 5]**
+5. **No workbench/tools/rug/clutter** yet (ref `02`/`07`). **[Phase 6]**
+6. **Desk coding-station** is a plain box + blue screen — needs to read as the "first taste" station.
+   **[Phase 6 + Phase 8 loop]**
+
+### Gate verdicts (turn 2)
+- ALL PASS. no-crushed-blacks 0–0.03 · material-variance 0.11–0.24 · tonemap ≤ 0.005 ·
+  no-flat-face 0.04–0.19 · fire-emissive hero 0.025 / detail 0.11 · warm-cool-split wide 0.05 ·
+  fire-lit + cat-present PASS · fps ≥ 34 · determinism 0.0.
+
+### Self-scores (/10, vs references + user ref 07)
+- hero **6** · wide **6.5** · window **7** · desk **5.5** · detail **6**. Mean **~6.2** (was 3.8).
+  Cabin now reads as a real cozy beamed cabin w/ stone hearth + mountain window. Gap to 8.5: the
+  fire, the cat, wall richness, and set-dressing.
+
+---
+
 ## Phase 1 — First light (2026-07-22) — greybox + materials + lighting up, harness green
 
 **Shots judged:** `shots/{hero,desk,window,wide,detail}.png` (1280×720, freeze).

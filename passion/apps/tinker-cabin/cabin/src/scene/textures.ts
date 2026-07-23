@@ -187,3 +187,111 @@ export const propTextures = (): WoodTextureSet =>
     roughHi: 0.88,
     repeat: [1, 1],
   });
+
+/** Procedural stacked-stone albedo: irregular mortar-jointed blocks in warm greys. */
+function stoneAlbedoCanvas(size: number, seed: number): HTMLCanvasElement {
+  const c = document.createElement("canvas");
+  c.width = c.height = size;
+  const ctx = c.getContext("2d")!;
+  const rand = mulberry32(seed);
+  ctx.fillStyle = "#2b2622"; // mortar
+  ctx.fillRect(0, 0, size, size);
+  const rows = 9;
+  const rh = size / rows;
+  for (let r = 0; r < rows; r++) {
+    const y0 = r * rh;
+    const offset = (r % 2) * 0.5;
+    const cols = 4 + Math.floor(rand() * 2);
+    const cw = size / cols;
+    for (let cx = -1; cx <= cols; cx++) {
+      const x0 = (cx + offset) * cw + rand() * 6 - 3;
+      const g = 92 + Math.floor(rand() * 60);
+      const rr = g + Math.floor(rand() * 18);
+      const bb = g - Math.floor(rand() * 14);
+      ctx.fillStyle = `rgb(${rr},${g},${bb})`;
+      const pad = 2 + rand() * 2;
+      const bw = cw - pad * 2;
+      const bh = rh - pad * 2;
+      // rounded-ish block
+      ctx.fillRect(x0 + pad, y0 + pad, bw, bh);
+      // speckle/mottling
+      for (let s = 0; s < 24; s++) {
+        const sx = x0 + pad + rand() * bw;
+        const sy = y0 + pad + rand() * bh;
+        const d = rand() > 0.5 ? 22 : -22;
+        ctx.fillStyle = `rgba(${rr + d},${g + d},${bb + d},0.25)`;
+        ctx.fillRect(sx, sy, 1 + rand() * 2, 1 + rand() * 2);
+      }
+    }
+  }
+  return c;
+}
+
+export const stoneTextures = (): WoodTextureSet => {
+  const size = 512;
+  const albedoC = stoneAlbedoCanvas(size, 1717);
+  const normalC = normalFromCanvas(albedoC, 7);
+  const roughC = roughnessFromCanvas(albedoC, 0.7, 0.98);
+  const mk = (canvas: HTMLCanvasElement, srgb: boolean): THREE.CanvasTexture => {
+    const t = new THREE.CanvasTexture(canvas);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(2, 3);
+    t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+    t.anisotropy = 8;
+    return t;
+  };
+  return { map: mk(albedoC, true), normalMap: mk(normalC, false), roughnessMap: mk(roughC, false) };
+};
+
+/**
+ * Dusk mountain vista for the window: vertical sky gradient (deep blue → warm horizon) with a few
+ * layered mountain silhouettes. Returned as one sRGB texture used as an emissive+map on the pane.
+ */
+export function duskVistaTexture(): THREE.CanvasTexture {
+  const w = 512;
+  const h = 512;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d")!;
+  const sky = ctx.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, "#5478b0"); // clear upper dusk blue
+  sky.addColorStop(0.45, "#93add4");
+  sky.addColorStop(0.72, "#ecc79a"); // warm horizon band
+  sky.addColorStop(0.85, "#f4d3a0");
+  sky.addColorStop(1, "#d9b184");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, w, h);
+  // soft low sun glow near the horizon
+  const sun = ctx.createRadialGradient(w * 0.66, h * 0.66, 4, w * 0.66, h * 0.66, w * 0.34);
+  sun.addColorStop(0, "rgba(255,240,205,0.95)");
+  sun.addColorStop(0.4, "rgba(255,225,170,0.4)");
+  sun.addColorStop(1, "rgba(255,225,170,0)");
+  ctx.fillStyle = sun;
+  ctx.fillRect(0, 0, w, h);
+  // layered ridgelines, far (light, hazy) to near (dark) — read against the bright sky
+  const layers: Array<[string, number, number]> = [
+    ["#7f8fb0", 0.6, 55],
+    ["#566484", 0.7, 85],
+    ["#39435c", 0.82, 120],
+  ];
+  const rand = mulberry32(99);
+  for (const [col, baseY, amp] of layers) {
+    ctx.fillStyle = col;
+    ctx.beginPath();
+    ctx.moveTo(0, h);
+    let y = baseY * h;
+    ctx.lineTo(0, y);
+    for (let x = 0; x <= w; x += 16) {
+      y += (rand() - 0.5) * amp * 0.5;
+      y = Math.max(baseY * h - amp, Math.min(baseY * h + amp * 0.4, y));
+      ctx.lineTo(x, y);
+    }
+    ctx.lineTo(w, h);
+    ctx.closePath();
+    ctx.fill();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
