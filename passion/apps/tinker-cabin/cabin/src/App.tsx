@@ -1,20 +1,37 @@
 /**
  * App shell: the R3F Canvas (ACES tonemapping + bloom/vignette post), the camera rig (pinned for
- * the harness or free-look for play), the cabin scene, and the stats bridge. Reads deterministic
- * params from the URL so the harness can pin a pose and freeze animation.
+ * the harness or free-look for play), the cabin scene, the stats bridge, and the Discovery
+ * interaction (walk to the desk, press E → the code "first taste" mini-app → behavioral signals).
+ * Reads deterministic params from the URL so the harness can pin a pose and freeze animation.
  */
 import { Canvas } from "@react-three/fiber";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
+import { useRef, useState } from "react";
 import * as THREE from "three";
 import { CameraRigHud } from "./Hud";
-import { CameraRig } from "./controls/CameraRig";
+import { CameraRig, InteractionZone } from "./controls/CameraRig";
+import { createIntent } from "./controls/intent";
 import { StatsBridge } from "./core/StatsBridge";
 import { parseParams } from "./core/params";
+import { TasteApp } from "./interest/TasteApp";
+import { exposeInterest } from "./interest/expose";
+import type { InterestHypothesis } from "./interest/signals";
 import { Cabin } from "./scene/Cabin";
 import { ANCHORS } from "./scene/layout";
 
 export function App(): JSX.Element {
   const params = parseParams();
+  const intentRef = useRef(createIntent());
+  const [tasteOpen, setTasteOpen] = useState(false);
+  const [nearDesk, setNearDesk] = useState(false);
+  const interactive = !params.cam; // the harness pins the camera and never interacts
+
+  const onTasteResult = (h: InterestHypothesis): void => {
+    setTasteOpen(false);
+    exposeInterest(h);
+    console.log(`[cabin] interest: ${h.state} — ${h.reasons.join("; ") || "weak signal"}`);
+  };
+
   const [sx, sy, sz] = ANCHORS.spawn;
 
   return (
@@ -31,7 +48,16 @@ export function App(): JSX.Element {
       >
         <color attach="background" args={["#0a0b10"]} />
         <Cabin freeze={params.freeze} />
-        <CameraRig params={params} />
+        <CameraRig params={params} intentRef={intentRef} />
+        {interactive && (
+          <InteractionZone
+            intentRef={intentRef}
+            target={ANCHORS.desk}
+            radius={1.7}
+            onNear={setNearDesk}
+            onInteract={() => setTasteOpen(true)}
+          />
+        )}
         <StatsBridge />
         <EffectComposer>
           <Bloom mipmapBlur luminanceThreshold={0.85} luminanceSmoothing={0.12} intensity={0.5} />
@@ -39,6 +65,30 @@ export function App(): JSX.Element {
         </EffectComposer>
       </Canvas>
       {params.hud ? <CameraRigHud /> : null}
+      {interactive && nearDesk && !tasteOpen ? <Prompt /> : null}
+      {tasteOpen ? <TasteApp onClose={onTasteResult} /> : null}
     </>
+  );
+}
+
+function Prompt(): JSX.Element {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        bottom: 28,
+        left: "50%",
+        transform: "translateX(-50%)",
+        padding: "8px 14px",
+        borderRadius: 10,
+        background: "rgba(10,12,16,0.7)",
+        color: "#f0e6d6",
+        font: "600 14px ui-sans-serif, system-ui, sans-serif",
+        border: "1px solid rgba(255,180,110,0.35)",
+        pointerEvents: "none",
+      }}
+    >
+      Press <b>E</b> to try the coding station
+    </div>
   );
 }

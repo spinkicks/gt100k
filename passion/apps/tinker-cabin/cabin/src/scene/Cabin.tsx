@@ -44,7 +44,12 @@ function Shell(): JSX.Element {
         {Array.from({ length: 7 }, (_, k) => {
           const z = -hz + 0.35 + (k * (hz * 2 - 0.7)) / 6;
           return (
-            <mesh key={`beam-${k}`} position={[0, height - 0.16, z]} castShadow receiveShadow>
+            <mesh
+              key={`beam-${z.toFixed(3)}`}
+              position={[0, height - 0.16, z]}
+              castShadow
+              receiveShadow
+            >
               <boxGeometry args={[hx * 2, 0.22, 0.2]} />
               <meshStandardMaterial color="#3a2817" roughness={0.85} metalness={0} />
             </mesh>
