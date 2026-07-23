@@ -342,6 +342,55 @@ function Rug(): JSX.Element {
   );
 }
 
+function SetDressing(): JSX.Element {
+  const { hx, hz } = ROOM;
+  const inX = hx - 0.16;
+  const inZ = hz - 0.16;
+  const bookColors = ["#7a3b2e", "#2e5a4a", "#385a7a", "#8a6a2e"];
+  return (
+    <group>
+      {/* baseboards around the room interior */}
+      {(
+        [
+          [0, -inZ, hx * 2, 0.18, 0],
+          [0, inZ, hx * 2, 0.18, 0],
+          [-inX, 0, hz * 2, 0.18, Math.PI / 2],
+          [inX, 0, hz * 2, 0.18, Math.PI / 2],
+        ] as Array<[number, number, number, number, number]>
+      ).map(([x, z, len, h, ry]) => (
+        <mesh key={`base-${x}-${z}`} position={[x, h / 2, z]} rotation={[0, ry, 0]} castShadow>
+          <boxGeometry args={[len, h, 0.06]} />
+          <meshStandardMaterial color="#3a2817" roughness={0.7} metalness={0} />
+        </mesh>
+      ))}
+      {/* a small framed landscape print on the back wall, left of the chimney (ref 05) */}
+      <group position={[-1.7, 1.95, -inZ + 0.02]}>
+        <mesh castShadow>
+          <boxGeometry args={[0.7, 0.5, 0.04]} />
+          <meshStandardMaterial color="#4a3320" roughness={0.6} />
+        </mesh>
+        <mesh position={[0, 0, 0.03]}>
+          <planeGeometry args={[0.58, 0.38]} />
+          <meshStandardMaterial color="#6b7f9e" roughness={0.9} />
+        </mesh>
+      </group>
+      {/* wall shelf with a few books on the left wall, above the desk */}
+      <group position={[-inX + 0.02, 1.75, -0.6]} rotation={[0, Math.PI / 2, 0]}>
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[1.2, 0.05, 0.28]} />
+          <meshStandardMaterial color="#4a3018" roughness={0.7} />
+        </mesh>
+        {bookColors.map((col, i) => (
+          <mesh key={`book-${col}`} position={[-0.45 + i * 0.16, 0.16, 0]} castShadow>
+            <boxGeometry args={[0.1, 0.26, 0.2]} />
+            <meshStandardMaterial color={col} roughness={0.85} />
+          </mesh>
+        ))}
+      </group>
+    </group>
+  );
+}
+
 export function Cabin({ freeze }: { freeze: boolean }): JSX.Element {
   return (
     <group>
@@ -352,6 +401,7 @@ export function Cabin({ freeze }: { freeze: boolean }): JSX.Element {
       <Window />
       <Desk />
       <Lamp />
+      <SetDressing />
 
       {/* cool window fill (dusk daylight raking from +X) */}
       <directionalLight
