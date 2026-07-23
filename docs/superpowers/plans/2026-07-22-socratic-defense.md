@@ -681,14 +681,27 @@ describe("parseJudgment", () => {
 });
 ```
 
-- [ ] **Step 3: package.json / tsconfig** (no external deps; references the domain)
+- [ ] **Step 3: package.json + tsconfig** (no external deps; references the domain)
 
 ```json
+// passion/adapters/tutor-tfy/package.json
 {
   "name": "@gt100k/tutor-tfy", "version": "0.1.0", "private": true, "type": "module",
   "main": "./src/index.ts", "types": "./src/index.ts", "exports": { ".": "./src/index.ts" },
   "dependencies": { "@gt100k/socratic-defense": "workspace:*" },
   "scripts": { "test": "vitest run", "tutor:live": "tsx scripts/tutor-live.ts" }
+}
+```
+
+```json
+// passion/adapters/tutor-tfy/tsconfig.json
+// NOTE: `include` deliberately covers src + test only. `scripts/` (the opt-in tutor:live runner)
+// is intentionally OUTSIDE the build; it runs via tsx, not tsc.
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": { "rootDir": ".", "outDir": "dist" },
+  "references": [{ "path": "../../packages/socratic-defense" }],
+  "include": ["src/**/*.ts", "test/**/*.ts"]
 }
 ```
 
@@ -771,10 +784,17 @@ export class TfyTutor implements Interviewer, AnswerJudge {
 ```ts
 // scripts/tutor-live.ts
 import { TfyTutor, tfyConfigFromEnv } from "../src/index.js";
+import type { ProjectProfile } from "@gt100k/socratic-defense";
+
 async function main() {
   const t = new TfyTutor(tfyConfigFromEnv());
-  const q = await t.nextQuestion({ profile: { title: "DIY Subwoofer", summary: "A ported box tuned with Thiele-Small params." }, targetFacet: "how", isFollowUp: false });
-  const j = await t.judge({ facet: "how", question: q, answer: "The port length tunes the resonant frequency to the driver's Fs." });
+  const profile: ProjectProfile = {
+    id: "live-1", studentId: "stu-live", title: "DIY Subwoofer",
+    domain: "making-engineering", summary: "A ported box tuned with Thiele-Small params.", artifactRefs: [],
+  };
+  // Full port context (the adapter methods are typed to the exact interface params).
+  const q = await t.nextQuestion({ profile, transcript: [], targetFacet: "how", isFollowUp: false, readinessLevel: "developing" });
+  const j = await t.judge({ profile, facet: "how", question: q, answer: "The port length tunes the resonant frequency to the driver's Fs.", readinessLevel: "developing" });
   console.log(JSON.stringify({ q, j }, null, 2));
 }
 main().catch((e) => { console.error(e); process.exit(1); });
@@ -854,6 +874,8 @@ export async function runDemo(): Promise<EvidenceRecord> {
 ---
 
 ## Self-Review
+
+**0. Adversarial-review + empirical-build fixes applied:** C1 — local `Hasher` (evidence-graph doesn't export its port). C2 — `.ts` judge fixture (no `resolveJsonModule`). C3 — index barrel exports `model.js` at Task 3. C4 — `demo.ts` imports `Judgment` from `./model.js`. HIGH — `runSession` takes an `answerSource` callback (live-capable), not a pre-known `answers[]`. Plus (from the reconstruct-and-run verification): the `tutor-tfy/tsconfig.json` block is now explicit (was listed but not shown), and `scripts/tutor-live.ts` passes full type-correct port context. Empirically verified: reconstructed verbatim + run → `tsc -b` exit 0, **20/20 tests pass**, golden session + gradeless 64-hex hash confirmed.
 
 **1. Spec coverage:** SC-1→Task1; SC-2→Task2; SC-3→Task2 (+ session golden Task3); SC-4→Task2; SC-5→Task2; SC-6→Task3 golden; SC-7→Task4 (no-grade + determinism + locked hash); SC-8→Task5; SC-9→every task's gate; manual live→Task5 `tutor:live`. ✓
 
