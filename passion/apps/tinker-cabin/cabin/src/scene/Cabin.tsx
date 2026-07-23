@@ -14,6 +14,12 @@ import { updateStats } from "../core/hook";
 import { useAssetReady } from "../core/useAssetReady";
 import { EnvLight } from "./EnvLight";
 import { SkyDome } from "./SkyDome";
+import { ChimeKeys } from "./gadgets/ChimeKeys";
+import { ControlPanel } from "./gadgets/ControlPanel";
+import { Easel } from "./gadgets/Easel";
+import { GearGizmo } from "./gadgets/GearGizmo";
+import { InteractiveLamp } from "./gadgets/InteractiveLamp";
+import type { GadgetStore } from "./gadgets/gadgetState";
 import { ANCHORS, ROOM } from "./layout";
 import {
   catFurTexture,
@@ -774,37 +780,6 @@ function Window(): JSX.Element {
   );
 }
 
-function Lamp(): JSX.Element {
-  // warm table lamp beside the desk — cozy secondary key + lifts desk-framing material variance.
-  const [dx, , dz] = ANCHORS.desk;
-  return (
-    <group position={[dx + 0.2, 0, dz + 1.1]}>
-      {/* slim side table */}
-      <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.22, 0.24, 1.0, 16]} />
-        <meshStandardMaterial color="#3a2616" roughness={0.7} metalness={0} />
-      </mesh>
-      {/* lamp base + shade */}
-      <mesh position={[0, 1.12, 0]} castShadow>
-        <cylinderGeometry args={[0.05, 0.07, 0.24, 12]} />
-        <meshStandardMaterial color="#5a4632" roughness={0.5} metalness={0.3} />
-      </mesh>
-      <mesh position={[0, 1.34, 0]}>
-        <coneGeometry args={[0.22, 0.28, 20, 1, true]} />
-        <meshStandardMaterial
-          color="#e8c98a"
-          emissive="#ffcf87"
-          emissiveIntensity={0.9}
-          side={2}
-          roughness={0.8}
-        />
-      </mesh>
-      {/* warm glow */}
-      <pointLight position={[0, 1.34, 0]} color="#ffcf87" intensity={9} distance={6} decay={2} />
-    </group>
-  );
-}
-
 function Desk(): JSX.Element {
   const tex = useMemo(() => propTextures(), []);
   const [x, , z] = ANCHORS.desk;
@@ -952,7 +927,13 @@ function Door(): JSX.Element {
   );
 }
 
-export function Cabin({ freeze }: { freeze: boolean }): JSX.Element {
+export function Cabin({
+  freeze,
+  gadgets,
+}: {
+  freeze: boolean;
+  gadgets: GadgetStore;
+}): JSX.Element {
   return (
     <group>
       <EnvLight />
@@ -962,9 +943,15 @@ export function Cabin({ freeze }: { freeze: boolean }): JSX.Element {
       <Cat />
       <Window />
       <Desk />
-      <Lamp />
       <Door />
       <SetDressing />
+
+      {/* discovery gadgets — proximity + press-E interactables that feed the interest signals */}
+      <InteractiveLamp store={gadgets} freeze={freeze} />
+      <ControlPanel store={gadgets} freeze={freeze} />
+      <GearGizmo store={gadgets} freeze={freeze} />
+      <ChimeKeys store={gadgets} freeze={freeze} />
+      <Easel store={gadgets} freeze={freeze} />
 
       {/* cool daylight from OUTSIDE the window, angled down into the room. It casts shadow, so the
           +X wall blocks it everywhere except through the opening → a real window-shaped light shaft

@@ -22,6 +22,8 @@ export interface Params {
   preset: Preset;
   freeze: boolean;
   hud: boolean;
+  /** gadget ids to force into their showcase (activated) state, or ["all"]; drives "after" shots */
+  act: string[];
 }
 
 /** FNV-1a → a stable 32-bit seed from a string or numeric string. */
@@ -53,11 +55,15 @@ export function parseParams(search: string = location.search): Params {
 
   const preset: Preset = q.get("preset") === "low" ? "low" : "high";
 
+  const actStr = q.get("act");
+  const act = actStr ? actStr.split(",").filter(Boolean) : [];
+
   return {
     seed,
     cam,
     preset,
     freeze: q.get("freeze") === "1",
     hud: q.get("hud") === "1",
+    act,
   };
 }

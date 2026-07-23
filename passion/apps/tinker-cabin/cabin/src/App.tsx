@@ -7,26 +7,35 @@
 import { Canvas } from "@react-three/fiber";
 import { Bloom, EffectComposer, N8AO, Vignette } from "@react-three/postprocessing";
 import { Physics } from "@react-three/rapier";
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { CameraRigHud } from "./Hud";
-import { InteractionZone, PinnedCamera } from "./controls/CameraRig";
+import { PinnedCamera } from "./controls/CameraRig";
+import { GadgetZones } from "./controls/GadgetZones";
 import { PhysicsController, RoomColliders } from "./controls/PhysicsController";
 import { createIntent } from "./controls/intent";
 import { StatsBridge } from "./core/StatsBridge";
 import { parseParams } from "./core/params";
 import { TasteApp } from "./interest/TasteApp";
 import { exposeInterest } from "./interest/expose";
+import { GadgetSignalRecorder, exposeGadgets } from "./interest/gadgetSignals";
 import type { InterestHypothesis } from "./interest/signals";
 import { Cabin } from "./scene/Cabin";
+import { GADGETS, activateGadget, createGadgetStore, gadgetDef } from "./scene/gadgets/gadgetState";
 import { ANCHORS } from "./scene/layout";
 
 export function App(): JSX.Element {
   const params = parseParams();
   const intentRef = useRef(createIntent());
   const [tasteOpen, setTasteOpen] = useState(false);
-  const [nearDesk, setNearDesk] = useState(false);
+  const [nearId, setNearId] = useState<string | null>(null);
+  const [discovered, setDiscovered] = useState(0);
   const interactive = !params.cam; // the harness pins the camera and never interacts
+
+  // shared, mutable gadget visual state — the interaction manager mutates it and the scene meshes
+  // read it each frame (same ref-store pattern as intentRef). Seeded from ?act= for showcase shots.
+  const store = useMemo(() => createGadgetStore(params.act), [params.act]);
+  const recorder = useMemo(() => new GadgetSignalRecorder(), []);
 
   const onTasteResult = (h: InterestHypothesis): void => {
     setTasteOpen(false);
@@ -34,6 +43,29 @@ export function App(): JSX.Element {
     console.log(`[cabin] interest: ${h.state} — ${h.reasons.join("; ") || "weak signal"}`);
   };
 
+  const onActivate = (id: string): void => {
+    const def = gadgetDef(id);
+    if (!def) return;
+    if (id === "code-station") {
+      setTasteOpen(true);
+      return;
+    }
+    const { mode, firstTime } = activateGadget(store, id);
+    const summary = recorder.record({
+      gadgetId: id,
+      domain: def.domain,
+      mode,
+      firstTime,
+      at: Date.now(),
+    });
+    exposeGadgets(summary);
+    setDiscovered(summary.discovered.length);
+    console.log(
+      `[cabin] discovered ${id} (${def.domain}) → mode ${mode}; ${summary.reasons.join("; ")}`,
+    );
+  };
+
+  const nearLabel = nearId ? (gadgetDef(nearId)?.label ?? null) : null;
   const [sx, sy, sz] = ANCHORS.spawn;
 
   return (
@@ -52,7 +84,7 @@ export function App(): JSX.Element {
         {/* subtle aerial-perspective fog tinted to the sky — distant trees/mountains fade into it
             (real depth); density is low so the small interior is barely affected. */}
         <fogExp2 attach="fog" args={["#9aadc9", 0.009]} />
-        <Cabin freeze={params.freeze} />
+        <Cabin freeze={params.freeze} gadgets={store} />
         {params.cam ? (
           // harness: pin the exact pose, no physics → deterministic screenshots
           <PinnedCamera pose={params.cam} />
@@ -66,12 +98,11 @@ export function App(): JSX.Element {
           </Suspense>
         )}
         {interactive && (
-          <InteractionZone
+          <GadgetZones
             intentRef={intentRef}
-            target={ANCHORS.desk}
-            radius={1.7}
-            onNear={setNearDesk}
-            onInteract={() => setTasteOpen(true)}
+            gadgets={GADGETS}
+            onNear={setNearId}
+            onActivate={onActivate}
           />
         )}
         <StatsBridge />
@@ -84,13 +115,14 @@ export function App(): JSX.Element {
         </EffectComposer>
       </Canvas>
       {params.hud ? <CameraRigHud /> : null}
-      {interactive && nearDesk && !tasteOpen ? <Prompt /> : null}
+      {interactive ? <DiscoveryCounter n={discovered} total={GADGETS.length - 1} /> : null}
+      {interactive && nearLabel && !tasteOpen ? <Prompt label={nearLabel} /> : null}
       {tasteOpen ? <TasteApp onClose={onTasteResult} /> : null}
     </>
   );
 }
 
-function Prompt(): JSX.Element {
+function Prompt({ label }: { label: string }): JSX.Element {
   return (
     <div
       style={{
@@ -107,7 +139,29 @@ function Prompt(): JSX.Element {
         pointerEvents: "none",
       }}
     >
-      Press <b>E</b> to try the coding station
+      Press <b>E</b> — {label}
+    </div>
+  );
+}
+
+/** Small corner readout of how many gadgets the player has discovered (never shown in harness shots). */
+function DiscoveryCounter({ n, total }: { n: number; total: number }): JSX.Element {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: 12,
+        right: 14,
+        padding: "6px 12px",
+        borderRadius: 9,
+        background: "rgba(10,12,16,0.62)",
+        color: "#f0e6d6",
+        font: "600 13px ui-sans-serif, system-ui, sans-serif",
+        border: "1px solid rgba(255,180,110,0.28)",
+        pointerEvents: "none",
+      }}
+    >
+      Discovered {n}/{total}
     </div>
   );
 }
