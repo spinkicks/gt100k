@@ -221,6 +221,18 @@ importers:
 
   passion/packages/evidence-graph: {}
 
+  passion/packages/guardrails:
+    dependencies:
+      '@gt100k/hypothesis-store':
+        specifier: workspace:*
+        version: link:../hypothesis-store
+      '@gt100k/interest-inference':
+        specifier: workspace:*
+        version: link:../interest-inference
+      '@gt100k/student-profile':
+        specifier: workspace:*
+        version: link:../student-profile
+
   passion/packages/hypothesis-store:
     dependencies:
       '@gt100k/interest-inference':
