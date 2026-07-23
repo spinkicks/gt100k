@@ -51,7 +51,19 @@ export class KeyboardPointerSource implements InputSource {
   }
 
   private requestLock = (): void => {
-    this.el?.requestPointerLock?.();
+    // Already locked → nothing to do (a redundant request during lock also rejects).
+    if (!this.el || document.pointerLockElement === this.el) return;
+    // Chrome rejects requestPointerLock() with "cannot be acquired immediately after the user has
+    // exited the lock" if you re-request within ~1s of exiting (e.g. Esc to use the code overlay,
+    // then click the canvas). That rejection is BENIGN — the next click succeeds — but as an
+    // unhandled promise rejection it would trip the global handler and show the fatal boot overlay.
+    // Swallow it (both the Promise form and the older synchronous-throw form).
+    try {
+      const p = this.el.requestPointerLock?.() as unknown as Promise<void> | undefined;
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    } catch {
+      /* older browsers throw synchronously; ignore */
+    }
   };
 
   private readonly onKeyDown = (e: KeyboardEvent): void => {

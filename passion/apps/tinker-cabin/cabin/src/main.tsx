@@ -11,20 +11,23 @@ import "./styles.css";
 
 installHook();
 
-// Asset-loader failures (a missing GLB/HDR/texture → dev server returns index.html → the loader
-// throws) are handled gracefully by the per-asset error boundaries + procedural fallbacks, so we
-// must NOT escalate them to the fatal error overlay. Only genuine app errors surface.
-function isAssetError(x: unknown): boolean {
+// Benign, self-recovering failures we must NOT escalate to the fatal error overlay:
+//  - Asset-loader failures (a missing GLB/HDR/texture → dev server returns index.html → the loader
+//    throws) are handled by the per-asset error boundaries + procedural fallbacks.
+//  - Pointer-lock rejections ("cannot be acquired immediately after the user has exited the lock")
+//    are a benign browser timing quirk; the next click succeeds.
+// Only genuine app errors surface.
+function isBenignError(x: unknown): boolean {
   const m = (x instanceof Error ? x.message : String(x ?? "")).toLowerCase();
-  return /\.glb|\.gltf|\.hdr|\.jpg|\.png|could not load|gltf|texture|unexpected token '<'|not valid json/.test(
+  return /\.glb|\.gltf|\.hdr|\.jpg|\.png|could not load|gltf|texture|unexpected token '<'|not valid json|pointer ?lock/.test(
     m,
   );
 }
 window.addEventListener("error", (e) => {
-  if (!isAssetError(e.error ?? e.message)) setError(e.error ?? e.message);
+  if (!isBenignError(e.error ?? e.message)) setError(e.error ?? e.message);
 });
 window.addEventListener("unhandledrejection", (e) => {
-  if (!isAssetError(e.reason)) setError(e.reason);
+  if (!isBenignError(e.reason)) setError(e.reason);
 });
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {

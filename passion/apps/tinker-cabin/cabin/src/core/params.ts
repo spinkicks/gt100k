@@ -24,6 +24,8 @@ export interface Params {
   hud: boolean;
   /** gadget ids to force into their showcase (activated) state, or ["all"]; drives "after" shots */
   act: string[];
+  /** debug/test: open a gadget's code-challenge overlay on load (e.g. ?challenge=lamp) */
+  challenge: string | null;
 }
 
 /** FNV-1a → a stable 32-bit seed from a string or numeric string. */
@@ -65,5 +67,6 @@ export function parseParams(search: string = location.search): Params {
     freeze: q.get("freeze") === "1",
     hud: q.get("hud") === "1",
     act,
+    challenge: q.get("challenge"),
   };
 }

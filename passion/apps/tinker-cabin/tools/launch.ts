@@ -106,6 +106,8 @@ export interface UrlOpts {
   hud?: boolean;
   /** gadget ids (comma list) or "all" to force gadgets into their activated showcase state */
   act?: string;
+  /** open a gadget's code-challenge overlay on load (debug/screenshots) */
+  challenge?: string;
 }
 
 /** Build a deterministic app URL: ?seed &?cam=x,y,z,yaw,pitch[,fov] &?preset &?freeze &?hud &?act. */
@@ -117,5 +119,6 @@ export function cabinUrl(o: UrlOpts): string {
   if (o.freeze ?? true) q.set("freeze", "1");
   if (o.hud) q.set("hud", "1");
   if (o.act) q.set("act", o.act);
+  if (o.challenge) q.set("challenge", o.challenge);
   return `${BASE}/?${q.toString()}`;
 }

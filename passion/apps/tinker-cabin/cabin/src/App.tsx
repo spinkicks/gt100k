@@ -7,7 +7,7 @@
 import { Canvas } from "@react-three/fiber";
 import { Bloom, EffectComposer, N8AO, Vignette } from "@react-three/postprocessing";
 import { Physics } from "@react-three/rapier";
-import { Suspense, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { CameraRigHud } from "./Hud";
 import { PinnedCamera } from "./controls/CameraRig";
@@ -16,7 +16,9 @@ import { PhysicsController, RoomColliders } from "./controls/PhysicsController";
 import { createIntent } from "./controls/intent";
 import { StatsBridge } from "./core/StatsBridge";
 import { parseParams } from "./core/params";
+import { CodeChallenge } from "./interest/CodeChallenge";
 import { TasteApp } from "./interest/TasteApp";
+import { CHALLENGES } from "./interest/challenges";
 import { exposeInterest } from "./interest/expose";
 import { GadgetSignalRecorder, exposeGadgets } from "./interest/gadgetSignals";
 import type { InterestHypothesis } from "./interest/signals";
@@ -28,6 +30,8 @@ export function App(): JSX.Element {
   const params = parseParams();
   const intentRef = useRef(createIntent());
   const [tasteOpen, setTasteOpen] = useState(false);
+  // ?challenge=<id> opens that gadget's overlay on load (debug/test/screenshots); else null.
+  const [challengeId, setChallengeId] = useState<string | null>(params.challenge);
   const [nearId, setNearId] = useState<string | null>(null);
   const [discovered, setDiscovered] = useState(0);
   const interactive = !params.cam; // the harness pins the camera and never interacts
@@ -43,14 +47,10 @@ export function App(): JSX.Element {
     console.log(`[cabin] interest: ${h.state} — ${h.reasons.join("; ") || "weak signal"}`);
   };
 
-  const onActivate = (id: string): void => {
+  /** Record a breadth discovery for a gadget (its family + that it was reached). */
+  const recordDiscovery = (id: string, mode: number, firstTime: boolean): void => {
     const def = gadgetDef(id);
     if (!def) return;
-    if (id === "code-station") {
-      setTasteOpen(true);
-      return;
-    }
-    const { mode, firstTime } = activateGadget(store, id);
     const summary = recorder.record({
       gadgetId: id,
       domain: def.domain,
@@ -65,8 +65,42 @@ export function App(): JSX.Element {
     );
   };
 
+  const onActivate = (id: string): void => {
+    const def = gadgetDef(id);
+    if (!def) return;
+    if (id === "code-station") {
+      setTasteOpen(true);
+      return;
+    }
+    // Code-driven gadgets: pressing E opens the gadget's code challenge (the coding-shack game).
+    // Running the code drives the real 3D gadget live; solving it locks it "online".
+    if (CHALLENGES[id]) {
+      setChallengeId(id);
+      return;
+    }
+    // Fallback (gadgets not yet converted to a code challenge): plain toggle discovery.
+    const { mode, firstTime } = activateGadget(store, id);
+    recordDiscovery(id, mode, firstTime);
+  };
+
+  const onChallengeClose = (h: InterestHypothesis): void => {
+    setChallengeId(null);
+    exposeInterest(h);
+    console.log(`[cabin] coding session: ${h.state} — ${h.reasons.join("; ") || "weak signal"}`);
+  };
+
   const nearLabel = nearId ? (gadgetDef(nearId)?.label ?? null) : null;
+  const openSpec = challengeId ? CHALLENGES[challengeId] : undefined;
+  const overlayOpen = tasteOpen || Boolean(openSpec);
   const [sx, sy, sz] = ANCHORS.spawn;
+
+  // When a code overlay opens, release pointer lock so the cursor is immediately usable on the panel
+  // (no manual Esc). Re-locking on the next canvas click is handled + rejection-guarded in intent.ts.
+  useEffect(() => {
+    if (overlayOpen && typeof document !== "undefined" && document.pointerLockElement) {
+      document.exitPointerLock();
+    }
+  }, [overlayOpen]);
 
   return (
     <>
@@ -116,8 +150,27 @@ export function App(): JSX.Element {
       </Canvas>
       {params.hud ? <CameraRigHud /> : null}
       {interactive ? <DiscoveryCounter n={discovered} total={GADGETS.length - 1} /> : null}
-      {interactive && nearLabel && !tasteOpen ? <Prompt label={nearLabel} /> : null}
+      {interactive && nearLabel && !overlayOpen ? <Prompt label={nearLabel} /> : null}
       {tasteOpen ? <TasteApp onClose={onTasteResult} /> : null}
+      {openSpec ? (
+        <CodeChallenge
+          spec={openSpec}
+          onWorld={(mode) => {
+            const st = store[openSpec.gadgetId];
+            if (st) st.mode = mode;
+          }}
+          onSolvedDiscovery={() => {
+            const st = store[openSpec.gadgetId];
+            const def = gadgetDef(openSpec.gadgetId);
+            if (!st || !def) return;
+            const firstTime = !st.discovered;
+            st.mode = def.showcaseMode;
+            st.discovered = true;
+            recordDiscovery(openSpec.gadgetId, def.showcaseMode, firstTime);
+          }}
+          onClose={onChallengeClose}
+        />
+      ) : null}
     </>
   );
 }
