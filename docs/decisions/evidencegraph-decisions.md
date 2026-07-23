@@ -2,7 +2,7 @@
 
 **Status:** Draft — awaiting operator decisions · Owner: (you) · Created 2026-07-23
 **Purpose:** Lock the open decisions before we build the EvidenceGraph beyond the current synthetic example. Two tracks: **(A–B) how students actually produce and capture evidence**, and **(C–G) how we make the architecture robust and shippable for live child data.**
-**Grounding:** PRD §19 / §19.1 / §19.2 (D1–D6 gates); the two hardening docs (`docs/prd/hardening/evidencegraph-productionization.md` + `docs/research/passion-pipeline/hardening/08-*.md`); the shipped MVP (`passion/packages/evidence-graph`, adapters, `evidence-explorer` app); `GOVERNANCE.md` G7/G9.
+**Grounding:** PRD §19 (the full-vision spec + §19.2 D1–D6 gates — now archived at `archive/docs/prd/PRD.md` after the PassionLab reset); the current active spec surface — `docs/prd/passionApps.md` (E1), `docs/prd/passion-roadmap.md` (features 002 + 023-productionization); the two hardening docs (`docs/prd/hardening/evidencegraph-productionization.md` + `docs/research/passion-pipeline/hardening/08-*.md`); the shipped MVP (`passion/packages/evidence-graph`, adapters, `evidence-explorer` app); `docs/prd/GOVERNANCE.md` G7/G9.
 
 ---
 
@@ -15,7 +15,7 @@ Each decision has: **why it matters**, **options** (with trade-offs), a **recomm
 - Mark anything out of scope with `Decision: N/A (defer)`.
 - Sections are ordered by how much they're currently *un*specified — **Section A (student experience) is the biggest gap and the most important to get right**, so it's first.
 
-When the blanks are filled, I'll turn this into (1) an updated PRD §19 + a productionization plan, and (2) a spec for the first non-synthetic build.
+When the blanks are filled, I'll turn this into (1) the EvidenceGraph design + productionization plan (now captured in `evidencegraph-v1-design.md` / `-buildspec.md`; the monolithic PRD §19 is archived post-reset, so this lives in `passionApps.md` / `passion-roadmap.md` + the hardening spec), and (2) a spec for the first non-synthetic build.
 
 ---
 

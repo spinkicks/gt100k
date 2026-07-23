@@ -2,7 +2,7 @@
 
 **Status:** Draft for discussion · Owner: (you) · Created 2026-07-23
 **Companion:** decisions in [`evidencegraph-decisions.md`](./evidencegraph-decisions.md) (this doc folds those in).
-**Grounding:** the shipped MVP (`passion/packages/evidence-graph`, adapters, `evidence-explorer` app); PRD §19 (the full vision this is a deliberately-scoped-down slice of).
+**Grounding:** the shipped MVP (`passion/packages/evidence-graph`, adapters, `evidence-explorer` app); PRD §19 (the full vision this is a deliberately-scoped-down slice of — archived at `archive/docs/prd/PRD.md` post-reset; current active surface: `docs/prd/passionApps.md` E1 + `docs/prd/passion-roadmap.md`).
 
 ---
 
