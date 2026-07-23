@@ -578,11 +578,13 @@ class TreesBoundary extends Component<
 function ExteriorTrees({ originX }: { originX: number }): JSX.Element {
   return (
     <group>
-      {/* near grassy foreground the trees stand on — kept small/close so it doesn't fog into a teal
-          slab at the horizon; beyond it the photographic panorama's own ground/mountains show. */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[originX + 10, 0, 0]}>
-        <planeGeometry args={[24, 60]} />
-        <meshStandardMaterial color="#6a7a44" roughness={1} metalness={0} />
+      {/* near grassy foreground the trees stand on. Starts OUTSIDE the wall (x > hx) and sits a hair
+          below y=0 so it never overlaps the interior floor (was causing floor z-fighting). Unlit +
+          fog-exempt + tinted to the panorama's grass so it blends into the photographic view rather
+          than fogging to a teal slab (smooths the synthetic→photographic transition). */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[originX + 17, -0.03, 0]}>
+        <planeGeometry args={[34, 64]} />
+        <meshBasicMaterial color="#8a9358" toneMapped={false} fog={false} />
       </mesh>
       <TreesBoundary originX={originX}>
         <Suspense fallback={<ConeTrees originX={originX} />}>
