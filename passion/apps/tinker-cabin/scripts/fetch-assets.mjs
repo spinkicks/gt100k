@@ -24,6 +24,18 @@ const HDRIS = [{ id: "kloppenheim_06", out: "env/dusk.hdr" }];
 /** PBR textures → cabin/public/assets/textures/<name>_{diff,nor,rough}.jpg */
 const TEXTURES = [{ id: "brown_planks_05", name: "wood" }];
 
+/** Direct-download CC0 GLB models (Poly Pizza / Quaternius) → cabin/public/assets/models/ */
+const MODELS = [
+  {
+    url: "https://static.poly.pizza/67f5e3fe-37ee-4c86-95c8-d269d8c9f8ba.glb",
+    out: "models/cat.glb",
+  },
+  {
+    url: "https://static.poly.pizza/712aaefa-ae7f-4cb3-8834-a1b8860df3b2.glb",
+    out: "models/pine.glb",
+  },
+];
+
 async function getJson(url) {
   const r = await fetch(url, { signal: AbortSignal.timeout(30000) });
   if (!r.ok) throw new Error(`${r.status} ${url}`);
@@ -81,6 +93,16 @@ async function main() {
       ok++;
     } catch (e) {
       console.warn(`  ! skipped ${t.id}: ${e instanceof Error ? e.message : e}`);
+      fail++;
+    }
+  }
+  for (const m of MODELS) {
+    try {
+      console.log(`Model ${m.out}`);
+      await download(m.url, m.out);
+      ok++;
+    } catch (e) {
+      console.warn(`  ! skipped ${m.out}: ${e instanceof Error ? e.message : e}`);
       fail++;
     }
   }

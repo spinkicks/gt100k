@@ -320,20 +320,40 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
 
 const CAT_MODEL_URL = "/assets/models/cat.glb";
 
-/** Real cat model, dropped in via Blender MCP export (see docs/BLENDER_MCP.md). Falls back to the
- *  procedural cat when the GLB is absent. Adjust scale/rotation to match your exported model. */
+/** Real CC0 cat GLB (Quaternius, via fetch-assets). Auto-normalized to fit + grounded so it works
+ *  regardless of the model's native scale/pivot. Falls back to the procedural cat if the GLB fails. */
 function GltfCat(): JSX.Element {
   const [x, , z] = ANCHORS.cat;
   const { scene } = useGLTF(CAT_MODEL_URL);
-  const model = useMemo(() => scene.clone(true), [scene]);
-  useEffect(() => {
-    model.traverse((o) => {
+  const model = useMemo(() => {
+    const s = scene.clone(true);
+    s.traverse((o) => {
       o.castShadow = true;
       o.receiveShadow = true;
     });
+    // fit the longest dimension to ~0.62m and drop it onto the floor, centred on the anchor.
+    // updateMatrixWorld first — setFromObject reads world matrices, which are stale on a fresh clone.
+    s.updateMatrixWorld(true);
+    const size = new THREE.Vector3();
+    new THREE.Box3().setFromObject(s).getSize(size);
+    const longest = Math.max(size.x, size.y, size.z);
+    const k = longest > 0 ? 0.62 / longest : 1;
+    s.scale.setScalar(k);
+    s.updateMatrixWorld(true);
+    const box2 = new THREE.Box3().setFromObject(s);
+    const c = new THREE.Vector3();
+    box2.getCenter(c);
+    s.position.set(-c.x, -box2.min.y, -c.z);
+    return s;
+  }, [scene]);
+  useEffect(() => {
     updateStats({ catVisible: true });
-  }, [model]);
-  return <primitive object={model} position={[x, 0.02, z]} rotation={[0, -0.7, 0]} scale={0.4} />;
+  }, []);
+  return (
+    <group position={[x, 0, z]} rotation={[0, -0.6, 0]}>
+      <primitive object={model} />
+    </group>
+  );
 }
 
 /** Renders the procedural cat if the GLB is missing / fails to load. */
@@ -350,8 +370,12 @@ class CatBoundary extends Component<{ children: ReactNode }, { failed: boolean }
 function Cat(): JSX.Element {
   // Only mount the glTF loader once we've confirmed the GLB really exists (a dev server answers a
   // missing path with index.html, which would crash the loader). Otherwise show the procedural cat.
-  const hasModel = useAssetReady(CAT_MODEL_URL);
-  if (!hasModel) return <ProceduralCat />;
+  // Default to the procedural tabby (cozy + reliable). The available free CC0 cat GLBs are blocky,
+  // cold-grey, and skinned (broken auto-scale), so the GLB path is opt-in via ?cat=glb until a
+  // better model is dropped into /assets/models/cat.glb.
+  const useGlb =
+    typeof location !== "undefined" && new URLSearchParams(location.search).get("cat") === "glb";
+  if (!useGlb) return <ProceduralCat />;
   return (
     <CatBoundary>
       <Suspense fallback={<ProceduralCat />}>
