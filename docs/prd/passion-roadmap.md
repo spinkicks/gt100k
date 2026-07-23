@@ -15,7 +15,7 @@
 
 ## Existing Spec-Kit features to build on
 
-- **`002-evidence-graph`** → artifact **E1** (the process-DAG MVP). Extended later by the productionization feature.
+- **`002-evidence-graph`** → artifact **E1** (the process-DAG MVP). Extended later by the productionization feature. **v1 build direction:** `docs/decisions/evidencegraph-v1-design.md` — one graph per project (packets removed), standalone product.
 - **`003-interest-lab`** → big chunks of **A1/A2/A5, C1/C3/C4, F1(partial)** (the discovery world, behavioral capture, inference, hypothesis lifecycle, guide surface). Our Discovery App PRD is aligned to it.
 - **`007-passion-tutor`** → part of **E2** (a deterministic Socratic project-interview that surfaces articulation gaps and emits an evidence record to 002). A seed for the defense + concierge.
 
@@ -25,7 +25,7 @@
 
 **Goal:** the two foundational engines exist and are green on synthetic data.
 - `002-evidence-graph` (E1) and `003-interest-lab` (A1/A2/A5, C1/C3/C4) — continue/stabilize.
-- **DoD:** discovery world renders 1+ cabin; behavioral events captured; a hypothesis object updates; evidence graph builds+verifies a synthetic packet.
+- **DoD:** discovery world renders 1+ cabin; behavioral events captured; a hypothesis object updates; evidence graph builds+verifies a synthetic project graph.
 
 ## Phase 1 — Discovery MVP (the thinnest end-to-end interest read)
 

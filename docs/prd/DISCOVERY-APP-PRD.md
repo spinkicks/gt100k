@@ -1,7 +1,7 @@
 # Discovery App PRD — The Passion Lab "Discover" Experience
 
 **Status:** Draft v1 · 2026-07-22 · Owner: (product)
-**Grounding:** This PRD is the source-of-truth design agreed in a structured design session. It is grounded in the project brainlifts (`docs/research/gtBrainlift.md`, `passionBrainlift.md`, `familyBrainlift.md`), the `@gt100k/evidence-graph` MVP, the exploration-world precedents research (`docs/research/interest-lab-world-precedents.md`, `interest-lab-hybrid-vs-full-3d.md`), and five cited research memos in `docs/research/passion-pipeline/` (interest consolidation, push/back-off, talent spine, reversibility, assessment). Every consequential decision below is tied to that evidence.
+**Grounding:** This PRD is the source-of-truth design agreed in a structured design session. It is grounded in the project brainlifts (`docs/research/gtBrainlift.md`, `passionBrainlift.md`, `familyBrainlift.md`), the `@gt100k/evidence-graph` MVP (v1 direction: `docs/decisions/evidencegraph-v1-design.md`), the exploration-world precedents research (`docs/research/interest-lab-world-precedents.md`, `interest-lab-hybrid-vs-full-3d.md`), and five cited research memos in `docs/research/passion-pipeline/` (interest consolidation, push/back-off, talent spine, reversibility, assessment). Every consequential decision below is tied to that evidence.
 
 > **Companion doc:** the specialization half of the pipeline lives in `SPECIALIZATION-PIPELINE-PRD.md`. This PRD covers **Discovery** only, up to and including the evidence it produces for the graduation gate.
 
