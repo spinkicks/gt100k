@@ -1,6 +1,7 @@
 {
   "files": [],
   "references": [
-    { "path": "passion/packages/evidence-explorer-view" }
+    { "path": "passion/packages/evidence-explorer-view" },
+    { "path": "passion/packages/interest-inference" }
   ]
 }
