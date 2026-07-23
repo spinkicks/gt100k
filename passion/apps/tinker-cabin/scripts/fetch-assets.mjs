@@ -31,7 +31,8 @@ const TEXTURES = [{ id: "brown_planks_05", name: "wood" }];
 /** Direct-download CC0 GLB models (Poly Pizza / Quaternius) → cabin/public/assets/models/ */
 const MODELS = [
   {
-    url: "https://static.poly.pizza/7ccb71fe-dabb-4a6f-a98a-8992bb5e6bc7.glb",
+    // "Dingus the cat" by alwayshasbean (Poly Pizza, CC-BY 3.0) — a static, textured tabby.
+    url: "https://static.poly.pizza/7ebad68c-3f89-45f1-a0b5-04514e8a4e52.glb",
     out: "models/cat.glb",
   },
   {

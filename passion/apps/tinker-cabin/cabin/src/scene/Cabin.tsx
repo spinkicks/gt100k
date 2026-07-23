@@ -336,14 +336,25 @@ function GltfCat(): JSX.Element {
     s.traverse((o) => {
       o.castShadow = true;
       o.receiveShadow = true;
+      // Dingus ships metalness 0.4 / roughness 0.3 → it reads as a dark glossy blob that reflects
+      // the dim room instead of showing its baked tabby fur. Force a matte fur material (keep the
+      // baseColorTexture) so the coat lights warmly by the fire.
+      const mesh = o as THREE.Mesh;
+      const mat = mesh.material as THREE.MeshStandardMaterial | undefined;
+      if (mat && "metalness" in mat) {
+        const m = mat.clone();
+        m.metalness = 0;
+        m.roughness = 0.85;
+        mesh.material = m;
+      }
     });
-    // fit the longest dimension to ~0.62m and drop it onto the floor, centred on the anchor.
+    // fit the longest dimension to ~0.72m and drop it onto the floor, centred on the anchor.
     // updateMatrixWorld first — setFromObject reads world matrices, which are stale on a fresh clone.
     s.updateMatrixWorld(true);
     const size = new THREE.Vector3();
     new THREE.Box3().setFromObject(s).getSize(size);
     const longest = Math.max(size.x, size.y, size.z);
-    const k = longest > 0 ? 0.62 / longest : 1;
+    const k = longest > 0 ? 0.72 / longest : 1;
     s.scale.setScalar(k);
     s.updateMatrixWorld(true);
     const box2 = new THREE.Box3().setFromObject(s);
@@ -374,14 +385,14 @@ class CatBoundary extends Component<{ children: ReactNode }, { failed: boolean }
 }
 
 function Cat(): JSX.Element {
-  // Only mount the glTF loader once we've confirmed the GLB really exists (a dev server answers a
-  // missing path with index.html, which would crash the loader). Otherwise show the procedural cat.
-  // Default to the procedural two-tone tabby. The free CC0 cat GLBs are all skinned + blocky-grey,
-  // so their bind-pose bbox breaks auto-scale (renders huge) and they clash with the cozy scene —
-  // GLB stays opt-in via ?cat=glb until a clean static cat model is dropped into /assets/models/cat.glb.
-  const useGlb =
-    typeof location !== "undefined" && new URLSearchParams(location.search).get("cat") === "glb";
-  if (!useGlb) return <ProceduralCat />;
+  // Default to the real CC0 cat GLB ("Dingus the cat", alwayshasbean, CC-BY — a static, textured
+  // tabby) when it's been fetched into /assets/models/cat.glb. HEAD-probe first (a dev server answers
+  // a missing path with index.html, which would crash the loader) so CI/offline falls back to the
+  // procedural tabby and stays deterministic. Force the procedural cat with ?cat=proc.
+  const forceProc =
+    typeof location !== "undefined" && new URLSearchParams(location.search).get("cat") === "proc";
+  const hasGlb = useAssetReady(CAT_MODEL_URL);
+  if (forceProc || !hasGlb) return <ProceduralCat />;
   return (
     <CatBoundary>
       <Suspense fallback={<ProceduralCat />}>
