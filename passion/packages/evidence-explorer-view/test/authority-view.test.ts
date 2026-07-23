@@ -8,8 +8,8 @@ import { describe, expect, it } from "vitest";
  * carries a persistent "Declared" tag). No node/actor exposes an accusation field.
  */
 describe("authority view derivation", () => {
-  const { graph, packet } = buildFixtureGraph(new NodeCryptoHasher());
-  const view = buildExplorerView(graph, packet);
+  const bundle = buildFixtureGraph(new NodeCryptoHasher());
+  const view = buildExplorerView(bundle.graph, bundle);
 
   it("grades the Outcome human-owned with a named owner", () => {
     const grade = view.nodes.find((n) => n.type === "Outcome");

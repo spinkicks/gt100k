@@ -1,120 +1,104 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
 
-import { merkleRoot } from "../../../packages/evidence-graph/src/merkle.js";
-import type { Attestation, EvidencePacket } from "../../../packages/evidence-graph/src/model.js";
+import { addNode } from "../../../packages/evidence-graph/src/graph.js";
+import type { EvidenceGraph, EvidenceNode } from "../../../packages/evidence-graph/src/model.js";
 import type { Verifier } from "../../../packages/evidence-graph/src/ports.js";
 import { NodeCryptoHasher } from "../../evidence-hash-node/src/index.js";
 import { DeterministicStubVerifier } from "../src/index.js";
 
-const SUBJECT_DIGEST = "fa6cc759cb3564394df561e6d4d2e9fe9ad76568ee10e37d22a83539bc3f6958";
+type EvidenceNodeContent = Omit<EvidenceNode, "id">;
 
-function makePacket(): EvidencePacket {
+const learnerArtifact = (title: string): EvidenceNodeContent => ({
+  type: "Artifact",
+  actor: { kind: "human", ref: "learner-synthetic-1" },
+  inputs: [],
+  timestamp: "2026-07-20T00:00:00.000Z",
+  consentScope: { scope: "synthetic" },
+  payload: { title },
+});
+
+/** Build a content-addressed graph whose stored ids match their content (a clean, verifiable graph). */
+function makeGraph(...contents: EvidenceNodeContent[]): EvidenceGraph {
   const hasher = new NodeCryptoHasher();
-  const nodeIds = ["node-a", "node-b", "node-c"].map((value) =>
-    hasher.hash(new TextEncoder().encode(value)),
-  );
-  const root = merkleRoot(nodeIds, hasher);
-
-  return {
-    milestoneRef: "milestone-verifier-synthetic",
-    subjectDigest: SUBJECT_DIGEST,
-    nodeIds,
-    merkleRoot: root,
-    artifactHashes: [nodeIds[0] as string],
-    failedBranches: [],
-    assistanceLedger: [],
-    contributionMap: {},
-    reviewAnchors: [],
-    outcomes: [],
-    attestation: {
-      _type: "https://in-toto.io/Statement/v1",
-      predicateType: "https://gt100k.dev/attestations/evidence/v1",
-      subject: [{ name: "artifact", digest: { sha256: SUBJECT_DIGEST } }],
-      predicate: {
-        builder: { id: "gt100k-evidence-graph" },
-        materials: [],
-        merkleRoot: root,
-        milestoneRef: "milestone-verifier-synthetic",
-      },
-    },
-  };
+  let graph: EvidenceGraph = { nodes: {}, edges: [] };
+  for (const content of contents) {
+    graph = addNode(graph, content, hasher).graph;
+  }
+  return graph;
 }
 
 describe("DeterministicStubVerifier", () => {
-  it("implements Verifier and passes an untampered packet", async () => {
+  it("implements Verifier and passes an untampered whole-project graph", async () => {
     expectTypeOf<DeterministicStubVerifier>().toMatchTypeOf<Verifier>();
 
+    const graph = makeGraph(learnerArtifact("a"), learnerArtifact("b"), learnerArtifact("c"));
+
     await expect(
-      new DeterministicStubVerifier().verify(makePacket(), new NodeCryptoHasher()),
+      new DeterministicStubVerifier().verify(graph, new NodeCryptoHasher()),
     ).resolves.toEqual({ ok: true, reasons: [] });
   });
 
-  it("reports MERKLE_MISMATCH after any selected node digest is altered", async () => {
+  it("reports CONTENT_HASH_MISMATCH when a stored node's content is tampered", async () => {
     const verifier = new DeterministicStubVerifier();
     const hasher = new NodeCryptoHasher();
-    const packet = makePacket();
+    const graph = makeGraph(learnerArtifact("a"), learnerArtifact("b"), learnerArtifact("c"));
 
-    for (const index of packet.nodeIds.keys()) {
-      const tampered = structuredClone(packet);
-      tampered.nodeIds[index] = hasher.hash(new TextEncoder().encode(`tampered-${index}`));
+    // Tamper each node in turn: mutate its payload without re-keying → stored id no longer binds it.
+    for (const storedId of Object.keys(graph.nodes)) {
+      const tampered = structuredClone(graph);
+      const node = tampered.nodes[storedId]!;
+      tampered.nodes[storedId] = {
+        ...node,
+        payload: { ...node.payload, tampered: true },
+      };
 
       await expect(verifier.verify(tampered, hasher)).resolves.toEqual({
         ok: false,
-        reasons: ["MERKLE_MISMATCH"],
+        reasons: ["CONTENT_HASH_MISMATCH"],
       });
     }
   });
 
-  it("reports MERKLE_MISMATCH when either committed root no longer binds the packet", async () => {
-    for (const alterRoot of [
-      (packet: EvidencePacket) => {
-        packet.merkleRoot = "0".repeat(64);
-      },
-      (packet: EvidencePacket) => {
-        packet.attestation.predicate.merkleRoot = "0".repeat(64);
-      },
-    ]) {
-      const packet = makePacket();
-      alterRoot(packet);
-
-      await expect(
-        new DeterministicStubVerifier().verify(packet, new NodeCryptoHasher()),
-      ).resolves.toEqual({ ok: false, reasons: ["MERKLE_MISMATCH"] });
-    }
-  });
-
-  it("reports SUBJECT_DIGEST_MISMATCH when the attestation subject changes", async () => {
-    const packet = makePacket();
-    packet.attestation.subject[0]!.digest.sha256 = "0".repeat(64);
+  it("reports the human-authority invariant reasons over the whole graph", async () => {
+    // A model-authored Artifact violates the human-authority invariant (MODEL_AUTHORED_PROHIBITED_TYPE).
+    const modelArtifact: EvidenceNodeContent = {
+      type: "Artifact",
+      actor: { kind: "model", ref: "assistant-model-synthetic" },
+      inputs: [],
+      timestamp: "2026-07-20T00:01:00.000Z",
+      consentScope: { scope: "synthetic" },
+      payload: { title: "model-authored artifact" },
+    };
+    const graph = makeGraph(learnerArtifact("a"), modelArtifact);
 
     await expect(
-      new DeterministicStubVerifier().verify(packet, new NodeCryptoHasher()),
-    ).resolves.toEqual({ ok: false, reasons: ["SUBJECT_DIGEST_MISMATCH"] });
+      new DeterministicStubVerifier().verify(graph, new NodeCryptoHasher()),
+    ).resolves.toEqual({ ok: false, reasons: ["MODEL_AUTHORED_PROHIBITED_TYPE"] });
   });
 
-  it("returns ATTESTATION_STRUCTURE_MISMATCH for malformed or unbound statement structure", async () => {
-    const alterStructure = [
-      (packet: EvidencePacket) => {
-        packet.attestation._type = "https://example.invalid/Statement";
-      },
-      (packet: EvidencePacket) => {
-        packet.attestation.predicateType = "https://example.invalid/predicate";
-      },
-      (packet: EvidencePacket) => {
-        packet.attestation.predicate.milestoneRef = "different-milestone";
-      },
-      (packet: EvidencePacket) => {
-        (packet.attestation as Partial<Attestation>).subject = undefined;
-      },
-    ];
+  it("surfaces both a content tamper and an invariant breach without duplicating reasons", async () => {
+    const modelArtifact: EvidenceNodeContent = {
+      type: "Artifact",
+      actor: { kind: "model", ref: "assistant-model-synthetic" },
+      inputs: [],
+      timestamp: "2026-07-20T00:01:00.000Z",
+      consentScope: { scope: "synthetic" },
+      payload: { title: "model-authored artifact" },
+    };
+    const graph = makeGraph(learnerArtifact("a"), modelArtifact);
 
-    for (const alter of alterStructure) {
-      const packet = makePacket();
-      alter(packet);
+    // Tamper the first (human) node's content too.
+    const cleanId = Object.keys(graph.nodes).find((id) => graph.nodes[id]?.actor.kind === "human")!;
+    const tampered = structuredClone(graph);
+    const node = tampered.nodes[cleanId]!;
+    tampered.nodes[cleanId] = { ...node, payload: { ...node.payload, tampered: true } };
 
-      await expect(
-        new DeterministicStubVerifier().verify(packet, new NodeCryptoHasher()),
-      ).resolves.toEqual({ ok: false, reasons: ["ATTESTATION_STRUCTURE_MISMATCH"] });
-    }
+    const result = await new DeterministicStubVerifier().verify(tampered, new NodeCryptoHasher());
+    expect(result.ok).toBe(false);
+    expect(new Set(result.reasons)).toEqual(
+      new Set(["CONTENT_HASH_MISMATCH", "MODEL_AUTHORED_PROHIBITED_TYPE"]),
+    );
+    // Reasons are de-duplicated even though multiple nodes could raise the same one.
+    expect(result.reasons.length).toBe(new Set(result.reasons).size);
   });
 });

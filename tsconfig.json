@@ -14,9 +14,12 @@
     { "path": "passion/packages/student-profile" },
     { "path": "passion/adapters/profile-store-fs" },
     { "path": "passion/packages/wellbeing" },
+    { "path": "passion/packages/family" },
     { "path": "passion/packages/guardrails" },
     { "path": "passion/packages/concierge" },
     { "path": "passion/adapters/concierge-live" },
+    { "path": "passion/packages/evidence-tiny-game" },
+    { "path": "passion/adapters/evidence-repo-postgres" },
     { "path": "passion/packages/specialization-planner" },
     { "path": "passion/adapters/planner-live" }
   ]
