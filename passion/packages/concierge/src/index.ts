@@ -2,3 +2,4 @@
 // library + typed ports + deterministic stub adapters. No network; SYNTHETIC data only.
 // Barrel filled in task-by-task (model → library → safety → ports/stubs → pipeline → promote).
 export * from "./model.js";
+export * from "./library.js";
