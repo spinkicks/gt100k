@@ -1284,3 +1284,13 @@ dev killed (`pnpm --filter @gt100k/interest-lab-app build`).
 - **`applyTrust` covered by its own test.** The plan exports `applyTrust` as the consumer gate helper but
   its Task-6 test block only exercised `topicTrust`. Added an `applyTrust` test (PROVISIONAL below bar,
   TRUSTED at α=1.0) so the exported gate helper is not untested dead code ([D6]).
+
+## Task 7 — StubTagger + domain barrel
+- **Stub fallback = confidence 0**, not a plausible guess: an unknown ref must not be silently
+  fabricated as a trusted tag. confidence 0 < `CONFIDENCE_FLOOR` (0.5) → `validateSuggestion` rejects
+  it → routed to the review queue. The stub is deterministic (no RNG, no clock), so CI is reproducible.
+- **Domain barrel widened at Task 7 (not deferred to Task 9)**: adapters import `Tagger`/`ArtifactRef`/
+  `TagSuggestion` (and Task 8 imports `isCabinId`/`isWorkMode`/`CABINS`/`WORK_MODES`) from the package
+  index by name. Writing the full `export *` barrel now (resolver/ports/pipeline/validity) is what lets
+  `tsc -b` resolve those symbols; Task 9 re-asserts the identical barrel. Verified no export-name
+  collisions across the 7 modules.

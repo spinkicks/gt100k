@@ -32,6 +32,12 @@ importers:
 
   passion/adapters/evidence-verifier-stub: {}
 
+  passion/adapters/tagger-stub:
+    dependencies:
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../../packages/two-axis-tagging
+
   passion/apps/evidence-explorer:
     dependencies:
       '@gt100k/evidence-deferred':

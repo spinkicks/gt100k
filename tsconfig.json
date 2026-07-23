@@ -2,6 +2,7 @@
   "files": [],
   "references": [
     { "path": "passion/packages/evidence-explorer-view" },
-    { "path": "passion/packages/two-axis-tagging" }
+    { "path": "passion/packages/two-axis-tagging" },
+    { "path": "passion/adapters/tagger-stub" }
   ]
 }
