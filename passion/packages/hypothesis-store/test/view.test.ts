@@ -71,6 +71,31 @@ describe("consoleViewModel", () => {
     expect(top).not.toHaveProperty("passion");
   });
 
+  it("surfaces coverage gaps (domain×mode combos observed but not yet sampled) — from the read", () => {
+    const s = applyInterestRead(emptyStore(), "kid-1", read, NOW);
+    const vm = consoleViewModel(s, "kid-1");
+    // observed axes: domains {music-sound, movement-body} × modes {build, perform}.
+    // sampled: music-sound::build, movement-body::perform → the other two are gaps (sorted).
+    expect(vm.coverageGaps).toEqual(["movement-body::build", "music-sound::perform"]);
+  });
+
+  it("gives each card a next distinguishing probe (never a fixed label)", () => {
+    const s = applyInterestRead(emptyStore(), "kid-1", read, NOW);
+    const vm = consoleViewModel(s, "kid-1");
+    // EMERGING, no gate supplied → the gap-survival probe.
+    expect(vm.cards[0]!.state).toBe("EMERGING");
+    expect(vm.cards[0]!.nextProbe).toBe(
+      "Watch for a voluntary return after a ≥14-day quiet gap.",
+    );
+    // EXPLORING (thin) → offer the cell again unprompted.
+    expect(vm.cards[1]!.state).toBe("EXPLORING");
+    expect(vm.cards[1]!.nextProbe).toBe(
+      "Offer the cell again unprompted and watch for a voluntary return.",
+    );
+    // language is a next test, never "you are an X".
+    expect(vm.cards[0]!.nextProbe.toLowerCase()).not.toContain("you are");
+  });
+
   it("allowedActions reflect state (exact actionsFor output)", () => {
     const s = applyInterestRead(emptyStore(), "kid-1", read, NOW);
     const vm = consoleViewModel(s, "kid-1");
@@ -97,5 +122,9 @@ describe("consoleViewModel", () => {
     const vm = consoleViewModel(s, "kid-1", new Map([[id, gate]]));
     expect(vm.cards[0]!.gate).toEqual(gate);
     expect(vm.cards[1]!.gate).toBeUndefined();
+    // a passed gate re-points the next probe at the human decision (sign-off), not another test.
+    expect(vm.cards[0]!.nextProbe).toBe(
+      "Gate passed — a human may promote with an autonomy sign-off.",
+    );
   });
 });
