@@ -103,8 +103,93 @@ export const GIZMO_CHALLENGE: ChallengeSpec = {
   solvedMsg: "Engaged! The gears are turning.",
 };
 
-/** Challenges keyed by gadget id. Gadgets without an entry fall back to a plain discovery for now. */
+/**
+ * CHIME KEYS — arrays / sequencing. The chimes play a rhythm from a beat array; each slot is PLAY or
+ * REST. Match the target rhythm and the real chimes ring. (Target: PLAY REST PLAY PLAY REST.)
+ */
+export const CHIMES_CHALLENGE: ChallengeSpec = {
+  gadgetId: "chimes",
+  title: "Compose the chime loop",
+  prompt:
+    "Fill the beat array — each slot PLAYs a note or RESTs. Match the target rhythm and the chimes ring.",
+  concept: "arrays",
+  ops: ["PLAY", "REST"],
+  header: "const beats = [",
+  footer: "]   // ♪ play the pattern",
+  lines: [
+    { pre: "beat 0 = ", op: 1, post: "," },
+    { pre: "beat 1 = ", op: 1, post: "," },
+    { pre: "beat 2 = ", op: 1, post: "," },
+    { pre: "beat 3 = ", op: 1, post: "," },
+    { pre: "beat 4 = ", op: 0, post: "," },
+  ],
+  run: (lines) => lines.map((l) => (l.op === 0 ? 1 : 0)), // PLAY(op0) → note
+  target: [1, 0, 1, 1, 0],
+  worldMode: (_trace, solved) => (solved ? 1 : 0), // chimes: 0 quiet · 1 ringing
+  solvedMsg: "Ringing! The chimes play your loop.",
+};
+
+/**
+ * CONTROL PANEL — conditionals. Sensor readings pass through one comparison against a threshold;
+ * pick the operator that lights the target pass/fail pattern. (readings [2,5,4,6] > 4 → 0,1,0,1.)
+ */
+export const PANEL_CHALLENGE: ChallengeSpec = {
+  gadgetId: "panel",
+  title: "Wire the panel logic",
+  prompt:
+    "Each sensor reading is checked against the threshold. Pick the operator so the lamps match the target.",
+  concept: "conditionals",
+  ops: [">", "<", ">=", "=="],
+  header: "readings = [2, 5, 4, 6];  threshold = 4",
+  footer: "// 🟢 pass · ⚫ fail",
+  lines: [{ pre: "light = readings.map(r => r ", op: 1, post: " threshold)" }],
+  run: (lines) => {
+    const readings = [2, 5, 4, 6];
+    const th = 4;
+    const op = lines[0]?.op ?? 0;
+    return readings.map((r) => {
+      const pass = op === 0 ? r > th : op === 1 ? r < th : op === 2 ? r >= th : r === th;
+      return pass ? 1 : 0;
+    });
+  },
+  target: [0, 1, 0, 1], // r > 4
+  worldMode: (_trace, solved) => (solved ? 1 : 0), // panel: 0 idle · 1 online
+  solvedMsg: "Online! The panel logic checks out.",
+};
+
+/**
+ * EASEL — functions / arguments. Paint the scene by calling paint() with the right colour argument
+ * on each layer, in order. All three correct → the finished canvas shows. (SKY, PEAK, SUN.)
+ */
+export const EASEL_CHALLENGE: ChallengeSpec = {
+  gadgetId: "easel",
+  title: "Paint by function calls",
+  prompt:
+    "Each layer calls paint() with a colour argument. Pass the right colour to each call to render the scene.",
+  concept: "functions",
+  ops: ["SKY", "PEAK", "SUN", "SNOW"],
+  header: "canvas.clear()",
+  footer: "return canvas   // 🎨",
+  lines: [
+    { pre: "paint(", op: 3, post: ")   // background" },
+    { pre: "paint(", op: 0, post: ")   // ridge" },
+    { pre: "paint(", op: 1, post: ")   // highlight" },
+  ],
+  // correct argument per layer: SKY(0), PEAK(1), SUN(2)
+  run: (lines) => {
+    const correct = [0, 1, 2];
+    return lines.map((l, i) => (l.op === correct[i] ? 1 : 0));
+  },
+  target: [1, 1, 1],
+  worldMode: (_trace, solved) => (solved ? 2 : 0), // easel: 0 blank · 2 finished painting
+  solvedMsg: "Painted! The canvas is complete.",
+};
+
+/** Challenges keyed by gadget id — the coding-shack game (all code-themed, each a distinct concept). */
 export const CHALLENGES: Record<string, ChallengeSpec> = {
-  lamp: LAMP_CHALLENGE,
-  gizmo: GIZMO_CHALLENGE,
+  lamp: LAMP_CHALLENGE, // sequencing
+  gizmo: GIZMO_CHALLENGE, // loops
+  chimes: CHIMES_CHALLENGE, // arrays
+  panel: PANEL_CHALLENGE, // conditionals
+  easel: EASEL_CHALLENGE, // functions
 };
