@@ -22,12 +22,13 @@
 | **C4** Hypothesis Store + Lifecycle | ✅ done | `specs/013-hypothesis-store` | versioned hypotheses + lifecycle + Phase 2→3 gate (det. checks + human sign-off) + console view-model |
 | **G1** Student Profile + Discovery Orchestrator | ✅ done | `specs/014-student-profile` (+ `@gt100k/profile-store-fs`) | per-kid profile + append-only interaction log + a pure, idempotent full-replay `runCycle` wiring **012→011→013**; gates derived from the log; JSON-file-per-kid persistence. **The guide console now renders GENUINELY-DERIVED reads** (no more hand-built seed). Real TimeBack priors (G2) + consent/erasure (G3) later |
 | **E2** Assessment / Oral Defense | ✅ done (engine) | `specs/010-socratic-defense` (+`tutor-stub`/`tutor-tfy`) | LLM-conducts + deterministic scaffold + evidence record; sampling cadence + UI integration still to wire |
-| **F1** Guide + Wellbeing **Console (guide part)** | 🟡 partial | `specs/013` app `@gt100k/guide-console` (redesigned; fed by 014) | guide console shipped + redesigned (Workbench layout, child switcher + search, level rings, plain-language tooltips + Key) and now fed by the **014 orchestrator** (real derived reads); the **wellbeing/burnout-escalation surface (F2)** + of-record grade ownership tie-in remain |
+| **F1** Guide + Wellbeing **Console (guide part)** | 🟡 partial | `specs/013` app `@gt100k/guide-console` (redesigned; fed by 014 + 016) | guide console shipped + redesigned (Workbench layout, child switcher + search, level rings, plain-language tooltips + Key), fed by the **014 orchestrator** (real derived reads), and now carries the **wellbeing/escalation panel (F2/016)** — per-spike two-knob recommendation + "needs your review" escalations; of-record grade ownership tie-in remains |
+| **F2** Push/Back-off + Burnout Monitor | ✅ done (engine) | `specs/016-wellbeing` (`@gt100k/wellbeing`) | pure two-knob engine (challenge PUSH/HOLD/SCAFFOLD × pressure AUTONOMY_UP/STEADY + back-off/rest/escalate) implementing the §6.2 table + 9 guardrails (devaluation weighted highest; push only from strength; missingness → human; counter-cyclical autonomy; never gamify; no child-facing label; behavioral-only), a deriver over the 014 log/013 store, and the guide-console panel; **guide surface functional, polish pending** |
 | **E1** EvidenceGraph | 🟡 partial | `specs/002-evidence-graph` (MVP) | core DAG + human-owned grades shipped; **D1–D6 pre-production gates** (transparency log, crypto-shred erasure, comparative-judgment, conformal, export provenance, signing) remain — see `hardening/evidencegraph-productionization.md` |
 | **A2** Cabin 3D Interiors | 🟡 partial | `apps/tinker-cabin` (game-side MVP) | one photoreal cabin + realism-loop harness; the rest of the world is the teammate's track |
 | **A4** Taste Apps + Embedding SDK | 🟡 partial | intern apps exist | the embedding SDK + measurable-panel standard is not built |
 
-**Not started (⬜):** A1 world · A3 asset pipeline · A5 accessibility mirror · A6 resource router/curated library · B1 concierge · B2 child-safe RAG · D1 planner · D2 project workspace · D3 mentor relay · D4 audience broker · D5 PCDE curriculum · F2 burnout monitor · F3 family co-engagement · G2 TimeBack integration · G3 consent/privacy · G4 safety/moderation · G5 calibration harness · G6 metrics.
+**Not started (⬜):** A1 world · A3 asset pipeline · A5 accessibility mirror · A6 resource router/curated library · B1 concierge · B2 child-safe RAG · D1 planner · D2 project workspace · D3 mentor relay · D4 audience broker · D5 PCDE curriculum · F3 family co-engagement · G2 TimeBack integration · G3 consent/privacy · G4 safety/moderation · G5 calibration harness · G6 metrics.
 
 **Wiring gap — RESOLVED (014):** the four discovery engines are now wired end-to-end. `Interaction`s → `signal-pipeline` (012) → `interest-inference` (011) → `hypothesis-store` (013) run through the per-kid **Student Profile (G1)** orchestrator, and the guide console renders the derived read (synthetic-pilot roster). Remaining glue is real inputs: the game-side `Interaction` emitter (C1 UI, teammate) and real priors (G2).
 
@@ -187,10 +188,10 @@ flowchart TB
 
 ## 3. Build-sequencing notes
 
-- **Done (discovery spine + wiring):** C2 (009) · C1 (012) · C3 (011) · C4 (013) · E2 (010) · **G1 + orchestrator (014)** · F1-guide (013 app, redesigned + fed by 014) · E1-MVP (002). The engines are wired end-to-end and the console reads genuinely-derived data.
+- **Done (discovery spine + wiring):** C2 (009) · C1 (012) · C3 (011) · C4 (013) · E2 (010) · **G1 + orchestrator (014)** · F1-guide (013 app, redesigned + fed by 014) · **F2 wellbeing engine + panel (016)** · E1-MVP (002). The engines are wired end-to-end and the console reads genuinely-derived data.
 - **Next up (in order):**
   1. **B1 Concierge + B2 child-safe RAG + A6 curated library** (RAG/ML lane; spec basis in `hardening/child-safe-rag.md`, research in `research/passion-pipeline/07-child-safe-rag.md`). *The long-tail escape valve + the "deep dive" layer; the highest-risk subsystem.*
-  2. **F2 Burnout monitor** (completes F1) and **G6 metrics/guardrail-compliance**.
+  2. **G6 metrics/guardrail-compliance** (F2 wellbeing engine + panel shipped in 016; guide-surface polish pending).
   3. **Specialization lane:** D1 Planner → D2 workspace → D3 mentor/D4 audience → D5 PCDE.
   4. **Pre-live gates:** E1 D1–D6 productionization, G3 consent/erasure, G4 safety-at-scale, G5 calibration (once outcome data accrues).
 - **Original critical path (for reference):** A1 → A2/A3 → A4 → C2 → C1 → C3 → C4 → F1 (+ G1, G2). Concierge (B1/B2) and the external router (A6) can follow once the bounded loop reads signal.

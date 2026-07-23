@@ -2113,3 +2113,105 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ── Wellbeing / escalation panel (016-wellbeing) ─────────────────────────────
+   Guide-facing, grayscale-safe. A review item is set apart by a left rule only
+   (no color), so it reads the same in monochrome and never gamifies. */
+.wbpanel {
+  margin: 4px 0 22px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+.wbpanel__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.wbpanel__head h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.wbpanel__count {
+  border-color: var(--line-3);
+  color: var(--ink);
+  font-weight: 600;
+}
+.wbpanel__empty {
+  margin: 0;
+  color: var(--ink-faint);
+  font-size: 13px;
+}
+.wblist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.wbitem {
+  padding: 12px 14px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+}
+.wbitem--review {
+  border-left: 3px solid var(--ink-muted);
+}
+.wbitem__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.wbitem__spec {
+  font-weight: 600;
+  color: var(--ink);
+}
+.wbitem__state {
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+.wbitem__moves {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--ink-muted);
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+.wbitem__moves strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.wbitem__sep {
+  color: var(--ink-faint);
+}
+.wbitem__review {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line-2);
+}
+.wbitem__reviewk {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.wbitem__reason {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+.wbitem__reason--muted {
+  margin-top: 8px;
+  color: var(--ink-faint);
+}

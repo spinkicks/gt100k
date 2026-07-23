@@ -10,16 +10,20 @@ export interface QaState {
   readonly selectedId: string | null;
   readonly count: number;
   readonly states: readonly string[];
+  /** 016-wellbeing: how many of the child's spikes the wellbeing engine flagged for a human. */
+  readonly escalations: number;
 }
 
-// Small, stable snapshot for the usability gate — ranked states so a promote is observable.
+// Small, stable snapshot for the usability gate — ranked states so a promote is observable. The
+// wellbeing `escalations` count (016) is additive: it defaults to 0 so existing callers are unchanged.
 export function buildQaState(
   store: HypothesisStore,
   kidId: string,
   selectedId: string | null,
+  escalations = 0,
 ): QaState {
   const cards = getForKid(store, kidId);
-  return { selectedId, count: cards.length, states: cards.map((h) => h.state) };
+  return { selectedId, count: cards.length, states: cards.map((h) => h.state), escalations };
 }
 
 // The top gate-passed EMERGING candidate (cards are ranked by lowerBound desc), or null if none.

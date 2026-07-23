@@ -128,6 +128,9 @@ importers:
       '@gt100k/student-profile':
         specifier: workspace:*
         version: link:../../packages/student-profile
+      '@gt100k/wellbeing':
+        specifier: workspace:*
+        version: link:../../packages/wellbeing
       motion:
         specifier: ^12.42.0
         version: 12.42.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -260,6 +263,24 @@ importers:
         version: link:../two-axis-tagging
 
   passion/packages/two-axis-tagging: {}
+
+  passion/packages/wellbeing:
+    dependencies:
+      '@gt100k/hypothesis-store':
+        specifier: workspace:*
+        version: link:../hypothesis-store
+      '@gt100k/interest-inference':
+        specifier: workspace:*
+        version: link:../interest-inference
+      '@gt100k/signal-pipeline':
+        specifier: workspace:*
+        version: link:../signal-pipeline
+      '@gt100k/student-profile':
+        specifier: workspace:*
+        version: link:../student-profile
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../two-axis-tagging
 
 packages:
 
