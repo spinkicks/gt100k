@@ -184,6 +184,12 @@ importers:
 
   passion/packages/evidence-graph: {}
 
+  passion/packages/hypothesis-store:
+    dependencies:
+      '@gt100k/interest-inference':
+        specifier: workspace:*
+        version: link:../interest-inference
+
   passion/packages/interest-inference: {}
 
   passion/packages/socratic-defense:

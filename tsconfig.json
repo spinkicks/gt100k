@@ -8,6 +8,7 @@
     { "path": "passion/adapters/tutor-tfy" },
     { "path": "passion/packages/two-axis-tagging" },
     { "path": "passion/adapters/tagger-stub" },
-    { "path": "passion/adapters/tagger-tfy" }
+    { "path": "passion/adapters/tagger-tfy" },
+    { "path": "passion/packages/hypothesis-store" }
   ]
 }
