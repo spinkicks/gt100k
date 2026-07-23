@@ -116,13 +116,17 @@ The current app is a **viewer**; v1 makes it interactive. **In scope:**
 
 So nothing gets lost: project-start hand-off (A2), cadence (A6), automatic capture (B1-auto), mediated-AI attestation (B2), defense workflow (B3), team workflow (B5), consent/retention/legal-hold UX (B6/D3/D4), three-layer erasure + keys (C1/C2/D1/D2), external anchoring (C5), signing (C6), reviewer pool + assessment panels (E2/E3), region/residency (F2), Go services (F1-B), pre-live gate order (G2), pilot params (G3).
 
-## 13. What's missing / open (let's discuss)
+## 13. Resolved (were open questions)
 
-1. **Refactor vs. rebuild** — turning the current packet-centric code into graph-centric (see §14) is a real but contained change. Confirm we refactor the existing package rather than start fresh.
-2. **Manual-add UX** — adding nodes + drawing edges in a 3D scene is fiddly. Do we add nodes in a **2D side panel / form** and let the 3D view just *render* them? (I lean yes.)
-3. **What's a "project" record** — beyond nodes/edges, does a project need a name, owner (`studentId`), created/updated, status? (Minimal metadata table.)
-4. **Demo content** — we need one hand-authored, reproducible "student journey" (a code project built over ~N steps) as the seed. Who/what domain — a small game? a script? (Ties to the interest-lab cabins.)
-5. **Does v1 need auth/multi-user at all**, or is it a single demo project loaded from a fixture? (Simplest: seedable fixtures + one editable project.)
+1. **Refactor, not rebuild** — evolve the existing tested package from packet-centric to graph-centric (see §14).
+2. **Manual-add via a 2D side panel / form** — the 3D view *renders* the graph; adding/connecting nodes happens in a 2D surface, not in the 3D scene.
+3. **Minimal project record** — a project has `name`, owner (`studentId`), `created`/`updated`, `status`, plus its nodes/edges.
+4. **Demo content = a tiny game** — the reproducible "student journey" is a small code game built over N steps (a natural fit for the code domain + the cabin themes).
+5. **No auth/multi-user in v1** — seedable fixtures + one editable project.
+
+## 13a. Extraction is the goal (not now)
+
+The explicit end-state is that the EvidenceGraph becomes **its own product**. We build it *here* in v1 to reuse the working toolchain + green tests and prove the boundaries, then **extract it later** — keeping the `@gt100k/evidence-*` package names and pnpm layout intact so extraction is a mechanical copy / `git subtree` / published-package swap, not a merge fight. No separate repo now; nothing outside the `evidence-*` namespace may reach *into* these packages (preserve the zero-inbound-coupling that already holds).
 
 ## 14. Impact on existing code (for the spec)
 
