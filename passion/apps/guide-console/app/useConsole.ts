@@ -16,6 +16,7 @@ import {
 import { applyGuidePrimaryAction, buildQaState, topPromotableId } from "./console-state.js";
 import { installQa } from "./qa.js";
 import { CHILDREN, buildRosterGates, buildRosterStore, type Child } from "./console-data.js";
+import { escalationCount, wellbeingForKid } from "./wellbeing.js";
 
 const GUIDE: HumanActor = { id: "guide-synthetic", role: "guide" };
 const isoNow = (): string => new Date().toISOString();
@@ -36,6 +37,9 @@ export function useConsole() {
 
   const gates = useMemo(() => buildRosterGates(store), [store]);
   const vm = useMemo(() => consoleViewModel(store, kid, gates), [store, kid, gates]);
+  // The selected child's per-spike wellbeing reads (016) — derived from the interaction log, not the
+  // mutable store, so a human promote/park never changes them.
+  const wellbeing = useMemo(() => wellbeingForKid(kid), [kid]);
 
   // Switching child resets the transient view state so the detail pane / filter never point at a
   // stale card from the previous kid.
@@ -50,7 +54,13 @@ export function useConsole() {
 
   useEffect(() => {
     installQa(
-      () => buildQaState(ref.current.store, ref.current.kid, ref.current.selectedId),
+      () =>
+        buildQaState(
+          ref.current.store,
+          ref.current.kid,
+          ref.current.selectedId,
+          escalationCount(ref.current.kid),
+        ),
       () => {
         const next = applyGuidePrimaryAction(
           ref.current.store,
@@ -141,6 +151,7 @@ export function useConsole() {
     setFilter,
     counts,
     summaries,
+    wellbeing,
     selectedId,
     setSelectedId,
     selectedCard,

@@ -14,6 +14,7 @@ import {
   SpecCard,
   SpecRail,
 } from "./components.js";
+import { WellbeingPanel } from "./wellbeing-panel.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 
 export function GuideConsole(): JSX.Element {
@@ -44,6 +45,8 @@ export function GuideConsole(): JSX.Element {
         <header className="ghead">
           <h1 id="console-title">Interest hypotheses</h1>
         </header>
+
+        <WellbeingPanel cards={ctrl.wellbeing} />
 
         {ctrl.visible.length === 0 ? (
           <EmptyState ctrl={ctrl} />

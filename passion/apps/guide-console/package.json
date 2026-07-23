@@ -12,6 +12,7 @@
     "@gt100k/hypothesis-store": "workspace:*",
     "@gt100k/interest-inference": "workspace:*",
     "@gt100k/student-profile": "workspace:*",
+    "@gt100k/wellbeing": "workspace:*",
     "motion": "^12.42.0",
     "next": "^14.2.15",
     "react": "^18.3.1",
