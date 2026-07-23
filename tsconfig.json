@@ -14,6 +14,7 @@
     { "path": "passion/packages/student-profile" },
     { "path": "passion/adapters/profile-store-fs" },
     { "path": "passion/packages/wellbeing" },
+    { "path": "passion/packages/family" },
     { "path": "passion/packages/guardrails" },
     { "path": "passion/packages/concierge" },
     { "path": "passion/adapters/concierge-live" },
