@@ -14,7 +14,7 @@
     "@gt100k/student-profile": "workspace:*"
   },
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run --root ../.. packages/guardrails/test",
     "report": "tsx scripts/report.ts"
   }
 }
