@@ -1,5 +1,5 @@
 {
-  "name": "@gt100k/evidence-repo-postgres",
+  "name": "@gt100k/evidence-tiny-game",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,12 +9,13 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "demo": "tsx src/demo.ts",
-    "seed": "tsx src/seed-cli.ts",
     "test": "vitest run"
   },
   "dependencies": {
-    "@electric-sql/pglite": "^0.5.4",
-    "@gt100k/evidence-tiny-game": "workspace:*"
+    "@gt100k/evidence-graph": "workspace:*"
+  },
+  "devDependencies": {
+    "@gt100k/evidence-hash-node": "workspace:*",
+    "@gt100k/evidence-verifier-stub": "workspace:*"
   }
 }
