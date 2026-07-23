@@ -60,7 +60,8 @@ function TexturedFloor(): JSX.Element {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
       <planeGeometry args={[hx * 2, hz * 2]} />
-      <meshStandardMaterial {...tex} roughness={0.85} metalness={0} />
+      {/* warm tint multiplies the scanned (greyish) planks toward the cabin's cozy palette */}
+      <meshStandardMaterial {...tex} color="#caa579" roughness={0.85} metalness={0} />
     </mesh>
   );
 }
@@ -442,13 +443,11 @@ function ProceduralCat(): JSX.Element {
 function ExteriorTrees({ originX }: { originX: number }): JSX.Element {
   // [dx from wall, z, height, green]
   const trees: Array<[number, number, number, string]> = [
-    [1.8, -2.6, 4.2, "#26402b"],
-    [2.4, 2.9, 4.8, "#223a27"],
-    [3.2, -1.1, 5.4, "#2b4630"],
-    [3.0, 1.6, 4.0, "#20361f"],
-    [4.4, -3.2, 6.0, "#1e3324"],
-    [4.1, 3.6, 5.6, "#24402a"],
-    [5.2, 0.4, 6.4, "#1b2f20"],
+    [2.7, -3.5, 4.6, "#26402b"],
+    [3.5, 3.3, 5.2, "#223a27"],
+    [4.3, -1.5, 5.8, "#2b4630"],
+    [4.8, 1.9, 5.0, "#20361f"],
+    [6.0, -0.2, 6.6, "#1b2f20"],
   ];
   return (
     <group>
