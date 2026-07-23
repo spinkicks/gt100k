@@ -1,0 +1,10 @@
+# Private aesthetic targets — CC-licensed, internal comparison only, never published (repo is PUBLIC)
+reference/*
+!reference/README.md
+# Loop screenshots (regenerable)
+shots/*
+!shots/.gitkeep
+# build + deps
+node_modules/
+dist/
+.cache/
