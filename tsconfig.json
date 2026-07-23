@@ -5,6 +5,9 @@
     { "path": "passion/packages/interest-inference" },
     { "path": "passion/packages/socratic-defense" },
     { "path": "passion/adapters/tutor-stub" },
-    { "path": "passion/adapters/tutor-tfy" }
+    { "path": "passion/adapters/tutor-tfy" },
+    { "path": "passion/packages/two-axis-tagging" },
+    { "path": "passion/adapters/tagger-stub" },
+    { "path": "passion/adapters/tagger-tfy" }
   ]
 }
