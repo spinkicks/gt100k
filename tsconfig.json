@@ -17,6 +17,7 @@
     { "path": "passion/packages/guardrails" },
     { "path": "passion/packages/concierge" },
     { "path": "passion/adapters/concierge-live" },
-    { "path": "passion/packages/timeback" }
+    { "path": "passion/packages/timeback" },
+    { "path": "passion/adapters/timeback-live" }
   ]
 }
