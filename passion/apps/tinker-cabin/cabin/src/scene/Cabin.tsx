@@ -106,22 +106,10 @@ function Shell(): JSX.Element {
 function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
   const keyLight = useRef<THREE.PointLight>(null);
   const flames = useRef<THREE.Group>(null);
+  const embersRef = useRef<THREE.Group>(null);
   const [ax, , az] = ANCHORS.fireplace;
   const stone = useMemo(() => stoneTextures(), []);
   const flame = useMemo(() => flameTexture(), []);
-
-  useEffect(() => {
-    updateStats({ fireLit: true });
-  }, []);
-
-  useFrame((state) => {
-    const t = freeze ? FROZEN_T : state.clock.elapsedTime;
-    // deterministic multi-sine flicker (no RNG)
-    const flicker =
-      1 + Math.sin(t * 12) * 0.09 + Math.sin(t * 27.3) * 0.05 + Math.sin(t * 3.1) * 0.03;
-    if (keyLight.current) keyLight.current.intensity = 24 * flicker;
-    if (flames.current) flames.current.scale.set(1, flicker, 1);
-  });
 
   // additive flame sprites: [x, baseY, width, height, opacity] — clustered into one tongue cluster
   const sprites: Array<[number, number, number, number, number]> = [
@@ -130,6 +118,47 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
     [0.14, 0, 0.3, 0.56, 0.7],
     [0, 0.02, 0.24, 0.42, 0.95],
   ];
+  // ember sparks that drift up from the coals: [x, z, phase, speed, size]
+  const embers: Array<[number, number, number, number, number]> = [
+    [-0.18, 0.36, 0.0, 0.9, 0.05],
+    [0.12, 0.42, 2.1, 1.2, 0.04],
+    [0.02, 0.3, 4.0, 0.7, 0.055],
+    [0.22, 0.38, 1.2, 1.05, 0.035],
+    [-0.1, 0.44, 3.3, 0.85, 0.045],
+  ];
+
+  useEffect(() => {
+    updateStats({ fireLit: true });
+  }, []);
+
+  useFrame((state) => {
+    const t = freeze ? FROZEN_T : state.clock.elapsedTime;
+    const flicker =
+      1 + Math.sin(t * 12) * 0.09 + Math.sin(t * 27.3) * 0.05 + Math.sin(t * 3.1) * 0.03;
+    if (keyLight.current) keyLight.current.intensity = 24 * flicker;
+    // per-tongue life: each flame sways + breathes on its own phase (livelier than a group scale)
+    const g = flames.current;
+    if (g) {
+      g.children.forEach((c, i) => {
+        const baseH = sprites[i]?.[3] ?? 0.6;
+        const ph = i * 1.7;
+        c.scale.y = baseH * (1 + Math.sin(t * (9 + i * 2.3) + ph) * 0.16);
+        c.position.x = (sprites[i]?.[0] ?? 0) + Math.sin(t * (4 + i) + ph) * 0.025;
+      });
+    }
+    // embers drift up + fade over a ~0.7m loop (deterministic; frozen when freeze=1)
+    const eg = embersRef.current;
+    if (eg) {
+      eg.children.forEach((c, i) => {
+        const [ex, , phase, speed] = embers[i] ?? [0, 0, 0, 1, 0.04];
+        const u = ((t * speed + phase) % 2) / 2; // 0..1 rise
+        c.position.y = 0.05 + u * 0.7;
+        c.position.x = ex + Math.sin(t * 2 + phase) * 0.05;
+        const s = c as THREE.Sprite;
+        if (s.material) s.material.opacity = Math.max(0, 0.9 * (1 - u));
+      });
+    }
+  });
 
   return (
     <group position={[ax, 0, az + 0.35]}>
@@ -153,11 +182,26 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
         <boxGeometry args={[2.8, 0.2, 0.85]} />
         <meshStandardMaterial color="#5a3d22" roughness={0.7} metalness={0} />
       </mesh>
-      {/* ember bed — low glowing coals under the logs (kept deep-orange so it doesn't read as a slab) */}
-      <mesh position={[0, 0.26, 0.4]}>
-        <boxGeometry args={[0.95, 0.1, 0.4]} />
-        <meshStandardMaterial color="#ff6a1e" emissive="#e83c04" emissiveIntensity={3.2} />
-      </mesh>
+      {/* ember bed — a cluster of glowing coal lumps (reads as coals, not a slab) */}
+      {(
+        [
+          [-0.28, 0.22, 0.4, 0.09, 3.6],
+          [-0.05, 0.2, 0.44, 0.11, 4.2],
+          [0.2, 0.21, 0.4, 0.1, 3.4],
+          [0.34, 0.2, 0.36, 0.07, 2.8],
+          [0.05, 0.19, 0.34, 0.08, 3.0],
+        ] as Array<[number, number, number, number, number]>
+      ).map(([x, y, z, r, ei]) => (
+        <mesh key={`coal-${x}-${z}`} position={[x, y, z]}>
+          <sphereGeometry args={[r, 10, 8]} />
+          <meshStandardMaterial
+            color="#ff7a2a"
+            emissive="#e03808"
+            emissiveIntensity={ei}
+            roughness={1}
+          />
+        </mesh>
+      ))}
       {/* logs */}
       {(
         [
@@ -192,6 +236,22 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
           </sprite>
         ))}
       </group>
+      {/* ember sparks drifting up from the coals (positions animated in useFrame) */}
+      <group ref={embersRef}>
+        {embers.map(([ex, ez, , , size]) => (
+          <sprite key={`ember-${ex}-${ez}`} position={[ex, 0.1, ez]} scale={[size, size, 1]}>
+            <spriteMaterial
+              map={flame}
+              blending={THREE.AdditiveBlending}
+              depthWrite={false}
+              transparent
+              opacity={0.9}
+              toneMapped={false}
+              color="#ffb460"
+            />
+          </sprite>
+        ))}
+      </group>
       {/* warm key light from the fire */}
       <pointLight
         ref={keyLight}
@@ -214,36 +274,76 @@ function Cat(): JSX.Element {
   useEffect(() => {
     updateStats({ catVisible: true });
   }, []);
-  // low-poly curled tabby placeholder (a real CC0 glTF replaces this in the life phase).
-  const fur = <meshStandardMaterial color="#8a6a44" roughness={0.85} metalness={0} />;
+  // Curled two-tone tabby (procedural placeholder; a CC0 glTF cat swaps in via the fetch-asset path).
+  const brown = <meshStandardMaterial color="#6f4f34" roughness={0.9} metalness={0} />;
+  const cream = <meshStandardMaterial color="#c9ab84" roughness={0.9} metalness={0} />;
+  const pink = <meshStandardMaterial color="#b07a6e" roughness={0.9} metalness={0} />;
   return (
-    <group position={[x, 0.12, z]} rotation={[0, -0.7, 0]}>
-      {/* curled body */}
-      <mesh castShadow scale={[1.1, 0.7, 0.85]}>
-        <sphereGeometry args={[0.28, 20, 16]} />
-        {fur}
+    <group position={[x, 0.14, z]} rotation={[0, -0.7, 0]}>
+      {/* curled body (brown back) */}
+      <mesh castShadow receiveShadow scale={[1.2, 0.74, 0.98]}>
+        <sphereGeometry args={[0.3, 24, 18]} />
+        {brown}
       </mesh>
-      {/* head */}
-      <mesh position={[0.28, 0.06, 0.12]} castShadow scale={[0.8, 0.8, 0.8]}>
-        <sphereGeometry args={[0.16, 16, 14]} />
-        {fur}
+      {/* cream belly/chest patch, slightly front-low */}
+      <mesh position={[0.12, -0.06, 0.16]} castShadow scale={[0.95, 0.55, 0.7]}>
+        <sphereGeometry args={[0.26, 20, 16]} />
+        {cream}
       </mesh>
-      {/* ears */}
+      {/* front paws tucked (cream) */}
       {(
         [
-          [0.34, 0.2, 0.02],
-          [0.34, 0.2, 0.22],
+          [0.34, -0.02, 0.02],
+          [0.32, -0.03, 0.16],
         ] as Array<[number, number, number]>
-      ).map(([ex, ey, ez]) => (
-        <mesh key={`ear-${ez}`} position={[ex, ey, ez]} rotation={[0, 0, -0.3]} castShadow>
-          <coneGeometry args={[0.05, 0.1, 8]} />
-          {fur}
+      ).map(([px, py, pz]) => (
+        <mesh
+          key={`paw-${pz}`}
+          position={[px, py, pz]}
+          rotation={[0, 0, 0.2]}
+          castShadow
+          scale={[1.4, 0.7, 0.7]}
+        >
+          <sphereGeometry args={[0.07, 12, 10]} />
+          {cream}
         </mesh>
       ))}
-      {/* tail curled around */}
-      <mesh position={[-0.24, 0.02, -0.18]} rotation={[0, 0.6, 0]} castShadow>
-        <torusGeometry args={[0.16, 0.045, 8, 16, Math.PI * 1.3]} />
-        {fur}
+      {/* head */}
+      <mesh position={[0.32, 0.08, 0.1]} castShadow scale={[0.9, 0.85, 0.9]}>
+        <sphereGeometry args={[0.16, 20, 16]} />
+        {brown}
+      </mesh>
+      {/* muzzle (cream) + nose */}
+      <mesh position={[0.45, 0.03, 0.1]} castShadow scale={[0.7, 0.6, 0.8]}>
+        <sphereGeometry args={[0.08, 14, 12]} />
+        {cream}
+      </mesh>
+      <mesh position={[0.51, 0.04, 0.1]} castShadow>
+        <sphereGeometry args={[0.02, 8, 8]} />
+        {pink}
+      </mesh>
+      {/* ears — brown outer + pink inner */}
+      {(
+        [
+          [0.28, 0.22, 0.02],
+          [0.28, 0.22, 0.2],
+        ] as Array<[number, number, number]>
+      ).map(([ex, ey, ez]) => (
+        <group key={`ear-${ez}`} position={[ex, ey, ez]} rotation={[0, 0, -0.25]}>
+          <mesh castShadow>
+            <coneGeometry args={[0.055, 0.11, 10]} />
+            {brown}
+          </mesh>
+          <mesh position={[0.01, -0.005, 0]} scale={[0.6, 0.7, 0.6]}>
+            <coneGeometry args={[0.055, 0.11, 10]} />
+            {pink}
+          </mesh>
+        </group>
+      ))}
+      {/* tail curled around to the front */}
+      <mesh position={[-0.22, -0.02, -0.16]} rotation={[Math.PI / 2, 0.5, 0]} castShadow>
+        <torusGeometry args={[0.18, 0.05, 10, 20, Math.PI * 1.4]} />
+        {brown}
       </mesh>
     </group>
   );
