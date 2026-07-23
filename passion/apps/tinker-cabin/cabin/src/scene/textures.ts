@@ -424,6 +424,52 @@ export function grassTexture(): THREE.CanvasTexture {
   return t;
 }
 
+/**
+ * A tuft of grass blades on a transparent background, for alpha-tested crossed-quad billboards.
+ * Several tapered blades fan up from the base in varied muted-olive greens (matched to the
+ * photographic panorama's meadow), darker at the root and lighter at the tip. Used unlit +
+ * alphaTest so instanced tufts read as real grass clumps, not flat cones.
+ */
+export function grassBladeTexture(): THREE.CanvasTexture {
+  const w = 128;
+  const h = 128;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d")!;
+  ctx.clearRect(0, 0, w, h);
+  const rand = mulberry32(4242);
+  const blades = 9;
+  for (let i = 0; i < blades; i++) {
+    const baseX = w * (0.12 + rand() * 0.76);
+    const bh = h * (0.5 + rand() * 0.48); // blade height
+    const topY = h - bh;
+    const lean = (rand() - 0.5) * w * 0.28; // horizontal drift of the tip
+    const halfW = 1.6 + rand() * 2.2; // blade half-width at the base
+    const ctrlY = h - bh * (0.45 + rand() * 0.2);
+    const tipX = baseX + lean;
+    // per-blade vertical gradient: dark olive root → lighter sage tip
+    const g = ctx.createLinearGradient(0, h, 0, topY);
+    const dk = 40 + Math.floor(rand() * 25);
+    g.addColorStop(0, `rgb(${dk},${dk + 34},${Math.floor(dk * 0.5)})`);
+    g.addColorStop(
+      1,
+      `rgb(${110 + Math.floor(rand() * 40)},${140 + Math.floor(rand() * 45)},${70 + Math.floor(rand() * 30)})`,
+    );
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(baseX - halfW, h);
+    ctx.quadraticCurveTo(baseX - halfW * 0.5 + lean * 0.5, ctrlY, tipX, topY);
+    ctx.quadraticCurveTo(baseX + halfW * 0.5 + lean * 0.5, ctrlY, baseX + halfW, h);
+    ctx.closePath();
+    ctx.fill();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
 /** A small painted mountain landscape for the framed picture on the wall. */
 export function paintingTexture(): THREE.CanvasTexture {
   const w = 320;

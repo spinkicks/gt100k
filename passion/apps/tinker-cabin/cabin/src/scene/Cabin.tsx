@@ -18,6 +18,7 @@ import { ANCHORS, ROOM } from "./layout";
 import {
   flameTexture,
   floorTextures,
+  grassBladeTexture,
   grassTexture,
   mulberry32,
   paintingTexture,
@@ -468,12 +469,14 @@ function ProceduralCat(): JSX.Element {
 }
 
 const PINE_MODEL_URL = "/assets/models/pine.glb";
-// tree spots outside the window: [dx from wall, z, height, cone-green]
+// tree spots outside the window: [dx from wall, z, height, cone-green]. Placed at a WIDE lateral
+// angle (large |z| vs dx) so they frame the window edges instead of blocking the hero mountain, plus
+// two pushed far back (large dx) to read small + hazy and blend into the panorama's own treeline.
 const TREE_SPOTS: Array<[number, number, number, string]> = [
-  [2.6, -4.4, 4.6, "#26402b"],
-  [3.4, 4.2, 5.2, "#223a27"],
-  [4.6, -2.4, 5.6, "#2b4630"],
-  [5.2, 2.6, 5.0, "#20361f"],
+  [5.5, -7.8, 5.0, "#26402b"], // left frame
+  [6.0, 7.6, 5.4, "#223a27"], // right frame
+  [12.5, -9.5, 7.2, "#2b4630"], // distant left → panorama treeline
+  [11.5, 8.8, 6.6, "#20361f"], // distant right → panorama treeline
 ];
 
 /** Clone a loaded object, fit its height to `targetH`, centre it on X/Z and drop it to y=0. */
@@ -578,19 +581,67 @@ class TreesBoundary extends Component<
 
 /** Conifers + a forest floor outside the window: near parallax that also masks the mountain-plane
  *  edges (no black at oblique angles). Real pine GLB when present, cone fallback otherwise. */
-/** Instanced 3D grass blades scattered over the near meadow so it reads as grass, not a flat blob. */
+/** Two crossed vertical quads (unit width, standing on y=0, pivot at the base) so an alpha-tested
+ *  grass-tuft texture reads as a 3D clump from any angle — never edge-on-invisible like a single quad. */
+function crossedTuftGeometry(): THREE.BufferGeometry {
+  const g = new THREE.BufferGeometry();
+  // quad A in the XY plane (faces ±Z), quad B in the ZY plane (faces ±X); y spans 0→1
+  const pos = new Float32Array([
+    -0.5,
+    0,
+    0,
+    0.5,
+    0,
+    0,
+    0.5,
+    1,
+    0,
+    -0.5,
+    1,
+    0, // A
+    0,
+    0,
+    -0.5,
+    0,
+    0,
+    0.5,
+    0,
+    1,
+    0.5,
+    0,
+    1,
+    -0.5, // B
+  ]);
+  const uv = new Float32Array([0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]);
+  const idx = [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7];
+  g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  g.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+  g.setIndex(idx);
+  return g;
+}
+
+/** Instanced crossed-quad grass tufts over the near meadow — denser close to the wall, sparser
+ *  toward the panorama, color-varied muted olive so it blends into the photographic view. */
 function GrassTufts({ originX }: { originX: number }): JSX.Element {
   const ref = useRef<THREE.InstancedMesh>(null);
-  const COUNT = 2600;
+  const geom = useMemo(() => crossedTuftGeometry(), []);
+  const blade = useMemo(() => grassBladeTexture(), []);
+  const COUNT = 2400;
   const data = useMemo(() => {
     const rand = mulberry32(9);
-    return Array.from({ length: COUNT }, () => ({
-      x: 1.5 + rand() * 17, // just outside the wall, out to the mid-meadow
-      z: (rand() - 0.5) * 22,
-      h: 0.14 + rand() * 0.26,
-      rot: rand() * Math.PI,
-      tint: 0.75 + rand() * 0.5,
-    }));
+    return Array.from({ length: COUNT }, () => {
+      // bias density toward the wall (x small) so the near field is lush and the far field thins out
+      const t = rand() * rand(); // skew toward 0
+      return {
+        x: 1.4 + t * 20, // just outside the wall out into the meadow
+        z: (rand() - 0.5) * 26,
+        w: 0.28 + rand() * 0.34, // tuft width
+        h: 0.18 + rand() * 0.28 - t * 0.08, // shorter farther out
+        rot: rand() * Math.PI,
+        tint: 0.72 + rand() * 0.56,
+        warm: rand() * 0.18, // a few sun-dried yellow-green tufts
+      };
+    });
   }, []);
   useEffect(() => {
     const m = ref.current;
@@ -598,21 +649,28 @@ function GrassTufts({ originX }: { originX: number }): JSX.Element {
     const dummy = new THREE.Object3D();
     const col = new THREE.Color();
     data.forEach((d, i) => {
-      dummy.position.set(originX + d.x, d.h / 2, d.z);
+      dummy.position.set(originX + d.x, 0, d.z);
       dummy.rotation.set(0, d.rot, 0);
-      dummy.scale.set(1, d.h / 0.25, 1);
+      dummy.scale.set(d.w, d.h, d.w);
       dummy.updateMatrix();
       m.setMatrixAt(i, dummy.matrix);
-      // unlit green (varied) so blades read as grass, not light-washed white spikes
-      m.setColorAt(i, col.setRGB(0.26 * d.tint, 0.4 * d.tint, 0.15 * d.tint));
+      // muted olive/sage, matched to the panorama meadow; a little per-tuft warmth + brightness jitter
+      col.setRGB(0.5 * d.tint + d.warm, 0.56 * d.tint, 0.34 * d.tint);
+      m.setColorAt(i, col);
     });
     m.instanceMatrix.needsUpdate = true;
     if (m.instanceColor) m.instanceColor.needsUpdate = true;
   }, [data, originX]);
   return (
-    <instancedMesh ref={ref} args={[undefined, undefined, COUNT]}>
-      <coneGeometry args={[0.035, 0.25, 4]} />
-      <meshBasicMaterial toneMapped={false} />
+    <instancedMesh ref={ref} args={[geom, undefined, COUNT]} frustumCulled={false}>
+      <meshBasicMaterial
+        map={blade}
+        transparent
+        alphaTest={0.4}
+        side={THREE.DoubleSide}
+        toneMapped={false}
+        depthWrite
+      />
     </instancedMesh>
   );
 }
