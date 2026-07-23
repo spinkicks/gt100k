@@ -1,8 +1,32 @@
 # Loop decisions — what was chosen and why (do not re-litigate)
 
-> ACTIVE FEATURE = **002 evidence-explorer** (Provenance Observatory visual/simplicity pass).
-> The `EE-*` entries below are this loop's decisions. The legacy `D0xx` entries further down are
-> leftover scratch from a prior interest-lab run and do not apply to this app.
+> ACTIVE FEATURE = **009 two-axis-tagging** (branch `loop/009-two-axis-tagging`). The `T2A-*` entries
+> immediately below are this loop's decisions. Everything under the older `ACTIVE FEATURE = 002` /
+> `EE-*` / `D0xx` headers is leftover scratch from prior loops and does NOT apply to this feature.
+
+## T2A — Two-Axis Tagging decisions
+
+- **[T2A-0] Stale `.loop` bookkeeping was from an unrelated feature.** `progress.md`/`decisions.md`
+  described an "Emberwood cozy-cabin world"; the SPEC/PLAN/branch are 009 two-axis-tagging. Treated the
+  old notes as noise and started clean (progress.md overwritten; this decisions section prepended).
+- **[T2A-1] `last-gate.txt` was a harness-infra failure, not repo code.** It showed
+  `set: pipefail: invalid option name` (the factory harness ran under `sh`/dash, not bash) and
+  `cd: $'…/gt100k-009\r'` (a `\r` appended to the repo path read from the factory harness's own config
+  under `/home/malice/code/gt100k-factory/harness/`, outside my repo + lane). `.loop/SPEC`/`.loop/PLAN`
+  are clean (verified `cat -A`). My in-repo gate `pnpm exec tsc -b && pnpm test` is green (157 tests),
+  so I removed the stale red flag rather than "fixing" a non-existent code problem. I do not edit the
+  factory harness.
+- **[T2A-2] Increment granularity = one coherent phase per turn.** The plan lists per-task commits, but
+  the harness commits once per turn. Chose to land P0 (plan Tasks 0–2: scaffold + both taxonomies) as a
+  single reviewable green increment (well under the ~400-line PR guideline) rather than three
+  micro-turns. Subsequent phases (P1 records+resolver, P2 pipeline+stub, P3 validity, P4 tfy, P5 demo)
+  land as their own per-turn increments.
+- **[T2A-3] `noUncheckedIndexedAccess` handling in `taxonomy.ts`.** The plan's sketch used non-null `!`
+  on `subs.get(cabin)!`; under this repo's strict `noUncheckedIndexedAccess` that is still typed but the
+  team style avoids `!`. Used `subs.get(p[0])?.has(p[1]) ?? false` and `subs.get(cabin)?.add(slug)`
+  instead — same behavior, no non-null assertion, and `hasPath` returns `false` for a missing cabin map
+  (defensive, though every CABIN is seeded at construction).
+
 
 ## EE-ART — committed art direction (keep cohesive across turns)
 - World: **cinematic dark cosmos**. Palette: `--void #0a0e17`, panels `#121826`/`#1a2233`,
