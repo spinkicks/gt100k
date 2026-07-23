@@ -6,10 +6,12 @@
  */
 import { Canvas } from "@react-three/fiber";
 import { Bloom, EffectComposer, N8AO, Vignette } from "@react-three/postprocessing";
-import { useRef, useState } from "react";
+import { Physics } from "@react-three/rapier";
+import { Suspense, useRef, useState } from "react";
 import * as THREE from "three";
 import { CameraRigHud } from "./Hud";
-import { CameraRig, InteractionZone } from "./controls/CameraRig";
+import { InteractionZone, PinnedCamera } from "./controls/CameraRig";
+import { PhysicsController, RoomColliders } from "./controls/PhysicsController";
 import { createIntent } from "./controls/intent";
 import { StatsBridge } from "./core/StatsBridge";
 import { parseParams } from "./core/params";
@@ -48,7 +50,18 @@ export function App(): JSX.Element {
       >
         <color attach="background" args={["#0a0b10"]} />
         <Cabin freeze={params.freeze} />
-        <CameraRig params={params} intentRef={intentRef} />
+        {params.cam ? (
+          // harness: pin the exact pose, no physics → deterministic screenshots
+          <PinnedCamera pose={params.cam} />
+        ) : (
+          // free-walk: real physics character controller (collision + gravity)
+          <Suspense fallback={null}>
+            <Physics gravity={[0, -9.81, 0]} timeStep={1 / 60}>
+              <RoomColliders />
+              <PhysicsController intentRef={intentRef} />
+            </Physics>
+          </Suspense>
+        )}
         {interactive && (
           <InteractionZone
             intentRef={intentRef}

@@ -511,14 +511,26 @@ function PineTrees({ originX }: { originX: number }): JSX.Element {
       }),
     [scene],
   );
+  // gentle deterministic wind sway (frozen phase under ?freeze=1 so shots stay reproducible)
+  const windRef = useRef<THREE.Group>(null);
+  const frozen =
+    typeof location !== "undefined" && new URLSearchParams(location.search).get("freeze") === "1";
+  useFrame((state) => {
+    const t = frozen ? FROZEN_T : state.clock.elapsedTime;
+    const g = windRef.current;
+    if (!g) return;
+    g.children.forEach((c, i) => {
+      c.rotation.z = Math.sin(t * 0.7 + i * 1.3) * 0.02 + Math.sin(t * 1.6 + i) * 0.01;
+    });
+  });
   return (
-    <>
+    <group ref={windRef}>
       {TREE_SPOTS.map(([dx, z], i) => (
         <group key={`pine-${dx}-${z}`} position={[originX + dx, 0, z]} rotation={[0, i * 1.27, 0]}>
           <primitive object={models[i] as THREE.Object3D} />
         </group>
       ))}
-    </>
+    </group>
   );
 }
 
