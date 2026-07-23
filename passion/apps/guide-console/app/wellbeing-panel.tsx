@@ -26,10 +26,10 @@ export function WellbeingPanel({ cards }: { cards: readonly WellbeingCardVM[] })
     <section className="wbpanel" aria-labelledby="wb-title">
       <header className="wbpanel__head">
         <h2 id="wb-title">Wellbeing</h2>
-        <span className="chip chip--soft">System proposes &middot; you decide</span>
+        <span className="wbpanel__sub">The system proposes, you decide.</span>
         {escalations > 0 ? (
-          <span className="chip wbpanel__count" data-testid="wb-escalations">
-            {escalations} need your review
+          <span className="wbpanel__count" data-testid="wb-escalations">
+            {escalations} {escalations === 1 ? "needs" : "need"} your review
           </span>
         ) : null}
       </header>
@@ -51,14 +51,13 @@ export function WellbeingPanel({ cards }: { cards: readonly WellbeingCardVM[] })
                 <span className="wbitem__state">{STATE_LABEL[c.read.state] ?? c.read.state}</span>
               </div>
               <div className="wbitem__moves">
-                <span>
-                  Challenge: <strong>{CHALLENGE_LABEL[c.read.challenge] ?? c.read.challenge}</strong>
+                <span className="wbmove">
+                  <span className="wbmove__k">Challenge</span>
+                  {CHALLENGE_LABEL[c.read.challenge] ?? c.read.challenge}
                 </span>
-                <span className="wbitem__sep" aria-hidden="true">
-                  &middot;
-                </span>
-                <span>
-                  Pressure: <strong>{PRESSURE_LABEL[c.read.pressure] ?? c.read.pressure}</strong>
+                <span className="wbmove">
+                  <span className="wbmove__k">Pressure</span>
+                  {PRESSURE_LABEL[c.read.pressure] ?? c.read.pressure}
                 </span>
               </div>
               {c.read.escalateToHuman ? (

@@ -41,7 +41,7 @@ function decide(s: WellbeingSignals): Decision {
   const successKnown = typeof s.successRate === "number" && !Number.isNaN(s.successRate);
   const success = successKnown ? (s.successRate as number) : undefined;
 
-  // 1. BURNOUT_TIP — quiet devaluation (weighted HIGHEST) or an obsessive tip.
+  // 1. BURNOUT_TIP: quiet devaluation (weighted HIGHEST) or an obsessive tip.
   if (s.devaluation === true || s.obsessiveTip === true) {
     return {
       state: "BURNOUT_TIP",
@@ -50,14 +50,14 @@ function decide(s: WellbeingSignals): Decision {
       rest: true,
       escalate: true,
       escalationReason:
-        "possible devaluation / obsessive tip — a human should decide on a guilt-free, reversible break; broaden identity and re-open plural spikes",
+        "Possible devaluation or an obsessive tip. A human should decide on a guilt-free, reversible break, and broaden identity by re-opening plural spikes.",
       rationale:
         "Presence without depth (or an obsessive tip) is the earliest alarm. Hold the challenge, lift pressure (more autonomy), and hand this to a mentor for a guilt-free, reversible rest.",
       notes: ["weight devaluation over exhaustion", HUMAN_DISPOSES, NEVER_GAMIFY],
     };
   }
 
-  // 2. EARLY_BURNOUT — an exhaustion pattern with declining depth AND return.
+  // 2. EARLY_BURNOUT: an exhaustion pattern with declining depth AND return.
   if (s.exhaustion === true && depthTrend === "declining" && returnTrend === "declining") {
     return {
       state: "EARLY_BURNOUT",
@@ -65,14 +65,14 @@ function decide(s: WellbeingSignals): Decision {
       pressure: "AUTONOMY_UP",
       backOff: true,
       escalate: true,
-      escalationReason: "early exhaustion pattern — cut load and pressure; a warm human check-in",
+      escalationReason: "Early exhaustion pattern. Cut load and pressure, and route a warm human check-in.",
       rationale:
-        "An early exhaustion pattern (shorter/later sessions with declining return and depth). Back off — pressure down and load down before touching challenge — and route a warm check-in to a mentor.",
+        "An early exhaustion pattern (shorter or later sessions with declining return and depth). Back off (pressure down and load down before touching challenge) and route a warm check-in to a mentor.",
       notes: ["back off = pressure down first", HUMAN_DISPOSES, NEVER_GAMIFY],
     };
   }
 
-  // 3. GAP — a per-spike quiet period. NEVER an auto-nudge / label; escalate for a human check-in.
+  // 3. GAP: a per-spike quiet period. NEVER an auto-nudge / label; escalate for a human check-in.
   if (s.missing === true) {
     return {
       state: "GAP",
@@ -80,14 +80,14 @@ function decide(s: WellbeingSignals): Decision {
       pressure: "STEADY",
       escalate: true,
       escalationReason:
-        "a per-spike quiet period — a gap is a question, not a verdict; a human should check in (never an automated nudge or label)",
+        "A per-spike quiet period. A gap is a question, not a verdict, so a human should check in (never an automated nudge or label).",
       rationale:
-        "A quiet period on this spike. A gap is a question, not a verdict: no automated nudge and no label — a human decides whether to check in.",
-      notes: ["missingness → a human check-in, never an auto-nudge/label", HUMAN_DISPOSES, NEVER_GAMIFY],
+        "A quiet period on this spike. A gap is a question, not a verdict: no automated nudge and no label. A human decides whether to check in.",
+      notes: ["missingness routes to a human check-in, never an auto-nudge/label", HUMAN_DISPOSES, NEVER_GAMIFY],
     };
   }
 
-  // 4. DANGER_WINDOW — a stakes event. Counter-cyclical: autonomy up + reduce evaluative surfacing.
+  // 4. DANGER_WINDOW: a stakes event. Counter-cyclical: autonomy up + reduce evaluative surfacing.
   if (s.stakesEvent === true) {
     return {
       state: "DANGER_WINDOW",
@@ -95,12 +95,12 @@ function decide(s: WellbeingSignals): Decision {
       pressure: "AUTONOMY_UP",
       reduceEvaluativeSurfacing: true,
       rationale:
-        "A stakes event (competition / deadline / audience / valuation spike). Act counter-cyclically: hold challenge, lift autonomy, and reduce evaluative surfacing — never add stakes or streaks.",
+        "A stakes event (competition, deadline, audience, or valuation spike). Act counter-cyclically: hold challenge, lift autonomy, and reduce evaluative surfacing. Never add stakes or streaks.",
       notes: ["counter-cyclical autonomy on a stakes event", NEVER_GAMIFY],
     };
   }
 
-  // 5. OVER_CHALLENGED — success below the scaffold threshold and not rising. (Devaluation is
+  // 5. OVER_CHALLENGED: success below the scaffold threshold and not rising. (Devaluation is
   // already excluded here: it wins at priority 1, so reaching this branch means !devaluation.)
   if ((success ?? 1) < SCAFFOLD_SUCCESS && returnTrend !== "rising") {
     return {
@@ -108,12 +108,12 @@ function decide(s: WellbeingSignals): Decision {
       challenge: "SCAFFOLD",
       pressure: "STEADY",
       rationale:
-        "Success is below the comfortable stretch zone and return is not rising. Scaffold: lower difficulty or add support to bring success back toward the ~80–90% setpoint.",
-      notes: ["setpoint ~80–90% success", NEVER_GAMIFY],
+        "Success is below the comfortable stretch zone and return is not rising. Scaffold: lower difficulty or add support to bring success back toward the 80 to 90% setpoint.",
+      notes: ["setpoint 80 to 90% success", NEVER_GAMIFY],
     };
   }
 
-  // 6. UNDER_CHALLENGED — PUSH ONLY FROM STRENGTH: rising return + rising depth + stretch-seeking.
+  // 6. UNDER_CHALLENGED: PUSH ONLY FROM STRENGTH: rising return + rising depth + stretch-seeking.
   if (
     returnTrend === "rising" &&
     depthTrend === "rising" &&
@@ -125,12 +125,12 @@ function decide(s: WellbeingSignals): Decision {
       challenge: "PUSH",
       pressure: "STEADY",
       rationale:
-        "Rising return and depth with the child voluntarily reaching for harder work. Push from strength: raise difficulty or fade scaffold, co-set with the child — hold pressure steady.",
+        "Rising return and depth with the child voluntarily reaching for harder work. Push from strength: raise difficulty or fade scaffold, co-set with the child, and hold pressure steady.",
       notes: ["push only from strength (rising return + depth + stretch-seeking)", NEVER_GAMIFY],
     };
   }
 
-  // 7. IN_ZONE — otherwise. Protect autonomy; resist adding stakes.
+  // 7. IN_ZONE: otherwise. Protect autonomy; resist adding stakes.
   return {
     state: "IN_ZONE",
     challenge: "HOLD",

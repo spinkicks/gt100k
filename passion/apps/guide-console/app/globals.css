@@ -2119,87 +2119,115 @@ body {
    (no color), so it reads the same in monochrome and never gamifies. */
 .wbpanel {
   margin: 4px 0 22px;
-  padding: 16px;
+  padding: 16px 18px;
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--r);
 }
 .wbpanel__head {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 .wbpanel__head h2 {
   margin: 0;
-  font-size: 15px;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--ink);
 }
+.wbpanel__sub {
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+}
 .wbpanel__count {
-  border-color: var(--line-3);
-  color: var(--ink);
+  margin-left: auto;
+  font-size: 0.76rem;
   font-weight: 600;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 3px 10px;
 }
 .wbpanel__empty {
   margin: 0;
   color: var(--ink-faint);
-  font-size: 13px;
+  font-size: 0.85rem;
 }
 .wblist {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 .wbitem {
   padding: 12px 14px;
-  background: var(--panel-2);
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--line);
-  border-radius: var(--r-sm);
+  border-radius: 10px;
 }
 .wbitem--review {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--line-2);
   border-left: 3px solid var(--ink-muted);
 }
 .wbitem__top {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: 12px;
 }
 .wbitem__spec {
   font-weight: 600;
+  font-size: 0.9rem;
   color: var(--ink);
 }
 .wbitem__state {
-  font-size: 12px;
+  flex: 0 0 auto;
+  font-size: 0.7rem;
   color: var(--ink-muted);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 9px;
+  white-space: nowrap;
 }
 .wbitem__moves {
-  margin-top: 6px;
-  font-size: 13px;
-  color: var(--ink-muted);
+  margin-top: 9px;
   display: flex;
-  gap: 8px;
-  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 7px;
 }
-.wbitem__moves strong {
-  color: var(--ink);
+.wbmove {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
   font-weight: 600;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 3px 9px;
 }
-.wbitem__sep {
+.wbmove__k {
+  font-size: 0.66rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--ink-faint);
 }
 .wbitem__review {
-  margin-top: 10px;
+  margin-top: 11px;
   padding-top: 10px;
   border-top: 1px dashed var(--line-2);
 }
 .wbitem__reviewk {
   display: inline-block;
-  font-size: 11px;
-  letter-spacing: 0.04em;
+  font-size: 0.64rem;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--ink);
   font-weight: 600;
@@ -2207,7 +2235,7 @@ body {
 }
 .wbitem__reason {
   margin: 0;
-  font-size: 13px;
+  font-size: 0.83rem;
   color: var(--ink-muted);
   line-height: 1.45;
 }
