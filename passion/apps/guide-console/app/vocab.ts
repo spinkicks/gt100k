@@ -25,10 +25,6 @@ export const SIGNALS: Record<string, Term> = {
     label: "Prompted Return",
     desc: "Came back, but only after a nudge. Counts for less than a voluntary return.",
   },
-  depth_climb: {
-    label: "Depth Climb",
-    desc: "Went deeper or took on something harder over time, instead of just repeating the easy part.",
-  },
   gap_survived: {
     label: "Survived a Break",
     desc: "Returned to it after a long gap. The interest held up on its own.",
@@ -45,10 +41,40 @@ export const SIGNALS: Record<string, Term> = {
     label: "Cooling Off",
     desc: "Started downplaying or dismissing it. Interest may be fading.",
   },
+  // Depth families (the "going deeper" signals emitted by 011/012).
+  unrequired_revision: {
+    label: "Unprompted Revision",
+    desc: "Went back and improved their work without being asked to.",
+  },
+  chosen_challenge: {
+    label: "Chose the Harder Path",
+    desc: "Picked a harder option when an easier one was available.",
+  },
+  failure_recovery: {
+    label: "Recovered from a Setback",
+    desc: "Hit a failure and kept going instead of giving up.",
+  },
+  self_authored_scope: {
+    label: "Set Their Own Goal",
+    desc: "Defined their own goal or scope for the work, rather than following a prompt.",
+  },
+  artifact_competence: {
+    label: "Growing Skill",
+    desc: "Produced work that shows real, improving competence.",
+  },
 };
 
+// Reasons from 011 can carry a ":count" suffix (e.g. "prompted_return:2", "skip:3"). Split it off,
+// map the base key to a friendly label, and surface the count only when it's greater than one.
 export function signal(key: string): Term {
-  return SIGNALS[key] ?? { label: prettify(key), desc: "" };
+  const colon = key.indexOf(":");
+  const base = colon === -1 ? key : key.slice(0, colon);
+  const count = colon === -1 ? NaN : Number(key.slice(colon + 1));
+  const t = SIGNALS[base] ?? { label: prettify(base), desc: "" };
+  if (Number.isFinite(count) && count > 1) {
+    return { label: `${t.label} ×${count}`, desc: t.desc };
+  }
+  return t;
 }
 
 // Lifecycle states of an interest hypothesis.
