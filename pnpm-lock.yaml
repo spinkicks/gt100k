@@ -32,6 +32,12 @@ importers:
 
   passion/adapters/evidence-verifier-stub: {}
 
+  passion/adapters/profile-store-fs:
+    dependencies:
+      '@gt100k/student-profile':
+        specifier: workspace:*
+        version: link:../../packages/student-profile
+
   passion/adapters/tagger-stub:
     dependencies:
       '@gt100k/two-axis-tagging':

@@ -11,6 +11,7 @@
     { "path": "passion/adapters/tagger-tfy" },
     { "path": "passion/packages/signal-pipeline" },
     { "path": "passion/packages/hypothesis-store" },
-    { "path": "passion/packages/student-profile" }
+    { "path": "passion/packages/student-profile" },
+    { "path": "passion/adapters/profile-store-fs" }
   ]
 }
