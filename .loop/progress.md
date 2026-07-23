@@ -13,7 +13,7 @@ native `fetch`, opt-in only). SYNTHETIC ONLY.
 - [x] **P0 — Task 0** scaffold `@gt100k/two-axis-tagging` (pkg.json, tsconfig, index, smoke; root tsconfig ref; pnpm install; gate green)
 - [x] **P0 — Task 1** work-mode taxonomy: `WORK_MODES` (golden order), `WORK_MODE_DEFS`, `isWorkMode`
 - [x] **P0 — Task 2** domain taxonomy: `CABINS` (8 golden), `SEED_SUBTOPICS`, `createTaxonomy`, `mintSubTopic` (idempotent-by-slug), `serializePath`, `isCabinId`
-- [ ] **P1 — Task 3** records: `Artifact`/`ActionEvent`/`RawAction`/`TagSuggestion` + `makeArtifact` validator
+- [x] **P1 — Task 3** records: `Artifact`/`ActionEvent`/`RawAction`/`TagSuggestion` + `makeArtifact` validator
 - [ ] **P1 — Task 4** engaged-mode resolver (rule table, intersect-afforded, priority, reject-invalid, unresolved→review) + ≥8 golden fixtures — **the crux**
 - [ ] **P2 — Task 5** `Tagger` port + suggest→validate→accept pipeline (+ sub-topic minting), `CONFIDENCE_FLOOR=0.5`
 - [ ] **P3 — Task 6** validity harness: Krippendorff α (nominal, closed form) golden 0.5333 / 1.0, `ALPHA_BAR=0.667` trust gate, review queue
@@ -21,33 +21,34 @@ native `fetch`, opt-in only). SYNTHETIC ONLY.
 - [ ] **P4 — Task 8** `@gt100k/tagger-tfy` adapter (native fetch, no SDK, opt-in `tag:live`) + recorded-fixture parse test
 - [ ] **P5 — Task 9** public API + `runDemo()` coverage matrix + README
 
-## Done this turn — P0 (Tasks 0–2): scaffold + both taxonomies
-- New package `passion/packages/two-axis-tagging` (mirrors `evidence-graph` conventions exactly:
-  `type:module`, `main`/`types`→`src/index.ts`, tsconfig extends `../../../tsconfig.base.json`,
-  test script `vitest run --root ../.. packages/two-axis-tagging/test`).
-- `src/work-modes.ts` — 9 modes in golden order; each has `{id,gloss,produces,examples[],boundaryRules[]}`
-  as DATA (§3.2 / §7 — definitions are data so the validity harness can sharpen/merge/split them).
-- `src/taxonomy.ts` — 8 golden cabins (§3.1), seed sub-topics, `createTaxonomy()` with `hasPath`,
-  idempotent `mintSubTopic` (slugified, parented to an existing cabin, never mints a new cabin),
-  `serializePath`, `isCabinId`. `noUncheckedIndexedAccess`-safe (`?.` + `?? false`, no non-null `!`).
-- `src/index.ts` barrel exports work-modes + taxonomy (will grow each task).
-- Root `tsconfig.json`: **appended** `{ "path": "passion/packages/two-axis-tagging" }` (kept the
-  existing evidence-explorer-view entry).
+## Done this turn — P1 (Task 3): records + `makeArtifact` validator
+- `src/records.ts` — the record types the whole feature is built on:
+  - `Artifact` (§3.3): `domainPath`, `affordedModes`, `kind`, `source`, `origin`, `tagConfidence`,
+    `tagStatus`. `RawAction` (§3.5), `ActionEvent` (§3.4), `TagSuggestion` (§4), `DepthSignal`, plus
+    the `ArtifactKind`/`TagSource`/`TagOrigin`/`TagStatus` unions.
+  - `makeArtifact(tax, input)` validator: rejects a `domainPath` that doesn't resolve in the passed
+    taxonomy, rejects an empty afforded set, rejects a non-work-mode; dedups `affordedModes`
+    (order-preserving via `[...new Set()]`); `gold` ⇒ `tagConfidence:1`, else `tagConfidence ?? 0`.
+  - `tagStatus` always starts `PROVISIONAL` — trust is only conferred later by the validity gate
+    (Task 6 `applyTrust`/`topicTrust`), never at construction. This is the §7 decision [D6] made
+    concrete: an artifact is not trusted just because it was minted.
+- `src/index.ts` barrel grew to also export `./records.js` (work-modes + taxonomy + records now).
 
 ## Gate — GREEN
-- `pnpm install` (non-frozen) — workspace symlink created (lockfile already up to date; 10 projects).
-- `pnpm exec tsc -b` → exit 0.
-- `pnpm test` → **157 passed (38 files)**; my package adds 8 (smoke 1 · work-modes 3 · taxonomy 4).
-  Nothing else in the repo broke.
+- `pnpm exec tsc -b` → exit 0 (composite build clean; `noUncheckedIndexedAccess`/`verbatimModuleSyntax` ok).
+- `pnpm test` → **160 passed (39 files)**; this package now 11 (smoke 1 · work-modes 3 · taxonomy 4 ·
+  records 3). No other package regressed.
 
 ## Self-audit → SC coverage so far
-- **SC-1** (stable IDs match the golden list) — **MET**: `taxonomy.test.ts` asserts the exact 8-cabin
-  golden array + seed sub-topic paths resolve via `hasPath`; `work-modes.test.ts` asserts the exact
-  9-mode golden order + every def has a non-empty gloss and a valid `produces`. Real golden assertions.
-- SC-2…SC-8 — not yet (Tasks 3–9).
+- **SC-1** (stable IDs match the golden list) — **MET** (Tasks 1–2; `taxonomy.test.ts` + `work-modes.test.ts`).
+- **SC-2/SC-3 groundwork** — Task 3 lands the `Artifact`/`RawAction` shapes the resolver consumes and
+  `makeArtifact`'s afforded/domain validation; the resolver invariant test itself is Task 4 (NOT yet met).
+- SC-4…SC-8 — not yet (Tasks 4–9).
 
 ## NEXT
-- **Task 3 (P1 setup): records + `makeArtifact` validator.** Test-first per plan Step 1 (valid gold
-  artifact → `tagConfidence:1`, `tagStatus:"PROVISIONAL"`; reject empty afforded set; reject invalid
-  domainPath). Then Task 4 (the resolver — the crux, ≥8 golden fixtures). Keep one coherent green
-  increment per turn; commit boundary = plan's `git commit` lines.
+- **Task 4 (P1 — the crux): the engaged-mode resolver.** Test-first per plan: write the ≥9-case golden
+  fixture `src/__fixtures__/resolver-cases.ts` (synth + mixingDesk artifacts), then `resolver.test.ts`
+  asserting each `(RawAction, Artifact)` → exact `{primary, secondary?}` OR `{ok:false, reason}`, PLUS
+  the `engagedModes ⊆ affordedModes` invariant loop. Implement `ACTION_MODE_RULES` (priority-ordered)
+  + `resolveEngagedModes`: intersect candidates with afforded, empty→`invalid-for-artifact`, unknown
+  action→`unresolved`, first kept→primary, next→secondary. This is where SC-2/SC-3/SC-4 get met.
