@@ -14,7 +14,7 @@ _Avoid_: dwell time, time-in-app, engagement, session length
 **InterestHypothesis**:
 The mutable, versioned evidence record that is the discovery output — a domain × work-mode read with
 supporting and disconfirming evidence, never a scalar. Lifecycle: `EXPLORING → EMERGING →
-CANDIDATE_SPINE → ACTIVE / CONTESTED / PARKED / REOPENED`.
+CANDIDATE → ACTIVE / CONTESTED / PARKED / REOPENED`.
 _Avoid_: passion score, interest rating, profile
 
 **Revisable Hypothesis**:
