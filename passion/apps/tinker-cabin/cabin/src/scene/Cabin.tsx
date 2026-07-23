@@ -8,13 +8,15 @@
  */
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
-import type * as THREE from "three";
+import * as THREE from "three";
 import { updateStats } from "../core/hook";
 import { ANCHORS, ROOM } from "./layout";
 import {
   duskVistaTexture,
+  flameTexture,
   floorTextures,
   propTextures,
+  rugTexture,
   stoneTextures,
   wallTextures,
 } from "./textures";
@@ -85,6 +87,7 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
   const flames = useRef<THREE.Group>(null);
   const [ax, , az] = ANCHORS.fireplace;
   const stone = useMemo(() => stoneTextures(), []);
+  const flame = useMemo(() => flameTexture(), []);
 
   useEffect(() => {
     updateStats({ fireLit: true });
@@ -99,11 +102,12 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
     if (flames.current) flames.current.scale.set(1, flicker, 1);
   });
 
-  const tongues: Array<[number, number, number, string]> = [
-    [-0.22, 0.34, 0.12, "#ff5410"],
-    [0.02, 0.52, 0.1, "#ffb020"],
-    [0.22, 0.32, 0.11, "#ff6612"],
-    [-0.05, 0.42, 0.09, "#ff8a1a"],
+  // additive flame sprites: [x, baseY, width, height, opacity] — clustered into one tongue cluster
+  const sprites: Array<[number, number, number, number, number]> = [
+    [0, 0, 0.52, 0.92, 0.9],
+    [-0.13, 0, 0.32, 0.6, 0.7],
+    [0.14, 0, 0.3, 0.56, 0.7],
+    [0, 0.02, 0.24, 0.42, 0.95],
   ];
 
   return (
@@ -128,10 +132,10 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
         <boxGeometry args={[2.8, 0.2, 0.85]} />
         <meshStandardMaterial color="#5a3d22" roughness={0.7} metalness={0} />
       </mesh>
-      {/* ember bed */}
-      <mesh position={[0, 0.3, 0.36]}>
-        <boxGeometry args={[1.0, 0.14, 0.45]} />
-        <meshStandardMaterial color="#ff7a20" emissive="#ff4808" emissiveIntensity={5} />
+      {/* ember bed — low glowing coals under the logs (kept deep-orange so it doesn't read as a slab) */}
+      <mesh position={[0, 0.26, 0.4]}>
+        <boxGeometry args={[0.95, 0.1, 0.4]} />
+        <meshStandardMaterial color="#ff6a1e" emissive="#e83c04" emissiveIntensity={3.2} />
       </mesh>
       {/* logs */}
       {(
@@ -151,18 +155,21 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
           <meshStandardMaterial color="#2a1a0e" roughness={0.9} />
         </mesh>
       ))}
-      {/* flame tongues + hot core */}
-      <group ref={flames} position={[0, 0.36, 0.36]}>
-        {tongues.map(([x, h, r, col]) => (
-          <mesh key={`flame-${x}-${col}`} position={[x, h / 2, 0]}>
-            <coneGeometry args={[r, h, 10]} />
-            <meshStandardMaterial color={col} emissive={col} emissiveIntensity={5.5} />
-          </mesh>
+      {/* soft additive flame sprites (billboard the camera; stack for a warm volumetric glow).
+          Sits above the logs (y) and in front of them (z) so it isn't occluded by the log geometry. */}
+      <group ref={flames} position={[0, 0.32, 0.44]}>
+        {sprites.map(([x, by, w, h, op]) => (
+          <sprite key={`flame-${x}-${h}`} position={[x, by + h / 2, 0]} scale={[w, h, 1]}>
+            <spriteMaterial
+              map={flame}
+              blending={THREE.AdditiveBlending}
+              depthWrite={false}
+              transparent
+              opacity={op}
+              toneMapped={false}
+            />
+          </sprite>
         ))}
-        <mesh position={[0, 0.16, 0]}>
-          <sphereGeometry args={[0.12, 12, 12]} />
-          <meshStandardMaterial color="#fff0c0" emissive="#ffd060" emissiveIntensity={8} />
-        </mesh>
       </group>
       {/* warm key light from the fire */}
       <pointLight
@@ -271,7 +278,7 @@ function Lamp(): JSX.Element {
         <meshStandardMaterial
           color="#e8c98a"
           emissive="#ffcf87"
-          emissiveIntensity={1.6}
+          emissiveIntensity={0.9}
           side={2}
           roughness={0.8}
         />
@@ -319,10 +326,22 @@ function Desk(): JSX.Element {
   );
 }
 
+function Rug(): JSX.Element {
+  const rug = useMemo(() => rugTexture(), []);
+  // patterned rug on the floor in front of the hearth (ref 07)
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, -1.5]} receiveShadow>
+      <planeGeometry args={[2.6, 1.9]} />
+      <meshStandardMaterial map={rug} roughness={0.9} metalness={0} />
+    </mesh>
+  );
+}
+
 export function Cabin({ freeze }: { freeze: boolean }): JSX.Element {
   return (
     <group>
       <Shell />
+      <Rug />
       <Fireplace freeze={freeze} />
       <Cat />
       <Window />

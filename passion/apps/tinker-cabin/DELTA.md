@@ -15,6 +15,17 @@ then checkpoint (draft PR + honest per-framing scores + remaining gaps).
 
 ---
 
+## Phase 5a — Fire + rug + lamp (2026-07-22) — ALL GATES PASS
+
+Replaced the cone/sphere fire with **soft additive flame-tongue sprites** (tapered teardrop texture,
+deterministic flicker), softened the ember bed, added a **patterned hearth rug**, softened the lamp.
+All gates green, determinism PASS. Fire now reads as tongues (was orbs). Self-scores: hero **7** ·
+wide **7** · window **7** · detail **6.5** · desk **6**. Mean **~6.7**.
+Remaining to 8.5: richer wood variation/trim, a better cat (glTF or sculpt), workbench/tools/shelves
+set-dressing, and the desk needs to read as the coding "first taste" station (ties into the mechanic).
+
+---
+
 ## Phase 2–4 — Structure + materials + window (2026-07-22) — ALL GATES PASS
 
 **Shots judged:** all 5 framings. **All gates green**, determinism PASS, 34–64 fps (SwiftShader).

@@ -295,3 +295,69 @@ export function duskVistaTexture(): THREE.CanvasTexture {
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
 }
+
+/**
+ * Warm flame-tongue sprite for additive fire: a tapered teardrop (wide hot base → pointed cooler
+ * tip), drawn as stacked ellipses so a vertically-stretched sprite reads as a flame, not an orb.
+ * Canvas y=0 is top; we build the tip at top and the base at the bottom.
+ */
+export function flameTexture(): THREE.CanvasTexture {
+  const s = 128;
+  const c = document.createElement("canvas");
+  c.width = c.height = s;
+  const ctx = c.getContext("2d")!;
+  ctx.clearRect(0, 0, s, s);
+  const cx = s / 2;
+  // color by height: tip (top) deep orange → mid amber → base hot white
+  const colorAt = (u: number): string => {
+    // u: 0 at base (bottom), 1 at tip (top)
+    if (u < 0.25) return "rgba(255,248,220,1)";
+    if (u < 0.5) return "rgba(255,205,110,0.92)";
+    if (u < 0.78) return "rgba(255,140,45,0.6)";
+    return "rgba(190,55,10,0.18)";
+  };
+  const steps = 96;
+  for (let i = 0; i < steps; i++) {
+    const u = i / steps; // 0 base → 1 tip
+    const y = s * (0.96 - u * 0.92); // base near bottom, tip near top
+    // width profile: pinched at base, bulge ~20% up, taper to a point at the tip
+    const bulge = Math.sin(Math.min(1, u * 1.2) * Math.PI * 0.5);
+    const halfW = 0.42 * s * bulge * (1 - u * 0.85) + 2;
+    const halfH = (s / steps) * 1.6;
+    ctx.fillStyle = colorAt(u);
+    ctx.beginPath();
+    ctx.ellipse(cx, y, halfW, halfH, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+/** Simple 2-tone woven rug pattern (warm kilim-ish stripes) for the hearth rug. */
+export function rugTexture(): THREE.CanvasTexture {
+  const s = 256;
+  const c = document.createElement("canvas");
+  c.width = c.height = s;
+  const ctx = c.getContext("2d")!;
+  ctx.fillStyle = "#6e3b2a"; // rust base
+  ctx.fillRect(0, 0, s, s);
+  const bands = ["#8a4a33", "#3f2a20", "#b5763f", "#3f2a20", "#8a4a33"];
+  const bh = s / (bands.length * 3);
+  for (let i = 0; i < bands.length * 3; i++) {
+    ctx.fillStyle = bands[i % bands.length]!;
+    ctx.fillRect(0, i * bh, s, bh * 0.6);
+  }
+  // simple zigzag motif rows
+  ctx.strokeStyle = "#d8b98a";
+  ctx.lineWidth = 2;
+  for (let y = bh; y < s; y += bh * 3) {
+    ctx.beginPath();
+    for (let x = 0; x <= s; x += 16) ctx.lineTo(x, y + (Math.floor(x / 16) % 2 ? 6 : -6));
+    ctx.stroke();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
