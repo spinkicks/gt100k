@@ -1,0 +1,15 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist"
+  },
+  "references": [
+    { "path": "../student-profile" },
+    { "path": "../hypothesis-store" },
+    { "path": "../interest-inference" },
+    { "path": "../signal-pipeline" },
+    { "path": "../two-axis-tagging" }
+  ],
+  "include": ["src/**/*.ts", "test/**/*.ts"]
+}

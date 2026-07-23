@@ -1,0 +1,13 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist"
+  },
+  "references": [
+    { "path": "../hypothesis-store" },
+    { "path": "../interest-inference" },
+    { "path": "../student-profile" }
+  ],
+  "include": ["src/**/*.ts", "test/**/*.ts", "scripts/**/*.ts"]
+}

@@ -20,6 +20,7 @@ import {
   PILOT_NOW,
   type OrchestratorContext,
   type Roster,
+  type StudentProfile,
 } from "@gt100k/student-profile";
 
 export interface Child {
@@ -64,6 +65,14 @@ const ROSTER_GATES: ReadonlyMap<string, GateStatus> = (() => {
 export function buildRosterGates(_store?: HypothesisStore): ReadonlyMap<string, GateStatus> {
   return ROSTER_GATES;
 }
+
+// The derived profile for one child (the source for the wellbeing deriver). The catalog + "now" are
+// re-exported so the wellbeing panel can resolve the raw interaction log to cells (016-wellbeing).
+export function profileFor(kidId: string): StudentProfile | undefined {
+  return ROSTER.get(kidId);
+}
+
+export { PILOT_CATALOG };
 
 export function childInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
