@@ -55,7 +55,7 @@ function actionsFor(state: InterestHypothesis["state"]): string[] {
 function nextProbe(state: InterestHypothesis["state"], gate: GateStatus | undefined): string {
   switch (state) {
     case "PARKED":
-      return "Parked — reopen to resume exploring.";
+      return "Parked. Reopen to resume exploring.";
     case "CONTESTED":
       return "Re-sample unprompted; a voluntary return distinguishes renewed interest from a dip.";
     case "EXPLORING":
@@ -69,7 +69,7 @@ function nextProbe(state: InterestHypothesis["state"], gate: GateStatus | undefi
     if (!gate.gapSurvived) return "Watch for a voluntary return after a ≥14-day quiet gap.";
     if (!gate.durable) return "Confirm ≥2 return occasions sustained across ≥8 weeks.";
     if (!gate.hasArtifact) return "Capture a perseverance artifact (iteration past a failure).";
-    return "Gate passed — a human may promote with an autonomy sign-off.";
+    return "Gate passed. A human may promote with an autonomy sign-off.";
   }
   return state === "CANDIDATE"
     ? "Confirm sustained returns across the term before activating."

@@ -124,7 +124,7 @@ describe("consoleViewModel", () => {
     expect(vm.cards[1]!.gate).toBeUndefined();
     // a passed gate re-points the next probe at the human decision (sign-off), not another test.
     expect(vm.cards[0]!.nextProbe).toBe(
-      "Gate passed — a human may promote with an autonomy sign-off.",
+      "Gate passed. A human may promote with an autonomy sign-off.",
     );
   });
 });
