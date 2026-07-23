@@ -531,25 +531,33 @@ export function flameTexture(): THREE.CanvasTexture {
   const ctx = c.getContext("2d")!;
   ctx.clearRect(0, 0, s, s);
   const cx = s / 2;
-  // color by height: tip (top) deep orange → mid amber → base hot white
-  const colorAt = (u: number): string => {
-    // u: 0 at base (bottom), 1 at tip (top)
-    if (u < 0.25) return "rgba(255,248,220,1)";
-    if (u < 0.5) return "rgba(255,205,110,0.92)";
-    if (u < 0.78) return "rgba(255,140,45,0.6)";
-    return "rgba(190,55,10,0.18)";
+  // color by height: base hot white → amber → deep-orange tip (fed to a per-row radial gradient
+  // whose alpha feathers to 0 at the blade edge, so additive stacking reads as one soft flame body
+  // rather than hard-edged bars).
+  const coreColor = (u: number): [number, number, number] => {
+    if (u < 0.22) return [255, 249, 224];
+    if (u < 0.46) return [255, 214, 130];
+    if (u < 0.72) return [255, 150, 55];
+    return [206, 74, 18];
   };
-  const steps = 96;
+  const steps = 120;
   for (let i = 0; i < steps; i++) {
     const u = i / steps; // 0 base → 1 tip
-    const y = s * (0.96 - u * 0.92); // base near bottom, tip near top
-    // width profile: pinched at base, bulge ~20% up, taper to a point at the tip
-    const bulge = Math.sin(Math.min(1, u * 1.2) * Math.PI * 0.5);
-    const halfW = 0.42 * s * bulge * (1 - u * 0.85) + 2;
-    const halfH = (s / steps) * 1.6;
-    ctx.fillStyle = colorAt(u);
+    const y = s * (0.965 - u * 0.93); // base near bottom, tip near top
+    // width profile: pinched at base, bulge ~25% up, taper to a point at the flickering tip
+    const bulge = Math.sin(Math.min(1, u * 1.25) * Math.PI * 0.5);
+    const halfW = 0.4 * s * bulge * (1 - u * 0.9) + 1.5;
+    // core alpha: bright low, fading toward the cooler tip
+    const coreA = u < 0.5 ? 0.85 - u * 0.4 : 0.55 * (1 - (u - 0.5) / 0.5);
+    const [r, g, b] = coreColor(u);
+    // soft horizontal falloff: opaque-ish core → transparent edge (feathered, not a hard ellipse)
+    const grad = ctx.createRadialGradient(cx, y, 0, cx, y, halfW);
+    grad.addColorStop(0, `rgba(${r},${g},${b},${coreA.toFixed(3)})`);
+    grad.addColorStop(0.55, `rgba(${r},${g},${b},${(coreA * 0.5).toFixed(3)})`);
+    grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+    ctx.fillStyle = grad;
     ctx.beginPath();
-    ctx.ellipse(cx, y, halfW, halfH, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx, y, halfW, (s / steps) * 2.2, 0, 0, Math.PI * 2);
     ctx.fill();
   }
   const t = new THREE.CanvasTexture(c);

@@ -163,12 +163,13 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
   const stone = useMemo(() => stoneTextures(), []);
   const flame = useMemo(() => flameTexture(), []);
 
-  // additive flame sprites: [x, baseY, width, height, opacity] — clustered into one tongue cluster
+  // additive flame sprites: [x, baseY, width, height, opacity] — overlapping so they merge into one
+  // soft flame body (lower per-sprite opacity so additive doesn't blow out to a hard white bar).
   const sprites: Array<[number, number, number, number, number]> = [
-    [0, 0, 0.52, 0.92, 0.9],
-    [-0.13, 0, 0.32, 0.6, 0.7],
-    [0.14, 0, 0.3, 0.56, 0.7],
-    [0, 0.02, 0.24, 0.42, 0.95],
+    [0, 0, 0.6, 1.0, 0.6],
+    [-0.09, 0, 0.44, 0.72, 0.4],
+    [0.1, 0, 0.42, 0.66, 0.4],
+    [0, 0.0, 0.28, 0.52, 0.6],
   ];
   // ember sparks that drift up from the coals: [x, z, phase, speed, size]
   const embers: Array<[number, number, number, number, number]> = [
@@ -273,8 +274,9 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
         </mesh>
       ))}
       {/* soft additive flame sprites (billboard the camera; stack for a warm volumetric glow).
-          Sits above the logs (y) and in front of them (z) so it isn't occluded by the log geometry. */}
-      <group ref={flames} position={[0, 0.32, 0.44]}>
+          Base sits on the coals and the cluster is pulled well in FRONT of the logs (z) so the log
+          cylinders never cut a hard occlusion line across the flame. */}
+      <group ref={flames} position={[0, 0.24, 0.58]}>
         {sprites.map(([x, by, w, h, op]) => (
           <sprite key={`flame-${x}-${h}`} position={[x, by + h / 2, 0]} scale={[w, h, 1]}>
             <spriteMaterial
