@@ -2,7 +2,7 @@
  * Provenance Explorer view model (§U8, data-model Part II).
  *
  * These are *view* types only — the framework-agnostic, deterministic view-model the 3D/2D app
- * renders. Domain types (`EvidenceNode`, `EvidenceGraph`, `EvidencePacket`, …) are imported from
+ * renders. Domain types (`EvidenceNode`, `EvidenceGraph`, `Attestation`, …) are imported from
  * `@gt100k/evidence-graph` and never redefined here. This package reads the domain, computes no
  * grade and no crypto, and produces a deterministic layout.
  */

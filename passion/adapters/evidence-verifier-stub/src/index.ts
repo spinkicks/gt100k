@@ -1,57 +1,14 @@
-import { merkleRoot } from "../../../packages/evidence-graph/src/merkle.js";
+import { addNode } from "../../../packages/evidence-graph/src/graph.js";
+import { assertHumanAuthority } from "../../../packages/evidence-graph/src/invariants.js";
 import type {
-  Attestation,
-  EvidencePacket,
+  EvidenceGraph,
+  EvidenceNode,
   VerificationResult,
 } from "../../../packages/evidence-graph/src/model.js";
 import type { Hasher, Verifier } from "../../../packages/evidence-graph/src/ports.js";
 
-const IN_TOTO_STATEMENT_TYPE = "https://in-toto.io/Statement/v1";
-const EVIDENCE_PREDICATE_TYPE = "https://gt100k.dev/attestations/evidence/v1";
-const ATTESTATION_STRUCTURE_MISMATCH = "ATTESTATION_STRUCTURE_MISMATCH";
-const MERKLE_MISMATCH = "MERKLE_MISMATCH";
-const SUBJECT_DIGEST_MISMATCH = "SUBJECT_DIGEST_MISMATCH";
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
-
-function hasDigest(value: unknown): boolean {
-  return isRecord(value) && typeof value.sha256 === "string";
-}
-
-function hasAttestationStructure(value: unknown): value is Attestation {
-  if (!isRecord(value) || !isRecord(value.predicate)) {
-    return false;
-  }
-
-  const { predicate } = value;
-  return (
-    value._type === IN_TOTO_STATEMENT_TYPE &&
-    value.predicateType === EVIDENCE_PREDICATE_TYPE &&
-    Array.isArray(value.subject) &&
-    value.subject.every(
-      (subject) =>
-        isRecord(subject) && typeof subject.name === "string" && hasDigest(subject.digest),
-    ) &&
-    isRecord(predicate.builder) &&
-    typeof predicate.builder.id === "string" &&
-    Array.isArray(predicate.materials) &&
-    predicate.materials.every(
-      (material) =>
-        isRecord(material) && typeof material.uri === "string" && hasDigest(material.digest),
-    ) &&
-    typeof predicate.merkleRoot === "string" &&
-    typeof predicate.milestoneRef === "string"
-  );
-}
-
-function hasSubjectBinding(packet: EvidencePacket, attestation: Attestation): boolean {
-  return (
-    attestation.subject.length > 0 &&
-    attestation.subject.every((subject) => subject.digest.sha256 === packet.subjectDigest)
-  );
-}
+const EMPTY_GRAPH: EvidenceGraph = { nodes: {}, edges: [] };
+const CONTENT_HASH_MISMATCH = "CONTENT_HASH_MISMATCH";
 
 function addReason(reasons: string[], reason: string): void {
   if (!reasons.includes(reason)) {
@@ -59,33 +16,32 @@ function addReason(reasons: string[], reason: string): void {
   }
 }
 
-/** Deterministic unsigned verifier stub; real WASI and signature checks remain deferred. */
+/** Re-derives a node's content-addressed id from its *current* content (via the domain). */
+function recomputeId(node: EvidenceNode, hasher: Hasher): string {
+  const { id: _committed, ...content } = node;
+  return addNode(EMPTY_GRAPH, content, hasher).id;
+}
+
+/**
+ * Deterministic unsigned verifier stub for the one-graph-per-project model. Integrity is
+ * self-contained: each node's stored id *is* its content commitment, so re-deriving the id from the
+ * node's current content and comparing to the stored key surfaces any byte-level tamper — no
+ * committed packet/root is needed. Then the constitutional human-authority invariant is checked.
+ * Real WASI sandboxing and signature checks remain deferred (§19.2 D1/D6).
+ */
 export class DeterministicStubVerifier implements Verifier {
-  async verify(packet: EvidencePacket, hasher: Hasher): Promise<VerificationResult> {
+  async verify(graph: EvidenceGraph, hasher: Hasher): Promise<VerificationResult> {
     const reasons: string[] = [];
-    const attestation: unknown = packet.attestation;
-    const validAttestation =
-      hasAttestationStructure(attestation) &&
-      attestation.predicate.milestoneRef === packet.milestoneRef;
 
-    if (!validAttestation) {
-      addReason(reasons, ATTESTATION_STRUCTURE_MISMATCH);
+    for (const [storedId, node] of Object.entries(graph.nodes)) {
+      if (recomputeId(node, hasher) !== storedId) {
+        addReason(reasons, CONTENT_HASH_MISMATCH);
+      }
     }
 
-    try {
-      const derivedRoot = merkleRoot(packet.nodeIds, hasher);
-      if (derivedRoot !== packet.merkleRoot) {
-        addReason(reasons, MERKLE_MISMATCH);
-      }
-      if (validAttestation && derivedRoot !== attestation.predicate.merkleRoot) {
-        addReason(reasons, MERKLE_MISMATCH);
-      }
-    } catch {
-      addReason(reasons, MERKLE_MISMATCH);
-    }
-
-    if (validAttestation && !hasSubjectBinding(packet, attestation)) {
-      addReason(reasons, SUBJECT_DIGEST_MISMATCH);
+    const authority = assertHumanAuthority(graph);
+    for (const reason of authority.reasons) {
+      addReason(reasons, reason);
     }
 
     return { ok: reasons.length === 0, reasons };

@@ -9,6 +9,6 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run --root ../.. packages/evidence-graph/test"
+    "test": "vitest run --root ../../.. passion/packages/evidence-graph/test"
   }
 }

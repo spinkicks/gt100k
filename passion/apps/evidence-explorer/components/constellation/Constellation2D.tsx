@@ -12,6 +12,12 @@ import { Glyph } from "./glyphs.js";
 
 const NODE_R = 28;
 
+/** Max characters for a 2D node label before ellipsis (full text stays in the <title> hover). */
+const LABEL_MAX = 22;
+function truncateLabel(label: string): string {
+  return label.length > LABEL_MAX ? `${label.slice(0, LABEL_MAX - 1).trimEnd()}…` : label;
+}
+
 /** SVG dash pattern per light-thread style (§U8.12). */
 const DASH: Record<EdgeView["threadStyle"], string | undefined> = {
   solid: undefined,
@@ -162,17 +168,19 @@ function NodeMark({
             cited
           </text>
         ) : null}
-        {/* Text label + pseudonymous actor chip. */}
+        {/* Text label + pseudonymous actor chip. Label is truncated so long titles never bleed
+            into the neighbouring column (labels are centered; columns are 240px apart). */}
         <text
           y={NODE_R + 20}
           textAnchor="middle"
-          fontSize={14}
+          fontSize={13}
           fill="var(--ink)"
           style={{ fontWeight: 600 }}
         >
-          {node.label}
+          <title>{node.label}</title>
+          {truncateLabel(node.label)}
         </text>
-        <text y={NODE_R + 38} textAnchor="middle" fontSize={11.5} fill="var(--ink-muted)">
+        <text y={NODE_R + 37} textAnchor="middle" fontSize={11} fill="var(--ink-muted)">
           {node.actor.kind} · {node.actor.label}
         </text>
       </g>

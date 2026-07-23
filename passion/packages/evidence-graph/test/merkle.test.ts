@@ -12,6 +12,8 @@ const LEAF_C = "c3".repeat(32);
 const INTERIOR_AB = "d4".repeat(32);
 const INTERIOR_AA = "e5".repeat(32);
 const ROOT_ABC = "f6".repeat(32);
+const INTERIOR_CA = "77".repeat(32);
+const ROOT_CAB = "88".repeat(32);
 
 function toHex(bytes: Uint8Array): string {
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
@@ -71,19 +73,28 @@ describe("merkleRoot", () => {
     },
   );
 
-  it("is deterministic and permutation-independent after sorting digest bytes", () => {
+  it("preserves caller input order (true RFC-6962) so permutations hash to different roots", () => {
     const orderedHasher = threeLeafHasher();
-    const shuffledHasher = threeLeafHasher();
+    const shuffledHasher = new ScriptedHasher({
+      [leafInput(DIGEST_A)]: LEAF_A,
+      [leafInput(DIGEST_B)]: LEAF_B,
+      [leafInput(DIGEST_C)]: LEAF_C,
+      [interiorInput(LEAF_C, LEAF_A)]: INTERIOR_CA,
+      [interiorInput(INTERIOR_CA, LEAF_B)]: ROOT_CAB,
+    });
 
     const ordered = merkleRoot([DIGEST_A, DIGEST_B, DIGEST_C], orderedHasher);
     const shuffled = merkleRoot([DIGEST_C, DIGEST_A, DIGEST_B], shuffledHasher);
 
     expect(ordered).toBe(ROOT_ABC);
-    expect(shuffled).toBe(ordered);
+    expect(shuffled).toBe(ROOT_CAB);
+    expect(shuffled).not.toBe(ordered);
+
+    // Leaves are fed in the caller's order, NOT sorted, so the shuffled input hashes C, A, B first.
     expect(shuffledHasher.inputs.slice(0, 3)).toEqual([
+      leafInput(DIGEST_C),
       leafInput(DIGEST_A),
       leafInput(DIGEST_B),
-      leafInput(DIGEST_C),
     ]);
   });
 
