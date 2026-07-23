@@ -11,6 +11,7 @@ import { Environment } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { Component, type ReactNode, Suspense, useEffect } from "react";
 import * as THREE from "three";
+import { useAssetReady } from "../core/useAssetReady";
 
 const HDRI_URL = "/assets/env/dusk.hdr";
 
@@ -73,6 +74,10 @@ class EnvBoundary extends Component<{ children: ReactNode }, { failed: boolean }
 }
 
 export function EnvLight(): JSX.Element {
+  // Mount the HDRI only once confirmed present (else the dev server's index.html fallback would
+  // crash RGBELoader). Procedural env otherwise.
+  const hasHdri = useAssetReady(HDRI_URL);
+  if (!hasHdri) return <ProceduralEnv />;
   return (
     <EnvBoundary>
       <Suspense fallback={<ProceduralEnv />}>

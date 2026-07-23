@@ -6,10 +6,12 @@
  * Determinism: all animation is a pure function of clock time and is frozen (fixed phase) when
  * `freeze` is set, so `?freeze=1` shots are reproducible. No Math.random in the render loop.
  */
+import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { Component, type ReactNode, Suspense, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { updateStats } from "../core/hook";
+import { useAssetReady } from "../core/useAssetReady";
 import { EnvLight } from "./EnvLight";
 import { ANCHORS, ROOM } from "./layout";
 import {
@@ -269,12 +271,55 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
   );
 }
 
+const CAT_MODEL_URL = "/assets/models/cat.glb";
+
+/** Real cat model, dropped in via Blender MCP export (see docs/BLENDER_MCP.md). Falls back to the
+ *  procedural cat when the GLB is absent. Adjust scale/rotation to match your exported model. */
+function GltfCat(): JSX.Element {
+  const [x, , z] = ANCHORS.cat;
+  const { scene } = useGLTF(CAT_MODEL_URL);
+  const model = useMemo(() => scene.clone(true), [scene]);
+  useEffect(() => {
+    model.traverse((o) => {
+      o.castShadow = true;
+      o.receiveShadow = true;
+    });
+    updateStats({ catVisible: true });
+  }, [model]);
+  return <primitive object={model} position={[x, 0.02, z]} rotation={[0, -0.7, 0]} scale={0.4} />;
+}
+
+/** Renders the procedural cat if the GLB is missing / fails to load. */
+class CatBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError(): { failed: boolean } {
+    return { failed: true };
+  }
+  render(): ReactNode {
+    return this.state.failed ? <ProceduralCat /> : this.props.children;
+  }
+}
+
 function Cat(): JSX.Element {
+  // Only mount the glTF loader once we've confirmed the GLB really exists (a dev server answers a
+  // missing path with index.html, which would crash the loader). Otherwise show the procedural cat.
+  const hasModel = useAssetReady(CAT_MODEL_URL);
+  if (!hasModel) return <ProceduralCat />;
+  return (
+    <CatBoundary>
+      <Suspense fallback={<ProceduralCat />}>
+        <GltfCat />
+      </Suspense>
+    </CatBoundary>
+  );
+}
+
+function ProceduralCat(): JSX.Element {
   const [x, , z] = ANCHORS.cat;
   useEffect(() => {
     updateStats({ catVisible: true });
   }, []);
-  // Curled two-tone tabby (procedural placeholder; a CC0 glTF cat swaps in via the fetch-asset path).
+  // Curled two-tone tabby (fallback when no glTF cat is present).
   const brown = <meshStandardMaterial color="#6f4f34" roughness={0.9} metalness={0} />;
   const cream = <meshStandardMaterial color="#c9ab84" roughness={0.9} metalness={0} />;
   const pink = <meshStandardMaterial color="#b07a6e" roughness={0.9} metalness={0} />;
@@ -359,28 +404,30 @@ function Window(): JSX.Element {
   const cy = 1.75; // opening centre height
   const iface = x - 0.15; // interior wall face
   const sky = useMemo(() => skyGradientTexture(), []);
-  const far = useMemo(() => mountainLayerTexture("#8aa0c4", 0.5, 26, 11), []);
-  const mid = useMemo(() => mountainLayerTexture("#5d6f92", 0.62, 40, 23), []);
-  const near = useMemo(() => mountainLayerTexture("#3a465f", 0.74, 60, 37), []);
+  const far = useMemo(() => mountainLayerTexture("#8397b8", 0.5, 26, 11, 0.85), []);
+  const mid = useMemo(() => mountainLayerTexture("#566a90", 0.62, 40, 23, 0.5), []);
+  const near = useMemo(() => mountainLayerTexture("#33405a", 0.74, 60, 37, 0.2), []);
 
   return (
     <group>
-      {/* view layers OUTSIDE the opening (x > wall), facing the room; different depths → parallax */}
+      {/* view layers OUTSIDE the opening (x > wall), facing the room; different depths → parallax.
+          Sky is a big opaque backdrop that fully covers the window cone (no black gap even up close);
+          mountain layers are tall enough that their bases fall below the sill (no void beneath). */}
       <group>
-        <mesh position={[x + 11, 5.5, 0.4]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[34, 22]} />
+        <mesh position={[x + 14, 9, 0.4]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[90, 60]} />
           <meshBasicMaterial map={sky} toneMapped />
         </mesh>
-        <mesh position={[x + 7.5, 2.8, 0.3]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[26, 9]} />
+        <mesh position={[x + 8, 3.4, 0.3]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[48, 15]} />
           <meshBasicMaterial map={far} transparent toneMapped />
         </mesh>
-        <mesh position={[x + 5, 2.4, 0.1]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[20, 8]} />
+        <mesh position={[x + 5.5, 2.7, 0.1]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[34, 13]} />
           <meshBasicMaterial map={mid} transparent toneMapped />
         </mesh>
-        <mesh position={[x + 3.1, 2.1, -0.2]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[15, 7]} />
+        <mesh position={[x + 3.3, 2.2, -0.2]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[24, 12]} />
           <meshBasicMaterial map={near} transparent toneMapped />
         </mesh>
       </group>
@@ -626,7 +673,7 @@ export function Cabin({ freeze }: { freeze: boolean }): JSX.Element {
         shadow-camera-bottom={-6}
       />
       {/* soft cool ambient so shadows read, never crush to black */}
-      <ambientLight color="#33425f" intensity={0.42} />
+      <ambientLight color="#2b3852" intensity={0.28} />
     </group>
   );
 }

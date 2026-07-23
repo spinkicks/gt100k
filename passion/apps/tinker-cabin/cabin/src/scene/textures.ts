@@ -298,64 +298,89 @@ export function duskVistaTexture(): THREE.CanvasTexture {
 
 /** Opaque dusk sky gradient + soft low sun — the far backdrop plane of the parallax window view. */
 export function skyGradientTexture(): THREE.CanvasTexture {
-  const w = 256;
-  const h = 256;
+  const w = 1024;
+  const h = 1024;
   const c = document.createElement("canvas");
   c.width = w;
   c.height = h;
   const ctx = c.getContext("2d")!;
   const sky = ctx.createLinearGradient(0, 0, 0, h);
-  sky.addColorStop(0, "#4a6ea8");
-  sky.addColorStop(0.5, "#8fa9d0");
-  sky.addColorStop(0.78, "#eac79a");
-  sky.addColorStop(1, "#f0cf9c");
+  sky.addColorStop(0, "#3a5890");
+  sky.addColorStop(0.5, "#7f9ac6");
+  sky.addColorStop(0.8, "#e6c194");
+  sky.addColorStop(1, "#ecc896");
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, w, h);
-  const sun = ctx.createRadialGradient(w * 0.62, h * 0.72, 3, w * 0.62, h * 0.72, w * 0.4);
-  sun.addColorStop(0, "rgba(255,244,214,0.95)");
-  sun.addColorStop(0.35, "rgba(255,228,175,0.4)");
-  sun.addColorStop(1, "rgba(255,228,175,0)");
+  const sun = ctx.createRadialGradient(w * 0.62, h * 0.74, 4, w * 0.62, h * 0.74, w * 0.42);
+  sun.addColorStop(0, "rgba(255,244,214,0.9)");
+  sun.addColorStop(0.35, "rgba(255,226,172,0.35)");
+  sun.addColorStop(1, "rgba(255,226,172,0)");
   ctx.fillStyle = sun;
   ctx.fillRect(0, 0, w, h);
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
   return t;
 }
 
 /**
- * One transparent mountain-ridge layer (ridge + everything below it filled with `color`, sky above
- * transparent). Stack several at increasing distance behind the window for real parallax as the
- * camera moves. `baseY` (0..1) sets the ridge height, `amp` its jaggedness, `seed` its shape.
+ * One transparent mountain-ridge layer for the parallax window view: a smoothed ridge filled with
+ * `color`, then tinted with aerial haze (more `haze` = hazier/lighter toward the ridgeline, for
+ * distant layers). High-res + smoothed so it doesn't read as low-res/jagged.
  */
 export function mountainLayerTexture(
   color: string,
   baseY: number,
   amp: number,
   seed: number,
+  haze = 0,
 ): THREE.CanvasTexture {
-  const w = 512;
-  const h = 256;
+  const w = 1600;
+  const h = 400;
   const c = document.createElement("canvas");
   c.width = w;
   c.height = h;
   const ctx = c.getContext("2d")!;
   ctx.clearRect(0, 0, w, h);
   const rand = mulberry32(seed);
+  // build + smooth the ridge heights (two averaging passes → gentle silhouette, not jagged)
+  const step = 8;
+  const n = Math.floor(w / step) + 1;
+  let ys: number[] = [];
+  let y = baseY * h;
+  for (let i = 0; i < n; i++) {
+    y += (rand() - 0.5) * amp;
+    y = Math.max(baseY * h - amp, Math.min(baseY * h + amp * 0.5, y));
+    ys.push(y);
+  }
+  for (let pass = 0; pass < 2; pass++) {
+    ys = ys.map((v, i) => {
+      const a = ys[i - 1] ?? v;
+      const b = ys[i + 1] ?? v;
+      return (a + v + b) / 3;
+    });
+  }
   ctx.fillStyle = color;
   ctx.beginPath();
   ctx.moveTo(0, h);
-  let y = baseY * h;
-  ctx.lineTo(0, y);
-  for (let x = 0; x <= w; x += 14) {
-    y += (rand() - 0.5) * amp;
-    y = Math.max(baseY * h - amp, Math.min(baseY * h + amp * 0.5, y));
-    ctx.lineTo(x, y);
-  }
+  ctx.lineTo(0, ys[0]!);
+  for (let i = 0; i < n; i++) ctx.lineTo(i * step, ys[i]!);
   ctx.lineTo(w, h);
   ctx.closePath();
   ctx.fill();
+  // aerial haze: tint only the mountain pixels, lighter toward the ridgeline
+  if (haze > 0) {
+    ctx.globalCompositeOperation = "source-atop";
+    const g = ctx.createLinearGradient(0, baseY * h - amp, 0, h);
+    g.addColorStop(0, `rgba(150,170,205,${0.55 * haze})`);
+    g.addColorStop(1, "rgba(150,170,205,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+    ctx.globalCompositeOperation = "source-over";
+  }
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
   return t;
 }
 

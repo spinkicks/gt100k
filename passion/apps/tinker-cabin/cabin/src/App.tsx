@@ -42,7 +42,7 @@ export function App(): JSX.Element {
         gl={{
           antialias: true,
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.05,
+          toneMappingExposure: 0.9,
         }}
         camera={{ position: [sx, sy, sz], fov: params.cam?.fov ?? 60, near: 0.05, far: 100 }}
       >
