@@ -424,6 +424,55 @@ export function grassTexture(): THREE.CanvasTexture {
   return t;
 }
 
+/** A small painted mountain landscape for the framed picture on the wall. */
+export function paintingTexture(): THREE.CanvasTexture {
+  const w = 320;
+  const h = 240;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d")!;
+  const sky = ctx.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, "#e8b878");
+  sky.addColorStop(0.5, "#e6cfa0");
+  sky.addColorStop(1, "#dfc58f");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, w, h);
+  // low sun
+  ctx.fillStyle = "rgba(255,240,205,0.9)";
+  ctx.beginPath();
+  ctx.arc(w * 0.7, h * 0.32, 22, 0, Math.PI * 2);
+  ctx.fill();
+  // two mountain ridges
+  const rand = mulberry32(3);
+  const ridge = (baseY: number, amp: number, color: string) => {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(0, h);
+    let y = baseY;
+    ctx.lineTo(0, y);
+    for (let x = 0; x <= w; x += 12) {
+      y += (rand() - 0.5) * amp;
+      y = Math.max(baseY - amp, Math.min(baseY + amp * 0.4, y));
+      ctx.lineTo(x, y);
+    }
+    ctx.lineTo(w, h);
+    ctx.closePath();
+    ctx.fill();
+  };
+  ridge(h * 0.5, 34, "#8898b4");
+  ridge(h * 0.62, 46, "#5d6f92");
+  // snow dabs on the near ridge crest
+  ctx.fillStyle = "rgba(240,244,250,0.8)";
+  for (let i = 0; i < 40; i++) ctx.fillRect(rand() * w, h * 0.6 + rand() * 8, 2 + rand() * 3, 2);
+  // foreground
+  ctx.fillStyle = "#3a4a30";
+  ctx.fillRect(0, h * 0.82, w, h * 0.18);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
 /**
  * Warm flame-tongue sprite for additive fire: a tapered teardrop (wide hot base → pointed cooler
  * tip), drawn as stacked ellipses so a vertically-stretched sprite reads as a flame, not an orb.

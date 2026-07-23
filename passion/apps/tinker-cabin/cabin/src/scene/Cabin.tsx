@@ -20,6 +20,7 @@ import {
   floorTextures,
   grassTexture,
   mulberry32,
+  paintingTexture,
   propTextures,
   rugTexture,
   stoneTextures,
@@ -371,9 +372,9 @@ class CatBoundary extends Component<{ children: ReactNode }, { failed: boolean }
 function Cat(): JSX.Element {
   // Only mount the glTF loader once we've confirmed the GLB really exists (a dev server answers a
   // missing path with index.html, which would crash the loader). Otherwise show the procedural cat.
-  // Default to the procedural tabby (cozy + reliable). The available free CC0 cat GLBs are blocky,
-  // cold-grey, and skinned (broken auto-scale), so the GLB path is opt-in via ?cat=glb until a
-  // better model is dropped into /assets/models/cat.glb.
+  // Default to the procedural two-tone tabby. The free CC0 cat GLBs are all skinned + blocky-grey,
+  // so their bind-pose bbox breaks auto-scale (renders huge) and they clash with the cozy scene —
+  // GLB stays opt-in via ?cat=glb until a clean static cat model is dropped into /assets/models/cat.glb.
   const useGlb =
     typeof location !== "undefined" && new URLSearchParams(location.search).get("cat") === "glb";
   if (!useGlb) return <ProceduralCat />;
@@ -777,6 +778,7 @@ function SetDressing(): JSX.Element {
   const { hx, hz } = ROOM;
   const inX = hx - 0.16;
   const inZ = hz - 0.16;
+  const painting = useMemo(() => paintingTexture(), []);
   const bookColors = ["#7a3b2e", "#2e5a4a", "#385a7a", "#8a6a2e"];
   return (
     <group>
@@ -794,15 +796,22 @@ function SetDressing(): JSX.Element {
           <meshStandardMaterial color="#3a2817" roughness={0.7} metalness={0} />
         </mesh>
       ))}
-      {/* a small framed landscape print on the back wall, left of the chimney (ref 05) */}
-      <group position={[-1.7, 1.95, -inZ + 0.02]}>
+      {/* framed mountain landscape painting on the back wall, left of the chimney */}
+      <group position={[-1.75, 1.95, -inZ + 0.02]}>
+        {/* frame */}
         <mesh castShadow>
-          <boxGeometry args={[0.7, 0.5, 0.04]} />
-          <meshStandardMaterial color="#4a3320" roughness={0.6} />
+          <boxGeometry args={[0.92, 0.68, 0.05]} />
+          <meshStandardMaterial color="#4a3320" roughness={0.55} metalness={0.05} />
         </mesh>
+        {/* inner mat */}
         <mesh position={[0, 0, 0.03]}>
-          <planeGeometry args={[0.58, 0.38]} />
-          <meshStandardMaterial color="#6b7f9e" roughness={0.9} />
+          <planeGeometry args={[0.82, 0.58]} />
+          <meshStandardMaterial color="#e8e0d0" roughness={0.9} />
+        </mesh>
+        {/* the painting */}
+        <mesh position={[0, 0, 0.031]}>
+          <planeGeometry args={[0.68, 0.46]} />
+          <meshStandardMaterial map={painting} roughness={0.85} />
         </mesh>
       </group>
       {/* wall shelf with a few books on the left wall, above the desk */}

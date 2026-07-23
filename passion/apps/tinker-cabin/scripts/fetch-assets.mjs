@@ -31,7 +31,7 @@ const TEXTURES = [{ id: "brown_planks_05", name: "wood" }];
 /** Direct-download CC0 GLB models (Poly Pizza / Quaternius) → cabin/public/assets/models/ */
 const MODELS = [
   {
-    url: "https://static.poly.pizza/67f5e3fe-37ee-4c86-95c8-d269d8c9f8ba.glb",
+    url: "https://static.poly.pizza/7ccb71fe-dabb-4a6f-a98a-8992bb5e6bc7.glb",
     out: "models/cat.glb",
   },
   {
