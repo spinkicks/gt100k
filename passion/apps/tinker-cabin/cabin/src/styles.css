@@ -1,0 +1,27 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #0a0b10;
+}
+#app {
+  position: fixed;
+  inset: 0;
+}
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+#err {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  font: 14px / 1.5 ui-monospace, monospace;
+  color: #ffd7d7;
+  background: #300;
+  padding: 24px;
+  white-space: pre-wrap;
+}
