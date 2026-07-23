@@ -565,6 +565,66 @@ export function flameTexture(): THREE.CanvasTexture {
   return t;
 }
 
+/**
+ * Short-fur texture for the procedural cat: a base coat broken up by fine directional fur strokes
+ * plus soft mackerel-tabby bands, with a derived normal map for micro-relief. Turns the smooth
+ * clay loaf into something that reads as furred. Returns albedo + normal.
+ */
+export function catFurTexture(
+  base: RGB,
+  dark: RGB,
+  seed: number,
+  stripes: boolean,
+): { map: THREE.CanvasTexture; normalMap: THREE.CanvasTexture } {
+  const size = 256;
+  const c = document.createElement("canvas");
+  c.width = c.height = size;
+  const ctx = c.getContext("2d")!;
+  const rand = mulberry32(seed);
+  ctx.fillStyle = `rgb(${base[0]},${base[1]},${base[2]})`;
+  ctx.fillRect(0, 0, size, size);
+  // soft tabby bands (vertical, wavy) — only on the coat, not the belly/cream
+  if (stripes) {
+    for (let b = 0; b < 7; b++) {
+      const bx = (b + 0.5) * (size / 7) + (rand() - 0.5) * 10;
+      const bw = 8 + rand() * 12;
+      ctx.strokeStyle = `rgba(${dark[0]},${dark[1]},${dark[2]},${0.28 + rand() * 0.18})`;
+      ctx.lineWidth = bw;
+      ctx.beginPath();
+      for (let y = 0; y <= size; y += 6) {
+        const x = bx + Math.sin(y * 0.03 + b) * 10;
+        if (y === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+  }
+  // fine fur strokes: many short lines in base±shade, mostly vertical, for micro-detail
+  for (let i = 0; i < 5200; i++) {
+    const x = rand() * size;
+    const y = rand() * size;
+    const len = 3 + rand() * 6;
+    const d = rand() > 0.5 ? 1 : -1;
+    const j = Math.floor(rand() * 26) * d;
+    ctx.strokeStyle = `rgba(${base[0] + j},${base[1] + j},${base[2] + j},${0.2 + rand() * 0.3})`;
+    ctx.lineWidth = 0.6 + rand() * 0.6;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + (rand() - 0.5) * 2, y - len);
+    ctx.stroke();
+  }
+  const normalC = normalFromCanvas(c, 2.4);
+  const mk = (canvas: HTMLCanvasElement, srgb: boolean): THREE.CanvasTexture => {
+    const t = new THREE.CanvasTexture(canvas);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(2, 2);
+    t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+    t.anisotropy = 8;
+    return t;
+  };
+  return { map: mk(c, true), normalMap: mk(normalC, false) };
+}
+
 /** Simple 2-tone woven rug pattern (warm kilim-ish stripes) for the hearth rug. */
 export function rugTexture(): THREE.CanvasTexture {
   const s = 256;

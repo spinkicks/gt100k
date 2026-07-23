@@ -16,6 +16,7 @@ import { EnvLight } from "./EnvLight";
 import { SkyDome } from "./SkyDome";
 import { ANCHORS, ROOM } from "./layout";
 import {
+  catFurTexture,
   flameTexture,
   floorTextures,
   grassBladeTexture,
@@ -395,9 +396,16 @@ function ProceduralCat(): JSX.Element {
   useEffect(() => {
     updateStats({ catVisible: true });
   }, []);
-  // Curled two-tone tabby (fallback when no glTF cat is present).
-  const brown = <meshStandardMaterial color="#6f4f34" roughness={0.9} metalness={0} />;
-  const cream = <meshStandardMaterial color="#c9ab84" roughness={0.9} metalness={0} />;
+  // Curled two-tone tabby (fallback when no glTF cat is present). Fur textures (fine strokes +
+  // mackerel tabby bands + micro-relief normal) break up the smooth-clay look so it reads as furred.
+  const coatFur = useMemo(() => catFurTexture([111, 79, 52], [58, 38, 22], 71, true), []);
+  const bellyFur = useMemo(() => catFurTexture([201, 171, 132], [150, 120, 88], 72, false), []);
+  const brown = (
+    <meshStandardMaterial {...coatFur} color="#6f4f34" roughness={0.95} metalness={0} />
+  );
+  const cream = (
+    <meshStandardMaterial {...bellyFur} color="#c9ab84" roughness={0.95} metalness={0} />
+  );
   const pink = <meshStandardMaterial color="#b07a6e" roughness={0.9} metalness={0} />;
   return (
     <group position={[x, 0.14, z]} rotation={[0, -0.7, 0]}>
