@@ -659,30 +659,49 @@ export function catFurTexture(
   return { map: mk(c, true), normalMap: mk(normalC, false) };
 }
 
-/** Simple 2-tone woven rug pattern (warm kilim-ish stripes) for the hearth rug. */
+/** Woven wool-kilim texture for the hearth rug: muted terracotta/ochre/charcoal bands, a cream
+ *  diamond motif, a border, and fine horizontal weave striations so it reads as woven wool (not a
+ *  flat printed stripe). */
 export function rugTexture(): THREE.CanvasTexture {
-  const s = 256;
+  const s = 512;
   const c = document.createElement("canvas");
   c.width = c.height = s;
   const ctx = c.getContext("2d")!;
-  ctx.fillStyle = "#6e3b2a"; // rust base
+  const rand = mulberry32(555);
+  // muted, desaturated palette (was a garish bright rust)
+  ctx.fillStyle = "#7c4634";
   ctx.fillRect(0, 0, s, s);
-  const bands = ["#8a4a33", "#3f2a20", "#b5763f", "#3f2a20", "#8a4a33"];
-  const bh = s / (bands.length * 3);
-  for (let i = 0; i < bands.length * 3; i++) {
+  const bands = ["#814b37", "#3a2a22", "#a06a44", "#3a2a22", "#8f5a3e"];
+  const bh = s / (bands.length * 4);
+  for (let i = 0; i < bands.length * 4; i++) {
     ctx.fillStyle = bands[i % bands.length]!;
-    ctx.fillRect(0, i * bh, s, bh * 0.6);
+    ctx.fillRect(0, i * bh, s, bh * 0.62);
   }
-  // simple zigzag motif rows
-  ctx.strokeStyle = "#d8b98a";
-  ctx.lineWidth = 2;
-  for (let y = bh; y < s; y += bh * 3) {
+  // cream diamond/zigzag motif rows
+  ctx.strokeStyle = "#d8bd93";
+  ctx.lineWidth = 3;
+  for (let y = bh; y < s; y += bh * 4) {
     ctx.beginPath();
-    for (let x = 0; x <= s; x += 16) ctx.lineTo(x, y + (Math.floor(x / 16) % 2 ? 6 : -6));
+    for (let x = 0; x <= s; x += 24) ctx.lineTo(x, y + (Math.floor(x / 24) % 2 ? 10 : -10));
+    ctx.stroke();
+  }
+  // border frame
+  ctx.strokeStyle = "#2f231c";
+  ctx.lineWidth = 10;
+  ctx.strokeRect(6, 6, s - 12, s - 12);
+  // fine horizontal weave striations across the whole rug (woven wool grain)
+  for (let y = 0; y < s; y += 2) {
+    const a = 0.05 + rand() * 0.08;
+    ctx.strokeStyle = rand() > 0.5 ? `rgba(255,240,215,${a})` : `rgba(0,0,0,${a})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, y + 0.5);
+    ctx.lineTo(s, y + 0.5);
     ctx.stroke();
   }
   const t = new THREE.CanvasTexture(c);
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
   t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
   return t;
 }
