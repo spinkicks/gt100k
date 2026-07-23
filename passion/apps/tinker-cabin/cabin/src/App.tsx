@@ -5,7 +5,7 @@
  * Reads deterministic params from the URL so the harness can pin a pose and freeze animation.
  */
 import { Canvas } from "@react-three/fiber";
-import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
+import { Bloom, EffectComposer, N8AO, Vignette } from "@react-three/postprocessing";
 import { useRef, useState } from "react";
 import * as THREE from "three";
 import { CameraRigHud } from "./Hud";
@@ -60,6 +60,9 @@ export function App(): JSX.Element {
         )}
         <StatsBridge />
         <EffectComposer>
+          {/* ambient occlusion → contact shadows in the crevices (grounds objects; subtle on
+              software-GL headless shots, stronger on a real GPU) */}
+          <N8AO aoRadius={0.5} intensity={2.2} distanceFalloff={1} halfRes />
           <Bloom mipmapBlur luminanceThreshold={0.85} luminanceSmoothing={0.12} intensity={0.5} />
           <Vignette eskil={false} offset={0.28} darkness={0.72} />
         </EffectComposer>
