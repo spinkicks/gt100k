@@ -19,8 +19,8 @@ import { NodeCryptoHasher } from "@gt100k/evidence-hash-node";
 
 /** Build the deterministic Provenance Observatory view for the synthetic milestone. */
 export function buildSyntheticExplorerView(opts: BuildExplorerViewOptions = {}): ExplorerView {
-  const { graph, packet } = buildFixtureGraph(new NodeCryptoHasher());
-  return buildExplorerView(graph, packet, opts);
+  const bundle = buildFixtureGraph(new NodeCryptoHasher());
+  return buildExplorerView(bundle.graph, bundle, opts);
 }
 
 /**
@@ -39,18 +39,12 @@ export interface SyntheticVerification {
 export async function buildSyntheticVerification(): Promise<SyntheticVerification> {
   const hasher = new NodeCryptoHasher();
   const fixture = await explorerFixture(hasher);
-  const verified = buildVerificationView(
-    fixture.packet,
-    fixture.verifierResult,
-    fixture.graph,
-    hasher,
-  );
+  const verified = buildVerificationView(fixture.graph, fixture.verifierResult, hasher, {
+    subjectDigest: fixture.subjectDigest,
+  });
   const tamperedBundle = applyTamper(fixture);
-  const tampered = buildVerificationView(
-    tamperedBundle.packet,
-    fixture.verifierResult,
-    tamperedBundle.graph,
-    hasher,
-  );
+  const tampered = buildVerificationView(tamperedBundle.graph, fixture.verifierResult, hasher, {
+    subjectDigest: tamperedBundle.subjectDigest,
+  });
   return { verified, tampered, tamperNodeId: fixture.ids["released-artifact"] };
 }

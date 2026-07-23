@@ -1,7 +1,7 @@
 import type {
   EvidenceEdge,
+  EvidenceGraph,
   EvidenceNode,
-  EvidencePacket,
 } from "../../../packages/evidence-graph/src/model.js";
 import type { EvidenceRepository } from "../../../packages/evidence-graph/src/ports.js";
 
@@ -9,11 +9,11 @@ function clone<T>(value: T): T {
   return structuredClone(value);
 }
 
-/** In-memory synthetic EvidenceRepository with copy-isolated storage boundaries. */
+/** In-memory synthetic EvidenceRepository with copy-isolated storage boundaries (one graph per project). */
 export class InMemoryEvidenceRepository implements EvidenceRepository {
   private readonly nodes = new Map<string, EvidenceNode>();
   private readonly edges: EvidenceEdge[] = [];
-  private readonly packets = new Map<string, EvidencePacket>();
+  private readonly graphs = new Map<string, EvidenceGraph>();
 
   async saveNode(node: EvidenceNode): Promise<void> {
     this.nodes.set(node.id, clone(node));
@@ -33,12 +33,17 @@ export class InMemoryEvidenceRepository implements EvidenceRepository {
     return clone(this.edges);
   }
 
-  async savePacket(packet: EvidencePacket): Promise<void> {
-    this.packets.set(packet.milestoneRef, clone(packet));
+  async saveGraph(projectId: string, graph: EvidenceGraph): Promise<void> {
+    this.graphs.set(projectId, clone(graph));
   }
 
-  async getPacket(milestoneRef: string): Promise<EvidencePacket | null> {
-    const packet = this.packets.get(milestoneRef);
-    return packet === undefined ? null : clone(packet);
+  async getGraph(projectId: string): Promise<EvidenceGraph | null> {
+    const graph = this.graphs.get(projectId);
+    return graph === undefined ? null : clone(graph);
+  }
+
+  /** Erasure: drop the whole project graph (the v1 delete-the-project story). */
+  async deleteGraph(projectId: string): Promise<void> {
+    this.graphs.delete(projectId);
   }
 }

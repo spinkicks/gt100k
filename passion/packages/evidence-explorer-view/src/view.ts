@@ -1,9 +1,10 @@
 /**
  * `buildExplorerView` — composes the single deterministic `ExplorerView` the app renders from the
- * domain graph + assembled packet. Reads the domain; computes no grade and no crypto. Presentation
- * flags (tier / reduced-motion / plain / captions) never affect state — `plainViewEquals` proves it.
+ * domain graph + a project milestone selection (one graph per project). Reads the domain; computes
+ * no grade and no crypto. Presentation flags (tier / reduced-motion / plain / captions) never affect
+ * state — `plainViewEquals` proves it.
  */
-import type { EvidenceGraph, EvidencePacket } from "@gt100k/evidence-graph";
+import type { EvidenceGraph } from "@gt100k/evidence-graph";
 import { layoutExplorer2D } from "./layout2d.js";
 import { CENTER_3D, layoutExplorer3D } from "./layout3d.js";
 import type {
@@ -18,7 +19,12 @@ import type {
 } from "./model.js";
 import { provenanceRanks } from "./ranks.js";
 import { buildGrowthTimeline } from "./timeline.js";
-import { resolveEdgeThread, resolveNodeBody, resolveNodeColorRole, resolveNodeGlyph } from "./visual.js";
+import {
+  resolveEdgeThread,
+  resolveNodeBody,
+  resolveNodeColorRole,
+  resolveNodeGlyph,
+} from "./visual.js";
 
 const HUMAN_OWNED_OUTCOME_KINDS = new Set(["grade", "judgment"]);
 
@@ -28,6 +34,15 @@ export interface BuildExplorerViewOptions {
   readonly reducedTransparency?: boolean;
   readonly plainMode?: boolean;
   readonly audioCaptions?: boolean;
+}
+
+/**
+ * The project milestone selection the view is composed against (one graph per project): which node
+ * ids are in-milestone, and the stable per-project reference shown as `milestoneRef`.
+ */
+export interface MilestoneSelection {
+  readonly milestoneNodeIds: readonly string[];
+  readonly projectRef: string;
 }
 
 function defaultPresentation(opts: BuildExplorerViewOptions): Presentation {
@@ -46,15 +61,15 @@ function actorLabel(ref: string, displayName?: string): string {
 
 export function buildExplorerView(
   graph: EvidenceGraph,
-  packet: EvidencePacket,
+  selection: MilestoneSelection,
   opts: BuildExplorerViewOptions = {},
 ): ExplorerView {
   const ranks = provenanceRanks(graph);
   const layout2d = layoutExplorer2D(graph);
   const layout3d = layoutExplorer3D(graph);
-  const timeline = buildGrowthTimeline(graph, packet);
+  const timeline = buildGrowthTimeline(graph, selection.milestoneNodeIds);
 
-  const milestoneIds = new Set(packet.nodeIds);
+  const milestoneIds = new Set(selection.milestoneNodeIds);
   const birthByNode = new Map(timeline.beats.map((b) => [b.nodeId, b.birthOrder]));
 
   const nodes: NodeView[] = ranks.map((r) => {
@@ -81,7 +96,7 @@ export function buildExplorerView(
     return {
       id: node.id,
       type: node.type,
-      label: (typeof node.payload.title === "string" ? node.payload.title : node.type),
+      label: typeof node.payload.title === "string" ? node.payload.title : node.type,
       actor: chip,
       ...(node.tool !== undefined ? { tool: node.tool } : {}),
       body: resolveNodeBody(node.type),
@@ -118,7 +133,7 @@ export function buildExplorerView(
   });
 
   return {
-    milestoneRef: packet.milestoneRef,
+    milestoneRef: selection.projectRef,
     nodes,
     edges,
     bounds2d: layout2d.bounds,

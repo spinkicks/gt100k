@@ -1,22 +1,24 @@
-import type { EvidenceEdge, EvidenceNode, EvidencePacket, VerificationResult } from "./model.js";
+import type { EvidenceEdge, EvidenceGraph, EvidenceNode, VerificationResult } from "./model.js";
 
 /** Pure, synchronous content hashing supplied by a runtime adapter. */
 export interface Hasher {
   hash(input: Uint8Array): string;
 }
 
-/** Asynchronous packet verification supplied by a deterministic or real verifier. */
+/** Asynchronous whole-graph verification supplied by a deterministic or real verifier. */
 export interface Verifier {
-  verify(packet: EvidencePacket, hasher: Hasher): Promise<VerificationResult>;
+  verify(graph: EvidenceGraph, hasher: Hasher): Promise<VerificationResult>;
 }
 
-/** Persistence boundary for evidence records and milestone packets. */
+/** Persistence boundary for evidence records and per-project graphs (one graph per project). */
 export interface EvidenceRepository {
   saveNode(node: EvidenceNode): Promise<void>;
   getNode(id: string): Promise<EvidenceNode | null>;
   saveEdge(edge: EvidenceEdge): Promise<void>;
-  savePacket(packet: EvidencePacket): Promise<void>;
-  getPacket(milestoneRef: string): Promise<EvidencePacket | null>;
+  /** Persist the whole graph for a project. Erasure = delete everything under `projectId`. */
+  saveGraph(projectId: string, graph: EvidenceGraph): Promise<void>;
+  getGraph(projectId: string): Promise<EvidenceGraph | null>;
+  deleteGraph(projectId: string): Promise<void>;
 }
 
 /** Non-production placeholder for a future transparency-log inclusion proof. */

@@ -6,15 +6,22 @@ network, clock, or runtime-crypto dependency. Callers supply those capabilities 
 Use synthetic or pseudonymous data with this feature slice. `consentScope` records scope metadata; it does
 not implement consent, legal, or admissions workflows.
 
+## One graph per project
+
+There are no per-milestone evidence packets. Each project owns exactly one content-addressed evidence
+graph. Its Merkle root is derived from every node in the graph (ordered by `(timestamp, id)`), and an
+attestation binds that whole-graph root to a released artifact.
+
 ## Quick start
 
-This example builds and verifies a one-node synthetic packet. The Node.js hasher and deterministic verifier
-are workspace adapters, not domain dependencies.
+This example builds a one-node synthetic project graph, computes its root, and verifies it. The Node.js
+hasher and deterministic verifier are workspace adapters, not domain dependencies.
 
 ```ts
 import {
   addNode,
-  assembleEvidencePacket,
+  buildGraphAttestation,
+  graphMerkleRoot,
   type EvidenceGraph,
   type EvidenceNode,
 } from "@gt100k/evidence-graph";
@@ -34,17 +41,14 @@ const artifact = {
 } satisfies Omit<EvidenceNode, "id">;
 
 const { graph, id } = addNode(emptyGraph, artifact, hasher);
-const packet = assembleEvidencePacket(
+const root = graphMerkleRoot(graph, hasher);
+const attestation = buildGraphAttestation(
   graph,
-  {
-    milestoneRef: "milestone-synthetic-001",
-    subjectDigest: id,
-    nodeIds: [id],
-  },
+  { projectRef: "project-synthetic-001", subjectDigest: id },
   hasher,
 );
 
-const result = await new DeterministicStubVerifier().verify(packet, hasher);
+const result = await new DeterministicStubVerifier().verify(graph, hasher);
 if (!result.ok) throw new Error(result.reasons.join(", "));
 ```
 
@@ -56,9 +60,11 @@ if (!result.ok) throw new Error(result.reasons.join(", "));
 | `addNode` | Hash node content and return a graph with the node inserted; identical content is a no-op. |
 | `addEdge` | Return a graph with one resolved edge while rejecting self-edges and cycles. |
 | `assertHumanAuthority` | Enforce human ownership of grades and the no-accusation rule. |
-| `merkleRoot` | Compute an RFC-6962 raw-byte Merkle root through an injected hasher. |
+| `merkleRoot` | Compute an RFC-6962 raw-byte Merkle root through an injected hasher, preserving caller input order. |
+| `orderedGraphNodeIds` | Return a graph's node ids in canonical `(timestamp, id)` order for a reproducible root. |
+| `graphMerkleRoot` | Compute the whole project graph's Merkle root over its `orderedGraphNodeIds`. |
 | `buildAttestation` | Build the unsigned in-toto Statement used by this slice. |
-| `assembleEvidencePacket` | Validate a selected subgraph and derive its packet, ledgers, root, and attestation. |
+| `buildGraphAttestation` | Build the unsigned in-toto Statement for a whole project graph: root from `graphMerkleRoot`, materials from Artifact node ids, subject bound to the released artifact. |
 | `traceEvidence` | Return the connected supporting node ids for a selected node, excluding unrelated islands. |
 
 The entrypoint also exports the domain records, taxonomies, PROV mappings, input types, and verification
@@ -73,7 +79,7 @@ code.
 | --- | --- | --- |
 | `Hasher` | `NodeCryptoHasher` from `@gt100k/evidence-hash-node` | SHA-256 via `node:crypto`. |
 | `Verifier` | `DeterministicStubVerifier` from `@gt100k/evidence-verifier-stub` | Re-derives the Merkle root and checks the unsigned attestation bindings. |
-| `EvidenceRepository` | `InMemoryEvidenceRepository` from `@gt100k/evidence-repo-memory` | Deep-copy-isolated, process-local storage. |
+| `EvidenceRepository` | `InMemoryEvidenceRepository` from `@gt100k/evidence-repo-memory` | Deep-copy-isolated, process-local storage. Persists whole per-project graphs via `saveGraph`/`getGraph`/`deleteGraph` (erasure = `deleteGraph` of everything under a `projectId`) alongside `saveNode`/`getNode`/`saveEdge`. |
 | `TransparencyLog` | `StubTransparencyLog` from `@gt100k/evidence-deferred` | NON-PRODUCTION deterministic placeholder. |
 | `ErasureService` | `StubErasureService` from `@gt100k/evidence-deferred` | NON-PRODUCTION deterministic placeholder. |
 

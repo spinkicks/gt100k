@@ -12,12 +12,13 @@
  */
 import {
   type EvidenceGraph,
-  type EvidenceNode,
-  type EvidencePacket,
   type VerificationResult,
   addNode,
   assertHumanAuthority,
+  buildGraphAttestation,
+  graphMerkleRoot,
   merkleRoot,
+  orderedGraphNodeIds,
 } from "@gt100k/evidence-graph";
 // `Hasher` is a port, not re-exported from the domain index — import it directly (repo convention).
 import type { Hasher } from "../../evidence-graph/src/ports.js";
@@ -35,23 +36,6 @@ function recomputeNodeHash(graph: EvidenceGraph, id: string, hasher: Hasher): st
   }
   const { id: _committed, ...content } = node;
   return addNode(EMPTY_GRAPH, content, hasher).id;
-}
-
-/** The milestone subgraph the human-authority invariant is checked over (mirrors the packet). */
-function milestoneSubgraph(graph: EvidenceGraph, nodeIds: readonly string[]): EvidenceGraph {
-  const selected = new Set(nodeIds);
-  const nodes: Record<string, EvidenceNode> = {};
-  for (const id of nodeIds) {
-    const node = graph.nodes[id];
-    if (node !== undefined) {
-      nodes[id] = node;
-    }
-  }
-  const edges = graph.edges.filter(
-    (edge) =>
-      selected.has(edge.from) && (selected.has(edge.to) || graph.nodes[edge.to] === undefined),
-  );
-  return { nodes, edges };
 }
 
 /**
@@ -93,24 +77,37 @@ export function verifyWaveOrder(
     .map((edge) => ({ from: edge.from, to: edge.to }));
 }
 
+export interface BuildVerificationViewOptions {
+  /** Content id of the released-artifact node the graph attests to. */
+  readonly subjectDigest: string;
+}
+
 /**
- * Builds the verification view for a packet against the *current* graph content and a
- * (pre-awaited) verifier result. Ordered steps (§U8.8): `merkle-root` → `subject-digest` →
- * `human-authority` → `transparency-log-stub`. `sealState` = `"verified"` iff all non-stub steps
- * pass, else `"mismatch"` (the only place red appears). `"unverified"` is the app's pre-Verify
- * state and is never produced here.
+ * Builds the verification view for a whole project graph (one graph per project) against its
+ * *current* content and a (pre-awaited) verifier result. Ordered steps (§U8.8): `merkle-root` →
+ * `subject-digest` → `human-authority` → `transparency-log-stub`. `sealState` = `"verified"` iff
+ * all non-stub steps pass, else `"mismatch"` (the only place red appears). `"unverified"` is the
+ * app's pre-Verify state and is never produced here.
+ *
+ * The committed root is the whole-graph `graphMerkleRoot` over the stored ids; the recomputed root
+ * is the same timestamp-ordered leaves re-derived from each node's *current* content, so a
+ * byte-level tamper flips one leaf and the two roots diverge.
  */
 export function buildVerificationView(
-  packet: EvidencePacket,
-  verifierResult: VerificationResult,
   graph: EvidenceGraph,
+  verifierResult: VerificationResult,
   hasher: Hasher,
+  opts: BuildVerificationViewOptions,
 ): VerificationView {
-  const committedRoot = packet.merkleRoot;
-  const recomputedHashes = packet.nodeIds.map((id) => recomputeNodeHash(graph, id, hasher));
+  let committedRoot = "";
   let recomputedRoot = "";
   try {
-    recomputedRoot = merkleRoot(recomputedHashes, hasher);
+    committedRoot = graphMerkleRoot(graph, hasher); // leaves = stored ids, timestamp-ordered.
+    const orderedIds = orderedGraphNodeIds(graph);
+    recomputedRoot = merkleRoot(
+      orderedIds.map((id) => recomputeNodeHash(graph, id, hasher)),
+      hasher,
+    );
   } catch {
     recomputedRoot = ""; // invalid digest (missing/tampered) → mismatch.
   }
@@ -121,15 +118,23 @@ export function buildVerificationView(
     detail: { committed: committedRoot, recomputed: recomputedRoot },
   };
 
-  const attested = packet.attestation.subject[0]?.digest.sha256 ?? null;
+  const attestation = buildGraphAttestation(
+    graph,
+    { projectRef: "speaker-v1", subjectDigest: opts.subjectDigest },
+    hasher,
+  );
+  const attested = attestation.subject[0]?.digest.sha256 ?? null;
   const subjectStep: VerifyStep = {
     id: "subject-digest",
     label: "Subject digest binding",
-    status: attested === packet.subjectDigest ? "pass" : "fail",
-    detail: { committed: packet.subjectDigest, attested },
+    status:
+      attested === opts.subjectDigest && graph.nodes[opts.subjectDigest] !== undefined
+        ? "pass"
+        : "fail",
+    detail: { committed: opts.subjectDigest, attested },
   };
 
-  const authority = assertHumanAuthority(milestoneSubgraph(graph, packet.nodeIds));
+  const authority = assertHumanAuthority(graph);
   const authorityStep: VerifyStep = {
     id: "human-authority",
     label: "Human-owned final grade",
@@ -156,9 +161,10 @@ export function buildVerificationView(
 }
 
 /**
- * Deterministically tamper the released byte-body's payload. The committed packet is unchanged, so
- * the mismatch surfaces only at verify time when node hashes are re-derived from content (§U8.8).
- * The tamper touches a byte-level Artifact — never a person, Outcome, or Assistance (SC-E09).
+ * Deterministically tamper the released byte-body's payload. The stored node id (the committed
+ * commitment) is unchanged, so the mismatch surfaces only at verify time when node hashes are
+ * re-derived from content (§U8.8). The tamper touches a byte-level Artifact — never a person,
+ * Outcome, or Assistance (SC-E09).
  */
 export function applyTamper(bundle: FixtureBundle): FixtureBundle {
   const targetId = bundle.ids["released-artifact"];
@@ -171,8 +177,7 @@ export function applyTamper(bundle: FixtureBundle): FixtureBundle {
     };
   }
   return {
+    ...bundle,
     graph: { nodes: tamperedNodes, edges: bundle.graph.edges },
-    packet: bundle.packet,
-    ids: bundle.ids,
   };
 }

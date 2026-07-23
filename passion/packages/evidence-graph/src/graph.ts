@@ -88,3 +88,41 @@ export function addEdge(graph: EvidenceGraph, edge: EvidenceEdge): EvidenceGraph
     edges: [...graph.edges, edge],
   };
 }
+
+/** Returns the selected node's connected evidence support, excluding actor/tool targets and the node itself. */
+export function traceEvidence(graph: EvidenceGraph, nodeId: string): string[] {
+  if (graph.nodes[nodeId] === undefined) {
+    throw new Error(`MISSING_NODE:${nodeId}`);
+  }
+
+  const adjacency = new Map<string, Set<string>>();
+  for (const edge of graph.edges) {
+    if (graph.nodes[edge.from] === undefined || graph.nodes[edge.to] === undefined) {
+      continue;
+    }
+    const from = adjacency.get(edge.from) ?? new Set<string>();
+    const to = adjacency.get(edge.to) ?? new Set<string>();
+    from.add(edge.to);
+    to.add(edge.from);
+    adjacency.set(edge.from, from);
+    adjacency.set(edge.to, to);
+  }
+
+  const visited = new Set([nodeId]);
+  const pending = [nodeId];
+  while (pending.length > 0) {
+    const current = pending.pop();
+    if (current === undefined) {
+      continue;
+    }
+    for (const connected of adjacency.get(current) ?? []) {
+      if (!visited.has(connected)) {
+        visited.add(connected);
+        pending.push(connected);
+      }
+    }
+  }
+
+  visited.delete(nodeId);
+  return [...visited].sort();
+}
