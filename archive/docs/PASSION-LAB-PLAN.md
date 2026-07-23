@@ -91,5 +91,5 @@ single-shell vs. deep-linked-modules; the exact shared state model; what Felipe'
 |---|---|---|---|
 | Discover | `003-interest-lab` | `interest-lab` | rebuild in flight |
 | Develop (Socratic tutor) | `007-passion-tutor` | `passion-tutor` | done (#78) |
-| Document (Evidence Graph) | `002-evidence-graph` | `evidence-explorer` | revamp in flight |
+| Document (Evidence Graph) | `002-evidence-graph` | `evidence-explorer` | revamp in flight — v1 direction in `docs/decisions/evidencegraph-v1-*.md` (one graph per project) |
 | **Unify + Motivate + Wellbeing** | **`009-passion-lab` (to write)** | `apps/passion-lab` | **planning (this doc)** |

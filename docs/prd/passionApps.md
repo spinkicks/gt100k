@@ -67,7 +67,7 @@
 
 ### Group E — Assessment & Provenance
 
-- **E1. EvidenceGraph** *(exists, MVP; D1–D6 pre-production)* — Content-addressed process DAG with human-owned grades and neutral declared-AI-help nodes. Pre-live gates: transparency log, crypto-shred erasure, comparative-judgment, conformal calibration, export provenance, attestation signing. *Fits:* the "prove the spike" pillar; wraps every project.
+- **E1. EvidenceGraph** *(exists, MVP; D1–D6 pre-production)* — Content-addressed process DAG with human-owned grades and neutral declared-AI-help nodes. Pre-live gates: transparency log, crypto-shred erasure, comparative-judgment, conformal calibration, export provenance, attestation signing. *Fits:* the "prove the spike" pillar; wraps every project. *v1 build:* `docs/decisions/evidencegraph-v1-design.md` — one graph per project (packets removed), standalone product.
 - **E2. Assessment / Oral Defense System** *(net-new)* — AI-conducted, sampled, multi-touchpoint, anxiety-safe, age-adapted Socratic defense + the **readiness-staged** process rubric; human owns the grade. *Fits:* verifies authorship + understanding structurally (never a detector).
 
 ### Group F — Human & Family Layer

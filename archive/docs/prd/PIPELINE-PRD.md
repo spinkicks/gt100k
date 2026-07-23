@@ -294,14 +294,14 @@ A unit meets tolerance when the line holds current, **independently verified** e
 | Advanced mathematics | AP Calculus BC = 5 | Official AP result + internal transfer tasks |
 | Calculus-based science | AP Physics C = 5 | Official AP result + experiment/modeling evidence |
 | Advanced verbal analysis | AP English Literature = 5 | Official AP result + timed and revised writing |
-| Independent construction | ≥ 1 multi-cycle masterpiece | EvidenceGraph packet + live defense + external outcome |
+| Independent construction | ≥ 1 multi-cycle masterpiece | EvidenceGraph + live defense + external outcome |
 | Learning autonomy | Can plan, recover, seek bounded help, explain decisions | Longitudinal mastery + project evidence |
 
 Before official tests are age-appropriate, the line reads **in-process gauges** (leading indicators): mastery retention, far transfer, reasoning speed, writing quality, project complexity, revision quality, independent planning, recovery after failure. Per the yield-honesty clause (§2.3), **a leading indicator is never converted into a claim that the output has been achieved.**
 
 ### 8.2 Provenance / QC record — EvidenceGraph *(`PRD.md` §19)*
 
-Every artifact, attempt, transformation, assist, and review is a node in a content-addressed evidence DAG (a domain extension of W3C PROV), with per-milestone `EvidencePacket`s serialized as Workflow-Run RO-Crate. Integrity is **anchor-conditional**: Merkle roots are attested (in-toto) and anchored in an append-only transparency log; SHA-1/MD5 are forbidden; C2PA is export-only, never the integrity layer. Erasure is reconciled with append-only provenance via **crypto-shredding** off-graph payloads. **Humans issue every final grade and every non-deterministic judgment**; model output is admissible only as cited supporting evidence, never as the grade itself (`PRD.md` §19, §19.1). Deterministic checks (builds, tests, verifiers) may be automated; open-ended work uses anchored rubrics and de-biased comparative judgment, with model panels shadow-only until calibrated.
+Every artifact, attempt, transformation, assist, and review is a node in a content-addressed evidence DAG (a domain extension of W3C PROV) — one graph per project (no separate per-milestone packet), serializable to Workflow-Run RO-Crate for export. Integrity is **anchor-conditional**: Merkle roots are attested (in-toto) and anchored in an append-only transparency log; SHA-1/MD5 are forbidden; C2PA is export-only, never the integrity layer. Erasure is reconciled with append-only provenance via **crypto-shredding** off-graph payloads. **Humans issue every final grade and every non-deterministic judgment**; model output is admissible only as cited supporting evidence, never as the grade itself (`PRD.md` §19, §19.1). Deterministic checks (builds, tests, verifiers) may be automated; open-ended work uses anchored rubrics and de-biased comparative judgment, with model panels shadow-only until calibrated.
 
 ### 8.3 Controlled exposure — Reality Gateway *(`PRD.md` §20)*
 
@@ -314,7 +314,7 @@ The shipped unit is a **learner-owned, standards-based credential** (1EdTech CAS
 ### 8.5 Station 3 acceptance & tolerances
 
 - EvidenceGraph achieves 99.99% durability for acknowledged attestations; ≥ 95% of hermetic jobs reproduce inside tolerance; tampering, replay, and poisoned artifacts fail the security suite (`PRD.md` §19.1).
-- **Pre-live gate:** external transparency-log inclusion/consistency proofs verify for 100% of sampled milestone roots; a per-subject crypto-shred renders payloads unrecoverable while retained packets still verify; comparative-judgment budget validated against reviewer capacity (`PRD.md` §19.2, §33.1).
+- **Pre-live gate:** external transparency-log inclusion/consistency proofs verify for 100% of sampled milestone roots; a per-subject crypto-shred renders payloads unrecoverable while retained project graphs still verify; comparative-judgment budget validated against reviewer capacity (`PRD.md` §19.2, §33.1).
 - A learner can export credentials in interoperable formats free of charge; revocation of audience access does not falsify an issued credential.
 
 ---
