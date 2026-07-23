@@ -1236,3 +1236,15 @@ dev killed (`pnpm --filter @gt100k/interest-lab-app build`).
 - **Camera:** central Coding Desk hero (dx=0), pos [0.1,2.72,9.1] target [0,1.7,-1.2] fov 46.
 - **noColdBlueScreen floor added to the test battery** (code-scene `measureCodeFloors`): every
   surface-class "screen" prop must be non-blue in both color + emissive — a machine guard on the trap.
+
+## 011-interest-inference (build turn)
+- **Per-package `test` script = `vitest run`** (matches sibling `evidence-explorer-view`) rather than the
+  plan's `vitest run --root ../.. packages/interest-inference/test` — the plan's path was relative to the repo
+  root but packages live under `passion/packages/...`, so that path would be wrong. The GATE uses root
+  `pnpm test` (globs `passion/packages/**/test/**`) regardless, so this is cosmetic. Kept the `demo` script.
+- **Attribution fixtures materialized as `MAKER_GRID`/`LOYALIST_GRID` + expected labels** in
+  `src/__fixtures__/interest.fixtures.ts` (spec §6 says the fixtures file "provides … the two attribution grids
+  + expected labels") and consumed by a dedicated `test/attribution-fixtures.test.ts`, so SC-7 maps to the
+  named fixture (not only inline beliefs in `aggregate.test.ts`).
+- **Stale `.loop/progress.md`** (Emberwood WORLD lane) was overwritten with this lane's real state.
+- Whole feature built in one turn: fully-specified, deterministic, no ambiguity → all tasks + gate green.
