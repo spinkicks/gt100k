@@ -26,6 +26,20 @@
   team style avoids `!`. Used `subs.get(p[0])?.has(p[1]) ?? false` and `subs.get(cabin)?.add(slug)`
   instead — same behavior, no non-null assertion, and `hasPath` returns `false` for a missing cabin map
   (defensive, though every CABIN is seeded at construction).
+- **[T2A-4] Resolver tie-break = the rule table's own priority order, NOT the global `WORK_MODES`
+  order.** Spec §3.5(3) says "the rule table's priority order picks primary; the next becomes
+  secondary." So `resolveEngagedModes` keeps `ACTION_MODE_RULES[actionType]` order via
+  order-preserving `.filter(afforded.has)`; `kept[0]` → primary, `kept[1]` → secondary. `tinker`'s
+  candidates `["build","investigate"]` therefore resolve to `{primary:"build", secondary:"investigate"}`
+  regardless of the artifact's `affordedModes` array order (both are afforded by `synth`). `WORK_MODES`
+  is exported as `GLOBAL_MODE_ORDER` only for future tie-break auditing — it is deliberately NOT
+  consulted in the current resolution path (no rule table has an ambiguous same-priority tie yet).
+- **[T2A-5] `unresolved` vs `invalid-for-artifact` are distinct rejection reasons.** Unknown
+  actionType (not in `ACTION_MODE_RULES`) → `unresolved` (spec §3.5 "never guess a mode"; routed to the
+  review queue at Task 6). Known actionType whose candidate modes don't intersect the artifact's
+  `affordedModes` → `invalid-for-artifact` (spec §3.5(2): a data/authoring error, surfaced, never
+  silently coerced). Both return `{ok:false}` so the `⊆` invariant holds vacuously; the caller decides
+  routing. Task 4 emits `unresolved`; wiring it into `createReviewQueue` is Task 6 (SC-4's second half).
 
 
 ## EE-ART — committed art direction (keep cohesive across turns)

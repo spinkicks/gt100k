@@ -14,7 +14,7 @@ native `fetch`, opt-in only). SYNTHETIC ONLY.
 - [x] **P0 — Task 1** work-mode taxonomy: `WORK_MODES` (golden order), `WORK_MODE_DEFS`, `isWorkMode`
 - [x] **P0 — Task 2** domain taxonomy: `CABINS` (8 golden), `SEED_SUBTOPICS`, `createTaxonomy`, `mintSubTopic` (idempotent-by-slug), `serializePath`, `isCabinId`
 - [x] **P1 — Task 3** records: `Artifact`/`ActionEvent`/`RawAction`/`TagSuggestion` + `makeArtifact` validator
-- [ ] **P1 — Task 4** engaged-mode resolver (rule table, intersect-afforded, priority, reject-invalid, unresolved→review) + ≥8 golden fixtures — **the crux**
+- [x] **P1 — Task 4** engaged-mode resolver (rule table, intersect-afforded, priority, reject-invalid, unresolved→review) + 9 golden fixtures — **the crux**
 - [ ] **P2 — Task 5** `Tagger` port + suggest→validate→accept pipeline (+ sub-topic minting), `CONFIDENCE_FLOOR=0.5`
 - [ ] **P3 — Task 6** validity harness: Krippendorff α (nominal, closed form) golden 0.5333 / 1.0, `ALPHA_BAR=0.667` trust gate, review queue
 - [ ] **P2/P4 — Task 7** `@gt100k/tagger-stub` adapter (deterministic, CI) + domain index barrel
@@ -45,10 +45,38 @@ native `fetch`, opt-in only). SYNTHETIC ONLY.
   `makeArtifact`'s afforded/domain validation; the resolver invariant test itself is Task 4 (NOT yet met).
 - SC-4…SC-8 — not yet (Tasks 4–9).
 
+## Done this turn — P1 (Task 4): engaged-mode resolver (the crux)
+- `src/resolver.ts` — `ACTION_MODE_RULES` (10 actionTypes → priority-ordered candidate modes) +
+  `resolveEngagedModes(artifact, action)`: unknown actionType → `{ok:false, reason:"unresolved"}`;
+  intersect candidates with `affordedModes` (order-preserving `.filter`), empty intersection →
+  `{ok:false, reason:"invalid-for-artifact"}` (never coerced); first kept → `primary`, next → `secondary`.
+  Deterministic on `(RawAction, Artifact)`. `GLOBAL_MODE_ORDER` exported for future tie-break auditing.
+- `src/__fixtures__/resolver-cases.ts` — 9 golden `(RawAction, Artifact)` cases over two synthetic
+  artifacts (`synth` affords perform/build/investigate; `mixingDesk` affords debug/investigate/explain):
+  play→perform, assemble→build, inspect→investigate, tinker→{build,investigate}, write-melody→
+  invalid-for-artifact (compose not afforded), wobble→unresolved, fix→debug, teach→explain,
+  play(on mixer)→invalid-for-artifact.
+- `test/resolver.test.ts` — 10 tests: each fixture asserts exact `{primary, secondary?}` OR
+  `{ok:false, reason}`, plus a loop proving `engagedModes ⊆ affordedModes` on every ok result.
+
+## Gate — GREEN
+- `pnpm exec tsc -b` → exit 0 (composite build clean).
+- `pnpm test` → **170 passed (40 files)**; this package now 21 (smoke 1 · work-modes 3 · taxonomy 4 ·
+  records 3 · resolver 10). No other package regressed.
+
+## Self-audit → SC coverage after Task 4
+- **SC-2** (`engagedModes ⊆ affordedModes` for every valid action; non-intersecting → **rejected**, not
+  coerced) — **MET** (`resolver.test.ts` subset-invariant loop + the two `invalid-for-artifact` cases).
+- **SC-3** (deterministic resolver golden: exact primary+secondary, priority-ordered) — **MET** (the 9
+  golden fixture cases in `resolver.test.ts`).
+- **SC-4** (ambiguous/unknown action → `unresolved`, never guessed) — **resolver half MET** (the
+  `wobble → unresolved` case). The *enqueue-to-review-queue* half is Task 6 (`createReviewQueue`); not
+  yet wired. SC-4 not fully met until Task 6.
+- SC-1 — still MET (Tasks 1–2). SC-5…SC-8 — not yet (Tasks 5–9).
+
 ## NEXT
-- **Task 4 (P1 — the crux): the engaged-mode resolver.** Test-first per plan: write the ≥9-case golden
-  fixture `src/__fixtures__/resolver-cases.ts` (synth + mixingDesk artifacts), then `resolver.test.ts`
-  asserting each `(RawAction, Artifact)` → exact `{primary, secondary?}` OR `{ok:false, reason}`, PLUS
-  the `engagedModes ⊆ affordedModes` invariant loop. Implement `ACTION_MODE_RULES` (priority-ordered)
-  + `resolveEngagedModes`: intersect candidates with afforded, empty→`invalid-for-artifact`, unknown
-  action→`unresolved`, first kept→primary, next→secondary. This is where SC-2/SC-3/SC-4 get met.
+- **Task 5 (P2): `Tagger` port + tagging pipeline.** Test-first per plan: `test/pipeline.test.ts`
+  (accept valid suggestion → `auto` artifact w/ its confidence; mint a novel sub-topic on accept;
+  reject unknown cabin / invalid mode / confidence < `CONFIDENCE_FLOOR=0.5`). Implement `src/ports.ts`
+  (`Tagger`, `ArtifactRef`) + `src/pipeline.ts` (`CONFIDENCE_FLOOR`, `validateSuggestion`,
+  `acceptSuggestion` minting novel sub-topics via `tax.mintSubTopic`). This is where SC-5 gets met.
