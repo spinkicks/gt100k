@@ -30,10 +30,29 @@ export function InteractiveLamp({
   const shade = useRef<THREE.MeshStandardMaterial>(null);
   const chain = useRef<THREE.MeshStandardMaterial>(null);
   const shadeColor = useMemo(() => new THREE.Color(), []);
+  // playback latch: when a new Run arrives (seqId changes) we mark the start time and step through
+  // the programmed on/off pattern slowly (TICK seconds/step) so the player watches it execute.
+  const play = useRef<{ id: number; start: number }>({ id: 0, start: 0 });
+  const TICK = 0.7;
 
   useFrame((state) => {
     const t = freeze ? GADGET_FROZEN_T : state.clock.elapsedTime;
-    const mode = store.lamp?.mode ?? 1;
+    const st = store.lamp;
+
+    // resolve the current mode: normally store.lamp.mode, but during a playback we override it by
+    // stepping through the sequence (skipped under freeze so harness shots stay static/deterministic).
+    let mode = st?.mode ?? 1;
+    const seq = st?.seq;
+    const seqId = st?.seqId ?? 0;
+    if (!freeze && seq && seq.length > 0) {
+      if (seqId !== play.current.id) play.current = { id: seqId, start: t };
+      const step = Math.floor((t - play.current.start) / TICK);
+      if (step < seq.length) {
+        mode = seq[step] === 1 ? 1 : 0; // blink WARM/OFF through the pattern
+      } else {
+        mode = st?.solved ? 3 : seq[seq.length - 1] === 1 ? 1 : 0; // settle (BRIGHT if solved)
+      }
+    }
     const [col, intensity, emissive] = MODES[mode] ?? MODES[1]!;
     if (light.current) {
       light.current.color.set(col);

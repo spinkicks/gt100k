@@ -28,20 +28,31 @@ function Lamp({ on }: { on: boolean }): JSX.Element {
 
 export function CodeChallenge({
   spec,
+  initialLines,
   onWorld,
+  onPlayback,
+  onProgramChange,
   onSolvedDiscovery,
   onClose,
 }: {
   spec: ChallengeSpec;
+  /** restore a previously-edited program (so re-opening after a playback keeps your edits) */
+  initialLines?: CodeLine[];
   /** drive the real 3D gadget: called with the gadget store mode on every Run */
   onWorld: (mode: number) => void;
+  /** playback gadgets: hand the trace to the world to play back slowly (Run then exits the menu) */
+  onPlayback?: (trace: number[], solved: boolean) => void;
+  /** persist the edited program up to the shell so it survives close/re-open */
+  onProgramChange?: (lines: CodeLine[]) => void;
   /** called once, the first time this challenge is solved (breadth discovery signal) */
   onSolvedDiscovery: () => void;
   /** session end → depth hypothesis */
   onClose: (result: InterestHypothesis) => void;
 }): JSX.Element {
   const recorder = useMemo(() => new SignalRecorder(Date.now()), []);
-  const [lines, setLines] = useState<CodeLine[]>(() => spec.lines.map((l) => ({ ...l })));
+  const [lines, setLines] = useState<CodeLine[]>(() =>
+    (initialLines ?? spec.lines).map((l) => ({ ...l })),
+  );
   const [result, setResult] = useState<number[] | null>(null);
   const [runs, setRuns] = useState(0);
   const [solved, setSolved] = useState(false);
@@ -50,9 +61,9 @@ export function CodeChallenge({
   const cycle = (i: number): void => {
     if (solved) return;
     recorder.edit();
-    setLines((prev) =>
-      prev.map((l, j) => (j === i ? { ...l, op: (l.op + 1) % spec.ops.length } : l)),
-    );
+    const next = lines.map((l, j) => (j === i ? { ...l, op: (l.op + 1) % spec.ops.length } : l));
+    setLines(next);
+    onProgramChange?.(next);
   };
 
   const run = (): void => {
@@ -61,10 +72,17 @@ export function CodeChallenge({
     recorder.run(Date.now(), ok);
     setResult(trace);
     setRuns((r) => r + 1);
-    onWorld(spec.worldMode(trace, ok)); // drive the real gadget live
     if (ok && !solved) {
       setSolved(true);
       onSolvedDiscovery();
+    }
+    // playback gadgets (e.g. the lamp): hand the trace to the world, then exit the menu so the
+    // player watches it execute. Non-playback gadgets update live and keep the panel open.
+    if (spec.playback && onPlayback) {
+      onPlayback(trace, ok);
+      close();
+    } else {
+      onWorld(spec.worldMode(trace, ok));
     }
   };
 

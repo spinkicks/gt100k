@@ -44,6 +44,9 @@ export interface ChallengeSpec {
   worldMode: (trace: number[], solved: boolean) => number;
   /** shown when solved (gadget-flavoured, e.g. "Lit! The lamp is online.") */
   solvedMsg: string;
+  /** if set, Run exits the menu and the gadget plays the trace back slowly (watch it execute in the
+   *  world), instead of instantly setting a mode + keeping the panel open */
+  playback?: boolean;
 }
 
 /**
@@ -77,6 +80,7 @@ export const LAMP_CHALLENGE: ChallengeSpec = {
   // OFF(0) · WARM(1) · COOL(2) · BRIGHT(3): live-preview the final tick while editing; lock BRIGHT on solve
   worldMode: (trace, solved) => (solved ? 3 : trace[trace.length - 1] ? 1 : 0),
   solvedMsg: "Lit! The lamp is online.",
+  playback: true, // Run exits the menu and the lamp blinks the pattern slowly so you watch it
 };
 
 /**

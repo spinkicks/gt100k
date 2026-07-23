@@ -110,6 +110,13 @@ export interface GadgetVisualState {
   mode: number;
   /** true once the player has activated it at least once this session */
   discovered: boolean;
+  /** optional playback sequence (per-tick 0/1) a gadget steps through after a Run, e.g. the lamp
+   *  blinking its programmed pattern slowly so the player can watch it execute in the world */
+  seq?: number[];
+  /** bumped each Run so the gadget latches a fresh playback start (change-detection, no timers) */
+  seqId?: number;
+  /** whether the last Run solved the challenge (drives the settled state, e.g. lamp → BRIGHT) */
+  solved?: boolean;
 }
 
 export type GadgetStore = Record<string, GadgetVisualState>;

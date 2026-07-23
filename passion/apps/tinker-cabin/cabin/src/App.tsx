@@ -18,7 +18,7 @@ import { StatsBridge } from "./core/StatsBridge";
 import { parseParams } from "./core/params";
 import { CodeChallenge } from "./interest/CodeChallenge";
 import { TasteApp } from "./interest/TasteApp";
-import { CHALLENGES } from "./interest/challenges";
+import { CHALLENGES, type CodeLine } from "./interest/challenges";
 import { exposeInterest } from "./interest/expose";
 import { GadgetSignalRecorder, exposeGadgets } from "./interest/gadgetSignals";
 import type { InterestHypothesis } from "./interest/signals";
@@ -34,6 +34,9 @@ export function App(): JSX.Element {
   const [challengeId, setChallengeId] = useState<string | null>(params.challenge);
   const [nearId, setNearId] = useState<string | null>(null);
   const [discovered, setDiscovered] = useState(0);
+  // edited programs per gadget, so re-opening a challenge (e.g. after the lamp playback exits the
+  // menu) restores your edits instead of resetting to the broken starter program.
+  const [programs, setPrograms] = useState<Record<string, CodeLine[]>>({});
   const interactive = !params.cam; // the harness pins the camera and never interacts
 
   // shared, mutable gadget visual state — the interaction manager mutates it and the scene meshes
@@ -150,14 +153,24 @@ export function App(): JSX.Element {
       </Canvas>
       {params.hud ? <CameraRigHud /> : null}
       {interactive ? <DiscoveryCounter n={discovered} total={GADGETS.length - 1} /> : null}
+      {interactive && !overlayOpen ? <Crosshair active={Boolean(nearLabel)} /> : null}
       {interactive && nearLabel && !overlayOpen ? <Prompt label={nearLabel} /> : null}
       {tasteOpen ? <TasteApp onClose={onTasteResult} /> : null}
       {openSpec ? (
         <CodeChallenge
           spec={openSpec}
+          initialLines={programs[openSpec.gadgetId]}
+          onProgramChange={(lines) => setPrograms((p) => ({ ...p, [openSpec.gadgetId]: lines }))}
           onWorld={(mode) => {
             const st = store[openSpec.gadgetId];
             if (st) st.mode = mode;
+          }}
+          onPlayback={(trace, solved) => {
+            const st = store[openSpec.gadgetId];
+            if (!st) return;
+            st.seq = trace;
+            st.seqId = (st.seqId ?? 0) + 1; // latch a fresh playback in the gadget
+            st.solved = solved;
           }}
           onSolvedDiscovery={() => {
             const st = store[openSpec.gadgetId];
@@ -193,6 +206,72 @@ function Prompt({ label }: { label: string }): JSX.Element {
       }}
     >
       Press <b>E</b> — {label}
+    </div>
+  );
+}
+
+/** Minecraft-style centre crosshair. Turns amber + grows a ring when aimed at an interactable, so the
+ *  player knows a click / E will do something there. Hidden in overlays + harness shots. */
+function Crosshair({ active }: { active: boolean }): JSX.Element {
+  const col = active ? "rgba(255,196,110,0.95)" : "rgba(255,255,255,0.75)";
+  const bar: React.CSSProperties = {
+    position: "absolute",
+    background: col,
+    boxShadow: "0 0 2px rgba(0,0,0,0.9)",
+    borderRadius: 1,
+  };
+  const len = active ? 12 : 10;
+  const th = 2;
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%,-50%)",
+        width: 30,
+        height: 30,
+        pointerEvents: "none",
+        zIndex: 15,
+      }}
+    >
+      {/* horizontal + vertical bars forming a + */}
+      <div
+        style={{
+          ...bar,
+          top: "50%",
+          left: "50%",
+          width: len,
+          height: th,
+          transform: "translate(-50%,-50%)",
+        }}
+      />
+      <div
+        style={{
+          ...bar,
+          top: "50%",
+          left: "50%",
+          width: th,
+          height: len,
+          transform: "translate(-50%,-50%)",
+        }}
+      />
+      {/* highlight ring when aimed at an interactable */}
+      {active ? (
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            width: 26,
+            height: 26,
+            transform: "translate(-50%,-50%)",
+            border: "2px solid rgba(255,196,110,0.9)",
+            borderRadius: "50%",
+            boxShadow: "0 0 4px rgba(0,0,0,0.7)",
+          }}
+        />
+      ) : null}
     </div>
   );
 }

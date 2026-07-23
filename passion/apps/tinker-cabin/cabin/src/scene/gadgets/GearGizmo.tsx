@@ -67,10 +67,13 @@ export function GearGizmo({
   useFrame((state) => {
     const t = freeze ? GADGET_FROZEN_T : state.clock.elapsedTime;
     // mode carries the loop count (0 = idle): more turns → faster spin, so running the loop challenge
-    // visibly speeds the gears. Base rate is brisk so the motion reads clearly across the room.
+    // visibly speeds the gears. Once the crank has been ENGAGED (discovered) it keeps turning even at
+    // rest count, so the gizmo stays alive instead of freezing the instant you land the exact answer.
     const turns = store.gizmo?.mode ?? 0;
-    const on = turns > 0;
-    const w = on ? t * (1.6 + turns * 0.5) : 0;
+    const engaged = store.gizmo?.discovered ?? false;
+    const on = turns > 0 || engaged;
+    const rate = turns > 0 ? 1.6 + turns * 0.5 : 2.2; // lively idle spin once engaged
+    const w = on ? t * rate : 0;
     // meshed: neighbours counter-rotate at inverse tooth-count ratio (arbitrary rest angles offset)
     if (g1.current) g1.current.rotation.y = w;
     if (g2.current) g2.current.rotation.y = -w * (teeth.a / teeth.b) + 0.3;
