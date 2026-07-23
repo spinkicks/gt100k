@@ -15,6 +15,7 @@ import {
   SpecRail,
 } from "./components.js";
 import { WellbeingPanel } from "./wellbeing-panel.js";
+import { PlanPanel } from "./plan-panel.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 
 export function GuideConsole(): JSX.Element {
@@ -47,6 +48,8 @@ export function GuideConsole(): JSX.Element {
         </header>
 
         <WellbeingPanel cards={ctrl.wellbeing} />
+
+        <PlanPanel cards={ctrl.plans} />
 
         {ctrl.visible.length === 0 ? (
           <EmptyState ctrl={ctrl} />

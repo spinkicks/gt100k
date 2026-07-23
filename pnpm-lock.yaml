@@ -38,6 +38,12 @@ importers:
 
   passion/adapters/evidence-verifier-stub: {}
 
+  passion/adapters/planner-live:
+    dependencies:
+      '@gt100k/specialization-planner':
+        specifier: workspace:*
+        version: link:../../packages/specialization-planner
+
   passion/adapters/profile-store-fs:
     dependencies:
       '@gt100k/student-profile':
@@ -162,6 +168,9 @@ importers:
       '@gt100k/interest-inference':
         specifier: workspace:*
         version: link:../../packages/interest-inference
+      '@gt100k/specialization-planner':
+        specifier: workspace:*
+        version: link:../../packages/specialization-planner
       '@gt100k/student-profile':
         specifier: workspace:*
         version: link:../../packages/student-profile
@@ -301,6 +310,30 @@ importers:
       '@gt100k/evidence-graph':
         specifier: workspace:*
         version: link:../evidence-graph
+
+  passion/packages/specialization-planner:
+    dependencies:
+      '@gt100k/concierge':
+        specifier: workspace:*
+        version: link:../concierge
+      '@gt100k/hypothesis-store':
+        specifier: workspace:*
+        version: link:../hypothesis-store
+      '@gt100k/interest-inference':
+        specifier: workspace:*
+        version: link:../interest-inference
+      '@gt100k/signal-pipeline':
+        specifier: workspace:*
+        version: link:../signal-pipeline
+      '@gt100k/student-profile':
+        specifier: workspace:*
+        version: link:../student-profile
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../two-axis-tagging
+      '@gt100k/wellbeing':
+        specifier: workspace:*
+        version: link:../wellbeing
 
   passion/packages/student-profile:
     dependencies:
