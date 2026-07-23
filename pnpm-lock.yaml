@@ -235,6 +235,21 @@ importers:
         specifier: workspace:*
         version: link:../evidence-graph
 
+  passion/packages/student-profile:
+    dependencies:
+      '@gt100k/hypothesis-store':
+        specifier: workspace:*
+        version: link:../hypothesis-store
+      '@gt100k/interest-inference':
+        specifier: workspace:*
+        version: link:../interest-inference
+      '@gt100k/signal-pipeline':
+        specifier: workspace:*
+        version: link:../signal-pipeline
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../two-axis-tagging
+
   passion/packages/two-axis-tagging: {}
 
 packages:
