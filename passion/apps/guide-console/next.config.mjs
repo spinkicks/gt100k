@@ -6,6 +6,7 @@ const nextConfig = {
     "@gt100k/signal-pipeline",
     "@gt100k/two-axis-tagging",
     "@gt100k/student-profile",
+    "@gt100k/wellbeing",
   ],
   experimental: {
     extensionAlias: {

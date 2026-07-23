@@ -19,6 +19,7 @@ import {
   buildRosterGates,
   buildRosterStore,
 } from "../app/console-data.js";
+import { escalationCount, wellbeingForKid } from "../app/wellbeing.js";
 import { serializeCellKey } from "@gt100k/interest-inference";
 import { consoleViewModel, getForKid } from "@gt100k/hypothesis-store";
 import { describe, expect, it } from "vitest";
@@ -74,12 +75,17 @@ describe("guide-console derived roster", () => {
 });
 
 describe("buildQaState", () => {
-  it("reports selectedId, count, and ranked states", () => {
+  it("reports selectedId, count, ranked states, and the wellbeing escalation count", () => {
     expect(buildQaState(buildRosterStore(), ARI, ARI_TOP_ID)).toEqual({
       selectedId: ARI_TOP_ID,
       count: 2,
       states: ["EMERGING", "EXPLORING"],
+      escalations: 0, // additive field; defaults to 0 for existing callers
     });
+  });
+
+  it("passes through a live wellbeing escalation count when supplied", () => {
+    expect(buildQaState(buildRosterStore(), ARI, ARI_TOP_ID, 3).escalations).toBe(3);
   });
 });
 
@@ -119,5 +125,40 @@ describe("derived gates + primary action", () => {
     const store = buildRosterStore();
     const emptyGates = new Map(); // no gate passes
     expect(applyGuidePrimaryAction(store, ARI, emptyGates, ROSTER_NOW)).toBeNull();
+  });
+});
+
+describe("wellbeing panel data (016) — system proposes, human disposes", () => {
+  it("derives a read per spike for the selected kid, escalations sorted first", () => {
+    const cards = wellbeingForKid(ARI);
+    expect(cards).toHaveLength(2);
+    // Ari's thin dance cell has gone quiet → GAP (escalate); his audio cell is IN_ZONE. Escalation
+    // sorts to the top so the guide sees "needs your review" first.
+    expect(cards[0]!.read.state).toBe("GAP");
+    expect(cards[0]!.read.escalateToHuman).toBe(true);
+    expect(cards[0]!.read.escalationReason).toBeTruthy();
+    expect(cards[1]!.read.escalateToHuman).toBe(false);
+    // Every read carries the two-knob recommendation and never a child-facing label/score.
+    for (const c of cards) {
+      expect(["PUSH", "HOLD", "SCAFFOLD"]).toContain(c.read.challenge);
+      expect(["AUTONOMY_UP", "STEADY"]).toContain(c.read.pressure);
+      for (const key of Object.keys(c.read)) {
+        expect(key.toLowerCase()).not.toContain("score");
+      }
+    }
+  });
+
+  it("the escalation count matches the flagged spikes (Ari 1, Bex 0)", () => {
+    expect(escalationCount(ARI)).toBe(1);
+    expect(escalationCount("kid-synthetic-002")).toBe(0);
+  });
+
+  it("a healthy confident spike is IN_ZONE / HOLD (push only from strength: no PUSH without instrumented success)", () => {
+    const ari = wellbeingForKid(ARI);
+    const audio = ari.find((c) => c.cellKey === ARI_BUILD_KEY);
+    expect(audio).toBeDefined();
+    expect(audio!.read.state).toBe("IN_ZONE");
+    expect(audio!.read.challenge).toBe("HOLD");
+    expect(audio!.read.escalateToHuman).toBe(false);
   });
 });
