@@ -394,6 +394,46 @@ function ProceduralCat(): JSX.Element {
   );
 }
 
+/** Procedural conifers standing outside the window: near parallax + they mask the mountain-plane
+ *  edges so no black shows at oblique angles. Unlit-ish dark greens; static (deterministic). */
+function ExteriorTrees({ originX }: { originX: number }): JSX.Element {
+  // [dx from wall, z, height, green]
+  const trees: Array<[number, number, number, string]> = [
+    [1.8, -2.6, 4.2, "#26402b"],
+    [2.4, 2.9, 4.8, "#223a27"],
+    [3.2, -1.1, 5.4, "#2b4630"],
+    [3.0, 1.6, 4.0, "#20361f"],
+    [4.4, -3.2, 6.0, "#1e3324"],
+    [4.1, 3.6, 5.6, "#24402a"],
+    [5.2, 0.4, 6.4, "#1b2f20"],
+  ];
+  return (
+    <group>
+      {trees.map(([dx, z, h, green]) => (
+        <group key={`tree-${dx}-${z}`} position={[originX + dx, 0, z]}>
+          {/* trunk */}
+          <mesh position={[0, h * 0.18, 0]}>
+            <cylinderGeometry args={[0.06, 0.09, h * 0.36, 8]} />
+            <meshStandardMaterial color="#3a2a1a" roughness={0.9} />
+          </mesh>
+          {/* stacked foliage cones */}
+          {[0, 1, 2].map((tier) => {
+            const ty = h * (0.32 + tier * 0.22);
+            const r = (0.6 - tier * 0.14) * (h / 5);
+            const ch = h * 0.34 * (1 - tier * 0.12);
+            return (
+              <mesh key={`t-${tier}`} position={[0, ty, 0]}>
+                <coneGeometry args={[r, ch, 9]} />
+                <meshStandardMaterial color={green} roughness={0.95} metalness={0} />
+              </mesh>
+            );
+          })}
+        </group>
+      ))}
+    </group>
+  );
+}
+
 /**
  * The window: a wooden frame + muntins around the wall opening (no glass pane), plus the mountain
  * view rendered as separate unlit layers OUTSIDE the wall at increasing distance — so the view
@@ -410,26 +450,27 @@ function Window(): JSX.Element {
 
   return (
     <group>
-      {/* view layers OUTSIDE the opening (x > wall), facing the room; different depths → parallax.
-          Sky is a big opaque backdrop that fully covers the window cone (no black gap even up close);
-          mountain layers are tall enough that their bases fall below the sill (no void beneath). */}
+      {/* view OUTSIDE the opening. An all-encompassing sky DOME (back-side sphere) guarantees sky at
+          every viewing angle — no black gap even looking obliquely. Mountain layers + conifer trees
+          sit in front of it at increasing distance for parallax; the trees also mask the plane edges. */}
       <group>
-        <mesh position={[x + 14, 9, 0.4]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[90, 60]} />
-          <meshBasicMaterial map={sky} toneMapped />
+        <mesh scale={70}>
+          <sphereGeometry args={[1, 32, 16]} />
+          <meshBasicMaterial map={sky} side={THREE.BackSide} toneMapped fog={false} />
         </mesh>
-        <mesh position={[x + 8, 3.4, 0.3]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[48, 15]} />
+        <mesh position={[x + 9, 3.4, 0.3]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[60, 16]} />
           <meshBasicMaterial map={far} transparent toneMapped />
         </mesh>
-        <mesh position={[x + 5.5, 2.7, 0.1]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[34, 13]} />
+        <mesh position={[x + 6, 2.7, 0.1]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[40, 13]} />
           <meshBasicMaterial map={mid} transparent toneMapped />
         </mesh>
-        <mesh position={[x + 3.3, 2.2, -0.2]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[24, 12]} />
+        <mesh position={[x + 3.6, 2.2, -0.2]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[28, 12]} />
           <meshBasicMaterial map={near} transparent toneMapped />
         </mesh>
+        <ExteriorTrees originX={x} />
       </group>
 
       {/* wooden frame ring + muntins on the interior face of the opening (1.9 wide × 1.5 tall) */}

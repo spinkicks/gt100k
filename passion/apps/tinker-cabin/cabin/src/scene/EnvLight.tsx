@@ -73,16 +73,34 @@ class EnvBoundary extends Component<{ children: ReactNode }, { failed: boolean }
   }
 }
 
+/** Dims the environment's contribution so the room stays cozy/dusk, not washed out. */
+function EnvIntensity({ value }: { value: number }): null {
+  const { scene } = useThree();
+  useEffect(() => {
+    scene.environmentIntensity = value;
+    return () => {
+      scene.environmentIntensity = 1;
+    };
+  }, [scene, value]);
+  return null;
+}
+
 export function EnvLight(): JSX.Element {
   // Mount the HDRI only once confirmed present (else the dev server's index.html fallback would
-  // crash RGBELoader). Procedural env otherwise.
+  // crash RGBELoader). Procedural env otherwise. IBL dimmed for a cozy dusk mood.
   const hasHdri = useAssetReady(HDRI_URL);
-  if (!hasHdri) return <ProceduralEnv />;
   return (
-    <EnvBoundary>
-      <Suspense fallback={<ProceduralEnv />}>
-        <Environment files={HDRI_URL} />
-      </Suspense>
-    </EnvBoundary>
+    <>
+      <EnvIntensity value={0.5} />
+      {hasHdri ? (
+        <EnvBoundary>
+          <Suspense fallback={<ProceduralEnv />}>
+            <Environment files={HDRI_URL} />
+          </Suspense>
+        </EnvBoundary>
+      ) : (
+        <ProceduralEnv />
+      )}
+    </>
   );
 }
