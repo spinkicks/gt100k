@@ -1,11 +1,6 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
 
-import type {
-  EvidenceEdge,
-  EvidenceGraph,
-  EvidenceNode,
-  VerificationResult,
-} from "../src/model.js";
+import type { EvidenceGraph, VerificationResult } from "../src/model.js";
 import type {
   ErasureService,
   ErasureTombstoneStub,
@@ -31,11 +26,8 @@ describe("EvidenceGraph ports", () => {
     expect(hasher.hash(new Uint8Array([1, 2, 3]))).toBe("synthetic-3");
   });
 
-  it("defines the complete asynchronous repository contract with per-project graphs", () => {
+  it("defines the graph-level repository contract (one graph per project)", () => {
     expectTypeOf<EvidenceRepository>().toEqualTypeOf<{
-      saveNode(node: EvidenceNode): Promise<void>;
-      getNode(id: string): Promise<EvidenceNode | null>;
-      saveEdge(edge: EvidenceEdge): Promise<void>;
       saveGraph(projectId: string, graph: EvidenceGraph): Promise<void>;
       getGraph(projectId: string): Promise<EvidenceGraph | null>;
       deleteGraph(projectId: string): Promise<void>;

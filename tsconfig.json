@@ -10,6 +10,7 @@
     { "path": "passion/adapters/tagger-stub" },
     { "path": "passion/adapters/tagger-tfy" },
     { "path": "passion/packages/signal-pipeline" },
-    { "path": "passion/packages/hypothesis-store" }
+    { "path": "passion/packages/hypothesis-store" },
+    { "path": "passion/adapters/evidence-repo-postgres" }
   ]
 }
