@@ -86,8 +86,6 @@ export function Observatory({ seed }: { seed: SyntheticSeed }): JSX.Element {
               <AddPanel
                 graph={graph}
                 nodes={view.nodes}
-                projectRef={seed.projectRef}
-                subjectDigest={seed.subjectDigest}
                 onApply={(next) => {
                   setGraph(next.graph);
                   setView(next.view);

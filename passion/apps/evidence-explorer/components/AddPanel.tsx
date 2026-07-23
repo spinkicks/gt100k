@@ -22,7 +22,7 @@ import {
   type NodeType,
 } from "@gt100k/evidence-graph";
 import { type JSX, useId, useMemo, useState } from "react";
-import { type AddContext, type AddResult, addEdgeAction, addNodeAction } from "../app/actions.js";
+import { type AddResult, addEdgeAction, addNodeAction, resetAction } from "../app/actions.js";
 import { ChevronIcon } from "./icons.js";
 import type { SyntheticVerification } from "./synthetic-view.js";
 
@@ -46,15 +46,11 @@ function manualTimestamp(nodeCount: number): string {
 export function AddPanel({
   graph,
   nodes,
-  projectRef,
-  subjectDigest,
   onApply,
 }: {
   graph: EvidenceGraph;
   /** Current nodes (id + label) for the edge from/to selects. */
   nodes: readonly NodeView[];
-  projectRef: string;
-  subjectDigest: string;
   onApply: (next: AppliedBundle) => void;
 }): JSX.Element {
   const [open, setOpen] = useState(false);
@@ -83,9 +79,7 @@ export function AddPanel({
   const toId = useId();
   const edgeTypeId = useId();
 
-  const ctx: AddContext = { projectRef, subjectDigest };
-
-  const run = async (call: Promise<AddResult>): Promise<void> => {
+  const run = async (call: Promise<AddResult>, successNotice: string): Promise<void> => {
     setPending(true);
     setError(null);
     setNotice(null);
@@ -93,7 +87,7 @@ export function AddPanel({
       const res = await call;
       if (res.ok) {
         onApply({ graph: res.graph, view: res.view, verification: res.verification });
-        setNotice("Added to the graph.");
+        setNotice(successNotice);
       } else {
         setError(res.error);
       }
@@ -107,12 +101,20 @@ export function AddPanel({
   const submitNode = (): void => {
     const timestamp = manualTimestamp(Object.keys(graph.nodes).length);
     void run(
-      addNodeAction(graph, { type: nodeType, title, actorKind, actorRef, timestamp }, ctx),
+      addNodeAction({ type: nodeType, title, actorKind, actorRef, timestamp }),
+      "Added to the graph.",
     ).then(() => setTitle(""));
   };
 
   const submitEdge = (): void => {
-    void run(addEdgeAction(graph, { type: edgeType, from, to }, ctx));
+    void run(addEdgeAction({ type: edgeType, from, to }), "Added to the graph.");
+  };
+
+  const resetDemo = (): void => {
+    void run(resetAction(), "Reset to the seed graph.").then(() => {
+      setFrom("");
+      setTo("");
+    });
   };
 
   const canAddEdge = from !== "" && to !== "" && !pending;
@@ -302,6 +304,22 @@ export function AddPanel({
               disabled={!canAddEdge}
             >
               Add edge
+            </button>
+          </section>
+
+          <div className="addp-divider" aria-hidden="true" />
+
+          {/* ── Reset demo ───────────────────────────────────────────────────── */}
+          <section className="addp-section" aria-labelledby={`${panelId}-reset`}>
+            <h3 className="addp-section-title" id={`${panelId}-reset`}>
+              Reset demo
+            </h3>
+            <p className="hud-caption">
+              Restore the seeded tiny-runner-v1 graph, discarding manual adds. The store persists,
+              so this is the way to replay the demo.
+            </p>
+            <button type="button" className="addp-submit" onClick={resetDemo} disabled={pending}>
+              Reset to seed
             </button>
           </section>
         </div>

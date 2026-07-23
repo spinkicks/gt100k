@@ -9,10 +9,12 @@
     "test": "vitest run --config vitest.config.mts"
   },
   "dependencies": {
+    "@electric-sql/pglite": "^0.5.4",
     "@gt100k/evidence-deferred": "workspace:*",
     "@gt100k/evidence-explorer-view": "workspace:*",
     "@gt100k/evidence-graph": "workspace:*",
     "@gt100k/evidence-hash-node": "workspace:*",
+    "@gt100k/evidence-repo-postgres": "workspace:*",
     "@gt100k/evidence-tiny-game": "workspace:*",
     "@gt100k/evidence-verifier-stub": "workspace:*",
     "@react-three/drei": "^9.114.0",
