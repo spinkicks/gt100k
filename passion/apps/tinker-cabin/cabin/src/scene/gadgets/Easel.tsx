@@ -1,22 +1,16 @@
 /**
- * Paint easel (art). Press E to cycle the canvas through paintings: blank → warm sunset → cool
- * night → vivid bloom. A tripod easel with a palette of paint blobs in the back-right corner.
+ * Paint easel (art). Driven by the paint(SKY/PEAK/SUN) code challenge: the canvas starts blank and,
+ * as the paint() calls come out right, a real painted mountain landscape appears on it (finished +
+ * lit at mode 2). A tripod easel with a palette of paint blobs in the back-right corner.
  *
- * Determinism: the canvas is chosen purely by `store.easel.mode` (no time term), so it is stable at
- * rest and under `?freeze=1`. A faint palette-blob sheen pulses on clock time as the affordance.
+ * Determinism: the canvas picture is chosen purely by `store.easel.mode` (no time term), so it is
+ * stable at rest and under `?freeze=1`. A faint palette-blob sheen pulses on clock time (affordance).
  */
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
+import { paintingTexture } from "../textures";
 import { GADGET_FROZEN_T, type GadgetStore } from "./gadgetState";
-
-// per mode: [canvas base colour, emissive tint, emissive strength]
-const PAINTINGS: Array<[string, string, number]> = [
-  ["#e7e0d2", "#000000", 0], // blank primed canvas
-  ["#c9663a", "#ff9a4a", 0.45], // warm sunset
-  ["#2f4a7a", "#4a7ad0", 0.4], // cool night
-  ["#7a3a86", "#e05ad0", 0.6], // vivid bloom
-];
 
 export function Easel({
   store,
@@ -27,19 +21,29 @@ export function Easel({
 }): JSX.Element {
   const canvas = useRef<THREE.MeshStandardMaterial>(null);
   const palette = useRef<THREE.MeshStandardMaterial>(null);
-  const emis = useMemo(() => new THREE.Color(), []);
-  const base = useMemo(() => new THREE.Color(), []);
+  // the finished piece: an actual painted mountain scene (matches the paint(SKY/PEAK/SUN) challenge)
+  const painting = useMemo(() => paintingTexture(), []);
+  const applied = useRef(-1);
 
   useFrame((state) => {
     const t = freeze ? GADGET_FROZEN_T : state.clock.elapsedTime;
     const mode = store.easel?.mode ?? 0;
-    const [col, glow, strength] = PAINTINGS[mode] ?? PAINTINGS[0]!;
-    if (canvas.current) {
-      base.set(col);
-      canvas.current.color.copy(base);
-      emis.set(glow);
-      canvas.current.emissive.copy(emis);
-      canvas.current.emissiveIntensity = strength;
+    // only re-apply on a mode change (swapping material.map forces a shader recompile)
+    if (canvas.current && mode !== applied.current) {
+      applied.current = mode;
+      if (mode <= 0) {
+        // blank primed canvas — no picture yet
+        canvas.current.map = null;
+        canvas.current.color.set("#e7e0d2");
+        canvas.current.emissiveIntensity = 0;
+      } else {
+        // a real painting appears; brighter/lit once fully finished (mode 2)
+        canvas.current.map = painting;
+        canvas.current.color.set(mode >= 2 ? "#ffffff" : "#b9b2a4"); // underpainting → finished
+        canvas.current.emissive.set("#4a3a24");
+        canvas.current.emissiveIntensity = mode >= 2 ? 0.35 : 0.12;
+      }
+      canvas.current.needsUpdate = true;
     }
     // palette blobs shimmer faintly (affordance)
     if (palette.current)
