@@ -36,22 +36,44 @@ export class KeyboardPointerSource implements InputSource {
     this.intent = intent;
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("keyup", this.onKeyUp);
-    el.addEventListener("click", this.requestLock);
+    el.addEventListener("click", this.onClick);
     document.addEventListener("mousemove", this.onMouseMove);
   }
 
   detach(): void {
     window.removeEventListener("keydown", this.onKeyDown);
     window.removeEventListener("keyup", this.onKeyUp);
-    this.el?.removeEventListener("click", this.requestLock);
+    this.el?.removeEventListener("click", this.onClick);
     document.removeEventListener("mousemove", this.onMouseMove);
     this.el = null;
     this.intent = null;
     this.down.clear();
   }
 
+  /** Click = enter mouse-look (first click grabs pointer lock); once playing, a click is "use" —
+   *  the crosshair is on the target, so clicking interacts just like pressing E (Minecraft-style). */
+  private onClick = (): void => {
+    if (this.el && document.pointerLockElement === this.el) {
+      if (this.intent) this.intent.interact = true;
+      return;
+    }
+    this.requestLock();
+  };
+
   private requestLock = (): void => {
-    this.el?.requestPointerLock?.();
+    // Already locked → nothing to do (a redundant request during lock also rejects).
+    if (!this.el || document.pointerLockElement === this.el) return;
+    // Chrome rejects requestPointerLock() with "cannot be acquired immediately after the user has
+    // exited the lock" if you re-request within ~1s of exiting (e.g. Esc to use the code overlay,
+    // then click the canvas). That rejection is BENIGN — the next click succeeds — but as an
+    // unhandled promise rejection it would trip the global handler and show the fatal boot overlay.
+    // Swallow it (both the Promise form and the older synchronous-throw form).
+    try {
+      const p = this.el.requestPointerLock?.() as unknown as Promise<void> | undefined;
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    } catch {
+      /* older browsers throw synchronously; ignore */
+    }
   };
 
   private readonly onKeyDown = (e: KeyboardEvent): void => {

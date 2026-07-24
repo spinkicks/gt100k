@@ -8,7 +8,7 @@ import * as THREE from "three";
 type RGB = [number, number, number];
 
 /** Small deterministic PRNG so textures look identical every render (determinism gate). */
-function mulberry32(seed: number): () => number {
+export function mulberry32(seed: number): () => number {
   let s = seed;
   return () => {
     s |= 0;
@@ -34,9 +34,12 @@ function woodAlbedoCanvas(
   for (let p = 0; p < planks; p++) {
     const y0 = p * plankH;
     const shade = 0.82 + rand() * 0.28;
-    ctx.fillStyle = `rgb(${Math.floor(base[0] * shade)},${Math.floor(base[1] * shade)},${Math.floor(base[2] * shade)})`;
+    // per-plank hue jitter (some planks warmer/cooler) so rows don't read as one flat tone
+    const hr = 1 + (rand() - 0.5) * 0.12;
+    const hb = 1 + (rand() - 0.5) * 0.12;
+    ctx.fillStyle = `rgb(${Math.floor(base[0] * shade * hr)},${Math.floor(base[1] * shade)},${Math.floor(base[2] * shade * hb)})`;
     ctx.fillRect(0, y0, size, plankH);
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 44; i++) {
       const gy = y0 + rand() * plankH;
       ctx.strokeStyle = `rgba(${dark[0]},${dark[1]},${dark[2]},${0.04 + rand() * 0.1})`;
       ctx.lineWidth = 0.5 + rand() * 1.5;
@@ -60,8 +63,29 @@ function woodAlbedoCanvas(
       ctx.arc(kx, ky, kr * 2, 0, Math.PI * 2);
       ctx.fill();
     }
-    ctx.fillStyle = "rgba(0,0,0,0.55)";
+    // plank seam: dark groove at the top edge + a thin highlight just below and a soft shadow at the
+    // bottom edge → a beveled tongue-and-groove read (depth) instead of flat painted stripes.
+    ctx.fillStyle = "rgba(0,0,0,0.5)";
     ctx.fillRect(0, y0, size, Math.max(1.5, plankH * 0.03));
+    ctx.fillStyle = "rgba(255,240,210,0.10)";
+    ctx.fillRect(0, y0 + Math.max(1.5, plankH * 0.03), size, Math.max(1, plankH * 0.02));
+    ctx.fillStyle = "rgba(0,0,0,0.16)";
+    ctx.fillRect(0, y0 + plankH - Math.max(1.5, plankH * 0.05), size, Math.max(1.5, plankH * 0.05));
+  }
+  // low-frequency mottling: a few big soft patches of subtle light/dark so the tiled texture doesn't
+  // read as an obviously repeating stamp across a large wall.
+  for (let i = 0; i < 7; i++) {
+    const mx = rand() * size;
+    const my = rand() * size;
+    const mr = size * (0.28 + rand() * 0.35);
+    const up = rand() > 0.5;
+    const g = ctx.createRadialGradient(mx, my, 1, mx, my, mr);
+    g.addColorStop(0, up ? "rgba(255,240,210,0.06)" : "rgba(20,12,6,0.10)");
+    g.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(mx, my, mr, 0, Math.PI * 2);
+    ctx.fill();
   }
   return c;
 }
@@ -166,14 +190,15 @@ export const floorTextures = (): WoodTextureSet =>
 
 export const wallTextures = (): WoodTextureSet =>
   makeSet({
-    planks: 10,
+    size: 1024,
+    planks: 13,
     base: [186, 143, 92],
     dark: [70, 46, 24],
     seed: 21,
     normalStrength: 5,
     roughLo: 0.55,
     roughHi: 0.9,
-    repeat: [3, 2],
+    repeat: [2.2, 1.7],
   });
 
 export const propTextures = (): WoodTextureSet =>
@@ -194,7 +219,7 @@ function stoneAlbedoCanvas(size: number, seed: number): HTMLCanvasElement {
   c.width = c.height = size;
   const ctx = c.getContext("2d")!;
   const rand = mulberry32(seed);
-  ctx.fillStyle = "#2b2622"; // mortar
+  ctx.fillStyle = "#211915"; // deep recessed mortar (darker → the joints read as real gaps)
   ctx.fillRect(0, 0, size, size);
   const rows = 9;
   const rh = size / rows;
@@ -205,23 +230,32 @@ function stoneAlbedoCanvas(size: number, seed: number): HTMLCanvasElement {
     const cw = size / cols;
     for (let cx = -1; cx <= cols; cx++) {
       const x0 = (cx + offset) * cw + rand() * 6 - 3;
-      const g = 92 + Math.floor(rand() * 60);
-      const rr = g + Math.floor(rand() * 18);
-      const bb = g - Math.floor(rand() * 14);
-      ctx.fillStyle = `rgb(${rr},${g},${bb})`;
+      // warm taupe granite tones (more red, less blue) so the hearth reads warm, not cold grey
+      const g = 96 + Math.floor(rand() * 58);
+      const rr = g + 16 + Math.floor(rand() * 22);
+      const bb = g - 10 - Math.floor(rand() * 16);
       const pad = 2 + rand() * 2;
       const bw = cw - pad * 2;
       const bh = rh - pad * 2;
-      // rounded-ish block
-      ctx.fillRect(x0 + pad, y0 + pad, bw, bh);
+      const bx = x0 + pad;
+      const by = y0 + pad;
+      ctx.fillStyle = `rgb(${rr},${g},${bb})`;
+      ctx.fillRect(bx, by, bw, bh);
       // speckle/mottling
-      for (let s = 0; s < 24; s++) {
-        const sx = x0 + pad + rand() * bw;
-        const sy = y0 + pad + rand() * bh;
-        const d = rand() > 0.5 ? 22 : -22;
+      for (let s = 0; s < 30; s++) {
+        const sx = bx + rand() * bw;
+        const sy = by + rand() * bh;
+        const d = rand() > 0.5 ? 26 : -26;
         ctx.fillStyle = `rgba(${rr + d},${g + d},${bb + d},0.25)`;
         ctx.fillRect(sx, sy, 1 + rand() * 2, 1 + rand() * 2);
       }
+      // chiseled bevel: lit top+left edges, shadowed bottom+right → each block reads as raised stone
+      ctx.fillStyle = "rgba(255,238,210,0.16)";
+      ctx.fillRect(bx, by, bw, 1.5);
+      ctx.fillRect(bx, by, 1.5, bh);
+      ctx.fillStyle = "rgba(0,0,0,0.32)";
+      ctx.fillRect(bx, by + bh - 1.5, bw, 1.5);
+      ctx.fillRect(bx + bw - 1.5, by, 1.5, bh);
     }
   }
   return c;
@@ -293,5 +327,381 @@ export function duskVistaTexture(): THREE.CanvasTexture {
   }
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+/** Opaque dusk sky gradient + soft low sun — the far backdrop plane of the parallax window view. */
+export function skyGradientTexture(): THREE.CanvasTexture {
+  const w = 1024;
+  const h = 1024;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d")!;
+  const sky = ctx.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, "#3a5890");
+  sky.addColorStop(0.5, "#7f9ac6");
+  sky.addColorStop(0.8, "#e6c194");
+  sky.addColorStop(1, "#ecc896");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, w, h);
+  const sun = ctx.createRadialGradient(w * 0.62, h * 0.74, 4, w * 0.62, h * 0.74, w * 0.42);
+  sun.addColorStop(0, "rgba(255,244,214,0.9)");
+  sun.addColorStop(0.35, "rgba(255,226,172,0.35)");
+  sun.addColorStop(1, "rgba(255,226,172,0)");
+  ctx.fillStyle = sun;
+  ctx.fillRect(0, 0, w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+/**
+ * One transparent mountain-ridge layer for the parallax window view: a smoothed ridge filled with
+ * `color`, then tinted with aerial haze (more `haze` = hazier/lighter toward the ridgeline, for
+ * distant layers). High-res + smoothed so it doesn't read as low-res/jagged.
+ */
+export function mountainLayerTexture(
+  color: string,
+  baseY: number,
+  amp: number,
+  seed: number,
+  haze = 0,
+): THREE.CanvasTexture {
+  const w = 1600;
+  const h = 400;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d")!;
+  ctx.clearRect(0, 0, w, h);
+  const rand = mulberry32(seed);
+  // build + smooth the ridge heights (two averaging passes → gentle silhouette, not jagged)
+  const step = 8;
+  const n = Math.floor(w / step) + 1;
+  let ys: number[] = [];
+  let y = baseY * h;
+  for (let i = 0; i < n; i++) {
+    y += (rand() - 0.5) * amp;
+    y = Math.max(baseY * h - amp, Math.min(baseY * h + amp * 0.5, y));
+    ys.push(y);
+  }
+  for (let pass = 0; pass < 2; pass++) {
+    ys = ys.map((v, i) => {
+      const a = ys[i - 1] ?? v;
+      const b = ys[i + 1] ?? v;
+      return (a + v + b) / 3;
+    });
+  }
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(0, h);
+  ctx.lineTo(0, ys[0]!);
+  for (let i = 0; i < n; i++) ctx.lineTo(i * step, ys[i]!);
+  ctx.lineTo(w, h);
+  ctx.closePath();
+  ctx.fill();
+  // aerial haze: tint only the mountain pixels, lighter toward the ridgeline
+  if (haze > 0) {
+    ctx.globalCompositeOperation = "source-atop";
+    const g = ctx.createLinearGradient(0, baseY * h - amp, 0, h);
+    g.addColorStop(0, `rgba(150,170,205,${0.55 * haze})`);
+    g.addColorStop(1, "rgba(150,170,205,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+    ctx.globalCompositeOperation = "source-over";
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+/** Mottled meadow-grass texture for the exterior foreground (blades + tonal variation so it isn't a
+ *  flat slab and blends into the photographic panorama's grass). */
+export function grassTexture(): THREE.CanvasTexture {
+  const s = 256;
+  const c = document.createElement("canvas");
+  c.width = c.height = s;
+  const ctx = c.getContext("2d")!;
+  const rand = mulberry32(7);
+  ctx.fillStyle = "#7f8c4e";
+  ctx.fillRect(0, 0, s, s);
+  for (let i = 0; i < 220; i++) {
+    const x = rand() * s;
+    const y = rand() * s;
+    const r = 6 + rand() * 26;
+    const g = 70 + Math.floor(rand() * 60);
+    ctx.fillStyle = `rgba(${g - 20},${g + 20},${50 + Math.floor(rand() * 30)},0.12)`;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  for (let i = 0; i < 1400; i++) {
+    const x = rand() * s;
+    const y = rand() * s;
+    const h = 2 + rand() * 5;
+    const g = 90 + Math.floor(rand() * 70);
+    ctx.strokeStyle = `rgba(${g - 40},${g},${40 + Math.floor(rand() * 30)},${0.3 + rand() * 0.4})`;
+    ctx.lineWidth = 0.6 + rand();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + (rand() - 0.5) * 2, y - h);
+    ctx.stroke();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(10, 18);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+/**
+ * A tuft of grass blades on a transparent background, for alpha-tested crossed-quad billboards.
+ * Several tapered blades fan up from the base in varied muted-olive greens (matched to the
+ * photographic panorama's meadow), darker at the root and lighter at the tip. Used unlit +
+ * alphaTest so instanced tufts read as real grass clumps, not flat cones.
+ */
+export function grassBladeTexture(): THREE.CanvasTexture {
+  const w = 128;
+  const h = 128;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d")!;
+  ctx.clearRect(0, 0, w, h);
+  const rand = mulberry32(4242);
+  const blades = 9;
+  for (let i = 0; i < blades; i++) {
+    const baseX = w * (0.12 + rand() * 0.76);
+    const bh = h * (0.5 + rand() * 0.48); // blade height
+    const topY = h - bh;
+    const lean = (rand() - 0.5) * w * 0.28; // horizontal drift of the tip
+    const halfW = 1.6 + rand() * 2.2; // blade half-width at the base
+    const ctrlY = h - bh * (0.45 + rand() * 0.2);
+    const tipX = baseX + lean;
+    // per-blade vertical gradient: dark olive root → lighter sage tip
+    const g = ctx.createLinearGradient(0, h, 0, topY);
+    const dk = 40 + Math.floor(rand() * 25);
+    g.addColorStop(0, `rgb(${dk},${dk + 34},${Math.floor(dk * 0.5)})`);
+    g.addColorStop(
+      1,
+      `rgb(${110 + Math.floor(rand() * 40)},${140 + Math.floor(rand() * 45)},${70 + Math.floor(rand() * 30)})`,
+    );
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(baseX - halfW, h);
+    ctx.quadraticCurveTo(baseX - halfW * 0.5 + lean * 0.5, ctrlY, tipX, topY);
+    ctx.quadraticCurveTo(baseX + halfW * 0.5 + lean * 0.5, ctrlY, baseX + halfW, h);
+    ctx.closePath();
+    ctx.fill();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+/** A small painted mountain landscape for the framed picture on the wall. */
+export function paintingTexture(): THREE.CanvasTexture {
+  const w = 320;
+  const h = 240;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d")!;
+  const sky = ctx.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, "#e8b878");
+  sky.addColorStop(0.5, "#e6cfa0");
+  sky.addColorStop(1, "#dfc58f");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, w, h);
+  // low sun
+  ctx.fillStyle = "rgba(255,240,205,0.9)";
+  ctx.beginPath();
+  ctx.arc(w * 0.7, h * 0.32, 22, 0, Math.PI * 2);
+  ctx.fill();
+  // two mountain ridges
+  const rand = mulberry32(3);
+  const ridge = (baseY: number, amp: number, color: string) => {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(0, h);
+    let y = baseY;
+    ctx.lineTo(0, y);
+    for (let x = 0; x <= w; x += 12) {
+      y += (rand() - 0.5) * amp;
+      y = Math.max(baseY - amp, Math.min(baseY + amp * 0.4, y));
+      ctx.lineTo(x, y);
+    }
+    ctx.lineTo(w, h);
+    ctx.closePath();
+    ctx.fill();
+  };
+  ridge(h * 0.5, 34, "#8898b4");
+  ridge(h * 0.62, 46, "#5d6f92");
+  // snow dabs on the near ridge crest
+  ctx.fillStyle = "rgba(240,244,250,0.8)";
+  for (let i = 0; i < 40; i++) ctx.fillRect(rand() * w, h * 0.6 + rand() * 8, 2 + rand() * 3, 2);
+  // foreground
+  ctx.fillStyle = "#3a4a30";
+  ctx.fillRect(0, h * 0.82, w, h * 0.18);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+/**
+ * Warm flame-tongue sprite for additive fire: a tapered teardrop (wide hot base → pointed cooler
+ * tip), drawn as stacked ellipses so a vertically-stretched sprite reads as a flame, not an orb.
+ * Canvas y=0 is top; we build the tip at top and the base at the bottom.
+ */
+export function flameTexture(): THREE.CanvasTexture {
+  const s = 128;
+  const c = document.createElement("canvas");
+  c.width = c.height = s;
+  const ctx = c.getContext("2d")!;
+  ctx.clearRect(0, 0, s, s);
+  const cx = s / 2;
+  // color by height: base hot white → amber → deep-orange tip (fed to a per-row radial gradient
+  // whose alpha feathers to 0 at the blade edge, so additive stacking reads as one soft flame body
+  // rather than hard-edged bars).
+  const coreColor = (u: number): [number, number, number] => {
+    if (u < 0.22) return [255, 249, 224];
+    if (u < 0.46) return [255, 214, 130];
+    if (u < 0.72) return [255, 150, 55];
+    return [206, 74, 18];
+  };
+  const steps = 120;
+  for (let i = 0; i < steps; i++) {
+    const u = i / steps; // 0 base → 1 tip
+    const y = s * (0.965 - u * 0.93); // base near bottom, tip near top
+    // width profile: pinched at base, bulge ~25% up, taper to a point at the flickering tip
+    const bulge = Math.sin(Math.min(1, u * 1.25) * Math.PI * 0.5);
+    const halfW = 0.4 * s * bulge * (1 - u * 0.9) + 1.5;
+    // core alpha: bright low, fading toward the cooler tip
+    const coreA = u < 0.5 ? 0.85 - u * 0.4 : 0.55 * (1 - (u - 0.5) / 0.5);
+    const [r, g, b] = coreColor(u);
+    // soft horizontal falloff: opaque-ish core → transparent edge (feathered, not a hard ellipse)
+    const grad = ctx.createRadialGradient(cx, y, 0, cx, y, halfW);
+    grad.addColorStop(0, `rgba(${r},${g},${b},${coreA.toFixed(3)})`);
+    grad.addColorStop(0.55, `rgba(${r},${g},${b},${(coreA * 0.5).toFixed(3)})`);
+    grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.ellipse(cx, y, halfW, (s / steps) * 2.2, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+/**
+ * Short-fur texture for the procedural cat: a base coat broken up by fine directional fur strokes
+ * plus soft mackerel-tabby bands, with a derived normal map for micro-relief. Turns the smooth
+ * clay loaf into something that reads as furred. Returns albedo + normal.
+ */
+export function catFurTexture(
+  base: RGB,
+  dark: RGB,
+  seed: number,
+  stripes: boolean,
+): { map: THREE.CanvasTexture; normalMap: THREE.CanvasTexture } {
+  const size = 256;
+  const c = document.createElement("canvas");
+  c.width = c.height = size;
+  const ctx = c.getContext("2d")!;
+  const rand = mulberry32(seed);
+  ctx.fillStyle = `rgb(${base[0]},${base[1]},${base[2]})`;
+  ctx.fillRect(0, 0, size, size);
+  // soft tabby bands (vertical, wavy) — only on the coat, not the belly/cream
+  if (stripes) {
+    for (let b = 0; b < 7; b++) {
+      const bx = (b + 0.5) * (size / 7) + (rand() - 0.5) * 10;
+      const bw = 8 + rand() * 12;
+      ctx.strokeStyle = `rgba(${dark[0]},${dark[1]},${dark[2]},${0.28 + rand() * 0.18})`;
+      ctx.lineWidth = bw;
+      ctx.beginPath();
+      for (let y = 0; y <= size; y += 6) {
+        const x = bx + Math.sin(y * 0.03 + b) * 10;
+        if (y === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+  }
+  // fine fur strokes: many short lines in base±shade, mostly vertical, for micro-detail
+  for (let i = 0; i < 5200; i++) {
+    const x = rand() * size;
+    const y = rand() * size;
+    const len = 3 + rand() * 6;
+    const d = rand() > 0.5 ? 1 : -1;
+    const j = Math.floor(rand() * 26) * d;
+    ctx.strokeStyle = `rgba(${base[0] + j},${base[1] + j},${base[2] + j},${0.2 + rand() * 0.3})`;
+    ctx.lineWidth = 0.6 + rand() * 0.6;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + (rand() - 0.5) * 2, y - len);
+    ctx.stroke();
+  }
+  const normalC = normalFromCanvas(c, 2.4);
+  const mk = (canvas: HTMLCanvasElement, srgb: boolean): THREE.CanvasTexture => {
+    const t = new THREE.CanvasTexture(canvas);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(2, 2);
+    t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+    t.anisotropy = 8;
+    return t;
+  };
+  return { map: mk(c, true), normalMap: mk(normalC, false) };
+}
+
+/** Woven wool-kilim texture for the hearth rug: muted terracotta/ochre/charcoal bands, a cream
+ *  diamond motif, a border, and fine horizontal weave striations so it reads as woven wool (not a
+ *  flat printed stripe). */
+export function rugTexture(): THREE.CanvasTexture {
+  const s = 512;
+  const c = document.createElement("canvas");
+  c.width = c.height = s;
+  const ctx = c.getContext("2d")!;
+  const rand = mulberry32(555);
+  // muted, desaturated palette (was a garish bright rust)
+  ctx.fillStyle = "#7c4634";
+  ctx.fillRect(0, 0, s, s);
+  const bands = ["#814b37", "#3a2a22", "#a06a44", "#3a2a22", "#8f5a3e"];
+  const bh = s / (bands.length * 4);
+  for (let i = 0; i < bands.length * 4; i++) {
+    ctx.fillStyle = bands[i % bands.length]!;
+    ctx.fillRect(0, i * bh, s, bh * 0.62);
+  }
+  // cream diamond/zigzag motif rows
+  ctx.strokeStyle = "#d8bd93";
+  ctx.lineWidth = 3;
+  for (let y = bh; y < s; y += bh * 4) {
+    ctx.beginPath();
+    for (let x = 0; x <= s; x += 24) ctx.lineTo(x, y + (Math.floor(x / 24) % 2 ? 10 : -10));
+    ctx.stroke();
+  }
+  // border frame
+  ctx.strokeStyle = "#2f231c";
+  ctx.lineWidth = 10;
+  ctx.strokeRect(6, 6, s - 12, s - 12);
+  // fine horizontal weave striations across the whole rug (woven wool grain)
+  for (let y = 0; y < s; y += 2) {
+    const a = 0.05 + rand() * 0.08;
+    ctx.strokeStyle = rand() > 0.5 ? `rgba(255,240,215,${a})` : `rgba(0,0,0,${a})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, y + 0.5);
+    ctx.lineTo(s, y + 0.5);
+    ctx.stroke();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
   return t;
 }

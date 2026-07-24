@@ -6,32 +6,92 @@
  * Determinism: all animation is a pure function of clock time and is frozen (fixed phase) when
  * `freeze` is set, so `?freeze=1` shots are reproducible. No Math.random in the render loop.
  */
+import { useGLTF, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
-import type * as THREE from "three";
+import { Component, type ReactNode, Suspense, useEffect, useMemo, useRef } from "react";
+import * as THREE from "three";
 import { updateStats } from "../core/hook";
+import { useAssetReady } from "../core/useAssetReady";
+import { EnvLight } from "./EnvLight";
+import { SkyDome } from "./SkyDome";
+import { ChimeKeys } from "./gadgets/ChimeKeys";
+import { ControlPanel } from "./gadgets/ControlPanel";
+import { Easel } from "./gadgets/Easel";
+import { GearGizmo } from "./gadgets/GearGizmo";
+import { InteractiveLamp } from "./gadgets/InteractiveLamp";
+import type { GadgetStore } from "./gadgets/gadgetState";
 import { ANCHORS, ROOM } from "./layout";
 import {
-  duskVistaTexture,
+  catFurTexture,
+  flameTexture,
   floorTextures,
+  grassBladeTexture,
+  grassTexture,
+  mulberry32,
+  paintingTexture,
   propTextures,
+  rugTexture,
   stoneTextures,
   wallTextures,
 } from "./textures";
 
 const FROZEN_T = 1.5; // fixed phase used when freeze=1
 
-function Shell(): JSX.Element {
+const WOOD_TEX = {
+  map: "/assets/textures/wood_diff.jpg",
+  normalMap: "/assets/textures/wood_nor.jpg",
+  roughnessMap: "/assets/textures/wood_rough.jpg",
+};
+
+/** Floor with real scanned CC0 wood when fetched, else the procedural plank material. */
+function ProceduralFloor(): JSX.Element {
+  const { hx, hz } = ROOM;
   const floor = useMemo(() => floorTextures(), []);
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      <planeGeometry args={[hx * 2, hz * 2]} />
+      <meshStandardMaterial {...floor} roughness={0.78} metalness={0} />
+    </mesh>
+  );
+}
+
+function TexturedFloor(): JSX.Element {
+  const { hx, hz } = ROOM;
+  const tex = useTexture(WOOD_TEX);
+  useMemo(() => {
+    for (const [key, t] of Object.entries(tex)) {
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(3, 3);
+      t.colorSpace = key === "map" ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+      t.anisotropy = 8;
+      t.needsUpdate = true;
+    }
+  }, [tex]);
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      <planeGeometry args={[hx * 2, hz * 2]} />
+      {/* warm tint multiplies the scanned (greyish) planks toward the cabin's cozy palette */}
+      <meshStandardMaterial {...tex} color="#caa579" roughness={0.85} metalness={0} />
+    </mesh>
+  );
+}
+
+function Floor(): JSX.Element {
+  const hasWood = useAssetReady(WOOD_TEX.map);
+  if (!hasWood) return <ProceduralFloor />;
+  return (
+    <Suspense fallback={<ProceduralFloor />}>
+      <TexturedFloor />
+    </Suspense>
+  );
+}
+
+function Shell(): JSX.Element {
   const wall = useMemo(() => wallTextures(), []);
   const { hx, hz, height, wall: tw } = ROOM;
   return (
     <group>
-      {/* floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[hx * 2, hz * 2]} />
-        <meshStandardMaterial {...floor} roughness={0.78} metalness={0} />
-      </mesh>
+      <Floor />
       {/* ceiling */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, height, 0]} receiveShadow>
         <planeGeometry args={[hx * 2, hz * 2]} />
@@ -42,7 +102,12 @@ function Shell(): JSX.Element {
         {Array.from({ length: 7 }, (_, k) => {
           const z = -hz + 0.35 + (k * (hz * 2 - 0.7)) / 6;
           return (
-            <mesh key={`beam-${k}`} position={[0, height - 0.16, z]} castShadow receiveShadow>
+            <mesh
+              key={`beam-${z.toFixed(3)}`}
+              position={[0, height - 0.16, z]}
+              castShadow
+              receiveShadow
+            >
               <boxGeometry args={[hx * 2, 0.22, 0.2]} />
               <meshStandardMaterial color="#3a2817" roughness={0.85} metalness={0} />
             </mesh>
@@ -71,9 +136,26 @@ function Shell(): JSX.Element {
         <boxGeometry args={[tw, height, hz * 2]} />
         <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
       </mesh>
-      {/* right wall (+X) — holds the window */}
-      <mesh position={[hx, height / 2, 0]} receiveShadow>
-        <boxGeometry args={[tw, height, hz * 2]} />
+      {/* right wall (+X) — built as 4 segments AROUND a real window opening
+          (opening: y∈[1.0,2.5], z∈[-0.95,0.95]) so exterior light only enters through the hole
+          and the mountain view behind it parallaxes. Segments cast shadow to form the light shaft. */}
+      <mesh position={[hx, 0.5, 0]} receiveShadow castShadow>
+        <boxGeometry args={[tw, 1.0, hz * 2]} />
+        <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
+      </mesh>
+      <mesh position={[hx, 2.75, 0]} receiveShadow castShadow>
+        <boxGeometry args={[tw, 0.5, hz * 2]} />
+        <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
+      </mesh>
+      {/* jambs sit BETWEEN the sill and header (partition the wall face without overlap → no
+          coplanar same-facing faces → no z-fight; touching edges are back-to-back). The exterior
+          light's shadow-normalBias (below) closes any thin seam leak. */}
+      <mesh position={[hx, 1.75, -1.975]} receiveShadow castShadow>
+        <boxGeometry args={[tw, 1.5, 2.05]} />
+        <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
+      </mesh>
+      <mesh position={[hx, 1.75, 1.975]} receiveShadow castShadow>
+        <boxGeometry args={[tw, 1.5, 2.05]} />
         <meshStandardMaterial {...wall} roughness={0.85} metalness={0} />
       </mesh>
     </group>
@@ -83,8 +165,27 @@ function Shell(): JSX.Element {
 function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
   const keyLight = useRef<THREE.PointLight>(null);
   const flames = useRef<THREE.Group>(null);
+  const embersRef = useRef<THREE.Group>(null);
   const [ax, , az] = ANCHORS.fireplace;
   const stone = useMemo(() => stoneTextures(), []);
+  const flame = useMemo(() => flameTexture(), []);
+
+  // additive flame sprites: [x, baseY, width, height, opacity] — overlapping so they merge into one
+  // soft flame body (lower per-sprite opacity so additive doesn't blow out to a hard white bar).
+  const sprites: Array<[number, number, number, number, number]> = [
+    [0, 0, 0.6, 1.0, 0.6],
+    [-0.09, 0, 0.44, 0.72, 0.4],
+    [0.1, 0, 0.42, 0.66, 0.4],
+    [0, 0.0, 0.28, 0.52, 0.6],
+  ];
+  // ember sparks that drift up from the coals: [x, z, phase, speed, size]
+  const embers: Array<[number, number, number, number, number]> = [
+    [-0.18, 0.36, 0.0, 0.9, 0.05],
+    [0.12, 0.42, 2.1, 1.2, 0.04],
+    [0.02, 0.3, 4.0, 0.7, 0.055],
+    [0.22, 0.38, 1.2, 1.05, 0.035],
+    [-0.1, 0.44, 3.3, 0.85, 0.045],
+  ];
 
   useEffect(() => {
     updateStats({ fireLit: true });
@@ -92,19 +193,32 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
 
   useFrame((state) => {
     const t = freeze ? FROZEN_T : state.clock.elapsedTime;
-    // deterministic multi-sine flicker (no RNG)
     const flicker =
       1 + Math.sin(t * 12) * 0.09 + Math.sin(t * 27.3) * 0.05 + Math.sin(t * 3.1) * 0.03;
     if (keyLight.current) keyLight.current.intensity = 24 * flicker;
-    if (flames.current) flames.current.scale.set(1, flicker, 1);
+    // per-tongue life: each flame sways + breathes on its own phase (livelier than a group scale)
+    const g = flames.current;
+    if (g) {
+      g.children.forEach((c, i) => {
+        const baseH = sprites[i]?.[3] ?? 0.6;
+        const ph = i * 1.7;
+        c.scale.y = baseH * (1 + Math.sin(t * (9 + i * 2.3) + ph) * 0.16);
+        c.position.x = (sprites[i]?.[0] ?? 0) + Math.sin(t * (4 + i) + ph) * 0.025;
+      });
+    }
+    // embers drift up + fade over a ~0.7m loop (deterministic; frozen when freeze=1)
+    const eg = embersRef.current;
+    if (eg) {
+      eg.children.forEach((c, i) => {
+        const [ex, , phase, speed] = embers[i] ?? [0, 0, 0, 1, 0.04];
+        const u = ((t * speed + phase) % 2) / 2; // 0..1 rise
+        c.position.y = 0.05 + u * 0.7;
+        c.position.x = ex + Math.sin(t * 2 + phase) * 0.05;
+        const s = c as THREE.Sprite;
+        if (s.material) s.material.opacity = Math.max(0, 0.9 * (1 - u));
+      });
+    }
   });
-
-  const tongues: Array<[number, number, number, string]> = [
-    [-0.22, 0.34, 0.12, "#ff5410"],
-    [0.02, 0.52, 0.1, "#ffb020"],
-    [0.22, 0.32, 0.11, "#ff6612"],
-    [-0.05, 0.42, 0.09, "#ff8a1a"],
-  ];
 
   return (
     <group position={[ax, 0, az + 0.35]}>
@@ -128,11 +242,26 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
         <boxGeometry args={[2.8, 0.2, 0.85]} />
         <meshStandardMaterial color="#5a3d22" roughness={0.7} metalness={0} />
       </mesh>
-      {/* ember bed */}
-      <mesh position={[0, 0.3, 0.36]}>
-        <boxGeometry args={[1.0, 0.14, 0.45]} />
-        <meshStandardMaterial color="#ff7a20" emissive="#ff4808" emissiveIntensity={5} />
-      </mesh>
+      {/* ember bed — a cluster of glowing coal lumps (reads as coals, not a slab) */}
+      {(
+        [
+          [-0.28, 0.22, 0.4, 0.09, 3.6],
+          [-0.05, 0.2, 0.44, 0.11, 4.2],
+          [0.2, 0.21, 0.4, 0.1, 3.4],
+          [0.34, 0.2, 0.36, 0.07, 2.8],
+          [0.05, 0.19, 0.34, 0.08, 3.0],
+        ] as Array<[number, number, number, number, number]>
+      ).map(([x, y, z, r, ei]) => (
+        <mesh key={`coal-${x}-${z}`} position={[x, y, z]}>
+          <sphereGeometry args={[r, 10, 8]} />
+          <meshStandardMaterial
+            color="#ff7a2a"
+            emissive="#e03808"
+            emissiveIntensity={ei}
+            roughness={1}
+          />
+        </mesh>
+      ))}
       {/* logs */}
       {(
         [
@@ -151,18 +280,38 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
           <meshStandardMaterial color="#2a1a0e" roughness={0.9} />
         </mesh>
       ))}
-      {/* flame tongues + hot core */}
-      <group ref={flames} position={[0, 0.36, 0.36]}>
-        {tongues.map(([x, h, r, col]) => (
-          <mesh key={`flame-${x}-${col}`} position={[x, h / 2, 0]}>
-            <coneGeometry args={[r, h, 10]} />
-            <meshStandardMaterial color={col} emissive={col} emissiveIntensity={5.5} />
-          </mesh>
+      {/* soft additive flame sprites (billboard the camera; stack for a warm volumetric glow).
+          Base sits on the coals and the cluster is pulled well in FRONT of the logs (z) so the log
+          cylinders never cut a hard occlusion line across the flame. */}
+      <group ref={flames} position={[0, 0.24, 0.58]}>
+        {sprites.map(([x, by, w, h, op]) => (
+          <sprite key={`flame-${x}-${h}`} position={[x, by + h / 2, 0]} scale={[w, h, 1]}>
+            <spriteMaterial
+              map={flame}
+              blending={THREE.AdditiveBlending}
+              depthWrite={false}
+              transparent
+              opacity={op}
+              toneMapped={false}
+            />
+          </sprite>
         ))}
-        <mesh position={[0, 0.16, 0]}>
-          <sphereGeometry args={[0.12, 12, 12]} />
-          <meshStandardMaterial color="#fff0c0" emissive="#ffd060" emissiveIntensity={8} />
-        </mesh>
+      </group>
+      {/* ember sparks drifting up from the coals (positions animated in useFrame) */}
+      <group ref={embersRef}>
+        {embers.map(([ex, ez, , , size]) => (
+          <sprite key={`ember-${ex}-${ez}`} position={[ex, 0.1, ez]} scale={[size, size, 1]}>
+            <spriteMaterial
+              map={flame}
+              blending={THREE.AdditiveBlending}
+              depthWrite={false}
+              transparent
+              opacity={0.9}
+              toneMapped={false}
+              color="#ffb460"
+            />
+          </sprite>
+        ))}
       </group>
       {/* warm key light from the fire */}
       <pointLight
@@ -181,103 +330,452 @@ function Fireplace({ freeze }: { freeze: boolean }): JSX.Element {
   );
 }
 
+const CAT_MODEL_URL = "/assets/models/cat.glb";
+
+/** Real CC0 cat GLB (Quaternius, via fetch-assets). Auto-normalized to fit + grounded so it works
+ *  regardless of the model's native scale/pivot. Falls back to the procedural cat if the GLB fails. */
+function GltfCat(): JSX.Element {
+  const [x, , z] = ANCHORS.cat;
+  const { scene } = useGLTF(CAT_MODEL_URL);
+  const model = useMemo(() => {
+    const s = scene.clone(true);
+    s.traverse((o) => {
+      o.castShadow = true;
+      o.receiveShadow = true;
+      // Dingus ships metalness 0.4 / roughness 0.3 → it reads as a dark glossy blob that reflects
+      // the dim room instead of showing its baked tabby fur. Force a matte fur material (keep the
+      // baseColorTexture) so the coat lights warmly by the fire.
+      const mesh = o as THREE.Mesh;
+      const mat = mesh.material as THREE.MeshStandardMaterial | undefined;
+      if (mat && "metalness" in mat) {
+        const m = mat.clone();
+        m.metalness = 0;
+        m.roughness = 0.85;
+        mesh.material = m;
+      }
+    });
+    // fit the longest dimension to ~0.72m and drop it onto the floor, centred on the anchor.
+    // updateMatrixWorld first — setFromObject reads world matrices, which are stale on a fresh clone.
+    s.updateMatrixWorld(true);
+    const size = new THREE.Vector3();
+    new THREE.Box3().setFromObject(s).getSize(size);
+    const longest = Math.max(size.x, size.y, size.z);
+    const k = longest > 0 ? 0.72 / longest : 1;
+    s.scale.setScalar(k);
+    s.updateMatrixWorld(true);
+    const box2 = new THREE.Box3().setFromObject(s);
+    const c = new THREE.Vector3();
+    box2.getCenter(c);
+    s.position.set(-c.x, -box2.min.y, -c.z);
+    return s;
+  }, [scene]);
+  useEffect(() => {
+    updateStats({ catVisible: true });
+  }, []);
+  return (
+    <group position={[x, 0, z]} rotation={[0, -0.6, 0]}>
+      <primitive object={model} />
+    </group>
+  );
+}
+
+/** Renders the procedural cat if the GLB is missing / fails to load. */
+class CatBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError(): { failed: boolean } {
+    return { failed: true };
+  }
+  render(): ReactNode {
+    return this.state.failed ? <ProceduralCat /> : this.props.children;
+  }
+}
+
 function Cat(): JSX.Element {
+  // Default to the real CC0 cat GLB ("Dingus the cat", alwayshasbean, CC-BY — a static, textured
+  // tabby) when it's been fetched into /assets/models/cat.glb. HEAD-probe first (a dev server answers
+  // a missing path with index.html, which would crash the loader) so CI/offline falls back to the
+  // procedural tabby and stays deterministic. Force the procedural cat with ?cat=proc.
+  const forceProc =
+    typeof location !== "undefined" && new URLSearchParams(location.search).get("cat") === "proc";
+  const hasGlb = useAssetReady(CAT_MODEL_URL);
+  if (forceProc || !hasGlb) return <ProceduralCat />;
+  return (
+    <CatBoundary>
+      <Suspense fallback={<ProceduralCat />}>
+        <GltfCat />
+      </Suspense>
+    </CatBoundary>
+  );
+}
+
+function ProceduralCat(): JSX.Element {
   const [x, , z] = ANCHORS.cat;
   useEffect(() => {
     updateStats({ catVisible: true });
   }, []);
-  // low-poly curled tabby placeholder (a real CC0 glTF replaces this in the life phase).
-  const fur = <meshStandardMaterial color="#8a6a44" roughness={0.85} metalness={0} />;
+  // Curled two-tone tabby (fallback when no glTF cat is present). Fur textures (fine strokes +
+  // mackerel tabby bands + micro-relief normal) break up the smooth-clay look so it reads as furred.
+  const coatFur = useMemo(() => catFurTexture([111, 79, 52], [58, 38, 22], 71, true), []);
+  const bellyFur = useMemo(() => catFurTexture([201, 171, 132], [150, 120, 88], 72, false), []);
+  const brown = (
+    <meshStandardMaterial {...coatFur} color="#6f4f34" roughness={0.95} metalness={0} />
+  );
+  const cream = (
+    <meshStandardMaterial {...bellyFur} color="#c9ab84" roughness={0.95} metalness={0} />
+  );
+  const pink = <meshStandardMaterial color="#b07a6e" roughness={0.9} metalness={0} />;
   return (
-    <group position={[x, 0.12, z]} rotation={[0, -0.7, 0]}>
-      {/* curled body */}
-      <mesh castShadow scale={[1.1, 0.7, 0.85]}>
-        <sphereGeometry args={[0.28, 20, 16]} />
-        {fur}
+    <group position={[x, 0.14, z]} rotation={[0, -0.7, 0]}>
+      {/* curled body (brown back) */}
+      <mesh castShadow receiveShadow scale={[1.2, 0.74, 0.98]}>
+        <sphereGeometry args={[0.3, 24, 18]} />
+        {brown}
       </mesh>
-      {/* head */}
-      <mesh position={[0.28, 0.06, 0.12]} castShadow scale={[0.8, 0.8, 0.8]}>
-        <sphereGeometry args={[0.16, 16, 14]} />
-        {fur}
+      {/* cream belly/chest patch, slightly front-low */}
+      <mesh position={[0.12, -0.06, 0.16]} castShadow scale={[0.95, 0.55, 0.7]}>
+        <sphereGeometry args={[0.26, 20, 16]} />
+        {cream}
       </mesh>
-      {/* ears */}
+      {/* front paws tucked (cream) */}
       {(
         [
-          [0.34, 0.2, 0.02],
-          [0.34, 0.2, 0.22],
+          [0.34, -0.02, 0.02],
+          [0.32, -0.03, 0.16],
         ] as Array<[number, number, number]>
-      ).map(([ex, ey, ez]) => (
-        <mesh key={`ear-${ez}`} position={[ex, ey, ez]} rotation={[0, 0, -0.3]} castShadow>
-          <coneGeometry args={[0.05, 0.1, 8]} />
-          {fur}
+      ).map(([px, py, pz]) => (
+        <mesh
+          key={`paw-${pz}`}
+          position={[px, py, pz]}
+          rotation={[0, 0, 0.2]}
+          castShadow
+          scale={[1.4, 0.7, 0.7]}
+        >
+          <sphereGeometry args={[0.07, 12, 10]} />
+          {cream}
         </mesh>
       ))}
-      {/* tail curled around */}
-      <mesh position={[-0.24, 0.02, -0.18]} rotation={[0, 0.6, 0]} castShadow>
-        <torusGeometry args={[0.16, 0.045, 8, 16, Math.PI * 1.3]} />
-        {fur}
+      {/* head */}
+      <mesh position={[0.32, 0.08, 0.1]} castShadow scale={[0.9, 0.85, 0.9]}>
+        <sphereGeometry args={[0.16, 20, 16]} />
+        {brown}
+      </mesh>
+      {/* muzzle (cream) + nose */}
+      <mesh position={[0.45, 0.03, 0.1]} castShadow scale={[0.7, 0.6, 0.8]}>
+        <sphereGeometry args={[0.08, 14, 12]} />
+        {cream}
+      </mesh>
+      <mesh position={[0.51, 0.04, 0.1]} castShadow>
+        <sphereGeometry args={[0.02, 8, 8]} />
+        {pink}
+      </mesh>
+      {/* ears — brown outer + pink inner */}
+      {(
+        [
+          [0.28, 0.22, 0.02],
+          [0.28, 0.22, 0.2],
+        ] as Array<[number, number, number]>
+      ).map(([ex, ey, ez]) => (
+        <group key={`ear-${ez}`} position={[ex, ey, ez]} rotation={[0, 0, -0.25]}>
+          <mesh castShadow>
+            <coneGeometry args={[0.055, 0.11, 10]} />
+            {brown}
+          </mesh>
+          <mesh position={[0.01, -0.005, 0]} scale={[0.6, 0.7, 0.6]}>
+            <coneGeometry args={[0.055, 0.11, 10]} />
+            {pink}
+          </mesh>
+        </group>
+      ))}
+      {/* tail curled around to the front */}
+      <mesh position={[-0.22, -0.02, -0.16]} rotation={[Math.PI / 2, 0.5, 0]} castShadow>
+        <torusGeometry args={[0.18, 0.05, 10, 20, Math.PI * 1.4]} />
+        {brown}
       </mesh>
     </group>
   );
 }
 
+const PINE_MODEL_URL = "/assets/models/pine.glb";
+// tree spots outside the window: [dx from wall, z, height, cone-green]. Placed at a WIDE lateral
+// angle (large |z| vs dx) so they frame the window edges instead of blocking the hero mountain, plus
+// two pushed far back (large dx) to read small + hazy and blend into the panorama's own treeline.
+const TREE_SPOTS: Array<[number, number, number, string]> = [
+  [5.5, -7.8, 5.0, "#26402b"], // left frame
+  [6.0, 7.6, 5.4, "#223a27"], // right frame
+  [12.5, -9.5, 7.2, "#2b4630"], // distant left → panorama treeline
+  [11.5, 8.8, 6.6, "#20361f"], // distant right → panorama treeline
+];
+
+/** Clone a loaded object, fit its height to `targetH`, centre it on X/Z and drop it to y=0. */
+function fitToHeight(src: THREE.Object3D, targetH: number): THREE.Object3D {
+  const s = src.clone(true);
+  s.traverse((o) => {
+    o.castShadow = true;
+    o.receiveShadow = true;
+  });
+  s.updateMatrixWorld(true);
+  const size = new THREE.Vector3();
+  new THREE.Box3().setFromObject(s).getSize(size);
+  s.scale.setScalar(size.y > 0 ? targetH / size.y : 1);
+  s.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(s);
+  const c = new THREE.Vector3();
+  box.getCenter(c);
+  s.position.set(-c.x, -box.min.y, -c.z);
+  return s;
+}
+
+/** Real CC0 pine GLB (Quaternius), one clone auto-fitted per spot. */
+function PineTrees({ originX }: { originX: number }): JSX.Element {
+  const { scene } = useGLTF(PINE_MODEL_URL);
+  const models = useMemo(
+    () =>
+      TREE_SPOTS.map(([, , h]) => {
+        const m = fitToHeight(scene, h);
+        // outside the window → their shadows aren't visible inside; skip the (expensive) shadow
+        // passes over this dense foliage so the fps floor holds even on software-GL.
+        m.traverse((o) => {
+          o.castShadow = false;
+          o.receiveShadow = false;
+        });
+        return m;
+      }),
+    [scene],
+  );
+  // gentle deterministic wind sway (frozen phase under ?freeze=1 so shots stay reproducible)
+  const windRef = useRef<THREE.Group>(null);
+  const frozen =
+    typeof location !== "undefined" && new URLSearchParams(location.search).get("freeze") === "1";
+  useFrame((state) => {
+    const t = frozen ? FROZEN_T : state.clock.elapsedTime;
+    const g = windRef.current;
+    if (!g) return;
+    g.children.forEach((c, i) => {
+      c.rotation.z = Math.sin(t * 0.7 + i * 1.3) * 0.02 + Math.sin(t * 1.6 + i) * 0.01;
+    });
+  });
+  return (
+    <group ref={windRef}>
+      {TREE_SPOTS.map(([dx, z], i) => (
+        <group key={`pine-${dx}-${z}`} position={[originX + dx, 0, z]} rotation={[0, i * 1.27, 0]}>
+          <primitive object={models[i] as THREE.Object3D} />
+        </group>
+      ))}
+    </group>
+  );
+}
+
+/** Procedural stacked-cone conifers — the fallback when the pine GLB is absent. */
+function ConeTrees({ originX }: { originX: number }): JSX.Element {
+  return (
+    <>
+      {TREE_SPOTS.map(([dx, z, h, green]) => (
+        <group key={`cone-${dx}-${z}`} position={[originX + dx, 0, z]}>
+          <mesh position={[0, h * 0.18, 0]}>
+            <cylinderGeometry args={[0.06, 0.09, h * 0.36, 8]} />
+            <meshStandardMaterial color="#3a2a1a" roughness={0.9} />
+          </mesh>
+          {[0, 1, 2].map((tier) => {
+            const ty = h * (0.32 + tier * 0.22);
+            const r = (0.6 - tier * 0.14) * (h / 5);
+            const ch = h * 0.34 * (1 - tier * 0.12);
+            return (
+              <mesh key={`t-${tier}`} position={[0, ty, 0]}>
+                <coneGeometry args={[r, ch, 9]} />
+                <meshStandardMaterial color={green} roughness={0.95} metalness={0} />
+              </mesh>
+            );
+          })}
+        </group>
+      ))}
+    </>
+  );
+}
+
+/** Renders the cone-tree fallback if the pine GLB is missing / fails. */
+class TreesBoundary extends Component<
+  { originX: number; children: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError(): { failed: boolean } {
+    return { failed: true };
+  }
+  render(): ReactNode {
+    return this.state.failed ? <ConeTrees originX={this.props.originX} /> : this.props.children;
+  }
+}
+
+/** Conifers + a forest floor outside the window: near parallax that also masks the mountain-plane
+ *  edges (no black at oblique angles). Real pine GLB when present, cone fallback otherwise. */
+/** Two crossed vertical quads (unit width, standing on y=0, pivot at the base) so an alpha-tested
+ *  grass-tuft texture reads as a 3D clump from any angle — never edge-on-invisible like a single quad. */
+function crossedTuftGeometry(): THREE.BufferGeometry {
+  const g = new THREE.BufferGeometry();
+  // quad A in the XY plane (faces ±Z), quad B in the ZY plane (faces ±X); y spans 0→1
+  const pos = new Float32Array([
+    -0.5,
+    0,
+    0,
+    0.5,
+    0,
+    0,
+    0.5,
+    1,
+    0,
+    -0.5,
+    1,
+    0, // A
+    0,
+    0,
+    -0.5,
+    0,
+    0,
+    0.5,
+    0,
+    1,
+    0.5,
+    0,
+    1,
+    -0.5, // B
+  ]);
+  const uv = new Float32Array([0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]);
+  const idx = [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7];
+  g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  g.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+  g.setIndex(idx);
+  return g;
+}
+
+/** Instanced crossed-quad grass tufts over the near meadow — denser close to the wall, sparser
+ *  toward the panorama, color-varied muted olive so it blends into the photographic view. */
+function GrassTufts({ originX }: { originX: number }): JSX.Element {
+  const ref = useRef<THREE.InstancedMesh>(null);
+  const geom = useMemo(() => crossedTuftGeometry(), []);
+  const blade = useMemo(() => grassBladeTexture(), []);
+  const COUNT = 2400;
+  const data = useMemo(() => {
+    const rand = mulberry32(9);
+    return Array.from({ length: COUNT }, () => {
+      // bias density toward the wall (x small) so the near field is lush and the far field thins out
+      const t = rand() * rand(); // skew toward 0
+      return {
+        x: 1.4 + t * 20, // just outside the wall out into the meadow
+        z: (rand() - 0.5) * 26,
+        w: 0.28 + rand() * 0.34, // tuft width
+        h: 0.18 + rand() * 0.28 - t * 0.08, // shorter farther out
+        rot: rand() * Math.PI,
+        tint: 0.72 + rand() * 0.56,
+        warm: rand() * 0.18, // a few sun-dried yellow-green tufts
+      };
+    });
+  }, []);
+  useEffect(() => {
+    const m = ref.current;
+    if (!m) return;
+    const dummy = new THREE.Object3D();
+    const col = new THREE.Color();
+    data.forEach((d, i) => {
+      dummy.position.set(originX + d.x, 0, d.z);
+      dummy.rotation.set(0, d.rot, 0);
+      dummy.scale.set(d.w, d.h, d.w);
+      dummy.updateMatrix();
+      m.setMatrixAt(i, dummy.matrix);
+      // muted olive/sage, matched to the panorama meadow; a little per-tuft warmth + brightness jitter
+      col.setRGB(0.5 * d.tint + d.warm, 0.56 * d.tint, 0.34 * d.tint);
+      m.setColorAt(i, col);
+    });
+    m.instanceMatrix.needsUpdate = true;
+    if (m.instanceColor) m.instanceColor.needsUpdate = true;
+  }, [data, originX]);
+  return (
+    <instancedMesh ref={ref} args={[geom, undefined, COUNT]} frustumCulled={false}>
+      <meshBasicMaterial
+        map={blade}
+        transparent
+        alphaTest={0.4}
+        side={THREE.DoubleSide}
+        toneMapped={false}
+        depthWrite
+      />
+    </instancedMesh>
+  );
+}
+
+function ExteriorTrees({ originX }: { originX: number }): JSX.Element {
+  const grass = useMemo(() => grassTexture(), []);
+  return (
+    <group>
+      {/* near grassy foreground the trees stand on. Starts OUTSIDE the wall (x > hx) and sits a hair
+          below y=0 so it never overlaps the interior floor (was causing floor z-fighting). Unlit +
+          fog-exempt + tinted to the panorama's grass so it blends into the photographic view rather
+          than fogging to a teal slab (smooths the synthetic→photographic transition). */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[originX + 17, -0.03, 0]}>
+        <planeGeometry args={[34, 64]} />
+        <meshBasicMaterial map={grass} color="#aeb884" toneMapped={false} fog={false} />
+      </mesh>
+      <GrassTufts originX={originX} />
+      <TreesBoundary originX={originX}>
+        <Suspense fallback={<ConeTrees originX={originX} />}>
+          <PineTrees originX={originX} />
+        </Suspense>
+      </TreesBoundary>
+    </group>
+  );
+}
+
+/**
+ * The window: a wooden frame + muntins around the wall opening (no glass pane), plus the mountain
+ * view rendered as separate unlit layers OUTSIDE the wall at increasing distance — so the view
+ * parallaxes as you move (real depth, not a painting). Muntins cast shadow into the light shaft.
+ */
 function Window(): JSX.Element {
-  const [x, y, z] = ANCHORS.window;
-  const vista = useMemo(() => duskVistaTexture(), []);
-  // picture window set into the +X wall's interior face (x ≈ 3.34); rotated so it faces the room (-X).
+  const [x] = ANCHORS.window;
+  const cy = 1.75; // opening centre height
+  const iface = x - 0.26; // frame sits PROUD of the interior wall face (3.35) → no frame-in-wall z-fight
   return (
-    <group position={[x - 0.16, y + 0.15, z]} rotation={[0, -Math.PI / 2, 0]}>
-      {/* outer frame (solid box set into the wall; the pane sits in FRONT of it, room-side) */}
-      <mesh castShadow>
-        <boxGeometry args={[2.1, 1.7, 0.14]} />
-        <meshStandardMaterial color="#4a3320" roughness={0.6} metalness={0} />
-      </mesh>
-      {/* the dusk mountain vista — a window view is effectively unlit, so render it with a basic
-          (unlit) map at full vividness in front of the frame. Bloom threshold keeps it from clipping. */}
-      <mesh position={[0, 0, 0.09]}>
-        <planeGeometry args={[1.9, 1.5]} />
-        <meshBasicMaterial map={vista} toneMapped={true} />
-      </mesh>
-      {/* muntins (cross bars) — in front of the glass */}
-      <mesh position={[0, 0, 0.11]}>
-        <boxGeometry args={[0.05, 1.5, 0.03]} />
-        <meshStandardMaterial color="#3a2818" roughness={0.6} />
-      </mesh>
-      <mesh position={[0, 0, 0.11]}>
-        <boxGeometry args={[1.9, 0.05, 0.03]} />
-        <meshStandardMaterial color="#3a2818" roughness={0.6} />
-      </mesh>
-    </group>
-  );
-}
+    <group>
+      {/* view OUTSIDE the opening: a real CC0 photographic mountain panorama on the sky dome
+          (champagne_castle_1), with conifer trees + forest floor in front for parallax + depth. */}
+      <group>
+        <SkyDome />
+        <ExteriorTrees originX={x} />
+      </group>
 
-function Lamp(): JSX.Element {
-  // warm table lamp beside the desk — cozy secondary key + lifts desk-framing material variance.
-  const [dx, , dz] = ANCHORS.desk;
-  return (
-    <group position={[dx + 0.2, 0, dz + 1.1]}>
-      {/* slim side table */}
-      <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.22, 0.24, 1.0, 16]} />
-        <meshStandardMaterial color="#3a2616" roughness={0.7} metalness={0} />
-      </mesh>
-      {/* lamp base + shade */}
-      <mesh position={[0, 1.12, 0]} castShadow>
-        <cylinderGeometry args={[0.05, 0.07, 0.24, 12]} />
-        <meshStandardMaterial color="#5a4632" roughness={0.5} metalness={0.3} />
-      </mesh>
-      <mesh position={[0, 1.34, 0]}>
-        <coneGeometry args={[0.22, 0.28, 20, 1, true]} />
-        <meshStandardMaterial
-          color="#e8c98a"
-          emissive="#ffcf87"
-          emissiveIntensity={1.6}
-          side={2}
-          roughness={0.8}
-        />
-      </mesh>
-      {/* warm glow */}
-      <pointLight position={[0, 1.34, 0]} color="#ffcf87" intensity={9} distance={6} decay={2} />
+      {/* wooden frame ring + muntins on the interior face of the opening (1.9 wide × 1.5 tall) */}
+      <group position={[iface, cy, 0]} rotation={[0, -Math.PI / 2, 0]}>
+        {(
+          [
+            [0, 0.83, 2.16, 0.16],
+            [0, -0.83, 2.16, 0.16],
+          ] as Array<[number, number, number, number]>
+        ).map(([px, py, bw, bh]) => (
+          <mesh key={`fh-${py}`} position={[px, py, 0]} castShadow>
+            <boxGeometry args={[bw, bh, 0.16]} />
+            <meshStandardMaterial color="#4a3320" roughness={0.6} metalness={0} />
+          </mesh>
+        ))}
+        {(
+          [
+            [-1.0, 0, 0.16, 1.5],
+            [1.0, 0, 0.16, 1.5],
+          ] as Array<[number, number, number, number]>
+        ).map(([px, py, bw, bh]) => (
+          <mesh key={`fv-${px}`} position={[px, py, 0]} castShadow>
+            <boxGeometry args={[bw, bh, 0.16]} />
+            <meshStandardMaterial color="#4a3320" roughness={0.6} metalness={0} />
+          </mesh>
+        ))}
+        {/* muntin cross — offset in depth so the two bars don't share a plane at the crossing (z-fight) */}
+        <mesh position={[0, 0, 0.05]} castShadow>
+          <boxGeometry args={[0.05, 1.5, 0.05]} />
+          <meshStandardMaterial color="#3a2818" roughness={0.6} />
+        </mesh>
+        <mesh position={[0, 0, 0.02]} castShadow>
+          <boxGeometry args={[1.9, 0.05, 0.05]} />
+          <meshStandardMaterial color="#3a2818" roughness={0.6} />
+        </mesh>
+      </group>
     </group>
   );
 }
@@ -319,35 +817,163 @@ function Desk(): JSX.Element {
   );
 }
 
-export function Cabin({ freeze }: { freeze: boolean }): JSX.Element {
+function Rug(): JSX.Element {
+  const rug = useMemo(() => rugTexture(), []);
+  // patterned rug on the floor in front of the hearth (ref 07)
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, -1.5]} receiveShadow>
+      <planeGeometry args={[2.6, 1.9]} />
+      <meshStandardMaterial map={rug} roughness={0.9} metalness={0} />
+    </mesh>
+  );
+}
+
+function SetDressing(): JSX.Element {
+  const { hx, hz } = ROOM;
+  const inX = hx - 0.16;
+  const inZ = hz - 0.16;
+  const painting = useMemo(() => paintingTexture(), []);
+  const bookColors = ["#7a3b2e", "#2e5a4a", "#385a7a", "#8a6a2e"];
   return (
     <group>
+      {/* baseboards around the room interior */}
+      {(
+        [
+          [0, -inZ, hx * 2, 0.18, 0],
+          [0, inZ, hx * 2, 0.18, 0],
+          [-inX, 0, hz * 2, 0.18, Math.PI / 2],
+          [inX, 0, hz * 2, 0.18, Math.PI / 2],
+        ] as Array<[number, number, number, number, number]>
+      ).map(([x, z, len, h, ry]) => (
+        <mesh key={`base-${x}-${z}`} position={[x, h / 2, z]} rotation={[0, ry, 0]} castShadow>
+          <boxGeometry args={[len, h, 0.06]} />
+          <meshStandardMaterial color="#3a2817" roughness={0.7} metalness={0} />
+        </mesh>
+      ))}
+      {/* framed mountain landscape painting on the back wall, left of the chimney */}
+      <group position={[-1.75, 1.95, -inZ + 0.02]}>
+        {/* frame */}
+        <mesh castShadow>
+          <boxGeometry args={[0.92, 0.68, 0.05]} />
+          <meshStandardMaterial color="#4a3320" roughness={0.55} metalness={0.05} />
+        </mesh>
+        {/* inner mat */}
+        <mesh position={[0, 0, 0.03]}>
+          <planeGeometry args={[0.82, 0.58]} />
+          <meshStandardMaterial color="#e8e0d0" roughness={0.9} />
+        </mesh>
+        {/* the painting */}
+        <mesh position={[0, 0, 0.031]}>
+          <planeGeometry args={[0.68, 0.46]} />
+          <meshStandardMaterial map={painting} roughness={0.85} />
+        </mesh>
+      </group>
+      {/* wall shelf with a few books on the left wall, above the desk */}
+      <group position={[-inX + 0.02, 1.75, -0.6]} rotation={[0, Math.PI / 2, 0]}>
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[1.2, 0.05, 0.28]} />
+          <meshStandardMaterial color="#4a3018" roughness={0.7} />
+        </mesh>
+        {bookColors.map((col, i) => (
+          <mesh key={`book-${col}`} position={[-0.45 + i * 0.16, 0.16, 0]} castShadow>
+            <boxGeometry args={[0.1, 0.26, 0.2]} />
+            <meshStandardMaterial color={col} roughness={0.85} />
+          </mesh>
+        ))}
+      </group>
+    </group>
+  );
+}
+
+function Door(): JSX.Element {
+  const plank = useMemo(() => propTextures(), []);
+  const inZ = ROOM.hz - 0.15; // interior face of the front (+Z) wall
+  // a closed plank door with a frame + handle, set against the front wall, camera-right of centre
+  return (
+    <group position={[1.35, 0, inZ]}>
+      {/* frame: two jambs + a head */}
+      <mesh position={[-0.62, 1.05, 0]} castShadow>
+        <boxGeometry args={[0.12, 2.15, 0.16]} />
+        <meshStandardMaterial color="#43301c" roughness={0.7} metalness={0} />
+      </mesh>
+      <mesh position={[0.62, 1.05, 0]} castShadow>
+        <boxGeometry args={[0.12, 2.15, 0.16]} />
+        <meshStandardMaterial color="#43301c" roughness={0.7} metalness={0} />
+      </mesh>
+      <mesh position={[0, 2.12, 0]} castShadow>
+        <boxGeometry args={[1.36, 0.12, 0.16]} />
+        <meshStandardMaterial color="#43301c" roughness={0.7} metalness={0} />
+      </mesh>
+      {/* the closed door slab (planked wood), proud of the wall into the room */}
+      <mesh position={[0, 1.02, -0.06]} castShadow receiveShadow>
+        <boxGeometry args={[1.02, 2.0, 0.08]} />
+        <meshStandardMaterial {...plank} roughness={0.75} metalness={0} />
+      </mesh>
+      {/* two cross rails for a plank-door look */}
+      <mesh position={[0, 0.5, -0.11]} castShadow>
+        <boxGeometry args={[0.98, 0.12, 0.03]} />
+        <meshStandardMaterial color="#3a2716" roughness={0.7} />
+      </mesh>
+      <mesh position={[0, 1.55, -0.11]} castShadow>
+        <boxGeometry args={[0.98, 0.12, 0.03]} />
+        <meshStandardMaterial color="#3a2716" roughness={0.7} />
+      </mesh>
+      {/* iron handle */}
+      <mesh position={[0.38, 1.0, -0.13]} castShadow>
+        <sphereGeometry args={[0.05, 12, 12]} />
+        <meshStandardMaterial color="#20242a" roughness={0.4} metalness={0.7} />
+      </mesh>
+    </group>
+  );
+}
+
+export function Cabin({
+  freeze,
+  gadgets,
+}: {
+  freeze: boolean;
+  gadgets: GadgetStore;
+}): JSX.Element {
+  return (
+    <group>
+      <EnvLight />
       <Shell />
+      <Rug />
       <Fireplace freeze={freeze} />
       <Cat />
       <Window />
       <Desk />
-      <Lamp />
+      <Door />
+      <SetDressing />
 
-      {/* cool window fill (dusk daylight raking from +X) */}
+      {/* discovery gadgets — proximity + press-E interactables that feed the interest signals */}
+      <InteractiveLamp store={gadgets} freeze={freeze} />
+      <ControlPanel store={gadgets} freeze={freeze} />
+      <GearGizmo store={gadgets} freeze={freeze} />
+      <ChimeKeys store={gadgets} freeze={freeze} />
+      <Easel store={gadgets} freeze={freeze} />
+
+      {/* cool daylight from OUTSIDE the window, angled down into the room. It casts shadow, so the
+          +X wall blocks it everywhere except through the opening → a real window-shaped light shaft
+          + muntin-cross shadow on the floor. No light touches the interior window wall directly. */}
       <directionalLight
-        position={[6, 4, 1]}
-        color="#6f92d8"
-        intensity={1.5}
+        position={[ROOM.hx + 6, 5, 1.2]}
+        color="#93add8"
+        intensity={3.2}
         castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-bias={-0.0004}
+        shadow-normalBias={0.05}
+        shadow-camera-near={0.5}
+        shadow-camera-far={22}
+        shadow-camera-left={-6}
+        shadow-camera-right={6}
+        shadow-camera-top={6}
+        shadow-camera-bottom={-6}
       />
       {/* soft cool ambient so shadows read, never crush to black */}
-      <ambientLight color="#33425f" intensity={0.5} />
-      {/* gentle cool fill spilling from the window into the room (offset off the pane to avoid a hotspot) */}
-      <pointLight
-        position={[ROOM.hx - 1.2, 1.7, 0.4]}
-        color="#7aa0e8"
-        intensity={9}
-        distance={7}
-        decay={2}
-      />
+      <ambientLight color="#2b3852" intensity={0.28} />
     </group>
   );
 }
