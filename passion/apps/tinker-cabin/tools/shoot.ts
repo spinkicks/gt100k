@@ -50,6 +50,8 @@ export async function shoot(args: Args): Promise<ShotResult> {
     preset: str(args.preset) ?? "high",
     freeze: args.nofreeze !== true,
     hud: args.hud === true || args.hud === "1",
+    act: str(args.act),
+    challenge: str(args.challenge),
   });
 
   const closeServer = await ensureServer();

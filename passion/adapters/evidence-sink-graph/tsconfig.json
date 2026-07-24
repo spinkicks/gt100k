@@ -1,0 +1,13 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist"
+  },
+  "references": [
+    { "path": "../../packages/evidence-graph" },
+    { "path": "../evidence-hash-node" },
+    { "path": "../../packages/project-workspace" }
+  ],
+  "include": ["src/**/*.ts", "test/**/*.ts"]
+}

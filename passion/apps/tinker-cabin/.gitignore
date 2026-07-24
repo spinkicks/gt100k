@@ -4,6 +4,9 @@ reference/*
 # Loop screenshots (regenerable)
 shots/*
 !shots/.gitkeep
+# Fetched CC0 assets (binaries) — run `pnpm fetch-assets`; app falls back to procedural without them
+cabin/public/assets/*
+!cabin/public/assets/CREDITS.md
 # build + deps
 node_modules/
 dist/
