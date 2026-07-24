@@ -58,10 +58,12 @@ export function CodeChallenge({
   const [solved, setSolved] = useState(false);
   const closed = useRef(false);
 
-  const cycle = (i: number): void => {
+  // pick an op directly from the visible choices (all options shown as chips — more interactive +
+  // discoverable than blind cycling)
+  const setOp = (i: number, op: number): void => {
     if (solved) return;
     recorder.edit();
-    const next = lines.map((l, j) => (j === i ? { ...l, op: (l.op + 1) % spec.ops.length } : l));
+    const next = lines.map((l, j) => (j === i ? { ...l, op } : l));
     setLines(next);
     onProgramChange?.(next);
   };
@@ -76,11 +78,11 @@ export function CodeChallenge({
       setSolved(true);
       onSolvedDiscovery();
     }
-    // playback gadgets (e.g. the lamp): hand the trace to the world, then exit the menu so the
-    // player watches it execute. Non-playback gadgets update live and keep the panel open.
+    // Drive the gadget; the panel STAYS OPEN (it's docked to the side, so you watch the gadget react
+    // live and it stays put after you solve — close it yourself when you're done). Playback gadgets
+    // (the lamp) blink the trace back slowly via the world; others update instantly.
     if (spec.playback && onPlayback) {
       onPlayback(trace, ok);
-      close();
     } else {
       onWorld(spec.worldMode(trace, ok));
     }
@@ -99,25 +101,28 @@ export function CodeChallenge({
       style={{
         position: "fixed",
         inset: 0,
-        display: "grid",
-        placeItems: "center",
-        // low-opacity so the player watches the real gadget change behind the panel on each Run
-        background: "rgba(6,8,12,0.5)",
-        backdropFilter: "blur(1.5px)",
+        // DOCK bottom-left (not centered) + no full-screen dim, so the gadget stays visible in the
+        // centre of the view as you edit/run — you watch it react live, not hidden behind the panel.
+        display: "flex",
+        alignItems: "flex-end",
+        justifyContent: "flex-start",
+        padding: 22,
+        pointerEvents: "none", // only the panel captures clicks; the rest passes through to the scene
         zIndex: 20,
       }}
     >
       <div
         style={{
-          width: 460,
+          width: 440,
           maxWidth: "92vw",
-          padding: "22px 24px",
+          padding: "18px 22px",
           borderRadius: 14,
-          background: "linear-gradient(180deg,#1b1f27,#12151b)",
-          border: "1px solid rgba(255,180,110,0.25)",
+          background: "linear-gradient(180deg,rgba(27,31,39,0.97),rgba(18,21,27,0.97))",
+          border: "1px solid rgba(255,180,110,0.3)",
           color: "#eae2d6",
           font: "14px/1.5 ui-sans-serif, system-ui, sans-serif",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
+          pointerEvents: "auto",
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
@@ -149,13 +154,25 @@ export function CodeChallenge({
         >
           <div style={{ color: "#7f8ba0" }}>{spec.header}</div>
           {lines.map((l, i) => (
-            <div key={`ln-${spec.gadgetId}-${l.pre}`} style={{ whiteSpace: "pre" }}>
-              {"  "}
-              <span style={{ color: "#9aa4b6" }}>{l.pre}</span>
-              <button type="button" onClick={() => cycle(i)} style={opTok(spec.ops[l.op]!, solved)}>
-                {spec.ops[l.op]}
-              </button>
-              {l.post ? <span style={{ color: "#9aa4b6" }}>{l.post}</span> : null}
+            <div
+              key={`ln-${spec.gadgetId}-${l.pre}`}
+              style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 4 }}
+            >
+              <span style={{ color: "#9aa4b6", whiteSpace: "pre" }}>{`  ${l.pre}`}</span>
+              {/* every option shown as a chip; the selected one is highlighted, click to choose */}
+              {spec.ops.map((op, oi) => (
+                <button
+                  key={`op-${spec.gadgetId}-${i}-${op}`}
+                  type="button"
+                  onClick={() => setOp(i, oi)}
+                  style={opTok(op, l.op === oi, solved)}
+                >
+                  {op}
+                </button>
+              ))}
+              {l.post ? (
+                <span style={{ color: "#9aa4b6", whiteSpace: "pre" }}>{l.post}</span>
+              ) : null}
             </div>
           ))}
           <div style={{ color: "#7f8ba0" }}>{spec.footer}</div>
@@ -177,6 +194,19 @@ export function CodeChallenge({
             <button type="button" onClick={run} style={btn("primary")}>
               ▶ Run
             </button>
+          ) : spec.questUrl ? (
+            <>
+              <button
+                type="button"
+                onClick={() => window.open(spec.questUrl, "_blank", "noopener,noreferrer")}
+                style={btn("primary")}
+              >
+                🎁 Open your quest →
+              </button>
+              <button type="button" onClick={close} style={btn("ghost")}>
+                Close
+              </button>
+            </>
           ) : (
             <button type="button" onClick={close} style={btn("primary")}>
               ✓ Online — back to the shack
@@ -187,7 +217,7 @@ export function CodeChallenge({
               ? spec.solvedMsg
               : runs > 0
                 ? "Not quite — tweak an op and run again."
-                : "Cycle the ops, then Run."}
+                : "Pick the ops, then Run."}
           </span>
         </div>
       </div>
@@ -215,16 +245,17 @@ function btn(kind: "primary" | "ghost"): React.CSSProperties {
   };
 }
 
-function opTok(op: string, solved: boolean): React.CSSProperties {
-  const flip = op === "FLIP";
+function opTok(_op: string, selected: boolean, solved: boolean): React.CSSProperties {
+  // selected chip glows amber; the others are dim/greyed so the choices read as pickable options
   return {
-    background: flip ? "rgba(255,160,80,0.18)" : "rgba(120,150,200,0.16)",
-    color: flip ? "#ffcf9a" : "#a9c2e6",
-    border: `1px solid ${flip ? "rgba(255,160,80,0.5)" : "rgba(120,150,200,0.45)"}`,
+    background: selected ? "rgba(255,160,80,0.28)" : "rgba(120,140,170,0.08)",
+    color: selected ? "#ffcf9a" : "#8b93a2",
+    border: `1px solid ${selected ? "rgba(255,170,90,0.7)" : "rgba(120,140,170,0.28)"}`,
     borderRadius: 7,
     padding: "1px 8px",
     fontWeight: 700,
     fontFamily: "inherit",
+    opacity: solved && !selected ? 0.5 : 1,
     cursor: solved ? "default" : "pointer",
   };
 }

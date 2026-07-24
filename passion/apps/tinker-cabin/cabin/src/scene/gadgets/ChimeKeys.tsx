@@ -30,6 +30,7 @@ export function ChimeKeys({
 }): JSX.Element {
   const mats = useRef<Array<THREE.MeshStandardMaterial | null>>([]);
   const bars = useRef<Array<THREE.Mesh | null>>([]);
+  const mallet = useRef<THREE.Group>(null);
 
   useFrame((state) => {
     const t = freeze ? GADGET_FROZEN_T : state.clock.elapsedTime;
@@ -41,6 +42,19 @@ export function ChimeKeys({
       const bar = bars.current[i];
       if (bar) bar.position.y = 0.47 + (on ? strike * strike * 0.06 : 0);
     });
+    // mallet: sweeps across the bars and bobs down to strike in rhythm when ringing; parks at rest.
+    const mg = mallet.current;
+    if (mg) {
+      if (on) {
+        const sweep = 0.5 + 0.5 * Math.sin(t * 1.1); // 0..1 across the bar row
+        const bob = Math.abs(Math.sin(t * 3.2)); // 1 at the moment of a strike
+        mg.position.set(-0.3 + sweep * 0.6, 0.58 - bob * 0.1, 0);
+        mg.rotation.z = 0;
+      } else {
+        mg.position.set(0.02, 0.52, 0.22); // resting across the frame corner
+        mg.rotation.z = Math.PI / 2;
+      }
+    }
   });
 
   return (
@@ -94,15 +108,18 @@ export function ChimeKeys({
           />
         </mesh>
       ))}
-      {/* mallet resting across the frame */}
-      <mesh position={[0.02, 0.5, 0.22]} rotation={[0, 0.3, Math.PI / 2]} castShadow>
-        <cylinderGeometry args={[0.008, 0.008, 0.34, 8]} />
-        <meshStandardMaterial color="#8a6a3a" roughness={0.6} />
-      </mesh>
-      <mesh position={[0.18, 0.5, 0.24]} castShadow>
-        <sphereGeometry args={[0.028, 12, 10]} />
-        <meshStandardMaterial color="#d8d2c4" roughness={0.7} />
-      </mesh>
+      {/* mallet — animated: sweeps + strikes when ringing (see useFrame), else rests on the frame.
+          Modelled head-down (striking end at the group origin) so it dips onto the bars. */}
+      <group ref={mallet} position={[0.02, 0.52, 0.22]} rotation={[0, 0, Math.PI / 2]}>
+        <mesh position={[0, 0.14, 0]} castShadow>
+          <cylinderGeometry args={[0.008, 0.008, 0.28, 8]} />
+          <meshStandardMaterial color="#8a6a3a" roughness={0.6} />
+        </mesh>
+        <mesh position={[0, 0, 0]} castShadow>
+          <sphereGeometry args={[0.028, 12, 10]} />
+          <meshStandardMaterial color="#d8d2c4" roughness={0.7} />
+        </mesh>
+      </group>
     </group>
   );
 }
