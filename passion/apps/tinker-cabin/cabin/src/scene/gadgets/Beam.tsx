@@ -112,9 +112,14 @@ export function Beam({
     // a bright point light TRAVELS along the beam (real lighting engine, moving) so the light flows
     // from emitter toward the target and lights the board as it goes.
     if (flowLight.current) {
-      if (path.length >= 2) {
-        const seg = (t * 2.6) % (path.length - 1); // cells/sec along the polyline
-        const i = Math.floor(seg);
+      const legs = path.length - 1;
+      if (legs >= 1) {
+        const travel = legs / 2.6; // seconds to traverse the whole beam
+        const PAUSE = 0.4; // dwell at the target before the next pulse leaves the emitter
+        const tc = t % (travel + PAUSE);
+        const prog = tc < travel ? tc / travel : 1; // 0..1 along the path; holds at 1 during the pause
+        const seg = prog * legs;
+        const i = Math.min(Math.floor(seg), legs - 1);
         const f = seg - i;
         const a = path[i] ?? path[0]!;
         const b = path[i + 1] ?? a;
