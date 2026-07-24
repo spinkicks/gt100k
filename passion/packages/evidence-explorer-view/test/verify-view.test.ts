@@ -20,9 +20,11 @@ describe("buildVerificationView", () => {
   const build = async (tamper: boolean) => {
     const bundle = buildFixtureGraph(hasher);
     const target = tamper ? applyTamper(bundle) : bundle;
-    // The committed packet is unchanged; a stub verifier trusts the committed nodeIds.
-    const verifierResult = await verifier.verify(target.packet, hasher);
-    return buildVerificationView(target.packet, verifierResult, target.graph, hasher);
+    // Whole-graph verification: the stub re-derives each node's content-addressed id.
+    const verifierResult = await verifier.verify(target.graph, hasher);
+    return buildVerificationView(target.graph, verifierResult, hasher, {
+      subjectDigest: target.subjectDigest,
+    });
   };
 
   it("exposes exactly the four §U8.8 steps in order", async () => {

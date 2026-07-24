@@ -1,5 +1,5 @@
-import { NodeCryptoHasher } from "@gt100k/evidence-hash-node";
 import { buildExplorerView, explorerFixture } from "@gt100k/evidence-explorer-view";
+import { NodeCryptoHasher } from "@gt100k/evidence-hash-node";
 import { describe, expect, it } from "vitest";
 
 /** Seeded smoke test (UE009 / SC-E15) — keeps the gate green from iteration 1. */
@@ -11,7 +11,7 @@ describe("explorer smoke (seeded speaker-v1)", () => {
     // The whole domain flow assembles + verifies (human-authority + stub verifier).
     expect(fixture.verifierResult.ok).toBe(true);
 
-    const view = buildExplorerView(fixture.graph, fixture.packet);
+    const view = buildExplorerView(fixture.graph, fixture);
     expect(view.milestoneRef).toBe("speaker-v1");
     expect(view.nodes).toHaveLength(13);
     expect(view.nodes.filter((n) => n.isInMilestone)).toHaveLength(12);

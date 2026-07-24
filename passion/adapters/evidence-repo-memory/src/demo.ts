@@ -3,8 +3,8 @@ import {
   type EvidenceGraph,
   addEdge,
   addNode,
-  assembleEvidencePacket,
   assertHumanAuthority,
+  graphMerkleRoot,
 } from "../../../packages/evidence-graph/src/index.js";
 import { syntheticMilestone } from "../../../packages/evidence-graph/test/fixtures/seed.js";
 import { NodeCryptoHasher } from "../../evidence-hash-node/src/index.js";
@@ -22,13 +22,7 @@ function resolveFixtureEdge(
   };
 }
 
-function requireNodeId(key: string, nodeIdsByKey: ReadonlyMap<string, string>): string {
-  const id = nodeIdsByKey.get(key);
-  if (id === undefined) {
-    throw new Error(`MISSING_SYNTHETIC_NODE:${key}`);
-  }
-  return id;
-}
+const PROJECT_ID = "speaker-v1";
 
 async function main(): Promise<void> {
   const hasher = new NodeCryptoHasher();
@@ -55,37 +49,25 @@ async function main(): Promise<void> {
     throw new Error(`HUMAN_AUTHORITY_FAILED:${authority.reasons.join(",")}`);
   }
 
-  const milestoneNodeIds = syntheticMilestone.milestoneNodeKeys.map((key) =>
-    requireNodeId(key, nodeIdsByKey),
-  );
-  const packet = assembleEvidencePacket(
-    graph,
-    {
-      milestoneRef: syntheticMilestone.milestoneRef,
-      subjectDigest: syntheticMilestone.subjectDigest,
-      nodeIds: milestoneNodeIds,
-    },
-    hasher,
-  );
-  await repository.savePacket(packet);
-
-  const persistedPacket = await repository.getPacket(syntheticMilestone.milestoneRef);
-  if (persistedPacket === null) {
-    throw new Error("PACKET_NOT_PERSISTED");
+  // One graph per project: persist the whole graph under its project id, then reload it.
+  await repository.saveGraph(PROJECT_ID, graph);
+  const persistedGraph = await repository.getGraph(PROJECT_ID);
+  if (persistedGraph === null) {
+    throw new Error("GRAPH_NOT_PERSISTED");
   }
 
-  const verification = await verifier.verify(persistedPacket, hasher);
+  const verification = await verifier.verify(persistedGraph, hasher);
   if (!verification.ok) {
     throw new Error(`VERIFICATION_FAILED:${verification.reasons.join(",")}`);
   }
 
-  console.log(`Synthetic milestone: ${syntheticMilestone.milestoneRef}`);
-  console.log(`Graph: ${Object.keys(graph.nodes).length} nodes, ${graph.edges.length} edges`);
-  console.log("Human authority: PASS");
+  console.log(`Synthetic project: ${PROJECT_ID}`);
   console.log(
-    `Packet: ${persistedPacket.nodeIds.length} nodes, root ${persistedPacket.merkleRoot}`,
+    `Graph: ${Object.keys(persistedGraph.nodes).length} nodes, ${persistedGraph.edges.length} edges`,
   );
-  console.log("Persisted packet: PASS");
+  console.log("Human authority: PASS");
+  console.log(`Graph root: ${graphMerkleRoot(persistedGraph, hasher)}`);
+  console.log("Persisted graph: PASS");
   console.log("Verification: PASS");
 }
 

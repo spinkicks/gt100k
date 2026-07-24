@@ -314,12 +314,20 @@ button {
   border: 0;
 }
 .obs-tier-btn {
-  padding: 5px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 44px;
+  padding: 5px 16px;
   border: 0;
   background: transparent;
   color: var(--ink-muted);
-  font-size: var(--text-label);
+  font-size: var(--text-body);
+  font-weight: 600;
+  letter-spacing: 0.04em;
   line-height: 1;
+  cursor: pointer;
   transition: color 160ms ease, background-color 160ms ease;
 }
 .obs-tier-btn:hover {
@@ -539,11 +547,16 @@ button {
 .scrub-beats {
   list-style: none;
   margin: 0;
-  padding: 4px 0 8px;
+  /* Right padding + an edge-fade so the horizontally-scrolled strip reads as a scroll region: the
+     last card fades into the panel edge instead of being hard-sliced (which looked like a text box
+     rendering outside the stage). Mirrors the Ledger's edge-faded scroll region. */
+  padding: 4px 24px 8px 0;
   display: flex;
   gap: 8px;
   overflow-x: auto;
   scrollbar-width: thin;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent 100%);
+  mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent 100%);
 }
 .scrub-beat {
   display: flex;
@@ -637,215 +650,184 @@ button {
   }
 }
 
-/* ── Verify panel (§U5.3 / §U8.8, UE032–UE035) ──────────────────────────────── */
-.verify {
+/* ── Verify box (§U8.8, simplification pass) — a quiet, expandable status line ── */
+.verifybox {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px 18px;
   border-top: 1px solid var(--line);
 }
-.verify-head {
+.verifybox-summary {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 18px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  font-size: var(--text-body);
 }
-.verify-title {
-  font-size: var(--text-label);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-  margin: 0;
+.verifybox-summary:hover {
+  background: color-mix(in oklab, var(--panel-2) 40%, transparent);
 }
-.verify-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.verify-btn {
+.verifybox-seal {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
-  border: 1px solid var(--line);
-  background: color-mix(in oklab, var(--panel-2) 80%, transparent);
-  color: var(--ink);
-  font-size: var(--text-label);
-  line-height: 1;
-  transition: background-color 160ms ease, border-color 160ms ease, transform 120ms ease;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
-.verify-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
+.verifybox-seal-mark {
+  font-size: 1.05em;
 }
-.verify-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-.verify-btn--primary {
-  border-color: color-mix(in oklab, var(--verify) 45%, var(--line));
-  background: color-mix(in oklab, var(--verify) 14%, transparent);
+.verifybox-seal--verified {
   color: var(--verify);
 }
-.verify-btn--tamper {
-  border-color: color-mix(in oklab, var(--tamper) 40%, var(--line));
+.verifybox-seal--mismatch {
   color: var(--tamper);
 }
-.verify-intro {
-  margin: 0;
-  font-size: var(--text-label);
+.verifybox-line {
   color: var(--ink-muted);
-  line-height: 1.4;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
-/* The seal — a static, text-first badge (meaning never depends on the 3D wave; scenario 4). */
-.verify-seal {
+.verifybox-line-label {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+}
+.verifybox-diff {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  align-self: flex-start;
-  padding: 8px 16px;
-  border: 1px solid var(--line);
-  font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  gap: 6px;
 }
-.verify-seal-icon {
-  font-size: 1.1em;
-}
-.verify-seal--verified {
-  color: var(--verify);
-  border-color: color-mix(in oklab, var(--verify) 60%, var(--line));
-  background: color-mix(in oklab, var(--verify) 12%, transparent);
-  box-shadow: 0 0 22px -6px color-mix(in oklab, var(--verify) 70%, transparent);
-  animation: seal-forge 900ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-.verify-seal--mismatch {
-  color: var(--tamper);
-  border-color: color-mix(in oklab, var(--tamper) 60%, var(--line));
-  background: color-mix(in oklab, var(--tamper) 12%, transparent);
-}
-.verify-seal--unverified {
+.verifybox-old {
   color: var(--ink-muted);
+  text-decoration: line-through;
 }
-@keyframes seal-forge {
-  from {
-    transform: scale(0.82);
-    opacity: 0;
-  }
+.verifybox-arrow {
+  color: var(--tamper);
 }
-
-/* Stepped checklist — the accessible truth; rows tick in order, each with a text status. */
-.verify-steps {
+.verifybox-new {
+  color: var(--tamper);
+}
+.verifybox-chevron {
+  margin-left: auto;
+  display: inline-flex;
+  color: var(--ink-muted);
+  transition: transform 160ms ease;
+}
+.verifybox-chevron.is-open {
+  transform: rotate(180deg);
+}
+.verifybox-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 18px 16px;
+}
+.verifybox-steps {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
-.verify-step {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 8px 10px;
-  border: 1px solid var(--line);
-  background: color-mix(in oklab, var(--panel-2) 55%, transparent);
-  opacity: 0.5;
-  transition: opacity 200ms ease, border-color 200ms ease;
+.verifybox-step {
+  display: grid;
+  grid-template-columns: 1.3em 1fr auto;
+  align-items: baseline;
+  gap: 8px;
+  font-size: var(--text-label);
 }
-.verify-step.is-revealed {
-  opacity: 1;
-  animation: step-pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-@keyframes step-pop {
-  from {
-    transform: translateX(-6px);
-    opacity: 0;
-  }
-}
-.verify-step-mark {
-  font-size: 1em;
-  line-height: 1.4;
-  width: 1.2em;
+.verifybox-step-mark {
   text-align: center;
+  color: var(--ink-muted);
 }
-.verify-step--pass {
-  border-color: color-mix(in oklab, var(--verify) 45%, var(--line));
-}
-.verify-step--pass .verify-step-mark {
+.verifybox-step--pass .verifybox-step-mark {
   color: var(--verify);
 }
-.verify-step--fail {
-  border-color: color-mix(in oklab, var(--tamper) 55%, var(--line));
-}
-.verify-step--fail .verify-step-mark {
+.verifybox-step--fail .verifybox-step-mark {
   color: var(--tamper);
 }
-.verify-step--stub .verify-step-mark {
+.verifybox-step-label {
+  color: var(--ink);
+}
+.verifybox-step-status {
   color: var(--ink-muted);
-}
-.verify-step-body {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-.verify-step-label {
-  font-size: var(--text-label);
-  font-weight: 600;
-}
-.verify-step-status {
   font-size: 11px;
-  color: var(--ink-muted);
+  text-align: right;
 }
-
-/* Merkle root — ticks in on verify; diverges old→new on tamper. */
-.verify-root {
+.verifybox-root {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
   font-size: var(--text-label);
 }
-.verify-root-label {
+.verifybox-root-label {
   color: var(--ink-muted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 10px;
 }
-.verify-root-value {
-  color: var(--verify);
-  animation: root-tick 1200ms linear both;
+.verifybox-root-value {
+  color: var(--ink);
+  overflow-wrap: anywhere;
+  font-size: 12px;
 }
-@keyframes root-tick {
-  from {
-    opacity: 0;
-    filter: blur(3px);
-  }
+.verifybox-copy {
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 11px;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
 }
-.verify-root-diff {
+.verifybox-copy:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: var(--focus);
+}
+.verifybox-copy:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.verifybox-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+.verifybox-tamper {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  min-height: 34px;
+  padding: 6px 14px;
+  border: 1px solid color-mix(in oklab, var(--tamper) 40%, var(--line));
+  background: transparent;
+  color: var(--tamper);
+  font-size: var(--text-label);
+  cursor: pointer;
+  transition: background-color 160ms ease;
 }
-.verify-root-old {
+.verifybox-tamper:hover {
+  background: color-mix(in oklab, var(--tamper) 12%, transparent);
+}
+.verifybox-tamper.is-active {
+  background: color-mix(in oklab, var(--tamper) 18%, transparent);
+}
+.verifybox-note {
+  margin: 0;
   color: var(--ink-muted);
-  text-decoration: line-through;
-}
-.verify-root-arrow {
-  color: var(--tamper);
-}
-.verify-root-new {
-  color: var(--tamper);
-  animation: root-diverge 900ms cubic-bezier(0.65, 0, 0.35, 1) both;
-}
-@keyframes root-diverge {
-  from {
-    transform: translateX(-8px);
-    opacity: 0;
-  }
+  font-size: 11px;
 }
 
 /* Calm-2D verify parity: the seal-forge ring pulses; the byte-body fracture crack pulses subtly. */
@@ -1649,6 +1631,136 @@ button {
 /* Traced constellation body: a subtle emphasis ring (colour is never the sole cue — dim conveys it). */
 .constellation .is-traced {
   filter: drop-shadow(0 0 6px color-mix(in oklab, var(--focus) 60%, transparent));
+}
+
+/* ── Manual Add panel (Phase 4) — reuses the HUD drawer language (frosted, hairline, square). ── */
+.addp {
+  display: flex;
+  flex-direction: column;
+}
+.addp-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 14px 16px;
+  text-align: left;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 140ms ease;
+}
+.addp-toggle:hover {
+  background: color-mix(in oklab, var(--focus) 6%, transparent);
+}
+.addp-toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.addp-toggle-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.98rem;
+  letter-spacing: -0.01em;
+}
+.addp-toggle-sub {
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  line-height: 1.3;
+}
+.addp-toggle-chevron {
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: var(--ink-muted);
+  transition: transform 220ms ease;
+}
+.addp-toggle.is-open .addp-toggle-chevron {
+  transform: rotate(180deg);
+}
+.addp-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 16px 16px;
+  border-top: 1px solid var(--line-soft);
+}
+.addp-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.addp-section-title {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.addp-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.addp-input,
+.addp-select {
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  background: color-mix(in oklab, var(--void) 55%, transparent);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-label);
+  transition: border-color 140ms ease;
+}
+.addp-input::placeholder {
+  color: var(--ink-muted);
+}
+.addp-input:focus,
+.addp-select:focus {
+  outline: none;
+  border-color: color-mix(in oklab, var(--focus) 45%, var(--line));
+}
+.addp-submit {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid color-mix(in oklab, var(--focus) 34%, var(--line));
+  background: color-mix(in oklab, var(--focus) 10%, var(--panel-2));
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-label);
+  cursor: pointer;
+  transition: border-color 140ms ease, background-color 140ms ease, transform 120ms ease, opacity
+    140ms ease;
+}
+.addp-submit:hover:not(:disabled) {
+  border-color: color-mix(in oklab, var(--focus) 55%, var(--line));
+  background: color-mix(in oklab, var(--focus) 16%, var(--panel-2));
+}
+.addp-submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.addp-submit:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.addp-divider {
+  height: 1px;
+  background: var(--line-soft);
+}
+.addp-error {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in oklab, var(--tamper) 45%, var(--line));
+  background: color-mix(in oklab, var(--tamper) 10%, transparent);
+  color: color-mix(in oklab, var(--tamper) 30%, var(--ink));
+  font-size: 0.78rem;
+  line-height: 1.4;
 }
 
 @media (prefers-reduced-motion: reduce) {

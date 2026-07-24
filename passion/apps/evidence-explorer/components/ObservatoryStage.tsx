@@ -33,7 +33,7 @@ import {
 import type { JSX } from "react";
 import { Inspector } from "./Inspector.js";
 import { TimeScrub } from "./TimeScrub.js";
-import { VerifyPanel } from "./VerifyPanel.js";
+import { VerifyBox } from "./VerifyBox.js";
 import { Constellation2D } from "./constellation/Constellation2D.js";
 import { useHud } from "./hud-state.js";
 import { type SelectionOrigin, panelById } from "./inspector-model.js";
@@ -116,7 +116,8 @@ export function ObservatoryStage({
 
   // HUD presentation state (UX5, UE044–UE045) — filter/trace emphasis + the display toggles
   // (tier / reduced-motion / plain / captions). All presentation-only; the `ExplorerView` never changes.
-  const { emphasisFor, tierOverride, reducedMotion, plainMode, audioCaptions } = useHud();
+  const { emphasisFor, tierOverride, setTierOverride, reducedMotion, plainMode, audioCaptions } =
+    useHud();
 
   // Time-scrub state (§U5.4) — presentation-only: it reveals a subset of the one `ExplorerView`,
   // never mutates it. Starts fully grown so the default view matches the calm baseline.
@@ -199,6 +200,28 @@ export function ObservatoryStage({
           Rendering: <strong>{TIER_LABEL[activeTier]}</strong>
           {plainMode ? <span className="obs-stage-tag"> · plain</span> : null}
         </span>
+        {/* Primary control: a plain 3D ⇄ 2D toggle. "3D" resolves the best 3D tier (auto);
+            "2D" forces the calm-2D equal mode. Active choice mirrors the live `activeTier`. */}
+        <div className="obs-tier-control" role="radiogroup" aria-label="Render dimension">
+          <button
+            type="button"
+            role="radio"
+            aria-checked={is3D}
+            className={`obs-tier-btn${is3D ? " is-active" : ""}`}
+            onClick={() => setTierOverride("auto")}
+          >
+            3D
+          </button>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={!is3D}
+            className={`obs-tier-btn${!is3D ? " is-active" : ""}`}
+            onClick={() => setTierOverride("calm2d")}
+          >
+            2D
+          </button>
+        </div>
       </div>
 
       <div className="obs-viewport">
@@ -257,9 +280,8 @@ export function ObservatoryStage({
         onSelectBeat={select}
       />
 
-      <VerifyPanel
+      <VerifyBox
         verification={verification}
-        reducedMotion={reducedMotion}
         audioCaptions={audioCaptions}
         onVisualChange={setVerifyVisual}
       />

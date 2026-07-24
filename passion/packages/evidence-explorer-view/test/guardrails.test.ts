@@ -29,8 +29,8 @@ describe("guardrails", () => {
     /\b(price|currency|leaderboard|percentile|outOf|streak|countdown|urgency|dropRate|rarity|accusation)\b/;
 
   it("view types expose no gamified / accusatory fields (depthRank is allowed)", () => {
-    const { graph, packet } = buildFixtureGraph(new NodeCryptoHasher());
-    const view = buildExplorerView(graph, packet);
+    const bundle = buildFixtureGraph(new NodeCryptoHasher());
+    const view = buildExplorerView(bundle.graph, bundle);
     const serialized = JSON.stringify(view);
     // `depthRank` is the allowed neutral provenance index; scrub it before scanning for `rank`.
     const scrubbed = serialized.replace(/depthRank/g, "");

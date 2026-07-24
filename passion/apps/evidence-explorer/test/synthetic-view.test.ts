@@ -3,19 +3,21 @@ import { buildSyntheticExplorerView } from "../components/synthetic-view.js";
 
 /**
  * App-level seeded smoke (UE010/UE012, SC-E15) — the page's server-side view builder produces the
- * committed "speaker-v1" milestone deterministically, keeping the gate green from iteration 1.
+ * committed "tiny-runner-v1" journey (student builds a one-button runner) deterministically, keeping
+ * the gate green from iteration 1.
  */
 describe("evidence-explorer synthetic view", () => {
-  it("builds the deterministic speaker-v1 view", () => {
+  it("builds the deterministic tiny-runner-v1 view", () => {
     const view = buildSyntheticExplorerView({ tier: "calm2d" });
 
-    expect(view.milestoneRef).toBe("speaker-v1");
-    expect(view.nodes).toHaveLength(13);
+    expect(view.milestoneRef).toBe("tiny-runner-v1");
+    // The tiny-game journey is 12 fully connected nodes (no island); every node is in-milestone.
+    expect(view.nodes).toHaveLength(12);
     expect(view.nodes.filter((n) => n.isInMilestone)).toHaveLength(12);
-    expect(view.nodes.filter((n) => n.isIsland)).toHaveLength(1);
+    expect(view.nodes.filter((n) => n.isIsland)).toHaveLength(0);
 
     // Golden 2D world bounds (§U8.1) + authored 3D center (§U8.2).
-    expect(view.bounds2d).toEqual({ x: 0, y: 0, width: 1440, height: 880 });
+    expect(view.bounds2d).toEqual({ x: 0, y: 0, width: 1440, height: 560 });
     expect(view.center3d).toEqual([15, -1, 0]);
 
     // Presentation flags never affect state — this is the calm tier here.

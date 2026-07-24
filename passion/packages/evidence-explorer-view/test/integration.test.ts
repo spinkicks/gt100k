@@ -3,7 +3,7 @@ import {
   buildFixtureGraph,
   plainViewEquals,
 } from "@gt100k/evidence-explorer-view";
-import { traceEvidence } from "@gt100k/evidence-graph";
+import { graphMerkleRoot, traceEvidence } from "@gt100k/evidence-graph";
 import { NodeCryptoHasher } from "@gt100k/evidence-hash-node";
 import { describe, expect, it } from "vitest";
 import type { Hasher } from "../../evidence-graph/src/ports.js";
@@ -73,53 +73,55 @@ function topology(view: ReturnType<typeof buildExplorerView>) {
 describe("integration — port boundary (SC-E14 / SC-012)", () => {
   it("builds the view with the real node hasher + produces content-addressed sha256 ids", () => {
     const hasher = new NodeCryptoHasher();
-    const { graph, packet, ids } = buildFixtureGraph(hasher);
-    const view = buildExplorerView(graph, packet);
+    const bundle = buildFixtureGraph(hasher);
+    const { graph, ids } = bundle;
+    const view = buildExplorerView(graph, bundle);
 
     // Real SHA-256 content addressing (64 hex). The domain — not the view — computes these.
-    expect(packet.subjectDigest).toMatch(/^[0-9a-f]{64}$/);
-    expect(packet.merkleRoot).toMatch(/^[0-9a-f]{64}$/);
+    expect(bundle.subjectDigest).toMatch(/^[0-9a-f]{64}$/);
+    expect(graphMerkleRoot(graph, hasher)).toMatch(/^[0-9a-f]{64}$/);
     for (const id of Object.values(ids)) {
       expect(id).toMatch(/^[0-9a-f]{64}$/);
     }
     // Subject binding is the released artifact's content address (domain invariant, not recomputed).
-    expect(packet.subjectDigest).toBe(ids["released-artifact"]);
-    expect(view.milestoneRef).toBe(packet.milestoneRef);
+    expect(bundle.subjectDigest).toBe(ids["released-artifact"]);
+    expect(view.milestoneRef).toBe(bundle.projectRef);
     expect(view.nodes).toHaveLength(13);
   });
 
   it("the domain's golden values are deterministic across rebuilds (unchanged by the view)", () => {
     const a = buildFixtureGraph(new NodeCryptoHasher());
     const b = buildFixtureGraph(new NodeCryptoHasher());
-    // Same hasher → byte-for-byte identical graph + packet (the domain's golden guarantee).
-    expect(a.graph).toEqual(b.graph);
-    expect(a.packet).toEqual(b.packet);
-    expect(a.ids).toEqual(b.ids);
+    // Same hasher → byte-for-byte identical graph + selection (the domain's golden guarantee).
+    expect(a).toEqual(b);
     // And the composed view is likewise deterministic.
-    expect(
-      plainViewEquals(buildExplorerView(a.graph, a.packet), buildExplorerView(b.graph, b.packet)),
-    ).toBe(true);
+    expect(plainViewEquals(buildExplorerView(a.graph, a), buildExplorerView(b.graph, b))).toBe(
+      true,
+    );
   });
 
   it("swapping the Hasher adapter needs no view change — topology is identical, only ids differ", () => {
     const real = buildFixtureGraph(new NodeCryptoHasher());
     const alt = buildFixtureGraph(new AltFnvHasher());
 
-    const realView = buildExplorerView(real.graph, real.packet);
-    const altView = buildExplorerView(alt.graph, alt.packet);
+    const realView = buildExplorerView(real.graph, real);
+    const altView = buildExplorerView(alt.graph, alt);
 
     // The two adapters produce DIFFERENT content addresses …
     expect(alt.ids["released-artifact"]).not.toBe(real.ids["released-artifact"]);
-    expect(alt.packet.merkleRoot).not.toBe(real.packet.merkleRoot);
+    expect(graphMerkleRoot(alt.graph, new AltFnvHasher())).not.toBe(
+      graphMerkleRoot(real.graph, new NodeCryptoHasher()),
+    );
     // … yet the view (layout / ranks / timeline / mapping) is byte-for-byte the same shape.
     expect(topology(altView)).toEqual(topology(realView));
-    // Alt hasher still yields a valid, verifiable packet shape (subject binding holds).
-    expect(alt.packet.subjectDigest).toBe(alt.ids["released-artifact"]);
+    // Alt hasher still binds the subject to the released artifact's content address.
+    expect(alt.subjectDigest).toBe(alt.ids["released-artifact"]);
   });
 
   it("domain traceEvidence drives a supporting-only trace and excludes the island (SC-012)", () => {
-    const { graph, ids } = buildFixtureGraph(new NodeCryptoHasher());
-    const view = buildExplorerView(graph, buildFixtureGraph(new NodeCryptoHasher()).packet);
+    const bundle = buildFixtureGraph(new NodeCryptoHasher());
+    const { graph, ids } = bundle;
+    const view = buildExplorerView(graph, bundle);
 
     const trace = traceEvidence(graph, ids["outcome-grade"]);
     const traceSet = new Set(trace);

@@ -1,23 +1,21 @@
 /**
- * Committed synthetic fixture — the canonical "speaker-v1" milestone (§U7), built through the
+ * Committed synthetic fixture — the canonical "speaker-v1" project graph (§U7), built through the
  * `@gt100k/evidence-graph` public API. Pseudonymous actors, no PII, no consent/admissions/legal
- * machinery. 13 nodes (12 in-milestone + 1 disconnected island), assembled into an `EvidencePacket`
- * that passes the human-authority invariant and the deterministic stub verifier.
+ * machinery. One graph per project: 13 nodes (12 in-milestone + 1 disconnected island) that pass
+ * the human-authority invariant and the deterministic stub verifier.
  */
 import {
-  addEdge,
-  addNode,
-  assembleEvidencePacket,
   type EvidenceEdge,
   type EvidenceGraph,
   type EvidenceNode,
-  type EvidencePacket,
   type VerificationResult,
+  addEdge,
+  addNode,
 } from "@gt100k/evidence-graph";
+import { DeterministicStubVerifier } from "@gt100k/evidence-verifier-stub";
 // `Hasher` is a port and is not re-exported from the domain index — import it via the domain's
 // ports module directly (the repo's established cross-package convention).
 import type { Hasher } from "../../../evidence-graph/src/ports.js";
-import { DeterministicStubVerifier } from "@gt100k/evidence-verifier-stub";
 
 /** Stable declaration order — drives within-rank layout order (§U8.1/§U8.2). */
 type FixtureKey =
@@ -43,8 +41,7 @@ interface Seed {
 }
 
 /** Monotonic timestamps in declaration order so the growth timeline is stable (§U8.7). */
-const at = (day: number): string =>
-  `2026-03-${String(day).padStart(2, "0")}T09:00:00.000Z`;
+const at = (day: number): string => `2026-03-${String(day).padStart(2, "0")}T09:00:00.000Z`;
 
 const SEEDS: readonly Seed[] = [
   {
@@ -208,7 +205,11 @@ const SEEDS: readonly Seed[] = [
 ];
 
 /** Milestone edges (§U7.1); actor `authored_by` edges are added per node from `SEEDS`. */
-const MILESTONE_EDGES: ReadonlyArray<{ from: FixtureKey; to: FixtureKey; type: EvidenceEdge["type"] }> = [
+const MILESTONE_EDGES: ReadonlyArray<{
+  from: FixtureKey;
+  to: FixtureKey;
+  type: EvidenceEdge["type"];
+}> = [
   { from: "src-artifact", to: "plan", type: "derived_from" },
   { from: "src-artifact", to: "assist-research", type: "derived_from" },
   { from: "attempt-1", to: "src-artifact", type: "derived_from" },
@@ -225,12 +226,17 @@ const MILESTONE_EDGES: ReadonlyArray<{ from: FixtureKey; to: FixtureKey; type: E
 
 export interface FixtureBundle {
   readonly graph: EvidenceGraph;
-  readonly packet: EvidencePacket;
   /** Fixture key → content-addressed node id. */
   readonly ids: Record<FixtureKey, string>;
+  /** Ids of the 12 in-milestone seeds (the island is excluded). */
+  readonly milestoneNodeIds: string[];
+  /** Content id of the released artifact node this graph attests to. */
+  readonly subjectDigest: string;
+  /** Stable per-project reference (one graph per project). */
+  readonly projectRef: string;
 }
 
-/** Build the synthetic graph + assembled packet deterministically (pure, sync). */
+/** Build the synthetic project graph deterministically (pure, sync). */
 export function buildFixtureGraph(hasher: Hasher): FixtureBundle {
   let graph: EvidenceGraph = { nodes: {}, edges: [] };
   const ids = {} as Record<FixtureKey, string>;
@@ -254,18 +260,15 @@ export function buildFixtureGraph(hasher: Hasher): FixtureBundle {
     graph = addEdge(graph, { type: e.type, from: ids[e.from], to: ids[e.to] });
   }
 
-  const nodeIds = SEEDS.filter((s) => s.milestone).map((s) => ids[s.key]);
-  const packet = assembleEvidencePacket(
-    graph,
-    {
-      milestoneRef: "speaker-v1",
-      subjectDigest: ids["released-artifact"],
-      nodeIds,
-    },
-    hasher,
-  );
+  const milestoneNodeIds = SEEDS.filter((s) => s.milestone).map((s) => ids[s.key]);
 
-  return { graph, packet, ids };
+  return {
+    graph,
+    ids,
+    milestoneNodeIds,
+    subjectDigest: ids["released-artifact"],
+    projectRef: "speaker-v1",
+  };
 }
 
 export interface ExplorerFixture extends FixtureBundle {
@@ -275,7 +278,7 @@ export interface ExplorerFixture extends FixtureBundle {
 /** Full fixture including the deterministic stub-verifier result (§U7). */
 export async function explorerFixture(hasher: Hasher): Promise<ExplorerFixture> {
   const bundle = buildFixtureGraph(hasher);
-  const verifierResult = await new DeterministicStubVerifier().verify(bundle.packet, hasher);
+  const verifierResult = await new DeterministicStubVerifier().verify(bundle.graph, hasher);
   return { ...bundle, verifierResult };
 }
 

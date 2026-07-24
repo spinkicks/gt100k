@@ -1,87 +1,93 @@
 # PassionLab Build Roadmap
 
-**Status:** Draft v1 · 2026-07-22 · Owner: (product/eng)
-**Purpose:** Sequence the 30 `passionApps.md` artifacts into a phased, dependency-ordered build path, mapped to **Spec Kit** features. Each feature below becomes `specs/NNN-<slug>/spec.md` → then a `writing-plans` implementation plan (`docs/superpowers/plans/…`) → then execution.
-**Reads with:** `passionApps.md` (artifact catalog), the two PRDs, and `hardening/`.
+**Status:** v2 · updated 2026-07-23 · Owner: (product/eng)
+**Purpose:** Sequence the `passionApps.md` artifacts into a phased, dependency-ordered build path, mapped to the **actual** Spec-Kit features under `specs/`. Each feature is `specs/NNN-<slug>/spec.md` → a `writing-plans` implementation plan (`docs/superpowers/plans/…`) → execution (factory loop).
+**Reads with:** `passionApps.md` (artifact catalog + live status log), the two PRDs, and `hardening/`.
+
+> **Numbering note (read this first):** the actual build order diverged from the v1 proposal. The real spec numbers are the source of truth: `009` two-axis-tagging, `010` socratic-defense, `011` interest-inference, `012` signal-pipeline, `013` hypothesis-store + guide console, `014` student-profile + orchestrator, `015` concierge + child-safe RAG + curated library, `016` wellbeing, `017` guardrails, `018` specialization-planner, `019` family-coengagement, `020` timeback. `002` evidence-graph predates the sequence. `001/003/004/005/006/007/008` are archived.
 
 ---
 
-## How to read this
+## Where we actually are (2026-07-23)
 
-- **Feature** = a Spec-Kit unit (`specs/NNN-<slug>/`). Some already exist; most are new.
-- Each feature lists the `passionApps` artifacts it delivers, its dependencies, and a **Definition of Done (DoD)**.
-- **Synthetic-first:** every phase is buildable and testable on synthetic/pilot data. No real child data until the Phase 5 pre-live gates pass.
-- Numbers for new features are proposals (existing IDs: 002, 003, 007 active; 001/004/005/006/008 archived).
+| Lane | Status |
+|---|---|
+| **Discovery spine** (C1/C2/C3/C4 + G1 orchestrator + F1 guide console) | ✅ built + merged — `009` `011` `012` `013` `014` |
+| **Assessment / defense** (E2 engine) | ✅ built + merged — `010` |
+| **Concierge + child-safe RAG + curated library** (B1/B2/A6) | ✅ built + merged — `015` |
+| **Wellbeing** (F2 push/back-off + burnout) | ✅ built + merged — `016` |
+| **Guardrails / program metrics + compliance** (G6) | ✅ built + merged — `017` |
+| **EvidenceGraph** (E1 MVP) | ✅ MVP merged — `002`; D1–D6 productionization **owned by teammate** |
+| **Specialization planner** (D1) | ✅ engine merged — `018` (surface polish pending) |
+| **Family co-engagement** (F3) | ✅ engine merged — `019` (surface polish pending) |
+| **TimeBack priors** (G2) | ✅ merged — `020` (fake data now; live adapter opt-in) |
+| **Game/visual world** (A1 world, A2 cabins, A3 assets, A5 mirror) | 🟡 partial / teammate — one photoreal tinker cabin only |
+| **Rest of specialization** (D2 workspace, D3 mentor, D4 audience, D5 PCDE) | ⬜ not started |
+| **Pre-live gates** (G3 consent/erasure, G4 safety-at-scale, G5 calibration, E1 D1–D6) | ⬜ not started (E1 productionization = teammate) |
 
-## Existing Spec-Kit features to build on
-
-- **`002-evidence-graph`** → artifact **E1** (the process-DAG MVP). Extended later by the productionization feature. **v1 build direction:** `docs/decisions/evidencegraph-v1-design.md` — one graph per project (packets removed), standalone product.
-- **`003-interest-lab`** → big chunks of **A1/A2/A5, C1/C3/C4, F1(partial)** (the discovery world, behavioral capture, inference, hypothesis lifecycle, guide surface). Our Discovery App PRD is aligned to it.
-- **`007-passion-tutor`** → part of **E2** (a deterministic Socratic project-interview that surfaces articulation gaps and emits an evidence record to 002). A seed for the defense + concierge.
+**Synthetic-first:** every merged feature is built + tested on synthetic/pilot data. No real child data until the Phase 5 pre-live gates pass.
 
 ---
 
-## Phase 0 — Substrate (in flight)
+## Phase 0 — Substrate ✅ done
 
-**Goal:** the two foundational engines exist and are green on synthetic data.
-- `002-evidence-graph` (E1) and `003-interest-lab` (A1/A2/A5, C1/C3/C4) — continue/stabilize.
-- **DoD:** discovery world renders 1+ cabin; behavioral events captured; a hypothesis object updates; evidence graph builds+verifies a synthetic project graph.
+- `002-evidence-graph` (E1 MVP) merged; a synthetic project graph builds + verifies. Productionization (D1–D6) is a Phase-5 gate, now owned by teammate.
+- The discovery *engines* were built directly as `009`–`014` (the old `003-interest-lab` monolith was archived and split).
 
-## Phase 1 — Discovery MVP (the thinnest end-to-end interest read)
+## Phase 1 — Discovery MVP ✅ done (engines) / 🟡 world partial
 
-**Goal:** a kid can explore 2–3 cabins and the system produces a real, revisable interest read a guide can act on — on synthetic/pilot data. *This is the MVP.*
-- **`009-two-axis-tagging`** → **C2**. Domain (hierarchical) + work-mode taxonomy; afforded-modes + action-resolved engaged mode; tag-validity gate. *Dep:* 003. *DoD:* every gadget/taste app tagged; engaged-mode resolved from actions; tag reliability measured.
-- **Extend `003-interest-lab`** → **C3/C4** to the spec in `engines/C3-inference.md` (belief-per-cell, novelty-decay, voluntary-vs-prompted, topic-vs-style separation, "not sure yet"). *DoD:* ranked 1–3 candidate spikes with calibrated uncertainty + supporting/disconfirming evidence.
-- **`010-taste-apps`** → **A4** embedding SDK + 2–3 seeded taste apps (reuse intern apps). *DoD:* a gadget click opens a measurable embedded taste; depth signals captured.
-- **Extend `003` guide surface** → **F1 (MVP)**. *DoD:* a guide sees the hypothesis, evidence, coverage gaps, next probe; can park/promote (human-owned).
-- **DoD (phase):** end-to-end — explore → tasted/returned → per-(domain×mode) read → guide console. Metrics: time-to-provisional-hypothesis, coverage breadth.
+**Goal:** a kid's behavior produces a real, revisable interest read a guide can act on — on synthetic/pilot data.
+- **`009-two-axis-tagging`** → **C2** ✅ — domain × work-mode taxonomy; afforded + action-resolved engaged mode; tag-validity gate.
+- **`011-interest-inference`** → **C3** ✅ — Beta-Bernoulli belief-per-cell, novelty decay, voluntary-vs-prompted, topic-vs-style, calibrated "not sure yet".
+- **`012-signal-pipeline`** → **C1** ✅ — Interaction → CellEvent firewall (engine done; the game-side emitter is teammate).
+- **`013-hypothesis-store`** → **C4 + F1 (MVP)** ✅ — versioned hypotheses + lifecycle + Phase 2→3 gate + the guide console.
+- **`014-student-profile`** → **G1** ✅ — per-kid profile + append-only log + idempotent `runCycle` wiring 012→011→013; the console reads genuinely-derived data.
+- **Still open here:** **A4** taste-app embedding SDK (intern apps exist; SDK not built); **A1/A5** discovery world + accessibility mirror (teammate track; only one **A2** cabin exists).
 
-## Phase 2 — Discovery, full
+## Phase 2 — Discovery, full ✅ done (RAG + honesty) / 🟡 world remainder
 
-**Goal:** the full discovery experience with the long-tail concierge and cold-start.
-- **`011-concierge`** → **B1 + B2 + A6**. On-demand companion; the staged child-safe harness (`hardening/child-safe-rag.md`); curated library + live open-web behind the harness; niche→probe conversion. *Dep:* 009, G4. *DoD:* niche request → vetted/served probe; distress→human escalation; async vet→promote.
-- **`012-onboarding-inventory`** → environmental inventory intake + kid starter + cold-start priors. *DoD:* new kid seeded; priors only re-order the coverage pass.
-- **Complete `003`**: remaining cabins, accessibility mirror (A5) parity, session hygiene (quiet periods per `remaining-weakpoints.md` #2).
-- **`013-calibration-harness`** → **G5** + metrics/guardrail-compliance (**G6**). *DoD:* tag reliability, confidence calibration, longitudinal-outcome banking started; guardrail checks automated.
+**Goal:** the long-tail concierge + the honesty layer.
+- **`015-concierge-rag`** → **B1 + B2 + A6** ✅ — on-demand companion; the staged child-safe harness (`hardening/child-safe-rag.md`); curated library + opt-in live open-web behind the harness; niche→probe; distress→human; async vet→promote.
+- **`017-guardrails`** → **G6** ✅ — program metrics (funnel, coverage, calibration, reopen) + GC1–GC6 compliance checks + CLI report.
+- **Still open here:** **G5** calibration/validation harness (needs longitudinal outcomes); **`003` remainder** — remaining cabins + **A5** accessibility mirror + per-spike quiet-period hygiene (teammate/world track).
 
-## Phase 3 — Handoff + Specialization core
+## Phase 3 — Handoff + Specialization core ✅ core merged / 🟡 remainder
 
 **Goal:** a certified spike flows into a living, project-first plan with process capture.
-- **`014-graduation-gate`** → the Phase 2→3 certification (gap-surviving return + full-term durability + perseverance artifact + human autonomy sign-off). *Dep:* 003, F1. 
-- **`015-specialization-planner`** → **D1** (`engines/D1-specialization-planner.md`): living, project-first, scaffolded co-authorship, AI-drafts/human-owns, continuous replanning. *Dep:* 014.
-- **`016-project-workspace`** → **D2** (Type III PBL) wrapped by **E1**. *DoD:* a project runs; process captured to the evidence graph.
-- **`017-assessment-defense`** → **E2**: readiness-staged process rubric + AI-conducted, sampled, anxiety-safe oral defense (extends `007`); human owns of-record grade. *Dep:* 002, 007.
-- **`018-pcde-curriculum`** → **D5** embedded psychosocial scaffolds + assessment.
+- **Phase 2→3 certification** ✅ — shipped as the `013`/`014` gate (gap-surviving return + full-term durability + perseverance artifact + human autonomy sign-off).
+- **`018-specialization-planner`** → **D1** ✅ (engine + Plan panel) — four-stage ascent (readiness-gated), bounded DP, rest cadence, mentor relay, PCDE focus, grounded on the `015` curated library; guide-console Plan panel. Surface polish pending.
+- **`010-socratic-defense`** → **E2** ✅ (engine) — AI-conducted, sampled, anxiety-safe oral defense + evidence record; human owns the of-record grade. Sampling cadence + UI wiring remain.
+- **D2 project workspace** (Type III PBL wrapped by E1) ⬜ · **D5 PCDE curriculum** ⬜.
 
-## Phase 4 — Specialization, full + the human/family layer
+## Phase 4 — Specialization, full + the human/family layer 🟡 partial (F2/F3 engines merged)
 
 **Goal:** the ascent runs healthy at scale.
-- **`019-mentor-audience`** → **D3 + D4**: mentor relay + access-transfer; real-audience/submission broker (competitions, publishing, communities).
-- **`020-burnout-monitor`** → **F2**: the signal→action playbook (`SPECIALIZATION-PIPELINE-PRD.md` §8); quiet-devaluation detection; escalation to F1.
-- **`021-guide-wellbeing-console`** → **F1 (full)**: audit-only default + the two human-owned carve-outs, uncertainty-based routing, anti-rubber-stamp UX (`hardening/human-scaling.md`).
-- **`022-family-coengagement`** → **F3**: scaffolded warm prompts, showcases, door-opening; family conversion + pressure-monitoring backstop (`remaining-weakpoints.md` #5).
+- **`016-wellbeing`** → **F2** ✅ — signal→action push/back-off playbook; quiet-devaluation detection; escalation to F1.
+- **F1 guide + wellbeing console** ✅ (functional) — redesigned Workbench, fed by `014`, carrying the `016` panel; audit-only default + human-owned carve-outs per `hardening/human-scaling.md` (polish ongoing).
+- **`019-family-coengagement`** → **F3** ✅ (engine + surface) — warm-demanding coaching, door-opening asks, showcases + family-driven-pressure backstop (`remaining-weakpoints.md` #5). Surface polish pending.
+- **D3 mentor relay + D4 audience broker** ⬜.
 
-## Phase 5 — Pre-live gates (block any real child)
+## Phase 5 — Pre-live gates (block any real child) ⬜ not started
 
 **Goal:** everything required before a live child touches the system.
-- **`023-evidencegraph-productionization`** → **E1 D1–D6** in order (`hardening/evidencegraph-productionization.md`): **D2 erasure data model first**, then D1/D6 anchoring+signing, then D3/D4/D5. *Blocks live use.*
-- **`024-identity-consent-privacy`** → **G3**: consent scope, retention, parental access, erasure wiring. *Blocks live use.*
-- **`025-safety-at-scale`** → **G4** hardening of the shared moderation service. *Blocks live use.*
-- **Inference validation** (**G5**): once real outcomes begin to land, re-fit and validate the model.
+- **E1 D1–D6 productionization** (`hardening/evidencegraph-productionization.md`): **D2 erasure data model first**, then anchoring/signing, then the rest. **Teammate-owned.** *Blocks live use.*
+- **G3 identity/consent/privacy**: consent scope, retention, parental access, erasure wiring. *Blocks live use.*
+- **G4 safety-at-scale**: harden + consolidate the shared moderation service (concierge already ships in-app safety stages). *Blocks live use.*
+- **G5 inference validation**: once real outcomes land, re-fit and validate the model.
 
-## Cross-cutting (built alongside, not a phase)
+## Cross-cutting
 
-- **`G1` Student Profile / Longitudinal Record** — the shared state above everything; stand up early (Phase 1) and grow it.
-- **`G2` TimeBack Integration** — aptitude tilt + discretionary-XP prior + two-block loop; needed by Phase 1 inference (can stub first).
+- **G1 Student Profile / Longitudinal Record** — ✅ shipped (`014`); the shared state above everything.
+- **G2 TimeBack Integration** — ✅ merged (`020`): aptitude tilt + discretionary-XP prior + a light two-block handoff (prior only, never a gate). Deterministic fake data now; opt-in live adapter ready for the real API.
 
 ---
 
 ## Critical path & risks
 
-- **Critical path to the MVP:** 003 (world) → 009 (tagging) → C3 (inference) → F1 (guide console) → 010 (taste apps). Everything else follows.
-- **Longest-lead / riskiest:** 011/B2 (child-safe live open-web), C3+G5 (inference with no launch labels), 023 (EvidenceGraph D1–D6, esp. D2 erasure).
-- **Hard ordering rule:** `023` **D2 before D1** — never anchor un-erasable child PII externally.
+- **MVP critical path (done):** 009 tagging → 011 inference → 013 hypothesis store + guide console → 014 orchestrator. The discovery read is live on synthetic data.
+- **Longest-lead / riskiest (remaining):** 015/B2 child-safe live open-web (shipped behind stubs; live path is opt-in), C3 + G5 (inference validation with no launch labels yet), E1 D1–D6 (all pre-production, teammate), G3 (erasure on append-only child data — a hard pre-live gate).
+- **Hard ordering rule:** E1 **D2 (erasure data model) before D1 (external anchoring)** — never anchor un-erasable child PII externally.
 
-## Next step (step 2)
+## Next step
 
-Pick the first feature(s) to take from roadmap → **Spec Kit `spec.md`** → **`writing-plans` plan**. Recommended first: **`009-two-axis-tagging`** (unblocks the whole MVP read) or extend **`003-interest-lab`** inference to `engines/C3-inference.md`.
+- 018/019/020 are merged. Next: a **guide-console consolidation + polish** pass (fold hypotheses + wellbeing + Plan + Family into one cockpit), then pick from **D2 project workspace** (unblocks the specialization loop with E1), the **pre-live gates** (G3/G4), or **G5 calibration** once outcomes accrue.
