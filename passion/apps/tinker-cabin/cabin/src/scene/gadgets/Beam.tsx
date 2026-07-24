@@ -63,6 +63,8 @@ export function traceBeam(ops: number[]): { path: Array<[number, number]>; hit: 
   return { path, hit };
 }
 
+const SEG_MAX = 9; // max beam segments we pre-allocate + reposition each frame
+
 export function Beam({
   store,
   freeze,
@@ -70,7 +72,7 @@ export function Beam({
   store: GadgetStore;
   freeze: boolean;
 }): JSX.Element {
-  const cells = useRef<Array<THREE.MeshStandardMaterial | null>>([]);
+  const segs = useRef<Array<THREE.Mesh | null>>([]);
   const mirrors = useRef<Array<THREE.Group | null>>([]);
   const targetMat = useRef<THREE.MeshStandardMaterial>(null);
   const targetLight = useRef<THREE.PointLight>(null);
@@ -80,14 +82,23 @@ export function Beam({
     const st = store.beam;
     const data = st?.data ?? (st?.discovered ? BEAM_SOLUTION : BEAM_START);
     const { path, hit } = traceBeam(data);
-    // light the cells the beam passes through
-    cells.current.forEach((m, idx) => {
-      if (!m) return;
-      const c = idx % 3;
-      const r = Math.floor(idx / 3);
-      const lit = path.some(([pc, pr]) => pc === c && pr === r);
-      m.emissiveIntensity = lit ? 1.5 : 0.0;
-    });
+    // draw the beam as glowing segments between consecutive path cells (a connected laser line)
+    for (let i = 0; i < SEG_MAX; i++) {
+      const m = segs.current[i];
+      if (!m) continue;
+      const a = path[i];
+      const b = path[i + 1];
+      if (!a || !b) {
+        m.visible = false;
+        continue;
+      }
+      m.visible = true;
+      const [ax, ay] = cellPos(a[0], a[1]);
+      const [bx, by] = cellPos(b[0], b[1]);
+      m.position.set((ax + bx) / 2, (ay + by) / 2, 0.05);
+      const horiz = a[1] === b[1];
+      m.scale.set(horiz ? C * 1.05 : 0.03, horiz ? 0.03 : C * 1.05, 1);
+    }
     // orient the mirrors: "/" = +45°, "\" = -45°
     mirrors.current.forEach((g, i) => {
       if (g) g.rotation.z = (data[i] ?? 0) === 0 ? Math.PI / 4 : -Math.PI / 4;
@@ -110,27 +121,37 @@ export function Beam({
         <boxGeometry args={[0.58, 0.58, 0.05]} />
         <meshStandardMaterial color="#12100c" roughness={0.5} metalness={0.2} />
       </mesh>
-      {/* 3×3 beam cells (emissive when the beam passes through) */}
+      {/* faint 3×3 grid tiles (static backdrop so the cells read) */}
       {Array.from({ length: 9 }, (_, idx) => {
         const c = idx % 3;
         const r = Math.floor(idx / 3);
         const [x, y, z] = cellPos(c, r);
         return (
-          <mesh key={`cell-${c}-${r}`} position={[x, y, z]}>
-            <boxGeometry args={[0.12, 0.12, 0.02]} />
-            <meshStandardMaterial
-              ref={(m) => {
-                cells.current[idx] = m;
-              }}
-              color="#1a1712"
-              emissive="#ff6a3a"
-              emissiveIntensity={0}
-              roughness={0.5}
-              toneMapped={false}
-            />
+          <mesh key={`cell-${c}-${r}`} position={[x, y, z - 0.01]}>
+            <boxGeometry args={[0.12, 0.12, 0.015]} />
+            <meshStandardMaterial color="#1a1712" roughness={0.6} metalness={0.1} />
           </mesh>
         );
       })}
+      {/* beam segments — glowing laser line, repositioned along the path each frame */}
+      {Array.from({ length: SEG_MAX }, (_, i) => (
+        <mesh
+          key={`seg-${i}`}
+          visible={false}
+          ref={(m) => {
+            segs.current[i] = m;
+          }}
+        >
+          <boxGeometry args={[1, 1, 0.02]} />
+          <meshStandardMaterial
+            color="#ff8a4a"
+            emissive="#ff6a2a"
+            emissiveIntensity={2.2}
+            roughness={0.4}
+            toneMapped={false}
+          />
+        </mesh>
+      ))}
       {/* emitter — a nub on the left of cell (0,0) */}
       <mesh position={[cellPos(0, 0)[0] - 0.09, cellPos(0, 0)[1], 0.04]}>
         <boxGeometry args={[0.05, 0.06, 0.05]} />
