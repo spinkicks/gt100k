@@ -16,3 +16,4 @@ export * from "./model.js";
 export * from "./catalog.js";
 export * from "./broker.js";
 export * from "./lifecycle.js";
+export * from "./derive.js";
