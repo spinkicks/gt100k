@@ -9,6 +9,7 @@
     "test": "vitest run --config vitest.config.mts"
   },
   "dependencies": {
+    "@gt100k/access-broker": "workspace:*",
     "@gt100k/family": "workspace:*",
     "@gt100k/hypothesis-store": "workspace:*",
     "@gt100k/interest-inference": "workspace:*",

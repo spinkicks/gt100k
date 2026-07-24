@@ -12,4 +12,8 @@ regexes = [
   # workflowPlan.md §15: "...any verified secret, malicious/slopsquatted package..."
   # generic-api-key trips on the phrase; it is documentation, not a credential.
   '''malicious/slopsquatted''',
+  # access-broker test fixtures set a spike's cellKey from a plan fixture, e.g.
+  # `cellKey: PLAN_S3.cellKey` — generic-api-key trips on the property name "key";
+  # the value is a fixture reference, not a credential (spec 023, synthetic only).
+  '''cellKey:\s*PLAN_S\d+\.cellKey''',
 ]
