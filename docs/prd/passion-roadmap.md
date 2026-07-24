@@ -22,7 +22,7 @@
 | **Specialization planner** (D1) | ✅ engine + Plan tab merged — `018` |
 | **Family co-engagement** (F3) | ✅ engine + Family tab merged — `019` / `021` |
 | **TimeBack priors** (G2) | ✅ merged — `020` (fake data now; live adapter opt-in) |
-| **Project workspace** (D2) | ✅ engine + evidence-sink adapter merged — `022` Tasks 0–5; **studio app (Tasks 6–7) built live next** |
+| **Project workspace** (D2) | ✅ engine + evidence-sink adapter + **project-studio app** merged — `022` (child-facing journey-timeline studio, 7-preset theme switcher, `window.__qa`/LOOP_QA; stub EvidenceSink until E1's API settles) |
 | **Game/visual world** (A1 world, A2 cabins, A3 assets, A5 mirror) | 🟡 partial / teammate — tinker cabin + realism loop |
 | **Rest of specialization** (D3 mentor, D4 audience, D5 PCDE) | ⬜ not started |
 | **Pre-live gates** (G3 consent/erasure, G4 safety-at-scale, G5 calibration, E1 D1–D6) | ⬜ not started (E1 productionization = teammate) |
@@ -59,7 +59,7 @@
 - **Phase 2→3 certification** ✅ — shipped as the `013`/`014` gate (gap-surviving return + full-term durability + perseverance artifact + human autonomy sign-off).
 - **`018-specialization-planner`** → **D1** ✅ (engine + Plan panel) — four-stage ascent (readiness-gated), bounded DP, rest cadence, mentor relay, PCDE focus, grounded on the `015` curated library; guide-console Plan panel. Surface polish pending.
 - **`010-socratic-defense`** → **E2** ✅ (engine) — AI-conducted, sampled, anxiety-safe oral defense + evidence record; human owns the of-record grade. Sampling cadence + UI wiring remain.
-- **D2 project workspace** (Type III PBL wrapped by E1) ✅ **engine + evidence-sink adapter merged** (`022` Tasks 0–5); the cartoonish `apps/project-studio` (Tasks 6–7) is **built live next** (stub EvidenceSink until E1's API settles). · **D5 PCDE curriculum** ⬜.
+- **D2 project workspace** (Type III PBL wrapped by E1) ✅ **engine + evidence-sink adapter + `apps/project-studio` merged** (`022`; child-facing journey-timeline studio, 7-preset theme switcher, `window.__qa`/LOOP_QA, stub EvidenceSink until E1's API settles). · **D5 PCDE curriculum** ⬜.
 
 ## Phase 4 — Specialization, full + the human/family layer 🟡 partial (F2/F3 engines merged)
 
@@ -92,4 +92,4 @@
 
 ## Next step
 
-- 018/019/020/022-engine merged, and the **guide-console cockpit** (4-tab + polish + Galaxy) merged. Next: the **D2 Project Studio app** (`022` Tasks 6–7, built live over the merged engine on a stub EvidenceSink), then pick from **D3/D4 mentor+audience**, **D5 PCDE**, or the **pre-live gates** (G3/G4, G5 once outcomes accrue). Real E1 evidence wiring lands once the teammate's EvidenceGraph API settles.
+- 018/019/020/022 (engine + **project-studio app**) merged, and the **guide-console cockpit** (4-tab + polish + Galaxy) merged. Next: pick from **D3/D4 mentor+audience**, **D5 PCDE**, or the **pre-live gates** (G3/G4, G5 once outcomes accrue). Real E1 evidence wiring lands once the teammate's EvidenceGraph API settles.
