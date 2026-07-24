@@ -19,7 +19,9 @@
 
   --ink: #f0efec;
   --ink-muted: #b0aea7;
-  --ink-faint: #86847c;
+  /* Tertiary labels/captions. Kept just above WCAG AA (~4.5:1 on --panel, ~5:1 on --bg) so small
+     faint text stays legible without breaking the monochrome feel. */
+  --ink-faint: #9a988f;
   --focus: rgba(255, 255, 255, 0.6);
 
   --font-body: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
@@ -32,16 +34,25 @@
 
 * {
   box-sizing: border-box;
+  /* Hide scrollbar chrome everywhere; scrolling (wheel / trackpad / keyboard) still works. */
+  scrollbar-width: none; /* Firefox */
+}
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none; /* Chromium, Safari, Edge */
 }
 
 html,
 body {
   margin: 0;
   padding: 0;
+  -ms-overflow-style: none; /* legacy Edge/IE */
 }
 
 body {
   min-height: 100vh;
+  overflow-x: hidden; /* no horizontal scroll */
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-body);
@@ -100,6 +111,25 @@ body {
   grid-template-columns: 250px 1fr;
   min-height: 100vh;
 }
+/* Ambient starfield backdrop (Galaxy): fixed behind the console, non-interactive, dimmed by a
+   scrim so text on the transparent surfaces (rail, main negative space) stays legible. */
+.galaxy-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+}
+.galaxy-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(38, 38, 36, 0.42);
+}
+.app--workbench {
+  position: relative;
+  z-index: 1;
+}
 .app--triage {
   grid-template-columns: 248px 336px 1fr;
 }
@@ -136,9 +166,13 @@ body {
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: linear-gradient(160deg, #3c3b38, #2a2926);
+  background: var(--panel-3);
   border: 1px solid var(--line-2);
-  color: #f4f2ee;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 1.15rem;
+  line-height: 1;
   flex: 0 0 auto;
 }
 .brand__title {
@@ -1259,16 +1293,88 @@ body {
   padding: 30px 34px 96px;
 }
 .ghead {
-  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
 }
-/* Matches the sidebar section labels (Children / Specializations). */
-.ghead h1 {
-  margin: 0;
-  font-size: 0.67rem;
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--ink-faint);
+/* Segmented view switcher: Hypotheses / Wellbeing / Plan — the primary nav (the child is already
+   chosen in the sidebar, so no name title is repeated here). */
+.tabs {
+  display: inline-flex;
+  gap: 3px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 3px;
+}
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: var(--ink-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  padding: 6px 13px;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.tab:hover {
+  color: var(--ink);
+}
+.tab:active {
+  transform: translateY(0.5px);
+}
+.tab:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.tab--on {
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+/* One number treatment for every tab — same font, background, and color. */
+.tab__num {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  padding: 0 6px;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1.55;
+}
+/* At-a-glance "needs your review" marker on a tab (separate from the count pill). */
+.tab__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink);
+  flex: 0 0 auto;
+}
+/* The active tab's content mounts with a quiet fade so switching reads as a state change,
+   not a jump. Disabled under prefers-reduced-motion by the global block below. */
+@keyframes tabfade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.main--wb > .grid--wb,
+.main--wb > .wbpanel,
+.main--wb > .empty {
+  animation: tabfade 0.18s ease-out both;
 }
 .grid {
   display: grid;
@@ -2118,11 +2224,10 @@ body {
    Guide-facing, grayscale-safe. A review item is set apart by a left rule only
    (no color), so it reads the same in monochrome and never gamifies. */
 .wbpanel {
-  margin: 4px 0 22px;
-  padding: 16px 18px;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
+  margin: 0 0 22px;
+  padding: 0;
+  background: transparent;
+  border: 0;
 }
 .wbpanel__head {
   display: flex;
@@ -2163,15 +2268,14 @@ body {
   gap: 8px;
 }
 .wbitem {
-  padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.02);
+  padding: 14px 16px;
+  background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 12px;
 }
 .wbitem--review {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--panel-2);
   border-color: var(--line-2);
-  border-left: 3px solid var(--ink-muted);
 }
 .wbitem__top {
   display: flex;
@@ -2242,4 +2346,170 @@ body {
 .wbitem__reason--muted {
   margin-top: 8px;
   color: var(--ink-faint);
+}
+
+/* ---- Specialization plan panel (018 / D1) ---- */
+/* Stage purpose sits right under the header row. */
+.planitem__purpose {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+}
+/* At-a-glance: mentor / audience / rhythm / practice / rest as a compact label→value grid. */
+.plangrid {
+  margin: 12px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px 18px;
+}
+.plangrid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.plangrid dt {
+  font-size: 0.64rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+}
+.plangrid dd {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  line-height: 1.4;
+}
+/* Next project: the one authentic thing to do next, boxed apart from the at-a-glance. */
+.planproject {
+  margin-top: 12px;
+  padding: 11px 13px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+.planproject__k {
+  display: inline-block;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 4px;
+}
+.planproject__title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.planproject__q {
+  margin: 3px 0 8px;
+  font-size: 0.83rem;
+  font-style: italic;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+.planproject__method,
+.planproject__scaffold,
+.planproject__success {
+  margin: 5px 0 0;
+  font-size: 0.81rem;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+.planproject__method strong,
+.planproject__scaffold strong,
+.planproject__success strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.planproject__owns {
+  margin: 8px 0 0;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--ink-faint);
+}
+/* Vetted curated resources for the craft scaffold — inline, quiet links. */
+.planres {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+.planres li {
+  font-size: 0.78rem;
+}
+.planres a {
+  color: var(--ink-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.planres a:hover {
+  color: var(--ink);
+}
+/* PCDE focus chips. */
+.planpcde {
+  margin-top: 11px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+/* Honest-scope note — shown ONCE per panel, quiet. */
+.planterminal {
+  margin: 12px 0 0;
+  padding-top: 11px;
+  border-top: 1px dashed var(--line-2);
+  font-size: 0.74rem;
+  font-style: italic;
+  color: var(--ink-faint);
+  line-height: 1.45;
+}
+
+/* ---- Family co-engagement tab (021) ---- */
+.famobs {
+  margin-top: 12px;
+  padding-top: 11px;
+  border-top: 1px dashed var(--line-2);
+}
+.famobs__k {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.famobs__list {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 3px;
+}
+.famobs__list li {
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+}
+.famoffers {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.famoffers li {
+  font-size: 0.83rem;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+.famoffers__k {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 2px;
 }

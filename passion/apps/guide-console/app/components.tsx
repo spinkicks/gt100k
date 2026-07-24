@@ -7,7 +7,6 @@ import { useState, type JSX } from "react";
 import { childInitials } from "./console-data.js";
 import type { ConsoleController } from "./useConsole.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
-import { BrandMark } from "./logos.js";
 import { ProgressRing } from "./progress.js";
 import {
   ACTIONS,
@@ -95,9 +94,7 @@ export function Term({
 export function Brand(): JSX.Element {
   return (
     <div className="brand">
-      <span className="brand__mark" aria-hidden="true">
-        <BrandMark size={20} />
-      </span>
+      <span className="brand__mark" aria-hidden="true">P</span>
       <span className="brand__title">PassionLab Guide Console</span>
     </div>
   );

@@ -21,17 +21,10 @@ const CHALLENGE_LABEL: Record<string, string> = { PUSH: "Push", HOLD: "Hold", SC
 const PRESSURE_LABEL: Record<string, string> = { AUTONOMY_UP: "Autonomy ↑", STEADY: "Steady" };
 
 export function WellbeingPanel({ cards }: { cards: readonly WellbeingCardVM[] }): JSX.Element {
-  const escalations = cards.filter((c) => c.read.escalateToHuman).length;
   return (
-    <section className="wbpanel" aria-labelledby="wb-title">
+    <section className="wbpanel" aria-label="Wellbeing">
       <header className="wbpanel__head">
-        <h2 id="wb-title">Wellbeing</h2>
         <span className="wbpanel__sub">The system proposes, you decide.</span>
-        {escalations > 0 ? (
-          <span className="wbpanel__count" data-testid="wb-escalations">
-            {escalations} {escalations === 1 ? "needs" : "need"} your review
-          </span>
-        ) : null}
       </header>
 
       {cards.length === 0 ? (
