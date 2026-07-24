@@ -10,7 +10,7 @@ There are three apps to show:
 |---|---|---|---|---|
 | 1 | **Guide Console** | the teacher / guide | http://localhost:3020 | shared |
 | 2 | **Project Studio** | the child | http://localhost:3010 | shared |
-| 3 | **Evidence Explorer** | shows the honest record of a child's work | http://localhost:3030 | teammate (EvidenceGraph) |
+| 3 | **Evidence Explorer** (themed) | shows the honest record of a child's work | http://localhost:3030 | teammate (EvidenceGraph), merged |
 
 > If you only have two minutes, do Guide Console + Project Studio and skip app 3.
 
@@ -29,7 +29,7 @@ pnpm install
 # 2) start each app in its OWN terminal tab/window, then open the printed localhost link
 pnpm --filter @gt100k/guide-console   exec next dev -p 3020   # the guide's view
 pnpm --filter @gt100k/project-studio  exec next dev -p 3010   # the kid's view
-pnpm --filter @gt100k/evidence-explorer exec next dev -p 3030 # the honest-record view (teammate)
+pnpm --filter @gt100k/evidence-explorer-themed exec next dev -p 3030 # the honest-record view (teammate)
 ```
 
 Each command prints a `Local: http://localhost:PORT` line when it is ready. Open those three links in the browser.
@@ -53,6 +53,8 @@ Each command prints a `Local: http://localhost:PORT` line when it is ready. Open
 ## 3. The 30 second story (say this first)
 
 > "Most kids never find the thing they could be great at. This project helps a child, ages 6 to 14, discover a real passion and then go deep on it. The twist is that instead of asking a kid what they like, we watch what they actually keep coming back to. Then we give the adult a clear read on it, we help the kid do real projects, and we protect the kid from burnout the whole way. I will show you the grown up's view first, then the kid's, and finally how we keep an honest record of the work."
+
+Tie it together: the grown-up console, the kid's studio, and the evidence view all share one visual language and the same theme switcher, so it reads as a single product, not three separate demos.
 
 Three ideas to repeat in plain words:
 1. **We learn from what kids do, not from what they say.** Surveys are unreliable. Behavior is honest.
@@ -98,14 +100,15 @@ This is the fun, kid facing side, where a child actually does a project and writ
 
 This shows the **honest record** of a child's project: every real step, and proof that the record was not faked or changed later.
 
-> Owned by the teammate finishing the EvidenceGraph work. Confirm the exact button names on the day, since final touches are in progress.
+> Owned by the teammate, and now **merged**. This is the themed build (`evidence-explorer-themed`), which shares the Project Studio's look and theme switcher, so the whole product feels like one thing.
 
 1. **Set the scene.** "When a child does a project, we keep a trail of every real step: what they tried, what broke, what they made, and where they got help. This is a directed acyclic graph, which just means a web of steps where every arrow points from a step back to what it was built on. Each dot is one step, and the lines are those connections."
-2. **Show 3D and 2D.** Use the **3D / 2D** toggle at the top. "It is the same record either way. A calm flat map, or an immersive view. Nobody is forced into the fancy version."
-3. **Trace the story.** Click **Trace lineage**. "This lights up the full provenance, the chain of every step that led to the final result, so you see the whole path behind it, not just the shiny ending."
-4. **Open one step.** Click a dot. "You can open any step and read exactly what happened, including when an AI assistant was used. Declared AI help is stored as its own neutral, status equal node, so honesty is built into the data, not policed afterward. Getting help is shown openly and is never treated as cheating."
-5. **Prove it is real (the big moment).** Find the **Verified** line near the bottom, expand it, and click **Show tamper**. "Each step is content addressed, meaning its ID is a hash of its own contents, so you cannot change a step without changing its fingerprint. The whole history then rolls up into a Merkle root, which is basically one digital fingerprint for the entire record. Watch: if someone alters even one byte, the root changes color and the seal breaks to MISMATCH, so anyone can instantly tell it was tampered with. Click again to restore it." (Note the small line: presentation only, no cryptography or grade is computed in the app itself.)
-6. **Close the act.** "So a family, a school, or a competition can trust that this is a real, unedited record of the child's actual work."
+2. **Match the look (the cohesion beat).** Open the **theme switcher** and pick a theme. "This is the same switcher, and the same themes, as the kid's Project Studio. It re-skins not just the panels but the whole 3D world. One consistent, themeable design language across our apps." (The switcher has four families: Observatory, Warm, Minimal, Tech.)
+3. **Show 3D and 2D.** Use the **3D / 2D** toggle at the top. "It is the same record either way. A calm flat map, or an immersive view. Nobody is forced into the fancy version."
+4. **Trace the story.** Click **Trace lineage**. "This lights up the full provenance, the chain of every step that led to the final result, so you see the whole path behind it, not just the shiny ending."
+5. **Open one step.** Click a dot. "You can open any step and read exactly what happened, including when an AI assistant was used. Declared AI help is stored as its own neutral, status equal node, so honesty is built into the data, not policed afterward. Getting help is shown openly and is never treated as cheating."
+6. **Prove it is real (the big moment).** Find the **Verified** line near the bottom, expand it, and click **Show tamper**. "Each step is content addressed, meaning its ID is a hash of its own contents, so you cannot change a step without changing its fingerprint. The whole history then rolls up into a Merkle root, which is basically one digital fingerprint for the entire record. Watch: if someone alters even one byte, the root changes color and the seal breaks to MISMATCH, so anyone can instantly tell it was tampered with. Click again to restore it." (Note the small line: presentation only, no cryptography or grade is computed in the app itself.)
+7. **Close the act.** "So a family, a school, or a competition can trust that this is a real, unedited record of the child's actual work. And it looks and feels like the rest of the product."
 
 ---
 
