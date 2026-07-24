@@ -11,3 +11,4 @@
 export const PROJECT_WORKSPACE_PACKAGE = "@gt100k/project-workspace" as const;
 
 export * from "./model.js";
+export * from "./project.js";
