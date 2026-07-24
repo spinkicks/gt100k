@@ -101,25 +101,28 @@ export function CodeChallenge({
       style={{
         position: "fixed",
         inset: 0,
-        display: "grid",
-        placeItems: "center",
-        // low-opacity so the player watches the real gadget change behind the panel on each Run
-        background: "rgba(6,8,12,0.5)",
-        backdropFilter: "blur(1.5px)",
+        // DOCK bottom-left (not centered) + no full-screen dim, so the gadget stays visible in the
+        // centre of the view as you edit/run — you watch it react live, not hidden behind the panel.
+        display: "flex",
+        alignItems: "flex-end",
+        justifyContent: "flex-start",
+        padding: 22,
+        pointerEvents: "none", // only the panel captures clicks; the rest passes through to the scene
         zIndex: 20,
       }}
     >
       <div
         style={{
-          width: 460,
+          width: 440,
           maxWidth: "92vw",
-          padding: "22px 24px",
+          padding: "18px 22px",
           borderRadius: 14,
-          background: "linear-gradient(180deg,#1b1f27,#12151b)",
-          border: "1px solid rgba(255,180,110,0.25)",
+          background: "linear-gradient(180deg,rgba(27,31,39,0.97),rgba(18,21,27,0.97))",
+          border: "1px solid rgba(255,180,110,0.3)",
           color: "#eae2d6",
           font: "14px/1.5 ui-sans-serif, system-ui, sans-serif",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
+          pointerEvents: "auto",
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>

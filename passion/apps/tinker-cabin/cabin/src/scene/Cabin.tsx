@@ -19,6 +19,7 @@ import { ControlPanel } from "./gadgets/ControlPanel";
 import { Easel } from "./gadgets/Easel";
 import { GearGizmo } from "./gadgets/GearGizmo";
 import { InteractiveLamp } from "./gadgets/InteractiveLamp";
+import { Lockbox } from "./gadgets/Lockbox";
 import type { GadgetStore } from "./gadgets/gadgetState";
 import { ANCHORS, ROOM } from "./layout";
 import {
@@ -952,6 +953,7 @@ export function Cabin({
       <GearGizmo store={gadgets} freeze={freeze} />
       <ChimeKeys store={gadgets} freeze={freeze} />
       <Easel store={gadgets} freeze={freeze} />
+      <Lockbox store={gadgets} freeze={freeze} />
 
       {/* cool daylight from OUTSIDE the window, angled down into the room. It casts shadow, so the
           +X wall blocks it everywhere except through the opening → a real window-shaped light shaft

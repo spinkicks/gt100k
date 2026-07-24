@@ -191,6 +191,35 @@ export const EASEL_CHALLENGE: ChallengeSpec = {
   solvedMsg: "Painted! The canvas is complete.",
 };
 
+/**
+ * LOCKBOX — variables. Assign each dial variable so the combination matches the secret KEY; each
+ * correct dial cracks the real lid open a little more, and all three spring it fully open (revealing
+ * a glowing reward). (Key: dial1=2, dial2=0, dial3=3.)
+ */
+export const LOCKBOX_CHALLENGE: ChallengeSpec = {
+  gadgetId: "lockbox",
+  title: "Crack the lockbox",
+  prompt:
+    "Assign each dial so the combination matches the key. Every correct dial cracks the lid open a little more.",
+  concept: "variables",
+  ops: ["0", "1", "2", "3"],
+  header: "const dials = []",
+  footer: "open if dials === KEY   // 🔒",
+  lines: [
+    { pre: "dials[0] = ", op: 0 },
+    { pre: "dials[1] = ", op: 0 },
+    { pre: "dials[2] = ", op: 0 },
+  ],
+  run: (lines) => {
+    const key = [2, 0, 3];
+    return lines.map((l, i) => (l.op === key[i] ? 1 : 0));
+  },
+  target: [1, 1, 1],
+  // mode = number of correct dials (0..3) → the lid opening angle; fully open (3) reveals the reward
+  worldMode: (trace) => trace.filter(Boolean).length,
+  solvedMsg: "Unlocked! The lid springs open.",
+};
+
 /** Challenges keyed by gadget id — the coding-shack game (all code-themed, each a distinct concept). */
 export const CHALLENGES: Record<string, ChallengeSpec> = {
   lamp: LAMP_CHALLENGE, // sequencing
@@ -198,4 +227,5 @@ export const CHALLENGES: Record<string, ChallengeSpec> = {
   chimes: CHIMES_CHALLENGE, // arrays
   panel: PANEL_CHALLENGE, // conditionals
   easel: EASEL_CHALLENGE, // functions
+  lockbox: LOCKBOX_CHALLENGE, // variables
 };

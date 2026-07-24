@@ -14,7 +14,14 @@
  */
 
 /** Interest families a gadget probes. `code` is the desk coding-station (opens the TasteApp). */
-export type GadgetDomain = "tinker" | "engineering" | "mechanical" | "music" | "art" | "code";
+export type GadgetDomain =
+  | "tinker"
+  | "engineering"
+  | "mechanical"
+  | "music"
+  | "art"
+  | "code"
+  | "logic";
 
 export interface GadgetDef {
   id: string;
@@ -101,6 +108,18 @@ export const GADGETS: readonly GadgetDef[] = [
     modes: 4,
     defaultMode: 0,
     showcaseMode: 2,
+  },
+  {
+    id: "lockbox",
+    label: "the lockbox",
+    domain: "logic",
+    // front wall, left of the door — on a small crate
+    target: [-0.3, 0, 2.2],
+    radius: 1.5,
+    // mode = number of correct dials (0..3): the lid cracks open more per correct dial
+    modes: 4,
+    defaultMode: 0,
+    showcaseMode: 3,
   },
 ] as const;
 
