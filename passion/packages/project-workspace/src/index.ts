@@ -9,3 +9,5 @@
 // rank/reward field anywhere (guardrail SC-5); declared AI help is a NEUTRAL `Assistance` node
 // (SC-6). No network; SYNTHETIC data only. Barrel filled in task-by-task.
 export const PROJECT_WORKSPACE_PACKAGE = "@gt100k/project-workspace" as const;
+
+export * from "./model.js";
