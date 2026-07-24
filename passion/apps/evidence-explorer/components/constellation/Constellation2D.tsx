@@ -26,8 +26,20 @@ const DASH: Record<EdgeView["threadStyle"], string | undefined> = {
   frayed: "1 4",
 };
 
-function edgePath(from: NodeView, to: NodeView): string {
-  return `M ${from.pos2d.x} ${from.pos2d.y} L ${to.pos2d.x} ${to.pos2d.y}`;
+/**
+ * Provenance-flow path: drawn from the upstream body to just short of the downstream body, so the
+ * `marker-end` arrowhead reads clearly at the downstream end rather than being buried under the node.
+ * "Downstream" is the higher-`depthRank` endpoint (toward the Outcome), regardless of how the domain
+ * stored `from → to` (e.g. `derived_from` points derived → source, i.e. downstream → upstream).
+ */
+function flowPath(upstream: NodeView, downstream: NodeView): string {
+  const dx = downstream.pos2d.x - upstream.pos2d.x;
+  const dy = downstream.pos2d.y - upstream.pos2d.y;
+  const len = Math.hypot(dx, dy) || 1;
+  const gap = NODE_R + 8; // stop short of the downstream body so the arrowhead sits at its edge
+  const ex = downstream.pos2d.x - (dx / len) * gap;
+  const ey = downstream.pos2d.y - (dy / len) * gap;
+  return `M ${upstream.pos2d.x} ${upstream.pos2d.y} L ${ex} ${ey}`;
 }
 
 /** How a node reads under the HUD filters + trace (mirrors `hud-state`'s `NodeEmphasis`). */
@@ -240,45 +252,18 @@ export function Constellation2D({
         <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
           <feGaussianBlur stdDeviation="10" />
         </filter>
+        {/* Provenance-direction arrowhead — subtle, muted, sized modestly so threads read as flowing
+            from source → downstream (toward the Outcome) without cluttering the constellation. */}
         <marker
-          id="cap-arrow"
+          id="prov-arrow"
           viewBox="0 0 10 10"
           refX="8"
           refY="5"
-          markerWidth="7"
-          markerHeight="7"
-          orient="auto-start-reverse"
-        >
-          <path d="M0 1 L9 5 L0 9 Z" fill="var(--verify)" />
-        </marker>
-        <marker
-          id="cap-check"
-          viewBox="0 0 12 12"
-          refX="6"
-          refY="6"
-          markerWidth="9"
-          markerHeight="9"
+          markerWidth="6"
+          markerHeight="6"
           orient="auto"
         >
-          <path
-            d="M2 6 L5 9 L10 3"
-            fill="none"
-            stroke="var(--verify)"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </marker>
-        <marker
-          id="cap-slash"
-          viewBox="0 0 10 10"
-          refX="5"
-          refY="5"
-          markerWidth="8"
-          markerHeight="8"
-          orient="auto"
-        >
-          <path d="M2 8 L8 2" stroke="var(--tamper)" strokeWidth="1.6" strokeLinecap="round" />
+          <path d="M0 1.5 L9 5 L0 8.5 Z" fill="var(--ink-muted)" opacity="0.75" />
         </marker>
       </defs>
 
@@ -288,14 +273,10 @@ export function Constellation2D({
           const from = byId.get(e.from);
           const to = byId.get(e.to);
           if (!from || !to) return null;
-          const cap =
-            e.cap === "arrow"
-              ? "url(#cap-arrow)"
-              : e.cap === "check"
-                ? "url(#cap-check)"
-                : e.cap === "slash"
-                  ? "url(#cap-slash)"
-                  : undefined;
+          // Provenance flow reads toward the higher-`depthRank` (downstream) body, whichever way the
+          // domain stored the edge — so the arrow always says "this led to that".
+          const downstream = to.depthRank >= from.depthRank ? to : from;
+          const upstream = downstream === to ? from : to;
           const lit = litCount > 0 && isEdgeLit(waveOrder, litCount, e.from, e.to);
           // On a tamper mismatch, lineage touching the byte-body desaturates (dim — never red).
           const desaturated = fractureId !== null && (e.from === fractureId || e.to === fractureId);
@@ -320,11 +301,11 @@ export function Constellation2D({
             <path
               key={`${e.from}->${e.to}-${i}`}
               className="edge-draw"
-              d={edgePath(from, to)}
+              d={flowPath(upstream, downstream)}
               stroke={stroke}
               strokeWidth={(e.flow ? 1.8 : 1.2) * (lit ? 1.6 : 1)}
               strokeDasharray={DASH[e.threadStyle]}
-              markerEnd={cap}
+              markerEnd="url(#prov-arrow)"
               opacity={opacity}
             />
           );

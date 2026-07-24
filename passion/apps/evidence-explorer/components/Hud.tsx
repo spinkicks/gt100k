@@ -15,7 +15,6 @@ import {
   NODE_COLOR_ROLES,
   NODE_GLYPHS,
   SPRINGS,
-  type TierOverride,
 } from "@gt100k/evidence-explorer-view";
 import { EDGE_TYPES, NODE_TYPES } from "@gt100k/evidence-graph";
 import type { EdgeType, NodeType } from "@gt100k/evidence-graph";
@@ -37,13 +36,6 @@ import { useSelection } from "./selection.js";
 
 const NODE_TYPE_LIST = NODE_TYPES as readonly NodeType[];
 const EDGE_TYPE_LIST = EDGE_TYPES as readonly EdgeType[];
-
-const TIER_MODES: readonly { readonly value: TierOverride; readonly label: string }[] = [
-  { value: "auto", label: "Auto" },
-  { value: "cinematic", label: "Cinematic" },
-  { value: "standard3d", label: "Standard" },
-  { value: "calm2d", label: "Calm 2D" },
-];
 
 const RM_MODES: readonly { readonly value: ReducedMotionMode; readonly label: string }[] = [
   { value: "system", label: "System" },
@@ -115,8 +107,6 @@ export function Hud({ view }: { view: ExplorerView }): JSX.Element {
     reducedMotionMode,
     setReducedMotionMode,
     systemReducedMotion,
-    tierOverride,
-    setTierOverride,
     audioCaptions,
     toggleAudioCaptions,
   } = useHud();
@@ -333,12 +323,6 @@ export function Hud({ view }: { view: ExplorerView }): JSX.Element {
           >
             <div className="hud-drawer-inner">
               <p className="hud-caption">Presentation only — the evidence never changes.</p>
-              <Segmented
-                label="Render tier"
-                value={tierOverride}
-                options={TIER_MODES}
-                onChange={setTierOverride}
-              />
               <Segmented
                 label="Reduced motion"
                 value={reducedMotionMode}
