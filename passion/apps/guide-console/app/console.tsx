@@ -19,11 +19,13 @@ import {
 import { WellbeingPanel } from "./wellbeing-panel.js";
 import { PlanPanel } from "./plan-panel.js";
 import { FamilyPanel } from "./family-panel.js";
+import { AccessPanel } from "./access-panel.js";
 import { familyOfferCount } from "./family.js";
+import { accessNeedsReview, accessProposalCount } from "./access.js";
 import Galaxy from "./Galaxy.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 
-type View = "hypotheses" | "wellbeing" | "plan" | "family";
+type View = "hypotheses" | "wellbeing" | "plan" | "family" | "access";
 
 export function GuideConsole(): JSX.Element {
   const ctrl = useConsole();
@@ -76,6 +78,12 @@ export function GuideConsole(): JSX.Element {
       label: "Family",
       count: familyOfferCount(ctrl.family),
       review: ctrl.family?.escalateToHuman ?? false,
+    },
+    {
+      id: "access",
+      label: "Access",
+      count: accessProposalCount(ctrl.access),
+      review: accessNeedsReview(ctrl.access),
     },
   ];
 
@@ -152,6 +160,7 @@ export function GuideConsole(): JSX.Element {
         {view === "family" ? (
           <FamilyPanel read={ctrl.family} observations={ctrl.familyObservations} />
         ) : null}
+        {view === "access" ? <AccessPanel cards={ctrl.access} /> : null}
 
         <Legend />
       </main>
