@@ -11,3 +11,5 @@
 // SYNTHETIC data only. Reuses 018 (Stage/MentorRole/AudienceLevel/SpecializationPlan), 016
 // (WellbeingRead), and 009 (WorkMode) — never redefined. Barrel filled task-by-task.
 export const ACCESS_BROKER_PACKAGE = "@gt100k/access-broker" as const;
+
+export * from "./model.js";
