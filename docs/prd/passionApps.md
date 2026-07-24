@@ -34,9 +34,9 @@
 | **A2** Cabin 3D Interiors | 🟡 partial | `apps/tinker-cabin` (game-side MVP) | one photoreal cabin + realism-loop harness; the rest of the world is the teammate's track |
 | **A4** Taste Apps + Embedding SDK | 🟡 partial | intern apps exist | the embedding SDK + measurable-panel standard is not built |
 
-**In flight (🔨):** *nothing actively building.* The **D2 Project Studio app** (`apps/project-studio`, 022 Tasks 6–7) is merged — a 7-preset journey-timeline studio over the engine, running on the **stub `EvidenceSink`** until the teammate's EvidenceGraph API is ready to wire for real. Next candidates: **D3/D4** (mentor + audience), **D5** (PCDE curriculum), or the **pre-live gates** (G3/G4). *(The guide-console cockpit — tabs + polish + Galaxy + Family tab — merged.)*
+**In flight (🔨):** *nothing actively building.* **D3/D4 access broker (023)** just merged: the combined mentor-relay + audience-broker engine + live adapter + a guide-console **Access tab** (ranked mentor/audience matches, the guide-gated access-transfer lifecycle with a guardian-consent hard blocker, plus wellbeing/stage/craft-floor gates). Next candidates: **D5** (PCDE curriculum) or the **pre-live gates** (G3/G4). *(The D2 Project Studio app, the guide-console cockpit, and the teammate's themed Evidence Explorer are all merged.)*
 
-**Not started (⬜):** A1 world · A3 asset pipeline · A5 accessibility mirror · D3 mentor relay · D4 audience broker · D5 PCDE curriculum · G3 consent/privacy · G4 safety/moderation · G5 calibration harness.
+**Not started (⬜):** A1 world · A3 asset pipeline · A5 accessibility mirror · D5 PCDE curriculum · G3 consent/privacy · G4 safety/moderation · G5 calibration harness.
 
 **Wiring gap — RESOLVED (014 + 020):** the discovery engines are wired end-to-end (`Interaction`s → 012 → 011 → 013 through the per-kid **G1** orchestrator), the console renders the derived read, and **real priors now flow from TimeBack (G2/020)** as a soft, never-gating starting hint. The remaining real input is the game-side `Interaction` emitter (C1 UI, teammate).
 
@@ -71,8 +71,8 @@
 
 - **D1. Specialization Planner** *(✅ done, engine — `specs/018-specialization-planner`)* — Living, adaptive, project-first plan generator: spike + aptitude + access + stage + history → a staged sequence of Type III projects with embedded bounded practice; LLM-generated + curated/RAG-grounded + human-reviewed; continuously replans against progress/return/burnout. *Fits:* the engine that drives the ascent.
 - **D2. Project Workspace (Type III PBL)** *(✅ done — `specs/022-project-studio`)* — Where kids do authentic real-audience projects; captures the working process. *v1:* a headless `@gt100k/project-workspace` engine (Project + 10 quest-entry kinds → the closed EvidenceGraph taxonomy via an `EvidenceSink` port; deterministic stub + real SHA-256 adapter) + a cartoonish child-facing **project quest studio** (`apps/project-studio`: journey-timeline UI, 7-preset theme switcher, `window.__qa`/LOOP_QA). No gamification/score/grade; declared AI help neutral; synthetic/local. *Fits:* the recurring unit of the spine; feeds the EvidenceGraph.
-- **D3. Mentor Relay + Access-Transfer System** *(net-new)* — Tracks the warm→technical→expert→master relay, engineered handoffs, and "access transferred" as a deliverable; routes AI + family + thin expert + near-peer roles. *Fits:* operationalizes the mentor spine in the software-first model.
-- **D4. Real-Audience / Submission Broker** *(net-new)* — Competition calendars, publishing pipelines, community connections, marketplace submission. *Fits:* supplies real audiences at scale so "ambition scales by audience, not hours."
+- **D3. Mentor Relay + Access-Transfer System** *(✅ done — `specs/023-access-broker`)* — Tracks the warm→technical→expert→master relay, engineered handoffs, and "access transferred" as a deliverable; routes AI + family + thin expert + near-peer roles. *Fits:* operationalizes the mentor spine in the software-first model.
+- **D4. Real-Audience / Submission Broker** *(✅ done — `specs/023-access-broker`)* — Competition calendars, publishing pipelines, community connections, marketplace submission. *Fits:* supplies real audiences at scale so "ambition scales by audience, not hours."
 - **D5. PCDE Curriculum Engine** *(net-new)* — Stage-sequenced psychosocial-skill scaffolds embedded in projects, coached and assessed via the EvidenceGraph. *Fits:* builds the actual rate-limiter (psychosocial skills).
 
 ### Group E — Assessment & Provenance
@@ -196,9 +196,9 @@ flowchart TB
 
 ## 3. Build-sequencing notes
 
-- **Done (discovery spine + honesty/safety + specialization/family/priors engines + the cockpit):** C2 (009) · C1 (012) · C3 (011) · C4 (013) · E2 (010) · **G1 + orchestrator (014)** · **F2 wellbeing (016)** · **G6 guardrails (017)** · **A6+B1+B2 concierge/RAG/curated library (015)** · **D1 planner engine + Plan panel (018)** · **F3 family engine + Family tab (019/021)** · **G2 TimeBack priors (020)** · **D2 project-workspace engine + evidence-sink adapter + project-studio app (022)** · **F1 guide-console cockpit** (4-tab: Hypotheses/Wellbeing/Plan/Family + polish + Galaxy) · E1-MVP (002, teammate). Engines wired end-to-end; the cockpit reads genuinely-derived data with real TimeBack priors.
+- **Done (discovery spine + honesty/safety + specialization/family/priors engines + the cockpit):** C2 (009) · C1 (012) · C3 (011) · C4 (013) · E2 (010) · **G1 + orchestrator (014)** · **F2 wellbeing (016)** · **G6 guardrails (017)** · **A6+B1+B2 concierge/RAG/curated library (015)** · **D1 planner engine + Plan panel (018)** · **F3 family engine + Family tab (019/021)** · **G2 TimeBack priors (020)** · **D2 project-workspace engine + evidence-sink adapter + project-studio app (022)** · **D3/D4 access broker engine + adapter + Access tab (023)** · **F1 guide-console cockpit** (5-tab: Hypotheses/Wellbeing/Plan/Family/Access + polish + Galaxy) · E1-MVP (002, teammate). Engines wired end-to-end; the cockpit reads genuinely-derived data with real TimeBack priors.
 - **Next up (in order):**
-  1. **Specialization lane (rest):** D3 mentor/D4 audience → D5 PCDE.
+  1. **D5 PCDE curriculum** (the rest of the specialization lane).
   2. **Pre-live gates:** E1 D1–D6 productionization (teammate), G3 consent/erasure, G4 safety-at-scale, G5 calibration (once outcome data accrues).
   3. **Real evidence wiring:** swap the studio's stub `EvidenceSink` for the SHA-256 adapter once the teammate's EvidenceGraph API settles.
 - **Original critical path (for reference):** A1 → A2/A3 → A4 → C2 → C1 → C3 → C4 → F1 (+ G1, G2). Concierge (B1/B2) and the external router (A6) can follow once the bounded loop reads signal.

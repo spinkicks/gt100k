@@ -13,7 +13,7 @@
 | Lane | Status |
 |---|---|
 | **Discovery spine** (C1/C2/C3/C4 + G1 orchestrator) | ✅ built + merged — `009` `011` `012` `013` `014` |
-| **Guide-console cockpit** (F1) | ✅ merged — 4-tab (Hypotheses/Wellbeing/Plan/Family) + polish + Galaxy backdrop |
+| **Guide-console cockpit** (F1) | ✅ merged — 5-tab (Hypotheses/Wellbeing/Plan/Family/Access) + polish + Galaxy backdrop |
 | **Assessment / defense** (E2 engine) | ✅ built + merged — `010` |
 | **Concierge + child-safe RAG + curated library** (B1/B2/A6) | ✅ built + merged — `015` |
 | **Wellbeing** (F2) | ✅ built + merged — `016` |
@@ -24,7 +24,8 @@
 | **TimeBack priors** (G2) | ✅ merged — `020` (fake data now; live adapter opt-in) |
 | **Project workspace** (D2) | ✅ engine + evidence-sink adapter + **project-studio app** merged — `022` (child-facing journey-timeline studio, 7-preset theme switcher, `window.__qa`/LOOP_QA; stub EvidenceSink until E1's API settles) |
 | **Game/visual world** (A1 world, A2 cabins, A3 assets, A5 mirror) | 🟡 partial / teammate — tinker cabin + realism loop |
-| **Rest of specialization** (D3 mentor, D4 audience, D5 PCDE) | ⬜ not started |
+| **Access broker** (D3 mentor, D4 audience) | ✅ merged — `023` (combined engine + live adapter + guide-console Access tab) |
+| **Rest of specialization** (D5 PCDE) | ⬜ not started |
 | **Pre-live gates** (G3 consent/erasure, G4 safety-at-scale, G5 calibration, E1 D1–D6) | ⬜ not started (E1 productionization = teammate) |
 
 **Synthetic-first:** every merged feature is built + tested on synthetic/pilot data. No real child data until the Phase 5 pre-live gates pass.
@@ -67,7 +68,7 @@
 - **`016-wellbeing`** → **F2** ✅ — signal→action push/back-off playbook; quiet-devaluation detection; escalation to F1.
 - **F1 guide + wellbeing console** ✅ (functional) — redesigned Workbench, fed by `014`, carrying the `016` panel; audit-only default + human-owned carve-outs per `hardening/human-scaling.md` (polish ongoing).
 - **`019-family-coengagement`** → **F3** ✅ (engine + surface) — warm-demanding coaching, door-opening asks, showcases + family-driven-pressure backstop (`remaining-weakpoints.md` #5). Surface polish pending.
-- **D3 mentor relay + D4 audience broker** ⬜.
+- **D3 mentor relay + D4 audience broker** ✅ merged (`023`: one combined access-broker engine + opt-in live adapter + the guide-console **Access tab** — ranked mentor/audience matches, a guide-gated access-transfer lifecycle with a guardian-consent hard blocker, and wellbeing/stage/craft-floor guardrails).
 
 ## Phase 5 — Pre-live gates (block any real child) ⬜ not started
 
@@ -92,4 +93,4 @@
 
 ## Next step
 
-- 018/019/020/022 (engine + **project-studio app**) merged, and the **guide-console cockpit** (4-tab + polish + Galaxy) merged. Next: pick from **D3/D4 mentor+audience**, **D5 PCDE**, or the **pre-live gates** (G3/G4, G5 once outcomes accrue). Real E1 evidence wiring lands once the teammate's EvidenceGraph API settles.
+- 018/019/020/022/023 merged (023 = the combined **access broker** + the guide-console **Access tab**), plus the **guide-console cockpit** (now 5 tabs) and the teammate's **themed Evidence Explorer** (`#144`). Next: pick from **D5 PCDE** or the **pre-live gates** (G3/G4, G5 once outcomes accrue). Real E1 evidence wiring lands once the teammate's EvidenceGraph API settles.
