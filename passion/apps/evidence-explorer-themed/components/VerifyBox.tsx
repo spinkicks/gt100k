@@ -160,7 +160,7 @@ export function VerifyBox({
               {tamperOn ? "Hide tamper" : "Show tamper"}
             </button>
             <span className="verifybox-note">
-              Presentation only — no grade, no crypto in the app.
+              Presentation only. No grade, no crypto in the app.
             </span>
           </div>
         </div>

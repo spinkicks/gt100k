@@ -130,7 +130,6 @@ export function AddPanel({
       >
         <span className="addp-toggle-text">
           <span className="addp-toggle-title">Add to graph</span>
-          <span className="addp-toggle-sub">Append a node or a thread — validated live</span>
         </span>
         <span className="addp-toggle-chevron" aria-hidden="true">
           <ChevronIcon size={16} />

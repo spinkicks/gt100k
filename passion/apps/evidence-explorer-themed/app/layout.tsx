@@ -37,7 +37,7 @@ const mono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "GT100K — Provenance Observatory",
   description:
-    "A navigable, content-addressed evidence DAG for one milestone — rendered as a calm, forensic-precise observatory. Synthetic data only.",
+    "A content-addressed evidence graph for one milestone, shown as a 3D observatory. Synthetic data only.",
 };
 
 // Set data-theme before first paint so a persisted theme never flashes the default (FOUC guard).

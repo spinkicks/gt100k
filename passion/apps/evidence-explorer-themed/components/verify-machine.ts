@@ -105,7 +105,7 @@ export function sealAnnouncement(view: VerificationView): string {
     case "verified":
       return `Verified. Merkle root ${shortRoot(merkleRootOf(view))} re-derived and matches; every final grade is human-owned.`;
     case "mismatch":
-      return "Tamper detected. The released artifact's bytes no longer match its committed Merkle root. No person, learner, or grade is implicated — only the byte-level record diverged.";
+      return "Tamper detected. The released artifact's bytes no longer match its committed Merkle root. No person, learner, or grade is implicated. Only the byte-level record diverged.";
     default:
       return "Not yet verified.";
   }

@@ -165,7 +165,7 @@ export function Hud({ view }: { view: ExplorerView }): JSX.Element {
           </span>
         </button>
         <p className="sr-only" aria-live="polite">
-          {hasTrace ? "Lineage highlighted — the Ledger marks the same nodes." : "Trace off."}
+          {hasTrace ? "Lineage highlighted. The Ledger marks the same nodes." : "Trace off."}
         </p>
       </div>
 

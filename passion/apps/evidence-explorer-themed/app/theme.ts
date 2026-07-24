@@ -31,7 +31,7 @@ export const THEME_GROUPS: readonly ThemeGroup[] = [
   {
     family: "observatory",
     label: "Observatory",
-    blurb: "the native instrument",
+    blurb: "native palette",
     presets: [
       { id: "observatory-graphite", name: "Graphite", chips: ["#0c0d11", "#6db8e8", "#38d9a6"] },
     ],
@@ -39,7 +39,7 @@ export const THEME_GROUPS: readonly ThemeGroup[] = [
   {
     family: "warm",
     label: "Warm",
-    blurb: "vivid accents on a warm night",
+    blurb: "warm surfaces, vivid accents",
     presets: [
       { id: "warm-sunbeam", name: "Sunbeam", chips: ["#1d1710", "#ffd166", "#ff6b57"] },
       { id: "warm-berry", name: "Berry", chips: ["#1e1020", "#d59bff", "#ff5d8f"] },
@@ -58,7 +58,7 @@ export const THEME_GROUPS: readonly ThemeGroup[] = [
   {
     family: "tech",
     label: "Tech",
-    blurb: "high-contrast signal",
+    blurb: "high contrast",
     presets: [
       { id: "tech-terminal", name: "Terminal", chips: ["#0a0f0b", "#39ff5f", "#223d22"] },
       { id: "tech-synth", name: "Synthwave", chips: ["#130a22", "#22d3ee", "#ff2fb9"] },

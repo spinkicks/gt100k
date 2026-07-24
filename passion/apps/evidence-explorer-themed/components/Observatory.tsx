@@ -43,9 +43,7 @@ export function Observatory({ seed }: { seed: SyntheticSeed }): JSX.Element {
       <header className="obs-header">
         <div className="obs-title">
           <p className="obs-eyebrow">Provenance Observatory</p>
-          <h1>
-            Milestone <span className="mono obs-ref">{view.milestoneRef}</span>
-          </h1>
+          <h1>Milestone</h1>
         </div>
         <div className="obs-readout" aria-label="Milestone summary">
           <div className="obs-stat">
