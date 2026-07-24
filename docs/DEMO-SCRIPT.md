@@ -4,23 +4,22 @@
 **Goal:** show, in a few minutes, how we help a child find a real passion and go deep on it, and convey how much engineering is under the hood.
 **Golden rule for the talk:** lead in plain language, then use the real technical term when it shows depth and gloss it in the same breath (for example, "a Merkle root, which is basically a digital fingerprint"). Everything on screen is **made-up sample data**. Say that once, early. No em-dashes in anything you read aloud or put on a slide.
 
-There are three apps to show:
+**All apps run on the teammate's laptop, which is the presentation machine.** (Your laptop stays at the desk.) The teammate drives; the ports below are on his machine.
 
 | Order | App | Who it is for | URL (after you start it) | Owner |
 |---|---|---|---|---|
+| 0 (optional opener) | **Discovery Cabin** | the child (explore a 3D world) | http://localhost:3040 | teammate, **early prototype** |
 | 1 | **Guide Console** | the teacher / guide | http://localhost:3020 | shared |
 | 2 | **Project Studio** | the child | http://localhost:3010 | shared |
 | 3 | **Evidence Explorer** (themed) | shows the honest record of a child's work | http://localhost:3030 | teammate (EvidenceGraph), merged |
 
-> If you only have two minutes, do Guide Console + Project Studio and skip app 3.
+> Short on time? The core is Guide Console then Project Studio, then Evidence Explorer. The Discovery Cabin is an optional scene-setter and it is rough, so frame it as an early prototype or skip it.
 
 ---
 
 ## 1. How to start the apps (do this before the talk)
 
-**Prerequisites:** Node 20+, and `pnpm` installed. You only need to do the install once.
-
-From the repository root:
+**Do this on the teammate's laptop** (the presentation machine). **Prerequisites:** Node 20+ and `pnpm`. Get the latest first: `git checkout main && git pull`. Then, from the repository root:
 
 ```bash
 # 1) one-time install (safe to re-run)
@@ -30,9 +29,12 @@ pnpm install
 pnpm --filter @gt100k/guide-console   exec next dev -p 3020   # the guide's view
 pnpm --filter @gt100k/project-studio  exec next dev -p 3010   # the kid's view
 pnpm --filter @gt100k/evidence-explorer-themed exec next dev -p 3030 # the honest-record view (teammate)
+
+# optional opener: the 3D discovery cabin. NOTE: this one is Vite, not Next, and is an early prototype.
+pnpm --filter @gt100k/tinker-cabin-app exec vite --port 3040 --strictPort
 ```
 
-Each command prints a `Local: http://localhost:PORT` line when it is ready. Open those three links in the browser.
+Each command prints a `Local: http://localhost:PORT` line when it is ready. Open those links in the browser.
 
 **Tips**
 - For a clean demo with no leftover test data, open the links in a **private / incognito** window.
@@ -46,7 +48,7 @@ Each command prints a `Local: http://localhost:PORT` line when it is ready. Open
 
 - **Show live (click through):** Guide Console, Project Studio, Evidence Explorer.
 - **Describe only (no screen, they run behind the scenes):** the parts that read a child's behavior, watch for burnout, build the step by step plan, and coach the family. Talk about these; do not try to click them.
-- **Do not show (still being built):** the explorable 3D discovery world (a teammate track). If asked, say "that is next on our roadmap."
+- **Optional, and only if you want to (early prototype):** the **Discovery Cabin**, a first rough version of the explorable 3D world (teammate track). Good as a 30-second scene-setter; say plainly that it is an early prototype. Skipping it is completely fine.
 
 ---
 
@@ -63,7 +65,17 @@ Three ideas to repeat in plain words:
 
 ---
 
-## 4. Act 1: The Guide Console (http://localhost:3020)
+## 4. Act 0 (optional opener): The Discovery Cabin (http://localhost:3040)
+
+The very start of the journey: a 3D world a child walks around to find what they like. It is an **early prototype**, so set expectations up front, keep it to about 30 seconds, then move on.
+
+1. **Set the scene.** "Before any grown-up tools, a kid just explores. This is an early version of that world. They walk around, pick things up, and try things. We watch what they keep coming back to, and that becomes the signal everything else is built on."
+2. **Walk around.** Move through the cabin and interact with a gadget or two. "It is rough around the edges on purpose today. The idea is what matters: discovery happens by doing, not by asking."
+3. **Hand off to the read.** "What a child does in here becomes the evidence the guide sees next." Then switch to the Guide Console.
+
+---
+
+## 5. Act 1: The Guide Console (http://localhost:3020)
 
 This is the teacher or guide's mission control for one child at a time.
 
@@ -81,7 +93,7 @@ Nice touch to mention: the calm moving starry background is deliberate, and it t
 
 ---
 
-## 5. Act 2: The Project Studio (http://localhost:3010)
+## 6. Act 2: The Project Studio (http://localhost:3010)
 
 This is the fun, kid facing side, where a child actually does a project and writes down the journey.
 
@@ -96,7 +108,7 @@ This is the fun, kid facing side, where a child actually does a project and writ
 
 ---
 
-## 6. Act 3: The Evidence Explorer (http://localhost:3030), teammate owned
+## 7. Act 3: The Evidence Explorer (http://localhost:3030), teammate owned
 
 This shows the **honest record** of a child's project: every real step, and proof that the record was not faked or changed later.
 
@@ -112,7 +124,7 @@ This shows the **honest record** of a child's project: every real step, and proo
 
 ---
 
-## 7. Under the hood: the hard parts (bring these up for a technical room)
+## 8. Under the hood: the hard parts (bring these up for a technical room)
 
 Use these to show how much real engineering sits behind the friendly screens. Each keeps the real term and glosses it in the same breath. No em-dashes.
 
@@ -134,7 +146,7 @@ Use these to show how much real engineering sits behind the friendly screens. Ea
 
 ---
 
-## 8. Likely questions and simple answers
+## 9. Likely questions and simple answers
 
 - **"Is this real kid data?"** No. All sample data. Real use waits behind privacy and consent work we have already mapped out.
 - **"How do you know what a kid likes?"** We measure what they choose to come back to after the newness wears off, not what they click once.
@@ -144,7 +156,7 @@ Use these to show how much real engineering sits behind the friendly screens. Ea
 
 ---
 
-## 9. Two minute version
+## 10. Two minute version
 
 - **Guide Console:** land on it, say the one line story, click **Wellbeing**, then **Plan**.
 - **Project Studio:** show the timeline, add one entry, switch one theme.
@@ -152,7 +164,7 @@ Use these to show how much real engineering sits behind the friendly screens. Ea
 
 ---
 
-## 10. Do not do these on stage
+## 11. Do not do these on stage
 
 - Do not switch git branches or run build commands during the demo.
 - If the Studio timeline looks cluttered from earlier testing, reopen it in a fresh incognito window for the clean sample.
