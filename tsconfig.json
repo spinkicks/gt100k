@@ -26,6 +26,7 @@
     { "path": "passion/adapters/timeback-live" },
     { "path": "passion/packages/project-workspace" },
     { "path": "passion/adapters/evidence-sink-graph" },
-    { "path": "passion/packages/access-broker" }
+    { "path": "passion/packages/access-broker" },
+    { "path": "passion/adapters/access-broker-live" }
   ]
 }
