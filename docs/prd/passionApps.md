@@ -1,6 +1,6 @@
 # PassionApps — Every Software Endeavor for the Full PassionLab
 
-**Status:** v2 · updated 2026-07-23
+**Status:** v2 · updated 2026-07-24
 **Purpose:** The complete build map. Every software artifact required to stand up the full PassionLab (Discovery + Specialization), what each is, how it fits, and **its current build status** — plus a flow diagram.
 **Companions:** `DISCOVERY-APP-PRD.md`, `SPECIALIZATION-PIPELINE-PRD.md`, and the research memos in `docs/research/passion-pipeline/`.
 
@@ -28,14 +28,15 @@
 | **A6 + B1 + B2** Concierge + Child-Safe RAG + Curated Library | ✅ done | `specs/015-concierge-rag` (`@gt100k/concierge` + `@gt100k/concierge-live` + `apps/concierge`) | 10-stage defense-in-depth pipeline (curated-first → allowlist-biased retrieval → per-doc filter + injection spotlighting → grounded cite-or-refuse → output moderation → age-tier readability → async cache→vet→promote), typed ports with deterministic stubs (CI/LOOP_QA) + opt-in TFY/Wikipedia real adapters; the **curated library is domain×mode-tagged**, so it seeds discovery and grounds the D1 planner's briefs |
 | **D1** Specialization Planner | ✅ done (engine) | `specs/018-specialization-planner` (`@gt100k/specialization-planner` + `@gt100k/planner-live` + guide-console Plan panel) | pure four-stage ascent engine (Ignition→Foundations→Authorship→Signature, **readiness-gated not age**), bounded/​capped DP, mandatory rest, mentor relay, PCDE focus, `derivePlanInputs` over 013/014/016, briefs grounded on the 015 curated library (deterministic stub + opt-in TFY), and a guide-console "Plan" panel; **system proposes, human disposes**; surface polish pending |
 | **F3** Family Co-Engagement | ✅ done | `specs/019-family-coengagement` (`@gt100k/family`) + `specs/021` (console Family tab) | pure `assessFamily` engine (warm-demanding coaching posture, counter-cyclical autonomy on rising stakes, door-opening asks, family-driven-pressure watch → guide re-coaching) + a deriver over 013/014/016, now surfaced as the guide-console **Family tab** (read-only coaching read; the standalone `apps/family` app retired); no affect detection, no gamification, no automated parent message |
+| **D2** Project Workspace / Studio | 🟡 engine done | `specs/022-project-studio` (`@gt100k/project-workspace` + `@gt100k/evidence-sink-graph`) | headless engine: `Project` + 10 append-only quest-entry kinds → the **closed EvidenceGraph taxonomy** via an `EvidenceSink` port (deterministic stub + real SHA-256 adapter over `@gt100k/evidence-graph`, fail-safe), perseverance chain; no gamification/score/grade, declared AI help neutral. The **cartoonish `apps/project-studio` (Tasks 6–7) is built live next**; real evidence-graph wiring once the teammate's E1 API settles |
 | **G2** TimeBack Integration | ✅ done | `specs/020-timeback-integration` (`@gt100k/timeback` + `@gt100k/timeback-live`) | subject→cabin crosswalk + `toDomainPriors` mapper (mastery → aptitude tilt, free-choice XP → discretionary tilt), light two-block handoff, `withPriors` hook, deterministic fake data source + opt-in live adapter scaffold (no real API yet); **prior only, never a gate** (standing no-gate test) |
 | **E1** EvidenceGraph | 🟡 partial (**teammate**) | `specs/002-evidence-graph` (MVP) | core DAG + human-owned grades shipped; **D1–D6 pre-production gates** (transparency log, crypto-shred erasure, comparative-judgment, conformal, export provenance, signing) remain — **owned by teammate** — see `hardening/evidencegraph-productionization.md` |
 | **A2** Cabin 3D Interiors | 🟡 partial | `apps/tinker-cabin` (game-side MVP) | one photoreal cabin + realism-loop harness; the rest of the world is the teammate's track |
 | **A4** Taste Apps + Embedding SDK | 🟡 partial | intern apps exist | the embedding SDK + measurable-panel standard is not built |
 
-**In flight (🔨):** nothing — 018 (D1), 019 (F3), and 020 (G2) all merged. Next up is a guide-console consolidation + polish pass (fold hypotheses + wellbeing + Plan + Family into one operator cockpit; iterate live).
+**In flight (🔨):** **D2 Project Studio app** — `specs/022-project-studio` Tasks 6–7 (the cartoonish child-facing `apps/project-studio`). The engine + adapter (Tasks 0–5) are merged; the app is built **live** next, on the **stub `EvidenceSink`** until the teammate's EvidenceGraph API is ready to wire for real. *(The guide-console cockpit — tabs + polish + Galaxy + Family tab — merged.)*
 
-**Not started (⬜):** A1 world · A3 asset pipeline · A5 accessibility mirror · D2 project workspace · D3 mentor relay · D4 audience broker · D5 PCDE curriculum · G3 consent/privacy · G4 safety/moderation · G5 calibration harness.
+**Not started (⬜):** A1 world · A3 asset pipeline · A5 accessibility mirror · D3 mentor relay · D4 audience broker · D5 PCDE curriculum · G3 consent/privacy · G4 safety/moderation · G5 calibration harness.
 
 **Wiring gap — RESOLVED (014 + 020):** the discovery engines are wired end-to-end (`Interaction`s → 012 → 011 → 013 through the per-kid **G1** orchestrator), the console renders the derived read, and **real priors now flow from TimeBack (G2/020)** as a soft, never-gating starting hint. The remaining real input is the game-side `Interaction` emitter (C1 UI, teammate).
 
@@ -69,7 +70,7 @@
 ### Group D — Specialization Engine
 
 - **D1. Specialization Planner** *(✅ done, engine — `specs/018-specialization-planner`)* — Living, adaptive, project-first plan generator: spike + aptitude + access + stage + history → a staged sequence of Type III projects with embedded bounded practice; LLM-generated + curated/RAG-grounded + human-reviewed; continuously replans against progress/return/burnout. *Fits:* the engine that drives the ascent.
-- **D2. Project Workspace (Type III PBL)** *(net-new)* — Where kids do authentic real-audience projects; captures the working process. *Fits:* the recurring unit of the spine; feeds the EvidenceGraph.
+- **D2. Project Workspace (Type III PBL)** *(🟡 engine done — `specs/022-project-studio`; studio app in flight)* — Where kids do authentic real-audience projects; captures the working process. *v1:* a headless `@gt100k/project-workspace` engine (Project + 10 quest-entry kinds → the closed EvidenceGraph taxonomy via an `EvidenceSink` port; deterministic stub + real SHA-256 adapter) + a cartoonish child-facing **project quest studio** (`apps/project-studio`, built live). No gamification/score/grade; declared AI help neutral; synthetic/local. *Fits:* the recurring unit of the spine; feeds the EvidenceGraph.
 - **D3. Mentor Relay + Access-Transfer System** *(net-new)* — Tracks the warm→technical→expert→master relay, engineered handoffs, and "access transferred" as a deliverable; routes AI + family + thin expert + near-peer roles. *Fits:* operationalizes the mentor spine in the software-first model.
 - **D4. Real-Audience / Submission Broker** *(net-new)* — Competition calendars, publishing pipelines, community connections, marketplace submission. *Fits:* supplies real audiences at scale so "ambition scales by audience, not hours."
 - **D5. PCDE Curriculum Engine** *(net-new)* — Stage-sequenced psychosocial-skill scaffolds embedded in projects, coached and assessed via the EvidenceGraph. *Fits:* builds the actual rate-limiter (psychosocial skills).
@@ -195,10 +196,10 @@ flowchart TB
 
 ## 3. Build-sequencing notes
 
-- **Done (discovery spine + honesty/safety + specialization/family/priors engines):** C2 (009) · C1 (012) · C3 (011) · C4 (013) · E2 (010) · **G1 + orchestrator (014)** · F1-guide (013 app, redesigned + fed by 014/016/018) · **F2 wellbeing engine + panel (016)** · **G6 guardrails/metrics + compliance (017)** · **A6 + B1 + B2 concierge + child-safe RAG + curated library (015)** · **D1 specialization planner engine + Plan panel (018)** · **F3 family co-engagement engine + surface (019)** · **G2 TimeBack priors (020)** · E1-MVP (002, teammate). The engines are wired end-to-end and the console reads genuinely-derived data with real TimeBack priors.
+- **Done (discovery spine + honesty/safety + specialization/family/priors engines + the cockpit):** C2 (009) · C1 (012) · C3 (011) · C4 (013) · E2 (010) · **G1 + orchestrator (014)** · **F2 wellbeing (016)** · **G6 guardrails (017)** · **A6+B1+B2 concierge/RAG/curated library (015)** · **D1 planner engine + Plan panel (018)** · **F3 family engine + Family tab (019/021)** · **G2 TimeBack priors (020)** · **D2 project-workspace engine + evidence-sink adapter (022 Tasks 0–5)** · **F1 guide-console cockpit** (4-tab: Hypotheses/Wellbeing/Plan/Family + polish + Galaxy) · E1-MVP (002, teammate). Engines wired end-to-end; the cockpit reads genuinely-derived data with real TimeBack priors.
 - **Next up (in order):**
-  1. **Guide-console consolidation + visual polish** — fold hypotheses + wellbeing (016) + Plan (018) + Family (019) into one coherent operator cockpit; iterate live.
-  2. **Specialization lane (rest):** D2 project workspace → D3 mentor/D4 audience → D5 PCDE.
+  1. **D2 Project Studio app (live)** — the cartoonish `apps/project-studio` (022 Tasks 6–7) over the merged engine (stub EvidenceSink until E1's API settles).
+  2. **Specialization lane (rest):** D3 mentor/D4 audience → D5 PCDE.
   3. **Pre-live gates:** E1 D1–D6 productionization (teammate), G3 consent/erasure, G4 safety-at-scale, G5 calibration (once outcome data accrues).
 - **Original critical path (for reference):** A1 → A2/A3 → A4 → C2 → C1 → C3 → C4 → F1 (+ G1, G2). Concierge (B1/B2) and the external router (A6) can follow once the bounded loop reads signal.
 - **Highest-risk / longest-lead:** B2 (child-safe open-web RAG), C3 + G5 (inference with no launch labels), E1 D1–D6 (all pre-production), G3 (erasure on append-only child data — a hard pre-live gate).

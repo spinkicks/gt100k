@@ -1,6 +1,6 @@
 # PassionLab Build Roadmap
 
-**Status:** v2 · updated 2026-07-23 · Owner: (product/eng)
+**Status:** v2 · updated 2026-07-24 · Owner: (product/eng)
 **Purpose:** Sequence the `passionApps.md` artifacts into a phased, dependency-ordered build path, mapped to the **actual** Spec-Kit features under `specs/`. Each feature is `specs/NNN-<slug>/spec.md` → a `writing-plans` implementation plan (`docs/superpowers/plans/…`) → execution (factory loop).
 **Reads with:** `passionApps.md` (artifact catalog + live status log), the two PRDs, and `hardening/`.
 
@@ -8,21 +8,23 @@
 
 ---
 
-## Where we actually are (2026-07-23)
+## Where we actually are (2026-07-24)
 
 | Lane | Status |
 |---|---|
-| **Discovery spine** (C1/C2/C3/C4 + G1 orchestrator + F1 guide console) | ✅ built + merged — `009` `011` `012` `013` `014` |
+| **Discovery spine** (C1/C2/C3/C4 + G1 orchestrator) | ✅ built + merged — `009` `011` `012` `013` `014` |
+| **Guide-console cockpit** (F1) | ✅ merged — 4-tab (Hypotheses/Wellbeing/Plan/Family) + polish + Galaxy backdrop |
 | **Assessment / defense** (E2 engine) | ✅ built + merged — `010` |
 | **Concierge + child-safe RAG + curated library** (B1/B2/A6) | ✅ built + merged — `015` |
-| **Wellbeing** (F2 push/back-off + burnout) | ✅ built + merged — `016` |
-| **Guardrails / program metrics + compliance** (G6) | ✅ built + merged — `017` |
+| **Wellbeing** (F2) | ✅ built + merged — `016` |
+| **Guardrails / metrics + compliance** (G6) | ✅ built + merged — `017` |
 | **EvidenceGraph** (E1 MVP) | ✅ MVP merged — `002`; D1–D6 productionization **owned by teammate** |
-| **Specialization planner** (D1) | ✅ engine merged — `018` (surface polish pending) |
-| **Family co-engagement** (F3) | ✅ engine merged — `019` (surface polish pending) |
+| **Specialization planner** (D1) | ✅ engine + Plan tab merged — `018` |
+| **Family co-engagement** (F3) | ✅ engine + Family tab merged — `019` / `021` |
 | **TimeBack priors** (G2) | ✅ merged — `020` (fake data now; live adapter opt-in) |
-| **Game/visual world** (A1 world, A2 cabins, A3 assets, A5 mirror) | 🟡 partial / teammate — one photoreal tinker cabin only |
-| **Rest of specialization** (D2 workspace, D3 mentor, D4 audience, D5 PCDE) | ⬜ not started |
+| **Project workspace** (D2) | ✅ engine + evidence-sink adapter merged — `022` Tasks 0–5; **studio app (Tasks 6–7) built live next** |
+| **Game/visual world** (A1 world, A2 cabins, A3 assets, A5 mirror) | 🟡 partial / teammate — tinker cabin + realism loop |
+| **Rest of specialization** (D3 mentor, D4 audience, D5 PCDE) | ⬜ not started |
 | **Pre-live gates** (G3 consent/erasure, G4 safety-at-scale, G5 calibration, E1 D1–D6) | ⬜ not started (E1 productionization = teammate) |
 
 **Synthetic-first:** every merged feature is built + tested on synthetic/pilot data. No real child data until the Phase 5 pre-live gates pass.
@@ -57,7 +59,7 @@
 - **Phase 2→3 certification** ✅ — shipped as the `013`/`014` gate (gap-surviving return + full-term durability + perseverance artifact + human autonomy sign-off).
 - **`018-specialization-planner`** → **D1** ✅ (engine + Plan panel) — four-stage ascent (readiness-gated), bounded DP, rest cadence, mentor relay, PCDE focus, grounded on the `015` curated library; guide-console Plan panel. Surface polish pending.
 - **`010-socratic-defense`** → **E2** ✅ (engine) — AI-conducted, sampled, anxiety-safe oral defense + evidence record; human owns the of-record grade. Sampling cadence + UI wiring remain.
-- **D2 project workspace** (Type III PBL wrapped by E1) ⬜ · **D5 PCDE curriculum** ⬜.
+- **D2 project workspace** (Type III PBL wrapped by E1) ✅ **engine + evidence-sink adapter merged** (`022` Tasks 0–5); the cartoonish `apps/project-studio` (Tasks 6–7) is **built live next** (stub EvidenceSink until E1's API settles). · **D5 PCDE curriculum** ⬜.
 
 ## Phase 4 — Specialization, full + the human/family layer 🟡 partial (F2/F3 engines merged)
 
@@ -90,4 +92,4 @@
 
 ## Next step
 
-- 018/019/020 are merged. Next: a **guide-console consolidation + polish** pass (fold hypotheses + wellbeing + Plan + Family into one cockpit), then pick from **D2 project workspace** (unblocks the specialization loop with E1), the **pre-live gates** (G3/G4), or **G5 calibration** once outcomes accrue.
+- 018/019/020/022-engine merged, and the **guide-console cockpit** (4-tab + polish + Galaxy) merged. Next: the **D2 Project Studio app** (`022` Tasks 6–7, built live over the merged engine on a stub EvidenceSink), then pick from **D3/D4 mentor+audience**, **D5 PCDE**, or the **pre-live gates** (G3/G4, G5 once outcomes accrue). Real E1 evidence wiring lands once the teammate's EvidenceGraph API settles.
