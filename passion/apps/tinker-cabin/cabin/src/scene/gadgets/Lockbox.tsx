@@ -36,7 +36,7 @@ export function Lockbox({
     const target = (mode / 3) * OPEN_ANGLE;
     if (freeze) angle.current = target;
     else angle.current += (target - angle.current) * 0.12; // ease open/closed
-    if (lid.current) lid.current.rotation.x = -angle.current;
+    if (lid.current) lid.current.rotation.x = angle.current; // hinge at the wall side → opens toward the room
     // status studs: light the first `mode` (one per correct dial)
     studs.current.forEach((m, i) => {
       if (m) m.emissiveIntensity = i < mode ? 1.0 : 0.08;
@@ -110,20 +110,21 @@ export function Lockbox({
         distance={1.6}
         decay={2}
       />
-      {/* lid — hinged at the back-top edge (pivot), extends forward when closed */}
-      <group ref={lid} position={[0, 0.98, -0.2]}>
-        <mesh position={[0, 0.03, 0.2]} castShadow>
+      {/* lid — hinged at the WALL-side top edge (pivot at +z) so it swings up and opens toward the
+          middle of the room; covers the box top when closed */}
+      <group ref={lid} position={[0, 0.98, 0.2]}>
+        <mesh position={[0, 0.03, -0.2]} castShadow>
           <boxGeometry args={[0.5, 0.08, 0.4]} />
           <meshStandardMaterial color="#5a3a24" roughness={0.6} metalness={0.15} />
         </mesh>
-        <mesh position={[0, 0.07, 0.2]}>
+        <mesh position={[0, 0.07, -0.2]}>
           <boxGeometry args={[0.52, 0.04, 0.42]} />
           <meshStandardMaterial color="#8a6a34" roughness={0.4} metalness={0.6} />
         </mesh>
       </group>
-      {/* three status studs on the front face (z+0.2), one per dial */}
+      {/* three status studs on the ROOM-facing face (z-0.2) so the player sees them, one per dial */}
       {[-0.14, 0, 0.14].map((x, i) => (
-        <mesh key={`stud-${x}`} position={[x, 0.8, 0.205]} rotation={[Math.PI / 2, 0, 0]}>
+        <mesh key={`stud-${x}`} position={[x, 0.8, -0.205]} rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.03, 0.03, 0.02, 16]} />
           <meshStandardMaterial
             ref={(m) => {

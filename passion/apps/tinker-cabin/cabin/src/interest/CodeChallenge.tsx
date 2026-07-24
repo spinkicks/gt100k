@@ -78,11 +78,11 @@ export function CodeChallenge({
       setSolved(true);
       onSolvedDiscovery();
     }
-    // playback gadgets (e.g. the lamp): hand the trace to the world, then exit the menu so the
-    // player watches it execute. Non-playback gadgets update live and keep the panel open.
+    // Drive the gadget; the panel STAYS OPEN (it's docked to the side, so you watch the gadget react
+    // live and it stays put after you solve — close it yourself when you're done). Playback gadgets
+    // (the lamp) blink the trace back slowly via the world; others update instantly.
     if (spec.playback && onPlayback) {
       onPlayback(trace, ok);
-      close();
     } else {
       onWorld(spec.worldMode(trace, ok));
     }
