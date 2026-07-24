@@ -47,6 +47,8 @@ export interface ChallengeSpec {
   /** if set, Run exits the menu and the gadget plays the trace back slowly (watch it execute in the
    *  world), instead of instantly setting a mode + keeping the panel open */
   playback?: boolean;
+  /** if set, solving reveals a button that opens this URL (a follow-on quest) in a new tab */
+  questUrl?: string;
 }
 
 /**
@@ -218,6 +220,7 @@ export const LOCKBOX_CHALLENGE: ChallengeSpec = {
   // mode = number of correct dials (0..3) → the lid opening angle; fully open (3) reveals the reward
   worldMode: (trace) => trace.filter(Boolean).length,
   solvedMsg: "Unlocked! The lid springs open.",
+  questUrl: "https://alpha-code-one.vercel.app/quest/list",
 };
 
 /** Challenges keyed by gadget id — the coding-shack game (all code-themed, each a distinct concept). */

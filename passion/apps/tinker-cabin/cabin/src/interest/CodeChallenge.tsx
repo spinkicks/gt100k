@@ -194,6 +194,19 @@ export function CodeChallenge({
             <button type="button" onClick={run} style={btn("primary")}>
               ▶ Run
             </button>
+          ) : spec.questUrl ? (
+            <>
+              <button
+                type="button"
+                onClick={() => window.open(spec.questUrl, "_blank", "noopener,noreferrer")}
+                style={btn("primary")}
+              >
+                🎁 Open your quest →
+              </button>
+              <button type="button" onClick={close} style={btn("ghost")}>
+                Close
+              </button>
+            </>
           ) : (
             <button type="button" onClick={close} style={btn("primary")}>
               ✓ Online — back to the shack
