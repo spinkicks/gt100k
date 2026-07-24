@@ -13,7 +13,10 @@ import { useRef } from "react";
 import type * as THREE from "three";
 import { GADGET_FROZEN_T, type GadgetStore } from "./gadgetState";
 
-const OPEN_ANGLE = 2.1; // radians the lid rotates when fully open
+const OPEN_ANGLE = 1.55; // radians the lid rotates when fully open (~89° = upright; past this it flops back)
+// lid angle per number of correct dials: 1–2 right = just a tiny crack (~6°/~10°) to peek at the
+// gem; 3 = wide open. (0.105 rad ≈ 6°, 0.175 rad ≈ 10°.)
+const CRACK = [0, 0.105, 0.175, OPEN_ANGLE];
 
 export function Lockbox({
   store,
@@ -31,22 +34,25 @@ export function Lockbox({
 
   useFrame((state) => {
     const t = freeze ? GADGET_FROZEN_T : state.clock.elapsedTime;
+    // once cracked open (solved → discovered) the lid LATCHES fully open till reload, regardless of
+    // any later mode; otherwise the angle follows the correct-dial count (tiny crack at 1–2).
     const mode = store.lockbox?.mode ?? 0;
-    const full = mode >= 3;
-    const target = (mode / 3) * OPEN_ANGLE;
+    const opened = store.lockbox?.discovered ? 3 : mode;
+    const full = opened >= 3;
+    const target = CRACK[Math.min(opened, 3)] ?? 0;
     if (freeze) angle.current = target;
     else angle.current += (target - angle.current) * 0.12; // ease open/closed
     if (lid.current) lid.current.rotation.x = angle.current; // hinge at the wall side → opens toward the room
-    // status studs: light the first `mode` (one per correct dial)
+    // status studs: light the first `opened` (one per correct dial)
     studs.current.forEach((m, i) => {
-      if (m) m.emissiveIntensity = i < mode ? 1.0 : 0.08;
+      if (m) m.emissiveIntensity = i < opened ? 1.0 : 0.08;
     });
     // reward gem: dark when closed, steady glow while cracking, bright pulse once fully open; spins
     const pulse = 0.5 + 0.5 * Math.sin(t * 3);
     if (gem.current)
-      gem.current.emissiveIntensity = mode === 0 ? 0 : full ? 0.9 + 0.6 * pulse : 0.3;
+      gem.current.emissiveIntensity = opened === 0 ? 0 : full ? 0.9 + 0.6 * pulse : 0.3;
     if (gemMesh.current) gemMesh.current.rotation.y = t * 0.8;
-    if (glow.current) glow.current.intensity = mode === 0 ? 0 : full ? 1.4 + 0.8 * pulse : 0.4;
+    if (glow.current) glow.current.intensity = opened === 0 ? 0 : full ? 1.4 + 0.8 * pulse : 0.4;
   });
 
   return (
