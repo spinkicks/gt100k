@@ -9,6 +9,7 @@
     "test": "vitest run --config vitest.config.mts"
   },
   "dependencies": {
+    "@gt100k/family": "workspace:*",
     "@gt100k/hypothesis-store": "workspace:*",
     "@gt100k/interest-inference": "workspace:*",
     "@gt100k/specialization-planner": "workspace:*",
@@ -16,6 +17,7 @@
     "@gt100k/wellbeing": "workspace:*",
     "motion": "^12.42.0",
     "next": "^14.2.15",
+    "ogl": "^1.0.11",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

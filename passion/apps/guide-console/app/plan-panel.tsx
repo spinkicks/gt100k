@@ -58,6 +58,26 @@ const PCDE_LABEL: Record<string, string> = {
   producer_identity: "Producer identity",
 };
 
+function titleCase(s: string): string {
+  return s.length === 0 ? s : s[0] + s.slice(1).toLowerCase();
+}
+
+// The stub brief embeds raw "(https://…)" URLs in the craft-scaffold prose; strip them, because the
+// same vetted resources render as clean clickable links just below.
+function stripUrls(text: string): string {
+  return text.replace(/\s*\(https?:\/\/[^)]+\)/g, "").replace(/\s{2,}/g, " ").trim();
+}
+
+// The engine's rationale/escalation prose can contain raw stage tokens (e.g. "S1_IGNITION");
+// render them with the friendly stage name so no enum leaks into the guide-facing copy.
+function humanizeStages(text: string): string {
+  return text
+    .replace(/S1_IGNITION/g, "Ignition")
+    .replace(/S2_FOUNDATIONS/g, "Foundations")
+    .replace(/S3_AUTHORSHIP/g, "Authorship")
+    .replace(/S4_SIGNATURE/g, "Signature");
+}
+
 function restLine(r: PlanCardVM["plan"]["restCadence"]): string {
   return `${r.daysOffPerWeek} days/week off, ${r.monthsOffPerYear} months/year off the primary spike (in ~${r.offInIncrementsOfMonths}-month breaks)`;
 }
@@ -82,10 +102,10 @@ function PlanItem({ card }: { card: PlanCardVM }): JSX.Element {
           {specPath(card.domainPath)} · {modeLabel(card.mode)}
         </span>
         <span className="wbitem__state">
-          {STAGE_LABEL[p.stage] ?? p.stage} · {card.state}
+          {STAGE_LABEL[p.stage] ?? p.stage} · {titleCase(card.state)}
         </span>
       </div>
-      <p className="wbitem__reason wbitem__reason--muted">{STAGE_PURPOSE[p.stage] ?? ""}</p>
+      <p className="planitem__purpose">{STAGE_PURPOSE[p.stage] ?? ""}</p>
 
       <dl className="plangrid">
         <div>
@@ -118,7 +138,7 @@ function PlanItem({ card }: { card: PlanCardVM }): JSX.Element {
           <strong>How:</strong> {project.authenticMethod}
         </p>
         <p className="planproject__scaffold">
-          <strong>Craft scaffold:</strong> {project.craftScaffold}
+          <strong>Craft scaffold:</strong> {stripUrls(project.craftScaffold)}
         </p>
         {card.resources.length > 0 ? (
           <ul className="planres">
@@ -148,29 +168,18 @@ function PlanItem({ card }: { card: PlanCardVM }): JSX.Element {
       {p.escalateToHuman ? (
         <div className="wbitem__review" role="note">
           <span className="wbitem__reviewk">Needs your review</span>
-          <p className="wbitem__reason">{p.escalationReason ?? p.rationale}</p>
+          <p className="wbitem__reason">{humanizeStages(p.escalationReason ?? p.rationale)}</p>
         </div>
-      ) : (
-        <p className="wbitem__reason wbitem__reason--muted">{p.rationale}</p>
-      )}
-
-      <p className="planterminal">{p.terminalNote}</p>
+      ) : null}
     </li>
   );
 }
 
 export function PlanPanel({ cards }: { cards: readonly PlanCardVM[] }): JSX.Element {
-  const reviews = cards.filter((c) => c.plan.escalateToHuman).length;
   return (
-    <section className="wbpanel" aria-labelledby="plan-title" data-testid="plan-panel">
+    <section className="wbpanel" aria-label="Specialization plan" data-testid="plan-panel">
       <header className="wbpanel__head">
-        <h2 id="plan-title">Specialization plan</h2>
         <span className="wbpanel__sub">The system proposes a plan, you decide.</span>
-        {reviews > 0 ? (
-          <span className="wbpanel__count" data-testid="plan-reviews">
-            {reviews} {reviews === 1 ? "needs" : "need"} your review
-          </span>
-        ) : null}
       </header>
 
       {cards.length === 0 ? (
@@ -179,11 +188,14 @@ export function PlanPanel({ cards }: { cards: readonly PlanCardVM[] }): JSX.Elem
           active specialization.
         </p>
       ) : (
-        <ul className="wblist" data-testid="plan-list">
-          {cards.map((c) => (
-            <PlanItem key={c.id} card={c} />
-          ))}
-        </ul>
+        <>
+          <ul className="wblist" data-testid="plan-list">
+            {cards.map((c) => (
+              <PlanItem key={c.id} card={c} />
+            ))}
+          </ul>
+          {cards[0] ? <p className="planterminal">{cards[0].plan.terminalNote}</p> : null}
+        </>
       )}
     </section>
   );

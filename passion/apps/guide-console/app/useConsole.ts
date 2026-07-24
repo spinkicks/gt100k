@@ -17,6 +17,7 @@ import { applyGuidePrimaryAction, buildQaState, topPromotableId } from "./consol
 import { installQa } from "./qa.js";
 import { CHILDREN, buildRosterGates, buildRosterStore, type Child } from "./console-data.js";
 import { escalationCount, wellbeingForKid } from "./wellbeing.js";
+import { familyForKid, familyObservationsForKid } from "./family.js";
 import { plansForKid } from "./plan.js";
 
 const GUIDE: HumanActor = { id: "guide-synthetic", role: "guide" };
@@ -41,6 +42,9 @@ export function useConsole() {
   // The selected child's per-spike wellbeing reads (016) — derived from the interaction log, not the
   // mutable store, so a human promote/park never changes them.
   const wellbeing = useMemo(() => wellbeingForKid(kid), [kid]);
+  // The selected child's family coaching read (021) + its synthetic guide observations.
+  const family = useMemo(() => familyForKid(kid), [kid]);
+  const familyObservations = useMemo(() => familyObservationsForKid(kid), [kid]);
   // The selected child's certified-spike specialization plans (018-D1). Derived from the log + the
   // same wellbeing reads, with the DETERMINISTIC STUB brief — synchronous + offline for LOOP_QA.
   const plans = useMemo(() => plansForKid(kid), [kid]);
@@ -156,6 +160,8 @@ export function useConsole() {
     counts,
     summaries,
     wellbeing,
+    family,
+    familyObservations,
     plans,
     selectedId,
     setSelectedId,
