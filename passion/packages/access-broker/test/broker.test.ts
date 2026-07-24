@@ -26,7 +26,7 @@ function inputs(plan: SpecializationPlan, ageBand: AgeBand, over: Partial<Broker
 }
 
 const ids = (ms: readonly { opportunity: { id: string } }[]): string[] => ms.map((m) => m.opportunity.id);
-const scores = (ms: readonly { score: number }[]): number[] => ms.map((m) => m.score);
+const scores = (ms: readonly { relevance: number }[]): number[] => ms.map((m) => m.relevance);
 
 describe("brokerAccess — golden matching table (SC-1)", () => {
   it("S1: warm mentors only; no real audience (SELF); age/stage-gated entries hidden", () => {

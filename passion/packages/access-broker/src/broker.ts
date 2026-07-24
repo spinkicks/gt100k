@@ -26,7 +26,12 @@ export interface BrokerInputs {
 
 export interface Match {
   readonly opportunity: Opportunity;
-  readonly score: number;
+  /**
+   * The deterministic ranking value in [0,1] (higher = better fit). Named `relevance` (not "score")
+   * to honor the hard invariant "no score/rank field on any type" (spec §4.1) — it ranks the
+   * OPPORTUNITY for the guide, and is never a child-facing or competitive score.
+   */
+  readonly relevance: number;
   readonly fit: readonly string[];
   readonly blocked?: string;
 }
@@ -64,13 +69,13 @@ function scoreAndFit(
   o: Opportunity,
   plan: SpecializationPlan,
   roleOrLevelMatched: boolean,
-): { score: number; fit: string[] } {
+): { relevance: number; fit: string[] } {
   const domainFit = o.cellKey === plan.cellKey ? 1 : 0;
   const modeFit = o.modes?.includes(plan.mode as WorkMode) ? 1 : 0;
   const roleOrLevel = roleOrLevelMatched ? 1 : 0;
   const availabilitySoon = o.availability?.deadline ? 1 : 0;
 
-  const score = round4(
+  const relevance = round4(
     W.domainFit * domainFit +
       W.modeFit * modeFit +
       W.roleOrLevel * roleOrLevel +
@@ -91,13 +96,17 @@ function scoreAndFit(
   }
   fit.push(`reputation ${o.reputation}`);
   if (o.availability?.deadline) fit.push(`why now: deadline ${o.availability.deadline}`);
-  return { score, fit };
+  return { relevance, fit };
 }
 
-/** Rank by score desc, then id asc (the deterministic tie-break, SC-8). */
+/** Rank by relevance desc, then id asc (the deterministic tie-break, SC-8). */
 function rank(matches: readonly Match[]): Match[] {
   return [...matches].sort((a, b) =>
-    b.score !== a.score ? b.score - a.score : a.opportunity.id < b.opportunity.id ? -1 : 1,
+    b.relevance !== a.relevance
+      ? b.relevance - a.relevance
+      : a.opportunity.id < b.opportunity.id
+        ? -1
+        : 1,
   );
 }
 
@@ -112,8 +121,8 @@ function surfacableMentors(
     if (!ageOk(o.ageTier, ageBand)) continue; // age-tier gate
     if (!stageOk(o.minStage, plan.stage)) continue; // stage gate (minStage ≤ plan.stage)
     if (o.fillsRole !== plan.mentorRole) continue; // named-need role match (exclude others, v1)
-    const { score, fit } = scoreAndFit(o, plan, true);
-    matches.push({ opportunity: o, score, fit });
+    const { relevance, fit } = scoreAndFit(o, plan, true);
+    matches.push({ opportunity: o, relevance, fit });
   }
   return rank(matches);
 }
@@ -133,8 +142,8 @@ function surfacableAudiences(
     if (!ageOk(o.ageTier, ageBand)) continue; // age-tier gate
     if (!stageOk(o.minStage, plan.stage)) continue; // stage gate
     if (o.level !== plan.audience) continue; // named-need level match
-    const { score, fit } = scoreAndFit(o, plan, true);
-    matches.push({ opportunity: o, score, fit });
+    const { relevance, fit } = scoreAndFit(o, plan, true);
+    matches.push({ opportunity: o, relevance, fit });
   }
   return { matches: rank(matches) };
 }
