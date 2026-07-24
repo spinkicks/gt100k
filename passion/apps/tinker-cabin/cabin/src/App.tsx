@@ -205,7 +205,7 @@ function Prompt({ label }: { label: string }): JSX.Element {
         pointerEvents: "none",
       }}
     >
-      Press <b>E</b> — {label}
+      <b>E</b> or click — {label}
     </div>
   );
 }
