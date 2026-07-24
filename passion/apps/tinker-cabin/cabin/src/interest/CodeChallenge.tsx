@@ -58,10 +58,12 @@ export function CodeChallenge({
   const [solved, setSolved] = useState(false);
   const closed = useRef(false);
 
-  const cycle = (i: number): void => {
+  // pick an op directly from the visible choices (all options shown as chips — more interactive +
+  // discoverable than blind cycling)
+  const setOp = (i: number, op: number): void => {
     if (solved) return;
     recorder.edit();
-    const next = lines.map((l, j) => (j === i ? { ...l, op: (l.op + 1) % spec.ops.length } : l));
+    const next = lines.map((l, j) => (j === i ? { ...l, op } : l));
     setLines(next);
     onProgramChange?.(next);
   };
@@ -149,13 +151,25 @@ export function CodeChallenge({
         >
           <div style={{ color: "#7f8ba0" }}>{spec.header}</div>
           {lines.map((l, i) => (
-            <div key={`ln-${spec.gadgetId}-${l.pre}`} style={{ whiteSpace: "pre" }}>
-              {"  "}
-              <span style={{ color: "#9aa4b6" }}>{l.pre}</span>
-              <button type="button" onClick={() => cycle(i)} style={opTok(spec.ops[l.op]!, solved)}>
-                {spec.ops[l.op]}
-              </button>
-              {l.post ? <span style={{ color: "#9aa4b6" }}>{l.post}</span> : null}
+            <div
+              key={`ln-${spec.gadgetId}-${l.pre}`}
+              style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 4 }}
+            >
+              <span style={{ color: "#9aa4b6", whiteSpace: "pre" }}>{`  ${l.pre}`}</span>
+              {/* every option shown as a chip; the selected one is highlighted, click to choose */}
+              {spec.ops.map((op, oi) => (
+                <button
+                  key={`op-${spec.gadgetId}-${i}-${op}`}
+                  type="button"
+                  onClick={() => setOp(i, oi)}
+                  style={opTok(op, l.op === oi, solved)}
+                >
+                  {op}
+                </button>
+              ))}
+              {l.post ? (
+                <span style={{ color: "#9aa4b6", whiteSpace: "pre" }}>{l.post}</span>
+              ) : null}
             </div>
           ))}
           <div style={{ color: "#7f8ba0" }}>{spec.footer}</div>
@@ -187,7 +201,7 @@ export function CodeChallenge({
               ? spec.solvedMsg
               : runs > 0
                 ? "Not quite — tweak an op and run again."
-                : "Cycle the ops, then Run."}
+                : "Pick the ops, then Run."}
           </span>
         </div>
       </div>
@@ -215,16 +229,17 @@ function btn(kind: "primary" | "ghost"): React.CSSProperties {
   };
 }
 
-function opTok(op: string, solved: boolean): React.CSSProperties {
-  const flip = op === "FLIP";
+function opTok(_op: string, selected: boolean, solved: boolean): React.CSSProperties {
+  // selected chip glows amber; the others are dim/greyed so the choices read as pickable options
   return {
-    background: flip ? "rgba(255,160,80,0.18)" : "rgba(120,150,200,0.16)",
-    color: flip ? "#ffcf9a" : "#a9c2e6",
-    border: `1px solid ${flip ? "rgba(255,160,80,0.5)" : "rgba(120,150,200,0.45)"}`,
+    background: selected ? "rgba(255,160,80,0.28)" : "rgba(120,140,170,0.08)",
+    color: selected ? "#ffcf9a" : "#8b93a2",
+    border: `1px solid ${selected ? "rgba(255,170,90,0.7)" : "rgba(120,140,170,0.28)"}`,
     borderRadius: 7,
     padding: "1px 8px",
     fontWeight: 700,
     fontFamily: "inherit",
+    opacity: solved && !selected ? 0.5 : 1,
     cursor: solved ? "default" : "pointer",
   };
 }
