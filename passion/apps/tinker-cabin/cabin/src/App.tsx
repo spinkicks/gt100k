@@ -27,7 +27,10 @@ import { GADGETS, activateGadget, createGadgetStore, gadgetDef } from "./scene/g
 import { ANCHORS } from "./scene/layout";
 
 export function App(): JSX.Element {
-  const params = parseParams();
+  // Parse ONCE — the URL is constant for the session. (If this ran every render it would return a
+  // fresh `act` array each time, re-triggering the gadget-store useMemo and RESETTING every gadget
+  // to rest on every re-render — e.g. the lockbox slamming shut the instant solving calls setState.)
+  const params = useMemo(() => parseParams(), []);
   const intentRef = useRef(createIntent());
   const [tasteOpen, setTasteOpen] = useState(false);
   // ?challenge=<id> opens that gadget's overlay on load (debug/test/screenshots); else null.
