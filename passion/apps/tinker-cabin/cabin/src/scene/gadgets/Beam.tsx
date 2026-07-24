@@ -22,6 +22,8 @@ export const BEAM_START = [1, 0]; // deliberately-wrong starting orientations ("
 export const BEAM_SOLUTION = [0, 1]; // "/", "\" → routes the beam to the target
 const C = 0.15; // cell size (metres)
 
+// board faces the room (+Z); viewed from +Z looking -Z, world +x is screen-RIGHT, so increasing col
+// (the beam's "right") maps to +x directly. cellPos is used by cells/mirrors/beam/target alike.
 const cellPos = (c: number, r: number): [number, number, number] => [
   (c - 1) * C,
   (r - 1) * C,
@@ -76,6 +78,7 @@ export function Beam({
   const mirrors = useRef<Array<THREE.Group | null>>([]);
   const targetMat = useRef<THREE.MeshStandardMaterial>(null);
   const targetLight = useRef<THREE.PointLight>(null);
+  const flowLight = useRef<THREE.PointLight>(null);
 
   useFrame((state) => {
     const t = freeze ? GADGET_FROZEN_T : state.clock.elapsedTime;
@@ -95,14 +98,32 @@ export function Beam({
       m.visible = true;
       const [ax, ay] = cellPos(a[0], a[1]);
       const [bx, by] = cellPos(b[0], b[1]);
-      m.position.set((ax + bx) / 2, (ay + by) / 2, 0.05);
+      // stagger z slightly per segment so perpendicular segments don't z-fight where they meet
+      m.position.set((ax + bx) / 2, (ay + by) / 2, 0.05 + i * 0.0009);
       const horiz = a[1] === b[1];
-      m.scale.set(horiz ? C * 1.05 : 0.03, horiz ? 0.03 : C * 1.05, 1);
+      m.scale.set(horiz ? C * 1.04 : 0.028, horiz ? 0.028 : C * 1.04, 1);
     }
-    // orient the mirrors: "/" = +45°, "\" = -45°
+    // orient the mirrors: "/" = "/" as the player sees it (board x is flipped → sign flipped too)
     mirrors.current.forEach((g, i) => {
-      if (g) g.rotation.z = (data[i] ?? 0) === 0 ? Math.PI / 4 : -Math.PI / 4;
+      if (g) g.rotation.z = (data[i] ?? 0) === 0 ? -Math.PI / 4 : Math.PI / 4;
     });
+    // a bright point light TRAVELS along the beam (real lighting engine, moving) so the light flows
+    // from emitter toward the target and lights the board as it goes.
+    if (flowLight.current) {
+      if (path.length >= 2) {
+        const seg = (t * 2.6) % (path.length - 1); // cells/sec along the polyline
+        const i = Math.floor(seg);
+        const f = seg - i;
+        const a = path[i] ?? path[0]!;
+        const b = path[i + 1] ?? a;
+        const [ax, ay] = cellPos(a[0], a[1]);
+        const [bx, by] = cellPos(b[0], b[1]);
+        flowLight.current.position.set(ax + (bx - ax) * f, ay + (by - ay) * f, 0.14);
+        flowLight.current.intensity = 1.0;
+      } else {
+        flowLight.current.intensity = 0;
+      }
+    }
     // target: glows + fires a real light when the beam lands
     const pulse = 0.5 + 0.5 * Math.sin(t * 4);
     if (targetMat.current) targetMat.current.emissiveIntensity = hit ? 1.2 + 0.8 * pulse : 0.12;
@@ -152,7 +173,7 @@ export function Beam({
           />
         </mesh>
       ))}
-      {/* emitter — a nub on the left of cell (0,0) */}
+      {/* emitter — a nub to the player-left of cell (0,0), where the beam starts */}
       <mesh position={[cellPos(0, 0)[0] - 0.09, cellPos(0, 0)[1], 0.04]}>
         <boxGeometry args={[0.05, 0.06, 0.05]} />
         <meshStandardMaterial
@@ -204,6 +225,8 @@ export function Beam({
         distance={1.8}
         decay={2}
       />
+      {/* travelling beam light — moves along the path each frame (positioned in useFrame) */}
+      <pointLight ref={flowLight} color="#ff8a4a" intensity={0} distance={0.9} decay={2} />
     </group>
   );
 }
