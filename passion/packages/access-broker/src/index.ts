@@ -14,3 +14,4 @@ export const ACCESS_BROKER_PACKAGE = "@gt100k/access-broker" as const;
 
 export * from "./model.js";
 export * from "./catalog.js";
+export * from "./broker.js";
