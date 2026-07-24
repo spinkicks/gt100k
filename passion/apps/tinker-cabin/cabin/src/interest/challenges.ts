@@ -228,7 +228,7 @@ export const LOCKBOX_CHALLENGE: ChallengeSpec = {
 /**
  * BEAM — reflection / geometry. Set each mirror's orientation so the light beam reflects across the
  * grid and lands on the target sensor. The beam re-routes live as you pick; a hit fires the target
- * light. (Solution: mirror A = "/", mirror B = "\".)
+ * light. (Three mirrors A/B/C; solution A="/", B="\", C="/".)
  */
 export const BEAM_CHALLENGE: ChallengeSpec = {
   gadgetId: "beam",
@@ -241,7 +241,8 @@ export const BEAM_CHALLENGE: ChallengeSpec = {
   footer: "hit if beam reaches target   // 🔦",
   lines: [
     { pre: "mirrorA.face = ", op: BEAM_START[0] ?? 1 },
-    { pre: "mirrorB.face = ", op: BEAM_START[1] ?? 0 },
+    { pre: "mirrorB.face = ", op: BEAM_START[1] ?? 1 },
+    { pre: "mirrorC.face = ", op: BEAM_START[2] ?? 1 },
   ],
   run: (lines) => [traceBeam(lines.map((l) => l.op)).hit ? 1 : 0],
   target: [1],

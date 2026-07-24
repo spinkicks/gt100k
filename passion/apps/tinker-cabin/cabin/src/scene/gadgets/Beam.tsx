@@ -12,14 +12,16 @@ import { useRef } from "react";
 import type * as THREE from "three";
 import { GADGET_FROZEN_T, type GadgetStore } from "./gadgetState";
 
-// grid + fixed elements (col, row), col/row ∈ 0..2. Emitter shoots RIGHT from (0,0).
+// grid + fixed elements (col, row), col/row ∈ 0..2. Emitter shoots RIGHT from (0,0). Three mirrors:
+// A(2,0) B(2,2) C(0,2); target at (0,1). Solution routes right→up→left→down into the sensor.
 const MIRROR_CELLS: Array<[number, number]> = [
   [2, 0],
   [2, 2],
+  [0, 2],
 ];
-const TARGET_CELL: [number, number] = [0, 2];
-export const BEAM_START = [1, 0]; // deliberately-wrong starting orientations ("\", "/") → misses
-export const BEAM_SOLUTION = [0, 1]; // "/", "\" → routes the beam to the target
+const TARGET_CELL: [number, number] = [0, 1];
+export const BEAM_START = [1, 1, 1]; // deliberately-wrong (all "\") → beam falls off the board
+export const BEAM_SOLUTION = [0, 1, 0]; // "/", "\", "/" → routes the beam onto the target
 const C = 0.15; // cell size (metres)
 
 // board faces the room (+Z); viewed from +Z looking -Z, world +x is screen-RIGHT, so increasing col
@@ -189,13 +191,14 @@ export function Beam({
         return (
           <group
             key={`mirror-${c}-${r}`}
-            position={[x, y, z + 0.01]}
+            // sit ABOVE the beam segments (z) so the ray reads as hitting the mirror, not crossing it
+            position={[x, y, z + 0.06]}
             ref={(g) => {
               mirrors.current[i] = g;
             }}
           >
             <mesh castShadow>
-              <boxGeometry args={[0.02, 0.15, 0.03]} />
+              <boxGeometry args={[0.028, 0.17, 0.03]} />
               <meshStandardMaterial color="#cfe6ff" roughness={0.1} metalness={0.85} />
             </mesh>
           </group>
