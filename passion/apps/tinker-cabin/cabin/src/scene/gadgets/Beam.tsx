@@ -1,0 +1,188 @@
+/**
+ * Beam board (logic / reflection). A code-driven optics puzzle: a light beam leaves the emitter and
+ * travels a 3×3 grid; the player sets each MIRROR's orientation ("/" or "\") in code and the beam
+ * reflects LIVE, lighting the cells it passes. Land it on the target sensor and the target fires a
+ * real point light (the lighting engine) + glows green. Mirror ops come from `store.beam.data`
+ * (pushed by the challenge as you edit), so the beam re-routes the instant you pick an orientation.
+ *
+ * Determinism: everything derives from `store.beam.data` (or a fixed default) + frozen clock time.
+ */
+import { useFrame } from "@react-three/fiber";
+import { useRef } from "react";
+import type * as THREE from "three";
+import { GADGET_FROZEN_T, type GadgetStore } from "./gadgetState";
+
+// grid + fixed elements (col, row), col/row ∈ 0..2. Emitter shoots RIGHT from (0,0).
+const MIRROR_CELLS: Array<[number, number]> = [
+  [2, 0],
+  [2, 2],
+];
+const TARGET_CELL: [number, number] = [0, 2];
+export const BEAM_START = [1, 0]; // deliberately-wrong starting orientations ("\", "/") → misses
+export const BEAM_SOLUTION = [0, 1]; // "/", "\" → routes the beam to the target
+const C = 0.15; // cell size (metres)
+
+const cellPos = (c: number, r: number): [number, number, number] => [
+  (c - 1) * C,
+  (r - 1) * C,
+  0.035,
+];
+
+/** Reflect a grid direction off a mirror op (0 = "/", 1 = "\"). */
+function reflect(dc: number, dr: number, op: number): [number, number] {
+  return op === 0 ? [dr, dc] : [-dr, -dc];
+}
+
+/** Trace the beam through the grid given the two mirror ops. Returns the lit path + whether it hit. */
+export function traceBeam(ops: number[]): { path: Array<[number, number]>; hit: boolean } {
+  const mirrorOp = (c: number, r: number): number | null => {
+    for (let i = 0; i < MIRROR_CELLS.length; i++) {
+      const cell = MIRROR_CELLS[i]!;
+      if (cell[0] === c && cell[1] === r) return ops[i] ?? 0;
+    }
+    return null;
+  };
+  let c = 0;
+  let r = 0;
+  let dc = 1;
+  let dr = 0;
+  const path: Array<[number, number]> = [[0, 0]];
+  let hit = false;
+  for (let i = 0; i < 12; i++) {
+    const m = mirrorOp(c, r);
+    if (m !== null) [dc, dr] = reflect(dc, dr, m);
+    c += dc;
+    r += dr;
+    if (c < 0 || c > 2 || r < 0 || r > 2) break; // left the board → miss
+    path.push([c, r]);
+    if (c === TARGET_CELL[0] && r === TARGET_CELL[1]) {
+      hit = true;
+      break;
+    }
+  }
+  return { path, hit };
+}
+
+export function Beam({
+  store,
+  freeze,
+}: {
+  store: GadgetStore;
+  freeze: boolean;
+}): JSX.Element {
+  const cells = useRef<Array<THREE.MeshStandardMaterial | null>>([]);
+  const mirrors = useRef<Array<THREE.Group | null>>([]);
+  const targetMat = useRef<THREE.MeshStandardMaterial>(null);
+  const targetLight = useRef<THREE.PointLight>(null);
+
+  useFrame((state) => {
+    const t = freeze ? GADGET_FROZEN_T : state.clock.elapsedTime;
+    const st = store.beam;
+    const data = st?.data ?? (st?.discovered ? BEAM_SOLUTION : BEAM_START);
+    const { path, hit } = traceBeam(data);
+    // light the cells the beam passes through
+    cells.current.forEach((m, idx) => {
+      if (!m) return;
+      const c = idx % 3;
+      const r = Math.floor(idx / 3);
+      const lit = path.some(([pc, pr]) => pc === c && pr === r);
+      m.emissiveIntensity = lit ? 1.5 : 0.0;
+    });
+    // orient the mirrors: "/" = +45°, "\" = -45°
+    mirrors.current.forEach((g, i) => {
+      if (g) g.rotation.z = (data[i] ?? 0) === 0 ? Math.PI / 4 : -Math.PI / 4;
+    });
+    // target: glows + fires a real light when the beam lands
+    const pulse = 0.5 + 0.5 * Math.sin(t * 4);
+    if (targetMat.current) targetMat.current.emissiveIntensity = hit ? 1.2 + 0.8 * pulse : 0.12;
+    if (targetLight.current) targetLight.current.intensity = hit ? 1.6 + 0.6 * pulse : 0;
+  });
+
+  // mounted on the back (-Z) wall, right of the fireplace, facing into the room (+Z)
+  return (
+    <group position={[1.95, 1.5, -2.84]}>
+      {/* board backing + frame */}
+      <mesh castShadow receiveShadow>
+        <boxGeometry args={[0.66, 0.66, 0.06]} />
+        <meshStandardMaterial color="#241a12" roughness={0.7} metalness={0.1} />
+      </mesh>
+      <mesh position={[0, 0, 0.005]}>
+        <boxGeometry args={[0.58, 0.58, 0.05]} />
+        <meshStandardMaterial color="#12100c" roughness={0.5} metalness={0.2} />
+      </mesh>
+      {/* 3×3 beam cells (emissive when the beam passes through) */}
+      {Array.from({ length: 9 }, (_, idx) => {
+        const c = idx % 3;
+        const r = Math.floor(idx / 3);
+        const [x, y, z] = cellPos(c, r);
+        return (
+          <mesh key={`cell-${c}-${r}`} position={[x, y, z]}>
+            <boxGeometry args={[0.12, 0.12, 0.02]} />
+            <meshStandardMaterial
+              ref={(m) => {
+                cells.current[idx] = m;
+              }}
+              color="#1a1712"
+              emissive="#ff6a3a"
+              emissiveIntensity={0}
+              roughness={0.5}
+              toneMapped={false}
+            />
+          </mesh>
+        );
+      })}
+      {/* emitter — a nub on the left of cell (0,0) */}
+      <mesh position={[cellPos(0, 0)[0] - 0.09, cellPos(0, 0)[1], 0.04]}>
+        <boxGeometry args={[0.05, 0.06, 0.05]} />
+        <meshStandardMaterial
+          color="#c0492e"
+          emissive="#ff5a30"
+          emissiveIntensity={0.8}
+          toneMapped={false}
+        />
+      </mesh>
+      {/* mirrors — angled bars the player orients in code */}
+      {MIRROR_CELLS.map(([c, r], i) => {
+        const [x, y, z] = cellPos(c, r);
+        return (
+          <group
+            key={`mirror-${c}-${r}`}
+            position={[x, y, z + 0.01]}
+            ref={(g) => {
+              mirrors.current[i] = g;
+            }}
+          >
+            <mesh castShadow>
+              <boxGeometry args={[0.02, 0.15, 0.03]} />
+              <meshStandardMaterial color="#cfe6ff" roughness={0.1} metalness={0.85} />
+            </mesh>
+          </group>
+        );
+      })}
+      {/* target sensor ring at (0,2) — glows green + fires a light when hit */}
+      <mesh position={cellPos(TARGET_CELL[0], TARGET_CELL[1])} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.06, 0.018, 12, 20]} />
+        <meshStandardMaterial
+          ref={targetMat}
+          color="#3affa0"
+          emissive="#2aff90"
+          emissiveIntensity={0.12}
+          roughness={0.3}
+          toneMapped={false}
+        />
+      </mesh>
+      <pointLight
+        ref={targetLight}
+        position={[
+          cellPos(TARGET_CELL[0], TARGET_CELL[1])[0],
+          cellPos(TARGET_CELL[0], TARGET_CELL[1])[1],
+          0.3,
+        ]}
+        color="#4dffb0"
+        intensity={0}
+        distance={1.8}
+        decay={2}
+      />
+    </group>
+  );
+}

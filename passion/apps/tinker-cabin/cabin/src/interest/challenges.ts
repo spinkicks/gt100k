@@ -11,6 +11,8 @@
  * `repeat 4 times { turn() }` depending on the challenge.
  */
 
+import { BEAM_START, traceBeam } from "../scene/gadgets/Beam";
+
 /** One editable line of the program: monospace text around a cycling op token. */
 export interface CodeLine {
   /** text before the op token (e.g. "tick 1:  on = ") */
@@ -223,6 +225,30 @@ export const LOCKBOX_CHALLENGE: ChallengeSpec = {
   questUrl: "https://alpha-code-one.vercel.app/quest/list",
 };
 
+/**
+ * BEAM — reflection / geometry. Set each mirror's orientation so the light beam reflects across the
+ * grid and lands on the target sensor. The beam re-routes live as you pick; a hit fires the target
+ * light. (Solution: mirror A = "/", mirror B = "\".)
+ */
+export const BEAM_CHALLENGE: ChallengeSpec = {
+  gadgetId: "beam",
+  title: "Aim the light beam",
+  prompt:
+    "Orient each mirror so the beam reflects across the grid onto the target. It re-routes as you pick.",
+  concept: "reflection",
+  ops: ["/", "\\"],
+  header: "beam.emit(RIGHT)",
+  footer: "hit if beam reaches target   // 🔦",
+  lines: [
+    { pre: "mirrorA.face = ", op: BEAM_START[0] ?? 1 },
+    { pre: "mirrorB.face = ", op: BEAM_START[1] ?? 0 },
+  ],
+  run: (lines) => [traceBeam(lines.map((l) => l.op)).hit ? 1 : 0],
+  target: [1],
+  worldMode: (trace) => (trace[0] === 1 ? 1 : 0),
+  solvedMsg: "Beam locked on the target!",
+};
+
 /** Challenges keyed by gadget id — the coding-shack game (all code-themed, each a distinct concept). */
 export const CHALLENGES: Record<string, ChallengeSpec> = {
   lamp: LAMP_CHALLENGE, // sequencing
@@ -231,4 +257,5 @@ export const CHALLENGES: Record<string, ChallengeSpec> = {
   panel: PANEL_CHALLENGE, // conditionals
   easel: EASEL_CHALLENGE, // functions
   lockbox: LOCKBOX_CHALLENGE, // variables
+  beam: BEAM_CHALLENGE, // reflection
 };

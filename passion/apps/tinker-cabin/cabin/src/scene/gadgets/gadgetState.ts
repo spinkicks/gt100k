@@ -121,6 +121,17 @@ export const GADGETS: readonly GadgetDef[] = [
     defaultMode: 0,
     showcaseMode: 3,
   },
+  {
+    id: "beam",
+    label: "the beam board",
+    domain: "logic",
+    // back wall, right of the fireplace
+    target: [1.95, 0, -2.1],
+    radius: 1.6,
+    modes: 2,
+    defaultMode: 0,
+    showcaseMode: 1,
+  },
 ] as const;
 
 /** frozen clock phase for `?freeze=1` (matches Cabin's FROZEN_T so all animation settles together) */
@@ -137,6 +148,9 @@ export interface GadgetVisualState {
   seqId?: number;
   /** whether the last Run solved the challenge (drives the settled state, e.g. lamp → BRIGHT) */
   solved?: boolean;
+  /** arbitrary per-gadget program data (e.g. the beam's mirror orientations), pushed live by the
+   *  challenge as the player edits so the gadget can react before Run */
+  data?: number[];
 }
 
 export type GadgetStore = Record<string, GadgetVisualState>;

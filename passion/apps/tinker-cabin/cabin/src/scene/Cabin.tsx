@@ -14,6 +14,7 @@ import { updateStats } from "../core/hook";
 import { useAssetReady } from "../core/useAssetReady";
 import { EnvLight } from "./EnvLight";
 import { SkyDome } from "./SkyDome";
+import { Beam } from "./gadgets/Beam";
 import { ChimeKeys } from "./gadgets/ChimeKeys";
 import { ControlPanel } from "./gadgets/ControlPanel";
 import { Easel } from "./gadgets/Easel";
@@ -954,6 +955,7 @@ export function Cabin({
       <ChimeKeys store={gadgets} freeze={freeze} />
       <Easel store={gadgets} freeze={freeze} />
       <Lockbox store={gadgets} freeze={freeze} />
+      <Beam store={gadgets} freeze={freeze} />
 
       {/* cool daylight from OUTSIDE the window, angled down into the room. It casts shadow, so the
           +X wall blocks it everywhere except through the opening → a real window-shaped light shaft

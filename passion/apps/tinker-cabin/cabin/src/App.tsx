@@ -163,7 +163,13 @@ export function App(): JSX.Element {
         <CodeChallenge
           spec={openSpec}
           initialLines={programs[openSpec.gadgetId]}
-          onProgramChange={(lines) => setPrograms((p) => ({ ...p, [openSpec.gadgetId]: lines }))}
+          onProgramChange={(lines) => {
+            setPrograms((p) => ({ ...p, [openSpec.gadgetId]: lines }));
+            // push raw ops to the store so gadgets that react LIVE to the program (the beam's mirror
+            // orientations) re-route the instant you pick, before you even Run.
+            const st = store[openSpec.gadgetId];
+            if (st) st.data = lines.map((l) => l.op);
+          }}
           onWorld={(mode) => {
             const st = store[openSpec.gadgetId];
             if (st) st.mode = mode;
