@@ -45,6 +45,18 @@ importers:
         specifier: workspace:*
         version: link:../../packages/evidence-tiny-game
 
+  passion/adapters/evidence-sink-graph:
+    dependencies:
+      '@gt100k/evidence-graph':
+        specifier: workspace:*
+        version: link:../../packages/evidence-graph
+      '@gt100k/evidence-hash-node':
+        specifier: workspace:*
+        version: link:../evidence-hash-node
+      '@gt100k/project-workspace':
+        specifier: workspace:*
+        version: link:../../packages/project-workspace
+
   passion/adapters/evidence-verifier-stub: {}
 
   passion/adapters/planner-live:

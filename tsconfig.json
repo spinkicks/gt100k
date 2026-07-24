@@ -24,6 +24,7 @@
     { "path": "passion/adapters/planner-live" },
     { "path": "passion/packages/timeback" },
     { "path": "passion/adapters/timeback-live" },
-    { "path": "passion/packages/project-workspace" }
+    { "path": "passion/packages/project-workspace" },
+    { "path": "passion/adapters/evidence-sink-graph" }
   ]
 }
