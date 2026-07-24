@@ -204,6 +204,9 @@ importers:
 
   passion/apps/guide-console:
     dependencies:
+      '@gt100k/access-broker':
+        specifier: workspace:*
+        version: link:../../packages/access-broker
       '@gt100k/family':
         specifier: workspace:*
         version: link:../../packages/family

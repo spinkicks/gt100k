@@ -2513,3 +2513,118 @@ body {
   color: var(--ink-faint);
   margin-bottom: 2px;
 }
+
+/* ── Access tab (023-access-broker D3 + D4) ─────────────────────────────── */
+.btn--ghost {
+  background: transparent;
+  border-color: var(--line-2);
+  color: var(--ink-muted);
+}
+.btn--ghost:hover:not(:disabled) {
+  background: var(--panel-2);
+  color: var(--ink);
+}
+.accgroup {
+  margin-top: 12px;
+}
+.accgroup__k {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 6px;
+}
+.accgroup__empty {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  line-height: 1.45;
+}
+.acclist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.accmatch {
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  background: var(--panel-2);
+}
+.accmatch__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.accmatch__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.accmatch__rel {
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+.accmatch__meta,
+.accmatch__fit {
+  margin: 6px 0 0;
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  line-height: 1.4;
+}
+.accmatch__blocked {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  border-left: 2px solid var(--line-3);
+  padding-left: 8px;
+}
+.accmatch__actions,
+.accmatch__lifecycle {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.accstate {
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+.accstate--transferred {
+  color: #0f1f14;
+  background: #7fd6a1;
+  border-color: #7fd6a1;
+}
+.accstate--active {
+  color: var(--ink);
+  border-color: var(--line-3);
+}
+.accstate--declined {
+  color: var(--ink-faint);
+}
+.accconsent {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  cursor: pointer;
+  user-select: none;
+}
+.accconsent input {
+  width: 16px;
+  height: 16px;
+  accent-color: #7fd6a1;
+}

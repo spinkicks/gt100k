@@ -46,7 +46,7 @@ Each command prints a `Local: http://localhost:PORT` line when it is ready. Open
 
 - **Show live (click through):** Guide Console, Project Studio, Evidence Explorer.
 - **Describe only (no screen, they run behind the scenes):** the parts that read a child's behavior, watch for burnout, build the step by step plan, and coach the family. Talk about these; do not try to click them.
-- **Do not show (still being built):** the tool that connects kids to real mentors and real audiences, and the explorable 3D world. If asked, say "that is next on our roadmap."
+- **Do not show (still being built):** the explorable 3D discovery world (a teammate track). If asked, say "that is next on our roadmap."
 
 ---
 
@@ -65,14 +65,15 @@ Three ideas to repeat in plain words:
 
 This is the teacher or guide's mission control for one child at a time.
 
-1. **Set the scene.** "This is what a guide sees. On the left is the list of kids. In the middle is what this child is into. On the right are four tabs."
+1. **Set the scene.** "This is what a guide sees. On the left is the list of kids. In the middle is what this child is into. On the right are five tabs."
 2. **Point at the left.** "Notice the little tag that says *Synthetic data only*. This is all sample data."
 3. **Read one interest card (the Hypotheses tab loads first).** "For each child we show what the evidence suggests, and how sure we are. It always says *current evidence suggests*, never *your child is an X*. It is a work in progress, not a verdict." If the room is technical, add: "Behind this is a Bayesian model, basically a system that keeps a probability for every interest and updates it as evidence arrives, with one belief for each *topic by work style* cell. It separates *what topic* a child loves from *what kind of work* they love, and it honestly reports uncertainty, so it can say *not sure yet*. The hard part is that we have no answer key, so it ships with research based starting values and learns over years."
 4. **Switch the child** using the picker on the left. "Each child gets their own read." Pick one or two so people see it change.
 5. **Click the Wellbeing tab.** "This watches for strain and burnout from behavior only, never from cameras or faces. Face and emotion detection is both scientifically shaky and illegal in EU education, so we refuse to use it." If technical, add: "It runs two independent dials, challenge and pressure, and when a child strains it turns the pressure down before it lowers the difficulty. It weighs quiet disengagement more heavily than plain tiredness, because that predicts dropout far better." "If a child is pushing too hard, it flags *needs your review* for a human to check. Wellbeing matters as much as progress here."
 6. **Click the Plan tab.** "Once a child's interest is real, we lay out a step by step climb: what stage they are in, what kind of mentor fits, who the work is for, and the next real project. The software drafts it. The guide approves it."
 7. **Click the Family tab.** "We also coach the family with warm, specific ways to help, and we watch that the support never turns into pressure."
-8. **Close the act.** "Every suggestion here waits for a human to decide. The software never acts on the child by itself."
+8. **Click the Access tab.** "This is where we broker the real world. For a child who is ready, it suggests real mentors and real audiences and tracks each connection all the way through to done, an *access transfer*." Do it live: click **Propose handoff** on a mentor, then point out that **Approve** stays disabled until you tick **Guardian consent recorded**. "That consent gate is a hard block in the code, not just a checkbox." Then walk it forward to *Access transferred*. If technical, add: "The engine ranks the options and enforces guardrails: it never widens the audience past the child's readiness stage, it holds all new connections during a rest or back-off window because widening an audience raises the stakes, and the family can suggest an option but can never be the one who approves it. The system proposes, the guide disposes."
+9. **Close the act.** "Every suggestion here waits for a human to decide. The software never acts on the child by itself."
 
 Nice touch to mention: the calm moving starry background is deliberate, and it turns off automatically for anyone who prefers less motion.
 
@@ -124,6 +125,8 @@ Use these to show how much real engineering sits behind the friendly screens. Ea
 
 - **Proving authorship without an AI detector.** We never run an AI text detector on a child, because those tools are inaccurate and biased against non native writers. Instead authorship is verified structurally, through a short, friendly, AI conducted oral defense where the child talks through their own decisions and dead ends, and a human owns the final call.
 
+- **Brokering real mentors and audiences, safely.** The access engine takes the mentor role and audience level the plan named and matches them against a catalog of real world opportunities, then tracks each connection through a strict lifecycle: matched, proposed, approved, introduced, active, transferred. Guardian consent is a hard blocker in code, expert and master mentors are gated to later stages, and during any rest or back-off window it holds all new connections, because widening a child's audience raises the stakes. The family can suggest an opportunity but can never be the one who approves it.
+
 - **Everything is deterministic and testable.** Each engine is pure and reproducible, runs offline, and ships with a machine checkable state contract, so the same input always gives the same output and an automated gate can verify the real product in a browser, not just the code.
 
 ---
@@ -134,7 +137,7 @@ Use these to show how much real engineering sits behind the friendly screens. Ea
 - **"How do you know what a kid likes?"** We measure what they choose to come back to after the newness wears off, not what they click once.
 - **"Does the software grade kids?"** No. It suggests. A human always owns the decision and the grade.
 - **"What stops a parent from pushing too hard?"** We coach families toward support and watch for pressure, and the wellbeing check flags it for a human.
-- **"What is next?"** Connecting kids to real mentors and real audiences, and the explorable discovery world.
+- **"What is next?"** Wiring the mentor and audience broker to real outside partners (the guide-facing engine is already built and in the console), and the explorable discovery world.
 
 ---
 

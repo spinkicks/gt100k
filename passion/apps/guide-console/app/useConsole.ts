@@ -19,6 +19,7 @@ import { CHILDREN, buildRosterGates, buildRosterStore, type Child } from "./cons
 import { escalationCount, wellbeingForKid } from "./wellbeing.js";
 import { familyForKid, familyObservationsForKid } from "./family.js";
 import { plansForKid } from "./plan.js";
+import { accessForKid } from "./access.js";
 
 const GUIDE: HumanActor = { id: "guide-synthetic", role: "guide" };
 const isoNow = (): string => new Date().toISOString();
@@ -48,6 +49,9 @@ export function useConsole() {
   // The selected child's certified-spike specialization plans (018-D1). Derived from the log + the
   // same wellbeing reads, with the DETERMINISTIC STUB brief — synchronous + offline for LOOP_QA.
   const plans = useMemo(() => plansForKid(kid), [kid]);
+  // The selected child's per-certified-spike access broker plans (023-D3/D4). Same plans + wellbeing
+  // reads, run through the pure brokerAccess engine against a synthetic opportunity catalog.
+  const access = useMemo(() => accessForKid(kid), [kid]);
 
   // Switching child resets the transient view state so the detail pane / filter never point at a
   // stale card from the previous kid.
@@ -163,6 +167,7 @@ export function useConsole() {
     family,
     familyObservations,
     plans,
+    access,
     selectedId,
     setSelectedId,
     selectedCard,

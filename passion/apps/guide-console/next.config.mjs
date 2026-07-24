@@ -1,6 +1,7 @@
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   transpilePackages: [
+    "@gt100k/access-broker",
     "@gt100k/concierge",
     "@gt100k/family",
     "@gt100k/hypothesis-store",
