@@ -7,6 +7,13 @@ export const W_XP = 0.5;
 export const A_RETURN = 1.0;
 export const A_DEPTH = 0.5;
 export const B_SKIP = 0.5;
+/**
+ * Alpha scale for the secondary reading of a two-mode action (e.g. `tinker` resolves to build
+ * primary + investigate secondary). The secondary mode is inferred from the action's affordances
+ * rather than directly observed, so it is weaker evidence. Preserves the weight the old
+ * `secondaryWeight` config applied through `magnitude`, but as an explicit engine constant.
+ */
+export const A_SECONDARY = 0.5;
 export const HALFLIFE_DAYS = 14;
 export const MIN_EVIDENCE_MASS = 3;
 export const MAX_CI_WIDTH = 0.35;
@@ -39,9 +46,22 @@ export interface CellEvent {
   readonly domainPath: DomainPath;
   readonly mode: string;
   readonly kind: EventKind;
-  readonly magnitude: number; // [0,1]
   readonly novelty: boolean;
   readonly timestamp: string; // ISO-8601
+  /**
+   * Which reading of a multi-mode action this is. Absent means primary.
+   *
+   * This replaces the old free-numeric `magnitude` field (E1). `magnitude` was specified only as
+   * "depth for returns, strength for depth families", which invited an emitter to fill it with
+   * active time — and because it multiplied alpha, duration would silently have become the
+   * dominant term in the posterior. At 6-8 the evidence says the opposite: choice predicts durable
+   * interest and duration does not.
+   *
+   * A closed enum cannot smuggle a duration in. One event now means one occurrence; the only
+   * graded thing left is whether the mode was directly acted or merely afforded, and that weight
+   * lives here as a named constant rather than as data on the event.
+   */
+  readonly role?: "primary" | "secondary";
 }
 
 export interface CellBelief {
@@ -90,7 +110,7 @@ export function recencyWeight(now: number, timestamp: string): number {
   return Math.pow(0.5, ageMs / 86400000 / HALFLIFE_DAYS);
 }
 
-// Clamp a documented [0,1] input; NaN → 0. Guards magnitude / tilt inputs against out-of-range poisoning.
+// Clamp a documented [0,1] input; NaN → 0. Guards prior tilt inputs against out-of-range poisoning.
 export function clamp01(x: number): number {
   if (Number.isNaN(x)) return 0;
   return x < 0 ? 0 : x > 1 ? 1 : x;

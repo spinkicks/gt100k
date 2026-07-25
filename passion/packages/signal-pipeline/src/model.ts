@@ -11,7 +11,12 @@ export interface Interaction {
   readonly timestamp: string; // ISO-8601
   readonly prompted: boolean; // true = system surfaced/nudged the child here
   readonly sessionId: string;
-  readonly depth?: number; // [0,1] return-event magnitude (default DEFAULTS.defaultDepth)
+  /**
+   * Which depth families this occurrence exhibited. Presence is what counts; `value` is only
+   * checked for being positive (E1). There is deliberately no duration or `depth` field: the
+   * ages 6-8 evidence is that dwell is non-monotonic in interest, so nothing time-shaped is
+   * allowed to reach the belief math.
+   */
   readonly depthSignals?: readonly DepthSignal[];
 }
 
@@ -25,15 +30,12 @@ export interface SurfacedRecord {
 
 export interface PipelineConfig {
   readonly noveltyWindowDays: number; // exposures within this window of first-exposure are novelty
-  readonly secondaryWeight: number; // magnitude multiplier for the secondary-mode return event
-  readonly defaultDepth: number; // return-event magnitude when interaction.depth is absent
 }
 
-// Golden defaults — spec §3.2. Do not re-open.
+// Golden defaults — spec §3.2. The secondary-mode weight moved to `A_SECONDARY` in 011, where it
+// is an engine constant rather than a per-event multiplier an emitter can reach.
 export const DEFAULTS: PipelineConfig = {
   noveltyWindowDays: 3,
-  secondaryWeight: 0.5,
-  defaultDepth: 1,
 };
 
 export type DropReason = "unknown-artifact" | "unresolved-action" | "invalid-for-artifact";

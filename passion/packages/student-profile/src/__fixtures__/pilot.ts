@@ -123,7 +123,6 @@ function strongLog(kidId: string, artifactId: string, actionType: string, tag: s
     mk(kidId, artifactId, actionType, NOVEL, `${tag}-x0`),
     ...returns.map((d, i) =>
       mk(kidId, artifactId, actionType, d, `${tag}-r${i}`, {
-        depth: 1,
         ...(i === returns.length - 1
           ? { depthSignals: [{ kind: "artifact_competence", value: 1 }] }
           : {}),
@@ -138,7 +137,6 @@ function confidentOnlyLog(kidId: string, artifactId: string, actionType: string,
     mk(kidId, artifactId, actionType, NOVEL, `${tag}-x0`),
     ...CLUSTER.map((d, i) =>
       mk(kidId, artifactId, actionType, d, `${tag}-r${i}`, {
-        depth: 1,
         ...(i === CLUSTER.length - 1
           ? { depthSignals: [{ kind: "artifact_competence", value: 1 }] }
           : {}),

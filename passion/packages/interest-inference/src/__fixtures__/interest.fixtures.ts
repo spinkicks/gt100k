@@ -11,14 +11,14 @@ export const GOLDEN_CELL_KEY = "music-sound/audio-systems::build";
 
 // The golden cell → α=5.5, β=1.5 (spec §6): 3 voluntary + 2 depth + 1 skip; 1 novelty + 1 prompted excluded.
 export const GOLDEN_EVENTS: CellEvent[] = [
-  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", magnitude: 1, novelty: false, timestamp: TS },
-  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", magnitude: 1, novelty: false, timestamp: TS },
-  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", magnitude: 1, novelty: false, timestamp: TS },
-  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "unrequired_revision", magnitude: 1, novelty: false, timestamp: TS },
-  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "artifact_competence", magnitude: 1, novelty: false, timestamp: TS },
-  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "skip", magnitude: 1, novelty: false, timestamp: TS },
-  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", magnitude: 1, novelty: true, timestamp: TS },
-  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "prompted_return", magnitude: 1, novelty: false, timestamp: TS },
+  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: false, timestamp: TS },
+  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: false, timestamp: TS },
+  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: false, timestamp: TS },
+  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "unrequired_revision", novelty: false, timestamp: TS },
+  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "artifact_competence", novelty: false, timestamp: TS },
+  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "skip", novelty: false, timestamp: TS },
+  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: true, timestamp: TS },
+  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "prompted_return", novelty: false, timestamp: TS },
 ];
 
 // Two attribution grids (spec §6) — pre-set means to test attribution in isolation.

@@ -29,7 +29,6 @@ export const INTERACTIONS: Interaction[] = [
     timestamp: "2026-02-28T00:00:00.000Z",
     prompted: false,
     sessionId: "s5",
-    depth: 1,
     depthSignals: [{ kind: "artifact_competence", value: 1 }],
   },
   // a prompted engagement (investigate cell) — excluded from voluntary belief

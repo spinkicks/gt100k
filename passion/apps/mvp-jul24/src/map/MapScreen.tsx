@@ -1,5 +1,7 @@
 import { motion, useReducedMotion } from "motion/react";
+import { useEffect } from "react";
 import { useGame } from "../game/store";
+import { sessionLog } from "../signals/session";
 import { CABINS } from "./cabins.data";
 import "./MapScreen.css";
 
@@ -12,6 +14,15 @@ import "./MapScreen.css";
  */
 export const MapScreen: React.FC = () => {
   const reduce = useReducedMotion();
+
+  // Availability is what makes a decline readable: a cabin the child could have
+  // entered and didn't is evidence; a locked one is not. So only enterable
+  // cabins are surfaced.
+  useEffect(() => {
+    for (const cabin of CABINS) {
+      if (cabin.active) sessionLog.recordSurfaced(cabin.id);
+    }
+  }, []);
 
   return (
     <div className="map-screen">

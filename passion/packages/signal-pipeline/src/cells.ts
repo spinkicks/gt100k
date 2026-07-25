@@ -1,26 +1,26 @@
 import type { Artifact, ActionEvent } from "@gt100k/two-axis-tagging";
 import type { CellEvent } from "@gt100k/interest-inference";
-import { isDepthFamily, clamp01 } from "@gt100k/interest-inference";
-import type { PipelineConfig } from "./model.js";
+import { isDepthFamily } from "@gt100k/interest-inference";
 
 /**
  * Map one ActionEvent to the CellEvent[] that 011 consumes:
- * - a primary return event (kind from returnState, magnitude = depth);
- * - if a secondary engaged mode is present, a return event at depth × secondaryWeight;
+ * - a primary return event (kind from returnState);
+ * - if a secondary engaged mode is present, the same event against that cell, marked
+ *   `role: "secondary"` so the engine can down-weight an inferred mode;
  * - one depth CellEvent per DEPTH_FAMILY depthSignal (non-family signals ignored).
  *
- * `depth` is passed explicitly because the 009 ActionEvent has no depth field — it is carried
- * from the source Interaction by the BuiltEvent.
+ * One event = one occurrence (E1). There is no `magnitude`: the old field was specified only as
+ * "depth for returns, strength for depth families", which invited an emitter to fill it with
+ * active time, and it multiplied alpha directly. The ages 6-8 evidence is that duration is a poor
+ * and non-monotonic proxy for interest, so nothing time-shaped may enter the belief math.
  */
-export function actionToCellEvents(event: ActionEvent, artifact: Artifact, depth: number, config: PipelineConfig): CellEvent[] {
+export function actionToCellEvents(event: ActionEvent, artifact: Artifact): CellEvent[] {
   const kind = event.returnState === "voluntary" ? "voluntary_return" : "prompted_return";
-  const mag = clamp01(depth);
   const out: CellEvent[] = [
     {
       domainPath: artifact.domainPath,
       mode: event.engagedModes.primary,
       kind,
-      magnitude: mag,
       novelty: event.noveltyFlag,
       timestamp: event.timestamp,
     },
@@ -30,18 +30,19 @@ export function actionToCellEvents(event: ActionEvent, artifact: Artifact, depth
       domainPath: artifact.domainPath,
       mode: event.engagedModes.secondary,
       kind,
-      magnitude: clamp01(mag * config.secondaryWeight),
       novelty: event.noveltyFlag,
       timestamp: event.timestamp,
+      role: "secondary",
     });
   }
   for (const s of event.depthSignals) {
-    if (isDepthFamily(s.kind)) {
+    // A depth signal either happened or it did not. `value` is no longer read as a strength; a
+    // non-positive value is treated as the signal being absent rather than as a weak occurrence.
+    if (isDepthFamily(s.kind) && s.value > 0) {
       out.push({
         domainPath: artifact.domainPath,
         mode: event.engagedModes.primary,
         kind: s.kind,
-        magnitude: clamp01(s.value),
         novelty: event.noveltyFlag,
         timestamp: event.timestamp,
       });
