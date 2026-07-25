@@ -13,6 +13,11 @@
 **Raw evidence:** `raw/06a-activity-formats-6-8.md` · `raw/06b-wrapper-vs-domain-6-8.md` ·
 `raw/06c-domains-at-6-8.md` · `raw/06d-work-modes-at-6-8.md`
 
+> **§8 is an amendment (2026-07-25).** After review, the scope was narrowed to a **topic-interest finder
+> only**. §8 records which findings that retires, which it sharpens, and the concrete replacement signal
+> model. **Read §8 before acting on §3 or §5** — it supersedes parts of both. The engine-side change
+> request derived from it is `docs/proposals/interest-engine-data-collection-v2.md`.
+
 **Scope honesty, read first.** The 6–8 band is genuinely under-evidenced. Across all four passes the strongest studies
 sit at ages 9–12, in undergraduates, or in single-family ethnographies. Most findings below carry 2-1 verification
 votes and "medium" confidence; the handful of 3-0 findings are flagged. Two of the four passes returned a *negative*
@@ -276,3 +281,129 @@ synthesis), run 2026-07-25: **696 agents, ~30.7M tokens, 107 sources fetched, 50
 refuted section and are deliberately **not** used above. Verification votes and confidence are carried inline so a
 reader can weight each claim; "3-0" means three independent verifiers with distinct lenses agreed, "2-1" means one
 dissented.
+
+---
+
+## 8. Amendment — finder-only scope (2026-07-25)
+
+Review by Felipe narrowed the scope and corrected four readings of `mvp-jul24`. This section is
+authoritative where it conflicts with §3 or §5.
+
+### 8.1 Scope corrections
+
+1. **Purpose is a topic-interest finder, nothing more.** The output is "which topic interests this
+   student." It is **not** input to project development, and not a selection instrument.
+2. **The Evidence Graph is a separate artifact** with no relationship to this work for now.
+3. **`ReadoutScreen` is a test instrument**, not a shipped child-facing surface.
+4. **Locked cabins are build state**, not a design choice — the other cabins are in development.
+5. **Tagging is being redone**, so the re-tagging point below is an input to that work, not a separate ask.
+
+### 8.2 What this retires
+
+| Retired | Was | Why it drops |
+|---|---|---|
+| Child-facing ranked readout | §5 / scorecard #1 | It is a test instrument. The ranking, visible-dwell and fixed-label concerns only apply to a child-facing surface. **Keep the constraint recorded**: if any part of it later becomes child-facing, all three objections return. |
+| Padlocked / locked cabins | C-scorecard #6 | Build state. The *free-choice* principle (PRD §5.2) still governs the shipped design. |
+| Renzulli open-endedness / Type III | C6, scorecard #9 | Evidence Graph is out of scope. Closed-answer puzzles are entirely fine for a finder. |
+| `artifact_competence` as a signal family | — | It is a work-quality judgement; it belongs to the Evidence Graph, not the finder. Drop it from the finder's event set. |
+
+**Downgraded but not retired:** unequal cabin polish (C7-adjacent). It is no longer a criticism — only one
+cabin is built — but it remains a *hard limit on interpretation*: **no cross-cabin comparison from the
+current build is valid.** Record it so it is not discovered in the data later.
+
+### 8.3 The work-mode axis under finder-only scope — the meshing objection dissolves
+
+§2.5(d) and D6 warned that inferring a child's work-mode and **routing** from it asserts the
+learning-styles meshing hypothesis, whose evidentiary bar has essentially never been cleared. Under
+finder-only scope that objection largely goes away, because the mode axis stops being a product feature
+and becomes a **nuisance covariate**: its only job is to separate *"loves deduction"* from *"loves
+mathematics."* Partialling out a confound carries no meshing claim.
+
+**Revised D6.** Keep the mode axis. Keep the rank-1 / low-rank decomposition — it is the mechanism that
+answers the original question. **Never surface a mode to the child, and never route content from an
+inferred mode.** Under those two constraints the construct-validity worries in §2.5(b) are also much
+weaker, because mode is no longer being asked to be a stable trait — only to soak up variance.
+
+### 8.4 Gaps in the prescribed data collection (`specs/011` + PRD §6)
+
+The prescription is largely right, and these parts should not regress: event-level rather than aggregate
+(the key call — aggregate dwell was flat at p = .80 / .24 where trial-wise choice predicted);
+`prompted_return` excluded; `novelty` excluded; silence = no update; `skip` as the only disconfirming
+signal; recency as trajectory; uncertainty-gated "not sure yet"; and depth families defined as
+*constructions* rather than passive metrics. Five real gaps remain.
+
+- **P1 — `magnitude: [0,1]` is where dwell re-enters.** Defined only as "depth for returns, strength for
+  depth families," with no derivation given. If it is computed from active time, `activeMs` returns
+  through the back door and *multiplies* α, reimporting non-monotonicity, executive-function and
+  epistemic-uncertainty confounds. **Highest-priority fix.**
+- **P2 — no choice set is recorded, so "voluntary" is not interpretable.** A return to the only available
+  cabin is not a preference. Choice is only meaningful against **what was declined**. `CellEvent` has no
+  field for the alternatives on offer, nor for system-surfaced vs self-found. The same field also
+  discharges the exposure-propensity logging that `hardening/06` already requires for the feedback-loop
+  risk (Ensign 2018; Chaney 2018; Perdomo 2020).
+- **P3 — no wrapper-appeal covariate.** Generic game affinity independently predicted voluntary return
+  (β = 0.267, p = .003), going non-significant only when thresholded on **above-median** play intensity.
+  Nothing in the contract carries it, so cross-cabin comparison stays confounded.
+- **P4 — `voluntary_return` conflates two different events.** "Reopened 30 s later" and "came back on day
+  4 unprompted" share one `kind`. The across-day one is the signal — and at 7–8 it was the *only* thing
+  that discriminated (§2.2).
+- **P5 — `MIN_EVIDENCE_MASS = 3` is optimistic.** Three non-novel voluntary returns to call a cell
+  `confident`, against preference data showing ~40% stable hierarchies over months and ~60% stability
+  *within a single sitting* (§2.5b). The spec correctly flags thresholds as calibratable; 3 will read
+  confident far too early.
+
+**Minor.** `W_APT` leans on aptitude tilt citing SMPY, which identifies at **age 13** — down-weight at
+6–8. And the marginal decomposition takes *unweighted* means over cells, so a cabin with one gadget gets
+equal footing with a cabin with seven; weight marginals by evidence mass.
+
+### 8.5 The replacement signal model
+
+Replace "how long, and did they solve it" with **"what did they choose, out of what, and did they come
+back."** Three tiers.
+
+**Tier 1 — primary signal: choice events with a recorded choice set.** On every pick, record the chosen
+item, **the alternatives available and not chosen**, whether system-surfaced or self-found, session id and
+timestamp. This is the Hanley et al. operationalization (94–98% interobserver agreement) plus the
+trial-wise-choice finding, and it is nearly free — the registry already knows what was on screen.
+
+**Tier 2 — depth as discrete events, never duration.** Keep the depth families, derive each from an
+**action**, and let `magnitude` be a **count of discrete events** rather than a normalized duration
+(this is the P1 fix):
+
+| Family | Observable action |
+|---|---|
+| `unrequired_revision` | reopened a solved puzzle, or changed an answer after being correct |
+| `chosen_challenge` | took the harder variant when an easier one was offered |
+| `failure_recovery` | resumed after an abandoned or failed attempt *(binary-observable; the productive-failure signal)* |
+| `self_authored_scope` | kept going past the win state |
+
+**Tier 3 — return, split by horizon.** Split `voluntary_return` into `same_session_reopen` (context,
+near-zero weight) and `cross_day_return` (the signal), carrying the day gap. This makes PRD §6.2's 7- and
+30-day horizons computable, which today they are not.
+
+### 8.6 What becomes of `activeMs` and `solves` — demote and repurpose, don't delete
+
+- **`activeMs` → validity gate + diagnostic.** (i) Require a floor (~20–30 s) before an "open" counts as
+  an event rather than a stray click. (ii) Flag the pathological shape: high dwell with no cross-day
+  return is the familiarity/struggling pattern (β = .96) — a flag for a human, never a belief update.
+- **`solves` → difficulty calibration, never interest.** The evidence's complaint is that `solves` indexes
+  **prior ability** (r = .37–.44, and gain nulls) — but prior ability is exactly what you need to pick the
+  next difficulty. The confound becomes the feature: a *good* ability estimate and a *bad* interest
+  estimate, so use it where ability is the question.
+
+### 8.7 What still stands, unchanged
+
+- **D5 (never trigger a domain you cannot maintain) — and it matters *more* under finder-only scope, not
+  less.** A finder's whole job is broad triggering across topics, and §2.3 says a triggered-then-
+  unmaintained topic ends up measurably *below* baseline while untouched topics merely drift (−.03). A
+  finder that samples eight cabins and maintains one is, on that evidence, net-negative for seven of them.
+  Cheapest mitigation: guarantee each triggered cabin **≥2 spaced re-exposures** before it may be dropped.
+  This is a scheduling rule, not a redesign.
+- **D1 (intrinsic integration)** — unchanged, and it is the mechanism that makes a *finder* trustworthy.
+- **D3 (delayed out-of-product probe)** — unchanged. At 7–8, in-session telemetry discriminated nothing.
+- **D4 (session shape ~10–15 min, 4–6 spaced exposures)** — unchanged.
+- **D7 (zero rewards)** — unchanged and over-determined.
+- **D8 (signals say "what to offer next," never selection)** — now explicitly confirmed by scope.
+- **C1's re-tagging point** — the current gadgets are intrinsically integrated for *deduction*, not
+  *mathematics*; they would play identically with the numerals swapped for symbols. This is an input to
+  the tagging rework already planned.
