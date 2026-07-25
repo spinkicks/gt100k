@@ -1,0 +1,93 @@
+.lg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  font-family: system-ui, sans-serif;
+  color: #4a3f35;
+}
+
+.lg-exit {
+  align-self: flex-start;
+  border: none;
+  background: #f3e6d8;
+  color: #4a3f35;
+  border-radius: 0.75rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.lg-exit:hover {
+  background: #e8d7c2;
+}
+
+.lg-clues {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin: 0;
+  max-width: 32rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.lg-table {
+  border-collapse: collapse;
+  background: #d9c7ae;
+  border: 2px solid #b89a76;
+  border-radius: 0.75rem;
+}
+
+.lg-table th,
+.lg-table td {
+  border: 1px solid #b89a76;
+  padding: 0;
+}
+
+.lg-corner {
+  background: transparent;
+}
+
+.lg-col-head,
+.lg-row-head {
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b5a45;
+  background: #fbf3e7;
+  padding: 0.4rem 0.6rem;
+  white-space: nowrap;
+}
+
+.lg-cell {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  background: #fffaf1;
+  padding: 0;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background-color 100ms ease, transform 80ms ease;
+}
+
+.lg-cell:hover {
+  transform: scale(1.03);
+}
+
+.lg-cell.lg-unknown {
+  background: #fffaf1;
+  color: transparent;
+}
+
+.lg-cell.lg-yes {
+  background: #e4f0e0;
+  color: #3f6b34;
+}
+
+.lg-cell.lg-no {
+  background: #f3e6d8;
+  color: #b04a3f;
+}
