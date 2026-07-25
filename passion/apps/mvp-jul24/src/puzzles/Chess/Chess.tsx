@@ -1,36 +1,22 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
+import BoardGrid from "./BoardGrid";
+import FreePlayBoard from "./FreePlayBoard";
 import {
   type ChessGameState,
   type Square,
   attemptMove,
   initState,
   legalTargets,
-  squareName,
   squaresEqual,
 } from "./logic";
 import { PUZZLES } from "./puzzles.data";
 import "./Chess.css";
 
-const GLYPHS: Record<string, string> = {
-  wK: "♔",
-  wQ: "♕",
-  wR: "♖",
-  wB: "♗",
-  wN: "♘",
-  wP: "♙",
-  bK: "♚",
-  bQ: "♛",
-  bR: "♜",
-  bB: "♝",
-  bN: "♞",
-  bP: "♟",
-};
-
-const FILES = ["a", "b", "c", "d", "e", "f", "g", "h"];
-const RANKS = [8, 7, 6, 5, 4, 3, 2, 1];
+type Mode = "tactics" | "freeplay";
 
 export default function Chess({ seed, onSolved, onExit }: PuzzleProps) {
+  const [mode, setMode] = useState<Mode>("tactics");
   const puzzle = useMemo(() => PUZZLES[seed % PUZZLES.length]!, [seed]);
   const [state, setState] = useState<ChessGameState>(() => initState(puzzle));
   const [selected, setSelected] = useState<Square | null>(null);
@@ -99,65 +85,41 @@ export default function Chess({ seed, onSolved, onExit }: PuzzleProps) {
       <button type="button" className="cx-exit" onClick={onExit}>
         ← Back
       </button>
-      <p className="cx-prompt">{puzzle.prompt}</p>
-      <div
-        className="cx-board"
-        style={{
-          gridTemplateColumns: "auto repeat(8, 2.6rem)",
-          gridTemplateRows: "repeat(8, 2.6rem) auto",
-        }}
-      >
-        {RANKS.map((rank, r) => (
-          <Fragment key={`row-${rank}`}>
-            <div className="cx-cell cx-rank-label">{rank}</div>
-            {FILES.map((_, c) => {
-              const square: Square = { row: r, col: c };
-              const piece = state.board[r]?.[c] ?? null;
-              const isLight = (r + c) % 2 === 0;
-              const isSelected = selected ? squaresEqual(selected, square) : false;
-              const isTarget = targets.some((t) => squaresEqual(t, square));
-              const name = squareName(square);
-              return (
-                <button
-                  key={name}
-                  type="button"
-                  className={[
-                    "cx-cell",
-                    "cx-square",
-                    isLight ? "cx-light" : "cx-dark",
-                    isSelected ? "cx-selected" : "",
-                    isTarget ? "cx-target" : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  data-square={name}
-                  aria-label={
-                    piece
-                      ? `${name}: ${piece.color === "w" ? "white" : "black"} ${piece.type}`
-                      : `${name}: empty`
-                  }
-                  onClick={() => handleSquareClick(square)}
-                >
-                  {piece ? (
-                    <span className={`cx-piece cx-piece-${piece.color}`}>
-                      {GLYPHS[`${piece.color}${piece.type}`]}
-                    </span>
-                  ) : isTarget ? (
-                    <span className="cx-dot" />
-                  ) : null}
-                </button>
-              );
-            })}
-          </Fragment>
-        ))}
-        <div className="cx-cell cx-corner" />
-        {FILES.map((f) => (
-          <div key={f} className="cx-cell cx-file-label">
-            {f}
-          </div>
-        ))}
+      <div className="cx-mode-toggle" role="tablist" aria-label="Chess mode">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mode === "tactics"}
+          className={`cx-mode-btn ${mode === "tactics" ? "cx-mode-active" : ""}`}
+          onClick={() => setMode("tactics")}
+        >
+          Tactics
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mode === "freeplay"}
+          className={`cx-mode-btn ${mode === "freeplay" ? "cx-mode-active" : ""}`}
+          onClick={() => setMode("freeplay")}
+        >
+          Free Play
+        </button>
       </div>
-      <p className={`cx-message ${message ? "cx-message-show" : ""}`}>{message ?? " "}</p>
+
+      {mode === "tactics" ? (
+        <>
+          <p className="cx-prompt">{puzzle.prompt}</p>
+          <BoardGrid
+            board={state.board}
+            selected={selected}
+            targets={targets}
+            onSquareClick={handleSquareClick}
+          />
+          <p className={`cx-message ${message ? "cx-message-show" : ""}`}>{message ?? " "}</p>
+        </>
+      ) : (
+        <FreePlayBoard onSolved={onSolved} />
+      )}
     </div>
   );
 }

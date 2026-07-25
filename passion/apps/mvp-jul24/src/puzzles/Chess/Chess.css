@@ -30,6 +30,73 @@
   box-shadow: var(--shadow-soft), var(--glow-ember);
 }
 
+/* Segmented Tactics / Free Play toggle, wood-framed to match cx-exit. */
+.cx-mode-toggle {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border: 2px solid var(--wood-frame);
+  border-radius: var(--r-pill);
+  background: var(--wood);
+  box-shadow: var(--shadow-soft);
+}
+
+.cx-mode-btn {
+  border: none;
+  background: transparent;
+  color: var(--cream-soft);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.4rem 1rem;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: background 160ms var(--ease-out), color 160ms var(--ease-out), box-shadow 160ms
+    var(--ease-out);
+}
+
+.cx-mode-btn:hover {
+  color: var(--cream);
+}
+
+.cx-mode-btn.cx-mode-active {
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  color: var(--wood-deep);
+  box-shadow: var(--shadow-soft), var(--glow-ember);
+}
+
+.cx-freeplay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.cx-fp-status.cx-fp-status-over {
+  font-size: 1.05rem;
+}
+
+.cx-newgame {
+  border: 2px solid var(--wood-frame);
+  background: linear-gradient(180deg, var(--parchment-hi), var(--parchment-edge));
+  color: var(--ink);
+  border-radius: var(--r-pill);
+  padding: 0.45rem 1.1rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: transform 120ms var(--ease-out), box-shadow 160ms var(--ease-out), background 160ms
+    var(--ease-out);
+}
+
+.cx-newgame:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  box-shadow: var(--shadow-soft), var(--glow-ember);
+}
+
 .cx-prompt {
   margin: 0;
   max-width: 32rem;
