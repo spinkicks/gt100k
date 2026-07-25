@@ -1,0 +1,58 @@
+@import "./console.css";
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #0d0f12;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Theme switcher. Deliberately outside the themed stage so it never influences the read. */
+.switch {
+  display: flex;
+  gap: 4px;
+  padding: 10px 14px;
+  background: #0d0f12;
+  border-bottom: 1px solid #23262b;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.switch button {
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  padding: 7px 14px;
+  border-radius: 7px;
+  border: 1px solid #2c3037;
+  background: transparent;
+  color: #b9bec7;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.switch button span {
+  display: block;
+  font-weight: 400;
+  font-size: 11px;
+  opacity: 0.65;
+  margin-top: 1px;
+}
+.switch button:hover {
+  border-color: #454b55;
+  color: #eef1f5;
+}
+.switch button[aria-pressed="true"] {
+  background: #eef1f5;
+  border-color: #eef1f5;
+  color: #14171b;
+}
+
+.stage {
+  height: calc(100vh - 53px);
+  overflow: hidden;
+}

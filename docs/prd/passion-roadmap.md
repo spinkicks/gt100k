@@ -1,6 +1,6 @@
 # PassionLab Build Roadmap
 
-**Status:** v2 · updated 2026-07-24 · Owner: (product/eng)
+**Status:** v2.1 · updated 2026-07-25 · Owner: (product/eng)
 **Purpose:** Sequence the `passionApps.md` artifacts into a phased, dependency-ordered build path, mapped to the **actual** Spec-Kit features under `specs/`. Each feature is `specs/NNN-<slug>/spec.md` → a `writing-plans` implementation plan (`docs/superpowers/plans/…`) → execution (factory loop).
 **Reads with:** `passionApps.md` (artifact catalog + live status log), the two PRDs, and `hardening/`.
 
@@ -25,6 +25,7 @@
 | **Project workspace** (D2) | ✅ engine + evidence-sink adapter + **project-studio app** merged — `022` (child-facing journey-timeline studio, 7-preset theme switcher, `window.__qa`/LOOP_QA; stub EvidenceSink until E1's API settles) |
 | **Game/visual world** (A1 world, A2 cabins, A3 assets, A5 mirror) | 🟡 partial / teammate — tinker cabin + realism loop |
 | **Access broker** (D3 mentor, D4 audience) | ✅ merged — `023` (combined engine + live adapter + guide-console Access tab) |
+| **Parent Playbook** (F4) | ✅ merged + **hosted on AWS** — `docs/superpowers/specs/2026-07-24-parent-guide-design.md` (no `specs/NNN`); static-exported `apps/parent-guide`; Family Check-In mirrors `@gt100k/family` (512-combination parity test). Manager MVP item 2 |
 | **Rest of specialization** (D5 PCDE) | ⬜ not started |
 | **Pre-live gates** (G3 consent/erasure, G4 safety-at-scale, G5 calibration, E1 D1–D6) | ⬜ not started (E1 productionization = teammate) |
 
@@ -93,4 +94,6 @@
 
 ## Next step
 
-- 018/019/020/022/023 merged (023 = the combined **access broker** + the guide-console **Access tab**), plus the **guide-console cockpit** (now 5 tabs) and the teammate's **themed Evidence Explorer** (`#144`). Next: pick from **D5 PCDE** or the **pre-live gates** (G3/G4, G5 once outcomes accrue). Real E1 evidence wiring lands once the teammate's EvidenceGraph API settles.
+- 018/019/020/022/023 merged (023 = the combined **access broker** + the guide-console **Access tab**), plus the **guide-console cockpit** (now 5 tabs), the teammate's **themed Evidence Explorer** (`#144`), and **F4 the Parent Playbook** (`#149`, hosted on AWS).
+- **Now the constraint is cohesion, not features.** The domain layer is well factored (17 engines behind typed ports, shared by every surface), but the presentation layer is not: **5 apps hand-roll ~8,550 lines of CSS with no shared UI package and at least 3 independent theme systems**, `evidence-explorer` and `evidence-explorer-themed` are near-duplicates, and there is no single front door, so the product reads as separate sites rather than one system. Before more features, spec a **product-cohesion architecture**: a shared `@gt100k/ui` design-system package, one theme model, one shell with role-based routes, an app-inventory cleanup, and a single deployment.
+- **Feature gaps still unowned** (both named in the manager's long-term goals): the **admissions-facing portfolio / evidence packet** (E1 v1 explicitly removed packets; export provenance is E1 D5, teammate, not started) and a **workshop builder for guides** (zero coverage anywhere in the repo). Then **D5 PCDE** and the **pre-live gates** (G3/G4, G5 once outcomes accrue). Real E1 evidence wiring lands once the teammate's EvidenceGraph API settles.

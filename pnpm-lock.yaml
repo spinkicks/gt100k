@@ -138,6 +138,28 @@ importers:
         specifier: ^18.3.1
         version: 18.3.7(@types/react@18.3.31)
 
+  passion/apps/design-lab:
+    dependencies:
+      '@gt100k/design-tokens':
+        specifier: workspace:*
+        version: link:../../packages/design-tokens
+      next:
+        specifier: ^14.2.15
+        version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.12
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: ^18.3.1
+        version: 18.3.7(@types/react@18.3.31)
+
   passion/apps/evidence-explorer:
     dependencies:
       '@electric-sql/pglite':
@@ -271,6 +293,9 @@ importers:
       '@gt100k/access-broker':
         specifier: workspace:*
         version: link:../../packages/access-broker
+      '@gt100k/design-tokens':
+        specifier: workspace:*
+        version: link:../../packages/design-tokens
       '@gt100k/family':
         specifier: workspace:*
         version: link:../../packages/family
@@ -280,6 +305,9 @@ importers:
       '@gt100k/interest-inference':
         specifier: workspace:*
         version: link:../../packages/interest-inference
+      '@gt100k/research':
+        specifier: workspace:*
+        version: link:../../packages/research
       '@gt100k/specialization-planner':
         specifier: workspace:*
         version: link:../../packages/specialization-planner
@@ -499,6 +527,8 @@ importers:
         specifier: workspace:*
         version: link:../two-axis-tagging
 
+  passion/packages/design-tokens: {}
+
   passion/packages/evidence-explorer-view:
     dependencies:
       '@gt100k/evidence-graph':
@@ -576,6 +606,8 @@ importers:
       '@gt100k/specialization-planner':
         specifier: workspace:*
         version: link:../specialization-planner
+
+  passion/packages/research: {}
 
   passion/packages/signal-pipeline:
     dependencies:

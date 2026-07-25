@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@gt100k/access-broker": "workspace:*",
+    "@gt100k/design-tokens": "workspace:*",
     "@gt100k/family": "workspace:*",
     "@gt100k/hypothesis-store": "workspace:*",
     "@gt100k/interest-inference": "workspace:*",
+    "@gt100k/research": "workspace:*",
     "@gt100k/specialization-planner": "workspace:*",
     "@gt100k/student-profile": "workspace:*",
     "@gt100k/wellbeing": "workspace:*",

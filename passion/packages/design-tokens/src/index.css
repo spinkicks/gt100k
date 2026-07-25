@@ -1,0 +1,5 @@
+/* The whole token layer. Framework-free CSS custom properties by design: this is what
+   keeps every downstream styling choice reversible, and it lets a Vite/R3F app read the
+   same values with no React. */
+@import "./contract.css";
+@import "./themes.css";

@@ -1,0 +1,106 @@
+/**
+ * CANONICAL: the adult (guide-facing) language is "MUI", chosen 2026-07-25 from a
+ * side-by-side against Horizon UI. Crisper, hairline borders, restrained blue accent.
+ *
+ * The MUI values are applied to :root, so any app that imports the token package gets the
+ * canonical look with no attribute to set and no chance of an unthemed flash. Horizon is
+ * kept only as an opt-in override for comparison; delete it once nobody is comparing.
+ */
+
+:root {
+  --canvas: #f7f8fa;
+  --rail: #ffffff;
+  --rail-2: #f2f4f7;
+  --surface: #ffffff;
+  --surface-2: #f7f8fa;
+
+  --ink: #1c2025;
+  --ink-muted: #5a6472;
+  /* Measured, not eyeballed: 5.17:1 on white, 4.86:1 on the canvas, 4.69:1 on the rail.
+     Clears AA on every ground we actually place it on. The lighter grey it replaced was
+     3.03:1, which is why tertiary text should earn its rank from size and weight rather
+     than from paleness. */
+  --ink-faint: #656e7a;
+
+  --line: #e4e7ec;
+  --line-strong: #cfd4dc;
+  --line-w: 1px;
+
+  --accent: #0b6bcb;
+  --accent-hover: #095aa9;
+  --accent-weak: #e7f1fc;
+  --accent-ink: #ffffff;
+
+  --good: #1f7a4d;
+  --good-bg: #e6f4ec;
+  --warn: #8f6100;
+  --warn-bg: #fdf3e0;
+  --bad: #c41c1c;
+  --bad-bg: #fdeaea;
+
+  --chart-1: #0b6bcb;
+  --chart-2: #64b5f6;
+  --chart-3: #1f7a4d;
+  --chart-4: #b26500;
+
+  --positive: #1f7a4d;
+  --alarm: #c41c1c;
+  --alarm-bg: #fdeaea;
+  --alarm-ink: #941515;
+
+  --uncertain: #a9b2bf;
+  --uncertain-bg: #f0f2f5;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --elev-raised: 0 1px 2px rgb(16 24 40 / 0.06), 0 1px 3px rgb(16 24 40 / 0.06);
+  --focus-color: #0b6bcb;
+}
+
+/* Opt-in comparison theme only. Not canonical. */
+[data-theme="horizon"] {
+  --canvas: #f4f7fe;
+  --rail: #ffffff;
+  --rail-2: #f4f7fe;
+  --surface: #ffffff;
+  --surface-2: #f4f7fe;
+
+  --ink: #1b2559;
+  --ink-muted: #707eae;
+  --ink-faint: #a3aed0;
+
+  --line: #e9edf7;
+  --line-strong: #d6dcec;
+
+  --accent: #4318ff;
+  --accent-hover: #3311db;
+  --accent-weak: #ebe8ff;
+  --accent-ink: #ffffff;
+
+  --good: #01a97b;
+  --good-bg: #e0f8f1;
+  --warn: #b07400;
+  --warn-bg: #fff4e0;
+  --bad: #d0362a;
+  --bad-bg: #ffeceb;
+
+  --chart-1: #4318ff;
+  --chart-2: #6ad2ff;
+  --chart-3: #01b574;
+  --chart-4: #ffb547;
+
+  --positive: #01a97b;
+  --alarm: #d0362a;
+  --alarm-bg: #ffeceb;
+  --alarm-ink: #9e2820;
+
+  --uncertain: #a3aed0;
+  --uncertain-bg: #eef2fb;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --elev-raised: 0 18px 40px rgb(112 144 176 / 0.12);
+  --focus-color: #7551ff;
+}
