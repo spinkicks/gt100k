@@ -11,6 +11,11 @@ import { skyGradientTexture } from "./textures";
 
 const VISTA_URL = "/assets/env/vista.jpg";
 const ROT = Math.PI * 0.72; // aim the dramatic peaks toward the window (+X)
+// This is the single largest asset (~6MB) and isn't needed for first paint — the room shows the
+// procedural CanvasDome sky instantly via the Suspense fallback below regardless. Preloading still
+// starts the fetch immediately (parallel with everything else) so the real vista swaps in sooner,
+// without blocking anything.
+useTexture.preload(VISTA_URL);
 
 function VistaDome(): JSX.Element {
   const tex = useTexture(VISTA_URL);
