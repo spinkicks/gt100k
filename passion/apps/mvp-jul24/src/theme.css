@@ -1,0 +1,111 @@
+/* ------------------------------------------------------------------ *
+ * GT100K · Passion Lab — cozy cabin design tokens + global foundation
+ * One source of truth for color, type, radius, shadow, and z-index.
+ * Imported once from main.tsx, ahead of any component styles.
+ * ------------------------------------------------------------------ */
+
+@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap");
+
+:root {
+  /* — Wood (structure) — */
+  --wood-deep: #241611; /* app backdrop */
+  --wood: #3a2519;
+  --wood-frame: #5a3a24; /* panel frames / borders */
+  --wood-light: #6a4326; /* raised wood faces */
+
+  /* — Ember (firelight accent) — */
+  --ember: #e8863c;
+  --ember-bright: #ffb867;
+  --ember-deep: #c25a1f;
+
+  /* — Parchment (surfaces) — */
+  --parchment: #f3e4c6;
+  --parchment-hi: #fbf1da; /* lit top edge of a page */
+  --parchment-edge: #e0c99e;
+
+  /* — Ink & cream (text) — */
+  --ink: #33230f; /* on parchment  (≥ 4.5:1) */
+  --ink-soft: #6a5334; /* secondary on parchment (≥ 4.5:1 on parchment) */
+  --cream: #f2e6cd; /* on dark wood */
+  --cream-soft: #cbb489; /* secondary on dark wood */
+
+  /* — Radii — */
+  --r-sm: 10px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-pill: 999px;
+
+  /* — Warm layered shadows — */
+  --shadow-soft: 0 2px 8px rgba(20, 10, 4, 0.35);
+  --shadow-raised: 0 3px 0 rgba(20, 10, 4, 0.25), 0 6px 16px rgba(20, 10, 4, 0.4);
+  --shadow-panel: 0 4px 8px rgba(20, 10, 4, 0.35), 0 24px 60px rgba(15, 8, 4, 0.55);
+  --glow-ember: 0 0 18px rgba(232, 134, 60, 0.55);
+  --glow-ember-strong: 0 0 30px rgba(255, 184, 103, 0.7);
+
+  /* — Type — */
+  --font-display: "Baloo 2", ui-rounded, system-ui, sans-serif;
+  --font-body: "Nunito Sans", "Nunito", system-ui, sans-serif;
+
+  /* — Semantic z-index scale — */
+  --z-backdrop: 0;
+  --z-panel: 10;
+  --z-overlay: 50;
+  --z-toast: 80;
+
+  /* — Motion — */
+  --ease-out: cubic-bezier(0.22, 0.7, 0.3, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--cream);
+  /* Warm, dark, cozy — like sitting by a fire. A firelit glow rises from lower
+     center; the corners fall into deep wood shadow (vignette). */
+  background-color: var(--wood-deep);
+  background-image: radial-gradient(
+      90% 70% at 50% 88%,
+      rgba(232, 134, 60, 0.18) 0%,
+      transparent 60%
+    ), radial-gradient(120% 100% at 50% 8%, #402a1c 0%, #2c1b12 42%, var(--wood-deep) 100%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Headings breathe and balance across lines. */
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+  letter-spacing: 0.01em;
+}
+
+/* Keyboard focus stays visible and on-brand everywhere. */
+:where(button, a, [tabindex]):focus-visible {
+  outline: 3px solid var(--ember-bright);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

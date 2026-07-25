@@ -1,0 +1,8 @@
+# Loop screenshots (regenerable) — keep the dir, ignore the shots.
+shots/*
+!shots/.gitkeep
+
+# Fetched CC0/CC-BY 3D assets (scripts/fetch-assets.mjs) — binaries never enter the public repo;
+# the 3D cabin falls back to procedural materials/lighting when they're absent. Keep the credits.
+public/assets/*
+!public/assets/CREDITS.md
