@@ -79,7 +79,7 @@ export function PhysicsController({
     const rb = body.current;
     if (!rb) return;
     const step = Math.min(dt, 0.05);
-    const speed = (it.sprint ? 4.4 : 2.4) * step;
+    const speed = (it.sprint ? 6.6 : 3.8) * step; // bumped up: brisker walk + faster sprint
     const sin = Math.sin(yaw.current);
     const cos = Math.cos(yaw.current);
     vy.current = Math.max(-8, vy.current - 9.81 * step);
