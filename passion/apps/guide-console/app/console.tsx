@@ -35,6 +35,7 @@ export function GuideConsole(): JSX.Element {
   const [view, setView] = useState<View>("overview");
 
   // Switching child returns to the default summary so a tab never points at a stale kid's section.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ctrl.kid is the trigger, not a value read in the body — dropping it would run the reset once and never again.
   useEffect(() => {
     setView("overview");
   }, [ctrl.kid]);

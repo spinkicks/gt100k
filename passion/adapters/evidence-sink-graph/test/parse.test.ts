@@ -143,7 +143,9 @@ describe("graphEvidenceSink — real SHA-256 EvidenceSink over @gt100k/evidence-
       const project = withInjectedEvent(bad);
 
       let graph!: EvidenceGraph;
-      expect(() => (graph = graphEvidenceSink().record(project))).not.toThrow();
+      expect(() => {
+        graph = graphEvidenceSink().record(project);
+      }).not.toThrow();
 
       // The malformed event contributes no node; the ten well-formed events are untouched.
       expect(Object.keys(graph.nodes)).toHaveLength(10);
@@ -164,7 +166,9 @@ describe("graphEvidenceSink — real SHA-256 EvidenceSink over @gt100k/evidence-
       const project = withInjectedEvent(toxic);
 
       let graph!: EvidenceGraph;
-      expect(() => (graph = graphEvidenceSink().record(project))).not.toThrow();
+      expect(() => {
+        graph = graphEvidenceSink().record(project);
+      }).not.toThrow();
 
       expect(Object.keys(graph.nodes)).toHaveLength(10);
       expect(graph).toEqual(cleanGraph());

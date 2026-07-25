@@ -10,12 +10,12 @@ const DEFAULT_BASE_URL = "https://tfy.promptlens.trilogy.com/openai/v1";
 const DEFAULT_MODEL = "gpt-5.4-mini";
 
 export function tfyConfigFromEnv(env: NodeJS.ProcessEnv = process.env): TfyConfig {
-  const apiKey = env["TFY_API_KEY"];
+  const apiKey = env.TFY_API_KEY;
   if (!apiKey) throw new Error("TFY_API_KEY is required for the live tutor");
   return {
     apiKey,
-    baseURL: env["TFY_BASE_URL"] ?? DEFAULT_BASE_URL,
-    model: env["TFY_TUTOR_MODEL"] ?? DEFAULT_MODEL,
+    baseURL: env.TFY_BASE_URL ?? DEFAULT_BASE_URL,
+    model: env.TFY_TUTOR_MODEL ?? DEFAULT_MODEL,
   };
 }
 

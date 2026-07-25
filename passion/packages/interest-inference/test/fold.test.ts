@@ -45,8 +45,8 @@ describe("foldEvents", () => {
     expect(cell.skips).toBe(1);
     expect(cell.prompted).toBe(1);
     // It must not surface as a supporting reason either, since it moved no belief.
-    expect(cell.positiveByKind["artifact_competence"]).toBeUndefined();
-    expect(cell.positiveByKind["unrequired_revision"]).toBeCloseTo(0.5, 6);
+    expect(cell.positiveByKind.artifact_competence).toBeUndefined();
+    expect(cell.positiveByKind.unrequired_revision).toBeCloseTo(0.5, 6);
   });
 
   it("same_day_engagement is counted but moves nothing (E2)", () => {

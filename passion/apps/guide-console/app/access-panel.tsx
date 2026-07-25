@@ -278,10 +278,10 @@ export function AccessPanel({ cards }: { cards: readonly AccessCardVM[] }): JSX.
       </header>
 
       {cards.length === 0 ? (
-        <p className="wbpanel__empty" role="status">
+        <output className="wbpanel__empty">
           No certified spikes to broker yet. A spike gets mentor and audience options once you promote
           it to a candidate or an active specialization.
-        </p>
+        </output>
       ) : (
         <ul className="wblist" data-testid="access-list">
           {cards.map((c) => (

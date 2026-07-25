@@ -205,13 +205,11 @@ function derivePlanCore(inputs: PlanInputs, resources: readonly CuratedResource[
   if (inputs.stretchSeeking) signals.push("voluntarily reaching for harder work");
   if (inputs.producerIdentity) signals.push("shipping/sharing for others");
 
-  const rationale =
-    `On readiness signals (${signals.join(", ")}), this spike sits at ${stage} — ` +
-    `${STAGE_PURPOSE[stage]}. ${inputs.monthsInPursuit} months in pursuit is indicative only; ` +
-    `stages advance on readiness, never age. ` +
-    (strained
+  const rationale = `On readiness signals (${signals.join(", ")}), this spike sits at ${stage} — ${STAGE_PURPOSE[stage]}. ${inputs.monthsInPursuit} months in pursuit is indicative only; stages advance on readiness, never age. ${
+    strained
       ? "The wellbeing read shows strain, so we hold the stage and propose a guilt-free rest / deload and more autonomy — protect the rage to master."
-      : "The mentor is a relay and the audience widens with authenticity; deliberate practice stays small and serves the child's own project.");
+      : "The mentor is a relay and the audience widens with authenticity; deliberate practice stays small and serves the child's own project."
+  }`;
 
   const guardrailNotes: readonly string[] = [
     `DP is bounded: ${dpDose} < ${INVESTMENT_LOAD} investment-year load — practice serves the project, never the reverse.`,

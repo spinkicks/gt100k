@@ -108,7 +108,7 @@ export function BarChart({
         const bh = (v / max) * (h - pad.t - pad.b);
         const cx = pad.l + i * slot + slot / 2;
         return (
-          <g key={i}>
+          <g key={labels[i]}>
             <rect
               x={compare ? cx - bw - 2 : cx - bw / 2}
               y={h - pad.b - bh}

@@ -164,6 +164,8 @@ export function Beam({
       {/* beam segments — glowing laser line, repositioned along the path each frame */}
       {Array.from({ length: SEG_MAX }, (_, i) => (
         <mesh
+          /* biome-ignore lint/suspicious/noArrayIndexKey: these are SEG_MAX fixed slots, not list
+             data — the same index addresses the mesh in `segs.current`, so it is the identity. */
           key={`seg-${i}`}
           visible={false}
           ref={(m) => {

@@ -28,9 +28,7 @@ export function FamilyPanel({
       </header>
 
       {!read ? (
-        <p className="wbpanel__empty" role="status">
-          No coaching read yet.
-        </p>
+        <output className="wbpanel__empty">No coaching read yet.</output>
       ) : (
         <ul className="wblist">
           {/* Escalation first, when the pressure watch needs a human. */}

@@ -61,8 +61,8 @@ export function Icon({ name, size = 18 }: { name: string; size?: number }): JSX.
       {ICON_PATHS[name]
         ?.split("M")
         .filter(Boolean)
-        .map((d, i) => (
-          <path key={i} d={`M${d}`} />
+        .map((d) => (
+          <path key={d} d={`M${d}`} />
         ))}
     </svg>
   );
@@ -82,6 +82,10 @@ export function Term({
   return (
     <span
       className={`term${className ? ` ${className}` : ""}`}
+      /* biome-ignore lint/a11y/noNoninteractiveTabindex: deliberate — the CSS tooltip only opens on
+         :hover and :focus-visible, so this tab stop is a sighted keyboard user's only route to the
+         plain-language definition. A <button> would promise an action it does not have and drop an
+         inline-block UA control into running prose. */
       tabIndex={0}
       data-tip={desc}
       aria-label={`${label}. ${desc}`}
@@ -135,7 +139,15 @@ export function CellTitle({ card }: { card: HypothesisCard }): JSX.Element {
 export function ModeChip({ card }: { card: HypothesisCard }): JSX.Element {
   const t = modeTerm(card.mode);
   return (
-    <span className="cell__mode" tabIndex={0} data-tip={t.desc} aria-label={`${t.label}. ${t.desc}`}>
+    <span
+      className="cell__mode"
+      /* biome-ignore lint/a11y/noNoninteractiveTabindex: deliberate — the CSS tooltip only opens on
+         :hover and :focus-visible, so this tab stop is a sighted keyboard user's only route to the
+         plain-language definition. The chip triggers a tooltip; it is not a control. */
+      tabIndex={0}
+      data-tip={t.desc}
+      aria-label={`${t.label}. ${t.desc}`}
+    >
       {t.label}
     </span>
   );
@@ -264,6 +276,8 @@ export function Actions({
   ctrl: ConsoleController;
 }): JSX.Element {
   return (
+    /* biome-ignore lint/a11y/useSemanticElements: <fieldset> groups form controls, not a toolbar of
+       actions, and its UA groove border, padding and min-inline-size would reshape this flex row. */
     <div className="acts" role="group" aria-label={`Actions for ${card.cellKey}`}>
       {card.allowedActions.map((action) => {
         const t = actionTerm(action);
@@ -444,11 +458,11 @@ export function SpecRail({
 
 export function EmptyState({ ctrl }: { ctrl: ConsoleController }): JSX.Element {
   return (
-    <p className="empty" role="status">
+    <output className="empty">
       {ctrl.vm.cards.length === 0
         ? "No hypotheses yet. Exploration in progress."
         : "No hypotheses in this view."}
-    </p>
+    </output>
   );
 }
 

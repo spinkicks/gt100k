@@ -71,7 +71,7 @@ export function reopen(
 ): HypothesisStore {
   assertHuman(actor);
   const h = mustGet(store, id);
-  if (h.state !== "PARKED") throw new Error(`can only reopen a PARKED hypothesis`);
+  if (h.state !== "PARKED") throw new Error("can only reopen a PARKED hypothesis");
   const reopened = withState(h, "REOPENED", actor.id, "reopened", now);
   return put(store, withState(reopened, "EMERGING", actor.id, "resume exploring", now));
 }

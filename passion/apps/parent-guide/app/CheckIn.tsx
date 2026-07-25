@@ -68,6 +68,8 @@ export function CheckIn(): JSX.Element {
         </div>
       </form>
 
+      {/* biome-ignore lint/a11y/useSemanticElements: this live region wraps <Result>, which renders a
+          heading and paragraphs, and <output> only accepts phrasing content. */}
       <div role="status" aria-live="polite">
         {result !== null && <Result result={result} />}
       </div>
@@ -93,7 +95,7 @@ function Result({ result }: { result: Decision }): JSX.Element {
       <h3>{copy.heading}</h3>
       <p>
         {copy.body}
-        {showSecondDoor ? " " + SECOND_DOOR_NOTE : ""}
+        {showSecondDoor ? ` ${SECOND_DOOR_NOTE}` : ""}
       </p>
       {result.talkToHuman && (
         <p className="result__human">

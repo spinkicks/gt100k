@@ -27,26 +27,26 @@ function parseObject(raw: string): Record<string, unknown> | null {
 /** `{ safe: boolean, reason?: string }` → {@link ModerationVerdict}, or `null` if malformed. */
 export function parseModeration(raw: string): ModerationVerdict | null {
   const o = parseObject(raw);
-  if (!o || typeof o["safe"] !== "boolean") return null;
-  const reason = typeof o["reason"] === "string" ? o["reason"] : undefined;
-  return reason === undefined ? { safe: o["safe"] } : { safe: o["safe"], reason };
+  if (!o || typeof o.safe !== "boolean") return null;
+  const reason = typeof o.reason === "string" ? o.reason : undefined;
+  return reason === undefined ? { safe: o.safe } : { safe: o.safe, reason };
 }
 
 /** `{ distress: boolean, reason?: string }` → {@link DistressVerdict}, or `null` if malformed. */
 export function parseDistress(raw: string): DistressVerdict | null {
   const o = parseObject(raw);
-  if (!o || typeof o["distress"] !== "boolean") return null;
-  const reason = typeof o["reason"] === "string" ? o["reason"] : undefined;
-  return reason === undefined ? { distress: o["distress"] } : { distress: o["distress"], reason };
+  if (!o || typeof o.distress !== "boolean") return null;
+  const reason = typeof o.reason === "string" ? o.reason : undefined;
+  return reason === undefined ? { distress: o.distress } : { distress: o.distress, reason };
 }
 
 /** `{ grounded: boolean, score: 0..1 }` → {@link FaithfulnessVerdict}, or `null` if malformed. */
 export function parseFaithfulness(raw: string): FaithfulnessVerdict | null {
   const o = parseObject(raw);
-  if (!o || typeof o["grounded"] !== "boolean") return null;
-  const score = o["score"];
+  if (!o || typeof o.grounded !== "boolean") return null;
+  const score = o.score;
   if (typeof score !== "number" || Number.isNaN(score) || score < 0 || score > 1) return null;
-  return { grounded: o["grounded"], score };
+  return { grounded: o.grounded, score };
 }
 
 /**
@@ -56,13 +56,13 @@ export function parseFaithfulness(raw: string): FaithfulnessVerdict | null {
  */
 export function parseGeneration(raw: string): GeneratedAnswer | null {
   const o = parseObject(raw);
-  if (!o || typeof o["text"] !== "string" || !Array.isArray(o["citations"])) return null;
+  if (!o || typeof o.text !== "string" || !Array.isArray(o.citations)) return null;
   const citations: Citation[] = [];
-  for (const c of o["citations"]) {
+  for (const c of o.citations) {
     if (typeof c !== "object" || c === null) return null;
     const cit = c as Record<string, unknown>;
-    if (typeof cit["url"] !== "string" || typeof cit["title"] !== "string") return null;
-    citations.push({ url: cit["url"], title: cit["title"], reputation: reputationOf(cit["url"]) });
+    if (typeof cit.url !== "string" || typeof cit.title !== "string") return null;
+    citations.push({ url: cit.url, title: cit.title, reputation: reputationOf(cit.url) });
   }
-  return { text: o["text"], citations };
+  return { text: o.text, citations };
 }

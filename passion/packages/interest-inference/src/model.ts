@@ -146,7 +146,7 @@ export function recencyWeight(now: number, timestamp: string): number {
   const parsed = Date.parse(timestamp);
   if (Number.isNaN(parsed)) return 1; // unparseable timestamp → no decay (never NaN-poison alpha)
   const ageMs = Math.max(0, now - parsed);
-  return Math.pow(0.5, ageMs / 86400000 / HALFLIFE_DAYS);
+  return 0.5 ** (ageMs / 86400000 / HALFLIFE_DAYS);
 }
 
 // Clamp a documented [0,1] input; NaN → 0. Guards prior tilt inputs against out-of-range poisoning.

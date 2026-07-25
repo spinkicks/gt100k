@@ -22,6 +22,11 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: `noFlash` is a static build-time
+            constant — its only interpolations are THEME_KEY and DEFAULT_THEME, both JSON.stringify'd
+            module literals, so no user input reaches it. The value it reads back from localStorage is
+            passed to setAttribute only, never eval'd. It must run before first paint to avoid a theme
+            flash, so it cannot be a React component. */}
         <script dangerouslySetInnerHTML={{ __html: noFlash }} />
       </head>
       <body>{children}</body>

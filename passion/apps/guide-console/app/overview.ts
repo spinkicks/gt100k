@@ -362,7 +362,10 @@ export function buildOverview(
     coveredByMonth[idx]! += 1;
   }
   let running = 0;
-  const coverageCumulative = coveredByMonth.map((n) => (running += n));
+  const coverageCumulative = coveredByMonth.map((n) => {
+    running += n;
+    return running;
+  });
 
   const half = (pred: (i: Interaction) => boolean): [number, number] => [
     log.filter((i) => ms(i.timestamp) < midpoint && pred(i)).length,
@@ -434,7 +437,10 @@ export function buildOverview(
       if (idx !== undefined) perMonth[idx]! += 1;
     }
     let acc = 0;
-    const cumulative = perMonth.map((n) => (acc += n));
+    const cumulative = perMonth.map((n) => {
+      acc += n;
+      return acc;
+    });
     return {
       id: card.id,
       index,

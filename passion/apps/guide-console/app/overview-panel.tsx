@@ -33,6 +33,8 @@ const TILE_CLAIMS: Readonly<Record<string, string>> = {
 /** The one place a chart's shape is chosen: charts only draw when the derivation says they can. */
 function Blank({ reason }: { reason: string }): JSX.Element {
   return (
+    /* biome-ignore lint/a11y/useSemanticElements: this live region wraps two <p> elements, and
+       <output> only accepts phrasing content, so the swap would produce invalid markup. */
     <div className="ov-blank" role="status">
       <p className="ov-blank__k">Not enough activity yet to chart</p>
       <p className="ov-blank__d">{reason}</p>
