@@ -1,0 +1,105 @@
+.ng {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  font-family: system-ui, sans-serif;
+  color: #4a3f35;
+}
+
+.ng-exit {
+  align-self: flex-start;
+  border: none;
+  background: #f3e6d8;
+  color: #4a3f35;
+  border-radius: 0.75rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.ng-exit:hover {
+  background: #e8d7c2;
+}
+
+.ng-board {
+  display: grid;
+  gap: 2px;
+  background: #d9c7ae;
+  border: 2px solid #b89a76;
+  border-radius: 0.75rem;
+  padding: 6px;
+}
+
+.ng-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.ng-corner {
+  background: transparent;
+}
+
+.ng-clue {
+  min-width: 2rem;
+  min-height: 2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b5a45;
+  background: #fbf3e7;
+}
+
+.ng-clue-col {
+  flex-direction: column;
+  padding: 0.15rem 0;
+  line-height: 1.1;
+}
+
+.ng-clue-row {
+  justify-content: flex-end;
+  padding-right: 0.5rem;
+  white-space: nowrap;
+}
+
+.ng-grid-cell {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid #cbb798;
+  background: #fffaf1;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 100ms ease, transform 80ms ease;
+}
+
+.ng-grid-cell:hover {
+  transform: scale(1.03);
+}
+
+.ng-grid-cell.ng-empty {
+  background: #fffaf1;
+}
+
+.ng-grid-cell.ng-filled {
+  background: #6b5a45;
+  border-color: #4a3f35;
+}
+
+.ng-grid-cell.ng-crossed {
+  background: #f3e6d8;
+}
+
+.ng-grid-cell.ng-crossed::after {
+  content: '×';
+  color: #b08968;
+  font-size: 1.25rem;
+}
+
+.ng-grid-cell.ng-crossed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
