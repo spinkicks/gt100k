@@ -318,6 +318,7 @@ function ShareCard({
           <h2>Where their time goes</h2>
           <p>Share of logged visits by area</p>
         </div>
+        <WhyThis id="cross-area-comparison" what="areas cannot be compared directly yet" />
       </div>
       {ok ? (
         <div className="donutwrap">

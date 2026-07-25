@@ -71,6 +71,19 @@ export const CLAIMS: readonly Claim[] = [
       "The three-day window is our default, picked to be short enough to catch genuine repeat visits. It is not a measured constant.",
   },
   {
+    id: "cross-area-comparison",
+    label: "Comparing areas",
+    area: "Reading the child",
+    basis: "evidence",
+    why: "Read this as where a child spent time, not as which area they like most, because some activities are simply more appealing regardless of their subject.",
+    sources: [
+      { authors: "Habgood & Ainsworth", year: 2011, url: "https://doi.org/10.1080/10508406.2010.508029" },
+      { authors: "Nye, Su, Rounds & Drasgow", year: 2012, url: "https://doi.org/10.1177/1745691612449021" },
+    ],
+    limit:
+      "General appeal of the activity itself predicted coming back independently of the subject, and we have no baseline yet to subtract it, so comparisons across areas are confounded.",
+  },
+  {
     id: "plural-reversible",
     label: "Plural and reversible",
     area: "Reading the child",
