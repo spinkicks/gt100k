@@ -31,27 +31,30 @@ In GT 100k the homeschool parents *are* the educators, so the guide-facing wisdo
 
 ## 4. Content spine (the page, top to bottom)
 
-1. **The one idea (hero).** "You are your child's biggest advantage. Handled wrong, you are also the biggest risk. The whole difference is *how*." One-line promise; soft scroll cue.
-2. **The stance: demanding and warm.** High expectations plus warmth that never depends on results. What it is, what it is not (the "tiger" trap: cold control underperforms warm-demanding on the child's own grades). The child owns the goal, so it becomes theirs instead of something done to them.
-3. **The five moves** (from the engine's asks + shared activities):
-   - Open doors, do not assign them. Offer access, a time and place, a community; the child can decline.
-   - Be a co-learner, not a judge. Shared build/make evenings, "demo nights" where the child teaches you, visits to see the field.
-   - Protect their ownership. They keep choosing the problem, the method, and the pace.
-   - Keep it plural and reversible. Offer a second, unrelated door; stepping back is a legitimate outcome, not a failure.
-   - Handle logistics, not the outcome. Do the access and the driving; do not attach your pride to the result.
-4. **The four traps** (the engine's pressure antecedents, as a self-check). Each is "what it looks like → do this instead":
-   - Over-valuing it (you are more invested than they are).
-   - Approval that rides on performance (your warmth shifts with results).
-   - Control and hovering (correcting, taking over, surveillance).
-   - Tying their whole identity to one thing (over-identification).
-5. **When it gets hard** (mirrors the engine's branches) — short "if this → do this":
-   - A big event is coming (stakes rising): dial *down* pressure and evaluation, not warmth; the counter-cyclical move.
-   - They have gone quiet (devaluation): a warm, non-evaluative check-in; a guilt-free, reversible break is a real option; consider looping in your guide.
-   - They are stuck (over-challenged): normalize the struggle, rebuild small wins.
-   - Little shared time (low engagement): build the shared, high-support high-challenge environment.
-   - **The Family Check-In widget lives here** (see §5).
-6. **Why this works (credibility strip).** Compact, understated, cited: warm-demanding beats "tiger" on the child's own grades (Kim 2013); harm runs through contingent self-worth (Luthar 2020); parental expectations predict *gains*, not just levels (Pinquart & Ebeling 2020; Hill & Tyson 2009); harmonious vs obsessive passion decides whether the goal becomes the child's own (Vallerand 2003; Ryan & Deci 2000). This is the layer that makes the page credible for applications.
-7. **The one-page summary.** A printable "fridge version": the stance, the five moves, the four traps, the hard-moment rules. This IS the "successful parent outline."
+The page is a set of short, plain-language **chapters**. **Every strong claim carries an inline, checkable citation** (author, year), and the **Sources** section (§11) lists each with a working link, so a parent can confirm nothing here is invented. A sticky in-page table of contents lets them jump around. Chapters stay tight (a few sentences each) so the whole thing stays scannable.
+
+**Part 1 — Why (the case).**
+1. **The one idea (hero).** "You are your child's biggest advantage. Handled wrong, you are also the biggest risk. The whole difference is *how*." [Pinquart & Ebeling 2020; Kim 2013]
+2. **Why the home matters, not just genes.** The engaged, autonomy-supportive home converts a child's ceiling into real achievement; adoption and income studies move measured outcomes by double digits where environments differ, and parents' expectations predict *gains*, not just current levels. [Capron & Duyme 1989; Turkheimer 2003; Pinquart & Ebeling 2020; Hill & Tyson 2009]
+3. **The stance: demanding and warm.** Warm-demanding beats "tiger" on the child's own grades *and* wellbeing; the harm comes from control and warmth-that-depends-on-results, not from high standards. [Kim 2013; Assor 2004; Pinquart 2016; Grolnick & Pomerantz 2009]
+4. **Let it become theirs (motivation).** The goal must become the child's own (harmonious, not obsessive, passion) through autonomy support. And **do not bribe the passion**: rewards, streaks, and prizes reliably undermine real interest, and the effect is *worse* in young children. Sincere, specific praise for the process is fine; contingent prizes are not. [Vallerand 2003; Ryan & Deci 2000; Deci/Koestner/Ryan 1999; Lepper 1973; Warneken & Tomasello 2008]
+5. **Push the challenge, not the child (pressure).** Two separate dials. Keep difficulty in the "hard but doable" zone (roughly 85% success), and when they strain, turn *pressure* down before you lower the *challenge*. When stakes rise, add *more* freedom and less evaluation, the opposite of the adult reflex. Sustained achievement pressure is now a top adolescent-health risk. [Wilson 2019; Wood 1976; Bartholomew 2011; Mageau 2009; Grolnick & Pomerantz 2009; Luthar 2020]
+
+**Part 2 — What to do (the five moves).** From the engine's offers + shared activities: open doors do not assign them; be a co-learner not a judge; protect their ownership (they choose problem, method, pace); keep it plural and reversible; handle logistics, not the outcome. [Grolnick & Pomerantz 2009; Mageau 2009]
+
+**Part 3 — What to avoid (the four traps).** The engine's pressure antecedents as a self-check ("what it looks like → do this instead"): over-valuing it; approval that rides on performance; control and hovering; tying their whole identity to one thing. [Mageau 2009; Assor 2004]
+
+**Part 4 — The big questions parents actually ask (each answered with research).**
+6. **How much practice, and how much rest?** Practice matters, but it explains a limited share of performance (much of the difference is elsewhere), so *bounded* practice serving a real project beats endless drilling, and real rest (days off each week, weeks off each year) is part of the plan, not a lapse. [Macnamara 2014; AAP/Brenner 2016]
+7. **Deep or well-rounded?** A genuine deep spike is what pays, and most children have a real strongest area ("good at everything" is largely a testing illusion). But breadth helps only up to a point (an inverted-U), and skills do not transfer across unrelated fields, so hold about **two or three** pursuits early and **narrow by around age 13**. Sample widely early, specialize later. [Achter/Lubinski/Benbow 1996, 1997; Fredricks 2012; Busseri 2006; Sala & Gobet 2017; Côté 1999; Robertson/Lubinski/Benbow 2010]
+8. **Should I let them quit?** The real danger is *foreclosure* (all-in with no exploration), not switching. The "you've put too much in to stop now" instinct is the adult's bias; young children do not have it. Ask for *effort within the attempt*, never *loyalty to a domain*. A healthy switch is a calm move *toward* something they already return to, made *after* clearing at least one real difficulty. Default to "park," never "quit." [Marcia 1966; Kroger 2010; Sehl 2021/2024/2026; Arkes & Ayton 1999; Credé 2017; Duckworth 2007; O'Keefe/Dweck/Walton 2018]
+9. **Am I too late, or pushing too early?** Start early with wide, low-stakes sampling; the heavy investment years are adolescence, not childhood. A true "start-before-7" window exists only for music and other rhythm/motor skills. [Côté 1999; Watanabe 2007; Steele 2013]
+
+**Part 5 — When it gets hard.** Short "if this → do this" for the four moments the engine watches (stakes rising, gone quiet, stuck, little shared time), plus the **Family Check-In widget** (§5). [memo 02 signal→action; Raedeke & Smith 2001; Mageau 2009]
+
+**Part 6 — Sources.** "Check it yourself" (§11): every claim above, grouped, with links.
+
+**Part 7 — The one-page summary.** A printable "fridge version" (the stance, the five moves, the four traps, and the big-question answers in a line each). This IS the "successful parent outline."
 
 ## 5. The Family Check-In widget (a parent-facing mirror of `assessFamily`)
 
@@ -95,6 +98,7 @@ Calm, editorial, trustworthy (this is for parents and for applications, not the 
 - **One file:** `parent-guide/index.html`, self-contained: inline `<style>`, semantic HTML, a small inline `<script>` for the widget only.
 - **No external fetches** (system font stack, no CDN, no analytics), **no build step**, **no backend**. Opens by double-click; hostable or emailable as-is.
 - The widget logic is a vanilla-JS mirror of the 5-branch ladder; the page is fully usable (all content readable) with JS disabled, and only the widget requires JS.
+- A **sticky in-page table of contents** (anchor links) keeps the longer page navigable, and the same anchors let each body claim link straight to its Sources entry. Still no external fetch.
 
 ## 8. Out of scope (YAGNI)
 
@@ -108,7 +112,8 @@ Calm, editorial, trustworthy (this is for parents and for applications, not the 
 - A parent with no background reads it and can state the stance, name two moves, and catch one trap in themselves.
 - The Family Check-In returns the correct branch for each of the five situations (verifiable against `assess.ts` logic).
 - It opens correctly by double-click with no network, prints cleanly, and passes AA contrast.
-- It reads as credible for an application (the evidence strip is accurate and cited).
+- **Every strong claim in the body has an inline citation** that resolves to an entry in §11 Sources, and every Sources link works. A skeptical parent can verify any claim in about two clicks. This is the bar that makes it credible for an application, and it holds us to the same rigor as the brainlift.
+- It covers the full topic set the manager named: motivation, pressure, parenting, specialization, well-roundedness (breadth vs depth), quitting/switching, and timing, each backed by research.
 - No em-dashes, no score/label/reward anywhere, warmth never framed as conditional.
 
 ## 10. Grounding references
@@ -116,3 +121,64 @@ Calm, editorial, trustworthy (this is for parents and for applications, not the 
 - Engine: `passion/packages/family/src/{model,assess,derive}.ts`; console surface: `passion/apps/guide-console/app/{family.ts,family-panel.tsx}`.
 - Research: `docs/research/familyBrainlift.md`; `docs/research/passion-pipeline/{02-push-vs-backoff-burnout,03-talent-development-spine,04-reversibility-plurality-switching}.md`.
 - Spec of the engine: `specs/019-family-coengagement/spec.md`.
+
+## 11. Sources the page must cite (claim → source → link)
+
+Grouped to match the chapters. The page renders these as a "Check it yourself" section with clickable links, and each body claim links to its entry. All links are DOIs or stable records. An honest note appears on the page too: much of the passion/burnout evidence is adolescent-weighted and some parenting effects are small, so we state limits rather than overclaim (this mirrors the brainlift's own honesty).
+
+**The home is the lever**
+- Parents' expectations predict *gains*, not just levels — Pinquart & Ebeling (2020). https://doi.org/10.1007/s10648-019-09506-z
+- Communicating expectations/strategy beats monitoring — Hill & Tyson (2009). https://doi.org/10.1037/a0015362
+- Aspiration is the strongest involvement component — Fan & Chen (2001). https://doi.org/10.1023/A:1009048817385
+- Rearing environment moves childhood outcomes where environments differ — Capron & Duyme (1989). https://doi.org/10.1038/340552a0
+- Environment matters most where it has room to — Turkheimer et al. (2003). https://doi.org/10.1046/j.0956-7976.2003.psci_1475.x
+
+**Warm-demanding, not tiger**
+- Supportive beats tiger on grades *and* wellbeing (8-yr longitudinal) — Kim et al. (2013). https://doi.org/10.1037/a0030612
+- Authoritative/warmth/autonomy positive; harsh/psychological control negative — Pinquart (2016). https://doi.org/10.1007/s10648-015-9338-y
+- Structure is not control — Grolnick & Pomerantz (2009). https://doi.org/10.1111/j.1750-8606.2009.00099.x
+- The emotional costs of conditional regard — Assor, Roth & Deci (2004). https://doi.org/10.1111/j.0022-3506.2004.00256.x
+- Achievement pressure is a top adolescent-health risk — Luthar, Kumar & Zillmer (2020). https://doi.org/10.1037/amp0000556
+
+**Motivation (let it become theirs; do not bribe it)**
+- Self-Determination Theory — Ryan & Deci (2000). https://doi.org/10.1037/0003-066X.55.1.68
+- Harmonious vs obsessive passion — Vallerand et al. (2003). https://doi.org/10.1037/0022-3514.85.4.756
+- Passion antecedents (autonomy support vs over-valuation/pressured specialization) — Mageau et al. (2009). https://doi.org/10.1111/j.1467-6494.2009.00559.x
+- Rewards undermine intrinsic motivation, worse in children — Deci, Koestner & Ryan (1999). https://doi.org/10.1037/0033-2909.125.6.627
+- The classic child demonstration — Lepper, Greene & Nisbett (1973). https://doi.org/10.1037/h0035519
+- Even toddlers, and praise did not undermine — Warneken & Tomasello (2008). https://doi.org/10.1037/a0013860
+
+**Pressure (push the challenge, not the child)**
+- Control leads to burnout, separately from difficulty — Bartholomew et al. (2011). https://doi.org/10.1177/0146167211413125
+- ~85% success is the optimal-difficulty sweet spot — Wilson et al. (2019). https://doi.org/10.1038/s41467-019-12552-4
+- Scaffolding / zone of proximal development — Wood, Bruner & Ross (1976). https://doi.org/10.1111/j.1469-7610.1976.tb00381.x
+
+**Burnout (catch quiet devaluation)**
+- The three-part burnout measure incl. devaluation — Raedeke & Smith (2001). https://doi.org/10.1123/jsep.23.4.281
+- Burnout predicts dropout years later — Isoard-Gautheur et al. (2016). https://doi.org/10.1123/tsp.2014-0140
+- Burnout as constrained identity and control — Coakley (1992). https://doi.org/10.1123/ssj.9.3.271
+- A participation gap is multi-causal — Crane & Temple (2015). https://doi.org/10.1177/1356336X14555294
+
+**Practice and rest**
+- Deliberate practice explains a limited share of performance — Macnamara, Hambrick & Oswald (2014). https://doi.org/10.1177/0956797614535810
+- Rest cadence for young people — Brenner & AAP Council on Sports Medicine and Fitness (2016). https://doi.org/10.1542/peds.2016-2148
+
+**Deep vs well-rounded**
+- "Multipotentiality" is largely a testing artifact; most gifted kids have a real tilt — Achter, Lubinski & Benbow (1996) https://doi.org/10.1037/0022-0167.43.1.65 ; (1997) https://doi.org/10.1177/001698629704100102
+- Breadth helps on an inverted-U — Fredricks (2012) https://doi.org/10.1007/s10964-011-9704-0 ; Busseri et al. (2006) https://doi.org/10.1037/0012-1649.42.6.1313
+- Skills do not transfer across unrelated domains — Sala & Gobet (2017). https://doi.org/10.1177/0963721417712760
+- Sample early, specialize later — Côté (1999). https://doi.org/10.1123/tsp.13.4.395
+- More ability keeps paying even among the gifted — Robertson, Smeets, Lubinski & Benbow (2010). https://doi.org/10.1177/0963721410391442
+
+**Quitting and switching**
+- Foreclosure (commitment without exploration) is the hazard — Marcia (1966) https://doi.org/10.1037/h0023281 ; Kroger, Martinussen & Marcia (2010) https://doi.org/10.1016/j.adolescence.2009.11.002
+- Sunk-cost bias is learned with age; young kids lack it — Sehl, Friedman & Denison (2021) https://doi.org/10.1111/cogs.13063 ; Arkes & Ayton (1999) https://doi.org/10.1037/0033-2909.125.5.591
+- Effort, not consistency-of-interest, carries "grit" — Credé, Tynan & Harms (2017) https://doi.org/10.1037/pspp0000102 ; Duckworth et al. (2007) https://doi.org/10.1037/0022-3514.92.6.1087
+- "Develop your interest" beats "find your passion" — O'Keefe, Dweck & Walton (2018). https://doi.org/10.1177/0956797618780643
+
+**Timing / sensitive periods**
+- A music/motor sensitive period before ~7 — Watanabe, Savion-Lemieux & Penhune (2007) https://doi.org/10.1007/s00221-006-0619-z ; Steele et al. (2013) https://doi.org/10.1523/JNEUROSCI.3578-12.2013
+
+**Whole household (context)**
+- Coparenting agreement predicts child adjustment — Teubert & Pinquart (2010). https://doi.org/10.1080/15295192.2010.492040
+- The two-parent advantage runs through process, not structure — Amato (2005). https://doi.org/10.1353/foc.2005.0012
