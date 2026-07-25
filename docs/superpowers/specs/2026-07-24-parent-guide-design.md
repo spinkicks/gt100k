@@ -44,17 +44,24 @@ The page is a set of short, plain-language **chapters**. **Every strong claim ca
 
 **Part 3 — What to avoid (the four traps).** The engine's pressure antecedents as a self-check ("what it looks like → do this instead"): over-valuing it; approval that rides on performance; control and hovering; tying their whole identity to one thing. [Mageau 2009; Assor 2004]
 
-**Part 4 — The big questions parents actually ask (each answered with research).**
-6. **How much practice, and how much rest?** Practice matters, but it explains a limited share of performance (much of the difference is elsewhere), so *bounded* practice serving a real project beats endless drilling, and real rest (days off each week, weeks off each year) is part of the plan, not a lapse. [Macnamara 2014; AAP/Brenner 2016]
-7. **Deep or well-rounded?** A genuine deep spike is what pays, and most children have a real strongest area ("good at everything" is largely a testing illusion). But breadth helps only up to a point (an inverted-U), and skills do not transfer across unrelated fields, so hold about **two or three** pursuits early and **narrow by around age 13**. Sample widely early, specialize later. [Achter/Lubinski/Benbow 1996, 1997; Fredricks 2012; Busseri 2006; Sala & Gobet 2017; Côté 1999; Robertson/Lubinski/Benbow 2010]
-8. **Should I let them quit?** The real danger is *foreclosure* (all-in with no exploration), not switching. The "you've put too much in to stop now" instinct is the adult's bias; young children do not have it. Ask for *effort within the attempt*, never *loyalty to a domain*. A healthy switch is a calm move *toward* something they already return to, made *after* clearing at least one real difficulty. Default to "park," never "quit." [Marcia 1966; Kroger 2010; Sehl 2021/2024/2026; Arkes & Ayton 1999; Credé 2017; Duckworth 2007; O'Keefe/Dweck/Walton 2018]
-9. **Am I too late, or pushing too early?** Start early with wide, low-stakes sampling; the heavy investment years are adolescence, not childhood. A true "start-before-7" window exists only for music and other rhythm/motor skills. [Côté 1999; Watanabe 2007; Steele 2013]
+**Part 4 — How talent actually develops (the ideas behind our coaching).** This is the "why it works" layer, and it is exactly the thinking baked into the engine's recommendations.
+6. **What actually makes a "grandmaster."** Drive and an enriched, supportive environment matter more than raw gifts. In Bloom's study of 120 world-class performers, early on "motivation and effort count far more than the particular gifts," and the talent was *developed*, not simply found. The kids who go far show a "rage to master" (an intrinsic, near-obsessive pull), but that only pays off *inside* a supportive environment; neither the drive nor the talent alone is enough. One family famously *designed* their home around chess and produced three prodigies, an existence proof that environment can convert potential into elite performance. Ability still matters and keeps mattering, yet hours of drilling explain only a minority of the difference (most in games like chess, least in academics). [Bloom 1985; Winner 1996; Polgar; Macnamara 2014; Robertson/Lubinski/Benbow 2010]
+7. **The environment does the quiet work (the "complex" home).** The homes that grow talent are *both* highly supportive *and* highly challenging at the same time, and they make using the skill feel good (flow). That combination, not pressure, is what turns ability into sustained development. [Csikszentmihalyi/Rathunde/Whalen 1993; Capron & Duyme 1989; Turkheimer 2003]
+8. **The mentor is a relay, and outside people matter (you cannot be all of them).** No single coach carries a child the whole way. It is a sequence: a warm first teacher who makes them fall in love, a technical teacher who builds precision, then a master who shapes their voice, and the most valuable thing each hands over is *the next one* (an introduction, an audition, a door). A big part of your job, and of what our system helps with, is bringing in mentors, near-peers, and community you cannot personally be. [Bloom 1985; Subotnik/Olszewski-Kubilius/Worrell 2011]
+9. **The climb is staged.** Fall in love → get precise → make it real for a community → find your own voice. Sample widely and playfully when young, specialize around the mid-teens, and save the heavy investment for later adolescence. Progress by *widening the audience* (from you, to peers, to a real community, to the field), not by piling on hours; each real project is the unit of growth. [Côté 1999; Subotnik 2011; Renzulli 1977; Bloom 1985]
+10. **The real bottleneck is psychosocial skill, and it is teachable.** What separates strong developers is not only talent but skills like setting goals, practicing with quality, coping with feedback and pressure, and self-advocacy. These are a curriculum, not a fixed personality, and they can be built from early on. [MacNamara/Button/Collins 2010; Subotnik 2011]
 
-**Part 5 — When it gets hard.** Short "if this → do this" for the four moments the engine watches (stakes rising, gone quiet, stuck, little shared time), plus the **Family Check-In widget** (§5). [memo 02 signal→action; Raedeke & Smith 2001; Mageau 2009]
+**Part 5 — The big questions parents actually ask (each answered with research).**
+11. **How much practice, and how much rest?** Practice matters but explains a limited share of performance, so *bounded* practice serving a real project beats endless drilling; and real rest (days off each week, weeks off each year) is part of the plan, not a lapse. [Macnamara 2014; Ericsson 1993; AAP/Brenner 2016]
+12. **Deep or well-rounded?** A genuine deep spike is what pays, and most children have a real strongest area ("good at everything" is largely a testing illusion). But breadth helps only up to a point (an inverted-U), and skills do not transfer across unrelated fields, so hold about **two or three** pursuits early and **narrow by around age 13**. Sample widely early, specialize later. [Achter/Lubinski/Benbow 1996, 1997; Fredricks 2012; Busseri 2006; Sala & Gobet 2017; Côté 1999; Robertson/Lubinski/Benbow 2010]
+13. **Should I let them quit?** The real danger is *foreclosure* (all-in with no exploration), not switching. The "you've put too much in to stop now" instinct is the adult's bias; young children do not have it. Ask for *effort within the attempt*, never *loyalty to a domain*. A healthy switch is a calm move *toward* something they already return to, made *after* clearing at least one real difficulty. Default to "park," never "quit." [Marcia 1966; Kroger 2010; Sehl 2021/2024/2026; Arkes & Ayton 1999; Credé 2017; Duckworth 2007; O'Keefe/Dweck/Walton 2018]
+14. **Am I too late, or pushing too early?** Start early with wide, low-stakes sampling; the heavy investment years are adolescence, not childhood. A true "start-before-7" window exists only for music and other rhythm/motor skills. [Côté 1999; Watanabe 2007; Steele 2013]
 
-**Part 6 — Sources.** "Check it yourself" (§11): every claim above, grouped, with links.
+**Part 6 — When it gets hard.** Short "if this → do this" for the four moments the engine watches (stakes rising, gone quiet, stuck, little shared time), plus the **Family Check-In widget** (§5). [memo 02 signal→action; Raedeke & Smith 2001; Mageau 2009]
 
-**Part 7 — The one-page summary.** A printable "fridge version" (the stance, the five moves, the four traps, and the big-question answers in a line each). This IS the "successful parent outline."
+**Part 7 — Sources.** "Check it yourself" (§11): every claim above, grouped, with links.
+
+**Part 8 — The one-page summary.** A printable "fridge version" (the stance, the five moves, the four traps, and the big-question answers in a line each). This IS the "successful parent outline."
 
 ## 5. The Family Check-In widget (a parent-facing mirror of `assessFamily`)
 
@@ -113,7 +120,7 @@ Calm, editorial, trustworthy (this is for parents and for applications, not the 
 - The Family Check-In returns the correct branch for each of the five situations (verifiable against `assess.ts` logic).
 - It opens correctly by double-click with no network, prints cleanly, and passes AA contrast.
 - **Every strong claim in the body has an inline citation** that resolves to an entry in §11 Sources, and every Sources link works. A skeptical parent can verify any claim in about two clicks. This is the bar that makes it credible for an application, and it holds us to the same rigor as the brainlift.
-- It covers the full topic set the manager named: motivation, pressure, parenting, specialization, well-roundedness (breadth vs depth), quitting/switching, and timing, each backed by research.
+- It covers the full topic set the manager named: motivation, pressure, parenting, specialization, well-roundedness (breadth vs depth), quitting/switching, timing, and **how talent actually develops** (drive vs raw talent, the "complex" environment, the mentor relay and outside influence, the staged climb, and psychosocial skills), each backed by research.
 - No em-dashes, no score/label/reward anywhere, warmth never framed as conditional.
 
 ## 10. Grounding references
@@ -182,3 +189,13 @@ Grouped to match the chapters. The page renders these as a "Check it yourself" s
 **Whole household (context)**
 - Coparenting agreement predicts child adjustment — Teubert & Pinquart (2010). https://doi.org/10.1080/15295192.2010.492040
 - The two-parent advantage runs through process, not structure — Amato (2005). https://doi.org/10.1353/foc.2005.0012
+
+**How talent actually develops (grandmasters, environment, mentors)**
+- Talent is developed; "drive, not talent"; the three-teacher relay — Bloom (1985), *Developing Talent in Young People*. https://www.penguinrandomhouse.com/books/15009/developing-talent-in-young-people-by-benjamin-bloom/
+- The "rage to master" needs an enriched environment (both, not either) — Winner (1996); Winner & Drake (2018). https://www.journalofexpertise.org/articles/JoE_2018_1_1_Winner_Drake_Apr10.pdf
+- Talent-development megamodel; psychosocial skills as the stage-transition determinant — Subotnik, Olszewski-Kubilius & Worrell (2011). https://doi.org/10.1177/1529100611418056
+- The "complex" (high-support + high-challenge) home and flow — Csikszentmihalyi, Rathunde & Whalen (1993). https://archive.org/details/talentedteenager0000csik_v3s4
+- Deliberate practice is effortful and, for a child, externally scaffolded — Ericsson, Krampe & Tesch-Römer (1993). https://doi.org/10.1037/0033-295X.100.3.363
+- Progress by widening the audience (the authentic-project model) — Renzulli (1977). https://gifted.uconn.edu/schoolwide-enrichment-model/the-enrichment-triad-model/
+- Psychosocial skills are a teachable curriculum (PCDEs) — MacNamara, Button & Collins (2010). https://doi.org/10.1123/tsp.24.1.52
+- A designed home that produced three chess prodigies (existence proof) — Polgar, *Raise a Genius!* (documented in `docs/research/familyBrainlift.md`).
