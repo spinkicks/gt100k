@@ -98,6 +98,24 @@ export function isDepthFamily(kind: string): kind is DepthFamily {
   return DEPTH_SET.has(kind);
 }
 
+/**
+ * Depth families that feed the interest belief (E11).
+ *
+ * `artifact_competence` is deliberately absent. It is a judgement about how good the made thing
+ * is, which is the Evidence Graph's question, not evidence about what a child is drawn to. A
+ * child can produce competent work in something they are bored by, and produce poor work in the
+ * thing they love most, so scoring it here reads work quality as interest.
+ *
+ * It is still emitted and still read downstream: the specialization planner derives
+ * `producerIdentity` from it. Unscored for interest, not deleted.
+ */
+const INTEREST_SCORING_DEPTH = new Set<string>(
+  DEPTH_FAMILIES.filter((k) => k !== "artifact_competence"),
+);
+export function scoresInterest(kind: string): boolean {
+  return INTEREST_SCORING_DEPTH.has(kind);
+}
+
 export function serializeCellKey(domainPath: DomainPath, mode: string): string {
   const d = domainPath.length === 2 ? `${domainPath[0]}/${domainPath[1]}` : domainPath[0];
   return `${d}::${mode}`;

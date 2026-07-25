@@ -22,7 +22,7 @@ describe("buildPrior", () => {
 });
 
 describe("foldEvents", () => {
-  it("excludes novelty + prompted; adds returns/depth to alpha; skips to beta", () => {
+  it("excludes novelty, prompted and artifact_competence; adds returns/depth to alpha; skips to beta", () => {
     const priors: DomainPrior[] = [
       { domain: "music-sound", inEnvironment: true, aptitudeTilt: 0, discretionaryTilt: 0 },
     ];
@@ -37,9 +37,15 @@ describe("foldEvents", () => {
       { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "prompted_return", novelty: false, timestamp: TS },
     ];
     const cell = foldEvents(evts, priors, NOW).get("music-sound/audio-systems::build")!;
-    expect(cell.alpha).toBeCloseTo(5.5, 6);
+    // 1.5 prior + 3 voluntary returns + 0.5 for the one scoring depth family.
+    // artifact_competence contributes nothing (E11): it is a work-quality judgement, not
+    // evidence about what the child is drawn to.
+    expect(cell.alpha).toBeCloseTo(5.0, 6);
     expect(cell.beta).toBeCloseTo(1.5, 6);
     expect(cell.skips).toBe(1);
     expect(cell.prompted).toBe(1);
+    // It must not surface as a supporting reason either, since it moved no belief.
+    expect(cell.positiveByKind["artifact_competence"]).toBeUndefined();
+    expect(cell.positiveByKind["unrequired_revision"]).toBeCloseTo(0.5, 6);
   });
 });

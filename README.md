@@ -2,43 +2,118 @@
 
 **GT100K** is Alpha School's internal accelerated-gifted layer on TimeBack — an operating system for an intensive, in-person gifted academy that takes an already-admitted child (ages 6–14) from daily academic mastery and passion discovery through to a portable, evidence-backed body of work. Long-horizon goal: MIT-level academic readiness by the end of 8th grade.
 
-> **Status: pre-code / PRD.** This repo is docs-only today. Code lands behind the governed workflow in [`AGENTS.md`](AGENTS.md) as implementation begins.
+> **Status: working monorepo.** 19 engine packages, 15 adapters, and 10 apps, with **643 tests across 143 files** green. Every engine is pure, deterministic and offline; all data is synthetic. No real child data touches this system until the pre-live gates pass (see [Pre-live gates](#pre-live-gates)).
+
+## Quick start
+
+Requires Node 20+ and `pnpm` (developed on Node 24 / pnpm 9).
+
+```bash
+pnpm install
+pnpm exec tsc -b        # typecheck the whole workspace
+pnpm test               # 643 tests
+```
+
+Run an app (each on its own port):
+
+```bash
+pnpm --filter @gt100k/guide-console  exec next dev -p 3020   # the guide's cockpit
+pnpm --filter @gt100k/project-studio exec next dev -p 3010   # the child's project studio
+pnpm --filter @gt100k/parent-guide   exec next dev -p 3055   # the parent playbook
+pnpm --filter @gt100k/design-lab     exec next dev -p 3060   # design-system reference
+```
+
+## How it fits together
+
+A child's behaviour becomes a revisable interest read, which a **human** promotes into a staged plan, which produces real projects with a tamper-evident record.
+
+```
+interactions ─► signal-pipeline ─► interest-inference ─► hypothesis-store ─► guide console
+   (the game)      (012)               (011)                 (013)          (a human decides)
+                                                                │
+                                            certified spike ────┼──► specialization-planner (D1)
+                                                                ├──► access-broker (D3/D4)
+                                                                ├──► wellbeing (F2) · family (F3)
+                                                                └──► project-workspace ──► evidence-graph
+```
+
+Two rules hold everywhere, and most of the design follows from them:
+
+- **The system proposes, a human disposes.** Nothing labels, grades, or acts on a child on its own.
+- **No score, no gamification.** Rewarding an activity a child already enjoys reliably reduces later voluntary engagement, and the effect is worse in children — which would corrupt the exact signal we measure. See `/evidence` in the guide console for the citation behind every measurement.
+
+## The workspace
+
+`pnpm-workspace.yaml` covers `passion/packages/*`, `passion/adapters/*`, `passion/apps/*`.
+
+### Engines — `passion/packages/`
+
+Pure, deterministic, dependency-light. No network, no LLM, no clock.
+
+| Package | What it does |
+|---|---|
+| `two-axis-tagging` | The domain × work-mode taxonomy (8 cabins, 9 modes) every signal is keyed by |
+| `signal-pipeline` | Raw `Interaction`s → `CellEvent`s. Novelty, voluntary-vs-prompted, skips |
+| `interest-inference` | Beta-Bernoulli belief per cell; separates topic-love from style-love; reports "not sure yet" |
+| `hypothesis-store` | Versioned, revisable hypotheses and their lifecycle |
+| `student-profile` | Per-child append-only log + the orchestrator that replays it |
+| `wellbeing` | Burnout and strain from behaviour only. No cameras, no emotion inference |
+| `family` | Warm-demanding family coaching; watches for family-driven pressure |
+| `specialization-planner` | The staged ascent from a certified spike to a signature body of work |
+| `access-broker` | Brokers real mentors and audiences; guardian consent is a hard blocker |
+| `socratic-defense` | Authorship verified by a spoken defense, never by an AI detector |
+| `project-workspace` | The child's project log, feeding the evidence graph |
+| `evidence-graph` | Content-addressed, tamper-evident record of how work was actually made |
+| `concierge` | Child-safe retrieval behind a staged defense-in-depth pipeline |
+| `guardrails` | Executable compliance checks (GC1–GC6) over the whole spine |
+| `timeback` | Academic signals as priors only, never a gate |
+| `research` | The cited evidence behind every measurement, as data |
+| `design-tokens` | Framework-free CSS custom properties: one visual language, every surface |
+
+### Apps — `passion/apps/`
+
+| App | Audience |
+|---|---|
+| `guide-console` | The guide's cockpit: overview dashboard, hypotheses, wellbeing, plan, family, access |
+| `project-studio` | The child's project journal |
+| `parent-guide` | The Warm-Demanding Parent Playbook (static export, hosted on AWS) |
+| `mvp-jul24`, `tinker-cabin` | The child-facing discovery game (Vite + React Three Fiber) |
+| `evidence-explorer-themed` | The provenance observatory, 2D and 3D |
+| `concierge`, `design-lab` | Concierge demo; design-system reference |
+
+Adapters in `passion/adapters/` supply the real implementations behind engine ports (Postgres, filesystem, live tagging/tutoring), so every engine stays testable with a deterministic stub.
 
 ## Where to start
 
-- New here? Read [`docs/prd/PRD.md`](docs/prd/PRD.md) §1 (executive summary) and §2 (mission), then [`docs/prd/GOVERNANCE.md`](docs/prd/GOVERNANCE.md).
-- Building? Start with [`docs/prd/FOUNDATION_PRD.md`](docs/prd/FOUNDATION_PRD.md) (the platform spine — the first buildable slice), and follow the Spec Kit chain (`/speckit-*`) against [`.specify/memory/constitution.md`](.specify/memory/constitution.md).
-- Working in the repo? Read [`AGENTS.md`](AGENTS.md) (golden rules: branching, PRs, merge, security).
+- **New here?** [`docs/prd/DISCOVERY-APP-PRD.md`](docs/prd/DISCOVERY-APP-PRD.md), then [`docs/prd/GOVERNANCE.md`](docs/prd/GOVERNANCE.md). A demo walkthrough of the running apps lives in [`docs/DEMO-SCRIPT.md`](docs/DEMO-SCRIPT.md).
+- **Want the thesis?** [`docs/research/passionBrainlift.md`](docs/research/passionBrainlift.md) — the spiky points of view and the evidence under them.
+- **Building?** [`docs/prd/passionApps.md`](docs/prd/passionApps.md) (what exists, what does not) and [`docs/prd/passion-roadmap.md`](docs/prd/passion-roadmap.md) (the order).
+- **Working in the repo?** [`AGENTS.md`](AGENTS.md) — branching, PRs, merge, security. `main` is branch-protected and PR-only.
 
-## Document map
-
-### Canonical specs — `docs/prd/`
-
-| Document | What it is | Authoritative for |
-|---|---|---|
-| [`PRD.md`](docs/prd/PRD.md) | Full-program operating system (the canonical product spec) | Product scope, requirements, architecture, delivery plan |
-| [`GOVERNANCE.md`](docs/prd/GOVERNANCE.md) | Rights, consent, safety, decision-authority invariants (G1–G9) | `G`-class rights/safety rules (stricter rule wins) |
-| [`FOUNDATION_PRD.md`](docs/prd/FOUNDATION_PRD.md) | Baby PRD #1 — AWS-hosted platform foundation spine | The first buildable slice (identity/consent, event spine, contracts, OPA, data plane) |
-| [`PIPELINE-PRD.md`](docs/prd/PIPELINE-PRD.md) | Standalone reframe of the program as a deterministic student pipeline | The station/pipeline view of the same program |
-
-**Authority order** when documents conflict: [`.specify/memory/constitution.md`](.specify/memory/constitution.md) **and** `GOVERNANCE.md` (G-class rights/safety; stricter wins) → `AGENTS.md` (workflow) → decision log → PRD/specs (product intent).
-
-### Background & research — `docs/research/`
+### Key documents
 
 | Document | What it is |
 |---|---|
-| [`gtBrainlift.md`](docs/research/gtBrainlift.md) | Originating thesis and the five spiky points of view (SPOV 1–5) |
-| [`RESEARCH-implementation-blueprint.md`](docs/research/RESEARCH-implementation-blueprint.md) | Evidence-based implementation blueprint the PRD syncs to |
-| [`RESEARCH-FINDINGS.md`](docs/research/RESEARCH-FINDINGS.md) | Topic-ordered evidence record for product/policy decisions |
-| [`PRD-review.md`](docs/research/PRD-review.md) | Citation audit + "max defensible intensity" review that drove PRD v1.2 |
-| [`impactful.md`](docs/research/impactful.md) | Engineering skills & end-to-end project matrix (proposals map to it) |
-| [`DEEP-RESEARCH.md`](docs/research/DEEP-RESEARCH.md) | The multi-agent deep-research workflow readme |
+| [`docs/prd/GOVERNANCE.md`](docs/prd/GOVERNANCE.md) | Rights, consent, safety, decision authority (G1–G9). Stricter rule wins |
+| [`docs/prd/DISCOVERY-APP-PRD.md`](docs/prd/DISCOVERY-APP-PRD.md) | Discovery: how a child's interest is found |
+| [`docs/prd/SPECIALIZATION-PIPELINE-PRD.md`](docs/prd/SPECIALIZATION-PIPELINE-PRD.md) | Specialization: how a validated spike becomes expertise |
+| [`docs/research/passionBrainlift.md`](docs/research/passionBrainlift.md) | Finding and proving the spike, with sources |
+| [`docs/research/familyBrainlift.md`](docs/research/familyBrainlift.md) | The family as environment amplifier |
+| [`docs/decisions/`](docs/decisions/) | Architecture decision records, including the design language |
+| [`docs/proposals/`](docs/proposals/) | Live proposals, e.g. the interest-engine v2 data-collection review |
 
-### Source proposals — [`docs/proposals/`](docs/proposals/)
+**Authority order** when documents conflict: [`.specify/memory/constitution.md`](.specify/memory/constitution.md) and `GOVERNANCE.md` (rights and safety; stricter wins) → `AGENTS.md` (workflow) → decision records → PRDs and specs (product intent).
 
-The ten source architecture/product proposals consolidated into the PRD (see `PRD.md` §35 traceability).
+## Pre-live gates
+
+These block any real child using the system, and none are complete:
+
+- **G3** identity, consent, retention, and erasure.
+- **E1 productionization** — transparency log, crypto-shredding erasure, export provenance, signing. The hard part is that a right to erasure sits in direct tension with an append-only, tamper-evident store.
+- **G4** content safety at child scale.
+- **G5** inference validation, once real longitudinal outcomes exist to validate against.
 
 ## Tooling
 
-- [`.specify/`](.specify/) — Spec Kit chain (constitution, templates, scripts) for turning the PRDs into specs → plans → tasks → code.
-- `.claude/`, `.github/` — agent skills/workflows and CI (gitleaks + hygiene; branch-protected, PR-only `main`).
+- [`.specify/`](.specify/) — Spec Kit chain (constitution, templates, scripts).
+- `.claude/`, `.github/` — agent skills and CI (gitleaks + hygiene).

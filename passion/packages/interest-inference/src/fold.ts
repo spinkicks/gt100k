@@ -11,6 +11,7 @@ import {
   W_XP,
   clamp01,
   isDepthFamily,
+  scoresInterest,
   recencyWeight,
   serializeCellKey,
 } from "./model.js";
@@ -79,6 +80,10 @@ export function foldEvents(
       cell.alpha += add;
       cell.positiveByKind[e.kind] = (cell.positiveByKind[e.kind] ?? 0) + add;
     } else if (isDepthFamily(e.kind)) {
+      // E11: not every depth family scores interest. `artifact_competence` is a work-quality
+      // judgement, so it passes through to downstream consumers without touching the belief or
+      // appearing as a supporting reason for it.
+      if (!scoresInterest(e.kind)) continue;
       const add = A_DEPTH * roleScale * w;
       cell.alpha += add;
       cell.positiveByKind[e.kind] = (cell.positiveByKind[e.kind] ?? 0) + add;

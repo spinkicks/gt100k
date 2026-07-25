@@ -81,17 +81,25 @@ horizons computable — today they are not, because nothing persisted carries a 
 ### E3 — Record the choice set. *(fixes P2 — the biggest conceptual gap)*
 
 A return to the only available cabin is not a preference. **Choice is only meaningful against what was
-declined.** Add:
+declined.**
 
-```
-choiceSet:   readonly string[]        // cellKeys that were available and NOT chosen, at the moment of choice
-surfacedBy:  "system" | "self"        // exposure propensity
-sessionId:   string
-```
-
-`surfacedBy` also discharges the exposure-propensity logging that
-`hardening/06-measurement-validity-coldstart.md` already requires for the feedback-loop risk
-(Ensign 2018; Chaney 2018; Perdomo 2020) — one field, two problems.
+> **AMENDED 2026-07-25, after P0 shipped (#161): no new field was needed.** This section originally
+> specified a per-choice-moment `choiceSet: readonly string[]` plus `surfacedBy` and `sessionId`. All
+> three already existed. `SurfacedRecord` is defined in `signal-pipeline/src/model.ts` as "a cell or
+> artifact that was shown or available in a session", `deriveSkips` already reads it as "surfaced this
+> session, not engaged this session", and `Interaction` already carries `timestamp`, `sessionId`, and
+> `prompted` (which is `surfacedBy` inverted). **`SurfacedRecord` is the choice set**, at session
+> granularity.
+>
+> Session granularity was taken over per-choice-moment deliberately. With the cell matrix still
+> effectively 1×1 (every gadget one topic, one work-mode), a per-moment set would record alternatives
+> that are all the *same cell*, so the extra fidelity is not merely unused but unobservable. It is also
+> a lossy aggregation rather than a different shape, so moving to per-moment later is additive. And the
+> normalization `B_DECLINED / |choiceSet|` under-weights each decline at session granularity, since the
+> session set is a superset of the true alternatives at any one moment. Under-weighting negative
+> evidence about a seven-year-old is the right direction to be wrong.
+>
+> Revisit when the cell matrix widens, not on a schedule.
 
 ### E4 — Treat a decline as weak negative evidence, normalized by choice-set size
 
@@ -135,11 +143,26 @@ analogue. Suggested: `W_APT → 0.15` for ages ≤ 8, or gate it on capability r
 
 ### E9 — Repurpose the two signals we already collect, rather than deleting them
 
-- **`activeMs` → validity gate + diagnostic, never a belief term.** (i) Require a floor (~20–30 s) before
-  an "open" counts as an event at all, so stray clicks don't become evidence. (ii) Flag the pathological
+- **`activeMs` → validity gate + diagnostic, never a belief term.** (i) Classify every open by a
+  duration floor (~20–30 s) so a stray click never becomes positive evidence. (ii) Flag the pathological
   shape — high dwell with **no** cross-day return is the familiarity/struggling pattern (β = .96); that's
-  a flag for a human, not a posterior update. Suggest carrying it as a coarse bucket
+  a flag for a human, not a posterior update. Carry it as a coarse bucket
   (`under_floor | short | medium | long`) so it cannot accidentally be multiplied into α.
+
+  > **AMENDED 2026-07-25: this section used to contradict itself, and the contradiction was load-bearing.**
+  > The prose said the floor decides whether an open "counts as an event at all", i.e. a filter, while the
+  > §4 contract lists `under_floor` as a `dwellBucket` *value*, which only makes sense if sub-floor opens
+  > are emitted. Resolved in favour of the contract: **the floor classifies, it does not filter.**
+  >
+  > That inconsistency was harmless while non-engagement was unscored, and became a sign-inverting bug the
+  > moment E4 scored declines. Because `SurfacedRecord` is written when an artifact becomes available,
+  > dropping a sub-floor open leaves "surfaced this session, never engaged", which is exactly E4's decline
+  > definition. Five fifteen-second attempts would have produced zero voluntary returns *and* a decline,
+  > turning a brief attempt into negative evidence. Caught in review of #161 and fixed there.
+  >
+  > `dwellBucket` now lives on `Interaction` (`signal-pipeline/src/model.ts`) and is deliberately absent
+  > from `CellEvent`, so dwell cannot reach a posterior structurally rather than by convention. Two tests
+  > in `signal-pipeline/test/dwell-never-scored.test.ts` enforce it.
 - **`solves` → difficulty calibration, never interest.** The complaint against `solves` is that it indexes
   **prior ability** — which is exactly what you need to choose the next difficulty. Good ability estimate,
   bad interest estimate; use it where ability is the question.
@@ -310,7 +333,34 @@ Checked against `passion/apps/mvp-jul24` after #150 / #151, so the emission side
 | All **7 gadgets are now `status: "active"`** — but all still `topic: "math"` and all one work-mode (deductive constraint satisfaction) | The cell matrix is still effectively 1×1, so topic-vs-style attribution has nothing to decompose yet. E7 is harmless but inert until a second topic *or* a second mode exists. Feeds the planned tagging rework. |
 | **Endless puzzle generation** (#151) | Genuinely helpful here: repeatable content is what makes the `MIN_EVIDENCE_MASS` / `MIN_DISTINCT_DAYS` gates (E6) reachable at all. One-shot puzzles could never accrue enough non-novel evidence. |
 | The interest store is still `{ activeMs, opens, solves }` with **no timestamp persisted** — `Date.now()` appears only in the in-memory idle tick | Confirms **P0 is the real blocking phase.** Until events carry `timestamp` + `sessionId`, E2/E3/E6 are all unimplementable. This is a store change, not a redesign. |
-| **No difficulty or variant notion exists** in any puzzle's data | **`chosen_challenge` is not observable today.** It needs an easier/harder variant to be offered *and declined* first. Either add difficulty variants (endless generation makes this cheap) or drop `chosen_challenge` from the initial event set and rely on the other three depth families. |
+| **No difficulty or variant notion exists** in any puzzle's data | **`chosen_challenge` is not observable today.** It needs an easier/harder variant to be offered *and declined* first. Either add difficulty variants (endless generation makes this cheap) or drop `chosen_challenge` from the initial event set and rely on the other three depth families. **See the escalation below: this is a functional blocker, not a missing nicety.** |
+
+> **AMENDED 2026-07-25 — `chosen_challenge` caps the specialization ladder at S2.**
+>
+> This was filed as "one depth family we cannot observe yet", which undersells it. `deriveStage`
+> in `specialization-planner/src/stage.ts` requires `stretchSeeking` for **both** upper stages:
+>
+> ```ts
+> if (producerIdentity && stretchSeeking && d >= DEPTH_S4 && r >= RETURN_S4) return "S4_SIGNATURE";
+> if (stretchSeeking && d >= DEPTH_S3 && r >= RETURN_S3) return "S3_AUTHORSHIP";
+> ```
+>
+> `stretchSeeking` is derived as `events.some(e => e.kind === "chosen_challenge")`. Since nothing
+> emits that event, it is permanently `false`, so **no child can ever be placed above
+> `S2_FOUNDATIONS`** regardless of how much they return, how deep they go, or what they produce.
+> Two of the four stages are unreachable. `stretchSeeking` also feeds a wellbeing signal
+> (`wellbeing/src/assess.ts`) and a plan rationale string (`plan.ts:205`).
+>
+> This corrects earlier guidance that widening the cell matrix should come before difficulty
+> variants. Those solve different problems and the priority depends on which you care about first:
+> a second topic or work-mode turns on the topic-versus-style decomposition, which is currently
+> inert; difficulty variants unblock the top half of a ladder that is already shipped and silently
+> capped. The capped ladder is the more urgent of the two, because it is a shipped feature that
+> cannot function rather than a measurement that is not yet informative.
+>
+> Until variants exist, `stretchSeeking: false` must be read as **"not observable yet"**, never as
+> "this child does not seek challenge". Same class of error as a coverage denominator counting
+> areas the game cannot express.
 
 **Practical read:** P0 (persist timestamped events with a choice set) is the only phase on the critical
 path. Everything else is either inert until the cell matrix widens, or a small constant change.

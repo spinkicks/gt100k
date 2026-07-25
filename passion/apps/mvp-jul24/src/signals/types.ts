@@ -1,4 +1,4 @@
-import type { Interaction, SurfacedRecord } from "@gt100k/signal-pipeline";
+import type { DwellBucket, Interaction, SurfacedRecord } from "@gt100k/signal-pipeline";
 
 /**
  * The engine's own contract, imported as types only — `@gt100k/signal-pipeline`
@@ -6,30 +6,16 @@ import type { Interaction, SurfacedRecord } from "@gt100k/signal-pipeline";
  * dependency and no bundle cost. This makes `tsc` the drift guard: a change to
  * `Interaction` upstream breaks this app's typecheck. A hand-maintained key-set
  * test could not do that, because it only ever asserts our own shape.
+ *
+ * `dwellBucket` now lives on `Interaction` itself rather than on a local extension:
+ * the pipeline has to be able to read it (E9 uses it as a validity gate), and a field
+ * that exists at runtime but not in the shared type is exactly the untyped side channel
+ * the type import was added to eliminate.
  */
-export type { Interaction, SurfacedRecord };
+export type { DwellBucket, Interaction, SurfacedRecord };
 
 /**
- * How long an open held attention, as a closed ordinal set rather than a number.
- *
- * Two constraints meet here. Sub-floor opens **must** be emitted: dropping them
- * leaves "surfaced this session, never engaged", which E4 reads as a decline —
- * so discarding a brief attempt would silently turn it into *negative* evidence,
- * inverting the sign of the strongest signal we have. But duration must **not**
- * be able to reach the belief math (dwell is non-monotonic in interest). A closed
- * enum satisfies both: it survives, and it cannot be multiplied into alpha — the
- * same reasoning that moved the secondary-mode weight to `A_SECONDARY`.
- *
- * The engine decides what an `under_floor` open is worth. The emitter only
- * reports what happened.
+ * Retained as an alias so call sites read clearly at the emission boundary. The bucket is
+ * part of the shared contract now, so this adds nothing structurally.
  */
-export type DwellBucket = "under_floor" | "short" | "medium" | "long";
-
-/**
- * An `Interaction` plus the bucket. Additive: the shared fields are structurally
- * the engine's, so this stays assignable to `Interaction` and the extra field is
- * ignored by consumers that do not read it.
- */
-export interface EmittedInteraction extends Interaction {
-  readonly dwellBucket?: DwellBucket;
-}
+export type EmittedInteraction = Interaction;
