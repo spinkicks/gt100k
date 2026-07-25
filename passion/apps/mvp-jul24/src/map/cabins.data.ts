@@ -62,7 +62,15 @@ export const CABINS: CabinNode[] = [
     accent: "#5b7fa6",
     emblem: "grid",
   },
-  { id: "math", label: "Math", xPct: 72, yPct: 43, active: true, accent: "#c9962f", emblem: "gear" },
+  {
+    id: "math",
+    label: "Math",
+    xPct: 72,
+    yPct: 43,
+    active: true,
+    accent: "#c9962f",
+    emblem: "gear",
+  },
   // Horizon cabins: accents deliberately desaturated so they sit behind the two active nodes in the
   // visual hierarchy the way the painted cabins sit behind them in the landscape.
   {

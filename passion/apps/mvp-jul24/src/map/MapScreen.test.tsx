@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useGame } from "../game/store";
-import { CABINS } from "./cabins.data";
 import MapScreen from "./MapScreen";
+import { CABINS } from "./cabins.data";
 
 beforeEach(() => {
   useGame.getState().goToMap();
