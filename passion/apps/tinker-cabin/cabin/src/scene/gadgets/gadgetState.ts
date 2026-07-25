@@ -14,7 +14,14 @@
  */
 
 /** Interest families a gadget probes. `code` is the desk coding-station (opens the TasteApp). */
-export type GadgetDomain = "tinker" | "engineering" | "mechanical" | "music" | "art" | "code";
+export type GadgetDomain =
+  | "tinker"
+  | "engineering"
+  | "mechanical"
+  | "music"
+  | "art"
+  | "code"
+  | "logic";
 
 export interface GadgetDef {
   id: string;
@@ -102,6 +109,29 @@ export const GADGETS: readonly GadgetDef[] = [
     defaultMode: 0,
     showcaseMode: 2,
   },
+  {
+    id: "lockbox",
+    label: "the lockbox",
+    domain: "logic",
+    // front wall, left of the door — on a small crate
+    target: [-0.3, 0, 2.2],
+    radius: 1.5,
+    // mode = number of correct dials (0..3): the lid cracks open more per correct dial
+    modes: 4,
+    defaultMode: 0,
+    showcaseMode: 3,
+  },
+  {
+    id: "beam",
+    label: "the beam board",
+    domain: "logic",
+    // back wall, right of the fireplace
+    target: [1.95, 0, -2.1],
+    radius: 1.6,
+    modes: 2,
+    defaultMode: 0,
+    showcaseMode: 1,
+  },
 ] as const;
 
 /** frozen clock phase for `?freeze=1` (matches Cabin's FROZEN_T so all animation settles together) */
@@ -118,6 +148,9 @@ export interface GadgetVisualState {
   seqId?: number;
   /** whether the last Run solved the challenge (drives the settled state, e.g. lamp → BRIGHT) */
   solved?: boolean;
+  /** arbitrary per-gadget program data (e.g. the beam's mirror orientations), pushed live by the
+   *  challenge as the player edits so the gadget can react before Run */
+  data?: number[];
 }
 
 export type GadgetStore = Record<string, GadgetVisualState>;

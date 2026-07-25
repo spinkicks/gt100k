@@ -74,33 +74,36 @@ export function InteractiveLamp({
     <group position={[-2.8, 0, 0.5]}>
       {/* slim side table */}
       <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.22, 0.24, 1.0, 16]} />
+        <cylinderGeometry args={[0.2, 0.24, 1.0, 20]} />
         <meshStandardMaterial color="#3a2616" roughness={0.7} metalness={0} />
       </mesh>
-      {/* brass stem */}
-      <mesh position={[0, 1.12, 0]} castShadow>
-        <cylinderGeometry args={[0.05, 0.07, 0.24, 12]} />
-        <meshStandardMaterial color="#5a4632" roughness={0.5} metalness={0.3} />
+      {/* thin brass neck — table top (y1.0) up to the shade bottom (y1.3); stops there so it never
+          pokes up through the shade */}
+      <mesh position={[0, 1.15, 0]} castShadow>
+        <cylinderGeometry args={[0.022, 0.032, 0.3, 12]} />
+        <meshStandardMaterial color="#6a5333" roughness={0.4} metalness={0.5} />
       </mesh>
-      {/* shade (emissive follows the mode) */}
-      <mesh position={[0, 1.34, 0]}>
-        <coneGeometry args={[0.22, 0.28, 20, 1, true]} />
+      {/* shade — a SOLID tapered drum (no open bottom → no see-through onto the neck). Emissive
+          follows the mode. Bottom rim r0.22 at y1.30, top r0.11 at y1.56. */}
+      <mesh position={[0, 1.43, 0]} castShadow>
+        <cylinderGeometry args={[0.11, 0.22, 0.28, 24, 1, false]} />
         <meshStandardMaterial
           ref={shade}
           color="#e8c98a"
           emissive="#ffcf87"
           emissiveIntensity={0.9}
-          side={THREE.DoubleSide}
+          side={THREE.FrontSide}
           roughness={0.8}
         />
       </mesh>
-      {/* pull-chain switch — the visible affordance */}
-      <mesh position={[0.16, 1.26, 0]}>
-        <cylinderGeometry args={[0.006, 0.006, 0.12, 6]} />
+      {/* pull-chain switch — hangs just OUTSIDE the shade rim (x≈0.24 > bottom r0.22) so it never
+          intersects the shade. The visible interactive affordance. */}
+      <mesh position={[0.24, 1.21, 0]}>
+        <cylinderGeometry args={[0.005, 0.005, 0.16, 6]} />
         <meshStandardMaterial color="#8a7a54" roughness={0.5} metalness={0.4} />
       </mesh>
-      <mesh position={[0.16, 1.19, 0]}>
-        <sphereGeometry args={[0.022, 10, 8]} />
+      <mesh position={[0.24, 1.11, 0]}>
+        <sphereGeometry args={[0.02, 10, 8]} />
         <meshStandardMaterial
           ref={chain}
           color="#ffd27a"
@@ -112,7 +115,7 @@ export function InteractiveLamp({
       </mesh>
       <pointLight
         ref={light}
-        position={[0, 1.34, 0]}
+        position={[0, 1.4, 0]}
         color="#ffcf87"
         intensity={9}
         distance={6}

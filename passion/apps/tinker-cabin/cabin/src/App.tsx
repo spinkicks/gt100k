@@ -27,7 +27,10 @@ import { GADGETS, activateGadget, createGadgetStore, gadgetDef } from "./scene/g
 import { ANCHORS } from "./scene/layout";
 
 export function App(): JSX.Element {
-  const params = parseParams();
+  // Parse ONCE — the URL is constant for the session. (If this ran every render it would return a
+  // fresh `act` array each time, re-triggering the gadget-store useMemo and RESETTING every gadget
+  // to rest on every re-render — e.g. the lockbox slamming shut the instant solving calls setState.)
+  const params = useMemo(() => parseParams(), []);
   const intentRef = useRef(createIntent());
   const [tasteOpen, setTasteOpen] = useState(false);
   // ?challenge=<id> opens that gadget's overlay on load (debug/test/screenshots); else null.
@@ -160,7 +163,13 @@ export function App(): JSX.Element {
         <CodeChallenge
           spec={openSpec}
           initialLines={programs[openSpec.gadgetId]}
-          onProgramChange={(lines) => setPrograms((p) => ({ ...p, [openSpec.gadgetId]: lines }))}
+          onProgramChange={(lines) => {
+            setPrograms((p) => ({ ...p, [openSpec.gadgetId]: lines }));
+            // push raw ops to the store so gadgets that react LIVE to the program (the beam's mirror
+            // orientations) re-route the instant you pick, before you even Run.
+            const st = store[openSpec.gadgetId];
+            if (st) st.data = lines.map((l) => l.op);
+          }}
           onWorld={(mode) => {
             const st = store[openSpec.gadgetId];
             if (st) st.mode = mode;
@@ -205,7 +214,7 @@ function Prompt({ label }: { label: string }): JSX.Element {
         pointerEvents: "none",
       }}
     >
-      Press <b>E</b> — {label}
+      <b>E</b> or click — {label}
     </div>
   );
 }

@@ -11,6 +11,8 @@
  * `repeat 4 times { turn() }` depending on the challenge.
  */
 
+import { BEAM_START, traceBeam } from "../scene/gadgets/Beam";
+
 /** One editable line of the program: monospace text around a cycling op token. */
 export interface CodeLine {
   /** text before the op token (e.g. "tick 1:  on = ") */
@@ -47,6 +49,8 @@ export interface ChallengeSpec {
   /** if set, Run exits the menu and the gadget plays the trace back slowly (watch it execute in the
    *  world), instead of instantly setting a mode + keeping the panel open */
   playback?: boolean;
+  /** if set, solving reveals a button that opens this URL (a follow-on quest) in a new tab */
+  questUrl?: string;
 }
 
 /**
@@ -191,6 +195,61 @@ export const EASEL_CHALLENGE: ChallengeSpec = {
   solvedMsg: "Painted! The canvas is complete.",
 };
 
+/**
+ * LOCKBOX — variables. Assign each dial variable so the combination matches the secret KEY; each
+ * correct dial cracks the real lid open a little more, and all three spring it fully open (revealing
+ * a glowing reward). (Key: dial1=2, dial2=0, dial3=3.)
+ */
+export const LOCKBOX_CHALLENGE: ChallengeSpec = {
+  gadgetId: "lockbox",
+  title: "Crack the lockbox",
+  prompt:
+    "Assign each dial so the combination matches the key. Every correct dial cracks the lid open a little more.",
+  concept: "variables",
+  ops: ["0", "1", "2", "3"],
+  header: "const dials = []",
+  footer: "open if dials === KEY   // 🔒",
+  lines: [
+    { pre: "dials[0] = ", op: 0 },
+    { pre: "dials[1] = ", op: 0 },
+    { pre: "dials[2] = ", op: 0 },
+  ],
+  run: (lines) => {
+    const key = [2, 0, 3];
+    return lines.map((l, i) => (l.op === key[i] ? 1 : 0));
+  },
+  target: [1, 1, 1],
+  // mode = number of correct dials (0..3) → the lid opening angle; fully open (3) reveals the reward
+  worldMode: (trace) => trace.filter(Boolean).length,
+  solvedMsg: "Unlocked! The lid springs open.",
+  questUrl: "https://alpha-code-one.vercel.app/quest/list",
+};
+
+/**
+ * BEAM — reflection / geometry. Set each mirror's orientation so the light beam reflects across the
+ * grid and lands on the target sensor. The beam re-routes live as you pick; a hit fires the target
+ * light. (Three mirrors A/B/C; solution A="/", B="\", C="/".)
+ */
+export const BEAM_CHALLENGE: ChallengeSpec = {
+  gadgetId: "beam",
+  title: "Aim the light beam",
+  prompt:
+    "Orient each mirror so the beam reflects across the grid onto the target. It re-routes as you pick.",
+  concept: "reflection",
+  ops: ["/", "\\"],
+  header: "beam.emit(RIGHT)",
+  footer: "hit if beam reaches target   // 🔦",
+  lines: [
+    { pre: "mirrorA.face = ", op: BEAM_START[0] ?? 1 },
+    { pre: "mirrorB.face = ", op: BEAM_START[1] ?? 1 },
+    { pre: "mirrorC.face = ", op: BEAM_START[2] ?? 1 },
+  ],
+  run: (lines) => [traceBeam(lines.map((l) => l.op)).hit ? 1 : 0],
+  target: [1],
+  worldMode: (trace) => (trace[0] === 1 ? 1 : 0),
+  solvedMsg: "Beam locked on the target!",
+};
+
 /** Challenges keyed by gadget id — the coding-shack game (all code-themed, each a distinct concept). */
 export const CHALLENGES: Record<string, ChallengeSpec> = {
   lamp: LAMP_CHALLENGE, // sequencing
@@ -198,4 +257,6 @@ export const CHALLENGES: Record<string, ChallengeSpec> = {
   chimes: CHIMES_CHALLENGE, // arrays
   panel: PANEL_CHALLENGE, // conditionals
   easel: EASEL_CHALLENGE, // functions
+  lockbox: LOCKBOX_CHALLENGE, // variables
+  beam: BEAM_CHALLENGE, // reflection
 };
