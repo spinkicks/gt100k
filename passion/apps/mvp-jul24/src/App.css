@@ -1,0 +1,100 @@
+.app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Cozy wooden shelf/sign — a warm plank strip lit from within, not a flat bar. */
+.app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-panel);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem clamp(0.9rem, 3vw, 1.75rem);
+  background: linear-gradient(180deg, rgba(255, 220, 170, 0.08), transparent 40%),
+    linear-gradient(180deg, var(--wood-light) 0%, var(--wood) 60%, #2f1e13 100%);
+  border-bottom: 3px solid var(--wood-frame);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.app-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: auto;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: var(--ember-bright);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  letter-spacing: 0.01em;
+}
+
+.app-wordmark-flame {
+  width: 1.35rem;
+  height: 1.35rem;
+  filter: drop-shadow(0 0 6px rgba(255, 184, 103, 0.6));
+  animation: flame-flicker 2.6s ease-in-out infinite;
+  transform-origin: 50% 90%;
+}
+
+@keyframes flame-flicker {
+  0%,
+  100% {
+    transform: scale(1) rotate(-1deg);
+    opacity: 0.95;
+  }
+  50% {
+    transform: scale(1.06) rotate(1.5deg);
+    opacity: 1;
+  }
+}
+
+.app-topbar-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.app-topbar-btn {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.4rem 1.1rem;
+  border-radius: var(--r-pill);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  background: rgba(242, 230, 205, 0.08);
+  color: var(--cream);
+  cursor: pointer;
+  transition: background 160ms var(--ease-out), color 160ms var(--ease-out), box-shadow 160ms
+    var(--ease-out), transform 120ms var(--ease-out);
+}
+
+.app-topbar-btn:hover {
+  background: rgba(255, 184, 103, 0.18);
+  transform: translateY(-1px);
+}
+
+.app-topbar-btn:active {
+  transform: translateY(0);
+}
+
+.app-topbar-btn.active {
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  color: var(--ink);
+  border-color: var(--ember-deep);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), var(--glow-ember);
+}
+
+/* Body sits on the dark firelit backdrop; content is centered on a "table". */
+.app-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: clamp(1rem, 3.5vw, 2.75rem);
+  overflow-y: auto;
+}
