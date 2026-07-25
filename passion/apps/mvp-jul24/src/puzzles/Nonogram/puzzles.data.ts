@@ -7,7 +7,7 @@ const PLUS: boolean[][] = [
   [true, true, true, true, true],
   [false, false, true, false, false],
   [false, false, true, false, false],
-]
+];
 
 const DIAMOND: boolean[][] = [
   [false, false, true, false, false],
@@ -15,6 +15,6 @@ const DIAMOND: boolean[][] = [
   [true, false, false, false, true],
   [false, true, false, true, false],
   [false, false, true, false, false],
-]
+];
 
-export const PUZZLES: boolean[][][] = [PLUS, DIAMOND]
+export const PUZZLES: boolean[][][] = [PLUS, DIAMOND];

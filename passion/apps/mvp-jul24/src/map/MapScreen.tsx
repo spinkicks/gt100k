@@ -1,6 +1,6 @@
-import { useGame } from '../game/store'
-import { CABINS } from './cabins.data'
-import './MapScreen.css'
+import { useGame } from "../game/store";
+import { CABINS } from "./cabins.data";
+import "./MapScreen.css";
 
 /**
  * Painterly world map: a background illustration with absolutely-positioned cabin
@@ -16,12 +16,12 @@ export const MapScreen: React.FC = () => {
         <button
           key={cabin.id}
           type="button"
-          className={`map-screen-node${cabin.active ? '' : ' inactive'}`}
+          className={`map-screen-node${cabin.active ? "" : " inactive"}`}
           style={{ left: `${cabin.xPct}%`, top: `${cabin.yPct}%` }}
           data-cabin={cabin.id}
           disabled={!cabin.active}
           onClick={() => {
-            if (cabin.active) useGame.getState().openCabin(cabin.id)
+            if (cabin.active) useGame.getState().openCabin(cabin.id);
           }}
         >
           {cabin.label}
@@ -29,7 +29,7 @@ export const MapScreen: React.FC = () => {
         </button>
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default MapScreen
+export default MapScreen;

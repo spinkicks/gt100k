@@ -1,4 +1,4 @@
-import type { PuzzleProps } from '../game/types'
+import type { PuzzleProps } from "../game/types";
 
 export default function ComingSoon({ onExit }: PuzzleProps) {
   return (
@@ -8,5 +8,5 @@ export default function ComingSoon({ onExit }: PuzzleProps) {
       </button>
       <p className="coming-soon-message">Coming soon</p>
     </div>
-  )
+  );
 }

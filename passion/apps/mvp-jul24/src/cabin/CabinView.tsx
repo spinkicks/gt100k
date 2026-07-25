@@ -1,7 +1,7 @@
-import { useGame } from '../game/store'
-import Cabin3D from './Cabin3D'
-import CabinStatic from './CabinStatic'
-import './CabinView.css'
+import { useGame } from "../game/store";
+import Cabin3D from "./Cabin3D";
+import CabinStatic from "./CabinStatic";
+import "./CabinView.css";
 
 /**
  * Picks the cabin backend (3D scene vs. static illustration) for the currently
@@ -9,12 +9,12 @@ import './CabinView.css'
  * without leaving the screen. Renders nothing when no cabin is open.
  */
 export const CabinView: React.FC = () => {
-  const cabinId = useGame((s) => s.cabinId)
-  const cabinBackend = useGame((s) => s.cabinBackend)
+  const cabinId = useGame((s) => s.cabinId);
+  const cabinBackend = useGame((s) => s.cabinBackend);
 
-  if (!cabinId) return null
+  if (!cabinId) return null;
 
-  const otherBackend = cabinBackend === '3d' ? 'static' : '3d'
+  const otherBackend = cabinBackend === "3d" ? "static" : "3d";
 
   return (
     <div className="cabin-view">
@@ -25,9 +25,9 @@ export const CabinView: React.FC = () => {
       >
         Mode: {cabinBackend}
       </button>
-      {cabinBackend === '3d' ? <Cabin3D topic={cabinId} /> : <CabinStatic topic={cabinId} />}
+      {cabinBackend === "3d" ? <Cabin3D topic={cabinId} /> : <CabinStatic topic={cabinId} />}
     </div>
-  )
-}
+  );
+};
 
-export default CabinView
+export default CabinView;

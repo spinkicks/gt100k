@@ -1,6 +1,12 @@
 .cabin-view {
   position: relative;
   width: 100%;
+  /* Gives the wrapper an explicit height so the 3D backend's Canvas (sized to 100% of this
+     element) has something concrete to resolve against — without it, a percentage height on a
+     child of an auto-height parent computes to nothing and the WebGL canvas collapses to a
+     sliver. The static backend already sets this same ratio on `.cabin-static` itself, so this
+     is a no-op for that backend (matching ratios nest without letterboxing). */
+  aspect-ratio: 16 / 9;
 }
 
 .cabin-view-ab-toggle {

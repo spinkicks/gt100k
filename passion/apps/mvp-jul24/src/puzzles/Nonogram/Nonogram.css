@@ -93,7 +93,7 @@
 }
 
 .ng-grid-cell.ng-crossed::after {
-  content: '×';
+  content: "×";
   color: #b08968;
   font-size: 1.25rem;
 }

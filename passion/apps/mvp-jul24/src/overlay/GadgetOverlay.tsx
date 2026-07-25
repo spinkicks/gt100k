@@ -1,20 +1,20 @@
-import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
-import { useGame } from '../game/store'
-import { useInterest } from '../interest/store'
-import { gadgetById } from '../gadgets/registry'
-import ComingSoon from '../puzzles/ComingSoon'
-import './GadgetOverlay.css'
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useState } from "react";
+import { gadgetById } from "../gadgets/registry";
+import { useGame } from "../game/store";
+import { useInterest } from "../interest/store";
+import ComingSoon from "../puzzles/ComingSoon";
+import "./GadgetOverlay.css";
 
 export default function GadgetOverlay() {
-  const focusedGadgetId = useGame((s) => s.focusedGadgetId)
-  const [solved, setSolved] = useState(false)
+  const focusedGadgetId = useGame((s) => s.focusedGadgetId);
+  const [solved, setSolved] = useState(false);
 
   useEffect(() => {
-    setSolved(false)
-    if (!focusedGadgetId) return
-    useInterest.getState().recordOpen(focusedGadgetId)
-  }, [focusedGadgetId])
+    setSolved(false);
+    if (!focusedGadgetId) return;
+    useInterest.getState().recordOpen(focusedGadgetId);
+  }, [focusedGadgetId]);
 
   return (
     <AnimatePresence>
@@ -43,22 +43,22 @@ export default function GadgetOverlay() {
         </motion.div>
       ) : null}
     </AnimatePresence>
-  )
+  );
 }
 
 function GadgetPuzzle({ id, onSolved }: { id: string; onSolved: () => void }) {
-  const gadget = gadgetById(id)
-  const Puzzle = gadget && gadget.status !== 'coming-soon' ? gadget.Puzzle : undefined
-  const Component = Puzzle ?? ComingSoon
+  const gadget = gadgetById(id);
+  const Puzzle = gadget && gadget.status !== "coming-soon" ? gadget.Puzzle : undefined;
+  const Component = Puzzle ?? ComingSoon;
 
   return (
     <Component
       seed={0}
       onSolved={() => {
-        useInterest.getState().recordSolve(id)
-        onSolved()
+        useInterest.getState().recordSolve(id);
+        onSolved();
       }}
       onExit={() => useGame.getState().closeGadget()}
     />
-  )
+  );
 }

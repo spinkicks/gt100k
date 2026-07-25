@@ -1,13 +1,13 @@
-import { useInterest } from './store'
-import { gadgetById } from '../gadgets/registry'
-import { useGame } from '../game/store'
-import './ReadoutScreen.css'
+import { gadgetById } from "../gadgets/registry";
+import { useGame } from "../game/store";
+import { useInterest } from "./store";
+import "./ReadoutScreen.css";
 
 /** `90000` -> `1.5 min`; anything under a minute is shown in seconds instead. */
 function formatActiveTime(ms: number): string {
-  if (ms < 60_000) return `${Math.round(ms / 1000)} sec`
-  const minutes = Math.round((ms / 60_000) * 10) / 10
-  return `${minutes} min`
+  if (ms < 60_000) return `${Math.round(ms / 1000)} sec`;
+  const minutes = Math.round((ms / 60_000) * 10) / 10;
+  return `${minutes} min`;
 }
 
 /**
@@ -15,13 +15,13 @@ function formatActiveTime(ms: number): string {
  * sorted by time-on-task descending. A "Back to map" button returns to the map.
  */
 export const ReadoutScreen: React.FC = () => {
-  const byGadget = useInterest((s) => s.byGadget)
+  const byGadget = useInterest((s) => s.byGadget);
 
   const entries = Object.entries(byGadget)
     .filter(([, stats]) => stats.activeMs > 0 || stats.opens > 0 || stats.solves > 0)
-    .sort((a, b) => b[1].activeMs - a[1].activeMs)
+    .sort((a, b) => b[1].activeMs - a[1].activeMs);
 
-  const maxMs = Math.max(1, ...entries.map(([, stats]) => stats.activeMs))
+  const maxMs = Math.max(1, ...entries.map(([, stats]) => stats.activeMs));
 
   return (
     <div className="readout-screen">
@@ -31,7 +31,7 @@ export const ReadoutScreen: React.FC = () => {
       ) : (
         <ul className="readout-screen-bars">
           {entries.map(([id, stats]) => {
-            const label = gadgetById(id)?.label ?? id
+            const label = gadgetById(id)?.label ?? id;
             return (
               <li key={id} className="readout-screen-bar-row" data-gadget={id}>
                 <span className="readout-screen-bar-label">{label}</span>
@@ -43,15 +43,19 @@ export const ReadoutScreen: React.FC = () => {
                 </div>
                 <span className="readout-screen-bar-value">{formatActiveTime(stats.activeMs)}</span>
               </li>
-            )
+            );
           })}
         </ul>
       )}
-      <button type="button" className="readout-screen-back" onClick={() => useGame.getState().goToMap()}>
+      <button
+        type="button"
+        className="readout-screen-back"
+        onClick={() => useGame.getState().goToMap()}
+      >
         Back to map
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default ReadoutScreen
+export default ReadoutScreen;

@@ -1,28 +1,28 @@
-import { useEffect, useRef, useState } from 'react'
-import type { PuzzleProps } from '../../game/types'
-import { SPORTS_PUZZLE, emptyMarks, isSolved, key, type Mark, type MarkGrid } from './logic'
-import './LogicGrid.css'
+import { useEffect, useRef, useState } from "react";
+import type { PuzzleProps } from "../../game/types";
+import { type Mark, type MarkGrid, SPORTS_PUZZLE, emptyMarks, isSolved, key } from "./logic";
+import "./LogicGrid.css";
 
-const next = (m: Mark): Mark => (m === 'unknown' ? 'yes' : m === 'yes' ? 'no' : 'unknown')
+const next = (m: Mark): Mark => (m === "unknown" ? "yes" : m === "yes" ? "no" : "unknown");
 
-const symbol = (m: Mark): string => (m === 'yes' ? '✓' : m === 'no' ? '✗' : '')
+const symbol = (m: Mark): string => (m === "yes" ? "✓" : m === "no" ? "✗" : "");
 
 export default function LogicGrid({ onSolved, onExit }: PuzzleProps) {
-  const puzzle = SPORTS_PUZZLE
-  const [marks, setMarks] = useState<MarkGrid>(() => emptyMarks(puzzle))
-  const solvedRef = useRef(false)
+  const puzzle = SPORTS_PUZZLE;
+  const [marks, setMarks] = useState<MarkGrid>(() => emptyMarks(puzzle));
+  const solvedRef = useRef(false);
 
   useEffect(() => {
     if (!solvedRef.current && isSolved(marks, puzzle)) {
-      solvedRef.current = true
-      onSolved()
+      solvedRef.current = true;
+      onSolved();
     }
-  }, [marks, puzzle, onSolved])
+  }, [marks, puzzle, onSolved]);
 
   const cycle = (e: string, c: string, v: string) => {
-    const k = key(e, c, v)
-    setMarks((m) => ({ ...m, [k]: next(m[k]!) }))
-  }
+    const k = key(e, c, v);
+    setMarks((m) => ({ ...m, [k]: next(m[k]!) }));
+  };
 
   return (
     <div className="lg">
@@ -30,8 +30,8 @@ export default function LogicGrid({ onSolved, onExit }: PuzzleProps) {
         ← Back
       </button>
       <ul className="lg-clues">
-        {puzzle.clues.map((clue, i) => (
-          <li key={i}>{clue}</li>
+        {puzzle.clues.map((clue) => (
+          <li key={clue}>{clue}</li>
         ))}
       </ul>
       <table className="lg-table">
@@ -53,8 +53,8 @@ export default function LogicGrid({ onSolved, onExit }: PuzzleProps) {
               <th className="lg-row-head">{e}</th>
               {puzzle.categories.map((cat) =>
                 cat.values.map((v) => {
-                  const k = key(e, cat.name, v)
-                  const mark = marks[k]!
+                  const k = key(e, cat.name, v);
+                  const mark = marks[k]!;
                   return (
                     <td key={k} className="lg-td">
                       <button
@@ -67,7 +67,7 @@ export default function LogicGrid({ onSolved, onExit }: PuzzleProps) {
                         {symbol(mark)}
                       </button>
                     </td>
-                  )
+                  );
                 }),
               )}
             </tr>
@@ -75,5 +75,5 @@ export default function LogicGrid({ onSolved, onExit }: PuzzleProps) {
         </tbody>
       </table>
     </div>
-  )
+  );
 }
