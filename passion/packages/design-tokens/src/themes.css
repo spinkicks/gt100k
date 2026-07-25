@@ -1,212 +1,113 @@
 /**
- * FIVE CANDIDATE THEMES for the adult (guide-facing) surfaces.
+ * Two candidate themes, both taken from the references chosen for this project:
+ * Horizon UI and the MUI dashboard template.
  *
- * All five assign the same contract. None of them changes the layout, the density, or the
- * component set: the only variables are ground, ink, accent, and type. That is deliberate,
- * because the layout is the part that already works.
- *
- * Theme 1 is the current console's language, extracted rather than invented, and serves as
- * the baseline the other four are judged against.
+ * They share one layout, one component set, and one token contract. Only ground, ink,
+ * accent, radius, and shadow differ.
  */
 
-/* ============================================================ 1. MIDNIGHT
-   The current console, tightened. Near-monochrome blue-black, one cool accent,
-   mono numerals. Contrast raised to clear AA on body text. */
-[data-theme="midnight"] {
-  --canvas: oklch(0.185 0.008 265);
-  --rail: oklch(0.155 0.008 265);
-  --rail-2: oklch(0.215 0.009 265);
-  --surface: oklch(0.225 0.009 265);
-  --surface-2: oklch(0.262 0.011 265);
+/* ============================================================ HORIZON
+   Lavender-tinted ground, white cards, generous radius, soft lifted shadows, violet
+   accent. Friendly and modern; the warmer of the two. */
+[data-theme="horizon"] {
+  --canvas: #f4f7fe;
+  --rail: #ffffff;
+  --rail-2: #f4f7fe;
+  --surface: #ffffff;
+  --surface-2: #f4f7fe;
 
-  --ink: oklch(0.955 0.004 265);
-  --ink-muted: oklch(0.75 0.008 265);
-  --ink-faint: oklch(0.6 0.008 265);
+  --ink: #1b2559;
+  --ink-muted: #707eae;
+  --ink-faint: #a3aed0;
 
-  --line: oklch(0.315 0.012 265);
-  --line-strong: oklch(0.44 0.016 265);
+  --line: #e9edf7;
+  --line-strong: #d6dcec;
+  --line-w: 1px;
 
-  --accent: oklch(0.78 0.115 196);
-  --accent-hover: oklch(0.86 0.115 196);
-  --accent-weak: oklch(0.3 0.045 200);
-  --accent-ink: oklch(0.16 0.02 265);
+  --accent: #4318ff;
+  --accent-hover: #3311db;
+  --accent-weak: #ebe8ff;
+  --accent-ink: #ffffff;
 
-  --positive: oklch(0.76 0.1 165);
-  --alarm: oklch(0.72 0.15 38);
-  --alarm-bg: oklch(0.3 0.06 38);
-  --alarm-ink: oklch(0.88 0.09 48);
+  --good: #01a97b;
+  --good-bg: #e0f8f1;
+  --warn: #b07400;
+  --warn-bg: #fff4e0;
+  --bad: #d0362a;
+  --bad-bg: #ffeceb;
 
-  --uncertain: oklch(0.5 0.01 265);
-  --uncertain-bg: oklch(0.28 0.01 265);
+  --chart-1: #4318ff;
+  --chart-2: #6ad2ff;
+  --chart-3: #01b574;
+  --chart-4: #ffb547;
 
-  --font-display: var(--font-sans), system-ui, sans-serif;
-  --font-body: var(--font-sans), system-ui, sans-serif;
+  --positive: #01a97b;
+  --alarm: #d0362a;
+  --alarm-bg: #ffeceb;
+  --alarm-ink: #9e2820;
 
-  --radius-sm: 5px;
-  --radius-md: 9px;
-  --radius-lg: 13px;
-  --elev-raised: 0 1px 0 oklch(1 0 0 / 0.04), 0 2px 12px oklch(0 0 0 / 0.35);
-  --focus-color: oklch(0.8 0.11 196);
-}
-
-/* ============================================================ 2. DAYLIGHT
-   The same restraint in a light scheme. Near-monochrome, one blue accent, generous
-   whitespace. This is the register the Parent Playbook needs anyway, so picking it
-   would unify console and long-form under one scheme. */
-[data-theme="daylight"] {
-  --canvas: oklch(0.985 0.002 265);
-  --rail: oklch(0.968 0.003 265);
-  --rail-2: oklch(0.945 0.004 265);
-  --surface: oklch(1 0 0);
-  --surface-2: oklch(0.975 0.003 265);
-
-  --ink: oklch(0.23 0.014 265);
-  --ink-muted: oklch(0.47 0.012 265);
-  --ink-faint: oklch(0.62 0.01 265);
-
-  --line: oklch(0.915 0.005 265);
-  --line-strong: oklch(0.83 0.008 265);
-
-  --accent: oklch(0.52 0.15 258);
-  --accent-hover: oklch(0.44 0.15 258);
-  --accent-weak: oklch(0.955 0.028 258);
-  --accent-ink: oklch(1 0 0);
-
-  --positive: oklch(0.5 0.1 160);
-  --alarm: oklch(0.53 0.18 28);
-  --alarm-bg: oklch(0.96 0.03 32);
-  --alarm-ink: oklch(0.44 0.14 28);
-
-  --uncertain: oklch(0.72 0.008 265);
-  --uncertain-bg: oklch(0.945 0.004 265);
+  --uncertain: #a3aed0;
+  --uncertain-bg: #eef2fb;
 
   --font-display: var(--font-sans), system-ui, sans-serif;
   --font-body: var(--font-sans), system-ui, sans-serif;
 
-  --radius-sm: 5px;
-  --radius-md: 9px;
-  --radius-lg: 13px;
-  --elev-raised: 0 1px 2px oklch(0.3 0.02 265 / 0.06), 0 4px 14px oklch(0.3 0.02 265 / 0.05);
-  --focus-color: oklch(0.6 0.14 258);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --elev-raised: 0 18px 40px rgb(112 144 176 / 0.12);
+  --focus-color: #7551ff;
 }
 
-/* ============================================================ 3. WARM SLATE
-   Dark, but warm. Brown-grey ground instead of blue-grey, amber accent. Reads human
-   and considered rather than clinical, which matters when the subject is a child. */
-[data-theme="warm-slate"] {
-  --canvas: oklch(0.205 0.009 62);
-  --rail: oklch(0.172 0.009 62);
-  --rail-2: oklch(0.235 0.01 62);
-  --surface: oklch(0.245 0.011 62);
-  --surface-2: oklch(0.285 0.013 62);
+/* ============================================================ MUI
+   Neutral grey ground, white cards with a hairline border, tighter radius, restrained
+   blue accent. Crisper and more businesslike; the more serious of the two. */
+[data-theme="mui"] {
+  --canvas: #f7f8fa;
+  --rail: #ffffff;
+  --rail-2: #f2f4f7;
+  --surface: #ffffff;
+  --surface-2: #f7f8fa;
 
-  --ink: oklch(0.96 0.006 70);
-  --ink-muted: oklch(0.775 0.012 70);
-  --ink-faint: oklch(0.62 0.012 70);
+  --ink: #1c2025;
+  --ink-muted: #5a6472;
+  --ink-faint: #8b95a3;
 
-  --line: oklch(0.335 0.014 62);
-  --line-strong: oklch(0.46 0.018 62);
+  --line: #e4e7ec;
+  --line-strong: #cfd4dc;
+  --line-w: 1px;
 
-  --accent: oklch(0.79 0.128 72);
-  --accent-hover: oklch(0.87 0.128 72);
-  --accent-weak: oklch(0.32 0.05 62);
-  --accent-ink: oklch(0.19 0.02 62);
+  --accent: #0b6bcb;
+  --accent-hover: #095aa9;
+  --accent-weak: #e7f1fc;
+  --accent-ink: #ffffff;
 
-  --positive: oklch(0.76 0.09 145);
-  --alarm: oklch(0.7 0.16 28);
-  --alarm-bg: oklch(0.31 0.07 28);
-  --alarm-ink: oklch(0.87 0.1 38);
+  --good: #1f7a4d;
+  --good-bg: #e6f4ec;
+  --warn: #8f6100;
+  --warn-bg: #fdf3e0;
+  --bad: #c41c1c;
+  --bad-bg: #fdeaea;
 
-  --uncertain: oklch(0.52 0.012 62);
-  --uncertain-bg: oklch(0.3 0.012 62);
+  --chart-1: #0b6bcb;
+  --chart-2: #64b5f6;
+  --chart-3: #1f7a4d;
+  --chart-4: #b26500;
+
+  --positive: #1f7a4d;
+  --alarm: #c41c1c;
+  --alarm-bg: #fdeaea;
+  --alarm-ink: #941515;
+
+  --uncertain: #a9b2bf;
+  --uncertain-bg: #f0f2f5;
 
   --font-display: var(--font-sans), system-ui, sans-serif;
   --font-body: var(--font-sans), system-ui, sans-serif;
 
   --radius-sm: 6px;
-  --radius-md: 11px;
-  --radius-lg: 16px;
-  --elev-raised: 0 1px 0 oklch(1 0 0 / 0.05), 0 3px 14px oklch(0 0 0 / 0.34);
-  --focus-color: oklch(0.82 0.12 72);
-}
-
-/* ============================================================ 4. EDITORIAL
-   Light, warm paper, serif headings and serif claims, high contrast. The model's
-   statements read as considered prose rather than machine output. Shares a language
-   with the Parent Playbook, so the whole adult side becomes one thing. */
-[data-theme="editorial"] {
-  --canvas: oklch(0.972 0.006 92);
-  --rail: oklch(0.948 0.008 92);
-  --rail-2: oklch(0.925 0.009 92);
-  --surface: oklch(0.995 0.002 92);
-  --surface-2: oklch(0.955 0.007 92);
-
-  --ink: oklch(0.245 0.022 262);
-  --ink-muted: oklch(0.46 0.018 260);
-  --ink-faint: oklch(0.6 0.014 260);
-
-  --line: oklch(0.895 0.008 90);
-  --line-strong: oklch(0.79 0.011 90);
-
-  --accent: oklch(0.45 0.085 202);
-  --accent-hover: oklch(0.37 0.085 202);
-  --accent-weak: oklch(0.95 0.021 202);
-  --accent-ink: oklch(0.995 0 0);
-
-  --positive: oklch(0.46 0.09 158);
-  --alarm: oklch(0.5 0.16 30);
-  --alarm-bg: oklch(0.955 0.032 46);
-  --alarm-ink: oklch(0.41 0.13 32);
-
-  --uncertain: oklch(0.7 0.012 90);
-  --uncertain-bg: oklch(0.935 0.008 90);
-
-  --font-display: var(--font-serif), Georgia, serif;
-  --font-body: var(--font-sans), system-ui, sans-serif;
-
-  --radius-sm: 3px;
-  --radius-md: 5px;
-  --radius-lg: 8px;
-  --elev-raised: 0 1px 2px oklch(0.4 0.03 262 / 0.05);
-  --focus-color: oklch(0.58 0.1 202);
-}
-
-/* ============================================================ 5. BLUEPRINT
-   Light, cool, technical. Desaturated steel ground, mono-forward, thin precise lines.
-   Reads as a measuring instrument, which is what the console literally is. */
-[data-theme="blueprint"] {
-  --canvas: oklch(0.955 0.008 232);
-  --rail: oklch(0.925 0.011 232);
-  --rail-2: oklch(0.9 0.013 232);
-  --surface: oklch(0.99 0.003 232);
-  --surface-2: oklch(0.955 0.008 232);
-
-  --ink: oklch(0.235 0.026 250);
-  --ink-muted: oklch(0.45 0.022 245);
-  --ink-faint: oklch(0.6 0.018 240);
-
-  --line: oklch(0.86 0.014 232);
-  --line-strong: oklch(0.7 0.022 235);
-
-  --accent: oklch(0.47 0.13 250);
-  --accent-hover: oklch(0.39 0.13 250);
-  --accent-weak: oklch(0.93 0.03 245);
-  --accent-ink: oklch(1 0 0);
-
-  --positive: oklch(0.48 0.1 178);
-  --alarm: oklch(0.52 0.17 25);
-  --alarm-bg: oklch(0.945 0.035 30);
-  --alarm-ink: oklch(0.42 0.14 25);
-
-  --uncertain: oklch(0.7 0.014 232);
-  --uncertain-bg: oklch(0.925 0.01 232);
-
-  --font-display: var(--font-sans), system-ui, sans-serif;
-  --font-body: var(--font-sans), system-ui, sans-serif;
-
-  --radius-sm: 2px;
-  --radius-md: 3px;
-  --radius-lg: 4px;
-  --elev-raised: 0 1px 0 oklch(0.7 0.022 235 / 0.5);
-  --focus-color: oklch(0.55 0.12 250);
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --elev-raised: 0 1px 2px rgb(16 24 40 / 0.06), 0 1px 3px rgb(16 24 40 / 0.06);
+  --focus-color: #0b6bcb;
 }

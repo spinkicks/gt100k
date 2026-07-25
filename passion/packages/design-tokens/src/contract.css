@@ -25,8 +25,24 @@
   --ink-muted: #555555;
   --ink-faint: #888888;
 
-  /* ---- A calm positive, for states like "calibrated". Never a grade. */
+  /* ---- A calm positive, for states like "calibrated". */
   --positive: #2f6f4f;
+
+  /* ---- Status scale. Guides are not technical, so status is colour-coded for readability.
+         Always paired with a text label, never colour alone (about 8% of men cannot rely on
+         hue), and applied to a STATE, not stamped on the child as a grade. */
+  --good: #1f7a4d;
+  --good-bg: #e7f6ee;
+  --warn: #9a6a00;
+  --warn-bg: #fdf3e2;
+  --bad: #c0332b;
+  --bad-bg: #fdeceb;
+
+  /* ---- Categorical chart series. Distinguishable and colour-blind-safe-ish. */
+  --chart-1: #4c6ef5;
+  --chart-2: #12b886;
+  --chart-3: #f59f00;
+  --chart-4: #ae3ec9;
 
   /* ---- Lines */
   --line: #dddddd;

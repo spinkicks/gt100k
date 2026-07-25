@@ -4,15 +4,12 @@ import { useState } from "react";
 import { Console } from "./console.js";
 
 const THEMES = [
-  { id: "midnight", name: "1. Midnight", note: "The current console, tightened" },
-  { id: "daylight", name: "2. Daylight", note: "Same restraint, light scheme" },
-  { id: "warm-slate", name: "3. Warm Slate", note: "Dark but warm, amber accent" },
-  { id: "editorial", name: "4. Editorial", note: "Warm paper, serif claims" },
-  { id: "blueprint", name: "5. Blueprint", note: "Cool, technical, precise" },
+  { id: "horizon", name: "Horizon", note: "Violet, rounded, lifted cards" },
+  { id: "mui", name: "MUI", note: "Blue, crisper, hairline borders" },
 ] as const;
 
 export default function Page(): JSX.Element {
-  const [theme, setTheme] = useState<string>("midnight");
+  const [theme, setTheme] = useState<string>("horizon");
 
   return (
     <>

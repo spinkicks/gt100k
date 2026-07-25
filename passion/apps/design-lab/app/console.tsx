@@ -1,41 +1,63 @@
-import { Fragment } from "react";
-
-/**
- * A faithful, full-width Guide Console screen. Structure mirrors the console we already
- * have; the content encodes the research rules (evidence x agreement instead of a score,
- * natural frequencies, a value-suppressed "not sure yet", one interruptive alarm, and a
- * proposal you negotiate rather than approve).
- */
+import { AreaChart, BarChart, Donut, Spark } from "./charts.js";
 
 const KIDS = [
-  { i: "AM", n: "Ari Mercado", m: "2 tracked · 1 ready", on: true },
-  { i: "BI", n: "Bex Ito", m: "2 tracked · 1 ready", on: false },
-  { i: "CO", n: "Cyrus Okafor", m: "2 tracked", on: false },
-  { i: "DP", n: "Dulce Park", m: "3 tracked · 2 ready", on: false },
+  { i: "AM", n: "Ari Mercado", m: "2 spikes", s: "warn", on: true },
+  { i: "BI", n: "Bex Ito", m: "2 spikes", s: "good", on: false },
+  { i: "CO", n: "Cyrus Okafor", m: "2 spikes", s: "good", on: false },
+  { i: "DP", n: "Dulce Park", m: "3 spikes", s: "bad", on: false },
 ];
 
-const TABS = [
-  { k: "Hypotheses", n: 2, on: true },
-  { k: "Wellbeing", n: 2, alert: true },
-  { k: "Plan", n: 0 },
-  { k: "Family", n: 5 },
-  { k: "Access", n: 0 },
+const TABS = ["Overview", "Hypotheses", "Wellbeing", "Plan", "Family", "Access"];
+
+const MONTHS = ["Feb", "Mar", "Apr", "May", "Jun", "Jul"];
+const WEEKS = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"];
+
+const TILES = [
+  { k: "Voluntary returns", v: "28", d: "+12%", up: true, spark: [8, 11, 9, 14, 16, 15, 21, 28] },
+  { k: "Depth signals", v: "14", d: "+5%", up: true, spark: [4, 5, 5, 7, 8, 9, 12, 14] },
+  { k: "Sessions this month", v: "31", d: "-4%", up: false, spark: [38, 36, 35, 33, 34, 32, 31, 31] },
+  { k: "Coverage", v: "68%", d: "+9%", up: true, spark: [42, 47, 51, 55, 58, 61, 65, 68] },
 ];
 
-const MODES = ["Build", "Investigate", "Compose", "Perform", "Explain", "Care"];
-const DOMAINS = [
-  { d: "Music & Sound", w: [1, 2, 0, 3, 0, 0] },
-  { d: "Code & Computers", w: [3, 2, 0, 0, 1, 0] },
-  { d: "Art & Motion", w: [0, 0, 2, 1, 0, 0] },
-  { d: "Making & Eng.", w: [2, 1, 0, 0, 0, 1] },
+const SPIKES = [
+  {
+    n: "Music & Sound › Audio Systems",
+    mode: "Build",
+    stage: "Emerging",
+    conf: 74,
+    status: "good",
+    statusLabel: "On track",
+    spark: [30, 38, 44, 51, 58, 66, 70, 74],
+  },
+  {
+    n: "Art & Motion › Dance",
+    mode: "Perform",
+    stage: "Exploring",
+    conf: 38,
+    status: "warn",
+    statusLabel: "Needs a look",
+    spark: [40, 39, 41, 38, 37, 39, 38, 38],
+  },
+  {
+    n: "Code & Computers › Game Dev",
+    mode: "Build",
+    stage: "Candidate",
+    conf: 81,
+    status: "good",
+    statusLabel: "On track",
+    spark: [55, 60, 63, 68, 72, 75, 79, 81],
+  },
 ];
 
-function Freq({ on, unsure }: { on: number; unsure?: boolean }): JSX.Element {
+function Tile({ t }: { t: (typeof TILES)[number] }): JSX.Element {
   return (
-    <div className="freq__dots" role="img" aria-label={`about ${on} in 10`}>
-      {Array.from({ length: 10 }, (_, i) => (
-        <i key={i} data-on={i < on ? "true" : "false"} aria-hidden="true" />
-      ))}
+    <div className="tile">
+      <div className="tile__k">{t.k}</div>
+      <div className="tile__row">
+        <span className="tile__v">{t.v}</span>
+        <span className={`delta delta--${t.up ? "up" : "down"}`}>{t.d}</span>
+      </div>
+      <Spark data={t.spark} color={t.up ? "var(--good)" : "var(--bad)"} />
     </div>
   );
 }
@@ -43,25 +65,20 @@ function Freq({ on, unsure }: { on: number; unsure?: boolean }): JSX.Element {
 export function Console(): JSX.Element {
   return (
     <div className="app">
-      {/* Pane 1 */}
       <aside className="rail">
         <div className="brand">
           <span className="brand__mark">P</span>
-          <span className="brand__name">
-            PassionLab
-            <br />
-            Guide Console
-          </span>
+          <span className="brand__name">PassionLab</span>
         </div>
-        <div className="rail__search">Search children</div>
         <div className="rail__label">Children</div>
         {KIDS.map((k) => (
           <div className="kid" key={k.i} aria-current={k.on ? "true" : undefined}>
             <span className="kid__av">{k.i}</span>
-            <span>
+            <span className="kid__txt">
               <span className="kid__name">{k.n}</span>
               <span className="kid__meta">{k.m}</span>
             </span>
+            <span className={`pip pip--${k.s}`} aria-hidden="true" />
           </div>
         ))}
         <div className="rail__foot">
@@ -69,217 +86,211 @@ export function Console(): JSX.Element {
         </div>
       </aside>
 
-      {/* Pane 2 */}
-      <nav className="spikes">
-        <div className="rail__label">Specializations</div>
-        <div className="spike" aria-current="true">
-          <div className="spike__name">Music &amp; Sound › Audio Systems</div>
-          <div className="spike__state">
-            <span className="dot" /> Emerging · Build
-          </div>
-        </div>
-        <div className="spike">
-          <div className="spike__name">Art &amp; Motion › Dance</div>
-          <div className="spike__state">
-            <span className="dot dot--quiet" /> Exploring · Perform
-          </div>
-        </div>
-      </nav>
-
-      {/* Pane 3 */}
       <main className="work">
-        <div className="tabs" role="tablist">
-          {TABS.map((t) => (
-            <button
-              key={t.k}
-              className="tab"
-              role="tab"
-              aria-selected={t.on ? "true" : "false"}
-              type="button"
-            >
-              {t.k}
-              {t.alert ? <span className="tab__alert" aria-label="needs review" /> : null}
-              <span className="tab__n">{t.n}</span>
+        <header className="top">
+          <div>
+            <div className="crumb">Children / Ari Mercado</div>
+            <h1>Ari Mercado</h1>
+          </div>
+          <div className="top__right">
+            <span className="badge badge--warn">Wellbeing: watch</span>
+            <span className="who">Guide: R. Alvarez</span>
+          </div>
+        </header>
+
+        <nav className="tabs">
+          {TABS.map((t, i) => (
+            <button key={t} className="tab" aria-selected={i === 0} type="button">
+              {t}
             </button>
           ))}
-        </div>
+        </nav>
 
-        <div className="work__body">
-          <div className="section__h">
-            <h2>What the evidence suggests</h2>
-            <p>Ari Mercado · updated 2 days ago</p>
-          </div>
+        <div className="body">
+          <section className="tiles">
+            {TILES.map((t) => (
+              <Tile t={t} key={t.k} />
+            ))}
+          </section>
 
-          <div className="alarm">
-            <span className="alarm__mark">!</span>
-            <div>
-              <h3>Quiet devaluation, three weeks running</h3>
-              <p>Doing it flatly and no longer sharing it. Worth a warm, non-evaluative check-in.</p>
+          <section className="row2">
+            <div className="card">
+              <div className="card__hd">
+                <div>
+                  <h2>Returns over time</h2>
+                  <p>Unprompted returns are the signal. Prompted ones are shown for contrast.</p>
+                </div>
+                <div className="legend">
+                  <span>
+                    <i style={{ background: "var(--chart-1)" }} />
+                    Voluntary
+                  </span>
+                  <span>
+                    <i style={{ background: "var(--chart-2)" }} />
+                    Prompted
+                  </span>
+                </div>
+              </div>
+              <AreaChart
+                labels={MONTHS}
+                series={[
+                  { name: "vol", color: "var(--chart-1)", data: [6, 9, 12, 15, 22, 28] },
+                  { name: "pro", color: "var(--chart-2)", data: [14, 13, 11, 10, 9, 7] },
+                ]}
+              />
             </div>
-            <button className="btn" type="button">
-              Open wellbeing
-            </button>
-          </div>
 
-          <div className="grid2">
-            <article className="card">
-              <div className="card__top">
+            <div className="card">
+              <div className="card__hd">
                 <div>
-                  <p className="card__path">Music &amp; Sound › Audio Systems</p>
-                  <h3 className="card__claim">Keeps choosing to build audio systems, unprompted.</h3>
-                </div>
-                <span className="chip">Build</span>
-              </div>
-
-              <div className="axes">
-                <div>
-                  <div className="axis__k">Evidence</div>
-                  <div className="axis__v">Moderate</div>
-                </div>
-                <div>
-                  <div className="axis__k">Agreement</div>
-                  <div className="axis__v">High</div>
-                </div>
-                <div>
-                  <div className="axis__k">Calibration</div>
-                  <div className="axis__v axis__v--calm">Calibrated</div>
+                  <h2>Where their time goes</h2>
+                  <p>Share of sessions by area</p>
                 </div>
               </div>
-
-              <div className="freq">
-                <Freq on={7} />
-                <p className="freq__note">
-                  About 7 in 10 children showing this pattern kept returning to it after the
-                  prompting stopped.
-                </p>
+              <div className="donutwrap">
+                <Donut
+                  slices={[
+                    { name: "Music", value: 46, color: "var(--chart-1)" },
+                    { name: "Code", value: 28, color: "var(--chart-2)" },
+                    { name: "Art", value: 16, color: "var(--chart-3)" },
+                    { name: "Other", value: 10, color: "var(--chart-4)" },
+                  ]}
+                />
+                <ul className="dlegend">
+                  <li>
+                    <i style={{ background: "var(--chart-1)" }} />
+                    Music &amp; Sound <b>46%</b>
+                  </li>
+                  <li>
+                    <i style={{ background: "var(--chart-2)" }} />
+                    Code &amp; Computers <b>28%</b>
+                  </li>
+                  <li>
+                    <i style={{ background: "var(--chart-3)" }} />
+                    Art &amp; Motion <b>16%</b>
+                  </li>
+                  <li>
+                    <i style={{ background: "var(--chart-4)" }} />
+                    Everything else <b>10%</b>
+                  </li>
+                </ul>
               </div>
-
-              <div className="ledger">
-                <div>
-                  <h4>Supporting</h4>
-                  <ul>
-                    <li>Returned 4 times unprompted</li>
-                    <li>Chose the harder build twice</li>
-                    <li>Recovered after a failure</li>
-                  </ul>
-                </div>
-                <div>
-                  <h4>Disconfirming</h4>
-                  <ul>
-                    <li className="is-none">none yet</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="next">
-                <b>Next test</b>
-                <span>Gate passed. A human may promote this with an autonomy sign-off.</span>
-              </div>
-
-              <div className="acts">
-                <button className="btn btn--primary" type="button">
-                  Promote
-                </button>
-                <button className="btn" type="button">
-                  Park
-                </button>
-                <button className="btn" type="button">
-                  Contest
-                </button>
-                <span className="acts__spacer">
-                  <b>Emerging</b>3 of 3 checks
-                </span>
-              </div>
-            </article>
-
-            <article className="card card--unsure">
-              <div className="card__top">
-                <div>
-                  <p className="card__path">Art &amp; Motion › Dance</p>
-                  <h3 className="card__claim">Too early to say anything about dance.</h3>
-                </div>
-                <span className="chip">Perform</span>
-              </div>
-
-              <div className="axes">
-                <div>
-                  <div className="axis__k">Evidence</div>
-                  <div className="axis__v axis__v--quiet">Limited</div>
-                </div>
-                <div>
-                  <div className="axis__k">Agreement</div>
-                  <div className="axis__v axis__v--quiet">Low</div>
-                </div>
-                <div>
-                  <div className="axis__k">Calibration</div>
-                  <div className="axis__v axis__v--quiet">Not stated</div>
-                </div>
-              </div>
-
-              <div className="freq">
-                <Freq on={5} unsure />
-                <p className="freq__note">
-                  No likelihood given. Thin evidence renders flat on purpose, so two uncertain
-                  reads cannot be told apart at a glance.
-                </p>
-              </div>
-
-              <div className="ledger">
-                <div>
-                  <h4>Supporting</h4>
-                  <ul>
-                    <li className="is-none">none yet</li>
-                  </ul>
-                </div>
-                <div>
-                  <h4>Disconfirming</h4>
-                  <ul>
-                    <li>Only ever attended when prompted</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="next">
-                <b>Next test</b>
-                <span>Offer the cell again unprompted and watch for a voluntary return.</span>
-              </div>
-
-              <div className="acts">
-                <button className="btn" type="button">
-                  Park
-                </button>
-                <span className="acts__spacer">
-                  <b>Exploring</b>gathering signal
-                </span>
-              </div>
-            </article>
-          </div>
-
-          <div className="cov">
-            <div className="section__h">
-              <h2 style={{ fontSize: "var(--text-base)" }}>Coverage</h2>
-              <p>Where this child has and has not been given a real chance</p>
             </div>
-            <div className="cov__grid">
-              <span />
-              {MODES.map((m) => (
-                <span className="cov__hd" key={m}>
-                  {m}
-                </span>
-              ))}
-              {DOMAINS.map((row) => (
-                <Fragment key={row.d}>
-                  <span className="cov__row">{row.d}</span>
-                  {row.w.map((w, i) => (
-                    <span className="cell" data-w={w} key={`${row.d}-${i}`} />
-                  ))}
-                </Fragment>
-              ))}
+          </section>
+
+          <section className="row2">
+            <div className="card">
+              <div className="card__hd">
+                <div>
+                  <h2>Weekly engagement</h2>
+                  <p>Sessions and depth signals per week</p>
+                </div>
+                <div className="legend">
+                  <span>
+                    <i style={{ background: "var(--chart-1)" }} />
+                    Sessions
+                  </span>
+                  <span>
+                    <i style={{ background: "var(--chart-3)" }} />
+                    Depth
+                  </span>
+                </div>
+              </div>
+              <BarChart
+                labels={WEEKS}
+                data={[5, 7, 6, 9, 8, 11, 10, 12]}
+                color="var(--chart-1)"
+                compare={[1, 2, 2, 3, 3, 4, 5, 6]}
+                compareColor="var(--chart-3)"
+              />
             </div>
-            <p className="cov__legend">
-              Empty cells are gaps in exposure, not evidence of dislike.
-            </p>
-          </div>
+
+            <div className="card card--alarm">
+              <div className="card__hd">
+                <div>
+                  <h2>Wellbeing</h2>
+                  <p>Behaviour only. No cameras, no emotion detection.</p>
+                </div>
+                <span className="badge badge--warn">Watch</span>
+              </div>
+              <ul className="checks">
+                <li>
+                  <span className="pip pip--bad" /> Quiet devaluation
+                  <b>3 weeks</b>
+                </li>
+                <li>
+                  <span className="pip pip--warn" /> Rising stakes
+                  <b>showcase in 9 days</b>
+                </li>
+                <li>
+                  <span className="pip pip--good" /> Rest cadence
+                  <b>2 days off / week</b>
+                </li>
+                <li>
+                  <span className="pip pip--good" /> Family pressure
+                  <b>none observed</b>
+                </li>
+              </ul>
+              <button className="btn btn--primary" type="button">
+                Open wellbeing review
+              </button>
+            </div>
+          </section>
+
+          <section className="card">
+            <div className="card__hd">
+              <div>
+                <h2>Specializations</h2>
+                <p>What the evidence suggests, and how confident we are</p>
+              </div>
+              <button className="btn" type="button">
+                Export
+              </button>
+            </div>
+            <table className="tbl">
+              <thead>
+                <tr>
+                  <th>Area</th>
+                  <th>Work style</th>
+                  <th>Stage</th>
+                  <th>Confidence</th>
+                  <th>Trend</th>
+                  <th>Status</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                {SPIKES.map((s) => (
+                  <tr key={s.n}>
+                    <td className="tbl__name">{s.n}</td>
+                    <td>
+                      <span className="chip">{s.mode}</span>
+                    </td>
+                    <td>{s.stage}</td>
+                    <td>
+                      <div className="meter">
+                        <div className="meter__bar">
+                          <span style={{ width: `${s.conf}%` }} data-s={s.status} />
+                        </div>
+                        <span className="meter__n">{s.conf}%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <Spark data={s.spark} color="var(--chart-1)" />
+                    </td>
+                    <td>
+                      <span className={`badge badge--${s.status}`}>{s.statusLabel}</span>
+                    </td>
+                    <td>
+                      <button className="btn btn--sm" type="button">
+                        Review
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
         </div>
       </main>
     </div>
