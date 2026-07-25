@@ -1,0 +1,55 @@
+/**
+ * DIRECTION A — "Paper and Ink"
+ *
+ * A considered printed document. Warm off-white, humanist serif for prose and for the
+ * model's claims, sans reserved for chrome, labels and figures. Setting a hypothesis in
+ * serif makes it read as considered prose rather than machine output, which is the point:
+ * the console must never look like it is scoring a child.
+ *
+ * Warmth comes from the neutrals, not from the accent. One restrained accent, one alarm.
+ */
+
+[data-direction="paper"] {
+  --canvas: oklch(0.973 0.005 92);
+  --surface: oklch(0.995 0.002 92);
+  --surface-2: oklch(0.952 0.008 92);
+
+  --ink: oklch(0.26 0.022 260);
+  --ink-muted: oklch(0.48 0.018 258);
+
+  --line: oklch(0.9 0.007 90);
+  --line-strong: oklch(0.8 0.01 90);
+  --line-w: 1px;
+
+  --accent: oklch(0.47 0.076 205);
+  --accent-hover: oklch(0.39 0.076 205);
+  --accent-weak: oklch(0.955 0.019 205);
+  --accent-ink: oklch(0.995 0 0);
+
+  --alarm: oklch(0.52 0.16 32);
+  --alarm-bg: oklch(0.955 0.033 60);
+  --alarm-ink: oklch(0.42 0.12 38);
+
+  --uncertain: oklch(0.66 0.012 90);
+  --uncertain-bg: oklch(0.93 0.008 90);
+
+  --font-display: var(--font-serif), Georgia, serif;
+  --font-body: var(--font-serif), Georgia, serif;
+  --font-ui: var(--font-sans), system-ui, sans-serif;
+
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  --elev-raised: 0 1px 2px oklch(0.4 0.03 260 / 0.05);
+  --elev-overlay: 0 10px 30px oklch(0.4 0.03 260 / 0.09);
+
+  --focus-color: oklch(0.6 0.09 205);
+}
+
+/* Child mode stays the same language, just larger and rounder. No restyle. */
+[data-direction="paper"][data-mood="child"] {
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}

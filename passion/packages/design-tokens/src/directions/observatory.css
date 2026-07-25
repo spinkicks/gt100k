@@ -1,0 +1,56 @@
+/**
+ * DIRECTION C — "Observatory"
+ *
+ * An instrument at night. Near-monochrome dark ground so the only thing that glows is the
+ * child's own evidence. Extends the look the Evidence Explorer already has, and it is the
+ * most natural fit for a 3D graph on a canvas.
+ *
+ * Honest risk, recorded here rather than discovered later: dark grounds are the weakest
+ * choice for long-form reading (the Parent Playbook) and are less studied for young
+ * children. If this wins, it likely wins for the evidence and 3D surfaces only.
+ */
+
+[data-direction="observatory"] {
+  --canvas: oklch(0.19 0.016 262);
+  --surface: oklch(0.235 0.018 262);
+  --surface-2: oklch(0.275 0.02 262);
+
+  --ink: oklch(0.95 0.006 262);
+  --ink-muted: oklch(0.72 0.014 262);
+
+  --line: oklch(0.34 0.02 262);
+  --line-strong: oklch(0.46 0.025 262);
+  --line-w: 1px;
+
+  --accent: oklch(0.78 0.13 195);
+  --accent-hover: oklch(0.86 0.13 195);
+  --accent-weak: oklch(0.3 0.05 200);
+  --accent-ink: oklch(0.16 0.02 262);
+
+  --alarm: oklch(0.7 0.16 35);
+  --alarm-bg: oklch(0.3 0.07 35);
+  --alarm-ink: oklch(0.87 0.1 45);
+
+  --uncertain: oklch(0.5 0.012 262);
+  --uncertain-bg: oklch(0.28 0.012 262);
+
+  --font-display: var(--font-sans), system-ui, sans-serif;
+  --font-body: var(--font-sans), system-ui, sans-serif;
+  --font-ui: var(--font-sans), system-ui, sans-serif;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --elev-raised: 0 1px 0 oklch(1 0 0 / 0.05), 0 2px 10px oklch(0 0 0 / 0.4);
+  --elev-overlay: 0 12px 36px oklch(0 0 0 / 0.55);
+
+  --focus-color: oklch(0.8 0.12 195);
+}
+
+[data-direction="observatory"][data-mood="child"] {
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --line-w: 2px;
+}

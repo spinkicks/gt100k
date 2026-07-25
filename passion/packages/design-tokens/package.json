@@ -1,0 +1,13 @@
+{
+  "name": "@gt100k/design-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Framework-free CSS custom properties: the single source of truth for the PassionLab design system. Zero dependencies so a Vite/R3F app, a static export, or a future Figma sync can all consume it.",
+  "exports": {
+    ".": "./src/index.css",
+    "./index.css": "./src/index.css",
+    "./contract.css": "./src/contract.css",
+    "./directions/*.css": "./src/directions/*.css"
+  },
+  "files": ["src"]
+}
