@@ -1,0 +1,25 @@
+.cabin-view {
+  position: relative;
+  width: 100%;
+}
+
+.cabin-view-ab-toggle {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  z-index: 5;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.75rem;
+  font-family: system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  background: rgba(20, 20, 20, 0.65);
+  color: #fdf8ee;
+  cursor: pointer;
+}
+
+.cabin-view-ab-toggle:hover {
+  background: rgba(20, 20, 20, 0.85);
+}
