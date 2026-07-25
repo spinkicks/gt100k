@@ -1,0 +1,3 @@
+# Loop screenshots (regenerable) — keep the dir, ignore the shots.
+shots/*
+!shots/.gitkeep
