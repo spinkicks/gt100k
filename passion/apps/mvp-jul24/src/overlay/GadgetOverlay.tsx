@@ -100,10 +100,14 @@ function GadgetPuzzle({ id, onSolved }: { id: string; onSolved: () => void }) {
   const gadget = gadgetById(id);
   const Puzzle = gadget && gadget.status !== "coming-soon" ? gadget.Puzzle : undefined;
   const Component = Puzzle ?? ComingSoon;
+  // Fresh seed each time a gadget is opened (this component remounts per open
+  // via the overlay's key), so re-entering a gadget yields a different
+  // generated puzzle — not just the "Next puzzle" button.
+  const [seed] = useState(() => Math.floor(Math.random() * 1_000_000_000));
 
   return (
     <Component
-      seed={0}
+      seed={seed}
       onSolved={() => {
         useInterest.getState().recordSolve(id);
         onSolved();
