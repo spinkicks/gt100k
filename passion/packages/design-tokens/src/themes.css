@@ -16,7 +16,11 @@
 
   --ink: #1c2025;
   --ink-muted: #5a6472;
-  --ink-faint: #8b95a3;
+  /* Measured, not eyeballed: 5.17:1 on white, 4.86:1 on the canvas, 4.69:1 on the rail.
+     Clears AA on every ground we actually place it on. The lighter grey it replaced was
+     3.03:1, which is why tertiary text should earn its rank from size and weight rather
+     than from paleness. */
+  --ink-faint: #656e7a;
 
   --line: #e4e7ec;
   --line-strong: #cfd4dc;

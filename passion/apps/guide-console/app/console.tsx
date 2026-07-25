@@ -22,7 +22,6 @@ import { FamilyPanel } from "./family-panel.js";
 import { AccessPanel } from "./access-panel.js";
 import { familyOfferCount } from "./family.js";
 import { accessNeedsReview, accessProposalCount } from "./access.js";
-import Galaxy from "./Galaxy.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 
 type View = "hypotheses" | "wellbeing" | "plan" | "family" | "access";
@@ -30,22 +29,11 @@ type View = "hypotheses" | "wellbeing" | "plan" | "family" | "access";
 export function GuideConsole(): JSX.Element {
   const ctrl = useConsole();
   const [view, setView] = useState<View>("hypotheses");
-  const [reduceMotion, setReduceMotion] = useState(false);
 
   // Switching child returns to the core read so a tab never points at a stale kid's section.
   useEffect(() => {
     setView("hypotheses");
   }, [ctrl.kid]);
-
-  // The galaxy animates via requestAnimationFrame (not CSS), so honor reduced-motion explicitly:
-  // freeze it to a static starfield when the user asks for less motion.
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = (): void => setReduceMotion(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
 
   function pick(card: HypothesisCard, i: number): void {
     setView("hypotheses");
@@ -89,25 +77,6 @@ export function GuideConsole(): JSX.Element {
 
   return (
     <>
-      {/* Calm, grayscale ambient starfield behind the console; decorative only, non-interactive,
-          with a scrim (CSS) so text on the transparent surfaces stays legible. */}
-      <div className="galaxy-bg" aria-hidden="true">
-        <Galaxy
-          saturation={0}
-          hueShift={0}
-          density={0.6}
-          glowIntensity={0.14}
-          starSpeed={0.2}
-          speed={0.3}
-          rotationSpeed={0.02}
-          twinkleIntensity={0.2}
-          mouseInteraction={false}
-          mouseRepulsion={false}
-          disableAnimation={reduceMotion}
-          transparent
-        />
-      </div>
-
       <div className="app app--workbench">
         <aside className="sidebar">
         <Brand />

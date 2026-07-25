@@ -293,6 +293,9 @@ importers:
       '@gt100k/access-broker':
         specifier: workspace:*
         version: link:../../packages/access-broker
+      '@gt100k/design-tokens':
+        specifier: workspace:*
+        version: link:../../packages/design-tokens
       '@gt100k/family':
         specifier: workspace:*
         version: link:../../packages/family

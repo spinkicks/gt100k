@@ -3,6 +3,7 @@ const nextConfig = {
   transpilePackages: [
     "@gt100k/access-broker",
     "@gt100k/concierge",
+    "@gt100k/design-tokens",
     "@gt100k/family",
     "@gt100k/hypothesis-store",
     "@gt100k/interest-inference",
