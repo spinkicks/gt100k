@@ -1,29 +1,31 @@
 import { PerspectiveCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
+import * as THREE from "three";
 import type { TopicId } from "../game/types";
-import { GadgetMarker } from "./scene3d/GadgetMarker";
-import { Room } from "./scene3d/Room";
-import { gadgetAnchors } from "./scene3d/anchors";
+import { Cabin } from "./scene3d/Cabin";
+import { EnvLight } from "./scene3d/EnvLight";
 
 /**
- * 3D cabin backend: a fixed-camera, procedurally-built cozy room (warm wood walls + floor,
- * a glowing brick fireplace, a rug and window — all `three.js` primitives + `MeshStandardMaterial`,
- * no external textures/models) with drei `<Html>` "+" markers over each gadget's wall anchor.
+ * 3D cabin backend: a fixed-camera, real-asset cozy room (warm scanned wood, HDR image-based
+ * lighting, a glowing stone fireplace, a window onto a mountain vista, a cat, a wall lantern) with
+ * clickable 3D props — not floating UI markers — for each gadget (see scene3d/GadgetProps.tsx).
  * The camera is static — no OrbitControls/PointerLock/WASD/physics; the view never moves.
  */
 export const Cabin3D: React.FC<{ topic: TopicId }> = ({ topic }) => {
-  const anchors = gadgetAnchors(topic);
-
   return (
     <div className="cabin3d-canvas-wrap" style={{ width: "100%", height: "100%" }}>
-      <Canvas shadows dpr={[1, 2]}>
-        <PerspectiveCamera makeDefault position={[0, 1.5, 4]} fov={60} />
+      <Canvas shadows dpr={[1, 2]} gl={{ toneMappingExposure: 1.05 }}>
+        <color attach="background" args={["#171310"]} />
+        <PerspectiveCamera
+          makeDefault
+          position={[-1.35, 1.55, 2.75]}
+          fov={62}
+          onUpdate={(self) => self.lookAt(new THREE.Vector3(0.55, 1.25, -2.7))}
+        />
         <Suspense fallback={null}>
-          <Room />
-          {anchors.map((anchor) => (
-            <GadgetMarker key={anchor.id} anchor={anchor} />
-          ))}
+          <EnvLight />
+          <Cabin topic={topic} />
         </Suspense>
       </Canvas>
     </div>
