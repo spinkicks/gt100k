@@ -39,3 +39,43 @@ test("exit button calls onExit", () => {
   fireEvent.click(document.querySelector(".lits-exit")!);
   expect(onExit).toHaveBeenCalled();
 });
+
+test("no 'Next puzzle' button until solved", () => {
+  render(<LITS seed={2} onSolved={() => {}} onExit={() => {}} />);
+  expect(document.querySelector(".lits-next")).toBeNull();
+});
+
+test("'Next puzzle' loads a different bank puzzle, resets the board, and does not exit", () => {
+  const onSolved = vi.fn();
+  const onExit = vi.fn();
+  render(<LITS seed={5} onSolved={onSolved} onExit={onExit} />);
+
+  const solutionCells = () => Array.from(document.querySelectorAll('[data-solution="1"]'));
+  // Snapshot which cells are the current puzzle's solution before shading any of them —
+  // this is the puzzle's "identity" for comparison after advancing.
+  const keysBefore = solutionCells().map((el) =>
+    el.getAttribute("aria-label")?.replace(", shaded", ""),
+  );
+
+  for (const el of solutionCells()) fireEvent.click(el);
+  expect(onSolved).toHaveBeenCalledTimes(1);
+
+  const nextBtn = document.querySelector(".lits-next");
+  expect(nextBtn).toBeTruthy();
+  fireEvent.click(nextBtn!);
+
+  // Board resets (nothing shaded, "Next puzzle" hidden again until re-solved) and the
+  // subgame does NOT auto-close.
+  expect(document.querySelectorAll(".lits-shaded").length).toBe(0);
+  expect(document.querySelector(".lits-next")).toBeNull();
+  expect(onExit).not.toHaveBeenCalled();
+
+  const keysAfter = solutionCells().map((el) =>
+    el.getAttribute("aria-label")?.replace(", shaded", ""),
+  );
+  expect(keysAfter).not.toEqual(keysBefore);
+
+  // The new puzzle is still fully solvable through the UI.
+  for (const el of solutionCells()) fireEvent.click(el);
+  expect(onSolved).toHaveBeenCalledTimes(2);
+});
