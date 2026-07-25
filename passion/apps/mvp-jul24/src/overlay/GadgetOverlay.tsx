@@ -4,6 +4,8 @@ import { gadgetById } from "../gadgets/registry";
 import { useGame } from "../game/store";
 import { useInterest } from "../interest/store";
 import ComingSoon from "../puzzles/ComingSoon";
+import { FLOOR_MS } from "../signals/log";
+import { sessionLog } from "../signals/session";
 import "./GadgetOverlay.css";
 
 export default function GadgetOverlay() {
@@ -14,7 +16,25 @@ export default function GadgetOverlay() {
   useEffect(() => {
     setSolved(false);
     if (!focusedGadgetId) return;
-    useInterest.getState().recordOpen(focusedGadgetId);
+    const id = focusedGadgetId;
+    useInterest.getState().recordOpen(id);
+
+    // Snapshot at open so the emitted event reflects *this* visit, not the
+    // gadget's lifetime total.
+    const before = useInterest.getState().byGadget[id];
+    const activeAtOpen = before?.activeMs ?? 0;
+    const solvesAtOpen = before?.solves ?? 0;
+
+    return () => {
+      const activeMs = (useInterest.getState().byGadget[id]?.activeMs ?? 0) - activeAtOpen;
+      sessionLog.recordOpen(id, activeMs);
+      // Returning to something already solved is unrequired revision — the
+      // puzzle owed them nothing. Gated on the same floor so a misclick on a
+      // finished gadget is not read as depth.
+      if (activeMs >= FLOOR_MS && solvesAtOpen > 0) {
+        sessionLog.recordDepth(id, "unrequired_revision");
+      }
+    };
   }, [focusedGadgetId]);
 
   return (
