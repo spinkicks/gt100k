@@ -14,7 +14,11 @@
  */
 import { mkdirSync } from "node:fs";
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { type Page, chromium } from "playwright";
+
+const HERE = resolve(fileURLToPath(import.meta.url), "..");
+export const PROJECT_ROOT = resolve(HERE, "..");
 
 interface Args {
   [k: string]: string | boolean;
@@ -38,7 +42,8 @@ const str = (v: string | boolean | undefined): string | undefined =>
   typeof v === "string" ? v : undefined;
 
 const DEFAULT_PORT = 5178;
-const DEFAULT_OUT_DIR = "/Users/felipecaicedo/.claude/jobs/716f9f3e/tmp";
+// Overridable via --out-dir or SMOKE_OUT_DIR; defaults to the repo-relative (gitignored) shots/ dir.
+const DEFAULT_OUT_DIR = resolve(PROJECT_ROOT, "shots");
 const VIEWPORT = { width: 1440, height: 900 };
 
 let failures = 0;
@@ -183,7 +188,7 @@ async function shoot3dCabin(base: string, outDir: string, timeout: number): Prom
 export async function smoke(args: Args = {}): Promise<{ failures: number }> {
   const port = Number(str(args.port) ?? DEFAULT_PORT);
   const base = `http://localhost:${port}`;
-  const outDir = resolve(str(args["out-dir"]) ?? DEFAULT_OUT_DIR);
+  const outDir = resolve(str(args["out-dir"]) ?? process.env.SMOKE_OUT_DIR ?? DEFAULT_OUT_DIR);
   const timeout = Number(str(args.timeout) ?? 30000);
   mkdirSync(outDir, { recursive: true });
 

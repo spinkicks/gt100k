@@ -9,7 +9,7 @@ export interface GadgetAnchor {
   position: readonly [number, number, number];
 }
 
-/** Back-wall inner face sits just in front of ROOM.backZ (see scene3d/room-dims.ts). */
+/** Back-wall inner face sits just in front of ROOM.backZ (see scene3d/Room.tsx). */
 const ANCHOR_Z = -2.8;
 
 // Markers are kept within the fixed camera's frame: at z=-2.8 with the camera at

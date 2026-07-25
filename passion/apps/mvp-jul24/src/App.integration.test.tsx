@@ -17,8 +17,7 @@ test("full loop: map -> cabin -> gadget -> solve -> readout", () => {
     screen.getByTestId("app-root").querySelector('[data-cabin="math"]') as HTMLElement,
   );
 
-  // Cabin: force static backend (no WebGL/Canvas needed in jsdom), then find the nonogram hotspot.
-  useGame.getState().setBackend("static");
+  // Cabin: static backend is set in beforeEach (no WebGL/Canvas needed in jsdom); find the nonogram hotspot.
   const nonogramHotspot = document.querySelector('[data-gadget="nonogram"]') as HTMLElement;
   expect(nonogramHotspot).toBeInTheDocument();
 
