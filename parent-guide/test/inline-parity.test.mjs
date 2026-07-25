@@ -10,7 +10,7 @@ const mod = readFileSync(fileURLToPath(new URL("../widget-logic.mjs", import.met
 function decideBody(src) {
   const start = src.indexOf("export function decide(s) {");
   expect(start).toBeGreaterThan(-1);
-  return src.slice(start + "export function decide(s) {".length).replace(/\s+/g, " ").trim().slice(0, 400);
+  return src.slice(start + "export function decide(s) {".length).replace(/\s+/g, " ").trim();
 }
 
 describe("inline widget mirrors widget-logic.mjs", () => {

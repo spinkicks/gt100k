@@ -13,7 +13,8 @@ const KEYS = [
 function toSignals(bits) {
   return {
     kidId: "t", now: "2026-01-01T00:00:00.000Z",
-    activeSpikes: bits.overIdentification ? 1 : 2,
+    // The engine's decide() ignores activeSpikes, so this constant does not affect parity.
+    activeSpikes: 1,
     ...bits,
   };
 }
