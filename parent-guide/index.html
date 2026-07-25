@@ -46,6 +46,20 @@
   .sources li{margin:.4em 0}
   .sources h3{margin-top:1.4em}
   .placeholder{color:var(--muted);font-style:italic}
+  .toggles{border:none;margin:0;padding:0;display:grid;gap:.6em}
+  .toggles legend{font-weight:600;padding:0 0 .4em;font-size:.95rem}
+  .toggles label{display:grid;grid-template-columns:auto 1fr;gap:.55em;
+    align-items:start;cursor:pointer;line-height:1.4}
+  .toggles input{margin-top:.28em;width:1.05em;height:1.05em;accent-color:var(--accent)}
+  #checkin-submit{margin-top:16px;font:inherit;font-weight:600;color:#fff;
+    background:var(--accent);border:1px solid var(--accent);border-radius:8px;
+    padding:.6em 1.1em;cursor:pointer}
+  #checkin-submit:hover{filter:brightness(.94)}
+  #checkin-submit:focus-visible,.toggles input:focus-visible{outline:3px solid #b9814f;outline-offset:2px}
+  #checkin-result:not(:empty){margin-top:18px;padding:16px 18px;border:1px solid var(--line);
+    border-radius:var(--r);background:var(--bg)}
+  #checkin-result h3{margin:0 0 .3em}
+  #checkin-result .posture{font-size:.9rem;color:var(--muted);margin-top:.6em}
   @media (max-width:820px){.wrap{grid-template-columns:1fr}nav.toc{position:static}}
   @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
   @media print{
@@ -248,7 +262,25 @@
 
     <section id="checkin">
       <h2>Family Check-In</h2>
-      <p class="placeholder">A short, private self-reflection tool will live here. It never stores or sends anything, and it never shows a score, a label, or a verdict. It is guidance, not a diagnosis.</p>
+      <p>A short, private self-reflection about right now. It never stores or sends anything, and it never shows a score, a label, or a verdict. It offers what tends to help, and it is guidance, not a diagnosis.</p>
+      <div class="card">
+        <form id="checkin-form">
+          <fieldset class="toggles">
+            <legend>Check any that feel true right now. Leave the rest.</legend>
+            <label><input type="checkbox" data-signal="anyStakesEvent" /> Is a big test, competition, showcase, or deadline coming up soon?</label>
+            <label><input type="checkbox" data-signal="anyDevaluation" /> Lately are they doing it flatly, canceling, or not sharing it anymore?</label>
+            <label><input type="checkbox" data-signal="anyBackOffOrRest" /> Do they seem worn out, or asking for a break?</label>
+            <label><input type="checkbox" data-signal="pressuredSpecialization" /> Is the schedule pushing them harder into this even as their interest in it seems to be fading?</label>
+            <label><input type="checkbox" data-signal="overIdentification" /> Is this the only thing they'll do or talk about, with no other live interest?</label>
+            <label><input type="checkbox" data-signal="parentalOverValuation" /> Honestly, are you more invested in this than they are?</label>
+            <label><input type="checkbox" data-signal="conditionalRegardObserved" /> Does your warmth or approval shift with how they perform?</label>
+            <label><input type="checkbox" data-signal="familyControlObserved" /> Do you catch yourself hovering, correcting, or taking over?</label>
+            <label><input type="checkbox" data-signal="lowFamilyEngagement" /> Is there little you actually do together around their interests?</label>
+          </fieldset>
+          <button type="submit" id="checkin-submit">Show me what tends to help</button>
+        </form>
+        <div id="checkin-result" role="status" aria-live="polite"></div>
+      </div>
     </section>
 
     <section id="sources" class="sources">
@@ -395,5 +427,127 @@
     </section>
   </main>
 </div>
+<script>
+// VERBATIM mirror of parent-guide/widget-logic.mjs decide() (the "export " keyword dropped).
+// Kept byte-for-byte in sync by parent-guide/test/inline-parity.test.mjs. Do not edit by hand.
+function decide(s) {
+  const elevated =
+    s.parentalOverValuation === true ||
+    s.conditionalRegardObserved === true ||
+    s.familyControlObserved === true ||
+    (s.pressuredSpecialization === true && s.anyDevaluation === true) ||
+    (s.overIdentification === true && s.anyStakesEvent === true);
+
+  if (elevated) {
+    return {
+      branch: "elevated", risk: "elevated",
+      autonomySupport: "up", structure: "steady", warmth: "non_contingent",
+      decouple: true, escalate: true, talkToHuman: true,
+      offers: ["keep_warmth_same", "reduce_evaluation",
+        ...(s.overIdentification === true ? ["second_door"] : []), "logistics_only"],
+    };
+  }
+  if (s.anyStakesEvent === true) {
+    return {
+      branch: "rising_stakes", risk: "watch",
+      autonomySupport: "up", structure: "steady", warmth: "non_contingent",
+      decouple: true, escalate: false, talkToHuman: false,
+      offers: ["reduce_evaluation", "logistics_only", "access"],
+    };
+  }
+  if (s.anyBackOffOrRest === true || s.anyDevaluation === true) {
+    return {
+      branch: "strain", risk: "watch",
+      autonomySupport: "up", structure: "steady", warmth: "non_contingent",
+      decouple: false, escalate: true, talkToHuman: true,
+      offers: ["guilt_free_break", "access", "structure"],
+    };
+  }
+  if (s.lowFamilyEngagement === true) {
+    return {
+      branch: "low_engagement", risk: "none",
+      autonomySupport: "steady", structure: "up", warmth: "non_contingent",
+      decouple: false, escalate: false, talkToHuman: false,
+      offers: ["structure", "access"],
+    };
+  }
+  return {
+    branch: "healthy", risk: "none",
+    autonomySupport: "steady", structure: "steady", warmth: "non_contingent",
+    decouple: false, escalate: false, talkToHuman: false,
+    offers: ["access", "structure", "community"],
+  };
+}
+
+// Parent-facing copy per branch (spec 5.3), offer-framed, no em-dashes, no score or verdict.
+const COPY = {
+  healthy: {
+    heading: "Things look steady",
+    body: "What tends to help here is to keep opening a door they cannot reach on their own, offer a community around what they love, and keep your warmth the same no matter how things go.",
+  },
+  low_engagement: {
+    heading: "There is not much shared time right now",
+    body: "What tends to help is to set up a regular, low-stakes time and place, and do something together around it, like a build night, a visit, or a teach-back. Keep your warmth the same no matter how things go.",
+  },
+  strain: {
+    heading: "They may be worn out or pulling back",
+    body: "What tends to help is to offer a genuinely guilt-free, reversible break, keep a regular time and easy access open for when they want it, and keep your warmth exactly the same. If this lasts, this is a moment to talk to your guide or a trusted professional.",
+  },
+  rising_stakes: {
+    heading: "Something higher-stakes is coming up",
+    body: "What tends to help is to add more freedom and less evaluation, not more pressure. Make it clear the result does not change how you feel about them, keep access open, and offer to handle the logistics only.",
+  },
+  elevated: {
+    heading: "This is a moment to protect the relationship first",
+    body: "What tends to help is to keep your warmth exactly the same before and after any result, and make clear it never depends on how things go. Ease off evaluation, hand back ownership of the how, and offer to handle the logistics only. This is a moment to talk to your guide or a trusted professional.",
+  },
+};
+
+const AUTONOMY_WORDS = { up: "give them more room to choose", steady: "keep their room to choose steady" };
+const STRUCTURE_WORDS = { up: "add a little more structure and rhythm", steady: "keep the structure and rhythm steady" };
+
+(function () {
+  const form = document.getElementById("checkin-form");
+  const out = document.getElementById("checkin-result");
+  if (!form || !out) return;
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    const s = {};
+    form.querySelectorAll("input[data-signal]").forEach(function (input) {
+      s[input.getAttribute("data-signal")] = input.checked;
+    });
+
+    const r = decide(s);
+    const copy = COPY[r.branch] || COPY.healthy;
+
+    out.setAttribute("data-branch", r.branch);
+    out.setAttribute("data-risk", r.risk);
+    out.setAttribute("data-escalate", String(r.escalate));
+    out.setAttribute("data-autonomy", r.autonomySupport);
+    out.setAttribute("data-structure", r.structure);
+    out.setAttribute("data-decouple", String(r.decouple));
+
+    let extra = "";
+    if (r.offers.indexOf("second_door") !== -1) {
+      extra = " It may also help to keep a second, unrelated door open, so a setback in one place is not a crisis of who they are.";
+    }
+
+    const posture = "Posture: " + AUTONOMY_WORDS[r.autonomySupport] + ", " +
+      STRUCTURE_WORDS[r.structure] + ", and keep your warmth non-contingent" +
+      (r.decouple ? ", separating their worth from how it goes." : ".");
+
+    const heading = document.createElement("h3");
+    heading.textContent = copy.heading;
+    const para = document.createElement("p");
+    para.textContent = copy.body + extra;
+    const postureEl = document.createElement("p");
+    postureEl.className = "posture";
+    postureEl.textContent = posture;
+
+    out.replaceChildren(heading, para, postureEl);
+  });
+})();
+</script>
 </body>
 </html>
