@@ -2,4 +2,3 @@ packages:
   - "passion/packages/*"
   - "passion/adapters/*"
   - "passion/apps/*"
-  - "parent-guide"
