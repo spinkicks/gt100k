@@ -13,10 +13,22 @@
 import { useMemo, type JSX } from "react";
 import { AreaChart, BarChart, Donut, Spark } from "./charts.js";
 import { buildOverview, type ShareSlice, type StatTile, type TimeSeries } from "./overview.js";
+import { WhyThis } from "./why.js";
 import type { ConsoleController } from "./useConsole.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 
 const SLICE_COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"];
+
+/**
+ * Which tiles carry a citation, by the tile key `buildOverview` assigns. Sessions is a plain count
+ * of what happened, so there is nothing to cite; the rest are measurement choices we should be able
+ * to defend on the spot.
+ */
+const TILE_CLAIMS: Readonly<Record<string, string>> = {
+  voluntary: "voluntary-returns",
+  depth: "depth-signals",
+  coverage: "coverage",
+};
 
 /** The one place a chart's shape is chosen: charts only draw when the derivation says they can. */
 function Blank({ reason }: { reason: string }): JSX.Element {
@@ -35,9 +47,13 @@ function seriesSentence(label: string, labels: readonly string[], data: readonly
 function Tile({ t }: { t: StatTile }): JSX.Element {
   const color =
     t.trend?.dir === "up" ? "var(--good)" : t.trend?.dir === "down" ? "var(--bad)" : "var(--chart-1)";
+  const claimId = TILE_CLAIMS[t.key];
   return (
     <div className="tile">
-      <div className="tile__k">{t.label}</div>
+      <div className="tile__k why-head">
+        {t.label}
+        {claimId !== undefined ? <WhyThis id={claimId} /> : null}
+      </div>
       <div className="tile__row">
         <span className="tile__v">{t.value}</span>
         {t.trend ? (
@@ -88,7 +104,10 @@ export function OverviewPanel({
         <div className={`card${wellbeing.status === "good" ? "" : " card--alarm"}`}>
           <div className="card__hd">
             <div>
-              <h2>Wellbeing</h2>
+              <div className="why-head">
+                <h2>Wellbeing</h2>
+                <WhyThis id="wellbeing-behaviour-only" what="wellbeing from behaviour alone" />
+              </div>
               <p>Behaviour only. No cameras, no emotion detection.</p>
             </div>
             <span className={`badge badge--${wellbeing.status}`}>{wellbeing.badge}</span>
@@ -130,7 +149,12 @@ export function OverviewPanel({
                 <th scope="col">Area</th>
                 <th scope="col">Work style</th>
                 <th scope="col">Stage</th>
-                <th scope="col">Confidence</th>
+                <th scope="col">
+                  <span className="why-head">
+                    Confidence
+                    <WhyThis id="confidence-lower-bound" what="confidence this way" />
+                  </span>
+                </th>
                 <th scope="col">Activity</th>
                 <th scope="col">Status</th>
                 <th scope="col">
@@ -191,7 +215,10 @@ function ReturnsCard({ s }: { s: TimeSeries }): JSX.Element {
     <div className="card">
       <div className="card__hd">
         <div>
-          <h2>Returns over time</h2>
+          <div className="why-head">
+            <h2>Returns over time</h2>
+            <WhyThis id="prompted-vs-voluntary" what="voluntary and prompted returns separately" />
+          </div>
           <p>Unprompted returns are the signal. Prompted ones are shown for contrast.</p>
         </div>
         {/* A legend for a chart that is not drawn would promise data the card does not have. */}

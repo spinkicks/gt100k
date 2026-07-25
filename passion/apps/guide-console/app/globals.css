@@ -3078,3 +3078,283 @@ body {
   padding: 6px 12px;
   font-size: 0.75rem;
 }
+
+/* ── WhyThis + the Evidence base (@gt100k/research) ───────────────────────────
+   Citations at the point of the claim. Everything here is `why-` prefixed so it cannot collide with
+   the rest of this stylesheet. The trigger is deliberately quiet — a metric should win the eye, not
+   the footnote beside it — and the popover opens BELOW the trigger so it can never cover the number
+   it explains. */
+.why {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+/* Puts a trigger on the same line as the thing it annotates, without touching that thing's own
+   type styles. On a `th` it goes on a span inside the cell, never on the cell itself. */
+.why-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.why-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 21px;
+  height: 21px;
+  flex: 0 0 auto;
+  padding: 0;
+  font: inherit;
+  /* The trigger is dropped into uppercase table headers and bold tile labels, so it resets the
+     inherited type instead of inheriting a treatment meant for a word. */
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--ink-muted);
+  background: none;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: color 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.why-btn:hover,
+.why-btn[aria-expanded="true"] {
+  color: var(--accent);
+  background: var(--accent-weak);
+  opacity: 1;
+}
+.why-btn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+.why-pop {
+  position: absolute;
+  z-index: 40;
+  /* --why-clear and --why-shift are set by why.tsx and are usually 0. They exist so the popover
+     steps out of the way of the number it explains: down past a stat tile when it has to open
+     leftward, and sideways out of a table column when it heads one. */
+  top: calc(100% + 8px + var(--why-clear, 0px));
+  left: calc(-6px + var(--why-shift, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  padding: 13px 15px 14px;
+  /* Reset every inherited display treatment: this can sit inside an uppercase header cell. */
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.006em;
+  text-transform: none;
+  text-align: left;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elev-overlay);
+  animation: why-open 0.14s ease-out both;
+}
+/* Flipped when the trigger sits near an edge, so the popover always opens into the viewport. */
+.why-pop--left {
+  left: auto;
+  right: -6px;
+}
+.why-pop--up {
+  top: auto;
+  bottom: calc(100% + 8px);
+}
+@keyframes why-open {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.why-pop__hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.why-pop__k {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.why-pop__why {
+  color: var(--ink);
+}
+.why-pop__limit,
+.why-pop__nosrc {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
+.why-pop__limit b {
+  font-weight: 700;
+  color: var(--ink);
+}
+.why-pop__src {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-top: 9px;
+  border-top: 1px solid var(--line);
+}
+.why-pop__srck {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.why-src {
+  align-self: flex-start;
+  font-size: 0.78rem;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.why-src:hover {
+  border-bottom-color: currentColor;
+}
+.why-src:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* The basis tag. Colour is the second carrier here, never the first: the words differ too, so
+   "Our default" is still legible as a choice we made when the amber ground is not. */
+.why-tag {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  padding: 2px 9px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: -0.004em;
+  /* Sentence case, matching the console's existing status badges. An all-caps "OUR DEFAULT" reads
+     as a warning; it is an admission. */
+  text-transform: none;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  border-radius: 999px;
+}
+.why-tag--evidence {
+  color: var(--accent);
+  background: var(--accent-weak);
+}
+.why-tag--chosen {
+  color: var(--warn);
+  background: var(--warn-bg);
+}
+.why-tag--policy {
+  color: var(--ink-muted);
+  background: var(--surface-2);
+  border-color: var(--line);
+}
+
+/* Sidebar link out to the full list. Modest by design — it is reference material, not a task. */
+.why-link {
+  align-self: flex-start;
+  padding: 0 3px;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.why-link:hover {
+  color: var(--accent);
+  border-bottom-color: currentColor;
+}
+.why-link:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ── Evidence base page ──────────────────────────────────────────────────── */
+.why-page {
+  margin-inline: auto;
+  display: grid;
+  gap: 20px;
+}
+.why-page__hd {
+  max-width: 68ch;
+}
+.why-page__hd h1 {
+  margin: 0 0 8px;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.why-page__lede {
+  margin: 0 0 16px;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+.why-page__lede .why-tag {
+  vertical-align: baseline;
+}
+.why-back {
+  text-decoration: none;
+}
+.why-list {
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.why-entry {
+  display: grid;
+  gap: 6px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.why-entry:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+.why-entry__hd {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.why-entry__k {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.why-entry__why {
+  margin: 0;
+  max-width: 78ch;
+  font-size: 0.875rem;
+}
+.why-entry__limit,
+.why-entry__nosrc {
+  margin: 0;
+  max-width: 78ch;
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+}
+.why-entry__limit b {
+  font-weight: 700;
+  color: var(--ink);
+}
+.why-entry__src {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}

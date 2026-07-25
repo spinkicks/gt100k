@@ -7,6 +7,7 @@ const nextConfig = {
     "@gt100k/family",
     "@gt100k/hypothesis-store",
     "@gt100k/interest-inference",
+    "@gt100k/research",
     "@gt100k/signal-pipeline",
     "@gt100k/two-axis-tagging",
     "@gt100k/student-profile",

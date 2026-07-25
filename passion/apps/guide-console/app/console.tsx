@@ -8,6 +8,7 @@
 // window.__qa (via useConsole) for the LOOP_QA usability gate; the contract is driven from the
 // controller, so it stays live whichever tab is showing. Overview is the default landing view: guides
 // are not technical, and the summary is what orients them before they act.
+import Link from "next/link";
 import { useEffect, useState, type JSX } from "react";
 import { useConsole } from "./useConsole.js";
 import {
@@ -93,6 +94,11 @@ export function GuideConsole(): JSX.Element {
         <ChildSwitcher ctrl={ctrl} />
         <div className="sidebar__foot">
           <span className="chip chip--soft">Synthetic data only</span>
+          {/* Every number on the Overview can be asked "why?" in place; this is the same material
+              read end to end, which is also how a new guide gets oriented. */}
+          <Link className="why-link" href="/evidence">
+            Evidence base
+          </Link>
         </div>
       </aside>
 
