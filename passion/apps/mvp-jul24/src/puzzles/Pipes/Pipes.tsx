@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
-import { LEVELS } from "./levels.data";
+import { EASY_SIZE, HARD_SIZE, generateLevel, nextSeed } from "./generate";
 import { type Grid, type TileKind, computePowered, isSolved, makeGrid, rotateTile } from "./logic";
 import "./Pipes.css";
 
@@ -46,8 +46,16 @@ function PipeArt({ kind }: { kind: TileKind }) {
 }
 
 export default function Pipes({ seed, onSolved, onExit }: PuzzleProps) {
-  const level = useMemo(() => LEVELS[seed % LEVELS.length]!, [seed]);
-  const [grid, setGrid] = useState<Grid>(() => makeGrid(level, seed));
+  // `seed` gives session variety while `puzzleIndex` ("Next puzzle" clicks)
+  // always advances to a fresh, deterministic-per-index generated level —
+  // there's no fixed level list to run out of, so this is effectively
+  // unlimited puzzles. Difficulty alternates between the two supported grid
+  // sizes so both get exercised over a play session.
+  const [puzzleIndex, setPuzzleIndex] = useState(0);
+  const genSeed = useMemo(() => nextSeed(seed, puzzleIndex), [seed, puzzleIndex]);
+  const size = puzzleIndex % 2 === 0 ? EASY_SIZE : HARD_SIZE;
+  const level = useMemo(() => generateLevel(genSeed, size), [genSeed, size]);
+  const [grid, setGrid] = useState<Grid>(() => makeGrid(level, genSeed));
   // Visual-only quarter-turn counter per cell (unbounded, unlike Tile.rotation)
   // so the SVG always spins forward instead of snapping back at the 3->0 wrap.
   const [spins, setSpins] = useState<number[][]>(() =>
@@ -56,11 +64,11 @@ export default function Pipes({ seed, onSolved, onExit }: PuzzleProps) {
   const solvedRef = useRef(false);
 
   useEffect(() => {
-    const g = makeGrid(level, seed);
+    const g = makeGrid(level, genSeed);
     setGrid(g);
     setSpins(g.map((row) => row.map((t) => t.rotation)));
     solvedRef.current = false;
-  }, [level, seed]);
+  }, [level, genSeed]);
 
   const powered = useMemo(() => computePowered(grid), [grid]);
   const solved = useMemo(() => isSolved(grid), [grid]);
@@ -79,6 +87,10 @@ export default function Pipes({ seed, onSolved, onExit }: PuzzleProps) {
       s.map((row, ri) => (ri !== r ? row : row.map((v, ci) => (ci !== c ? v : v + 1)))),
     );
   };
+
+  // Advances to a freshly generated puzzle without leaving the subgame —
+  // the board resets via the [level, genSeed] effect above.
+  const nextPuzzle = () => setPuzzleIndex((i) => i + 1);
 
   const cols = grid[0]?.length ?? 0;
 
@@ -133,6 +145,11 @@ export default function Pipes({ seed, onSolved, onExit }: PuzzleProps) {
           }),
         )}
       </div>
+      {solved && (
+        <button type="button" className="pp-next" onClick={nextPuzzle}>
+          Next puzzle →
+        </button>
+      )}
     </div>
   );
 }

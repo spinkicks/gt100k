@@ -1,7 +1,7 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
-import { type Cell, blankGrid, isSolved, makePuzzle } from "./logic";
-import { PUZZLES } from "./puzzles.data";
+import { generatePuzzle } from "./generate";
+import { type Cell, type NonogramPuzzle, blankGrid, isSolved } from "./logic";
 import "./Nonogram.css";
 
 const next = (c: Cell): Cell => (c === "empty" ? "filled" : c === "filled" ? "crossed" : "empty");
@@ -9,20 +9,47 @@ const next = (c: Cell): Cell => (c === "empty" ? "filled" : c === "filled" ? "cr
 const clueText = (clue: number[]): string =>
   clue.length === 1 && clue[0] === 0 ? "" : clue.join(" ");
 
+const sameSolution = (a: boolean[][], b: boolean[][]): boolean =>
+  a.length === b.length && a.every((row, r) => row.every((v, c) => v === b[r]?.[c]));
+
+// Monotonically increasing across the module's lifetime so every mount and
+// every "Next puzzle" click draws from a different point in the generator's
+// seed space — puzzles never repeat back-to-back.
+let generationCounter = 0;
+
+function nextGeneratorSeed(base: number): number {
+  generationCounter += 1;
+  return (base * 2654435761 + generationCounter * 40503) >>> 0;
+}
+
+/** Generates a fresh unique-solution puzzle, guaranteed different from `avoid`. */
+function generateFreshPuzzle(base: number, avoid?: boolean[][]): NonogramPuzzle {
+  let puzzle = generatePuzzle(nextGeneratorSeed(base));
+  while (avoid && sameSolution(puzzle.solution, avoid)) {
+    puzzle = generatePuzzle(nextGeneratorSeed(base));
+  }
+  return puzzle;
+}
+
 export default function Nonogram({ seed, onSolved, onExit }: PuzzleProps) {
-  const puzzle = useMemo(() => makePuzzle(PUZZLES[seed % PUZZLES.length]!), [seed]);
+  // Effectively unlimited puzzles: generate a fresh one on mount instead of
+  // picking from a fixed hand-authored set.
+  const [puzzle, setPuzzle] = useState<NonogramPuzzle>(() => generateFreshPuzzle(seed));
   const [grid, setGrid] = useState<Cell[][]>(() => blankGrid(puzzle.size));
+  const [solved, setSolved] = useState(false);
   const solvedRef = useRef(false);
 
-  // Reset the board whenever a new puzzle is loaded (seed change).
+  // Reset the board whenever a new puzzle is loaded.
   useEffect(() => {
     setGrid(blankGrid(puzzle.size));
+    setSolved(false);
     solvedRef.current = false;
   }, [puzzle]);
 
   useEffect(() => {
     if (!solvedRef.current && isSolved(grid, puzzle)) {
       solvedRef.current = true;
+      setSolved(true);
       onSolved();
     }
   }, [grid, puzzle, onSolved]);
@@ -32,6 +59,13 @@ export default function Nonogram({ seed, onSolved, onExit }: PuzzleProps) {
       g.map((row, ri) => (ri === r ? row.map((cell, ci) => (ci === c ? next(cell) : cell)) : row)),
     );
   };
+
+  // "Next puzzle" — regenerate and reset instead of exiting; onSolved has
+  // already fired once for this puzzle and won't fire again until the new
+  // one is also solved.
+  const nextPuzzle = useCallback(() => {
+    setPuzzle((p) => generateFreshPuzzle(seed, p.solution));
+  }, [seed]);
 
   return (
     <div className="ng">
@@ -73,6 +107,11 @@ export default function Nonogram({ seed, onSolved, onExit }: PuzzleProps) {
           </Fragment>
         ))}
       </div>
+      {solved && (
+        <button type="button" className="ng-next" onClick={nextPuzzle}>
+          Next puzzle →
+        </button>
+      )}
     </div>
   );
 }

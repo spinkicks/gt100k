@@ -1,11 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
+import { LITS_BANK } from "./bank";
 import { blankShade, checkLits } from "./logic";
-import { PUZZLES } from "./puzzles.data";
 import "./LITS.css";
 
 const THICK = "3px solid var(--wood-frame)";
 const THIN = "1px solid rgba(90, 58, 36, 0.25)";
+
+/**
+ * Hashes (seed, counter) into a LITS_BANK index. `seed` gives session-to-session variety
+ * (different players / different sessions land on different puzzles); `counter` lets a single
+ * session step through further picks (used by "Next puzzle") without repeating the same hash
+ * input twice.
+ */
+function pickBankIndex(seed: number, counter: number, len: number): number {
+  let h = (seed * 2654435761 + counter * 2246822519) >>> 0;
+  h = (h ^ (h >>> 15)) >>> 0;
+  return h % len;
+}
 
 /** Friendly, non-spoilery status hints derived from the rule violations. */
 function hintFor(violations: string[], shadedCount: number): string | null {
@@ -28,15 +40,32 @@ function hintFor(violations: string[], shadedCount: number): string | null {
 }
 
 export default function LITS({ seed, onSolved, onExit }: PuzzleProps) {
-  const puzzle = useMemo(() => PUZZLES[seed % PUZZLES.length]!, [seed]);
-  const [shade, setShade] = useState(() => blankShade(puzzle.rows, puzzle.cols));
+  // `pickCounterRef` advances on every "Next puzzle" click so each pick hashes to a fresh
+  // input; `puzzleIndex` is the resulting LITS_BANK index actually rendered.
+  const pickCounterRef = useRef(0);
+  const [puzzleIndex, setPuzzleIndex] = useState(() =>
+    pickBankIndex(seed, pickCounterRef.current, LITS_BANK.length),
+  );
+  const puzzle = LITS_BANK[puzzleIndex]!;
+  const [shadeState, setShadeState] = useState(() => blankShade(puzzle.rows, puzzle.cols));
   const solvedRef = useRef(false);
 
-  // Reset the board whenever a new puzzle is loaded (seed change).
-  useEffect(() => {
-    setShade(blankShade(puzzle.rows, puzzle.cols));
+  // Reset the board whenever a new puzzle is loaded (puzzleIndex change). This is done
+  // synchronously *during* render (React's documented "adjust state while rendering"
+  // escape hatch), not in a useEffect: bank puzzles can differ in rows/cols (e.g. an
+  // 8x8 hard puzzle after a 6x6 easy one). Overriding the local `shade` variable (not just
+  // calling setShadeState, whose new value wouldn't be visible until the next render) means
+  // the rest of *this* render already uses a correctly-sized blank grid, instead of indexing
+  // the new (smaller) `puzzle.regions` with the old (larger) shade grid's coordinates and
+  // crashing before React ever gets to re-render with the reset state.
+  const [lastPuzzle, setLastPuzzle] = useState(puzzle);
+  let shade = shadeState;
+  if (lastPuzzle !== puzzle) {
+    setLastPuzzle(puzzle);
+    shade = blankShade(puzzle.rows, puzzle.cols);
+    setShadeState(shade);
     solvedRef.current = false;
-  }, [puzzle]);
+  }
 
   const result = useMemo(() => checkLits(shade, puzzle), [shade, puzzle]);
 
@@ -48,7 +77,23 @@ export default function LITS({ seed, onSolved, onExit }: PuzzleProps) {
   }, [result, onSolved]);
 
   const toggle = (r: number, c: number) => {
-    setShade((g) => g.map((row, ri) => (ri === r ? row.map((v, ci) => (ci === c ? !v : v)) : row)));
+    setShadeState((g) =>
+      g.map((row, ri) => (ri === r ? row.map((v, ci) => (ci === c ? !v : v)) : row)),
+    );
+  };
+
+  // Advances to another bank puzzle without leaving the subgame (does NOT auto-close/exit) —
+  // the board resets via the render-time adjustment above, once `puzzleIndex` changes. Keeps
+  // re-picking until it lands on a puzzle different from the current one (when the bank has
+  // more than one).
+  const nextPuzzle = () => {
+    let idx = puzzleIndex;
+    for (let tries = 0; tries < LITS_BANK.length + 1; tries++) {
+      pickCounterRef.current += 1;
+      idx = pickBankIndex(seed, pickCounterRef.current, LITS_BANK.length);
+      if (idx !== puzzleIndex) break;
+    }
+    setPuzzleIndex(idx);
   };
 
   const shadedCount = shade.reduce((n, row) => n + row.filter(Boolean).length, 0);
@@ -101,6 +146,11 @@ export default function LITS({ seed, onSolved, onExit }: PuzzleProps) {
       <p className="lits-hint" aria-live="polite">
         {hint ?? "Solved! Every region holds one tidy tetromino."}
       </p>
+      {result.solved && (
+        <button type="button" className="lits-next" onClick={nextPuzzle}>
+          Next puzzle →
+        </button>
+      )}
     </div>
   );
 }

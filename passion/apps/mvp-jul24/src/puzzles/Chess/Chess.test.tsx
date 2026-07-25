@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import Chess from "./Chess";
+import { TACTICS } from "./bank";
 
 const clickSquare = (name: string) => {
   const el = document.querySelector(`[data-square="${name}"]`);
@@ -7,69 +8,135 @@ const clickSquare = (name: string) => {
   fireEvent.click(el);
 };
 
-test("playing the mate-in-1 solution move calls onSolved", () => {
-  const onSolved = vi.fn();
-  render(<Chess seed={0} onSolved={onSolved} onExit={() => {}} />);
+/** Deterministic rng that always selects `id` out of the bank — lets tests
+ * pin down which random tactic loads without hardcoding array indices. */
+function rngFor(id: string): () => number {
+  const idx = TACTICS.findIndex((t) => t.id === id);
+  if (idx < 0) throw new Error(`no such tactic: ${id}`);
+  return () => (idx + 0.5) / TACTICS.length;
+}
 
-  clickSquare("a1"); // select the white rook
-  clickSquare("a8"); // the winning back-rank mate
+describe("Tactics mode — random bank puzzle", () => {
+  test("loads a bank puzzle on open and playing its solution calls onSolved", () => {
+    const onSolved = vi.fn();
+    render(
+      <Chess seed={0} onSolved={onSolved} onExit={() => {}} rng={rngFor("corner-mate-h8-rook")} />,
+    );
 
-  expect(onSolved).toHaveBeenCalledTimes(1);
-});
+    expect(screen.getByText(/checkmate in one/i)).toBeInTheDocument();
+    clickSquare("a1"); // select the white rook
+    clickSquare("a8"); // the back-rank mate
 
-test("a wrong-but-legal move shows a hint and resets instead of solving", () => {
-  const onSolved = vi.fn();
-  render(<Chess seed={0} onSolved={onSolved} onExit={() => {}} />);
+    expect(onSolved).toHaveBeenCalledTimes(1);
+  });
 
-  clickSquare("a1"); // select the white rook
-  clickSquare("a5"); // legal rook move, but not the solution
+  test("a wrong-but-legal move shows a hint and resets instead of solving", () => {
+    const onSolved = vi.fn();
+    render(
+      <Chess seed={0} onSolved={onSolved} onExit={() => {}} rng={rngFor("corner-mate-h8-rook")} />,
+    );
 
-  expect(onSolved).not.toHaveBeenCalled();
-  expect(document.querySelector(".cx-message-show")).not.toBeNull();
+    clickSquare("a1");
+    clickSquare("a5"); // legal rook move, but not the solution
 
-  // Position reset: the rook is back on a1 and can still find the mate.
-  clickSquare("a1");
-  clickSquare("a8");
-  expect(onSolved).toHaveBeenCalledTimes(1);
-});
+    expect(onSolved).not.toHaveBeenCalled();
+    expect(document.querySelector(".cx-message-show")).not.toBeNull();
 
-test("multi-move puzzle: player move, auto opponent reply, then the winning capture solves it", () => {
-  const onSolved = vi.fn();
-  render(<Chess seed={1} onSolved={onSolved} onExit={() => {}} />);
+    // Position reset: the rook is back on a1 and can still find the mate.
+    clickSquare("a1");
+    clickSquare("a8");
+    expect(onSolved).toHaveBeenCalledTimes(1);
+  });
 
-  clickSquare("e4"); // select the white knight
-  clickSquare("f6"); // knight hops in with check
-  expect(onSolved).not.toHaveBeenCalled();
+  test("multi-ply puzzle: player move, auto opponent reply, then the winning move solves it", () => {
+    const onSolved = vi.fn();
+    render(
+      <Chess seed={0} onSolved={onSolved} onExit={() => {}} rng={rngFor("knight-fork-queen")} />,
+    );
 
-  // The scripted black king reply (e8 -> e7) should have been auto-played.
-  expect(document.querySelector('[data-square="e7"]')?.textContent).toBe("♚");
+    clickSquare("e4"); // select the white knight
+    clickSquare("f6"); // knight hops in with check
+    expect(onSolved).not.toHaveBeenCalled();
 
-  clickSquare("h1"); // select the white rook
-  clickSquare("h4"); // capture the undefended queen
+    // The scripted black king reply (e8 -> e7) should have been auto-played.
+    expect(document.querySelector('[data-square="e7"]')?.textContent).toBe("♚");
 
-  expect(onSolved).toHaveBeenCalledTimes(1);
-});
+    clickSquare("h1"); // select the white rook
+    clickSquare("h4"); // capture the undefended queen
 
-test("back button calls onExit", () => {
-  const onExit = vi.fn();
-  render(<Chess seed={0} onSolved={() => {}} onExit={onExit} />);
-  fireEvent.click(document.querySelector(".cx-exit")!);
-  expect(onExit).toHaveBeenCalled();
+    expect(onSolved).toHaveBeenCalledTimes(1);
+  });
+
+  test("an illegal (nonsense) move is rejected outright and does not solve", () => {
+    const onSolved = vi.fn();
+    render(
+      <Chess seed={0} onSolved={onSolved} onExit={() => {}} rng={rngFor("corner-mate-h8-rook")} />,
+    );
+    clickSquare("a1");
+    clickSquare("b2"); // rook cannot move diagonally — not a listed target, click is a no-op
+    expect(onSolved).not.toHaveBeenCalled();
+  });
+
+  test("solving does not auto-close: 'Next puzzle' only appears once solved, and loads a different tactic", () => {
+    const onSolved = vi.fn();
+    // rng() = 0 deterministically picks TACTICS[0] first, then — since Next
+    // excludes the just-solved id from the pool — TACTICS[1] next.
+    render(<Chess seed={0} onSolved={onSolved} onExit={() => {}} rng={() => 0} />);
+
+    const first = TACTICS[0]!;
+    const second = TACTICS[1]!;
+    expect(document.querySelector(".cx-next")).toBeNull();
+
+    const [firstFrom, firstTo] = [first.solution[0]!.from, first.solution[0]!.to];
+    const squareName = (s: { row: number; col: number }) =>
+      `${String.fromCharCode(97 + s.col)}${8 - s.row}`;
+    clickSquare(squareName(firstFrom));
+    clickSquare(squareName(firstTo));
+
+    expect(onSolved).toHaveBeenCalledTimes(1);
+    expect(document.querySelector(".cx-next")).not.toBeNull();
+
+    fireEvent.click(screen.getByText("Next puzzle →"));
+
+    // A new puzzle loaded: the board reset to the second tactic's starting
+    // position, and the "solved" UI (Next button) is gone again.
+    expect(document.querySelector(".cx-next")).toBeNull();
+    const secondFrom = squareName(second.solution[0]!.from);
+    const secondPiece = second.board[second.solution[0]!.from.row]?.[second.solution[0]!.from.col];
+    expect(
+      document.querySelector(`[data-square="${secondFrom}"]`)?.getAttribute("aria-label"),
+    ).toContain(secondPiece?.type);
+
+    // Solving the second tactic fires onSolved again (not just once ever).
+    const [secondFrom2, secondTo2] = [second.solution[0]!.from, second.solution[0]!.to];
+    clickSquare(squareName(secondFrom2));
+    clickSquare(squareName(secondTo2));
+    expect(onSolved).toHaveBeenCalledTimes(2);
+  });
+
+  test("back button calls onExit", () => {
+    const onExit = vi.fn();
+    render(<Chess seed={0} onSolved={() => {}} onExit={onExit} />);
+    fireEvent.click(document.querySelector(".cx-exit")!);
+    expect(onExit).toHaveBeenCalled();
+  });
 });
 
 describe("mode toggle", () => {
   test("defaults to Tactics, and switches to Free Play on click", () => {
-    render(<Chess seed={0} onSolved={() => {}} onExit={() => {}} />);
+    render(
+      <Chess seed={0} onSolved={() => {}} onExit={() => {}} rng={rngFor("corner-mate-h8-rook")} />,
+    );
 
     // Tactics is active by default: the tactic prompt is visible and the
     // starting free-play position (e.g. two rooks on rank 1) is not.
-    expect(screen.getByText(/find checkmate in one/i)).toBeInTheDocument();
+    expect(screen.getByText(/checkmate in one/i)).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Tactics" })).toHaveAttribute("aria-selected", "true");
 
     fireEvent.click(screen.getByRole("tab", { name: "Free Play" }));
 
     expect(screen.getByRole("tab", { name: "Free Play" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.queryByText(/find checkmate in one/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/checkmate in one/i)).not.toBeInTheDocument();
     expect(screen.getByText("New game")).toBeInTheDocument();
     // A standard game starts with a White pawn on e2.
     expect(document.querySelector('[data-square="e2"]')?.textContent).toBe("♙");

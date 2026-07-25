@@ -33,6 +33,8 @@ export interface ChessPuzzle {
   /** Alternating moves: player (even index), scripted opponent reply (odd index), ... */
   solution: Move[];
   hint?: string;
+  /** Short tactic tag for display, e.g. "Fork", "Back-rank mate" (bank puzzles only). */
+  label?: string;
 }
 
 export interface ChessGameState {

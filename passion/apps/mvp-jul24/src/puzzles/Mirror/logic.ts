@@ -1,4 +1,5 @@
-// Pure logic for the Mirror/laser puzzle: grid model, beam tracing, and authored levels.
+// Pure logic for the Mirror/laser puzzle: grid model, mirror reflection, and
+// beam tracing. Level construction lives in ./generate.ts.
 // No React/DOM here so it can be unit-tested in isolation.
 
 export type Direction = "N" | "S" | "E" | "W";
@@ -28,7 +29,8 @@ export interface TraceResult {
   reachesTarget: boolean;
 }
 
-const DIR_VECTORS: Record<Direction, [number, number]> = {
+/** Unit step for each direction, shared with the level generator's path walker. */
+export const DIR_VECTORS: Record<Direction, [number, number]> = {
   N: [-1, 0],
   S: [1, 0],
   E: [0, 1],
@@ -42,6 +44,19 @@ const BACKSLASH_REFLECT: Record<Direction, Direction> = { N: "W", W: "N", S: "E"
 
 function reflect(dir: Direction, orientation: Orientation): Direction {
   return orientation === "/" ? SLASH_REFLECT[dir] : BACKSLASH_REFLECT[dir];
+}
+
+/**
+ * Inverse of `reflect`: which mirror orientation turns a beam travelling
+ * `from` into travelling `to`? Used by the generator, which builds a route
+ * turn-by-turn and needs to know which glyph realizes each turn.
+ * Throws if `to` isn't one of the two directions perpendicular to `from`
+ * (i.e. no single mirror can produce that turn).
+ */
+export function orientationForTurn(from: Direction, to: Direction): Orientation {
+  if (SLASH_REFLECT[from] === to) return "/";
+  if (BACKSLASH_REFLECT[from] === to) return "\\";
+  throw new Error(`no mirror orientation turns ${from} into ${to}`);
 }
 
 /**
@@ -88,66 +103,20 @@ export function cloneMirrors(mirrors: CellContent[][]): CellContent[][] {
   return mirrors.map((row) => [...row]);
 }
 
-const toggle = (o: Orientation): Orientation => (o === "/" ? "\\" : "/");
+export const toggleOrientation = (o: Orientation): Orientation => (o === "/" ? "\\" : "/");
 
 /** Rotate the mirror at (row, col), if there is one. No-op on empty floor cells. */
 export function rotateMirror(mirrors: CellContent[][], row: number, col: number): CellContent[][] {
   const cell = mirrors[row]?.[col] ?? null;
   if (!cell) return mirrors;
   return mirrors.map((r, ri) =>
-    ri === row ? r.map((c, ci) => (ci === col ? toggle(cell) : c)) : r,
+    ri === row ? r.map((c, ci) => (ci === col ? toggleOrientation(cell) : c)) : r,
   );
 }
 
-function emptyGrid(size: number): CellContent[][] {
+/** An empty size x size mirror grid (no mirrors placed). Shared with the generator. */
+export function emptyGrid(size: number): CellContent[][] {
   return Array.from({ length: size }, () =>
     Array.from({ length: size }, () => null as CellContent),
   );
-}
-
-function gridWith(size: number, mirrorAt: [number, number, Orientation][]): CellContent[][] {
-  const g = emptyGrid(size);
-  for (const [r, c, o] of mirrorAt) g[r]![c] = o;
-  return g;
-}
-
-// --- Authored levels -------------------------------------------------------
-// Each level's initial mirror orientations are deliberately "wrong" so the
-// beam misses the target until the player rotates every mirror on its path.
-
-/** Level 1 — one mirror, one click. */
-const LEVEL_1: MirrorLevel = {
-  size: 4,
-  emitter: { row: 0, col: 0, dir: "E" },
-  target: { row: 3, col: 2 },
-  mirrors: gridWith(4, [[0, 2, "/"]]), // needs "\" to send the beam south
-};
-
-/** Level 2 — two mirrors, an L-shaped route. */
-const LEVEL_2: MirrorLevel = {
-  size: 5,
-  emitter: { row: 0, col: 0, dir: "E" },
-  target: { row: 3, col: 4 },
-  mirrors: gridWith(5, [
-    [0, 2, "/"], // needs "\": E -> S
-    [3, 2, "/"], // needs "\": S -> E
-  ]),
-};
-
-/** Level 3 — three mirrors, a longer zig-zag on a bigger board. */
-const LEVEL_3: MirrorLevel = {
-  size: 6,
-  emitter: { row: 0, col: 0, dir: "E" },
-  target: { row: 5, col: 5 },
-  mirrors: gridWith(6, [
-    [0, 3, "/"], // needs "\": E -> S
-    [2, 3, "/"], // needs "\": S -> E
-    [2, 5, "/"], // needs "\": E -> S
-  ]),
-};
-
-export const LEVELS: MirrorLevel[] = [LEVEL_1, LEVEL_2, LEVEL_3];
-
-export function pickLevel(seed: number): MirrorLevel {
-  return LEVELS[((seed % LEVELS.length) + LEVELS.length) % LEVELS.length]!;
 }
