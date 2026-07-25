@@ -1,10 +1,12 @@
 .cabin-static {
   position: relative;
   width: 100%;
+  height: 100%;
   aspect-ratio: 16 / 9;
-  background-color: #d8c4a0;
+  background-color: #2a1a10;
   overflow: hidden;
-  border-radius: 1rem;
+  border-radius: var(--r-md);
+  container-type: size;
 }
 
 .cabin-static-bg {
@@ -16,40 +18,129 @@
   /* If the art asset 404s, the fallback background color on .cabin-static still shows through. */
 }
 
+/* Firelight rising from the hearth + a soft vignette into the corners. */
+.cabin-static-hearthlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(50% 42% at 50% 74%, rgba(255, 176, 92, 0.28) 0%, transparent 70%),
+    radial-gradient(120% 100% at 50% 45%, transparent 58%, rgba(20, 10, 4, 0.5) 100%);
+}
+
+/* Each gadget object is the button — a little framed puzzle plaque set in the scene. */
 .cabin-static-hotspot {
   position: absolute;
   transform: translate(-50%, -50%);
+  width: clamp(48px, 8cqw, 82px);
+  padding: 0;
   border: none;
-  border-radius: 0.6rem;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.85rem;
-  font-family: system-ui, sans-serif;
-  color: #4a3f35;
-  background: rgba(255, 248, 235, 0.9);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  background: none;
   cursor: pointer;
-  transition: transform 120ms ease, background-color 120ms ease;
+}
+
+.cabin-static-hotspot-object {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 13%;
+  border-radius: 20%;
+  border: 3px solid var(--wood-frame);
+  background: linear-gradient(
+    158deg,
+    var(--parchment-hi),
+    var(--parchment) 55%,
+    var(--parchment-edge)
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), var(--shadow-raised), 0 10px 14px -6px
+    rgba(0, 0, 0, 0.55);
+  transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out), filter 180ms
+    var(--ease-out);
+}
+
+.gadget-object-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Active (playable) gadgets glow with firelight and breathe gently. */
+.cabin-static-hotspot:not(.coming-soon) .cabin-static-hotspot-object {
+  border-color: var(--ember-deep);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), var(--shadow-raised), var(--glow-ember);
+  animation: hearth-pulse 3.4s ease-in-out infinite;
+}
+
+@keyframes hearth-pulse {
+  0%,
+  100% {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), var(--shadow-raised), 0 0 14px
+      rgba(232, 134, 60, 0.45);
+  }
+  50% {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), var(--shadow-raised), 0 0 26px
+      rgba(255, 184, 103, 0.72);
+  }
+}
+
+/* Coming-soon gadgets are dimmed, cooler, and wear a small lock. */
+.cabin-static-hotspot.coming-soon .cabin-static-hotspot-object {
+  filter: saturate(0.5) brightness(0.9);
+  opacity: 0.82;
+}
+
+.cabin-static-hotspot-lock {
+  position: absolute;
+  right: -6%;
+  bottom: -6%;
+  width: 42%;
+  height: 42%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--wood);
+  border: 2px solid var(--wood-frame);
+  color: var(--cream-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+.cabin-static-hotspot-lock svg {
+  width: 62%;
+  height: 62%;
+}
+
+/* Hover / focus: lift toward the viewer, warm up, reveal the label tooltip. */
+.cabin-static-hotspot:hover .cabin-static-hotspot-object,
+.cabin-static-hotspot:focus-visible .cabin-static-hotspot-object {
+  transform: translateY(-5px) scale(1.06);
+  filter: none;
+  opacity: 1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 14px 22px -8px rgba(0, 0, 0, 0.6),
+    var(--glow-ember-strong);
+}
+
+.cabin-static-hotspot-label {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  padding: 0.22rem 0.55rem;
+  border-radius: 8px;
+  background: rgba(36, 22, 17, 0.94);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.74rem;
   white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: var(--shadow-soft);
+  transition: opacity 140ms var(--ease-out), transform 140ms var(--ease-out);
+  z-index: 2;
 }
 
-.cabin-static-hotspot:hover {
-  transform: translate(-50%, -50%) scale(1.05);
-  background: rgba(255, 248, 235, 1);
-}
-
-.cabin-static-hotspot.coming-soon {
-  opacity: 0.6;
-  background: rgba(220, 213, 200, 0.85);
-}
-
-.cabin-static-hotspot-badge {
-  display: inline-block;
-  margin-left: 0.4rem;
-  padding: 0.05rem 0.35rem;
-  border-radius: 0.4rem;
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  background: #b3a48c;
-  color: #fbf3e7;
+.cabin-static-hotspot:hover .cabin-static-hotspot-label,
+.cabin-static-hotspot:focus-visible .cabin-static-hotspot-label {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }

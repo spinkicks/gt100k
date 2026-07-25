@@ -1,10 +1,15 @@
+/* The map presented as a framed page on the table — wood frame, warm vignette. */
 .map-screen {
   position: relative;
   width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
   aspect-ratio: 16 / 9;
-  background-color: #cfe3d8;
   overflow: hidden;
-  border-radius: 1rem;
+  background-color: #cfe3d8;
+  border-radius: var(--r-lg);
+  border: 10px solid var(--wood-frame);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.3), var(--shadow-panel);
 }
 
 .map-screen-bg {
@@ -16,41 +21,99 @@
   /* If /art/map.png 404s, the fallback background color on .map-screen still shows through. */
 }
 
+/* Soft firelit vignette so the map reads as a lit illustration, not a raw <img>. */
+.map-screen-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(115% 95% at 50% 45%, transparent 55%, rgba(36, 22, 17, 0.42) 100%);
+  box-shadow: inset 0 0 70px 14px rgba(30, 15, 6, 0.35);
+}
+
+/* Cabin node — a warm wooden signpost pill, centered on its point. */
 .map-screen-node {
   position: absolute;
-  transform: translate(-50%, -50%);
-  border: none;
-  border-radius: 0.75rem;
-  padding: 0.5rem 0.9rem;
-  font-size: 0.9rem;
-  font-family: system-ui, sans-serif;
-  color: #26402f;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
-  transition: transform 120ms ease, background-color 120ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--r-pill);
+  border: 2px solid var(--wood-frame);
+  background: linear-gradient(180deg, var(--wood-light), var(--wood));
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
   white-space: nowrap;
+  cursor: pointer;
+  box-shadow: var(--shadow-raised);
+  transition: box-shadow 160ms var(--ease-out), filter 160ms var(--ease-out);
 }
 
-.map-screen-node:hover:not(:disabled) {
-  transform: translate(-50%, -50%) scale(1.06);
-  background: rgba(255, 255, 255, 1);
+.map-screen-node-label {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
 }
 
+/* Active cabin: an inviting glowing amber signpost that pulls the eye. */
+.map-screen-node:not(.inactive) {
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  border-color: var(--ember-deep);
+  color: var(--ink);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.4),
+    var(--glow-ember);
+  animation: node-breathe 3.4s ease-in-out infinite;
+}
+
+.map-screen-node:not(.inactive) .map-screen-node-label {
+  text-shadow: none;
+}
+
+@keyframes node-breathe {
+  0%,
+  100% {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 14px
+      rgba(232, 134, 60, 0.45);
+  }
+  50% {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 6px 16px rgba(0, 0, 0, 0.45), 0 0 28px
+      rgba(255, 184, 103, 0.75);
+  }
+}
+
+/* A small firelight spark that marks the active, playable cabin. */
+.map-screen-node-spark {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff7e6 0%, var(--ember-bright) 55%, var(--ember-deep) 100%);
+  box-shadow: 0 0 8px rgba(255, 184, 103, 0.9);
+}
+
+/* Secondary "soon" cabins — clearly dimmed and locked. */
 .map-screen-node.inactive {
-  opacity: 0.55;
+  background: linear-gradient(180deg, #5a4a3c, #43362b);
+  border-color: #4a3a2c;
+  color: var(--cream-soft);
+  opacity: 0.72;
   cursor: not-allowed;
-  background: rgba(220, 220, 210, 0.85);
+  box-shadow: var(--shadow-soft);
+  filter: saturate(0.7);
 }
 
 .map-screen-node-badge {
-  display: inline-block;
-  margin-left: 0.4rem;
-  padding: 0.05rem 0.35rem;
-  border-radius: 0.4rem;
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  background: #8a9587;
-  color: #f4f7f2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.05rem 0.45rem 0.05rem 0.3rem;
+  border-radius: var(--r-pill);
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--cream);
+}
+
+.map-screen-node-badge svg {
+  width: 0.72rem;
+  height: 0.72rem;
 }

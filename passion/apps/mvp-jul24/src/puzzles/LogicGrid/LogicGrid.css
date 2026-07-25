@@ -2,92 +2,152 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  padding: 1.25rem;
-  font-family: system-ui, sans-serif;
-  color: #4a3f35;
+  gap: 1.1rem;
+  font-family: var(--font-body);
+  color: var(--ink);
 }
 
 .lg-exit {
   align-self: flex-start;
-  border: none;
-  background: #f3e6d8;
-  color: #4a3f35;
-  border-radius: 0.75rem;
-  padding: 0.5rem 1rem;
+  border: 2px solid var(--wood-frame);
+  background: linear-gradient(180deg, var(--parchment-hi), var(--parchment-edge));
+  color: var(--ink);
+  border-radius: var(--r-pill);
+  padding: 0.45rem 1.1rem;
+  font-family: var(--font-display);
+  font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: background-color 120ms ease;
+  box-shadow: var(--shadow-soft);
+  transition: transform 120ms var(--ease-out), box-shadow 160ms var(--ease-out), background 160ms
+    var(--ease-out);
 }
 
 .lg-exit:hover {
-  background: #e8d7c2;
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  box-shadow: var(--shadow-soft), var(--glow-ember);
 }
 
+/* Clues as a tidy, readable card on parchment. */
 .lg-clues {
-  list-style: disc;
-  padding-left: 1.25rem;
+  list-style: none;
   margin: 0;
-  max-width: 32rem;
+  padding: 0.9rem 1.1rem;
+  max-width: 34rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   font-size: 0.95rem;
-  line-height: 1.5;
+  line-height: 1.45;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--parchment-hi), var(--parchment));
+  border: 2px solid var(--parchment-edge);
+  border-radius: var(--r-md);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.lg-clues li {
+  position: relative;
+  padding-left: 1.4rem;
+}
+
+.lg-clues li::before {
+  content: "";
+  position: absolute;
+  left: 0.2rem;
+  top: 0.5em;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ember-bright), var(--ember-deep));
+  box-shadow: 0 0 6px rgba(232, 134, 60, 0.5);
 }
 
 .lg-table {
-  border-collapse: collapse;
-  background: #d9c7ae;
-  border: 2px solid #b89a76;
-  border-radius: 0.75rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: linear-gradient(160deg, #c9a878, #a9865f);
+  border: 4px solid var(--wood-frame);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-raised);
 }
 
 .lg-table th,
 .lg-table td {
-  border: 1px solid #b89a76;
+  border: 1px solid rgba(90, 58, 36, 0.35);
   padding: 0;
 }
 
 .lg-corner {
   background: transparent;
+  border-color: transparent;
 }
 
 .lg-col-head,
 .lg-row-head {
-  min-width: 2.5rem;
-  min-height: 2.5rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #6b5a45;
-  background: #fbf3e7;
-  padding: 0.4rem 0.6rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--parchment-hi), var(--parchment));
+}
+
+/* Rotate the cramped column headers to vertical so they get room to breathe. */
+.lg-col-head {
+  height: 6.5rem;
+  padding: 0.5rem 0.15rem;
+  vertical-align: bottom;
+}
+
+.lg-col-head > span,
+.lg-col-head {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+}
+
+.lg-row-head {
+  writing-mode: horizontal-tb;
+  padding: 0.4rem 0.7rem;
+  text-align: right;
   white-space: nowrap;
 }
 
 .lg-cell {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.6rem;
+  height: 2.6rem;
   border: none;
-  background: #fffaf1;
+  background: linear-gradient(180deg, #fffaf1, #f3e7d3);
   padding: 0;
   cursor: pointer;
-  font-size: 1.1rem;
-  transition: background-color 100ms ease, transform 80ms ease;
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1;
+  transition: background-color 120ms var(--ease-out), transform 90ms var(--ease-out), box-shadow
+    120ms var(--ease-out);
 }
 
 .lg-cell:hover {
-  transform: scale(1.03);
+  transform: scale(1.05);
+  box-shadow: inset 0 0 0 2px rgba(232, 134, 60, 0.4);
+}
+
+.lg-cell:active {
+  transform: scale(0.95);
 }
 
 .lg-cell.lg-unknown {
-  background: #fffaf1;
+  background: linear-gradient(180deg, #fffaf1, #f3e7d3);
   color: transparent;
 }
 
 .lg-cell.lg-yes {
-  background: #e4f0e0;
-  color: #3f6b34;
+  background: #d7eccf;
+  color: #2f6b2a;
 }
 
 .lg-cell.lg-no {
-  background: #f3e6d8;
-  color: #b04a3f;
+  background: #f2d9cf;
+  color: #b0402f;
 }
