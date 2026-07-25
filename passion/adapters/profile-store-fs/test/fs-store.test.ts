@@ -44,7 +44,7 @@ function ariProfile(): StudentProfile {
       { kidId: KID, artifactId: "synth-01", actionType: "assemble", timestamp: "2026-02-22T00:00:00.000Z", prompted: false, sessionId: "s2" },
       { kidId: KID, artifactId: "synth-01", actionType: "assemble", timestamp: "2026-02-24T00:00:00.000Z", prompted: false, sessionId: "s3" },
       { kidId: KID, artifactId: "synth-01", actionType: "assemble", timestamp: "2026-02-26T00:00:00.000Z", prompted: false, sessionId: "s4" },
-      { kidId: KID, artifactId: "synth-01", actionType: "assemble", timestamp: "2026-02-28T00:00:00.000Z", prompted: false, sessionId: "s5", depth: 1, depthSignals: [{ kind: "artifact_competence", value: 1 }] },
+      { kidId: KID, artifactId: "synth-01", actionType: "assemble", timestamp: "2026-02-28T00:00:00.000Z", prompted: false, sessionId: "s5", depthSignals: [{ kind: "artifact_competence", value: 1 }] },
     ],
     { catalog: CATALOG },
     NOW,

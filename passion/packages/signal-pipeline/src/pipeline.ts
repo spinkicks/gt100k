@@ -28,7 +28,7 @@ export function deriveSignals(input: DeriveInput): {
   const { built, dropped } = buildActionEvents(input.interactions, input.catalog, config);
 
   const cellEvents: CellEvent[] = [];
-  for (const b of built) cellEvents.push(...actionToCellEvents(b.event, b.artifact, b.depth, config));
+  for (const b of built) cellEvents.push(...actionToCellEvents(b.event, b.artifact));
   cellEvents.push(...deriveSkips(input.surfaced ?? [], built, input.catalog, config));
 
   return { actionEvents: built.map((b) => b.event), cellEvents, dropped };

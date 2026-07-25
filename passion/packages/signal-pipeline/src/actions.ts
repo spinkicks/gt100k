@@ -12,7 +12,6 @@ export interface BuiltEvent {
   readonly event: ActionEvent;
   readonly artifact: Artifact;
   readonly cellKey: string; // serializeCellKey(artifact.domainPath, engagedModes.primary)
-  readonly depth: number; // return-event magnitude (interaction.depth ?? config.defaultDepth)
   readonly sessionId: string;
 }
 
@@ -61,7 +60,7 @@ export function buildActionEvents(
       returnState: i.prompted ? "prompted" : "voluntary",
       noveltyFlag: isNovelty(firstExposure, i.kidId, cellKey, i.timestamp, config),
     };
-    built.push({ event, artifact: art, cellKey, depth: i.depth ?? config.defaultDepth, sessionId: i.sessionId });
+    built.push({ event, artifact: art, cellKey, sessionId: i.sessionId });
   }
   return { built, dropped };
 }

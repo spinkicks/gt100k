@@ -27,14 +27,14 @@ describe("foldEvents", () => {
       { domain: "music-sound", inEnvironment: true, aptitudeTilt: 0, discretionaryTilt: 0 },
     ];
     const evts: CellEvent[] = [
-      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", magnitude: 1, novelty: false, timestamp: TS },
-      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", magnitude: 1, novelty: false, timestamp: TS },
-      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", magnitude: 1, novelty: false, timestamp: TS },
-      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "unrequired_revision", magnitude: 1, novelty: false, timestamp: TS },
-      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "artifact_competence", magnitude: 1, novelty: false, timestamp: TS },
-      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "skip", magnitude: 1, novelty: false, timestamp: TS },
-      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", magnitude: 1, novelty: true, timestamp: TS },
-      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "prompted_return", magnitude: 1, novelty: false, timestamp: TS },
+      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: false, timestamp: TS },
+      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: false, timestamp: TS },
+      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: false, timestamp: TS },
+      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "unrequired_revision", novelty: false, timestamp: TS },
+      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "artifact_competence", novelty: false, timestamp: TS },
+      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "skip", novelty: false, timestamp: TS },
+      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: true, timestamp: TS },
+      { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "prompted_return", novelty: false, timestamp: TS },
     ];
     const cell = foldEvents(evts, priors, NOW).get("music-sound/audio-systems::build")!;
     expect(cell.alpha).toBeCloseTo(5.5, 6);

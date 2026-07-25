@@ -5,7 +5,7 @@ import type { CellEvent, DomainPrior } from "../src/model.js";
 const NOW = Date.parse("2026-01-01T00:00:00.000Z");
 const TS = "2026-01-01T00:00:00.000Z";
 function ret(domain: string, sub: string, mode: string): CellEvent {
-  return { domainPath: [domain, sub], mode, kind: "voluntary_return", magnitude: 1, novelty: false, timestamp: TS };
+  return { domainPath: [domain, sub], mode, kind: "voluntary_return", novelty: false, timestamp: TS };
 }
 
 describe("runInference", () => {
