@@ -2,7 +2,7 @@ import { gadgetsForTopic } from "../gadgets/registry";
 import { useGame } from "../game/store";
 import type { TopicId } from "../game/types";
 import GadgetObject from "./GadgetObject";
-import { hotspotStyle } from "./hotspots";
+import { staticHotspotStyle } from "./hotspots";
 import "./CabinStatic.css";
 
 /**
@@ -27,7 +27,7 @@ export const CabinStatic: React.FC<{ topic: TopicId }> = ({ topic }) => {
             key={gadget.id}
             type="button"
             className={`cabin-static-hotspot${isComingSoon ? " coming-soon" : ""}`}
-            style={hotspotStyle(gadget)}
+            style={staticHotspotStyle(gadget)}
             data-gadget={gadget.id}
             onClick={() => useGame.getState().focusGadget(gadget.id)}
           >

@@ -18,9 +18,9 @@ import { Component, type ReactNode, Suspense, useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { TopicId } from "../../game/types";
 import { GadgetPropView } from "./GadgetProps";
+import { SkyDome } from "./SkyDome";
 import { gadgetProps3D } from "./anchors";
 import { ANCHORS, ROOM } from "./layout";
-import { SkyDome } from "./SkyDome";
 import {
   catFurTexture,
   flameTexture,
@@ -375,7 +375,9 @@ function ProceduralCat(): JSX.Element {
   const [x, , z] = ANCHORS.cat;
   const coatFur = useMemo(() => catFurTexture([111, 79, 52], [58, 38, 22], 71, true), []);
   const bellyFur = useMemo(() => catFurTexture([201, 171, 132], [150, 120, 88], 72, false), []);
-  const brown = <meshStandardMaterial {...coatFur} color="#6f4f34" roughness={0.95} metalness={0} />;
+  const brown = (
+    <meshStandardMaterial {...coatFur} color="#6f4f34" roughness={0.95} metalness={0} />
+  );
   const cream = (
     <meshStandardMaterial {...bellyFur} color="#c9ab84" roughness={0.95} metalness={0} />
   );
@@ -455,10 +457,7 @@ function fitToHeight(src: THREE.Object3D, targetH: number): THREE.Object3D {
 
 function PineTrees({ originX }: { originX: number }): JSX.Element {
   const { scene } = useGLTF(PINE_MODEL_URL);
-  const models = useMemo(
-    () => TREE_SPOTS.map(([, , h]) => fitToHeight(scene, h)),
-    [scene],
-  );
+  const models = useMemo(() => TREE_SPOTS.map(([, , h]) => fitToHeight(scene, h)), [scene]);
   return (
     <group>
       {TREE_SPOTS.map(([dx, z], i) => (

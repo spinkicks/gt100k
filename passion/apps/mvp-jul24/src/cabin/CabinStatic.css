@@ -31,7 +31,7 @@
 .cabin-static-hotspot {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: clamp(48px, 8cqw, 82px);
+  width: clamp(52px, 9cqw, 92px);
   padding: 0;
   border: none;
   background: none;

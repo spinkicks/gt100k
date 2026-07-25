@@ -211,7 +211,13 @@ function HoverLabel({
 }): JSX.Element | null {
   if (!visible) return null;
   return (
-    <Html center distanceFactor={5} zIndexRange={[10, 0]} occlude={false} position={[0, 0.34, 0.02]}>
+    <Html
+      center
+      distanceFactor={5}
+      zIndexRange={[10, 0]}
+      occlude={false}
+      position={[0, 0.34, 0.02]}
+    >
       <div className="cabin3d-gadget-label" data-gadget={id}>
         {label}
       </div>
@@ -228,7 +234,12 @@ function FrameProp({ prop }: { prop: GadgetProp3D }): JSX.Element {
   const matColor = active ? "#e8e0d0" : "#8a8378";
 
   return (
-    <group position={prop.position} rotation={[prop.rotation[0], prop.rotation[1], prop.rotation[2]]} ref={groupRef} {...handlers}>
+    <group
+      position={prop.position}
+      rotation={[prop.rotation[0], prop.rotation[1], prop.rotation[2]]}
+      ref={groupRef}
+      {...handlers}
+    >
       <mesh castShadow>
         <boxGeometry args={[0.62, 0.62, 0.05]} />
         <meshStandardMaterial color={frameColor} roughness={0.55} metalness={0.05} />
@@ -275,7 +286,12 @@ function ChessProp({ prop }: { prop: GadgetProp3D }): JSX.Element {
   }, []);
 
   return (
-    <group position={prop.position} rotation={[prop.rotation[0], prop.rotation[1], prop.rotation[2]]} ref={groupRef} {...handlers}>
+    <group
+      position={prop.position}
+      rotation={[prop.rotation[0], prop.rotation[1], prop.rotation[2]]}
+      ref={groupRef}
+      {...handlers}
+    >
       {/* side table */}
       <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[0.32, 0.34, 0.06, 20]} />
@@ -327,7 +343,12 @@ function MirrorProp({ prop }: { prop: GadgetProp3D }): JSX.Element {
   );
 
   return (
-    <group position={prop.position} rotation={[prop.rotation[0], prop.rotation[1], prop.rotation[2]]} ref={groupRef} {...handlers}>
+    <group
+      position={prop.position}
+      rotation={[prop.rotation[0], prop.rotation[1], prop.rotation[2]]}
+      ref={groupRef}
+      {...handlers}
+    >
       {/* base */}
       <mesh position={[0, 0.02, 0]} castShadow receiveShadow>
         <boxGeometry args={[0.5, 0.04, 0.34]} />

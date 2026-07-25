@@ -27,12 +27,15 @@ test("coming-soon gadgets render with a distinct soon marker but are still click
   expect(useGame.getState().focusedGadgetId).toBe("mirror");
 });
 
-test("hotspot buttons carry data-gadget matching the gadget id and are positioned by xPct/yPct", () => {
+test("hotspot buttons carry data-gadget matching the gadget id and render at their mapped static position", () => {
   render(<CabinStatic topic="math" />);
   const nonogramButton = document.querySelector('[data-gadget="nonogram"]') as HTMLElement;
   expect(nonogramButton).toBeInTheDocument();
-  expect(nonogramButton.style.left).toBe("15%");
-  expect(nonogramButton.style.top).toBe("60%");
+  expect(nonogramButton.style.left).toBe("20%");
+  expect(nonogramButton.style.top).toBe("45%");
+
+  fireEvent.click(nonogramButton);
+  expect(useGame.getState().focusedGadgetId).toBe("nonogram");
 });
 
 test("renders the cabin background image with the topic-specific src", () => {

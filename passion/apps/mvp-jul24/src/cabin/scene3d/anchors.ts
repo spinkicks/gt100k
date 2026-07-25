@@ -33,7 +33,12 @@ const KNOWN_PROPS: Record<
   string,
   Pick<GadgetProp3D, "kind" | "pattern" | "position" | "rotation">
 > = {
-  nonogram: { kind: "frame", pattern: "nonogram", position: [-2.4, 1.8, -2.78], rotation: [0, 0, 0] },
+  nonogram: {
+    kind: "frame",
+    pattern: "nonogram",
+    position: [-2.4, 1.8, -2.78],
+    rotation: [0, 0, 0],
+  },
   "logic-grid": {
     kind: "frame",
     pattern: "logic-grid",
@@ -56,7 +61,9 @@ const KNOWN_PROPS: Record<
  *  spread by its 2D hotspot (xPct/yPct, authored for the CabinStatic backdrop) so the scene never
  *  breaks/crashes when the registry grows — it just looks a little generic until someone adds a
  *  bespoke prop for it. */
-function fallbackProp(gadget: Gadget): Pick<GadgetProp3D, "kind" | "pattern" | "position" | "rotation"> {
+function fallbackProp(
+  gadget: Gadget,
+): Pick<GadgetProp3D, "kind" | "pattern" | "position" | "rotation"> {
   const xFrac = gadget.hotspot.xPct / 100;
   const yFrac = gadget.hotspot.yPct / 100;
   const x = -2.6 + xFrac * 5.2;
