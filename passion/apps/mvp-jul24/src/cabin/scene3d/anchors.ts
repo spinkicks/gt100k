@@ -89,6 +89,11 @@ function fallbackProp(
  * Maps each gadget in a topic onto a hand-placed (or, failing that, generic-fallback) 3D prop.
  * Pure function of the registry — no R3F/three imports — so it's unit-testable outside a WebGL
  * context.
+ *
+ * Returns `[]` for a topic with no gadgets, which is a real state a player reaches rather than a
+ * defect: `math` is on the map and active but has zero gadgets until its games ship (see
+ * src/gadgets/registry.ts). Callers get an empty list and scene3d/Cabin.tsx renders the furnished
+ * room with no props in it — a quiet, complete-looking cabin, not a blank or broken one.
  */
 export function gadgetProps3D(topic: TopicId): GadgetProp3D[] {
   return gadgetsForTopic(topic).map((gadget) => {

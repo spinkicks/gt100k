@@ -7,10 +7,20 @@ import Mirror from "../puzzles/Mirror/Mirror";
 import Nonogram from "../puzzles/Nonogram/Nonogram";
 import Pipes from "../puzzles/Pipes/Pipes";
 
+/**
+ * Every gadget in the game, keyed to the cabin (topic) it lives in.
+ *
+ * All seven live in `logic-games`, not `math`: each one survives replacing every numeral with an
+ * arbitrary symbol, so what they actually exercise is deduction rather than mathematics (see the
+ * TopicId doc comment in src/game/types.ts). The `math` cabin therefore has ZERO entries here for
+ * now — that is intentional, and a later PR fills it with genuinely mathematical games. Every
+ * consumer of `gadgetsForTopic` must tolerate an empty list (see scene3d/anchors.ts and
+ * cabin/CabinStatic.tsx, both of which render a normal empty room).
+ */
 export const GADGETS: Gadget[] = [
   {
     id: "nonogram",
-    topic: "math",
+    topic: "logic-games",
     label: "Nonogram",
     status: "active",
     Puzzle: Nonogram,
@@ -18,7 +28,7 @@ export const GADGETS: Gadget[] = [
   },
   {
     id: "logic-grid",
-    topic: "math",
+    topic: "logic-games",
     label: "Logic Grid",
     status: "active",
     Puzzle: LogicGrid,
@@ -26,7 +36,7 @@ export const GADGETS: Gadget[] = [
   },
   {
     id: "mirror",
-    topic: "math",
+    topic: "logic-games",
     label: "Mirror Maze",
     status: "active",
     Puzzle: Mirror,
@@ -34,7 +44,7 @@ export const GADGETS: Gadget[] = [
   },
   {
     id: "chess",
-    topic: "math",
+    topic: "logic-games",
     label: "Chess Puzzle",
     status: "active",
     Puzzle: Chess,
@@ -42,7 +52,7 @@ export const GADGETS: Gadget[] = [
   },
   {
     id: "minesweeper",
-    topic: "math",
+    topic: "logic-games",
     label: "Minesweeper",
     status: "active",
     Puzzle: Minesweeper,
@@ -50,7 +60,7 @@ export const GADGETS: Gadget[] = [
   },
   {
     id: "pipes",
-    topic: "math",
+    topic: "logic-games",
     label: "Pipes",
     status: "active",
     Puzzle: Pipes,
@@ -58,7 +68,7 @@ export const GADGETS: Gadget[] = [
   },
   {
     id: "lits",
-    topic: "math",
+    topic: "logic-games",
     label: "LITS",
     status: "active",
     Puzzle: LITS,

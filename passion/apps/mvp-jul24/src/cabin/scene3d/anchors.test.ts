@@ -2,9 +2,9 @@ import { GADGETS } from "../../gadgets/registry";
 import { gadgetProps3D } from "./anchors";
 
 test("returns one 3D prop per gadget in the topic, matching id/label/status", () => {
-  const props = gadgetProps3D("math");
-  const mathGadgets = GADGETS.filter((g) => g.topic === "math");
-  expect(props).toHaveLength(mathGadgets.length);
+  const props = gadgetProps3D("logic-games");
+  const logicGadgets = GADGETS.filter((g) => g.topic === "logic-games");
+  expect(props).toHaveLength(logicGadgets.length);
 
   const nonogram = props.find((p) => p.id === "nonogram");
   expect(nonogram).toBeDefined();
@@ -16,7 +16,7 @@ test("returns one 3D prop per gadget in the topic, matching id/label/status", ()
 });
 
 test("gives each puzzle family a prop kind that reads as the right object", () => {
-  const props = gadgetProps3D("math");
+  const props = gadgetProps3D("logic-games");
   const kindOf = (id: string) => props.find((p) => p.id === id)?.kind;
   expect(kindOf("chess")).toBe("chess");
   expect(kindOf("mirror")).toBe("mirror");
@@ -27,7 +27,7 @@ test("gives each puzzle family a prop kind that reads as the right object", () =
 });
 
 test("frame props sit on the back wall, clear of the fireplace chimney breast", () => {
-  const props = gadgetProps3D("math");
+  const props = gadgetProps3D("logic-games");
   for (const prop of props.filter((p) => p.kind === "frame")) {
     const [x, y, z] = prop.position;
     expect(z).toBeLessThan(-2.5);
@@ -39,7 +39,7 @@ test("frame props sit on the back wall, clear of the fireplace chimney breast", 
 });
 
 test("chess and mirror props sit on the floor, away from the back wall", () => {
-  const props = gadgetProps3D("math");
+  const props = gadgetProps3D("logic-games");
   const chess = props.find((p) => p.id === "chess");
   const mirror = props.find((p) => p.id === "mirror");
   expect(chess?.position[1]).toBe(0);
@@ -50,6 +50,11 @@ test("chess and mirror props sit on the floor, away from the back wall", () => {
   expect(mirror?.position[2]).toBeGreaterThan(-2);
 });
 
-test("returns an empty list for a topic with no registered gadgets", () => {
-  expect(gadgetProps3D("music")).toEqual([]);
-});
+// `math` is deliberately gadget-free until its games ship, and `music`/`code`/`art` aren't built at
+// all — every one of them must map to an empty prop list so the 3D room just renders unfurnished.
+test.each(["math", "music", "code", "art"] as const)(
+  "returns an empty list for %s, which has no registered gadgets",
+  (topic) => {
+    expect(gadgetProps3D(topic)).toEqual([]);
+  },
+);

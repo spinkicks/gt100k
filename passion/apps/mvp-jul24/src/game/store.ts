@@ -14,6 +14,13 @@ interface GameState {
   setBackend: (b: CabinBackend) => void;
 }
 
+/**
+ * The 3D room is the only cabin backend a player ever sees, so it's the unconditional default.
+ * `?cabin=static` stays as an escape hatch — the flat-illustration backend is what renders when
+ * WebGL is unavailable (older machines, locked-down browsers) and it's what the headless screenshot
+ * tooling drives (tools/shoot.ts, tools/smoke.ts) since it needs no GPU. There is no longer an
+ * in-app toggle between the two (see cabin/CabinView.tsx); the query param is the whole interface.
+ */
 const initialBackend: CabinBackend =
   new URLSearchParams(globalThis.location?.search ?? "").get("cabin") === "static"
     ? "static"

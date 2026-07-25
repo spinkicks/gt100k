@@ -9,31 +9,31 @@ beforeEach(() => {
 });
 
 test("renders a hotspot button for each gadget in the topic, labelled by hotspot.label", () => {
-  render(<CabinStatic topic="math" />);
+  render(<CabinStatic topic="logic-games" />);
   expect(screen.getByRole("button", { name: "Nonogram" })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Logic Grid" })).toBeInTheDocument();
 });
 
 test("clicking the nonogram hotspot focuses that gadget", () => {
-  render(<CabinStatic topic="math" />);
+  render(<CabinStatic topic="logic-games" />);
   fireEvent.click(screen.getByRole("button", { name: "Nonogram" }));
   expect(useGame.getState().focusedGadgetId).toBe("nonogram");
 });
 
 test("coming-soon gadgets render with a distinct soon marker but are still clickable", () => {
-  // All math gadgets are active in the real registry now; stub in a synthetic
+  // All logic-games gadgets are active in the real registry now; stub in a synthetic
   // coming-soon one so this still-supported render path stays covered.
   const spy = vi.spyOn(registry, "gadgetsForTopic").mockReturnValue([
     {
       id: "mirror",
-      topic: "math",
+      topic: "logic-games",
       label: "Mirror Maze",
       status: "coming-soon",
       hotspot: { xPct: 55, yPct: 60, label: "Mirror Maze" },
     },
   ]);
 
-  render(<CabinStatic topic="math" />);
+  render(<CabinStatic topic="logic-games" />);
   const mirrorButton = screen.getByRole("button", { name: /Mirror Maze/ });
   expect(mirrorButton.className).toMatch(/coming-soon/);
 
@@ -44,7 +44,7 @@ test("coming-soon gadgets render with a distinct soon marker but are still click
 });
 
 test("hotspot buttons carry data-gadget matching the gadget id and render at their mapped static position", () => {
-  render(<CabinStatic topic="math" />);
+  render(<CabinStatic topic="logic-games" />);
   const nonogramButton = document.querySelector('[data-gadget="nonogram"]') as HTMLElement;
   expect(nonogramButton).toBeInTheDocument();
   expect(nonogramButton.style.left).toBe("20%");
@@ -55,8 +55,22 @@ test("hotspot buttons carry data-gadget matching the gadget id and render at the
 });
 
 test("renders the cabin background image with the topic-specific src", () => {
-  render(<CabinStatic topic="math" />);
+  render(<CabinStatic topic="logic-games" />);
   const img = document.querySelector("img.cabin-static-bg") as HTMLImageElement;
   expect(img).toBeInTheDocument();
-  expect(img.getAttribute("src")).toBe("/art/cabin-math.png");
+  expect(img.getAttribute("src")).toBe("/art/cabin-logic-games.png");
+});
+
+// `math` is on the map, active, and has no gadgets until its games ship. Entering it has to give a
+// normal (if quiet) room rather than throwing or rendering nothing at all.
+test("a topic with no gadgets renders the room with zero hotspots and does not throw", () => {
+  expect(() => render(<CabinStatic topic="math" />)).not.toThrow();
+
+  expect(document.querySelector(".cabin-static")).toBeInTheDocument();
+  expect(document.querySelector("img.cabin-static-bg")?.getAttribute("src")).toBe(
+    "/art/cabin-math.png",
+  );
+  expect(document.querySelector(".cabin-static-hearthlight")).toBeInTheDocument();
+  expect(document.querySelectorAll("[data-gadget]")).toHaveLength(0);
+  expect(screen.queryAllByRole("button")).toHaveLength(0);
 });

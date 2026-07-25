@@ -9,8 +9,11 @@ export function hotspotStyle(gadget: Gadget): { left: string; top: string } {
  * Placement for the static-image cabin, independent of the registry's
  * `hotspot.xPct/yPct` (which the 3D wall anchors also read — see
  * `scene3d/anchors.ts`). These coordinates are tuned against the painted
- * `cabin-math.png` art so each illustrated object visually rests on a frame,
+ * `cabin-logic-games.png` art so each illustrated object visually rests on a frame,
  * shelf, or floor spot instead of floating over the hearth.
+ *
+ * Keyed by gadget id, so a topic with no gadgets (currently `math`) simply never looks anything up
+ * here.
  */
 const STATIC_POSITIONS: Record<string, { xPct: number; yPct: number }> = {
   nonogram: { xPct: 20, yPct: 45 },

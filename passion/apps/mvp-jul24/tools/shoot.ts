@@ -74,8 +74,9 @@ export async function shoot(args: Args = {}): Promise<ShootResult> {
     console.log(`[shoot] map → ${mapOut}`);
     await page.screenshot({ path: mapOut });
 
-    // Only `math` is active on the map in this milestone (src/map/cabins.data.ts).
-    await page.click('[data-cabin="math"]');
+    // `logic-games` is the cabin with all seven puzzles in it (src/map/cabins.data.ts). `math` is
+    // also active but deliberately empty until its games ship, so it isn't the useful shot here.
+    await page.click('[data-cabin="logic-games"]');
     await page.waitForSelector(".cabin-static", { timeout });
     await page.waitForTimeout(300);
     console.log(`[shoot] cabin → ${cabinOut}`);

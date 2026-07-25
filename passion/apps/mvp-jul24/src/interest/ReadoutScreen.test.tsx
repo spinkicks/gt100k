@@ -44,7 +44,7 @@ test("shows a friendly empty state when nothing has been explored", () => {
 });
 
 test("back to map button returns to the map screen", () => {
-  useGame.getState().openCabin("math");
+  useGame.getState().openCabin("logic-games");
   render(<ReadoutScreen />);
   fireEvent.click(screen.getByRole("button", { name: /back to map/i }));
   expect(useGame.getState().screen).toBe("map");

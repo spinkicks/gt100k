@@ -12,6 +12,12 @@ import "./CabinStatic.css";
  * to open the nonogram, etc. The label appears as a tooltip on hover/focus.
  * The image is decorative — if `/art/cabin-${topic}.png` 404s, the container's
  * fallback background keeps the scene intentional and never blocks the objects.
+ *
+ * A topic with no gadgets is a supported, non-degenerate state, not an error: `math` currently has
+ * zero (see src/gadgets/registry.ts) because its games land in a later PR. The map deliberately lets
+ * a player walk into it, and what they get is the painted room with nothing to click — so this
+ * component must never assume the list is non-empty. It doesn't: `gadgets.map` over `[]` just leaves
+ * the backdrop and hearthlight standing.
  */
 export const CabinStatic: React.FC<{ topic: TopicId }> = ({ topic }) => {
   const gadgets = gadgetsForTopic(topic);

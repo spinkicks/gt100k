@@ -1,36 +1,81 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useGame } from "../game/store";
+import { CABINS } from "./cabins.data";
 import MapScreen from "./MapScreen";
 
 beforeEach(() => {
   useGame.getState().goToMap();
 });
 
-test("clicking the math node opens the math cabin", () => {
+test("clicking the Logic Games node opens the logic-games cabin", () => {
   render(<MapScreen />);
-  fireEvent.click(screen.getByRole("button", { name: /Math & Puzzles/ }));
+  fireEvent.click(screen.getByRole("button", { name: /Logic Games/ }));
+  expect(useGame.getState().screen).toBe("cabin");
+  expect(useGame.getState().cabinId).toBe("logic-games");
+});
+
+test('logic-games node carries data-cabin="logic-games" and is enabled', () => {
+  render(<MapScreen />);
+  const node = document.querySelector('[data-cabin="logic-games"]') as HTMLButtonElement;
+  expect(node).toBeInTheDocument();
+  expect(node).not.toBeDisabled();
+  expect(node).not.toHaveAttribute("aria-disabled");
+  expect(node.style.left).toBe("27%");
+  expect(node.style.top).toBe("45%");
+});
+
+// `math` is active and openable even though it has no gadgets yet — the empty room is deliberate
+// (see src/gadgets/registry.ts), so the node must not be treated as coming-soon.
+test("clicking the Math node opens the (currently gadget-free) math cabin", () => {
+  render(<MapScreen />);
+  const node = document.querySelector('[data-cabin="math"]') as HTMLButtonElement;
+  expect(node).not.toBeDisabled();
+  expect(node).not.toHaveAttribute("aria-disabled");
+
+  fireEvent.click(node);
   expect(useGame.getState().screen).toBe("cabin");
   expect(useGame.getState().cabinId).toBe("math");
 });
 
-test('math node carries data-cabin="math" and is enabled', () => {
+test("renders a node for all five cabins", () => {
   render(<MapScreen />);
-  const mathNode = document.querySelector('[data-cabin="math"]') as HTMLButtonElement;
-  expect(mathNode).toBeInTheDocument();
-  expect(mathNode).not.toBeDisabled();
-  expect(mathNode.style.left).toBe("50%");
-  expect(mathNode.style.top).toBe("55%");
+  expect(document.querySelectorAll("[data-cabin]")).toHaveLength(5);
+  for (const cabin of CABINS) {
+    expect(document.querySelector(`[data-cabin="${cabin.id}"]`)).toBeInTheDocument();
+  }
 });
 
-test("inactive nodes are disabled, show a soon hint, and do not open a cabin", () => {
-  render(<MapScreen />);
-  const musicNode = document.querySelector('[data-cabin="music"]') as HTMLButtonElement;
-  expect(musicNode).toBeDisabled();
-  expect(musicNode.textContent).toMatch(/soon/i);
+test.each(["music", "code", "art"])(
+  "the %s node reads as coming soon and does not open a cabin",
+  (id) => {
+    render(<MapScreen />);
+    const node = document.querySelector(`[data-cabin="${id}"]`) as HTMLButtonElement;
+    expect(node.className).toMatch(/inactive/);
+    expect(node.textContent).toMatch(/coming soon/i);
 
-  fireEvent.click(musicNode);
-  expect(useGame.getState().screen).toBe("map");
-  expect(useGame.getState().cabinId).toBeNull();
+    fireEvent.click(node);
+    expect(useGame.getState().screen).toBe("map");
+    expect(useGame.getState().cabinId).toBeNull();
+  },
+);
+
+// aria-disabled rather than the `disabled` attribute, so keyboard users can still reach the node and
+// hear what's coming instead of having it skipped entirely (see MapScreen.tsx).
+test("coming-soon nodes stay focusable and announce themselves as coming soon", () => {
+  render(<MapScreen />);
+  const node = document.querySelector('[data-cabin="music"]') as HTMLButtonElement;
+  expect(node).not.toBeDisabled();
+  expect(node).toHaveAttribute("aria-disabled", "true");
+  expect(node).toHaveAccessibleName("Music — coming soon");
+
+  node.focus();
+  expect(document.activeElement).toBe(node);
+});
+
+test("coming-soon nodes are marked up without a padlock glyph", () => {
+  render(<MapScreen />);
+  const node = document.querySelector('[data-cabin="art"]') as HTMLButtonElement;
+  expect(node.querySelector("svg")).toBeNull();
 });
 
 test("renders the map background image", () => {

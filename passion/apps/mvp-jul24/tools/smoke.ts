@@ -98,7 +98,7 @@ async function shootStaticCabinAndNonogramAndLogic(
     try {
       await page.goto(`${base}/?cabin=static`, { waitUntil: "domcontentloaded" });
       await page.waitForSelector(".map-screen", { timeout });
-      await page.click('[data-cabin="math"]');
+      await page.click('[data-cabin="logic-games"]');
       await page.waitForSelector(".cabin-static", { timeout });
       await page.waitForTimeout(300);
       await page.screenshot({ path: cabinOut });
@@ -165,7 +165,7 @@ async function shoot3dCabin(base: string, outDir: string, timeout: number): Prom
     wireConsoleWatchers(page, "3d");
     await page.goto(`${base}/?cabin=3d`, { waitUntil: "domcontentloaded" });
     await page.waitForSelector(".map-screen", { timeout });
-    await page.click('[data-cabin="math"]');
+    await page.click('[data-cabin="logic-games"]');
     await page.waitForSelector(".cabin-view", { timeout });
     // Give the WebGL canvas time to init + render a frame. If WebGL fails under headless
     // Chromium's swiftshader fallback, don't let that crash the rest of the script — note it.
