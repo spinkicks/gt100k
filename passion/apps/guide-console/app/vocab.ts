@@ -148,8 +148,15 @@ const titleCaseHyphen = (k: string): string =>
     .join(" ");
 
 export const DOMAINS: Record<string, string> = {
-  "games-logic": "Games & Logic",
+  // The eight real taxonomy cabins (two-axis-tagging CABINS).
   "music-sound": "Music & Sound",
+  "code-computers": "Code & Computers",
+  "games-strategy": "Games & Strategy",
+  "making-engineering": "Making & Engineering",
+  "art-motion": "Art & Motion",
+  "influence-media": "Influence & Media",
+  "math-puzzles": "Math & Puzzles",
+  "games-logic": "Games & Logic",
   "movement-body": "Movement & Body",
   "visual-art": "Visual Art",
   "writing-word": "Writing & Words",

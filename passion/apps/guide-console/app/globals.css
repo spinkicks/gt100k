@@ -1413,6 +1413,7 @@ body {
 }
 .main--wb > .grid--wb,
 .main--wb > .wbpanel,
+.main--wb > .ovbody,
 .main--wb > .empty {
   animation: tabfade 0.18s ease-out both;
 }
@@ -2723,4 +2724,357 @@ body {
   width: 16px;
   height: 16px;
   accent-color: var(--accent);
+}
+
+/* ── Overview dashboard ───────────────────────────────────────────────────────
+   Lifted from the approved console reference (design-lab/app/console.css). Three names collided
+   with existing rules that mean something else in this console, so they carry an `ov-` prefix here:
+   `.legend` is already the collapsible Key disclosure, `.tbl` is already the compact prototype's
+   evidence table, and `.ov-sr` / `.ov-blank` / `.ov-foot` / `.ov-none` are new. `.chip`, `.btn` and
+   `.btn--primary` already exist with exactly this meaning, so they are reused rather than redefined.
+   Colour is always doubled by text: every pip, badge and meter sits beside a written label. */
+
+/* Visually hidden but read aloud — carries each chart's actual numbers to a screen reader. */
+.ov-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ovbody {
+  display: grid;
+  gap: 20px;
+}
+
+/* ── Stat tiles ──────────────────────────────────────────────────────────── */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+@media (max-width: 1250px) {
+  .tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.tile {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elev-raised);
+  padding: 18px 20px;
+}
+.tile__k {
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+.tile__row {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin: 4px 0 2px;
+}
+.tile__v {
+  font-size: 1.875rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.tile__ctx {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+}
+/* Fixed slot so tiles stay aligned when a series is too flat to be worth drawing. */
+.tile__spark {
+  height: 34px;
+  margin-top: 6px;
+}
+/* The sign in the label ("+50%", "−100%", "No change") is the meaning; hue only reinforces it. */
+.delta {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.delta--up {
+  color: var(--good);
+  background: var(--good-bg);
+}
+.delta--down {
+  color: var(--bad);
+  background: var(--bad-bg);
+}
+.delta--flat {
+  color: var(--ink-muted);
+  background: var(--surface-2);
+}
+.spark {
+  width: 110px;
+  height: 34px;
+  display: block;
+}
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elev-raised);
+  padding: 20px 22px;
+  min-width: 0;
+}
+.card__hd {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+.card__hd h2 {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.card__hd p {
+  margin: 3px 0 0;
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+}
+.card--alarm {
+  border-color: var(--warn);
+}
+.row2 {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 1250px) {
+  .row2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* A chart that cannot say anything true yet. Quiet and centred, so a sparse child reads as
+   "nothing here yet" rather than as a broken render. */
+.ov-blank {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 5px;
+  min-height: 190px;
+  padding: 18px;
+  text-align: center;
+}
+.ov-blank__k {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+.ov-blank__d {
+  margin: 0;
+  max-width: 42ch;
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+}
+.ov-foot {
+  margin: 8px 0 0;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+}
+.ov-none {
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+}
+
+/* ── Charts ──────────────────────────────────────────────────────────────── */
+.chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.chart__grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.chart__lab {
+  font-size: 11px;
+  fill: var(--ink-muted);
+  font-family: var(--font-body);
+}
+.ov-legend {
+  display: flex;
+  gap: 14px;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+.ov-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ov-legend i,
+.dlegend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+.donutwrap {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.dlegend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 9px;
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+  min-width: 0;
+  flex: 1;
+}
+.dlegend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dlegend b {
+  margin-left: auto;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Status badges + pips ────────────────────────────────────────────────── */
+.badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.badge--good {
+  color: var(--good);
+  background: var(--good-bg);
+}
+.badge--warn {
+  color: var(--warn);
+  background: var(--warn-bg);
+}
+.badge--bad {
+  color: var(--bad);
+  background: var(--bad-bg);
+}
+.pip {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.pip--good {
+  background: var(--good);
+}
+.pip--warn {
+  background: var(--warn);
+}
+.pip--bad {
+  background: var(--bad);
+}
+.checks {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: grid;
+  gap: 11px;
+  font-size: 0.8125rem;
+}
+.checks li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink-muted);
+}
+.checks b {
+  margin-left: auto;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* ── Specializations table ───────────────────────────────────────────────── */
+.ov-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+.ov-tbl th {
+  text-align: left;
+  font-size: 0.6875rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  font-weight: 700;
+  padding: 0 12px 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.ov-tbl td {
+  padding: 13px 12px 13px 0;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.ov-tbl tr:last-child td {
+  border-bottom: none;
+}
+.ov-tbl__name {
+  font-weight: 700;
+  color: var(--ink);
+}
+.meter {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 128px;
+}
+.meter__bar {
+  flex: 1;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+/* The percentage beside the bar is the value; the fill colour only echoes the status pill. */
+.meter__bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+}
+.meter__bar span[data-s="warn"] {
+  background: var(--warn);
+}
+.meter__bar span[data-s="bad"] {
+  background: var(--bad);
+}
+.meter__n {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.btn--sm {
+  padding: 6px 12px;
+  font-size: 0.75rem;
 }
