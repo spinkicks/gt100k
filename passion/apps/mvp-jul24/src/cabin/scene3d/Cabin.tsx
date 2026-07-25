@@ -12,7 +12,7 @@
  * Determinism: all animation is a pure function of clock time — no Math.random in the render loop —
  * so screenshots stay reproducible.
  */
-import { useGLTF, useTexture } from "@react-three/drei";
+import { ContactShadows, useGLTF, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { Component, type ReactNode, Suspense, useMemo, useRef } from "react";
 import * as THREE from "three";
@@ -37,6 +37,13 @@ const WOOD_TEX = {
   normalMap: "/assets/textures/wood_nor.jpg",
   roughnessMap: "/assets/textures/wood_rough.jpg",
 };
+// Kick these fetches off at import time (in parallel with the HEAD "does this asset exist"
+// probes below and with the HDR/vista preloads in EnvLight/SkyDome) instead of waiting for
+// useAssetReady to flip and only THEN starting the real load — shaves a sequential network
+// round-trip off time-to-real-textures. Harmless no-op on a fresh clone/CI where the files are
+// gitignored/absent: the rejected promise just never gets read because mounting stays gated
+// behind useAssetReady/Suspense boundaries below.
+useTexture.preload(Object.values(WOOD_TEX));
 
 /** Floor with real scanned CC0 wood when fetched, else the procedural plank material. */
 function ProceduralFloor(): JSX.Element {
@@ -309,6 +316,7 @@ function Fireplace(): JSX.Element {
 }
 
 const CAT_MODEL_URL = "/assets/models/cat.glb";
+useGLTF.preload(CAT_MODEL_URL);
 
 /** Real CC0 cat GLB (via fetch-assets), auto-normalized to fit + grounded. Falls back to the
  *  procedural cat if the GLB is absent/fails to load. */
@@ -430,6 +438,7 @@ function ProceduralCat(): JSX.Element {
 }
 
 const PINE_MODEL_URL = "/assets/models/pine.glb";
+useGLTF.preload(PINE_MODEL_URL);
 const TREE_SPOTS: Array<[number, number, number, string]> = [
   [5.5, -7.8, 5.0, "#26402b"],
   [6.0, 7.6, 5.4, "#223a27"],
@@ -650,6 +659,18 @@ export function Cabin({ topic }: { topic: TopicId }): JSX.Element {
       <Window />
       <WallLantern />
       <SetDressing />
+      {/* Soft contact shadow under the hearth rug/cat so they read as sitting IN the room rather
+          than floating over the floor. frames=1: the room's occluders never move, so the blurred
+          shadow render-to-texture only needs to happen once, not every frame. */}
+      <ContactShadows
+        position={[0, 0.011, -1.35]}
+        opacity={0.55}
+        scale={5.5}
+        blur={2.2}
+        far={2.5}
+        color="#0c0603"
+        frames={1}
+      />
 
       {props.map((prop) => (
         <GadgetPropView key={prop.id} prop={prop} />
@@ -674,7 +695,10 @@ export function Cabin({ topic }: { topic: TopicId }): JSX.Element {
         shadow-camera-bottom={-6}
       />
       {/* soft cool ambient so shadows read, never crush to black */}
-      <ambientLight color="#2b3852" intensity={0.32} />
+      <ambientLight color="#2b3852" intensity={0.42} />
+      {/* low warm fill from the fire's general direction so anything back-lit or off to the side
+          (the cat curled by the hearth) doesn't read as a featureless dark silhouette. */}
+      <hemisphereLight color="#5a3a20" groundColor="#0c0704" intensity={0.35} />
     </group>
   );
 }

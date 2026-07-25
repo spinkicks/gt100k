@@ -8,13 +8,18 @@
  * its own Suspense + error boundary so a missing file degrades silently instead of crashing the
  * scene.
  */
-import { Environment } from "@react-three/drei";
+import { Environment, useEnvironment } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { Component, type ReactNode, Suspense, useEffect } from "react";
 import * as THREE from "three";
 import { useAssetReady } from "./useAssetReady";
 
 const HDRI_URL = "/assets/env/dusk.hdr";
+// Start decoding the HDR immediately at import time, in parallel with the HEAD probe below,
+// instead of only after useAssetReady flips true — removes a sequential round-trip from
+// time-to-real-lighting. No-op (silently uncalled promise) if the file 404s, since <Environment>
+// only ever mounts once hasHdri is confirmed.
+useEnvironment.preload({ files: HDRI_URL });
 
 function equirectCanvas(): HTMLCanvasElement {
   const w = 128;
@@ -92,7 +97,7 @@ export function EnvLight(): JSX.Element {
   const hasHdri = useAssetReady(HDRI_URL);
   return (
     <>
-      <EnvIntensity value={0.45} />
+      <EnvIntensity value={0.55} />
       {hasHdri ? (
         <EnvBoundary>
           <Suspense fallback={<ProceduralEnv />}>
