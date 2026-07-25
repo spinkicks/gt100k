@@ -27,6 +27,7 @@ export default function Page(): JSX.Element {
         <Toc />
         <main className="main">
           <header className="page-header">
+            <p className="kicker">A guide for homeschool parents</p>
             <h1>The Warm-Demanding Parent Playbook</h1>
             <p className="lede">
               You are your child&apos;s biggest advantage. This guide shows how to use that well, in
@@ -36,10 +37,10 @@ export default function Page(): JSX.Element {
 
           <section id="start">
             <h2>Start here</h2>
-            <p>The 30-second version. If you read nothing else, read this.</p>
-            <p>
-              You are your child&apos;s biggest advantage, and handled wrong you are also their
-              biggest risk. How you show up decides which one you are.
+            <p className="dropcap">
+              The 30-second version. If you read nothing else, read this. You are your child&apos;s
+              biggest advantage, and handled wrong you are also their biggest risk. How you show up
+              decides which one you are.
               <Cite>Pinquart 2020; Kim 2013</Cite>
             </p>
             <div className="panel panel--accent">
@@ -106,6 +107,10 @@ export default function Page(): JSX.Element {
               on grades are small, so lean on this stance for wellbeing and durable motivation
               rather than as a big lever on report cards.
               <Cite>Kim 2013; Assor 2004; Pinquart 2016; Grolnick 2009</Cite>
+            </p>
+            <p className="pullquote">
+              The harm comes from control, and from warmth that depends on results, not from high
+              standards.
             </p>
 
             <h3>Let it become theirs</h3>
@@ -182,6 +187,10 @@ export default function Page(): JSX.Element {
               existence proof that the environment can be designed. Ability still matters, yet
               practice hours explain only a minority of the difference between people.
               <Cite>Bloom 1985; Winner 1996; Polgar; Macnamara 2014; Robertson 2010</Cite>
+            </p>
+            <p className="pullquote">
+              The talent was developed, not simply found. Drive and an enriched home matter more
+              than raw gifts.
             </p>
 
             <h3>The environment does the quiet work</h3>
