@@ -16,6 +16,7 @@ describe("model", () => {
   });
   it("depth-family guard", () => {
     expect(isDepthFamily("artifact_competence")).toBe(true);
-    expect(isDepthFamily("voluntary_return")).toBe(false);
+    expect(isDepthFamily("cross_day_return")).toBe(false);
+    expect(isDepthFamily("same_day_engagement")).toBe(false);
   });
 });

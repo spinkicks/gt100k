@@ -43,10 +43,12 @@ export function deriveGates(
     config: ctx.config,
   });
 
-  // Return timeline per cellKey: voluntary, non-novel returns are the durability signal.
+  // Return timeline per cellKey: voluntary, non-novel, across-day returns are the durability
+  // signal. The gate asks whether interest survived a gap, so a same-day re-entry never belonged
+  // in this timeline — `cross_day_return` (E2) is what this filter always meant.
   const timelines = new Map<string, string[]>();
   for (const e of cellEvents) {
-    if (e.kind !== "voluntary_return" || e.novelty !== false) continue;
+    if (e.kind !== "cross_day_return" || e.novelty !== false) continue;
     const key = serializeCellKey(e.domainPath, e.mode);
     const arr = timelines.get(key);
     if (arr) arr.push(e.timestamp);

@@ -50,6 +50,39 @@ jobs:
       - name: Repo hygiene
         run: |
           echo "Tracked files: $(git ls-files | wc -l)"
-          # Growable gatekeeper: add lint / type-check / test / build steps here as code lands
-          # (pnpm for JS/TS, uv for Python) per the §10.5 quality tiers.
-          echo "CI gatekeeper passed (docs-stage)."
+
+      # Everything below was the "add these as code lands" TODO that outlived the docs stage.
+      # Until now CI only scanned for secrets and oversized files, so a change could break the
+      # build or the suite and still merge green — which is exactly how a broken assertion
+      # reached main. Local runs were catching it; nothing enforced them.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm exec tsc -b
+
+      - name: Test (engines + adapters)
+        run: pnpm test
+
+      # The root vitest config only globs passion/packages and passion/adapters, so every app
+      # suite sat outside the gate. Apps are listed explicitly rather than swept with `pnpm -r`,
+      # because each carries its own vitest config and environment (jsdom, WebGL stubs) and a
+      # recursive run would silently pick up packages whose `test` script re-enters the root
+      # config. Add a line when an app gains a suite.
+      - name: Test (apps)
+        run: |
+          for app in guide-console project-studio parent-guide concierge-app \
+                     evidence-explorer evidence-explorer-themed mvp-jul24 tinker-cabin-app; do
+            echo "::group::$app"
+            pnpm --filter "@gt100k/$app" test
+            echo "::endgroup::"
+          done

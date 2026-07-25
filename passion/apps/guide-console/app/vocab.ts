@@ -1,4 +1,4 @@
-// Plain-language vocabulary for the console. The engine speaks in signal keys (voluntary_return, …),
+// Plain-language vocabulary for the console. The engine speaks in signal keys (cross_day_return, …),
 // lifecycle enums (EMERGING, …) and action verbs (promote, …). Guides never decode those: everything
 // they see is a human label plus a one-line description, surfaced as tooltips and in the Key. Unknown
 // keys fall back to a de-underscored Title Case label (never the raw name). No em dashes in any copy.
@@ -17,9 +17,13 @@ const prettify = (k: string): string =>
 
 // Behavioural evidence signals (both supporting and disconfirming).
 export const SIGNALS: Record<string, Term> = {
-  voluntary_return: {
-    label: "Voluntary Return",
-    desc: "Came back to this on their own, with no prompt. The strongest sign of genuine interest.",
+  cross_day_return: {
+    label: "Came Back Another Day",
+    desc: "Came back to this on their own, on a later day. The strongest sign of genuine interest.",
+  },
+  same_day_engagement: {
+    label: "Same Day Visit",
+    desc: "Picked this up again the same day. Useful context, but not proof the interest lasts.",
   },
   prompted_return: {
     label: "Prompted Return",

@@ -22,21 +22,24 @@ export const GOLDEN_CELL_KEY = "music-sound/audio-systems::build";
  *   mean 0.797314 · sd 0.142508 · lowerBound 0.654806 · evidenceMass 4.457407
  *
  * Excluded from the belief, and each one is here to prove it stays excluded:
- *   - the day-6 return is the first exposure (`novelty: true`)
+ *   - the day-6 return is the first exposure (`novelty: true`). It stays a `cross_day_return`
+ *     rather than becoming a `same_day_engagement` under E2, deliberately: at a zero-weight kind
+ *     it would prove nothing, whereas at a full-weight kind it proves the novelty flag still
+ *     suppresses an event the scoring branch would otherwise have counted.
  *   - the day-0 `prompted_return` was system-surfaced
  *   - the day-1 `artifact_competence` is a work-quality judgement, unscored for interest (E11)
  */
 const D = (day: number): string => `2026-01-0${day}T00:00:00.000Z`;
 
 export const GOLDEN_EVENTS: CellEvent[] = [
-  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: true, timestamp: D(2) },
-  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: false, timestamp: D(3) },
+  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "cross_day_return", novelty: true, timestamp: D(2) },
+  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "cross_day_return", novelty: false, timestamp: D(3) },
   { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "skip", novelty: false, timestamp: D(4) },
-  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: false, timestamp: D(5) },
+  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "cross_day_return", novelty: false, timestamp: D(5) },
   { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "unrequired_revision", novelty: false, timestamp: D(6) },
-  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: false, timestamp: D(7) },
+  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "cross_day_return", novelty: false, timestamp: D(7) },
   { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "artifact_competence", novelty: false, timestamp: D(7) },
-  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: false, timestamp: D(8) },
+  { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "cross_day_return", novelty: false, timestamp: D(8) },
   { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "prompted_return", novelty: false, timestamp: D(8) },
 ];
 

@@ -53,7 +53,9 @@ export function derivePlanInputs(
     (e) => serializeCellKey(e.domainPath, e.mode) === cellKey && !Number.isNaN(Date.parse(e.timestamp)),
   );
 
-  const voluntary = events.filter((e) => e.kind === "voluntary_return");
+  // Across-day returns only (E2): a same-day re-entry is not evidence a pursuit is durable, which
+  // is the whole question this deriver is asking.
+  const voluntary = events.filter((e) => e.kind === "cross_day_return");
   if (voluntary.length === 0) return null; // discovery, not specialization
 
   const ageDays = (ts: string): number => (nowMs - Date.parse(ts)) / DAY_MS;

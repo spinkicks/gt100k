@@ -63,7 +63,11 @@ describe("guide-console derived roster", () => {
       "art-motion/dance::perform",
     ]);
     const top = vm.cards[0]!;
-    expect(top.supporting).toEqual(["voluntary_return", "artifact_competence"]);
+    // artifact_competence is deliberately absent (E11). It is a work-quality judgement, so it no
+    // longer moves the interest belief, and a reason that moved no belief must not be shown to a
+    // guide as one. It is still emitted and still read by the planner's producerIdentity.
+    expect(top.supporting).toEqual(["cross_day_return"]);
+    expect(top.supporting).not.toContain("artifact_competence");
     expect(top.disconfirming).toEqual([]);
     const thin = vm.cards[1]!;
     expect(thin.supporting).toEqual([]);

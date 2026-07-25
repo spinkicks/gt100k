@@ -28,10 +28,10 @@ Each `(domain × work-mode)` cell is a Beta-Bernoulli posterior.
 
 - **Prior** (from the domain's `DomainPrior`): `alpha_prior = 1 + (inEnvironment ? 0.5 : 0) + 0.5·aptitudeTilt + 0.5·discretionaryTilt`, `beta_prior = 1`.
 - **Evidence** (per event, recency-weighted `w = 0.5^(ageDays/14)`):
-  - `voluntary_return` → `alpha += 1.0·magnitude·w`
-  - depth family (`unrequired_revision`, `chosen_challenge`, `failure_recovery`, `self_authored_scope`, `artifact_competence`) → `alpha += 0.5·magnitude·w`
+  - `cross_day_return` (a prior engagement of the cell on an earlier UTC day) → `alpha += 1.0·w`
+  - depth family (`unrequired_revision`, `chosen_challenge`, `failure_recovery`, `self_authored_scope`, `artifact_competence`) → `alpha += 0.5·w`
   - `skip` (non-novel) → `beta += 0.5·w`
-  - `novelty` events, `prompted_return`, and silence → **excluded** (triggered / prompted / missingness ≠ interest)
+  - `novelty` events, `prompted_return`, `same_day_engagement`, and silence → **excluded** (triggered / prompted / same-day / missingness ≠ interest)
 - **Posterior**: `mean = α/(α+β)`, `sd = √(αβ / ((α+β)²(α+β+1)))`, `lowerBound = max(0, mean − sd)`, `evidenceMass = (α−α_prior)+(β−β_prior)`.
 - **Confidence** (honest "not sure yet"): `evidenceMass ≥ 3` **and** `2·sd ≤ 0.35`.
 - **Candidates**: confident cells with `lowerBound ≥ 0.6`, ranked by `lowerBound` desc (ties by key), capped at 3.

@@ -90,6 +90,7 @@ export const PILOT_PRIORS: Readonly<Record<string, readonly DomainPrior[]>> = {
 // novelty window before the first return), gate-spread voluntary returns at −90 / −70 / −30, and a
 // recent cluster at −12 / −8 / −5 / −3 / −1 (the last with a depth signal) for confidence.
 const NOVEL = "2025-12-25";
+const NOVEL_NEXT = "2025-12-26"; // still inside the 3-day novelty window
 const SPREAD = ["2026-01-01", "2026-01-21", "2026-03-02"]; // −90 / −70 / −30
 const CLUSTER = ["2026-03-20", "2026-03-24", "2026-03-27", "2026-03-29", "2026-03-31"];
 
@@ -153,6 +154,25 @@ function thinLog(kidId: string, artifactId: string, actionType: string, tag: str
   ];
 }
 
+/**
+ * Thin AND gone quiet: `thinLog` plus one more self-initiated touch the day after the exposure, so
+ * the cell has a real cross-day return to have gone quiet on. Both early touches sit inside the
+ * novelty window, so the cell still reaches neither the belief nor the gate and still reads
+ * EXPLORING; the extra day is visible only to wellbeing's missingness signal.
+ *
+ * Split out from `thinLog` under E2: a first-ever engagement is a `same_day_engagement`, not a
+ * return, so a lone exposure leaves nothing to have gone quiet on. "Too sparse to say anything
+ * about" (Cyrus) and "engaged once, then silence" (Ari's dance, Dulce's physics) used to be the
+ * same log by coincidence and are now genuinely different shapes.
+ */
+function quietLog(kidId: string, artifactId: string, actionType: string, tag: string): Interaction[] {
+  return [
+    mk(kidId, artifactId, actionType, NOVEL, `${tag}-x0`),
+    mk(kidId, artifactId, actionType, NOVEL_NEXT, `${tag}-x1`),
+    mk(kidId, artifactId, actionType, "2026-03-25", `${tag}-p0`, { prompted: true }),
+  ];
+}
+
 // Cell keys / artifact refs used both in fixtures and for the human transitions below.
 const DULCE_GAMEDEV = serializeCellKey(["code-computers", "game-dev"], "build");
 const DULCE_PROD = serializeCellKey(["music-sound", "production"], "build");
@@ -161,7 +181,7 @@ const DULCE_PHYSICS = serializeCellKey(["science-nature", "physics"], "investiga
 // ── Per-kid interaction logs ─────────────────────────────────────────────────────
 const ARI_LOG: Interaction[] = [
   ...strongLog("kid-synthetic-001", "ari-audio", "assemble", "ari-audio"),
-  ...thinLog("kid-synthetic-001", "ari-dance", "play", "ari-dance"),
+  ...quietLog("kid-synthetic-001", "ari-dance", "play", "ari-dance"),
 ];
 const BEX_LOG: Interaction[] = [
   ...strongLog("kid-synthetic-002", "bex-chess", "play", "bex-chess"),
@@ -174,7 +194,7 @@ const CYRUS_LOG: Interaction[] = [
 const DULCE_LOG: Interaction[] = [
   ...strongLog("kid-synthetic-004", "dulce-gamedev", "assemble", "dulce-gamedev"),
   ...strongLog("kid-synthetic-004", "dulce-prod", "assemble", "dulce-prod"),
-  ...thinLog("kid-synthetic-004", "dulce-physics", "inspect", "dulce-physics"),
+  ...quietLog("kid-synthetic-004", "dulce-physics", "inspect", "dulce-physics"),
 ];
 
 const ARI_ARTIFACTS = { [serializeCellKey(["music-sound", "audio-systems"], "build")]: "defense-record-042" };

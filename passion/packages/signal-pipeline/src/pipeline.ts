@@ -4,6 +4,7 @@ import type { Interaction, SurfacedRecord, PipelineConfig, DroppedInteraction } 
 import { DEFAULTS } from "./model.js";
 import { buildActionEvents } from "./actions.js";
 import { actionToCellEvents } from "./cells.js";
+import { classifyReturns } from "./returns.js";
 import { deriveSkips } from "./skips.js";
 
 export interface DeriveInput {
@@ -15,9 +16,9 @@ export interface DeriveInput {
 
 /**
  * The Signal Firewall orchestrator. Turns raw child interactions into the CellEvent stream 011
- * consumes: resolve engaged modes (via 009), classify novelty + voluntary/prompted, extract depth,
- * and derive skips from surfaced-minus-engaged. Unresolved/unknown interactions emit nothing and
- * are reported in `dropped` (never guessed).
+ * consumes: resolve engaged modes (via 009), classify novelty and the return horizon
+ * (cross-day / same-day / prompted), extract depth, and derive skips from surfaced-minus-engaged.
+ * Unresolved/unknown interactions emit nothing and are reported in `dropped` (never guessed).
  */
 export function deriveSignals(input: DeriveInput): {
   actionEvents: ActionEvent[];
@@ -27,8 +28,11 @@ export function deriveSignals(input: DeriveInput): {
   const config: PipelineConfig = { ...DEFAULTS, ...input.config };
   const { built, dropped } = buildActionEvents(input.interactions, input.catalog, config);
 
+  // Classification needs the whole stream (the previous engagement of the same kid+cell), so it
+  // runs once over `built` and is handed to the per-event mapping.
+  const returns = classifyReturns(built);
   const cellEvents: CellEvent[] = [];
-  for (const b of built) cellEvents.push(...actionToCellEvents(b.event, b.artifact));
+  built.forEach((b, i) => cellEvents.push(...actionToCellEvents(b.event, b.artifact, returns[i]!)));
   cellEvents.push(...deriveSkips(input.surfaced ?? [], built, input.catalog, config));
 
   return { actionEvents: built.map((b) => b.event), cellEvents, dropped };

@@ -77,26 +77,26 @@ describe("every child renders something drawable or an honest empty state", () =
 
 test("derives Ari's headline numbers from the interaction log", () => {
   const ov = overviewFor(ARI);
-  expect(ov.events).toBe(11);
+  expect(ov.events).toBe(12);
   const by = new Map(ov.tiles.map((t) => [t.key, t]));
-  expect(by.get("voluntary")?.value).toBe("10");
+  expect(by.get("voluntary")?.value).toBe("11");
   expect(by.get("depth")?.value).toBe("1");
-  expect(by.get("sessions")?.value).toBe("11");
+  expect(by.get("sessions")?.value).toBe("12");
   expect(by.get("coverage")?.context).toBe("2 of 11 areas we can observe");
-  // Second half of the observed window against the first: 4 voluntary returns became 6.
+  // Second half of the observed window against the first: 5 voluntary returns became 6.
   expect(by.get("voluntary")?.trend).toEqual({
     dir: "up",
-    label: "+50%",
-    aria: "Voluntary returns up 50 percent versus the previous period",
+    label: "+20%",
+    aria: "Voluntary returns up 20 percent versus the previous period",
   });
   // Dec / Jan / Feb / Mar, with February's real zero left in rather than skipped.
   expect(ov.returns.ok).toBe(true);
   expect(ov.returns.labels).toEqual(["Dec", "Jan", "Feb", "Mar"]);
-  expect(ov.returns.a).toEqual([2, 2, 0, 6]);
+  expect(ov.returns.a).toEqual([3, 2, 0, 6]);
   expect(ov.returns.b).toEqual([0, 0, 0, 1]);
   expect(ov.share.slices.map((s) => [s.label, s.percent])).toEqual([
-    ["Music & Sound", 82],
-    ["Art & Motion", 18],
+    ["Music & Sound", 75],
+    ["Art & Motion", 25],
   ]);
 });
 
