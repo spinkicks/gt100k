@@ -50,17 +50,39 @@ describe("interactions", () => {
         timestamp: "2026-07-25T10:00:00.000Z",
         prompted: false,
         sessionId: "s1",
+        dwellBucket: "short",
       },
     ]);
   });
 
-  test("an open below the validity floor emits nothing — a stray click is not evidence", () => {
+  test("an open below the floor is still recorded, tagged under_floor", () => {
     const c = clock(Date.parse("2026-07-25T10:00:00.000Z"));
     const log = createSignalLog({ sessionId: "s1", now: c.now });
 
     log.recordOpen("nonogram", FLOOR_MS - 1);
 
-    expect(log.interactions()).toEqual([]);
+    // Dropping it would leave "surfaced, never engaged" — which E4 reads as a
+    // decline. A brief attempt must never become NEGATIVE evidence.
+    const [only] = log.interactions();
+    expect(only?.artifactId).toBe("nonogram");
+    expect(only?.dwellBucket).toBe("under_floor");
+  });
+
+  test("buckets an open by how long it held attention, never by raw duration", () => {
+    const c = clock(Date.parse("2026-07-25T10:00:00.000Z"));
+    const log = createSignalLog({ sessionId: "s1", now: c.now });
+
+    log.recordOpen("a", 1_000);
+    log.recordOpen("b", 30_000);
+    log.recordOpen("c", 3 * 60_000);
+    log.recordOpen("d", 10 * 60_000);
+
+    expect(log.interactions().map((i) => i.dwellBucket)).toEqual([
+      "under_floor",
+      "short",
+      "medium",
+      "long",
+    ]);
   });
 
   test("a depth signal is never floor-gated — completing a puzzle is evidence at any duration", () => {
@@ -85,6 +107,7 @@ describe("interactions", () => {
     expect(keys).toEqual([
       "actionType",
       "artifactId",
+      "dwellBucket",
       "kidId",
       "prompted",
       "sessionId",

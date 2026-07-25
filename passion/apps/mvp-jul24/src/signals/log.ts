@@ -1,4 +1,4 @@
-import type { Interaction, SurfacedRecord } from "./types";
+import type { DwellBucket, EmittedInteraction, SurfacedRecord } from "./types";
 
 /** Synthetic local identity — this demo holds no child PII. */
 export const KID_ID = "local-demo";
@@ -6,15 +6,27 @@ export const KID_ID = "local-demo";
 const STORAGE_KEY = "mvp-jul24:signals";
 
 /**
- * Minimum active time before an *open* counts as an interaction (proposal E9).
- * Dwell is not evidence of interest — its meaning reverses by learner — but it is
- * a serviceable validity gate: below this, a click is more likely a misclick or a
- * glance than an engagement. Never used to weight anything.
+ * The floor below which an open is unlikely to be a real engagement (proposal E9).
+ * It classifies; it does not filter. Under-floor opens are still emitted, tagged
+ * `under_floor`, because a dropped open is indistinguishable from never having
+ * shown up — and "surfaced, never engaged" is what E4 scores as a decline.
  */
 export const FLOOR_MS = 20_000;
 
+/** Held attention past the first vigilance decrement (~6 min at ages 6–8). */
+const LONG_MS = 6 * 60_000;
+/** Past a couple of minutes: sustained, but short of the decrement. */
+const MEDIUM_MS = 2 * 60_000;
+
+function bucketFor(activeMs: number): DwellBucket {
+  if (activeMs < FLOOR_MS) return "under_floor";
+  if (activeMs < MEDIUM_MS) return "short";
+  if (activeMs < LONG_MS) return "medium";
+  return "long";
+}
+
 interface Stored {
-  interactions: Interaction[];
+  interactions: EmittedInteraction[];
   surfaced: SurfacedRecord[];
 }
 
@@ -71,11 +83,11 @@ export function createSignalLog({ sessionId, now }: SignalLogOptions) {
     },
 
     /**
-     * Record that the child opened an artifact. Gated on `activeMs` reaching
-     * `FLOOR_MS` so a stray click never becomes evidence.
+     * Record that the child opened an artifact. Always emitted, carrying a
+     * `dwellBucket` so the engine can decide what a brief visit is worth. The
+     * emitter reports; it does not adjudicate.
      */
     recordOpen(artifactId: string, activeMs: number): void {
-      if (activeMs < FLOOR_MS) return;
       const s = read();
       s.interactions.push({
         kidId: KID_ID,
@@ -84,6 +96,7 @@ export function createSignalLog({ sessionId, now }: SignalLogOptions) {
         timestamp: stamp(),
         prompted: false,
         sessionId,
+        dwellBucket: bucketFor(activeMs),
       });
       write(s);
     },
@@ -107,7 +120,7 @@ export function createSignalLog({ sessionId, now }: SignalLogOptions) {
       write(s);
     },
 
-    interactions(): readonly Interaction[] {
+    interactions(): readonly EmittedInteraction[] {
       return read().interactions;
     },
   };

@@ -50,7 +50,7 @@ test("an open emits an interaction only once enough active time has accrued", ()
   expect(opens.map((i) => i.artifactId)).toEqual(["nonogram"]);
 });
 
-test("a glance at a gadget emits nothing", () => {
+test("a glance is recorded as an under_floor open, never dropped", () => {
   useGame.setState({ screen: "cabin", cabinId: "math" });
   const { rerender } = render(<App />);
 
@@ -61,5 +61,12 @@ test("a glance at a gadget emits nothing", () => {
   useGame.setState({ focusedGadgetId: null });
   rerender(<App />);
 
-  expect(sessionLog.interactions()).toEqual([]);
+  // Dropping this would leave "surfaced, never engaged" — which E4 reads as a
+  // decline, turning a brief attempt into negative evidence. It survives, and
+  // the bucket lets the engine decide what it is worth.
+  const [only] = sessionLog.interactions();
+  expect(only?.actionType).toBe("open");
+  expect(only?.dwellBucket).toBe("under_floor");
+  // A glance still asserts no depth: the app must not claim revision happened.
+  expect(only?.depthSignals).toBeUndefined();
 });
