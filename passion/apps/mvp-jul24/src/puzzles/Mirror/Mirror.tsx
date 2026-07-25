@@ -1,13 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
-import {
-  type CellContent,
-  type Direction,
-  cloneMirrors,
-  pickLevel,
-  rotateMirror,
-  traceBeam,
-} from "./logic";
+import { generateLevel } from "./generate";
+import { type CellContent, type Direction, cloneMirrors, rotateMirror, traceBeam } from "./logic";
 import "./Mirror.css";
 
 const CELL = 56; // px, keep in sync with .mr-cell width/height in Mirror.css
@@ -15,11 +9,14 @@ const CELL = 56; // px, keep in sync with .mr-cell width/height in Mirror.css
 const ARROW_ROTATION: Record<Direction, number> = { N: -90, E: 0, S: 90, W: 180 };
 
 export default function Mirror({ seed, onSolved, onExit }: PuzzleProps) {
-  const level = useMemo(() => pickLevel(seed), [seed]);
+  // `round` advances on "Next puzzle" so the board keeps changing after the
+  // player solves one, without ever repeating the level they just beat.
+  const [round, setRound] = useState(0);
+  const level = useMemo(() => generateLevel(seed + round), [seed, round]);
   const [mirrors, setMirrors] = useState<CellContent[][]>(() => cloneMirrors(level.mirrors));
   const solvedRef = useRef(false);
 
-  // Reset the board whenever a new puzzle is loaded (seed change).
+  // Reset the board whenever a new puzzle is loaded (seed or round change).
   useEffect(() => {
     setMirrors(cloneMirrors(level.mirrors));
     solvedRef.current = false;
@@ -138,6 +135,12 @@ export default function Mirror({ seed, onSolved, onExit }: PuzzleProps) {
           ? "The beam is locked onto the target!"
           : "Click a mirror to rotate it and guide the beam to the target."}
       </output>
+
+      {trace.reachesTarget && (
+        <button type="button" className="mr-next" onClick={() => setRound((r) => r + 1)}>
+          Next puzzle →
+        </button>
+      )}
     </div>
   );
 }

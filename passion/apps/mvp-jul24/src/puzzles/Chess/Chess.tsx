@@ -2,28 +2,37 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
 import BoardGrid from "./BoardGrid";
 import FreePlayBoard from "./FreePlayBoard";
+import { pickRandomTactic } from "./bank";
 import {
   type ChessGameState,
+  type ChessPuzzle,
   type Square,
   attemptMove,
   initState,
   legalTargets,
   squaresEqual,
 } from "./logic";
-import { PUZZLES } from "./puzzles.data";
 import "./Chess.css";
 
 type Mode = "tactics" | "freeplay";
 
-export default function Chess({ seed, onSolved, onExit }: PuzzleProps) {
+export interface ChessProps extends PuzzleProps {
+  /** Injectable RNG for deterministic tests. Defaults to `Math.random` —
+   * production always picks genuinely at random, since `seed` is a fixed
+   * constant from the caller (not a per-session value) and can't be used
+   * for real variety here. */
+  rng?: () => number;
+}
+
+export default function Chess({ onSolved, onExit, rng = Math.random }: ChessProps) {
   const [mode, setMode] = useState<Mode>("tactics");
-  const puzzle = useMemo(() => PUZZLES[seed % PUZZLES.length]!, [seed]);
+  const [puzzle, setPuzzle] = useState<ChessPuzzle>(() => pickRandomTactic(rng));
   const [state, setState] = useState<ChessGameState>(() => initState(puzzle));
   const [selected, setSelected] = useState<Square | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const solvedRef = useRef(false);
 
-  // Reset whenever a new puzzle is loaded (seed change).
+  // Reset whenever a new puzzle is loaded (mount, or "Next puzzle").
   useEffect(() => {
     setState(initState(puzzle));
     setSelected(null);
@@ -37,6 +46,10 @@ export default function Chess({ seed, onSolved, onExit }: PuzzleProps) {
       onSolved();
     }
   }, [state.solved, onSolved]);
+
+  const handleNextPuzzle = () => {
+    setPuzzle(pickRandomTactic(rng, puzzle.id));
+  };
 
   const targets = useMemo(
     () => (selected ? legalTargets(state.board, selected) : []),
@@ -108,7 +121,10 @@ export default function Chess({ seed, onSolved, onExit }: PuzzleProps) {
 
       {mode === "tactics" ? (
         <>
-          <p className="cx-prompt">{puzzle.prompt}</p>
+          <p className="cx-prompt">
+            {puzzle.prompt}
+            {puzzle.label ? <span className="cx-tag"> ({puzzle.label})</span> : null}
+          </p>
           <BoardGrid
             board={state.board}
             selected={selected}
@@ -116,6 +132,11 @@ export default function Chess({ seed, onSolved, onExit }: PuzzleProps) {
             onSquareClick={handleSquareClick}
           />
           <p className={`cx-message ${message ? "cx-message-show" : ""}`}>{message ?? " "}</p>
+          {state.solved ? (
+            <button type="button" className="cx-next" onClick={handleNextPuzzle}>
+              Next puzzle →
+            </button>
+          ) : null}
         </>
       ) : (
         <FreePlayBoard onSolved={onSolved} />

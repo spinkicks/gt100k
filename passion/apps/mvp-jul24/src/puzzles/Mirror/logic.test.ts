@@ -1,9 +1,7 @@
 import {
   type CellContent,
-  LEVELS,
   cloneMirrors,
-  isSolved,
-  pickLevel,
+  orientationForTurn,
   rotateMirror,
   traceBeam,
 } from "./logic";
@@ -113,33 +111,20 @@ describe("rotateMirror", () => {
   });
 });
 
-describe("authored levels", () => {
-  test("pickLevel wraps around by modulo", () => {
-    expect(pickLevel(0)).toBe(LEVELS[0]);
-    expect(pickLevel(1)).toBe(LEVELS[1]);
-    expect(pickLevel(LEVELS.length)).toBe(LEVELS[0]);
-    expect(pickLevel(LEVELS.length + 1)).toBe(LEVELS[1]);
+describe("orientationForTurn", () => {
+  test("is the exact inverse of the reflection table for every perpendicular pair", () => {
+    expect(orientationForTurn("E", "N")).toBe("/");
+    expect(orientationForTurn("N", "E")).toBe("/");
+    expect(orientationForTurn("S", "W")).toBe("/");
+    expect(orientationForTurn("W", "S")).toBe("/");
+    expect(orientationForTurn("E", "S")).toBe("\\");
+    expect(orientationForTurn("S", "E")).toBe("\\");
+    expect(orientationForTurn("N", "W")).toBe("\\");
+    expect(orientationForTurn("W", "N")).toBe("\\");
   });
 
-  test.each(LEVELS.map((level, i) => [i, level] as const))(
-    "level %i: starts unsolved and is solvable by rotating only mirror cells",
-    (_i, level) => {
-      expect(isSolved(level, level.mirrors)).toBe(false);
-
-      let mirrors = cloneMirrors(level.mirrors);
-      for (let r = 0; r < level.size; r++) {
-        for (let c = 0; c < level.size; c++) {
-          if (level.mirrors[r]![c]) mirrors = rotateMirror(mirrors, r, c);
-        }
-      }
-      expect(isSolved(level, mirrors)).toBe(true);
-    },
-  );
-
-  test("emitter and target cells never carry a mirror", () => {
-    for (const level of LEVELS) {
-      expect(level.mirrors[level.emitter.row]![level.emitter.col]).toBeNull();
-      expect(level.mirrors[level.target.row]![level.target.col]).toBeNull();
-    }
+  test("throws for a same-direction or opposite-direction 'turn' (no single mirror does that)", () => {
+    expect(() => orientationForTurn("E", "E")).toThrow();
+    expect(() => orientationForTurn("E", "W")).toThrow();
   });
 });

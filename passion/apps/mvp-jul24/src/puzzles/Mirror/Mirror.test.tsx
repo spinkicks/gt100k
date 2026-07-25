@@ -1,25 +1,32 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import Mirror from "./Mirror";
 
-// Level for seed=0 (see logic.ts LEVEL_1): one mirror at row 1, column 3 (1-indexed
-// in the aria-label), starting as "/" and needing one rotation to "\" to route the
-// beam from the emitter down onto the target.
+// Every generated level's mirrors start flipped from the solution orientation
+// (see generate.ts), so clicking every mirror on the board exactly once is
+// always the full solution regardless of which board a given seed produced.
+function solveByClickingEveryMirror() {
+  const mirrors = document.querySelectorAll<HTMLButtonElement>(".mr-mirror");
+  expect(mirrors.length).toBeGreaterThan(0);
+  for (const mirror of mirrors) fireEvent.click(mirror);
+}
 
-test("rotating the mirror routes the beam to the target and fires onSolved once", () => {
+test("rotating every mirror once routes the beam to the target and fires onSolved once", () => {
   const onSolved = vi.fn();
   render(<Mirror seed={0} onSolved={onSolved} onExit={() => {}} />);
 
-  const mirror = screen.getByLabelText(/mirror row 1 column 3/i);
   expect(onSolved).not.toHaveBeenCalled();
 
-  fireEvent.click(mirror);
+  solveByClickingEveryMirror();
 
   expect(onSolved).toHaveBeenCalledTimes(1);
   expect(screen.getByRole("status")).toHaveTextContent(/locked onto the target/i);
 
   // Clicking further (rotating back and forth) must not call onSolved again.
-  fireEvent.click(mirror);
-  fireEvent.click(mirror);
+  const mirrors = document.querySelectorAll<HTMLButtonElement>(".mr-mirror");
+  for (const mirror of mirrors) {
+    fireEvent.click(mirror);
+    fireEvent.click(mirror);
+  }
   expect(onSolved).toHaveBeenCalledTimes(1);
 });
 
@@ -35,4 +42,36 @@ test("Back button calls onExit", () => {
   render(<Mirror seed={0} onSolved={() => {}} onExit={onExit} />);
   fireEvent.click(document.querySelector(".mr-exit")!);
   expect(onExit).toHaveBeenCalled();
+});
+
+test('"Next puzzle" only appears once solved, and generates a fresh, unsolved board', () => {
+  const onSolved = vi.fn();
+  render(<Mirror seed={0} onSolved={onSolved} onExit={() => {}} />);
+
+  expect(document.querySelector(".mr-next")).toBeNull();
+
+  const firstBoardMirrors = Array.from(document.querySelectorAll(".mr-mirror")).map((el) =>
+    el.getAttribute("aria-label"),
+  );
+
+  solveByClickingEveryMirror();
+  expect(onSolved).toHaveBeenCalledTimes(1);
+
+  const nextButton = document.querySelector<HTMLButtonElement>(".mr-next");
+  expect(nextButton).not.toBeNull();
+  fireEvent.click(nextButton!);
+
+  // The new round starts unsolved again, and the "Next puzzle" control
+  // disappears until the player solves this new board too.
+  expect(document.querySelector(".mr-next")).toBeNull();
+  expect(screen.getByRole("status")).toHaveTextContent(/rotate it and guide the beam/i);
+
+  const secondBoardMirrors = Array.from(document.querySelectorAll(".mr-mirror")).map((el) =>
+    el.getAttribute("aria-label"),
+  );
+  expect(secondBoardMirrors).not.toEqual(firstBoardMirrors);
+
+  // Solving the new board fires onSolved again (once per round).
+  solveByClickingEveryMirror();
+  expect(onSolved).toHaveBeenCalledTimes(2);
 });

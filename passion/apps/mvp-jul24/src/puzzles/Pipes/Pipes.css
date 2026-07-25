@@ -30,6 +30,30 @@
   box-shadow: var(--shadow-soft), var(--glow-ember);
 }
 
+/* Rewarding ember pill shown once solved, to fetch the next generated puzzle. */
+.pp-next {
+  border: 2px solid var(--ember-deep);
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  color: var(--ink);
+  border-radius: var(--r-pill);
+  padding: 0.55rem 1.4rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft), var(--glow-ember);
+  transition: transform 120ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+
+.pp-next:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft), var(--glow-ember-strong);
+}
+
+.pp-next:active {
+  transform: translateY(0) scale(0.98);
+}
+
 .pp-board {
   display: grid;
   gap: 4px;

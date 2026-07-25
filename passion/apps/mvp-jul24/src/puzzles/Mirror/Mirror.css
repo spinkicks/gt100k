@@ -30,6 +30,31 @@
   box-shadow: var(--shadow-soft), var(--glow-ember);
 }
 
+/* "Next puzzle" — same wood-button language as the Back control, but in the
+   ember palette so it reads as the primary action once the beam is lit. */
+.mr-next {
+  border: 2px solid var(--wood-frame);
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  color: var(--parchment-hi);
+  border-radius: var(--r-pill);
+  padding: 0.5rem 1.3rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft), var(--glow-ember);
+  transition: transform 120ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+
+.mr-next:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft), var(--glow-ember-strong);
+}
+
+.mr-next:active {
+  transform: translateY(0);
+}
+
 .mr-board {
   position: relative;
   background: linear-gradient(160deg, #c9a878, #a9865f);
