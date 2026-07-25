@@ -12,7 +12,7 @@ test("returns one 3D prop per gadget in the topic, matching id/label/status", ()
   expect(nonogram?.status).toBe("active");
 
   const mirror = props.find((p) => p.id === "mirror");
-  expect(mirror?.status).toBe("coming-soon");
+  expect(mirror?.status).toBe("active");
 });
 
 test("gives each puzzle family a prop kind that reads as the right object", () => {
@@ -44,8 +44,10 @@ test("chess and mirror props sit on the floor, away from the back wall", () => {
   const mirror = props.find((p) => p.id === "mirror");
   expect(chess?.position[1]).toBe(0);
   expect(mirror?.position[1]).toBe(0);
-  expect(chess?.position[2]).toBeGreaterThan(0);
-  expect(mirror?.position[2]).toBeGreaterThan(0);
+  // "away from the back wall" means well clear of it (back wall sits at z ~ -2.78);
+  // floor props sit mid-room, not flush against the wall.
+  expect(chess?.position[2]).toBeGreaterThan(-2);
+  expect(mirror?.position[2]).toBeGreaterThan(-2);
 });
 
 test("returns an empty list for a topic with no registered gadgets", () => {

@@ -1,4 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { vi } from "vitest";
+import * as registry from "../gadgets/registry";
 import { useGame } from "../game/store";
 import { useInterest } from "../interest/store";
 import GadgetOverlay from "./GadgetOverlay";
@@ -32,9 +34,21 @@ test("refocusing the same gadget does not record a second open", () => {
 });
 
 test("coming-soon gadget renders ComingSoon fallback", () => {
+  // All math gadgets are active in the real registry now; stub in a synthetic
+  // coming-soon one so this still-supported render path stays covered.
+  const spy = vi.spyOn(registry, "gadgetById").mockReturnValue({
+    id: "mirror",
+    topic: "math",
+    label: "Mirror Maze",
+    status: "coming-soon",
+    hotspot: { xPct: 55, yPct: 60, label: "Mirror Maze" },
+  });
+
   useGame.getState().focusGadget("mirror");
   render(<GadgetOverlay />);
   expect(document.querySelector(".coming-soon")).toBeInTheDocument();
+
+  spy.mockRestore();
 });
 
 test("solving shows a Solved state with a Back button, and does not auto-close", () => {
