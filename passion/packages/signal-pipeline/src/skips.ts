@@ -49,7 +49,7 @@ export function deriveSkips(
     for (const [cellKey, mode] of engaged) {
       if (thisSession?.has(cellKey)) continue; // engaged this session → not a skip
       if (isNovelty(firstExposure, s.kidId, cellKey, s.timestamp, config)) continue; // still novel → excluded
-      out.push({ domainPath: art.domainPath, mode, kind: "skip", magnitude: 1, novelty: false, timestamp: s.timestamp });
+      out.push({ domainPath: art.domainPath, mode, kind: "skip", novelty: false, timestamp: s.timestamp });
     }
   }
   return out;

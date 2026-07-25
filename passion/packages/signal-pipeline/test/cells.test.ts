@@ -28,14 +28,14 @@ describe("actionToCellEvents", () => {
       returnState: "voluntary",
       noveltyFlag: false,
     };
-    const cells = actionToCellEvents(ev, synth, 1, DEFAULTS);
-    // primary voluntary_return (mag 1) + secondary voluntary_return (mag 0.5) + artifact_competence depth (mag 1); "noise" ignored
+    const cells = actionToCellEvents(ev, synth);
+    // primary return + secondary return (role: secondary) + one artifact_competence depth event; "noise" ignored
     expect(cells).toHaveLength(3);
-    expect(cells[0]).toMatchObject({ mode: "build", kind: "voluntary_return", magnitude: 1, novelty: false });
-    expect(cells[1]).toMatchObject({ mode: "investigate", kind: "voluntary_return", magnitude: 0.5 });
-    expect(cells[2]).toMatchObject({ mode: "build", kind: "artifact_competence", magnitude: 1 });
+    expect(cells[0]).toMatchObject({ mode: "build", kind: "voluntary_return", novelty: false });
+    expect(cells[1]).toMatchObject({ mode: "investigate", kind: "voluntary_return" });
+    expect(cells[2]).toMatchObject({ mode: "build", kind: "artifact_competence" });
   });
-  it("prompted maps to prompted_return; explicit depth applies", () => {
+  it("prompted maps to prompted_return", () => {
     const ev: ActionEvent = {
       kidId: "k",
       artifactId: "synth-01",
@@ -45,9 +45,9 @@ describe("actionToCellEvents", () => {
       returnState: "prompted",
       noveltyFlag: false,
     };
-    const cells = actionToCellEvents(ev, synth, 1, DEFAULTS);
+    const cells = actionToCellEvents(ev, synth);
     expect(cells).toEqual([
-      { domainPath: synth.domainPath, mode: "investigate", kind: "prompted_return", magnitude: 1, novelty: false, timestamp: ev.timestamp },
+      { domainPath: synth.domainPath, mode: "investigate", kind: "prompted_return", novelty: false, timestamp: ev.timestamp },
     ]);
   });
 });

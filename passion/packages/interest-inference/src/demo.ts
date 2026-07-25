@@ -8,10 +8,10 @@ export function runDemo(): InterestRead {
     { domain: "music-sound", inEnvironment: true, aptitudeTilt: 0, discretionaryTilt: 0 },
   ];
   const events: CellEvent[] = [
-    { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", magnitude: 1, novelty: false, timestamp: ts },
-    { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", magnitude: 1, novelty: false, timestamp: ts },
-    { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", magnitude: 1, novelty: false, timestamp: ts },
-    { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "artifact_competence", magnitude: 1, novelty: false, timestamp: ts },
+    { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: false, timestamp: ts },
+    { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: false, timestamp: ts },
+    { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "voluntary_return", novelty: false, timestamp: ts },
+    { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "artifact_competence", novelty: false, timestamp: ts },
   ];
   return runInference(events, priors, now);
 }

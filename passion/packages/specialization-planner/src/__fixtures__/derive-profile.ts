@@ -33,7 +33,6 @@ const mk = (date: string, session: string): Interaction => ({
   timestamp: iso(date),
   prompted: false, // self-initiated ⇒ voluntary return
   sessionId: session,
-  depth: 1,
   depthSignals: [{ kind: "chosen_challenge", value: 1 }], // voluntarily reaches for harder work
 });
 

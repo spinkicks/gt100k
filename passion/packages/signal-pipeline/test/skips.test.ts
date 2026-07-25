@@ -29,7 +29,7 @@ describe("deriveSkips", () => {
     ];
     const skips = deriveSkips(surfaced, built, catalog, DEFAULTS);
     expect(skips).toHaveLength(1);
-    expect(skips[0]).toMatchObject({ mode: "build", kind: "skip", magnitude: 1, novelty: false });
+    expect(skips[0]).toMatchObject({ mode: "build", kind: "skip", novelty: false });
   });
   it("no skip for an artifact the child never engaged", () => {
     const surfaced: SurfacedRecord[] = [{ kidId: "k", artifactId: "synth-01", sessionId: "s2", timestamp: "2026-02-15T00:00:00.000Z" }];

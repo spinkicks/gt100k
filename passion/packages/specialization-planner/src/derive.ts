@@ -62,9 +62,10 @@ export function derivePlanInputs(
     return a >= 0 && a <= RETURN_WINDOW_DAYS;
   }).length;
 
-  const depthAccumulation = events
-    .filter((e) => isDepthFamily(e.kind))
-    .reduce((sum, e) => sum + e.magnitude, 0);
+  // Count of depth-family occurrences. This summed `magnitude` before E1 removed that field;
+  // since every emitted magnitude was 1, counting is behaviour-preserving and now says plainly
+  // what it always meant: how many times the child went deeper, not for how long.
+  const depthAccumulation = events.filter((e) => isDepthFamily(e.kind)).length;
 
   const stretchSeeking = events.some((e) => e.kind === "chosen_challenge");
   const producerIdentity = events.some(

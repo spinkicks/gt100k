@@ -2,6 +2,7 @@ import type { CellEvent, DomainPath, DomainPrior } from "./model.js";
 import {
   A_RETURN,
   A_DEPTH,
+  A_SECONDARY,
   B_SKIP,
   ALPHA0,
   BETA0,
@@ -70,13 +71,15 @@ export function foldEvents(
       continue;
     }
     const w = recencyWeight(now, e.timestamp);
-    const mag = clamp01(e.magnitude);
+    // One event = one occurrence (E1). The only scaling left is the secondary reading of a
+    // two-mode action, which is inferred rather than observed.
+    const roleScale = e.role === "secondary" ? A_SECONDARY : 1;
     if (e.kind === "voluntary_return") {
-      const add = A_RETURN * mag * w;
+      const add = A_RETURN * roleScale * w;
       cell.alpha += add;
       cell.positiveByKind[e.kind] = (cell.positiveByKind[e.kind] ?? 0) + add;
     } else if (isDepthFamily(e.kind)) {
-      const add = A_DEPTH * mag * w;
+      const add = A_DEPTH * roleScale * w;
       cell.alpha += add;
       cell.positiveByKind[e.kind] = (cell.positiveByKind[e.kind] ?? 0) + add;
     } else if (e.kind === "skip") {

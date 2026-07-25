@@ -44,9 +44,9 @@ const mk = (date: string, session: string, over: Partial<Interaction> = {}): Int
 // OLDER window (age 21–42d before NOW): voluntary returns that went deep by choice.
 // RECENT window (age ≤ 21d): prompted-only returns, no depth → declining return + compliance-only.
 const LOG: readonly Interaction[] = [
-  mk("2026-02-25", "s0", { depth: 1, depthSignals: [{ kind: "chosen_challenge", value: 1 }] }),
-  mk("2026-03-01", "s1", { depth: 1, depthSignals: [{ kind: "chosen_challenge", value: 1 }] }),
-  mk("2026-03-05", "s2", { depth: 1, depthSignals: [{ kind: "artifact_competence", value: 1 }] }),
+  mk("2026-02-25", "s0", { depthSignals: [{ kind: "chosen_challenge", value: 1 }] }),
+  mk("2026-03-01", "s1", { depthSignals: [{ kind: "chosen_challenge", value: 1 }] }),
+  mk("2026-03-05", "s2", { depthSignals: [{ kind: "artifact_competence", value: 1 }] }),
   mk("2026-03-20", "s3", { prompted: true }),
   mk("2026-03-27", "s4", { prompted: true }),
 ];

@@ -20,14 +20,13 @@ describe("buildActionEvents", () => {
   it("builds a voluntary, non-novel BuiltEvent for a resolved engagement", () => {
     const ints: Interaction[] = [
       { kidId: "k", artifactId: "synth-01", actionType: "assemble", timestamp: "2026-01-01T00:00:00.000Z", prompted: false, sessionId: "s1" },
-      { kidId: "k", artifactId: "synth-01", actionType: "assemble", timestamp: "2026-02-01T00:00:00.000Z", prompted: false, sessionId: "s2", depth: 0.8 },
+      { kidId: "k", artifactId: "synth-01", actionType: "assemble", timestamp: "2026-02-01T00:00:00.000Z", prompted: false, sessionId: "s2" },
     ];
     const { built, dropped } = buildActionEvents(ints, catalog, DEFAULTS);
     expect(dropped).toHaveLength(0);
     expect(built).toHaveLength(2);
     expect(built[1]!.event.engagedModes.primary).toBe("build");
     expect(built[1]!.event.returnState).toBe("voluntary");
-    expect(built[1]!.depth).toBe(0.8);
     expect(built[1]!.sessionId).toBe("s2");
     expect(built[1]!.cellKey).toBe("music-sound/audio-systems::build");
     expect(built[0]!.event.noveltyFlag).toBe(true); // first exposure

@@ -40,7 +40,7 @@ const INTERACTIONS: Interaction[] = [
   assemble("2026-02-22T00:00:00.000Z", "s2"),
   assemble("2026-02-24T00:00:00.000Z", "s3"),
   assemble("2026-02-26T00:00:00.000Z", "s4"),
-  assemble("2026-02-28T00:00:00.000Z", "s5", { depth: 1, depthSignals: [{ kind: "artifact_competence", value: 1 }] }),
+  assemble("2026-02-28T00:00:00.000Z", "s5", { depthSignals: [{ kind: "artifact_competence", value: 1 }] }),
 ];
 
 const CTX = { catalog: CATALOG };
