@@ -24,6 +24,12 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.1)(jsdom@26.1.0)
 
+  parent-guide:
+    devDependencies:
+      '@gt100k/family':
+        specifier: workspace:*
+        version: link:../passion/packages/family
+
   passion/adapters/access-broker-live:
     dependencies:
       '@gt100k/access-broker':
