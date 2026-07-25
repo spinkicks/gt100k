@@ -1,4 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { vi } from "vitest";
+import * as registry from "../gadgets/registry";
 import { useGame } from "../game/store";
 import CabinStatic from "./CabinStatic";
 
@@ -19,12 +21,26 @@ test("clicking the nonogram hotspot focuses that gadget", () => {
 });
 
 test("coming-soon gadgets render with a distinct soon marker but are still clickable", () => {
+  // All math gadgets are active in the real registry now; stub in a synthetic
+  // coming-soon one so this still-supported render path stays covered.
+  const spy = vi.spyOn(registry, "gadgetsForTopic").mockReturnValue([
+    {
+      id: "mirror",
+      topic: "math",
+      label: "Mirror Maze",
+      status: "coming-soon",
+      hotspot: { xPct: 55, yPct: 60, label: "Mirror Maze" },
+    },
+  ]);
+
   render(<CabinStatic topic="math" />);
   const mirrorButton = screen.getByRole("button", { name: /Mirror Maze/ });
   expect(mirrorButton.className).toMatch(/coming-soon/);
 
   fireEvent.click(mirrorButton);
   expect(useGame.getState().focusedGadgetId).toBe("mirror");
+
+  spy.mockRestore();
 });
 
 test("hotspot buttons carry data-gadget matching the gadget id and render at their mapped static position", () => {

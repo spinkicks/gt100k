@@ -1,0 +1,93 @@
+.lits {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  font-family: var(--font-body);
+  color: var(--ink);
+}
+
+/* Shared "wood button" look for the Back control. */
+.lits-exit {
+  align-self: flex-start;
+  border: 2px solid var(--wood-frame);
+  background: linear-gradient(180deg, var(--parchment-hi), var(--parchment-edge));
+  color: var(--ink);
+  border-radius: var(--r-pill);
+  padding: 0.45rem 1.1rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: transform 120ms var(--ease-out), box-shadow 160ms var(--ease-out), background 160ms
+    var(--ease-out);
+}
+
+.lits-exit:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  box-shadow: var(--shadow-soft), var(--glow-ember);
+}
+
+.lits-board {
+  display: grid;
+  gap: 0;
+  background: linear-gradient(160deg, #c9a878, #a9865f);
+  border: 4px solid var(--wood-frame);
+  border-radius: var(--r-md);
+  padding: 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), var(--shadow-raised);
+}
+
+.lits-cell {
+  width: 2.6rem;
+  height: 2.6rem;
+  box-sizing: border-box;
+  padding: 0;
+  cursor: pointer;
+  background: linear-gradient(180deg, var(--parchment-hi), var(--parchment));
+  transition: background-color 120ms var(--ease-out), transform 90ms var(--ease-out), box-shadow
+    120ms var(--ease-out);
+}
+
+/* A faint tint alternates by region so jigsaw pieces stay legible even before shading. */
+.lits-cell[data-region-parity="1"] {
+  background: linear-gradient(180deg, var(--parchment), var(--parchment-edge));
+}
+
+.lits-cell:hover {
+  transform: scale(1.04);
+  box-shadow: inset 0 0 0 2px rgba(232, 134, 60, 0.4);
+  z-index: 1;
+}
+
+.lits-cell:active {
+  transform: scale(0.96);
+}
+
+/* Shaded = a warm firelit ember tile with a subtle woven texture. */
+.lits-cell.lits-shaded {
+  background: repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.08) 0,
+      rgba(255, 255, 255, 0.08) 2px,
+      transparent 2px,
+      transparent 6px
+    ), linear-gradient(180deg, var(--ember-bright), var(--ember-deep));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -3px 5px rgba(0, 0, 0, 0.25);
+}
+
+.lits-cell.lits-shaded:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -3px 5px rgba(0, 0, 0, 0.25), 0 0 0
+    2px rgba(232, 134, 60, 0.55);
+}
+
+.lits-hint {
+  margin: 0;
+  max-width: 26rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  min-height: 1.3em;
+}

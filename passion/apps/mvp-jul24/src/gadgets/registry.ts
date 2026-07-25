@@ -1,6 +1,11 @@
 import type { Gadget, TopicId } from "../game/types";
+import Chess from "../puzzles/Chess/Chess";
+import LITS from "../puzzles/LITS/LITS";
 import LogicGrid from "../puzzles/LogicGrid/LogicGrid";
+import Minesweeper from "../puzzles/Minesweeper/Minesweeper";
+import Mirror from "../puzzles/Mirror/Mirror";
 import Nonogram from "../puzzles/Nonogram/Nonogram";
+import Pipes from "../puzzles/Pipes/Pipes";
 
 export const GADGETS: Gadget[] = [
   {
@@ -23,35 +28,40 @@ export const GADGETS: Gadget[] = [
     id: "mirror",
     topic: "math",
     label: "Mirror Maze",
-    status: "coming-soon",
+    status: "active",
+    Puzzle: Mirror,
     hotspot: { xPct: 55, yPct: 60, label: "Mirror Maze" },
   },
   {
     id: "chess",
     topic: "math",
     label: "Chess Puzzle",
-    status: "coming-soon",
+    status: "active",
+    Puzzle: Chess,
     hotspot: { xPct: 75, yPct: 60, label: "Chess Puzzle" },
   },
   {
     id: "minesweeper",
     topic: "math",
     label: "Minesweeper",
-    status: "coming-soon",
+    status: "active",
+    Puzzle: Minesweeper,
     hotspot: { xPct: 25, yPct: 85, label: "Minesweeper" },
   },
   {
     id: "pipes",
     topic: "math",
     label: "Pipes",
-    status: "coming-soon",
+    status: "active",
+    Puzzle: Pipes,
     hotspot: { xPct: 50, yPct: 85, label: "Pipes" },
   },
   {
     id: "lits",
     topic: "math",
     label: "LITS",
-    status: "coming-soon",
+    status: "active",
+    Puzzle: LITS,
     hotspot: { xPct: 75, yPct: 85, label: "LITS" },
   },
 ];
