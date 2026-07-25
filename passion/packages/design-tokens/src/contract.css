@@ -15,9 +15,18 @@
   --surface: #ffffff;
   --surface-2: #f5f5f5;
 
+  /* ---- Navigation ground. Often darker (or lighter) than the canvas, so it is its own role
+         rather than a reuse of a surface token. */
+  --rail: #fafafa;
+  --rail-2: #f2f2f2;
+
   /* ---- Ink */
   --ink: #111111;
   --ink-muted: #555555;
+  --ink-faint: #888888;
+
+  /* ---- A calm positive, for states like "calibrated". Never a grade. */
+  --positive: #2f6f4f;
 
   /* ---- Lines */
   --line: #dddddd;

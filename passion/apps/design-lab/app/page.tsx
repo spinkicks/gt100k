@@ -1,71 +1,36 @@
 "use client";
 
 import { useState } from "react";
-import { Showcase } from "./showcase.js";
+import { Console } from "./console.js";
 
-const DIRECTIONS = [
-  { id: "paper", name: "A. Paper and Ink", note: "Editorial. Serif claims, warm off-white, deep teal." },
-  { id: "studio", name: "B. Studio Neutral", note: "A real tool. Humanist sans, tactile 2px lines, ochre." },
-  { id: "observatory", name: "C. Observatory", note: "Instrument at night. Content is the only thing that glows." },
+const THEMES = [
+  { id: "midnight", name: "1. Midnight", note: "The current console, tightened" },
+  { id: "daylight", name: "2. Daylight", note: "Same restraint, light scheme" },
+  { id: "warm-slate", name: "3. Warm Slate", note: "Dark but warm, amber accent" },
+  { id: "editorial", name: "4. Editorial", note: "Warm paper, serif claims" },
+  { id: "blueprint", name: "5. Blueprint", note: "Cool, technical, precise" },
 ] as const;
 
 export default function Page(): JSX.Element {
-  const [mood, setMood] = useState<"adult" | "child">("adult");
-  const [side, setSide] = useState<"console" | "studio">("console");
-  const [compact, setCompact] = useState(false);
+  const [theme, setTheme] = useState<string>("midnight");
 
   return (
     <>
-      <div className="lab__bar">
-        <h1>PassionLab Design Lab</h1>
-
-        <div className="lab__toggle">
-          <span>Surface</span>
-          <button aria-pressed={side === "console"} onClick={() => setSide("console")}>
-            Guide console
+      <div className="switch">
+        {THEMES.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            aria-pressed={theme === t.id}
+            onClick={() => setTheme(t.id)}
+          >
+            {t.name}
+            <span>{t.note}</span>
           </button>
-          <button aria-pressed={side === "studio"} onClick={() => setSide("studio")}>
-            Project studio
-          </button>
-        </div>
-
-        <div className="lab__toggle">
-          <span>Mode</span>
-          <button aria-pressed={mood === "adult"} onClick={() => setMood("adult")}>
-            Adult
-          </button>
-          <button aria-pressed={mood === "child"} onClick={() => setMood("child")}>
-            Child
-          </button>
-        </div>
-
-        <div className="lab__toggle">
-          <span>Density</span>
-          <button aria-pressed={!compact} onClick={() => setCompact(false)}>
-            Comfortable
-          </button>
-          <button aria-pressed={compact} onClick={() => setCompact(true)}>
-            Compact
-          </button>
-        </div>
-      </div>
-
-      <div className="lab__grid">
-        {DIRECTIONS.map((d) => (
-          <div className="lab__col" key={d.id}>
-            <div className="lab__label">
-              {d.name}
-              <span>{d.note}</span>
-            </div>
-            <div
-              data-direction={d.id}
-              data-mood={mood}
-              data-density={compact ? "compact" : "comfortable"}
-            >
-              <Showcase side={side} />
-            </div>
-          </div>
         ))}
+      </div>
+      <div data-theme={theme} className="stage">
+        <Console />
       </div>
     </>
   );

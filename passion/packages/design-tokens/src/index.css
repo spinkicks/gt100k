@@ -1,7 +1,5 @@
 /* The whole token layer. Framework-free CSS custom properties by design: this is what
-   keeps every downstream styling choice (Tailwind, a primitives package, plain CSS)
-   reversible, and it lets the Vite R3F app read the same values with no React. */
+   keeps every downstream styling choice reversible, and it lets a Vite/R3F app read the
+   same values with no React. */
 @import "./contract.css";
-@import "./directions/paper.css";
-@import "./directions/studio.css";
-@import "./directions/observatory.css";
+@import "./themes.css";
