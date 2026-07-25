@@ -30,7 +30,27 @@ export const DEPTH_FAMILIES = [
   "artifact_competence",
 ] as const;
 export type DepthFamily = (typeof DEPTH_FAMILIES)[number];
-export type EventKind = "voluntary_return" | "prompted_return" | DepthFamily | "skip";
+/**
+ * The return horizon split (E2). `voluntary_return` used to cover both "reopened it thirty seconds
+ * later" and "came back on day four unprompted"; only the delayed, across-day one is trustworthy
+ * evidence of durable interest at 6-8, so it gets the full `A_RETURN` weight and the other is
+ * recorded at weight 0.
+ *
+ * `cross_day_return` — a prior engagement of this same cell exists on an earlier UTC calendar day.
+ * `same_day_engagement` — everything else: a first-ever engagement, a reopen inside one session, or
+ * a re-entry in a different session on the same calendar day.
+ *
+ * The proposal called the second kind `same_session_reopen`. That name would lie about two of the
+ * three cases it covers — a first-ever touch is not a "reopen", and a same-day return in a
+ * different session is not "same session" — so it is named for what it actually asserts: this
+ * engagement is not evidence of a delayed return.
+ */
+export type EventKind =
+  | "cross_day_return"
+  | "same_day_engagement"
+  | "prompted_return"
+  | DepthFamily
+  | "skip";
 
 export type DomainPath = readonly [string] | readonly [string, string];
 export type Attribution = "domain" | "style" | "mixed";
@@ -48,6 +68,7 @@ export interface CellEvent {
   readonly kind: EventKind;
   readonly novelty: boolean;
   readonly timestamp: string; // ISO-8601
+  readonly dayGap?: number; // whole UTC days since the previous engagement; cross_day_return only
   /**
    * Which reading of a multi-mode action this is. Absent means primary.
    *

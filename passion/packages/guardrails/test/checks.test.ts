@@ -75,7 +75,7 @@ describe("checkCompliance — injected violations, one per check (SC-3..SC-7)", 
   it("GC2 fails when `prompted_return` appears in evidence.supporting (SC-5)", () => {
     const bad: InterestHypothesis = {
       ...clone(base),
-      evidence: { ...base.evidence, supporting: ["voluntary_return", "prompted_return"] },
+      evidence: { ...base.evidence, supporting: ["cross_day_return", "prompted_return"] },
     };
     const report = checkCompliance(singleHypRoster(bad));
     expect(report.ok).toBe(false);

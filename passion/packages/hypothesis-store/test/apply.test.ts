@@ -18,7 +18,7 @@ function read(confident: boolean, lowerBound: number): InterestRead {
         evidenceMass: 4.5,
         confident,
         attribution: confident ? "style" : null,
-        supporting: ["voluntary_return"],
+        supporting: ["cross_day_return"],
         disconfirming: [],
       },
     ],

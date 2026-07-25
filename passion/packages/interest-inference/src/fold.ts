@@ -36,6 +36,8 @@ export interface CellAccum {
   positiveByKind: Record<string, number>;
   skips: number;
   prompted: number;
+  /** `same_day_engagement` occurrences (E2). Context for a reader; never scored. */
+  sameDay: number;
 }
 
 export function foldEvents(
@@ -63,6 +65,7 @@ export function foldEvents(
         positiveByKind: {},
         skips: 0,
         prompted: 0,
+        sameDay: 0,
       };
       cells.set(cellKey, cell);
     }
@@ -71,11 +74,18 @@ export function foldEvents(
       cell.prompted += 1;
       continue;
     }
+    if (e.kind === "same_day_engagement") {
+      // E2: an engagement with no earlier-day predecessor asserts nothing about delayed return, so
+      // it moves neither alpha nor beta. Kept out of `positiveByKind` too — that list is the
+      // supporting-reason display, and a zero-weight event must not read as a reason to believe.
+      cell.sameDay += 1;
+      continue;
+    }
     const w = recencyWeight(now, e.timestamp);
     // One event = one occurrence (E1). The only scaling left is the secondary reading of a
     // two-mode action, which is inferred rather than observed.
     const roleScale = e.role === "secondary" ? A_SECONDARY : 1;
-    if (e.kind === "voluntary_return") {
+    if (e.kind === "cross_day_return") {
       const add = A_RETURN * roleScale * w;
       cell.alpha += add;
       cell.positiveByKind[e.kind] = (cell.positiveByKind[e.kind] ?? 0) + add;

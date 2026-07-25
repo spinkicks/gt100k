@@ -24,9 +24,14 @@ Interaction[]  ──resolveEngagedModes (009)──▶  ActionEvent  ──▶ 
   `returnState` is `prompted` iff `interaction.prompted`, else `voluntary`. An **unknown artifact**
   or an action that **does not resolve** to an afforded mode is **dropped** (recorded in `dropped`,
   emits no signal — the Signal Firewall).
-- **CellEvent mapping** — a primary return event (`kind` from `returnState`, magnitude = `depth`);
-  a reduced secondary return event at `depth × secondaryWeight` (default **0.5**); one depth event
-  per `DEPTH_FAMILY` signal (non-family signals ignored).
+- **return horizon** — a voluntary engagement is `cross_day_return` (carrying `dayGap`) when the
+  same `(kidId, cellKey)` was engaged on an **earlier UTC calendar day**, and `same_day_engagement`
+  otherwise: a first-ever engagement, a reopen inside one session, or a re-entry in a different
+  session the same day. Only the first scores; the second is recorded at weight 0. A prompted
+  engagement is `prompted_return` regardless.
+- **CellEvent mapping** — a primary return event; if a secondary mode is engaged, the same event
+  against that cell marked `role: "secondary"` (the engine down-weights an inferred mode), carrying
+  the same kind and `dayGap`; one depth event per `DEPTH_FAMILY` signal (non-family ignored).
 - **skip derivation** — a `skip` is disconfirming evidence about a *known* interest, so it fires
   only on a cell the child **actually engaged before**, when that cell is **non-novel** and the
   artifact was surfaced in a session where the child did **not** re-engage it. A surfaced artifact
@@ -49,4 +54,4 @@ pnpm --filter @gt100k/signal-pipeline demo   # synthetic scenario → CellEvents
 
 The demo feeds a synthetic scenario (six voluntary `build` returns, a prompted `investigate`, a
 `build` skip) through `deriveSignals` and into `runInference`, yielding a **confident** `build` cell
-(`voluntary_return` in `supporting`, `skip:1` in `disconfirming`).
+(`cross_day_return` in `supporting`, `skip:1` in `disconfirming`).

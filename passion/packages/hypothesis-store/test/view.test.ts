@@ -23,7 +23,7 @@ const read: InterestRead = {
       evidenceMass: 4.5,
       confident: true,
       attribution: "style",
-      supporting: ["voluntary_return", "unrequired_revision"],
+      supporting: ["cross_day_return", "unrequired_revision"],
       disconfirming: [],
     },
     {
@@ -38,7 +38,7 @@ const read: InterestRead = {
       evidenceMass: 0.5,
       confident: false,
       attribution: null,
-      supporting: ["voluntary_return"],
+      supporting: ["cross_day_return"],
       disconfirming: ["skip"],
     },
   ],
@@ -64,7 +64,7 @@ describe("consoleViewModel", () => {
     ]);
     const top = vm.cards[0]!;
     expect(top.state).toBe("EMERGING"); // confident → auto-advanced
-    expect(top.supporting).toEqual(["voluntary_return", "unrequired_revision"]);
+    expect(top.supporting).toEqual(["cross_day_return", "unrequired_revision"]);
     expect(top.disconfirming).toEqual([]);
     // never a scalar score — separate arrays, not a sum.
     expect(top).not.toHaveProperty("score");

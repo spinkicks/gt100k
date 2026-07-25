@@ -52,7 +52,9 @@ export function deriveWellbeingSignals(
     return a > TREND_WINDOW_DAYS && a <= 2 * TREND_WINDOW_DAYS;
   };
 
-  const isVol = (e: CellEvent): boolean => e.kind === "voluntary_return";
+  // Across-day returns only (E2). The trend this feeds is about a pursuit holding up over time, so
+  // counting same-day re-entries would let one busy afternoon read as a rising trend.
+  const isVol = (e: CellEvent): boolean => e.kind === "cross_day_return";
   const isPromptedish = (e: CellEvent): boolean => e.kind === "prompted_return" || e.kind === "skip";
   const isDepth = (e: CellEvent): boolean => isDepthFamily(e.kind);
 
