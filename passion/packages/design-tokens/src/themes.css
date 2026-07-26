@@ -105,7 +105,10 @@
   --good: #1e5b43;
   --good-bg: #e6f0ea;
   --warn: #8a5430;
-  --warn-bg: #f8e8de;
+  /* Gold Lighter, not Gold Lightest. Lightest is already --surface-2, so a warning panel would
+     have been indistinguishable from an ordinary grouped one and the warning would have rested
+     entirely on its border. This pair is the brand's own verified 4.8:1 (measures 4.75). */
+  --warn-bg: #f5ddcd;
   --bad: #95302b;
   --bad-bg: #f7e4e1;
 

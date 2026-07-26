@@ -1,4 +1,6 @@
-@import "@gt100k/design-tokens/contract.css";
+/* The package root, not contract.css on its own: the contract holds the variable names, the themes
+   file holds the values, and importing only the contract silently loads no theme at all. */
+@import "@gt100k/design-tokens";
 @import "@gt100k/ui/styles.css";
 
 /*

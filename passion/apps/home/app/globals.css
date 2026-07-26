@@ -2,18 +2,16 @@
 @import "@gt100k/ui/styles.css";
 
 /*
- * The front door. The canonical MUI language from @gt100k/design-tokens — neutral ground, white
- * cards, hairline structure, restrained blue accent — because the guide console is the approved
- * direction and the door has to look like the room.
+ * The front door. Wears the GT School identity via [data-theme="gt"], because the door has to
+ * look like the room: warm off-white paper, white cards, Navy structure, Gold as a surface only.
  *
  * It is a router and nothing else: no hero, no explanation, no scroll. Everything sits above the
  * fold at 1280x800. Nothing below names a raw colour; every value is a contract token.
  */
 :root {
   color-scheme: light;
-
-  --font-body: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    sans-serif;
+  /* No font families declared here on purpose: a local :root beats [data-theme] on equal
+     specificity, so redeclaring one would silently override the theme's face. */
 }
 
 * {
@@ -174,5 +172,74 @@ a.role:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .role {
     transition: none;
+  }
+}
+
+/* ── GT School type roles and the notch ────────────────────────────────────────────────────────
+ *
+ * THE SERIF HAS A FLOOR: Literata 300 only above ~1.1rem. The role names and the lede clear it;
+ * the surface labels and blurbs sit under it and stay Inter Tight, since a light serif never
+ * labels a row.
+ */
+.fd__lede,
+.role__role {
+  font-family: var(--font-display);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* Under the floor, so weight rather than a serif carries the rank. */
+.role__label {
+  font-weight: 620;
+}
+
+/* Inter Tight is drawn tight and its word space stops separating words at bold weights.
+   Same correction the console and the Playbook needed; the cause is the face, not the page. */
+body {
+  word-spacing: 0.07em;
+}
+
+/*
+ * ONE NOTCH PER SCREEN, and only when there is genuinely one most important action. The cut goes
+ * on the remembered role, which is the only card that claims primacy. On a first visit no role is
+ * remembered, all three are equal, and the page correctly shows no notch at all.
+ *
+ * CHAMFER ON A PSEUDO-ELEMENT so clip-path does not take the focus ring with the corner.
+ */
+.role--primary {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+  border-color: transparent;
+}
+
+.role--primary::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: var(--accent-weak);
+  border: var(--line-w) solid var(--accent);
+  border-radius: var(--radius-lg);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--cut-br, 14px)),
+    calc(100% - var(--cut-br, 14px)) 100%,
+    0 100%
+  );
+}
+
+/* High Contrast drops pseudo-element fills, which would leave the primary card with no surface
+   and no border. Give both back and lose the notch, which is the decoration. */
+@media (forced-colors: active) {
+  .role--primary {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+
+  .role--primary::before {
+    display: none;
   }
 }

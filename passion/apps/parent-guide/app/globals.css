@@ -1,41 +1,34 @@
-@import "@gt100k/design-tokens/contract.css";
+@import "@gt100k/design-tokens";
 @import "@gt100k/ui/styles.css";
 
 /*
- * Editorial palette: warm paper, deep slate ink, one calm teal accent (sage-neutral + teal).
- * These are OVERRIDES of the shared contract, not a private vocabulary. The Playbook is a warm
- * reading surface rather than a console, so the values differ from guide-console's — but the
- * names are the contract's, so a token rename lands here too. One contract, per-surface themes.
+ * The Warm-Demanding Parent Playbook — a long-form reading surface wearing the GT School identity
+ * via [data-theme="gt"] in @gt100k/design-tokens: warm off-white paper, white panels, Navy doing
+ * the structural work and the ink, Gold as a tint and never as text.
+ *
+ * The palette and the shape arrive whole from the token package. The :root that used to sit here
+ * and override the contract's colours, fonts and radii with a warm sage/evergreen set is gone: a
+ * local :root beats [data-theme] on equal specificity because it comes later, so the theme would
+ * have lost and the retheme would have changed nothing on screen. Only genuinely app-local names
+ * remain below, and nothing in this file states a colour.
+ *
+ * Three faces, assigned by size rather than by element. Literata 300 sets display type at 1.1rem
+ * and above; Inter Tight sets the prose, the controls and every compact heading beneath that floor
+ * (THE SERIF HAS A FLOOR — a light serif never labels a data row); Inconsolata sets marks. This
+ * page is almost entirely prose, so the utility face is rationed to the kicker, the two check-in
+ * buttons and the summary numerals, and appears nowhere else.
  */
 :root {
-  --canvas: oklch(0.973 0.004 95);
-  --surface: oklch(0.995 0.002 95);
-  --surface-2: oklch(0.955 0.007 200);
-  --ink: oklch(0.26 0.028 255);
-  --ink-muted: oklch(0.475 0.02 250);
-  --line: oklch(0.9 0.006 250);
-  --line-strong: oklch(0.82 0.01 250);
-  --accent: oklch(0.52 0.088 218);
-  --accent-hover: oklch(0.44 0.088 218);
-  --accent-weak: oklch(0.955 0.022 218);
-  --accent-ink: oklch(0.995 0 0);
-  --warn-bg: oklch(0.966 0.032 76);
-  --warn: oklch(0.44 0.1 55);
-  /* App-local: the contract's warn family is a fill and an ink (--warn-bg, --warn) with no
-     border token, and inventing one here would fork the contract. */
-  --warn-line: oklch(0.82 0.07 76);
-
-  /* App-local: an editorial reading measure only this long-form surface has. */
-  --measure: 66ch;
-  --font-display: var(--font-serif), "Iowan Old Style", Georgia, serif;
-  --font-body: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    sans-serif;
+  /* App-local: an editorial reading measure only this long-form surface has. `ch` is the width of
+     the "0" of whatever face is in play, and Inter Tight's is wide relative to its average advance
+     — the 66ch tuned for the old serif measured 94 characters a line here, well past the 65–75 the
+     brand asks for. 50ch lands at ~71. */
+  --measure: 50ch;
+  /* App-local: the contract's warn family is a fill and an ink (--warn-bg, --warn) with no border
+     token. Derived from the pair so it follows the theme instead of forking it. */
+  --warn-line: color-mix(in oklab, var(--warn) 32%, var(--warn-bg));
 
   --step-h1: clamp(2.35rem, 1.7rem + 2.7vw, 3.5rem);
-  /* Softer than the contract's 12px/4px defaults: the panels here are reading furniture. */
-  --radius-lg: 14px;
-  --radius-sm: 9px;
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 * {
@@ -49,29 +42,26 @@ body {
   margin: 0;
   background: var(--canvas);
   color: var(--ink);
-  font-family: var(--font-display);
+  /* The prose is Inter Tight, not the display face: Literata 300 is for headings. Tracking stays
+     normal, per the brand's reference scale, and no -webkit-font-smoothing: antialiased — it thins
+     dark-on-light text and costs contrast on paper this warm. */
+  font-family: var(--font-body);
   font-size: 1.14rem;
   line-height: 1.68;
-  font-feature-settings: "kern", "liga", "onum" 1;
-  -webkit-font-smoothing: antialiased;
+  letter-spacing: normal;
+  /* Inter Tight is drawn tight: its word space is 0.219em, against about 0.26em for Inter, and at
+     the sizes the check-in's labels and the ToC use it stops separating words ("Leave the rest"
+     read as "Leavethe rest"). A small global correction, since the cause is the face itself.
+     Excluded below: the marks, which already carry their own tracking. */
+  word-spacing: 0.07em;
+  font-feature-settings: "kern", "liga";
   text-rendering: optimizeLegibility;
 }
 
-/* UI chrome uses the sans; reading uses the serif. */
-.toc,
-.toc__title,
-.toc__link,
 .kicker,
 .btn,
-.checkin__legend,
-.toggle,
-.cite,
-.summary li::before,
-.result__posture,
-.sources li,
-.sources h3,
-.trap .do b {
-  font-family: var(--font-body);
+code {
+  word-spacing: normal;
 }
 
 /* Reading-progress rail */
@@ -87,7 +77,9 @@ body {
 }
 
 .layout {
-  max-width: 1140px;
+  /* Sized so the reading column's track lands just past --measure: with a narrower measure and the
+     same 1140px shell the article would have hugged the left of a half-empty track. */
+  max-width: 970px;
   margin: 0 auto;
   padding: clamp(24px, 3vw, 60px) clamp(18px, 4vw, 44px) 128px;
   display: grid;
@@ -116,9 +108,11 @@ body {
 .toc__summary::-webkit-details-marker {
   display: none;
 }
+/* Well under the serif floor, so Inter Tight 620 rather than a light serif. Not a mark either:
+   the utility face is rationed on a page this prose-heavy. */
 .toc__title {
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 620;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink-muted);
@@ -154,7 +148,7 @@ body {
   color: var(--ink-muted);
   text-decoration: none;
   padding: 7px 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   line-height: 1.35;
   transition: color 0.16s var(--ease), background 0.16s var(--ease);
 }
@@ -165,7 +159,7 @@ body {
 .toc__link[aria-current="true"] {
   color: var(--accent-hover);
   background: var(--accent-weak);
-  font-weight: 600;
+  font-weight: 620;
 }
 
 /* Main reading column */
@@ -173,26 +167,32 @@ body {
   min-width: 0;
   max-width: var(--measure);
 }
+/* THE UTILITY FACE IS FOR MARKS. The section kicker is one of the three places on the page that
+   earns it: it labels the document rather than reading as part of it. */
 .kicker {
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--accent-hover);
   margin: 0 0 0.9rem;
 }
+/* Literata is a light display face. Every weight override that used to bold it (600 here, tuned
+   for Newsreader) is gone; the size carries the hierarchy instead. */
 h1 {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 300;
   font-size: var(--step-h1);
-  line-height: 1.02;
-  letter-spacing: -0.015em;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
   margin: 0 0 0.3em;
   text-wrap: balance;
 }
 .lede {
   font-family: var(--font-display);
   font-size: 1.42rem;
+  font-weight: 300;
   font-style: italic;
   line-height: 1.42;
   color: var(--ink-muted);
@@ -210,20 +210,24 @@ section:first-of-type {
 }
 h2 {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 300;
   font-size: clamp(1.7rem, 1.4rem + 1vw, 2.15rem);
-  line-height: 1.12;
-  letter-spacing: -0.012em;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
   margin: 0 0 0.5em;
   text-wrap: balance;
 }
+/* 1.28rem clears the 1.1rem floor, so the subheadings keep the serif. The ones that do not clear
+   it — the source-group labels below — take Inter Tight 620 instead. */
 h3 {
   font-family: var(--font-display);
   font-size: 1.28rem;
-  font-weight: 600;
+  font-weight: 300;
   line-height: 1.25;
+  letter-spacing: -0.02em;
   margin: 1.7em 0 0.3em;
   color: var(--ink);
+  text-wrap: balance;
 }
 p,
 li {
@@ -234,7 +238,17 @@ p {
   margin: 0 0 1.05em;
 }
 strong {
-  font-weight: 600;
+  font-weight: 620;
+}
+/* Inline code takes the utility face on a warm tint, per the brand's prose guidance. */
+code {
+  padding: 0.1rem 0.3rem;
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
 }
 em {
   font-style: italic;
@@ -258,7 +272,7 @@ li {
 /* Drop cap on the opening paragraph */
 .dropcap::first-letter {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 300;
   float: left;
   font-size: 3.5em;
   line-height: 0.82;
@@ -270,6 +284,7 @@ li {
 .pullquote {
   font-family: var(--font-display);
   font-size: 1.5rem;
+  font-weight: 300;
   line-height: 1.32;
   font-style: italic;
   color: var(--ink);
@@ -287,9 +302,9 @@ li {
   border-radius: var(--radius-lg);
   padding: clamp(20px, 2.5vw, 30px);
   margin: 24px 0;
-  /* A 4%-alpha slate, not a token: the contract's --elev-* are neutral-black shadows, and a
-     neutral shadow goes grey against warm paper. */
-  box-shadow: 0 1px 2px oklch(0.4 0.03 255 / 0.04), 0 8px 24px oklch(0.4 0.03 255 / 0.04);
+  /* The GT theme's own elevation: a warm shadow, because a neutral-black one goes grey and dirty
+     against warm paper. That was the reason this rule used to hand-roll a slate shadow. */
+  box-shadow: var(--elev-raised);
 }
 .panel--accent {
   background: linear-gradient(180deg, var(--accent-weak), var(--surface));
@@ -313,6 +328,8 @@ li {
   padding-left: 2.4em;
   max-width: none;
 }
+/* A numeral badge is a mark, so it takes the utility face, tabular so the two-digit case would
+   still align. Near White on Navy, 14.6:1. */
 .summary li::before {
   counter-increment: line;
   content: counter(line);
@@ -323,8 +340,10 @@ li {
   height: 1.65em;
   display: grid;
   place-items: center;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
   color: var(--accent-ink);
   background: var(--accent);
   border-radius: 999px;
@@ -371,8 +390,7 @@ li {
 }
 .swaps .arrow {
   color: var(--accent);
-  font-weight: 700;
-  font-family: var(--font-body);
+  font-weight: 620;
 }
 .swaps .to {
   font-weight: 500;
@@ -418,7 +436,7 @@ li {
 }
 .trap .do b {
   color: var(--accent-hover);
-  font-weight: 600;
+  font-weight: 620;
 }
 
 /* Self-assessment checklists */
@@ -442,7 +460,7 @@ li {
   width: 1.15em;
   height: 1.15em;
   border: 2px solid var(--accent);
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
 }
 
 /* Citations and sources */
@@ -453,10 +471,13 @@ li {
 .cite a {
   color: var(--ink-muted);
 }
+/* THE SERIF HAS A FLOOR. These label a list rather than open a passage, and at 0.78rem they sit
+   well below it, so they drop out of Literata into Inter Tight 620. */
 .sources h3 {
   margin-top: 1.7em;
+  font-family: var(--font-body);
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: 620;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-muted);
@@ -485,10 +506,11 @@ li {
   border-radius: var(--radius-lg);
   padding: clamp(20px, 2.5vw, 30px);
   margin-top: 20px;
-  box-shadow: 0 1px 2px oklch(0.4 0.03 255 / 0.04), 0 8px 24px oklch(0.4 0.03 255 / 0.04);
+  box-shadow: var(--elev-raised);
 }
+/* A compact heading under the serif floor: Inter Tight 620. */
 .checkin__legend {
-  font-weight: 600;
+  font-weight: 620;
   margin: 0 0 14px;
   padding: 0;
   font-size: 0.95rem;
@@ -507,7 +529,7 @@ li {
   align-items: start;
   cursor: pointer;
   padding: 10px 12px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   line-height: 1.4;
   font-size: 0.98rem;
   transition: background 0.14s var(--ease);
@@ -522,7 +544,7 @@ li {
   width: 1.2em;
   height: 1.2em;
   border: 2px solid var(--line-strong);
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   display: grid;
   place-content: center;
   cursor: pointer;
@@ -551,14 +573,18 @@ li {
   align-items: center;
   flex-wrap: wrap;
 }
+/* THE UTILITY FACE IS FOR MARKS. The two check-in buttons are the page's only controls, and a
+   button label is a mark rather than a sentence. */
 .btn {
-  font-family: var(--font-body);
+  font-family: var(--font-mono);
   font-size: 1rem;
   font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   color: var(--accent-ink);
   background: var(--accent);
   border: 1px solid var(--accent);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   padding: 0.66em 1.2em;
   cursor: pointer;
   transition: background 0.15s var(--ease), transform 0.05s var(--ease);
@@ -580,11 +606,46 @@ li {
   background: var(--accent-weak);
   border-color: var(--accent);
 }
+
+/* ONE NOTCH PER SCREEN. The chamfer marks the single most important action in view. On this page
+ * that is the check-in's submit and nothing else: "Start over" is the quiet way out and keeps its
+ * square corners, and no panel, card or badge is cut.
+ *
+ * CHAMFER ON A PSEUDO-ELEMENT: clip-path clips the focus ring along with the corner, so the cut
+ * goes on a layer behind the content and the button itself stays unclipped. */
+.btn:not(.btn--ghost) {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+  border-color: transparent;
+}
+.btn:not(.btn--ghost)::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: var(--accent);
+  border-radius: var(--radius-md);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--cut-br, 14px)),
+    calc(100% - var(--cut-br, 14px)) 100%,
+    0 100%
+  );
+  transition: background 0.15s var(--ease);
+}
+.btn:not(.btn--ghost):hover {
+  background: transparent;
+  border-color: transparent;
+}
+.btn:not(.btn--ghost):hover::before {
+  background: var(--accent-hover);
+}
+
 :where(.btn, .toggle input, .toc__link, a):focus-visible {
-  /* Mixed toward pure white, not --accent-ink: that token is a near-white ink for text on the
-     accent, and reusing it here would tie the ring's lightness to an unrelated decision. */
-  outline: 3px solid color-mix(in oklab, var(--accent) 55%, white);
-  outline-offset: 2px;
+  outline: var(--focus-w) solid var(--focus-color);
+  outline-offset: var(--focus-offset);
 }
 
 .result {
@@ -608,7 +669,7 @@ li {
 }
 .result__human {
   margin-top: 0.7em;
-  font-weight: 600;
+  font-weight: 620;
   color: var(--warn);
 }
 .result__posture {
@@ -655,6 +716,22 @@ li {
   *::after {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
+  }
+}
+
+/* The chamfer paints the submit button's fill on a pseudo-element, which Windows High Contrast
+ * drops. Without this the label would be near-white on the card's white. Give the button its own
+ * fill back in forced-colors mode and lose the notch, which is decoration, rather than the button.
+ * (This is also why an automated contrast checker reports this one control as failing: it cannot
+ * see a pseudo-element's background. The real pair is Near White on Navy, 14.6:1.) */
+@media (forced-colors: active) {
+  .btn:not(.btn--ghost) {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+  }
+  .btn:not(.btn--ghost)::before {
+    display: none;
   }
 }
 
