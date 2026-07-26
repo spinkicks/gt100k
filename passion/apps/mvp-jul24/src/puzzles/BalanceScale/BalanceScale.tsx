@@ -53,12 +53,12 @@ function PanView({ pan, side }: { pan: Pan; side: "left" | "right" }): JSX.Eleme
          * Neither carries state, identity or animation, so there is nothing for a stable key to
          * preserve: the only thing that ever changes is how many of each there are.
          */}
-        {/* biome-ignore lint/suspicious/noArrayIndexKey: bags are identical by definition */}
         {Array.from({ length: pan.bags }, (_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: bags are identical by definition
           <span key={`bag-${i}`} className="bs-bag" aria-hidden="true" />
         ))}
-        {/* biome-ignore lint/suspicious/noArrayIndexKey: stones of a denomination are interchangeable */}
         {stones.map((d, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: stones of a denomination are interchangeable
           <span key={`stone-${d}-${i}`} className={`bs-stone bs-stone-${d}`}>
             {d}
           </span>

@@ -51,73 +51,15 @@ const NO_TEXT =
 const TARGETS = {
   map: {
     file: "map.png",
-    prompt:
-      "A warm, painterly parchment-style fantasy world map, like an illustrated " +
-      "overworld from a cozy storybook game. Flat hand-painted 2D illustration " +
-      "on aged parchment texture with soft muted colors — an illustrated map, " +
-      "not a 3D render, not a photograph. Five small wooden cabins sit in the " +
-      "landscape, and the composition is deliberately split into a bright near " +
-      "half and a hazy far half. " +
-      "NEAR, large and prominent in the foreground and midground, two cozy " +
-      "cabins glow with warm inviting light, sharply painted and richly " +
-      "coloured, each on its own green hillock, joined to the bottom edge of " +
-      "the map by a wide sunlit winding path: on the left a puzzle den with a " +
-      "lantern on its porch, a chequered board, scattered coloured wooden pegs " +
-      "and interlocking block shapes on the grass outside; on the right a " +
-      "clockmaker's workshop with brass cogs and gears leaning against its " +
-      "wall, a swinging pendulum under the eaves and a big plain round dial " +
-      "with two simple hands and a completely blank empty face on its gable. " +
-      "FAR AWAY near the horizon, three much smaller cabins are faint, pale, " +
-      "dim and half-swallowed by cool blue mist and rolling hills — clearly " +
-      "visible but distant, shuttered and unlit with dark empty windows, " +
-      "washed-out and desaturated, with no paths leading to them: one tucked " +
-      "among trees with faint ghostly silhouettes of a harp and a horn beside " +
-      "it, one with a faint web of thin branching glowing threads and tiny " +
-      "firefly-like dots of light creeping over the ground around it like a " +
-      "circuit, and one with a small easel, a palette and pale watery paint " +
-      "splashes on the grass beside it. " +
-      "Gentle rolling hills, soft clouds, hand-drawn storybook illustration " +
-      "style, strong depth: crisp golden light and saturated colour on the two " +
-      "near cabins, soft grey-blue atmospheric haze on the three distant ones. " +
-      NO_TEXT,
+    prompt: `A warm, painterly parchment-style fantasy world map, like an illustrated overworld from a cozy storybook game. Flat hand-painted 2D illustration on aged parchment texture with soft muted colors — an illustrated map, not a 3D render, not a photograph. Five small wooden cabins sit in the landscape, and the composition is deliberately split into a bright near half and a hazy far half. NEAR, large and prominent in the foreground and midground, two cozy cabins glow with warm inviting light, sharply painted and richly coloured, each on its own green hillock, joined to the bottom edge of the map by a wide sunlit winding path: on the left a puzzle den with a lantern on its porch, a chequered board, scattered coloured wooden pegs and interlocking block shapes on the grass outside; on the right a clockmaker's workshop with brass cogs and gears leaning against its wall, a swinging pendulum under the eaves and a big plain round dial with two simple hands and a completely blank empty face on its gable. FAR AWAY near the horizon, three much smaller cabins are faint, pale, dim and half-swallowed by cool blue mist and rolling hills — clearly visible but distant, shuttered and unlit with dark empty windows, washed-out and desaturated, with no paths leading to them: one tucked among trees with faint ghostly silhouettes of a harp and a horn beside it, one with a faint web of thin branching glowing threads and tiny firefly-like dots of light creeping over the ground around it like a circuit, and one with a small easel, a palette and pale watery paint splashes on the grass beside it. Gentle rolling hills, soft clouds, hand-drawn storybook illustration style, strong depth: crisp golden light and saturated colour on the two near cabins, soft grey-blue atmospheric haze on the three distant ones. ${NO_TEXT}`,
   },
   "cabin-math": {
     file: "cabin-math.png",
-    prompt:
-      "The inside of a clockmaker's workshop in a cozy wooden cabin, viewed " +
-      "from a fixed first-person perspective looking straight at the far wall. " +
-      "A long dark-wood workbench strewn with brass gears, cogs, springs, " +
-      "coiled mainsprings, tiny screwdrivers, tweezers and half-assembled " +
-      "clock movements. Behind it the wood-plank wall is hung with pendulum " +
-      "clocks whose faces have been removed to show their exposed brass " +
-      "clockwork, plus a few completely blank plain round dials with simple " +
-      "hands and no markings at all, swinging brass pendulums, and weights on " +
-      "chains. A wall of small parts drawers, a pair of brass balance scales, " +
-      "brass calipers and a set square. Warm lantern and candle light, dust " +
-      "motes drifting in a shaft of afternoon sun through a small window, " +
-      "exposed beams overhead, worn wooden floorboards and a small rug. " +
-      "Painterly storybook illustration style, rich warm brass-and-amber " +
-      "palette, snug and inviting. No people, no characters. " +
-      NO_TEXT,
+    prompt: `The inside of a clockmaker's workshop in a cozy wooden cabin, viewed from a fixed first-person perspective looking straight at the far wall. A long dark-wood workbench strewn with brass gears, cogs, springs, coiled mainsprings, tiny screwdrivers, tweezers and half-assembled clock movements. Behind it the wood-plank wall is hung with pendulum clocks whose faces have been removed to show their exposed brass clockwork, plus a few completely blank plain round dials with simple hands and no markings at all, swinging brass pendulums, and weights on chains. A wall of small parts drawers, a pair of brass balance scales, brass calipers and a set square. Warm lantern and candle light, dust motes drifting in a shaft of afternoon sun through a small window, exposed beams overhead, worn wooden floorboards and a small rug. Painterly storybook illustration style, rich warm brass-and-amber palette, snug and inviting. No people, no characters. ${NO_TEXT}`,
   },
   "cabin-logic-games": {
     file: "cabin-logic-games.png",
-    prompt:
-      "The inside of a puzzle den in a cozy wooden cabin, viewed from a fixed " +
-      "first-person perspective looking straight at the far wall. Large " +
-      "framed grid puzzles hang on the wood-plank wall — big empty chequered " +
-      "lattices and blank grids of plain squares studded with coloured wooden " +
-      "pegs, no writing on them. To one side a tall wooden pegboard is " +
-      "threaded with looping bright coloured pipes and rubber tubes running " +
-      "between its holes. In the middle of the room a small round table holds " +
-      "a carved wooden chess set mid-game. On the other side stands a narrow " +
-      "mirror maze of tall angled mirrors reflecting warm lamplight into " +
-      "infinity. A shelf of interlocking wooden block puzzles and flat " +
-      "tangram shapes, a lantern casting warm light, exposed beams overhead, " +
-      "worn floorboards and a patterned rug. Painterly storybook illustration " +
-      "style, warm inviting palette with bright pops of puzzle-piece colour. " +
-      "No people, no characters. " +
-      NO_TEXT,
+    prompt: `The inside of a puzzle den in a cozy wooden cabin, viewed from a fixed first-person perspective looking straight at the far wall. Large framed grid puzzles hang on the wood-plank wall — big empty chequered lattices and blank grids of plain squares studded with coloured wooden pegs, no writing on them. To one side a tall wooden pegboard is threaded with looping bright coloured pipes and rubber tubes running between its holes. In the middle of the room a small round table holds a carved wooden chess set mid-game. On the other side stands a narrow mirror maze of tall angled mirrors reflecting warm lamplight into infinity. A shelf of interlocking wooden block puzzles and flat tangram shapes, a lantern casting warm light, exposed beams overhead, worn floorboards and a patterned rug. Painterly storybook illustration style, warm inviting palette with bright pops of puzzle-piece colour. No people, no characters. ${NO_TEXT}`,
   },
 };
 

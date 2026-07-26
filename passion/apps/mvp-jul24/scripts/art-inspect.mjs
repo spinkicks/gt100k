@@ -71,19 +71,17 @@ async function diff(fileA, fileB, rectStrs = []) {
   const rb = await b.raw().toBuffer();
   const { width: w, height: h } = ma;
   const heat = Buffer.alloc(w * h * 3);
-  let outN = 0,
-    outDiff = 0,
-    outExact = 0,
-    inN = 0,
-    inDiff = 0;
+  let outN = 0;
+  let outDiff = 0;
+  let outExact = 0;
+  let inN = 0;
+  let inDiff = 0;
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
       const i = (y * w + x) * 3;
       const d =
         Math.abs(ra[i] - rb[i]) + Math.abs(ra[i + 1] - rb[i + 1]) + Math.abs(ra[i + 2] - rb[i + 2]);
-      const inside = rects.some(
-        (r) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h,
-      );
+      const inside = rects.some((r) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h);
       if (inside) {
         inN++;
         if (d > 0) inDiff++;
@@ -97,12 +95,19 @@ async function diff(fileA, fileB, rectStrs = []) {
       heat[i + 2] = 0;
     }
   }
-  console.log(`outside rects: ${outN} px, byte-identical ${((100 * outExact) / outN).toFixed(4)}%, differing ${outDiff}`);
+  console.log(
+    `outside rects: ${outN} px, byte-identical ${((100 * outExact) / outN).toFixed(4)}%, differing ${outDiff}`,
+  );
   if (inN) console.log(`inside  rects: ${inN} px, differing ${((100 * inDiff) / inN).toFixed(2)}%`);
   const out = join(APP_DIR, "shots", "art-wip", "diff-heat.png");
   mkdirSync(dirname(out), { recursive: true });
-  writeFileSync(out, await sharp(heat, { raw: { width: w, height: h, channels: 3 } }).png().toBuffer());
-  console.log(`heatmap -> shots/art-wip/diff-heat.png`);
+  writeFileSync(
+    out,
+    await sharp(heat, { raw: { width: w, height: h, channels: 3 } })
+      .png()
+      .toBuffer(),
+  );
+  console.log("heatmap -> shots/art-wip/diff-heat.png");
 }
 
 async function flat(file, rectStr) {
@@ -113,10 +118,10 @@ async function flat(file, rectStr) {
     .raw()
     .toBuffer({ resolveWithObject: true });
   const n = data.length;
-  let s = 0,
-    s2 = 0,
-    min = 255,
-    max = 0;
+  let s = 0;
+  let s2 = 0;
+  let min = 255;
+  let max = 0;
   for (let i = 0; i < n; i++) {
     s += data[i];
     s2 += data[i] * data[i];
@@ -159,7 +164,10 @@ async function grid(file, out, step = 100) {
   mkdirSync(dirname(p(out)), { recursive: true });
   writeFileSync(
     p(out),
-    await img.composite([{ input: Buffer.from(svg), top: 0, left: 0 }]).png().toBuffer(),
+    await img
+      .composite([{ input: Buffer.from(svg), top: 0, left: 0 }])
+      .png()
+      .toBuffer(),
   );
   console.log(`${out} (${w}x${h}, ${step}px grid)`);
 }
@@ -354,9 +362,7 @@ async function verify(imgFile, quadStr, refFile, out) {
     refSum += refs[i];
   }
   console.log(
-    `rectified ${ow}x${oh} | pattern correlation r=${r.toFixed(3)} ` +
-      `(illumination divided out; 1.0 = identical marks) | ` +
-      `baked level ${(plateSum / n).toFixed(0)} vs reference ${(refSum / n).toFixed(0)}`,
+    `rectified ${ow}x${oh} | pattern correlation r=${r.toFixed(3)} (illumination divided out; 1.0 = identical marks) | baked level ${(plateSum / n).toFixed(0)} vs reference ${(refSum / n).toFixed(0)}`,
   );
   console.log(`${out}: baked board on top, reference below — read them back against each other`);
   // r is depressed by the bake's own relighting, sub-pixel softening and film
@@ -476,10 +482,7 @@ async function snapquad(imgFile, quadStr) {
   const meet = (l1, l2) => {
     const det = l1.a * l2.b - l2.a * l1.b;
     if (Math.abs(det) < 1e-9) throw new Error("parallel edges");
-    return [
-      (l1.c * l2.b - l2.c * l1.b) / det,
-      (l1.a * l2.c - l2.a * l1.c) / det,
-    ];
+    return [(l1.c * l2.b - l2.c * l1.b) / det, (l1.a * l2.c - l2.a * l1.c) / det];
   };
   const snapped = [0, 1, 2, 3].map((i) => meet(lines[(i + 3) % 4], lines[i]).map(Math.round));
 
@@ -506,7 +509,8 @@ async function cells(file, gridStr, mapStr, areaStr = "0,0,1,1") {
   const [cols, rows] = gridStr.split("x").map(Number);
   const [ax, ay, aw, ah] = areaStr.split(",").map(Number);
   const expected = mapStr.split("/").map((r) => r.trim().split(""));
-  if (expected.length !== rows) throw new Error(`map has ${expected.length} rows, expected ${rows}`);
+  if (expected.length !== rows)
+    throw new Error(`map has ${expected.length} rows, expected ${rows}`);
 
   const { data, info } = await sharp(readFileSync(p(file)))
     .removeAlpha()
@@ -576,7 +580,8 @@ async function cells(file, gridStr, mapStr, areaStr = "0,0,1,1") {
 const [cmd, ...rest] = process.argv.slice(2);
 if (cmd === "crop") await crop(rest[0], rest[1], rest[2], rest[3] ? Number(rest[3]) : 3);
 else if (cmd === "grid") await grid(rest[0], rest[1], rest[2] ? Number(rest[2]) : 100);
-else if (cmd === "verify") await verify(rest[0], rest[1], rest[2], rest[3] ?? "shots/art-wip/verify.png");
+else if (cmd === "verify")
+  await verify(rest[0], rest[1], rest[2], rest[3] ?? "shots/art-wip/verify.png");
 else if (cmd === "snapquad") await snapquad(rest[0], rest[1]);
 else if (cmd === "cells") await cells(rest[0], rest[1], rest[2], rest[3]);
 else if (cmd === "diff") await diff(rest[0], rest[1], rest.slice(2));

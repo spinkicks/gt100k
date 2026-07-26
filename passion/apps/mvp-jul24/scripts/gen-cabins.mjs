@@ -189,18 +189,7 @@ const ROOMS = {
         // shots/art-wip/styled-cabin-logic-games-nonogram.png. Re-measure after
         // a --restyle: each repaint frames the board differently.
         face: { x: 182, y: 104, w: 748, h: 738 },
-        stylePrompt:
-          "Repaint this as a real hand-made wooden NONOGRAM puzzle board hanging in a " +
-          "cosy log cabin. The board is a pale cream painted panel with visible paper " +
-          "and wood grain and a slightly uneven hand-painted surface, set into a " +
-          "shallow wooden tray so the panel sits recessed with real thickness and the " +
-          "tray's inner edge casts a soft shadow across the panel. The grid lines are " +
-          "hand-inked in dark brown, slightly uneven in weight and not perfectly " +
-          "straight — ruled by hand, not printed. Filled squares are hand-painted " +
-          "dark walnut tiles with soft slightly irregular edges and a faint sheen, " +
-          "never flat black rounded rectangles. Along the top and left edges the clue " +
-          "marks are small hand-painted numerals in faded dark ink. " +
-          CABIN_LIGHT,
+        stylePrompt: `Repaint this as a real hand-made wooden NONOGRAM puzzle board hanging in a cosy log cabin. The board is a pale cream painted panel with visible paper and wood grain and a slightly uneven hand-painted surface, set into a shallow wooden tray so the panel sits recessed with real thickness and the tray's inner edge casts a soft shadow across the panel. The grid lines are hand-inked in dark brown, slightly uneven in weight and not perfectly straight — ruled by hand, not printed. Filled squares are hand-painted dark walnut tiles with soft slightly irregular edges and a faint sheen, never flat black rounded rectangles. Along the top and left edges the clue marks are small hand-painted numerals in faded dark ink. ${CABIN_LIGHT}`,
         // The largest board and the one nearest the frame edge, so it is the
         // one that competes with the fire for the eye. Held a little darker
         // than the default so the fireplace stays the focal point.
@@ -217,16 +206,7 @@ const ROOMS = {
         cls: "board",
         ref: "pipes.png",
         face: { x: 126, y: 92, w: 798, h: 852 },
-        stylePrompt:
-          "Repaint this as a real hand-made wooden PIPE PUZZLE board hanging in a cosy " +
-          "log cabin: a pale cream painted panel with visible grain, set into a shallow " +
-          "wooden tray with real thickness whose inner edge casts a soft shadow. The " +
-          "pipes are chunky little painted wooden or enamelled metal pipe segments " +
-          "sitting proud of the board with real volume, soft rounded ends and small " +
-          "shadows beneath them. The RED pipes are glowing warm copper and amber, lit " +
-          "from within as though flowing; the GREY pipes are dull unlit dark iron. The " +
-          "orange discs are round brass hubs; the rings are brass collars. " +
-          CABIN_LIGHT,
+        stylePrompt: `Repaint this as a real hand-made wooden PIPE PUZZLE board hanging in a cosy log cabin: a pale cream painted panel with visible grain, set into a shallow wooden tray with real thickness whose inner edge casts a soft shadow. The pipes are chunky little painted wooden or enamelled metal pipe segments sitting proud of the board with real volume, soft rounded ends and small shadows beneath them. The RED pipes are glowing warm copper and amber, lit from within as though flowing; the GREY pipes are dull unlit dark iron. The orange discs are round brass hubs; the rings are brass collars. ${CABIN_LIGHT}`,
         quad: [
           [820, 243],
           [949, 254],
@@ -239,16 +219,7 @@ const ROOMS = {
         cls: "board",
         ref: "mirror.png",
         face: { x: 116, y: 99, w: 788, h: 809 },
-        stylePrompt:
-          "Repaint this as a real hand-made wooden MIRROR MAZE puzzle board hanging in " +
-          "a cosy log cabin: a pale cream painted panel with visible grain and faint " +
-          "hand-ruled guide lines, set into a shallow wooden tray with real thickness " +
-          "whose inner edge casts a soft shadow. Each diagonal stroke is a small real " +
-          "angled mirror in a slim brass bezel, catching a glint of firelight. The " +
-          "orange line is a warm glowing beam of light lying across the board with a " +
-          "soft bloom around it. The dark disc is a brass emitter; the hollow circle is " +
-          "an unlit brass target ring. " +
-          CABIN_LIGHT,
+        stylePrompt: `Repaint this as a real hand-made wooden MIRROR MAZE puzzle board hanging in a cosy log cabin: a pale cream painted panel with visible grain and faint hand-ruled guide lines, set into a shallow wooden tray with real thickness whose inner edge casts a soft shadow. Each diagonal stroke is a small real angled mirror in a slim brass bezel, catching a glint of firelight. The orange line is a warm glowing beam of light lying across the board with a soft bloom around it. The dark disc is a brass emitter; the hollow circle is an unlit brass target ring. ${CABIN_LIGHT}`,
         quad: [
           [988, 295],
           [1094, 274],
@@ -286,71 +257,17 @@ const ROOMS = {
       gearTrain: {
         cls: "mech",
         zone: { x: 440, y: 160, w: 300, h: 260 },
-        prompt:
-          "Replace the brass cogwheels on the STONE CHIMNEY BREAST above the fireplace " +
-          "mantel with a proper working gear train, seen almost straight on. Four polished " +
-          "brass cogwheels of clearly different sizes sit in a single row that steps down " +
-          "from a big wheel on the left to a small wheel on the right. Every wheel has " +
-          "bold, deep, evenly spaced square-cut teeth all round its rim, and each wheel is " +
-          "positioned so that its teeth genuinely interlock and mesh with the teeth of the " +
-          "next wheel along: the rims actually touch, with each tooth sitting in the gap " +
-          "between two teeth of its neighbour, exactly like the gears inside a real clock. " +
-          "No wheel overlaps or passes through another wheel, and no wheel floats with an " +
-          "empty gap between it and its neighbour. Each wheel turns on a visible brass axle " +
-          "pin driven into the stone, and has spokes and a hub. " +
-          KEEP +
-          " " +
-          STYLE +
-          " " +
-          NO_TEXT,
+        prompt: `Replace the brass cogwheels on the STONE CHIMNEY BREAST above the fireplace mantel with a proper working gear train, seen almost straight on. Four polished brass cogwheels of clearly different sizes sit in a single row that steps down from a big wheel on the left to a small wheel on the right. Every wheel has bold, deep, evenly spaced square-cut teeth all round its rim, and each wheel is positioned so that its teeth genuinely interlock and mesh with the teeth of the next wheel along: the rims actually touch, with each tooth sitting in the gap between two teeth of its neighbour, exactly like the gears inside a real clock. No wheel overlaps or passes through another wheel, and no wheel floats with an empty gap between it and its neighbour. Each wheel turns on a visible brass axle pin driven into the stone, and has spokes and a hub. ${KEEP} ${STYLE} ${NO_TEXT}`,
       },
       vialRack: {
         cls: "mech",
         zone: { x: 790, y: 236, w: 172, h: 180 },
-        prompt:
-          "Replace the apparatus on the small WOODEN WALL SHELF to the right of the stone " +
-          "chimney with a rack of glass measuring vials, seen straight on at eye level. A " +
-          "low dark wood stand holds a single row of five identical tall narrow " +
-          "cylindrical clear glass test tubes upright side by side, evenly spaced, all " +
-          "exactly the same height and diameter. They are unmistakably REAL GLASS TUBES, " +
-          "not flat coloured rectangles: each is a round cylinder with curved transparent " +
-          "glass walls, a rounded bottom, a thin rolled rim, bright narrow specular " +
-          "highlights down the glass and a clearly visible curved meniscus at the liquid " +
-          "surface. Every tube is part filled with a different brightly coloured " +
-          "translucent liquid, and every tube is filled to an obviously different level, " +
-          "making a clean rising staircase of heights from barely covered on the left to " +
-          "nearly full on the right: red, amber, green, blue, violet. The glass above each " +
-          "liquid is empty and clear. No graduation lines on the glass. " +
-          KEEP +
-          " " +
-          STYLE +
-          " " +
-          NO_TEXT,
+        prompt: `Replace the apparatus on the small WOODEN WALL SHELF to the right of the stone chimney with a rack of glass measuring vials, seen straight on at eye level. A low dark wood stand holds a single row of five identical tall narrow cylindrical clear glass test tubes upright side by side, evenly spaced, all exactly the same height and diameter. They are unmistakably REAL GLASS TUBES, not flat coloured rectangles: each is a round cylinder with curved transparent glass walls, a rounded bottom, a thin rolled rim, bright narrow specular highlights down the glass and a clearly visible curved meniscus at the liquid surface. Every tube is part filled with a different brightly coloured translucent liquid, and every tube is filled to an obviously different level, making a clean rising staircase of heights from barely covered on the left to nearly full on the right: red, amber, green, blue, violet. The glass above each liquid is empty and clear. No graduation lines on the glass. ${KEEP} ${STYLE} ${NO_TEXT}`,
       },
       panBalance: {
         cls: "mech",
         zone: { x: 930, y: 555, w: 320, h: 265 },
-        prompt:
-          "Replace the glass prism standing on the LOW WOODEN TABLE on the right of the " +
-          "room with a big antique brass BALANCE SCALE standing squarely on that table " +
-          "top, seen side on at eye level. It is the chunky old-fashioned kitchen kind: a " +
-          "heavy turned wooden base, a short stout brass pillar rising from the middle of " +
-          "it, and across the top of that pillar ONE SINGLE THICK SOLID STRAIGHT BRASS " +
-          "CROSSBEAM — a stout bar as thick as a finger, plainly visible along its entire " +
-          "length, balanced at its midpoint on the pillar and reaching out the same " +
-          "distance each way. This crossbeam is the most important part of the object and " +
-          "must be drawn solid and unbroken from end to end. A shallow round brass pan " +
-          "sits directly ON TOP of each end of the crossbeam on a short stubby bracket, so " +
-          "there are exactly two pans, both firmly attached to the beam. Nothing hangs on " +
-          "chains and nothing floats unattached in mid air. The beam is tilted to the " +
-          "left: the left pan carries a stack of chunky hexagonal brass weights of " +
-          "different sizes and hangs lower, the right pan carries one small weight and " +
-          "rides higher. Two spare weights stand on the table beside the base. " +
-          KEEP +
-          " " +
-          STYLE +
-          " " +
-          NO_TEXT,
+        prompt: `Replace the glass prism standing on the LOW WOODEN TABLE on the right of the room with a big antique brass BALANCE SCALE standing squarely on that table top, seen side on at eye level. It is the chunky old-fashioned kitchen kind: a heavy turned wooden base, a short stout brass pillar rising from the middle of it, and across the top of that pillar ONE SINGLE THICK SOLID STRAIGHT BRASS CROSSBEAM — a stout bar as thick as a finger, plainly visible along its entire length, balanced at its midpoint on the pillar and reaching out the same distance each way. This crossbeam is the most important part of the object and must be drawn solid and unbroken from end to end. A shallow round brass pan sits directly ON TOP of each end of the crossbeam on a short stubby bracket, so there are exactly two pans, both firmly attached to the beam. Nothing hangs on chains and nothing floats unattached in mid air. The beam is tilted to the left: the left pan carries a stack of chunky hexagonal brass weights of different sizes and hangs lower, the right pan carries one small weight and rides higher. Two spare weights stand on the table beside the base. ${KEEP} ${STYLE} ${NO_TEXT}`,
       },
     },
     order: ["gearTrain", "vialRack", "panBalance"],
@@ -435,7 +352,12 @@ async function edit(key, { image, prompt, size = SIZE }) {
  * outer margins excluded so a lit window at the edge cannot join the run.
  */
 async function findPanel(bytes) {
-  const small = await sharp(bytes).removeAlpha().greyscale().resize(320, 320, { fit: "fill" }).raw().toBuffer();
+  const small = await sharp(bytes)
+    .removeAlpha()
+    .greyscale()
+    .resize(320, 320, { fit: "fill" })
+    .raw()
+    .toBuffer();
   const N = 320;
   const inX0 = Math.round(N * 0.1);
   const inX1 = Math.round(N * 0.95);
@@ -515,8 +437,7 @@ async function stylizeBoard(key, room, id, prop, { force = false } = {}) {
   const refPath = join(REF_DIR, prop.ref);
   if (!existsSync(refPath))
     throw new Error(
-      `missing puzzle reference ${refPath}. Set GEN_CABINS_REFS to the directory ` +
-        `holding the rendered board PNGs.`,
+      `missing puzzle reference ${refPath}. Set GEN_CABINS_REFS to the directory holding the rendered board PNGs.`,
     );
   const styled = await edit(key, {
     image: readFileSync(refPath),
@@ -700,7 +621,15 @@ function fitLightPlane(plate, quad, { inner = 26, outer = 68 } = {}) {
   const planeFor = (ch) => {
     const fit = (list) => {
       // normal equations for v = a*dx + b*dy + c
-      let sxx = 0, sxy = 0, sx = 0, syy = 0, sy = 0, n = 0, sxv = 0, syv = 0, sv = 0;
+      let sxx = 0;
+      let sxy = 0;
+      let sx = 0;
+      let syy = 0;
+      let sy = 0;
+      let n = 0;
+      let sxv = 0;
+      let syv = 0;
+      let sv = 0;
       for (const s2 of list) {
         const dx = s2[0];
         const dy = s2[1];
@@ -770,7 +699,16 @@ async function placeBoard(
   plateBuf,
   refBuf,
   quad,
-  { boost = 0.94, cast = 0.45, softness = 0.45, grain = 0.35, percentile = 0.55, relief = 1, inner = 0.05, seed = 7 } = {},
+  {
+    boost = 0.94,
+    cast = 0.45,
+    softness = 0.45,
+    grain = 0.35,
+    percentile = 0.55,
+    relief = 1,
+    inner = 0.05,
+    seed = 7,
+  } = {},
 ) {
   const plate = await sharp(plateBuf).removeAlpha().raw().toBuffer();
   const { data: ref, info } = await sharp(refBuf)
@@ -805,7 +743,8 @@ async function placeBoard(
     }
   if (!lums.length) throw new Error("quad covers no pixels");
   const sortedPlate = [...lums].sort((a, b) => a - b);
-  const plateAt = (p) => sortedPlate[Math.min(sortedPlate.length - 1, Math.round(sortedPlate.length * p))];
+  const plateAt = (p) =>
+    sortedPlate[Math.min(sortedPlate.length - 1, Math.round(sortedPlate.length * p))];
   const platePaper = Math.max(1, plateAt(percentile));
   const plateMedian = plateAt(0.5);
 
@@ -824,8 +763,7 @@ async function placeBoard(
 
   // --- statistics of the reference
   const refLums = new Float32Array(rw * rh);
-  for (let i = 0; i < rw * rh; i++)
-    refLums[i] = lum(ref[i * 3], ref[i * 3 + 1], ref[i * 3 + 2]);
+  for (let i = 0; i < rw * rh; i++) refLums[i] = lum(ref[i * 3], ref[i * 3 + 1], ref[i * 3 + 2]);
   const sortedRef = Float32Array.from(refLums).sort();
   const refPaper = Math.max(1, sortedRef[Math.round(sortedRef.length * percentile)]);
   const refMedian = sortedRef[Math.round(sortedRef.length * 0.5)];
@@ -849,8 +787,7 @@ async function placeBoard(
 
   const lumScale = (platePaper * boost) / refPaper;
   const gain = [0, 1, 2].map(
-    (c) =>
-      lumScale * ((paperMean[c] / paperLum) / (refPaperMean[c] / refPaperLum)) ** cast,
+    (c) => lumScale * (paperMean[c] / paperLum / (refPaperMean[c] / refPaperLum)) ** cast,
   );
 
   // --- the room's light across this board's face
@@ -920,10 +857,7 @@ async function placeBoard(
           const [u, v] = applyH(toUnit, [px, py]);
           if (u < fit.u0 || u > fit.u1 || v < fit.v0 || v > fit.v1) {
             // mount, with the board's edge shadow falling across it
-            const d = Math.max(
-              Math.max(fit.u0 - u, u - fit.u1),
-              Math.max(fit.v0 - v, v - fit.v1),
-            );
+            const d = Math.max(Math.max(fit.u0 - u, u - fit.u1), Math.max(fit.v0 - v, v - fit.v1));
             const sh = 1 - 0.42 * Math.exp(-Math.max(0, d) / 0.03);
             for (let c = 0; c < 3; c++) acc[c] += pad[c] * sh;
             continue;
@@ -1002,8 +936,7 @@ async function placeBoard(
   // measured quantity rather than a feel
   let relight = null;
   if (light) {
-    const at = (x, y) =>
-      light.planes.map((f) => f.a * (x - light.cx) + f.b * (y - light.cy) + f.c);
+    const at = (x, y) => light.planes.map((f) => f.a * (x - light.cx) + f.b * (y - light.cy) + f.c);
     const mid = (p1, p2) => [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2];
     const l = at(...mid(quad[0], quad[3]));
     const r = at(...mid(quad[1], quad[2]));
@@ -1095,7 +1028,12 @@ async function changedBox(tuned, base, zone, threshold = 40, minFrac = 0.05) {
   return { x: x0 + zone.x, y: y0 + zone.y, w: x1 - x0 + 1, h: y1 - y0 + 1 };
 }
 
-async function compositeMech(baseBuf, editBuf, zone, { feather = 12, protect = [], pad = 10 } = {}) {
+async function compositeMech(
+  baseBuf,
+  editBuf,
+  zone,
+  { feather = 12, protect = [], pad = 10 } = {},
+) {
   const base = await sharp(baseBuf).removeAlpha().raw().toBuffer();
   const ed = await sharp(editBuf).resize(W, H, { fit: "fill" }).removeAlpha().raw().toBuffer();
   const { raw: tuned, map } = toneMatch(ed, base, zone);
@@ -1169,14 +1107,16 @@ async function buildRoom(room, { only, attempt, restyle }) {
   const basePath = join(CONCEPT_DIR, spec.base);
   if (!existsSync(basePath))
     throw new Error(
-      `missing base still ${basePath}. shots/ is gitignored, so the concept frames must be ` +
-        `present locally to re-derive the backdrops.`,
+      `missing base still ${basePath}. shots/ is gitignored, so the concept frames must be present locally to re-derive the backdrops.`,
     );
   const outPath = attempt ? join(WIP_DIR, `${room}-${attempt}.png`) : join(ART_DIR, spec.file);
   mkdirSync(dirname(outPath), { recursive: true });
   mkdirSync(WIP_DIR, { recursive: true });
 
-  const baseBuf = await sharp(readFileSync(basePath)).resize(W, H, { fit: "fill" }).png().toBuffer();
+  const baseBuf = await sharp(readFileSync(basePath))
+    .resize(W, H, { fit: "fill" })
+    .png()
+    .toBuffer();
   const buildable = spec.order.filter((id) => spec.props[id].cls !== "asIs");
   if (only) {
     const unknown = only.filter((id) => !(id in spec.props));
@@ -1190,8 +1130,7 @@ async function buildRoom(room, { only, attempt, restyle }) {
   const startPath = only && existsSync(outPath) ? outPath : basePath;
   let current = await sharp(readFileSync(startPath)).resize(W, H, { fit: "fill" }).png().toBuffer();
   console.log(
-    `  ${room}: base shots/concept/${spec.base}` +
-      (startPath === outPath ? " (continuing from the existing output)" : ""),
+    `  ${room}: base shots/concept/${spec.base}${startPath === outPath ? " (continuing from the existing output)" : ""}`,
   );
 
   // A re-roll must not be conditioned on the attempt it replaces.
@@ -1254,9 +1193,7 @@ async function buildRoom(room, { only, attempt, restyle }) {
       win.y + win.h >= zone.y + zone.h - 1 && "bottom",
     ].filter(Boolean);
     console.log(
-      `  ${room}/${id} (mech) landed ${win.x},${win.y} ${win.w}x${win.h} in zone ` +
-        `${zone.x},${zone.y} ${zone.w}x${zone.h} (gain ${map.map((m) => m.gain.toFixed(2)).join("/")})` +
-        (clipped.length ? `  *** TOUCHES ZONE ${clipped.join("+")} ***` : ""),
+      `  ${room}/${id} (mech) landed ${win.x},${win.y} ${win.w}x${win.h} in zone ${zone.x},${zone.y} ${zone.w}x${zone.h} (gain ${map.map((m) => m.gain.toFixed(2)).join("/")})${clipped.length ? `  *** TOUCHES ZONE ${clipped.join("+")} ***` : ""}`,
     );
   }
 
@@ -1284,7 +1221,11 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--only") only = argv[++i].split(",").map((s) => s.trim());
-    else if (a.startsWith("--only=")) only = a.slice(7).split(",").map((s) => s.trim());
+    else if (a.startsWith("--only="))
+      only = a
+        .slice(7)
+        .split(",")
+        .map((s) => s.trim());
     else if (a === "--attempt") attempt = argv[++i];
     else if (a.startsWith("--attempt=")) attempt = a.slice(10);
     else if (a === "--list") list = true;
