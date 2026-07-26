@@ -2,12 +2,89 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { vi } from "vitest";
 import * as registry from "../gadgets/registry";
 import { useGame } from "../game/store";
+import type { PuzzleProps } from "../game/types";
 import { useInterest } from "../interest/store";
 import GadgetOverlay from "./GadgetOverlay";
 
 beforeEach(() => {
   useGame.getState().goToMap();
   useInterest.getState().reset();
+});
+
+// Belt-and-suspenders: if a stub-gadget test throws mid-assertion, its `spy.mockRestore()` call
+// below never runs, and the next test would render the stub instead of the real Nonogram it
+// expects. Restoring here (not just inline) means a failure stays a single-test failure.
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+/**
+ * A stub puzzle that solves on one click and echoes its `tier` prop into a `data-tier`
+ * *attribute* — never text, because the no-visible-number test below reads `textContent`, and
+ * production markup must never render a tier at all (PRD §11). Solving a real generated Nonogram
+ * through the DOM would exercise the generator, not the overlay's offer-a-harder-variant plumbing,
+ * so `gadgetById` is spied per-test (same technique the "coming-soon" test above already uses)
+ * rather than `vi.mock`-ing the whole registry module, which would also swap out the real Nonogram
+ * that the other tests in this file render and solve for real.
+ */
+function StubPuzzle({ tier, onSolved, onExit }: PuzzleProps) {
+  return (
+    <div data-testid="stub-puzzle" data-tier={tier ?? 0}>
+      <button type="button" data-testid="qa-solve" onClick={onSolved}>
+        solve
+      </button>
+      <button type="button" onClick={onExit}>
+        exit
+      </button>
+    </div>
+  );
+}
+
+function mockStubGadget() {
+  return vi.spyOn(registry, "gadgetById").mockImplementation((id: string) => ({
+    id,
+    topic: "logic-games",
+    label: "Stub",
+    status: "active",
+    hotspot: { xPct: 50, yPct: 50, label: "Stub" },
+    Puzzle: StubPuzzle,
+  }));
+}
+
+// The offered harder variant. A CHOICE: the easier path stays available beside it, so nothing is
+// gated and nothing escalates unasked.
+test("the solved state offers a harder variant and an unchanged way back", () => {
+  const spy = mockStubGadget();
+  useGame.getState().focusGadget("nonogram");
+  render(<GadgetOverlay />);
+  fireEvent.click(screen.getByTestId("qa-solve"));
+  expect(screen.getByRole("button", { name: /harder/i })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
+  spy.mockRestore();
+});
+
+// PRD §11 again: a visible tier/level number is a quantified display of the child's own
+// engagement, which is what the child-facing readout was removed for.
+test("no tier or level number is ever rendered", () => {
+  const spy = mockStubGadget();
+  useGame.getState().focusGadget("nonogram");
+  const { container } = render(<GadgetOverlay />);
+  fireEvent.click(screen.getByTestId("qa-solve"));
+  fireEvent.click(screen.getByRole("button", { name: /harder/i }));
+  expect(container.textContent).not.toMatch(/\b(tier|level|difficulty)\b/i);
+  expect(container.textContent).not.toMatch(/\b\d+\s*\/\s*\d+\b/);
+  spy.mockRestore();
+});
+
+test("the chosen tier reaches the puzzle", () => {
+  const spy = mockStubGadget();
+  useGame.getState().focusGadget("nonogram");
+  render(<GadgetOverlay />);
+  expect(screen.getByTestId("stub-puzzle")).toHaveAttribute("data-tier", "0");
+  fireEvent.click(screen.getByTestId("qa-solve"));
+  fireEvent.click(screen.getByRole("button", { name: /harder/i }));
+  expect(screen.getByTestId("stub-puzzle")).toHaveAttribute("data-tier", "1");
+  spy.mockRestore();
 });
 
 test("focusing a gadget mounts its puzzle and records one open", () => {

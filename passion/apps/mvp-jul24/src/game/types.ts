@@ -26,6 +26,15 @@ export interface GadgetHotspot {
 
 export interface PuzzleProps {
   seed: number;
+  /**
+   * Which difficulty variant to open at, when the child asked for one. OPTIONAL on purpose: a
+   * puzzle that has no tiers ignores it and still compiles, which is what keeps the harder-variant
+   * control a small change rather than a nine-component migration.
+   *
+   * Never rendered. A visible tier number would be a quantified display of the child's own
+   * engagement — the thing PRD §11 refuses and the child-facing readout was removed for.
+   */
+  tier?: number;
   onSolved: () => void;
   onExit: () => void;
 }

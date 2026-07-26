@@ -52,14 +52,16 @@ function generateFreshPuzzle(base: number, size: number, avoid?: boolean[][]): N
   return puzzle;
 }
 
-export default function Nonogram({ seed, onSolved, onExit }: PuzzleProps) {
+export default function Nonogram({ seed, tier = 0, onSolved, onExit }: PuzzleProps) {
   // `round` advances on "Next puzzle" so difficulty alternates across a session (see
-  // `sizeForRound`) instead of staying pinned to the generator's default forever.
-  const [round, setRound] = useState(0);
+  // `sizeForRound`) instead of staying pinned to the generator's default forever. `tier` — set by
+  // the overlay's "Try a harder one" offer — overrides where that alternation starts, so choosing
+  // the harder variant actually lands on the next size rather than restarting at round 0.
+  const [round, setRound] = useState(tier);
   // Effectively unlimited puzzles: generate a fresh one on mount instead of
   // picking from a fixed hand-authored set.
   const [puzzle, setPuzzle] = useState<NonogramPuzzle>(() =>
-    generateFreshPuzzle(seed, sizeForRound(0)),
+    generateFreshPuzzle(seed, sizeForRound(tier)),
   );
   const [grid, setGrid] = useState<Cell[][]>(() => blankGrid(puzzle.size));
   const [solved, setSolved] = useState(false);
