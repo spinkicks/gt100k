@@ -16,6 +16,6 @@
   box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.3), var(--shadow-panel);
 }
 
-/* The "Mode: 3d" backend toggle that used to sit at top-right is gone — 3D is the only backend a
-   player sees, and the pill read as a debug badge floating over a finished room. The static backend
-   is now reached only via `?cabin=static` (see game/store.ts). */
+/* The "Mode: 3d" backend toggle that used to sit at top-right is gone. `backdrop` is now the only
+   backend a player sees; there is no query param and no toggle. `3d` and `static` are parked (see
+   cabin/CabinView.tsx). */
