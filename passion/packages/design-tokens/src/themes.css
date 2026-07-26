@@ -58,6 +58,86 @@
   --focus-color: #0b6bcb;
 }
 
+/**
+ * GT School / GT Anywhere. The house identity: warm off-white paper carries the content, Navy does
+ * the structural work, Gold is an accent surface and never ink. Reads as a printed academic
+ * reference rather than a software dashboard.
+ *
+ * Every text pair below was measured, not eyeballed, and clears AA 4.5:1 on every ground it is
+ * actually placed on. Two findings worth keeping:
+ *
+ *  - Gold Deep (#ab683e) is 4.04:1 on the paper, so it FAILS as body ink. The brand's own table
+ *    already flags it large-text-only. Warn ink is #8a5430 (5.70), one of the brand's verified
+ *    warm accents, not the more obvious Gold Deep.
+ *  - The identity supplies no green and no red, but a guide console needs red/amber/green to stay
+ *    readable at a glance. Those three are derived here and measured; they are the only values in
+ *    this block the brand does not name, and they are deliberately desaturated so they sit on warm
+ *    paper instead of fighting it. Colour is never the only channel: every status also carries a
+ *    text label.
+ */
+[data-theme="gt"] {
+  --font-display: "Literata Variable", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-body: "Inter Tight Variable", "Segoe UI", system-ui, sans-serif;
+  --font-ui: "Inter Tight Variable", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Inconsolata Variable", ui-monospace, Consolas, monospace;
+
+  /* Page is paper, panels lift off it in white, grouped regions take a warm tint. */
+  --canvas: #fcf4ef;
+  --surface: #ffffff;
+  --surface-2: #f8e8de;
+  --rail: #ffffff;
+  --rail-2: #f8e8de;
+
+  --ink: #001117;
+  --ink-muted: #33505c;
+  --ink-faint: #4a6470;
+
+  --line: #ecd9cb;
+  --line-strong: #cac6c4;
+
+  /* Navy is the accent because the accent is also ink here (links, active labels), and Gold on
+     paper is 2.4:1. Gold's job is --accent-weak: a warm tint under a cool accent, per the brand. */
+  --accent: #002a3a;
+  --accent-hover: #001117;
+  --accent-weak: #f8e8de;
+  --accent-ink: #fbfbfb;
+
+  --good: #1e5b43;
+  --good-bg: #e6f0ea;
+  --warn: #8a5430;
+  --warn-bg: #f8e8de;
+  --bad: #95302b;
+  --bad-bg: #f7e4e1;
+
+  --positive: #1e5b43;
+  --alarm: #95302b;
+  --alarm-bg: #f7e4e1;
+  --alarm-ink: #7a2822;
+
+  --uncertain: #cac6c4;
+  --uncertain-bg: #f2ece8;
+
+  /* Chosen by searching every brand-sanctioned hex for the 4-subset with the widest worst-pair
+     separation, subject to each clearing 3:1 on both paper and panel (WCAG 1.4.11, graphics).
+     Worst pair is 1.51, and they alternate warm and cool so adjacent series differ in hue as well
+     as value. Gold itself is absent on purpose: 2.59:1 on white is too faint to carry a series. */
+  --chart-1: #14384a;
+  --chart-2: #ab683e;
+  --chart-3: #6f4526;
+  --chart-4: #001117;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  /* Warm shadow: a neutral black one turns grey and dirty against warm paper. */
+  --elev-raised: 0 1px 2px rgb(90 60 40 / 0.07), 0 1px 3px rgb(90 60 40 / 0.06);
+  --elev-overlay: 0 8px 24px rgb(90 60 40 / 0.14);
+  --focus-color: #004f71;
+
+  /* The signature: a cut across the bottom-right corner of the single most important action. */
+  --cut-br: 14px;
+}
+
 /* Opt-in comparison theme only. Not canonical. */
 [data-theme="horizon"] {
   --canvas: #f4f7fe;
