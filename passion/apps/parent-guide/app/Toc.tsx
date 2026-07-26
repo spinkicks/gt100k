@@ -35,7 +35,7 @@ export function Toc(): JSX.Element {
       },
       { rootMargin: "-12% 0px -70% 0px", threshold: 0 },
     );
-    els.forEach((el) => observer.observe(el));
+    for (const el of els) observer.observe(el);
     return () => observer.disconnect();
   }, []);
 

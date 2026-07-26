@@ -80,7 +80,7 @@ export function checkCompliance(roster: Roster): ComplianceReport {
 
     // GC2 — a prompted return is weak/disconfirming, never a voluntary return in `supporting`.
     if (h.evidence.supporting.some((s) => token(s) === "prompted_return")) {
-      gc2.push({ checkId: "GC2", ...where, message: `prompted_return counted as voluntary in supporting` });
+      gc2.push({ checkId: "GC2", ...where, message: "prompted_return counted as voluntary in supporting" });
     }
 
     // GC3 — confidence is never attributable to a raw novelty / first-exposure signal.
@@ -99,7 +99,7 @@ export function checkCompliance(roster: Roster): ComplianceReport {
 
     // GC5 — no demote on silence.
     if (h.history.some((e) => e.from === "EMERGING" && e.to === "EXPLORING")) {
-      gc5.push({ checkId: "GC5", ...where, message: `illegal demote EMERGING→EXPLORING in history` });
+      gc5.push({ checkId: "GC5", ...where, message: "illegal demote EMERGING→EXPLORING in history" });
     }
   }
 

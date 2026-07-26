@@ -152,6 +152,8 @@ export function WhyThis({
 
       {open ? (
         <span
+          /* biome-ignore lint/a11y/useSemanticElements: this popover is phrasing content inside a
+             paragraph, where a block-level <fieldset> is invalid and would add a UA groove border. */
           id={panelId}
           role="group"
           aria-labelledby={headingId}

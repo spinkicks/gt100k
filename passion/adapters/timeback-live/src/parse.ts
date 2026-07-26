@@ -39,8 +39,8 @@ export function parseSnapshot(kidId: string, body: unknown): TimeBackSnapshot {
   if (typeof body !== "object" || body === null || Array.isArray(body)) return safeEmpty(kidId);
   const o = body as Record<string, unknown>;
 
-  const asOf = o["asOf"];
-  const rawSubjects = o["subjects"];
+  const asOf = o.asOf;
+  const rawSubjects = o.subjects;
   if (typeof asOf !== "string" || !Array.isArray(rawSubjects)) return safeEmpty(kidId);
 
   const subjects: SubjectSignal[] = [];

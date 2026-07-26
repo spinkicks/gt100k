@@ -246,6 +246,7 @@ export default function Galaxy({
       gl.clearColor(0, 0, 0, 1);
     }
 
+    // biome-ignore lint/style/useConst: resize() reads `program` and runs before the assignment below, so a const would sit in the temporal dead zone.
     let program: Program;
 
     function resize() {

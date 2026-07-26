@@ -822,6 +822,7 @@ body {
 }
 
 .empty {
+  display: block;
   color: var(--ink-muted);
   padding: 40px;
   text-align: center;
@@ -2323,6 +2324,7 @@ body {
   padding: 3px 10px;
 }
 .wbpanel__empty {
+  display: block;
   margin: 0;
   color: var(--ink-muted);
   font-size: 0.85rem;

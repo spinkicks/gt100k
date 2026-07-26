@@ -60,12 +60,7 @@ const STRUCTURE_WORDS: Record<Knob, string> = {
 };
 
 export function postureLine(autonomySupport: Knob, structure: Knob, decouple: boolean): string {
-  return (
-    "Posture: " +
-    AUTONOMY_WORDS[autonomySupport] +
-    ", " +
-    STRUCTURE_WORDS[structure] +
-    ", and keep your warmth non-contingent" +
-    (decouple ? ", separating their worth from how it goes." : ".")
-  );
+  return `Posture: ${AUTONOMY_WORDS[autonomySupport]}, ${STRUCTURE_WORDS[structure]}, and keep your warmth non-contingent${
+    decouple ? ", separating their worth from how it goes." : "."
+  }`;
 }

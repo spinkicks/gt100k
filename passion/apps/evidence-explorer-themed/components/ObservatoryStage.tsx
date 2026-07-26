@@ -210,6 +210,9 @@ export function ObservatoryStage({
             "2D" forces the calm-2D equal mode. Active choice mirrors the live `activeTier`. */}
         <div className="obs-tier-control" role="radiogroup" aria-label="Render dimension">
           <button
+            /* biome-ignore lint/a11y/useSemanticElements: this is a segmented control — <input
+               type="radio"> is void, so it cannot wrap the visible label, and it would swap the
+               styled toggle for a native radio dial. */
             type="button"
             role="radio"
             aria-checked={is3D}
@@ -219,6 +222,9 @@ export function ObservatoryStage({
             3D
           </button>
           <button
+            /* biome-ignore lint/a11y/useSemanticElements: this is a segmented control — <input
+               type="radio"> is void, so it cannot wrap the visible label, and it would swap the
+               styled toggle for a native radio dial. */
             type="button"
             role="radio"
             aria-checked={!is3D}

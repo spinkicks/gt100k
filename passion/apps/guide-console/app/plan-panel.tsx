@@ -183,10 +183,10 @@ export function PlanPanel({ cards }: { cards: readonly PlanCardVM[] }): JSX.Elem
       </header>
 
       {cards.length === 0 ? (
-        <p className="wbpanel__empty" role="status">
+        <output className="wbpanel__empty">
           No certified spikes to plan yet. A spike is planned once you promote it to a candidate or an
           active specialization.
-        </p>
+        </output>
       ) : (
         <>
           <ul className="wblist" data-testid="plan-list">

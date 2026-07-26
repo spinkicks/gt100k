@@ -73,7 +73,7 @@ export const SIGNALS: Record<string, Term> = {
 export function signal(key: string): Term {
   const colon = key.indexOf(":");
   const base = colon === -1 ? key : key.slice(0, colon);
-  const count = colon === -1 ? NaN : Number(key.slice(colon + 1));
+  const count = colon === -1 ? Number.NaN : Number(key.slice(colon + 1));
   const t = SIGNALS[base] ?? { label: prettify(base), desc: "" };
   if (Number.isFinite(count) && count > 1) {
     return { label: `${t.label} ×${count}`, desc: t.desc };

@@ -15,10 +15,18 @@
       }
     }
   },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
   "files": {
     "ignore": [
       "**/dist/**",
       "**/.next/**",
+      "**/out/**",
+      "**/build/**",
+      "**/coverage/**",
       "**/node_modules/**",
       "**/*.d.ts",
       "passion/apps/**/tsconfig.json"

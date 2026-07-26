@@ -78,6 +78,9 @@ function Segmented<T extends string>({
         {options.map((o) => (
           <button
             key={o.value}
+            /* biome-ignore lint/a11y/useSemanticElements: this is a segmented control — <input
+               type="radio"> is void, so it cannot wrap the visible label, and it would swap the
+               styled toggle for a native radio dial. */
             type="button"
             role="radio"
             aria-checked={value === o.value}

@@ -67,6 +67,13 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      # `biome lint`, deliberately not `biome check`. Check also enforces the formatter, and the
+      # tree is ~272 files away from formatter-clean. Reformatting the world is a separate,
+      # coordinated commit (it wants a .git-blame-ignore-revs entry and a quiet moment for
+      # everyone's in-flight branches), not a drive-by inside a correctness fix.
+      - name: Lint
+        run: pnpm exec biome lint passion
+
       - name: Typecheck
         run: pnpm exec tsc -b
 
@@ -84,5 +91,17 @@ jobs:
                      evidence-explorer evidence-explorer-themed mvp-jul24 tinker-cabin-app; do
             echo "::group::$app"
             pnpm --filter "@gt100k/$app" test
+            echo "::endgroup::"
+          done
+
+      # A green suite does not mean the thing compiles: the type checker does not run Next's
+      # build, and parent-guide is statically exported to AWS, so a build break ships as a
+      # broken site rather than a failed test.
+      - name: Build apps
+        run: |
+          for app in guide-console parent-guide project-studio design-lab concierge-app \
+                     evidence-explorer evidence-explorer-themed mvp-jul24 tinker-cabin-app; do
+            echo "::group::$app"
+            pnpm --filter "@gt100k/$app" build
             echo "::endgroup::"
           done

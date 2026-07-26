@@ -4,7 +4,7 @@
 // an unknown subject contributes nothing and NEVER throws; a cabin with no offered contributor yields
 // no prior downstream.
 
-import { type CabinId } from "@gt100k/two-axis-tagging";
+import type { CabinId } from "@gt100k/two-axis-tagging";
 import type { Subject, TimeBackSnapshot } from "./model.js";
 
 export interface CabinWeight {

@@ -28,9 +28,7 @@ export function WellbeingPanel({ cards }: { cards: readonly WellbeingCardVM[] })
       </header>
 
       {cards.length === 0 ? (
-        <p className="wbpanel__empty" role="status">
-          No spikes to review yet.
-        </p>
+        <output className="wbpanel__empty">No spikes to review yet.</output>
       ) : (
         <ul className="wblist">
           {cards.map((c) => (

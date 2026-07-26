@@ -55,20 +55,20 @@ export function seedProjects(): readonly Project[] {
     at: "2026-04-02T15:00:00.000Z",
     text: "Sketched the game on paper for 20 minutes.",
   });
-  let attemptId: string;
-  [arcade, attemptId] = log(arcade, {
+  const [afterAttempt, attemptId] = log(arcade, {
     kind: "attempt",
     at: "2026-04-03T15:00:00.000Z",
     text: "Made the player jump when I press space.",
   });
-  let stuckId: string;
-  [arcade, stuckId] = log(arcade, {
+  arcade = afterAttempt;
+  const [afterStuck, stuckId] = log(arcade, {
     kind: "outcome",
     at: "2026-04-03T15:20:00.000Z",
     text: "The player jumped forever and floated off the screen. Broken!",
     stuck: true,
     refs: [attemptId],
   });
+  arcade = afterStuck;
   [arcade] = log(arcade, {
     kind: "ai_help",
     at: "2026-04-04T15:00:00.000Z",
