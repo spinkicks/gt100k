@@ -15,18 +15,22 @@ interface GameState {
 }
 
 /**
- * The 3D room is the only cabin backend a player ever sees, so it's the unconditional default.
- * `?cabin=static` stays as an escape hatch — the flat-illustration backend is what renders when
- * WebGL is unavailable (older machines, locked-down browsers) and it's what the headless screenshot
- * tooling drives (tools/shoot.ts, tools/smoke.ts) since it needs no GPU. `?cabin=backdrop` selects
- * the still-generated-painting backend (src/cabin/backdrop/), which is under review and deliberately
- * NOT a default. There is no in-app toggle between any of them (see cabin/CabinView.tsx); the query
- * param is the whole interface, and an unrecognised value falls through to 3D rather than erroring.
+ * `backdrop` — the still generated painting with clickable perspective props — is the default a
+ * player sees, decided 2026-07-25 after review against the real-time 3D room. The reachable-in-WebGL
+ * ceiling is a real ceiling: the hand-built room read as under-furnished, and raising it would cost
+ * far more than the painting did while still losing on fidelity. Its "a still is dead" objection is
+ * answered by the aliveness layer (firelight, dust in the shaft, cursor parallax).
+ *
+ * The others stay reachable by query param and nothing else — there is no in-app toggle (see
+ * cabin/CabinView.tsx), and an unrecognised value falls through to the default rather than erroring:
+ *   `?cabin=3d`      the real-time R3F room, kept intact and not deprecated
+ *   `?cabin=static`  the flat-illustration backend: the no-WebGL fallback, and what the headless
+ *                    screenshot tooling drives (tools/shoot.ts, tools/smoke.ts) since it needs no GPU
  */
-const SELECTABLE_BACKENDS = ["static", "backdrop"] as const;
+const SELECTABLE_BACKENDS = ["static", "3d"] as const;
 
 const requested = new URLSearchParams(globalThis.location?.search ?? "").get("cabin");
-const initialBackend: CabinBackend = SELECTABLE_BACKENDS.find((b) => b === requested) ?? "3d";
+const initialBackend: CabinBackend = SELECTABLE_BACKENDS.find((b) => b === requested) ?? "backdrop";
 
 export const useGame = create<GameState>((set) => ({
   screen: "map",
