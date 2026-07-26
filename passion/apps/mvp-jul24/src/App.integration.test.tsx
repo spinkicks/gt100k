@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import App from "./App";
 import { useGame } from "./game/store";
 import { useInterest } from "./interest/store";
+import { installQa } from "./qa";
 
 beforeEach(() => {
   useGame.getState().goToMap();
@@ -9,7 +10,7 @@ beforeEach(() => {
 });
 
 test("full loop: map -> cabin -> gadget -> solve -> readout", () => {
-  render(<App />);
+  const { rerender } = render(<App />);
 
   // Map: click the Logic Games cabin node (the one holding the deduction puzzles).
   fireEvent.click(
@@ -29,8 +30,13 @@ test("full loop: map -> cabin -> gadget -> solve -> readout", () => {
   for (const el of Array.from(document.querySelectorAll('[data-fill="1"]'))) fireEvent.click(el);
   expect(useInterest.getState().byGadget.nonogram?.solves).toBe(1);
 
-  // Go to the interest readout via the top bar and check the nonogram bar shows up.
-  fireEvent.click(screen.getByRole("button", { name: "Interest" }));
+  // The readout has no child-facing entry point (PRD §11 — the quantified display is
+  // operator/guide-facing only, per src/qa.ts). Drive it through the `window.__qa` contract instead
+  // of a nav button, then check the nonogram bar shows up. `[data-gadget="nonogram"]` here is
+  // `ReadoutScreen`'s own bar-row attribute — unrelated to the backdrop's `data-prop`.
+  installQa();
+  window.__qa?.showReadout();
+  rerender(<App />);
   expect(document.querySelector('[data-gadget="nonogram"]')).toBeInTheDocument();
   expect(screen.getByText("Nonogram")).toBeInTheDocument();
 });
