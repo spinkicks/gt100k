@@ -2,12 +2,19 @@
 @import "@gt100k/ui/styles.css";
 
 /*
- * PassionLab Guide console — a calm, legible data instrument (NOT a game). The canonical MUI
- * dashboard language from @gt100k/design-tokens: neutral grey ground, white cards, hairline
- * structure, restrained blue accent (docs/decisions/2026-07-25-design-language.md). Lifecycle state
- * is ALWAYS a dot/pill + a text label; evidence sign is a +/− glyph + a text heading — meaning never
- * rests on colour (WCAG 2.2 AA). Motion is subtle and disabled under prefers-reduced-motion. Fonts
- * are self-hosted (see fonts.ts) so nothing is fetched at build time.
+ * PassionLab Guide console — a calm, legible data instrument (NOT a game). Wears the GT School
+ * identity via [data-theme="gt"] in @gt100k/design-tokens: warm off-white paper, white panels,
+ * Navy structure, Gold as an accent surface and never as ink. Reads as a printed academic
+ * reference rather than a software dashboard.
+ *
+ * Three faces, assigned by size rather than by element: Literata 300 for display type at 1.1rem
+ * and above, Inter Tight for everything functional, Inconsolata for marks (buttons, tags, codes).
+ * A light serif never labels a data row, so compact headings and table headers take Inter Tight
+ * 620. All three are self-hosted packages, so nothing is fetched at build time.
+ *
+ * Lifecycle state is ALWAYS a dot/pill + a text label; evidence sign is a +/− glyph + a text
+ * heading — meaning never rests on colour (WCAG 2.2 AA), which matters more here because the GT
+ * palette holds few distinguishable hues. Motion is subtle and off under prefers-reduced-motion.
  */
 :root {
   color-scheme: light;
@@ -24,15 +31,13 @@
 
   --focus: var(--focus-color);
 
-  /* --ink, --ink-muted, --ink-faint and --line come straight from the token package.
-     Contrast policy: --ink-faint (#8b95a3) is ~3.0:1 on white and ~2.9:1 on the canvas, which fails
-     WCAG AA for the 11–13px captions this console is built from. So tertiary TEXT resolves to
-     --ink-muted (6.0:1 on white, 5.6:1 on the canvas) and earns its lower rank from size, weight and
-     uppercase treatment instead of from a paler grey. --ink-faint is kept for non-text marks. */
+  /* --ink, --ink-muted, --ink-faint, --line and the three font roles all come straight from the
+     token package, so the GT theme can re-point them. Do not redeclare a font family here: a local
+     :root wins over [data-theme] on equal specificity, and the theme would silently lose.
 
-  --font-body: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    sans-serif;
-  --font-mono: var(--font-mono-face), ui-monospace, "SFMono-Regular", Menlo, monospace;
+     Contrast policy: tertiary TEXT resolves to --ink-muted and earns its lower rank from size,
+     weight and uppercase treatment rather than from paleness. Under GT that is #33505c at 7.9:1 on
+     paper. --ink-faint (#4a6470, 5.8:1) still clears AA and is used for non-text marks. */
 
   --r: var(--radius-lg);
   --r-sm: var(--radius-md);
@@ -66,7 +71,10 @@ body {
      it thins dark-on-light text and costs contrast. */
   font-size: 14px;
   line-height: 1.55;
-  letter-spacing: -0.006em;
+  /* Tracking is normal, per the brand's reference scale. Inter Tight is already a tight face; the
+     -0.006em this used to carry was tuned for Inter and closed up small text once the faces
+     changed. */
+  letter-spacing: normal;
   text-rendering: optimizeLegibility;
 }
 
@@ -488,7 +496,10 @@ body {
   gap: 8px;
 }
 .acts .btn {
-  text-transform: capitalize;
+  /* Uppercase, like every other mark. This said `capitalize` before the GT retheme and outranks
+     the general .btn rule on specificity, so it would have quietly kept these three buttons in a
+     different case from every other button in the console. */
+  text-transform: uppercase;
 }
 /* Promote is the primary move on a card, so it carries the accent while staying a secondary button. */
 .acts .btn--go:not(:disabled) {
@@ -3330,4 +3341,148 @@ body {
   margin: 4px 0 0;
   padding: 0;
   list-style: none;
+}
+
+/* ── GT School type roles and the signature notch ──────────────────────────────────────────────
+ *
+ * Three faces assigned by size, not by element. Everything here follows the identity's own named
+ * rules; where a rule bites, the comment says which one.
+ */
+
+/* THE SERIF HAS A FLOOR. Literata 300 is a display face and stops being legible below about
+ * 1.1rem, so only genuine display type gets it. The card headings ("Returns over time") sit under
+ * that floor and deliberately keep Inter Tight 620: a light serif never labels a data row. */
+.topbar__title h1,
+.listcol__head h1,
+.airyhead h1,
+.hero__title,
+.focushead h1,
+.vpage__head h1,
+.why-page__hd h1 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+/* Display-sized figures read as an academic reference rather than a dashboard readout, which is
+ * the whole point of the identity. Tabular so columns still line up. */
+.stat__value,
+.tile__v {
+  font-family: var(--font-display);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* THE UTILITY FACE IS FOR MARKS. Inconsolata sets buttons, tags, badges and codes, never prose.
+ * (Under [data-theme="gt"], --font-mono resolves to Inconsolata.) This also fixes a legibility
+ * problem the token swap exposed: Inter Tight's word space is about 2px at badge sizes, so
+ * "Needs review" ran together. The utility face plus positive tracking separates it properly. */
+.btn,
+.pill,
+.chip,
+.delta {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pill,
+.chip,
+.delta {
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+}
+
+/* ONE NOTCH PER SCREEN. The chamfer marks the single most important action in view; repeating it
+ * everywhere turns a signature into wallpaper. Exactly one .btn--primary renders per tab.
+ *
+ * CHAMFER ON A PSEUDO-ELEMENT: clip-path would clip the focus ring along with the corner, so the
+ * cut goes on a layer behind the content and the button itself stays unclipped. */
+.btn--primary {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+  border-color: transparent;
+}
+
+.btn--primary::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: var(--accent);
+  border-radius: var(--r-sm);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--cut-br, 14px)),
+    calc(100% - var(--cut-br, 14px)) 100%,
+    0 100%
+  );
+  transition: background var(--dur-base) var(--ease);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: transparent;
+}
+
+.btn--primary:hover:not(:disabled)::before {
+  background: var(--accent-hover);
+}
+
+/* Card headings clear the serif floor at 1.15rem so the display face actually appears on the
+ * screen a guide spends all day in. At the old 1.0625rem they sat just under it, which would have
+ * left Literata visible nowhere on the Overview and the identity carried entirely by colour. */
+.card__hd h2 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+/* Badges are marks, so they take the utility face (THE UTILITY FACE IS FOR MARKS). This is also
+ * what makes "Needs review" legible: at bold weight Inter Tight's word space is narrow enough that
+ * the two words closed up. */
+.badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+}
+
+/* Inter Tight is drawn tight, and at bold weights its space stops separating words ("1 of 2" read
+ * as "1of 2"). A small global correction rather than a patch per element, since the cause is the
+ * face itself. Marks are excluded: they already carry their own tracking. */
+body {
+  word-spacing: 0.07em;
+}
+
+.btn,
+.pill,
+.chip,
+.delta,
+.badge {
+  word-spacing: normal;
+}
+
+/* The chamfer paints the button's fill on a pseudo-element, which Windows High Contrast drops.
+ * Without this the label would be near-white on the card's white. Give the element its own fill
+ * back in forced-colors mode and lose the notch, which is decoration, rather than the button.
+ * (This is also why an automated contrast checker reports this button as 1.03:1: it cannot see a
+ * pseudo-element's background. The real pair is Near White on Navy, 14.6:1.) */
+@media (forced-colors: active) {
+  .btn--primary {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+  }
+
+  .btn--primary::before {
+    display: none;
+  }
 }
