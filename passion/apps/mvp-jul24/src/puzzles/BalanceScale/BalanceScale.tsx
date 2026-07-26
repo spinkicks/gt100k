@@ -134,6 +134,7 @@ export const BalanceScale: React.FC<PuzzleProps & { initialRound?: number }> = (
   );
 
   const moves = legalMoves(scale);
+  const divides = moves.filter((move) => move.kind === "divide");
   const solved = isSolved(scale);
 
   return (
@@ -177,16 +178,49 @@ export const BalanceScale: React.FC<PuzzleProps & { initialRound?: number }> = (
         </button>
       ) : (
         <div className="bs-moves">
-          {moves.map((move) => (
-            <button
-              key={moveLabel(move)}
-              type="button"
-              className={`bs-move bs-move-${move.kind}`}
-              onClick={() => play(move)}
-            >
-              {moveLabel(move)}
-            </button>
-          ))}
+          {moves
+            .filter((move) => move.kind !== "divide")
+            .map((move) => (
+              <button
+                key={moveLabel(move)}
+                type="button"
+                className={`bs-move bs-move-${move.kind}`}
+                onClick={() => play(move)}
+              >
+                {moveLabel(move)}
+              </button>
+            ))}
+
+          {/*
+           * SPLITTING IS ALWAYS SHOWN, even when no split is legal yet — and that is a fix, not
+           * clutter. The palette used to render only currently-legal moves, and splitting is legal on
+           * *no* opening board (it needs every denomination on both pans to divide evenly). So the
+           * one move every solution requires — the generator enforces a divide in the shortest
+           * path — was the one move a child never saw, and the reasonable conclusion was that the
+           * feature did not exist.
+           *
+           * When nothing splits yet this is a line of text rather than a dead button: it states the
+           * condition, which is the thing to be reasoned about, and points at breaking a stone as the
+           * way to satisfy it. No disabled control, nothing to click that does nothing.
+           */}
+          {divides.length > 0 ? (
+            divides.map((move) => (
+              <button
+                key={moveLabel(move)}
+                type="button"
+                className="bs-move bs-move-divide"
+                onClick={() => play(move)}
+              >
+                {moveLabel(move)}
+              </button>
+            ))
+          ) : (
+            <p className="bs-split-hint">
+              To split both pans evenly, every kind of stone on both pans has to divide evenly —
+              break one first.
+            </p>
+          )}
+
           <button type="button" className="bs-reset" onClick={() => reset(null)}>
             Start this one over
           </button>

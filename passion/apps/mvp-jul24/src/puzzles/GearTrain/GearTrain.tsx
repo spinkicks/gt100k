@@ -55,6 +55,41 @@ function radiusFor(teeth: number): number {
 }
 
 /**
+ * How fast one gear turns, per single turn of the crank, as an exact reduced fraction plus a plain
+ * gloss. This exists because the puzzle was unreadable without it: the gears visibly spun, but
+ * nothing said how fast the crank turns or how fast the output ends up turning, so "a gear with more
+ * teeth turns slower" was an assertion the child could not check against anything on screen. The
+ * ratio only appeared once all three slots were full, which is exactly too late to reason with.
+ *
+ * Signed input, unsigned label: direction is shown by the arrow glyph instead, because "-2/3 turns"
+ * reads as a quantity rather than as a reversal.
+ */
+function rateLabel(rate: number | null): { fraction: string; gloss: string } | null {
+  if (rate === null || rate === 0) return null;
+  const mag = Math.abs(rate);
+  // Rates here are always ratios of small integers, so a denominator search is exact and cheap.
+  let num = 0;
+  let den = 0;
+  for (let d = 1; d <= 400 && den === 0; d++) {
+    const n = mag * d;
+    if (Math.abs(n - Math.round(n)) < 1e-9) {
+      num = Math.round(n);
+      den = d;
+    }
+  }
+  if (den === 0) return null;
+  const fraction = den === 1 ? `${num}` : `${num}/${den}`;
+  // One phrasing for every rate, so two gears can be compared by reading rather than by converting.
+  // "16/9x as fast" and "9/16 of a turn" were the same quantity in two shapes, which is exactly the
+  // arithmetic the child should be spending on the puzzle instead of on the label.
+  const gloss =
+    mag === 1
+      ? "1 turn per crank turn — same as the crank"
+      : `${fraction} turns per crank turn`;
+  return { fraction, gloss };
+}
+
+/**
  * A gear drawn from its real tooth count: a hub, a rim, and `teeth` trapezoids around the pitch
  * circle. `marked` draws one tooth in ember so the child can see it come back around.
  */
@@ -192,8 +227,9 @@ export const GearTrain: React.FC<PuzzleProps & { initialRound?: number }> = ({
 
       <div className="gt-bench">
         <div className="gt-stage">
-          <span className="gt-label">crank · {train.crankTeeth}</span>
+          <span className="gt-label">crank · {train.crankTeeth} teeth</span>
           <Gear teeth={train.crankTeeth} angle={angle(rates.crank)} />
+          <span className="gt-rate">↻ 1 turn — you turn this</span>
         </div>
 
         {SLOTS.map((slot) => {
@@ -222,6 +258,16 @@ export const GearTrain: React.FC<PuzzleProps & { initialRound?: number }> = ({
                   <span className="gt-slot-empty">{picked === null ? "empty" : "put it here"}</span>
                 )}
               </button>
+              {/* Speed is reported per gear as soon as that gear can have one, so the chain can be
+                  reasoned about while it is still half-built rather than only once it is complete. */}
+              <span className="gt-rate">
+                {(() => {
+                  const label = rateLabel(rate);
+                  if (label === null) return "—";
+                  const dir = (rate ?? 0) < 0 ? "↺" : "↻";
+                  return `${dir} ${label.gloss}`;
+                })()}
+              </span>
             </div>
           );
         })}

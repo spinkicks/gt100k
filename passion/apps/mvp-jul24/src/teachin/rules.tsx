@@ -105,7 +105,11 @@ export const TEACH_INS = {
   // --- math ------------------------------------------------------------------------------------
   "balance-scale": {
     title: "Balance Scale",
-    rule: "Both pans always weigh the same — that is why these moves are allowed. Do the same thing to both pans until one bag stands alone, and then the stones facing it are what the bag weighs.",
+    // Names all three move families on purpose. An earlier version said only "do the same thing to
+    // both pans", which left the two moves that actually decide the puzzle — breaking a stone, and
+    // splitting both pans — undescribed. Splitting is never legal on the opening board, so a child
+    // told nothing about it had no reason to believe it existed.
+    rule: "Both pans always weigh the same, so anything you do to one you must do to the other. Take matching stones off, break a stone into smaller ones, or split both pans evenly — until one bag stands alone.",
     Diagram: BalanceScaleDiagram,
   },
   "gear-train": {

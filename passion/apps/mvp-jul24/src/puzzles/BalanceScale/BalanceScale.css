@@ -210,3 +210,14 @@
 .bs-reset {
   background: linear-gradient(#e2d3b6, #cdbb99);
 }
+
+/* Shown in place of the split buttons while no split is legal. States the condition to satisfy
+   rather than offering a control that does nothing — see the note in BalanceScale.tsx. */
+.bs-split-hint {
+  flex-basis: 100%;
+  margin: 0.15rem 0 0;
+  text-align: center;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #c8ab84;
+}

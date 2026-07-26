@@ -162,3 +162,13 @@
   background: linear-gradient(#ffe0ad, #eec987);
   box-shadow: 0 0 0 2px #ffb15e;
 }
+
+/* Per-gear speed, in turns per single crank turn. Added because the train was unreadable without
+   it — see the note on `rateLabel` in GearTrain.tsx. */
+.gt-rate {
+  max-width: 7.5rem;
+  font-size: 0.7rem;
+  line-height: 1.3;
+  text-align: center;
+  color: #d8c3a0;
+}
