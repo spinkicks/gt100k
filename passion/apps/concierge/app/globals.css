@@ -1,3 +1,5 @@
+@import "@gt100k/design-tokens/contract.css";
+
 /*
  * PassionLab Concierge — a calm, legible chat surface (NOT a game). A child asks a niche question; the
  * concierge answers from a curated library first, or grounded open-web retrieval on a genuine gap, and
@@ -6,31 +8,43 @@
  * alone (WCAG 2.2 AA). Motion is subtle and disabled under prefers-reduced-motion. Fonts are
  * self-hosted (fonts.ts) so nothing is fetched at build time. Synthetic data only.
  */
+
+/*
+ * A dark, near-black instrument rather than a bright reading surface. These are OVERRIDES of the
+ * shared contract, not a private vocabulary: the names are the contract's, so a token rename lands
+ * here too, while the values stay the concierge's own. One contract, per-surface themes.
+ */
 :root {
   color-scheme: dark;
 
-  --bg: #262624;
-  --panel: #302f2d;
-  --panel-2: #3a3936;
+  --canvas: #262624;
+  --surface: #302f2d;
+  --surface-2: #3a3936;
+  /* App-local: the contract stops at two surface layers, and the hover state needs a third. */
+  --surface-3: #454440;
+
   --line: rgba(255, 255, 255, 0.08);
-  --line-2: rgba(255, 255, 255, 0.13);
-  --line-3: rgba(255, 255, 255, 0.2);
+  --line-strong: rgba(255, 255, 255, 0.13);
+  /* App-local: the contract has only two border weights, and the probe's rule is a visibly
+     heavier third — folding it into --line-strong would flatten two distinct edges into one. */
+  --line-quote: rgba(255, 255, 255, 0.2);
 
   --ink: #f0efec;
   --ink-muted: #b0aea7;
   --ink-faint: #86847c;
-  --focus: rgba(255, 255, 255, 0.6);
+  --focus-color: rgba(255, 255, 255, 0.6);
 
-  --ok: #cfe8d6;
+  --good: #cfe8d6;
   --warn: #f0e2c4;
-  --stop: #f0cfcf;
+  --bad: #f0cfcf;
 
   --font-body: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     sans-serif;
   --font-mono: var(--font-mono-face), ui-monospace, "SFMono-Regular", Menlo, monospace;
 
-  --r: 14px;
-  --r-sm: 9px;
+  /* Softer than the contract's 12px/4px: the panels here are chat furniture, not controls. */
+  --radius-lg: 14px;
+  --radius-sm: 9px;
 }
 
 * {
@@ -45,7 +59,7 @@ body {
 
 body {
   min-height: 100vh;
-  background: var(--bg);
+  background: var(--canvas);
   color: var(--ink);
   font-family: var(--font-body);
   font-size: 15px;
@@ -109,29 +123,29 @@ body {
 }
 .composer input {
   flex: 1;
-  background: var(--panel);
+  background: var(--surface);
   color: var(--ink);
-  border: 1px solid var(--line-2);
-  border-radius: var(--r);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
   padding: 12px 14px;
   font: inherit;
 }
 .composer input:focus-visible,
 .btn:focus-visible {
-  outline: 2px solid var(--focus);
+  outline: 2px solid var(--focus-color);
   outline-offset: 2px;
 }
 .btn {
-  background: var(--panel-2);
+  background: var(--surface-2);
   color: var(--ink);
-  border: 1px solid var(--line-2);
-  border-radius: var(--r);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
   padding: 12px 16px;
   font: inherit;
   cursor: pointer;
 }
 .btn:hover {
-  background: var(--panel-3, #454440);
+  background: var(--surface-3);
 }
 .btn:disabled {
   opacity: 0.5;
@@ -150,9 +164,9 @@ body {
 
 /* --- Response card ----------------------------------------------------------------------------- */
 .card {
-  background: var(--panel);
+  background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--r);
+  border-radius: var(--radius-lg);
   padding: 20px 22px;
 }
 .kind {
@@ -172,10 +186,10 @@ body {
   background: var(--ink-faint);
 }
 .kind--answer .dot {
-  background: var(--ok);
+  background: var(--good);
 }
 .kind--refused .dot {
-  background: var(--stop);
+  background: var(--bad);
 }
 .kind--escalated .dot {
   background: var(--warn);
@@ -188,9 +202,9 @@ body {
 .probe {
   margin: 0 0 18px;
   padding: 12px 14px;
-  border-left: 2px solid var(--line-3);
+  border-left: 2px solid var(--line-quote);
   background: rgba(255, 255, 255, 0.02);
-  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   color: var(--ink-muted);
   font-size: 0.92rem;
 }
@@ -216,12 +230,12 @@ body {
   gap: 12px;
   padding: 8px 12px;
   border: 1px solid var(--line);
-  border-radius: var(--r-sm);
+  border-radius: var(--radius-sm);
 }
 .cite a {
   color: var(--ink);
   text-decoration: none;
-  border-bottom: 1px solid var(--line-2);
+  border-bottom: 1px solid var(--line-strong);
 }
 .cite a:hover {
   border-bottom-color: var(--ink);
