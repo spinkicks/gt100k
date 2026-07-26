@@ -26,8 +26,15 @@ function isHumanActor(actor: string): boolean {
   return role !== "SYSTEM" && role !== "MODEL";
 }
 
-/** Recursively visit every object key in `value`, reporting any that is a banned field name. */
-function scanBannedKeys(
+/**
+ * Recursively visit every object key in `value`, reporting any that is a banned field name.
+ *
+ * Exported because @gt100k/mastery-map needs the same scan over a different shape. A second
+ * implementation there would give us two banned-key lists that drift apart, which is the failure
+ * this check exists to prevent. Note it scans KEYS and never values: prose mentioning a rating is
+ * legitimate domain language, a field called `rating` is not.
+ */
+export function scanBannedKeys(
   value: unknown,
   banned: readonly string[],
   onHit: (key: string) => void,

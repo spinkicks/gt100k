@@ -28,6 +28,7 @@
     { "path": "passion/adapters/evidence-sink-graph" },
     { "path": "passion/packages/access-broker" },
     { "path": "passion/adapters/access-broker-live" },
-    { "path": "passion/packages/ui" }
+    { "path": "passion/packages/ui" },
+    { "path": "passion/packages/mastery-map" }
   ]
 }

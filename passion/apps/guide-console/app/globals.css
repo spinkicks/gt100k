@@ -2710,6 +2710,295 @@ body {
   accent-color: var(--accent);
 }
 
+/* ---- Mastery maps panel (024) ---- */
+/* A map card is a wbitem holding an ordered list of milestone cards, so it reuses the panel shell
+   and only adds what a map needs: a status that is about USE and not about validity, the validator's
+   findings placed where they belong, and the four ordering grounds. */
+.mapcard__note {
+  margin: 6px 0 0;
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+/* A withdrawn map is not a broken one, so it reads as set aside rather than as an alarm: the whole
+   card steps back, and the status word beside it says which of the two it is. */
+.mapcard--withdrawn {
+  background: var(--surface-2);
+  border-style: dashed;
+  border-color: var(--line-strong);
+  box-shadow: none;
+}
+.mapcard--withdrawn .mapms {
+  opacity: 0.72;
+}
+.mapstatus--published {
+  color: var(--good);
+  background: var(--good-bg);
+  border-color: transparent;
+}
+.mapstatus--withdrawn {
+  color: var(--ink-muted);
+  background: var(--surface-2);
+  border-color: var(--line-strong);
+  border-style: dashed;
+}
+
+/* A validator finding, placed at whatever it concerns. An error blocks publication; a warning never
+   does, so the two are separated by their heading first and their ground second. */
+.mapflag {
+  margin-top: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  border-left: 3px solid transparent;
+}
+.mapflag--warning {
+  background: var(--warn-bg);
+  border-left-color: var(--warn);
+}
+.mapflag--error {
+  background: var(--bad-bg);
+  border-left-color: var(--bad);
+}
+.mapflag__k {
+  display: inline-block;
+  margin-bottom: 3px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.mapflag--warning .mapflag__k {
+  color: var(--warn);
+}
+.mapflag--error .mapflag__k {
+  color: var(--bad);
+}
+.mapflag .wbitem__reason {
+  color: var(--ink);
+}
+
+/* The milestones. An ordered list, because the order is the claim the map is making. It carries no
+   numbering, no tick and no bar: a map is not a checklist and nothing here counts anything. */
+.mapmslist {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.mapms {
+  padding: 14px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+.mapms__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.mapms__title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.mapms__where {
+  flex: 0 0 auto;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+/* The capability is the point of a milestone: what the child can DO afterwards. It gets the weight. */
+.mapms__cap {
+  margin: 5px 0 0;
+  font-size: 0.86rem;
+  color: var(--ink);
+  line-height: 1.45;
+}
+.mapms__after {
+  margin: 3px 0 0;
+  font-size: 0.76rem;
+  font-style: italic;
+  color: var(--ink-muted);
+}
+.mapms__demo {
+  margin: 10px 0 0;
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+.mapms__block {
+  margin-top: 10px;
+}
+.mapms__k {
+  display: inline-block;
+  margin-bottom: 3px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.mapres,
+.mappractice,
+.mapopps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 7px;
+}
+.mapres li,
+.mapopps li {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.81rem;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+.mapres a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.mapres a:hover {
+  color: var(--accent-hover);
+}
+.mapres a:focus-visible {
+  outline: var(--focus-w) solid var(--focus);
+  outline-offset: var(--focus-offset);
+  border-radius: 2px;
+}
+.mappractice li {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.mappractice__t {
+  font-size: 0.81rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.mappractice__d,
+.mapopps__ready {
+  flex: 1 0 100%;
+  margin: 0;
+  font-size: 0.79rem;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+.mapopps__ready {
+  font-style: italic;
+}
+
+/* The ordering justification, in the open. The reason a milestone sits where it does is the thing a
+   guide is here to read, so it is never behind the trigger; the popover holds what the ordering
+   rests on, the honest limit and the sources. */
+.ordering {
+  margin-top: 10px;
+  padding: 9px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+.ordering__hd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ordering__k {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.ordering__reason {
+  margin: 5px 0 0;
+  font-size: 0.82rem;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+/* Out of date, said in words beside the date it refers to. A stale map is not a wrong map, so this
+   reads as a note and not as an alarm, and the error styling is left for actual errors. */
+.chip--stale {
+  margin-left: 8px;
+  color: var(--warn);
+  background: var(--warn-bg);
+  border-color: transparent;
+}
+
+/* Why the map cannot go into use. A disabled button on its own is a dead end, and both refusals are
+   things a guide can act on: fix what the validator found, or get the resources re-checked. */
+.mapcard__refusal {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+
+/* The one edit a guide is offered. Quiet by default: correcting the software is a normal thing to
+   do here, not an alarming one, so it sits at the foot of the milestone rather than shouting. */
+.mapedit {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+}
+.mapedit__row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+.mapedit__in {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 6px 9px;
+  font: inherit;
+  font-size: 0.82rem;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.mapedit__in:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Both sides of every correction, because the record exists to show how the map was actually built
+   and keeping only the new value throws away the only copy of what the model proposed. */
+.mapedits {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.mapedits__t {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.mapedits__was,
+.mapedits__now {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--ink-muted);
+}
+.mapedits__was {
+  text-decoration: line-through;
+}
+
 /* ── Overview dashboard ───────────────────────────────────────────────────────
    Lifted from the approved console reference (design-lab/app/console.css). Three names collided
    with existing rules that mean something else in this console, so they carry an `ov-` prefix here:
@@ -3242,6 +3531,38 @@ body {
   color: var(--ink-muted);
   background: var(--surface-2);
   border-color: var(--line);
+}
+
+/* The four ORDERING grounds (024). Same tag, four values instead of research's three, and the same
+   rule about what carries the meaning: the words differ first, so "Our own reasoning" still reads as
+   nobody-checked-this when the grounds are all one grey.
+   Strongest to weakest, and the ranking is the point of the whole ordering rule:
+   syllabus (someone outside us publishes it) > research > community > model. */
+.ob-tag--syllabus {
+  color: var(--good);
+  background: var(--good-bg);
+}
+/* Outlined, where community below is not. Under the GT palette the accent-weak and warn grounds are
+   both warm near-neutrals, so the two middle grounds need a second difference to be told apart at a
+   glance rather than by reading the ink. */
+.ob-tag--research {
+  color: var(--accent);
+  background: var(--accent-weak);
+  border-color: var(--accent);
+}
+.ob-tag--community {
+  color: var(--warn);
+  background: var(--warn-bg);
+}
+/* The weakest of the four, and it has to look it. It is the only one with no fill of its own and the
+   only one drawn with a broken outline, so an ordering nobody outside us has checked never sits on
+   the screen looking as settled as one that a published syllabus backs. */
+.ob-tag--model {
+  color: var(--ink-muted);
+  background: var(--uncertain-bg);
+  border-color: var(--uncertain);
+  border-style: dashed;
+  font-weight: 500;
 }
 
 /* Sidebar link out to the full list. Modest by design — it is reference material, not a task. */

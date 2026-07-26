@@ -1,0 +1,22 @@
+{
+  "name": "@gt100k/mastery-map",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@gt100k/two-axis-tagging": "workspace:*",
+    "@gt100k/concierge": "workspace:*",
+    "@gt100k/specialization-planner": "workspace:*",
+    "@gt100k/hypothesis-store": "workspace:*",
+    "@gt100k/research": "workspace:*",
+    "@gt100k/guardrails": "workspace:*"
+  },
+  "scripts": {
+    "test": "vitest run --root ../.. packages/mastery-map/test"
+  }
+}
