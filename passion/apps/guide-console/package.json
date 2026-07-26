@@ -15,6 +15,7 @@
     "@gt100k/hypothesis-store": "workspace:*",
     "@gt100k/interest-inference": "workspace:*",
     "@gt100k/mastery-map": "workspace:*",
+    "@gt100k/project-workspace": "workspace:*",
     "@gt100k/research": "workspace:*",
     "@gt100k/specialization-planner": "workspace:*",
     "@gt100k/student-profile": "workspace:*",

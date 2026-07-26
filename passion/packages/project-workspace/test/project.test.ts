@@ -35,6 +35,27 @@ describe("startProject (spec §4.1, SC-1)", () => {
     expect(project.id).toMatch(/\S/);
   });
 
+  /**
+   * The milestone rides from the brief onto the project, and this package neither picks it nor
+   * validates it. The caller chose it and the planner stamped it; carrying it is what lets a
+   * child's standing on a mastery map be derived from work they actually made. A brief with none
+   * leaves the project with none, which is the self-directed case and behaves exactly as before.
+   */
+  it("carries the brief's milestoneId onto the project, and leaves it absent when the brief has none", () => {
+    const aimed = startProject(
+      { brief: { ...BRIEF, milestoneId: "pf-steady-pulse" }, kidId: "kid-1", ageBand: "9-11" },
+      NOW,
+    );
+    expect(aimed.milestoneId).toBe("pf-steady-pulse");
+
+    const unaimed = startProject({ brief: BRIEF, kidId: "kid-1", ageBand: "9-11" }, NOW);
+    expect(unaimed.milestoneId).toBeUndefined();
+    // And nothing else about the project moved with it.
+    const { milestoneId: _a, ...restAimed } = aimed;
+    const { milestoneId: _b, ...restUnaimed } = unaimed;
+    expect(restAimed).toEqual(restUnaimed);
+  });
+
   it("self-authored: starts blank with source self and no craftScaffold — the child owns the idea", () => {
     const project = startProject(
       {
