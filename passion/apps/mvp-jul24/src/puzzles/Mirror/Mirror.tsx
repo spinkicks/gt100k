@@ -15,6 +15,16 @@ const STEP = CELL + GAP;
 
 const ARROW_ROTATION: Record<Direction, number> = { N: -90, E: 0, S: 90, W: 180 };
 
+// Mirror does NOT alternate difficulty like Nonogram/Pipes, and this is a recorded finding rather
+// than an oversight (2026-07-26 difficulty-variety pass). `generateLevel` in `generate.ts` picks its
+// own board size (5-7, via `MIN_SIZE`/`SIZE_RANGE`) and turn count (2-4, via `MIN_TURNS`/
+// `TURNS_RANGE`) internally from the seed's own PRNG draw — unlike `generatePuzzle`/`generateLevel`
+// in Nonogram/Pipes, it takes no `size` (or turn-count) parameter a caller could pin to a round. So
+// there's already some size variety per generated level, but it's incidental to the seed, not
+// something this component can alternate on purpose. For Mirror to alternate the same way,
+// `generateLevel` would need an optional `size` (and/or `turns`) parameter that replaces the
+// internal random draw when given, so this component could pass `sizeForRound(round)` the same way
+// Nonogram does.
 export default function Mirror({ seed, onSolved, onExit }: PuzzleProps) {
   // `round` advances on "Next puzzle" so the board keeps changing after the
   // player solves one, without ever repeating the level they just beat.

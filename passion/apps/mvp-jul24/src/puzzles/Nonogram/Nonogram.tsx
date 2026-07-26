@@ -23,19 +23,44 @@ function nextGeneratorSeed(base: number): number {
   return (base * 2654435761 + generationCounter * 40503) >>> 0;
 }
 
+/**
+ * The two board sizes this cabin alternates between, easier first.
+ *
+ * Nonogram was permanently 5x5 before 2026-07-26: `generatePuzzle`'s `size` parameter existed and
+ * nothing ever passed it, so the room a player meets first was also the flat one while every math
+ * activity varied. 7 is the step up — large enough to need real line-solving, small enough that the
+ * generator's uniqueness check still converges inside MAX_ATTEMPTS (generate.test.ts already
+ * exercises 8x8 successfully, so 7x7 has margin to spare).
+ */
+export const SIZES = [5, 7] as const;
+
+/**
+ * ALTERNATES, deliberately — it does not climb. Same convention as GearTrain, BalanceScale and
+ * RatioMixing, whose comment states the reason: a session should meet both. A monotonic ramp is an
+ * escalation the child never chose, and offering a choice is what the harder-variant control is for.
+ */
+export function sizeForRound(round: number): number {
+  return SIZES[round % SIZES.length]!;
+}
+
 /** Generates a fresh unique-solution puzzle, guaranteed different from `avoid`. */
-function generateFreshPuzzle(base: number, avoid?: boolean[][]): NonogramPuzzle {
-  let puzzle = generatePuzzle(nextGeneratorSeed(base));
+function generateFreshPuzzle(base: number, size: number, avoid?: boolean[][]): NonogramPuzzle {
+  let puzzle = generatePuzzle(nextGeneratorSeed(base), size);
   while (avoid && sameSolution(puzzle.solution, avoid)) {
-    puzzle = generatePuzzle(nextGeneratorSeed(base));
+    puzzle = generatePuzzle(nextGeneratorSeed(base), size);
   }
   return puzzle;
 }
 
 export default function Nonogram({ seed, onSolved, onExit }: PuzzleProps) {
+  // `round` advances on "Next puzzle" so difficulty alternates across a session (see
+  // `sizeForRound`) instead of staying pinned to the generator's default forever.
+  const [round, setRound] = useState(0);
   // Effectively unlimited puzzles: generate a fresh one on mount instead of
   // picking from a fixed hand-authored set.
-  const [puzzle, setPuzzle] = useState<NonogramPuzzle>(() => generateFreshPuzzle(seed));
+  const [puzzle, setPuzzle] = useState<NonogramPuzzle>(() =>
+    generateFreshPuzzle(seed, sizeForRound(0)),
+  );
   const [grid, setGrid] = useState<Cell[][]>(() => blankGrid(puzzle.size));
   const [solved, setSolved] = useState(false);
   const solvedRef = useRef(false);
@@ -65,7 +90,11 @@ export default function Nonogram({ seed, onSolved, onExit }: PuzzleProps) {
   // already fired once for this puzzle and won't fire again until the new
   // one is also solved.
   const nextPuzzle = useCallback(() => {
-    setPuzzle((p) => generateFreshPuzzle(seed, p.solution));
+    setRound((r) => {
+      const nextRound = r + 1;
+      setPuzzle((p) => generateFreshPuzzle(seed, sizeForRound(nextRound), p.solution));
+      return nextRound;
+    });
   }, [seed]);
 
   return (
