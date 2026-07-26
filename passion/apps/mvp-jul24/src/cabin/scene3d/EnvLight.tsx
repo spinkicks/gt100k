@@ -12,6 +12,7 @@ import { Environment, useEnvironment } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { Component, type ReactNode, Suspense, useEffect } from "react";
 import * as THREE from "three";
+import { preloadWhenReal } from "./preloadWhenReal";
 import { useAssetReady } from "./useAssetReady";
 
 const HDRI_URL = "/assets/env/dusk.hdr";
@@ -19,7 +20,9 @@ const HDRI_URL = "/assets/env/dusk.hdr";
 // instead of only after useAssetReady flips true — removes a sequential round-trip from
 // time-to-real-lighting. No-op (silently uncalled promise) if the file 404s, since <Environment>
 // only ever mounts once hasHdri is confirmed.
-useEnvironment.preload({ files: HDRI_URL });
+// The old comment here said this was a "no-op (silently uncalled promise) if the file 404s". It
+// does not 404 on a dev server; it returns index.html at 200 and RGBELoader chokes on it.
+preloadWhenReal(HDRI_URL, () => useEnvironment.preload({ files: HDRI_URL }));
 
 function equirectCanvas(): HTMLCanvasElement {
   const w = 128;
