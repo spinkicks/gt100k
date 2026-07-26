@@ -190,6 +190,44 @@ difficulty into guesswork.
   chasing material realism instead of composition, which is the part that actually transfers. Progress is
   measured **against the app's own previous frame**: better than last time, on a stated axis.
 
+### The generated-still backdrop, and why props are inexact on purpose
+
+Superseding part of the bullet above: a **third backend, `backdrop`**, renders a generated still plate
+with clickable perspective prop polygons over it. It exists because the reachable-in-WebGL ceiling is a
+real ceiling, and a still buys fidelity the hand-built room cannot at roughly zero GPU cost. 3D stays
+the default; `?cabin=backdrop` opts in. Which becomes the default is **still open**.
+
+**The props in the plate are recognisable but not accurate, and that is a decision — not an oversight.**
+Anyone who finds the Pipes prop and notices it is not a connected network with a source and a sink has
+found a known, accepted fact. The path to accuracy was built and rejected twice on appearance:
+
+1. *Live puzzle previews composited in via homography* — geometrically exact to 0.0000 px, and rejected
+   because crisp flat vector over soft warm photoreal clashes on colour temperature, edge hardness and
+   grain. The code survives, dormant, behind `CabinBackdrop`'s `previews` prop.
+2. *Exact board renders baked into the plate* — provably correct cell-for-cell, with the surrounding
+   plate verified 100.0000% byte-identical, and rejected because a spec-quality render (flat, maximum
+   contrast, no anti-aliasing) baked into a painterly room reads as a screenshot taped inside a picture
+   frame. Relighting it reduced the obtrusion without making it physical.
+
+The lesson, recorded because it cost two rounds: **a spec is not art.** A reference render's job is to
+say *what* is on the board; something still has to say *how it is painted*. The remaining untried path
+is to stylize each exact render into a physical object before placing it — the pipeline that took the
+chess board from two convincing-but-wrong attempts to verified-accurate *and* photoreal.
+
+**What accuracy actually buys here is small**, which is why accepting the inexact props is defensible
+rather than lazy. PRD §5.3 asks props for a **clear affordance** — the child must see "that is the pipes
+puzzle" — and recognition is all a prop is load-bearing for. It could never show the real instance
+anyway: every gadget open generates a fresh random puzzle. Chess is the exception and *is* verified
+(audited: 8×8 grid, two distinguishable armies, ACCURATE), because a board game's set is legible enough
+at that size to be wrong in a way a viewer would notice.
+
+**Math room prop mapping**, so the next author does not regenerate a plate that already works — all five
+planned activities already have an object in `cabin-backdrop-math.png`: Gear Train → the brass gear train
+on the chimney breast; Balance Scale → the brass balance and its pan; Ratio Mixing → the three vials at
+different fill levels; Fraction Laser → the prism on the table splitting light; Function Machine → the
+brass instrument cabinet. The last is the weakest read (closer to a curio cabinet than a machine) and is
+the one to improve first if any of them is revisited.
+
 ## Explicitly deferred (deferred, not forgotten)
 
 These are known gaps with known fixes. They are out of scope for now by decision, and each stays
