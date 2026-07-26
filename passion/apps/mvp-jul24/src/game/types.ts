@@ -46,4 +46,19 @@ export interface Gadget {
   hotspot: GadgetHotspot;
   status: "active" | "coming-soon";
   Puzzle?: ComponentType<PuzzleProps>;
+  /**
+   * Declares that `Puzzle` actually reads `PuzzleProps.tier` and varies its board accordingly.
+   * Gates *visibility* of the overlay's "Try a harder one" offer — never set this on a gadget whose
+   * component ignores `tier`, because the button promises a harder board, and an unbacked flag
+   * would make the app lie to a child.
+   *
+   * This exists because the failure mode is concrete, not hypothetical: `Solved` and the puzzle
+   * occupy the same JSX slot in `GadgetOverlay`, so clicking "harder" unmounts and remounts the
+   * puzzle. A component that owns its own round/difficulty state (most of them do, independently of
+   * `tier`) resets that state to its own default on remount — which is its *easy* variant. Without
+   * this flag, "harder" would silently hand several gadgets back an easier board than the one just
+   * solved. Optional and defaults to falsy, so every existing gadget is unaffected until someone
+   * deliberately wires `tier` through and flips it on.
+   */
+  supportsTier?: boolean;
 }

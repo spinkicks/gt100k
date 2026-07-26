@@ -13,6 +13,10 @@ export default function GadgetOverlay() {
   const [solved, setSolved] = useState(false);
   const [tier, setTier] = useState(0);
   const reduce = useReducedMotion();
+  // Whether *this* gadget's component actually honours `tier` (see `Gadget.supportsTier`). Only
+  // Nonogram does today; the offer must stay hidden for the other eight, whose own round state
+  // would otherwise reset to easy on remount and hand back a board easier than the one just solved.
+  const offersHarder = !!(focusedGadgetId && gadgetById(focusedGadgetId)?.supportsTier);
 
   useEffect(() => {
     setSolved(false);
@@ -61,10 +65,14 @@ export default function GadgetOverlay() {
               <Solved
                 reduce={!!reduce}
                 onBack={() => useGame.getState().closeGadget()}
-                onHarder={() => {
-                  setTier((t) => t + 1);
-                  setSolved(false);
-                }}
+                onHarder={
+                  offersHarder
+                    ? () => {
+                        setTier((t) => t + 1);
+                        setSolved(false);
+                      }
+                    : undefined
+                }
               />
             ) : (
               <GadgetPuzzle id={focusedGadgetId} tier={tier} onSolved={() => setSolved(true)} />
@@ -77,13 +85,15 @@ export default function GadgetOverlay() {
 }
 
 /**
- * The win state, and the one shared place a harder variant is OFFERED.
- *
- * Both buttons are present and neither is preferred. That is the whole design: nothing is gated
- * (see shelf/types.ts for why — a completion gate would make "went deeper" a deterministic function
- * of "solved it", and `solves` indexes prior ability), and the harder board is a choice the child
- * makes rather than an escalation the app performs. No achievement copy, and no tier number: §11
- * refuses a quantified display of the child's own engagement.
+ * The win state, and the one shared place a harder variant is OFFERED — when there is one to
+ * offer. `onHarder` is OPTIONAL: the overlay omits it for any gadget without `supportsTier`, so the
+ * button only appears where a harder board is actually backed by the puzzle. Where it does appear,
+ * both buttons are present and neither is preferred — nothing is gated (see shelf/types.ts for why
+ * — a completion gate would make "went deeper" a deterministic function of "solved it", and
+ * `solves` indexes prior ability), and the harder board is a choice the child makes rather than an
+ * escalation the app performs. No achievement copy, and no tier number: §11 refuses a quantified
+ * display of the child's own engagement. Where the offer is absent, nothing was withheld either —
+ * there was never a harder variant to withhold.
  */
 function Solved({
   reduce,
@@ -92,7 +102,7 @@ function Solved({
 }: {
   reduce: boolean;
   onBack: () => void;
-  onHarder: () => void;
+  onHarder?: () => void;
 }) {
   const confetti = ["--ember", "--ember-bright", "--ember-deep", "--parchment-edge"];
   return (
@@ -137,9 +147,11 @@ function Solved({
       <button type="button" className="gadget-overlay-solved-back" onClick={onBack}>
         ← Back
       </button>
-      <button type="button" className="gadget-overlay-solved-harder" onClick={onHarder}>
-        Try a harder one
-      </button>
+      {onHarder ? (
+        <button type="button" className="gadget-overlay-solved-harder" onClick={onHarder}>
+          Try a harder one
+        </button>
+      ) : null}
     </div>
   );
 }

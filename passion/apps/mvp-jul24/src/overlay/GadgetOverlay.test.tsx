@@ -2,8 +2,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { vi } from "vitest";
 import * as registry from "../gadgets/registry";
 import { useGame } from "../game/store";
-import type { PuzzleProps } from "../game/types";
+import type { Gadget, PuzzleProps } from "../game/types";
 import { useInterest } from "../interest/store";
+import { SIZES } from "../puzzles/Nonogram/Nonogram";
 import GadgetOverlay from "./GadgetOverlay";
 
 beforeEach(() => {
@@ -40,7 +41,13 @@ function StubPuzzle({ tier, onSolved, onExit }: PuzzleProps) {
   );
 }
 
-function mockStubGadget() {
+/**
+ * `supportsTier` defaults to `true` here because most of these tests are specifically about the
+ * offer existing and the tier reaching the puzzle. The one test that needs it unset (the
+ * regression guard for the "harder can hand back an easier board" bug) passes `{ supportsTier:
+ * false }` explicitly — see below.
+ */
+function mockStubGadget(overrides: Partial<Gadget> = {}) {
   return vi.spyOn(registry, "gadgetById").mockImplementation((id: string) => ({
     id,
     topic: "logic-games",
@@ -48,6 +55,8 @@ function mockStubGadget() {
     status: "active",
     hotspot: { xPct: 50, yPct: 50, label: "Stub" },
     Puzzle: StubPuzzle,
+    supportsTier: true,
+    ...overrides,
   }));
 }
 
@@ -85,6 +94,40 @@ test("the chosen tier reaches the puzzle", () => {
   fireEvent.click(screen.getByRole("button", { name: /harder/i }));
   expect(screen.getByTestId("stub-puzzle")).toHaveAttribute("data-tier", "1");
   spy.mockRestore();
+});
+
+// Regression guard for the Critical: "harder" must not appear for a gadget whose component
+// ignores `tier` — for eight of the nine real gadgets, remounting resets their own round state to
+// its easy default, so an unconditional button would silently hand back an EASIER board than the
+// one just solved. `supportsTier` is the flag that prevents that; this proves the overlay actually
+// reads it rather than always offering.
+test("a gadget without supportsTier offers no harder-variant button", () => {
+  const spy = mockStubGadget({ supportsTier: false });
+  useGame.getState().focusGadget("nonogram");
+  render(<GadgetOverlay />);
+  fireEvent.click(screen.getByTestId("qa-solve"));
+  expect(screen.queryByRole("button", { name: /harder/i })).not.toBeInTheDocument();
+  // The easier path — the only path here — is still unconditionally present.
+  expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
+  spy.mockRestore();
+});
+
+// The stub proves the prop is plumbed; this proves it actually changes what a REAL puzzle renders.
+// Nonogram is the one gadget that honours `tier` (SIZES = [5, 7]), so it is the only place a change
+// in board size is assertable end to end, through the real registry, with no mock at all.
+test("choosing the real Nonogram's harder variant changes the rendered board size", () => {
+  useGame.getState().focusGadget("nonogram");
+  render(<GadgetOverlay />);
+
+  const cellsAtTier0 = document.querySelectorAll(".ng-grid-cell").length;
+  expect(cellsAtTier0).toBe(SIZES[0] ** 2);
+
+  for (const el of Array.from(document.querySelectorAll('[data-fill="1"]'))) fireEvent.click(el);
+  fireEvent.click(screen.getByRole("button", { name: /harder/i }));
+
+  const cellsAtTier1 = document.querySelectorAll(".ng-grid-cell").length;
+  expect(cellsAtTier1).toBe(SIZES[1] ** 2);
+  expect(cellsAtTier1).not.toBe(cellsAtTier0);
 });
 
 test("focusing a gadget mounts its puzzle and records one open", () => {

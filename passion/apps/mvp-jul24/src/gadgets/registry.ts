@@ -74,6 +74,9 @@ export const GADGETS: Gadget[] = [
     status: "active",
     Puzzle: Nonogram,
     hotspot: { xPct: 15, yPct: 60, label: "Nonogram" },
+    // Nonogram is the one gadget whose component reads `PuzzleProps.tier` (see Nonogram.tsx and
+    // the doc comment on `Gadget.supportsTier`) — the other eight ignore it and must not set this.
+    supportsTier: true,
   },
   {
     id: "mirror",
