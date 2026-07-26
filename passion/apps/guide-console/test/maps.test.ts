@@ -431,7 +431,13 @@ const MATH_IN_USE: MasteryMap = {
 /** Every map a child can currently be read against, for the invariants that must hold on all. */
 const IN_USE: readonly MasteryMap[] = [CONSOLE_PIANO_MAP, CONSOLE_GAME_DEV_MAP, MATH_IN_USE];
 
-const readOf = (vm: { reads: readonly { id: string }[] }, id: string) =>
+/**
+ * Generic on the element, so the read that comes back keeps its real type. Typing the parameter as
+ * `readonly { id: string }[]` also narrowed the RETURN to `{ id: string }`, which is why every
+ * property access on the result was a type error: 36 of them, all in this file, none caught by any
+ * gate because `tsc -b` covers packages and adapters but not apps.
+ */
+const readOf = <T extends { id: string }>(vm: { reads: readonly T[] }, id: string): T =>
   vm.reads.find((r) => r.id === id)!;
 
 const AT = "2026-07-26T11:15:00.000Z";
