@@ -232,11 +232,19 @@ math does" is ambiguous until you pick:
 Three of the five alternate rather than climb, and `RatioMixing.tsx` says the alternation is
 deliberate: "Tiers alternate so a session meets both benches."
 
-The four `logic-games` activities do neither. `Nonogram.tsx` calls
-`generatePuzzle(nextGeneratorSeed(base))` and takes the generator's default `size = 5` forever;
-`Pipes` accepts a `size` prop that defaults to `EASY_SIZE`. **So Nonogram is permanently 5×5 and
-Pipes permanently easy, in the room a player meets first.** The generators already accept the
-parameter — nothing passes it.
+**Corrected during implementation — the original claim here was half wrong.** This section first
+said both `Nonogram` and `Pipes` were stuck at their easy defaults. Only `Nonogram` was:
+`Nonogram.tsx` called `generatePuzzle(nextGeneratorSeed(base))` and took the generator's default
+`size = 5` forever. `Pipes` already alternated — `Pipes.tsx:57` read
+`const size = puzzleIndex % 2 === 0 ? EASY_SIZE : HARD_SIZE`, with a comment saying it varied
+"sizes so both get exercised over a play session". The error came from reading the `generateLevel`
+call site alone and inferring that its `size` argument was a defaulted prop, without reading where
+that argument came from.
+
+So the real gap was **one** of the four `logic-games` puzzles, not two. `Nonogram` gets the
+alternating ladder; `Pipes` gets refactored onto the same exported `SIZES` / `sizeForRound` shape
+with its behaviour unchanged, which is worth doing only because a shared convention is what makes
+the next puzzle's author copy the right thing.
 
 **Change.** Give `Nonogram` and `Pipes` the **alternating** model, and use that word rather than
 "ramp". Alternation is chosen over climb-and-cap for three reasons: it is the majority convention
