@@ -22,7 +22,7 @@ The bones for fixing this already exist and are better than the roadmap suggeste
 |---|---|
 | `ProjectBriefGenerator` port + `planner-live` adapter | An LLM already sits behind a typed port |
 | `BriefContext.resources: CuratedResource[]` | The planner already expects curated resources |
-| Concierge (015) | Ten-stage child-safe open-web retrieval into a curated library |
+| Concierge (015) | Ten-stage child-safe open-web retrieval into a curated library, ending in a human vet queue |
 | `CuratedResource` | `url`, `reputation`, `ageTiers`, `provenance`. A vetted-resource record |
 | Access broker (023) | Mentors and real audiences, guardian consent enforced |
 | Wellbeing (016), Family (019) | The pressure and burnout reads |
@@ -32,20 +32,23 @@ So this is not a new LLM integration. It is composing what exists and pointing i
 ## 2. The core decision: map and harness are different things
 
 **A mastery map is domain knowledge.** What the milestones are and in what order, with real vetted
-resources attached. Stable, reusable, and worth a human's attention exactly once.
+resources attached. Stable, reusable, and worth checking exactly once rather than once per child.
 
 **The harness is child state.** Everything the system already knows about this particular child, fed
 to the model so its reasoning is informed rather than generic.
 
-The model reasons per child, against a vetted domain substrate, instead of re-deriving what chess is
-every time. Personalisation lives in selection and pacing, not in re-inventing the domain.
+The model reasons per child, against a validated domain substrate, instead of re-deriving what chess
+is every time. Personalisation lives in selection and pacing, not in re-inventing the domain.
 
 Two arguments decided this, and both are about the map being shared rather than per-child.
 
-**Human review stays real.** The system proposes, a human disposes. If every child's pathway is
-generated fresh, a guide must review every generated pathway. That is unbounded review load, and
-unbounded review gets rubber-stamped, at which point the guardrail is theatre. Vetting a chess map
-once makes review small enough to actually happen.
+**Validation load stays bounded.** Every map is checked by the validator, and a guide can look over
+what the software produced. If each child's pathway were generated fresh, both of those would run
+once per child, and checking that scales with the roster gets skipped or rubber-stamped, at which
+point the guardrail is theatre. One chess map, validated once, is a load the program can actually
+carry. The cost of checking scales with the number of maps, not with the number of children. (§11
+explains why a human signature is not the publication gate; the argument here is about the work of
+checking a map at all.)
 
 **The program stays evaluable.** G5 exists to validate the inference model against real outcomes. If
 two children with the same chess spike get materially different paths, no outcome can be attributed:
@@ -62,10 +65,16 @@ serve every way of working in the domain; branch milestones declare which modes 
 
 ```ts
 interface MasteryMap {
+  readonly id: string;                  // stable, and independent of domainPath
+  readonly version: number;             // bumped on every stored change
   readonly domainPath: DomainPath;      // the domain, NOT a cellKey
+  readonly modes: readonly WorkMode[];  // the modes this domain affords
+  readonly ageBands: readonly AgeTier[]; // plural: S1 to S4 spans ages 6 to 14
   readonly milestones: readonly Milestone[];
-  readonly provenance: MapProvenance;   // model, prompt version, search date, vetting record
-  readonly vettedBy: HumanActor | null; // null = draft, never shown to a child
+  readonly provenance: MapProvenance;   // model, prompt version, generation date, edit record
+  readonly validation: ValidationRecord; // what actually gates publication (§11)
+  readonly status: "draft" | "published" | "withdrawn";
+  readonly vettedBy: HumanActor | null; // optional human review, never a precondition (§11)
   readonly revalidatedAt: string;       // resources rot; see §7
 }
 
@@ -76,12 +85,23 @@ interface Milestone {
   readonly requires: readonly string[]; // milestone ids, the DAG edges
   readonly modes: readonly WorkMode[];  // empty = trunk, serves every mode in the domain
   readonly stageFloor: Stage;           // earliest stage this is appropriate at (§6)
+  readonly ordering: Justification;     // why here, and after those
   readonly resources: readonly CuratedResource[];
   readonly practice: readonly PracticeForm[];   // what repeated effort looks like here
   readonly demonstration: string;       // the artefact that shows it, feeds the Evidence Graph
   readonly opportunities: readonly OpportunityHint[]; // competitions, showcases; brokered by 023
 }
 ```
+
+`DomainPath` and `WorkMode` come from two-axis-tagging, `Stage` from the specialization planner,
+`AgeTier` and `CuratedResource` from the concierge, `HumanActor` from the hypothesis store. The
+remaining types, `MapProvenance`, `ValidationRecord`, `Justification`, `PracticeForm` and
+`OpportunityHint`, are new and are defined in the slice-1 spec, which is where the authoritative
+shapes live. This block is the sketch; that document is the contract.
+
+A map spans ages by construction. It runs from `S1_IGNITION` to `S4_SIGNATURE`, which is roughly
+ages 6 to 14, so a single age tier cannot describe it and `ageBands` is plural. Resources are then
+checked against the bands the map actually claims, rather than against one.
 
 ### Why a trunk, and where it branches
 
@@ -97,6 +117,16 @@ Divergence appears to begin at **expert entry, defined by skill rather than age*
 place the separation of expert and intermediate activity profiles around the tenth year of serious
 play, and Bilalić, McLeod & Gobet (2009) find sub-specialisation effects only among titled players.
 So `stageFloor` on a branch milestone is the right mechanism, and branches should sit high.
+
+**A named dependency comes with that, and it is not small.** No child can currently be placed above
+`S2_FOUNDATIONS`. `deriveStage` in `specialization-planner/src/stage.ts` requires `stretchSeeking`
+for both `S3_AUTHORSHIP` and `S4_SIGNATURE`, `stretchSeeking` derives solely from
+`chosen_challenge`, and nothing in production emits that event because the discovery app has no
+difficulty-variant affordance. This is already escalated in PR #163 and is not this project's to
+fix. It does not stop us authoring maps, because a map is authored independently of who can reach
+it, but it does mean **branch milestones are unreachable until `chosen_challenge` becomes
+observable**. Anything that tests or demonstrates a map has to include a trunk-only path a child can
+walk today, or it is asserting on structure nobody can enter.
 
 **Honest limits, and they are substantial.** Nobody has directly compared the developmental histories
 of composers against performers, or competitors against problemists. There is no evidence at all for
@@ -148,22 +178,32 @@ is the first time they are composed into one thing:
 | Student profile (014) | The longitudinal record: what they returned to, what they abandoned |
 | Project workspace / Evidence Graph | What they have actually made |
 | Two-axis tagging (009) | Coverage and breadth, so a narrow child is not narrowed further |
-| Age band | Appropriateness, and it gates `ageTiers` on every resource |
+| Age bands | Appropriateness, and they gate `ageTiers` on every resource |
 
 **The harness is not a "don't hallucinate" wrapper.** Validation is a property of the pipeline, not
 the point of it. The point is that the model reasons about a real child in a real state.
 
 ## 5. Generation and validation
 
-1. A guide requests a map for a cell that has none.
-2. The harness assembles domain context; the concierge retrieves and vets candidate resources through
-   its existing ten stages, which already enforce child-safety, reputation and age tiers.
-3. The model drafts the milestone DAG and attaches resources to milestones.
+1. A guide requests a map for a domain that has none.
+2. The harness assembles domain context, and candidate resources are drawn from the concierge's
+   curated library. Those resources are **human-vetted upstream**: the concierge's tenth stage is a
+   vet queue where a person approves an entry into the library or rejects it
+   (`concierge/src/promote.ts`). That is deliberate child-safety design and this project does not
+   weaken it. Nothing here fetches from the open web.
+3. The model drafts the milestone DAG and attaches library resources to milestones.
 4. The validator checks what a model cannot self-certify: the DAG is acyclic, every `requires` id
-   resolves, every resource cleared the concierge and carries an `ageTier` covering the band, every
-   milestone has a `demonstration`, no milestone is satisfiable by consumption alone, and no scalar
-   score, rank, streak or badge appears anywhere (GC-class guardrail, already enforced elsewhere).
-5. The draft goes to a guide. **`vettedBy: null` means no child ever sees it.**
+   resolves, every resource came from the curated library and carries an `ageTiers` entry covering a
+   band the map claims, every milestone's `capability` names the artefact its `demonstration`
+   produces, and no banned scalar or gamification field appears anywhere (GC-class guardrail,
+   already enforced elsewhere).
+5. The map is stored as a draft. Publication needs `status: "published"` and an empty
+   `validation.errors` (§11). A guide may review it, and that review is optional.
+
+**Be precise about which half is software-decided.** The resource half of a map rests on human
+vetting that already happened, upstream, by design. What this pipeline decides in software is the
+**ordering**: which milestone comes after which, and what that ordering rests on. Those are
+different claims, and §11 makes only the second one.
 
 ## 6. It does not create a second progression ladder
 
@@ -200,7 +240,7 @@ program paces by wellbeing rather than by a target date.
 ## 9. A map must never become a reason not to change your mind
 
 This was the sharpest open question and our own research answers it without ambiguity. Hypotheses are
-revisable by design; a vetted map is a substantial artefact; artefacts create sunk cost; sunk cost
+revisable by design; a published map is a substantial artefact; artefacts create sunk cost; sunk cost
 argues against revision. Left alone, the map would quietly work against the engine it serves.
 
 The evidence says irreversibility is the actual harm mechanism, not early depth. Marcia (1966) on
@@ -215,9 +255,18 @@ Three consequences, and the second is the one that actually solves it.
 
 **No completion percentage, ever.** "Ari is 60% through the chess map" is a completion-contingent
 frame, and Deci, Koestner & Ryan (1999) measure completion-contingent rewards undermining intrinsic
-motivation at d = −0.36, with the effect **stronger in children than adults** (engagement-contingent
-−0.46 against −0.21). It would also corrupt the voluntary-return signal the engine is built on. This
-is the existing no-score guardrail arriving by a second, independent route.
+motivation at d = −0.36. The **stronger in children than adults** comparison comes from their
+*engagement-contingent* figures (−0.46 against −0.21), which is a different contingency class from
+the one a percentage creates, so read the age comparison as coming from those figures rather than
+from the −0.36. A percentage would also corrupt the voluntary-return signal the engine is built on.
+
+This is **not** the guardrail arriving by a second, independent route. It is the same finding our
+registry already records: the `no-gamification` claim cites Deci, Koestner & Ryan (1999) directly.
+That entry carries a limit this section should not drop, so it is restated here. The effect is
+debated. Rewards can help start a task a child genuinely does not care about; it is rewards on the
+thing they already love that backfire (Cameron, Banko & Pierce, 2001). A completion percentage on a
+spike a child chose is squarely the second case, which is why the guardrail holds here, but the
+claim is narrower than "rewards are bad".
 
 **Milestones produce artefacts, so leaving costs nothing.** Every milestone's `demonstration` lands in
 the Evidence Graph as real work. A child who parks chess after four milestones keeps four real
@@ -236,26 +285,62 @@ Approve-or-reject only would make the model the author and the human a rubber st
 the rule the whole system rests on. So a guide can edit.
 
 Provenance then has to carry the weight. Each milestone records whether it was model-proposed,
-human-edited or human-authored, and the map's `provenance` keeps the diff. This mirrors how the
-Evidence Graph treats a child's work: the record shows how the thing was actually made.
+human-edited or human-authored, and the map's `provenance` keeps every edit **with the value before
+it and the value after it**. Recording only that a field changed would not do: an edit overwrites
+the only copy of what the model proposed, so without both sides there is nothing left to compare.
+This mirrors how the Evidence Graph treats a child's work: the record shows how the thing was
+actually made.
+
+An edit also invalidates the map's validation record, because a changed field makes `validatedAt`
+stale the moment it lands. An edited map returns to draft and is re-validated before it can be
+published again.
 
 It also buys something useful. Once outcomes accrue, "did human-edited maps produce better outcomes
 than model-authored ones" becomes an answerable question, and the edits themselves are the clearest
 signal of where the generator is weak.
 
-## 11. Vetting
+## 11. What software gates, and what it does not
 
-A guide approves **the milestones and their order**, because the sequencing is the domain-expertise
-claim and it is what a human can actually judge. Resources are spot-checked, not reviewed one by one:
-they have already passed the concierge, and asking a human to click two hundred links is how review
-becomes rubber-stamping.
+**Superseded 2026-07-26.** This section originally said a guide approves the milestones and their
+order, "because the sequencing is the domain-expertise claim and it is what a human can actually
+judge." That was wrong, and it was wrong in the specific way this whole document warns against. Our
+guides are not chess masters or conservatoire teachers. Ordering is the one thing they have no basis
+to evaluate, so they would approve it unread, and we would have manufactured a rubber stamp and
+called it oversight.
 
-Any resource can be pulled down later without re-vetting the map.
+**The validator gates the ordering.** A map is publishable with no human signature. Publication
+takes two things: `status: "published"`, which says someone decided to use the map, and an empty
+`validation.errors`, which says the map is valid. They answer different questions and are kept
+apart deliberately, so that a guide pulling a map back sets `status: "withdrawn"` and leaves
+`validation` exactly as it was. Withdrawing a map is a decision about whether to use it, not a
+finding that it is broken.
+
+**Resource safety is not software-gated, and never was.** Resources come from the concierge's
+curated library, and its tenth stage is a human vet queue: a person approves an entry into the
+library or rejects it. That is a deliberate child-safety design and nothing here weakens it. So the
+claim in this section is narrow. Software decides the ordering. A human already decided, upstream,
+that each resource is fit for a child.
+
+This does not weaken "the system proposes, a human disposes." A map is **domain knowledge, not a
+decision about a child.** Nothing in a map reaches a child until a human promotes a hypothesis and
+approves a plan, and both are already human-owned. A third gate at the map would not add oversight;
+it would add a signature from someone with no basis for giving it, which is worse than none because
+it looks like review.
+
+Correctness is carried instead by the ordering rule, which is §2 of the slice-1 spec rather than a
+section of this document: every ordering decision names what it rests on, a published syllabus is
+the strongest support, and the model's own unsupported reasoning is permitted but visible and
+capped. That makes the claim checkable by anyone, rather than resting on a signature.
+
+Guides still get a **review** surface, because seeing and correcting software output is a judgment
+they genuinely can make: a guide can tell that a resource is wrong for a nine-year-old without being
+able to sequence the domain. A guide can edit a map, which returns it to draft for re-validation, or
+withdraw it, which takes it out of use immediately. Any resource can be pulled at any time.
 
 ## 12. Slice 1
 
 **In:** the `MasteryMap` domain model; the generator behind a typed port with a deterministic stub for
-CI; the validator; the guide's vetting screen; persistence.
+CI; the validator; the guide's review screen; persistence.
 
 **Out:** any child-facing surface; per-child selection from the map; real-world opportunity brokering
 beyond hints; the admissions portfolio; child login (that is G3, a pre-live gate).
@@ -293,5 +378,6 @@ et al. (2008), doi:10.1080/14613800802079080 · Sala, Aksayli, Tatlidil, Tatsumi
 (2019), doi:10.1525/collabra.203 · Güllich, Macnamara & Hambrick (2022),
 doi:10.1177/1745691620974772 · Macnamara, Hambrick & Oswald (2014), doi:10.1177/0956797614535810 ·
 Macnamara & Maitra (2019), doi:10.1098/rsos.190327 · Meinz & Hambrick (2010),
-doi:10.1177/0956797610373933 · Deci, Koestner & Ryan (1999) · Marcia (1966), doi:10.1037/h0023281 ·
+doi:10.1177/0956797610373933 · Deci, Koestner & Ryan (1999), doi:10.1037/0033-2909.125.6.627 ·
+Cameron, Banko & Pierce (2001) · Marcia (1966), doi:10.1037/h0023281 ·
 Vallerand et al. (2003), doi:10.1037/0022-3514.85.4.756 · O'Keefe, Dweck & Walton (2018).
