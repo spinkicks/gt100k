@@ -269,12 +269,14 @@ const ROOMS = {
         zone: { x: 930, y: 555, w: 320, h: 265 },
         prompt: `Replace the glass prism standing on the LOW WOODEN TABLE on the right of the room with a big antique brass BALANCE SCALE standing squarely on that table top, seen side on at eye level. It is the chunky old-fashioned kitchen kind: a heavy turned wooden base, a short stout brass pillar rising from the middle of it, and across the top of that pillar ONE SINGLE THICK SOLID STRAIGHT BRASS CROSSBEAM — a stout bar as thick as a finger, plainly visible along its entire length, balanced at its midpoint on the pillar and reaching out the same distance each way. This crossbeam is the most important part of the object and must be drawn solid and unbroken from end to end. A shallow round brass pan sits directly ON TOP of each end of the crossbeam on a short stubby bracket, so there are exactly two pans, both firmly attached to the beam. Nothing hangs on chains and nothing floats unattached in mid air. The beam is tilted to the left: the left pan carries a stack of chunky hexagonal brass weights of different sizes and hangs lower, the right pan carries one small weight and rides higher. Two spare weights stand on the table beside the base. ${KEEP} ${STYLE} ${NO_TEXT}`,
       },
-      // PROJECT.md names this the weakest read of the five math props — "closer to a curio
-      // cabinet than a machine" — and the first to improve if any is revisited. PRD §5.3 asks a
-      // prop for a CLEAR AFFORDANCE: the child must see "that is the function machine". So the
-      // whole job of this prompt is the in -> transform -> out reading, legible at the ~140x228
-      // the prop actually occupies on the wall. The zone sits just under vialRack's (which ends
-      // at y=416) and clips panBalance's left edge by ~5px, which is invisible at prop scale.
+      // This prop was PROJECT.md's weakest read of the five math props — "closer to a curio
+      // cabinet than a machine" — and was regenerated on 2026-07-26 for exactly that reason; this
+      // prompt is what replaced the old cabinet with the upright machine now in the plate.
+      // PROJECT.md's prop map no longer carries that designation. PRD §5.3 asks a prop for a CLEAR
+      // AFFORDANCE: the child must see "that is the function machine". So the whole job of this
+      // prompt is the in -> transform -> out reading, legible at the ~140x228 the prop actually
+      // occupies on the wall. The zone sits just under vialRack's (which ends at y=416) and clips
+      // panBalance's left edge by ~5px, which is invisible at prop scale.
       functionMachine: {
         cls: "mech",
         zone: { x: 795, y: 428, w: 140, h: 228 },

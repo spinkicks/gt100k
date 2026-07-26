@@ -242,8 +242,9 @@ at that size to be wrong in a way a viewer would notice.
 planned activities already have an object in `cabin-backdrop-math.png`: Gear Train → the brass gear train
 on the chimney breast; Balance Scale → the brass balance and its pan; Ratio Mixing → the three vials at
 different fill levels; Fraction Laser → the prism on the table splitting light; Function Machine → the
-brass instrument cabinet. The last is the weakest read (closer to a curio cabinet than a machine) and is
-the one to improve first if any of them is revisited.
+upright brass machine (funnel hopper on top, boxy housing with a round window onto its gearing, chute out
+the bottom over a tray), re-traced 2026-07-26 after regeneration — it used to be a three-shelf cabinet of
+brass instruments (the weakest read of the five) and is not any more.
 
 ## Explicitly deferred (deferred, not forgotten)
 
