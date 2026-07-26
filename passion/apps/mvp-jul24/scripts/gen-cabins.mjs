@@ -269,8 +269,21 @@ const ROOMS = {
         zone: { x: 930, y: 555, w: 320, h: 265 },
         prompt: `Replace the glass prism standing on the LOW WOODEN TABLE on the right of the room with a big antique brass BALANCE SCALE standing squarely on that table top, seen side on at eye level. It is the chunky old-fashioned kitchen kind: a heavy turned wooden base, a short stout brass pillar rising from the middle of it, and across the top of that pillar ONE SINGLE THICK SOLID STRAIGHT BRASS CROSSBEAM — a stout bar as thick as a finger, plainly visible along its entire length, balanced at its midpoint on the pillar and reaching out the same distance each way. This crossbeam is the most important part of the object and must be drawn solid and unbroken from end to end. A shallow round brass pan sits directly ON TOP of each end of the crossbeam on a short stubby bracket, so there are exactly two pans, both firmly attached to the beam. Nothing hangs on chains and nothing floats unattached in mid air. The beam is tilted to the left: the left pan carries a stack of chunky hexagonal brass weights of different sizes and hangs lower, the right pan carries one small weight and rides higher. Two spare weights stand on the table beside the base. ${KEEP} ${STYLE} ${NO_TEXT}`,
       },
+      // This prop was PROJECT.md's weakest read of the five math props — "closer to a curio
+      // cabinet than a machine" — and was regenerated on 2026-07-26 for exactly that reason; this
+      // prompt is what replaced the old cabinet with the upright machine now in the plate.
+      // PROJECT.md's prop map no longer carries that designation. PRD §5.3 asks a prop for a CLEAR
+      // AFFORDANCE: the child must see "that is the function machine". So the whole job of this
+      // prompt is the in -> transform -> out reading, legible at the ~140x228 the prop actually
+      // occupies on the wall. The zone sits just under vialRack's (which ends at y=416) and clips
+      // panBalance's left edge by ~5px, which is invisible at prop scale.
+      functionMachine: {
+        cls: "mech",
+        zone: { x: 795, y: 428, w: 140, h: 228 },
+        prompt: `Replace the tall narrow cabinet of brass instruments standing against the wall on the right of the room with a single antique brass FUNCTION MACHINE, seen straight on at eye level. FRAMING IS CRITICAL: the machine is a MODEST, COMPACT object that stands well clear of every edge of the picture, with generous empty wall visible above it, below it, to its left and to its right. Show the WHOLE machine from its feet to the very top of its funnel with nothing cut off at any edge. Do not fill the frame and do not crop any part of it — err on the side of drawing it too small rather than too large. The machine visibly takes something in at the top, changes it in the middle, and lets it out at the bottom, and reads as exactly three stacked parts, all three fully visible: at the TOP, a wide open funnel-shaped brass hopper with a round rim, wider than the body beneath it and tilted very slightly toward the viewer so the opening reads as a hole something could be dropped into — this funnel is the single most important part and must be complete and unmistakable; in the MIDDLE, a compact boxy brass housing with a small round glass window on its front through which two or three meshing cogwheels are visible, and a stout brass crank handle standing clear of the right-hand side on a visible axle with a turned wooden grip; at the BOTTOM, a short brass chute angling down and forward out of the housing, ending above a shallow open brass tray resting on the floorboards. The three parts are joined into one rigid object on short brass feet — nothing floats or is disconnected, and there are no shelves, no drawers, no glass doors and no rows of separate instruments. ${KEEP} ${STYLE} ${NO_TEXT}`,
+      },
     },
-    order: ["gearTrain", "vialRack", "panBalance"],
+    order: ["gearTrain", "vialRack", "panBalance", "functionMachine"],
   },
 };
 

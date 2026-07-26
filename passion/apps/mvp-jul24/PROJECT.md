@@ -190,12 +190,29 @@ difficulty into guesswork.
   chasing material realism instead of composition, which is the part that actually transfers. Progress is
   measured **against the app's own previous frame**: better than last time, on a stated axis.
 
+### The backend fork is closed — DECIDED 2026-07-26
+
+**`backdrop` is the only backend. `3d` and `static` are parked.** This **reverses** "3D is the
+direction and the winner… the painterly static art is not the target and never was the
+destination," recorded above and deliberately left there so the change is legible.
+
+What reversed it is the thing that motivated the still plate in the first place: the
+reachable-in-WebGL ceiling is a real ceiling, and #159/#166/#179 are where the app's actual fidelity
+came from. Parking `static` costs nothing extra — `backdrop` is an `<img>` plus SVG polygons and
+needs no WebGL, so the "no-WebGL fallback" rationale dies together with the 3D path rather than
+outliving it. Accessibility is unaffected either way: that is **A5**, the Layer-3 DOM mirror, which
+`CabinStatic` never was.
+
+Nothing was deleted. `Cabin3D.tsx`, `scene3d/`, `CabinStatic.tsx` and `hotspots.ts` are all still in
+the tree, still compiled, still covered by their own passing tests — the LITS/Minesweeper precedent.
+`cabin/CabinView.tsx` carries the reversal instructions.
+
 ### The generated-still backdrop, and why props are inexact on purpose
 
-Superseding part of the bullet above: a **third backend, `backdrop`**, renders a generated still plate
-with clickable perspective prop polygons over it. It exists because the reachable-in-WebGL ceiling is a
-real ceiling, and a still buys fidelity the hand-built room cannot at roughly zero GPU cost. 3D stays
-the default; `?cabin=backdrop` opts in. Which becomes the default is **still open**.
+`backdrop` renders a generated still plate with clickable perspective prop polygons over it. It
+exists because the reachable-in-WebGL ceiling is a real ceiling, and a still buys fidelity the
+hand-built room cannot at roughly zero GPU cost. It is now the only backend — see *The backend fork
+is closed*, above — reached with no query param at all.
 
 **The props in the plate are recognisable but not accurate, and that is a decision — not an oversight.**
 Anyone who finds the Pipes prop and notices it is not a connected network with a source and a sink has
@@ -225,8 +242,9 @@ at that size to be wrong in a way a viewer would notice.
 planned activities already have an object in `cabin-backdrop-math.png`: Gear Train → the brass gear train
 on the chimney breast; Balance Scale → the brass balance and its pan; Ratio Mixing → the three vials at
 different fill levels; Fraction Laser → the prism on the table splitting light; Function Machine → the
-brass instrument cabinet. The last is the weakest read (closer to a curio cabinet than a machine) and is
-the one to improve first if any of them is revisited.
+upright brass machine (funnel hopper on top, boxy housing with a round window onto its gearing, chute out
+the bottom over a tray), re-traced 2026-07-26 after regeneration — it used to be a three-shelf cabinet of
+brass instruments (the weakest read of the five) and is not any more.
 
 ## Explicitly deferred (deferred, not forgotten)
 
@@ -257,6 +275,19 @@ recorded so it is not rediscovered as a surprise.
   would need, which painted art can never do. Turning it back on is one word at the call site; making
   it show real state is the seam described in `previews/snapshots.ts`.
 
+## Corrected
+
+### The child-facing interest readout is gone — 2026-07-26
+
+An ungated "Interest" button sat in the child's primary nav and opened a screen titled "Your
+interests", ranking gadgets by time-on-task with the minutes printed. PRD §11 refuses that three
+times over: it is a child-facing quantified display of the child's own engagement; a visible
+time-on-task ranking makes the measured quantity a target, converting the instrument into an
+engagement-contingent reward (**d = −0.46** in children, growing −0.35 immediate → −0.55 at ~2
+weeks); and "your interests" asserts the fixed discovered-interest model. The counters survive
+behind `window.__qa` — §11 permits operator-facing readouts — and no child-reachable path renders a
+duration. **Do not re-add a child-facing one.**
+
 ## Risks logged but not solved
 
 Stated without softening.
@@ -274,9 +305,9 @@ Stated without softening.
   create one.** Density is now 4-vs-5 rather than 7-vs-5, which is a real improvement and is one of
   the reasons the trim was taken — but memo §8.2's limit is not a density threshold that 4-vs-5
   clears. Unequal cabins are not a criticism of the build; **no cross-cabin comparison from it is
-  valid**, density included, and `math` currently has zero activities in it anyway. Any number
-  comparing Logic Games against Math out of this build is an artifact of how many doors each room
-  has. Do not let "we density-matched it" become a licence to compare.
+  valid**, density included. Any number comparing Logic Games against Math out of this build is an
+  artifact of how many doors each room has. Do not let "we density-matched it" become a licence to
+  compare.
 - **The backdrop cabin's interaction surfaces emit no signal records, and the app now has a pipeline
   that does.** #161 added timestamped, session-scoped `Interaction` / `SurfacedRecord` emission. The
   backdrop backend adds a whole new set of interaction surfaces — perspective prop polygons, and the

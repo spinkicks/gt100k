@@ -413,12 +413,15 @@ const MATH: BackdropRoom = {
       kind: "object",
       gadgetId: "balance-scale",
       label: "Brass balance scale",
+      // Bottom edge raised to ~y=418 (was ~y=428-430) so it stops just above the function-machine
+      // funnel below it: this is a wall-shelf object well above the machine and doesn't need those
+      // rows. See the note on `function-machine` for what sharing them used to cost.
       outline: [
         [802, 237],
         [843, 237],
         [847, 350],
-        [871, 428],
-        [803, 430],
+        [871, 418],
+        [803, 420],
         [795, 350],
       ],
     },
@@ -438,20 +441,30 @@ const MATH: BackdropRoom = {
       ],
     },
     {
-      // The glass-fronted cabinet of brass instruments below the rack. The only prop here with a
-      // real flat face, so the only `flat` one. Quad is the front face, not the outer carcass.
-      //
-      // Honest note: this is the weakest read of the five. It looks like a curio cabinet rather
-      // than a machine, and it is the first prop to improve if this room is ever revisited
-      // (recorded in PROJECT.md's prop map for the same reason).
+      // A single upright machine: funnel hopper on top, boxy housing with a round window onto its
+      // gearing in the middle, chute out the bottom over a tray. The only prop here with a real
+      // flat face, so the only `flat` one. Quad is the front face, not the outer carcass.
       kind: "flat",
       gadgetId: "function-machine",
-      label: "Cabinet of brass instruments",
+      label: "Brass function machine",
+      // Re-traced 2026-07-26 after the prop was regenerated. It used to be a three-shelf cabinet of
+      // scattered brass instruments — the weakest read of the five, closer to a curio cabinet than
+      // a machine. It is now one upright machine: funnel hopper on top, a boxy housing with a round
+      // window onto its gearing, and a chute angling out at the bottom over a tray, so the
+      // in -> transform -> out reading PRD §5.3 wants is legible at prop size.
+      //
+      // The top edge now runs to y=430-431, up at the funnel's rim, instead of stopping short at
+      // y=437-440. It used to stop short because `balance-scale`'s polygon bottom ran to
+      // y=428-430, directly over the funnel's visible top — the two quads overlapped, and since
+      // overlapping quads swallow each other's clicks by DOM order, clicking the visible top of the
+      // hopper opened Balance Scale instead. Fixed by raising `balance-scale`'s bottom edge to
+      // ~y=418 (it's a wall-shelf object well above the machine and doesn't need those rows), which
+      // freed this quad to extend up to the funnel rim without re-overlapping it.
       quad: [
-        [813, 461],
-        [931, 454],
-        [933, 641],
-        [813, 646],
+        [802, 431],
+        [931, 430],
+        [932, 650],
+        [802, 652],
       ],
     },
     {

@@ -18,14 +18,12 @@ import RatioMixing from "../puzzles/RatioMixing/RatioMixing";
  * left to reason about, which is the swap test (research memo §2.1/D1) and the reason the split
  * exists at all.
  *
- * Consumers of `gadgetsForTopic` must still tolerate an empty list — `music`/`code`/`art` return one
- * (see scene3d/anchors.ts and cabin/CabinStatic.tsx, both of which render a normal empty room).
+ * Consumers of `gadgetsForTopic` must still tolerate an empty list: `music`/`code`/`art` return one.
+ * `cabin/backdrop/CabinBackdrop.tsx` renders a normal empty room for them.
  *
- * The `math` entries carry no `hotspot` that means anything yet: the backdrop room for `math` is not
- * authored, so nothing routes a player to them through a painted prop. They are reachable through
- * the 3D and static backends, which place unknown gadgets generically. Authoring
- * `cabin/backdrop/quads.data.ts` for `math` is the follow-up, and the five objects it needs are
- * already in `public/art/cabin-backdrop-math.png` — see PROJECT.md for the prop-to-activity map.
+ * The `math` entries are fully authored: `cabin/backdrop/quads.data.ts` has a `MATH` room whose prop
+ * quads cover all five, traced onto `public/art/cabin-backdrop-math.png` (#179). PROJECT.md's
+ * prop-to-activity map records which painted object is which.
  *
  * ===========================================================================================
  * LOGIC GAMES IS FOUR, NOT SEVEN — DECIDED 2026-07-25. THIS IS THE ONLY PLACE THAT DECIDES IT.
@@ -76,6 +74,9 @@ export const GADGETS: Gadget[] = [
     status: "active",
     Puzzle: Nonogram,
     hotspot: { xPct: 15, yPct: 60, label: "Nonogram" },
+    // Nonogram is the one gadget whose component reads `PuzzleProps.tier` (see Nonogram.tsx and
+    // the doc comment on `Gadget.supportsTier`) — the other eight ignore it and must not set this.
+    supportsTier: true,
   },
   {
     id: "mirror",

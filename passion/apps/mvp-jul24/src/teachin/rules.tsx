@@ -76,7 +76,7 @@ export const TEACH_INS = {
   },
   mirror: {
     title: "Mirror Maze",
-    rule: "Click a mirror to rotate it and guide the beam to the target. A mirror always bends the beam a quarter-turn, and the two slants bend it opposite ways.",
+    rule: "Click a mirror to rotate it and guide the beam to the target. A mirror always bends the beam a quarter-turn, and the two slants bend it opposite ways — the same board as Fraction Laser, where fractions do the bending instead of slants.",
     Diagram: MirrorDiagram,
   },
   chess: {
@@ -122,7 +122,7 @@ export const TEACH_INS = {
   },
   "fraction-laser": {
     title: "Fraction Laser",
-    rule: "Each prism sends part of the light straight on and the rest out of its side port — the two parts always make one whole. Set every prism so each crystal gets exactly the fraction written on it.",
+    rule: "Each prism sends part of the light straight on and the rest out of its side port — the two parts always make one whole. Set every prism so each crystal gets exactly the fraction written on it — the same board as Mirror Maze without fractions.",
     Diagram: FractionLaserDiagram,
   },
   "function-machine": {

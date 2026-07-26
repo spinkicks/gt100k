@@ -23,19 +23,68 @@ function nextGeneratorSeed(base: number): number {
   return (base * 2654435761 + generationCounter * 40503) >>> 0;
 }
 
+/**
+ * The two board sizes this cabin alternates between, easier first.
+ *
+ * Nonogram was permanently 5x5 before 2026-07-26: `generatePuzzle`'s `size` parameter existed and
+ * nothing ever passed it, so the room a player meets first was also the flat one while every math
+ * activity varied. 7 is the step up — large enough to need real line-solving, small enough that the
+ * generator's uniqueness check still converges inside MAX_ATTEMPTS (generate.test.ts already
+ * exercises 8x8 successfully, so 7x7 has margin to spare).
+ */
+export const SIZES = [5, 7] as const;
+
+/**
+ * ALTERNATES, deliberately — it does not climb. Same convention as GearTrain, BalanceScale and
+ * RatioMixing, whose comment states the reason: a session should meet both. A monotonic ramp is an
+ * escalation the child never chose, and offering a choice is what the harder-variant control is for.
+ *
+ * Serves the ROUND-driven caller only — "Next puzzle" within a mount. Do not feed `tier` through
+ * this: see `sizeForTier` below for why the two callers cannot share this function's semantics.
+ */
+export function sizeForRound(round: number): number {
+  return SIZES[round % SIZES.length]!;
+}
+
+/**
+ * MONOTONIC and CLAMPED, deliberately — it never wraps. Serves the TIER-driven caller only: the
+ * overlay's explicit "Try a harder one" offer (`GadgetOverlay.tsx`), which unmounts and remounts
+ * this component with an ever-incrementing `tier` each time it's pressed.
+ *
+ * This function exists because `sizeForRound(tier)` doesn't: `tier` grows without bound (0, 1, 2,
+ * 3, …) while `SIZES` has only two entries, so `SIZES[tier % SIZES.length]` wraps back to the
+ * smallest size on the third press — pressing "harder" twice handed back an EASIER board than the
+ * one just solved, which is precisely the inversion the harder-variant offer was built to prevent.
+ * Clamping at the last index means every tier beyond `SIZES.length - 1` just holds at the hardest
+ * size instead of wrapping.
+ */
+export function sizeForTier(tier: number): number {
+  return SIZES[Math.min(tier, SIZES.length - 1)]!;
+}
+
 /** Generates a fresh unique-solution puzzle, guaranteed different from `avoid`. */
-function generateFreshPuzzle(base: number, avoid?: boolean[][]): NonogramPuzzle {
-  let puzzle = generatePuzzle(nextGeneratorSeed(base));
+function generateFreshPuzzle(base: number, size: number, avoid?: boolean[][]): NonogramPuzzle {
+  let puzzle = generatePuzzle(nextGeneratorSeed(base), size);
   while (avoid && sameSolution(puzzle.solution, avoid)) {
-    puzzle = generatePuzzle(nextGeneratorSeed(base));
+    puzzle = generatePuzzle(nextGeneratorSeed(base), size);
   }
   return puzzle;
 }
 
-export default function Nonogram({ seed, onSolved, onExit }: PuzzleProps) {
+export default function Nonogram({ seed, tier = 0, onSolved, onExit }: PuzzleProps) {
+  // `round` advances on "Next puzzle" so difficulty alternates across a session (see
+  // `sizeForRound`) instead of staying pinned to the generator's default forever. Seeded from
+  // `tier` so a session that already chose "harder" keeps alternating from there rather than
+  // restarting the cycle at round 0 — `sizeForRound` wraps by design, which is fine for THIS use
+  // (round-to-round alternation is meant to cycle forever).
+  const [round, setRound] = useState(tier);
   // Effectively unlimited puzzles: generate a fresh one on mount instead of
-  // picking from a fixed hand-authored set.
-  const [puzzle, setPuzzle] = useState<NonogramPuzzle>(() => generateFreshPuzzle(seed));
+  // picking from a fixed hand-authored set. Uses `sizeForTier`, NOT `sizeForRound`: this is the
+  // one place the component is sized from the overlay's monotonic "harder" request rather than
+  // from round-to-round alternation, and the two must not share a function (see `sizeForTier`).
+  const [puzzle, setPuzzle] = useState<NonogramPuzzle>(() =>
+    generateFreshPuzzle(seed, sizeForTier(tier)),
+  );
   const [grid, setGrid] = useState<Cell[][]>(() => blankGrid(puzzle.size));
   const [solved, setSolved] = useState(false);
   const solvedRef = useRef(false);
@@ -65,7 +114,11 @@ export default function Nonogram({ seed, onSolved, onExit }: PuzzleProps) {
   // already fired once for this puzzle and won't fire again until the new
   // one is also solved.
   const nextPuzzle = useCallback(() => {
-    setPuzzle((p) => generateFreshPuzzle(seed, p.solution));
+    setRound((r) => {
+      const nextRound = r + 1;
+      setPuzzle((p) => generateFreshPuzzle(seed, sizeForRound(nextRound), p.solution));
+      return nextRound;
+    });
   }, [seed]);
 
   return (

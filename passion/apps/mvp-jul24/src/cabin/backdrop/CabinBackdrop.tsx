@@ -90,9 +90,8 @@ const PREVIEWS_DEFAULT = false;
  * and no rounding step where drift could enter. (The preview layer cannot use that mechanism, which
  * is why it is the only part that measures. See fit.ts.)
  *
- * Not the default backend. `3d` is what a player sees (PROJECT.md, "Visual direction"); this is
- * reached with `?cabin=backdrop` and exists so the still-backdrop direction can be judged against
- * the 3D room rather than argued about. The 3D path is untouched.
+ * The only backend (PROJECT.md, "The backend fork is closed"). `3d` and `static` are parked; there
+ * is no query param and no branch left to reach them from `CabinView`.
  */
 export const CabinBackdrop: React.FC<{
   topic: TopicId;

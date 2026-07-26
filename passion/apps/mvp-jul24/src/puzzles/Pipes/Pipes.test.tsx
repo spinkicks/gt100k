@@ -1,5 +1,5 @@
 import { fireEvent, render } from "@testing-library/react";
-import Pipes from "./Pipes";
+import Pipes, { SIZES, sizeForRound } from "./Pipes";
 import { EASY_SIZE, HARD_SIZE, generateLevel, nextSeed } from "./generate";
 import { makeGrid } from "./logic";
 
@@ -79,4 +79,19 @@ test("'Next puzzle' appears once solved, and generates a different board on clic
   const initial1 = makeGrid(level1, nextSeed(seed, 1));
   solveBoard(initial1);
   expect(onSolved).toHaveBeenCalledTimes(2);
+});
+
+// Alternation, not a climb: a session meets both sizes, and nothing escalates past what the child
+// chose. Same convention as GearTrain/BalanceScale/RatioMixing in the math cabin.
+test("consecutive rounds are not all the same size", () => {
+  const sizes = [0, 1, 2, 3].map(sizeForRound);
+  expect(new Set(sizes).size).toBeGreaterThan(1);
+});
+
+test("round 0 is the easier size, so a first visit is never the hard one", () => {
+  expect(sizeForRound(0)).toBe(Math.min(...SIZES));
+});
+
+test("every size matches a preset the generator actually supports", () => {
+  for (const size of SIZES) expect([EASY_SIZE, HARD_SIZE]).toContain(size);
 });

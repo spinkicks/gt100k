@@ -25,6 +25,17 @@ export interface ChessProps extends PuzzleProps {
   rng?: () => number;
 }
 
+// Chess (tactics mode) does NOT alternate difficulty like Nonogram/Pipes, and this is a recorded
+// finding rather than an oversight (2026-07-26 difficulty-variety pass). `TacticSpec` in `bank.ts`
+// carries only `theme: "mate" | "material"` — a category of tactic, not an ordering — plus a
+// free-text `label`. There is no rating, Elo, or structured mate-in-N depth field to sort on: the
+// "mate in 2" vs "mate in 1" distinction that exists in the bank today lives only inside `label`'s
+// prose, and parsing that string to derive a difficulty would be inventing an axis the data doesn't
+// actually carry. `pickRandomTactic` picks uniformly at random across the whole bank instead. For
+// Chess to alternate the same way, `TacticSpec` would need an authored, structured difficulty field
+// (e.g. a numeric `rating` or `mateInN: number`) that `pickRandomTactic` could bucket into an
+// easier/harder band and select from via `round % 2`, the same shape every other alternating puzzle
+// in this cabin uses.
 export default function Chess({ onSolved, onExit, rng = Math.random }: ChessProps) {
   const [mode, setMode] = useState<Mode>("tactics");
   const [puzzle, setPuzzle] = useState<ChessPuzzle>(() => pickRandomTactic(rng));

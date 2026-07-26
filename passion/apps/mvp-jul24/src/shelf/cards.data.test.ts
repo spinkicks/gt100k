@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, test } from "vitest";
 import { backdropRoomFor } from "../cabin/backdrop/quads.data";
 import { GADGETS, gadgetById } from "../gadgets/registry";
 import { SHELF_DECKS, shelfDeckFor } from "./cards.data";
@@ -193,4 +193,34 @@ describe("the constraints that are decisions, not preferences", () => {
       }
     }
   });
+});
+
+const cardFor = (topic: string, gadgetId: string) =>
+  SHELF_DECKS.find((d) => d.topic === topic)?.cards.find((c) => c.gadgetId === gadgetId);
+
+// The twin pair is the same shell with only the content binding varied, and it is how "loves
+// deduction" is told apart from "loves mathematics" by observation. A player could not tell.
+test("each twin's card names the other", () => {
+  const mirror = cardFor("logic-games", "mirror");
+  const laser = cardFor("math", "fraction-laser");
+  expect(mirror?.body.join(" ")).toMatch(/fraction laser/i);
+  expect(laser?.body.join(" ")).toMatch(/mirror maze/i);
+});
+
+// Inert, not a nudge. Nothing may read as "you played X, so try Y" — a system-surfaced prompt is
+// the prompted-vs-voluntary distinction the engine turns on, and priming the pair destroys the
+// comparison it exists to enable.
+test("neither cross-reference is phrased as a recommendation", () => {
+  for (const card of [cardFor("logic-games", "mirror"), cardFor("math", "fraction-laser")]) {
+    const text = card?.body.join(" ") ?? "";
+    expect(text).not.toMatch(
+      /you (should|might|liked|enjoyed)|try (it|this|that)|recommend|next up|head over to|give it a shot|worth playing/i,
+    );
+  }
+});
+
+// The type says two paragraphs and the prose has to live inside them.
+test("both cards still have exactly two paragraphs", () => {
+  expect(cardFor("logic-games", "mirror")?.body).toHaveLength(2);
+  expect(cardFor("math", "fraction-laser")?.body).toHaveLength(2);
 });

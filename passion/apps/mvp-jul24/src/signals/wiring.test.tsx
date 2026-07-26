@@ -1,16 +1,32 @@
 import { render } from "@testing-library/react";
-import { beforeEach, expect, test } from "vitest";
+import { beforeEach, expect, test, vi } from "vitest";
 import App from "../App";
 import { useGame } from "../game/store";
 import { useInterest } from "../interest/store";
 import { FLOOR_MS } from "./log";
 import { sessionLog } from "./session";
 
+// `session.ts`'s real `sessionLog` is a no-op: EMISSION_ENABLED is false because the backdrop's
+// prop polygons and bookshelf emit nothing, so a live app-wide log would silently under-count
+// every open (see the comment on EMISSION_ENABLED in ./session). That is correct in production,
+// but it would make this file untestable — CabinView/MapScreen/GadgetOverlay call `sessionLog`
+// unconditionally, so with the real off-switch there is nothing to observe. This mock swaps in a
+// live `createSignalLog` for the session module's export, so the actual wiring code in those
+// components still runs and still gets exercised — only the on/off decision is bypassed.
+vi.mock("./session", async () => {
+  const { createSignalLog } = await import("./log");
+  return {
+    SESSION_ID: "wiring-test",
+    EMISSION_ENABLED: true,
+    sessionLog: createSignalLog({ sessionId: "wiring-test", now: () => Date.now() }),
+  };
+});
+
 beforeEach(() => {
   localStorage.clear();
   useGame.setState({ screen: "map", cabinId: null, focusedGadgetId: null });
-  // Static backend: no WebGL/Canvas in jsdom (same reason as App.integration.test).
-  useGame.getState().setBackend("static");
+  // `backdrop` is the only backend now — no WebGL/Canvas in jsdom either way (same reason as
+  // App.integration.test), so there is nothing left to force here.
   useInterest.getState().reset();
 });
 
