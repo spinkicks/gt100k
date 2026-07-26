@@ -1,4 +1,4 @@
-import { gadgetById, gadgetsForTopic } from "./registry";
+import { GADGETS, gadgetById, gadgetsForTopic } from "./registry";
 
 /** The roster, in full. Four, not the original seven — see the block comment in registry.ts. */
 const LOGIC_GAMES_IDS = ["nonogram", "mirror", "chess", "pipes"];
@@ -72,4 +72,14 @@ test("the still-unbuilt cabins return an empty list", () => {
 test("gadgetById returns the matching gadget or undefined", () => {
   expect(gadgetById("nonogram")?.id).toBe("nonogram");
   expect(gadgetById("nope")).toBeUndefined();
+});
+
+// Pins the invariant the doc comment on `Gadget.supportsTier` (src/game/types.ts) describes but
+// nothing previously enforced: only a gadget whose component actually reads `PuzzleProps.tier` may
+// set this flag, because `GadgetOverlay` uses it to decide whether to show the "harder" offer at
+// all, and an unbacked flag would promise a harder board the puzzle can't deliver. Nonogram is the
+// only one wired up today.
+test("supportsTier is set on exactly the gadgets whose component honours it", () => {
+  const withSupportsTier = GADGETS.filter((g) => g.supportsTier).map((g) => g.id);
+  expect(withSupportsTier).toEqual(["nonogram"]);
 });

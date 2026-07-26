@@ -213,7 +213,9 @@ test("each twin's card names the other", () => {
 test("neither cross-reference is phrased as a recommendation", () => {
   for (const card of [cardFor("logic-games", "mirror"), cardFor("math", "fraction-laser")]) {
     const text = card?.body.join(" ") ?? "";
-    expect(text).not.toMatch(/you (should|might|liked|enjoyed)|try (it|this|that)|recommend|next up/i);
+    expect(text).not.toMatch(
+      /you (should|might|liked|enjoyed)|try (it|this|that)|recommend|next up|head over to|give it a shot|worth playing/i,
+    );
   }
 });
 
