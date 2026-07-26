@@ -1,0 +1,331 @@
+/* Fraction Laser wears Mirror Maze's clothes on purpose — same wood-framed
+   board, same parchment tiles, same ember beam, same Back / Next controls.
+   The pair is an experiment (PROJECT.md, "The twin pair"): the shell is held
+   constant so that a child's preference between the two is a preference about
+   fractions rather than about how the game looks. Any change here that is not
+   also true of Mirror.css weakens that, so the divergences are few and
+   deliberate: a 64px tile instead of 56px (a stacked fraction needs the room)
+   and a gap folded into the SVG's own geometry so the beams stay centred. */
+
+.fl {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  font-family: var(--font-body);
+  color: var(--ink);
+}
+
+.fl-exit {
+  align-self: flex-start;
+  border: 2px solid var(--wood-frame);
+  background: linear-gradient(180deg, var(--parchment-hi), var(--parchment-edge));
+  color: var(--ink);
+  border-radius: var(--r-pill);
+  padding: 0.45rem 1.1rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: transform 120ms var(--ease-out), box-shadow 160ms var(--ease-out), background 160ms
+    var(--ease-out);
+}
+
+.fl-exit:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  box-shadow: var(--shadow-soft), var(--glow-ember);
+}
+
+.fl-next {
+  border: 2px solid var(--wood-frame);
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  color: var(--parchment-hi);
+  border-radius: var(--r-pill);
+  padding: 0.5rem 1.3rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft), var(--glow-ember);
+  transition: transform 120ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+
+.fl-next:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft), var(--glow-ember-strong);
+}
+
+.fl-next:active {
+  transform: translateY(0);
+}
+
+.fl-board {
+  position: relative;
+  background: linear-gradient(160deg, #c9a878, #a9865f);
+  border: 4px solid var(--wood-frame);
+  border-radius: var(--r-md);
+  padding: 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), var(--shadow-raised);
+  transition: box-shadow 260ms var(--ease-out);
+}
+
+.fl-board.fl-solved {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), var(--shadow-raised),
+    var(--glow-ember-strong);
+}
+
+.fl-grid {
+  position: relative;
+  display: grid;
+  z-index: 1;
+}
+
+.fl-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.fl-floor {
+  background: linear-gradient(180deg, #fffaf1, #f3e7d3);
+  border: 1px solid rgba(90, 58, 36, 0.25);
+  border-radius: 5px;
+}
+
+/* — The stacked fraction glyph, used on prisms, crystals and the emitter — */
+
+.fl-frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.fl-num {
+  padding: 0 0.18em;
+}
+
+.fl-den {
+  padding: 0 0.18em;
+  border-top: 0.09em solid currentColor;
+}
+
+.fl-frac-whole {
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+/* — Emitter: the same ember lantern as Mirror's, labelled with the one whole
+     beam it puts out, because "one whole" is the quantity everything else on
+     the board is a share of. — */
+
+.fl-emitter {
+  background: radial-gradient(circle at 50% 45%, var(--ember-bright), var(--ember-deep) 70%);
+  border: 2px solid var(--ember-deep);
+  border-radius: 6px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 10px rgba(232, 134, 60, 0.65);
+}
+
+.fl-emitter-arrow {
+  font-size: 1.3rem;
+  color: var(--parchment-hi);
+  text-shadow: 0 0 6px rgba(255, 184, 103, 0.9);
+  display: inline-block;
+}
+
+.fl-emitter-whole {
+  position: absolute;
+  left: 5px;
+  top: 3px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--parchment-hi);
+  text-shadow: 0 1px 3px rgba(60, 20, 0, 0.8);
+}
+
+/* — Prism: the tunable piece. The big fraction is the share that carries
+     straight on; the small one, pushed to whichever edge the side port faces,
+     is the rest. They are always written so they visibly make one whole. — */
+
+.fl-prism {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(160deg, #fffdf7, #ecdcc0);
+  border: 2px solid var(--wood-frame);
+  border-radius: 7px;
+  cursor: pointer;
+  color: var(--ink);
+  overflow: hidden;
+  transition: transform 90ms var(--ease-out), box-shadow 140ms var(--ease-out);
+}
+
+.fl-prism::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1.5px solid rgba(232, 134, 60, 0.45);
+  border-radius: 4px;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.fl-prism:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 0 2px rgba(232, 134, 60, 0.45);
+}
+
+.fl-prism:active {
+  transform: scale(0.96);
+}
+
+.fl-prism-main {
+  font-size: 0.9rem;
+  z-index: 1;
+}
+
+/* Where the two amounts can sit without the light covering them.
+   Three of a prism's four edge-centres always carry a beam — the one it
+   arrives on, the one it carries straight out of, and the side port — so the
+   only reliably clear places on the tile are the middle and the corners. The
+   main amount takes the middle, which the beams leave alone because each one
+   stops short of it, and the side amount takes the corner next to the port it
+   belongs to. An earlier version put the side amount on the port edge itself
+   and the branch beam drew straight over the top of it. */
+.fl-prism-side {
+  position: absolute;
+  font-size: 0.58rem;
+  color: var(--ink-soft);
+  z-index: 1;
+}
+
+.fl-branch-N .fl-prism-side {
+  top: 2px;
+  right: 3px;
+}
+
+.fl-branch-S .fl-prism-side {
+  bottom: 2px;
+  left: 3px;
+}
+
+.fl-branch-E .fl-prism-side {
+  bottom: 2px;
+  right: 3px;
+}
+
+.fl-branch-W .fl-prism-side {
+  top: 2px;
+  left: 3px;
+}
+
+/* — Crystal: Mirror's dark alcove, but the gem is replaced by the exact share
+     this one is owed. Comparing that against the amount written on the beam
+     arriving at it is the whole task. — */
+
+.fl-crystal {
+  background: radial-gradient(circle at 50% 55%, #2c1b12, var(--wood-deep) 75%);
+  border: 2px solid var(--wood-frame);
+  border-radius: 6px;
+  color: var(--cream-soft);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 200ms var(--ease-out), color 200ms var(--ease-out);
+}
+
+.fl-crystal-need {
+  font-size: 0.95rem;
+}
+
+.fl-crystal-lit {
+  color: #fff6e6;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4), var(--glow-ember-strong);
+  text-shadow: 0 0 10px rgba(255, 184, 103, 0.95);
+}
+
+/* — Beams. Thickness is the share carried, so the light visibly thins at every
+     split; the label on each run says exactly how much it is. — */
+
+.fl-beam-layer {
+  position: absolute;
+  inset: 10px;
+  pointer-events: none;
+  z-index: 2;
+  overflow: visible;
+}
+
+.fl-beam-glow {
+  stroke: var(--ember-bright);
+  stroke-linecap: round;
+  opacity: 0.5;
+  filter: blur(4px);
+}
+
+.fl-beam-core {
+  stroke: var(--ember-bright);
+  stroke-linecap: round;
+  stroke-dasharray: 14 8;
+  animation: fl-beam-flow 900ms linear infinite;
+}
+
+/* Light that reaches no crystal — thrown away, and shown being thrown away. */
+.fl-beam-spilt .fl-beam-glow,
+.fl-beam-spilt .fl-beam-core {
+  stroke: #8d7f6b;
+  opacity: 0.4;
+}
+
+.fl-beam-label {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 12px;
+  fill: #fff6e6;
+  paint-order: stroke;
+  stroke: rgba(46, 26, 12, 0.85);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+@keyframes fl-beam-flow {
+  to {
+    stroke-dashoffset: -44;
+  }
+}
+
+/* The demands, written out as the sum they are. The constraint the puzzle runs
+   on is that these total exactly one, so it is stated rather than implied. */
+.fl-ledger {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--cream);
+  letter-spacing: 0.02em;
+}
+
+.fl-hint {
+  margin: 0;
+  max-width: 34rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--cream-soft);
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl-beam-core {
+    animation: none;
+  }
+  .fl-prism,
+  .fl-crystal,
+  .fl-exit {
+    transition: none;
+  }
+}

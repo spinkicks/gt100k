@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ratio Mixing — review harness</title>
+    <style>
+      /* Harness chrome only. Everything the bench looks like lives in RatioMixing.css. */
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+      #root {
+        min-height: 100vh;
+      }
+      .harness {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        padding: 24px 16px 48px;
+      }
+      .bar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 8px 14px;
+        border-radius: 20px;
+        background: rgba(20, 13, 9, 0.62);
+        border: 1px solid rgba(240, 178, 100, 0.22);
+        color: #f3e4cd;
+        font: 13px/1.4 ui-sans-serif, system-ui, sans-serif;
+      }
+      .bar input {
+        width: 6rem;
+        padding: 4px 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./harness.tsx"></script>
+  </body>
+</html>

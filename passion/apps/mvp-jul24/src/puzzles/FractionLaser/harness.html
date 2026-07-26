@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fraction Laser — review harness</title>
+    <style>
+      /* Harness chrome only. Everything being reviewed lives in FractionLaser.css. */
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+      .wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        padding: 70px 20px 40px;
+      }
+      .bar {
+        position: fixed;
+        top: 14px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        width: max-content;
+        padding: 8px 14px;
+        border-radius: 20px;
+        background: rgba(20, 13, 9, 0.62);
+        border: 1px solid rgba(240, 178, 100, 0.22);
+        backdrop-filter: blur(16px);
+        font: 13px/1.4 ui-sans-serif, system-ui, sans-serif;
+        color: #f3e4cd;
+      }
+      .bar button {
+        appearance: none;
+        font: inherit;
+        font-size: 12px;
+        padding: 5px 11px;
+        border-radius: 999px;
+        cursor: pointer;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(195, 173, 147, 0.85);
+      }
+      .bar button[aria-pressed="true"] {
+        color: #fff0d8;
+        border-color: rgba(240, 178, 100, 0.45);
+        background: rgba(240, 178, 100, 0.16);
+      }
+      .bar .label {
+        font-size: 9.5px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(195, 173, 147, 0.6);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./harness.tsx"></script>
+  </body>
+</html>
