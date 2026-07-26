@@ -4,8 +4,12 @@
    constant so that a child's preference between the two is a preference about
    fractions rather than about how the game looks. Any change here that is not
    also true of Mirror.css weakens that, so the divergences are few and
-   deliberate: a 64px tile instead of 56px (a stacked fraction needs the room)
-   and a gap folded into the SVG's own geometry so the beams stay centred. */
+   deliberate: a 64px tile instead of 56px, because a stacked fraction needs the
+   room. That is now the ONLY divergence. This note used to list a second one —
+   the grid gap folded into the SVG's own geometry, so beams stay centred — which
+   was a divergence only because Mirror had the bug and this file did not. Mirror
+   has since been fixed the same way, so the pair is back to differing in tile
+   size alone, which is the state the experiment wants. */
 
 .fl {
   display: flex;

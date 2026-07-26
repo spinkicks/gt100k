@@ -248,9 +248,9 @@
     linear-gradient(var(--parchment-hi) 40%, rgba(251, 241, 218, 0)) top / 100% 26px no-repeat local,
     linear-gradient(rgba(237, 220, 184, 0), #eddcb8 62%) bottom / 100% 30px no-repeat local,
     radial-gradient(farthest-side at 50% 0, rgba(51, 35, 15, 0.24), rgba(51, 35, 15, 0)) top / 100%
-      13px no-repeat scroll,
+    13px no-repeat scroll,
     radial-gradient(farthest-side at 50% 100%, rgba(51, 35, 15, 0.28), rgba(51, 35, 15, 0)) bottom /
-      100% 15px no-repeat scroll,
+    100% 15px no-repeat scroll,
     linear-gradient(180deg, var(--parchment-hi) 0%, var(--parchment) 46%, #eddcb8 100%) scroll;
 }
 

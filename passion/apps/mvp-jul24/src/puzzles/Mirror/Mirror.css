@@ -70,10 +70,12 @@
     var(--glow-ember-strong);
 }
 
+/* The tile size and the gap are set inline from Mirror.tsx's CELL/GAP, because the SVG beam overlay
+   has to compute its coordinates from the same two numbers. Declaring the gap here as well would put
+   the beam one gap-width per column out of true the moment the two copies drifted apart. */
 .mr-grid {
   position: relative;
   display: grid;
-  gap: 2px;
   z-index: 1;
 }
 
@@ -136,14 +138,41 @@
   transform: scale(1.15);
 }
 
-/* Mirror tiles — angled glass shards on a parchment backing. */
+/* — Mirror tiles: silvered glass shards mounted across a tile. —
+   The one thing a player must read here is which of the two diagonals a mirror is sitting on,
+   because the two slants bend the beam opposite ways: read the slant wrong and the beam goes
+   somewhere else for a reason that was never visible. An earlier version drew the shard as a
+   near-white streak over a near-white tile — legible in a design screenshot, close to invisible on
+   a real screen against the parchment.
+
+   So the slant is now carried three times over, and NONE of the three cues is a hue. Colour-blind
+   players and washed-out low-contrast screens are both ordinary cases for a game aimed at
+   six-to-eight-year-olds, and the puzzles here carry redundant non-colour cues on purpose
+   elsewhere too (see the size-carries-value note in BalanceScale.css):
+
+     1. luminance — the shard is a dark-rimmed bar with a bright silvered face, so it contrasts
+        against the parchment tile in both directions and survives greyscale. The casing is
+        10.1:1 against the darkest end of the tile gradient and 12.8:1 against the lightest; the
+        white streak it replaced managed 1.0–1.2:1, which is the whole of the bug;
+     2. shape — the bar runs corner to corner, the full diagonal, so its direction is the biggest
+        thing on the tile rather than a short mark near the middle;
+     3. the mounts — the two corners the shard is bolted into are darkened, at 3:1 or better so
+        they stand on their own, and so that shrunk to the size the cabin's wall prop paints the
+        board at — where the bar is barely a couple of pixels wide — the tile still visibly leans
+        the right way.
+
+   To anyone about to simplify this back to a single cue: it *was* a single cue, and the mirrors
+   could not be seen. Check it in greyscale, and at a third of this size, before removing any of
+   the three. */
 .mr-mirror {
   position: relative;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, #fffaf1, #f3e7d3);
-  border: 1px solid rgba(90, 58, 36, 0.35);
-  border-radius: 5px;
+  /* A shade deeper than .mr-floor and framed in wood like FractionLaser's prism, so the tiles that
+     can be touched separate from the ones that cannot before the shard is even read. */
+  background: linear-gradient(160deg, #f2e4c9, #dccbaa);
+  border: 2px solid var(--wood-frame);
+  border-radius: 6px;
   cursor: pointer;
   overflow: hidden;
   transition: transform 90ms var(--ease-out), box-shadow 140ms var(--ease-out);
@@ -151,28 +180,54 @@
 
 .mr-mirror:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 0 2px rgba(232, 134, 60, 0.4);
+  box-shadow: 0 0 0 2px rgba(232, 134, 60, 0.55);
 }
 
 .mr-mirror:active {
   transform: scale(0.95);
 }
 
+/* Cue 3, the mounts: a wedge in each of the two corners the shard is bolted into. Hard-edged rather
+   than feathered — a soft blob in a corner reads as a smudge on the tile, a wedge reads as a bracket
+   holding something up. The 45deg/225deg pair fills the bottom-left and top-right corners, and a
+   quarter-turn is exactly what carries that "/" pair onto the "\" pair (top-left, bottom-right), so
+   rotating this one layer keeps the mounts in step with the shard above them and the whole tile turns
+   as one piece. */
+.mr-mirror::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(45deg, rgba(90, 58, 36, 0.65) 0 16%, transparent 16%),
+    linear-gradient(225deg, rgba(90, 58, 36, 0.65) 0 16%, transparent 16%);
+  transition: transform 160ms var(--ease-out);
+}
+
+.mr-mirror-back::before {
+  transform: rotate(90deg);
+}
+
+/* Cues 1 and 2, the shard. 142% is a little over the diagonal of a square, so the bar reaches past
+   both corners and the tile's `overflow: hidden` crops it flush — which is what makes it read as a
+   shard mounted across the cell rather than a floating sliver. The band running down its thickness
+   is a silvered edge lit from the warm side of the room: bright face, dull glass behind it, dark
+   casing top and bottom. */
 .mr-mirror-glass {
   position: absolute;
-  left: -15%;
-  top: 46%;
-  width: 130%;
-  height: 16%;
+  left: -21%;
+  top: calc(50% - 5px);
+  width: 142%;
+  height: 10px;
+  border-radius: 2px;
   background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.95) 45%,
-    var(--ember-bright) 52%,
-    rgba(255, 255, 255, 0.95) 58%,
-    rgba(255, 255, 255, 0) 100%
+    180deg,
+    #2f1d10 0 18%,
+    #fffdf7 18% 42%,
+    #ffe7c0 42% 58%,
+    #a98a63 58% 78%,
+    #2f1d10 78% 100%
   );
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+  box-shadow: 0 1px 4px rgba(31, 16, 6, 0.45);
   transform: rotate(45deg);
   transition: transform 160ms var(--ease-out);
 }
@@ -231,6 +286,7 @@
     animation: none;
   }
   .mr-mirror,
+  .mr-mirror::before,
   .mr-mirror-glass,
   .mr-target-gem,
   .mr-exit {

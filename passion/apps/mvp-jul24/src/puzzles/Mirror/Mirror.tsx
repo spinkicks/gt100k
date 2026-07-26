@@ -5,7 +5,13 @@ import { generateLevel } from "./generate";
 import { type CellContent, type Direction, cloneMirrors, rotateMirror, traceBeam } from "./logic";
 import "./Mirror.css";
 
-const CELL = 56; // px, keep in sync with .mr-cell width/height in Mirror.css
+// Geometry. CELL/GAP are the single source of truth for both the CSS grid template and the SVG beam
+// overlay: the grid's gap has to be folded into the beam's own coordinates, or every endpoint drifts
+// one gap-width per column and the beam stops landing on tile centres as the board grows. Ported
+// from FractionLaser, which hit this first — see the note at the top of FractionLaser.css.
+const CELL = 56;
+const GAP = 2;
+const STEP = CELL + GAP;
 
 const ARROW_ROTATION: Record<Direction, number> = { N: -90, E: 0, S: 90, W: 180 };
 
@@ -39,9 +45,11 @@ export default function Mirror({ seed, onSolved, onExit }: PuzzleProps) {
     setMirrors((prev) => rotateMirror(prev, r, c));
   };
 
-  const px = level.size * CELL;
+  // The grid's real footprint: n tiles plus the n-1 gaps between them. The SVG matches it exactly,
+  // so a point at column c sits at the centre of column c however far right c is.
+  const px = level.size * CELL + (level.size - 1) * GAP;
   const points = trace.path
-    .map((p) => `${p.col * CELL + CELL / 2},${p.row * CELL + CELL / 2}`)
+    .map((p) => `${p.col * STEP + CELL / 2},${p.row * STEP + CELL / 2}`)
     .join(" ");
 
   return (
@@ -54,15 +62,18 @@ export default function Mirror({ seed, onSolved, onExit }: PuzzleProps) {
           panel reuses the `.mr-hint` sentence below rather than inventing a second phrasing. */}
       <TeachIn activity="mirror" />
 
-      <div
-        className={`mr-board${trace.reachesTarget ? " mr-solved" : ""}`}
-        style={{ width: px, height: px }}
-      >
+      {/* No explicit size: the frame wraps the grid. Setting width/height here was wrong under the
+          global border-box rule — the 10px padding and the 4px border came out of the stated size,
+          while the grid is sized by its own tile template and so kept its full footprint: on a
+          5-wide board it hung 22px past the outer edge of the wood on each axis — the far column and
+          the bottom row sitting out on the frame — and 2px more for every column after that. */}
+      <div className={`mr-board${trace.reachesTarget ? " mr-solved" : ""}`}>
         <div
           className="mr-grid"
           style={{
             gridTemplateColumns: `repeat(${level.size}, ${CELL}px)`,
             gridTemplateRows: `repeat(${level.size}, ${CELL}px)`,
+            gap: GAP,
           }}
         >
           {mirrors.map((row, r) =>
