@@ -12,6 +12,18 @@
 // THE THIRD MAP IS DELIBERATELY OUT OF DATE. Both of the other two were re-checked well inside
 // STALE_AFTER_DAYS of the review clock, so with only those two the freshness path in spec §7 could
 // never run and the staleness a guide is supposed to see was unreachable by construction.
+//
+// THE NAMES CARRY A "CONSOLE_" PREFIX because the engine's own `src/__fixtures__/maps.ts` holds a
+// piano map and a game-dev map too, and they are DIFFERENT GRAPHS: different milestones, different
+// edges, different orderings. Two exports with one name across a package boundary invite the
+// assumption that an ordering pinned in the engine's tests is the ordering the console renders, and
+// it is not. The maths map has no namesake and takes the prefix for consistency.
+//
+// TWO OF THE THREE ARE IN USE. A per-child standing is only read against a map that is published
+// and fit to be (see `standingRefusalFor` in maps.ts), so a queue of three drafts would have shown
+// a guide no reading at all. The maths map stays a draft AND out of date, which is now two things
+// at once a guide can see: no reading against a child, and a refusal to put it into use until the
+// resources have been looked at again.
 import type { MasteryMap, Milestone, ValidationRecord } from "@gt100k/mastery-map";
 import type { Source } from "@gt100k/research";
 
@@ -226,8 +238,8 @@ const PIANO_MILESTONES: readonly Milestone[] = [
   },
 ];
 
-export const PIANO_MAP: MasteryMap = {
-  id: "map-piano",
+export const CONSOLE_PIANO_MAP: MasteryMap = {
+  id: "map-piano-console",
   version: 1,
   domainPath: ["music-sound", "instruments"],
   modes: ["perform", "compose"],
@@ -240,7 +252,8 @@ export const PIANO_MAP: MasteryMap = {
     edits: [],
   },
   validation: UNVALIDATED,
-  status: "draft",
+  // In use, which is what puts a child's reading on the screen underneath it.
+  status: "published",
   // A human has looked at this one. It is not a precondition for use, and the second map
   // deliberately leaves it null to prove that.
   vettedBy: { id: "guide-104", role: "GUIDE" },
@@ -477,8 +490,8 @@ const GAME_DEV_MILESTONES: readonly Milestone[] = [
   },
 ];
 
-export const GAME_DEV_MAP: MasteryMap = {
-  id: "map-game-dev",
+export const CONSOLE_GAME_DEV_MAP: MasteryMap = {
+  id: "map-game-dev-console",
   version: 1,
   domainPath: ["code-computers", "game-dev"],
   modes: ["build", "debug", "collaborate"],
@@ -491,7 +504,9 @@ export const GAME_DEV_MAP: MasteryMap = {
     edits: [],
   },
   validation: UNVALIDATED,
-  status: "draft",
+  // In use with nobody's signature on it, which is the pair of facts this map exists to hold
+  // together: human review is optional by design and its absence blocks nothing.
+  status: "published",
   // Nobody has reviewed this one, and it is just as usable for it. Human review is optional by
   // design: what a map must have is a passing validation record.
   vettedBy: null,
@@ -660,7 +675,7 @@ const COMPETITION_MATH_MILESTONES: readonly Milestone[] = [
   },
 ];
 
-export const COMPETITION_MATH_MAP: MasteryMap = {
+export const CONSOLE_COMPETITION_MATH_MAP: MasteryMap = {
   id: "map-competition-math",
   version: 1,
   domainPath: ["math-puzzles", "competition-math"],
@@ -682,4 +697,8 @@ export const COMPETITION_MATH_MAP: MasteryMap = {
 };
 
 /** The review queue the Maps tab shows. */
-export const REVIEW_MAPS: readonly MasteryMap[] = [PIANO_MAP, GAME_DEV_MAP, COMPETITION_MATH_MAP];
+export const REVIEW_MAPS: readonly MasteryMap[] = [
+  CONSOLE_PIANO_MAP,
+  CONSOLE_GAME_DEV_MAP,
+  CONSOLE_COMPETITION_MATH_MAP,
+];

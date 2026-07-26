@@ -2999,6 +2999,166 @@ body {
   text-decoration: line-through;
 }
 
+/* ---- One map read against one child (024 slice 2) ---- */
+/* NOTHING HERE IS A SCORE, AND THE COLOUR HAS TO SAY SO. A standing is how much a child has made,
+   which cannot support a claim that they have the capability, so no state below is green, none is
+   red, and none of them reads as a pass. The three standings are told apart by their words first,
+   the way every other four-valued thing in this console is, and the chip behind them stays quiet. */
+.mapchild {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: var(--rail);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+.mapchild__note {
+  margin: 5px 0 0;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+.mapreadlist {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.mapread {
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+.mapread__row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 8px;
+}
+/* All three quiet, and deliberately close to each other: the difference between one artefact and
+   several is a difference of degree, not the difference between a fail and a pass. */
+/* Muted ink rather than the uncertain grey: "nothing made yet" is the state a guide most needs to
+   read clearly, and the uncertain pair is a fill colour with nowhere near enough contrast for text
+   sitting on it. The dashed edge carries the difference instead. */
+.mapstrength--none {
+  color: var(--ink-muted);
+  background: var(--uncertain-bg);
+  border-color: var(--line-strong);
+  border-style: dashed;
+}
+.mapstrength--single,
+.mapstrength--multiple {
+  color: var(--ink-muted);
+  background: var(--surface-2);
+  border-color: var(--line);
+}
+.mapstrength--multiple {
+  color: var(--ink);
+}
+/* Whether to offer it. A different question from the standing beside it, so it is a different
+   shape: solid edge against the standing's dashed one, and no fill colour of its own.
+   It used to carry the accent, which made it the only filled chip on a row where all three
+   standings are deliberately grey. That handed the row's visual verdict to reachability, which is
+   an offering decision and the one thing on the row that is NOT about the child, and it undid in
+   the stylesheet exactly what the copy spends three sentences saying. It is now as quiet as the
+   standings it sits beside. */
+.mapoffer {
+  border-style: solid;
+}
+.mapoffer--yes {
+  color: var(--ink);
+  background: var(--surface-2);
+  border-color: var(--line);
+}
+.mapoffer--no {
+  color: var(--ink-muted);
+  background: transparent;
+  border-color: var(--line-strong);
+  border-style: dashed;
+}
+.mapread__note {
+  margin: 6px 0 0;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+.mapread__nowork {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+}
+/* The work, under every judgment. It gets ordinary body weight rather than being tucked away: a
+   standing shown without the artefacts behind it behaves like a grade, which is the one thing this
+   screen must not do. */
+.mapwork {
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.mapwork__proj {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.mapwork__things {
+  list-style: none;
+  margin: 3px 0 0;
+  padding: 0 0 0 10px;
+  border-left: 2px solid var(--line);
+  display: grid;
+  gap: 4px;
+}
+.mapwork__things li {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.81rem;
+  color: var(--ink);
+  line-height: 1.45;
+}
+.mapwork__at {
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+.mapblock {
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+/* A guide's override. It sits with the work rather than above it, because it is a decision about
+   what to offer and never a substitute for something made. */
+.mapread__ov {
+  margin-top: 10px;
+  padding: 9px 12px;
+  background: var(--surface-2);
+  border-left: 3px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+}
+.mapread__ovnote {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+  color: var(--ink);
+  line-height: 1.45;
+}
+.mapread__ovby {
+  margin: 4px 0 0;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+
 /* ── Overview dashboard ───────────────────────────────────────────────────────
    Lifted from the approved console reference (design-lab/app/console.css). Three names collided
    with existing rules that mean something else in this console, so they carry an `ov-` prefix here:
