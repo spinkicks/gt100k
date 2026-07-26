@@ -89,31 +89,38 @@
   box-shadow: 0 0 8px rgba(255, 184, 103, 0.9);
 }
 
-/* Secondary "soon" cabins — clearly dimmed and locked. */
+/* Secondary "coming soon" cabins — dimmed but deliberately still legible: a player should be able
+   to read what's on the way, so this is a quieted-down signpost, not a locked door. Dimmed enough
+   to lose the competition for attention against the amber active nodes, but the label keeps enough
+   contrast against the wood to stay readable. */
 .map-screen-node.inactive {
   background: linear-gradient(180deg, #5a4a3c, #43362b);
   border-color: #4a3a2c;
   color: var(--cream-soft);
-  opacity: 0.72;
+  opacity: 0.78;
+  /* These nodes carry aria-disabled, not the `disabled` attribute (so they stay tabbable — see
+     MapScreen.tsx), which means the browser no longer suppresses hover/pointer styling for us. */
   cursor: not-allowed;
   box-shadow: var(--shadow-soft);
   filter: saturate(0.7);
 }
 
+/* Keyboard users can still reach these nodes, so the focus ring has to remain visible on them. */
+.map-screen-node.inactive:focus-visible {
+  outline: 2px solid var(--ember-bright);
+  outline-offset: 2px;
+}
+
 .map-screen-node-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.2rem;
-  padding: 0.05rem 0.45rem 0.05rem 0.3rem;
+  padding: 0.05rem 0.45rem;
   border-radius: var(--r-pill);
   font-family: var(--font-body);
   font-size: 0.68rem;
   font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   background: rgba(0, 0, 0, 0.25);
   color: var(--cream);
-}
-
-.map-screen-node-badge svg {
-  width: 0.72rem;
-  height: 0.72rem;
 }

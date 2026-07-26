@@ -11,6 +11,14 @@ import "./MapScreen.css";
  * The image itself is decorative — if `/art/map.png` 404s, the container's
  * fallback background keeps the scene looking intentional and never blocks the
  * node layer.
+ *
+ * Not-yet-built cabins stay on the map as legible "coming soon" signposts (see cabins.data.ts).
+ * They use `aria-disabled` rather than the `disabled` attribute so they remain tabbable and
+ * discoverable — a real `disabled` button is skipped by keyboard navigation and often skimmed over
+ * by screen readers, which would hide the very thing the node exists to announce. The trade-off is
+ * that `aria-disabled` doesn't block activation, so the click handler has to guard on `active`
+ * itself (it already did) and the browser default of firing on Enter/Space is harmless because that
+ * handler is a no-op.
  */
 export const MapScreen: React.FC = () => {
   const reduce = useReducedMotion();
@@ -35,7 +43,8 @@ export const MapScreen: React.FC = () => {
           className={`map-screen-node${cabin.active ? "" : " inactive"}`}
           style={{ left: `${cabin.xPct}%`, top: `${cabin.yPct}%` }}
           data-cabin={cabin.id}
-          disabled={!cabin.active}
+          aria-disabled={cabin.active ? undefined : true}
+          aria-label={cabin.active ? undefined : `${cabin.label} — coming soon`}
           initial={reduce ? { opacity: 0 } : { opacity: 0, x: "-50%", y: "-30%" }}
           animate={{ opacity: 1, x: "-50%", y: "-50%" }}
           transition={{ delay: 0.12 + i * 0.08, duration: 0.45, ease: [0.22, 0.7, 0.3, 1] }}
@@ -49,15 +58,10 @@ export const MapScreen: React.FC = () => {
           {cabin.active ? (
             <span className="map-screen-node-spark" aria-hidden="true" />
           ) : (
-            <span className="map-screen-node-badge">
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path
-                  d="M7 10V8a5 5 0 0 1 10 0v2h1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1h1Zm2 0h6V8a3 3 0 0 0-6 0v2Z"
-                  fill="currentColor"
-                />
-              </svg>
-              soon
-            </span>
+            /* Plain wording, no padlock: these cabins aren't locked behind anything a player could
+               do, they just don't exist yet. The button's aria-label already carries the same words,
+               so this badge is redundant to a screen reader and stays out of the accessible name. */
+            <span className="map-screen-node-badge">Coming soon</span>
           )}
         </motion.button>
       ))}

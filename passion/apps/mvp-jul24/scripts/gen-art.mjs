@@ -3,8 +3,16 @@
  * gen-art.mjs — generate the game's art (world map + cabin backgrounds) via
  * the TrueFoundry image gateway.
  *
+ * NOTE: the cabin BACKDROPS used by the backdrop renderer
+ * (`public/art/cabin-backdrop-*.png`) are NOT produced here — they are built by
+ * scripts/gen-cabins.mjs, which edits approved concept stills in place rather
+ * than generating a room, so that the composition cannot drift. The
+ * `cabin-math` / `cabin-logic-games` targets below produce the older
+ * whole-room images still loaded by src/cabin/CabinStatic.tsx. Running them
+ * will not touch the backdrops.
+ *
  * Usage:
- *   node scripts/gen-art.mjs [target...] [--model <gpt-image-1|gemini-3-pro-image-preview>]
+ *   node scripts/gen-art.mjs [target...] [--model <gpt-image-1|gpt-image-1.5|gemini-3-pro-image-preview>]
  *
  * With no target, generates every target in TARGETS. Writes PNG/JPEG bytes
  * straight to public/art/<target>.<ext>.
@@ -24,36 +32,34 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ART_DIR = join(__dirname, "..", "public", "art");
 
 const GATEWAY_URL = "https://tfy.promptlens.trilogy.com/api/llm/images/generations";
-const DEFAULT_MODEL = "gpt-image-1";
-const VALID_MODELS = new Set(["gpt-image-1", "gemini-3-pro-image-preview"]);
+const DEFAULT_MODEL = "gpt-image-1.5";
+const VALID_MODELS = new Set(["gpt-image-1", "gpt-image-1.5", "gemini-3-pro-image-preview"]);
+
+/**
+ * Shared negative-constraint tail. Image models bake lettering into signage,
+ * clock dials and framed art unless told repeatedly not to, so every prompt
+ * ends with this.
+ */
+const NO_TEXT =
+  "Absolutely no text, no letters, no words, no writing, no numbers, no " +
+  "numerals, no digits, no labels, no captions, no signs, no signposts, no " +
+  "banners, no scrolls, no map legend, no compass rose, no watermark and no " +
+  "UI elements of any kind anywhere in the image. Every surface, frame, dial " +
+  "and board is blank of writing.";
 
 /** Named art targets: prompt + output filename. */
 const TARGETS = {
   map: {
     file: "map.png",
-    prompt:
-      "A warm, painterly parchment-style fantasy world map, like an illustrated " +
-      "overworld from a cozy storybook game. Hand-painted, top-down view, aged " +
-      "parchment texture with soft muted colors. Show a handful of distinct, " +
-      "cozy themed island or region nodes scattered across the map: a small " +
-      "math-and-puzzle cabin with geometric shapes and gears nearby, a music " +
-      "cabin with instruments and musical notes in the trees, a code cabin with " +
-      "glowing circuit-like paths and a lantern, and an art cabin with paint " +
-      "splatters and an easel outside. Gentle rolling hills, winding paths " +
-      "connecting the regions, soft clouds, a hand-drawn storybook illustration " +
-      "style. No text, no labels, no words, no UI elements anywhere in the image.",
+    prompt: `A warm, painterly parchment-style fantasy world map, like an illustrated overworld from a cozy storybook game. Flat hand-painted 2D illustration on aged parchment texture with soft muted colors — an illustrated map, not a 3D render, not a photograph. Five small wooden cabins sit in the landscape, and the composition is deliberately split into a bright near half and a hazy far half. NEAR, large and prominent in the foreground and midground, two cozy cabins glow with warm inviting light, sharply painted and richly coloured, each on its own green hillock, joined to the bottom edge of the map by a wide sunlit winding path: on the left a puzzle den with a lantern on its porch, a chequered board, scattered coloured wooden pegs and interlocking block shapes on the grass outside; on the right a clockmaker's workshop with brass cogs and gears leaning against its wall, a swinging pendulum under the eaves and a big plain round dial with two simple hands and a completely blank empty face on its gable. FAR AWAY near the horizon, three much smaller cabins are faint, pale, dim and half-swallowed by cool blue mist and rolling hills — clearly visible but distant, shuttered and unlit with dark empty windows, washed-out and desaturated, with no paths leading to them: one tucked among trees with faint ghostly silhouettes of a harp and a horn beside it, one with a faint web of thin branching glowing threads and tiny firefly-like dots of light creeping over the ground around it like a circuit, and one with a small easel, a palette and pale watery paint splashes on the grass beside it. Gentle rolling hills, soft clouds, hand-drawn storybook illustration style, strong depth: crisp golden light and saturated colour on the two near cabins, soft grey-blue atmospheric haze on the three distant ones. ${NO_TEXT}`,
   },
   "cabin-math": {
     file: "cabin-math.png",
-    prompt:
-      "A cozy wooden cabin interior, viewed from a fixed first-person " +
-      "perspective looking toward a stone fireplace. Warm firelight glow, " +
-      "exposed wood-plank walls and beams, a small rug on a wooden floor. On " +
-      "the walls, small framed puzzle gadgets and math curiosities hang like " +
-      "decorations — wooden geometric puzzles, an abacus, a grid-paper sketch in " +
-      "a frame. Soft warm lantern light, inviting and snug, painterly " +
-      "storybook illustration style, rich warm color palette. No people, no " +
-      "characters, no text, no words, no UI elements anywhere in the image.",
+    prompt: `The inside of a clockmaker's workshop in a cozy wooden cabin, viewed from a fixed first-person perspective looking straight at the far wall. A long dark-wood workbench strewn with brass gears, cogs, springs, coiled mainsprings, tiny screwdrivers, tweezers and half-assembled clock movements. Behind it the wood-plank wall is hung with pendulum clocks whose faces have been removed to show their exposed brass clockwork, plus a few completely blank plain round dials with simple hands and no markings at all, swinging brass pendulums, and weights on chains. A wall of small parts drawers, a pair of brass balance scales, brass calipers and a set square. Warm lantern and candle light, dust motes drifting in a shaft of afternoon sun through a small window, exposed beams overhead, worn wooden floorboards and a small rug. Painterly storybook illustration style, rich warm brass-and-amber palette, snug and inviting. No people, no characters. ${NO_TEXT}`,
+  },
+  "cabin-logic-games": {
+    file: "cabin-logic-games.png",
+    prompt: `The inside of a puzzle den in a cozy wooden cabin, viewed from a fixed first-person perspective looking straight at the far wall. Large framed grid puzzles hang on the wood-plank wall — big empty chequered lattices and blank grids of plain squares studded with coloured wooden pegs, no writing on them. To one side a tall wooden pegboard is threaded with looping bright coloured pipes and rubber tubes running between its holes. In the middle of the room a small round table holds a carved wooden chess set mid-game. On the other side stands a narrow mirror maze of tall angled mirrors reflecting warm lamplight into infinity. A shelf of interlocking wooden block puzzles and flat tangram shapes, a lantern casting warm light, exposed beams overhead, worn floorboards and a patterned rug. Painterly storybook illustration style, warm inviting palette with bright pops of puzzle-piece colour. No people, no characters. ${NO_TEXT}`,
   },
 };
 
@@ -133,6 +139,24 @@ async function generateImage({ model, prompt, apiKey }) {
   throw new Error("Gateway response contained neither b64_json nor url.");
 }
 
+/**
+ * Re-encode a PNG losslessly at max compression. The gateway's PNGs are
+ * under-compressed (~2.4 MB for 1024x1024); this shaves ~13% off with
+ * pixel-identical output, which matters because public/art/ is committed.
+ * Returns the original bytes if sharp is unavailable or does not help.
+ */
+async function shrinkPng(bytes) {
+  try {
+    const { default: sharp } = await import("sharp");
+    const out = await sharp(bytes)
+      .png({ compressionLevel: 9, adaptiveFiltering: true, palette: false })
+      .toBuffer();
+    return out.length < bytes.length ? out : bytes;
+  } catch {
+    return bytes;
+  }
+}
+
 async function main() {
   const { targets, model } = parseArgs(process.argv.slice(2));
 
@@ -161,7 +185,8 @@ async function main() {
     const outPath = join(ART_DIR, file);
     try {
       console.log(`  -> ${name}: requesting...`);
-      const bytes = await generateImage({ model, prompt, apiKey });
+      const raw = await generateImage({ model, prompt, apiKey });
+      const bytes = await shrinkPng(raw);
       writeFileSync(outPath, bytes);
       console.log(`  -> ${name}: wrote ${outPath} (${bytes.length} bytes)`);
     } catch (err) {

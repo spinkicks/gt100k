@@ -10,6 +10,7 @@
     "test": "vitest run",
     "gen-art": "node scripts/gen-art.mjs",
     "shoot": "tsx tools/shoot.ts",
+    "refboards": "tsx tools/refboards.ts",
     "compare": "tsx tools/compare.ts"
   },
   "dependencies": {

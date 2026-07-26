@@ -7,7 +7,7 @@
 
 | Order | App | For | URL |
 |---|---|---|---|
-| 0 (optional) | **Discovery Cabin** (early prototype) | child explores a 3D world | http://localhost:3040 |
+| 0 (optional) | **Discovery Cabin** (early prototype) | child clicks around a 3D cabin | http://localhost:3040 |
 | 1 | **Guide Console** | the guide | http://localhost:3020 |
 | 2 | **Project Studio** | the child | http://localhost:3010 |
 | 3 | **Evidence Explorer** | the honest record of the work | http://localhost:3030 |
@@ -38,7 +38,7 @@ The four apps share one visual language and theme switcher, so it reads as one p
 
 ## 3. Act 0 (optional): Discovery Cabin (:3040)
 
-Early prototype, about 30 seconds, set expectations up front. "Before any grown-up tools, a kid just explores. They walk around and try things, and we watch what they return to. That becomes the signal everything else is built on." Walk around, touch a gadget, then hand off: "What a child does here becomes the evidence the guide sees next."
+Early prototype, about 30 seconds, set expectations up front. "Before any grown-up tools, a kid just explores. They pick a cabin, look around the room, and try the things in it, and we watch what they come back to. That becomes the signal everything else is built on." It is point and click, one fixed view of the room, like an old adventure game: pick a cabin, click a prop, let its puzzle open, close it, then hand off: "What a child does here becomes the evidence the guide sees next."
 
 ---
 

@@ -1,0 +1,31 @@
+/* Puzzle previews composited into flat props. Geometry is set inline (per-prop matrix3d and source
+   rectangle, both computed in CabinBackdrop.tsx); this file holds only what is the same for all of
+   them. */
+
+.cbd-preview {
+  position: absolute;
+  /* The homography maps the SOURCE RECTANGLE (0,0)-(w,h) onto absolute art coordinates, so the
+     element must start at the layer's origin with no offset of its own and no transform-origin
+     shift — the quad's position is already inside the matrix. Both of these are part of the
+     contract documented in homography.ts; changing either silently translates every preview. */
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+
+  /* The polygon over the prop is the control. A preview that could be hovered would take pointer
+     events away from the polygon it sits inside, so the whole subtree opts out. */
+  pointer-events: none;
+
+  /* Seats the board on the surface: a soft contact shadow reads as a board resting on the wall
+     rather than a decal floating in front of it. The blend that warms it into the room is applied to
+     the whole layer, not here — see .cabin-backdrop-props in CabinBackdrop.css for why. */
+  filter: drop-shadow(0 1px 2px rgba(20, 10, 4, 0.5));
+}
+
+.cbd-preview-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Belt and braces with the wrapper: an <svg> is a replaced element and its own hit region. */
+  pointer-events: none;
+}

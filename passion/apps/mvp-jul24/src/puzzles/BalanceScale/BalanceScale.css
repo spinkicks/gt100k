@@ -1,0 +1,212 @@
+/* Balance Scale — warm wood and parchment, matching the cabin puzzles (see Mirror/FractionLaser). */
+
+.bs-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.25rem 1rem 2rem;
+  color: #f3e6cf;
+}
+
+.bs-back,
+.bs-next,
+.bs-reset,
+.bs-move {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid #6b4a2a;
+  background: linear-gradient(#f6e7c8, #e6d1a8);
+  color: #3a2513;
+  padding: 0.4rem 0.95rem;
+  box-shadow: 0 1px 0 #fdf6e6 inset;
+}
+
+.bs-back:hover,
+.bs-next:hover,
+.bs-reset:hover,
+.bs-move:hover {
+  background: linear-gradient(#fdf2da, #eedcb6);
+}
+
+.bs-back:focus-visible,
+.bs-next:focus-visible,
+.bs-reset:focus-visible,
+.bs-move:focus-visible {
+  outline: 3px solid #ffb15e;
+  outline-offset: 2px;
+}
+
+.bs-back {
+  align-self: flex-start;
+}
+
+.bs-rule {
+  max-width: 34rem;
+  margin: 0;
+  text-align: center;
+  line-height: 1.45;
+  color: #e8d5b5;
+}
+
+/* The scale itself: a fulcrum, a tilting beam, and two pans hanging off it. */
+.bs-scale {
+  position: relative;
+  width: min(40rem, 100%);
+  padding: 2.2rem 1rem 1rem;
+  border-radius: 12px;
+  border: 4px solid #4a3320;
+  background: radial-gradient(120% 90% at 50% 0%, rgba(255, 177, 94, 0.16), transparent 70%),
+    linear-gradient(#2a1c10, #1d130a);
+}
+
+/*
+ * The rig is static on purpose: every legal move changes both pans equally, so the beam is level by
+ * construction and can never tilt. See the note at the top of BalanceScale.tsx. Drawing a proper
+ * fulcrum and hangers is what makes it read as a balance rather than as a divider line.
+ */
+.bs-rig {
+  position: relative;
+  height: 2.6rem;
+}
+
+.bs-beam {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 0.6rem;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(#e0b352, #8a6320);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.bs-hanger {
+  position: absolute;
+  top: 1rem;
+  width: 2px;
+  height: 1.6rem;
+  background: linear-gradient(#c9962f, #7a5518);
+}
+
+.bs-hanger-left {
+  left: 12%;
+}
+
+.bs-hanger-right {
+  right: 12%;
+}
+
+/* Triangular pivot under the middle of the beam. */
+.bs-fulcrum {
+  position: absolute;
+  left: 50%;
+  top: 0.9rem;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 0.85rem solid transparent;
+  border-right: 0.85rem solid transparent;
+  border-bottom: 1.5rem solid #6b4a2a;
+}
+
+.bs-pans {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1.4rem;
+}
+
+.bs-pan {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 8rem;
+  padding: 0.7rem;
+  border-radius: 10px 10px 26px 26px;
+  border: 2px solid #6b4a2a;
+  background: linear-gradient(rgba(246, 231, 200, 0.09), rgba(246, 231, 200, 0.03));
+}
+
+.bs-pan-contents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+/* The bag IS the unknown: an opaque sack, gathered neck, heavy base. Never a glyph, never an "x". */
+.bs-bag {
+  width: 1.9rem;
+  height: 2.5rem;
+  border-radius: 34% 34% 48% 48% / 22% 22% 60% 60%;
+  background: linear-gradient(#8a6a4a, #5d4229);
+  border: 1px solid #3a2513;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
+}
+
+.bs-stone {
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: #2b2f36;
+  background: linear-gradient(#cfd4da, #a7aeb6);
+  border: 1px solid #7d848c;
+  border-radius: 5px;
+}
+
+/* Size carries the value redundantly with the printed number, so it reads without colour. */
+.bs-stone-1 {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.75rem;
+}
+.bs-stone-5 {
+  width: 2rem;
+  height: 1.8rem;
+  font-size: 0.85rem;
+}
+.bs-stone-10 {
+  width: 2.6rem;
+  height: 2.1rem;
+  font-size: 0.95rem;
+}
+
+.bs-pan-readout {
+  font-size: 0.85rem;
+  color: #d8c3a0;
+}
+
+.bs-status {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #d8c3a0;
+}
+
+.bs-note {
+  min-height: 1.4rem;
+  font-weight: 600;
+  color: #ffcf87;
+  text-align: center;
+}
+
+.bs-moves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  max-width: 40rem;
+}
+
+/* Divide is the move that needs planning, so it reads slightly warmer than the strip moves. */
+.bs-move-divide {
+  background: linear-gradient(#ffe0ad, #eec987);
+}
+
+.bs-reset {
+  background: linear-gradient(#e2d3b6, #cdbb99);
+}

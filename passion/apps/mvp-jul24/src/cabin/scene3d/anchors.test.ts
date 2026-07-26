@@ -2,9 +2,9 @@ import { GADGETS } from "../../gadgets/registry";
 import { gadgetProps3D } from "./anchors";
 
 test("returns one 3D prop per gadget in the topic, matching id/label/status", () => {
-  const props = gadgetProps3D("math");
-  const mathGadgets = GADGETS.filter((g) => g.topic === "math");
-  expect(props).toHaveLength(mathGadgets.length);
+  const props = gadgetProps3D("logic-games");
+  const logicGadgets = GADGETS.filter((g) => g.topic === "logic-games");
+  expect(props).toHaveLength(logicGadgets.length);
 
   const nonogram = props.find((p) => p.id === "nonogram");
   expect(nonogram).toBeDefined();
@@ -16,18 +16,29 @@ test("returns one 3D prop per gadget in the topic, matching id/label/status", ()
 });
 
 test("gives each puzzle family a prop kind that reads as the right object", () => {
-  const props = gadgetProps3D("math");
+  const props = gadgetProps3D("logic-games");
   const kindOf = (id: string) => props.find((p) => p.id === id)?.kind;
   expect(kindOf("chess")).toBe("chess");
   expect(kindOf("mirror")).toBe("mirror");
   // the rest are "on paper" grid puzzles rendered as framed wall panels
-  for (const id of ["nonogram", "logic-grid", "minesweeper", "pipes", "lits"]) {
+  for (const id of ["nonogram", "pipes"]) {
     expect(kindOf(id)).toBe("frame");
   }
 });
 
+// `KNOWN_PROPS` still holds hand-placed positions for logic-grid, minesweeper and lits, which left
+// the roster on 2026-07-25 (see src/gadgets/registry.ts for why they were kept). Those entries must
+// stay inert: `gadgetProps3D` iterates the registry, so a stale key can only ever leak a prop into
+// the room if someone rewrites it to iterate this map instead.
+test("does not emit props for gadget ids that are no longer in the registry", () => {
+  const ids = gadgetProps3D("logic-games").map((p) => p.id);
+  for (const id of ["logic-grid", "minesweeper", "lits"]) {
+    expect(ids, id).not.toContain(id);
+  }
+});
+
 test("frame props sit on the back wall, clear of the fireplace chimney breast", () => {
-  const props = gadgetProps3D("math");
+  const props = gadgetProps3D("logic-games");
   for (const prop of props.filter((p) => p.kind === "frame")) {
     const [x, y, z] = prop.position;
     expect(z).toBeLessThan(-2.5);
@@ -39,7 +50,7 @@ test("frame props sit on the back wall, clear of the fireplace chimney breast", 
 });
 
 test("chess and mirror props sit on the floor, away from the back wall", () => {
-  const props = gadgetProps3D("math");
+  const props = gadgetProps3D("logic-games");
   const chess = props.find((p) => p.id === "chess");
   const mirror = props.find((p) => p.id === "mirror");
   expect(chess?.position[1]).toBe(0);
@@ -50,6 +61,17 @@ test("chess and mirror props sit on the floor, away from the back wall", () => {
   expect(mirror?.position[2]).toBeGreaterThan(-2);
 });
 
-test("returns an empty list for a topic with no registered gadgets", () => {
-  expect(gadgetProps3D("music")).toEqual([]);
+// `math` is deliberately gadget-free until its games ship, and `music`/`code`/`art` aren't built at
+// all — every one of them must map to an empty prop list so the 3D room just renders unfurnished.
+// `math` used to be in this list and is not any more: its five maths activities now ship, so an
+// empty result for it would be the regression rather than the expectation.
+test.each(["music", "code", "art"] as const)(
+  "returns an empty list for %s, which has no registered gadgets",
+  (topic) => {
+    expect(gadgetProps3D(topic)).toEqual([]);
+  },
+);
+
+test("math now has props, because its activities shipped", () => {
+  expect(gadgetProps3D("math").length).toBeGreaterThan(0);
 });
