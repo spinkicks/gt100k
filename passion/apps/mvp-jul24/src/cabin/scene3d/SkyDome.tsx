@@ -8,6 +8,7 @@ import { useTexture } from "@react-three/drei";
 import { Component, type ReactNode, Suspense, useMemo } from "react";
 import * as THREE from "three";
 import { skyGradientTexture } from "./textures";
+import { preloadWhenReal } from "./preloadWhenReal";
 
 const VISTA_URL = "/assets/env/vista.jpg";
 const ROT = Math.PI * 0.72; // aim the dramatic peaks toward the window (+X)
@@ -15,7 +16,9 @@ const ROT = Math.PI * 0.72; // aim the dramatic peaks toward the window (+X)
 // procedural CanvasDome sky instantly via the Suspense fallback below regardless. Preloading still
 // starts the fetch immediately (parallel with everything else) so the real vista swaps in sooner,
 // without blocking anything.
-useTexture.preload(VISTA_URL);
+// Gated on the asset really being there: a dev server answers a missing path with index.html at
+// HTTP 200, which the loader then tries to decode as a JPEG. See preloadWhenReal.
+preloadWhenReal(VISTA_URL, () => useTexture.preload(VISTA_URL));
 
 function VistaDome(): JSX.Element {
   const tex = useTexture(VISTA_URL);
