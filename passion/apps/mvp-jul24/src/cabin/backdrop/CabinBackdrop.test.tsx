@@ -286,9 +286,9 @@ describe("backdrop image", () => {
 
 describe("topics with no authored backdrop", () => {
   it("renders an empty room rather than throwing", () => {
-    // `math` is a real, deliberately gadget-free cabin (PROJECT.md); music/code/art have no interior
-    // at all. All of them must survive being walked into.
-    for (const topic of ["math", "music", "code", "art"] as const) {
+    // `math` has an authored room now, so it is no longer one of these. music/code/art have no
+    // interior at all and must still survive being walked into.
+    for (const topic of ["music", "code", "art"] as const) {
       const { container, unmount } = render(<CabinBackdrop topic={topic} />);
       expect(container.querySelector(".cabin-backdrop")).not.toBeNull();
       expect(container.querySelectorAll("polygon")).toHaveLength(0);

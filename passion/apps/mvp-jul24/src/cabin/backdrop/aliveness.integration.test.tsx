@@ -208,15 +208,26 @@ describe("the effects are mounted over the painting", () => {
 });
 
 describe("a room with no measured light renders the still, unchanged", () => {
-  test("math has no authored interior, so it gets no effects and no frame loop", () => {
-    // Wrong regions look worse than none: a glow on a wall the fire is not on reads as a bug.
-    const { container } = render(<CabinBackdrop topic="math" />);
+  // This case used `math` while that room was unauthored. It has measured light of its own now, so
+  // the case moved to `music`, which has no interior at all. The property under test is unchanged:
+  // wrong regions look worse than none, because a glow on a wall the fire is not on reads as a bug.
+  test("a topic with no authored interior gets no effects and no frame loop", () => {
+    const { container } = render(<CabinBackdrop topic="music" />);
     expect(q(container, ".cabin-backdrop")).not.toBeNull();
     expect(q(container, ".cabin-backdrop-aliveness")).toBeNull();
     expect(q(container, ".cabin-aliveness")).toBeNull();
     // and it keeps the fallback wash, which is the only thing it ever had
     expect(q(container, ".cabin-backdrop-hearthlight")).not.toBeNull();
     expect(raf.requested).toBe(0);
+  });
+
+  test("math now has its own measured light, including a sconce Logic Games lacks", () => {
+    const { container } = render(<CabinBackdrop topic="math" />);
+    expect(q(container, ".cabin-backdrop-aliveness")).not.toBeNull();
+    // The sconce is the emitter this plate has and the Logic Games plate does not, so it is the one
+    // worth asserting: it proves the room's regions were measured rather than copied.
+    expect(backdropRoomFor("math")?.aliveness?.firelight?.sconce).not.toBeNull();
+    expect(backdropRoomFor("logic-games")?.aliveness?.firelight?.sconce).toBeNull();
   });
 
   test("`alive={false}` puts an authored room back exactly as it was", () => {
