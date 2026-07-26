@@ -15,7 +15,7 @@ describe("deriveSignals", () => {
     expect(cellEvents.some((c) => c.mode === "build" && c.kind === "skip")).toBe(true);
     // Every cross-day return in this log is two days after the last one except the first, which
     // follows the 2026-01-01 exposure.
-    expect(cellEvents.filter((c) => c.kind === "cross_day_return").map((c) => c.dayGap)).toEqual([50, 2, 2, 2, 2]);
+    expect(cellEvents.filter((c) => c.kind === "cross_day_return").map((c) => c.dayGap)).toEqual([40, 2, 2, 2, 2, 2, 2, 2, 2, 2]);
 
     const read = runInference(cellEvents, [{ domain: "music-sound", inEnvironment: true, aptitudeTilt: 0, discretionaryTilt: 0 }], NOW);
     const build = read.cells.find((c) => c.mode === "build");

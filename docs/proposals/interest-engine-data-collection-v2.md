@@ -178,6 +178,65 @@ far too early.
 
 This is explicitly a calibration decision, per PRD §14.3 — the *direction* is what's being proposed.
 
+> **IMPLEMENTED 2026-07-25.** Both halves landed: `MIN_EVIDENCE_MASS` 3 → 6, and a new
+> `MIN_DISTINCT_DAYS = 2`. `confident` now also requires `distinctDays >= MIN_DISTINCT_DAYS`, and
+> `distinctDays` is on `CellBelief` so a guide can see the evidence is spread rather than piled into
+> one afternoon.
+>
+> **A day only counts if an event actually moved alpha or beta on it.** Novelty-excluded events,
+> `prompted_return`, `same_day_engagement`, and `artifact_competence` all buy nothing, which keeps the
+> gate honest: zero-weight events must not be able to satisfy a gate about evidence being spread over
+> time. `skip` and `decline` do count, because they move beta and confidence is about the posterior
+> being pinned down, not about it being positive. Days are UTC, which slightly under-counts a child
+> playing either side of local midnight; that errs toward slowness, which is the safe direction for a
+> gate whose whole purpose is to resist premature certainty.
+>
+> The golden fixture needed re-deriving, since its old mass of 4.457 sat below the new floor and the
+> end-to-end happy path has to keep demonstrating a confident spike. Same seven-day span, with the
+> returns a child who came back six days out of seven would actually leave. New values, hand-derived
+> and then reproduced by the engine: `alpha 7.704284, beta 1.410168, mean 0.845282, sd 0.113710,
+> lowerBound 0.731572, evidenceMass 6.614452, distinctDays 6`. One day deliberately carries both a
+> skip and a return, proving a day counts once regardless of sign.
+>
+> Five downstream fixtures fell below the new bar. Every one was **enriched into a more realistic
+> child** rather than having its assertion weakened: they had been written as a single sitting, or as
+> five half-decayed returns, which is exactly the shape this gate exists to stop trusting. No gate was
+> lowered and no test was deleted or skipped.
+
+> **IMPLEMENTED 2026-07-25, both halves, at the suggested values.**
+>
+> `confident` is now `evidenceMass >= 6 && distinctDays >= 2 && 2*sd <= MAX_CI_WIDTH`.
+> `CellBelief` carries `distinctDays`: the number of distinct **UTC calendar days** on which some
+> event actually moved alpha or beta. Membership is granted inside the scoring branches of
+> `foldEvents`, so everything the fold declines to score is excluded by construction rather than by
+> a parallel list — a novelty event, a `prompted_return`, a `same_day_engagement`, and any depth
+> family `scoresInterest` rejects all leave the belief where they found it, so none of them can help
+> satisfy a gate that is a claim about evidence being spread over time. `skip` and `decline` do buy
+> a day; they move beta.
+>
+> UTC rather than local time, because the engine takes no timezone and must answer the same wherever
+> it runs. That under-counts a child playing either side of local midnight, which is the safe
+> direction for a gate whose job is to be slow. An unparseable timestamp buys no day at all, mirroring
+> `recencyWeight`'s refusal to decay what it cannot date.
+>
+> **The golden fixture had to be re-derived and is the main cost of this change.** It carried
+> `evidenceMass 4.457407`, below the new floor, so the golden read would have stopped being confident
+> and stopped producing a spike. It was enriched, not exempted: same seven-day span, with returns
+> added on the two days inside it that previously held only a skip or only a depth signal, plus a
+> `failure_recovery`. New values: `α 7.704284`, `β 1.410168`, `mean 0.845282`, `sd 0.113710`,
+> `lowerBound 0.731572`, `evidenceMass 6.614452`, `distinctDays 6`.
+>
+> Five downstream fixtures fell below the new bar and were given the events a real child would have
+> generated rather than having their assertions weakened: the 011 demo, 011's `runInference` fixture,
+> 012's pipeline fixture (shared with its demo), 014's orchestrator fixture, and the synthetic pilot
+> roster's recent cluster (five returns → ten, every other day). Nothing needed the gates relaxed,
+> and no case turned up where the new gates looked wrong rather than merely inconvenient.
+>
+> Guarded by `interest-inference/test/distinct-days.test.ts`: a single UTC day is not confident at any
+> mass; the same evidence over two days is; the mass floor and the day gate each fail alone; the four
+> unscored kinds buy no day; and two sittings either side of local midnight inside one UTC day count
+> once.
+
 ### E7 — Weight the marginals by evidence mass
 
 The rank-1 decomposition currently takes **unweighted** means over cells, so a cabin with one gadget gets

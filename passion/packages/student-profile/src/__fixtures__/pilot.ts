@@ -12,9 +12,9 @@
 //
 // Ari (kid-synthetic-001, the window.__qa kid) is the important one: his audio-systems log must reach
 // a *confident* `::build` (a recent cluster of voluntary, non-novel returns near NOW ⇒ evidenceMass
-// ≥ 3) AND leave a gate-spread of returns at ~day −90 / −70 / −30 so `deriveGates` sees a >14-day gap
-// and a >56-day term — the confident recent cluster is what carries inference; the old spread barely
-// feeds it (14-day recency half-life) but drives the gate timeline.
+// ≥ 6 across ≥ 2 distinct days) AND leave a gate-spread of returns at ~day −90 / −70 / −30 so
+// `deriveGates` sees a >14-day gap and a >56-day term — the confident recent cluster is what carries
+// inference; the old spread barely feeds it (14-day recency half-life) but drives the gate timeline.
 import type { Interaction } from "@gt100k/signal-pipeline";
 import type { DomainPrior } from "@gt100k/interest-inference";
 import { serializeCellKey } from "@gt100k/interest-inference";
@@ -88,11 +88,29 @@ export const PILOT_PRIORS: Readonly<Record<string, readonly DomainPrior[]>> = {
 // ── Log builders ────────────────────────────────────────────────────────────────
 // Timestamps relative to PILOT_NOW (2026-04-01): a novel first exposure at −97d (outside the 3-day
 // novelty window before the first return), gate-spread voluntary returns at −90 / −70 / −30, and a
-// recent cluster at −12 / −8 / −5 / −3 / −1 (the last with a depth signal) for confidence.
+// recent cluster every other day from −19 to −1 (the last with a depth signal) for confidence.
+//
+// The cluster used to be five returns from −12 to −1, worth 3.82 of recency-weighted mass. E6
+// raised `MIN_EVIDENCE_MASS` to 6, so Ari, Bex and Dulce would all have dropped to "not sure yet"
+// and the guide-console roster would have had nothing to show. Ten returns over nineteen days is
+// what the scenario always described — a child who is genuinely hooked — and it clears the floor
+// on the evidence rather than on a lowered bar: 6.34 from the cluster plus 0.27 of what survives
+// from the gate spread ≈ 6.61.
 const NOVEL = "2025-12-25";
 const NOVEL_NEXT = "2025-12-26"; // still inside the 3-day novelty window
 const SPREAD = ["2026-01-01", "2026-01-21", "2026-03-02"]; // −90 / −70 / −30
-const CLUSTER = ["2026-03-20", "2026-03-24", "2026-03-27", "2026-03-29", "2026-03-31"];
+const CLUSTER = [
+  "2026-03-13",
+  "2026-03-15",
+  "2026-03-17",
+  "2026-03-19",
+  "2026-03-21",
+  "2026-03-23",
+  "2026-03-25",
+  "2026-03-27",
+  "2026-03-29",
+  "2026-03-31",
+];
 
 function iso(date: string): string {
   return `${date}T00:00:00.000Z`;

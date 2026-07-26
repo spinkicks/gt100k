@@ -15,6 +15,7 @@ function belief(domain: string, mode: string, mean: number, evidenceMass: number
     sd: 0.1,
     lowerBound: mean,
     evidenceMass,
+    distinctDays: 2,
     confident: true,
     attribution: null,
     supporting: [],
