@@ -97,10 +97,15 @@ function Gear({
     >
       <g style={{ transform: `rotate(${angle}deg)`, transformOrigin: `${c}px ${c}px` }}>
         <circle cx={c} cy={c} r={r} className="gt-gear-body" />
+        {/*
+         * Keyed on the points string, not the index. Each tooth sits at its own angle, so its
+         * polygon path is unique within the gear — a genuinely stable key rather than a suppressed
+         * warning. (The index is still used to pick the marked tooth, which is fine; only the key
+         * has to be stable.)
+         */}
         {points.map((p, i) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: teeth are identical and positional
           <polygon
-            key={i}
+            key={p}
             points={p}
             className={marked && i === 0 ? "gt-tooth gt-tooth-marked" : "gt-tooth"}
           />
