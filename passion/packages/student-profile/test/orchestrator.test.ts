@@ -32,15 +32,23 @@ function assemble(ts: string, session: string, extra: Partial<Interaction> = {})
   return { kidId: KID, artifactId: SYNTH.id, actionType: "assemble", timestamp: ts, prompted: false, sessionId: session, ...extra };
 }
 
-// One first-exposure (novel) engagement + five non-novel voluntary returns clustered near NOW →
-// evidenceMass ≥ 3 ⇒ confident ⇒ auto-advance EXPLORING→EMERGING on the build cell.
+// One first-exposure (novel) engagement + ten non-novel voluntary returns, every other day over
+// the three weeks before NOW → evidenceMass ≥ 6 across ten distinct days ⇒ confident ⇒
+// auto-advance EXPLORING→EMERGING on the build cell. Five returns used to be enough; under E6 a
+// fortnight's worth of half-decayed returns is not, so the child was given the longer habit the
+// scenario always assumed rather than the assertion being softened.
 const INTERACTIONS: Interaction[] = [
   assemble("2026-01-01T00:00:00.000Z", "s0"),
-  assemble("2026-02-20T00:00:00.000Z", "s1"),
-  assemble("2026-02-22T00:00:00.000Z", "s2"),
-  assemble("2026-02-24T00:00:00.000Z", "s3"),
-  assemble("2026-02-26T00:00:00.000Z", "s4"),
-  assemble("2026-02-28T00:00:00.000Z", "s5", { depthSignals: [{ kind: "artifact_competence", value: 1 }] }),
+  assemble("2026-02-10T00:00:00.000Z", "s1"),
+  assemble("2026-02-12T00:00:00.000Z", "s2"),
+  assemble("2026-02-14T00:00:00.000Z", "s3"),
+  assemble("2026-02-16T00:00:00.000Z", "s4"),
+  assemble("2026-02-18T00:00:00.000Z", "s5"),
+  assemble("2026-02-20T00:00:00.000Z", "s6"),
+  assemble("2026-02-22T00:00:00.000Z", "s7"),
+  assemble("2026-02-24T00:00:00.000Z", "s8"),
+  assemble("2026-02-26T00:00:00.000Z", "s9"),
+  assemble("2026-02-28T00:00:00.000Z", "s10", { depthSignals: [{ kind: "artifact_competence", value: 1 }] }),
 ];
 
 const CTX = { catalog: CATALOG };

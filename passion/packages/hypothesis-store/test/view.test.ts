@@ -20,7 +20,9 @@ const read: InterestRead = {
       mean: 0.77,
       sd: 0.14,
       lowerBound: 0.7,
-      evidenceMass: 4.5,
+      // Above both E6 gates, so the read is one the engine could actually emit.
+      evidenceMass: 6.5,
+      distinctDays: 6,
       confident: true,
       attribution: "style",
       supporting: ["cross_day_return", "unrequired_revision"],
@@ -36,6 +38,7 @@ const read: InterestRead = {
       sd: 0.2,
       lowerBound: 0.3,
       evidenceMass: 0.5,
+      distinctDays: 1,
       confident: false,
       attribution: null,
       supporting: ["cross_day_return"],

@@ -15,7 +15,10 @@ function read(confident: boolean, lowerBound: number): InterestRead {
         mean: 0.77,
         sd: 0.14,
         lowerBound,
-        evidenceMass: 4.5,
+        // Kept consistent with `confident` under the E6 gates: a confident cell now needs mass
+        // ≥ 6 spread over ≥ 2 distinct days, and a thin one has neither.
+        evidenceMass: confident ? 6.5 : 0.5,
+        distinctDays: confident ? 6 : 1,
         confident,
         attribution: confident ? "style" : null,
         supporting: ["cross_day_return"],
