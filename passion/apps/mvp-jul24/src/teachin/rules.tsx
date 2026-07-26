@@ -114,7 +114,10 @@ export const TEACH_INS = {
   },
   "gear-train": {
     title: "Gear Train",
-    rule: "A gear with more teeth turns slower. Fit three gears so the ember tooth comes back to the top after exactly the number of crank turns the bench asks for.",
+    // Says what a "crank turn" IS, because the goal is stated in them. The first version assumed the
+    // unit was self-evident; playing it showed it was not — nothing on the bench told you a turn was
+    // a thing you did, so the target was a number attached to nothing.
+    rule: "Press the crank to turn it once, and every gear moves by its own speed — more teeth means slower. Fit three gears so the ember tooth is back on top after exactly the number of crank turns asked for, and not before.",
     Diagram: GearTrainDiagram,
   },
   "fraction-laser": {

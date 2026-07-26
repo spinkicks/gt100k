@@ -172,3 +172,72 @@
   text-align: center;
   color: #d8c3a0;
 }
+
+/* The crank bar. See the note in GearTrain.tsx: the goal is stated in crank turns, so the crank has
+   to be something the child turns and the count has to be readable, or the goal names a quantity that
+   appears nowhere. */
+.gt-crankbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.9rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid #4a3320;
+  background: rgba(246, 231, 200, 0.05);
+}
+
+.gt-crank-turn,
+.gt-crank-reset {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid #6b4a2a;
+  background: linear-gradient(#f6e7c8, #e6d1a8);
+  color: #3a2513;
+  padding: 0.35rem 0.85rem;
+}
+
+.gt-crank-turn:hover:not(:disabled),
+.gt-crank-reset:hover {
+  background: linear-gradient(#fdf2da, #eedcb6);
+}
+
+.gt-crank-turn:focus-visible,
+.gt-crank-reset:focus-visible {
+  outline: 3px solid #ffb15e;
+  outline-offset: 2px;
+}
+
+.gt-crank-reset {
+  background: linear-gradient(#e2d3b6, #cdbb99);
+  font-size: 0.82rem;
+}
+
+.gt-crank-count {
+  font-size: 0.88rem;
+  color: #d8c3a0;
+}
+
+.gt-crank-count strong {
+  color: #ffcf87;
+}
+
+/* Reads without colour too: the wording states the answer, the ember tint only reinforces it. */
+.gt-ember {
+  font-size: 0.82rem;
+  color: #a98f6c;
+}
+
+.gt-ember-on {
+  color: #ff8b3d;
+  font-weight: 600;
+}
+
+/* Stands in for the crank bar until the train is complete. See GearTrain.tsx. */
+.gt-crank-hint {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #c8ab84;
+}
