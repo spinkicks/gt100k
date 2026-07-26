@@ -4,6 +4,7 @@ import {
   A_DEPTH,
   A_SECONDARY,
   B_SKIP,
+  B_DECLINED,
   ALPHA0,
   BETA0,
   W_ENV,
@@ -35,6 +36,8 @@ export interface CellAccum {
   beta: number;
   positiveByKind: Record<string, number>;
   skips: number;
+  /** `decline` occurrences (E4) — passed over, and never engaged. Counted apart from `skips`. */
+  declines: number;
   prompted: number;
   /** `same_day_engagement` occurrences (E2). Context for a reader; never scored. */
   sameDay: number;
@@ -64,6 +67,7 @@ export function foldEvents(
         beta: betaPrior,
         positiveByKind: {},
         skips: 0,
+        declines: 0,
         prompted: 0,
         sameDay: 0,
       };
@@ -97,9 +101,21 @@ export function foldEvents(
       const add = A_DEPTH * roleScale * w;
       cell.alpha += add;
       cell.positiveByKind[e.kind] = (cell.positiveByKind[e.kind] ?? 0) + add;
-    } else if (e.kind === "skip") {
-      cell.beta += B_SKIP * w;
-      cell.skips += 1;
+    } else if (e.kind === "skip" || e.kind === "decline") {
+      // E4: picking one gadget out of seven is ONE observation, so the disconfirming mass is
+      // shared across the alternatives instead of applied in full to each. Unnormalized, a child
+      // who returns to their favourite cell every session accrues a full decrement on every other
+      // known cell every session, so breadth of discovery suppresses the very spike the engine
+      // exists to find. Absent `choiceSetSize` means "not a choice moment" and scores at full
+      // weight; the floor of 1 keeps a zero or negative size from dividing by zero.
+      const divisor = Math.max(1, e.choiceSetSize ?? 1);
+      if (e.kind === "skip") {
+        cell.beta += (B_SKIP * w) / divisor;
+        cell.skips += 1;
+      } else {
+        cell.beta += (B_DECLINED * w) / divisor;
+        cell.declines += 1;
+      }
     }
   }
   return cells;

@@ -3,8 +3,8 @@
 Turns raw child-interaction traces into the `CellEvent` stream that
 [`@gt100k/interest-inference`](../interest-inference) (011) consumes. It is the bridge between the
 discovery world and the inference engine, and it is where the guardrails live: novelty is
-discounted, prompted returns are marked, ambient/undefined actions emit **nothing**, and skips
-become the disconfirming signal.
+discounted, prompted returns are marked, ambient/undefined actions emit **nothing**, and what a
+session offered but the child did not take becomes the disconfirming signal.
 
 Pure, deterministic, headless. **Synthetic data only** — no network, no LLM, no persistence.
 
@@ -12,7 +12,7 @@ Pure, deterministic, headless. **Synthetic data only** — no network, no LLM, n
 
 ```
 Interaction[]  ──resolveEngagedModes (009)──▶  ActionEvent  ──▶  CellEvent[]  ──runInference (011)──▶  InterestRead
-   + SurfacedRecord[] ─────────────────────── skip derivation ──▶
+   + SurfacedRecord[] ─────────────────── skip/decline derivation ──▶
 ```
 
 `deriveSignals(input) → { actionEvents, cellEvents, dropped }`:
@@ -32,10 +32,15 @@ Interaction[]  ──resolveEngagedModes (009)──▶  ActionEvent  ──▶ 
 - **CellEvent mapping** — a primary return event; if a secondary mode is engaged, the same event
   against that cell marked `role: "secondary"` (the engine down-weights an inferred mode), carrying
   the same kind and `dayGap`; one depth event per `DEPTH_FAMILY` signal (non-family ignored).
-- **skip derivation** — a `skip` is disconfirming evidence about a *known* interest, so it fires
-  only on a cell the child **actually engaged before**, when that cell is **non-novel** and the
-  artifact was surfaced in a session where the child did **not** re-engage it. A surfaced artifact
-  the child never engaged emits no skip; a still-novel engaged cell emits no skip.
+- **skip / decline derivation** — per `(kidId, sessionId)`, the **not-chosen** set is every
+  non-novel cell reachable from an artifact surfaced in that session that the child did not engage
+  in it. Each not-chosen cell emits exactly one event, and every event from the session carries
+  `choiceSetSize = |notChosen|` so 011 can treat one choice as one observation. A cell the child
+  **engaged before** is a `skip` (disconfirming evidence about a known interest, keyed on the
+  artifact's *engaged* cells, never on `affordedModes[0]`); a cell they have **never engaged** is a
+  weaker `decline` (keyed on the artifact's afforded modes, since there is no engagement to key on).
+  The two are disjoint by construction. Surfacing counts as an exposure for the novelty window,
+  which is what lets a never-engaged cell ever leave it.
 
 ## Golden defaults
 

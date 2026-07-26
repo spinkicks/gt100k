@@ -30,7 +30,11 @@ Each `(domain × work-mode)` cell is a Beta-Bernoulli posterior.
 - **Evidence** (per event, recency-weighted `w = 0.5^(ageDays/14)`):
   - `cross_day_return` (a prior engagement of the cell on an earlier UTC day) → `alpha += 1.0·w`
   - depth family (`unrequired_revision`, `chosen_challenge`, `failure_recovery`, `self_authored_scope`, `artifact_competence`) → `alpha += 0.5·w`
-  - `skip` (non-novel) → `beta += 0.5·w`
+  - `skip` (non-novel, a cell engaged before and passed over) → `beta += 0.5·w / choiceSetSize`
+  - `decline` (non-novel, a cell on offer and never engaged) → `beta += 0.15·w / choiceSetSize`
+  - one choice is one observation, so both disconfirming kinds are divided by the number of
+    alternatives passed over at that moment (`choiceSetSize`, absent → 1); without that, breadth of
+    discovery would suppress every spike. The two kinds are disjoint: a cell yields at most one per session.
   - `novelty` events, `prompted_return`, `same_day_engagement`, and silence → **excluded** (triggered / prompted / same-day / missingness ≠ interest)
 - **Posterior**: `mean = α/(α+β)`, `sd = √(αβ / ((α+β)²(α+β+1)))`, `lowerBound = max(0, mean − sd)`, `evidenceMass = (α−α_prior)+(β−β_prior)`.
 - **Confidence** (honest "not sure yet"): `evidenceMass ≥ 3` **and** `2·sd ≤ 0.35`.
@@ -49,6 +53,7 @@ Each `(domain × work-mode)` cell is a Beta-Bernoulli posterior.
 | `A_RETURN` | `1.0` | | `K_LCB` | `1.0` |
 | `A_DEPTH` | `0.5` | | `SPIKE_THRESHOLD` | `0.6` |
 | `B_SKIP` | `0.5` | | `MAX_CANDIDATES` / `ATTR_MARGIN` | `3` / `0.1` |
+| `B_DECLINED` | `0.15` | | | |
 
 ## Output
 

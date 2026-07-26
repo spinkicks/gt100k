@@ -14,6 +14,7 @@ const goldenAccum: CellAccum = {
   // No same_day_engagement either: E2 makes it unscored for the same reason.
   positiveByKind: { cross_day_return: 3, unrequired_revision: 0.5 },
   skips: 1,
+  declines: 0,
   prompted: 1,
   sameDay: 2,
 };

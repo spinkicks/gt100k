@@ -113,11 +113,59 @@ Normalization matters — with 7 gadgets on screen, an unnormalized decrement wo
 times faster than α accrues. Suggested `B_DECLINED = 0.15`. **This is a revealed preference against
 available alternatives, which is better-founded than `skip`.**
 
+> **IMPLEMENTED 2026-07-25. The normalization argument turned out to apply to `skip`, which was already
+> live and already wrong.**
+>
+> This section reads as though unnormalized decrements are a hazard to avoid in new code. They were
+> not hypothetical: `skip` applied a full `B_SKIP` to every known-but-unengaged cell every session, and
+> the child app surfaces every enterable cabin on map render. So a child who returned to their favourite
+> every session still accrued skips on all the others, and beta grew with the number of cabins they had
+> explored. Over ten sessions, ignoring decay: two known cells gave a posterior mean of 0.647, four gave
+> 0.407, seven gave 0.262, against a `SPIKE_THRESHOLD` of 0.6. **Past about four cabins the spike stopped
+> being detectable, so the engine got worse at its only job precisely as the child got more curious.**
+>
+> Both kinds are now shares of one choice rather than independent observations. `CellEvent` carries
+> `choiceSetSize`, the count of alternatives passed over at that moment, and the pipeline divides by it.
+> Absent means "not a choice moment" and scores at full weight, which is what keeps the golden fixture's
+> lone skip unchanged.
+>
+> The two kinds are **mutually exclusive** per cell per session: `skip` when the child has engaged that
+> cell before, `decline` when they never have. Emitting both would score one behavioural fact twice.
+> `B_DECLINED` (0.15) sits far below `B_SKIP` (0.5) because passing over something never tried is much
+> weaker evidence than passing over a known love.
+>
+> One thing this needed that the section does not mention: a surfaced cell now seeds the first-exposure
+> map. `isNovelty` treats an unknown cell as novel, so without it a never-engaged cell could never leave
+> the novelty window and **E4 would have been completely inert**. That seeding is confined to the
+> skip/decline map; engagement novelty still derives from engagements alone, so alpha is untouched.
+>
+> Guarded by `interest-inference/test/breadth-invariance.test.ts`, which asserts both arms: normalized
+> spread across 1, 3 and 6 alternatives is 0.0029 and all stay above threshold; unnormalized is 0.0984
+> and sinking.
+
 ### E5 — Down-weight system-surfaced returns
 
 A return the system engineered is not the same evidence as one the child initiated. Apply a multiplier to
 α when `surfacedBy === "system"` (suggested `W_SURFACED = 0.5`). Keeps the anti-feedback-loop posture the
 hardening memo asks for without needing a full randomized reserve (which ADR-0004 already declined).
+
+> **DEFERRED 2026-07-25, for the same reason `chosen_challenge` is a problem: nothing can emit it.**
+>
+> `surfacedBy` needs the product to distinguish a cell the system put in front of the child from one the
+> child navigated to. The discovery app has no recommender, no ranked shelf, and no nudge; the map shows
+> the enterable cabins, so every return is child-navigated by construction. `surfacedBy` would be a
+> constant `"self"`.
+>
+> Adding the field anyway is the trap we already walked into once. `stretchSeeking` reads permanently
+> false because nothing emits `chosen_challenge`, and that silently caps the specialization ladder at S2.
+> A constant field is worse than a missing one, because it reads as a measurement.
+>
+> This one at least fails safe: a missing `surfacedBy` means full weight, which is today's behaviour.
+> But it would still be an unbacked claim in the contract. Note that `prompted` already covers the
+> stronger case of an adult or the system explicitly directing the child, and it is emitted.
+>
+> **Unblocks when** the child app gains any system-driven surfacing: a recommendation, a "try this next",
+> a ranked or personalized map. At that point the emitter and this multiplier should land together.
 
 ### E6 — Raise `MIN_EVIDENCE_MASS`. *(P5)*
 

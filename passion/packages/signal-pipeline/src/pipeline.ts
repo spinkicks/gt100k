@@ -17,7 +17,8 @@ export interface DeriveInput {
 /**
  * The Signal Firewall orchestrator. Turns raw child interactions into the CellEvent stream 011
  * consumes: resolve engaged modes (via 009), classify novelty and the return horizon
- * (cross-day / same-day / prompted), extract depth, and derive skips from surfaced-minus-engaged.
+ * (cross-day / same-day / prompted), extract depth, and derive the disconfirming skip/decline
+ * signals from surfaced-minus-engaged.
  * Unresolved/unknown interactions emit nothing and are reported in `dropped` (never guessed).
  */
 export function deriveSignals(input: DeriveInput): {
