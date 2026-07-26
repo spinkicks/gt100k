@@ -51,6 +51,10 @@ export function startProject(input: StartProjectInput, now: string): Project {
       authenticMethod: brief.authenticMethod,
       audience: brief.audience,
       craftScaffold: brief.craftScaffold,
+      // Carried, never chosen here. The caller picked the milestone and the planner stamped it onto
+      // the brief; a project started from that brief is what makes the child's work reachable from
+      // it. A brief with none leaves the project with none, which is the self-directed case.
+      milestoneId: brief.milestoneId,
       source: "planner",
       ageBand,
       createdAt: now,

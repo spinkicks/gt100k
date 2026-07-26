@@ -144,6 +144,11 @@ export interface PlanDeps {
   readonly generator: ProjectBriefGenerator;
   /** The A6 curated matches (from `curatedForCell`) to ground the craft scaffold. Default []. */
   readonly resources?: readonly CuratedResource[];
+  /**
+   * The mastery-map milestone this project should demonstrate, chosen by the caller. Stamped onto
+   * the returned brief; a value on the generator's own response is discarded.
+   */
+  readonly milestoneId?: string;
 }
 
 /**
@@ -278,7 +283,14 @@ export async function planSpecialization(
 ): Promise<SpecializationPlan> {
   void now;
   const core = derivePlanCore(inputs, deps.resources ?? []);
-  const nextProject = await generateNextProject(deps.generator, core.briefContext);
+  const generated = await generateNextProject(deps.generator, core.briefContext);
+  // Stamp AFTER generation and overwrite unconditionally, so a generator cannot smuggle in a
+  // milestone id of its own. Absent from deps means absent from the brief, not inherited.
+  const { milestoneId: _ignored, ...withoutClaim } = generated;
+  const nextProject: ProjectBrief =
+    deps.milestoneId === undefined
+      ? withoutClaim
+      : { ...withoutClaim, milestoneId: deps.milestoneId };
   return assemblePlan(inputs, core, nextProject);
 }
 

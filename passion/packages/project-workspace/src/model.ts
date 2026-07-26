@@ -62,6 +62,12 @@ export interface Project {
   readonly authenticMethod: string;
   readonly audience: AudienceLevel; // audience level (self → field)
   readonly craftScaffold?: string; // from a D1 brief when source === "planner"
+  /**
+   * The mastery-map milestone this project demonstrates, carried from the brief it was created
+   * from. Absent for a self-directed project, and absent when no milestone was selected. This is
+   * what lets a child's standing be derived from work they actually made rather than a checkbox.
+   */
+  readonly milestoneId?: string;
   readonly source: ProjectSource;
   readonly ageBand: AgeBand;
   readonly createdAt: string;
