@@ -75,6 +75,16 @@ export interface ProjectBrief {
   readonly craftScaffold: string; // the bounded DP / Type I–II skill floor paired with the project
   readonly successLooksLike: string; // process-based, never a score/reward
   readonly source: "stub" | "llm"; // provenance of the brief
+  /**
+   * The mastery-map milestone this project is meant to demonstrate, when the caller selected one.
+   * Optional because a self-directed project legitimately belongs to no milestone.
+   *
+   * STAMPED BY THE PLANNER FROM `PlanDeps`, never read from a generator's response. A model must
+   * not be able to invent one and thereby attach a child's work to a rung nobody chose. The planner
+   * cannot pick it either: mastery-map depends on this package, so the choice belongs to the caller
+   * that composes both.
+   */
+  readonly milestoneId?: string;
 }
 
 /** The port the engine `await`s for the next project (§3.4). Deterministic stub in the gate. */
@@ -137,7 +147,7 @@ export interface SpecializationPlan {
   readonly escalationReason?: string;
   readonly rationale: string; // guide-facing, plain language
   readonly guardrailNotes: readonly string[];
-  readonly terminalNote: string; // honest scope: by ~14 = a ready-to-invest performer, not an expert
+  readonly terminalNote: string; // honest scope: how far is the child's, paced by wellbeing not a date
 }
 
 // ── Golden constants (§3.7) — do not re-open ─────────────────────────────────────

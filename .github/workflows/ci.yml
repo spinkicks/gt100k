@@ -73,8 +73,21 @@ jobs:
       - name: Lint and format check
         run: pnpm exec biome check passion
 
-      - name: Typecheck
+      - name: Typecheck (packages + adapters)
         run: pnpm exec tsc -b
+
+      # `tsc -b` follows the root project references, which list packages and adapters and
+      # deliberately not apps: a Next app is built by `next build`, not by the composite. So no gate
+      # covered app types at all, and the guide console had accumulated 36 errors in one test file
+      # without anything noticing. Each app owns a tsconfig; check them.
+      - name: Typecheck (apps)
+        run: |
+          for app in home guide-console project-studio parent-guide concierge design-lab \
+                     evidence-explorer evidence-explorer-themed mvp-jul24 tinker-cabin; do
+            echo "::group::$app"
+            pnpm --filter "./passion/apps/$app" exec tsc --noEmit
+            echo "::endgroup::"
+          done
 
       - name: Test (engines + adapters)
         run: pnpm test

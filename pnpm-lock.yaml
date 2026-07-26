@@ -65,6 +65,24 @@ importers:
 
   passion/adapters/evidence-verifier-stub: {}
 
+  passion/adapters/mastery-map-live:
+    dependencies:
+      '@gt100k/concierge':
+        specifier: workspace:*
+        version: link:../../packages/concierge
+      '@gt100k/mastery-map':
+        specifier: workspace:*
+        version: link:../../packages/mastery-map
+      '@gt100k/research':
+        specifier: workspace:*
+        version: link:../../packages/research
+      '@gt100k/specialization-planner':
+        specifier: workspace:*
+        version: link:../../packages/specialization-planner
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../../packages/two-axis-tagging
+
   passion/adapters/planner-live:
     dependencies:
       '@gt100k/specialization-planner':
@@ -314,6 +332,9 @@ importers:
       '@gt100k/mastery-map':
         specifier: workspace:*
         version: link:../../packages/mastery-map
+      '@gt100k/project-workspace':
+        specifier: workspace:*
+        version: link:../../packages/project-workspace
       '@gt100k/research':
         specifier: workspace:*
         version: link:../../packages/research

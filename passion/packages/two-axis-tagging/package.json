@@ -9,6 +9,6 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run --root ../.. packages/two-axis-tagging/test"
+    "test": "vitest run --root ../../.. passion/packages/two-axis-tagging/test"
   }
 }

@@ -1,0 +1,15 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist"
+  },
+  "references": [
+    { "path": "../../packages/mastery-map" },
+    { "path": "../../packages/concierge" },
+    { "path": "../../packages/research" },
+    { "path": "../../packages/specialization-planner" },
+    { "path": "../../packages/two-axis-tagging" }
+  ],
+  "include": ["src/**/*.ts", "test/**/*.ts", "scripts/**/*.ts"]
+}

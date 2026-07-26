@@ -11,7 +11,7 @@
     "./styles.css": "./src/product-header.css"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run --root ../../.. passion/packages/ui/test"
   },
   "dependencies": {
     "@gt100k/design-tokens": "workspace:*",

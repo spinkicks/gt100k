@@ -12,6 +12,6 @@
     "@gt100k/interest-inference": "workspace:*"
   },
   "scripts": {
-    "test": "vitest run --root ../.. packages/hypothesis-store/test"
+    "test": "vitest run --root ../../.. passion/packages/hypothesis-store/test"
   }
 }

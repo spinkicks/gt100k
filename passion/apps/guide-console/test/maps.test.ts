@@ -431,7 +431,13 @@ const MATH_IN_USE: MasteryMap = {
 /** Every map a child can currently be read against, for the invariants that must hold on all. */
 const IN_USE: readonly MasteryMap[] = [CONSOLE_PIANO_MAP, CONSOLE_GAME_DEV_MAP, MATH_IN_USE];
 
-const readOf = (vm: { reads: readonly { id: string }[] }, id: string) =>
+/**
+ * Generic on the element, so the read that comes back keeps its real type. Typing the parameter as
+ * `readonly { id: string }[]` also narrowed the RETURN to `{ id: string }`, which is why every
+ * property access on the result was a type error: 36 of them, all in this file, none caught by any
+ * gate because `tsc -b` covers packages and adapters but not apps.
+ */
+const readOf = <T extends { id: string }>(vm: { reads: readonly T[] }, id: string): T =>
   vm.reads.find((r) => r.id === id)!;
 
 const AT = "2026-07-26T11:15:00.000Z";
@@ -457,7 +463,7 @@ describe("Child read: the standing comes from artefacts and from nothing else", 
       "gd-reproduce-a-bug",
     );
     expect(ms.strength).toBe("multiple");
-    expect(ms.evidence.map((e) => e.project)).toEqual(["Rescue the Toaster", "The lift fix"]);
+    expect(ms.evidence.map((e) => e.project)).toEqual(["Finding the lift bug", "The lift fix"]);
     for (const e of ms.evidence) expect(e.made).toHaveLength(1);
   });
 
@@ -510,9 +516,10 @@ describe("Child read: the standing comes from artefacts and from nothing else", 
       for (const e of ms.evidence) {
         const project = DULCE.projects.find((p) => p.id === e.projectId)!;
         expect(e.project).toBe(project.title);
-        expect(e.made.map((m) => m.title)).toEqual(
-          project.made.filter((m) => m.milestoneId === ms.id).map((m) => m.title),
-        );
+        // The link is on the milestone the PROJECT was aimed at, which is where a real one carries
+        // it, and it holds that project's whole body of work rather than a slice of it.
+        expect(project.milestoneId).toBe(ms.id);
+        expect(e.made.map((m) => m.title)).toEqual(project.made.map((m) => m.title));
       }
     }
   });

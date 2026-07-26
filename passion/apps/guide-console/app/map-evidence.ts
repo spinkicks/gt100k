@@ -1,14 +1,21 @@
-// What each child has actually MADE, and which milestone each thing may evidence (024 mastery maps,
-// slice 2). The console's own demo data, seeded here the way `maps-seed.ts` seeds the maps and
-// `console-data.ts` seeds the roster.
+// What each child has actually MADE, and which milestone each project was meant to demonstrate
+// (024 mastery maps, slice 2). The console's own demo data, seeded here the way `maps-seed.ts`
+// seeds the maps and `console-data.ts` seeds the roster.
 //
 // SLICE 2 DERIVES STANDING, IT DOES NOT CREATE LINKS. `readMap` is handed `MilestoneEvidence` and
-// takes it as given, so somebody upstream has to decide which artefact evidences which milestone.
-// Here that somebody is this file. In production it is the Evidence Graph, and the shape below is
-// deliberately the shape a project-workspace `WorkEvent` of kind "artifact" already carries, so
-// swapping the source later is a change of where the records come from and not a change of model.
-// Nothing here reaches into that package, and nothing here is derived from a checkbox: every
-// standing the panel shows is computed from the artefacts listed below and from nothing else.
+// takes it as given, so somebody upstream has to decide what evidences which milestone. THIS FILE
+// IS THAT SOMEBODY, and it has to be: mastery-map depends on the specialization planner, and
+// project-workspace depends on the planner too, so neither of those packages may import mastery-map
+// without making a cycle of it. The composition belongs above both, in the console that already
+// assembles a plan, which is the whole reason it lives here rather than in an engine.
+//
+// THE LINK RIDES ON THE PROJECT, NOT ON THE ARTEFACT, because that is the only shape the pipeline
+// can produce: the caller selects one milestone, the planner stamps it onto one brief, and one
+// `Project` comes out carrying it. A per-artefact tag let one project span several rungs, which no
+// real project ever does. `evidenceFromProjects` below is the adapter from the real thing, and it
+// is the same function `evidenceFor` is, so moving off these seeds is a change of source and not a
+// change of model. Nothing here is derived from a checkbox: every standing the panel shows is
+// computed from the artefacts listed below and from nothing else.
 //
 // SYNTHETIC. Four synthetic children, no real child data, same as every other console seed.
 import {
@@ -17,23 +24,29 @@ import {
   type GuideOverride,
   type MilestoneEvidence,
 } from "@gt100k/mastery-map";
+// Type-only, so nothing of that package reaches the bundle. The adapter reads a `Project`'s shape
+// and calls nothing, which is all a pure fold over its events needs.
+import type { Project } from "@gt100k/project-workspace";
 import type { DomainPath, Stage } from "@gt100k/specialization-planner";
 
 import { CHILDREN } from "./console-data.js";
 import { plansForKid } from "./plan.js";
 
-/** One thing the child made. `kind` is the artefact kind a `WorkEvent` already carries, and
-    `milestoneId` is the link: the claim that this thing might show that capability. */
+/** One thing the child made. `kind` is the artefact kind a `WorkEvent` already carries. It holds no
+    milestone of its own: which rung the work was aimed at is a fact about the project. */
 export interface MadeThing {
   readonly title: string;
   readonly kind: string;
   readonly at: string;
-  readonly milestoneId: string;
 }
 
+/** The console's stand-in for a `Project`, field for field on the two things a standing needs.
+    `milestoneId` is optional here for the same reason it is optional there: a self-directed
+    project belongs to no milestone, and one aimed at none evidences none. */
 export interface ChildProject {
   readonly id: string;
   readonly title: string;
+  readonly milestoneId?: string;
   readonly made: readonly MadeThing[];
 }
 
@@ -62,12 +75,12 @@ const ARI_WORK: ChildWork = {
     {
       id: "proj-scales-notebook",
       title: "Scales notebook",
+      milestoneId: "pf-steady-pulse",
       made: [
         {
           title: "G major, hands together, one steady pulse",
           kind: "recording",
           at: "2026-07-14T16:20:00.000Z",
-          milestoneId: "pf-steady-pulse",
         },
       ],
     },
@@ -93,12 +106,12 @@ const BEX_WORK: ChildWork = {
     {
       id: "proj-amc8-practice",
       title: "AMC 8 practice papers",
+      milestoneId: "cm-first-whole-paper",
       made: [
         {
           title: "First whole paper, sat in one sitting and marked",
           kind: "marked script",
           at: "2026-07-09T15:05:00.000Z",
-          milestoneId: "cm-first-whole-paper",
         },
       ],
     },
@@ -117,8 +130,13 @@ const CYRUS_WORK: ChildWork = {
 
 // ── Dulce: the one child with a certified spike in a domain that has a map ───────────────────────
 // Her game-dev spike is ACTIVE, so the stage below is the planner's real read on her and not a
-// default. Two projects, four artefacts, spread over two milestones on purpose: one milestone
-// evidenced twice inside a single project, and one evidenced once from each of two projects.
+// default. Three projects, four artefacts, over two milestones: one milestone evidenced twice
+// inside a single project, and one evidenced once from each of two projects.
+//
+// THE BUG WRITE-UP IS ITS OWN PROJECT, and it used to be a third artefact filed under "Rescue the
+// Toaster" with a milestone id of its own. That could not survive the model: a project carries one
+// milestone, so the choice was to drop the work or to give it the project it always was. Dulce did
+// two separable pieces of work on one game, and the second was aimed at a different rung.
 
 const DULCE_WORK: ChildWork = {
   kidId: "kid-synthetic-004",
@@ -127,36 +145,41 @@ const DULCE_WORK: ChildWork = {
     {
       id: "proj-rescue-the-toaster",
       title: "Rescue the Toaster",
+      milestoneId: "gd-one-screen-game",
       made: [
         {
           title: "One-screen build, finished end to end",
           kind: "build",
           at: "2026-06-28T18:40:00.000Z",
-          milestoneId: "gd-one-screen-game",
         },
         {
           title: "Playable link her cousin got to the end of",
           kind: "link",
           at: "2026-07-02T17:10:00.000Z",
-          milestoneId: "gd-one-screen-game",
         },
+      ],
+    },
+    {
+      id: "proj-toaster-lift-bug",
+      title: "Finding the lift bug",
+      milestoneId: "gd-reproduce-a-bug",
+      made: [
         {
           title: "The three steps that make the lift break, written down",
           kind: "note",
           at: "2026-07-11T19:25:00.000Z",
-          milestoneId: "gd-reproduce-a-bug",
         },
       ],
     },
     {
       id: "proj-toaster-lift-fix",
       title: "The lift fix",
+      milestoneId: "gd-reproduce-a-bug",
       made: [
         {
           title: "Fix for the lift bug with the cause named",
           kind: "patch",
           at: "2026-07-18T20:05:00.000Z",
-          milestoneId: "gd-reproduce-a-bug",
         },
       ],
     },
@@ -196,30 +219,69 @@ export interface WorkLink extends MilestoneEvidence {
 }
 
 /**
- * The evidence links `readMap` consumes, built from the artefacts above so the two can never
- * disagree. One link per project per milestone. Order follows the projects and then the artefacts,
- * so it is stable across renders.
+ * The evidence links `readMap` consumes, built from the projects above so the two can never
+ * disagree. ONE LINK PER PROJECT THAT NAMES A MILESTONE, holding every artefact on that project; a
+ * project aimed at no milestone yields nothing, because it evidences nothing. Order follows the
+ * projects, so it is stable across renders.
+ *
+ * A project aimed at a milestone with nothing made yet still yields a link, carrying zero. That is
+ * not the same fact as no project at all, and the difference is one a guide can act on. It reads as
+ * `none` either way, which is the point: starting a milestone is not evidence of finishing it.
  */
 export function evidenceFor(work: ChildWork): readonly WorkLink[] {
-  const out: WorkLink[] = [];
-  for (const project of work.projects) {
-    const byMilestone = new Map<string, MadeThing[]>();
-    for (const thing of project.made) {
-      const held = byMilestone.get(thing.milestoneId);
-      if (held === undefined) byMilestone.set(thing.milestoneId, [thing]);
-      else held.push(thing);
-    }
-    for (const [milestoneId, made] of byMilestone) {
-      out.push({
-        milestoneId,
-        projectId: project.id,
-        artifactCount: made.length,
-        project: project.title,
-        made,
-      });
-    }
-  }
-  return out;
+  return linksFrom(work.projects);
+}
+
+/**
+ * The same fold over the real thing: the links a child's actual `Project`s support.
+ *
+ * ONLY A WORK-EVENT OF KIND `artifact` COUNTS. Not a session, not an attempt, not a reflection. The
+ * design says a milestone is demonstrated by a thing that exists, and sessions are effort rather
+ * than artefacts, so counting them would let a child who worked hard and made nothing read as
+ * having made something.
+ *
+ * Pure, and it lives here rather than in `project-workspace` because the return type is
+ * mastery-map's and that package may not import mastery-map: mastery-map already depends on the
+ * planner, and so does the workspace. The console is the layer that holds both.
+ */
+export function evidenceFromProjects(projects: readonly Project[]): readonly WorkLink[] {
+  return linksFrom(
+    projects.map((p) => ({
+      id: p.id,
+      title: p.title,
+      milestoneId: p.milestoneId,
+      made: p.events.flatMap((e) =>
+        e.kind === "artifact"
+          ? [
+              {
+                // A child's own words are the fallback title, because an `artifact` event with no
+                // payload on it is still a thing they say they made, and the kind decides what
+                // counts. Dropping it would undercount real work over a missing optional field.
+                title: e.artifact?.title ?? e.text,
+                kind: e.artifact?.kind ?? "artifact",
+                at: e.at,
+              },
+            ]
+          : [],
+      ),
+    })),
+  );
+}
+
+function linksFrom(projects: readonly ChildProject[]): readonly WorkLink[] {
+  return projects.flatMap((project) =>
+    project.milestoneId === undefined
+      ? []
+      : [
+          {
+            milestoneId: project.milestoneId,
+            projectId: project.id,
+            artifactCount: project.made.length,
+            project: project.title,
+            made: project.made,
+          },
+        ],
+  );
 }
 
 /** One key per link, so a read handed back by the engine finds the artefacts it was derived from

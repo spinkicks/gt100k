@@ -12,6 +12,6 @@
     "@gt100k/student-profile": "workspace:*"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run --root ../../.. passion/adapters/profile-store-fs/test"
   }
 }

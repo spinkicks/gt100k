@@ -44,7 +44,7 @@ const TALLY_IN_WORDS = new RegExp(
 
 const ARI = workForKid("kid-synthetic-001"); // one recording, and an override on the rung before it
 const BEX = workForKid("kid-synthetic-002"); // one paper sat, nothing behind the rung after it
-const DULCE = workForKid("kid-synthetic-004"); // four artefacts over two projects and two milestones
+const DULCE = workForKid("kid-synthetic-004"); // four artefacts over three projects, two milestones
 
 /** The maths seed put into use and re-checked, because a child is only read against a map that is
     in use and fit to be, and that seed is deliberately a stale draft. */
@@ -357,8 +357,10 @@ describe("MapsPanel never renders a standing without the work under it", () => {
       html.split('data-testid="map-read"').find((r) => r.startsWith(` data-id="${id}"`))!;
 
     for (const project of DULCE.projects) {
+      // One milestone per project, the way a real `Project` carries it, so the whole of a
+      // project's work lands in one row and none of it anywhere else.
+      const row = rowOf(project.milestoneId!);
       for (const thing of project.made) {
-        const row = rowOf(thing.milestoneId);
         expect(row).toContain(project.title);
         expect(row).toContain(thing.title);
       }

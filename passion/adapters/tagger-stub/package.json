@@ -12,6 +12,6 @@
     "@gt100k/two-axis-tagging": "workspace:*"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run --root ../../.. passion/adapters/tagger-stub/test"
   }
 }

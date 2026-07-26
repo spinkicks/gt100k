@@ -30,6 +30,7 @@ import {
   stoneTextures,
   wallTextures,
 } from "./textures";
+import { preloadWhenReal } from "./preloadWhenReal";
 import { useAssetReady } from "./useAssetReady";
 
 const WOOD_TEX = {
@@ -43,7 +44,9 @@ const WOOD_TEX = {
 // round-trip off time-to-real-textures. Harmless no-op on a fresh clone/CI where the files are
 // gitignored/absent: the rejected promise just never gets read because mounting stays gated
 // behind useAssetReady/Suspense boundaries below.
-useTexture.preload(Object.values(WOOD_TEX));
+// Probe one of the three: they are fetched together by the same script, so either all are there
+// or none are. See preloadWhenReal for why an unguarded preload throws on a dev server.
+preloadWhenReal(WOOD_TEX.map, () => useTexture.preload(Object.values(WOOD_TEX)));
 
 /** Floor with real scanned CC0 wood when fetched, else the procedural plank material. */
 function ProceduralFloor(): JSX.Element {
@@ -316,7 +319,7 @@ function Fireplace(): JSX.Element {
 }
 
 const CAT_MODEL_URL = "/assets/models/cat.glb";
-useGLTF.preload(CAT_MODEL_URL);
+preloadWhenReal(CAT_MODEL_URL, () => useGLTF.preload(CAT_MODEL_URL));
 
 /** Real CC0 cat GLB (via fetch-assets), auto-normalized to fit + grounded. Falls back to the
  *  procedural cat if the GLB is absent/fails to load. */
@@ -438,7 +441,7 @@ function ProceduralCat(): JSX.Element {
 }
 
 const PINE_MODEL_URL = "/assets/models/pine.glb";
-useGLTF.preload(PINE_MODEL_URL);
+preloadWhenReal(PINE_MODEL_URL, () => useGLTF.preload(PINE_MODEL_URL));
 const TREE_SPOTS: Array<[number, number, number, string]> = [
   [5.5, -7.8, 5.0, "#26402b"],
   [6.0, 7.6, 5.4, "#223a27"],

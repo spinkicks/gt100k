@@ -144,6 +144,11 @@ export interface PlanDeps {
   readonly generator: ProjectBriefGenerator;
   /** The A6 curated matches (from `curatedForCell`) to ground the craft scaffold. Default []. */
   readonly resources?: readonly CuratedResource[];
+  /**
+   * The mastery-map milestone this project should demonstrate, chosen by the caller. Stamped onto
+   * the returned brief; a value on the generator's own response is discarded.
+   */
+  readonly milestoneId?: string;
 }
 
 /**
@@ -218,7 +223,7 @@ function derivePlanCore(inputs: PlanInputs, resources: readonly CuratedResource[
     `DP is bounded: ${dpDose} < ${INVESTMENT_LOAD} investment-year load — practice serves the project, never the reverse.`,
     `Rest is mandatory: ${REST_DAYS_PER_WEEK} days/week and ${REST_MONTHS_PER_YEAR} months/year off the primary spike, in ~${REST_INCREMENT_MONTHS}-month increments.`,
     "The child owns the problem, method, and pace — this brief is an offer (opportunity/structure/access), never an assignment.",
-    "Trajectory, not eminence — the by-14 artifact is a ready-to-invest performer.",
+    "Trajectory, not eminence: this plan protects a climb, it does not forecast where it ends.",
     ...(strained
       ? [
           "Strain present — holding the stage and proposing rest/deload to protect the rage to master.",
@@ -278,7 +283,14 @@ export async function planSpecialization(
 ): Promise<SpecializationPlan> {
   void now;
   const core = derivePlanCore(inputs, deps.resources ?? []);
-  const nextProject = await generateNextProject(deps.generator, core.briefContext);
+  const generated = await generateNextProject(deps.generator, core.briefContext);
+  // Stamp AFTER generation and overwrite unconditionally, so a generator cannot smuggle in a
+  // milestone id of its own. Absent from deps means absent from the brief, not inherited.
+  const { milestoneId: _ignored, ...withoutClaim } = generated;
+  const nextProject: ProjectBrief =
+    deps.milestoneId === undefined
+      ? withoutClaim
+      : { ...withoutClaim, milestoneId: deps.milestoneId };
   return assemblePlan(inputs, core, nextProject);
 }
 

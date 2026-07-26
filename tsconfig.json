@@ -29,6 +29,7 @@
     { "path": "passion/packages/access-broker" },
     { "path": "passion/adapters/access-broker-live" },
     { "path": "passion/packages/ui" },
-    { "path": "passion/packages/mastery-map" }
+    { "path": "passion/packages/mastery-map" },
+    { "path": "passion/adapters/mastery-map-live" }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@gt100k/access-broker",
+  "name": "@gt100k/mastery-map-live",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,11 +9,14 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@gt100k/mastery-map": "workspace:*",
+    "@gt100k/concierge": "workspace:*",
+    "@gt100k/research": "workspace:*",
     "@gt100k/specialization-planner": "workspace:*",
-    "@gt100k/wellbeing": "workspace:*",
     "@gt100k/two-axis-tagging": "workspace:*"
   },
   "scripts": {
-    "test": "vitest run --root ../../.. passion/packages/access-broker/test"
+    "test": "vitest run --root ../../.. passion/adapters/mastery-map-live/test",
+    "map:live": "tsx scripts/mastery-map-live.ts"
   }
 }
