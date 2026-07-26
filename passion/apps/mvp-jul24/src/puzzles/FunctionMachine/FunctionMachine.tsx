@@ -1,5 +1,6 @@
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
+import TeachIn from "../../teachin/TeachIn";
 import { MAX_DIFFICULTY, type Machine, generateMachine } from "./generate";
 import { applyRule, describeRule } from "./logic";
 import "./FunctionMachine.css";
@@ -124,6 +125,11 @@ function MachineRound({ machine, onSolved, onExit, onNext }: MachineRoundProps) 
       <button type="button" className="fm-exit" onClick={onExit}>
         ← Back
       </button>
+
+      {/* Explanation lives in the one shared teach-in; this file grows no tutorial of its own. The
+          panel reuses `.fm-status`'s opening sentence verbatim, and adds only the fact a child cannot
+          infer from the screen: that a missed prediction is free. */}
+      <TeachIn activity="function-machine" />
 
       <div className={`fm-machine${solved ? " fm-machine-open" : ""}`}>
         <span className="fm-port fm-port-in">in</span>

@@ -53,6 +53,44 @@ export interface ObjectProp extends PropBase {
 export type BackdropProp = FlatProp | ObjectProp;
 
 /**
+ * The bookshelf: a clickable silhouette in the painting that is **not gadget-backed**.
+ *
+ * WHY IT IS ITS OWN FIELD ON THE ROOM AND NOT AN ENTRY IN `props`
+ * `quads.data.test.ts` asserts that a room's props cover every gadget in its topic *exactly once,
+ * with none for absent gadgets*. That invariant is load-bearing — it is what stops a puzzle shipping
+ * with no painted surface to click — so the bookshelf must not be allowed to dilute it. Three ways
+ * were considered:
+ *
+ *   1. Give the shelf a `gadgets/registry.ts` entry. Rejected, and not on style grounds: `CabinView`
+ *      calls `sessionLog.recordSurfaced` for every gadget in the topic, so a registry entry would
+ *      enter the shelf into the interest/skip pipeline as an activity the child declined. That
+ *      pollutes the exact signals the shelf exists to support (see PROJECT.md, D5) with a row about
+ *      a piece of furniture. `GadgetOverlay` would also try to render a puzzle for it.
+ *   2. Add a `kind: "shelf"` member to `BackdropProp` and filter it out of the coverage check.
+ *      Honest, but it weakens the assertion's text for the sake of one non-gadget, and every
+ *      consumer of `BackdropProp` then has to branch on a `gadgetId` that may not be there.
+ *   3. THIS. A separate, optional field with no `gadgetId` at all. The coverage invariant is
+ *      untouched and unweakened, the type system makes "shelf with a gadgetId" and "gadget with no
+ *      prop" both unrepresentable, and the shelf's own polygon invariants are asserted in
+ *      `src/shelf/shelf.geometry.test.ts` — the same winding, bounds, integer-pixel and
+ *      non-rectangularity checks the gadget props get, plus one that it does not overlap them.
+ *
+ * It is an `object` silhouette in all but name (`kind` would carry no information here, since a
+ * shelf never receives a warped preview): both painted shelves are partly occluded — by the chess
+ * table in Logic Games, by the leather chair in Math — so their outlines follow what is visible
+ * rather than the case's flat front, and neither is a quad.
+ */
+export interface ShelfProp {
+  /** N-point silhouette of the *visible* shelf, wound clockwise on screen. */
+  outline: Polygon;
+  /**
+   * The shelf's accessible name — what it is in the painting, same rule as `PropBase.label`. The
+   * cards it holds are named by the panel it opens, not here.
+   */
+  label: string;
+}
+
+/**
  * Where the light in a room's painting is, so the still can be animated over it.
  *
  * These are the props `CabinAliveness` takes, in the same units as everything else here: the art's
@@ -83,6 +121,11 @@ export interface BackdropRoom {
   artWidth: number;
   artHeight: number;
   props: readonly BackdropProp[];
+  /**
+   * The painted bookshelf, if this plate has one. Absent = no shelf hotspot is rendered at all,
+   * which is the only honest state for a room whose painting contains no shelf — see `ShelfProp`.
+   */
+  shelf?: ShelfProp;
   /** Measured light in this room's plate. Absent = the still is shown without effects. */
   aliveness?: RoomAliveness;
 }

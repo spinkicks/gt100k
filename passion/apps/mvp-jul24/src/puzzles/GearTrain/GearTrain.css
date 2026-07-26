@@ -1,3 +1,15 @@
+/*
+ * COLOURS COME FROM src/theme.css TOKENS, not from hex written here.
+ *
+ * This file used to hold ~40 hand-picked hexes and zero tokens, while the ten puzzles written
+ * alongside it used the tokens heavily. That drift is what made the game read as washed out: every
+ * screen invented its own slightly-different warm mid-tone, so text and surface kept landing a few
+ * steps apart instead of the separation the token set guarantees (`--cream` and `--ink` are annotated
+ * >= 4.5:1 against their intended backgrounds; ad-hoc tans are not annotated as anything).
+ *
+ * Material pigments stay literal on purpose — brass and stone are pigments, not semantic roles, and
+ * the token set has no name for them. Anything that is TEXT or a SURFACE uses a token.
+ */
 /* Gear Train — brass and wood, matching the cabin puzzles (see Mirror/FractionLaser/BalanceScale). */
 
 .gt-root {
@@ -6,7 +18,7 @@
   align-items: center;
   gap: 0.9rem;
   padding: 1.25rem 1rem 2rem;
-  color: #f3e6cf;
+  color: var(--cream);
 }
 
 .gt-back,
@@ -15,24 +27,24 @@
   font: inherit;
   cursor: pointer;
   border-radius: 999px;
-  border: 1px solid #6b4a2a;
-  background: linear-gradient(#f6e7c8, #e6d1a8);
-  color: #3a2513;
+  border: 1px solid var(--wood-light);
+  background: linear-gradient(var(--parchment-hi), var(--parchment-edge));
+  color: var(--ink);
   padding: 0.4rem 0.95rem;
-  box-shadow: 0 1px 0 #fdf6e6 inset;
+  box-shadow: 0 1px 0 var(--parchment-hi) inset;
 }
 
 .gt-back:hover,
 .gt-next:hover,
 .gt-pick:hover {
-  background: linear-gradient(#fdf2da, #eedcb6);
+  background: linear-gradient(var(--parchment-hi), var(--parchment-edge));
 }
 
 .gt-back:focus-visible,
 .gt-next:focus-visible,
 .gt-pick:focus-visible,
 .gt-slot:focus-visible {
-  outline: 3px solid #ffb15e;
+  outline: 3px solid var(--ember-bright);
   outline-offset: 2px;
 }
 
@@ -45,11 +57,11 @@
   margin: 0;
   text-align: center;
   line-height: 1.45;
-  color: #e8d5b5;
+  color: var(--cream);
 }
 
 .gt-rule strong {
-  color: #ffcf87;
+  color: var(--ember-bright);
 }
 
 /* The bench: crank on the left, then the three slots in mesh order. */
@@ -61,9 +73,9 @@
   flex-wrap: wrap;
   padding: 1rem 0.75rem;
   border-radius: 12px;
-  border: 4px solid #4a3320;
+  border: 4px solid var(--wood-frame);
   background: radial-gradient(120% 90% at 50% 0%, rgba(255, 177, 94, 0.14), transparent 70%),
-    linear-gradient(#2a1c10, #1d130a);
+    linear-gradient(var(--wood), var(--wood-deep));
 }
 
 .gt-stage {
@@ -78,7 +90,7 @@
   font-size: 0.72rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #c8ab84;
+  color: var(--cream-soft);
 }
 
 .gt-slot {
@@ -89,7 +101,7 @@
   padding: 0.25rem;
   cursor: pointer;
   border-radius: 10px;
-  border: 2px dashed #6b4a2a;
+  border: 2px dashed var(--wood-light);
   background: rgba(246, 231, 200, 0.05);
 }
 
@@ -100,7 +112,7 @@
 
 .gt-slot-empty {
   font-size: 0.78rem;
-  color: #a98f6c;
+  color: var(--cream-soft);
 }
 
 /* Gear geometry. Teeth are real polygons so they can be counted, not a texture. */
@@ -117,36 +129,36 @@
 }
 
 .gt-tooth-marked {
-  fill: #ff8b3d;
-  stroke: #a4441a;
+  fill: var(--ember);
+  stroke: var(--ember-deep);
 }
 
 .gt-gear-hub {
-  fill: #4a3320;
-  stroke: #2a1c10;
+  fill: var(--wood-frame);
+  stroke: var(--wood);
   stroke-width: 1;
 }
 
 .gt-gear-spoke {
-  stroke: #a4441a;
+  stroke: var(--ember-deep);
   stroke-width: 2;
 }
 
 .gt-readout {
   margin: 0;
   font-size: 0.92rem;
-  color: #d8c3a0;
+  color: var(--cream-soft);
   text-align: center;
 }
 
 .gt-readout strong {
-  color: #ffcf87;
+  color: var(--ember-bright);
 }
 
 .gt-note {
   min-height: 1.4rem;
   font-weight: 600;
-  color: #ffcf87;
+  color: var(--ember-bright);
 }
 
 .gt-rack {
@@ -159,6 +171,85 @@
 
 /* The picked gear reads as lifted off the rack, so the next click has an obvious destination. */
 .gt-pick-on {
-  background: linear-gradient(#ffe0ad, #eec987);
-  box-shadow: 0 0 0 2px #ffb15e;
+  background: linear-gradient(var(--parchment-hi), var(--parchment-edge));
+  box-shadow: 0 0 0 2px var(--ember-bright);
+}
+
+/* Per-gear speed, in turns per single crank turn. Added because the train was unreadable without
+   it — see the note on `rateLabel` in GearTrain.tsx. */
+.gt-rate {
+  max-width: 7.5rem;
+  font-size: 0.7rem;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--cream-soft);
+}
+
+/* The crank bar. See the note in GearTrain.tsx: the goal is stated in crank turns, so the crank has
+   to be something the child turns and the count has to be readable, or the goal names a quantity that
+   appears nowhere. */
+.gt-crankbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.9rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--wood-frame);
+  background: rgba(246, 231, 200, 0.05);
+}
+
+.gt-crank-turn,
+.gt-crank-reset {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid var(--wood-light);
+  background: linear-gradient(var(--parchment-hi), var(--parchment-edge));
+  color: var(--ink);
+  padding: 0.35rem 0.85rem;
+}
+
+.gt-crank-turn:hover:not(:disabled),
+.gt-crank-reset:hover {
+  background: linear-gradient(var(--parchment-hi), var(--parchment-edge));
+}
+
+.gt-crank-turn:focus-visible,
+.gt-crank-reset:focus-visible {
+  outline: 3px solid var(--ember-bright);
+  outline-offset: 2px;
+}
+
+.gt-crank-reset {
+  background: linear-gradient(var(--parchment), var(--parchment-edge));
+  font-size: 0.82rem;
+}
+
+.gt-crank-count {
+  font-size: 0.88rem;
+  color: var(--cream-soft);
+}
+
+.gt-crank-count strong {
+  color: var(--ember-bright);
+}
+
+/* Reads without colour too: the wording states the answer, the ember tint only reinforces it. */
+.gt-ember {
+  font-size: 0.82rem;
+  color: var(--cream-soft);
+}
+
+.gt-ember-on {
+  color: var(--ember);
+  font-weight: 600;
+}
+
+/* Stands in for the crank bar until the train is complete. See GearTrain.tsx. */
+.gt-crank-hint {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--cream-soft);
 }

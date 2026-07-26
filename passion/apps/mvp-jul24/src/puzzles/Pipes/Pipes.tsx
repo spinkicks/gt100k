@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
+import TeachIn from "../../teachin/TeachIn";
 import { EASY_SIZE, HARD_SIZE, generateLevel, nextSeed } from "./generate";
 import { type Grid, type TileKind, computePowered, isSolved, makeGrid, rotateTile } from "./logic";
 import "./Pipes.css";
@@ -99,6 +100,8 @@ export default function Pipes({ seed, onSolved, onExit }: PuzzleProps) {
       <button type="button" className="pp-exit" onClick={onExit}>
         ← Back
       </button>
+      {/* Explanation lives in the one shared teach-in; this file grows no tutorial of its own. */}
+      <TeachIn activity="pipes" />
       <div
         className={`pp-board ${solved ? "pp-solved" : ""}`}
         style={{

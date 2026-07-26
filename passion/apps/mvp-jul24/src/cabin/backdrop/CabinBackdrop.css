@@ -6,7 +6,19 @@
   position: relative;
   width: 100%;
   height: 100%;
+  /* CLIP, NOT HIDDEN, AND THE DIFFERENCE IS A BUG THAT SHIPPED HERE.
+     `overflow: hidden` makes a *scroll container* — it just hides the scrollbars — and the parallax
+     overscan (`CabinAliveness` scales the art layer to 102.4%) leaves this box ~68px of scrollable
+     content that nothing is ever supposed to reach. The browser reaches it on its own: focus a control
+     inside the frame and Chromium's scroll-into-view slides the entire painted room up by that 68px,
+     silently and permanently, taking whatever is at the top of the frame behind its edge. It was found
+     with the shelf panel (whose heading and Close button disappeared a beat after a card was clicked),
+     but nothing about that panel causes it — any focusable thing in here can.
+     `overflow: clip` clips identically and creates no scroll container at all, so there is nothing to
+     scroll. `hidden` stays as the preceding declaration for engines older than Chrome 90 / Firefox 81 /
+     Safari 16, which ignore `clip` and need *something* here or the art bleeds out of the frame. */
   overflow: hidden;
+  overflow: clip;
   /* Warm wash behind everything: what shows when no backdrop source loads (a build with no art in
      public/art/, or a first paint before the image arrives). Matches CabinStatic's fallback so a
      missing painting reads as a dim room rather than a broken page. */

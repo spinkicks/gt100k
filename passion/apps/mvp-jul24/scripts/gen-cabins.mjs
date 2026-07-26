@@ -552,7 +552,15 @@ function inQuad(quad, px, py) {
 
 const lum = (r, g, b) => 0.299 * r + 0.587 * g + 0.114 * b;
 
-/** Deterministic noise, so a rebuild is reproducible. */
+/**
+ * Deterministic noise, so a rebuild is reproducible.
+ *
+ * THE ONE REMAINING COPY of src/lib/rng.ts's mulberry32, and deliberately so: this file is plain
+ * `.mjs` run by bare `node`, which cannot import a `.ts` module, and switching the art-baking
+ * pipeline over to a TypeScript loader to save nine lines would be a worse trade. The stream is
+ * identical (`(a + C) >>> 0` and `(a + C) | 0` agree on all 32 bits); if you edit either, edit both,
+ * or the committed cabin PNGs stop reproducing.
+ */
 function mulberry32(seed) {
   let a = seed >>> 0;
   return () => {

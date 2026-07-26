@@ -1,4 +1,4 @@
-import { MAX_DIFFICULTY, generateLevel, mulberry32, solutionFor } from "./generate";
+import { MAX_DIFFICULTY, generateLevel, solutionFor } from "./generate";
 import {
   ONE,
   addF,
@@ -165,11 +165,6 @@ describe("solutionFor", () => {
   });
 });
 
-test("mulberry32 is a deterministic seeded generator", () => {
-  const draw = (seed: number) => {
-    const rng = mulberry32(seed);
-    return Array.from({ length: 5 }, () => rng());
-  };
-  expect(draw(42)).toEqual(draw(42));
-  expect(draw(1)).not.toEqual(draw(2));
-});
+// The PRNG this generator draws from is shared and tested in src/lib/rng.test.ts, which pins its
+// stream against a frozen sequence — a stronger guarantee than the per-generator determinism check
+// that used to sit here.

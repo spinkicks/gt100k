@@ -1,5 +1,6 @@
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
+import TeachIn from "../../teachin/TeachIn";
 import { generatePuzzle } from "./generate";
 import { type Cell, type NonogramPuzzle, blankGrid, isSolved } from "./logic";
 import "./Nonogram.css";
@@ -72,6 +73,8 @@ export default function Nonogram({ seed, onSolved, onExit }: PuzzleProps) {
       <button type="button" className="ng-exit" onClick={onExit}>
         ← Back
       </button>
+      {/* Explanation lives in the one shared teach-in; this file grows no tutorial of its own. */}
+      <TeachIn activity="nonogram" />
       <div
         className="ng-board"
         style={{

@@ -32,10 +32,14 @@ describe("authored rooms", () => {
   });
 
   it("resolves by topic and returns undefined for topics with no authored interior", () => {
+    // Both built cabins are authored. `math` was pinned as undefined here on purpose, to stop a room
+    // being added by the side door while that cabin had no activities in it. It has five now, so the
+    // pin is inverted rather than deleted.
     expect(backdropRoomFor("logic-games")).toBeDefined();
-    // `math` is a real but gadget-free room, and music/code/art have no interior at all — all four
-    // must come back undefined rather than throwing, because the map lets a player reach them.
-    for (const topic of ["math", "music", "code", "art", "science", "words", "nonsense"]) {
+    expect(backdropRoomFor("math")).toBeDefined();
+    // The rest have no interior at all and must come back undefined rather than throwing, because
+    // the map lets a player reach them.
+    for (const topic of ["music", "code", "art", "science", "words", "nonsense"]) {
       expect(backdropRoomFor(topic)).toBeUndefined();
     }
   });

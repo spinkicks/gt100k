@@ -1,6 +1,7 @@
 import { type KeyboardEvent, type RefObject, useRef, useState } from "react";
 import { useGame } from "../../game/store";
 import type { TopicId } from "../../game/types";
+import CabinShelf from "../../shelf/CabinShelf";
 import CabinAliveness, { type AlivenessEffect } from "../aliveness/CabinAliveness";
 import { type FitMode, fitTransform, svgPreserveAspectRatio } from "./fit";
 import { quadSourceSize, toSvgPoints } from "./geometry";
@@ -262,6 +263,21 @@ export const CabinBackdrop: React.FC<{
             <PropHotspot key={prop.gadgetId} prop={prop} />
           ))}
         </svg>
+
+        {/* The bookshelf, last of all: its own layer over the props, and the card panel it opens.
+            Inside the parallax element for the same reason everything else is — a hotspot that does
+            not ride the art's transform slides off the object it points at the moment the cursor
+            moves. It is not one of `props` because it is not gadget-backed (see `ShelfProp`), and it
+            opens a reading panel rather than calling `focusGadget`. */}
+        {room?.shelf ? (
+          <CabinShelf
+            topic={topic}
+            shelf={room.shelf}
+            artWidth={artWidth}
+            artHeight={artHeight}
+            fitMode={FIT_MODE}
+          />
+        ) : null}
       </div>
     </div>
   );

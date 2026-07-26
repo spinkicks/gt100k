@@ -1,3 +1,15 @@
+/*
+ * COLOURS COME FROM src/theme.css TOKENS, not from hex written here.
+ *
+ * This file used to hold ~40 hand-picked hexes and zero tokens, while the ten puzzles written
+ * alongside it used the tokens heavily. That drift is what made the game read as washed out: every
+ * screen invented its own slightly-different warm mid-tone, so text and surface kept landing a few
+ * steps apart instead of the separation the token set guarantees (`--cream` and `--ink` are annotated
+ * >= 4.5:1 against their intended backgrounds; ad-hoc tans are not annotated as anything).
+ *
+ * Material pigments stay literal on purpose — brass and stone are pigments, not semantic roles, and
+ * the token set has no name for them. Anything that is TEXT or a SURFACE uses a token.
+ */
 /* Balance Scale — warm wood and parchment, matching the cabin puzzles (see Mirror/FractionLaser). */
 
 .bs-root {
@@ -6,7 +18,7 @@
   align-items: center;
   gap: 0.9rem;
   padding: 1.25rem 1rem 2rem;
-  color: #f3e6cf;
+  color: var(--cream);
 }
 
 .bs-back,
@@ -16,25 +28,25 @@
   font: inherit;
   cursor: pointer;
   border-radius: 999px;
-  border: 1px solid #6b4a2a;
-  background: linear-gradient(#f6e7c8, #e6d1a8);
-  color: #3a2513;
+  border: 1px solid var(--wood-light);
+  background: linear-gradient(var(--parchment-hi), var(--parchment-edge));
+  color: var(--ink);
   padding: 0.4rem 0.95rem;
-  box-shadow: 0 1px 0 #fdf6e6 inset;
+  box-shadow: 0 1px 0 var(--parchment-hi) inset;
 }
 
 .bs-back:hover,
 .bs-next:hover,
 .bs-reset:hover,
 .bs-move:hover {
-  background: linear-gradient(#fdf2da, #eedcb6);
+  background: linear-gradient(var(--parchment-hi), var(--parchment-edge));
 }
 
 .bs-back:focus-visible,
 .bs-next:focus-visible,
 .bs-reset:focus-visible,
 .bs-move:focus-visible {
-  outline: 3px solid #ffb15e;
+  outline: 3px solid var(--ember-bright);
   outline-offset: 2px;
 }
 
@@ -47,7 +59,7 @@
   margin: 0;
   text-align: center;
   line-height: 1.45;
-  color: #e8d5b5;
+  color: var(--cream);
 }
 
 /* The scale itself: a fulcrum, a tilting beam, and two pans hanging off it. */
@@ -56,9 +68,9 @@
   width: min(40rem, 100%);
   padding: 2.2rem 1rem 1rem;
   border-radius: 12px;
-  border: 4px solid #4a3320;
+  border: 4px solid var(--wood-frame);
   background: radial-gradient(120% 90% at 50% 0%, rgba(255, 177, 94, 0.16), transparent 70%),
-    linear-gradient(#2a1c10, #1d130a);
+    linear-gradient(var(--wood), var(--wood-deep));
 }
 
 /*
@@ -108,7 +120,7 @@
   height: 0;
   border-left: 0.85rem solid transparent;
   border-right: 0.85rem solid transparent;
-  border-bottom: 1.5rem solid #6b4a2a;
+  border-bottom: 1.5rem solid var(--wood-light);
 }
 
 .bs-pans {
@@ -126,7 +138,7 @@
   min-height: 8rem;
   padding: 0.7rem;
   border-radius: 10px 10px 26px 26px;
-  border: 2px solid #6b4a2a;
+  border: 2px solid var(--wood-light);
   background: linear-gradient(rgba(246, 231, 200, 0.09), rgba(246, 231, 200, 0.03));
 }
 
@@ -145,7 +157,7 @@
   height: 2.5rem;
   border-radius: 34% 34% 48% 48% / 22% 22% 60% 60%;
   background: linear-gradient(#8a6a4a, #5d4229);
-  border: 1px solid #3a2513;
+  border: 1px solid var(--ink);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
 }
 
@@ -153,7 +165,7 @@
   display: grid;
   place-items: center;
   font-weight: 700;
-  color: #2b2f36;
+  color: var(--ink);
   background: linear-gradient(#cfd4da, #a7aeb6);
   border: 1px solid #7d848c;
   border-radius: 5px;
@@ -178,19 +190,19 @@
 
 .bs-pan-readout {
   font-size: 0.85rem;
-  color: #d8c3a0;
+  color: var(--cream-soft);
 }
 
 .bs-status {
   margin: 0;
   font-size: 0.9rem;
-  color: #d8c3a0;
+  color: var(--cream-soft);
 }
 
 .bs-note {
   min-height: 1.4rem;
   font-weight: 600;
-  color: #ffcf87;
+  color: var(--ember-bright);
   text-align: center;
 }
 
@@ -204,9 +216,20 @@
 
 /* Divide is the move that needs planning, so it reads slightly warmer than the strip moves. */
 .bs-move-divide {
-  background: linear-gradient(#ffe0ad, #eec987);
+  background: linear-gradient(var(--parchment-hi), var(--parchment-edge));
 }
 
 .bs-reset {
-  background: linear-gradient(#e2d3b6, #cdbb99);
+  background: linear-gradient(var(--parchment), var(--parchment-edge));
+}
+
+/* Shown in place of the split buttons while no split is legal. States the condition to satisfy
+   rather than offering a control that does nothing — see the note in BalanceScale.tsx. */
+.bs-split-hint {
+  flex-basis: 100%;
+  margin: 0.15rem 0 0;
+  text-align: center;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--cream-soft);
 }

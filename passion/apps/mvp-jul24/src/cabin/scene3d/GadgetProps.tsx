@@ -10,9 +10,12 @@ import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { useGame } from "../../game/store";
+// The app's one seeded PRNG — the prop scatter below must be identical every render. See
+// src/lib/rng.ts.
+import { mulberry32 } from "../../lib/rng";
 import type { FramePattern, GadgetProp3D } from "./anchors";
 import "./GadgetProps.css";
-import { mulberry32, propTextures } from "./textures";
+import { propTextures } from "./textures";
 
 const ACTIVE_GLOW = "#ffb15e";
 const ACTIVE_EMISSIVE = "#c9762a";

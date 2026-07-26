@@ -15,13 +15,15 @@ beforeEach(() => {
 });
 
 describe("hotspots", () => {
-  it("renders one named control per authored prop, and nothing else focusable", () => {
+  it("renders one named control per authored prop plus the shelf, and nothing else focusable", () => {
+    // The shelf is the room's one control that is not gadget-backed (see `ShelfProp` in types.ts and
+    // src/shelf/). It is counted from the same authored data as the props rather than hard-coded, so
+    // this stays a statement about the room and not about a number someone remembered.
     render(<CabinBackdrop topic="logic-games" />);
     const buttons = screen.getAllByRole("button");
-    expect(buttons).toHaveLength(ROOM.props.length);
-    expect(new Set(buttons.map((b) => b.getAttribute("aria-label")))).toEqual(
-      new Set(ROOM.props.map((p) => p.label)),
-    );
+    const expected = [...ROOM.props.map((p) => p.label), ROOM.shelf!.label];
+    expect(buttons).toHaveLength(expected.length);
+    expect(new Set(buttons.map((b) => b.getAttribute("aria-label")))).toEqual(new Set(expected));
   });
 
   it("names props for what they are in the painting, not for what they open", () => {
@@ -279,16 +281,16 @@ describe("backdrop image", () => {
       if (img) fireEvent.error(img);
     }
     expect(container.querySelector("img")).toBeNull();
-    // A room with no painting is still a room you can click around in.
-    expect(screen.getAllByRole("button")).toHaveLength(ROOM.props.length);
+    // A room with no painting is still a room you can click around in — props and shelf alike.
+    expect(screen.getAllByRole("button")).toHaveLength(ROOM.props.length + 1);
   });
 });
 
 describe("topics with no authored backdrop", () => {
   it("renders an empty room rather than throwing", () => {
-    // `math` is a real, deliberately gadget-free cabin (PROJECT.md); music/code/art have no interior
-    // at all. All of them must survive being walked into.
-    for (const topic of ["math", "music", "code", "art"] as const) {
+    // `math` has an authored room now, so it is no longer one of these. music/code/art have no
+    // interior at all and must still survive being walked into.
+    for (const topic of ["music", "code", "art"] as const) {
       const { container, unmount } = render(<CabinBackdrop topic={topic} />);
       expect(container.querySelector(".cabin-backdrop")).not.toBeNull();
       expect(container.querySelectorAll("polygon")).toHaveLength(0);

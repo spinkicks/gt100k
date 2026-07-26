@@ -1,6 +1,10 @@
 // Pipes ("Net"-style connectivity puzzle): rotate tiles until the source
 // pipe connects, through matching openings, to every endpoint.
 
+// The app's one seeded PRNG. Its exact arithmetic decides how every board is scrambled, so see the
+// warning in src/lib/rng.ts before touching it.
+import { mulberry32 } from "../../lib/rng";
+
 /** Bit flags for the four cardinal openings a tile can have. */
 export const DIR = { N: 1, E: 2, S: 4, W: 8 } as const;
 
@@ -63,17 +67,6 @@ export type Grid = Tile[][];
 
 export function tileMask(tile: Tile): number {
   return maskAt(tile.kind, tile.rotation);
-}
-
-/** Deterministic PRNG (mulberry32) so a given seed always shuffles the same way. */
-function mulberry32(seed: number): () => number {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
 }
 
 /** Build a shuffled starting grid for `level`, deterministic from `seed`. */
