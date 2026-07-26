@@ -17,6 +17,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
+import TeachIn from "../../teachin/TeachIn";
 import "./GearTrain.css";
 import { type Level, TIERS, generateLevel } from "./generate";
 import {
@@ -178,6 +179,11 @@ export const GearTrain: React.FC<PuzzleProps & { initialRound?: number }> = ({
       <button type="button" className="gt-back" onClick={onExit}>
         ← Back
       </button>
+
+      {/* Explanation lives in the one shared teach-in; this file grows no tutorial of its own. The
+          panel reuses `.gt-rule`'s words, minus the interpolated target this level happens to have —
+          a static table cannot know it, and `.gt-rule` states it anyway. */}
+      <TeachIn activity="gear-train" />
 
       <p className="gt-rule">
         A gear with more teeth turns slower. Fit three gears so the ember tooth comes back to the

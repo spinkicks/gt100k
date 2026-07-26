@@ -18,6 +18,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
+import TeachIn from "../../teachin/TeachIn";
 import "./BalanceScale.css";
 import { type Level, TIERS, generateLevel } from "./generate";
 import {
@@ -140,6 +141,10 @@ export const BalanceScale: React.FC<PuzzleProps & { initialRound?: number }> = (
       <button type="button" className="bs-back" onClick={onExit}>
         ← Back
       </button>
+
+      {/* Explanation lives in the one shared teach-in; this file grows no tutorial of its own. The
+          panel reuses `.bs-rule` and `.bs-status`'s invariant sentence verbatim. */}
+      <TeachIn activity="balance-scale" />
 
       <p className="bs-rule">
         Do the same thing to both pans until one bag stands alone — then the stones facing it are

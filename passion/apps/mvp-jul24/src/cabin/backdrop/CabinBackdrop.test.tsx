@@ -15,13 +15,15 @@ beforeEach(() => {
 });
 
 describe("hotspots", () => {
-  it("renders one named control per authored prop, and nothing else focusable", () => {
+  it("renders one named control per authored prop plus the shelf, and nothing else focusable", () => {
+    // The shelf is the room's one control that is not gadget-backed (see `ShelfProp` in types.ts and
+    // src/shelf/). It is counted from the same authored data as the props rather than hard-coded, so
+    // this stays a statement about the room and not about a number someone remembered.
     render(<CabinBackdrop topic="logic-games" />);
     const buttons = screen.getAllByRole("button");
-    expect(buttons).toHaveLength(ROOM.props.length);
-    expect(new Set(buttons.map((b) => b.getAttribute("aria-label")))).toEqual(
-      new Set(ROOM.props.map((p) => p.label)),
-    );
+    const expected = [...ROOM.props.map((p) => p.label), ROOM.shelf!.label];
+    expect(buttons).toHaveLength(expected.length);
+    expect(new Set(buttons.map((b) => b.getAttribute("aria-label")))).toEqual(new Set(expected));
   });
 
   it("names props for what they are in the painting, not for what they open", () => {
@@ -279,8 +281,8 @@ describe("backdrop image", () => {
       if (img) fireEvent.error(img);
     }
     expect(container.querySelector("img")).toBeNull();
-    // A room with no painting is still a room you can click around in.
-    expect(screen.getAllByRole("button")).toHaveLength(ROOM.props.length);
+    // A room with no painting is still a room you can click around in — props and shelf alike.
+    expect(screen.getAllByRole("button")).toHaveLength(ROOM.props.length + 1);
   });
 });
 

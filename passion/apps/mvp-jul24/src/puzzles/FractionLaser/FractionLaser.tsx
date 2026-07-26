@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
+import TeachIn from "../../teachin/TeachIn";
 import { MAX_DIFFICULTY, generateLevel } from "./generate";
 import {
   type Dials,
@@ -124,6 +125,13 @@ export default function FractionLaser({
       <button type="button" className="fl-exit" onClick={onExit}>
         ← Back
       </button>
+
+      {/* Explanation lives in the one shared teach-in; this file grows no tutorial of its own. It
+          mounts at the same place in the tree as Mirror's, which is the twin-pair constraint at the
+          top of FractionLaser.css doing its job: an explanation that arrived differently in the two
+          halves of the pair would be a difference in the shell, not in the fractions. The panel
+          reuses `.fl-hint`'s unsolved sentence verbatim. */}
+      <TeachIn activity="fraction-laser" />
 
       {/* No explicit size: the frame wraps the grid. Setting width here would
           be wrong under the global border-box rule — padding and border would

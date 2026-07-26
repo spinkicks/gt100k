@@ -1,0 +1,421 @@
+/* The cabin bookshelf: the hit polygon over the painted shelf, and the panel of cards it opens.
+   Everything here is built from theme.css tokens — the panel is parchment in a wood frame, because it
+   is a shelf of pages in a log cabin and not a modal in a web app. */
+
+/* --- the hotspot ----------------------------------------------------------------------------- */
+
+/* Sits over the painting in the art's own coordinate system, exactly like `.cabin-backdrop-hotspots`
+   and for the same reason (fit.ts): `preserveAspectRatio` is the same rule as the image's
+   `object-fit: cover`, so the browser keeps polygon and painting locked together at every size with
+   no measurement anywhere. Mounted after the prop hotspots in document order, so the shelf's trace —
+   and, more importantly, the open panel — paint above them. */
+.shelf-hotspot-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* The <svg> box must not swallow clicks aimed at the painting or at the props under it; only the
+     hit polygon opts back in. */
+  pointer-events: none;
+}
+
+.shelf-hit {
+  fill: transparent;
+  /* `fill` makes the polygon INTERIOR the hit region whether or not the fill paints, so the target is
+     the shelf's silhouette rather than a rectangle over the fireplace stone beside it. */
+  pointer-events: fill;
+  cursor: pointer;
+  /* The focus treatment is the traced outline below. theme.css's global focus ring would draw a box
+     around the bounding box, which is the thing the silhouette exists to avoid. */
+  outline: none;
+}
+
+.shelf-halo,
+.shelf-trace {
+  fill: none;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 140ms var(--ease-out);
+  /* Constant device-pixel width whatever the backdrop is scaled to — the viewBox is 1536 wide. */
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+}
+
+/* Dark under-stroke so the bright line reads on both halves of a firelit room. Both shelves sit in
+   the dark end of their plate, where a single bright stroke vibrates. */
+.shelf-halo {
+  stroke: rgba(20, 10, 4, 0.7);
+  stroke-width: 5;
+}
+
+.shelf-trace {
+  stroke: var(--ember-bright);
+  stroke-width: 1.75;
+}
+
+.shelf-hit:hover ~ .shelf-halo,
+.shelf-hit:focus-visible ~ .shelf-halo,
+.shelf-hit:hover ~ .shelf-trace,
+.shelf-hit:focus-visible ~ .shelf-trace {
+  opacity: 1;
+}
+
+/* Keyboard focus is louder than hover: a pointer user has a cursor to tell them where they are. */
+.shelf-hit:focus-visible ~ .shelf-trace {
+  stroke-width: 2.75;
+  filter: drop-shadow(0 0 6px rgba(255, 184, 103, 0.85));
+}
+
+@media (prefers-contrast: more) {
+  .shelf-halo,
+  .shelf-trace {
+    stroke-width: 6;
+  }
+
+  .shelf-trace {
+    stroke: #fff;
+  }
+}
+
+/* --- the panel ------------------------------------------------------------------------------- */
+
+.shelf-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 3vh, 32px);
+  /* Dims the room without hiding it: the panel is a thing you opened in a place you are still
+     standing in. */
+  background: radial-gradient(120% 100% at 50% 50%, rgba(20, 10, 4, 0.5), rgba(12, 6, 3, 0.78));
+}
+
+.shelf-scrim-close {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.shelf-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(940px, 100%);
+  /* Fills the frame's height rather than hugging its content. Two reasons: a card is nearly always
+     taller than the space available inside a cabin frame (the frame is wide and short), so every
+     pixel given back to the page is a line of the page a child can see without scrolling; and a panel
+     that changes height as you move between cards makes the room jump. */
+  height: 100%;
+  padding: clamp(12px, 2.2vh, 22px);
+  border: 2px solid var(--wood-frame);
+  border-radius: var(--r-lg);
+  background: linear-gradient(180deg, #40291b 0%, #33200f 100%);
+  box-shadow: var(--shadow-panel);
+  outline: none;
+}
+
+.shelf-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.shelf-panel-title {
+  margin: 0;
+  font-size: clamp(1.1rem, 2.4vh, 1.45rem);
+  color: var(--parchment-hi);
+}
+
+.shelf-panel-intro {
+  margin: 4px 0 0;
+  max-width: 76ch;
+  font-size: 0.84rem;
+  color: var(--cream-soft);
+}
+
+/* The list beside the page, not above it: see the comment at the mount site. `min-height: 0` is what
+   lets the card below be the element that scrolls — without it a grid item refuses to shrink below
+   its content and the overflow lands on the panel, which then grows past the cabin frame. */
+.shelf-panel-body {
+  display: grid;
+  grid-template-columns: minmax(170px, 230px) 1fr;
+  gap: 14px;
+  min-height: 0;
+}
+
+.shelf-panel-close {
+  flex: 0 0 auto;
+  padding: 8px 16px;
+  border: 1px solid var(--wood-frame);
+  border-radius: var(--r-pill);
+  background: var(--wood-light);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms var(--ease-out);
+}
+
+.shelf-panel-close:hover {
+  background: var(--ember-deep);
+}
+
+/* The whole deck, always. Every title visible is what makes the offer real (see ShelfPanel.tsx) —
+   this is a column of spines on a shelf, not a stack you work through. It scrolls on its own if a
+   deck ever outgrows the frame, so the page beside it never moves. */
+.shelf-panel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow-y: auto;
+  min-height: 0;
+  padding-right: 2px;
+}
+
+.shelf-panel-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 8px 12px;
+  border: 1px solid rgba(224, 201, 158, 0.28);
+  /* Not a pill any more: a spine is a rectangle, and a two-line title in a pill reads as a bubble. */
+  border-radius: var(--r-sm);
+  background: rgba(243, 228, 198, 0.08);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 140ms var(--ease-out), border-color 140ms var(--ease-out);
+}
+
+.shelf-panel-tab:hover {
+  background: rgba(243, 228, 198, 0.16);
+}
+
+.shelf-panel-tab[data-open="true"] {
+  border-color: var(--ember-bright);
+  background: rgba(255, 184, 103, 0.2);
+  color: var(--parchment-hi);
+}
+
+.shelf-panel-tab-tag {
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: var(--ember-deep);
+  color: var(--parchment-hi);
+  font-size: 0.68rem;
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+
+/* The open page. Parchment, ink, and a scroll of its own so a long card never pushes the deck's
+   titles off the screen. The scrollbar is deliberately visible rather than overlay-thin: the panel is
+   shorter than a full card in a 900px-tall window, and a page that is quietly cut off with no cue is
+   a page a child does not know continues. */
+.shelf-card {
+  overflow-y: auto;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--parchment-edge) transparent;
+  padding: clamp(12px, 2vh, 20px) clamp(14px, 2.2vw, 24px);
+  border: 1px solid var(--parchment-edge);
+  border-radius: var(--r-md);
+  color: var(--ink);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), var(--shadow-soft);
+
+  /* SCROLL SHADOWS, and they are not decoration — they are the affordance. On macOS the scrollbar is
+     an overlay that only appears *while* scrolling, so a card taller than the panel looked simply
+     truncated: the second paragraph stopped mid-sentence with nothing to say there was more. This is
+     the standard four-layer trick — two `local` layers that scroll with the content and mask two
+     `scroll` layers pinned to the box — so a soft shadow appears at whichever edge has content beyond
+     it and disappears at the ends. No extra DOM, no JS, and it degrades to a plain page if a browser
+     ignores `background-attachment: local`.
+
+     The colours are the same parchment ramp the base layer is, so the mask is invisible as a mask. */
+  background:
+    linear-gradient(var(--parchment-hi) 40%, rgba(251, 241, 218, 0)) top / 100% 26px no-repeat local,
+    linear-gradient(rgba(237, 220, 184, 0), #eddcb8 62%) bottom / 100% 30px no-repeat local,
+    radial-gradient(farthest-side at 50% 0, rgba(51, 35, 15, 0.24), rgba(51, 35, 15, 0)) top / 100%
+      13px no-repeat scroll,
+    radial-gradient(farthest-side at 50% 100%, rgba(51, 35, 15, 0.28), rgba(51, 35, 15, 0)) bottom /
+      100% 15px no-repeat scroll,
+    linear-gradient(180deg, var(--parchment-hi) 0%, var(--parchment) 46%, #eddcb8 100%) scroll;
+}
+
+.shelf-card-title {
+  margin: 0 0 10px;
+  font-size: clamp(1.02rem, 2.2vh, 1.25rem);
+  color: var(--ink);
+}
+
+.shelf-card-para {
+  margin: 0 0 11px;
+  max-width: 78ch;
+  font-size: clamp(0.84rem, 1.75vh, 0.95rem);
+  line-height: 1.5;
+}
+
+/* WebKit needs its own scrollbar rules; the two blocks together cover every browser a child will be
+   handed. Kept next to the element they belong to rather than in a global sheet. */
+.shelf-card::-webkit-scrollbar {
+  width: 10px;
+}
+
+.shelf-card::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: var(--r-pill);
+  background-clip: content-box;
+  background-color: var(--ink-soft);
+}
+
+.shelf-card-source {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--parchment-edge);
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.shelf-card-source a {
+  color: var(--ember-deep);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* --- the diagrams ---------------------------------------------------------------------------- */
+
+/* Capped on BOTH axes. The width keeps strokes at a sensible weight; the height matters more — a
+   diagram sized only by width takes as much vertical room as its aspect ratio asks for, and the tall
+   ones (Königsberg is 300x206) then pushed the second paragraph out of the visible page entirely.
+   With a viewBox and the default `xMidYMid meet`, the drawing simply scales down to fit. */
+.shelf-diagram {
+  display: block;
+  width: min(400px, 100%);
+  max-height: min(165px, 22vh);
+  height: auto;
+  margin: 2px 0 12px;
+}
+
+.shelf-dg-cell,
+.shelf-dg-part,
+.shelf-dg-box,
+.shelf-dg-gear,
+.shelf-dg-coin,
+.shelf-dg-pan {
+  fill: rgba(51, 35, 15, 0.06);
+  stroke: var(--ink);
+  stroke-width: 1.4;
+}
+
+/* Opaque, unlike every other shape here, because edges terminate at a node's centre: a translucent
+   disc let seven bridges draw themselves straight through the digit counting them. */
+.shelf-dg-node {
+  fill: var(--parchment);
+  stroke: var(--ink);
+  stroke-width: 1.4;
+}
+
+.shelf-dg-cell.is-filled {
+  fill: var(--ember-deep);
+}
+
+.shelf-dg-ghost {
+  fill: rgba(194, 90, 31, 0.24);
+  stroke: none;
+}
+
+.shelf-dg-edge,
+.shelf-dg-beam,
+.shelf-dg-tooth,
+.shelf-dg-arrow,
+.shelf-dg-mirror {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.shelf-dg-mirror {
+  stroke-width: 3.4;
+}
+
+.shelf-dg-normal {
+  stroke: var(--ink-soft);
+  stroke-width: 1.2;
+  stroke-dasharray: 5 4;
+}
+
+.shelf-dg-ray,
+.shelf-dg-arc {
+  fill: none;
+  stroke: var(--ember-deep);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.shelf-dg-head {
+  fill: var(--ember-deep);
+  stroke: none;
+}
+
+/* Sized generously in viewBox units because a diagram is scaled DOWN to fit the card's height cap —
+   Königsberg's 300x206 lands at about 0.8, so 13px of viewBox was ~10px on screen and the bridge
+   counts inside the nodes stopped being readable at exactly the moment they mattered. */
+.shelf-dg-label,
+.shelf-dg-node-label {
+  fill: var(--ink);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.shelf-dg-note {
+  fill: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: 12px;
+}
+
+/* --- narrow windows -------------------------------------------------------------------------- */
+
+/* The panel is sized to the cabin frame, not the window, so this is about a genuinely narrow frame:
+   the two-column layout gives up and the list goes back to wrapped rows above the page. */
+@media (max-width: 720px) {
+  .shelf-panel-body {
+    grid-template-columns: 1fr;
+  }
+
+  .shelf-panel-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+
+  .shelf-panel-tab {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 620px) {
+  .shelf-panel-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .shelf-panel-close {
+    align-self: flex-end;
+  }
+}

@@ -50,7 +50,7 @@
  */
 
 import { shaftFromQuad } from "../aliveness/regions";
-import type { BackdropRoom, RoomAliveness } from "./types";
+import type { BackdropRoom, RoomAliveness, ShelfProp } from "./types";
 
 /** Source dimensions of every backdrop still. Also the SVG overlay's viewBox. */
 export const ART_WIDTH = 1536;
@@ -149,12 +149,61 @@ const LOGIC_GAMES_ALIVENESS: RoomAliveness = {
  * source rectangle's top-left — see `geometry.ts` for why that winding is mandatory and
  * `quads.data.test.ts` for the assertions that hold this file to it.
  */
+/**
+ * The bookshelf on the left wall, below the framed grid board.
+ *
+ * ===========================================================================================
+ * MEASURED AGAINST `public/art/cabin-backdrop-logic-games.png`, 1536x1024 (the committed plate,
+ * NOT the concept still the props above were traced onto).
+ * ===========================================================================================
+ * Not a gadget — see `ShelfProp` in types.ts for why it is a separate field rather than a sixth
+ * prop, and PROJECT.md ("The shelf is the D5 maintenance path") for why it exists at all.
+ *
+ * HOW IT WAS MEASURED
+ * A 50px labelled grid was burned over the plate (`scripts/art-inspect.mjs grid`), the shelf region
+ * cropped and upscaled 3-6x, and then — because this shelf sits in the darkest part of a
+ * warm-graded room, where an eyeballed edge is worth about ten pixels — each edge was read off a
+ * numeric luminance profile across it rather than off the crop. The finished polygon was drawn back
+ * over the full plate and inspected, which is the check that catches "numerically defensible,
+ * visibly wrong".
+ *
+ * WHAT THE PROFILES SAID
+ *  - TOP: the cornice's upper edge is a shallow step running y=487 at x=10 to y=481 at x=400 — it
+ *    rises slightly to the right, where the nonogram frame above it falls to the right. The plate's
+ *    perspective is not internally consistent (already noted for the pegboard and tangram panel
+ *    above); tracing what is painted still beats imposing a vanishing point the art does not have.
+ *  - The cornice OVERHANGS the case: the dark band ends at x=392 (bright lit wall from x=393 at both
+ *    y=490 and y=494), while the case's right stile is a lit vertical face at x=360..368 with wall
+ *    beyond it from x=371, at y=505, 620 and 690 alike. Hence the two-step corner at the top right:
+ *    (392,482)-(392,493)-(370,497). A bounding box would have claimed 22px of lit wall for 200px.
+ *  - LEFT: the shelf runs off-frame, so x=0 is the boundary. There is a dark stile at x=28..31 with
+ *    only shadow to its left, but the cornice and the shelf boards continue to the frame edge, so
+ *    cutting the polygon at the stile would give up real shelf to avoid a dim corner.
+ *  - BOTTOM: the round table occludes the lower shelves; its rim crosses y=725 at x=48 and y=709 at
+ *    x=196. The polygon stops ABOVE that at (0,698)-(370,686), for a reason beyond neatness: the
+ *    chess prop's outline rises to y=697 between x=196 and x=262, and hotspots that overlap swallow
+ *    each other's clicks by DOM order. Books are still painted below this line at x>250; they are
+ *    given up deliberately.
+ */
+const LOGIC_GAMES_SHELF: ShelfProp = {
+  label: "Bookshelf under the grid board",
+  outline: [
+    [0, 487],
+    [392, 482],
+    [392, 493],
+    [370, 497],
+    [370, 686],
+    [0, 698],
+  ],
+};
+
 const LOGIC_GAMES: BackdropRoom = {
   topic: "logic-games",
   sources: LOGIC_GAMES_SOURCES,
   artWidth: ART_WIDTH,
   artHeight: ART_HEIGHT,
   aliveness: LOGIC_GAMES_ALIVENESS,
+  shelf: LOGIC_GAMES_SHELF,
   props: [
     {
       // The framed grid board on the left wall — the strongest perspective in the room and the
@@ -295,12 +344,49 @@ const MATH_ALIVENESS: RoomAliveness = {
   ),
 };
 
+/**
+ * The tall bookshelf on the left wall. Same measuring method as the Logic Games shelf above, same
+ * plate this room's props were measured against, and the same reason for existing.
+ *
+ * WHAT THE PROFILES SAID
+ *  - TOP: the lit front edge of the top board steps to shadow at y=205 (x=60), 214 (x=160) and 223
+ *    (x=260) — a clean 0.09 px/px fall to the right, which is this wall receding. The band's upper
+ *    edge is ~18px above that, giving (0,181) to (319,213).
+ *  - RIGHT: the right stile is a lit vertical face at x=311..318 with a dark gap at x=307..310 in
+ *    front of it and wall from x=319, and it reads the SAME at y=300, 450 and 560. So unlike the
+ *    Logic Games shelf this edge is genuinely vertical in the painting, not foreshortened, and the
+ *    polygon says so rather than inventing a taper for consistency's sake.
+ *  - BOTTOM: the leather armchair occludes the lower half. Its back rises from (40,516) across a
+ *    crown at (175,500) and falls away to the arm at (284,614), so the polygon's underside is that
+ *    silhouette, traced off a 4x crop. The strip of shelf still visible to the LEFT of the chair
+ *    (x<40, below y=522) is given up: it is ~36px wide, in deep shadow, and adding it would put a
+ *    thin tail on the hit region for no click anyone would make.
+ *  - Nothing here can collide with this room's five props; all of them are at x>=470.
+ */
+const MATH_SHELF: ShelfProp = {
+  label: "Tall bookshelf on the left wall",
+  outline: [
+    [0, 181],
+    [319, 213],
+    [319, 606],
+    [284, 614],
+    [270, 590],
+    [249, 544],
+    [225, 507],
+    [175, 500],
+    [124, 502],
+    [40, 516],
+    [0, 522],
+  ],
+};
+
 const MATH: BackdropRoom = {
   topic: "math",
   sources: MATH_SOURCES,
   artWidth: ART_WIDTH,
   artHeight: ART_HEIGHT,
   aliveness: MATH_ALIVENESS,
+  shelf: MATH_SHELF,
   props: [
     {
       // The brass gear cluster on the chimney breast. Traced around the gears themselves and NOT

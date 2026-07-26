@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
+import TeachIn from "../../teachin/TeachIn";
 import { generateLevel } from "./generate";
 import { type CellContent, type Direction, cloneMirrors, rotateMirror, traceBeam } from "./logic";
 import "./Mirror.css";
@@ -48,6 +49,10 @@ export default function Mirror({ seed, onSolved, onExit }: PuzzleProps) {
       <button type="button" className="mr-exit" onClick={onExit}>
         ← Back
       </button>
+
+      {/* Explanation lives in the one shared teach-in; this file grows no tutorial of its own. The
+          panel reuses the `.mr-hint` sentence below rather than inventing a second phrasing. */}
+      <TeachIn activity="mirror" />
 
       <div
         className={`mr-board${trace.reachesTarget ? " mr-solved" : ""}`}

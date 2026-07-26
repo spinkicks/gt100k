@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Teach-in — review harness</title>
+    <style>
+      /* Harness chrome only. Everything the panel looks like lives in TeachIn.css. */
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+      #root {
+        min-height: 100vh;
+      }
+      .harness {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
+        gap: 26px;
+        padding: 24px 16px 64px;
+      }
+      /*
+       * Each cell stands in for a puzzle root: the same column flex the twelve activities use, so the
+       * teach-in anchors itself here exactly as it does in the real thing.
+       */
+      .harness-slot {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        min-height: 18rem;
+        padding: 1.25rem;
+        border-radius: 16px;
+        border: 8px solid var(--wood-frame);
+        background: linear-gradient(160deg, var(--parchment) 0%, var(--parchment-edge) 100%);
+        color: var(--ink);
+      }
+      .harness-id {
+        align-self: flex-start;
+        font: 700 12px/1 ui-monospace, monospace;
+        letter-spacing: 0.06em;
+        color: var(--ink-soft);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./harness.tsx"></script>
+  </body>
+</html>

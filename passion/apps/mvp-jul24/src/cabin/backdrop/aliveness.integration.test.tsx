@@ -235,7 +235,8 @@ describe("a room with no measured light renders the still, unchanged", () => {
     expect(q(container, ".cabin-backdrop-aliveness")).toBeNull();
     expect(q(container, ".cabin-backdrop-hearthlight")).not.toBeNull();
     expect(raf.requested).toBe(0);
-    expect(screen.getAllByRole("button")).toHaveLength(ROOM.props.length);
+    // props + the bookshelf, which is not gadget-backed and so is not one of `props`.
+    expect(screen.getAllByRole("button")).toHaveLength(ROOM.props.length + 1);
   });
 
   test("each effect can be switched off on its own", () => {
@@ -286,7 +287,8 @@ describe("layering: the effects must not take a single pointer event", () => {
   test("every prop is still clickable and still in the tab order with the effects mounted", () => {
     render(<CabinBackdrop topic="logic-games" />);
     const buttons = screen.getAllByRole("button");
-    expect(buttons).toHaveLength(ROOM.props.length);
+    // props + the bookshelf, which sits in its own layer above the effects for the same reason.
+    expect(buttons).toHaveLength(ROOM.props.length + 1);
     for (const button of buttons) expect(button.getAttribute("tabindex")).toBe("0");
     fireEvent.click(screen.getByRole("button", { name: "Chess set on the table" }));
     expect(useGame.getState().focusedGadgetId).toBe("chess");

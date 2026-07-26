@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
+import TeachIn from "../../teachin/TeachIn";
 import { generatePuzzle, nextSeed } from "./generate";
 import { type Mark, type MarkGrid, emptyMarks, isSolved, key } from "./logic";
 import "./LogicGrid.css";
@@ -49,6 +50,10 @@ export default function LogicGrid({ seed, onSolved, onExit }: PuzzleProps) {
       <button type="button" className="lg-exit" onClick={onExit}>
         ← Back
       </button>
+      {/* Explanation lives in the one shared teach-in; this file grows no tutorial of its own.
+          Mounted even though Logic Grid is off the roster (src/gadgets/registry.ts), so re-adding it
+          stays the one-line change that comment promises. */}
+      <TeachIn activity="logic-grid" />
       <ul className="lg-clues">
         {puzzle.clues.map((clue) => (
           <li key={clue}>{clue}</li>
