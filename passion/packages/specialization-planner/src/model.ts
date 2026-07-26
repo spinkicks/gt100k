@@ -147,7 +147,7 @@ export interface SpecializationPlan {
   readonly escalationReason?: string;
   readonly rationale: string; // guide-facing, plain language
   readonly guardrailNotes: readonly string[];
-  readonly terminalNote: string; // honest scope: by ~14 = a ready-to-invest performer, not an expert
+  readonly terminalNote: string; // honest scope: how far is the child's, paced by wellbeing not a date
 }
 
 // ── Golden constants (§3.7) — do not re-open ─────────────────────────────────────

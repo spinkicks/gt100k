@@ -223,7 +223,7 @@ function derivePlanCore(inputs: PlanInputs, resources: readonly CuratedResource[
     `DP is bounded: ${dpDose} < ${INVESTMENT_LOAD} investment-year load — practice serves the project, never the reverse.`,
     `Rest is mandatory: ${REST_DAYS_PER_WEEK} days/week and ${REST_MONTHS_PER_YEAR} months/year off the primary spike, in ~${REST_INCREMENT_MONTHS}-month increments.`,
     "The child owns the problem, method, and pace — this brief is an offer (opportunity/structure/access), never an assignment.",
-    "Trajectory, not eminence — the by-14 artifact is a ready-to-invest performer.",
+    "Trajectory, not eminence: this plan protects a climb, it does not forecast where it ends.",
     ...(strained
       ? [
           "Strain present — holding the stage and proposing rest/deload to protect the rage to master.",
