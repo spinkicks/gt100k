@@ -37,10 +37,36 @@ test("the trimmed puzzles are absent from every topic, in the registry only", ()
 
 // The seven puzzles moved out of `math` because none of them is actually mathematical (see the
 // TopicId doc comment in src/game/types.ts). `math` is now reserved for a real maths cabin that
-// hasn't been built, so an empty list is the correct answer, not a regression — this test exists so
-// that if someone re-points a deduction puzzle back at `math` it fails loudly.
-test('gadgetsForTopic("math") is empty until the real maths games ship', () => {
-  expect(gadgetsForTopic("math")).toEqual([]);
+// `math` now holds the five maths activities. The property worth protecting is no longer that it is
+// empty, but that it never picks up a deduction puzzle: the whole point of the split is that these
+// two rooms measure different things, and the failure mode is someone re-pointing a `logic-games`
+// puzzle at `math` because it "feels mathematical".
+test('gadgetsForTopic("math") holds only the maths activities', () => {
+  const ids = gadgetsForTopic("math").map((g) => g.id);
+  expect(ids).toEqual([
+    "balance-scale",
+    "gear-train",
+    "fraction-laser",
+    "function-machine",
+    "ratio-mixing",
+  ]);
+  for (const deduction of [
+    "nonogram",
+    "mirror",
+    "chess",
+    "pipes",
+    "logic-grid",
+    "lits",
+    "minesweeper",
+  ]) {
+    expect(ids).not.toContain(deduction);
+  }
+});
+
+test("the still-unbuilt cabins return an empty list", () => {
+  for (const topic of ["music", "code", "art"] as const) {
+    expect(gadgetsForTopic(topic)).toEqual([]);
+  }
 });
 
 test("gadgetById returns the matching gadget or undefined", () => {

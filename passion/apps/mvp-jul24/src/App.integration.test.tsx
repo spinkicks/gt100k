@@ -38,10 +38,14 @@ test("full loop: map -> cabin -> gadget -> solve -> readout", () => {
 /**
  * The `math` cabin is on the map and openable but holds no gadgets until its games ship (see
  * src/gadgets/registry.ts). Walking into it is a normal thing a player will do, so the whole path —
- * map click → store → CabinView → backend → empty prop list — has to survive it and put a real room
- * on screen. Driven through the static backend because jsdom has no WebGL for the 3D one.
+ * map click → store → CabinView → backend → prop list — has to survive it and put a real room on
+ * screen. Driven through the static backend because jsdom has no WebGL for the 3D one.
+ *
+ * This asserted zero gadgets while `math` was deliberately empty. It now holds five maths
+ * activities, so the assertion flipped: the point is that the whole path works and the room comes up
+ * furnished with its own props, not that the room is bare.
  */
-test("entering the empty math cabin renders a room, not a crash or a blank panel", () => {
+test("entering the math cabin renders a room with its activities in it", () => {
   expect(() => render(<App />)).not.toThrow();
 
   fireEvent.click(
@@ -51,9 +55,14 @@ test("entering the empty math cabin renders a room, not a crash or a blank panel
   expect(useGame.getState().cabinId).toBe("math");
   expect(document.querySelector(".cabin-view")).toBeInTheDocument();
   expect(document.querySelector(".cabin-static")).toBeInTheDocument();
-  // The room is furnished; it just has nothing to click in it.
   expect(document.querySelector("img.cabin-static-bg")).toBeInTheDocument();
-  expect(document.querySelectorAll("[data-gadget]")).toHaveLength(0);
+  // Its five activities are on the wall, and none of them is a deduction puzzle from the other room.
+  const ids = [...document.querySelectorAll("[data-gadget]")].map((el) =>
+    el.getAttribute("data-gadget"),
+  );
+  expect(ids).toHaveLength(5);
+  expect(ids).toContain("gear-train");
+  expect(ids).not.toContain("nonogram");
   // ...and no gadget overlay opened itself on the way in.
   expect(document.querySelector(".gadget-overlay")).toBeNull();
 });

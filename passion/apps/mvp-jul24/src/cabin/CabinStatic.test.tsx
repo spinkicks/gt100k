@@ -63,14 +63,15 @@ test("renders the cabin background image with the topic-specific src", () => {
   expect(img.getAttribute("src")).toBe("/art/cabin-logic-games.png");
 });
 
-// `math` is on the map, active, and has no gadgets until its games ship. Entering it has to give a
-// normal (if quiet) room rather than throwing or rendering nothing at all.
+// A gadget-free topic has to give a normal (if quiet) room rather than throwing or rendering nothing.
+// This used `math` while that cabin was deliberately empty; `math` now has five activities, so the
+// case moved to `music`, which is on the map as "coming soon" and genuinely has none.
 test("a topic with no gadgets renders the room with zero hotspots and does not throw", () => {
-  expect(() => render(<CabinStatic topic="math" />)).not.toThrow();
+  expect(() => render(<CabinStatic topic="music" />)).not.toThrow();
 
   expect(document.querySelector(".cabin-static")).toBeInTheDocument();
   expect(document.querySelector("img.cabin-static-bg")?.getAttribute("src")).toBe(
-    "/art/cabin-math.png",
+    "/art/cabin-music.png",
   );
   expect(document.querySelector(".cabin-static-hearthlight")).toBeInTheDocument();
   expect(document.querySelectorAll("[data-gadget]")).toHaveLength(0);

@@ -1,18 +1,31 @@
 import type { Gadget, TopicId } from "../game/types";
+import BalanceScale from "../puzzles/BalanceScale/BalanceScale";
 import Chess from "../puzzles/Chess/Chess";
+import FractionLaser from "../puzzles/FractionLaser/FractionLaser";
+import FunctionMachine from "../puzzles/FunctionMachine/FunctionMachine";
+import GearTrain from "../puzzles/GearTrain/GearTrain";
 import Mirror from "../puzzles/Mirror/Mirror";
 import Nonogram from "../puzzles/Nonogram/Nonogram";
 import Pipes from "../puzzles/Pipes/Pipes";
+import RatioMixing from "../puzzles/RatioMixing/RatioMixing";
 
 /**
  * Every gadget in the game, keyed to the cabin (topic) it lives in.
  *
- * All of them live in `logic-games`, not `math`: each one survives replacing every numeral with an
- * arbitrary symbol, so what they actually exercise is deduction rather than mathematics (see the
- * TopicId doc comment in src/game/types.ts). The `math` cabin therefore has ZERO entries here for
- * now — that is intentional, and a later PR fills it with genuinely mathematical games. Every
- * consumer of `gadgetsForTopic` must tolerate an empty list (see scene3d/anchors.ts and
- * cabin/CabinStatic.tsx, both of which render a normal empty room).
+ * The four in `logic-games` each survive replacing every numeral with an arbitrary symbol, so what
+ * they exercise is deduction rather than mathematics (see the TopicId doc comment in
+ * src/game/types.ts). The five in `math` do not: swap their content for symbols and there is nothing
+ * left to reason about, which is the swap test (research memo §2.1/D1) and the reason the split
+ * exists at all.
+ *
+ * Consumers of `gadgetsForTopic` must still tolerate an empty list — `music`/`code`/`art` return one
+ * (see scene3d/anchors.ts and cabin/CabinStatic.tsx, both of which render a normal empty room).
+ *
+ * The `math` entries carry no `hotspot` that means anything yet: the backdrop room for `math` is not
+ * authored, so nothing routes a player to them through a painted prop. They are reachable through
+ * the 3D and static backends, which place unknown gadgets generically. Authoring
+ * `cabin/backdrop/quads.data.ts` for `math` is the follow-up, and the five objects it needs are
+ * already in `public/art/cabin-backdrop-math.png` — see PROJECT.md for the prop-to-activity map.
  *
  * ===========================================================================================
  * LOGIC GAMES IS FOUR, NOT SEVEN — DECIDED 2026-07-25. THIS IS THE ONLY PLACE THAT DECIDES IT.
@@ -87,6 +100,48 @@ export const GADGETS: Gadget[] = [
     status: "active",
     Puzzle: Pipes,
     hotspot: { xPct: 50, yPct: 85, label: "Pipes" },
+  },
+
+  // --- math: the maths IS the mechanic in each of these, never a quiz attached to one. ---
+  {
+    id: "balance-scale",
+    topic: "math",
+    label: "Balance Scale",
+    status: "active",
+    Puzzle: BalanceScale,
+    hotspot: { xPct: 20, yPct: 55, label: "Balance Scale" },
+  },
+  {
+    id: "gear-train",
+    topic: "math",
+    label: "Gear Train",
+    status: "active",
+    Puzzle: GearTrain,
+    hotspot: { xPct: 40, yPct: 55, label: "Gear Train" },
+  },
+  {
+    id: "fraction-laser",
+    topic: "math",
+    label: "Fraction Laser",
+    status: "active",
+    Puzzle: FractionLaser,
+    hotspot: { xPct: 60, yPct: 55, label: "Fraction Laser" },
+  },
+  {
+    id: "function-machine",
+    topic: "math",
+    label: "Function Machine",
+    status: "active",
+    Puzzle: FunctionMachine,
+    hotspot: { xPct: 80, yPct: 55, label: "Function Machine" },
+  },
+  {
+    id: "ratio-mixing",
+    topic: "math",
+    label: "Ratio Mixing",
+    status: "active",
+    Puzzle: RatioMixing,
+    hotspot: { xPct: 50, yPct: 82, label: "Ratio Mixing" },
   },
 ];
 

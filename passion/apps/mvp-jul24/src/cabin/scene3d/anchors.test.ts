@@ -63,9 +63,15 @@ test("chess and mirror props sit on the floor, away from the back wall", () => {
 
 // `math` is deliberately gadget-free until its games ship, and `music`/`code`/`art` aren't built at
 // all — every one of them must map to an empty prop list so the 3D room just renders unfurnished.
-test.each(["math", "music", "code", "art"] as const)(
+// `math` used to be in this list and is not any more: its five maths activities now ship, so an
+// empty result for it would be the regression rather than the expectation.
+test.each(["music", "code", "art"] as const)(
   "returns an empty list for %s, which has no registered gadgets",
   (topic) => {
     expect(gadgetProps3D(topic)).toEqual([]);
   },
 );
+
+test("math now has props, because its activities shipped", () => {
+  expect(gadgetProps3D("math").length).toBeGreaterThan(0);
+});
