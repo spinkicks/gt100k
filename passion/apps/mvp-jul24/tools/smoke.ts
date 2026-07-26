@@ -1,7 +1,8 @@
 /**
  * Full-loop runtime smoke test (Task 16 polish pass): drives the REAL mvp-jul24 app in a
  * real headless Chromium at 1440x900 and captures PNGs a human can review, exercising the
- * map → cabin → gadget → readout loop on both cabin backends (3d + static).
+ * map → cabin → gadget → readout loop on the backdrop cabin backend — the only one left; `3d` and
+ * `static` are parked (see game/store.ts, cabin/CabinView.tsx).
  *
  * This is a one-off dev tool, not a test — it doesn't assert anything itself. Its job is to
  * surface runtime errors (console errors / uncaught exceptions) that unit tests can't catch,
@@ -82,7 +83,7 @@ async function shootMap(base: string, outDir: string, timeout: number): Promise<
   }
 }
 
-async function shootStaticCabinAndNonogramAndLogic(
+async function shootBackdropCabinAndNonogramAndLogic(
   base: string,
   outDir: string,
   timeout: number,
@@ -90,16 +91,16 @@ async function shootStaticCabinAndNonogramAndLogic(
   const browser = await chromium.launch({ headless: true });
   try {
     const page = await browser.newPage({ viewport: VIEWPORT, deviceScaleFactor: 1 });
-    wireConsoleWatchers(page, "static");
+    wireConsoleWatchers(page, "backdrop");
 
-    // --- cabin, static backend ---
-    const cabinLabel = "cabin (static backend)";
-    const cabinOut = resolve(outDir, "smoke-cabin-static.png");
+    // --- cabin, backdrop backend ---
+    const cabinLabel = "cabin (backdrop backend)";
+    const cabinOut = resolve(outDir, "smoke-cabin-backdrop.png");
     try {
-      await page.goto(`${base}/?cabin=static`, { waitUntil: "domcontentloaded" });
+      await page.goto(`${base}/`, { waitUntil: "domcontentloaded" });
       await page.waitForSelector(".map-screen", { timeout });
       await page.click('[data-cabin="logic-games"]');
-      await page.waitForSelector(".cabin-static", { timeout });
+      await page.waitForSelector(".cabin-backdrop", { timeout });
       await page.waitForTimeout(300);
       await page.screenshot({ path: cabinOut });
       ok(`${cabinLabel} → ${cabinOut}`);
@@ -107,11 +108,11 @@ async function shootStaticCabinAndNonogramAndLogic(
       fail(cabinLabel, e);
     }
 
-    // --- nonogram gadget (opened from the still-loaded static cabin) ---
+    // --- nonogram gadget (opened from the still-loaded backdrop cabin) ---
     const nonogramLabel = "nonogram gadget overlay";
     const nonogramOut = resolve(outDir, "smoke-nonogram.png");
     try {
-      await page.click('[data-gadget="nonogram"]');
+      await page.click('[data-prop="nonogram"]');
       await page.waitForSelector(".gadget-overlay", { timeout });
       await page.waitForTimeout(300);
       await page.screenshot({ path: nonogramOut });
@@ -156,35 +157,6 @@ async function shootStaticCabinAndNonogramAndLogic(
   }
 }
 
-async function shoot3dCabin(base: string, outDir: string, timeout: number): Promise<void> {
-  const label = "cabin (3d backend)";
-  const out = resolve(outDir, "smoke-cabin-3d.png");
-  const browser = await chromium.launch({ headless: true });
-  try {
-    const page = await browser.newPage({ viewport: VIEWPORT, deviceScaleFactor: 1 });
-    wireConsoleWatchers(page, "3d");
-    await page.goto(`${base}/?cabin=3d`, { waitUntil: "domcontentloaded" });
-    await page.waitForSelector(".map-screen", { timeout });
-    await page.click('[data-cabin="logic-games"]');
-    await page.waitForSelector(".cabin-view", { timeout });
-    // Give the WebGL canvas time to init + render a frame. If WebGL fails under headless
-    // Chromium's swiftshader fallback, don't let that crash the rest of the script — note it.
-    await page.waitForTimeout(1500);
-    const canvasCount = await page.locator(".cabin-view canvas").count();
-    if (canvasCount === 0) {
-      console.warn(
-        `[smoke] NOTE ${label}: no <canvas> found after 1.5s — WebGL likely failed to init`,
-      );
-    }
-    await page.screenshot({ path: out });
-    ok(`${label} → ${out} (canvas present: ${canvasCount > 0})`);
-  } catch (e) {
-    fail(label, e);
-  } finally {
-    await browser.close();
-  }
-}
-
 export async function smoke(args: Args = {}): Promise<{ failures: number }> {
   const port = Number(str(args.port) ?? DEFAULT_PORT);
   const base = `http://localhost:${port}`;
@@ -195,8 +167,7 @@ export async function smoke(args: Args = {}): Promise<{ failures: number }> {
   console.log(`[smoke] base=${base} outDir=${outDir}`);
 
   await shootMap(base, outDir, timeout);
-  await shootStaticCabinAndNonogramAndLogic(base, outDir, timeout);
-  await shoot3dCabin(base, outDir, timeout);
+  await shootBackdropCabinAndNonogramAndLogic(base, outDir, timeout);
 
   console.log(`[smoke] done — ${failures} failure(s)`);
   return { failures };

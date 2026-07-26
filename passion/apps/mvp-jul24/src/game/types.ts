@@ -17,16 +17,6 @@ import type { ComponentType } from "react";
  */
 export type TopicId = "logic-games" | "math" | "music" | "code" | "art" | "science" | "words";
 export type Screen = "map" | "cabin" | "readout";
-/**
- * Which cabin interior renders.
- *
- * `3d` is the one a player sees. `static` is the no-WebGL / headless-screenshot fallback. `backdrop`
- * is the still-generated-painting direction (a single AI still with perspective polygon hotspots
- * over the props painted into it — see src/cabin/backdrop/, including why the warped live-preview
- * layer that used to accompany them is switched off): opt-in only, so the two directions can be
- * compared side by side rather than argued about. See game/store.ts for how each is selected.
- */
-export type CabinBackend = "3d" | "static" | "backdrop";
 
 export interface GadgetHotspot {
   xPct: number;

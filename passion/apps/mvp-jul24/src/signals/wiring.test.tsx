@@ -9,8 +9,8 @@ import { sessionLog } from "./session";
 beforeEach(() => {
   localStorage.clear();
   useGame.setState({ screen: "map", cabinId: null, focusedGadgetId: null });
-  // Static backend: no WebGL/Canvas in jsdom (same reason as App.integration.test).
-  useGame.getState().setBackend("static");
+  // `backdrop` is the only backend now — no WebGL/Canvas in jsdom either way (same reason as
+  // App.integration.test), so there is nothing left to force here.
   useInterest.getState().reset();
 });
 

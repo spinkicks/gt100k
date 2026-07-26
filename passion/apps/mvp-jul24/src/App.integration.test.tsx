@@ -5,7 +5,6 @@ import { useInterest } from "./interest/store";
 
 beforeEach(() => {
   useGame.getState().goToMap();
-  useGame.getState().setBackend("static");
   useInterest.getState().reset();
 });
 
@@ -17,8 +16,9 @@ test("full loop: map -> cabin -> gadget -> solve -> readout", () => {
     screen.getByTestId("app-root").querySelector('[data-cabin="logic-games"]') as HTMLElement,
   );
 
-  // Cabin: static backend is set in beforeEach (no WebGL/Canvas needed in jsdom); find the nonogram hotspot.
-  const nonogramHotspot = document.querySelector('[data-gadget="nonogram"]') as HTMLElement;
+  // Cabin: `backdrop` is the only backend now (no WebGL/Canvas needed in jsdom); find the nonogram
+  // prop hotspot — the backdrop labels props `data-prop`, not `data-gadget` (see CabinBackdrop.tsx).
+  const nonogramHotspot = document.querySelector('[data-prop="nonogram"]') as HTMLElement;
   expect(nonogramHotspot).toBeInTheDocument();
 
   // Open the gadget overlay.
@@ -38,8 +38,9 @@ test("full loop: map -> cabin -> gadget -> solve -> readout", () => {
 /**
  * The `math` cabin is on the map and openable but holds no gadgets until its games ship (see
  * src/gadgets/registry.ts). Walking into it is a normal thing a player will do, so the whole path —
- * map click → store → CabinView → backend → prop list — has to survive it and put a real room on
- * screen. Driven through the static backend because jsdom has no WebGL for the 3D one.
+ * map click → store → CabinView → backdrop → prop list — has to survive it and put a real room on
+ * screen. Driven through `backdrop`, the only backend, which needs no WebGL and so needs no jsdom
+ * workaround.
  *
  * This asserted zero gadgets while `math` was deliberately empty. It now holds five maths
  * activities, so the assertion flipped: the point is that the whole path works and the room comes up
@@ -54,11 +55,11 @@ test("entering the math cabin renders a room with its activities in it", () => {
 
   expect(useGame.getState().cabinId).toBe("math");
   expect(document.querySelector(".cabin-view")).toBeInTheDocument();
-  expect(document.querySelector(".cabin-static")).toBeInTheDocument();
-  expect(document.querySelector("img.cabin-static-bg")).toBeInTheDocument();
+  expect(document.querySelector(".cabin-backdrop")).toBeInTheDocument();
+  expect(document.querySelector("img.cabin-backdrop-img")).toBeInTheDocument();
   // Its five activities are on the wall, and none of them is a deduction puzzle from the other room.
-  const ids = [...document.querySelectorAll("[data-gadget]")].map((el) =>
-    el.getAttribute("data-gadget"),
+  const ids = [...document.querySelectorAll("[data-prop]")].map((el) =>
+    el.getAttribute("data-prop"),
   );
   expect(ids).toHaveLength(5);
   expect(ids).toContain("gear-train");
