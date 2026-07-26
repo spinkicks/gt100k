@@ -19,7 +19,11 @@ import { MIN_DISTINCT_DAYS, MIN_EVIDENCE_MASS } from "../src/model.js";
 const NOW = Date.parse("2026-01-08T00:00:00.000Z");
 const KEY = "music-sound/audio-systems::build";
 
-const at = (timestamp: string, kind: EventKind = "cross_day_return", novelty = false): CellEvent => ({
+const at = (
+  timestamp: string,
+  kind: EventKind = "cross_day_return",
+  novelty = false,
+): CellEvent => ({
   domainPath: ["music-sound", "audio-systems"],
   mode: "build",
   kind,

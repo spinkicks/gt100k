@@ -31,7 +31,13 @@ const emerging: InterestRead = {
     },
   ],
   candidates: [
-    { cellKey: "c", domainPath: ["music-sound"], mode: "build", lowerBound: 0.7, attribution: "style" },
+    {
+      cellKey: "c",
+      domainPath: ["music-sound"],
+      mode: "build",
+      lowerBound: 0.7,
+      attribution: "style",
+    },
   ],
 };
 

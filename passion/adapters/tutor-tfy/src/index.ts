@@ -44,7 +44,10 @@ export class TfyTutor implements Interviewer, AnswerJudge {
   async nextQuestion(ctx: Parameters<Interviewer["nextQuestion"]>[0]): Promise<string> {
     const sys = `You interview a child about their own project to help them articulate it. Ask ONE short, warm question about the "${ctx.targetFacet}" facet${ctx.isFollowUp ? " (a gentle follow-up going deeper)" : ""}. Return JSON only: {"question":"..."}.`;
     const user = `Project: ${ctx.profile.title} — ${ctx.profile.summary}.`;
-    return parseQuestion(await chat(this.cfg, sys, user)) ?? `Tell me more about the ${ctx.targetFacet} of your project.`;
+    return (
+      parseQuestion(await chat(this.cfg, sys, user)) ??
+      `Tell me more about the ${ctx.targetFacet} of your project.`
+    );
   }
 
   async judge(ctx: Parameters<AnswerJudge["judge"]>[0]): Promise<Judgment> {

@@ -179,7 +179,9 @@ function Quest({
         </p>
         <div className="hero__meta">
           <span className="chip chip--accent">{audienceLabel(project.audience)}</span>
-          <span className="chip">{project.source === "self" ? "Your idea" : "A quest for you"}</span>
+          <span className="chip">
+            {project.source === "self" ? "Your idea" : "A quest for you"}
+          </span>
         </div>
         <p className="hero__how">
           <b>How:</b> {project.authenticMethod}
@@ -233,8 +235,8 @@ function Quest({
         </div>
         {kind === "outcome" ? (
           <label className="stuck">
-            <input type="checkbox" checked={stuck} onChange={(e) => setStuck(e.target.checked)} />
-            I got stuck or it broke (that&apos;s okay, it&apos;s part of it!)
+            <input type="checkbox" checked={stuck} onChange={(e) => setStuck(e.target.checked)} />I
+            got stuck or it broke (that&apos;s okay, it&apos;s part of it!)
           </label>
         ) : null}
       </div>

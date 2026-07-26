@@ -72,7 +72,12 @@ function opportunitiesForCard(card: PlanCardVM): readonly Opportunity[] {
   const role = card.plan.mentorRole;
   const level = card.plan.audience;
   const leaf = leafOf(card.domainPath);
-  const base = { cellKey: cell, minStage: "S1_IGNITION" as Stage, ageTier: CONSOLE_AGE_BAND, vetting: "vetted" as const };
+  const base = {
+    cellKey: cell,
+    minStage: "S1_IGNITION" as Stage,
+    ageTier: CONSOLE_AGE_BAND,
+    vetting: "vetted" as const,
+  };
 
   const out: Opportunity[] = [
     {

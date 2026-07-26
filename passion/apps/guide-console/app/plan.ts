@@ -47,7 +47,14 @@ export function plansForKid(kidId: string): readonly PlanCardVM[] {
     if (!isCertified(h.state)) continue;
     const read = reads.get(h.cellKey);
     if (!read) continue;
-    const inputs = derivePlanInputs(profile, profile.store, h.cellKey, read, ROSTER_NOW, PILOT_CATALOG);
+    const inputs = derivePlanInputs(
+      profile,
+      profile.store,
+      h.cellKey,
+      read,
+      ROSTER_NOW,
+      PILOT_CATALOG,
+    );
     if (!inputs) continue; // no voluntary engagement → not a specialization cell
     const resources = curatedForCell(PLAN_LIBRARY, inputs.domainPath, PLAN_AGE_TIER);
     const plan = planSpecializationWithStub(inputs, resources, ROSTER_NOW);
@@ -62,9 +69,7 @@ export function plansForKid(kidId: string): readonly PlanCardVM[] {
     });
   }
 
-  return [...out].sort(
-    (a, b) => Number(b.plan.escalateToHuman) - Number(a.plan.escalateToHuman),
-  );
+  return [...out].sort((a, b) => Number(b.plan.escalateToHuman) - Number(a.plan.escalateToHuman));
 }
 
 /** How many of the child's certified-spike plans need a human's review (rest/deload/advance). */

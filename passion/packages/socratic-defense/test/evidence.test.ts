@@ -4,7 +4,13 @@ import { runSession } from "../src/session.js";
 import { assembleEvidenceRecord, toEvidenceNode } from "../src/evidence.js";
 import type { Interviewer, AnswerJudge } from "../src/ports.js";
 import type { Judgment, Hasher } from "../src/model.js";
-import { PROFILE, READINESS, QUESTIONS, ANSWERS, JUDGMENTS } from "../src/__fixtures__/scripted-session.js";
+import {
+  PROFILE,
+  READINESS,
+  QUESTIONS,
+  ANSWERS,
+  JUDGMENTS,
+} from "../src/__fixtures__/scripted-session.js";
 
 const CREATED_AT = "2026-01-01T00:00:00.000Z";
 // Inline hasher (node:crypto builtin) — avoids importing the evidence-hash-node adapter into the domain.

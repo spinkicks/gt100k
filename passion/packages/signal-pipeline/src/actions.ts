@@ -33,7 +33,11 @@ export function buildActionEvents(
     if (!art) continue;
     const r = resolveEngagedModes(art, { artifactId: i.artifactId, actionType: i.actionType });
     if (!r.ok) continue;
-    exposures.push({ kidId: i.kidId, cellKey: serializeCellKey(art.domainPath, r.engagedModes.primary), timestamp: i.timestamp });
+    exposures.push({
+      kidId: i.kidId,
+      cellKey: serializeCellKey(art.domainPath, r.engagedModes.primary),
+      timestamp: i.timestamp,
+    });
   }
   const firstExposure = buildFirstExposure(exposures);
 
@@ -47,7 +51,10 @@ export function buildActionEvents(
     }
     const r = resolveEngagedModes(art, { artifactId: i.artifactId, actionType: i.actionType });
     if (!r.ok) {
-      dropped.push({ interaction: i, reason: r.reason === "invalid-for-artifact" ? "invalid-for-artifact" : "unresolved-action" });
+      dropped.push({
+        interaction: i,
+        reason: r.reason === "invalid-for-artifact" ? "invalid-for-artifact" : "unresolved-action",
+      });
       continue;
     }
     const cellKey = serializeCellKey(art.domainPath, r.engagedModes.primary);

@@ -38,7 +38,8 @@ export function deriveWellbeingSignals(
   const { cellEvents } = deriveSignals({ interactions: profile.interactions, catalog });
   // Only the events for THIS spike, that have a parseable timestamp.
   const events: readonly CellEvent[] = cellEvents.filter(
-    (e) => serializeCellKey(e.domainPath, e.mode) === cellKey && !Number.isNaN(Date.parse(e.timestamp)),
+    (e) =>
+      serializeCellKey(e.domainPath, e.mode) === cellKey && !Number.isNaN(Date.parse(e.timestamp)),
   );
 
   // Age-bucket each event: recent = ≤ TREND_WINDOW_DAYS old, older = the previous equal window.
@@ -55,7 +56,8 @@ export function deriveWellbeingSignals(
   // Across-day returns only (E2). The trend this feeds is about a pursuit holding up over time, so
   // counting same-day re-entries would let one busy afternoon read as a rising trend.
   const isVol = (e: CellEvent): boolean => e.kind === "cross_day_return";
-  const isPromptedish = (e: CellEvent): boolean => e.kind === "prompted_return" || e.kind === "skip";
+  const isPromptedish = (e: CellEvent): boolean =>
+    e.kind === "prompted_return" || e.kind === "skip";
   const isDepth = (e: CellEvent): boolean => isDepthFamily(e.kind);
 
   const count = (pred: (e: CellEvent) => boolean, win: (ts: string) => boolean): number =>
@@ -70,9 +72,7 @@ export function deriveWellbeingSignals(
   const depthTrend: Trend = validNow ? trend(recentDepth, olderDepth) : "stable";
 
   // stretch-seeking: the child voluntarily reaches for harder work RIGHT NOW (recent chosen_challenge).
-  const stretchSeeking = events.some(
-    (e) => e.kind === "chosen_challenge" && inRecent(e.timestamp),
-  );
+  const stretchSeeking = events.some((e) => e.kind === "chosen_challenge" && inRecent(e.timestamp));
 
   // devaluation (compliance-without-depth): they went deep by choice BEFORE, but recent returns are
   // prompted-only with no depth, and voluntary return is declining. Presence without depth.
@@ -85,8 +85,7 @@ export function deriveWellbeingSignals(
   // missingness: prior voluntary engagement, but no voluntary return within GAP_DAYS (a quiet period).
   const volTimes = events.filter(isVol).map((e) => Date.parse(e.timestamp));
   const latestVol = volTimes.length ? Math.max(...volTimes) : undefined;
-  const missing =
-    validNow && latestVol !== undefined && (nowMs - latestVol) / DAY_MS >= GAP_DAYS;
+  const missing = validNow && latestVol !== undefined && (nowMs - latestVol) / DAY_MS >= GAP_DAYS;
 
   return {
     kidId: profile.kidId,

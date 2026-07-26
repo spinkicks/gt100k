@@ -19,7 +19,12 @@ describe("parseTfySuggestion (SC-7)", () => {
   it("returns null on an invalid work-mode", () => {
     expect(
       parseTfySuggestion(
-        JSON.stringify({ domainPath: ["music-sound"], affordedModes: ["boop"], confidence: 0.9, rationale: "" }),
+        JSON.stringify({
+          domainPath: ["music-sound"],
+          affordedModes: ["boop"],
+          confidence: 0.9,
+          rationale: "",
+        }),
       ),
     ).toBeNull();
   });
@@ -27,7 +32,12 @@ describe("parseTfySuggestion (SC-7)", () => {
   it("returns null on an unknown cabin", () => {
     expect(
       parseTfySuggestion(
-        JSON.stringify({ domainPath: ["nope"], affordedModes: ["build"], confidence: 0.9, rationale: "" }),
+        JSON.stringify({
+          domainPath: ["nope"],
+          affordedModes: ["build"],
+          confidence: 0.9,
+          rationale: "",
+        }),
       ),
     ).toBeNull();
   });
@@ -35,14 +45,24 @@ describe("parseTfySuggestion (SC-7)", () => {
   it("returns null on out-of-range confidence", () => {
     expect(
       parseTfySuggestion(
-        JSON.stringify({ domainPath: ["music-sound"], affordedModes: ["build"], confidence: 1.5, rationale: "" }),
+        JSON.stringify({
+          domainPath: ["music-sound"],
+          affordedModes: ["build"],
+          confidence: 1.5,
+          rationale: "",
+        }),
       ),
     ).toBeNull();
   });
 
   it("parses a two-segment domainPath (cabin + sub-topic slug)", () => {
     const s = parseTfySuggestion(
-      JSON.stringify({ domainPath: ["code-computers", "game-dev"], affordedModes: ["build"], confidence: 0.8, rationale: "" }),
+      JSON.stringify({
+        domainPath: ["code-computers", "game-dev"],
+        affordedModes: ["build"],
+        confidence: 0.8,
+        rationale: "",
+      }),
     );
     expect(s?.domainPath).toEqual(["code-computers", "game-dev"]);
   });

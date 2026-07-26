@@ -3,7 +3,13 @@ import type { Interviewer, AnswerJudge } from "./ports.js";
 import { runSession } from "./session.js";
 import { assembleEvidenceRecord } from "./evidence.js";
 import type { EvidenceRecord, Judgment, Hasher } from "./model.js";
-import { PROFILE, READINESS, QUESTIONS, ANSWERS, JUDGMENTS } from "./__fixtures__/scripted-session.js";
+import {
+  PROFILE,
+  READINESS,
+  QUESTIONS,
+  ANSWERS,
+  JUDGMENTS,
+} from "./__fixtures__/scripted-session.js";
 
 // Inline node:crypto Hasher (a Node builtin, not a dependency) — keeps the domain free of an adapter import.
 const demoHasher: Hasher = { hash: (b) => createHash("sha256").update(b).digest("hex") };

@@ -6,7 +6,11 @@ export function isFacet(x: unknown): x is Facet {
 }
 
 export type ReadinessLevel = "emerging" | "developing" | "fluent";
-export const MAX_FOLLOWUP: Record<ReadinessLevel, number> = { emerging: 2, developing: 1, fluent: 1 };
+export const MAX_FOLLOWUP: Record<ReadinessLevel, number> = {
+  emerging: 2,
+  developing: 1,
+  fluent: 1,
+};
 export function maxFollowup(level: ReadinessLevel): number {
   return MAX_FOLLOWUP[level];
 }

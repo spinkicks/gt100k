@@ -5,7 +5,11 @@ export function initialCoverage(): CoverageByFacet {
   return { what: 0, why: 0, how: 0, challenge: 0, next: 0, audience: 0 };
 }
 
-export function updateCoverage(cov: CoverageByFacet, facet: Facet, judged: number): CoverageByFacet {
+export function updateCoverage(
+  cov: CoverageByFacet,
+  facet: Facet,
+  judged: number,
+): CoverageByFacet {
   return { ...cov, [facet]: Math.max(cov[facet], judged) };
 }
 

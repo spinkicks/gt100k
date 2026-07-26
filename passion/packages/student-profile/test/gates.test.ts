@@ -30,7 +30,14 @@ const WITH_ARTIFACT = { [BUILD_KEY]: "defense-record-042" };
 const NO_ARTIFACT = {} as Readonly<Record<string, string>>;
 
 function assemble(ts: string, session: string): Interaction {
-  return { kidId: KID, artifactId: SYNTH.id, actionType: "assemble", timestamp: ts, prompted: false, sessionId: session };
+  return {
+    kidId: KID,
+    artifactId: SYNTH.id,
+    actionType: "assemble",
+    timestamp: ts,
+    prompted: false,
+    sessionId: session,
+  };
 }
 
 // A novel first exposure 5 days before the first gate return, so the gate returns are all
@@ -73,9 +80,7 @@ describe("deriveGates", () => {
   });
 
   it("dropping the artifact flips hasArtifact alone", () => {
-    expect(gateOf(PASS_LOG, NO_ARTIFACT)).toEqual(
-      passed({ hasArtifact: false, passed: false }),
-    );
+    expect(gateOf(PASS_LOG, NO_ARTIFACT)).toEqual(passed({ hasArtifact: false, passed: false }));
   });
 
   it("collapsing the gap flips gapSurvived alone (all returns < 14d apart, span still ≥ 56d)", () => {
@@ -90,9 +95,7 @@ describe("deriveGates", () => {
       assemble("2026-02-18T00:00:00.000Z", "d4"),
       assemble("2026-03-02T00:00:00.000Z", "d5"),
     ];
-    expect(gateOf(dense, WITH_ARTIFACT)).toEqual(
-      passed({ gapSurvived: false, passed: false }),
-    );
+    expect(gateOf(dense, WITH_ARTIFACT)).toEqual(passed({ gapSurvived: false, passed: false }));
   });
 });
 

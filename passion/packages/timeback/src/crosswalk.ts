@@ -36,11 +36,7 @@ export const SUBJECT_CABIN_CROSSWALK = {
 
 /** The cabins a subject contributes to. Returns `[]` for an unknown subject (never throws). */
 export function crosswalkFor(subject: Subject): readonly CabinWeight[] {
-  return (
-    (SUBJECT_CABIN_CROSSWALK as Record<string, readonly CabinWeight[]>)[
-      subject
-    ] ?? []
-  );
+  return (SUBJECT_CABIN_CROSSWALK as Record<string, readonly CabinWeight[]>)[subject] ?? [];
 }
 
 /**

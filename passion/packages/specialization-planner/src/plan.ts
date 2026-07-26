@@ -64,12 +64,10 @@ const PCDE_BY_STAGE: Record<Stage, readonly Pcde[]> = {
 const CRAFT_FLOOR_HINT: Record<Stage, string> = {
   S1_IGNITION:
     "Keep it playful — the only floor is noticing what you enjoy and choosing to come back.",
-  S2_FOUNDATIONS:
-    "Pair the project with one small, chosen, bounded practice on a core technique.",
+  S2_FOUNDATIONS: "Pair the project with one small, chosen, bounded practice on a core technique.",
   S3_AUTHORSHIP:
     "Anchor the project with a chosen, capped practice on the craft your audience will notice.",
-  S4_SIGNATURE:
-    "Sustain a chosen, still-capped practice on the craft that sharpens your voice.",
+  S4_SIGNATURE: "Sustain a chosen, still-capped practice on the craft that sharpens your voice.",
 };
 
 const STAGE_PURPOSE: Record<Stage, string> = {
@@ -217,7 +215,9 @@ function derivePlanCore(inputs: PlanInputs, resources: readonly CuratedResource[
     "The child owns the problem, method, and pace — this brief is an offer (opportunity/structure/access), never an assignment.",
     "Trajectory, not eminence — the by-14 artifact is a ready-to-invest performer.",
     ...(strained
-      ? ["Strain present — holding the stage and proposing rest/deload to protect the rage to master."]
+      ? [
+          "Strain present — holding the stage and proposing rest/deload to protect the rage to master.",
+        ]
       : []),
   ];
 

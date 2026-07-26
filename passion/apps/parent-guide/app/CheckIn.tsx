@@ -20,8 +20,7 @@ export function CheckIn(): JSX.Element {
   const [signals, setSignals] = useState<Signals>(EMPTY);
   const [result, setResult] = useState<Decision | null>(null);
 
-  const toggle = (key: keyof Signals) =>
-    setSignals((prev) => ({ ...prev, [key]: !prev[key] }));
+  const toggle = (key: keyof Signals) => setSignals((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -36,14 +35,16 @@ export function CheckIn(): JSX.Element {
   return (
     <>
       <p className="checkin__intro">
-        A short, private self-reflection about right now. It runs entirely in your browser, it
-        never stores or sends anything, and it never shows a score, a label, or a verdict. It
-        offers what tends to help. It is guidance, not a diagnosis.
+        A short, private self-reflection about right now. It runs entirely in your browser, it never
+        stores or sends anything, and it never shows a score, a label, or a verdict. It offers what
+        tends to help. It is guidance, not a diagnosis.
       </p>
 
       <form className="checkin" onSubmit={onSubmit}>
         <fieldset className="fieldset">
-          <legend className="checkin__legend">Check any that feel true right now. Leave the rest.</legend>
+          <legend className="checkin__legend">
+            Check any that feel true right now. Leave the rest.
+          </legend>
           {QUESTIONS.map((q) => (
             <label className="toggle" key={q.signal}>
               <input

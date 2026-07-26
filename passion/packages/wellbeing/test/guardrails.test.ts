@@ -30,12 +30,26 @@ const ALLOWED_KEYS = new Set([
   "rationale",
   "guardrailNotes",
 ]);
-const BANNED_SUBSTRINGS = ["score", "streak", "point", "reward", "prize", "leaderboard", "badge", "level"];
+const BANNED_SUBSTRINGS = [
+  "score",
+  "streak",
+  "point",
+  "reward",
+  "prize",
+  "leaderboard",
+  "badge",
+  "level",
+];
 
 describe("guardrail invariants", () => {
   it("SC-2 devaluation outranks exhaustion: both present → BURNOUT_TIP (rest+escalate), not EARLY_BURNOUT", () => {
     const read = assessWellbeing(
-      sig({ returnTrend: "declining", depthTrend: "declining", devaluation: true, exhaustion: true }),
+      sig({
+        returnTrend: "declining",
+        depthTrend: "declining",
+        devaluation: true,
+        exhaustion: true,
+      }),
     );
     expect(read.state).toBe("BURNOUT_TIP");
     expect(read.rest).toBe(true);
@@ -46,7 +60,9 @@ describe("guardrail invariants", () => {
 
   it("SC-3 push only from strength: high successRate but flat return / no stretch → NOT PUSH (→ IN_ZONE/HOLD)", () => {
     // high success, but return is flat and there is no stretch-seeking → must not push.
-    const flat = assessWellbeing(sig({ returnTrend: "stable", depthTrend: "stable", successRate: 0.98 }));
+    const flat = assessWellbeing(
+      sig({ returnTrend: "stable", depthTrend: "stable", successRate: 0.98 }),
+    );
     expect(flat.challenge).not.toBe("PUSH");
     expect(flat.state).toBe("IN_ZONE");
     // high success, rising return, but NO stretch-seeking → still not a push.
@@ -56,7 +72,12 @@ describe("guardrail invariants", () => {
     expect(noStretch.challenge).not.toBe("PUSH");
     // high success but DECLINING return → not a push.
     const declining = assessWellbeing(
-      sig({ returnTrend: "declining", depthTrend: "declining", successRate: 0.98, stretchSeeking: true }),
+      sig({
+        returnTrend: "declining",
+        depthTrend: "declining",
+        successRate: 0.98,
+        stretchSeeking: true,
+      }),
     );
     expect(declining.challenge).not.toBe("PUSH");
   });
@@ -108,7 +129,14 @@ describe("guardrail invariants", () => {
       assessWellbeing(sig({ missing: true })),
       assessWellbeing(sig({ stakesEvent: true })),
       assessWellbeing(sig({ successRate: 0.4 })),
-      assessWellbeing(sig({ returnTrend: "rising", depthTrend: "rising", successRate: 0.95, stretchSeeking: true })),
+      assessWellbeing(
+        sig({
+          returnTrend: "rising",
+          depthTrend: "rising",
+          successRate: 0.95,
+          stretchSeeking: true,
+        }),
+      ),
       assessWellbeing(sig({})),
     ];
     for (const read of samples) {

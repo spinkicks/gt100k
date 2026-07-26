@@ -67,12 +67,11 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      # `biome lint`, deliberately not `biome check`. Check also enforces the formatter, and the
-      # tree is ~272 files away from formatter-clean. Reformatting the world is a separate,
-      # coordinated commit (it wants a .git-blame-ignore-revs entry and a quiet moment for
-      # everyone's in-flight branches), not a drive-by inside a correctness fix.
-      - name: Lint
-        run: pnpm exec biome lint passion
+      # `check` is lint + formatter. The formatter was enforced from the reformat commit recorded
+      # in .git-blame-ignore-revs; before that the tree had drifted 196 files from the config that
+      # was already sitting in the repo.
+      - name: Lint and format check
+        run: pnpm exec biome check passion
 
       - name: Typecheck
         run: pnpm exec tsc -b

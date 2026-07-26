@@ -65,7 +65,8 @@ function decide(s: WellbeingSignals): Decision {
       pressure: "AUTONOMY_UP",
       backOff: true,
       escalate: true,
-      escalationReason: "Early exhaustion pattern. Cut load and pressure, and route a warm human check-in.",
+      escalationReason:
+        "Early exhaustion pattern. Cut load and pressure, and route a warm human check-in.",
       rationale:
         "An early exhaustion pattern (shorter or later sessions with declining return and depth). Back off (pressure down and load down before touching challenge) and route a warm check-in to a mentor.",
       notes: ["back off = pressure down first", HUMAN_DISPOSES, NEVER_GAMIFY],
@@ -83,7 +84,11 @@ function decide(s: WellbeingSignals): Decision {
         "A per-spike quiet period. A gap is a question, not a verdict, so a human should check in (never an automated nudge or label).",
       rationale:
         "A quiet period on this spike. A gap is a question, not a verdict: no automated nudge and no label. A human decides whether to check in.",
-      notes: ["missingness routes to a human check-in, never an auto-nudge/label", HUMAN_DISPOSES, NEVER_GAMIFY],
+      notes: [
+        "missingness routes to a human check-in, never an auto-nudge/label",
+        HUMAN_DISPOSES,
+        NEVER_GAMIFY,
+      ],
     };
   }
 

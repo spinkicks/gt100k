@@ -56,7 +56,11 @@ function useStarGeometry(): THREE.ExtrudeGeometry {
  * calm-2D the baseline below is returned byte-for-byte (`roughness 0.35 / metalness 0.1`, no envMap), so
  * those tiers are unchanged — the whole pass rides the same gate as Bloom / DOF / IBL.
  */
-type Pbr = { readonly metalness: number; readonly roughness: number; readonly envMapIntensity: number };
+type Pbr = {
+  readonly metalness: number;
+  readonly roughness: number;
+  readonly envMapIntensity: number;
+};
 const PBR: Readonly<Record<string, Pbr>> = {
   world: { metalness: 0.35, roughness: 0.3, envMapIntensity: 1.1 },
   moon: { metalness: 0.3, roughness: 0.4, envMapIntensity: 1.0 },

@@ -28,7 +28,12 @@ export function parseTfySuggestion(raw: string): TagSuggestion | null {
   if (!Array.isArray(modes) || modes.length === 0 || !modes.every(isWorkMode)) return null;
 
   const confidence = o.confidence;
-  if (typeof confidence !== "number" || Number.isNaN(confidence) || confidence < 0 || confidence > 1) {
+  if (
+    typeof confidence !== "number" ||
+    Number.isNaN(confidence) ||
+    confidence < 0 ||
+    confidence > 1
+  ) {
     return null;
   }
 

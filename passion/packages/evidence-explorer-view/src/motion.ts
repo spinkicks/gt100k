@@ -129,10 +129,7 @@ export const RESOLVE_MOTION: Record<MotionKind, MotionRow> = {
 };
 
 /** Resolve a named motion for the current reduced-motion state (§U8.5). */
-export function resolveMotion(
-  kind: MotionKind,
-  opts: { reducedMotion: boolean },
-): MotionSpec {
+export function resolveMotion(kind: MotionKind, opts: { reducedMotion: boolean }): MotionSpec {
   const row = RESOLVE_MOTION[kind];
   const mode: MotionMode = opts.reducedMotion ? "reduced" : "animated";
   return opts.reducedMotion

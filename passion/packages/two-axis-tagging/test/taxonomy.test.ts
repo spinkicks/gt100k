@@ -4,8 +4,14 @@ import { CABINS, createTaxonomy, serializePath } from "../src/taxonomy.js";
 describe("taxonomy", () => {
   it("has the 8 golden cabins", () => {
     expect(CABINS).toEqual([
-      "music-sound", "code-computers", "games-strategy", "making-engineering",
-      "art-motion", "influence-media", "science-nature", "math-puzzles",
+      "music-sound",
+      "code-computers",
+      "games-strategy",
+      "making-engineering",
+      "art-motion",
+      "influence-media",
+      "science-nature",
+      "math-puzzles",
     ]);
   });
   it("validates seed paths and rejects unknown cabins", () => {

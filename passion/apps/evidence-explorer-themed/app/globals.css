@@ -1797,10 +1797,7 @@ body,
 .themebtn,
 .themepop,
 .swatch {
-  transition:
-    background-color 0.28s ease,
-    border-color 0.28s ease,
-    color 0.28s ease;
+  transition: background-color 0.28s ease, border-color 0.28s ease, color 0.28s ease;
 }
 
 /* ── Warm · Sunbeam ── */

@@ -19,8 +19,22 @@ const catalog = new Map<string, Artifact>([["synth-01", synth]]);
 describe("buildActionEvents", () => {
   it("builds a voluntary, non-novel BuiltEvent for a resolved engagement", () => {
     const ints: Interaction[] = [
-      { kidId: "k", artifactId: "synth-01", actionType: "assemble", timestamp: "2026-01-01T00:00:00.000Z", prompted: false, sessionId: "s1" },
-      { kidId: "k", artifactId: "synth-01", actionType: "assemble", timestamp: "2026-02-01T00:00:00.000Z", prompted: false, sessionId: "s2" },
+      {
+        kidId: "k",
+        artifactId: "synth-01",
+        actionType: "assemble",
+        timestamp: "2026-01-01T00:00:00.000Z",
+        prompted: false,
+        sessionId: "s1",
+      },
+      {
+        kidId: "k",
+        artifactId: "synth-01",
+        actionType: "assemble",
+        timestamp: "2026-02-01T00:00:00.000Z",
+        prompted: false,
+        sessionId: "s2",
+      },
     ];
     const { built, dropped } = buildActionEvents(ints, catalog, DEFAULTS);
     expect(dropped).toHaveLength(0);
@@ -34,17 +48,49 @@ describe("buildActionEvents", () => {
   });
   it("drops unknown artifact + unresolved action + invalid-for-artifact", () => {
     const ints: Interaction[] = [
-      { kidId: "k", artifactId: "ghost", actionType: "assemble", timestamp: "2026-01-01T00:00:00.000Z", prompted: false, sessionId: "s1" },
-      { kidId: "k", artifactId: "synth-01", actionType: "wobble", timestamp: "2026-01-01T00:00:00.000Z", prompted: false, sessionId: "s1" },
-      { kidId: "k", artifactId: "synth-01", actionType: "write-melody", timestamp: "2026-01-01T00:00:00.000Z", prompted: false, sessionId: "s1" },
+      {
+        kidId: "k",
+        artifactId: "ghost",
+        actionType: "assemble",
+        timestamp: "2026-01-01T00:00:00.000Z",
+        prompted: false,
+        sessionId: "s1",
+      },
+      {
+        kidId: "k",
+        artifactId: "synth-01",
+        actionType: "wobble",
+        timestamp: "2026-01-01T00:00:00.000Z",
+        prompted: false,
+        sessionId: "s1",
+      },
+      {
+        kidId: "k",
+        artifactId: "synth-01",
+        actionType: "write-melody",
+        timestamp: "2026-01-01T00:00:00.000Z",
+        prompted: false,
+        sessionId: "s1",
+      },
     ];
     const { built, dropped } = buildActionEvents(ints, catalog, DEFAULTS);
     expect(built).toHaveLength(0);
-    expect(dropped.map((d) => d.reason)).toEqual(["unknown-artifact", "unresolved-action", "invalid-for-artifact"]);
+    expect(dropped.map((d) => d.reason)).toEqual([
+      "unknown-artifact",
+      "unresolved-action",
+      "invalid-for-artifact",
+    ]);
   });
   it("returnState reflects interaction.prompted", () => {
     const ints: Interaction[] = [
-      { kidId: "k", artifactId: "synth-01", actionType: "inspect", timestamp: "2026-01-01T00:00:00.000Z", prompted: true, sessionId: "s1" },
+      {
+        kidId: "k",
+        artifactId: "synth-01",
+        actionType: "inspect",
+        timestamp: "2026-01-01T00:00:00.000Z",
+        prompted: true,
+        sessionId: "s1",
+      },
     ];
     const { built } = buildActionEvents(ints, catalog, DEFAULTS);
     expect(built).toHaveLength(1);

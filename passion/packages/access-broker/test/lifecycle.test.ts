@@ -18,7 +18,12 @@ const spike: SpikeRef = { kidId: PLAN_S3.kidId, cellKey: PLAN_S3.cellKey };
 
 function firstMentorMatch(): Match {
   const bp = brokerAccess(
-    { plan: PLAN_S3, wellbeing: okWellbeing(PLAN_S3.kidId, PLAN_S3.cellKey), ageBand: "9-11", existing: [] },
+    {
+      plan: PLAN_S3,
+      wellbeing: okWellbeing(PLAN_S3.kidId, PLAN_S3.cellKey),
+      ageBand: "9-11",
+      existing: [],
+    },
     { catalog: stubCatalog },
     NOW,
   );
@@ -58,8 +63,16 @@ describe("lifecycle transitions (SC-2)", () => {
   });
 
   it("advanceHandoff walks approved → introduced → active → transferred in order", () => {
-    let b = approve(proposeMatch(firstMentorMatch(), spike, NOW), { guardianConsent: true, guideId: "g" }, NOW);
-    b = advanceHandoff(b, "introduced", NOW, { warmIntro: true, overlap: true, whyNow: "deadline soon" });
+    let b = approve(
+      proposeMatch(firstMentorMatch(), spike, NOW),
+      { guardianConsent: true, guideId: "g" },
+      NOW,
+    );
+    b = advanceHandoff(b, "introduced", NOW, {
+      warmIntro: true,
+      overlap: true,
+      whyNow: "deadline soon",
+    });
     expect(b.state).toBe("introduced");
     expect(b.handoff).toEqual({ warmIntro: true, overlap: true, whyNow: "deadline soon" });
     b = advanceHandoff(b, "active", NOW);
@@ -69,7 +82,11 @@ describe("lifecycle transitions (SC-2)", () => {
   });
 
   it("advanceHandoff rejects skips and reversals", () => {
-    const approved = approve(proposeMatch(firstMentorMatch(), spike, NOW), { guardianConsent: true, guideId: "g" }, NOW);
+    const approved = approve(
+      proposeMatch(firstMentorMatch(), spike, NOW),
+      { guardianConsent: true, guideId: "g" },
+      NOW,
+    );
     expect(() => advanceHandoff(approved, "active", NOW)).toThrow("INVALID_TRANSITION"); // skip
     expect(() => advanceHandoff(approved, "transferred", NOW)).toThrow("INVALID_TRANSITION");
     const active = advanceHandoff(advanceHandoff(approved, "introduced", NOW), "active", NOW);
@@ -77,8 +94,14 @@ describe("lifecycle transitions (SC-2)", () => {
   });
 
   it("approve only from proposed; declineMatch → declined", () => {
-    const approved = approve(proposeMatch(firstMentorMatch(), spike, NOW), { guardianConsent: true, guideId: "g" }, NOW);
-    expect(() => approve(approved, { guardianConsent: true, guideId: "g" }, NOW)).toThrow("INVALID_TRANSITION");
+    const approved = approve(
+      proposeMatch(firstMentorMatch(), spike, NOW),
+      { guardianConsent: true, guideId: "g" },
+      NOW,
+    );
+    expect(() => approve(approved, { guardianConsent: true, guideId: "g" }, NOW)).toThrow(
+      "INVALID_TRANSITION",
+    );
     const declined = declineMatch(proposeMatch(firstMentorMatch(), spike, NOW), NOW);
     expect(declined.state).toBe("declined");
   });

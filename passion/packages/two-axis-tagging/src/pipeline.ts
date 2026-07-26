@@ -38,7 +38,12 @@ export function acceptSuggestion(tax: Taxonomy, ref: ArtifactRef, s: TagSuggesti
   }
 
   return makeArtifact(tax, {
-    id: ref.id, domainPath: path, affordedModes: s.affordedModes,
-    kind: ref.kind, source: "auto", origin, tagConfidence: s.confidence,
+    id: ref.id,
+    domainPath: path,
+    affordedModes: s.affordedModes,
+    kind: ref.kind,
+    source: "auto",
+    origin,
+    tagConfidence: s.confidence,
   });
 }

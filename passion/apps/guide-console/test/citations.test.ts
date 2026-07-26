@@ -38,12 +38,16 @@ describe("Evidence base page", () => {
     // The page walks AREAS in order; anything filed outside that list would still render, but the
     // ordering would be arbitrary, which is worth knowing about.
     const known = new Set<string>(AREAS);
-    for (const c of CLAIMS) expect(known.has(c.area), `${c.id} is filed under ${c.area}`).toBe(true);
+    for (const c of CLAIMS)
+      expect(known.has(c.area), `${c.id} is filed under ${c.area}`).toBe(true);
   });
 
   test("no area heading renders empty", () => {
     for (const area of AREAS) {
-      expect(CLAIMS.some((c) => c.area === area), `${area} has no claims`).toBe(true);
+      expect(
+        CLAIMS.some((c) => c.area === area),
+        `${area} has no claims`,
+      ).toBe(true);
     }
   });
 });

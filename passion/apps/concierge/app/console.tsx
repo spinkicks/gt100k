@@ -65,7 +65,10 @@ export function Concierge(): JSX.Element {
       <header className="brand">
         <div>
           <h1>PassionLab Concierge</h1>
-          <p>Ask about anything you&rsquo;re curious about — I&rsquo;ll point you to real, trusted material.</p>
+          <p>
+            Ask about anything you&rsquo;re curious about — I&rsquo;ll point you to real, trusted
+            material.
+          </p>
         </div>
         <span className="chip">Synthetic data only</span>
       </header>
@@ -84,7 +87,11 @@ export function Concierge(): JSX.Element {
       </form>
 
       <div className="seedrow">
-        <button className="btn btn--ghost" type="button" onClick={() => void ask(SEED_GAP_QUESTION)}>
+        <button
+          className="btn btn--ghost"
+          type="button"
+          onClick={() => void ask(SEED_GAP_QUESTION)}
+        >
           Try a gap question
         </button>
         <button
@@ -102,8 +109,8 @@ export function Concierge(): JSX.Element {
       </div>
 
       <p className="foot">
-        The concierge answers from a curated library first, uses grounded open-web retrieval only on a
-        genuine gap, and never counsels — distress is handed to a person. Chat is never scored.
+        The concierge answers from a curated library first, uses grounded open-web retrieval only on
+        a genuine gap, and never counsels — distress is handed to a person. Chat is never scored.
       </p>
     </div>
   );
@@ -120,8 +127,8 @@ function ResponseCard({ response }: { response: ConciergeResponse }): JSX.Elemen
 
       {response.kind === "escalated" && (
         <p className="answer">
-          That sounds really important. I&rsquo;m not the right helper for this — I&rsquo;m bringing in a
-          trusted grown-up who can talk with you.
+          That sounds really important. I&rsquo;m not the right helper for this — I&rsquo;m bringing
+          in a trusted grown-up who can talk with you.
         </p>
       )}
 

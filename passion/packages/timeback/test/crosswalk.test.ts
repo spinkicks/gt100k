@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CABINS, type CabinId } from "@gt100k/two-axis-tagging";
-import {
-  SUBJECT_CABIN_CROSSWALK,
-  crosswalkFor,
-  explainPriors,
-} from "../src/index.js";
+import { SUBJECT_CABIN_CROSSWALK, crosswalkFor, explainPriors } from "../src/index.js";
 import type { TimeBackSnapshot } from "../src/index.js";
 
 const CABIN_SET = new Set<string>(CABINS);

@@ -110,8 +110,18 @@ export interface Overview {
 
 // ── Date helpers (all UTC; the log timestamps are UTC ISO) ────────────────────
 const MONTH_NAMES = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
 const ms = (iso: string): number => Date.parse(iso);
@@ -183,12 +193,21 @@ const hasDepth = (i: Interaction): boolean => (i.depthSignals?.length ?? 0) > 0;
  * Returns null (chip omitted) when the window is too short or the earlier half has nothing to compare
  * against, because there is then no honest percentage to state.
  */
-function trendFrom(previous: number, current: number, windowDays: number, noun: string): Trend | null {
+function trendFrom(
+  previous: number,
+  current: number,
+  windowDays: number,
+  noun: string,
+): Trend | null {
   if (windowDays < MIN_TREND_WINDOW_DAYS) return null;
   if (previous <= 0) return null;
   const pct = Math.round(((current - previous) / previous) * 100);
   if (pct === 0) {
-    return { dir: "flat", label: "No change", aria: `${noun} unchanged versus the previous period` };
+    return {
+      dir: "flat",
+      label: "No change",
+      aria: `${noun} unchanged versus the previous period`,
+    };
   }
   const dir = pct > 0 ? "up" : "down";
   const word = pct > 0 ? "up" : "down";
@@ -204,11 +223,16 @@ function trendFrom(previous: number, current: number, windowDays: number, noun: 
  * Largest-remainder rounding so the donut legend always sums to exactly 100%, and no slice is ever
  * shown as 0% (a 0% wedge draws nothing and reads as a rendering bug).
  */
-function apportion(groups: readonly { key: string; label: string; count: number }[], total: number): ShareSlice[] {
+function apportion(
+  groups: readonly { key: string; label: string; count: number }[],
+  total: number,
+): ShareSlice[] {
   const raw = groups.map((g) => ({ ...g, exact: (g.count / total) * 100 }));
   const floors = raw.map((g) => ({ ...g, percent: Math.floor(g.exact) }));
   let left = 100 - floors.reduce((a, g) => a + g.percent, 0);
-  const order = [...floors].sort((a, b) => b.exact - Math.floor(b.exact) - (a.exact - Math.floor(a.exact)));
+  const order = [...floors].sort(
+    (a, b) => b.exact - Math.floor(b.exact) - (a.exact - Math.floor(a.exact)),
+  );
   for (const g of order) {
     if (left <= 0) break;
     g.percent += 1;
@@ -349,8 +373,7 @@ export function buildOverview(
 
   const afforded = affordedCells();
   const covered = new Set(cards.map((c) => c.cellKey).filter((k) => afforded.has(k)));
-  const coveragePct =
-    afforded.size > 0 ? Math.round((covered.size / afforded.size) * 100) : 0;
+  const coveragePct = afforded.size > 0 ? Math.round((covered.size / afforded.size) * 100) : 0;
 
   // When each covered cell first had evidence: the earliest interaction on any artifact that sits in
   // that cell. That is what makes a cumulative coverage line derivable from the log rather than guessed.
@@ -373,12 +396,10 @@ export function buildOverview(
   ];
   const [volPrev, volCurr] = half((i) => !i.prompted);
   const [depthPrev, depthCurr] = half(hasDepth);
-  const sessPrev = new Set(
-    log.filter((i) => ms(i.timestamp) < midpoint).map((i) => i.sessionId),
-  ).size;
-  const sessCurr = new Set(
-    log.filter((i) => ms(i.timestamp) >= midpoint).map((i) => i.sessionId),
-  ).size;
+  const sessPrev = new Set(log.filter((i) => ms(i.timestamp) < midpoint).map((i) => i.sessionId))
+    .size;
+  const sessCurr = new Set(log.filter((i) => ms(i.timestamp) >= midpoint).map((i) => i.sessionId))
+    .size;
   const coveredAtMid = [...covered].filter((cell) => {
     const ids = new Set(artifactsInCell(cell));
     const firstTouch = log.find((i) => ids.has(i.artifactId));
@@ -424,9 +445,7 @@ export function buildOverview(
   ];
 
   // ── Specializations table ──────────────────────────────────────────────────
-  const escalating = new Set(
-    wellbeing.filter((w) => w.read.escalateToHuman).map((w) => w.id),
-  );
+  const escalating = new Set(wellbeing.filter((w) => w.read.escalateToHuman).map((w) => w.id));
   const rows: readonly SpecRow[] = cards.map((card, index) => {
     const status: Status = escalating.has(card.id) ? "bad" : card.confident ? "good" : "warn";
     const ids = new Set(artifactsInCell(card.cellKey));

@@ -15,7 +15,11 @@ import { okWellbeing, restWellbeing } from "../src/__fixtures__/wellbeing.js";
 const NOW = "2026-07-24T00:00:00.000Z";
 const deps = { catalog: stubCatalog };
 
-function inputs(plan: SpecializationPlan, ageBand: AgeBand, over: Partial<BrokerInputs> = {}): BrokerInputs {
+function inputs(
+  plan: SpecializationPlan,
+  ageBand: AgeBand,
+  over: Partial<BrokerInputs> = {},
+): BrokerInputs {
   return {
     plan,
     wellbeing: okWellbeing(plan.kidId, plan.cellKey),
@@ -25,7 +29,8 @@ function inputs(plan: SpecializationPlan, ageBand: AgeBand, over: Partial<Broker
   };
 }
 
-const ids = (ms: readonly { opportunity: { id: string } }[]): string[] => ms.map((m) => m.opportunity.id);
+const ids = (ms: readonly { opportunity: { id: string } }[]): string[] =>
+  ms.map((m) => m.opportunity.id);
 const scores = (ms: readonly { relevance: number }[]): number[] => ms.map((m) => m.relevance);
 
 describe("brokerAccess — golden matching table (SC-1)", () => {
@@ -93,7 +98,9 @@ describe("brokerAccess — stage gate (SC-3)", () => {
   it("isolates the stage gate from the level filter: a same-level S4 audience is excluded at S3", () => {
     // au-community-early is REAL_COMMUNITY (matches the S3 plan's level) but minStage S4 ⇒ gated.
     const raw = stubCatalog.search({ cellKey: PLAN_S3.cellKey, kind: "audience" });
-    expect(raw.some((o) => o.id === "au-community-early" && o.level === "REAL_COMMUNITY")).toBe(true);
+    expect(raw.some((o) => o.id === "au-community-early" && o.level === "REAL_COMMUNITY")).toBe(
+      true,
+    );
     const bp = brokerAccess(inputs(PLAN_S3, "9-11"), deps, NOW);
     expect(ids(bp.audienceMatches)).not.toContain("au-community-early");
   });

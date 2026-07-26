@@ -17,7 +17,11 @@ const STATE_LABEL: Record<string, string> = {
   BURNOUT_TIP: "Possible tip into burnout",
   GAP: "Quiet period",
 };
-const CHALLENGE_LABEL: Record<string, string> = { PUSH: "Push", HOLD: "Hold", SCAFFOLD: "Scaffold" };
+const CHALLENGE_LABEL: Record<string, string> = {
+  PUSH: "Push",
+  HOLD: "Hold",
+  SCAFFOLD: "Scaffold",
+};
 const PRESSURE_LABEL: Record<string, string> = { AUTONOMY_UP: "Autonomy ↑", STEADY: "Steady" };
 
 export function WellbeingPanel({ cards }: { cards: readonly WellbeingCardVM[] }): JSX.Element {

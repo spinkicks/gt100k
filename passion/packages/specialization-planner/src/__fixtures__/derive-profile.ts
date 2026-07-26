@@ -53,5 +53,10 @@ const LOG: readonly Interaction[] = [
 
 /** The S3-readiness profile: run the real 012→011→013 chain over the hand-authored log. */
 export function buildS3Profile(now: string = DERIVE_NOW): StudentProfile {
-  return runCycle(emptyProfile(DERIVE_KID, "Synthetic Authorship"), LOG, { catalog: DERIVE_CATALOG }, now);
+  return runCycle(
+    emptyProfile(DERIVE_KID, "Synthetic Authorship"),
+    LOG,
+    { catalog: DERIVE_CATALOG },
+    now,
+  );
 }

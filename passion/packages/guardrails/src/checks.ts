@@ -27,7 +27,11 @@ function isHumanActor(actor: string): boolean {
 }
 
 /** Recursively visit every object key in `value`, reporting any that is a banned field name. */
-function scanBannedKeys(value: unknown, banned: readonly string[], onHit: (key: string) => void): void {
+function scanBannedKeys(
+  value: unknown,
+  banned: readonly string[],
+  onHit: (key: string) => void,
+): void {
   if (value === null || typeof value !== "object") return;
   if (Array.isArray(value)) {
     for (const item of value) scanBannedKeys(item, banned, onHit);
@@ -80,26 +84,42 @@ export function checkCompliance(roster: Roster): ComplianceReport {
 
     // GC2 — a prompted return is weak/disconfirming, never a voluntary return in `supporting`.
     if (h.evidence.supporting.some((s) => token(s) === "prompted_return")) {
-      gc2.push({ checkId: "GC2", ...where, message: "prompted_return counted as voluntary in supporting" });
+      gc2.push({
+        checkId: "GC2",
+        ...where,
+        message: "prompted_return counted as voluntary in supporting",
+      });
     }
 
     // GC3 — confidence is never attributable to a raw novelty / first-exposure signal.
     const novelty = h.evidence.supporting.find((s) => NOVELTY_MARKERS.includes(token(s)));
     if (novelty) {
-      gc3.push({ checkId: "GC3", ...where, message: `raw novelty marker "${novelty}" in supporting` });
+      gc3.push({
+        checkId: "GC3",
+        ...where,
+        message: `raw novelty marker "${novelty}" in supporting`,
+      });
     }
 
     // GC4 — a CANDIDATE/ACTIVE must have been put there by a human transition in history.
     if (h.state === "CANDIDATE" || h.state === "ACTIVE") {
       const humanPromote = h.history.some((e) => e.to === h.state && isHumanActor(e.actor));
       if (!humanPromote) {
-        gc4.push({ checkId: "GC4", ...where, message: `${h.state} lacks a human transition into ${h.state}` });
+        gc4.push({
+          checkId: "GC4",
+          ...where,
+          message: `${h.state} lacks a human transition into ${h.state}`,
+        });
       }
     }
 
     // GC5 — no demote on silence.
     if (h.history.some((e) => e.from === "EMERGING" && e.to === "EXPLORING")) {
-      gc5.push({ checkId: "GC5", ...where, message: "illegal demote EMERGING→EXPLORING in history" });
+      gc5.push({
+        checkId: "GC5",
+        ...where,
+        message: "illegal demote EMERGING→EXPLORING in history",
+      });
     }
   }
 

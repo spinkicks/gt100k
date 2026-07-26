@@ -48,7 +48,11 @@ function seriesSentence(label: string, labels: readonly string[], data: readonly
 
 function Tile({ t }: { t: StatTile }): JSX.Element {
   const color =
-    t.trend?.dir === "up" ? "var(--good)" : t.trend?.dir === "down" ? "var(--bad)" : "var(--chart-1)";
+    t.trend?.dir === "up"
+      ? "var(--good)"
+      : t.trend?.dir === "down"
+        ? "var(--bad)"
+        : "var(--chart-1)";
   const claimId = TILE_CLAIMS[t.key];
   return (
     <div className="tile">
@@ -59,15 +63,17 @@ function Tile({ t }: { t: StatTile }): JSX.Element {
       <div className="tile__row">
         <span className="tile__v">{t.value}</span>
         {t.trend ? (
-          <span className={`delta delta--${t.trend.dir}`} aria-label={t.trend.aria} title={t.trend.aria}>
+          <span
+            className={`delta delta--${t.trend.dir}`}
+            aria-label={t.trend.aria}
+            title={t.trend.aria}
+          >
             {t.trend.label}
           </span>
         ) : null}
       </div>
       <p className="tile__ctx">{t.context}</p>
-      <div className="tile__spark">
-        {t.spark ? <Spark data={t.spark} color={color} /> : null}
-      </div>
+      <div className="tile__spark">{t.spark ? <Spark data={t.spark} color={color} /> : null}</div>
     </div>
   );
 }

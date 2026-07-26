@@ -2,7 +2,13 @@ import { describe, it, expect } from "vitest";
 import { runSession } from "../src/session.js";
 import type { Interviewer, AnswerJudge } from "../src/ports.js";
 import type { Judgment } from "../src/model.js";
-import { PROFILE, READINESS, QUESTIONS, ANSWERS, JUDGMENTS } from "../src/__fixtures__/scripted-session.js";
+import {
+  PROFILE,
+  READINESS,
+  QUESTIONS,
+  ANSWERS,
+  JUDGMENTS,
+} from "../src/__fixtures__/scripted-session.js";
 
 // Inline scripted tutor — the domain's own tests must NOT import @gt100k/tutor-stub, or tsc -b sees a
 // cyclic project reference (adapter → domain → adapter).
@@ -39,10 +45,33 @@ describe("runSession (golden)", () => {
       answerSource: async ({ index }) => ANSWERS[index] ?? "",
     });
 
-    expect(s.turns.map((t) => t.facet)).toEqual(["what", "why", "why", "how", "challenge", "next", "audience"]);
-    expect(s.turns.map((t) => t.isFollowUp)).toEqual([false, false, true, false, false, false, false]);
+    expect(s.turns.map((t) => t.facet)).toEqual([
+      "what",
+      "why",
+      "why",
+      "how",
+      "challenge",
+      "next",
+      "audience",
+    ]);
+    expect(s.turns.map((t) => t.isFollowUp)).toEqual([
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+    ]);
     expect(s.turns.map((t) => t.coverage)).toEqual([0.7, 0.3, 0.7, 0.7, 0.7, 0.7, 0.7]);
-    expect(s.coverageByFacet).toEqual({ what: 0.7, why: 0.7, how: 0.7, challenge: 0.7, next: 0.7, audience: 0.7 });
+    expect(s.coverageByFacet).toEqual({
+      what: 0.7,
+      why: 0.7,
+      how: 0.7,
+      challenge: 0.7,
+      next: 0.7,
+      audience: 0.7,
+    });
     expect(s.gaps).toEqual([]);
     expect(s.status).toBe("complete");
   });

@@ -7,15 +7,33 @@ export interface Question {
 
 // Parent-observable questions (spec 5.1). Each maps to one signal the engine reads.
 export const QUESTIONS: readonly Question[] = [
-  { signal: "anyStakesEvent", label: "A big test, competition, showcase, or deadline is coming up soon." },
+  {
+    signal: "anyStakesEvent",
+    label: "A big test, competition, showcase, or deadline is coming up soon.",
+  },
   { signal: "anyDevaluation", label: "Lately they do it flatly, cancel, or stop sharing it." },
   { signal: "anyBackOffOrRest", label: "They seem worn out, or they are asking for a break." },
-  { signal: "pressuredSpecialization", label: "The schedule pushes them harder into this even as their interest fades." },
-  { signal: "overIdentification", label: "This is the only thing they will do or talk about, with nothing else alive." },
+  {
+    signal: "pressuredSpecialization",
+    label: "The schedule pushes them harder into this even as their interest fades.",
+  },
+  {
+    signal: "overIdentification",
+    label: "This is the only thing they will do or talk about, with nothing else alive.",
+  },
   { signal: "parentalOverValuation", label: "Honestly, I am more invested in this than they are." },
-  { signal: "conditionalRegardObserved", label: "My warmth or approval shifts with how they perform." },
-  { signal: "familyControlObserved", label: "I catch myself hovering, correcting, or taking over." },
-  { signal: "lowFamilyEngagement", label: "There is little we actually do together around their interests." },
+  {
+    signal: "conditionalRegardObserved",
+    label: "My warmth or approval shifts with how they perform.",
+  },
+  {
+    signal: "familyControlObserved",
+    label: "I catch myself hovering, correcting, or taking over.",
+  },
+  {
+    signal: "lowFamilyEngagement",
+    label: "There is little we actually do together around their interests.",
+  },
 ];
 
 export interface BranchCopy {

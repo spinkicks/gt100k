@@ -38,19 +38,31 @@ export function makeFixtureProject(): Project {
 
   project = logEvent(
     project,
-    { kind: "session", at: "2026-01-01T09:00:00.000Z", text: "Opened my bridge project and got out the paper." },
+    {
+      kind: "session",
+      at: "2026-01-01T09:00:00.000Z",
+      text: "Opened my bridge project and got out the paper.",
+    },
     "",
   );
 
   project = logEvent(
     project,
-    { kind: "decision", at: "2026-01-01T09:10:00.000Z", text: "I decided to use a triangle truss shape." },
+    {
+      kind: "decision",
+      at: "2026-01-01T09:10:00.000Z",
+      text: "I decided to use a triangle truss shape.",
+    },
     "",
   );
 
   project = logEvent(
     project,
-    { kind: "attempt", at: "2026-01-01T09:30:00.000Z", text: "I folded paper into 20 little beams and taped a flat deck." },
+    {
+      kind: "attempt",
+      at: "2026-01-01T09:30:00.000Z",
+      text: "I folded paper into 20 little beams and taped a flat deck.",
+    },
     "",
   );
   const attemptId = lastEventId(project);
@@ -107,7 +119,11 @@ export function makeFixtureProject(): Project {
 
   project = logEvent(
     project,
-    { kind: "reflection", at: "2026-01-01T11:00:00.000Z", text: "Triangles spread the weight — that is why it holds now." },
+    {
+      kind: "reflection",
+      at: "2026-01-01T11:00:00.000Z",
+      text: "Triangles spread the weight — that is why it holds now.",
+    },
     "",
   );
 

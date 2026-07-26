@@ -30,9 +30,7 @@ export function wellbeingForKid(kidId: string): readonly WellbeingCardVM[] {
       read: assessWellbeing(signals),
     };
   });
-  return [...cards].sort(
-    (a, b) => Number(b.read.escalateToHuman) - Number(a.read.escalateToHuman),
-  );
+  return [...cards].sort((a, b) => Number(b.read.escalateToHuman) - Number(a.read.escalateToHuman));
 }
 
 /** How many of the child's spikes need a human's review (a back-off / rest / gap / devaluation). */
