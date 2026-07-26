@@ -8,6 +8,15 @@ export const A_RETURN = 1.0;
 export const A_DEPTH = 0.5;
 export const B_SKIP = 0.5;
 /**
+ * Beta per `decline` × recency, divided by the choice-set size (E4).
+ *
+ * A decline is a cell that was available and passed over and that the child has never engaged.
+ * That is much weaker evidence than passing over a known love — you cannot tire of something you
+ * never tried — which is why it sits far below `B_SKIP`. Both are shares of one choice, so both
+ * are normalized by `CellEvent.choiceSetSize`.
+ */
+export const B_DECLINED = 0.15;
+/**
  * Alpha scale for the secondary reading of a two-mode action (e.g. `tinker` resolves to build
  * primary + investigate secondary). The secondary mode is inferred from the action's affordances
  * rather than directly observed, so it is weaker evidence. Preserves the weight the old
@@ -15,7 +24,26 @@ export const B_SKIP = 0.5;
  */
 export const A_SECONDARY = 0.5;
 export const HALFLIFE_DAYS = 14;
-export const MIN_EVIDENCE_MASS = 3;
+/**
+ * Minimum non-prior evidence mass before a cell may read `confident` (E6).
+ *
+ * Raised from 3 to 6. Three non-novel returns is roughly one afternoon of enthusiasm, and the
+ * preference literature puts within-sitting stability near 60% against only ~40% for hierarchies
+ * that survive months — so three events sat almost entirely inside the range a coin-flip's worth
+ * of momentary mood can produce.
+ */
+export const MIN_EVIDENCE_MASS = 6;
+/**
+ * Minimum number of distinct UTC calendar days carrying scored evidence before a cell may read
+ * `confident` (E6).
+ *
+ * This gate matters more than the mass floor. Mass alone cannot tell three returns in one
+ * afternoon apart from three returns across three weeks, and only the second is evidence of a
+ * durable interest; a count can always be run up inside a single sitting, a calendar cannot.
+ * Two is the floor implied by the evidence rather than a comfortable margin — it is the smallest
+ * span that asserts the interest outlived the sitting that produced it.
+ */
+export const MIN_DISTINCT_DAYS = 2;
 export const MAX_CI_WIDTH = 0.35;
 export const K_LCB = 1.0;
 export const SPIKE_THRESHOLD = 0.6;
@@ -44,13 +72,18 @@ export type DepthFamily = (typeof DEPTH_FAMILIES)[number];
  * three cases it covers — a first-ever touch is not a "reopen", and a same-day return in a
  * different session is not "same session" — so it is named for what it actually asserts: this
  * engagement is not evidence of a delayed return.
+ *
+ * The two disconfirming kinds are disjoint by construction (E4): `skip` is a cell the child has
+ * engaged before and passed over anyway; `decline` is one they have never engaged. A cell must
+ * never produce both for the same session, or one behavioural fact would be scored twice.
  */
 export type EventKind =
   | "cross_day_return"
   | "same_day_engagement"
   | "prompted_return"
   | DepthFamily
-  | "skip";
+  | "skip"
+  | "decline";
 
 export type DomainPath = readonly [string] | readonly [string, string];
 export type Attribution = "domain" | "style" | "mixed";
@@ -83,6 +116,12 @@ export interface CellEvent {
    * lives here as a named constant rather than as data on the event.
    */
   readonly role?: "primary" | "secondary";
+  /**
+   * How many alternatives were passed over at this choice moment (E4). One choice is one
+   * observation, so the disconfirming mass is shared across the alternatives rather than applied
+   * in full to each. Absent means "not a choice moment", which scores at full weight.
+   */
+  readonly choiceSetSize?: number;
 }
 
 export interface CellBelief {
@@ -95,6 +134,14 @@ export interface CellBelief {
   readonly sd: number;
   readonly lowerBound: number;
   readonly evidenceMass: number;
+  /**
+   * How many distinct UTC calendar days carried an event that actually moved alpha or beta (E6).
+   *
+   * Only scored events count, so this is a count of days on which the belief changed, not of days
+   * the child was seen. Reported alongside `evidenceMass` because a reader needs both to judge a
+   * cell: the same mass spread over six days and piled into one are very different claims.
+   */
+  readonly distinctDays: number;
   readonly confident: boolean;
   readonly attribution: Attribution | null;
   readonly supporting: readonly string[];
@@ -146,7 +193,26 @@ export function recencyWeight(now: number, timestamp: string): number {
   const parsed = Date.parse(timestamp);
   if (Number.isNaN(parsed)) return 1; // unparseable timestamp → no decay (never NaN-poison alpha)
   const ageMs = Math.max(0, now - parsed);
-  return Math.pow(0.5, ageMs / 86400000 / HALFLIFE_DAYS);
+  return 0.5 ** (ageMs / 86400000 / HALFLIFE_DAYS);
+}
+
+/**
+ * The UTC calendar day (`YYYY-MM-DD`) an event falls on, or `null` if the timestamp cannot be
+ * parsed (E6).
+ *
+ * UTC rather than local time so the day gate is deterministic: the engine takes no timezone and
+ * must give the same answer wherever it runs. The cost is that a child playing either side of
+ * local midnight can have both sittings land on one UTC day, which under-counts. That is the safe
+ * direction for a gate whose whole job is to be slow to call an interest durable.
+ *
+ * An unparseable timestamp yields `null` and is dropped from the day set rather than counted under
+ * its raw string. `recencyWeight` already declines to decay what it cannot date; a garbage
+ * timestamp must likewise not be able to satisfy a gate that is entirely a claim about dates.
+ */
+export function utcDay(timestamp: string): string | null {
+  const parsed = Date.parse(timestamp);
+  if (Number.isNaN(parsed)) return null;
+  return new Date(parsed).toISOString().slice(0, 10);
 }
 
 // Clamp a documented [0,1] input; NaN → 0. Guards prior tilt inputs against out-of-range poisoning.

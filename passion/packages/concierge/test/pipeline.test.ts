@@ -119,10 +119,7 @@ describe("runConcierge — curated-first (SC-1)", () => {
 describe("runConcierge — distress exits immediately (SC-2)", () => {
   it("escalates a distress message BEFORE any retrieval/generation, with no answer text", async () => {
     const { deps, search, generate } = makeDeps();
-    const { response } = await runConcierge(
-      req("no one likes me and I want to hurt myself"),
-      deps,
-    );
+    const { response } = await runConcierge(req("no one likes me and I want to hurt myself"), deps);
     expect(response.kind).toBe("escalated");
     expect(response.text).toBeUndefined();
     expect(response.citations).toBeUndefined();
@@ -134,7 +131,10 @@ describe("runConcierge — distress exits immediately (SC-2)", () => {
 describe("runConcierge — gap retrieval, injection defense + per-doc filter (SC-3, SC-5)", () => {
   it("retrieves on a gap, drops the low-rep doc, neutralizes the injection, serves a grounded answer", async () => {
     const { deps, search, generate } = makeDeps();
-    const { response, cache } = await runConcierge(req("how do tardigrades survive in space?"), deps);
+    const { response, cache } = await runConcierge(
+      req("how do tardigrades survive in space?"),
+      deps,
+    );
 
     expect(search).toHaveBeenCalledTimes(1);
     expect(generate).toHaveBeenCalledTimes(1);

@@ -108,7 +108,11 @@ export interface Brokerage {
   /** the guide id — the human who owns the single gate. */
   readonly approvedBy?: string;
   /** the engineered handoff event (warm intro / overlap / explicit "why now"). */
-  readonly handoff?: { readonly warmIntro: boolean; readonly overlap: boolean; readonly whyNow: string };
+  readonly handoff?: {
+    readonly warmIntro: boolean;
+    readonly overlap: boolean;
+    readonly whyNow: string;
+  };
   /** e.g. "held: protecting rest". */
   readonly note?: string;
   readonly createdAt: string;
@@ -116,7 +120,10 @@ export interface Brokerage {
 }
 
 // ── Iteration/validation constants (exact member sets) — do not re-open ───────────────────────────
-export const OPPORTUNITY_KINDS = ["mentor", "audience"] as const satisfies readonly OpportunityKind[];
+export const OPPORTUNITY_KINDS = [
+  "mentor",
+  "audience",
+] as const satisfies readonly OpportunityKind[];
 
 export const MENTOR_SOURCE_LAYERS = [
   "AI",
@@ -133,7 +140,11 @@ export const AUDIENCE_CHANNELS = [
   "MARKETPLACE",
 ] as const satisfies readonly AudienceChannel[];
 
-export const VETTING_STATUSES = ["vetted", "pending", "rejected"] as const satisfies readonly VettingStatus[];
+export const VETTING_STATUSES = [
+  "vetted",
+  "pending",
+  "rejected",
+] as const satisfies readonly VettingStatus[];
 
 export const HANDOFF_STATES = [
   "matched",

@@ -25,13 +25,7 @@ describe("buildDailyHandoff (SC-5)", () => {
   it("carries NO reward/points/grade/score/streak channel (only the reward-neutral FLAG)", () => {
     const keys = Object.keys(handoff);
     expect(new Set(keys)).toEqual(
-      new Set([
-        "kidId",
-        "date",
-        "priors",
-        "passionBlockRewardNeutral",
-        "blocksIndependent",
-      ]),
+      new Set(["kidId", "date", "priors", "passionBlockRewardNeutral", "blocksIndependent"]),
     );
     // no back-channel field beyond the literal reward-neutral flag
     const forbidden = keys

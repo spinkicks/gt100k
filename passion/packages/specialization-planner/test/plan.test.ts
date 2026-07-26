@@ -112,7 +112,11 @@ describe("planSpecialization — SC-1 golden table (spec §3.1 + §3.7)", () => 
   it("planSpecializationWithStub (sync) equals the async engine with the stub generator", async () => {
     const resources = curatedForCell(CURATED_LIBRARY, ["music-sound", "production"], "12-14");
     const sync = planSpecializationWithStub(INPUTS_S3, resources, NOW);
-    const async_ = await planSpecialization(INPUTS_S3, { generator: stubBriefGenerator, resources }, NOW);
+    const async_ = await planSpecialization(
+      INPUTS_S3,
+      { generator: stubBriefGenerator, resources },
+      NOW,
+    );
     expect(sync).toEqual(async_);
     // and the grounded craft scaffold cites the vetted resources
     expect(sync.nextProject.craftScaffold).toContain("https://");

@@ -10,12 +10,12 @@ const DEFAULT_BASE_URL = "https://tfy.promptlens.trilogy.com/openai/v1";
 const DEFAULT_MODEL = "gpt-5.4-mini";
 
 export function tfyConfigFromEnv(env: NodeJS.ProcessEnv = process.env): TfyConfig {
-  const apiKey = env["TFY_API_KEY"];
+  const apiKey = env.TFY_API_KEY;
   if (!apiKey) throw new Error("TFY_API_KEY is required for the live tutor");
   return {
     apiKey,
-    baseURL: env["TFY_BASE_URL"] ?? DEFAULT_BASE_URL,
-    model: env["TFY_TUTOR_MODEL"] ?? DEFAULT_MODEL,
+    baseURL: env.TFY_BASE_URL ?? DEFAULT_BASE_URL,
+    model: env.TFY_TUTOR_MODEL ?? DEFAULT_MODEL,
   };
 }
 
@@ -44,7 +44,10 @@ export class TfyTutor implements Interviewer, AnswerJudge {
   async nextQuestion(ctx: Parameters<Interviewer["nextQuestion"]>[0]): Promise<string> {
     const sys = `You interview a child about their own project to help them articulate it. Ask ONE short, warm question about the "${ctx.targetFacet}" facet${ctx.isFollowUp ? " (a gentle follow-up going deeper)" : ""}. Return JSON only: {"question":"..."}.`;
     const user = `Project: ${ctx.profile.title} — ${ctx.profile.summary}.`;
-    return parseQuestion(await chat(this.cfg, sys, user)) ?? `Tell me more about the ${ctx.targetFacet} of your project.`;
+    return (
+      parseQuestion(await chat(this.cfg, sys, user)) ??
+      `Tell me more about the ${ctx.targetFacet} of your project.`
+    );
   }
 
   async judge(ctx: Parameters<AnswerJudge["judge"]>[0]): Promise<Judgment> {

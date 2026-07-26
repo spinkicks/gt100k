@@ -28,7 +28,12 @@ describe("deriveBrokerInputs (Task 5)", () => {
         updatedAt: NOW,
       },
     ];
-    const inputs = deriveBrokerInputs(PLAN_S3, okWellbeing(PLAN_S3.kidId, PLAN_S3.cellKey), "9-11", existing);
+    const inputs = deriveBrokerInputs(
+      PLAN_S3,
+      okWellbeing(PLAN_S3.kidId, PLAN_S3.cellKey),
+      "9-11",
+      existing,
+    );
     expect(inputs.existing).toBe(existing);
   });
 

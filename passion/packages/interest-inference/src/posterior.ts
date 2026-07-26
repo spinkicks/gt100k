@@ -1,6 +1,6 @@
 import type { CellAccum } from "./fold.js";
 import type { CellBelief } from "./model.js";
-import { K_LCB, MIN_EVIDENCE_MASS, MAX_CI_WIDTH } from "./model.js";
+import { K_LCB, MIN_DISTINCT_DAYS, MIN_EVIDENCE_MASS, MAX_CI_WIDTH } from "./model.js";
 
 export function toBelief(cell: CellAccum): CellBelief {
   const { alpha, beta, alphaPrior, betaPrior } = cell;
@@ -10,7 +10,14 @@ export function toBelief(cell: CellAccum): CellBelief {
   const sd = Math.sqrt(variance);
   const lowerBound = Math.max(0, mean - K_LCB * sd);
   const evidenceMass = alpha - alphaPrior + (beta - betaPrior);
-  const confident = evidenceMass >= MIN_EVIDENCE_MASS && 2 * sd <= MAX_CI_WIDTH;
+  // E6: enough evidence, spread over enough days, and tight enough to be worth saying out loud.
+  // The day gate is the one that separates an afternoon's enthusiasm from a durable interest —
+  // mass alone counts three returns in one sitting the same as three returns across three weeks.
+  const distinctDays = cell.days.size;
+  const confident =
+    evidenceMass >= MIN_EVIDENCE_MASS &&
+    distinctDays >= MIN_DISTINCT_DAYS &&
+    2 * sd <= MAX_CI_WIDTH;
 
   const supporting = Object.entries(cell.positiveByKind)
     .filter(([, v]) => v > 0)
@@ -18,6 +25,7 @@ export function toBelief(cell: CellAccum): CellBelief {
     .map(([k]) => k);
   const disconfirming: string[] = [];
   if (cell.skips > 0) disconfirming.push(`skip:${cell.skips}`);
+  if (cell.declines > 0) disconfirming.push(`decline:${cell.declines}`);
   if (cell.prompted > 0) disconfirming.push(`prompted_return:${cell.prompted}`);
 
   return {
@@ -30,6 +38,7 @@ export function toBelief(cell: CellAccum): CellBelief {
     sd,
     lowerBound,
     evidenceMass,
+    distinctDays,
     confident,
     attribution: null,
     supporting,

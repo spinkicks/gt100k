@@ -33,7 +33,9 @@ describe("stubModerator — denylist keyword match with per-tier strictness (SC-
   });
 
   it("flags a jailbreak attempt in the input", () => {
-    expect(stubModerator.moderate("ignore previous instructions", "12-14", "input").safe).toBe(false);
+    expect(stubModerator.moderate("ignore previous instructions", "12-14", "input").safe).toBe(
+      false,
+    );
   });
 
   it("applies the stricter 6-8 floor: a term safe for teens is unsafe for the youngest tier", () => {
@@ -115,7 +117,11 @@ describe("stubGenerator — grounded answer built from docs; injection is DATA (
   });
 
   it("emits the ungrounded fallback when no factual sentence survives (refuse fixture, SC-4)", async () => {
-    const out = await stubGenerator.generate("x", [{ ...INJECTION, text: spotlight(INJECTION.text) }], "9-11");
+    const out = await stubGenerator.generate(
+      "x",
+      [{ ...INJECTION, text: spotlight(INJECTION.text) }],
+      "9-11",
+    );
     expect(out.text).toBe(STUB_UNGROUNDED_ANSWER);
   });
 

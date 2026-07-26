@@ -50,7 +50,8 @@ export function derivePlanInputs(
 
   const { cellEvents } = deriveSignals({ interactions: profile.interactions, catalog });
   const events: readonly CellEvent[] = cellEvents.filter(
-    (e) => serializeCellKey(e.domainPath, e.mode) === cellKey && !Number.isNaN(Date.parse(e.timestamp)),
+    (e) =>
+      serializeCellKey(e.domainPath, e.mode) === cellKey && !Number.isNaN(Date.parse(e.timestamp)),
   );
 
   // Across-day returns only (E2): a same-day re-entry is not evidence a pursuit is durable, which

@@ -11,7 +11,8 @@ const BRIEF: ProjectBrief = {
   audience: "REAL_COMMUNITY",
   childOwnsChoice: true,
   craftScaffold: "How to identify 10 local birds by sight + sound; how to keep a tally sheet",
-  successLooksLike: "A month of counts shared with the local birding group, with what surprised you",
+  successLooksLike:
+    "A month of counts shared with the local birding group, with what surprised you",
   source: "stub",
 };
 
@@ -137,7 +138,13 @@ describe("hasPerseverance (spec §4.2, SC-2)", () => {
     const attemptId = project.events[0]!.id;
     project = logEvent(
       project,
-      { kind: "outcome", at: NOW, text: "Rain washed out my count", stuck: true, refs: [attemptId] },
+      {
+        kind: "outcome",
+        at: NOW,
+        text: "Rain washed out my count",
+        stuck: true,
+        refs: [attemptId],
+      },
       NOW,
     );
     const stuckId = project.events[1]!.id;
@@ -173,7 +180,11 @@ describe("hasPerseverance (spec §4.2, SC-2)", () => {
     project = logEvent(project, { kind: "outcome", at: NOW, text: "Broke", stuck: true }, NOW);
     const stuckId = project.events[0]!.id;
     // a later revision, but it refs something else — not the stuck outcome
-    project = logEvent(project, { kind: "revision", at: NOW, text: "unrelated", refs: ["nope"] }, NOW);
+    project = logEvent(
+      project,
+      { kind: "revision", at: NOW, text: "unrelated", refs: ["nope"] },
+      NOW,
+    );
     expect(hasPerseverance(project)).toBe(false);
     // and the ordering matters: a revision BEFORE the stuck outcome does not count
     void stuckId;

@@ -2,7 +2,7 @@
 
 **GT100K** is Alpha School's internal accelerated-gifted layer on TimeBack — an operating system for an intensive, in-person gifted academy that takes an already-admitted child (ages 6–14) from daily academic mastery and passion discovery through to a portable, evidence-backed body of work. Long-horizon goal: MIT-level academic readiness by the end of 8th grade.
 
-> **Status: working monorepo.** 19 engine packages, 15 adapters, and 10 apps, with **643 tests across 143 files** green. Every engine is pure, deterministic and offline; all data is synthetic. No real child data touches this system until the pre-live gates pass (see [Pre-live gates](#pre-live-gates)).
+> **Status: working monorepo.** 20 packages, 15 adapters, and 11 apps, with **1,523 tests** green (693 engine and adapter, 830 app). Every engine is pure, deterministic and offline; all data is synthetic. No real child data touches this system until the pre-live gates pass (see [Pre-live gates](#pre-live-gates)).
 
 ## Quick start
 
@@ -10,11 +10,18 @@ Requires Node 20+ and `pnpm` (developed on Node 24 / pnpm 9).
 
 ```bash
 pnpm install
-pnpm exec tsc -b        # typecheck the whole workspace
-pnpm test               # 643 tests
+pnpm exec biome check passion   # lint + formatter, the same gate CI runs
+pnpm exec tsc -b                # typecheck the whole workspace
+pnpm test                       # 693 engine and adapter tests
 ```
 
-Run an app (each on its own port):
+**Start here:** the front door routes you to the right surface by role.
+
+```bash
+pnpm --filter @gt100k/home exec next dev -p 3000
+```
+
+Or go straight to one (the ports are fixed, because the front door and the shared header link to them):
 
 ```bash
 pnpm --filter @gt100k/guide-console  exec next dev -p 3020   # the guide's cockpit
@@ -68,12 +75,14 @@ Pure, deterministic, dependency-light. No network, no LLM, no clock.
 | `guardrails` | Executable compliance checks (GC1–GC6) over the whole spine |
 | `timeback` | Academic signals as priors only, never a gate |
 | `research` | The cited evidence behind every measurement, as data |
-| `design-tokens` | Framework-free CSS custom properties: one visual language, every surface |
+| `design-tokens` | Framework-free CSS custom properties: one vocabulary, every surface |
+| `ui` | The surfaces registry and the product header the adult surfaces share |
 
 ### Apps — `passion/apps/`
 
 | App | Audience |
 |---|---|
+| `home` | The front door. Routes by role and does nothing else |
 | `guide-console` | The guide's cockpit: overview dashboard, hypotheses, wellbeing, plan, family, access |
 | `project-studio` | The child's project journal |
 | `parent-guide` | The Warm-Demanding Parent Playbook (static export, hosted on AWS) |

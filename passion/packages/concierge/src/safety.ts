@@ -13,8 +13,7 @@ const EMAIL_RE = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g;
 // `\b` — that would skip the opening "(" of a "(555) 123-4567" form.
 const PHONE_RE = /\(?(?:\+?\d{1,3}[\s.-]?)?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/g;
 // A self-introduced name: "my name is X", "I am X", "call me X" (one or two capitalized words).
-const NAME_RE =
-  /\b(my name is|i am|i'm|call me)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/gi;
+const NAME_RE = /\b(my name is|i am|i'm|call me)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/gi;
 
 export interface PIIScrubResult {
   readonly cleaned: string;

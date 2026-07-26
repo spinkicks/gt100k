@@ -8,17 +8,8 @@
  * `InterestRead`: the derived store, the console view-model, `buildQaState`, the derived gates, and
  * the primary action (promote the top gate-passed candidate) actually moving `state()`.
  */
-import {
-  applyGuidePrimaryAction,
-  buildQaState,
-  topPromotableId,
-} from "../app/console-state.js";
-import {
-  CHILDREN,
-  ROSTER_NOW,
-  buildRosterGates,
-  buildRosterStore,
-} from "../app/console-data.js";
+import { applyGuidePrimaryAction, buildQaState, topPromotableId } from "../app/console-state.js";
+import { CHILDREN, ROSTER_NOW, buildRosterGates, buildRosterStore } from "../app/console-data.js";
 import { escalationCount, wellbeingForKid } from "../app/wellbeing.js";
 import { serializeCellKey } from "@gt100k/interest-inference";
 import { consoleViewModel, getForKid } from "@gt100k/hypothesis-store";

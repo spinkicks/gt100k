@@ -17,7 +17,10 @@ export const ACTION_MODE_RULES: Record<string, readonly WorkMode[]> = {
 };
 
 export type ResolveResult =
-  | { readonly ok: true; readonly engagedModes: { readonly primary: WorkMode; readonly secondary?: WorkMode } }
+  | {
+      readonly ok: true;
+      readonly engagedModes: { readonly primary: WorkMode; readonly secondary?: WorkMode };
+    }
   | { readonly ok: false; readonly reason: "invalid-for-artifact" | "unresolved" };
 
 export function resolveEngagedModes(artifact: Artifact, action: RawAction): ResolveResult {

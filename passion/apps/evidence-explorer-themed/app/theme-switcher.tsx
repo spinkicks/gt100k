@@ -51,6 +51,8 @@ export function ThemeSwitcher(): JSX.Element {
         Theme
       </button>
       {open ? (
+        /* biome-ignore lint/a11y/useSemanticElements: this popover is conditionally rendered, never
+           opened via showModal(), so a native <dialog> without [open] would be display:none. */
         <div className="themepop" role="dialog" aria-label="Choose a theme">
           {THEME_GROUPS.map((group) => (
             <div className="themepop__group" key={group.family}>
@@ -68,6 +70,9 @@ export function ThemeSwitcher(): JSX.Element {
                   >
                     <span className="swatch__chips" aria-hidden="true">
                       {preset.chips.map((c, i) => (
+                        /* biome-ignore lint/suspicious/noArrayIndexKey: `chips` is a fixed
+                           three-colour tuple that never reorders, and a colour can repeat between
+                           slots, so the position is the only stable identity. */
                         <span className="swatch__chip" key={i} style={{ background: c }} />
                       ))}
                     </span>

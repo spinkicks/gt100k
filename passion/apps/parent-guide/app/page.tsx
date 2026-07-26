@@ -93,8 +93,8 @@ export default function Page(): JSX.Element {
               achievement. Here is the honest scope. The strongest home-environment effects show up
               where homes differ a great deal, for example moving a child out of a deprived setting,
               and they are about childhood achievement, not raising an adult&apos;s ceiling. What a
-              committed home reliably does is convert a given ceiling into the grades and skills that
-              ordinary homes leave on the table. Parents&apos; expectations predict{" "}
+              committed home reliably does is convert a given ceiling into the grades and skills
+              that ordinary homes leave on the table. Parents&apos; expectations predict{" "}
               <em>gains</em>, not just where a child already is.
               <Cite>Pinquart 2020; Hill 2009; Capron 1989; Turkheimer 2003</Cite>
             </p>
@@ -123,16 +123,18 @@ export default function Page(): JSX.Element {
               <em>start</em> a task they genuinely do not care about, and sincere, specific praise
               for effort is fine. It is contingent prizes on the thing they already love that
               backfire.
-              <Cite>Vallerand 2003; Ryan 2000; Deci 1999; Lepper 1973; Warneken 2008; Cameron 2001</Cite>
+              <Cite>
+                Vallerand 2003; Ryan 2000; Deci 1999; Lepper 1973; Warneken 2008; Cameron 2001
+              </Cite>
             </p>
 
             <h3>Push the challenge, not the child</h3>
             <p>
               Picture two separate dials. Keep the difficulty in the hard-but-doable zone, roughly
-              an 85% success rate. When they strain, turn the <em>pressure</em> down before you lower
-              the <em>challenge</em>. When the stakes rise, add more freedom and less evaluation,
-              which is the opposite of the usual adult reflex. Sustained achievement pressure now
-              ranks among the top adolescent-health risks.
+              an 85% success rate. When they strain, turn the <em>pressure</em> down before you
+              lower the <em>challenge</em>. When the stakes rise, add more freedom and less
+              evaluation, which is the opposite of the usual adult reflex. Sustained achievement
+              pressure now ranks among the top adolescent-health risks.
               <Cite>Wilson 2019; Wood 1976; Bartholomew 2011; Mageau 2009; Luthar 2020</Cite>
             </p>
           </section>
@@ -165,9 +167,9 @@ export default function Page(): JSX.Element {
             <p>
               Because you never score the passion, working is not a number. It is three things you
               can see. They keep coming back on their own. They go <strong>deeper</strong> over
-              time. And at least once they <strong>pushed past a failure and made something</strong>.
-              That last one, breaking through a wall, is the sign that a light interest is becoming a
-              real one. Watch the process, not the polish.
+              time. And at least once they <strong>pushed past a failure and made something</strong>
+              . That last one, breaking through a wall, is the sign that a light interest is
+              becoming a real one. Watch the process, not the polish.
               <Cite>Nye 2012; Kapur 2008; Sinha 2021</Cite>
             </p>
           </section>
@@ -182,8 +184,8 @@ export default function Page(): JSX.Element {
               Bloom&apos;s study of 120 world-class performers, early on motivation and effort
               counted far more than any particular gift, and the talent was <em>developed</em>, not
               simply found. The children who go far show a rage to master, but that pays off only{" "}
-              <em>inside</em> a supportive environment. Neither drive nor talent alone is enough. One
-              family famously built their whole home around chess and raised three prodigies, an
+              <em>inside</em> a supportive environment. Neither drive nor talent alone is enough.
+              One family famously built their whole home around chess and raised three prodigies, an
               existence proof that the environment can be designed. Ability still matters, yet
               practice hours explain only a minority of the difference between people.
               <Cite>Bloom 1985; Winner 1996; Polgar; Macnamara 2014; Robertson 2010</Cite>
@@ -205,9 +207,9 @@ export default function Page(): JSX.Element {
             <h3>The mentor is a relay, and you cannot be all of them</h3>
             <p>
               Talent usually passes through a chain: a warm first teacher, then a more technical
-              one, then a master. The most valuable thing each hands over is <em>the next person</em>,
-              an introduction, an audition, a door. A big part of your job is bringing in mentors,
-              near-peers, and community that you cannot personally be.
+              one, then a master. The most valuable thing each hands over is{" "}
+              <em>the next person</em>, an introduction, an audition, a door. A big part of your job
+              is bringing in mentors, near-peers, and community that you cannot personally be.
               <Cite>Bloom 1985; Subotnik 2011</Cite>
             </p>
 
@@ -222,8 +224,8 @@ export default function Page(): JSX.Element {
 
             <h3>The real bottleneck is teachable</h3>
             <p>
-              What most often stalls a talented child is a set of psychosocial skills: setting goals,
-              practicing with quality, coping with feedback and pressure, speaking up for
+              What most often stalls a talented child is a set of psychosocial skills: setting
+              goals, practicing with quality, coping with feedback and pressure, speaking up for
               themselves. These are a curriculum, not a fixed personality, and you can build them
               from early on.
               <Cite>MacNamara 2010; Subotnik 2011</Cite>
@@ -371,18 +373,21 @@ export default function Page(): JSX.Element {
               A genuine deep spike is what pays off, and most children really do have a single
               strongest area. Good at everything is largely a testing illusion. Breadth helps, but
               only up to a point, and skills do not transfer across unrelated fields, so hold{" "}
-              <strong>two or three</strong> pursuits early and narrow toward one by around age 13. At
-              the elite-admissions end, a deep, differentiated profile tends to beat an
+              <strong>two or three</strong> pursuits early and narrow toward one by around age 13.
+              At the elite-admissions end, a deep, differentiated profile tends to beat an
               equally-credentialed well-rounded one, though treat that as a strategic bet, not a
               settled result.
-              <Cite>Achter 1996; Achter 1997; Fredricks 2012; Busseri 2006; Sala 2017; Cote 1999; Robertson 2010</Cite>
+              <Cite>
+                Achter 1996; Achter 1997; Fredricks 2012; Busseri 2006; Sala 2017; Cote 1999;
+                Robertson 2010
+              </Cite>
             </p>
 
             <h3>What if they like nothing, or everything?</h3>
             <p>
               Nothing usually means not enough varied exposure yet, so widen the menu and watch for
-              unprompted return. Everything is usually an unresolved tilt, so keep two or three doors
-              open and let real return narrow it for you.
+              unprompted return. Everything is usually an unresolved tilt, so keep two or three
+              doors open and let real return narrow it for you.
               <Cite>Hidi 2006; Achter 1996</Cite>
             </p>
 
@@ -390,17 +395,22 @@ export default function Page(): JSX.Element {
             <p>
               The real danger is <em>foreclosure</em>, going all-in with no exploration, not
               switching. The you-have-put-too-much-in-to-stop instinct is your bias. Young children
-              do not have it. Ask for <em>effort within the attempt</em>, never <em>loyalty to a
-              domain</em>. A healthy switch is a calm move <em>toward</em> something they already
-              return to, after clearing at least one real difficulty. Default to park it, not quit.
-              <Cite>Marcia 1966; Kroger 2010; Sehl 2021; Arkes 1999; Crede 2017; Duckworth 2007; O&apos;Keefe 2018</Cite>
+              do not have it. Ask for <em>effort within the attempt</em>, never{" "}
+              <em>loyalty to a domain</em>. A healthy switch is a calm move <em>toward</em>{" "}
+              something they already return to, after clearing at least one real difficulty. Default
+              to park it, not quit.
+              <Cite>
+                Marcia 1966; Kroger 2010; Sehl 2021; Arkes 1999; Crede 2017; Duckworth 2007;
+                O&apos;Keefe 2018
+              </Cite>
             </p>
 
             <h3>How much practice, and how much rest?</h3>
             <p>
               Practice matters, but it explains only a limited share of performance, so{" "}
-              <em>bounded</em> practice that serves a real project beats endless drilling. Real rest,
-              days off each week and weeks off each year, is part of the plan, not a failure of will.
+              <em>bounded</em> practice that serves a real project beats endless drilling. Real
+              rest, days off each week and weeks off each year, is part of the plan, not a failure
+              of will.
               <Cite>Macnamara 2014; Ericsson 1993; Brenner 2016</Cite>
             </p>
 
@@ -414,10 +424,10 @@ export default function Page(): JSX.Element {
 
             <h3>What about screens, games, and rewards for practice?</h3>
             <p>
-              A screen can be real exposure, like game design, music production, or coding, or it can
-              be just novelty. Judge it by unprompted return and depth, not by the device. Do not
-              turn their interest into a chore with sticker charts or paid practice. Keep the passion
-              reward-neutral and let the doing be the reward.
+              A screen can be real exposure, like game design, music production, or coding, or it
+              can be just novelty. Judge it by unprompted return and depth, not by the device. Do
+              not turn their interest into a chore with sticker charts or paid practice. Keep the
+              passion reward-neutral and let the doing be the reward.
               <Cite>Nye 2012; Deci 1999</Cite>
             </p>
 
@@ -711,7 +721,8 @@ export default function Page(): JSX.Element {
                 (2010).
               </Src>
               <Src href="https://en.wikipedia.org/wiki/L%C3%A1szl%C3%B3_Polg%C3%A1r">
-                A designed home that produced three chess prodigies. Polgar, <em>Raise a Genius!</em>
+                A designed home that produced three chess prodigies. Polgar,{" "}
+                <em>Raise a Genius!</em>
               </Src>
             </ul>
           </section>
@@ -726,9 +737,15 @@ export default function Page(): JSX.Element {
             <h3>The stance</h3>
             <ul className="checklist">
               <li>I hold high standards and stay warm at the same time.</li>
-              <li>My warmth never depends on how it goes. It is the same before and after a result.</li>
-              <li>When the stakes rise, I add more freedom and less evaluation, not more pressure.</li>
-              <li>I let the goal become theirs. I do not turn what they love into a reward chart.</li>
+              <li>
+                My warmth never depends on how it goes. It is the same before and after a result.
+              </li>
+              <li>
+                When the stakes rise, I add more freedom and less evaluation, not more pressure.
+              </li>
+              <li>
+                I let the goal become theirs. I do not turn what they love into a reward chart.
+              </li>
             </ul>
 
             <h3>The five moves</h3>

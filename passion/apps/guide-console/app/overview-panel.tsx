@@ -33,6 +33,8 @@ const TILE_CLAIMS: Readonly<Record<string, string>> = {
 /** The one place a chart's shape is chosen: charts only draw when the derivation says they can. */
 function Blank({ reason }: { reason: string }): JSX.Element {
   return (
+    /* biome-ignore lint/a11y/useSemanticElements: this live region wraps two <p> elements, and
+       <output> only accepts phrasing content, so the swap would produce invalid markup. */
     <div className="ov-blank" role="status">
       <p className="ov-blank__k">Not enough activity yet to chart</p>
       <p className="ov-blank__d">{reason}</p>
@@ -46,7 +48,11 @@ function seriesSentence(label: string, labels: readonly string[], data: readonly
 
 function Tile({ t }: { t: StatTile }): JSX.Element {
   const color =
-    t.trend?.dir === "up" ? "var(--good)" : t.trend?.dir === "down" ? "var(--bad)" : "var(--chart-1)";
+    t.trend?.dir === "up"
+      ? "var(--good)"
+      : t.trend?.dir === "down"
+        ? "var(--bad)"
+        : "var(--chart-1)";
   const claimId = TILE_CLAIMS[t.key];
   return (
     <div className="tile">
@@ -57,15 +63,17 @@ function Tile({ t }: { t: StatTile }): JSX.Element {
       <div className="tile__row">
         <span className="tile__v">{t.value}</span>
         {t.trend ? (
-          <span className={`delta delta--${t.trend.dir}`} aria-label={t.trend.aria} title={t.trend.aria}>
+          <span
+            className={`delta delta--${t.trend.dir}`}
+            aria-label={t.trend.aria}
+            title={t.trend.aria}
+          >
             {t.trend.label}
           </span>
         ) : null}
       </div>
       <p className="tile__ctx">{t.context}</p>
-      <div className="tile__spark">
-        {t.spark ? <Spark data={t.spark} color={color} /> : null}
-      </div>
+      <div className="tile__spark">{t.spark ? <Spark data={t.spark} color={color} /> : null}</div>
     </div>
   );
 }

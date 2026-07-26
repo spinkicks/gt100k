@@ -18,21 +18,26 @@ export function parseTfySuggestion(raw: string): TagSuggestion | null {
   if (typeof obj !== "object" || obj === null) return null;
   const o = obj as Record<string, unknown>;
 
-  const path = o["domainPath"];
+  const path = o.domainPath;
   if (!Array.isArray(path) || path.length < 1 || path.length > 2) return null;
   const cabin = path[0];
   if (!isCabinId(cabin)) return null;
   if (path.length === 2 && typeof path[1] !== "string") return null;
 
-  const modes = o["affordedModes"];
+  const modes = o.affordedModes;
   if (!Array.isArray(modes) || modes.length === 0 || !modes.every(isWorkMode)) return null;
 
-  const confidence = o["confidence"];
-  if (typeof confidence !== "number" || Number.isNaN(confidence) || confidence < 0 || confidence > 1) {
+  const confidence = o.confidence;
+  if (
+    typeof confidence !== "number" ||
+    Number.isNaN(confidence) ||
+    confidence < 0 ||
+    confidence > 1
+  ) {
     return null;
   }
 
-  const rationale = typeof o["rationale"] === "string" ? o["rationale"] : "";
+  const rationale = typeof o.rationale === "string" ? o.rationale : "";
 
   return {
     domainPath: path.length === 2 ? [cabin, path[1] as string] : [cabin],

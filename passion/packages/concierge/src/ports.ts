@@ -55,11 +55,7 @@ export interface Retriever {
 
 /** Grounded generation (stage 6) — an answer built ONLY from the passed docs, cite-or-refuse ([D5]). */
 export interface Generator {
-  generate(
-    query: string,
-    docs: readonly RetrievedDoc[],
-    tier: AgeTier,
-  ): Promise<GeneratedAnswer>;
+  generate(query: string, docs: readonly RetrievedDoc[], tier: AgeTier): Promise<GeneratedAnswer>;
 }
 
 /** Grounding check (stage 6) — is the answer supported by the docs? ([D5]). */

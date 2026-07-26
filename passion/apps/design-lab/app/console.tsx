@@ -15,7 +15,13 @@ const WEEKS = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"];
 const TILES = [
   { k: "Voluntary returns", v: "28", d: "+12%", up: true, spark: [8, 11, 9, 14, 16, 15, 21, 28] },
   { k: "Depth signals", v: "14", d: "+5%", up: true, spark: [4, 5, 5, 7, 8, 9, 12, 14] },
-  { k: "Sessions this month", v: "31", d: "-4%", up: false, spark: [38, 36, 35, 33, 34, 32, 31, 31] },
+  {
+    k: "Sessions this month",
+    v: "31",
+    d: "-4%",
+    up: false,
+    spark: [38, 36, 35, 33, 34, 32, 31, 31],
+  },
   { k: "Coverage", v: "68%", d: "+9%", up: true, spark: [42, 47, 51, 55, 58, 61, 65, 68] },
 ];
 

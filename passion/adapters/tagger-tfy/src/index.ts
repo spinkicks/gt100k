@@ -19,12 +19,12 @@ const DEFAULT_MODEL = "gpt-5.4-mini"; // verified low-cost model; override via T
  * or in any test — only by the opt-in `tag:live` script — so the CI gate needs no env.
  */
 export function tfyConfigFromEnv(env: NodeJS.ProcessEnv = process.env): TfyConfig {
-  const apiKey = env["TFY_API_KEY"];
+  const apiKey = env.TFY_API_KEY;
   if (!apiKey) throw new Error("TFY_API_KEY is required for the live tagger");
   return {
     apiKey,
-    baseURL: env["TFY_BASE_URL"] ?? DEFAULT_BASE_URL,
-    model: env["TFY_TAGGER_MODEL"] ?? DEFAULT_MODEL,
+    baseURL: env.TFY_BASE_URL ?? DEFAULT_BASE_URL,
+    model: env.TFY_TAGGER_MODEL ?? DEFAULT_MODEL,
   };
 }
 
@@ -85,7 +85,8 @@ export class TfyTagger implements Tagger {
       return fallback(ref);
     }
     const content =
-      (body as { choices?: Array<{ message?: { content?: string } }> })?.choices?.[0]?.message?.content ?? "";
+      (body as { choices?: Array<{ message?: { content?: string } }> })?.choices?.[0]?.message
+        ?.content ?? "";
     return parseTfySuggestion(content) ?? fallback(ref);
   }
 }

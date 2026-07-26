@@ -108,7 +108,7 @@ export function BarChart({
         const bh = (v / max) * (h - pad.t - pad.b);
         const cx = pad.l + i * slot + slot / 2;
         return (
-          <g key={i}>
+          <g key={labels[i]}>
             <rect
               x={compare ? cx - bw - 2 : cx - bw / 2}
               y={h - pad.b - bh}
@@ -158,7 +158,13 @@ export function Donut({
   let off = 0;
 
   return (
-    <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} role="img" aria-label="Time by area">
+    <svg
+      viewBox={`0 0 ${size} ${size}`}
+      width={size}
+      height={size}
+      role="img"
+      aria-label="Time by area"
+    >
       <g transform={`translate(${size / 2} ${size / 2}) rotate(-90)`}>
         {slices.map((s) => {
           const len = (s.value / total) * c;
@@ -187,7 +193,11 @@ export function Spark({ data, color }: { data: readonly number[]; color: string 
   const max = Math.max(...data);
   const min = Math.min(...data);
   const pts = data.map(
-    (v, i) => [(i * w) / (data.length - 1), h - 3 - ((v - min) / (max - min || 1)) * (h - 8)] as [number, number],
+    (v, i) =>
+      [(i * w) / (data.length - 1), h - 3 - ((v - min) / (max - min || 1)) * (h - 8)] as [
+        number,
+        number,
+      ],
   );
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="spark" aria-hidden="true">

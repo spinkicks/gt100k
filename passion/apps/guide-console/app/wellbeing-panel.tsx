@@ -17,7 +17,11 @@ const STATE_LABEL: Record<string, string> = {
   BURNOUT_TIP: "Possible tip into burnout",
   GAP: "Quiet period",
 };
-const CHALLENGE_LABEL: Record<string, string> = { PUSH: "Push", HOLD: "Hold", SCAFFOLD: "Scaffold" };
+const CHALLENGE_LABEL: Record<string, string> = {
+  PUSH: "Push",
+  HOLD: "Hold",
+  SCAFFOLD: "Scaffold",
+};
 const PRESSURE_LABEL: Record<string, string> = { AUTONOMY_UP: "Autonomy ↑", STEADY: "Steady" };
 
 export function WellbeingPanel({ cards }: { cards: readonly WellbeingCardVM[] }): JSX.Element {
@@ -28,9 +32,7 @@ export function WellbeingPanel({ cards }: { cards: readonly WellbeingCardVM[] })
       </header>
 
       {cards.length === 0 ? (
-        <p className="wbpanel__empty" role="status">
-          No spikes to review yet.
-        </p>
+        <output className="wbpanel__empty">No spikes to review yet.</output>
       ) : (
         <ul className="wblist">
           {cards.map((c) => (

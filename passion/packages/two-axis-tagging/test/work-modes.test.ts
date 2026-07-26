@@ -4,8 +4,15 @@ import { WORK_MODES, WORK_MODE_DEFS, isWorkMode } from "../src/work-modes.js";
 describe("work-modes", () => {
   it("has the 9 modes in golden order", () => {
     expect(WORK_MODES).toEqual([
-      "build", "investigate", "compose", "perform",
-      "debug", "explain", "persuade", "collaborate", "care",
+      "build",
+      "investigate",
+      "compose",
+      "perform",
+      "debug",
+      "explain",
+      "persuade",
+      "collaborate",
+      "care",
     ]);
   });
   it("defines every mode with a gloss and produces", () => {

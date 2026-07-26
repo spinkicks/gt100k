@@ -1,7 +1,13 @@
 import type { ProjectProfile, ReadinessLevel, Session, Turn, Facet } from "./model.js";
 import { maxFollowup } from "./model.js";
 import type { TutorPorts } from "./ports.js";
-import { initialCoverage, updateCoverage, selectNextFacet, isComplete, computeGaps } from "./scaffold.js";
+import {
+  initialCoverage,
+  updateCoverage,
+  selectNextFacet,
+  isComplete,
+  computeGaps,
+} from "./scaffold.js";
 
 // Supplies the child's answer each turn. In production this comes from the live UI; in CI it
 // replays a recorded array. This is the spec §5 `answerSource` (NOT a pre-known answers[]), so the
@@ -59,7 +65,14 @@ export async function runSession(input: RunSessionInput): Promise<Session> {
     });
 
     cov = updateCoverage(cov, targetFacet, judgment.coverage);
-    turns.push({ index: idx, facet: targetFacet, question, isFollowUp, answer, coverage: cov[targetFacet] });
+    turns.push({
+      index: idx,
+      facet: targetFacet,
+      question,
+      isFollowUp,
+      answer,
+      coverage: cov[targetFacet],
+    });
 
     if (isComplete(cov, turns.length)) break;
 

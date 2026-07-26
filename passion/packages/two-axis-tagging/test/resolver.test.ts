@@ -24,7 +24,8 @@ describe("resolveEngagedModes (golden)", () => {
       const r = resolveEngagedModes(c.artifact, c.action);
       if (r.ok) {
         expect(c.artifact.affordedModes).toContain(r.engagedModes.primary);
-        if (r.engagedModes.secondary) expect(c.artifact.affordedModes).toContain(r.engagedModes.secondary);
+        if (r.engagedModes.secondary)
+          expect(c.artifact.affordedModes).toContain(r.engagedModes.secondary);
       }
     }
   });

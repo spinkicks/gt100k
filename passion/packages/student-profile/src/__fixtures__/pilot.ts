@@ -12,9 +12,9 @@
 //
 // Ari (kid-synthetic-001, the window.__qa kid) is the important one: his audio-systems log must reach
 // a *confident* `::build` (a recent cluster of voluntary, non-novel returns near NOW ⇒ evidenceMass
-// ≥ 3) AND leave a gate-spread of returns at ~day −90 / −70 / −30 so `deriveGates` sees a >14-day gap
-// and a >56-day term — the confident recent cluster is what carries inference; the old spread barely
-// feeds it (14-day recency half-life) but drives the gate timeline.
+// ≥ 6 across ≥ 2 distinct days) AND leave a gate-spread of returns at ~day −90 / −70 / −30 so
+// `deriveGates` sees a >14-day gap and a >56-day term — the confident recent cluster is what carries
+// inference; the old spread barely feeds it (14-day recency half-life) but drives the gate timeline.
 import type { Interaction } from "@gt100k/signal-pipeline";
 import type { DomainPrior } from "@gt100k/interest-inference";
 import { serializeCellKey } from "@gt100k/interest-inference";
@@ -88,11 +88,29 @@ export const PILOT_PRIORS: Readonly<Record<string, readonly DomainPrior[]>> = {
 // ── Log builders ────────────────────────────────────────────────────────────────
 // Timestamps relative to PILOT_NOW (2026-04-01): a novel first exposure at −97d (outside the 3-day
 // novelty window before the first return), gate-spread voluntary returns at −90 / −70 / −30, and a
-// recent cluster at −12 / −8 / −5 / −3 / −1 (the last with a depth signal) for confidence.
+// recent cluster every other day from −19 to −1 (the last with a depth signal) for confidence.
+//
+// The cluster used to be five returns from −12 to −1, worth 3.82 of recency-weighted mass. E6
+// raised `MIN_EVIDENCE_MASS` to 6, so Ari, Bex and Dulce would all have dropped to "not sure yet"
+// and the guide-console roster would have had nothing to show. Ten returns over nineteen days is
+// what the scenario always described — a child who is genuinely hooked — and it clears the floor
+// on the evidence rather than on a lowered bar: 6.34 from the cluster plus 0.27 of what survives
+// from the gate spread ≈ 6.61.
 const NOVEL = "2025-12-25";
 const NOVEL_NEXT = "2025-12-26"; // still inside the 3-day novelty window
 const SPREAD = ["2026-01-01", "2026-01-21", "2026-03-02"]; // −90 / −70 / −30
-const CLUSTER = ["2026-03-20", "2026-03-24", "2026-03-27", "2026-03-29", "2026-03-31"];
+const CLUSTER = [
+  "2026-03-13",
+  "2026-03-15",
+  "2026-03-17",
+  "2026-03-19",
+  "2026-03-21",
+  "2026-03-23",
+  "2026-03-25",
+  "2026-03-27",
+  "2026-03-29",
+  "2026-03-31",
+];
 
 function iso(date: string): string {
   return `${date}T00:00:00.000Z`;
@@ -118,7 +136,12 @@ function mk(
 }
 
 /** Confident AND gate-passing: novel first exposure + spread returns + a recent cluster. */
-function strongLog(kidId: string, artifactId: string, actionType: string, tag: string): Interaction[] {
+function strongLog(
+  kidId: string,
+  artifactId: string,
+  actionType: string,
+  tag: string,
+): Interaction[] {
   const returns = [...SPREAD, ...CLUSTER];
   return [
     mk(kidId, artifactId, actionType, NOVEL, `${tag}-x0`),
@@ -133,7 +156,12 @@ function strongLog(kidId: string, artifactId: string, actionType: string, tag: s
 }
 
 /** Confident but NO gate spread + NO artifact: novel + a recent cluster only (span < 56d). */
-function confidentOnlyLog(kidId: string, artifactId: string, actionType: string, tag: string): Interaction[] {
+function confidentOnlyLog(
+  kidId: string,
+  artifactId: string,
+  actionType: string,
+  tag: string,
+): Interaction[] {
   return [
     mk(kidId, artifactId, actionType, NOVEL, `${tag}-x0`),
     ...CLUSTER.map((d, i) =>
@@ -147,7 +175,12 @@ function confidentOnlyLog(kidId: string, artifactId: string, actionType: string,
 }
 
 /** Thin: a novel first exposure + a single prompted return → stays EXPLORING, empty gate timeline. */
-function thinLog(kidId: string, artifactId: string, actionType: string, tag: string): Interaction[] {
+function thinLog(
+  kidId: string,
+  artifactId: string,
+  actionType: string,
+  tag: string,
+): Interaction[] {
   return [
     mk(kidId, artifactId, actionType, NOVEL, `${tag}-x0`),
     mk(kidId, artifactId, actionType, "2026-03-25", `${tag}-p0`, { prompted: true }),
@@ -165,7 +198,12 @@ function thinLog(kidId: string, artifactId: string, actionType: string, tag: str
  * about" (Cyrus) and "engaged once, then silence" (Ari's dance, Dulce's physics) used to be the
  * same log by coincidence and are now genuinely different shapes.
  */
-function quietLog(kidId: string, artifactId: string, actionType: string, tag: string): Interaction[] {
+function quietLog(
+  kidId: string,
+  artifactId: string,
+  actionType: string,
+  tag: string,
+): Interaction[] {
   return [
     mk(kidId, artifactId, actionType, NOVEL, `${tag}-x0`),
     mk(kidId, artifactId, actionType, NOVEL_NEXT, `${tag}-x1`),
@@ -197,8 +235,12 @@ const DULCE_LOG: Interaction[] = [
   ...quietLog("kid-synthetic-004", "dulce-physics", "inspect", "dulce-physics"),
 ];
 
-const ARI_ARTIFACTS = { [serializeCellKey(["music-sound", "audio-systems"], "build")]: "defense-record-042" };
-const BEX_ARTIFACTS = { [serializeCellKey(["games-strategy", "chess"], "perform")]: "defense-record-113" };
+const ARI_ARTIFACTS = {
+  [serializeCellKey(["music-sound", "audio-systems"], "build")]: "defense-record-042",
+};
+const BEX_ARTIFACTS = {
+  [serializeCellKey(["games-strategy", "chess"], "perform")]: "defense-record-113",
+};
 const DULCE_ARTIFACTS = {
   [DULCE_GAMEDEV]: "defense-record-201",
   [DULCE_PROD]: "defense-record-202",
@@ -216,20 +258,50 @@ export function buildPilotRoster(now: string = PILOT_NOW): Roster {
 
   roster.set(
     "kid-synthetic-001",
-    runCycle(emptyProfile("kid-synthetic-001", "Ari Mercado", PILOT_PRIORS["kid-synthetic-001"], ARI_ARTIFACTS), ARI_LOG, ctx, now),
+    runCycle(
+      emptyProfile(
+        "kid-synthetic-001",
+        "Ari Mercado",
+        PILOT_PRIORS["kid-synthetic-001"],
+        ARI_ARTIFACTS,
+      ),
+      ARI_LOG,
+      ctx,
+      now,
+    ),
   );
   roster.set(
     "kid-synthetic-002",
-    runCycle(emptyProfile("kid-synthetic-002", "Bex Ito", PILOT_PRIORS["kid-synthetic-002"], BEX_ARTIFACTS), BEX_LOG, ctx, now),
+    runCycle(
+      emptyProfile(
+        "kid-synthetic-002",
+        "Bex Ito",
+        PILOT_PRIORS["kid-synthetic-002"],
+        BEX_ARTIFACTS,
+      ),
+      BEX_LOG,
+      ctx,
+      now,
+    ),
   );
   roster.set(
     "kid-synthetic-003",
-    runCycle(emptyProfile("kid-synthetic-003", "Cyrus Okafor", PILOT_PRIORS["kid-synthetic-003"]), CYRUS_LOG, ctx, now),
+    runCycle(
+      emptyProfile("kid-synthetic-003", "Cyrus Okafor", PILOT_PRIORS["kid-synthetic-003"]),
+      CYRUS_LOG,
+      ctx,
+      now,
+    ),
   );
 
   // Dulce: derive, then apply the human transitions on top of the derived store.
   const dulce0 = runCycle(
-    emptyProfile("kid-synthetic-004", "Dulce Park", PILOT_PRIORS["kid-synthetic-004"], DULCE_ARTIFACTS),
+    emptyProfile(
+      "kid-synthetic-004",
+      "Dulce Park",
+      PILOT_PRIORS["kid-synthetic-004"],
+      DULCE_ARTIFACTS,
+    ),
     DULCE_LOG,
     ctx,
     now,

@@ -30,12 +30,12 @@ const DEFAULT_MODEL = "gpt-5.4-mini"; // verified low-cost model; override via T
  * only by the opt-in `planner:live` script — so the CI gate needs no env.
  */
 export function tfyConfigFromEnv(env: NodeJS.ProcessEnv = process.env): TfyConfig {
-  const apiKey = env["TFY_API_KEY"];
+  const apiKey = env.TFY_API_KEY;
   if (!apiKey) throw new Error("TFY_API_KEY is required for the live planner");
   return {
     apiKey,
-    baseURL: env["TFY_BASE_URL"] ?? DEFAULT_BASE_URL,
-    model: env["TFY_PLANNER_MODEL"] ?? DEFAULT_MODEL,
+    baseURL: env.TFY_BASE_URL ?? DEFAULT_BASE_URL,
+    model: env.TFY_PLANNER_MODEL ?? DEFAULT_MODEL,
   };
 }
 
@@ -73,7 +73,8 @@ async function chat(cfg: TfyConfig, system: string, user: string): Promise<strin
 
 /** The vetted curated resources block the model must ground the craft scaffold on. */
 function groundingBlock(resources: readonly CuratedResource[]): string {
-  if (resources.length === 0) return "(no curated resources for this cell — use a generic craft floor)";
+  if (resources.length === 0)
+    return "(no curated resources for this cell — use a generic craft floor)";
   return resources.map((r) => `- ${r.title} (${r.url})`).join("\n");
 }
 

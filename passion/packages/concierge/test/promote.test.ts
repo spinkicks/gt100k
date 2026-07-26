@@ -148,7 +148,11 @@ describe("promote (SC-8) — a served result compounds into the curated library"
       text: "Xyzzy is a magic word.",
       reputation: 0.9,
     };
-    const entry = toCacheEntry({ doc, query: "what is the xyzzy magic word", at: 0 }, "9-11", stubHasher);
+    const entry = toCacheEntry(
+      { doc, query: "what is the xyzzy magic word", at: 0 },
+      "9-11",
+      stubHasher,
+    );
     const { library, queue } = promote(LIB, enqueue([], entry), entry, "approve");
     expect(library).toBe(LIB); // no inferable domain path → cannot curate → library untouched
     expect(queue).toHaveLength(0);

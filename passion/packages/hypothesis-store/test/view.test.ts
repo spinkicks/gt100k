@@ -20,7 +20,9 @@ const read: InterestRead = {
       mean: 0.77,
       sd: 0.14,
       lowerBound: 0.7,
-      evidenceMass: 4.5,
+      // Above both E6 gates, so the read is one the engine could actually emit.
+      evidenceMass: 6.5,
+      distinctDays: 6,
       confident: true,
       attribution: "style",
       supporting: ["cross_day_return", "unrequired_revision"],
@@ -36,6 +38,7 @@ const read: InterestRead = {
       sd: 0.2,
       lowerBound: 0.3,
       evidenceMass: 0.5,
+      distinctDays: 1,
       confident: false,
       attribution: null,
       supporting: ["cross_day_return"],
@@ -84,9 +87,7 @@ describe("consoleViewModel", () => {
     const vm = consoleViewModel(s, "kid-1");
     // EMERGING, no gate supplied → the gap-survival probe.
     expect(vm.cards[0]!.state).toBe("EMERGING");
-    expect(vm.cards[0]!.nextProbe).toBe(
-      "Watch for a voluntary return after a ≥14-day quiet gap.",
-    );
+    expect(vm.cards[0]!.nextProbe).toBe("Watch for a voluntary return after a ≥14-day quiet gap.");
     // EXPLORING (thin) → offer the cell again unprompted.
     expect(vm.cards[1]!.state).toBe("EXPLORING");
     expect(vm.cards[1]!.nextProbe).toBe(

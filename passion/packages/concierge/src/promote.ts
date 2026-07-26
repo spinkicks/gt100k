@@ -4,11 +4,7 @@
 // need for live open-web retrieval, so the same need later resolves CURATED (SC-8). This stage runs
 // ASYNC and NEVER blocks the live answer (stages 1–9); it is a pure, deterministic value transform
 // here — the real reviewer surface + provenance signer are shared later (out of scope, spec §2).
-import {
-  inferDomainPaths,
-  withResource,
-  type CuratedLibrary,
-} from "./library.js";
+import { inferDomainPaths, withResource, type CuratedLibrary } from "./library.js";
 import type { AgeTier, CuratedResource, RetrievedDoc } from "./model.js";
 import type { CacheDraft } from "./pipeline.js";
 import type { Hasher } from "./ports.js";

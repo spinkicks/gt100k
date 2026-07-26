@@ -49,11 +49,11 @@ export function parseBriefFields(raw: string): BriefFields | null {
     out[k] = v;
   }
   return {
-    title: out["title"]!,
-    drivingQuestion: out["drivingQuestion"]!,
-    authenticMethod: out["authenticMethod"]!,
-    craftScaffold: out["craftScaffold"]!,
-    successLooksLike: out["successLooksLike"]!,
+    title: out.title!,
+    drivingQuestion: out.drivingQuestion!,
+    authenticMethod: out.authenticMethod!,
+    craftScaffold: out.craftScaffold!,
+    successLooksLike: out.successLooksLike!,
   };
 }
 

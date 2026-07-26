@@ -3,7 +3,12 @@
 // `ConciergeResponse` the surface serves. `now` is fixed (deterministic) so identical requests yield
 // identical responses — the property the LOOP_QA gate relies on. Kept pure + dep-injected so the CI
 // test drives it headless with stub deps (no network, no Next runtime).
-import { runConcierge, type AgeTier, type ConciergeDeps, type ConciergeResponse } from "@gt100k/concierge";
+import {
+  runConcierge,
+  type AgeTier,
+  type ConciergeDeps,
+  type ConciergeResponse,
+} from "@gt100k/concierge";
 import { SEED_AGE_TIER, SEED_KID_ID, SEED_SESSION_ID } from "./seed.js";
 
 export interface AskInput {

@@ -4,6 +4,7 @@ const nextConfig = {
   // so we export a static site that hosts on any static origin (AWS Amplify/S3).
   output: "export",
   images: { unoptimized: true },
+  transpilePackages: ["@gt100k/design-tokens", "@gt100k/ui"],
   experimental: {
     extensionAlias: {
       ".js": [".ts", ".tsx", ".js"],

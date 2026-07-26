@@ -12,12 +12,7 @@
 //   • stubReadability  — tier-parameterized truncate/simplify (uses STRICTNESS).
 //   • stubHasher     — stable FNV-1a digest for provenance.
 import { slugify } from "@gt100k/two-axis-tagging";
-import {
-  STRICTNESS,
-  type AgeTier,
-  type Citation,
-  type RetrievedDoc,
-} from "./model.js";
+import { STRICTNESS, type AgeTier, type Citation, type RetrievedDoc } from "./model.js";
 import { SPOTLIGHT_BEGIN, SPOTLIGHT_END } from "./safety.js";
 import type {
   DistressClassifier,

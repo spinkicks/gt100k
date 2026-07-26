@@ -155,7 +155,8 @@ async function pipeline(
 
   // Stage 6 — grounded generation, cite-or-refuse + faithfulness gate at the tier floor ([D5]).
   const gen = await deps.generator.generate(cleaned, spotlighted, tier);
-  if (gen.text.trim().length === 0 || gen.citations.length === 0) return refused("empty-generation");
+  if (gen.text.trim().length === 0 || gen.citations.length === 0)
+    return refused("empty-generation");
   const faith = deps.faithfulness.score(gen.text, spotlighted);
   if (!faith.grounded || faith.score < strict.faithfulnessMin) return refused("ungrounded");
 

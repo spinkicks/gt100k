@@ -55,7 +55,11 @@ export function ProgressRing({
   const c = 2 * Math.PI * r;
   const dash = c * frac;
   return (
-    <div className="pv-ring" role="img" aria-label={`${stateTerm(state).label}, ${ringSub(state, n)}`}>
+    <div
+      className="pv-ring"
+      role="img"
+      aria-label={`${stateTerm(state).label}, ${ringSub(state, n)}`}
+    >
       <svg viewBox="0 0 64 64" width={size} height={size} aria-hidden="true">
         <circle cx="32" cy="32" r={r} fill="none" stroke="var(--line-2)" strokeWidth="5" />
         {frac > 0 && (

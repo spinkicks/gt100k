@@ -65,7 +65,10 @@ function titleCase(s: string): string {
 // The stub brief embeds raw "(https://…)" URLs in the craft-scaffold prose; strip them, because the
 // same vetted resources render as clean clickable links just below.
 function stripUrls(text: string): string {
-  return text.replace(/\s*\(https?:\/\/[^)]+\)/g, "").replace(/\s{2,}/g, " ").trim();
+  return text
+    .replace(/\s*\(https?:\/\/[^)]+\)/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 }
 
 // The engine's rationale/escalation prose can contain raw stage tokens (e.g. "S1_IGNITION");
@@ -84,7 +87,9 @@ function restLine(r: PlanCardVM["plan"]["restCadence"]): string {
 
 function doseLine(dose: number): string {
   const pct = Math.round(dose * 100);
-  return pct === 0 ? "Deliberate play (no formal practice yet)" : `${pct}% bounded, chosen practice`;
+  return pct === 0
+    ? "Deliberate play (no formal practice yet)"
+    : `${pct}% bounded, chosen practice`;
 }
 
 function PlanItem({ card }: { card: PlanCardVM }): JSX.Element {
@@ -183,10 +188,10 @@ export function PlanPanel({ cards }: { cards: readonly PlanCardVM[] }): JSX.Elem
       </header>
 
       {cards.length === 0 ? (
-        <p className="wbpanel__empty" role="status">
-          No certified spikes to plan yet. A spike is planned once you promote it to a candidate or an
-          active specialization.
-        </p>
+        <output className="wbpanel__empty">
+          No certified spikes to plan yet. A spike is planned once you promote it to a candidate or
+          an active specialization.
+        </output>
       ) : (
         <>
           <ul className="wblist" data-testid="plan-list">

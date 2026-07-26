@@ -25,8 +25,8 @@ export interface TimeBackConfig {
  * (a missing credential is an operator error at run time, not a silent live call).
  */
 export function timeBackConfigFromEnv(env: NodeJS.ProcessEnv = process.env): TimeBackConfig {
-  const baseURL = env["TIMEBACK_BASE_URL"];
-  const apiKey = env["TIMEBACK_API_KEY"];
+  const baseURL = env.TIMEBACK_BASE_URL;
+  const apiKey = env.TIMEBACK_API_KEY;
   if (!baseURL) throw new Error("TIMEBACK_BASE_URL is required for the live TimeBack adapter");
   if (!apiKey) throw new Error("TIMEBACK_API_KEY is required for the live TimeBack adapter");
   return { baseURL, apiKey };

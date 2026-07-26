@@ -5,13 +5,7 @@
 // engine here; we only need a well-typed plan whose `cellKey` matches the seed catalog and whose
 // (stage, mentorRole, audience, nextProject.craftScaffold) name the current-stage need the broker
 // reads. `cellKey`s are reused verbatim from `catalog.ts`.
-import type {
-  AudienceLevel,
-  DomainPath,
-  MentorRole,
-  SpecializationPlan,
-  Stage,
-} from "../model.js";
+import type { AudienceLevel, DomainPath, MentorRole, SpecializationPlan, Stage } from "../model.js";
 import { CELL_AUDIO, CELL_GAMEDEV, CELL_CHESS } from "./catalog.js";
 
 const KID = "kid-synthetic-023";

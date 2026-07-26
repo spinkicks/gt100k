@@ -5,12 +5,7 @@
 // a generic scaffold otherwise. `childOwnsChoice` is always `true` (the brief is an OFFER, never an
 // assignment) and there is no score/reward field. NO network; fully synchronous work wrapped in a
 // resolved Promise so the engine can `await` it and the panel stays deterministic.
-import type {
-  BriefContext,
-  ProjectBrief,
-  ProjectBriefGenerator,
-  Stage,
-} from "./model.js";
+import type { BriefContext, ProjectBrief, ProjectBriefGenerator, Stage } from "./model.js";
 import type { CuratedResource } from "@gt100k/concierge";
 import type { DomainPath } from "@gt100k/two-axis-tagging";
 
@@ -90,7 +85,10 @@ function buildScaffold(
   craftFloorHint: string,
   resources: readonly CuratedResource[],
 ): string {
-  const hint = craftFloorHint.trim().length > 0 ? craftFloorHint.trim() : TEMPLATES[stage].defaultCraft(domain);
+  const hint =
+    craftFloorHint.trim().length > 0
+      ? craftFloorHint.trim()
+      : TEMPLATES[stage].defaultCraft(domain);
   if (resources.length > 0) {
     return `${hint} Ground the craft floor in these vetted resources: ${citeResources(resources)}.`;
   }

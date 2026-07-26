@@ -144,7 +144,11 @@ function MatchRow({
             </button>
           ) : null}
           {state === "active" ? (
-            <button type="button" className="btn btn--primary" onClick={() => onAdvance("transferred")}>
+            <button
+              type="button"
+              className="btn btn--primary"
+              onClick={() => onAdvance("transferred")}
+            >
               Mark access transferred
             </button>
           ) : null}
@@ -214,7 +218,9 @@ function AccessSpike({ card }: { card: AccessCardVM }): JSX.Element {
         <span className="wbitem__spec">
           {specPath(card.domainPath)} · {modeLabel(card.mode)}
         </span>
-        <span className="wbitem__state">{card.state === "ACTIVE" ? "Active spike" : "Candidate"}</span>
+        <span className="wbitem__state">
+          {card.state === "ACTIVE" ? "Active spike" : "Candidate"}
+        </span>
       </div>
 
       <dl className="plangrid">
@@ -232,8 +238,8 @@ function AccessSpike({ card }: { card: AccessCardVM }): JSX.Element {
         <div className="wbitem__review" role="note">
           <span className="wbitem__reviewk">Holding new access</span>
           <p className="wbitem__reason">
-            This spike is in a rest or back-off window, so we are not widening the audience right now.
-            Protecting the child comes before adding stakes.
+            This spike is in a rest or back-off window, so we are not widening the audience right
+            now. Protecting the child comes before adding stakes.
           </p>
         </div>
       ) : (
@@ -278,10 +284,10 @@ export function AccessPanel({ cards }: { cards: readonly AccessCardVM[] }): JSX.
       </header>
 
       {cards.length === 0 ? (
-        <p className="wbpanel__empty" role="status">
-          No certified spikes to broker yet. A spike gets mentor and audience options once you promote
-          it to a candidate or an active specialization.
-        </p>
+        <output className="wbpanel__empty">
+          No certified spikes to broker yet. A spike gets mentor and audience options once you
+          promote it to a candidate or an active specialization.
+        </output>
       ) : (
         <ul className="wblist" data-testid="access-list">
           {cards.map((c) => (

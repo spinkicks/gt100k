@@ -2,7 +2,9 @@ import type { Interviewer, AnswerJudge, Judgment } from "@gt100k/socratic-defens
 
 export class ScriptedTutor implements Interviewer, AnswerJudge {
   private i = 0;
-  constructor(private readonly script: { questions: readonly string[]; judgments: readonly Judgment[] }) {}
+  constructor(
+    private readonly script: { questions: readonly string[]; judgments: readonly Judgment[] },
+  ) {}
   async nextQuestion(): Promise<string> {
     return this.script.questions[this.i] ?? "Tell me more about your project.";
   }

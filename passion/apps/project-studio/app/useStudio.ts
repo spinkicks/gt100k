@@ -4,7 +4,12 @@
 // projects, the open project, the "log a quest entry" actions, localStorage persistence, and the
 // window.__qa install. SSR renders the deterministic seed; the client hydrates localStorage after.
 import { useEffect, useMemo, useRef, useState } from "react";
-import { logEvent, startProject, type Project, type WorkEventKind } from "@gt100k/project-workspace";
+import {
+  logEvent,
+  startProject,
+  type Project,
+  type WorkEventKind,
+} from "@gt100k/project-workspace";
 import { DEMO_AGE_BAND, DEMO_KID, seedProjects } from "./seed.js";
 import { buildQaState } from "./studio-state.js";
 import { installQa } from "./qa.js";
@@ -80,7 +85,8 @@ export function useStudio() {
           ageBand: DEMO_AGE_BAND,
           title: t,
           drivingQuestion: input.drivingQuestion.trim() || "What do I want to make?",
-          authenticMethod: input.authenticMethod.trim() || "Try things, see what happens, keep going.",
+          authenticMethod:
+            input.authenticMethod.trim() || "Try things, see what happens, keep going.",
           audience: "SELF",
         },
       },
@@ -101,7 +107,11 @@ export function useStudio() {
         setProjects((prev) =>
           prev.map((p) =>
             p.id === id
-              ? logEvent(p, { kind: "attempt", at: isoNow(), text: "Tried a quick idea." }, isoNow())
+              ? logEvent(
+                  p,
+                  { kind: "attempt", at: isoNow(), text: "Tried a quick idea." },
+                  isoNow(),
+                )
               : p,
           ),
         );

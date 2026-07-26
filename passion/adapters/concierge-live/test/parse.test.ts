@@ -89,9 +89,7 @@ describe("parseGeneration", () => {
     expect(parseGeneration("not json")).toBeNull();
     expect(parseGeneration(JSON.stringify({ text: 5, citations: [] }))).toBeNull();
     expect(parseGeneration(JSON.stringify({ text: "x", citations: "nope" }))).toBeNull();
-    expect(
-      parseGeneration(JSON.stringify({ text: "x", citations: [{ url: "u" }] })),
-    ).toBeNull(); // citation missing title
+    expect(parseGeneration(JSON.stringify({ text: "x", citations: [{ url: "u" }] }))).toBeNull(); // citation missing title
   });
 });
 

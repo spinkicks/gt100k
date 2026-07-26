@@ -15,9 +15,7 @@ import type { TimeBackSnapshot } from "./model.js";
  * subject, sorted by `domain` (cabin id) ascending. Deterministic; graceful (unknown subject / uncontributed
  * cabin → no prior, never a throw). A prior only shifts the discovery starting point; it never gates.
  */
-export function toDomainPriors(
-  snapshot: TimeBackSnapshot,
-): readonly DomainPrior[] {
+export function toDomainPriors(snapshot: TimeBackSnapshot): readonly DomainPrior[] {
   const totalXp = snapshot.subjects.reduce((sum, s) => sum + s.discretionaryXp, 0);
   const offered = snapshot.subjects.filter((s) => s.offered);
 

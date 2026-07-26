@@ -4,6 +4,7 @@ import {
   A_DEPTH,
   A_SECONDARY,
   B_SKIP,
+  B_DECLINED,
   ALPHA0,
   BETA0,
   W_ENV,
@@ -14,6 +15,7 @@ import {
   scoresInterest,
   recencyWeight,
   serializeCellKey,
+  utcDay,
 } from "./model.js";
 
 export function buildPrior(prior?: DomainPrior): { alphaPrior: number; betaPrior: number } {
@@ -35,9 +37,21 @@ export interface CellAccum {
   beta: number;
   positiveByKind: Record<string, number>;
   skips: number;
+  /** `decline` occurrences (E4) — passed over, and never engaged. Counted apart from `skips`. */
+  declines: number;
   prompted: number;
   /** `same_day_engagement` occurrences (E2). Context for a reader; never scored. */
   sameDay: number;
+  /**
+   * The distinct UTC calendar days (`YYYY-MM-DD`) on which an event moved alpha or beta (E6).
+   *
+   * Membership is granted only inside a scoring branch, so the set is exactly the days the belief
+   * changed on. Everything the fold declines to score is therefore absent by construction rather
+   * than by a parallel list of exclusions: a novelty event, a `prompted_return`, a
+   * `same_day_engagement`, and a depth family `scoresInterest` rejects all leave the belief where
+   * they found it, so none of them can help satisfy a gate about evidence being spread over time.
+   */
+  days: Set<string>;
 }
 
 export function foldEvents(
@@ -64,8 +78,10 @@ export function foldEvents(
         beta: betaPrior,
         positiveByKind: {},
         skips: 0,
+        declines: 0,
         prompted: 0,
         sameDay: 0,
+        days: new Set<string>(),
       };
       cells.set(cellKey, cell);
     }
@@ -82,6 +98,12 @@ export function foldEvents(
       continue;
     }
     const w = recencyWeight(now, e.timestamp);
+    // E6: the day is recorded once the event is known to score, so `days` counts days the belief
+    // moved rather than days the child was seen.
+    const day = utcDay(e.timestamp);
+    const markDay = (): void => {
+      if (day !== null) cell.days.add(day);
+    };
     // One event = one occurrence (E1). The only scaling left is the secondary reading of a
     // two-mode action, which is inferred rather than observed.
     const roleScale = e.role === "secondary" ? A_SECONDARY : 1;
@@ -89,6 +111,7 @@ export function foldEvents(
       const add = A_RETURN * roleScale * w;
       cell.alpha += add;
       cell.positiveByKind[e.kind] = (cell.positiveByKind[e.kind] ?? 0) + add;
+      markDay();
     } else if (isDepthFamily(e.kind)) {
       // E11: not every depth family scores interest. `artifact_competence` is a work-quality
       // judgement, so it passes through to downstream consumers without touching the belief or
@@ -97,9 +120,23 @@ export function foldEvents(
       const add = A_DEPTH * roleScale * w;
       cell.alpha += add;
       cell.positiveByKind[e.kind] = (cell.positiveByKind[e.kind] ?? 0) + add;
-    } else if (e.kind === "skip") {
-      cell.beta += B_SKIP * w;
-      cell.skips += 1;
+      markDay();
+    } else if (e.kind === "skip" || e.kind === "decline") {
+      // E4: picking one gadget out of seven is ONE observation, so the disconfirming mass is
+      // shared across the alternatives instead of applied in full to each. Unnormalized, a child
+      // who returns to their favourite cell every session accrues a full decrement on every other
+      // known cell every session, so breadth of discovery suppresses the very spike the engine
+      // exists to find. Absent `choiceSetSize` means "not a choice moment" and scores at full
+      // weight; the floor of 1 keeps a zero or negative size from dividing by zero.
+      const divisor = Math.max(1, e.choiceSetSize ?? 1);
+      if (e.kind === "skip") {
+        cell.beta += (B_SKIP * w) / divisor;
+        cell.skips += 1;
+      } else {
+        cell.beta += (B_DECLINED * w) / divisor;
+        cell.declines += 1;
+      }
+      markDay();
     }
   }
   return cells;

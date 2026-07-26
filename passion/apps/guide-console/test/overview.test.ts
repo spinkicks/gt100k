@@ -77,26 +77,31 @@ describe("every child renders something drawable or an honest empty state", () =
 
 test("derives Ari's headline numbers from the interaction log", () => {
   const ov = overviewFor(ARI);
-  expect(ov.events).toBe(12);
+  // 14 audio visits (one first exposure, three gate-spread returns, a ten-visit March run) plus
+  // three dance visits. The March run grew from five to ten under E6 — a cell only reads
+  // confident on six units of mass across two distinct days now, and five half-decayed returns
+  // do not carry that.
+  expect(ov.events).toBe(17);
   const by = new Map(ov.tiles.map((t) => [t.key, t]));
-  expect(by.get("voluntary")?.value).toBe("11");
+  expect(by.get("voluntary")?.value).toBe("16"); // only the prompted dance visit is not
   expect(by.get("depth")?.value).toBe("1");
-  expect(by.get("sessions")?.value).toBe("12");
+  expect(by.get("sessions")?.value).toBe("17");
   expect(by.get("coverage")?.context).toBe("2 of 11 areas we can observe");
-  // Second half of the observed window against the first: 5 voluntary returns became 6.
+  // Second half of the observed window against the first: 5 voluntary returns became 11.
   expect(by.get("voluntary")?.trend).toEqual({
     dir: "up",
-    label: "+20%",
-    aria: "Voluntary returns up 20 percent versus the previous period",
+    label: "+120%",
+    aria: "Voluntary returns up 120 percent versus the previous period",
   });
   // Dec / Jan / Feb / Mar, with February's real zero left in rather than skipped.
   expect(ov.returns.ok).toBe(true);
   expect(ov.returns.labels).toEqual(["Dec", "Jan", "Feb", "Mar"]);
-  expect(ov.returns.a).toEqual([3, 2, 0, 6]);
+  expect(ov.returns.a).toEqual([3, 2, 0, 11]);
   expect(ov.returns.b).toEqual([0, 0, 0, 1]);
+  // 14 of 17 visits is 82.35%, apportioned by largest remainder so the legend sums to 100.
   expect(ov.share.slices.map((s) => [s.label, s.percent])).toEqual([
-    ["Music & Sound", 75],
-    ["Art & Motion", 25],
+    ["Music & Sound", 82],
+    ["Art & Motion", 18],
   ]);
 });
 
@@ -111,7 +116,9 @@ test("weekly engagement counts distinct sessions and depth signals per week", ()
   const ov = overviewFor(BEX);
   expect(ov.engagement.ok).toBe(true);
   expect(ov.engagement.labels).toHaveLength(8);
-  expect(ov.engagement.a).toEqual([0, 0, 0, 1, 0, 2, 6, 2]);
+  // Weeks beginning Feb 9 … Mar 30. Bex's chess and python runs both step every other day
+  // through March, so the two cells contribute a session each on the same dates.
+  expect(ov.engagement.a).toEqual([0, 0, 0, 1, 4, 6, 8, 2]);
   expect(ov.engagement.b).toEqual([0, 0, 0, 0, 0, 0, 0, 2]);
 });
 

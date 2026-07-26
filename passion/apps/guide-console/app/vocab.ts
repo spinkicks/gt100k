@@ -41,6 +41,10 @@ export const SIGNALS: Record<string, Term> = {
     label: "Skipped",
     desc: "Was offered this and chose something else instead.",
   },
+  decline: {
+    label: "Passed Over",
+    desc: "Was there to pick and they picked something else. They have never tried this one, so it counts for very little.",
+  },
   devaluation: {
     label: "Cooling Off",
     desc: "Started downplaying or dismissing it. Interest may be fading.",
@@ -73,7 +77,7 @@ export const SIGNALS: Record<string, Term> = {
 export function signal(key: string): Term {
   const colon = key.indexOf(":");
   const base = colon === -1 ? key : key.slice(0, colon);
-  const count = colon === -1 ? NaN : Number(key.slice(colon + 1));
+  const count = colon === -1 ? Number.NaN : Number(key.slice(colon + 1));
   const t = SIGNALS[base] ?? { label: prettify(base), desc: "" };
   if (Number.isFinite(count) && count > 1) {
     return { label: `${t.label} ×${count}`, desc: t.desc };

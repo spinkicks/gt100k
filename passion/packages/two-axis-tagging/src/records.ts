@@ -30,18 +30,28 @@ export interface MakeArtifactInput {
 }
 
 export function makeArtifact(tax: Taxonomy, input: MakeArtifactInput): Artifact {
-  if (!tax.hasPath(input.domainPath)) throw new Error(`invalid domainPath: ${JSON.stringify(input.domainPath)}`);
+  if (!tax.hasPath(input.domainPath))
+    throw new Error(`invalid domainPath: ${JSON.stringify(input.domainPath)}`);
   const modes = [...new Set(input.affordedModes)];
   if (modes.length === 0) throw new Error("affordedModes must have ≥1 mode");
   for (const m of modes) if (!isWorkMode(m)) throw new Error(`invalid work-mode: ${String(m)}`);
   const tagConfidence = input.source === "gold" ? 1 : (input.tagConfidence ?? 0);
   return {
-    id: input.id, domainPath: input.domainPath, affordedModes: modes, kind: input.kind,
-    source: input.source, origin: input.origin ?? "seed", tagConfidence, tagStatus: "PROVISIONAL",
+    id: input.id,
+    domainPath: input.domainPath,
+    affordedModes: modes,
+    kind: input.kind,
+    source: input.source,
+    origin: input.origin ?? "seed",
+    tagConfidence,
+    tagStatus: "PROVISIONAL",
   };
 }
 
-export interface DepthSignal { readonly kind: string; readonly value: number; }
+export interface DepthSignal {
+  readonly kind: string;
+  readonly value: number;
+}
 
 export interface RawAction {
   readonly artifactId: string;

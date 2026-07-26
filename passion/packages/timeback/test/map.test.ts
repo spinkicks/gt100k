@@ -97,7 +97,9 @@ describe("toDomainPriors (fail-safe)", () => {
     const priors = toDomainPriors({
       kidId: "k",
       asOf: "2026-04-01T00:00:00.000Z",
-      subjects: [{ subject: "underwater-basket-weaving", mastery: 0.9, discretionaryXp: 5, offered: true }],
+      subjects: [
+        { subject: "underwater-basket-weaving", mastery: 0.9, discretionaryXp: 5, offered: true },
+      ],
     });
     expect(priors).toHaveLength(0);
   });

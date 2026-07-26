@@ -21,7 +21,9 @@ const emerging: InterestRead = {
       mean: 0.8,
       sd: 0.1,
       lowerBound: 0.7,
-      evidenceMass: 4,
+      // Mass and day count sit above the E6 gates, so the read is one the engine could emit.
+      evidenceMass: 6.5,
+      distinctDays: 6,
       confident: true,
       attribution: "style",
       supporting: [],
@@ -29,7 +31,13 @@ const emerging: InterestRead = {
     },
   ],
   candidates: [
-    { cellKey: "c", domainPath: ["music-sound"], mode: "build", lowerBound: 0.7, attribution: "style" },
+    {
+      cellKey: "c",
+      domainPath: ["music-sound"],
+      mode: "build",
+      lowerBound: 0.7,
+      attribution: "style",
+    },
   ],
 };
 

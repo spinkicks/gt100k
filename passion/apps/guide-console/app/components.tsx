@@ -37,7 +37,8 @@ export const pretty = (s: string): string => stateTerm(s).label;
 const ICON_PATHS: Record<string, string> = {
   brand: "M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2",
   layers: "M12 3 3 8l9 5 9-5-9-5ZM3 13l9 5 9-5",
-  tracked: "M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3ZM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3",
+  tracked:
+    "M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3ZM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3",
   calibrated: "M5 19a8 8 0 1 1 14 0M12 19l3.5-4.5",
   gate: "M6 21V4M6 4h11l-2 3.5L17 11H6",
   help: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M9.6 9.4a2.4 2.4 0 0 1 4.6.9c0 1.6-2.2 1.9-2.2 3.2M12 17.2h.01",
@@ -61,8 +62,8 @@ export function Icon({ name, size = 18 }: { name: string; size?: number }): JSX.
       {ICON_PATHS[name]
         ?.split("M")
         .filter(Boolean)
-        .map((d, i) => (
-          <path key={i} d={`M${d}`} />
+        .map((d) => (
+          <path key={d} d={`M${d}`} />
         ))}
     </svg>
   );
@@ -82,21 +83,16 @@ export function Term({
   return (
     <span
       className={`term${className ? ` ${className}` : ""}`}
+      /* biome-ignore lint/a11y/noNoninteractiveTabindex: deliberate — the CSS tooltip only opens on
+         :hover and :focus-visible, so this tab stop is a sighted keyboard user's only route to the
+         plain-language definition. A <button> would promise an action it does not have and drop an
+         inline-block UA control into running prose. */
       tabIndex={0}
       data-tip={desc}
       aria-label={`${label}. ${desc}`}
     >
       {label}
     </span>
-  );
-}
-
-export function Brand(): JSX.Element {
-  return (
-    <div className="brand">
-      <span className="brand__mark" aria-hidden="true">P</span>
-      <span className="brand__title">PassionLab Guide Console</span>
-    </div>
   );
 }
 
@@ -135,7 +131,15 @@ export function CellTitle({ card }: { card: HypothesisCard }): JSX.Element {
 export function ModeChip({ card }: { card: HypothesisCard }): JSX.Element {
   const t = modeTerm(card.mode);
   return (
-    <span className="cell__mode" tabIndex={0} data-tip={t.desc} aria-label={`${t.label}. ${t.desc}`}>
+    <span
+      className="cell__mode"
+      /* biome-ignore lint/a11y/noNoninteractiveTabindex: deliberate — the CSS tooltip only opens on
+         :hover and :focus-visible, so this tab stop is a sighted keyboard user's only route to the
+         plain-language definition. The chip triggers a tooltip; it is not a control. */
+      tabIndex={0}
+      data-tip={t.desc}
+      aria-label={`${t.label}. ${t.desc}`}
+    >
       {t.label}
     </span>
   );
@@ -264,6 +268,8 @@ export function Actions({
   ctrl: ConsoleController;
 }): JSX.Element {
   return (
+    /* biome-ignore lint/a11y/useSemanticElements: <fieldset> groups form controls, not a toolbar of
+       actions, and its UA groove border, padding and min-inline-size would reshape this flex row. */
     <div className="acts" role="group" aria-label={`Actions for ${card.cellKey}`}>
       {card.allowedActions.map((action) => {
         const t = actionTerm(action);
@@ -444,11 +450,11 @@ export function SpecRail({
 
 export function EmptyState({ ctrl }: { ctrl: ConsoleController }): JSX.Element {
   return (
-    <p className="empty" role="status">
+    <output className="empty">
       {ctrl.vm.cards.length === 0
         ? "No hypotheses yet. Exploration in progress."
         : "No hypotheses in this view."}
-    </p>
+    </output>
   );
 }
 
@@ -484,4 +490,3 @@ export function Legend({ open = false }: { open?: boolean }): JSX.Element {
     </details>
   );
 }
-

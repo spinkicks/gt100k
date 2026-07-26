@@ -179,7 +179,9 @@ function Quest({
         </p>
         <div className="hero__meta">
           <span className="chip chip--accent">{audienceLabel(project.audience)}</span>
-          <span className="chip">{project.source === "self" ? "Your idea" : "A quest for you"}</span>
+          <span className="chip">
+            {project.source === "self" ? "Your idea" : "A quest for you"}
+          </span>
         </div>
         <p className="hero__how">
           <b>How:</b> {project.authenticMethod}
@@ -192,12 +194,12 @@ function Quest({
       </header>
 
       {persevered ? (
-        <div className="callout" role="status">
+        <output className="callout">
           <span className="callout__icon">
             <SparkIcon />
           </span>
           You bounced back from a getting-stuck moment, and that&apos;s the good stuff.
-        </div>
+        </output>
       ) : null}
 
       <div className="composer">
@@ -233,8 +235,8 @@ function Quest({
         </div>
         {kind === "outcome" ? (
           <label className="stuck">
-            <input type="checkbox" checked={stuck} onChange={(e) => setStuck(e.target.checked)} />
-            I got stuck or it broke (that&apos;s okay, it&apos;s part of it!)
+            <input type="checkbox" checked={stuck} onChange={(e) => setStuck(e.target.checked)} />I
+            got stuck or it broke (that&apos;s okay, it&apos;s part of it!)
           </label>
         ) : null}
       </div>
@@ -297,8 +299,23 @@ function TimelineItem({ event, index }: { event: WorkEvent; index: number }): JS
 
 function Showcase({ project, onClose }: { project: Project; onClose: () => void }): JSX.Element {
   return (
-    <div className="modal" role="dialog" aria-modal="true" aria-label="Showtime" onClick={onClose}>
-      <div className="modal__card" onClick={(e) => e.stopPropagation()}>
+    <div
+      /* biome-ignore lint/a11y/useSemanticElements: this overlay is conditionally rendered and never
+         opened via showModal(), so a native <dialog> without [open] would be display:none, and its
+         UA border / padding / fit-content box would replace the full-bleed scrim. */
+      className="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Showtime"
+      // Dismiss on the scrim only: a click that lands on the card has a different target.
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") onClose();
+      }}
+    >
+      <div className="modal__card">
         <div className="deco-emoji" style={{ fontSize: "2.4rem" }} aria-hidden="true">
           🎉🌟🎈
         </div>

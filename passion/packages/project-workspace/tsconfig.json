@@ -4,9 +4,6 @@
     "rootDir": ".",
     "outDir": "dist"
   },
-  "references": [
-    { "path": "../evidence-graph" },
-    { "path": "../specialization-planner" }
-  ],
+  "references": [{ "path": "../evidence-graph" }, { "path": "../specialization-planner" }],
   "include": ["src/**/*.ts", "test/**/*.ts"]
 }

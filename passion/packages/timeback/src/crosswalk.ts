@@ -4,7 +4,7 @@
 // an unknown subject contributes nothing and NEVER throws; a cabin with no offered contributor yields
 // no prior downstream.
 
-import { type CabinId } from "@gt100k/two-axis-tagging";
+import type { CabinId } from "@gt100k/two-axis-tagging";
 import type { Subject, TimeBackSnapshot } from "./model.js";
 
 export interface CabinWeight {
@@ -36,11 +36,7 @@ export const SUBJECT_CABIN_CROSSWALK = {
 
 /** The cabins a subject contributes to. Returns `[]` for an unknown subject (never throws). */
 export function crosswalkFor(subject: Subject): readonly CabinWeight[] {
-  return (
-    (SUBJECT_CABIN_CROSSWALK as Record<string, readonly CabinWeight[]>)[
-      subject
-    ] ?? []
-  );
+  return (SUBJECT_CABIN_CROSSWALK as Record<string, readonly CabinWeight[]>)[subject] ?? [];
 }
 
 /**

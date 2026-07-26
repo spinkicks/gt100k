@@ -97,6 +97,7 @@
 - **G4. Content Safety / Moderation Service** *(net-new)* — Shared child-safety moderation across concierge, resources, and defense. *Fits:* one safety spine for all child-facing generation/retrieval.
 - **G5. Calibration / Validation Harness** *(net-new)* — Tunes thresholds and validates the inference model as longitudinal outcomes accrue; tracks spike persistence (the ground-truth labels). *Fits:* the answer to "how do we know the measurement works?" — a first-class response to weak-point #1.
 - **G6. Metrics / Analytics / Guardrail-Compliance** *(✅ done — `specs/017-guardrails`)* — Program-level dashboards (never kid-facing) + automated guardrail checks (no scalar-score leakage, no prompted returns counted, novelty discounted). *Fits:* measures whether the pipeline works and stays honest.
+- **G7. Presentation Cohesion** *(✅ done — `packages/design-tokens`, `packages/ui`, `apps/home`)* — One token contract behind `guide-console`, `design-lab`, `parent-guide` and `concierge`; a shared surfaces registry and product header; a front door at `apps/home` that routes by role and does nothing else. *Fits:* the answer to "why does this read as five separate sites?". Surface URLs resolve to localhost only in development, so the publicly deployed Playbook cannot ship a dead link to a parent. `project-studio` is excluded on purpose: a child must not be handed a switcher into the adult tools. *Still open:* the duplicate evidence explorers, and a single deployment.
 
 ---
 

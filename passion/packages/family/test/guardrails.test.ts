@@ -28,7 +28,8 @@ const ALL = [
 const blob = (r: FamilyRead): string => JSON.stringify(r).toLowerCase();
 // The ACTIONABLE recommendations only — asks + shared activities. The rationale and guardrail notes
 // legitimately NEGATE terms like "reward" / "tighten control", so a violation can only live here.
-const recs = (r: FamilyRead): string => [...r.asks, ...r.sharedActivities].join(" | ").toLowerCase();
+const recs = (r: FamilyRead): string =>
+  [...r.asks, ...r.sharedActivities].join(" | ").toLowerCase();
 
 // SC-2 — counter-cyclical: stakes/pressure ⇒ autonomy up + decouple; never "raise pressure".
 describe("guardrail: counter-cyclical (SC-2)", () => {

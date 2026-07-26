@@ -19,28 +19,42 @@ import {
 } from "./model.js";
 
 // Standing guardrail reminders, carried on every read as the contract in plain sight.
-const NON_CONTINGENT = "warmth is non-contingent — same warmth win or lose; never contingent praise or reward";
+const NON_CONTINGENT =
+  "warmth is non-contingent — same warmth win or lose; never contingent praise or reward";
 const NEVER_GAMIFY = "never gamify; no child- or family-facing label, score, or reward";
-const HUMAN_DISPOSES = "system proposes, human disposes — nothing is ever sent to a parent automatically";
-const AUTONOMY_OFFER = "asks are OFFERS of opportunity/structure/access — the child keeps choosing problem, method, and pace";
+const HUMAN_DISPOSES =
+  "system proposes, human disposes — nothing is ever sent to a parent automatically";
+const AUTONOMY_OFFER =
+  "asks are OFFERS of opportunity/structure/access — the child keeps choosing problem, method, and pace";
 const PLURALITY = "keep spikes plural and reversible — never narrow the child to a single identity";
 
 // Door-opening asks (OFFERS the child can decline — the family opens doors it can source, the child
 // keeps choosing). Framed as opportunity / structure / access; never a mandate, never contingent.
-const ASK_ACCESS = "Offer access the child can't self-source — a tool, space, mentor, or event — their choice whether to take it.";
-const ASK_STRUCTURE = "Offer a regular, low-stakes time and place for the pursuit; leave the what and how to the child.";
-const ASK_COMMUNITY = "Offer to connect them with a community or showcase; participating is optional and reversible.";
-const ASK_REDUCE_EVALUATION = "Ahead of the stakes window, reduce evaluative talk — ask what they're curious about, not about the result.";
-const ASK_LOGISTICS_ONLY = "Handle logistics and access without attaching pride to the outcome; the pursuit stays theirs.";
-const ASK_DECOUPLE = "Keep warmth the same before and after — separate how you treat them from how it goes.";
-const ASK_SECOND_DOOR = "Offer a second, unrelated door (a different domain) so their identity stays plural and reversible.";
-const ASK_GUILT_FREE = "Offer a genuinely guilt-free, reversible break — stepping back is a legitimate outcome, not a failure.";
+const ASK_ACCESS =
+  "Offer access the child can't self-source — a tool, space, mentor, or event — their choice whether to take it.";
+const ASK_STRUCTURE =
+  "Offer a regular, low-stakes time and place for the pursuit; leave the what and how to the child.";
+const ASK_COMMUNITY =
+  "Offer to connect them with a community or showcase; participating is optional and reversible.";
+const ASK_REDUCE_EVALUATION =
+  "Ahead of the stakes window, reduce evaluative talk — ask what they're curious about, not about the result.";
+const ASK_LOGISTICS_ONLY =
+  "Handle logistics and access without attaching pride to the outcome; the pursuit stays theirs.";
+const ASK_DECOUPLE =
+  "Keep warmth the same before and after — separate how you treat them from how it goes.";
+const ASK_SECOND_DOOR =
+  "Offer a second, unrelated door (a different domain) so their identity stays plural and reversible.";
+const ASK_GUILT_FREE =
+  "Offer a genuinely guilt-free, reversible break — stepping back is a legitimate outcome, not a failure.";
 
 // Structured shared-activity / showcase ideas that build the "complex" high-support + high-challenge
 // environment: the adult participates as a co-learner, never a judge.
-const ACT_COLEARN = "A shared build/make evening where the adult joins as a co-learner, not a judge.";
-const ACT_EXPOSE = "Visit a venue, lab, exhibition, or performance together — expose to the field without evaluating.";
-const ACT_TEACH_BACK = "A family 'demo night' where the child teaches the adult something — autonomy-supportive by design.";
+const ACT_COLEARN =
+  "A shared build/make evening where the adult joins as a co-learner, not a judge.";
+const ACT_EXPOSE =
+  "Visit a venue, lab, exhibition, or performance together — expose to the field without evaluating.";
+const ACT_TEACH_BACK =
+  "A family 'demo night' where the child teaches the adult something — autonomy-supportive by design.";
 
 function isKnob(x: unknown): x is Knob {
   return x === "up" || x === "steady";
@@ -112,7 +126,12 @@ function decide(s: FamilySignals): Branch {
       escalationReason:
         "Family-driven pressure pattern — re-coach toward autonomy support and non-contingent warmth; decouple the child's worth from the outcome; keep spikes plural and reversible.",
       antecedents,
-      asks: [ASK_DECOUPLE, ASK_REDUCE_EVALUATION, ...(plural ? [ASK_SECOND_DOOR] : []), ASK_LOGISTICS_ONLY],
+      asks: [
+        ASK_DECOUPLE,
+        ASK_REDUCE_EVALUATION,
+        ...(plural ? [ASK_SECOND_DOOR] : []),
+        ASK_LOGISTICS_ONLY,
+      ],
       activities: [ACT_COLEARN, ACT_TEACH_BACK],
       rationale:
         "The named antecedents of an obsessive tip are showing. This is the moment to dial autonomy support up (not control), keep warmth non-contingent, and hand the pattern to a guide to re-coach the family.",

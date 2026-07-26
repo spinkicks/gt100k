@@ -17,6 +17,7 @@
     "@gt100k/research": "workspace:*",
     "@gt100k/specialization-planner": "workspace:*",
     "@gt100k/student-profile": "workspace:*",
+    "@gt100k/ui": "workspace:*",
     "@gt100k/wellbeing": "workspace:*",
     "motion": "^12.42.0",
     "next": "^14.2.15",

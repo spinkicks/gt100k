@@ -1,7 +1,11 @@
 import type { EvidenceRecord, Session, Hasher } from "./model.js";
 import { canonicalize } from "@gt100k/evidence-graph";
 
-export function assembleEvidenceRecord(session: Session, createdAt: string, hasher: Hasher): EvidenceRecord {
+export function assembleEvidenceRecord(
+  session: Session,
+  createdAt: string,
+  hasher: Hasher,
+): EvidenceRecord {
   const base = {
     studentId: session.profile.studentId,
     projectId: session.profile.id,
@@ -35,6 +39,10 @@ export function toEvidenceNode(record: EvidenceRecord): EvidenceNodeLike {
     inputs: [],
     timestamp: record.createdAt,
     consentScope: { scope: "synthetic" },
-    payload: { recordHash: record.contentHash, gaps: record.gaps, coverageByFacet: record.coverageByFacet },
+    payload: {
+      recordHash: record.contentHash,
+      gaps: record.gaps,
+      coverageByFacet: record.coverageByFacet,
+    },
   };
 }

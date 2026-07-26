@@ -57,9 +57,7 @@ function placementFor(trigger: HTMLElement | null): Placement {
 
   const column = trigger.closest("th");
   const shift =
-    column === null
-      ? 0
-      : Math.max(0, column.getBoundingClientRect().right - (r.left - POP_INSET));
+    column === null ? 0 : Math.max(0, column.getBoundingClientRect().right - (r.left - POP_INSET));
 
   const x = r.left - POP_INSET + shift + POP_WIDTH + EDGE_PAD > window.innerWidth;
   const y =
@@ -152,6 +150,8 @@ export function WhyThis({
 
       {open ? (
         <span
+          /* biome-ignore lint/a11y/useSemanticElements: this popover is phrasing content inside a
+             paragraph, where a block-level <fieldset> is invalid and would add a UA groove border. */
           id={panelId}
           role="group"
           aria-labelledby={headingId}
