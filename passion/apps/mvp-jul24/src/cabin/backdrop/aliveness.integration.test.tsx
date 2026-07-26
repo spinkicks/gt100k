@@ -208,9 +208,11 @@ describe("the effects are mounted over the painting", () => {
 });
 
 describe("a room with no measured light renders the still, unchanged", () => {
-  test("math has no authored interior, so it gets no effects and no frame loop", () => {
-    // Wrong regions look worse than none: a glow on a wall the fire is not on reads as a bug.
-    const { container } = render(<CabinBackdrop topic="math" />);
+  // This case used `math` while that room was unauthored. It has measured light of its own now, so
+  // the case moved to `music`, which has no interior at all. The property under test is unchanged:
+  // wrong regions look worse than none, because a glow on a wall the fire is not on reads as a bug.
+  test("a topic with no authored interior gets no effects and no frame loop", () => {
+    const { container } = render(<CabinBackdrop topic="music" />);
     expect(q(container, ".cabin-backdrop")).not.toBeNull();
     expect(q(container, ".cabin-backdrop-aliveness")).toBeNull();
     expect(q(container, ".cabin-aliveness")).toBeNull();
@@ -219,12 +221,22 @@ describe("a room with no measured light renders the still, unchanged", () => {
     expect(raf.requested).toBe(0);
   });
 
+  test("math now has its own measured light, including a sconce Logic Games lacks", () => {
+    const { container } = render(<CabinBackdrop topic="math" />);
+    expect(q(container, ".cabin-backdrop-aliveness")).not.toBeNull();
+    // The sconce is the emitter this plate has and the Logic Games plate does not, so it is the one
+    // worth asserting: it proves the room's regions were measured rather than copied.
+    expect(backdropRoomFor("math")?.aliveness?.firelight?.sconce).not.toBeNull();
+    expect(backdropRoomFor("logic-games")?.aliveness?.firelight?.sconce).toBeNull();
+  });
+
   test("`alive={false}` puts an authored room back exactly as it was", () => {
     const { container } = render(<CabinBackdrop topic="logic-games" alive={false} />);
     expect(q(container, ".cabin-backdrop-aliveness")).toBeNull();
     expect(q(container, ".cabin-backdrop-hearthlight")).not.toBeNull();
     expect(raf.requested).toBe(0);
-    expect(screen.getAllByRole("button")).toHaveLength(ROOM.props.length);
+    // props + the bookshelf, which is not gadget-backed and so is not one of `props`.
+    expect(screen.getAllByRole("button")).toHaveLength(ROOM.props.length + 1);
   });
 
   test("each effect can be switched off on its own", () => {
@@ -275,7 +287,8 @@ describe("layering: the effects must not take a single pointer event", () => {
   test("every prop is still clickable and still in the tab order with the effects mounted", () => {
     render(<CabinBackdrop topic="logic-games" />);
     const buttons = screen.getAllByRole("button");
-    expect(buttons).toHaveLength(ROOM.props.length);
+    // props + the bookshelf, which sits in its own layer above the effects for the same reason.
+    expect(buttons).toHaveLength(ROOM.props.length + 1);
     for (const button of buttons) expect(button.getAttribute("tabindex")).toBe("0");
     fireEvent.click(screen.getByRole("button", { name: "Chess set on the table" }));
     expect(useGame.getState().focusedGadgetId).toBe("chess");

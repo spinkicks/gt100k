@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
+import TeachIn from "../../teachin/TeachIn";
 import { LITS_BANK } from "./bank";
 import { blankShade, checkLits } from "./logic";
 import "./LITS.css";
@@ -104,6 +105,11 @@ export default function LITS({ seed, onSolved, onExit }: PuzzleProps) {
       <button type="button" className="lits-exit" onClick={onExit}>
         ← Back
       </button>
+      {/* Explanation lives in the one shared teach-in; this file grows no tutorial of its own. LITS
+          is the one activity whose rule genuinely does not fit in a sentence — four constraints,
+          three of them global — so the panel states all four and the `.lits-hint` below still names
+          whichever one is currently being broken. */}
+      <TeachIn activity="lits" />
       <div
         className="lits-board"
         style={{

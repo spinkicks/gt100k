@@ -13,22 +13,13 @@
 // rotation-scrambling for play, exactly as it already does for
 // levels.data.ts's hand-authored levels.
 import { DIR, type Level, type TileKind, type TileSpec, maskAt } from "./logic";
+// The app's one seeded PRNG. Its exact arithmetic decides which levels this file produces, so see
+// the warning in src/lib/rng.ts before touching it.
+import { mulberry32 } from "../../lib/rng";
 
 /** Difficulty presets: grid side length (size x size board). */
 export const EASY_SIZE = 4;
 export const HARD_SIZE = 6;
-
-/** Deterministic PRNG (mulberry32). Kept local to this module — the
- * generator only depends on logic.ts's public (kind, rotation) <-> mask API. */
-function mulberry32(seed: number): () => number {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
 
 /** Deterministically combine a base seed with a "which puzzle this session"
  * counter, so the same `seed` prop stays reproducible for tests while a

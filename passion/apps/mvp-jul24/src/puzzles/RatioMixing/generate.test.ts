@@ -7,10 +7,10 @@ import {
   enumerateSolutions,
   generateOrder,
   isExactSolution,
-  mulberry32,
   nextSeed,
   tierForIndex,
 } from "./generate";
+import { mulberry32 } from "../../lib/rng";
 import {
   type RatioPuzzle,
   canPour,
@@ -202,16 +202,9 @@ describe("isExactSolution", () => {
   });
 });
 
+// mulberry32 itself is shared and tested in src/lib/rng.test.ts, which pins its stream against a
+// frozen sequence. What still belongs here is `nextSeed`, which is this file's own seed derivation.
 describe("seeding", () => {
-  test("mulberry32 is deterministic and seed-sensitive", () => {
-    const draw = (seed: number) => {
-      const rng = mulberry32(seed);
-      return Array.from({ length: 5 }, () => rng());
-    };
-    expect(draw(42)).toEqual(draw(42));
-    expect(draw(1)).not.toEqual(draw(2));
-  });
-
   test("nextSeed gives a fresh stream per order without repeating", () => {
     const seeds = new Set<number>();
     for (let counter = 0; counter < 50; counter++) seeds.add(nextSeed(42, counter));

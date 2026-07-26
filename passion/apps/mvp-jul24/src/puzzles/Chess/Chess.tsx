@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
+import TeachIn from "../../teachin/TeachIn";
 import BoardGrid from "./BoardGrid";
 import FreePlayBoard from "./FreePlayBoard";
 import { pickRandomTactic } from "./bank";
@@ -98,6 +99,10 @@ export default function Chess({ onSolved, onExit, rng = Math.random }: ChessProp
       <button type="button" className="cx-exit" onClick={onExit}>
         ← Back
       </button>
+      {/* Explanation lives in the one shared teach-in; this file grows no tutorial of its own. It
+          teaches the click-piece-then-square interface, which is what both modes share — the
+          per-position "what to find" stays on the `.cx-prompt` card where it belongs. */}
+      <TeachIn activity="chess" />
       <div className="cx-mode-toggle" role="tablist" aria-label="Chess mode">
         <button
           type="button"

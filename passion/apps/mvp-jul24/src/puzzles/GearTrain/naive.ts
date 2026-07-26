@@ -7,6 +7,9 @@
  * generator rejects any level these crack.
  */
 import { type Placement, SLOTS, type Train, enumeratePlacements, isSolved } from "./logic";
+// The app's one seeded PRNG — the measured blind-guess rates depend on its exact stream. See
+// src/lib/rng.ts.
+import { mulberry32 } from "../../lib/rng";
 
 export interface StrategyResult {
   solved: boolean;
@@ -59,13 +62,9 @@ export function targetLooksLikeAGear(train: Train): StrategyResult {
  * `budget` is how many attempts a child might plausibly make before losing interest.
  */
 export function randomPlacements(train: Train, seed: number, budget = 12): StrategyResult {
-  let a = seed >>> 0;
-  const rand = (): number => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+  // A separate generator instance, so measuring a candidate never advances the generator's own
+  // stream and therefore never changes which level is produced.
+  const rand = mulberry32(seed);
   const all = enumeratePlacements(train);
   for (let i = 0; i < budget; i++) {
     const placement = all[Math.floor(rand() * all.length)] as Placement;

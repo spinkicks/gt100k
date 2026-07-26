@@ -25,6 +25,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
+import TeachIn from "../../teachin/TeachIn";
 import { generateOrder, nextSeed, tierForIndex } from "./generate";
 import {
   type RatioPuzzle,
@@ -135,6 +136,11 @@ export default function RatioMixing({ seed, onSolved, onExit }: PuzzleProps) {
       <button type="button" className="rm-exit" onClick={onExit}>
         ← Back
       </button>
+
+      {/* The shared teach-in, mounted — which is what the "No tutorial" note above asks for. It
+          states the rule and says restarting is free; it does not state how much dye the jar needs,
+          because scaling the ratio to the capacity is the puzzle. */}
+      <TeachIn activity="ratio-mixing" />
 
       <div className="rm-order">
         <span className="rm-order-jar">Jar: {puzzle.capacity} units, filled to the brim</span>

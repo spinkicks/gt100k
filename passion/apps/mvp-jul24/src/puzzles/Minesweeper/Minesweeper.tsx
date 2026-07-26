@@ -1,6 +1,7 @@
 import type { MouseEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { PuzzleProps } from "../../game/types";
+import TeachIn from "../../teachin/TeachIn";
 import { type Board, flagCount, isWon, makeBoard, resetBoard, reveal, toggleFlag } from "./logic";
 import "./Minesweeper.css";
 
@@ -101,6 +102,11 @@ export default function Minesweeper({ seed, onSolved, onExit }: PuzzleProps) {
           🚩 Flag mode
         </button>
       </div>
+
+      {/* Explanation lives in the one shared teach-in; this file grows no tutorial of its own.
+          Mounted below the header rather than above it, because the header's right-hand end already
+          holds the flag-mode toggle and the `?` anchors to the right. */}
+      <TeachIn activity="minesweeper" />
 
       <div className="ms-board-wrap">
         <div

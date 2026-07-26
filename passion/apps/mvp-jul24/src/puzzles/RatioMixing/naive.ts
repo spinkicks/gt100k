@@ -39,6 +39,9 @@ import {
   ladleSize,
   pour,
 } from "./logic";
+// The app's one seeded PRNG — the measured blind-guess rates depend on its exact stream. See
+// src/lib/rng.ts.
+import { mulberry32 } from "../../lib/rng";
 
 /** Indices of every vat that can legally be poured right now. */
 function legalPours(puzzle: RatioPuzzle, batch: Batch): number[] {
@@ -200,24 +203,14 @@ export function blindSuccessProbability(puzzle: RatioPuzzle): number {
   return success;
 }
 
-/** mulberry32, local to this module so the naive models never perturb generator seeding. */
-function rngFrom(seed: number): () => number {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
 /**
  * Monte-Carlo version of `blindSuccessProbability`: actually plays `trials` careless batches and
  * reports the share that came out right. Nothing depends on it — it exists so a test can confirm
  * the exact DP above agrees with really playing the game.
  */
 export function randomPourRate(puzzle: RatioPuzzle, trials = 400, seed = 1): number {
-  const rng = rngFrom(seed);
+  // A separate generator instance, so the naive models never perturb generator seeding.
+  const rng = mulberry32(seed);
   let wins = 0;
   for (let t = 0; t < trials; t++) {
     const { solved } = runBatch(puzzle, (_batch, legal) => {
