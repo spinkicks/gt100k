@@ -446,12 +446,22 @@ const MATH: BackdropRoom = {
       // (recorded in PROJECT.md's prop map for the same reason).
       kind: "flat",
       gadgetId: "function-machine",
-      label: "Cabinet of brass instruments",
+      label: "Brass function machine",
+      // Re-traced 2026-07-26 after the prop was regenerated. It used to be a three-shelf cabinet of
+      // scattered brass instruments — PROJECT.md's "closer to a curio cabinet than a machine", and
+      // the weakest read of the five. It is now one upright machine: funnel hopper on top, a boxy
+      // housing with a round window onto its gearing, and a chute angling out at the bottom over a
+      // tray, so the in -> transform -> out reading PRD §5.3 wants is legible at prop size.
+      //
+      // The top edge stops at y=437 rather than following the funnel's rim up to ~y=430, because
+      // `balance-scale`'s polygon bottom runs from (871,428) to (803,430) and overlapping quads
+      // swallow each other's clicks by DOM order. Losing the last few pixels of the funnel from the
+      // hit area costs nothing — the quad is a click target, not a mask.
       quad: [
-        [813, 461],
-        [931, 454],
-        [933, 641],
-        [813, 646],
+        [802, 440],
+        [931, 437],
+        [932, 650],
+        [802, 652],
       ],
     },
     {
