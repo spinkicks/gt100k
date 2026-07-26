@@ -64,23 +64,69 @@ const CONSUMPTION_OPENERS = [
   "understand",
 ];
 
-/** A forecast is a claim about WHEN a child will arrive, which turns into a quota, which is the
-    family pressure the wellbeing engine exists to catch. Scoped to prose fields on purpose: our own
-    timestamp fields obviously contain dates and are not forecasts. */
-const FORECAST_PATTERNS = [
-  /\bby (?:age|the age of)\s*\d+/i,
-  /\bwithin\s+\d+\s*(?:day|week|month|year)/i,
-  /\bafter\s+\d+\s*(?:month|year)/i,
-  /\bin\s+\d+\s*(?:month|year)s?\b/i,
-  /\bby\s+(?:grade|year)\s*\d+/i,
-  /\b\d+\s*(?:month|year)s?\s+(?:in|from now)\b/i,
+/** One to twenty, in digits or written out. "by age ten" is the same claim as "by age 10", and a
+    rule that saw only the digit form was defeated by anyone who wrote the number as a word. */
+const NUMBER = String.raw`(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)`;
+
+/** Ordinals, for the one phrasing that needs them: a birthday. */
+const ORDINAL = String.raw`(?:\d+(?:st|nd|rd|th)|first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|thirteenth|fourteenth|fifteenth|sixteenth|seventeenth|eighteenth|nineteenth|twentieth)`;
+
+const UNIT = String.raw`(?:day|week|month|year)s?`;
+
+/**
+ * A forecast is a claim about WHEN a child will arrive, which turns into a quota, which is the
+ * family pressure the wellbeing engine exists to catch. Scoped to three prose fields on purpose:
+ * our own timestamp fields obviously contain dates and are not forecasts about anyone.
+ *
+ * Every pattern below is a DEADLINE: it says a child should be somewhere by some point. That is
+ * deliberate, and it is why two phrasings the first version of this rule matched are gone.
+ * "after ten years of practice" is a quantity of practice somebody measured, and "revised in five
+ * year cycles" is how often a document is reissued; neither is a date a child has to meet, and
+ * every pattern general enough to catch the forecast reading of "after N years" catches those too.
+ * Where the two cannot be told apart this rule prefers to MISS the forecast. It is an error-level
+ * gate, a guide reads the prose it would block, and blocking honest domain writing costs more than
+ * letting one loose sentence through, which a person reading the map can still see.
+ */
+const FORECAST_PATTERNS: readonly RegExp[] = [
+  // "by age ten", "by the age of 11"
+  new RegExp(String.raw`\bby\s+(?:the\s+age\s+of|age)\s+${NUMBER}\b`, "i"),
+  // "by their eleventh birthday"
+  new RegExp(String.raw`\bby\s+(?:\w+\s+)?${ORDINAL}\s+birthday\b`, "i"),
+  // "by the time they are nine"
+  new RegExp(
+    String.raw`\bby\s+the\s+time\s+(?:they|he|she|you)\s+(?:are|is|turn|reach)\s+${NUMBER}\b`,
+    "i",
+  ),
+  // "by grade 4", "by the end of Year 6"
+  new RegExp(String.raw`\bby\s+(?:the\s+end\s+of\s+)?(?:grade|year)\s+${NUMBER}\b`, "i"),
+  // "within six months", "within 2 years of starting"
+  new RegExp(String.raw`\bwithin\s+${NUMBER}\s+${UNIT}\b`, "i"),
+  // "two years from now"
+  new RegExp(String.raw`\b${NUMBER}\s+${UNIT}\s+from\s+now\b`, "i"),
 ];
 
+/**
+ * The content words of a sentence: lowercased, split on anything that is not a letter or a digit,
+ * stopwords dropped, and anything shorter than two characters dropped with them.
+ *
+ * THE LENGTH FLOOR IS LOAD-BEARING. Splitting on non-alphanumerics turns "a peer's game" into
+ * `peer`, `s`, `game`, and a bare `s` is not a stopword, so before the floor existed any two
+ * sentences that each contained one possessive shared a content word and error rule 3 passed on
+ * nothing whatsoever.
+ *
+ * NO STEMMING, deliberately. "Compose a fugue" against "A finished composition" fails rule 3, and
+ * that is a known false positive we are keeping: `compose` and `composition` are the same word to a
+ * reader and different words here. A stemmer would fix that sentence and would also make `play`
+ * match `player` and `rate` match `rating`, widening an error-level gate into passing milestones it
+ * exists to catch. A false PASS is the expensive direction: the author of a rejected milestone
+ * rewords a demonstration in a sentence, while a milestone waved through is one nobody looks at
+ * again.
+ */
 const words = (s: string): readonly string[] =>
   s
     .toLowerCase()
     .split(/[^a-z0-9]+/)
-    .filter((w) => w.length > 0 && !STOPWORDS.has(w));
+    .filter((w) => w.length > 1 && !STOPWORDS.has(w));
 
 const err = (code: string, message: string, milestoneId?: string): ValidationProblem => ({
   code,
@@ -121,7 +167,27 @@ export function validateMap(map: MasteryMap, now?: string): ValidationRecord {
   const warnings: ValidationProblem[] = [];
   const byId = new Map(map.milestones.map((m) => [m.id, m]));
 
-  // E1 — the requires graph is a DAG.
+  // E10: milestone ids are unique. Not one of the spec's nine, and found in review. `byId` above is
+  // last-wins, so a duplicate id hides one whole milestone: a cycle running through the hidden one
+  // is invisible to E1, E6 compares against the wrong floor, and the review screen puts the wrong
+  // title beside the wrong problem. It is reported once per duplicated id, not once per copy.
+  const seen = new Set<string>();
+  const duplicated = new Set<string>();
+  for (const m of map.milestones) {
+    if (seen.has(m.id)) duplicated.add(m.id);
+    seen.add(m.id);
+  }
+  for (const id of duplicated) {
+    errors.push(
+      err(
+        "E10_DUPLICATE_ID",
+        "more than one milestone claims this id, so one of them is hidden",
+        id,
+      ),
+    );
+  }
+
+  // E1: the requires graph is a DAG.
   for (const m of map.milestones) {
     for (const dep of m.requires) {
       if (!byId.has(dep)) {
@@ -134,16 +200,23 @@ export function validateMap(map: MasteryMap, now?: string): ValidationRecord {
   }
 
   for (const m of map.milestones) {
-    // E2 — capability and demonstration are present.
+    // E2: capability and demonstration are present.
     if (m.capability.trim() === "" || m.demonstration.trim() === "") {
       errors.push(err("E2_EMPTY", "capability and demonstration must both be present", m.id));
     }
 
-    // E3 — capability references the artefact in demonstration. A milestone you can finish by
-    // consuming something is one whose capability names nothing you made.
+    // E3: capability references the artefact in demonstration. A milestone you can finish by
+    // consuming something is one whose capability names nothing you made. An artefact set with no
+    // content word in it FAILS rather than skipping the rule: a demonstration made only of
+    // stopwords is the emptiest one that gets past rule 2, and treating it as nothing to check
+    // meant the worst demonstration on the map switched off the check it exists to feed.
     const artefact = new Set(words(m.demonstration));
     const claimed = words(m.capability);
-    if (artefact.size > 0 && !claimed.some((w) => artefact.has(w))) {
+    if (artefact.size === 0) {
+      errors.push(
+        err("E3_NO_ARTEFACT", "demonstration names no artefact, so nothing can point at one", m.id),
+      );
+    } else if (!claimed.some((w) => artefact.has(w))) {
       errors.push(
         err(
           "E3_NO_ARTEFACT",
@@ -153,26 +226,34 @@ export function validateMap(map: MasteryMap, now?: string): ValidationRecord {
       );
     }
 
-    // E4 — sources match the basis.
+    // E4: sources match the basis. Two codes, because they are two different faults with two
+    // different fixes: one milestone owes a citation, the other claimed support it had just said
+    // in the same breath it did not have.
     const isModel = m.ordering.basis === "model";
     if (isModel && m.ordering.sources.length > 0) {
-      errors.push(err("E4_SOURCES", "a model basis must carry no sources", m.id));
+      errors.push(err("E4_SOURCES_ON_MODEL_BASIS", "a model basis must carry no sources", m.id));
     }
     if (!isModel && m.ordering.sources.length === 0) {
-      errors.push(err("E4_SOURCES", `a ${m.ordering.basis} basis needs at least one source`, m.id));
+      errors.push(
+        err("E4_MISSING_SOURCES", `a ${m.ordering.basis} basis needs at least one source`, m.id),
+      );
     }
 
-    // E5 — resources have provenance and cover at least one band the map claims.
+    // E5: resources have provenance and cover at least one band the map claims. Two codes again: a
+    // resource with no provenance is a different problem from one pitched at the wrong ages, and
+    // reporting it under a code named for the age gap sent a guide looking at the wrong thing.
     for (const r of m.resources) {
       if (r.provenance.trim() === "") {
-        errors.push(err("E5_AGE", `resource "${r.id}" has no provenance`, m.id));
+        errors.push(err("E5_MISSING_PROVENANCE", `resource "${r.id}" has no provenance`, m.id));
       }
       if (!r.ageTiers.some((t) => map.ageBands.includes(t))) {
-        errors.push(err("E5_AGE", `resource "${r.id}" covers no age band this map claims`, m.id));
+        errors.push(
+          err("E5_AGE_BAND_GAP", `resource "${r.id}" covers no age band this map claims`, m.id),
+        );
       }
     }
 
-    // E6 — a prerequisite cannot be gated later than the thing it unlocks.
+    // E6: a prerequisite cannot be gated later than the thing it unlocks.
     for (const dep of m.requires) {
       const prereq = byId.get(dep);
       if (prereq && stageIndex(prereq.stageFloor) > stageIndex(m.stageFloor)) {
@@ -182,7 +263,7 @@ export function validateMap(map: MasteryMap, now?: string): ValidationRecord {
       }
     }
 
-    // E7 — a branch cannot claim a mode the domain does not afford.
+    // E7: a branch cannot claim a mode the domain does not afford.
     for (const mode of m.modes) {
       if (!map.modes.includes(mode)) {
         errors.push(
@@ -191,7 +272,7 @@ export function validateMap(map: MasteryMap, now?: string): ValidationRecord {
       }
     }
 
-    // E9 — no forecast in the named prose fields.
+    // E9: no forecast in the named prose fields.
     const prose = [
       m.ordering.reason,
       ...m.practice.map((p) => p.description),
@@ -207,7 +288,7 @@ export function validateMap(map: MasteryMap, now?: string): ValidationRecord {
       );
     }
 
-    // W6 — consumption opener. A warning, never an error: see CONSUMPTION_OPENERS.
+    // W6: consumption opener. A warning, never an error: see CONSUMPTION_OPENERS.
     const opener = m.capability.trim().toLowerCase();
     if (CONSUMPTION_OPENERS.some((v) => opener.startsWith(`${v} `))) {
       warnings.push(
@@ -216,14 +297,25 @@ export function validateMap(map: MasteryMap, now?: string): ValidationRecord {
     }
   }
 
-  // E8 — banned field names. The real lists from @gt100k/guardrails, never a second copy, and the
+  // E8: banned field names. The real lists from @gt100k/guardrails, never a second copy, and the
   // scan is over KEYS: prose mentioning a rating is legitimate domain language.
+  //
+  // Scanned in two passes so a hit can name the milestone it is on. The review screen places a
+  // problem at the milestone in its `milestoneId`, so a single scan over the whole map, which can
+  // only report a bare key name, pushed every banned key to the top of the card and left the guide
+  // to find which of a dozen milestones it came from. The shell pass sees the map with its
+  // milestones emptied out, so nothing is reported twice.
   const banned = [...SCALAR_KEYS, ...GAMIFICATION_KEYS];
-  scanBannedKeys(map, banned, (key) => {
+  scanBannedKeys({ ...map, milestones: [] }, banned, (key) => {
     errors.push(err("E8_BANNED_KEY", `field "${key}" is a banned name`));
   });
+  for (const m of map.milestones) {
+    scanBannedKeys(m, banned, (key) => {
+      errors.push(err("E8_BANNED_KEY", `field "${key}" is a banned name`, m.id));
+    });
+  }
 
-  // W1 — mostly the model's own confidence.
+  // W1: mostly the model's own confidence.
   const total = map.milestones.length;
   if (total > 0) {
     const modelShare = map.milestones.filter((m) => m.ordering.basis === "model").length / total;
@@ -236,7 +328,7 @@ export function validateMap(map: MasteryMap, now?: string): ValidationRecord {
       );
     }
 
-    // W4 — trunk share.
+    // W4: trunk share.
     const trunkShare = map.milestones.filter((m) => m.modes.length === 0).length / total;
     if (trunkShare < TRUNK_MIN_SHARE) {
       warnings.push(
@@ -245,12 +337,12 @@ export function validateMap(map: MasteryMap, now?: string): ValidationRecord {
     }
   }
 
-  // W2 — nothing externally anchored.
+  // W2: nothing externally anchored.
   if (!map.milestones.some((m) => m.ordering.basis === "syllabus")) {
     warnings.push(warn("W2_NO_SYLLABUS", "no milestone is anchored to a published syllabus"));
   }
 
-  // W3 — a branch below expert entry. The caveat rides in the message, because the guide reads the
+  // W3: a branch below expert entry. The caveat rides in the message, because the guide reads the
   // message and not the spec: no branch is reachable at ANY height today.
   for (const m of map.milestones) {
     if (m.modes.length > 0 && stageIndex(m.stageFloor) < stageIndex(EXPERT_ENTRY_STAGE)) {
@@ -266,7 +358,7 @@ export function validateMap(map: MasteryMap, now?: string): ValidationRecord {
     }
   }
 
-  // W5 — staleness. Only when a clock is supplied; the engine never reads one itself.
+  // W5: staleness. Only when a clock is supplied; the engine never reads one itself.
   if (now !== undefined) {
     const age = (Date.parse(now) - Date.parse(map.revalidatedAt)) / 86_400_000;
     if (Number.isFinite(age) && age > STALE_AFTER_DAYS) {

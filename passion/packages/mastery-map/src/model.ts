@@ -1,4 +1,4 @@
-// @gt100k/mastery-map — what getting good at a domain actually involves. The specialization planner
+// @gt100k/mastery-map, what getting good at a domain actually involves. The specialization planner
 // owns PACE (stage, practice dose, rest, back-off) and is deliberately domain-agnostic, so nothing
 // in the system knew what getting good at chess involves as distinct from audio production. A map
 // supplies that domain knowledge and never touches pace.

@@ -1,6 +1,10 @@
 /**
- * The validator's WARNING rules (spec §5). Warnings are surfaced to a guide and never block, so
- * every test here asserts two things: the warning fires, and it did NOT become an error.
+ * The validator's WARNING rules (spec §5). Warnings are surfaced to a guide and never block.
+ *
+ * "Never blocks" is asserted as what it actually means: the map that earned the warning still has
+ * an EMPTY error list, so it is still publishable. Asserting instead that the warning's own code is
+ * absent from `errors` proves nothing at all, because a problem pushed onto the warnings array
+ * cannot appear in the errors array whatever the rule does.
  */
 import { describe, expect, it } from "vitest";
 
@@ -29,11 +33,14 @@ describe("validateMap, warnings", () => {
     expect(warnings(withMilestones(anchored()))).toEqual([]);
   });
 
-  it("W1 flags a map mostly resting on the model's own reasoning", () => {
+  it("W1 flags a map mostly resting on the model's own reasoning, and still lets it through", () => {
     // Two of three on `model` is 67%, over the 34% default.
     const m = withMilestones(anchored({ id: "a" }), milestone({ id: "b" }), milestone({ id: "c" }));
-    expect(warnings(m)).toContain("W1_MODEL_HEAVY");
-    expect(errors(m)).not.toContain("W1_MODEL_HEAVY");
+    const record = validateMap(m);
+    expect(record.warnings.map((w) => w.code)).toContain("W1_MODEL_HEAVY");
+    expect(record.warnings.find((w) => w.code === "W1_MODEL_HEAVY")?.severity).toBe("warning");
+    // The map is publishable with the warning on it. That is what "never blocks" means.
+    expect(record.errors).toEqual([]);
   });
 
   it("W1 stays quiet when most milestones are externally supported", () => {
@@ -55,9 +62,13 @@ describe("validateMap, warnings", () => {
       expect(w?.message).toMatch(/chosen_challenge/);
     });
 
-    it("is NEVER an error, because no branch is reachable at any height today", () => {
+    /** Telling an author to raise a branch, while no branch is reachable at any height, is advice
+        we cannot stand behind, so the map that earns this warning is still publishable. */
+    it("leaves the map publishable, because no branch is reachable at any height today", () => {
       const m = withMilestones(anchored({ modes: ["build"], stageFloor: "S1_IGNITION" }));
-      expect(errors(m)).not.toContain("W3_EARLY_BRANCH");
+      const record = validateMap(m);
+      expect(record.warnings.find((w) => w.code === "W3_EARLY_BRANCH")?.severity).toBe("warning");
+      expect(record.errors).toEqual([]);
     });
 
     it("does not fire for a trunk milestone, which has no modes", () => {

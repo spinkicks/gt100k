@@ -311,6 +311,9 @@ importers:
       '@gt100k/interest-inference':
         specifier: workspace:*
         version: link:../../packages/interest-inference
+      '@gt100k/mastery-map':
+        specifier: workspace:*
+        version: link:../../packages/mastery-map
       '@gt100k/research':
         specifier: workspace:*
         version: link:../../packages/research

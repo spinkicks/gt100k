@@ -17,15 +17,20 @@ import { PlanPanel } from "./plan-panel.js";
 import { FamilyPanel } from "./family-panel.js";
 import { AccessPanel } from "./access-panel.js";
 import { OverviewPanel } from "./overview-panel.js";
+import { MapsPanel } from "./maps-panel.js";
 import { familyOfferCount } from "./family.js";
 import { accessNeedsReview, accessProposalCount } from "./access.js";
+import { mapsForReview } from "./maps.js";
+import { REVIEW_MAPS } from "./maps-seed.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 
-type View = "overview" | "hypotheses" | "wellbeing" | "plan" | "family" | "access";
+type View = "overview" | "hypotheses" | "wellbeing" | "plan" | "family" | "access" | "maps";
 
 export function GuideConsole(): JSX.Element {
   const ctrl = useConsole();
   const [view, setView] = useState<View>("overview");
+  // Domain knowledge, not a read on a child, so it does not move when the child switcher does.
+  const maps = mapsForReview();
 
   // Switching child returns to the default summary so a tab never points at a stale kid's section.
   // biome-ignore lint/correctness/useExhaustiveDependencies: ctrl.kid is the trigger, not a value read in the body — dropping it would run the reset once and never again.
@@ -77,6 +82,16 @@ export function GuideConsole(): JSX.Element {
       label: "Access",
       count: accessProposalCount(ctrl.access),
       review: accessNeedsReview(ctrl.access),
+    },
+    // How many maps exist, which is the same treatment every other tab gets. Deliberately not how
+    // far through one anybody is: a map carries no progress and this console never derives one.
+    {
+      id: "maps",
+      label: "Maps",
+      count: maps.length,
+      // Only an ERROR needs a person. Warnings are surfaced inline and never block, and a dot that
+      // lit up for every advisory note would stop meaning anything.
+      review: maps.some((m) => !m.valid),
     },
   ];
 
@@ -154,6 +169,9 @@ export function GuideConsole(): JSX.Element {
             <FamilyPanel read={ctrl.family} observations={ctrl.familyObservations} />
           ) : null}
           {view === "access" ? <AccessPanel cards={ctrl.access} /> : null}
+          {/* The maps themselves, not the view models: the panel owns the two changes a guide can
+              make to one, and both are changes to the map. */}
+          {view === "maps" ? <MapsPanel maps={REVIEW_MAPS} /> : null}
 
           <Legend />
         </main>
