@@ -238,7 +238,10 @@ test("every cabin renders the backdrop, and no other backend", () => {
     const { container, unmount } = render(<CabinView />);
     expect(container.querySelector(".cabin-backdrop")).not.toBeNull();
     expect(container.querySelector(".cabin-static")).toBeNull();
-    expect(container.querySelector("canvas")).toBeNull();
+    // (Correction, post-implementation: `querySelector("canvas")` is impossible to satisfy — the
+    // aliveness dust-mote layer legitimately renders a `<canvas>`. What this guards against is the
+    // 3D backend's WebGL canvas specifically, so exclude the aliveness one by class.)
+    expect(container.querySelector("canvas:not(.cabin-aliveness-motes)")).toBeNull();
     unmount();
   }
 });
@@ -823,9 +826,13 @@ git add passion/apps/mvp-jul24/src/puzzles/Nonogram passion/apps/mvp-jul24/src/p
         passion/apps/mvp-jul24/src/puzzles/Mirror passion/apps/mvp-jul24/src/puzzles/Chess
 git commit -m "feat(mvp-jul24): logic-games alternates difficulty like the math cabin
 
-Nonogram was permanently 5x5 and Pipes permanently easy — both
-generators accept a size parameter and nothing passed it — while all five
-math activities varied. The older, more-played room was the flat one.
+Nonogram was permanently 5x5 — its generator's size parameter existed and
+nothing passed it — while all five math activities varied. The older,
+more-played room was the flat one.
+(Correction, post-implementation: Pipes was NOT permanently easy — it
+already alternated EASY_SIZE/HARD_SIZE via its own sizeForRound. Nonogram
+was the only flat one in the room; drop Pipes from this commit's file list
+and message if it needed no change.)
 
 Alternation, not a climb, matching GearTrain/BalanceScale/RatioMixing,
 whose comment records the reason: a session should meet both tiers, and a
@@ -855,10 +862,17 @@ FractionLaser keep their climb-and-cap; they are not broken."
 
 - [ ] **Step 1: Write the failing test**
 
+(Correction, post-implementation: this file already existed with 5 passing tests by the time this
+task was reached — "Create" should read "extend". Add the tests below to the existing
+`passion/apps/mvp-jul24/src/overlay/GadgetOverlay.test.tsx` rather than starting a new file.)
+
 Create `passion/apps/mvp-jul24/src/overlay/GadgetOverlay.test.tsx`:
 
 ```tsx
 import { render, screen } from "@testing-library/react";
+// (Correction, post-implementation: `@testing-library/user-event` is NOT an installed dependency
+// of this app. Use `fireEvent` from `@testing-library/react` instead, and drop the `await` on the
+// click calls below — `fireEvent.click` is synchronous.)
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test } from "vitest";
 import { useGame } from "../game/store";
