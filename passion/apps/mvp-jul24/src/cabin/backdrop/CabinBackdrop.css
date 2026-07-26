@@ -1,0 +1,203 @@
+/* Still-backdrop cabin backend. Three stacked layers, all filling the same box: the painting, the
+   warped previews, and the SVG hotspots. Keeping them in one box with one shared scaling rule is
+   what keeps polygons on the painted objects — see fit.ts. */
+
+.cabin-backdrop {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* Warm wash behind everything: what shows when no backdrop source loads (a build with no art in
+     public/art/, or a first paint before the image arrives). Matches CabinStatic's fallback so a
+     missing painting reads as a dim room rather than a broken page. */
+  background: radial-gradient(70% 55% at 42% 52%, rgba(232, 134, 60, 0.22) 0%, transparent 62%),
+    linear-gradient(180deg, #2b1b12 0%, #1d120c 100%);
+}
+
+/* The element the cursor parallax is written onto, wrapping every layer that must move as one: the
+   painting, the previews, the aliveness effects and the hit polygons. `inset: 0` makes it exactly
+   the frame, so `object-fit: cover` and `preserveAspectRatio` still resolve against the same box
+   they did before it existed, and a uniform scale about its centre moves both by the same amount.
+
+   THE TWO TRANSITIONS ARE NOT DECORATION, AND THEY ARE NOT ARBITRARY. They are the pair
+   `CabinAliveness` normally declares on its own internal layer, ported here because the transform
+   is being written to this element instead (see the block comment in CabinBackdrop.tsx). The
+   component adds and removes `is-tracking` on whichever element it drives, and without both rules
+   the parallax is a series of hard jumps: while the cursor moves the transform is rewritten every
+   frame and the transition only has to paper over dropped frames (120ms linear), but when the
+   cursor leaves it is written exactly once and the transition does all the easing back to rest
+   (420ms, decelerating). One duration cannot do both jobs. */
+.cabin-backdrop-parallax {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+  transition: transform 420ms cubic-bezier(0.22, 0.8, 0.3, 1);
+}
+
+.cabin-backdrop-parallax.is-tracking {
+  transition: transform 120ms linear;
+}
+
+/* JS already refuses to attach the parallax under this preference, so this covers only the case it
+   cannot: a transform written by something else must not animate either. */
+@media (prefers-reduced-motion: reduce) {
+  .cabin-backdrop-parallax,
+  .cabin-backdrop-parallax.is-tracking {
+    transition: none;
+  }
+}
+
+.cabin-backdrop-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* MUST stay paired with the SVG overlay's preserveAspectRatio="xMidYMid slice", which is the same
+     rule. `object-position` is left at its 50% 50% default for the same reason — that is the `xMid
+     YMid` half. Change one of the three and the hotspots slide off the painting. */
+  object-fit: cover;
+}
+
+/* Firelight sitting over the painting, from the hearth at lower-left of centre. Subtle: the still is
+   already lit, so this is a hint of live warmth rather than a lighting rig. */
+.cabin-backdrop-hearthlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    38% 46% at 39% 56%,
+    rgba(255, 184, 103, 0.16) 0%,
+    rgba(232, 134, 60, 0.07) 45%,
+    transparent 72%
+  );
+  mix-blend-mode: screen;
+}
+
+/* Art-pixel coordinate space for the warped previews. Sized to the art in CSS pixels, then scaled as
+   a whole by the measured fit — so a child's transform can be authored purely in art pixels. */
+.cabin-backdrop-props {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+
+  /* The blend lives HERE, on the layer, not on each preview — and that is not a stylistic choice.
+     `transform` on this element makes it a stacking context, which isolates its children's blending
+     to the group: a `mix-blend-mode` on an individual preview composites against its transparent
+     siblings and never sees the painting at all, so it renders as an untouched bright decal. Applied
+     to the group, it composites against the backdrop image and the hearthlight beneath.
+
+     `hard-light` rather than `multiply` because the props sit on surfaces of wildly different value:
+     multiply reads beautifully on the lit wall board but crushes the boards on the dark chimney stone
+     and inside the bookshelf until they disappear. Hard-light keeps every board legible on both while
+     still letting the room's light and shadow play across it, which is the whole point — a board on a
+     wall is lit by the room it is in. Verified across all seven props of the time in a browser; see
+     verify/matrix3d.verify.ts and shots/backdrop-verify/.
+
+     Currently unobservable: the preview layer renders empty by default (see the PREVIEWS_DEFAULT
+     comment in CabinBackdrop.tsx). Kept for the same reason the rest of that path is kept — this
+     blend rule was tuned against the real painting and is not re-derivable from the numbers. */
+  mix-blend-mode: hard-light;
+  opacity: 0.88;
+}
+
+/* The cover-fitted art rectangle, which is the box the aliveness effects position themselves as
+   percentages of. It exists because `object-fit: cover` means the frame is NOT the art — see the
+   comment at the mount site in CabinBackdrop.tsx, including why this one is laid out in real CSS
+   pixels (left/top/width/height, all from the same measured fit) rather than scaled by a transform
+   the way the preview layer above it is.
+
+   `screen` rather than the `plus-lighter` the effects use internally: plus-lighter adds, which is
+   what light does and is right for the glows compositing against each other inside this group, but
+   applied again at the group level it blows the firebox out to white on a plate that is already
+   painted bright there. Screen adds with a ceiling, so the fire brightens the room without erasing
+   the logs someone drew in it.
+
+   `pointer-events: none` is belt and braces — every node the component renders computes it too —
+   but this wrapper is ours, sits directly over the painting, and is the one node in the stack whose
+   absence would make the whole overlay eat clicks. */
+.cabin-backdrop-aliveness {
+  position: absolute;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.cabin-backdrop-hotspots {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* The <svg> box itself must not swallow clicks aimed at the painting between props; only the hit
+     polygons opt back in. */
+  pointer-events: none;
+}
+
+/* --- hotspots ------------------------------------------------------------------------------- */
+
+.cabin-backdrop-hit {
+  /* `fill: transparent` keeps the polygon invisible; `pointer-events: fill` makes its INTERIOR the
+     hit region anyway (per SVG's pointer-events spec, `fill` ignores whether the fill is painted).
+     Together: real non-rectangular hit testing with nothing drawn over the art. */
+  fill: transparent;
+  pointer-events: fill;
+  cursor: pointer;
+  /* The focus treatment is the traced outline below, not a box. The global focus-visible outline in
+     theme.css would draw a rectangle around the polygon's bounding box, which is the exact thing
+     this whole component exists to avoid. */
+  outline: none;
+}
+
+.cabin-backdrop-halo,
+.cabin-backdrop-trace {
+  fill: none;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 140ms var(--ease-out);
+  /* Constant device-pixel width whatever the backdrop is scaled to. Without this a trace authored at
+     3 units is a hairline in a small window and a fat band in a large one, because the SVG is scaled
+     from a 1536-wide viewBox. */
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+}
+
+/* Dark under-stroke: gives the bright line something to sit against on the firelit half of the room
+   and stops it vibrating against the dark half. */
+.cabin-backdrop-halo {
+  stroke: rgba(20, 10, 4, 0.7);
+  stroke-width: 5;
+}
+
+.cabin-backdrop-trace {
+  stroke: var(--ember-bright);
+  stroke-width: 1.75;
+}
+
+/* Sibling selectors, no React state: the hit polygon precedes both decorative ones. */
+.cabin-backdrop-hit:hover ~ .cabin-backdrop-halo,
+.cabin-backdrop-hit:focus-visible ~ .cabin-backdrop-halo {
+  opacity: 1;
+}
+
+.cabin-backdrop-hit:hover ~ .cabin-backdrop-trace,
+.cabin-backdrop-hit:focus-visible ~ .cabin-backdrop-trace {
+  opacity: 1;
+}
+
+/* Keyboard focus is louder than hover: a pointer user has the cursor to tell them where they are, a
+   keyboard user has only this. */
+.cabin-backdrop-hit:focus-visible ~ .cabin-backdrop-trace {
+  stroke-width: 2.75;
+  filter: drop-shadow(0 0 6px rgba(255, 184, 103, 0.85));
+}
+
+@media (prefers-contrast: more) {
+  .cabin-backdrop-halo,
+  .cabin-backdrop-trace {
+    stroke-width: 6;
+  }
+
+  .cabin-backdrop-trace {
+    stroke: #fff;
+  }
+}

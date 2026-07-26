@@ -13,7 +13,11 @@ export function hotspotStyle(gadget: Gadget): { left: string; top: string } {
  * shelf, or floor spot instead of floating over the hearth.
  *
  * Keyed by gadget id, so a topic with no gadgets (currently `math`) simply never looks anything up
- * here.
+ * here — and, for the same reason, an entry for a gadget that is not in the registry is inert.
+ * `logic-grid`, `minesweeper` and `lits` left the roster on 2026-07-25 (see src/gadgets/registry.ts)
+ * and their placements are deliberately left below, on the same reasoning as `scene3d/anchors.ts`:
+ * they were tuned against the painted art by eye, they cost nothing while unused, and re-adding a
+ * puzzle without them would drop it back onto its untuned registry percentage.
  */
 const STATIC_POSITIONS: Record<string, { xPct: number; yPct: number }> = {
   nonogram: { xPct: 20, yPct: 45 },
