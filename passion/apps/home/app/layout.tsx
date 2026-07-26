@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import type { JSX, ReactNode } from "react";
 
-import { sans } from "./fonts.js";
+// The three GT faces, self-hosted as packages so rendering never depends on a network.
+import "@fontsource-variable/literata";
+import "@fontsource-variable/inter-tight";
+import "@fontsource-variable/inconsolata";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -12,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>): JSX.Element {
   return (
-    <html lang="en" className={sans.variable}>
+    <html lang="en" data-theme="gt">
       <body>{children}</body>
     </html>
   );
