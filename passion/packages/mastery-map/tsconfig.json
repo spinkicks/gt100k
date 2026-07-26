@@ -1,0 +1,16 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist"
+  },
+  "references": [
+    { "path": "../two-axis-tagging" },
+    { "path": "../concierge" },
+    { "path": "../specialization-planner" },
+    { "path": "../hypothesis-store" },
+    { "path": "../research" },
+    { "path": "../guardrails" }
+  ],
+  "include": ["src/**/*.ts", "test/**/*.ts"]
+}
