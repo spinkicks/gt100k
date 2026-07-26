@@ -1,5 +1,5 @@
 import { fireEvent, render } from "@testing-library/react";
-import Nonogram, { SIZES, sizeForRound } from "./Nonogram";
+import Nonogram, { SIZES, sizeForRound, sizeForTier } from "./Nonogram";
 
 const solutionSignature = () =>
   Array.from(document.querySelectorAll(".ng-grid-cell"))
@@ -67,4 +67,17 @@ test("round 0 is the easier size, so a first visit is never the hard one", () =>
 
 test("every size is one the generator can actually satisfy", () => {
   for (const size of SIZES) expect(size).toBeGreaterThanOrEqual(5);
+});
+
+// Regression guard for the Critical: `sizeForRound(tier)` wrapped back to the smallest size on
+// the third "harder" press (tier=2, SIZES.length=2). `sizeForTier` must never do that — it holds
+// at the hardest size instead of cycling back down.
+test("sizeForTier never wraps back to a smaller size as tier climbs", () => {
+  const tiers = [0, 1, 2, 3, 4, 10];
+  const sizes = tiers.map(sizeForTier);
+  for (let i = 1; i < sizes.length; i++) {
+    expect(sizes[i]!).toBeGreaterThanOrEqual(sizes[i - 1]!);
+  }
+  expect(sizeForTier(SIZES.length - 1)).toBe(Math.max(...SIZES));
+  expect(sizeForTier(SIZES.length + 5)).toBe(Math.max(...SIZES));
 });

@@ -130,6 +130,34 @@ test("choosing the real Nonogram's harder variant changes the rendered board siz
   expect(cellsAtTier1).not.toBe(cellsAtTier0);
 });
 
+// Regression guard for the Critical: pressing "harder" twice remounts Nonogram with tier=1 then
+// tier=2. Before the fix, the initial board size was `sizeForRound(tier)` — cyclic mod
+// `SIZES.length` (2) — so tier=2 wrapped back to `SIZES[0]`, handing back an EASIER board than the
+// one just solved. This presses the button twice and asserts the grid cell count only ever grows
+// or holds, never shrinks. Grid cell count, not any number in text: PRD §11 forbids a rendered
+// tier/size number, so the assertion has to read the DOM shape instead.
+test("pressing 'harder' twice never hands back a smaller board", () => {
+  useGame.getState().focusGadget("nonogram");
+  render(<GadgetOverlay />);
+
+  const cellsAtTier0 = document.querySelectorAll(".ng-grid-cell").length;
+
+  for (const el of Array.from(document.querySelectorAll('[data-fill="1"]'))) fireEvent.click(el);
+  fireEvent.click(screen.getByRole("button", { name: /harder/i }));
+  const cellsAtTier1 = document.querySelectorAll(".ng-grid-cell").length;
+  expect(cellsAtTier1).toBeGreaterThanOrEqual(cellsAtTier0);
+
+  for (const el of Array.from(document.querySelectorAll('[data-fill="1"]'))) fireEvent.click(el);
+  fireEvent.click(screen.getByRole("button", { name: /harder/i }));
+  const cellsAtTier2 = document.querySelectorAll(".ng-grid-cell").length;
+  expect(cellsAtTier2).toBeGreaterThanOrEqual(cellsAtTier1);
+
+  // SIZES has only two entries, so tier 2 should hold at the hardest size (same cell count as
+  // tier 1) rather than wrapping back to tier 0's size.
+  expect(cellsAtTier2).toBe(cellsAtTier1);
+  expect(cellsAtTier2).toBeGreaterThan(cellsAtTier0);
+});
+
 test("focusing a gadget mounts its puzzle and records one open", () => {
   useGame.getState().focusGadget("nonogram");
   render(<GadgetOverlay />);
