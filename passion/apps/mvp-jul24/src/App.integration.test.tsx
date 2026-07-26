@@ -12,9 +12,9 @@ beforeEach(() => {
 test("full loop: map -> cabin -> gadget -> solve -> readout", () => {
   render(<App />);
 
-  // Map: click the Math cabin node.
+  // Map: click the Logic Games cabin node (the one holding the deduction puzzles).
   fireEvent.click(
-    screen.getByTestId("app-root").querySelector('[data-cabin="math"]') as HTMLElement,
+    screen.getByTestId("app-root").querySelector('[data-cabin="logic-games"]') as HTMLElement,
   );
 
   // Cabin: static backend is set in beforeEach (no WebGL/Canvas needed in jsdom); find the nonogram hotspot.
@@ -33,4 +33,48 @@ test("full loop: map -> cabin -> gadget -> solve -> readout", () => {
   fireEvent.click(screen.getByRole("button", { name: "Interest" }));
   expect(document.querySelector('[data-gadget="nonogram"]')).toBeInTheDocument();
   expect(screen.getByText("Nonogram")).toBeInTheDocument();
+});
+
+/**
+ * The `math` cabin is on the map and openable but holds no gadgets until its games ship (see
+ * src/gadgets/registry.ts). Walking into it is a normal thing a player will do, so the whole path —
+ * map click → store → CabinView → backend → prop list — has to survive it and put a real room on
+ * screen. Driven through the static backend because jsdom has no WebGL for the 3D one.
+ *
+ * This asserted zero gadgets while `math` was deliberately empty. It now holds five maths
+ * activities, so the assertion flipped: the point is that the whole path works and the room comes up
+ * furnished with its own props, not that the room is bare.
+ */
+test("entering the math cabin renders a room with its activities in it", () => {
+  expect(() => render(<App />)).not.toThrow();
+
+  fireEvent.click(
+    screen.getByTestId("app-root").querySelector('[data-cabin="math"]') as HTMLElement,
+  );
+
+  expect(useGame.getState().cabinId).toBe("math");
+  expect(document.querySelector(".cabin-view")).toBeInTheDocument();
+  expect(document.querySelector(".cabin-static")).toBeInTheDocument();
+  expect(document.querySelector("img.cabin-static-bg")).toBeInTheDocument();
+  // Its five activities are on the wall, and none of them is a deduction puzzle from the other room.
+  const ids = [...document.querySelectorAll("[data-gadget]")].map((el) =>
+    el.getAttribute("data-gadget"),
+  );
+  expect(ids).toHaveLength(5);
+  expect(ids).toContain("gear-train");
+  expect(ids).not.toContain("nonogram");
+  // ...and no gadget overlay opened itself on the way in.
+  expect(document.querySelector(".gadget-overlay")).toBeNull();
+});
+
+// The "Mode: 3d" A/B pill used to sit in the corner of the cabin panel and read as a debug badge.
+test("the cabin panel no longer shows a backend debug badge", () => {
+  render(<App />);
+  fireEvent.click(
+    screen.getByTestId("app-root").querySelector('[data-cabin="logic-games"]') as HTMLElement,
+  );
+
+  expect(document.querySelector(".cabin-view")).toBeInTheDocument();
+  expect(document.querySelector(".cabin-view-ab-toggle")).toBeNull();
+  expect(screen.queryByText(/^Mode:/)).toBeNull();
 });

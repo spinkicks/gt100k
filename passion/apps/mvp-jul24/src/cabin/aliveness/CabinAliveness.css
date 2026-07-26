@@ -1,0 +1,142 @@
+/**
+ * Aliveness layers over a still cabin backdrop.
+ *
+ * Everything here is deliberately restricted to `opacity`, `transform` and `filter` — the three
+ * properties a browser can animate on the compositor without re-laying-out or re-painting the
+ * backdrop underneath. That restriction is the entire cost argument for this component: the fire
+ * flickering must not be more expensive than the WebGL scene it replaces, and the way to guarantee
+ * that is to never touch a property that can invalidate layout.
+ *
+ * Positions come from JS as percentages of this box (see regions.ts) — no coordinates are baked in
+ * here, because every room measures its own fireplace.
+ */
+
+.cabin-aliveness {
+  position: absolute;
+  inset: 0;
+  /* Clickable props are layered above and below this component; nothing in this tree may ever
+     intercept a pointer. Descendants that DO need clicks (a caller's hotspot passed in as a child)
+     have to opt back in with `pointer-events: auto` on the interactive element itself. */
+  pointer-events: none;
+  /* the parallax overscan pushes the art past this box; without this you see the seam */
+  overflow: hidden;
+}
+
+/* The element the parallax transform is written onto. Kept separate from the root so the root
+   stays a stable, untransformed box for the canvas to measure itself against. */
+.cabin-aliveness-layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+  /* Two speeds, and the reason is worth stating: while the cursor is moving, the transform is
+     rewritten every frame and the transition only needs to smooth over dropped frames (120ms
+     linear). When the cursor leaves, the transform is written once and the transition does all the
+     work of easing back to rest (420ms, decelerating). One duration cannot do both jobs. */
+  transition: transform 420ms cubic-bezier(0.22, 0.8, 0.3, 1);
+}
+.cabin-aliveness-layer.is-tracking {
+  transition: transform 120ms linear;
+}
+
+/* Wraps whatever the caller passed as children (normally the backdrop image). This is the element
+   the fire's brightness breath is applied to, so the breath reaches the art and not the glows. */
+.cabin-aliveness-art {
+  position: absolute;
+  inset: 0;
+  will-change: filter;
+}
+
+.cabin-aliveness-fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* ---------- firelight ---------- */
+
+.cabin-aliveness-glow {
+  position: absolute;
+  /* `plus-lighter` adds in premultiplied space, which is what light does; `screen` is the fallback
+     for engines that do not have it. Declared in that order so the cascade picks the better one
+     where it is supported. Note this only reaches the backdrop if no ancestor between this layer
+     and the art isolates — do not add `isolation`, `opacity` or a `filter` to .cabin-aliveness-fx. */
+  mix-blend-mode: screen;
+  mix-blend-mode: plus-lighter;
+  will-change: opacity, transform;
+}
+
+/* the firebox itself: small, hot, nearly white in the middle */
+.cabin-aliveness-glow.is-core {
+  background: radial-gradient(
+    closest-side ellipse,
+    rgba(255, 226, 170, 0.95) 0%,
+    rgba(255, 168, 72, 0.62) 34%,
+    rgba(255, 108, 26, 0.26) 62%,
+    rgba(214, 66, 10, 0) 86%
+  );
+}
+
+/* the pool the fire throws down onto the floor / rug / table */
+.cabin-aliveness-glow.is-floor {
+  background: radial-gradient(
+    closest-side ellipse,
+    rgba(255, 186, 106, 0.5) 0%,
+    rgba(240, 132, 44, 0.22) 48%,
+    rgba(190, 78, 18, 0) 84%
+  );
+}
+
+/* whole-room bounce: very low amplitude, much larger than the frame */
+.cabin-aliveness-glow.is-bounce {
+  background: radial-gradient(
+    closest-side ellipse,
+    rgba(255, 176, 96, 0.3) 0%,
+    rgba(226, 120, 40, 0.12) 52%,
+    rgba(180, 74, 16, 0) 88%
+  );
+}
+
+/* second warm source — a wall sconce or candle cluster. Cooler and steadier than the hearth. */
+.cabin-aliveness-glow.is-sconce {
+  background: radial-gradient(
+    closest-side ellipse,
+    rgba(255, 214, 150, 0.7) 0%,
+    rgba(255, 158, 62, 0.3) 40%,
+    rgba(210, 88, 20, 0) 82%
+  );
+}
+
+/* ---------- window light shaft ---------- */
+
+/* A soft brightening inside the painted shaft, clipped to the measured quad. The blur is what keeps
+   the clip from reading as a hard-edged polygon of lighter pixels. */
+.cabin-aliveness-sheen {
+  position: absolute;
+  mix-blend-mode: screen;
+  mix-blend-mode: plus-lighter;
+  background: linear-gradient(
+    to bottom,
+    rgba(214, 232, 255, 0.16) 0%,
+    rgba(206, 226, 255, 0.09) 45%,
+    rgba(200, 220, 255, 0) 92%
+  );
+  filter: blur(14px);
+  will-change: opacity;
+}
+
+.cabin-aliveness-motes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* JS already refuses to start a frame loop under this preference (see useReducedMotion.ts); this
+   block covers the one thing JS does not own — the CSS transition on the parallax layer — so a
+   stray transform write can never animate either. */
+@media (prefers-reduced-motion: reduce) {
+  .cabin-aliveness-layer,
+  .cabin-aliveness-layer.is-tracking {
+    transition: none;
+  }
+}

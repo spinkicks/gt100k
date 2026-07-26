@@ -649,6 +649,9 @@ function SetDressing(): JSX.Element {
 }
 
 export function Cabin({ topic }: { topic: TopicId }): JSX.Element {
+  // May legitimately be empty — the `math` cabin is active on the map but has no gadgets yet (see
+  // anchors.ts / gadgets/registry.ts). Everything below the props list is topic-independent room, so
+  // an empty list yields a fully furnished, lit, gadget-free cabin rather than an empty screen.
   const props = gadgetProps3D(topic);
   return (
     <group>

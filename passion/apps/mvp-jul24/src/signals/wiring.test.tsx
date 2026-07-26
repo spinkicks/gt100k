@@ -19,6 +19,7 @@ test("the map surfaces only the cabins a child can actually enter", () => {
 
   const ids = sessionLog.surfaced().map((s) => s.artifactId);
   expect(ids).toContain("math");
+  expect(ids).toContain("logic-games");
   // Locked cabins are not available, so they are not declinable either —
   // surfacing them would manufacture declines against unreachable content.
   expect(ids).not.toContain("music");
@@ -27,16 +28,16 @@ test("the map surfaces only the cabins a child can actually enter", () => {
 });
 
 test("entering a cabin surfaces its gadgets, making the unchosen ones declinable", () => {
-  useGame.setState({ screen: "cabin", cabinId: "math" });
+  useGame.setState({ screen: "cabin", cabinId: "logic-games" });
   render(<App />);
 
   const ids = sessionLog.surfaced().map((s) => s.artifactId);
   expect(ids).toContain("nonogram");
-  expect(ids).toContain("logic-grid");
+  expect(ids).toContain("pipes");
 });
 
 test("an open emits an interaction only once enough active time has accrued", () => {
-  useGame.setState({ screen: "cabin", cabinId: "math" });
+  useGame.setState({ screen: "cabin", cabinId: "logic-games" });
   const { rerender } = render(<App />);
 
   useGame.setState({ focusedGadgetId: "nonogram" });
@@ -51,7 +52,7 @@ test("an open emits an interaction only once enough active time has accrued", ()
 });
 
 test("a glance is recorded as an under_floor open, never dropped", () => {
-  useGame.setState({ screen: "cabin", cabinId: "math" });
+  useGame.setState({ screen: "cabin", cabinId: "logic-games" });
   const { rerender } = render(<App />);
 
   useGame.setState({ focusedGadgetId: "nonogram" });

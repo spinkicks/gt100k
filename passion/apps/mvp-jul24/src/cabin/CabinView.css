@@ -16,27 +16,6 @@
   box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.3), var(--shadow-panel);
 }
 
-/* A tasteful little wood control, not debug text. */
-.cabin-view-ab-toggle {
-  position: absolute;
-  top: 0.7rem;
-  right: 0.7rem;
-  z-index: var(--z-panel);
-  border: 1px solid var(--wood-frame);
-  border-radius: var(--r-pill);
-  padding: 0.32rem 0.75rem;
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 0.72rem;
-  letter-spacing: 0.01em;
-  color: var(--cream);
-  background: linear-gradient(180deg, rgba(90, 58, 36, 0.92), rgba(58, 37, 25, 0.92));
-  box-shadow: var(--shadow-soft);
-  cursor: pointer;
-  transition: background 160ms var(--ease-out), transform 120ms var(--ease-out);
-}
-
-.cabin-view-ab-toggle:hover {
-  background: linear-gradient(180deg, rgba(255, 184, 103, 0.28), rgba(58, 37, 25, 0.95));
-  transform: translateY(-1px);
-}
+/* The "Mode: 3d" backend toggle that used to sit at top-right is gone — 3D is the only backend a
+   player sees, and the pill read as a debug badge floating over a finished room. The static backend
+   is now reached only via `?cabin=static` (see game/store.ts). */

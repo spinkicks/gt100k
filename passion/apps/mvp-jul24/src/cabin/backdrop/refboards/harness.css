@@ -1,0 +1,67 @@
+/* Reference-board harness styling. Dev-only (see harness.tsx); never reaches dist.
+   Two jobs: give each board a square full-bleed box to fill, and replace the room's warm palette
+   with a maximum-contrast one. */
+
+html,
+body {
+  margin: 0;
+  background: #808080; /* mid grey, so a stray white or black margin on a board is obvious */
+}
+
+/* The screenshot target. One board, exactly square, no padding and no border: `tools/refboards.ts`
+   screenshots this element, so its bounds ARE the PNG's bounds and the board's four corners have to
+   be the image's four corners.
+
+   640 CSS px at deviceScaleFactor 2 gives a 1280 px PNG, comfortably over the 1024 px floor the art
+   pipeline asks for. The size is here rather than in the shooter because the SVG scales losslessly
+   either way and one number in one place is easier to reason about. */
+.refboard {
+  width: 640px;
+  height: 640px;
+  /* No margin: a margin would be inside neither the element nor the shot, but it would push the next
+     board's box, and any accidental padding here lands in the PNG as skew when the art agent fits a
+     homography to the corners. */
+  padding: 0;
+  border: 0;
+  display: block;
+}
+
+/* Every board's <svg> already stretches to its box via previews.css (.cbd-preview-svg is
+   width/height 100%), and each board's viewBox is square, so `xMidYMid meet` letterboxes nothing.
+
+   ---------------------------------------------------------------------------------------------
+   SPEC PALETTE
+   ---------------------------------------------------------------------------------------------
+   The previews paint entirely through the theme tokens in src/theme.css (see the `P` map in
+   previews/PreviewSvg.tsx), which means the palette can be swapped here without touching a single
+   component. That is the whole reason the previews were written against variables.
+
+   Overridden because the room palette optimises for the wrong thing: parchment on ember on warm wood
+   is correct over firelight and near-useless as a specification, where every mark has to be
+   separable from every other mark by an image model copying it. So: paper goes pure white, ink pure
+   black, and the semantic colours become the most saturated version of themselves that still says
+   what it said before.
+
+   Colour is retained rather than flattened to greyscale because in two of these boards colour IS
+   information — a lit pipe versus an unlit one, a live beam versus a grid line — and a greyscale
+   spec would make the art agent guess which strokes are hot. */
+.refboard {
+  --parchment: #ffffff;
+  --parchment-hi: #ffffff;
+  --parchment-edge: #ffffff;
+  --wood: #ffffff;
+  --wood-frame: #000000; /* grid lines and the board's own edge stroke */
+  --ink: #000000; /* filled nonogram cells, pipe casings, mirror glass */
+  --ink-soft: #4a4a4a; /* clue-rail ticks, unlit pipe runs — grey, so "not hot" is unmistakable */
+  --ember: #e00000; /* flow / beam glow */
+  --ember-bright: #ff8000; /* source hub, beam core, lit endpoint */
+  --ember-deep: #a00000; /* emitter */
+}
+
+/* The mirror board draws its faint grid with `--parchment-edge` at 25% opacity, which is invisible
+   on the white panel the override above gives it. Black at 25% is the light grey the room's warm
+   version reads as, so this restores the *appearance* rather than overriding the intent. Scoped to
+   this board because the same token is Pipes' board fill, where it must stay white. */
+.refboard[data-board="mirror"] {
+  --parchment-edge: #000000;
+}
