@@ -12,7 +12,7 @@
     "@gt100k/timeback": "workspace:*"
   },
   "scripts": {
-    "test": "vitest run --root ../.. adapters/timeback-live/test",
+    "test": "vitest run --root ../../.. passion/adapters/timeback-live/test",
     "timeback:live": "tsx scripts/timeback-live.ts"
   }
 }

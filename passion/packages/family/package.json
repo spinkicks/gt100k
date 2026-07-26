@@ -16,6 +16,6 @@
     "@gt100k/two-axis-tagging": "workspace:*"
   },
   "scripts": {
-    "test": "vitest run --root ../.. packages/family/test"
+    "test": "vitest run --root ../../.. passion/packages/family/test"
   }
 }

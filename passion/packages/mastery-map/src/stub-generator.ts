@@ -103,10 +103,13 @@ const TRUNK: readonly TrunkTemplate[] = [
     warning it would only be earning by carelessness. */
 const BRANCH_STAGE_FLOOR: Stage = "S3_AUTHORSHIP";
 
-/** A resource the stub can attach without making its own map invalid: rule 5 wants a provenance and
-    at least one age tier the map claims. The stub drops the rest rather than emitting a map it
-    already knows the validator will reject. It never edits a resource to make it fit. */
-function attachable(
+/** A resource a generator can attach without making its map invalid: rule 5 wants a provenance and
+    at least one age tier the map claims. The generator drops the rest rather than emitting a map it
+    already knows the validator will reject. It never edits a resource to make it fit.
+
+    Exported because the live adapter attaches from the same curated library against the same rule,
+    and a second copy of the filter is a second thing to keep in step with rule 5. */
+export function attachable(
   resources: readonly CuratedResource[],
   ageBands: MapContext["ageBands"],
 ): readonly CuratedResource[] {

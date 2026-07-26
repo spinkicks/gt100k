@@ -9,7 +9,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run --root ../../.. passion/packages/evidence-explorer-view/test"
   },
   "dependencies": {
     "@gt100k/evidence-graph": "workspace:*"
