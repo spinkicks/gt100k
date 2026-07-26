@@ -115,6 +115,9 @@ importers:
       '@gt100k/concierge-live':
         specifier: workspace:*
         version: link:../../adapters/concierge-live
+      '@gt100k/design-tokens':
+        specifier: workspace:*
+        version: link:../../packages/design-tokens
       '@gt100k/two-axis-tagging':
         specifier: workspace:*
         version: link:../../packages/two-axis-tagging
@@ -412,6 +415,9 @@ importers:
 
   passion/apps/parent-guide:
     dependencies:
+      '@gt100k/design-tokens':
+        specifier: workspace:*
+        version: link:../../packages/design-tokens
       next:
         specifier: ^14.2.15
         version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

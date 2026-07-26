@@ -1,10 +1,17 @@
+@import "@gt100k/design-tokens/contract.css";
+
+/*
+ * Editorial palette: warm paper, deep slate ink, one calm teal accent (sage-neutral + teal).
+ * These are OVERRIDES of the shared contract, not a private vocabulary. The Playbook is a warm
+ * reading surface rather than a console, so the values differ from guide-console's — but the
+ * names are the contract's, so a token rename lands here too. One contract, per-surface themes.
+ */
 :root {
-  /* Editorial palette: warm paper, deep slate ink, one calm teal accent (sage-neutral + teal). */
-  --bg: oklch(0.973 0.004 95);
+  --canvas: oklch(0.973 0.004 95);
   --surface: oklch(0.995 0.002 95);
   --surface-2: oklch(0.955 0.007 200);
   --ink: oklch(0.26 0.028 255);
-  --muted: oklch(0.475 0.02 250);
+  --ink-muted: oklch(0.475 0.02 250);
   --line: oklch(0.9 0.006 250);
   --line-strong: oklch(0.82 0.01 250);
   --accent: oklch(0.52 0.088 218);
@@ -12,15 +19,20 @@
   --accent-weak: oklch(0.955 0.022 218);
   --accent-ink: oklch(0.995 0 0);
   --warn-bg: oklch(0.966 0.032 76);
-  --warn-ink: oklch(0.44 0.1 55);
+  --warn: oklch(0.44 0.1 55);
+  /* App-local: the contract's warn family is a fill and an ink (--warn-bg, --warn) with no
+     border token, and inventing one here would fork the contract. */
   --warn-line: oklch(0.82 0.07 76);
 
+  /* App-local: an editorial reading measure only this long-form surface has. */
   --measure: 66ch;
-  --serif: var(--font-serif), "Iowan Old Style", Georgia, serif;
-  --sans: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-serif), "Iowan Old Style", Georgia, serif;
+  --font-body: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
 
   --step-h1: clamp(2.35rem, 1.7rem + 2.7vw, 3.5rem);
-  --radius: 14px;
+  /* Softer than the contract's 12px/4px defaults: the panels here are reading furniture. */
+  --radius-lg: 14px;
   --radius-sm: 9px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -34,9 +46,9 @@ html {
 }
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--canvas);
   color: var(--ink);
-  font-family: var(--serif);
+  font-family: var(--font-display);
   font-size: 1.14rem;
   line-height: 1.68;
   font-feature-settings: "kern", "liga", "onum" 1;
@@ -58,7 +70,7 @@ body {
 .sources li,
 .sources h3,
 .trap .do b {
-  font-family: var(--sans);
+  font-family: var(--font-body);
 }
 
 /* Reading-progress rail */
@@ -108,13 +120,13 @@ body {
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .toc__chevron {
   width: 9px;
   height: 9px;
-  border-right: 2px solid var(--muted);
-  border-bottom: 2px solid var(--muted);
+  border-right: 2px solid var(--ink-muted);
+  border-bottom: 2px solid var(--ink-muted);
   transform: rotate(45deg);
   transition: transform 0.18s var(--ease);
 }
@@ -138,7 +150,7 @@ body {
 }
 .toc__link {
   display: block;
-  color: var(--muted);
+  color: var(--ink-muted);
   text-decoration: none;
   padding: 7px 12px;
   border-radius: 8px;
@@ -169,7 +181,7 @@ body {
   margin: 0 0 0.9rem;
 }
 h1 {
-  font-family: var(--serif);
+  font-family: var(--font-display);
   font-weight: 600;
   font-size: var(--step-h1);
   line-height: 1.02;
@@ -178,11 +190,11 @@ h1 {
   text-wrap: balance;
 }
 .lede {
-  font-family: var(--serif);
+  font-family: var(--font-display);
   font-size: 1.42rem;
   font-style: italic;
   line-height: 1.42;
-  color: var(--muted);
+  color: var(--ink-muted);
   margin: 0;
   text-wrap: pretty;
 }
@@ -196,7 +208,7 @@ section:first-of-type {
   border-top: none;
 }
 h2 {
-  font-family: var(--serif);
+  font-family: var(--font-display);
   font-weight: 600;
   font-size: clamp(1.7rem, 1.4rem + 1vw, 2.15rem);
   line-height: 1.12;
@@ -205,7 +217,7 @@ h2 {
   text-wrap: balance;
 }
 h3 {
-  font-family: var(--serif);
+  font-family: var(--font-display);
   font-size: 1.28rem;
   font-weight: 600;
   line-height: 1.25;
@@ -244,7 +256,7 @@ li {
 
 /* Drop cap on the opening paragraph */
 .dropcap::first-letter {
-  font-family: var(--serif);
+  font-family: var(--font-display);
   font-weight: 600;
   float: left;
   font-size: 3.5em;
@@ -255,7 +267,7 @@ li {
 
 /* Pull quote */
 .pullquote {
-  font-family: var(--serif);
+  font-family: var(--font-display);
   font-size: 1.5rem;
   line-height: 1.32;
   font-style: italic;
@@ -271,9 +283,11 @@ li {
 .panel {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   padding: clamp(20px, 2.5vw, 30px);
   margin: 24px 0;
+  /* A 4%-alpha slate, not a token: the contract's --elev-* are neutral-black shadows, and a
+     neutral shadow goes grey against warm paper. */
   box-shadow: 0 1px 2px oklch(0.4 0.03 255 / 0.04), 0 8px 24px oklch(0.4 0.03 255 / 0.04);
 }
 .panel--accent {
@@ -318,10 +332,10 @@ li {
 /* Honest-limits callout */
 .callout {
   font-size: 0.98rem;
-  color: var(--muted);
+  color: var(--ink-muted);
   background: var(--surface-2);
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   padding: 18px 22px;
   margin: 20px 0;
 }
@@ -350,14 +364,14 @@ li {
   border-top: 1px solid var(--line);
 }
 .swaps .from {
-  color: var(--muted);
+  color: var(--ink-muted);
   text-align: right;
   font-style: italic;
 }
 .swaps .arrow {
   color: var(--accent);
   font-weight: 700;
-  font-family: var(--sans);
+  font-family: var(--font-body);
 }
 .swaps .to {
   font-weight: 500;
@@ -396,7 +410,7 @@ li {
   margin: 0;
 }
 .trap .look {
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .trap .do {
   margin-top: 0.35em;
@@ -433,10 +447,10 @@ li {
 /* Citations and sources */
 .cite {
   font-size: 0.8rem;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .cite a {
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .sources h3 {
   margin-top: 1.7em;
@@ -444,7 +458,7 @@ li {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .sources ul {
   list-style: none;
@@ -462,12 +476,12 @@ li {
 
 /* ---- Family Check-In widget ---- */
 .checkin__intro {
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .checkin {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   padding: clamp(20px, 2.5vw, 30px);
   margin-top: 20px;
   box-shadow: 0 1px 2px oklch(0.4 0.03 255 / 0.04), 0 8px 24px oklch(0.4 0.03 255 / 0.04);
@@ -537,7 +551,7 @@ li {
   flex-wrap: wrap;
 }
 .btn {
-  font-family: var(--sans);
+  font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 600;
   color: var(--accent-ink);
@@ -556,7 +570,7 @@ li {
   transform: translateY(1px);
 }
 .btn--ghost {
-  color: var(--muted);
+  color: var(--ink-muted);
   background: transparent;
   border-color: var(--line-strong);
 }
@@ -566,6 +580,8 @@ li {
   border-color: var(--accent);
 }
 :where(.btn, .toggle input, .toc__link, a):focus-visible {
+  /* Mixed toward pure white, not --accent-ink: that token is a near-white ink for text on the
+     accent, and reusing it here would tie the ring's lightness to an unrelated decision. */
   outline: 3px solid color-mix(in oklab, var(--accent) 55%, white);
   outline-offset: 2px;
 }
@@ -574,7 +590,7 @@ li {
   margin-top: 22px;
   padding: 20px 22px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--surface-2);
   animation: result-in 0.28s var(--ease);
 }
@@ -592,12 +608,12 @@ li {
 .result__human {
   margin-top: 0.7em;
   font-weight: 600;
-  color: var(--warn-ink);
+  color: var(--warn);
 }
 .result__posture {
   margin-top: 0.85em;
   font-size: 0.88rem;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 @keyframes result-in {
   from {
@@ -620,7 +636,7 @@ li {
     position: static;
     max-height: none;
     border: 1px solid var(--line);
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
     padding: 16px 18px;
     background: var(--surface);
   }
@@ -648,6 +664,8 @@ li {
     display: none;
   }
   body {
+    /* Deliberately not --canvas: the warm paper tint is a screen affordance, and printing it
+       spends ink on a background. */
     background: #fff;
     font-size: 11pt;
   }

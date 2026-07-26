@@ -11,6 +11,7 @@
   "dependencies": {
     "@gt100k/concierge": "workspace:*",
     "@gt100k/concierge-live": "workspace:*",
+    "@gt100k/design-tokens": "workspace:*",
     "@gt100k/two-axis-tagging": "workspace:*",
     "motion": "^12.42.0",
     "next": "^14.2.15",
