@@ -18,6 +18,6 @@
     "@gt100k/concierge": "workspace:*"
   },
   "scripts": {
-    "test": "vitest run --root ../.. packages/specialization-planner/test"
+    "test": "vitest run --root ../../.. passion/packages/specialization-planner/test"
   }
 }

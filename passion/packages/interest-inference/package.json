@@ -9,7 +9,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run --root ../../.. passion/packages/interest-inference/test",
     "demo": "tsx src/demo-run.ts"
   }
 }

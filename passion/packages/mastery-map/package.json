@@ -17,6 +17,6 @@
     "@gt100k/guardrails": "workspace:*"
   },
   "scripts": {
-    "test": "vitest run --root ../.. packages/mastery-map/test"
+    "test": "vitest run --root ../../.. passion/packages/mastery-map/test"
   }
 }

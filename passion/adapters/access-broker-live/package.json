@@ -12,6 +12,6 @@
     "@gt100k/access-broker": "workspace:*"
   },
   "scripts": {
-    "test": "vitest run --root ../.. adapters/access-broker-live/test"
+    "test": "vitest run --root ../../.. passion/adapters/access-broker-live/test"
   }
 }

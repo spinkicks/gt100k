@@ -13,7 +13,7 @@
     "@gt100k/interest-inference": "workspace:*"
   },
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run --root ../../.. passion/packages/signal-pipeline/test",
     "demo": "tsx src/demo-run.ts"
   }
 }

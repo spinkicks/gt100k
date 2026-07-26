@@ -14,6 +14,6 @@
     "@gt100k/project-workspace": "workspace:*"
   },
   "scripts": {
-    "test": "vitest run --root ../.. adapters/evidence-sink-graph/test"
+    "test": "vitest run --root ../../.. passion/adapters/evidence-sink-graph/test"
   }
 }

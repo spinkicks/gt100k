@@ -12,7 +12,7 @@
     "@gt100k/concierge": "workspace:*"
   },
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run --root ../../.. passion/adapters/concierge-live/test",
     "concierge:live": "tsx scripts/concierge-live.ts"
   }
 }

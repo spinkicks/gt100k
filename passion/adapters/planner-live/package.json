@@ -12,7 +12,7 @@
     "@gt100k/specialization-planner": "workspace:*"
   },
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run --root ../../.. passion/adapters/planner-live/test",
     "planner:live": "tsx scripts/planner-live.ts"
   }
 }
