@@ -22,6 +22,7 @@ import { familyOfferCount } from "./family.js";
 import { accessNeedsReview, accessProposalCount } from "./access.js";
 import { mapsForReview } from "./maps.js";
 import { REVIEW_MAPS } from "./maps-seed.js";
+import { workForKid } from "./map-evidence.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 
 type View = "overview" | "hypotheses" | "wellbeing" | "plan" | "family" | "access" | "maps";
@@ -169,9 +170,12 @@ export function GuideConsole(): JSX.Element {
             <FamilyPanel read={ctrl.family} observations={ctrl.familyObservations} />
           ) : null}
           {view === "access" ? <AccessPanel cards={ctrl.access} /> : null}
-          {/* The maps themselves, not the view models: the panel owns the two changes a guide can
-              make to one, and both are changes to the map. */}
-          {view === "maps" ? <MapsPanel maps={REVIEW_MAPS} /> : null}
+          {/* The maps themselves, not the view models: the panel owns the changes a guide can make,
+              and each of them is a change to the map or to what a guide has said about this child.
+              Keyed by child so the recorded overrides never carry across a switch. */}
+          {view === "maps" ? (
+            <MapsPanel key={ctrl.kid} maps={REVIEW_MAPS} work={workForKid(ctrl.kid)} />
+          ) : null}
 
           <Legend />
         </main>

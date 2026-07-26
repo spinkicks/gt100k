@@ -77,10 +77,15 @@ const STAGE_PURPOSE: Record<Stage, string> = {
   S4_SIGNATURE: "find your voice — portfolio-defining work",
 };
 
+// How far a child goes is theirs, so the first half of this no longer sets a ceiling by age. It
+// used to open "by ~14 the honest goal is a ready-to-invest performer", which read a date onto a
+// child: a forecast rung becomes a quota, and a quota is the family pressure the wellbeing and
+// family engines exist to detect (mastery-map design §8). The path runs all the way up; the pace is
+// read off the child. The second half is right and is untouched.
 const TERMINAL_NOTE =
-  "By ~14 the honest goal is a ready-to-invest performer — a signature body of work, an Evidence " +
-  "Graph, and a defensible portfolio — not an expert. Eminence is adult; this plan protects the " +
-  "trajectory, never claims to manufacture it.";
+  "How far a child goes here is theirs, and the path runs as far as they take it: what this plan " +
+  "paces by is the wellbeing read, never a target date, and it forecasts no rung for anybody. " +
+  "Eminence is adult; this plan protects the trajectory, never claims to manufacture it.";
 
 /** Demote a stage by one (S4→S3→S2→S1), floored at S1 — the strain hold (never advance) [D-C]. */
 function demoteOne(stage: Stage): Stage {

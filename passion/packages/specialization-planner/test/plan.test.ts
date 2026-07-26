@@ -100,7 +100,26 @@ describe("planSpecialization — SC-1 golden table (spec §3.1 + §3.7)", () => 
     expect(p.nextProject.source).toBe("stub");
     expect(p.rationale.length).toBeGreaterThan(0);
     expect(p.guardrailNotes.length).toBeGreaterThan(0);
-    expect(p.terminalNote.toLowerCase()).toContain("ready-to-invest");
+    expect(p.terminalNote.toLowerCase()).toContain("eminence is adult");
+  });
+
+  /**
+   * The terminal note says how far a child goes is theirs, and it sets no ceiling by age. It used
+   * to open with "by ~14 the honest goal is a ready-to-invest performer", which is a rung forecast
+   * against a date, and a forecast rung becomes a quota: exactly the family pressure the wellbeing
+   * and family engines exist to detect (mastery-map design §8). What paces the plan is the
+   * wellbeing read.
+   */
+  it("the terminal note puts the ceiling on nobody and paces by wellbeing, not by a date", async () => {
+    const p = await plan(INPUTS_S3);
+    expect(p.terminalNote).toMatch(/how far a child goes here is theirs/i);
+    expect(p.terminalNote).toMatch(/wellbeing/i);
+    // No age, no date, and no rung promised by one.
+    expect(p.terminalNote).not.toMatch(/by ~?\s*\d+\b/i);
+    expect(p.terminalNote).not.toMatch(/\bby (?:age|then)\b/i);
+    expect(p.terminalNote).not.toMatch(/\bready-to-invest\b/i);
+    // And the half that was always right is still there.
+    expect(p.terminalNote).toMatch(/protects the trajectory, never claims to manufacture it/i);
   });
 
   it("the stub brief head carries the stable §6 golden strings for S3", async () => {

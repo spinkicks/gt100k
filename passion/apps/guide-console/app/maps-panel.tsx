@@ -15,14 +15,25 @@
 // NO PROGRESS ANYWHERE. Nothing here renders a milestone count, a fraction, a percentage or a bar
 // over a map. The reasoning is in maps.ts; the test is `test/maps-panel.test.tsx`, which renders
 // this component and reads the markup, because markup is where the ban can actually be checked.
+//
+// SLICE 2 ADDS A READ ON ONE CHILD, and it never shows a standing without the work under it. Butler
+// (1988) is the reason: a bare verdict with no task anchoring behaves like a grade, and in 132
+// children aged roughly 10 to 12 it depressed interest and later performance. So every row below
+// carries the artefacts it was derived from, including when there are none.
 import { useState, type JSX } from "react";
 import type { MapStatus, MasteryMap } from "@gt100k/mastery-map";
+import type { ChildWork } from "./map-evidence.js";
 import {
+  childReadView,
   editCapability,
   mapView,
+  overrideFor,
   problemKey,
+  recordOverride,
   withStatus,
+  type ChildReadVM,
   type MapVM,
+  type MilestoneReadVM,
   type MilestoneVM,
 } from "./maps.js";
 import { OrderingWhy } from "./ordering.js";
@@ -173,14 +184,198 @@ function Milestone({
   );
 }
 
+/**
+ * One milestone read against one child. Three things sit on it and they are three different
+ * claims, which is why none of them is a tick.
+ *
+ * The STANDING is how much was made, and it is never a verdict: one artefact cannot show a
+ * capability, since what a child produces varies enormously from task to task, and a person
+ * declaring it does not rescue the claim either. WHETHER TO OFFER IT is a separate question that
+ * does have to come out yes or no, because the guide either puts the thing in front of the child
+ * or does not. THE WORK is underneath both of them, always, so neither is ever read on its own.
+ */
+function Standing({
+  read,
+  onOverride,
+}: {
+  read: MilestoneReadVM;
+  onOverride: (note: string) => void;
+}): JSX.Element {
+  return (
+    <li
+      className="mapread"
+      data-testid="map-read"
+      data-id={read.id}
+      data-strength={read.strength}
+      data-reachable={read.reachable}
+    >
+      <div className="mapms__top">
+        <span className="mapms__title">{read.title}</span>
+        <span className="mapms__where">
+          {read.isTrunk ? "Trunk" : `Branch: ${read.branchModes.join(", ")}`} · {read.stage}
+        </span>
+      </div>
+      <p className="mapms__cap">{read.capability}</p>
+
+      <div className="mapread__row">
+        <span className={`chip mapstrength mapstrength--${read.strength}`}>
+          {read.strengthText}
+        </span>
+        <span className={`chip mapoffer mapoffer--${read.reachable ? "yes" : "no"}`}>
+          {read.reachable ? "Could be offered next" : "Not on offer yet"}
+        </span>
+      </div>
+      <p className="mapread__note">{read.strengthNote}</p>
+
+      {/* The work, beside the standing, every time. An empty one says so in words rather than
+          leaving a judgment sitting on the screen with nothing under it. */}
+      <div className="mapms__block" data-testid="map-read-work">
+        <span className="mapms__k">What they made</span>
+        {read.evidence.length === 0 ? (
+          <p className="mapread__nowork">Nothing has been linked to this milestone.</p>
+        ) : (
+          <ul className="mapwork">
+            {read.evidence.map((e) => (
+              <li key={e.projectId}>
+                <span className="mapwork__proj">{e.project}</span>
+                <ul className="mapwork__things">
+                  {e.made.map((m) => (
+                    <li key={m.title}>
+                      <span className="chip chip--soft">{m.kind}</span>
+                      {m.title}
+                      <span className="mapwork__at">{m.at.slice(0, 10)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {read.blockedBy.length > 0 ? (
+        <div className="mapms__block" data-testid="map-read-blocked">
+          <span className="mapms__k">What is in the way</span>
+          <ul className="mapblock">
+            {read.blockedBy.map((b) => (
+              <li key={b}>{b}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {read.override === null ? null : (
+        <div className="mapread__ov" data-testid="map-read-override">
+          <span className="mapms__k">A guide said this should not hold the next thing up</span>
+          <p className="mapread__ovnote">{read.override.note}</p>
+          <p className="mapread__ovby">
+            {read.override.by}, {read.override.at.slice(0, 10)}. It changes what can be offered and
+            it puts no standing on this milestone: that comes from artefacts and from nothing else.
+          </p>
+        </div>
+      )}
+
+      {/* Offered only where nothing was made and nobody has already said this, because those are
+          the only places it does anything: a milestone with an artefact behind it already lets the
+          next one be offered, and a second override would overwrite a record somebody signed. */}
+      {read.canOverride ? (
+        <form
+          className="mapedit"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const note = new FormData(e.currentTarget).get("note");
+            if (typeof note === "string" && note.trim() !== "") onOverride(note.trim());
+          }}
+        >
+          <label className="mapms__k" htmlFor={`ov-${read.id}`}>
+            Say this should not hold the next thing up
+          </label>
+          <div className="mapedit__row">
+            <input
+              id={`ov-${read.id}`}
+              name="note"
+              className="mapedit__in"
+              type="text"
+              placeholder="Why. This is recorded against your name."
+            />
+            <button type="submit" className="btn btn--sm btn--ghost">
+              Record override
+            </button>
+          </div>
+        </form>
+      ) : null}
+    </li>
+  );
+}
+
+function ChildStanding({
+  vm,
+  onOverride,
+}: {
+  vm: ChildReadVM;
+  onOverride: (milestoneId: string, note: string) => void;
+}): JSX.Element {
+  return (
+    <div className="mapchild" data-testid="map-child" data-kid={vm.kidId}>
+      <span className="mapms__k">Where {vm.childName} would go next on this map</span>
+      <p className="mapchild__note">{vm.stageNote}</p>
+      {/* A map that is not in use, or not fit to be, is not one to read a child against. The map
+          stays on the screen, because this is where a guide fixes it; the child does not, because
+          a standing derived from a map nobody has put into use is a claim about them made on the
+          strength of something we have not stood behind. */}
+      {vm.standingRefusal !== null ? (
+        <p className="mapchild__note" data-testid="map-standing-refusal">
+          {vm.standingRefusal}
+        </p>
+      ) : (
+        <>
+          {/* Said once, at the top, because a guide who reads a standing as a pass has been misled
+              by the screen and not by the data under it. */}
+          <p className="mapchild__note">
+            Every standing here is read off what {vm.childName} actually made. Nobody ticks
+            anything, and none of it says they have a capability: a single artefact cannot carry
+            that claim and neither can several. Whether to offer something next is a different
+            question, and it is the only one below that comes out yes or no.
+          </p>
+          {/* Two different facts, never the same sentence. One rung can be out of reach because
+              nobody can reach it yet, and another because of where the planner has this child. */}
+          {vm.ceilingNote === null ? null : (
+            <p className="mapchild__note" data-testid="map-ceiling">
+              {vm.ceilingNote}
+            </p>
+          )}
+          {vm.stageGateNote === null ? null : (
+            <p className="mapchild__note" data-testid="map-stage-gate">
+              {vm.stageGateNote}
+            </p>
+          )}
+          <ol className="mapreadlist">
+            {vm.reads.map((read) => (
+              <Standing
+                key={read.id}
+                read={read}
+                onOverride={(note) => onOverride(read.id, note)}
+              />
+            ))}
+          </ol>
+        </>
+      )}
+    </div>
+  );
+}
+
 function MapCard({
   vm,
+  child,
   onStatus,
   onCapability,
+  onOverride,
 }: {
   vm: MapVM;
+  child: ChildReadVM | null;
   onStatus: (s: MapStatus) => void;
   onCapability: (milestoneId: string, value: string) => void;
+  onOverride: (milestoneId: string, note: string) => void;
 }): JSX.Element {
   return (
     <li
@@ -234,6 +429,8 @@ function MapCard({
           <dd>{vm.reviewedBy ?? "Nobody, and it does not need anyone"}</dd>
         </div>
       </dl>
+
+      {child === null ? null : <ChildStanding vm={child} onOverride={onOverride} />}
 
       {vm.edits.length > 0 ? (
         <div className="mapms__block" data-testid="map-edits">
@@ -290,23 +487,39 @@ function MapCard({
   );
 }
 
-export function MapsPanel({ maps }: { maps: readonly MasteryMap[] }): JSX.Element {
+export function MapsPanel({
+  maps,
+  work,
+}: {
+  maps: readonly MasteryMap[];
+  /** The selected child and what they have made. Absent means the tab is showing the maps alone,
+      which is a coherent thing to look at: a map is domain knowledge and holds nobody in it. */
+  work?: ChildWork;
+}): JSX.Element {
   // The maps themselves are held here, not their view models, because both of the things a guide
   // can do are changes to the MAP: a status is a decision about use, and an edit runs through the
   // engine's `applyEdit` so it cannot skip the record, the version bump or the invalidation. The
   // view model is derived on every render from whatever the map currently says.
   const [current, setCurrent] = useState<readonly MasteryMap[]>(maps);
+  // And the child's record is held the same way, for the same reason: an override goes into it
+  // through `recordOverride`, so it lands in the record beside the ones the child arrived with
+  // rather than in a bag of session state alongside it. `recordOverride` is what refuses a second
+  // override on one milestone and an id this map does not have.
+  const [child, setChild] = useState<ChildWork | undefined>(work);
   const shown = current.map((m) => mapView(m));
 
   const change = (id: string, f: (m: MasteryMap) => MasteryMap): void =>
     setCurrent((prev) => prev.map((m) => (m.id === id ? f(m) : m)));
+
+  const readOf = (map: MasteryMap): ChildReadVM | null =>
+    child === undefined ? null : childReadView(map, child, child.overrides);
 
   return (
     <section className="wbpanel" aria-label="Mastery maps" data-testid="maps-panel">
       <header className="wbpanel__head">
         <span className="wbpanel__sub">
           The validator checks the ordering. You decide whether a map is in use, and you can correct
-          what the software wrote.
+          what the software wrote. Where a child appears, it is read off the work they made.
         </span>
       </header>
 
@@ -316,16 +529,36 @@ export function MapsPanel({ maps }: { maps: readonly MasteryMap[] }): JSX.Elemen
         </output>
       ) : (
         <ul className="wblist" data-testid="maps-list">
-          {shown.map((vm) => (
-            <MapCard
-              key={vm.id}
-              vm={vm}
-              onStatus={(s) => change(vm.id, (m) => withStatus(m, s))}
-              onCapability={(milestoneId, value) =>
-                change(vm.id, (m) => editCapability(m, milestoneId, value))
-              }
-            />
-          ))}
+          {shown.map((vm, i) => {
+            const map = current[i]!;
+            return (
+              <MapCard
+                key={vm.id}
+                vm={vm}
+                child={readOf(map)}
+                onStatus={(s) => change(vm.id, (m) => withStatus(m, s))}
+                onCapability={(milestoneId, value) =>
+                  change(vm.id, (m) => editCapability(m, milestoneId, value))
+                }
+                onOverride={(milestoneId, note) =>
+                  setChild((prev) =>
+                    prev === undefined
+                      ? prev
+                      : // The instant the guide actually recorded it. This is the one clock in the
+                        // panel and it is read in an event handler rather than in a render, so the
+                        // screen stays reproducible while the record stays true: an override is a
+                        // signed human record and stamping the pinned review clock on it would
+                        // date every one a guide ever made to the same moment.
+                        recordOverride(
+                          map,
+                          prev,
+                          overrideFor(milestoneId, note, new Date().toISOString()),
+                        ),
+                  )
+                }
+              />
+            );
+          })}
         </ul>
       )}
     </section>

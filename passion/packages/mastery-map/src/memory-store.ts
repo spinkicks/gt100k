@@ -8,11 +8,12 @@
  * not the birth of a rival. Resolution by path is therefore a lookup ACROSS the stored maps, which
  * is what `get` does below.
  */
-import { type DomainPath, serializePath } from "@gt100k/two-axis-tagging";
+import type { DomainPath } from "@gt100k/two-axis-tagging";
 
 import { canPublish } from "./edit.js";
 import type { MasteryMap } from "./model.js";
 import type { MapStore } from "./ports.js";
+import { samePath, servesPath } from "./resolve.js";
 
 /** Stable token at the head of the thrown message, so a caller keys on this and not on prose. */
 export const MAP_VERSION_CONFLICT = "VERSION_CONFLICT";
@@ -32,23 +33,23 @@ export function createMemoryMapStore(
   const byId = new Map<string, MasteryMap>();
   for (const map of seed) byId.set(map.id, structuredClone(map));
 
-  /** The stored map whose `domainPath` serialises to exactly this key, or undefined. Later writes
-      win, which only matters if two maps claim one path, and that is a conflict for a real adapter
-      to make impossible rather than something to resolve by blending them here. */
-  const atPath = (key: string): MasteryMap | undefined => {
-    let found: MasteryMap | undefined;
-    for (const map of byId.values()) {
-      if (serializePath(map.domainPath) === key) found = map;
-    }
-    return found;
-  };
-
-  /** Most specific first, then the cabin above it. A cabin query never resolves DOWN to a
-      sub-topic map: the fallback only ever widens. Whichever one wins is returned WHOLE, because a
-      merged DAG is one nobody authored and nobody validated. */
+  /**
+   * Most specific first, then the cabin above it, through the one predicate that owns that rule
+   * (`servesPath`). A cabin query never resolves DOWN to a sub-topic map: the fallback only ever
+   * widens. Whichever one wins is returned WHOLE, because a merged DAG is one nobody authored and
+   * nobody validated.
+   *
+   * Later writes win where two maps claim one path, which is a conflict for a real adapter to make
+   * impossible rather than something to resolve by blending them here.
+   */
   const resolve = (domainPath: DomainPath): MasteryMap | undefined => {
-    const exact = atPath(serializePath(domainPath));
-    return exact ?? (domainPath.length === 2 ? atPath(serializePath([domainPath[0]])) : undefined);
+    let exact: MasteryMap | undefined;
+    let wider: MasteryMap | undefined;
+    for (const map of byId.values()) {
+      if (samePath(map.domainPath, domainPath)) exact = map;
+      else if (servesPath(map.domainPath, domainPath)) wider = map;
+    }
+    return exact ?? wider;
   };
 
   return {
