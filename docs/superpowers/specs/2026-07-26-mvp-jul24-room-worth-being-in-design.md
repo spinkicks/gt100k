@@ -126,6 +126,15 @@ in three hand-tuned coordinate systems (`scene3d/anchors.ts`, `cabin/hotspots.ts
 
 - `game/store.ts`: drop `SELECTABLE_BACKENDS` and the `?cabin=` override. `cabinBackend` stops
   being state.
+- **The headless tooling drives the parked backends and must be repointed.** `store.ts`'s own
+  comment records it: `?cabin=static` is "what the headless screenshot tooling drives
+  (tools/shoot.ts, tools/smoke.ts) since it needs no GPU." Three call sites —
+  `tools/shoot.ts:68`, `tools/smoke.ts:99` (both `static`) and `tools/smoke.ts:166` (`3d`) — plus
+  `smoke.ts`'s `shoot3dCabin` function, which exists only to screenshot the parked backend. The
+  fix is to drop the query param and let the default serve: `backdrop` needs no GPU either, so the
+  tooling's requirement is met. Two selector changes come with it — the root is
+  `.cabin-backdrop`, not `.cabin-static`, and a prop is `[data-prop="nonogram"]`, not
+  `[data-gadget="nonogram"]`.
 - Park `Cabin3D.tsx` + `scene3d/`, and `CabinStatic.tsx` + `cabin/hotspots.ts`, on the **exact
   LITS / Minesweeper precedent**: left in the tree, still compiled, tests still running, removed
   from the render path, with "to reverse it" instructions recorded in `PROJECT.md`. Nothing is
@@ -211,21 +220,34 @@ misreading `SurfacedRecord` exists to prevent.
 
 The two rooms are asymmetric, and the older one is the flat one.
 
-All five `math` activities ramp per round: `GearTrain` and `BalanceScale` call
-`generateLevel(seed + round, tierFor(round))`, `RatioMixing` uses `tierForIndex(index)`,
-`FunctionMachine` and `FractionLaser` pass a `difficulty` that advances with `round`.
+**`math` has two difficulty conventions, not one** — worth stating precisely, because "match what
+math does" is ambiguous until you pick:
 
-The four `logic-games` activities do not. `Nonogram.tsx` calls
+| Activity | Model |
+|---|---|
+| `GearTrain`, `BalanceScale` | **alternate** — `tierFor(round) = round % 2 === 0 ? 0 : min(1, TIERS.length - 1)` |
+| `RatioMixing` | **alternate** — `tierForIndex(index) = index % 2 === 0 ? EASY_TIER : HARD_TIER` |
+| `FunctionMachine`, `FractionLaser` | **climb and cap** — `Math.min(MAX_DIFFICULTY, round)`, cap 2 |
+
+Three of the five alternate rather than climb, and `RatioMixing.tsx` says the alternation is
+deliberate: "Tiers alternate so a session meets both benches."
+
+The four `logic-games` activities do neither. `Nonogram.tsx` calls
 `generatePuzzle(nextGeneratorSeed(base))` and takes the generator's default `size = 5` forever;
 `Pipes` accepts a `size` prop that defaults to `EASY_SIZE`. **So Nonogram is permanently 5×5 and
 Pipes permanently easy, in the room a player meets first.** The generators already accept the
 parameter — nothing passes it.
 
-**Change.** Pass a tier that advances with round in `Nonogram` and `Pipes`, matching `math`'s
-`tierFor(round)` shape so the two rooms behave alike. `Mirror` and `Chess` are to be inspected
-before assuming a parameter exists: `Chess` is a curated bank (`bank.ts`, `freeplay.ts`), so its
-ladder is bank selection rather than generation, and it may have no sensible tier at all — in which
-case that is recorded, not forced.
+**Change.** Give `Nonogram` and `Pipes` the **alternating** model, and use that word rather than
+"ramp". Alternation is chosen over climb-and-cap for three reasons: it is the majority convention
+already; `RatioMixing` records it as intentional; and a monotonic climb is an escalation the child
+never chose, which is the same objection B2 exists to answer. Unifying `FunctionMachine` and
+`FractionLaser` onto it is **out of scope** — they are not broken, and changing them buys nothing
+this design is for.
+
+`Mirror` and `Chess` are to be inspected before assuming a parameter exists: `Chess` is a curated
+bank (`bank.ts`, `freeplay.ts`), so its ladder is bank selection rather than generation, and it may
+have no sensible tier at all — in which case that is recorded, not forced.
 
 **Test.** Per puzzle: consecutive rounds are not all the same tier.
 
@@ -236,8 +258,16 @@ a prize — but it has two weaknesses. It can outrun a child who wanted another 
 difficulty, and it produces none of the behaviour §8.5 defines as `chosen_challenge`: *took the
 harder variant though an easier one was offered.*
 
-**Change.** One shared control in `GadgetOverlay`, beside the existing "Next puzzle": a harder
-variant offered explicitly, with the easier one still available.
+**Change.** One shared control offering a harder variant explicitly, with the easier one still
+available.
+
+**Where it goes, corrected.** There is **no "Next puzzle" button in `GadgetOverlay`** — each puzzle
+owns its own (`Nonogram`'s `nextPuzzle`, `RatioMixing`'s "Next order", and so on). The overlay's one
+shared post-solve surface is its `Solved` component, which every puzzle reaches through `onSolved`.
+So the control belongs in `Solved`, and the tier it selects has to reach the puzzle: `PuzzleProps`
+gains an **optional** `tier?: number`, the overlay owns the tier as state and passes it down, and
+puzzles that do not support tiers keep compiling untouched. Optional is what keeps this a small
+change across nine components instead of a required-prop migration.
 
 **Constraints, all three load-bearing.** It is a choice, never a gate — `PROJECT.md`'s
 nothing-is-gated rule stands, and the reason is that gating depth on completion would launder an
