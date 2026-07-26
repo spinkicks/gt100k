@@ -42,11 +42,11 @@ test("full loop: map -> cabin -> gadget -> solve -> readout", () => {
 });
 
 /**
- * The `math` cabin is on the map and openable but holds no gadgets until its games ship (see
- * src/gadgets/registry.ts). Walking into it is a normal thing a player will do, so the whole path —
- * map click → store → CabinView → backdrop → prop list — has to survive it and put a real room on
- * screen. Driven through `backdrop`, the only backend, which needs no WebGL and so needs no jsdom
- * workaround.
+ * The `math` cabin is on the map and openable and holds five gadgets (Balance Scale, Gear Train,
+ * Fraction Laser, Function Machine, Ratio Mixing — see src/gadgets/registry.ts). Walking into it is
+ * a normal thing a player will do, so the whole path — map click → store → CabinView → backdrop →
+ * prop list — has to survive it and put a real room on screen. Driven through `backdrop`, the only
+ * backend, which needs no WebGL and so needs no jsdom workaround.
  *
  * This asserted zero gadgets while `math` was deliberately empty. It now holds five maths
  * activities, so the assertion flipped: the point is that the whole path works and the room comes up

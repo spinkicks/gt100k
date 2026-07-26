@@ -8,8 +8,9 @@ import type { ComponentType } from "react";
  * survive replacing every numeral with an arbitrary symbol, so they measure *deduction*, not
  * mathematics (docs/research/passion-pipeline/06-activity-design-ages-6-8.md §5 conflict C1). They
  * therefore live in `logic-games`, and `math` is REUSED — same id string, entirely new meaning — for
- * a genuinely mathematical cabin built in a later PR. Nothing about the old `math` semantics is
- * preserved: as of this change `math` has zero gadgets on purpose.
+ * a genuinely mathematical cabin. Nothing about the old `math` semantics is preserved: it now holds
+ * five gadgets of its own (Balance Scale, Gear Train, Fraction Laser, Function Machine, Ratio
+ * Mixing — see src/gadgets/registry.ts), none of which are any of the seven above.
  *
  * Three of those seven (Logic Grid, Minesweeper, LITS) were later dropped from the roster — see
  * src/gadgets/registry.ts. That is a separate, later decision about how many doors the room has, and
