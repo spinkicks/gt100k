@@ -63,3 +63,6 @@ secrets/
 *.tfstate
 *.tfstate.*
 # loop-harness scratch — never commit
+
+# subagent-driven-development scratch (ledger, briefs, review packages) — never commit
+.superpowers/
