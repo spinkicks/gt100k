@@ -1,3 +1,4 @@
+import { ProductHeader } from "@gt100k/ui";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
@@ -13,7 +14,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <ProductHeader current="concierge" />
+        {children}
+      </body>
     </html>
   );
 }

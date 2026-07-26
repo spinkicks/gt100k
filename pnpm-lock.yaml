@@ -121,6 +121,9 @@ importers:
       '@gt100k/two-axis-tagging':
         specifier: workspace:*
         version: link:../../packages/two-axis-tagging
+      '@gt100k/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       motion:
         specifier: ^12.42.0
         version: 12.42.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -317,6 +320,9 @@ importers:
       '@gt100k/student-profile':
         specifier: workspace:*
         version: link:../../packages/student-profile
+      '@gt100k/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@gt100k/wellbeing':
         specifier: workspace:*
         version: link:../../packages/wellbeing
@@ -329,6 +335,31 @@ importers:
       ogl:
         specifier: ^1.0.11
         version: 1.0.11
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.12
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: ^18.3.1
+        version: 18.3.7(@types/react@18.3.31)
+
+  passion/apps/home:
+    dependencies:
+      '@gt100k/design-tokens':
+        specifier: workspace:*
+        version: link:../../packages/design-tokens
+      '@gt100k/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      next:
+        specifier: ^14.2.15
+        version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -418,6 +449,9 @@ importers:
       '@gt100k/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
+      '@gt100k/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       next:
         specifier: ^14.2.15
         version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -685,6 +719,25 @@ importers:
         version: link:../two-axis-tagging
 
   passion/packages/two-axis-tagging: {}
+
+  passion/packages/ui:
+    dependencies:
+      '@gt100k/design-tokens':
+        specifier: workspace:*
+        version: link:../design-tokens
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.12
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: ^18.3.1
+        version: 18.3.7(@types/react@18.3.31)
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
 
   passion/packages/wellbeing:
     dependencies:

@@ -1,3 +1,4 @@
+import { ProductHeader } from "@gt100k/ui";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -34,7 +35,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }): JSX.Element {
   return (
     <html lang="en" className={`${serif.variable} ${sans.variable}`}>
-      <body>{children}</body>
+      <body>
+        <ProductHeader current="parent" />
+        {children}
+      </body>
     </html>
   );
 }
