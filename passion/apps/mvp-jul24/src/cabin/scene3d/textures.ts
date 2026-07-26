@@ -5,20 +5,11 @@
  * the real CC0 scanned textures (fetched by scripts/fetch-assets.mjs) sit on top of.
  */
 import * as THREE from "three";
+// The app's one seeded PRNG, so textures look identical every render (determinism gate — the
+// screenshot tooling diffs these pixel-for-pixel). See src/lib/rng.ts before touching it.
+import { mulberry32 } from "../../lib/rng";
 
 type RGB = [number, number, number];
-
-/** Small deterministic PRNG so textures look identical every render (determinism gate). */
-export function mulberry32(seed: number): () => number {
-  let s = seed;
-  return () => {
-    s |= 0;
-    s = (s + 0x6d2b79f5) | 0;
-    let t = Math.imul(s ^ (s >>> 15), 1 | s);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
 
 function woodAlbedoCanvas(
   size: number,
