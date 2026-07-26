@@ -41,6 +41,10 @@ export const SIGNALS: Record<string, Term> = {
     label: "Skipped",
     desc: "Was offered this and chose something else instead.",
   },
+  decline: {
+    label: "Passed Over",
+    desc: "Was there to pick and they picked something else. They have never tried this one, so it counts for very little.",
+  },
   devaluation: {
     label: "Cooling Off",
     desc: "Started downplaying or dismissing it. Interest may be fading.",

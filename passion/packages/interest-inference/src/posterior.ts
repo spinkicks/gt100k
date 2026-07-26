@@ -18,6 +18,7 @@ export function toBelief(cell: CellAccum): CellBelief {
     .map(([k]) => k);
   const disconfirming: string[] = [];
   if (cell.skips > 0) disconfirming.push(`skip:${cell.skips}`);
+  if (cell.declines > 0) disconfirming.push(`decline:${cell.declines}`);
   if (cell.prompted > 0) disconfirming.push(`prompted_return:${cell.prompted}`);
 
   return {

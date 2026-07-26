@@ -8,6 +8,15 @@ export const A_RETURN = 1.0;
 export const A_DEPTH = 0.5;
 export const B_SKIP = 0.5;
 /**
+ * Beta per `decline` × recency, divided by the choice-set size (E4).
+ *
+ * A decline is a cell that was available and passed over and that the child has never engaged.
+ * That is much weaker evidence than passing over a known love — you cannot tire of something you
+ * never tried — which is why it sits far below `B_SKIP`. Both are shares of one choice, so both
+ * are normalized by `CellEvent.choiceSetSize`.
+ */
+export const B_DECLINED = 0.15;
+/**
  * Alpha scale for the secondary reading of a two-mode action (e.g. `tinker` resolves to build
  * primary + investigate secondary). The secondary mode is inferred from the action's affordances
  * rather than directly observed, so it is weaker evidence. Preserves the weight the old
@@ -44,13 +53,18 @@ export type DepthFamily = (typeof DEPTH_FAMILIES)[number];
  * three cases it covers — a first-ever touch is not a "reopen", and a same-day return in a
  * different session is not "same session" — so it is named for what it actually asserts: this
  * engagement is not evidence of a delayed return.
+ *
+ * The two disconfirming kinds are disjoint by construction (E4): `skip` is a cell the child has
+ * engaged before and passed over anyway; `decline` is one they have never engaged. A cell must
+ * never produce both for the same session, or one behavioural fact would be scored twice.
  */
 export type EventKind =
   | "cross_day_return"
   | "same_day_engagement"
   | "prompted_return"
   | DepthFamily
-  | "skip";
+  | "skip"
+  | "decline";
 
 export type DomainPath = readonly [string] | readonly [string, string];
 export type Attribution = "domain" | "style" | "mixed";
@@ -83,6 +97,12 @@ export interface CellEvent {
    * lives here as a named constant rather than as data on the event.
    */
   readonly role?: "primary" | "secondary";
+  /**
+   * How many alternatives were passed over at this choice moment (E4). One choice is one
+   * observation, so the disconfirming mass is shared across the alternatives rather than applied
+   * in full to each. Absent means "not a choice moment", which scores at full weight.
+   */
+  readonly choiceSetSize?: number;
 }
 
 export interface CellBelief {
