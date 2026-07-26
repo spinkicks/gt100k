@@ -1,7 +1,7 @@
 /** @type {import("next").NextConfig} */
 const nextConfig = {
-  // Fully static: the page is prose plus a client-side widget with no server logic,
-  // so we export a static site that hosts on any static origin (AWS Amplify/S3).
+  // Fully static: the front door is a router, not an application. It exports to any static origin
+  // and stays up whether or not the surfaces behind it do.
   output: "export",
   images: { unoptimized: true },
   transpilePackages: ["@gt100k/design-tokens", "@gt100k/ui"],

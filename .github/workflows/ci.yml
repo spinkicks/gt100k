@@ -86,7 +86,7 @@ jobs:
       # config. Add a line when an app gains a suite.
       - name: Test (apps)
         run: |
-          for app in guide-console project-studio parent-guide concierge-app \
+          for app in home guide-console project-studio parent-guide concierge-app \
                      evidence-explorer evidence-explorer-themed mvp-jul24 tinker-cabin-app; do
             echo "::group::$app"
             pnpm --filter "@gt100k/$app" test
@@ -98,7 +98,7 @@ jobs:
       # broken site rather than a failed test.
       - name: Build apps
         run: |
-          for app in guide-console parent-guide project-studio design-lab concierge-app \
+          for app in home guide-console parent-guide project-studio design-lab concierge-app \
                      evidence-explorer evidence-explorer-themed mvp-jul24 tinker-cabin-app; do
             echo "::group::$app"
             pnpm --filter "@gt100k/$app" build

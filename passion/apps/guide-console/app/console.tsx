@@ -11,7 +11,7 @@
 import Link from "next/link";
 import { useEffect, useState, type JSX } from "react";
 import { useConsole } from "./useConsole.js";
-import { Brand, ChildSwitcher, EmptyState, Legend, SpecCard, SpecRail } from "./components.js";
+import { ChildSwitcher, EmptyState, Legend, SpecCard, SpecRail } from "./components.js";
 import { WellbeingPanel } from "./wellbeing-panel.js";
 import { PlanPanel } from "./plan-panel.js";
 import { FamilyPanel } from "./family-panel.js";
@@ -83,8 +83,10 @@ export function GuideConsole(): JSX.Element {
   return (
     <>
       <div className="app app--workbench">
+        {/* No Brand here any more: the shared ProductHeader above states the product and the
+            surface, so a second wordmark right under it was the same claim twice. The sidebar's
+            job is the roster. */}
         <aside className="sidebar">
-          <Brand />
           <ChildSwitcher ctrl={ctrl} />
           <div className="sidebar__foot">
             <span className="chip chip--soft">Synthetic data only</span>

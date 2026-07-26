@@ -96,17 +96,6 @@ export function Term({
   );
 }
 
-export function Brand(): JSX.Element {
-  return (
-    <div className="brand">
-      <span className="brand__mark" aria-hidden="true">
-        P
-      </span>
-      <span className="brand__title">PassionLab Guide Console</span>
-    </div>
-  );
-}
-
 export function StatePill({ state }: { state: string }): JSX.Element {
   const t = stateTerm(state);
   return (

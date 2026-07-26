@@ -5,6 +5,7 @@ const nextConfig = {
     "@gt100k/concierge-live",
     "@gt100k/design-tokens",
     "@gt100k/two-axis-tagging",
+    "@gt100k/ui",
   ],
   experimental: {
     extensionAlias: {

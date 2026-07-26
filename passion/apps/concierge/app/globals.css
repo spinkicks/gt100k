@@ -1,4 +1,5 @@
 @import "@gt100k/design-tokens/contract.css";
+@import "@gt100k/ui/styles.css";
 
 /*
  * PassionLab Concierge — a calm, legible chat surface (NOT a game). A child asks a niche question; the
@@ -37,6 +38,15 @@
   --good: #cfe8d6;
   --warn: #f0e2c4;
   --bad: #f0cfcf;
+
+  /* The accent was the one contract role this surface never re-pointed, because nothing here used
+     it. The shared product header does, and the contract's default (#333 ink meant for a white
+     ground) vanishes on this one — so it is mapped like every other name above: the surface's own
+     near-white, with the ground as its ink. */
+  --accent: #e8e6e1;
+  --accent-hover: #ffffff;
+  --accent-weak: rgba(255, 255, 255, 0.08);
+  --accent-ink: #262624;
 
   --font-body: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     sans-serif;
