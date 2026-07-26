@@ -37,7 +37,8 @@ export const pretty = (s: string): string => stateTerm(s).label;
 const ICON_PATHS: Record<string, string> = {
   brand: "M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2",
   layers: "M12 3 3 8l9 5 9-5-9-5ZM3 13l9 5 9-5",
-  tracked: "M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3ZM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3",
+  tracked:
+    "M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3ZM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3",
   calibrated: "M5 19a8 8 0 1 1 14 0M12 19l3.5-4.5",
   gate: "M6 21V4M6 4h11l-2 3.5L17 11H6",
   help: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M9.6 9.4a2.4 2.4 0 0 1 4.6.9c0 1.6-2.2 1.9-2.2 3.2M12 17.2h.01",
@@ -98,7 +99,9 @@ export function Term({
 export function Brand(): JSX.Element {
   return (
     <div className="brand">
-      <span className="brand__mark" aria-hidden="true">P</span>
+      <span className="brand__mark" aria-hidden="true">
+        P
+      </span>
       <span className="brand__title">PassionLab Guide Console</span>
     </div>
   );
@@ -498,4 +501,3 @@ export function Legend({ open = false }: { open?: boolean }): JSX.Element {
     </details>
   );
 }
-

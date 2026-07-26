@@ -86,7 +86,10 @@ function byReputationThenId(a: CuratedResource, b: CuratedResource): number {
  * is compatible with the message's inferred paths, ranked (reputation desc, tie by id asc) and
  * capped at MAX_DOCS. Returns `[]` when nothing covers the need.
  */
-export function resolve(lib: CuratedLibrary, request: ConciergeRequest): readonly CuratedResource[] {
+export function resolve(
+  lib: CuratedLibrary,
+  request: ConciergeRequest,
+): readonly CuratedResource[] {
   return lib
     .filter((r) => matchesRequest(r, request))
     .slice()

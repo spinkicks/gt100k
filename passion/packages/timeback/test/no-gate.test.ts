@@ -31,9 +31,27 @@ describe("no-gate proof: a prior never manufactures a cell or candidate (SC-3)",
   // A small event-bearing fixture: 3 voluntary returns on math-puzzles/investigate near `now`
   // (novelty:false so they count).
   const events: readonly CellEvent[] = [
-    { domainPath: ["math-puzzles"], mode: "investigate", kind: "cross_day_return", novelty: false, timestamp: "2026-04-01T00:00:00.000Z" },
-    { domainPath: ["math-puzzles"], mode: "investigate", kind: "cross_day_return", novelty: false, timestamp: "2026-03-31T00:00:00.000Z" },
-    { domainPath: ["math-puzzles"], mode: "investigate", kind: "cross_day_return", novelty: false, timestamp: "2026-03-30T00:00:00.000Z" },
+    {
+      domainPath: ["math-puzzles"],
+      mode: "investigate",
+      kind: "cross_day_return",
+      novelty: false,
+      timestamp: "2026-04-01T00:00:00.000Z",
+    },
+    {
+      domainPath: ["math-puzzles"],
+      mode: "investigate",
+      kind: "cross_day_return",
+      novelty: false,
+      timestamp: "2026-03-31T00:00:00.000Z",
+    },
+    {
+      domainPath: ["math-puzzles"],
+      mode: "investigate",
+      kind: "cross_day_return",
+      novelty: false,
+      timestamp: "2026-03-30T00:00:00.000Z",
+    },
   ];
 
   it("(b) per-cell evidenceMass is IDENTICAL with vs without priors (prior excluded from evidence)", () => {
@@ -41,7 +59,9 @@ describe("no-gate proof: a prior never manufactures a cell or candidate (SC-3)",
     const without = runInference(events, [], now);
 
     // Same cell set either way (a prior never adds or removes a cell).
-    expect(withP.cells.map((c) => c.cellKey).sort()).toEqual(without.cells.map((c) => c.cellKey).sort());
+    expect(withP.cells.map((c) => c.cellKey).sort()).toEqual(
+      without.cells.map((c) => c.cellKey).sort(),
+    );
     expect(without.cells.length).toBeGreaterThan(0);
 
     for (const cell of without.cells) {

@@ -136,7 +136,12 @@ function mk(
 }
 
 /** Confident AND gate-passing: novel first exposure + spread returns + a recent cluster. */
-function strongLog(kidId: string, artifactId: string, actionType: string, tag: string): Interaction[] {
+function strongLog(
+  kidId: string,
+  artifactId: string,
+  actionType: string,
+  tag: string,
+): Interaction[] {
   const returns = [...SPREAD, ...CLUSTER];
   return [
     mk(kidId, artifactId, actionType, NOVEL, `${tag}-x0`),
@@ -151,7 +156,12 @@ function strongLog(kidId: string, artifactId: string, actionType: string, tag: s
 }
 
 /** Confident but NO gate spread + NO artifact: novel + a recent cluster only (span < 56d). */
-function confidentOnlyLog(kidId: string, artifactId: string, actionType: string, tag: string): Interaction[] {
+function confidentOnlyLog(
+  kidId: string,
+  artifactId: string,
+  actionType: string,
+  tag: string,
+): Interaction[] {
   return [
     mk(kidId, artifactId, actionType, NOVEL, `${tag}-x0`),
     ...CLUSTER.map((d, i) =>
@@ -165,7 +175,12 @@ function confidentOnlyLog(kidId: string, artifactId: string, actionType: string,
 }
 
 /** Thin: a novel first exposure + a single prompted return → stays EXPLORING, empty gate timeline. */
-function thinLog(kidId: string, artifactId: string, actionType: string, tag: string): Interaction[] {
+function thinLog(
+  kidId: string,
+  artifactId: string,
+  actionType: string,
+  tag: string,
+): Interaction[] {
   return [
     mk(kidId, artifactId, actionType, NOVEL, `${tag}-x0`),
     mk(kidId, artifactId, actionType, "2026-03-25", `${tag}-p0`, { prompted: true }),
@@ -183,7 +198,12 @@ function thinLog(kidId: string, artifactId: string, actionType: string, tag: str
  * about" (Cyrus) and "engaged once, then silence" (Ari's dance, Dulce's physics) used to be the
  * same log by coincidence and are now genuinely different shapes.
  */
-function quietLog(kidId: string, artifactId: string, actionType: string, tag: string): Interaction[] {
+function quietLog(
+  kidId: string,
+  artifactId: string,
+  actionType: string,
+  tag: string,
+): Interaction[] {
   return [
     mk(kidId, artifactId, actionType, NOVEL, `${tag}-x0`),
     mk(kidId, artifactId, actionType, NOVEL_NEXT, `${tag}-x1`),
@@ -215,8 +235,12 @@ const DULCE_LOG: Interaction[] = [
   ...quietLog("kid-synthetic-004", "dulce-physics", "inspect", "dulce-physics"),
 ];
 
-const ARI_ARTIFACTS = { [serializeCellKey(["music-sound", "audio-systems"], "build")]: "defense-record-042" };
-const BEX_ARTIFACTS = { [serializeCellKey(["games-strategy", "chess"], "perform")]: "defense-record-113" };
+const ARI_ARTIFACTS = {
+  [serializeCellKey(["music-sound", "audio-systems"], "build")]: "defense-record-042",
+};
+const BEX_ARTIFACTS = {
+  [serializeCellKey(["games-strategy", "chess"], "perform")]: "defense-record-113",
+};
 const DULCE_ARTIFACTS = {
   [DULCE_GAMEDEV]: "defense-record-201",
   [DULCE_PROD]: "defense-record-202",
@@ -234,20 +258,50 @@ export function buildPilotRoster(now: string = PILOT_NOW): Roster {
 
   roster.set(
     "kid-synthetic-001",
-    runCycle(emptyProfile("kid-synthetic-001", "Ari Mercado", PILOT_PRIORS["kid-synthetic-001"], ARI_ARTIFACTS), ARI_LOG, ctx, now),
+    runCycle(
+      emptyProfile(
+        "kid-synthetic-001",
+        "Ari Mercado",
+        PILOT_PRIORS["kid-synthetic-001"],
+        ARI_ARTIFACTS,
+      ),
+      ARI_LOG,
+      ctx,
+      now,
+    ),
   );
   roster.set(
     "kid-synthetic-002",
-    runCycle(emptyProfile("kid-synthetic-002", "Bex Ito", PILOT_PRIORS["kid-synthetic-002"], BEX_ARTIFACTS), BEX_LOG, ctx, now),
+    runCycle(
+      emptyProfile(
+        "kid-synthetic-002",
+        "Bex Ito",
+        PILOT_PRIORS["kid-synthetic-002"],
+        BEX_ARTIFACTS,
+      ),
+      BEX_LOG,
+      ctx,
+      now,
+    ),
   );
   roster.set(
     "kid-synthetic-003",
-    runCycle(emptyProfile("kid-synthetic-003", "Cyrus Okafor", PILOT_PRIORS["kid-synthetic-003"]), CYRUS_LOG, ctx, now),
+    runCycle(
+      emptyProfile("kid-synthetic-003", "Cyrus Okafor", PILOT_PRIORS["kid-synthetic-003"]),
+      CYRUS_LOG,
+      ctx,
+      now,
+    ),
   );
 
   // Dulce: derive, then apply the human transitions on top of the derived store.
   const dulce0 = runCycle(
-    emptyProfile("kid-synthetic-004", "Dulce Park", PILOT_PRIORS["kid-synthetic-004"], DULCE_ARTIFACTS),
+    emptyProfile(
+      "kid-synthetic-004",
+      "Dulce Park",
+      PILOT_PRIORS["kid-synthetic-004"],
+      DULCE_ARTIFACTS,
+    ),
     DULCE_LOG,
     ctx,
     now,

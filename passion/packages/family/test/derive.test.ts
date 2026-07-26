@@ -14,7 +14,13 @@ import {
 describe("deriveFamilySignals → assessFamily (SC-7)", () => {
   const profile = buildDominantSpikeProfile(DOMINANT_NOW);
   const reads = buildDominantWellbeingReads(DOMINANT_NOW);
-  const signals = deriveFamilySignals(profile, profile.store, reads, DOMINANT_NOW, DOMINANT_CATALOG);
+  const signals = deriveFamilySignals(
+    profile,
+    profile.store,
+    reads,
+    DOMINANT_NOW,
+    DOMINANT_CATALOG,
+  );
 
   it("the 016 reads produced a stakes window and a devaluation", () => {
     expect(reads.some((r) => r.state === "DANGER_WINDOW")).toBe(true);

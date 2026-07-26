@@ -73,7 +73,8 @@ async function chat(cfg: TfyConfig, system: string, user: string): Promise<strin
 
 /** The vetted curated resources block the model must ground the craft scaffold on. */
 function groundingBlock(resources: readonly CuratedResource[]): string {
-  if (resources.length === 0) return "(no curated resources for this cell — use a generic craft floor)";
+  if (resources.length === 0)
+    return "(no curated resources for this cell — use a generic craft floor)";
   return resources.map((r) => `- ${r.title} (${r.url})`).join("\n");
 }
 

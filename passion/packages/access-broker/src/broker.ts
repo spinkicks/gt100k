@@ -52,7 +52,13 @@ export const CRAFT_FLOOR_REASON = "craft floor: widen the audience only with a s
 export const HELD_NOTE = "held: protecting rest";
 
 /** Fixed scoring weights (sum = 1.0) — deterministic, no clock/random. Do not re-open. */
-const W = { domainFit: 0.35, modeFit: 0.15, roleOrLevel: 0.25, reputation: 0.2, availabilitySoon: 0.05 } as const;
+const W = {
+  domainFit: 0.35,
+  modeFit: 0.15,
+  roleOrLevel: 0.25,
+  reputation: 0.2,
+  availabilitySoon: 0.05,
+} as const;
 
 /** Terminal lifecycle states are never re-touched by the engine. */
 const TERMINAL_STATES: ReadonlySet<Brokerage["state"]> = new Set(["transferred", "declined"]);

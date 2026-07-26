@@ -14,6 +14,8 @@ describe("parseJudgment", () => {
     expect(parseJudgment("nope", "how")).toBeNull();
   });
   it("null on out-of-range coverage", () => {
-    expect(parseJudgment(JSON.stringify({ coverage: 2, rationale: "", thin: false }), "how")).toBeNull();
+    expect(
+      parseJudgment(JSON.stringify({ coverage: 2, rationale: "", thin: false }), "how"),
+    ).toBeNull();
   });
 });

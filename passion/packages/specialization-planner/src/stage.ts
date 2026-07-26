@@ -18,8 +18,12 @@ import {
 } from "./model.js";
 
 export function deriveStage(inputs: PlanInputs): Stage {
-  const { voluntaryReturnsRecent: r, depthAccumulation: d, stretchSeeking, producerIdentity } =
-    inputs;
+  const {
+    voluntaryReturnsRecent: r,
+    depthAccumulation: d,
+    stretchSeeking,
+    producerIdentity,
+  } = inputs;
 
   if (producerIdentity && stretchSeeking && d >= DEPTH_S4 && r >= RETURN_S4) {
     return "S4_SIGNATURE";

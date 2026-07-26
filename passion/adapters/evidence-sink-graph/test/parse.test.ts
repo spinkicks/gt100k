@@ -6,11 +6,7 @@
 //
 // This file is NEVER imported by a domain (`@gt100k/project-workspace`) test — the adapter is the only
 // place that touches the teammate's evolving E1 `addNode`/`addEdge` API.
-import {
-  EDGE_TYPES,
-  NODE_TYPES,
-  assertHumanAuthority,
-} from "@gt100k/evidence-graph";
+import { EDGE_TYPES, NODE_TYPES, assertHumanAuthority } from "@gt100k/evidence-graph";
 import type { EdgeType, EvidenceGraph, NodeType } from "@gt100k/evidence-graph";
 import { NodeCryptoHasher } from "@gt100k/evidence-hash-node";
 import { logEvent, startProject, stubHasher, toEvidence } from "@gt100k/project-workspace";
@@ -32,39 +28,103 @@ const BRIEF: ProjectBrief = {
 
 /** Build a synthetic all-10-kinds project (incl. the §4.2 stuck→revision→artifact chain) — no clock. */
 function makeProject(): Project {
-  let project = startProject({ brief: BRIEF, kidId: "kid-ada", ageBand: "9-11" }, "2026-01-01T08:00:00.000Z");
+  let project = startProject(
+    { brief: BRIEF, kidId: "kid-ada", ageBand: "9-11" },
+    "2026-01-01T08:00:00.000Z",
+  );
   const last = (p: Project): string => {
     const e = p.events[p.events.length - 1];
     if (e === undefined) throw new Error("no event");
     return e.id;
   };
 
-  project = logEvent(project, { kind: "session", at: "2026-01-01T09:00:00.000Z", text: "Opened my bridge project." }, "");
-  project = logEvent(project, { kind: "decision", at: "2026-01-01T09:10:00.000Z", text: "I'll use a triangle truss." }, "");
-  project = logEvent(project, { kind: "attempt", at: "2026-01-01T09:30:00.000Z", text: "Folded 20 beams, taped a deck." }, "");
+  project = logEvent(
+    project,
+    { kind: "session", at: "2026-01-01T09:00:00.000Z", text: "Opened my bridge project." },
+    "",
+  );
+  project = logEvent(
+    project,
+    { kind: "decision", at: "2026-01-01T09:10:00.000Z", text: "I'll use a triangle truss." },
+    "",
+  );
+  project = logEvent(
+    project,
+    { kind: "attempt", at: "2026-01-01T09:30:00.000Z", text: "Folded 20 beams, taped a deck." },
+    "",
+  );
   const attemptId = last(project);
   project = logEvent(
     project,
-    { kind: "outcome", at: "2026-01-01T09:45:00.000Z", text: "It collapsed under one book. Stuck.", stuck: true, refs: [attemptId] },
+    {
+      kind: "outcome",
+      at: "2026-01-01T09:45:00.000Z",
+      text: "It collapsed under one book. Stuck.",
+      stuck: true,
+      refs: [attemptId],
+    },
     "",
   );
   const stuckId = last(project);
   project = logEvent(
     project,
-    { kind: "ai_help", at: "2026-01-01T10:00:00.000Z", text: "A robot helped me learn triangles are stronger.", aiTool: { name: "studybot", version: "1.0.0" }, refs: [stuckId] },
+    {
+      kind: "ai_help",
+      at: "2026-01-01T10:00:00.000Z",
+      text: "A robot helped me learn triangles are stronger.",
+      aiTool: { name: "studybot", version: "1.0.0" },
+      refs: [stuckId],
+    },
     "",
   );
-  project = logEvent(project, { kind: "revision", at: "2026-01-01T10:20:00.000Z", text: "Rebuilt with triangle bracing.", refs: [stuckId] }, "");
+  project = logEvent(
+    project,
+    {
+      kind: "revision",
+      at: "2026-01-01T10:20:00.000Z",
+      text: "Rebuilt with triangle bracing.",
+      refs: [stuckId],
+    },
+    "",
+  );
   const revisionId = last(project);
   project = logEvent(
     project,
-    { kind: "artifact", at: "2026-01-01T10:50:00.000Z", text: "My braced bridge v2.", refs: [revisionId], artifact: { title: "Braced bridge v2", kind: "photo", ref: "local://v2.jpg" } },
+    {
+      kind: "artifact",
+      at: "2026-01-01T10:50:00.000Z",
+      text: "My braced bridge v2.",
+      refs: [revisionId],
+      artifact: { title: "Braced bridge v2", kind: "photo", ref: "local://v2.jpg" },
+    },
     "",
   );
   const artifactId = last(project);
-  project = logEvent(project, { kind: "reflection", at: "2026-01-01T11:00:00.000Z", text: "Triangles spread the weight." }, "");
-  project = logEvent(project, { kind: "milestone", at: "2026-01-01T11:15:00.000Z", text: "It held ten books!", refs: [artifactId] }, "");
-  project = logEvent(project, { kind: "showcase", at: "2026-01-01T11:30:00.000Z", text: "I showed the whole class.", refs: [artifactId] }, "");
+  project = logEvent(
+    project,
+    { kind: "reflection", at: "2026-01-01T11:00:00.000Z", text: "Triangles spread the weight." },
+    "",
+  );
+  project = logEvent(
+    project,
+    {
+      kind: "milestone",
+      at: "2026-01-01T11:15:00.000Z",
+      text: "It held ten books!",
+      refs: [artifactId],
+    },
+    "",
+  );
+  project = logEvent(
+    project,
+    {
+      kind: "showcase",
+      at: "2026-01-01T11:30:00.000Z",
+      text: "I showed the whole class.",
+      refs: [artifactId],
+    },
+    "",
+  );
 
   return project;
 }
@@ -92,7 +152,14 @@ describe("graphEvidenceSink — real SHA-256 EvidenceSink over @gt100k/evidence-
     // The §4.3 key edges are present: authorship, tool use, the stuck-outcome contradiction, derivation,
     // and the showcase release + validation.
     const presentEdgeTypes = new Set(graph.edges.map((e) => e.type));
-    for (const expected of ["authored_by", "used_tool", "contradicts", "derived_from", "released_as", "validates"] as const) {
+    for (const expected of [
+      "authored_by",
+      "used_tool",
+      "contradicts",
+      "derived_from",
+      "released_as",
+      "validates",
+    ] as const) {
       expect(presentEdgeTypes).toContain(expected);
     }
 
@@ -139,7 +206,12 @@ describe("graphEvidenceSink — real SHA-256 EvidenceSink over @gt100k/evidence-
     }
 
     it("drops an event with an unknown kind (pre-fold validation) — graph identical to the clean fold", () => {
-      const bad = { id: "evt_bad_kind", kind: "explode" as WorkEvent["kind"], at: "2026-01-01T09:20:00.000Z", text: "not a real kind" };
+      const bad = {
+        id: "evt_bad_kind",
+        kind: "explode" as WorkEvent["kind"],
+        at: "2026-01-01T09:20:00.000Z",
+        text: "not a real kind",
+      };
       const project = withInjectedEvent(bad);
 
       let graph!: EvidenceGraph;

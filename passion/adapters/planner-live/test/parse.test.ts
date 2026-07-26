@@ -4,7 +4,11 @@
 import { describe, it, expect } from "vitest";
 import { parseBriefFields, coerceBriefOrStub } from "../src/parse.js";
 import type { BriefContext } from "@gt100k/specialization-planner";
-import { BRIEF_VALID, BRIEF_MISSING_FIELD, BRIEF_EMPTY_FIELD } from "../src/__fixtures__/tfy-responses.js";
+import {
+  BRIEF_VALID,
+  BRIEF_MISSING_FIELD,
+  BRIEF_EMPTY_FIELD,
+} from "../src/__fixtures__/tfy-responses.js";
 
 const ctx: BriefContext = {
   domainPath: ["music-sound", "production"],

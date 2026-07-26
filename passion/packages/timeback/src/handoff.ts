@@ -17,10 +17,7 @@ export interface DailyHandoff {
 }
 
 /** Build the one-way daily handoff for a snapshot + day. Pure; no back-channel, no reward/grade field. */
-export function buildDailyHandoff(
-  snapshot: TimeBackSnapshot,
-  date: string,
-): DailyHandoff {
+export function buildDailyHandoff(snapshot: TimeBackSnapshot, date: string): DailyHandoff {
   return {
     kidId: snapshot.kidId,
     date,

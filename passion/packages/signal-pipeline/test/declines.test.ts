@@ -46,7 +46,12 @@ const SURFACED: SurfacedRecord[] = [
 ];
 
 const derive = (interactions: Interaction[], surfaced: SurfacedRecord[]) =>
-  deriveSkips(surfaced, buildActionEvents(interactions, catalog, DEFAULTS).built, catalog, DEFAULTS);
+  deriveSkips(
+    surfaced,
+    buildActionEvents(interactions, catalog, DEFAULTS).built,
+    catalog,
+    DEFAULTS,
+  );
 
 describe("deriveSkips — declines (E4)", () => {
   it("a cell engaged in the session is neither skipped nor declined", () => {

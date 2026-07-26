@@ -14,7 +14,13 @@ import {
 // The exact flags each §6.2 row must produce (state + two knobs + the three action flags + escalate).
 type RowExpectation = Pick<
   WellbeingRead,
-  "state" | "challenge" | "pressure" | "backOff" | "rest" | "reduceEvaluativeSurfacing" | "escalateToHuman"
+  | "state"
+  | "challenge"
+  | "pressure"
+  | "backOff"
+  | "rest"
+  | "reduceEvaluativeSurfacing"
+  | "escalateToHuman"
 >;
 
 const GOLDEN: ReadonlyArray<readonly [string, WellbeingSignals, RowExpectation]> = [

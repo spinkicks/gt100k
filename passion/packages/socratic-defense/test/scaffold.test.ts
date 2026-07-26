@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { initialCoverage, updateCoverage, selectNextFacet, isComplete, computeGaps } from "../src/scaffold.js";
+import {
+  initialCoverage,
+  updateCoverage,
+  selectNextFacet,
+  isComplete,
+  computeGaps,
+} from "../src/scaffold.js";
 
 describe("scaffold", () => {
   it("coverage starts at 0 for every facet", () => {

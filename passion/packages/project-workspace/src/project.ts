@@ -118,8 +118,6 @@ export function hasPerseverance(project: Project): boolean {
     }
     return events
       .slice(index + 1)
-      .some(
-        (later) => ITERATION_KINDS.has(later.kind) && (later.refs ?? []).includes(event.id),
-      );
+      .some((later) => ITERATION_KINDS.has(later.kind) && (later.refs ?? []).includes(event.id));
   });
 }

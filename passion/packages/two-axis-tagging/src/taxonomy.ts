@@ -2,8 +2,14 @@
 // fine = sub-topic (actionable). The tail is extensible: a sub-topic can be minted at runtime,
 // always parented to an existing cabin. Minting never creates a new cabin.
 export const CABINS = [
-  "music-sound", "code-computers", "games-strategy", "making-engineering",
-  "art-motion", "influence-media", "science-nature", "math-puzzles",
+  "music-sound",
+  "code-computers",
+  "games-strategy",
+  "making-engineering",
+  "art-motion",
+  "influence-media",
+  "science-nature",
+  "math-puzzles",
 ] as const;
 
 export type CabinId = (typeof CABINS)[number];
@@ -32,7 +38,11 @@ export function serializePath(p: DomainPath): string {
 
 // Deterministic slug so minting is idempotent by (cabin,label).
 export function slugify(label: string): string {
-  return label.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return label
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 export interface Taxonomy {
@@ -47,7 +57,9 @@ export function createTaxonomy(): Taxonomy {
   for (const c of CABINS) subs.set(c, new Set(SEED_SUBTOPICS[c]));
 
   return {
-    hasCabin(id): id is CabinId { return isCabinId(id); },
+    hasCabin(id): id is CabinId {
+      return isCabinId(id);
+    },
     hasPath(p) {
       if (!isCabinId(p[0])) return false;
       if (p.length === 1) return true;

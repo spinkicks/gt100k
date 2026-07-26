@@ -36,7 +36,9 @@ export function FamilyPanel({
             <li className="wbitem wbitem--review" data-testid="family-review">
               <div className="wbitem__top">
                 <span className="wbitem__spec">Needs your review</span>
-                <span className="wbitem__state">{RISK_LABEL[read.pressureWatch.risk] ?? read.pressureWatch.risk}</span>
+                <span className="wbitem__state">
+                  {RISK_LABEL[read.pressureWatch.risk] ?? read.pressureWatch.risk}
+                </span>
               </div>
               {read.pressureWatch.antecedents.length > 0 ? (
                 <div className="planpcde">
@@ -56,7 +58,9 @@ export function FamilyPanel({
             <div className="wbitem__top">
               <span className="wbitem__spec">Warm-demanding posture</span>
               {!read.escalateToHuman ? (
-                <span className="wbitem__state">{RISK_LABEL[read.pressureWatch.risk] ?? read.pressureWatch.risk}</span>
+                <span className="wbitem__state">
+                  {RISK_LABEL[read.pressureWatch.risk] ?? read.pressureWatch.risk}
+                </span>
               ) : null}
             </div>
             <dl className="plangrid">
@@ -112,7 +116,8 @@ export function FamilyPanel({
                 ))}
               </ul>
               <p className="planproject__owns">
-                Offers, not mandates — the child keeps choosing the problem, the method, and the pace.
+                Offers, not mandates — the child keeps choosing the problem, the method, and the
+                pace.
               </p>
             </li>
           ) : null}

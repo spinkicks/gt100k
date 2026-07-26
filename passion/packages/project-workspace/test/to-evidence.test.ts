@@ -2,17 +2,8 @@
 // NodeType with the §4.3 edges, the graph passes the package verifier, and an identical project
 // yields an identical graph (deterministic stub hasher, no network). This is the loop's proof that
 // the mapping is real — it runs the evidence-graph verifier over the built graph.
-import {
-  EDGE_TYPES,
-  NODE_TYPES,
-  assertHumanAuthority,
-} from "@gt100k/evidence-graph";
-import type {
-  EdgeType,
-  EvidenceGraph,
-  EvidenceNode,
-  NodeType,
-} from "@gt100k/evidence-graph";
+import { EDGE_TYPES, NODE_TYPES, assertHumanAuthority } from "@gt100k/evidence-graph";
+import type { EdgeType, EvidenceGraph, EvidenceNode, NodeType } from "@gt100k/evidence-graph";
 import { describe, expect, it } from "vitest";
 
 import { makeFixtureProject } from "../src/__fixtures__/project.js";
@@ -142,12 +133,13 @@ describe("toEvidence (§4.3 closed-taxonomy mapping)", () => {
       ),
     ).toBe(true);
     // Artifact authored_by the child + derived_from the revision.
-    expect(graph.edges.some((edge) => edge.type === "authored_by" && edge.from === artifact.id)).toBe(
-      true,
-    );
+    expect(
+      graph.edges.some((edge) => edge.type === "authored_by" && edge.from === artifact.id),
+    ).toBe(true);
     expect(
       graph.edges.some(
-        (edge) => edge.type === "derived_from" && edge.from === artifact.id && edge.to === revision.id,
+        (edge) =>
+          edge.type === "derived_from" && edge.from === artifact.id && edge.to === revision.id,
       ),
     ).toBe(true);
   });
@@ -164,7 +156,8 @@ describe("toEvidence (§4.3 closed-taxonomy mapping)", () => {
     expect(showcase.type).toBe("Review");
     expect(
       graph.edges.some(
-        (edge) => edge.type === "released_as" && edge.from === artifact.id && edge.to === showcase.id,
+        (edge) =>
+          edge.type === "released_as" && edge.from === artifact.id && edge.to === showcase.id,
       ),
     ).toBe(true);
     expect(

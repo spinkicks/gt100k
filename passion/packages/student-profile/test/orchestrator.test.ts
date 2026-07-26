@@ -29,7 +29,15 @@ const PRIORS: readonly DomainPrior[] = [
 const ARTIFACTS = { [BUILD_KEY]: "defense-record-042" };
 
 function assemble(ts: string, session: string, extra: Partial<Interaction> = {}): Interaction {
-  return { kidId: KID, artifactId: SYNTH.id, actionType: "assemble", timestamp: ts, prompted: false, sessionId: session, ...extra };
+  return {
+    kidId: KID,
+    artifactId: SYNTH.id,
+    actionType: "assemble",
+    timestamp: ts,
+    prompted: false,
+    sessionId: session,
+    ...extra,
+  };
 }
 
 // One first-exposure (novel) engagement + ten non-novel voluntary returns, every other day over
@@ -48,11 +56,18 @@ const INTERACTIONS: Interaction[] = [
   assemble("2026-02-22T00:00:00.000Z", "s7"),
   assemble("2026-02-24T00:00:00.000Z", "s8"),
   assemble("2026-02-26T00:00:00.000Z", "s9"),
-  assemble("2026-02-28T00:00:00.000Z", "s10", { depthSignals: [{ kind: "artifact_competence", value: 1 }] }),
+  assemble("2026-02-28T00:00:00.000Z", "s10", {
+    depthSignals: [{ kind: "artifact_competence", value: 1 }],
+  }),
 ];
 
 const CTX = { catalog: CATALOG };
-const PASSED_GATE: GateStatus = { gapSurvived: true, durable: true, hasArtifact: true, passed: true };
+const PASSED_GATE: GateStatus = {
+  gapSurvived: true,
+  durable: true,
+  hasArtifact: true,
+  passed: true,
+};
 const GUIDE: HumanActor = { id: "guide-1", role: "guide" };
 
 describe("runCycle", () => {
@@ -83,7 +98,13 @@ describe("runCycle", () => {
   it("preserves a human transition across a no-op cycle", () => {
     const p1 = runCycle(emptyProfile(KID, "Kid", PRIORS, ARTIFACTS), INTERACTIONS, CTX, NOW);
     // A human promotes the EMERGING build hypothesis to CANDIDATE (gate + sign-off).
-    const promoted = promote(p1.store, BUILD_ID, GUIDE, { gate: PASSED_GATE, autonomySignOff: true }, NOW);
+    const promoted = promote(
+      p1.store,
+      BUILD_ID,
+      GUIDE,
+      { gate: PASSED_GATE, autonomySignOff: true },
+      NOW,
+    );
     expect(getForKid(promoted, KID).find((h) => h.id === BUILD_ID)!.state).toBe("CANDIDATE");
 
     const p3 = runCycle({ ...p1, store: promoted }, [], CTX, NOW);

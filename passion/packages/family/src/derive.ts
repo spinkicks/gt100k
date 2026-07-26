@@ -38,7 +38,8 @@ export function deriveFamilySignals(
   // 013 — over-identification proxy: one spike dominates the child's tracked evidence mass.
   const masses = spikes.map((h) => h.evidence.mean).filter((m) => m > 0);
   const total = masses.reduce((sum, m) => sum + m, 0);
-  const overIdentification = total > 0 && Math.max(...masses) / total >= OVER_IDENTIFICATION_MIN_SHARE;
+  const overIdentification =
+    total > 0 && Math.max(...masses) / total >= OVER_IDENTIFICATION_MIN_SHARE;
 
   // 016 reads — behavioral windows surfaced by the wellbeing engine.
   const anyStakesEvent = wellbeingReads.some((r) => r.state === "DANGER_WINDOW");

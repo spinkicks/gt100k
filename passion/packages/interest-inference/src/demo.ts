@@ -27,7 +27,13 @@ export function runDemo(): InterestRead {
       }),
     ),
     // Still here to show it is carried and still unscored for interest (E11).
-    { domainPath: ["music-sound", "audio-systems"], mode: "build", kind: "artifact_competence", novelty: false, timestamp: day(12) },
+    {
+      domainPath: ["music-sound", "audio-systems"],
+      mode: "build",
+      kind: "artifact_competence",
+      novelty: false,
+      timestamp: day(12),
+    },
   ];
   return runInference(events, priors, now);
 }

@@ -53,7 +53,9 @@ describe("checkCompliance — injected violations, one per check (SC-3..SC-7)", 
     const bad: InterestHypothesis = {
       ...clone(base),
       state: "CANDIDATE",
-      history: [{ at: PILOT_NOW, from: "EXPLORING", to: "EXPLORING", actor: "SYSTEM", reason: "created" }],
+      history: [
+        { at: PILOT_NOW, from: "EXPLORING", to: "EXPLORING", actor: "SYSTEM", reason: "created" },
+      ],
     };
     const report = checkCompliance(singleHypRoster(bad));
     expect(report.ok).toBe(false);
@@ -61,7 +63,11 @@ describe("checkCompliance — injected violations, one per check (SC-3..SC-7)", 
     // exactly GC4 trips
     expect(report.checks.filter((c) => !c.ok).map((c) => c.id)).toEqual(["GC4"]);
     expect(report.violations).toHaveLength(1);
-    expect(report.violations[0]).toMatchObject({ checkId: "GC4", kidId: bad.kidId, cellKey: bad.cellKey });
+    expect(report.violations[0]).toMatchObject({
+      checkId: "GC4",
+      kidId: bad.kidId,
+      cellKey: bad.cellKey,
+    });
   });
 
   it("GC1 fails when an object carries a scalar `score`/`label` field (SC-4)", () => {
@@ -88,7 +94,13 @@ describe("checkCompliance — injected violations, one per check (SC-3..SC-7)", 
       ...clone(base),
       history: [
         ...base.history,
-        { at: PILOT_NOW, from: "EMERGING", to: "EXPLORING", actor: "SYSTEM", reason: "demote on silence" },
+        {
+          at: PILOT_NOW,
+          from: "EMERGING",
+          to: "EXPLORING",
+          actor: "SYSTEM",
+          reason: "demote on silence",
+        },
       ],
     };
     const report = checkCompliance(singleHypRoster(bad));

@@ -9,7 +9,11 @@ import { okWellbeing } from "../src/__fixtures__/wellbeing.js";
 const NOW = "2026-07-24T00:00:00.000Z";
 const deps = { catalog: stubCatalog };
 const runPlan = (plan: SpecializationPlan, ageBand: "6-8" | "9-11" | "12-14"): BrokerPlan =>
-  brokerAccess({ plan, wellbeing: okWellbeing(plan.kidId, plan.cellKey), ageBand, existing: [] }, deps, NOW);
+  brokerAccess(
+    { plan, wellbeing: okWellbeing(plan.kidId, plan.cellKey), ageBand, existing: [] },
+    deps,
+    NOW,
+  );
 
 // ── SC-7: no gamification key anywhere ─────────────────────────────────────────────────────────
 const FORBIDDEN = /score|rank|streak|points|xp|badge|leaderboard|win|lose/i;
@@ -21,7 +25,9 @@ function assertNoForbiddenKeys(obj: unknown, path = "root"): void {
     return;
   }
   for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
-    expect(FORBIDDEN.test(k), `${path}.${k} matches the forbidden gamification pattern`).toBe(false);
+    expect(FORBIDDEN.test(k), `${path}.${k} matches the forbidden gamification pattern`).toBe(
+      false,
+    );
     assertNoForbiddenKeys(v, `${path}.${k}`);
   }
 }
@@ -34,7 +40,11 @@ describe("guardrails (SC-7): no gamification, guide-only, family-not-judge", () 
     assertNoForbiddenKeys(runPlan(PLAN_S3, "9-11"));
     // a fully-advanced Brokerage
     const b = approve(
-      proposeMatch(runPlan(PLAN_S3, "9-11").mentorMatches[0]!, { kidId: PLAN_S3.kidId, cellKey: PLAN_S3.cellKey }, NOW),
+      proposeMatch(
+        runPlan(PLAN_S3, "9-11").mentorMatches[0]!,
+        { kidId: PLAN_S3.kidId, cellKey: PLAN_S3.cellKey },
+        NOW,
+      ),
       { guardianConsent: true, guideId: "guide-1" },
       NOW,
     );
@@ -43,7 +53,11 @@ describe("guardrails (SC-7): no gamification, guide-only, family-not-judge", () 
 
   it("no child-facing field: Brokerage records the GUIDE (approvedBy), never a child id", () => {
     const b = approve(
-      proposeMatch(runPlan(PLAN_S3, "9-11").mentorMatches[0]!, { kidId: PLAN_S3.kidId, cellKey: PLAN_S3.cellKey }, NOW),
+      proposeMatch(
+        runPlan(PLAN_S3, "9-11").mentorMatches[0]!,
+        { kidId: PLAN_S3.kidId, cellKey: PLAN_S3.cellKey },
+        NOW,
+      ),
       { guardianConsent: true, guideId: "guide-1" },
       NOW,
     );
@@ -89,7 +103,12 @@ describe("guardrails (SC-7): no gamification, guide-only, family-not-judge", () 
       },
     ];
     const bp = brokerAccess(
-      { plan: PLAN_S3, wellbeing: okWellbeing(PLAN_S3.kidId, PLAN_S3.cellKey), ageBand: "9-11", existing },
+      {
+        plan: PLAN_S3,
+        wellbeing: okWellbeing(PLAN_S3.kidId, PLAN_S3.cellKey),
+        ageBand: "9-11",
+        existing,
+      },
       deps,
       NOW,
     );

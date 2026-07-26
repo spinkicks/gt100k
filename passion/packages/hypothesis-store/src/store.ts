@@ -11,8 +11,7 @@ export function getForKid(store: HypothesisStore, kidId: string): InterestHypoth
   return Object.values(store.byId)
     .filter((h) => h.kidId === kidId)
     .sort(
-      (a, b) =>
-        b.evidence.lowerBound - a.evidence.lowerBound || a.cellKey.localeCompare(b.cellKey),
+      (a, b) => b.evidence.lowerBound - a.evidence.lowerBound || a.cellKey.localeCompare(b.cellKey),
     );
 }
 

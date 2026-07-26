@@ -25,7 +25,10 @@ interface NotChosen {
  * care about. A `decline` is by definition about a cell the child has never engaged, so there is
  * no engagement to key on and the afforded modes are the only description of what was on offer.
  */
-function offeredCells(art: Artifact, engaged: ReadonlyMap<string, string> | undefined): Map<string, string> {
+function offeredCells(
+  art: Artifact,
+  engaged: ReadonlyMap<string, string> | undefined,
+): Map<string, string> {
   const cells = new Map<string, string>();
   if (engaged) for (const [cellKey, mode] of engaged) cells.set(cellKey, mode);
   for (const mode of art.affordedModes) cells.set(serializeCellKey(art.domainPath, mode), mode);
@@ -91,7 +94,10 @@ export function deriveSkips(
     if (!art) continue;
     const t = Date.parse(s.timestamp);
     if (!Number.isNaN(t)) {
-      for (const cellKey of offeredCells(art, engagedByKidArtifact.get(ka(s.kidId, s.artifactId))).keys()) {
+      for (const cellKey of offeredCells(
+        art,
+        engagedByKidArtifact.get(ka(s.kidId, s.artifactId)),
+      ).keys()) {
         noteExposure(s.kidId, cellKey, t);
       }
     }
@@ -108,7 +114,10 @@ export function deriveSkips(
     const notChosen = new Map<string, NotChosen>();
     for (const s of records) {
       const art = catalog.get(s.artifactId)!;
-      for (const [cellKey, mode] of offeredCells(art, engagedByKidArtifact.get(ka(kidId, s.artifactId)))) {
+      for (const [cellKey, mode] of offeredCells(
+        art,
+        engagedByKidArtifact.get(ka(kidId, s.artifactId)),
+      )) {
         if (notChosen.has(cellKey)) continue; // one cell offered twice in a session is still one choice
         if (engagedThisSession?.has(cellKey)) continue; // taken this session → chosen, not passed over
         if (isNovelty(firstExposure, kidId, cellKey, s.timestamp, config)) continue; // still novel → excluded

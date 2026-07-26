@@ -87,9 +87,7 @@ describe("consoleViewModel", () => {
     const vm = consoleViewModel(s, "kid-1");
     // EMERGING, no gate supplied → the gap-survival probe.
     expect(vm.cards[0]!.state).toBe("EMERGING");
-    expect(vm.cards[0]!.nextProbe).toBe(
-      "Watch for a voluntary return after a ≥14-day quiet gap.",
-    );
+    expect(vm.cards[0]!.nextProbe).toBe("Watch for a voluntary return after a ≥14-day quiet gap.");
     // EXPLORING (thin) → offer the cell again unprompted.
     expect(vm.cards[1]!.state).toBe("EXPLORING");
     expect(vm.cards[1]!.nextProbe).toBe(

@@ -30,16 +30,64 @@ const CTX = { catalog: CATALOG };
 
 async function main(): Promise<void> {
   const ari = runCycle(
-    emptyProfile(KID, "Ari", [{ domain: "music-sound", inEnvironment: true, aptitudeTilt: 0, discretionaryTilt: 0 }], {
-      "music-sound/audio-systems::build": "defense-record-042",
-    }),
+    emptyProfile(
+      KID,
+      "Ari",
+      [{ domain: "music-sound", inEnvironment: true, aptitudeTilt: 0, discretionaryTilt: 0 }],
+      {
+        "music-sound/audio-systems::build": "defense-record-042",
+      },
+    ),
     [
-      { kidId: KID, artifactId: "synth-01", actionType: "assemble", timestamp: "2026-01-01T00:00:00.000Z", prompted: false, sessionId: "s0" },
-      { kidId: KID, artifactId: "synth-01", actionType: "assemble", timestamp: "2026-02-20T00:00:00.000Z", prompted: false, sessionId: "s1" },
-      { kidId: KID, artifactId: "synth-01", actionType: "assemble", timestamp: "2026-02-22T00:00:00.000Z", prompted: false, sessionId: "s2" },
-      { kidId: KID, artifactId: "synth-01", actionType: "assemble", timestamp: "2026-02-24T00:00:00.000Z", prompted: false, sessionId: "s3" },
-      { kidId: KID, artifactId: "synth-01", actionType: "assemble", timestamp: "2026-02-26T00:00:00.000Z", prompted: false, sessionId: "s4" },
-      { kidId: KID, artifactId: "synth-01", actionType: "assemble", timestamp: "2026-02-28T00:00:00.000Z", prompted: false, sessionId: "s5", depthSignals: [{ kind: "artifact_competence", value: 1 }] },
+      {
+        kidId: KID,
+        artifactId: "synth-01",
+        actionType: "assemble",
+        timestamp: "2026-01-01T00:00:00.000Z",
+        prompted: false,
+        sessionId: "s0",
+      },
+      {
+        kidId: KID,
+        artifactId: "synth-01",
+        actionType: "assemble",
+        timestamp: "2026-02-20T00:00:00.000Z",
+        prompted: false,
+        sessionId: "s1",
+      },
+      {
+        kidId: KID,
+        artifactId: "synth-01",
+        actionType: "assemble",
+        timestamp: "2026-02-22T00:00:00.000Z",
+        prompted: false,
+        sessionId: "s2",
+      },
+      {
+        kidId: KID,
+        artifactId: "synth-01",
+        actionType: "assemble",
+        timestamp: "2026-02-24T00:00:00.000Z",
+        prompted: false,
+        sessionId: "s3",
+      },
+      {
+        kidId: KID,
+        artifactId: "synth-01",
+        actionType: "assemble",
+        timestamp: "2026-02-26T00:00:00.000Z",
+        prompted: false,
+        sessionId: "s4",
+      },
+      {
+        kidId: KID,
+        artifactId: "synth-01",
+        actionType: "assemble",
+        timestamp: "2026-02-28T00:00:00.000Z",
+        prompted: false,
+        sessionId: "s5",
+        depthSignals: [{ kind: "artifact_competence", value: 1 }],
+      },
     ],
     CTX,
     NOW,

@@ -163,7 +163,9 @@ export function Hud({ view }: { view: ExplorerView }): JSX.Element {
           <span className="hud-trace-text">
             <span className="hud-trace-title">Trace lineage</span>
             <span className="hud-trace-sub">
-              {hasTrace ? "Highlighting the evidence behind the grade" : "Follow the outcome to its roots"}
+              {hasTrace
+                ? "Highlighting the evidence behind the grade"
+                : "Follow the outcome to its roots"}
             </span>
           </span>
         </button>
@@ -244,12 +246,7 @@ export function Hud({ view }: { view: ExplorerView }): JSX.Element {
 
       <AnimatePresence initial={false}>
         {drawer === "filters" && (
-          <motion.div
-            key="filters"
-            id={filtersId}
-            className="hud-drawer"
-            {...drawerMotion}
-          >
+          <motion.div key="filters" id={filtersId} className="hud-drawer" {...drawerMotion}>
             <div className="hud-drawer-inner">
               <div className="hud-drawer-head">
                 <span className="hud-drawer-title">Bodies</span>
@@ -281,7 +278,10 @@ export function Hud({ view }: { view: ExplorerView }): JSX.Element {
                             opacity={on ? 0.2 : 0.06}
                           />
                           <g
-                            style={{ color: `var(--${NODE_COLOR_ROLES[t]})`, opacity: on ? 1 : 0.4 }}
+                            style={{
+                              color: `var(--${NODE_COLOR_ROLES[t]})`,
+                              opacity: on ? 1 : 0.4,
+                            }}
                           >
                             <Glyph glyph={NODE_GLYPHS[t]} r={7} />
                           </g>
@@ -318,12 +318,7 @@ export function Hud({ view }: { view: ExplorerView }): JSX.Element {
         )}
 
         {drawer === "display" && (
-          <motion.div
-            key="display"
-            id={displayId}
-            className="hud-drawer"
-            {...drawerMotion}
-          >
+          <motion.div key="display" id={displayId} className="hud-drawer" {...drawerMotion}>
             <div className="hud-drawer-inner">
               <p className="hud-caption">Presentation only — the evidence never changes.</p>
               <Segmented

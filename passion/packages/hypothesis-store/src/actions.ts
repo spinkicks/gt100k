@@ -40,13 +40,7 @@ export function promote(
   if (!canTransition(h.state, to, "human")) throw new Error(`illegal transition ${h.state}→${to}`);
   return put(
     store,
-    withState(
-      h,
-      to,
-      actor.id,
-      to === "CANDIDATE" ? "promoted (gate+signoff)" : "activated",
-      now,
-    ),
+    withState(h, to, actor.id, to === "CANDIDATE" ? "promoted (gate+signoff)" : "activated", now),
   );
 }
 

@@ -49,7 +49,10 @@ function log(project: Project, event: Omit<WorkEvent, "id">): [Project, string] 
 /** Build the demo child's projects fresh (deterministic). Two planner briefs + one self-authored. */
 export function seedProjects(): readonly Project[] {
   // Arcade: a full honest journey: work, try, STUCK, robot help, fix, made it, reflect.
-  let arcade = startProject({ brief: BRIEFS[0]!, kidId: DEMO_KID, ageBand: DEMO_AGE_BAND }, STUDIO_NOW);
+  let arcade = startProject(
+    { brief: BRIEFS[0]!, kidId: DEMO_KID, ageBand: DEMO_AGE_BAND },
+    STUDIO_NOW,
+  );
   [arcade] = log(arcade, {
     kind: "session",
     at: "2026-04-02T15:00:00.000Z",
@@ -95,7 +98,10 @@ export function seedProjects(): readonly Project[] {
     text: "Getting stuck taught me what gravity is for.",
   });
 
-  let beat = startProject({ brief: BRIEFS[1]!, kidId: DEMO_KID, ageBand: DEMO_AGE_BAND }, STUDIO_NOW);
+  let beat = startProject(
+    { brief: BRIEFS[1]!, kidId: DEMO_KID, ageBand: DEMO_AGE_BAND },
+    STUDIO_NOW,
+  );
   [beat] = log(beat, {
     kind: "session",
     at: "2026-04-02T16:00:00.000Z",
