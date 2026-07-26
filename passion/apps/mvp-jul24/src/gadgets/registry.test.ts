@@ -1,36 +1,38 @@
 import { gadgetById, gadgetsForTopic } from "./registry";
 
-const NEWLY_ACTIVE_IDS = ["mirror", "chess", "minesweeper", "pipes", "lits"];
+/** The roster, in full. Four, not the original seven — see the block comment in registry.ts. */
+const LOGIC_GAMES_IDS = ["nonogram", "mirror", "chess", "pipes"];
 
-test('gadgetsForTopic("logic-games") returns all 7 deduction gadgets', () => {
+/**
+ * Dropped from the roster on 2026-07-25, NOT deleted from the app. Each still has its component,
+ * logic, generator/bank, data and test suite in `src/puzzles/`, all passing. This list is the
+ * assertion that the trim was a registry change and nothing more.
+ */
+const TRIMMED_IDS = ["logic-grid", "minesweeper", "lits"];
+
+test('gadgetsForTopic("logic-games") returns exactly the four roster gadgets', () => {
   const gadgets = gadgetsForTopic("logic-games");
-  expect(gadgets).toHaveLength(7);
+  expect(gadgets.map((g) => g.id)).toEqual(LOGIC_GAMES_IDS);
   expect(gadgets.every((g) => g.topic === "logic-games")).toBe(true);
 });
 
-test("nonogram and logic-grid are active with a Puzzle component", () => {
+test("every logic-games gadget is active with a Puzzle component", () => {
   const gadgets = gadgetsForTopic("logic-games");
-  for (const id of ["nonogram", "logic-grid"]) {
-    const gadget = gadgets.find((g) => g.id === id);
-    expect(gadget).toBeDefined();
-    expect(gadget!.status).toBe("active");
-    expect(gadget!.Puzzle).toBeDefined();
+  expect(gadgets).toHaveLength(LOGIC_GAMES_IDS.length);
+  for (const gadget of gadgets) {
+    expect(gadget.status, gadget.id).toBe("active");
+    expect(gadget.Puzzle, gadget.id).toBeDefined();
   }
 });
 
-test("the five formerly-coming-soon gadgets are now active with a Puzzle", () => {
-  const gadgets = gadgetsForTopic("logic-games");
-  for (const id of NEWLY_ACTIVE_IDS) {
-    const gadget = gadgets.find((g) => g.id === id);
-    expect(gadget).toBeDefined();
-    expect(gadget!.status).toBe("active");
-    expect(gadget!.Puzzle).toBeDefined();
+// Guards the trim in the direction it can silently reverse: someone re-adds an entry without
+// authoring the backdrop prop it needs, and quads.data.test.ts starts failing a file away from the
+// change that caused it. Re-adding one deliberately means editing this list too (see registry.ts,
+// "TO RE-ADD ONE").
+test("the trimmed puzzles are absent from every topic, in the registry only", () => {
+  for (const id of TRIMMED_IDS) {
+    expect(gadgetById(id), id).toBeUndefined();
   }
-});
-
-test("all seven logic-games gadgets are active with a Puzzle component", () => {
-  const gadgets = gadgetsForTopic("logic-games");
-  expect(gadgets.every((g) => g.status === "active" && g.Puzzle)).toBe(true);
 });
 
 // The seven puzzles moved out of `math` because none of them is actually mathematical (see the

@@ -3,6 +3,14 @@
  * gen-art.mjs — generate the game's art (world map + cabin backgrounds) via
  * the TrueFoundry image gateway.
  *
+ * NOTE: the cabin BACKDROPS used by the backdrop renderer
+ * (`public/art/cabin-backdrop-*.png`) are NOT produced here — they are built by
+ * scripts/gen-cabins.mjs, which edits approved concept stills in place rather
+ * than generating a room, so that the composition cannot drift. The
+ * `cabin-math` / `cabin-logic-games` targets below produce the older
+ * whole-room images still loaded by src/cabin/CabinStatic.tsx. Running them
+ * will not touch the backdrops.
+ *
  * Usage:
  *   node scripts/gen-art.mjs [target...] [--model <gpt-image-1|gpt-image-1.5|gemini-3-pro-image-preview>]
  *

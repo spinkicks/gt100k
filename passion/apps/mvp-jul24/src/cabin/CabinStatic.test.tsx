@@ -11,7 +11,9 @@ beforeEach(() => {
 test("renders a hotspot button for each gadget in the topic, labelled by hotspot.label", () => {
   render(<CabinStatic topic="logic-games" />);
   expect(screen.getByRole("button", { name: "Nonogram" })).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Logic Grid" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Pipes" })).toBeInTheDocument();
+  // Four, not the original seven — see src/gadgets/registry.ts.
+  expect(screen.getAllByRole("button")).toHaveLength(4);
 });
 
 test("clicking the nonogram hotspot focuses that gadget", () => {

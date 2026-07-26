@@ -23,9 +23,24 @@ export interface GadgetProp3D {
 }
 
 /**
- * Explicit hand-placed prop for every gadget currently in the registry (see
- * src/gadgets/registry.ts) — a framed panel for the "on paper" puzzles, a small chess set for the
- * chess puzzle, and an angled mirror stand for the mirror maze.
+ * Explicit hand-placed prop per gadget id — a framed panel for the "on paper" puzzles, a small
+ * chess set for the chess puzzle, and an angled mirror stand for the mirror maze.
+ *
+ * THREE OF THESE SEVEN ENTRIES ARE CURRENTLY INERT, ON PURPOSE
+ * `logic-grid`, `minesweeper` and `lits` left the activity roster on 2026-07-25 (the reasoning is
+ * in src/gadgets/registry.ts, which is the single place that decision is taken). Their placements
+ * are kept here rather than deleted because this map is a plain `Record` that `gadgetProps3D` only
+ * ever *reads* — it iterates the registry, not this object — so an entry for an unlisted gadget
+ * costs one unreferenced object literal and nothing else: no render, no import, no bundle weight
+ * beyond the literal itself, and no test can see it.
+ *
+ * What it buys is that these positions were placed by projecting each prop's bounds into the fixed
+ * camera and checking the on-screen gaps (see below), which is slow, fiddly, and impossible to
+ * re-derive from the numbers alone. Deleting them would throw that work away to save nothing, and
+ * re-adding a puzzle would silently fall through to `fallbackProp` and put a generic blank frame
+ * somewhere plausible-but-wrong instead. Contrast `cabin/backdrop/quads.data.ts`, where the
+ * equivalent coordinates *were* deleted — those are traced onto one specific painting that is
+ * being regenerated, so they expire; these are world-space and do not.
  *
  * Positions are chosen against the *fixed* camera in Cabin3D.tsx (position [-1.35, 1.55, 2.75],
  * looking at [0.55, 1.25, -2.7], fov 62, 16:9 canvas) — verified by projecting each prop's bounds

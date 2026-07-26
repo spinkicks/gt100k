@@ -1,8 +1,5 @@
 import type { Gadget, TopicId } from "../game/types";
 import Chess from "../puzzles/Chess/Chess";
-import LITS from "../puzzles/LITS/LITS";
-import LogicGrid from "../puzzles/LogicGrid/LogicGrid";
-import Minesweeper from "../puzzles/Minesweeper/Minesweeper";
 import Mirror from "../puzzles/Mirror/Mirror";
 import Nonogram from "../puzzles/Nonogram/Nonogram";
 import Pipes from "../puzzles/Pipes/Pipes";
@@ -10,12 +7,53 @@ import Pipes from "../puzzles/Pipes/Pipes";
 /**
  * Every gadget in the game, keyed to the cabin (topic) it lives in.
  *
- * All seven live in `logic-games`, not `math`: each one survives replacing every numeral with an
+ * All of them live in `logic-games`, not `math`: each one survives replacing every numeral with an
  * arbitrary symbol, so what they actually exercise is deduction rather than mathematics (see the
  * TopicId doc comment in src/game/types.ts). The `math` cabin therefore has ZERO entries here for
  * now — that is intentional, and a later PR fills it with genuinely mathematical games. Every
  * consumer of `gadgetsForTopic` must tolerate an empty list (see scene3d/anchors.ts and
  * cabin/CabinStatic.tsx, both of which render a normal empty room).
+ *
+ * ===========================================================================================
+ * LOGIC GAMES IS FOUR, NOT SEVEN — DECIDED 2026-07-25. THIS IS THE ONLY PLACE THAT DECIDES IT.
+ * ===========================================================================================
+ *
+ * **Logic Grid**, **LITS** and **Minesweeper** used to be here and are not any more. Nothing about
+ * them was deleted: `src/puzzles/LogicGrid/`, `src/puzzles/LITS/` and `src/puzzles/Minesweeper/`
+ * are all still in the tree, still compiled, still covered by their own passing test suites, and
+ * their wall previews are still registered and tested in `cabin/backdrop/previews/`. They are
+ * simply not listed as activities, so nothing routes a player to them.
+ *
+ * WHY (four reasons, in the order they carry weight)
+ *
+ * 1. The cabin's backdrop art gives us **four** surfaces that can hold a puzzle without wrecking
+ *    the room's composition. An attempt to manufacture six produced a wall of identical blank
+ *    frames that had to be thrown away — the room, not the roster, is the binding constraint. Two
+ *    of the seven props in `cabin/backdrop/quads.data.ts` were already flagged PARKED on borrowed
+ *    surfaces (a chimney breast, a bookshelf gap) for exactly this reason.
+ * 2. **LITS** is the least legible of the seven to someone watching over a shoulder — and a
+ *    passion-finder is judged partly on whether a puzzle looks worth walking over to.
+ * 3. **Logic Grid** is reading comprehension as much as deduction, so it loads on a second
+ *    construct. That is a measurement problem, not a taste one: time spent on it is not cleanly
+ *    attributable to the thing this cabin is supposed to be measuring.
+ * 4. **Minesweeper** duplicates Nonogram's construct (mark cells from numeric edge constraints)
+ *    while adding a luck element and a lose-state no other puzzle here has. It buys the least new
+ *    information per door in the room.
+ *
+ * Four also **density-matches** the five maths games planned for the `math` cabin far better than
+ * seven did. That does not make cross-cabin comparison valid — PROJECT.md's Risks section is clear
+ * that it is not, for reasons beyond activity count — but 4-vs-5 stops the raw door count from
+ * being the loudest difference between the two rooms.
+ *
+ * TO RE-ADD ONE (all of this is deliberately trivial; keep it that way)
+ *   1. re-import its component at the top of this file;
+ *   2. re-add its entry to `GADGETS` below — the `hotspot` percentages for all three are still in
+ *      `cabin/hotspots.ts` (`STATIC_POSITIONS`) and their 3D placements are still in
+ *      `cabin/scene3d/anchors.ts` (`KNOWN_PROPS`), both left in place on purpose;
+ *   3. author a prop quad for it in `cabin/backdrop/quads.data.ts` — this is the only step with
+ *      real work in it, because `quads.data.test.ts` requires the backdrop room to cover every
+ *      gadget in the topic exactly once, and the surface has to actually exist in the painting.
+ * Step 3 is the reason this is a decision and not a toggle: the art is the constraint.
  */
 export const GADGETS: Gadget[] = [
   {
@@ -25,14 +63,6 @@ export const GADGETS: Gadget[] = [
     status: "active",
     Puzzle: Nonogram,
     hotspot: { xPct: 15, yPct: 60, label: "Nonogram" },
-  },
-  {
-    id: "logic-grid",
-    topic: "logic-games",
-    label: "Logic Grid",
-    status: "active",
-    Puzzle: LogicGrid,
-    hotspot: { xPct: 35, yPct: 60, label: "Logic Grid" },
   },
   {
     id: "mirror",
@@ -51,28 +81,12 @@ export const GADGETS: Gadget[] = [
     hotspot: { xPct: 75, yPct: 60, label: "Chess Puzzle" },
   },
   {
-    id: "minesweeper",
-    topic: "logic-games",
-    label: "Minesweeper",
-    status: "active",
-    Puzzle: Minesweeper,
-    hotspot: { xPct: 25, yPct: 85, label: "Minesweeper" },
-  },
-  {
     id: "pipes",
     topic: "logic-games",
     label: "Pipes",
     status: "active",
     Puzzle: Pipes,
     hotspot: { xPct: 50, yPct: 85, label: "Pipes" },
-  },
-  {
-    id: "lits",
-    topic: "logic-games",
-    label: "LITS",
-    status: "active",
-    Puzzle: LITS,
-    hotspot: { xPct: 75, yPct: 85, label: "LITS" },
   },
 ];
 

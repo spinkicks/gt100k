@@ -12,7 +12,7 @@ beforeEach(() => {
 test("full loop: map -> cabin -> gadget -> solve -> readout", () => {
   render(<App />);
 
-  // Map: click the Logic Games cabin node (the one holding all seven puzzles).
+  // Map: click the Logic Games cabin node (the one holding the deduction puzzles).
   fireEvent.click(
     screen.getByTestId("app-root").querySelector('[data-cabin="logic-games"]') as HTMLElement,
   );

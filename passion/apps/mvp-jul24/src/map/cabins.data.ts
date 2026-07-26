@@ -23,8 +23,9 @@ export interface CabinNode {
 /**
  * Cabin nodes shown on the world map.
  *
- * Two are playable: `logic-games` (the seven deduction puzzles that used to be filed under `math` —
- * see the TopicId doc comment in src/game/types.ts for why they moved) and `math`, which is
+ * Two are playable: `logic-games` (the four deduction puzzles that used to be filed under `math` —
+ * see the TopicId doc comment in src/game/types.ts for why they moved, and src/gadgets/registry.ts
+ * for why there are four of them and not the original seven) and `math`, which is
  * deliberately active-but-empty. `math` opens a real, furnished, gadget-free room; its games land in
  * a later PR. Keeping it on the map from day one means the split is visible to a player instead of
  * appearing later as a surprise sixth cabin.

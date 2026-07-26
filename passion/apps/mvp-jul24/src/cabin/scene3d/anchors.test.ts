@@ -21,8 +21,19 @@ test("gives each puzzle family a prop kind that reads as the right object", () =
   expect(kindOf("chess")).toBe("chess");
   expect(kindOf("mirror")).toBe("mirror");
   // the rest are "on paper" grid puzzles rendered as framed wall panels
-  for (const id of ["nonogram", "logic-grid", "minesweeper", "pipes", "lits"]) {
+  for (const id of ["nonogram", "pipes"]) {
     expect(kindOf(id)).toBe("frame");
+  }
+});
+
+// `KNOWN_PROPS` still holds hand-placed positions for logic-grid, minesweeper and lits, which left
+// the roster on 2026-07-25 (see src/gadgets/registry.ts for why they were kept). Those entries must
+// stay inert: `gadgetProps3D` iterates the registry, so a stale key can only ever leak a prop into
+// the room if someone rewrites it to iterate this map instead.
+test("does not emit props for gadget ids that are no longer in the registry", () => {
+  const ids = gadgetProps3D("logic-games").map((p) => p.id);
+  for (const id of ["logic-grid", "minesweeper", "lits"]) {
+    expect(ids, id).not.toContain(id);
   }
 });
 

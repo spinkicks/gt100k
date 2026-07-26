@@ -31,8 +31,8 @@ to become a reading-the-mind-of-the-designer test.
 
 Two cabins are built:
 
-- **`logic-games` — "Logic Games."** Holds the seven existing deduction puzzles: Nonogram, Logic Grid,
-  Mirror Maze, Chess Puzzle, Minesweeper, Pipes, LITS.
+- **`logic-games` — "Logic Games."** Holds four deduction puzzles: **Nonogram, Pipes, Mirror Maze,
+  Chess Puzzle.** It held seven until 2026-07-25; see *The trim to four* below.
 - **`math` — "Math."** Reserved for **genuinely mathematical** activities; nothing else goes in it. It
   opens on day one as a real, furnished, deliberately **gadget-free** room, so the split is visible to a
   player from the start rather than arriving later as a surprise new cabin.
@@ -57,6 +57,42 @@ constraint satisfaction, and we would be mislabelling that as mathematical inter
 replaced with arbitrary symbols and the activity would still play the same, the binding is extrinsic and
 what we measure is wrapper engagement, not domain interest.* An activity that fails it may still ship as
 a trigger; it does not get to be evidence.
+
+### The trim to four — DECIDED 2026-07-25 (was deferred; no longer)
+
+**Logic Games dropped from seven activities to four.** Out: **LITS**, **Logic Grid**, **Minesweeper**.
+In: Nonogram, Pipes, Mirror Maze, Chess Puzzle. This was recorded here as a *deferred* option; it has
+now been taken, and the thing that took it was the art rather than the argument.
+
+**What forced it.** The cabin's backdrop plate gives four surfaces that can hold a puzzle without
+wrecking the room's composition. An attempt to manufacture six produced a wall of identical blank
+frames and was thrown away. Two of the seven backdrop props were already parked on borrowed surfaces
+— a chimney breast and a 310×78 bookshelf gap rendering a 6×6 board at ~13 px a cell — which was the
+same constraint showing up earlier and being worked around instead of accepted.
+
+**Why these three, unchanged from when this was a deferral.** **LITS** is the least legible to a
+spectator watching over a shoulder. **Logic Grid** is reading comprehension as much as deduction, so
+it loads on a second construct and its dwell time is not cleanly attributable. **Minesweeper**
+duplicates Nonogram's construct while adding a luck element and a lose-state neither of the others
+has. Four is also far closer to density-matching the five planned maths games than seven was — which
+does **not** license cross-cabin comparison (see *Risks*, which is unchanged on that point) but does
+stop raw door count being the loudest difference between the rooms.
+
+**What was actually removed: three registry entries.** Nothing was deleted. `src/puzzles/LITS/`,
+`src/puzzles/LogicGrid/` and `src/puzzles/Minesweeper/` are all still in the tree, still compiled,
+still covered by their own passing test suites, and their wall-preview renderers are still registered
+and tested. Their hand-tuned 3D placements (`scene3d/anchors.ts`) and static-cabin positions
+(`cabin/hotspots.ts`) were deliberately left in place too, because those were measured by eye and are
+not re-derivable from the numbers. The three puzzles are simply not listed as activities, so nothing
+routes a player to them, and they are not in the production bundle.
+
+**To reverse it** (per-puzzle): re-import the component and re-add its entry in
+`src/gadgets/registry.ts`, then author a prop quad for it in `cabin/backdrop/quads.data.ts`. Only the
+last step is real work, and it is the step the art constrains — `quads.data.test.ts` requires the
+backdrop room to cover every gadget in the topic exactly once, so a re-add without a real painted
+surface fails the build rather than shipping a puzzle floating on a wall. Those three quads *were*
+deleted, unlike the placements above, because they were traced onto one specific plate that is being
+regenerated and would be wrong on arrival.
 
 ### The five planned maths games
 
@@ -173,13 +209,15 @@ recorded so it is not rediscovered as a surprise.
   **permanent**, and the two should not be collapsed into one decision.
 - **The single-persistent-canvas rule** (PRD §5.2) — the one architectural rule the PRD says must not be
   violated. Not yet implemented here.
-- **Trimming Logic Games from 7 activities to 4** — dropping **LITS**, **Logic Grid** and
-  **Minesweeper**. This is the move if a tighter, cross-comparable demo is ever needed (four vs the
-  planned five maths games is close to density-matched, which seven is not). The rationale, recorded now
-  so it does not have to be re-argued: **LITS** is the least legible to a spectator watching over a
-  shoulder; **Logic Grid** is reading comprehension as much as deduction, so it loads on a second
-  construct; **Minesweeper** duplicates Nonogram's construct while adding a luck element and a lose-state
-  that neither of the others has.
+- **Live puzzle previews composited onto the backdrop.** The backdrop backend can warp each prop's
+  real board into the painting with a projective `matrix3d`, verified to 0.0000 px corner accuracy in
+  a browser. It is **switched off** (`CabinBackdrop`'s `previews` prop, off by default) after an
+  appearance review: crisp flat vector over soft warm photoreal loses on colour temperature, edge
+  hardness and grain at once, and the previews integrate no shadow, so a board reads as a decal held
+  in front of the wall. The puzzles are **painted into the plate** instead. The code is dormant, not
+  deleted, and its tests still run in both states — it is what a prop showing *live* per-child state
+  would need, which painted art can never do. Turning it back on is one word at the call site; making
+  it show real state is the seam described in `previews/snapshots.ts`.
 
 ## Risks logged but not solved
 
@@ -194,10 +232,22 @@ Stated without softening.
   removes most of it; accent colour, emblem and props still differ, and generic wrapper appeal
   independently predicts voluntary return (β = 0.267, p = .003). We accept the residual rather than
   claim it away.
-- **7-vs-5 activity density means there is no valid cross-cabin comparison from this build.** Already
-  recorded in memo §8.2 as a hard limit on interpretation: unequal cabins are not a criticism of the
-  build, but **no cross-cabin comparison from it is valid**, density included. Any number that compares
-  Logic Games against Math out of this build is an artifact of how many doors each room has.
+- **There is still no valid cross-cabin comparison from this build, and the trim to four does not
+  create one.** Density is now 4-vs-5 rather than 7-vs-5, which is a real improvement and is one of
+  the reasons the trim was taken — but memo §8.2's limit is not a density threshold that 4-vs-5
+  clears. Unequal cabins are not a criticism of the build; **no cross-cabin comparison from it is
+  valid**, density included, and `math` currently has zero activities in it anyway. Any number
+  comparing Logic Games against Math out of this build is an artifact of how many doors each room
+  has. Do not let "we density-matched it" become a licence to compare.
+- **The backdrop cabin's interaction surfaces emit no signal records, and the app now has a pipeline
+  that does.** #161 added timestamped, session-scoped `Interaction` / `SurfacedRecord` emission. The
+  backdrop backend adds a whole new set of interaction surfaces — perspective prop polygons, and the
+  bookshelf — and by decision they emit **nothing**. So the emission is not merely incomplete, it is
+  **silently partial**: records exist, they look well-formed, and they under-count every prop opened
+  through the backdrop. Anyone reading that data without reading this line will treat missing engagement
+  as absence of engagement, which is the one misreading `SurfacedRecord` exists to prevent. Either wire
+  the backdrop props into emission before trusting any of it, or gate the backdrop out of sessions whose
+  records are analysed. Do not split the difference.
 
 ## References
 

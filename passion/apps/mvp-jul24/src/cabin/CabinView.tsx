@@ -4,16 +4,17 @@ import { useGame } from "../game/store";
 import { sessionLog } from "../signals/session";
 import Cabin3D from "./Cabin3D";
 import CabinStatic from "./CabinStatic";
+import CabinBackdrop from "./backdrop/CabinBackdrop";
 import "./CabinView.css";
 
 /**
  * Picks the cabin backend for the currently open cabin. Renders nothing when no cabin is open.
  *
- * 3D is the only backend a player sees; `static` is a no-WebGL / headless-screenshot fallback
- * selected by `?cabin=static` at load (see game/store.ts's `initialBackend`). The on-screen
- * "Mode: 3d" A/B toggle that used to live here is gone — it read as a debug badge in the corner of
- * an otherwise finished room, and with 3D settled there's nothing left to A/B. `setBackend` is still
- * on the store for tests and for any future non-debug switch.
+ * 3D is the only backend a player sees; `static` is a no-WebGL / headless-screenshot fallback and
+ * `backdrop` is the still-painting direction under review, both selected by `?cabin=<name>` at load
+ * (see game/store.ts's `initialBackend`). The on-screen "Mode: 3d" A/B toggle that used to live here
+ * is gone — it read as a debug badge in the corner of an otherwise finished room. `setBackend` is
+ * still on the store for tests and for any future non-debug switch.
  */
 export const CabinView: React.FC = () => {
   const cabinId = useGame((s) => s.cabinId);
@@ -33,7 +34,9 @@ export const CabinView: React.FC = () => {
 
   return (
     <div className="cabin-view">
-      {cabinBackend === "3d" ? <Cabin3D topic={cabinId} /> : <CabinStatic topic={cabinId} />}
+      {cabinBackend === "3d" ? <Cabin3D topic={cabinId} /> : null}
+      {cabinBackend === "static" ? <CabinStatic topic={cabinId} /> : null}
+      {cabinBackend === "backdrop" ? <CabinBackdrop topic={cabinId} /> : null}
     </div>
   );
 };
