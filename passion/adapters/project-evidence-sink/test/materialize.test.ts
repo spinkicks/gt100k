@@ -1,4 +1,4 @@
-// SC-3 + SC-4 golden test: `toEvidence` maps EVERY work-event onto a VALID CLOSED EvidenceGraph
+// SC-3 + SC-4 golden test: `materialize` over `toEvidencePlan` maps EVERY work-event onto a VALID CLOSED EvidenceGraph
 // NodeType with the §4.3 edges, the graph passes the package verifier, and an identical project
 // yields an identical graph (deterministic stub hasher, no network). This is the loop's proof that
 // the mapping is real — it runs the evidence-graph verifier over the built graph.
@@ -6,10 +6,9 @@ import { EDGE_TYPES, NODE_TYPES, assertHumanAuthority } from "@gt100k/evidence-g
 import type { EdgeType, EvidenceGraph, EvidenceNode, NodeType } from "@gt100k/evidence-graph";
 import { describe, expect, it } from "vitest";
 
-import { makeFixtureProject } from "../src/__fixtures__/project.js";
-import { hasPerseverance } from "../src/project.js";
-import { stubEvidenceSink, stubHasher } from "../src/sink.js";
-import { toEvidence } from "../src/to-evidence.js";
+import { hasPerseverance, makeFixtureProject, toEvidencePlan } from "@gt100k/project-workspace";
+
+import { materialize, stubEvidenceSink, stubHasher } from "../src/index.js";
 
 const NODE_TYPE_SET = new Set<string>(NODE_TYPES);
 const EDGE_TYPE_SET = new Set<string>(EDGE_TYPES);
@@ -34,10 +33,10 @@ function nodesOfKind(graph: EvidenceGraph, kind: string): EvidenceNode[] {
   return Object.values(graph.nodes).filter((node) => node.payload.kind === kind);
 }
 
-describe("toEvidence (§4.3 closed-taxonomy mapping)", () => {
+describe("materialize (§4.3 closed-taxonomy mapping, graph side)", () => {
   it("maps every event to a valid closed NodeType and resolvable edges (SC-3)", () => {
     const project = makeFixtureProject();
-    const graph = toEvidence(project, stubHasher);
+    const graph = materialize(toEvidencePlan(project), stubHasher);
 
     // One node per event — no accidental content-address collisions.
     expect(Object.keys(graph.nodes)).toHaveLength(project.events.length);
@@ -53,14 +52,14 @@ describe("toEvidence (§4.3 closed-taxonomy mapping)", () => {
   });
 
   it("passes the evidence-graph human-authority verifier (SC-3)", () => {
-    const graph = toEvidence(makeFixtureProject(), stubHasher);
+    const graph = materialize(toEvidencePlan(makeFixtureProject()), stubHasher);
     const result = assertHumanAuthority(graph);
     expect(result.reasons).toEqual([]);
     expect(result.ok).toBe(true);
   });
 
   it("assigns each kid entry its §4.3 NodeType and actor.kind", () => {
-    const graph = toEvidence(makeFixtureProject(), stubHasher);
+    const graph = materialize(toEvidencePlan(makeFixtureProject()), stubHasher);
     const expected: Record<string, { type: NodeType; actorKind: string }> = {
       session: { type: "Contribution", actorKind: "human" },
       attempt: { type: "Attempt", actorKind: "human" },
@@ -87,7 +86,7 @@ describe("toEvidence (§4.3 closed-taxonomy mapping)", () => {
   });
 
   it("records declared AI help as a NEUTRAL Assistance node with used_tool (SC-6)", () => {
-    const graph = toEvidence(makeFixtureProject(), stubHasher);
+    const graph = materialize(toEvidencePlan(makeFixtureProject()), stubHasher);
     const [assistance] = nodesOfKind(graph, "ai_help");
     expect(assistance).toBeDefined();
     if (assistance === undefined) {
@@ -109,7 +108,7 @@ describe("toEvidence (§4.3 closed-taxonomy mapping)", () => {
     const project = makeFixtureProject();
     expect(hasPerseverance(project)).toBe(true);
 
-    const graph = toEvidence(project, stubHasher);
+    const graph = materialize(toEvidencePlan(project), stubHasher);
     const [stuckOutcome] = nodesOfKind(graph, "outcome");
     const [revision] = nodesOfKind(graph, "revision");
     const [artifact] = nodesOfKind(graph, "artifact");
@@ -145,7 +144,7 @@ describe("toEvidence (§4.3 closed-taxonomy mapping)", () => {
   });
 
   it("releases the showcase from its artifact (released_as + validates)", () => {
-    const graph = toEvidence(makeFixtureProject(), stubHasher);
+    const graph = materialize(toEvidencePlan(makeFixtureProject()), stubHasher);
     const [showcase] = nodesOfKind(graph, "showcase");
     const [artifact] = nodesOfKind(graph, "artifact");
     expect(showcase).toBeDefined();
@@ -168,8 +167,8 @@ describe("toEvidence (§4.3 closed-taxonomy mapping)", () => {
   });
 
   it("is deterministic: identical project → identical graph (SC-4)", () => {
-    const first = toEvidence(makeFixtureProject(), stubHasher);
-    const second = toEvidence(makeFixtureProject(), stubHasher);
+    const first = materialize(toEvidencePlan(makeFixtureProject()), stubHasher);
+    const second = materialize(toEvidencePlan(makeFixtureProject()), stubHasher);
     expect(second).toEqual(first);
     // The stub sink is the same fold through the deterministic hasher.
     expect(stubEvidenceSink.record(makeFixtureProject())).toEqual(first);
