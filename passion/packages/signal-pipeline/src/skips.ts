@@ -53,13 +53,29 @@ function offeredCells(
  * so both are normalized. The two are mutually exclusive — one cell in one session yields at most
  * one event, or one behavioural fact would be scored twice.
  */
+export interface SkipDerivation {
+  readonly events: CellEvent[];
+  /**
+   * Sessions that put something on offer but recorded no choice, and so yielded no disconfirming
+   * evidence at all.
+   *
+   * Reported rather than dropped in silence, for the same reason `dropped` exists: a rule that
+   * removes signal has to be auditable, or it becomes indistinguishable from a broken emitter. The
+   * specific failure it makes visible is a surface that stamps a different `sessionId` on its
+   * surfacings than on its interactions, which would silence every skip and decline in the product
+   * while every other number kept moving. A run where this list is long and `events` is empty means
+   * the emitter is wrong, not that the children are idle.
+   */
+  readonly silentSessions: readonly string[];
+}
+
 export function deriveSkips(
   surfaced: readonly SurfacedRecord[],
   built: readonly BuiltEvent[],
   catalog: ReadonlyMap<string, Artifact>,
   config: PipelineConfig,
   present: readonly Presence[] = [],
-): CellEvent[] {
+): SkipDerivation {
   const engagedByKidArtifact = new Map<string, Map<string, string>>(); // ka -> Map<cellKey, mode>
   const engagedCells = new Set<string>(); // exposureKey(kid, cell) — every cell this kid has engaged
   const firstExposure = new Map<string, number>(); // exposureKey -> ms epoch
@@ -133,9 +149,29 @@ export function deriveSkips(
   }
 
   const out: CellEvent[] = [];
+  const silentSessions: string[] = [];
   for (const records of bySession.values()) {
     const { kidId, sessionId } = records[0]!;
     const engagedThisSession = engagedBySession.get(ks(kidId, sessionId));
+
+    // No choice, nothing declined. A session the child took nothing from is not a session in which
+    // they rejected everything; it is one that observed nothing. Scoring it as rejection turns a
+    // child who could not find a way in into a child interested in no cabin at all, and the
+    // decrement lands on every cell that happened to be on screen, so the harm grows with the size
+    // of the offer rather than with anything the child did.
+    //
+    // The bias is systematic, not noise. These sessions cluster wherever the surface is hardest to
+    // read, and findability is a property of the art, so the error correlates with cabin design
+    // instead of interest. Memo 07 §4 D9 reaches this from the other side, in visual-search terms.
+    //
+    // `choiceSetSize` survives untouched, which is the part memo 06 §8.4 P2 actually argues for:
+    // knowing the alternatives is what makes a *taken* option interpretable. That reading needs a
+    // choice to have happened, and here none did.
+    if (engagedThisSession === undefined || engagedThisSession.size === 0) {
+      silentSessions.push(sessionId);
+      continue;
+    }
+
     const notChosen = new Map<string, NotChosen>();
     for (const s of records) {
       const art = catalog.get(s.artifactId)!;
@@ -161,5 +197,5 @@ export function deriveSkips(
       });
     }
   }
-  return out;
+  return { events: out, silentSessions };
 }

@@ -45,6 +45,12 @@ export function runCycle(
   now: string,
 ): StudentProfile {
   const interactions: readonly Interaction[] = [...profile.interactions, ...newInteractions];
+  // `dropped` and `silentSessions` are discarded here, and that is a known hole rather than a
+  // decision. Both exist so an emitter fault is visible instead of silent, and this orchestrator is
+  // what the console actually runs, so today nobody can see either. Surfacing them means either
+  // widening the persisted `StudentProfile` or giving this function a second return value, and
+  // neither is worth doing blind: it should follow whatever the console needs to show, not precede
+  // it. See `docs/decisions/2026-07-27-no-choice-no-decline.md`.
   const { cellEvents } = deriveSignals({
     interactions,
     surfaced: ctx.surfaced,

@@ -25,6 +25,8 @@ export function deriveSignals(input: DeriveInput): {
   actionEvents: ActionEvent[];
   cellEvents: CellEvent[];
   dropped: DroppedInteraction[];
+  /** Sessions that offered something and recorded no choice. See `SkipDerivation`. */
+  silentSessions: readonly string[];
 } {
   const config: PipelineConfig = { ...DEFAULTS, ...input.config };
   const { built, dropped, present } = buildActionEvents(input.interactions, input.catalog, config);
@@ -34,7 +36,13 @@ export function deriveSignals(input: DeriveInput): {
   const returns = classifyReturns(built);
   const cellEvents: CellEvent[] = [];
   built.forEach((b, i) => cellEvents.push(...actionToCellEvents(b.event, b.artifact, returns[i]!)));
-  cellEvents.push(...deriveSkips(input.surfaced ?? [], built, input.catalog, config, present));
+  const skips = deriveSkips(input.surfaced ?? [], built, input.catalog, config, present);
+  cellEvents.push(...skips.events);
 
-  return { actionEvents: built.map((b) => b.event), cellEvents, dropped };
+  return {
+    actionEvents: built.map((b) => b.event),
+    cellEvents,
+    dropped,
+    silentSessions: skips.silentSessions,
+  };
 }
