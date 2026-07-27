@@ -2,6 +2,7 @@ import type { CellEvent, DomainPath, DomainPrior } from "./model.js";
 import {
   A_RETURN,
   A_DEPTH,
+  A_REPORT_BROAD,
   A_SECONDARY,
   B_SKIP,
   B_DECLINED,
@@ -124,6 +125,22 @@ export function foldEvents(
     // One event = one occurrence (E1). The only scaling left is the secondary reading of a
     // two-mode action, which is inferred rather than observed.
     const roleScale = e.role === "secondary" ? A_SECONDARY : 1;
+    if (e.kind === "external_report") {
+      // E10. A `focused` report says the interest stayed with the materials rather than reaching
+      // the topic, so it is evidence about the wrapper and not about this domain; it is kept for a
+      // reader and scores nothing, like `same_day_engagement`. Only `broad` moves the belief.
+      if (e.reportScope !== "broad") continue;
+      const add = A_REPORT_BROAD * w;
+      cell.alpha += add;
+      cell.observedMass += A_REPORT_BROAD;
+      cell.positiveByKind[e.kind] = (cell.positiveByKind[e.kind] ?? 0) + add;
+      // Deliberately NOT markDay(). A report is a day an adult spoke, not a day the child did
+      // anything, and `distinctDays` is the gate that separates a durable interest from an
+      // afternoon's enthusiasm. Without this, two parent reports and no behaviour at all could
+      // make a cell confident, and 013 would then let a human promote it. The structural
+      // guarantee is that a child must have done something.
+      continue;
+    }
     if (e.kind === "cross_day_return") {
       const add = A_RETURN * roleScale * w;
       cell.alpha += add;
