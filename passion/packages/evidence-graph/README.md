@@ -3,8 +3,23 @@
 Pure TypeScript domain logic for a content-addressed evidence DAG. The package has no framework, storage,
 network, clock, or runtime-crypto dependency. Callers supply those capabilities through ports.
 
-Use synthetic or pseudonymous data with this feature slice. `consentScope` records scope metadata; it does
-not implement consent, legal, or admissions workflows.
+## A standalone product
+
+This package is its own product, not a slice of a larger one. It is developed inside the GT100K repo to reuse
+a working toolchain and a green test gate, and is intended for extraction as a mechanical `git subtree` copy
+(`docs/decisions/evidencegraph-v1-design.md` §11/§13a). Consequences that hold today, not later:
+
+- **No GT dependency.** Neither this package nor any `@gt100k/evidence-*` package or adapter imports a GT
+  product package. The `@gt100k/` prefix is a stable name, so extraction is a copy and not a rename. The one
+  deliberate exception is the Explorer *app* (`apps/evidence-explorer`), which uses the shared GT design
+  system; see its README.
+- **Zero inbound coupling.** Nothing outside the `@gt100k/evidence-*` namespace may import a **value** from
+  inside it. `import type` is allowed. Exactly one adapter is exempt, by design:
+  `@gt100k/project-evidence-sink`, the seam that turns a GT-side `EvidencePlan` into a graph.
+- **Checked in CI.** `@gt100k/boundaries` enforces both rules.
+
+Use synthetic or pseudonymous data. `consentScope` records scope metadata; it does not implement consent,
+legal, or admissions workflows.
 
 ## One graph per project
 
@@ -63,7 +78,7 @@ if (!result.ok) throw new Error(result.reasons.join(", "));
 | `merkleRoot` | Compute an RFC-6962 raw-byte Merkle root through an injected hasher, preserving caller input order. |
 | `orderedGraphNodeIds` | Return a graph's node ids in canonical `(timestamp, id)` order for a reproducible root. |
 | `graphMerkleRoot` | Compute the whole project graph's Merkle root over its `orderedGraphNodeIds`. |
-| `buildAttestation` | Build the unsigned in-toto Statement used by this slice. |
+| `buildAttestation` | Build the unsigned in-toto Statement for one selected subject digest. |
 | `buildGraphAttestation` | Build the unsigned in-toto Statement for a whole project graph: root from `graphMerkleRoot`, materials from Artifact node ids, subject bound to the released artifact. |
 | `traceEvidence` | Return the connected supporting node ids for a selected node, excluding unrelated islands. |
 
@@ -75,7 +90,7 @@ result types used by these functions.
 Domain functions accept ports by structural TypeScript contracts. Swap an adapter without changing domain
 code.
 
-| Port | Adapter in this slice | Status |
+| Port | Current adapter | Status |
 | --- | --- | --- |
 | `Hasher` | `NodeCryptoHasher` from `@gt100k/evidence-hash-node` | SHA-256 via `node:crypto`. |
 | `Verifier` | `DeterministicStubVerifier` from `@gt100k/evidence-verifier-stub` | Re-derives the Merkle root and checks the unsigned attestation bindings. |
@@ -86,6 +101,9 @@ code.
 `Hasher.hash` is synchronous. The `Verifier`, `EvidenceRepository`, `TransparencyLog`, and
 `ErasureService` methods are asynchronous. See [`src/ports.ts`](./src/ports.ts) for the exact contracts.
 
+Every adapter above is itself an `@gt100k/evidence-*` package, so the whole set travels with the product on
+extraction.
+
 ## Deferred capabilities: NON-PRODUCTION
 
 The following decisions are pre-live gates. Do not treat their current shapes as production security,
@@ -95,9 +113,9 @@ reliability, or compliance machinery.
   proof. It does not contact or anchor into an external log.
 - **D2: Crypto-shred erasure.** `StubErasureService` returns a deterministic `stub: true` tombstone. It does
   not manage keys, delete encrypted payloads, or prove erasure.
-- **D3: Comparative-judgment reliability.** This slice provides no implementation or interface.
-- **D4: Conformal calibration.** This slice provides no implementation or interface.
-- **D5: Durable public-export provenance.** This slice provides no implementation or interface.
+- **D3: Comparative-judgment reliability.** This package provides no implementation or interface.
+- **D4: Conformal calibration.** This package provides no implementation or interface.
+- **D5: Durable public-export provenance.** This package provides no implementation or interface.
 - **D6: Attestation signing.** `buildAttestation` emits an unsigned in-toto Statement. The verifier checks
   structure and digest bindings, not a signature or trust chain.
 

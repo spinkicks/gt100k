@@ -1,8 +1,10 @@
 # PassionLab
 
 The unified passion product: where a GT100K student discovers, develops, documents, and sustains a
-genuine passion over years. Code lives under `passion/`. This file is the glossary — vocabulary only,
-no implementation details. Terms are added/sharpened as the `grill-with-docs` session resolves them.
+genuine passion over years. Code lives under `passion/`, **excluding the `@gt100k/evidence-*` packages** —
+those are a separate product that happens to share this directory (see `CONTEXT-MAP.md`). This file is
+the glossary — vocabulary only, no implementation details. Terms are added/sharpened as the
+`grill-with-docs` session resolves them.
 
 ## Language
 
@@ -34,6 +36,10 @@ _Avoid_: career plan, major, track
 **EvidenceGraph**:
 The content-addressed (Merkle / RFC-6962) provenance DAG of a student's real project process — every
 artifact, attempt, tool, AI-assist, and review — proving authentic, human-owned work.
+**A separate product**, not a PassionLab component: it lives in the `@gt100k/evidence-*` namespace, is
+demonstrable with no GT dependency, and is intended for extraction
+(`docs/decisions/evidencegraph-v1-design.md` §11/§13a). It appears in this glossary because PassionLab
+*integrates* with it — one-way, through an adapter — not because PassionLab owns the term.
 _Avoid_: portfolio, plagiarism check, AI detector
 
 **TimeBack**:

@@ -2,6 +2,7 @@
 
 **Status:** v2.1 · updated 2026-07-25
 **Purpose:** The complete build map. Every software artifact required to stand up the full PassionLab (Discovery + Specialization), what each is, how it fits, and **its current build status** — plus a flow diagram.
+**One entry is not a PassionLab component:** **E1 EvidenceGraph** is its own product, built in this repo for later extraction as a mechanical `git subtree` copy (`docs/decisions/evidencegraph-v1-design.md` §11 + §13a). It is listed here because PassionLab integrates it, and because its pre-live gates block PassionLab going live — not because it is part of PassionLab. Architecture and delivery are separable; the pitch is not (`docs/research/passionBrainlift.md` Insight 12: a spike no one can verify is just a claim).
 **Companions:** `DISCOVERY-APP-PRD.md`, `SPECIALIZATION-PIPELINE-PRD.md`, and the research memos in `docs/research/passion-pipeline/`.
 
 > Legend: **✅ done** (built + merged to `main`, gate-green) · **🟡 partial** (a slice merged; more to build) · **⬜ todo** (not started). Delivery is tagged with its spec (`specs/NNN-…`).
@@ -29,9 +30,9 @@
 | **D1** Specialization Planner | ✅ done (engine) | `specs/018-specialization-planner` (`@gt100k/specialization-planner` + `@gt100k/planner-live` + guide-console Plan panel) | pure four-stage ascent engine (Ignition→Foundations→Authorship→Signature, **readiness-gated not age**), bounded/​capped DP, mandatory rest, mentor relay, PCDE focus, `derivePlanInputs` over 013/014/016, briefs grounded on the 015 curated library (deterministic stub + opt-in TFY), and a guide-console "Plan" panel; **system proposes, human disposes**; surface polish pending |
 | **F3** Family Co-Engagement | ✅ done | `specs/019-family-coengagement` (`@gt100k/family`) + `specs/021` (console Family tab) | pure `assessFamily` engine (warm-demanding coaching posture, counter-cyclical autonomy on rising stakes, door-opening asks, family-driven-pressure watch → guide re-coaching) + a deriver over 013/014/016, now surfaced as the guide-console **Family tab** (read-only coaching read; the standalone `apps/family` app retired); no affect detection, no gamification, no automated parent message |
 | **F4** Parent Playbook (static guide) | ✅ done | `docs/superpowers/specs/2026-07-24-parent-guide-design.md` (+ plan; no `specs/NNN` number) · `apps/parent-guide` | the manager's MVP item 2: a self-contained, research-cited plain-language guide for homeschool parents (stance, five moves, four traps, the big questions, printable "successful parent" self-assessment, ~59 cited sources with an honest-limits note) plus an interactive **Family Check-In** whose branch logic is an exact mirror of the `@gt100k/family` engine, proven across all 512 signal combinations by a parity test. Static-exported Next app, self-hosted fonts, no network at runtime; **hosted on AWS Amplify** (currently an intern sandbox account, so durability is an open item). Guardrails hold: no score/label/verdict, non-contingent warmth, escalating branches route to a human |
-| **D2** Project Workspace / Studio | ✅ done | `specs/022-project-studio` (`@gt100k/project-workspace` + `@gt100k/evidence-sink-graph` + `apps/project-studio`) | headless engine: `Project` + 10 append-only quest-entry kinds → the **closed EvidenceGraph taxonomy** via an `EvidenceSink` port (deterministic stub + real SHA-256 adapter over `@gt100k/evidence-graph`, fail-safe), perseverance chain. The child-facing **project quest studio** (`apps/project-studio`): a journey-timeline UI over the engine with a **7-preset theme switcher** (cartoon/minimal/tech), `window.__qa` + LOOP_QA gate, `localStorage`; no gamification/score/grade, declared AI help neutral. Real evidence-graph wiring once the teammate's E1 API settles |
+| **D2** Project Workspace / Studio | ✅ done | `specs/022-project-studio` (`@gt100k/project-workspace` + `@gt100k/project-evidence-sink` + `apps/project-studio`) | headless engine: `Project` + 10 append-only quest-entry kinds → `toEvidencePlan(project)`, a **pure plan** in the closed EvidenceGraph taxonomy (data, no graph), perseverance chain. Everything that touches the graph — the `EvidenceSink` port, both sinks (stub + real SHA-256), materialization (`addNode`/`addEdge`, content-addressing, DAG validation) — lives in the seam adapter `@gt100k/project-evidence-sink`, which sits **outside** the `@gt100k/evidence-*` namespace so extraction lifts the graph and leaves the adapter with PassionLab. The child-facing **project quest studio** (`apps/project-studio`): a journey-timeline UI over the engine with a **7-preset theme switcher** (cartoon/minimal/tech), `window.__qa` + LOOP_QA gate, `localStorage`; no gamification/score/grade, declared AI help neutral |
 | **G2** TimeBack Integration | ✅ done | `specs/020-timeback-integration` (`@gt100k/timeback` + `@gt100k/timeback-live`) | subject→cabin crosswalk + `toDomainPriors` mapper (mastery → aptitude tilt, free-choice XP → discretionary tilt), light two-block handoff, `withPriors` hook, deterministic fake data source + opt-in live adapter scaffold (no real API yet); **prior only, never a gate** (standing no-gate test) |
-| **E1** EvidenceGraph | 🟡 partial (**teammate**) | `specs/002-evidence-graph` (MVP) | core DAG + human-owned grades shipped; **D1–D6 pre-production gates** (transparency log, crypto-shred erasure, comparative-judgment, conformal, export provenance, signing) remain — **owned by teammate** — see `hardening/evidencegraph-productionization.md` |
+| **E1** EvidenceGraph *(separate product — integrated, not a PassionLab component)* | 🟡 partial (**teammate**) | `specs/002-evidence-graph` (MVP) | core DAG + human-owned grades shipped; **D1–D6 pre-production gates** (transparency log, crypto-shred erasure, comparative-judgment, conformal, export provenance, signing) remain — **owned by teammate** — see `hardening/evidencegraph-productionization.md`. Consumed across a hard boundary: nothing outside `@gt100k/evidence-*` may import a **value** from inside it (`import type` is fine — types vanish at compile time), enforced by the `@gt100k/boundaries` test in CI. Exactly one package is exempt, the seam adapter `@gt100k/project-evidence-sink` |
 | **A2** Cabin 3D Interiors | 🟡 partial | `apps/tinker-cabin` (game-side MVP) | one photoreal cabin + realism-loop harness; the rest of the world is the teammate's track |
 | **A4** Taste Apps + Embedding SDK | 🟡 partial | intern apps exist | the embedding SDK + measurable-panel standard is not built |
 
@@ -71,14 +72,14 @@
 ### Group D — Specialization Engine
 
 - **D1. Specialization Planner** *(✅ done, engine — `specs/018-specialization-planner`)* — Living, adaptive, project-first plan generator: spike + aptitude + access + stage + history → a staged sequence of Type III projects with embedded bounded practice; LLM-generated + curated/RAG-grounded + human-reviewed; continuously replans against progress/return/burnout. *Fits:* the engine that drives the ascent.
-- **D2. Project Workspace (Type III PBL)** *(✅ done — `specs/022-project-studio`)* — Where kids do authentic real-audience projects; captures the working process. *v1:* a headless `@gt100k/project-workspace` engine (Project + 10 quest-entry kinds → the closed EvidenceGraph taxonomy via an `EvidenceSink` port; deterministic stub + real SHA-256 adapter) + a cartoonish child-facing **project quest studio** (`apps/project-studio`: journey-timeline UI, 7-preset theme switcher, `window.__qa`/LOOP_QA). No gamification/score/grade; declared AI help neutral; synthetic/local. *Fits:* the recurring unit of the spine; feeds the EvidenceGraph.
+- **D2. Project Workspace (Type III PBL)** *(✅ done — `specs/022-project-studio`)* — Where kids do authentic real-audience projects; captures the working process. *v1:* a headless `@gt100k/project-workspace` engine (Project + 10 quest-entry kinds → `toEvidencePlan`, a pure plan in the closed EvidenceGraph taxonomy; the `EvidenceSink` port, both sinks and all materialization live in the seam adapter `@gt100k/project-evidence-sink`) + a cartoonish child-facing **project quest studio** (`apps/project-studio`: journey-timeline UI, 7-preset theme switcher, `window.__qa`/LOOP_QA). No gamification/score/grade; declared AI help neutral; synthetic/local. *Fits:* the recurring unit of the spine; feeds the EvidenceGraph (E1, a separate product) through that one seam.
 - **D3. Mentor Relay + Access-Transfer System** *(✅ done — `specs/023-access-broker`)* — Tracks the warm→technical→expert→master relay, engineered handoffs, and "access transferred" as a deliverable; routes AI + family + thin expert + near-peer roles. *Fits:* operationalizes the mentor spine in the software-first model.
 - **D4. Real-Audience / Submission Broker** *(✅ done — `specs/023-access-broker`)* — Competition calendars, publishing pipelines, community connections, marketplace submission. *Fits:* supplies real audiences at scale so "ambition scales by audience, not hours."
-- **D5. PCDE Curriculum Engine** *(net-new)* — Stage-sequenced psychosocial-skill scaffolds embedded in projects, coached and assessed via the EvidenceGraph. *Fits:* builds the actual rate-limiter (psychosocial skills).
+- **D5. PCDE Curriculum Engine** *(net-new)* — Stage-sequenced psychosocial-skill scaffolds embedded in projects, coached in-project and assessed against the process record the EvidenceGraph holds (E1, a separate product). *Fits:* builds the actual rate-limiter (psychosocial skills).
 
-### Group E — Assessment & Provenance
+### Group E — Assessment & Provenance *(E1 is a separate product; E2 is PassionLab)*
 
-- **E1. EvidenceGraph** *(exists, MVP; D1–D6 pre-production)* — Content-addressed process DAG with human-owned grades and neutral declared-AI-help nodes. Pre-live gates: transparency log, crypto-shred erasure, comparative-judgment, conformal calibration, export provenance, attestation signing. *Fits:* the "prove the spike" pillar; wraps every project. *v1 build:* `docs/decisions/evidencegraph-v1-design.md` — one graph per project (packets removed), standalone product.
+- **E1. EvidenceGraph** *(separate product; MVP exists, D1–D6 pre-production)* — Content-addressed process DAG with human-owned grades and neutral declared-AI-help nodes. **Its own product, developed here for later extraction** (`docs/decisions/evidencegraph-v1-design.md` §11 + §13a): one graph per project (packets removed), demonstrable with no GT dependency. Pre-live gates: transparency log, crypto-shred erasure, comparative-judgment, conformal calibration, export provenance, attestation signing. *Fits:* the "prove the spike" pillar — PassionLab **integrates** it across a product boundary (every project gets a graph, written through the single seam adapter `@gt100k/project-evidence-sink`). Separable codebase, joint value proposition: the two pillars still only work together commercially (`docs/research/passionBrainlift.md` Insight 12).
 - **E2. Assessment / Oral Defense System** *(net-new)* — AI-conducted, sampled, multi-touchpoint, anxiety-safe, age-adapted Socratic defense + the **readiness-staged** process rubric; human owns the grade. *Fits:* verifies authorship + understanding structurally (never a detector).
 
 ### Group F — Human & Family Layer
@@ -139,9 +140,13 @@ flowchart TB
     PCDE["D5 PCDE Curriculum Engine"]
   end
 
-  subgraph Assess["Assessment & Provenance"]
-    EG["E1 EvidenceGraph (process DAG)"]
+  subgraph Assess["Assessment (PassionLab)"]
+    Sink["@gt100k/project-evidence-sink (the one seam adapter)"]
     Defense["E2 Oral Defense + Readiness-Staged Rubric"]
+  end
+
+  subgraph EGProd["E1 EvidenceGraph — separate product (@gt100k/evidence-*, extractable)"]
+    EG["EvidenceGraph (process DAG)"]
   end
 
   subgraph HumanF["Human & Family Layer"]
@@ -180,7 +185,9 @@ flowchart TB
   Mentor --> Workspace
   Audience --> Workspace
   PCDE --> Workspace
-  Workspace --> EG --> Defense --> Guide
+  Workspace -->|evidence plan| Sink
+  Sink -->|materializes| EG
+  EG --> Defense --> Guide
   Workspace --> Burnout --> Guide
   Family --> Workspace
   Burnout -. re-coach .- Family
@@ -200,11 +207,11 @@ flowchart TB
 
 ## 3. Build-sequencing notes
 
-- **Done (discovery spine + honesty/safety + specialization/family/priors engines + the cockpit):** C2 (009) · C1 (012) · C3 (011) · C4 (013) · E2 (010) · **G1 + orchestrator (014)** · **F2 wellbeing (016)** · **G6 guardrails (017)** · **A6+B1+B2 concierge/RAG/curated library (015)** · **D1 planner engine + Plan panel (018)** · **F3 family engine + Family tab (019/021)** · **G2 TimeBack priors (020)** · **D2 project-workspace engine + evidence-sink adapter + project-studio app (022)** · **D3/D4 access broker engine + adapter + Access tab (023)** · **F1 guide-console cockpit** (5-tab: Hypotheses/Wellbeing/Plan/Family/Access + polish + Galaxy) · E1-MVP (002, teammate). Engines wired end-to-end; the cockpit reads genuinely-derived data with real TimeBack priors.
+- **Done (discovery spine + honesty/safety + specialization/family/priors engines + the cockpit):** C2 (009) · C1 (012) · C3 (011) · C4 (013) · E2 (010) · **G1 + orchestrator (014)** · **F2 wellbeing (016)** · **G6 guardrails (017)** · **A6+B1+B2 concierge/RAG/curated library (015)** · **D1 planner engine + Plan panel (018)** · **F3 family engine + Family tab (019/021)** · **G2 TimeBack priors (020)** · **D2 project-workspace engine + the `project-evidence-sink` seam adapter + project-studio app (022)** · **D3/D4 access broker engine + adapter + Access tab (023)** · **F1 guide-console cockpit** (5-tab: Hypotheses/Wellbeing/Plan/Family/Access + polish + Galaxy) · E1-MVP (002, teammate). Engines wired end-to-end; the cockpit reads genuinely-derived data with real TimeBack priors.
 - **Next up (in order):**
   1. **D5 PCDE curriculum** (the rest of the specialization lane).
-  2. **Pre-live gates:** E1 D1–D6 productionization (teammate), G3 consent/erasure, G4 safety-at-scale, G5 calibration (once outcome data accrues).
-  3. **Real evidence wiring:** swap the studio's stub `EvidenceSink` for the SHA-256 adapter once the teammate's EvidenceGraph API settles.
+  2. **Pre-live gates:** E1 D1–D6 productionization (teammate, inside the separate EvidenceGraph product), G3 consent/erasure, G4 safety-at-scale, G5 calibration (once outcome data accrues).
+  3. **Real evidence wiring:** the seam is settled — the engine emits a plan (`toEvidencePlan`) and `@gt100k/project-evidence-sink` holds both the stub and the SHA-256 sink. What remains is choosing the real sink in the studio's composition root; no engine change, and no new import across the `@gt100k/evidence-*` boundary.
 - **Original critical path (for reference):** A1 → A2/A3 → A4 → C2 → C1 → C3 → C4 → F1 (+ G1, G2). Concierge (B1/B2) and the external router (A6) can follow once the bounded loop reads signal.
 - **Highest-risk / longest-lead:** B2 (child-safe open-web RAG), C3 + G5 (inference with no launch labels), E1 D1–D6 (all pre-production), G3 (erasure on append-only child data — a hard pre-live gate).
 - **Pre-live gates (block any live child):** G3 erasure/consent, E1 provenance productionization, G4 safety at child scale. **Erasure sequencing:** E1 **D2 (erasure data model) must precede D1 (external anchoring)** — never anchor un-erasable child PII into a third party.
@@ -212,10 +219,11 @@ flowchart TB
 
 ## 4. Hardening mini-specs
 
-The four highest-risk areas have dedicated mini-specs in [`hardening/`](./hardening/):
+The highest-risk areas have dedicated mini-specs in [`hardening/`](./hardening/) — five of them, though this
+line said "four" until 2026-07-27; `remaining-weakpoints.md` covers several smaller ones together:
 
 - `human-scaling.md` — audit-only default + two human-owned carve-outs (wellbeing/safety, of-record grades); uncertainty-based routing; anti-rubber-stamp UX (weak point #4).
 - `child-safe-rag.md` — live open-web behind a staged defense-in-depth harness, uniform across ages; async vet→promote (weak point #3).
 - `measurement-validity.md` — the leaner validity program: behavior + light kid/family check-in, "not sure yet" default, bank long-term outcome data now (weak point #1).
-- `evidencegraph-productionization.md` — three-layer erasure architecture (digests-over-ciphertext / per-child-encrypted payloads / deletable identity map), the "never hash plaintext PII" invariant, D1–D6 sequencing (weak point #6).
+- `evidencegraph-productionization.md` — three-layer erasure architecture (digests-over-ciphertext / per-child-encrypted payloads / deletable identity map), the "never hash plaintext PII" invariant, D1–D6 sequencing (weak point #6). **Scoped to the separate E1 product**; it lives here because the gate blocks PassionLab going live.
 - `remaining-weakpoints.md` — per-spike quiet periods (#2), select-intense-then-convert + light backstop (#5), "nothing sticks" = exposure/diagnosis not a verdict (#7), speed-in-the-start/patience-in-the-commitment (#8).

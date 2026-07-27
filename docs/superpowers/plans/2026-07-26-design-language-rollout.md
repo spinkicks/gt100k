@@ -4,6 +4,15 @@
 product decisions.** Two of them are yours.
 **Date:** 2026-07-26
 
+> **Amended (2026-07-27):** `docs/decisions/evidencegraph-v1-design.md` §13a makes the EvidenceGraph its own
+> product, extractable by `git subtree`, which gives this plan's decision about `evidence-explorer` (~38, ~115) a
+> consequence it did not have on 2026-07-26. Theming that app to GT is what makes `apps/evidence-explorer` depend
+> on `@gt100k/design-tokens` and `@gt100k/ui`, two packages outside the `evidence-*` namespace, so they would have
+> to travel with the extraction or be replaced by the standalone product's own tokens. The new
+> `@gt100k/boundaries` check records this as an accepted **warning** (rule B3, `EVIDENCE_APP_OUTWARD_DEP`, apps
+> only) rather than a failure: the decision here stands, the cost is now visible. The inbound direction is still
+> hard-failed — nothing outside the namespace may import `evidence-*` as a value.
+
 ## 1. What I got wrong in the first draft
 
 The first version of this plan treated the four un-branded surfaces as a backlog to work through.

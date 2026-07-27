@@ -126,7 +126,15 @@ So nothing gets lost: project-start hand-off (A2), cadence (A6), automatic captu
 
 ## 13a. Extraction is the goal (not now)
 
-The explicit end-state is that the EvidenceGraph becomes **its own product**. We build it *here* in v1 to reuse the working toolchain + green tests and prove the boundaries, then **extract it later** — keeping the `@gt100k/evidence-*` package names and pnpm layout intact so extraction is a mechanical copy / `git subtree` / published-package swap, not a merge fight. No separate repo now; nothing outside the `evidence-*` namespace may reach *into* these packages (preserve the zero-inbound-coupling that already holds).
+The explicit end-state is that the EvidenceGraph becomes **its own product**. We build it *here* in v1 to reuse the working toolchain + green tests and prove the boundaries, then **extract it later** — keeping the `@gt100k/evidence-*` package names and pnpm layout intact so extraction is a mechanical copy / `git subtree` / published-package swap, not a merge fight. No separate repo now.
+
+**The invariant that keeps extraction mechanical:** nothing outside the `@gt100k/evidence-*` namespace may reach *into* those packages at runtime. `import type` is fine — types vanish at compile time, so they cost nothing on extraction. A value import does not: it is a real edge in the dependency graph that has to be unpicked later, by someone with less context than whoever added it.
+
+**This is scoped to architecture and delivery, not to the product thesis.** Separable codebases; a joint value proposition. `docs/research/passionBrainlift.md` Insight 12 — "the two pillars only work together" — still stands: a spike no one can verify is just a claim. Two products that need each other commercially can still be two products.
+
+> **Status, 2026-07-27: the invariant had drifted, and is now restored and enforced.** This clause used to read "preserve the zero-inbound-coupling that already holds," which stopped being true without anyone noticing — four runtime imports had crossed the line (`project-workspace/src/to-evidence.ts` calling `addNode`/`addEdge`, `socratic-defense/src/evidence.ts` calling `canonicalize`, and the `evidence-sink-graph` adapter sitting inside the namespace while depending on the passion side). Nothing enforced it, which is why a parenthetical asserting a fact was the wrong mechanism for keeping it true.
+>
+> All four are gone. `project-workspace` now emits a *plan* (pure data) that `@gt100k/project-evidence-sink` materializes — one adapter, outside the namespace, the single exemption to the rule. `socratic-defense` owns a parity-tested copy of `canonicalize`. **`@gt100k/boundaries` checks all of it on every CI run**, so the next drift fails a build instead of surviving for weeks.
 
 ## 14. Impact on existing code (for the spec)
 

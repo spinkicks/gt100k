@@ -1,19 +1,21 @@
 // SC-5 / SC-6 / SC-4 guardrail invariants — the NON-NEGOTIABLE product rules, as executable tests.
 // GRADE THE PROCESS, NOT THE POLISH: this file exists so that no future change can quietly slip a
 // score/grade/streak/points/badge/rank/reward field onto a `Project`, a `WorkEvent`, or the evidence
-// graph, quietly penalize declared AI help, or introduce a clock/random/network dependency into the
-// deterministic fold. No new source — pure invariant scans over the real model + `toEvidence` output.
+// PLAN, or introduce a clock/random/network dependency into the deterministic mapping.
+//
+// SCOPE: the model and the plan. The counterparts that assert on a materialized `EvidenceGraph` live in
+// `@gt100k/project-evidence-sink`, because building a graph is that adapter's job now — this package
+// deliberately cannot (see `src/plan.ts` for why). Both halves must hold; neither is sufficient alone.
 import { describe, expect, it, vi } from "vitest";
 
 import { makeFixtureProject } from "../src/__fixtures__/project.js";
 import type { Project, WorkEvent } from "../src/model.js";
+import { toEvidencePlan } from "../src/plan.js";
 import { startProject } from "../src/project.js";
-import { stubEvidenceSink, stubHasher } from "../src/sink.js";
-import { toEvidence } from "../src/to-evidence.js";
 
 // The forbidden gamification vocabulary. Anything matching this in a KEY anywhere in the model or the
-// evidence graph means "grade the polish" crept back in ([D3] / SC-5). `win`/`lose` are bounded so
-// legitimate words (`winner`, …) can't appear as keys — but no key should match regardless.
+// plan means "grade the polish" crept back in ([D3] / SC-5). `win`/`lose` are bounded so legitimate
+// words (`winner`, …) can't appear as keys — but no key should match regardless.
 const GAMIFICATION = /score|grade|streak|points|xp|badge|rank|leaderboard|reward|\bwin\b|\blose\b/i;
 
 /** Recursively collect EVERY object key reachable from a value (arrays + nested objects included). */
@@ -59,10 +61,11 @@ describe("guardrails — no gamification (SC-5)", () => {
     }
   });
 
-  it("carries NO gamification key anywhere in the toEvidence output graph", () => {
-    const graph = toEvidence(makeFixtureProject(), stubHasher);
-    for (const key of collectKeys(graph)) {
-      expect(key, `forbidden gamification key in the evidence graph: "${key}"`).not.toMatch(
+  it("carries NO gamification key anywhere in the toEvidencePlan output", () => {
+    // The graph-level counterpart is in the sink adapter. Scanning the plan too means a forbidden key
+    // is caught at the point the mapping introduces it, not one package downstream.
+    for (const key of collectKeys(toEvidencePlan(makeFixtureProject()))) {
+      expect(key, `forbidden gamification key in the evidence plan: "${key}"`).not.toMatch(
         GAMIFICATION,
       );
     }
@@ -75,10 +78,10 @@ describe("guardrails — no gamification (SC-5)", () => {
   });
 });
 
-describe("guardrails — declared AI help is NEUTRAL (SC-6)", () => {
-  it("maps ai_help to an Assistance/model node with used_tool and no penalty markers", () => {
-    const graph = toEvidence(makeFixtureProject(), stubHasher);
-    const assistance = Object.values(graph.nodes).filter((node) => node.payload.kind === "ai_help");
+describe("guardrails — declared AI help is NEUTRAL in the plan (SC-6)", () => {
+  it("plans ai_help as an Assistance/model node with a used_tool edge and no penalty markers", () => {
+    const plan = toEvidencePlan(makeFixtureProject());
+    const assistance = plan.nodes.filter((node) => node.payload.kind === "ai_help");
     expect(assistance).toHaveLength(1);
     const node = assistance[0];
     expect(node).toBeDefined();
@@ -86,31 +89,30 @@ describe("guardrails — declared AI help is NEUTRAL (SC-6)", () => {
       return;
     }
 
-    // Neutral by construction: an Assistance node authored by a model, wired via `used_tool`.
     expect(node.type).toBe("Assistance");
     expect(node.actor.kind).toBe("model");
     expect(node.tool?.name).toBe("studybot");
-    const usedTool = graph.edges.filter(
-      (edge) => edge.type === "used_tool" && edge.from === node.id,
-    );
-    expect(usedTool).toHaveLength(1);
+    expect(
+      plan.edges.filter(
+        (edge) =>
+          edge.type === "used_tool" &&
+          edge.from.kind === "event" &&
+          edge.from.eventId === node.eventId,
+      ),
+    ).toHaveLength(1);
 
-    // Nothing about the assistance is negative/penalized/deducted — declaring help is never a cost.
+    // Declaring help is never a cost, and it is never itself a verdict on the kid.
     expect(JSON.stringify(node)).not.toMatch(/penal|negativ|deduct|demerit|cheat|disallow/i);
-    // ...and (belt + braces) it is not itself an Outcome/Review that could imply a verdict on the kid.
     expect(node.type).not.toBe("Outcome");
     expect(node.type).not.toBe("Review");
   });
 });
 
 describe("guardrails — deterministic + offline (SC-4)", () => {
-  it("derives ids from content only: identical project → byte-identical graph", () => {
-    const first = toEvidence(makeFixtureProject(), stubHasher);
-    const second = toEvidence(makeFixtureProject(), stubHasher);
-    expect(second).toEqual(first);
-    // The stub SINK is the same content-only fold.
-    expect(stubEvidenceSink.record(makeFixtureProject())).toEqual(first);
-    // A self-authored project built twice is also stable (no clock/random in id derivation).
+  it("is pure over the project: identical project → identical plan", () => {
+    expect(toEvidencePlan(makeFixtureProject())).toEqual(toEvidencePlan(makeFixtureProject()));
+
+    // A self-authored project planned twice is also stable (no clock/random anywhere in the mapping).
     const self = () =>
       startProject(
         {
@@ -125,19 +127,17 @@ describe("guardrails — deterministic + offline (SC-4)", () => {
         },
         "2026-02-02T00:00:00.000Z",
       );
-    expect(toEvidence(self(), stubHasher)).toEqual(toEvidence(self(), stubHasher));
+    expect(toEvidencePlan(self())).toEqual(toEvidencePlan(self()));
   });
 
-  it("touches no network and no wall clock during the fold", () => {
+  it("touches no network and no wall clock while planning", () => {
     const fetchSpy = vi.fn();
     const dateNowSpy = vi.spyOn(Date, "now");
     const randomSpy = vi.spyOn(Math, "random");
     const priorFetch = (globalThis as { fetch?: unknown }).fetch;
     (globalThis as { fetch?: unknown }).fetch = fetchSpy;
     try {
-      const project = makeFixtureProject();
-      toEvidence(project, stubHasher);
-      stubEvidenceSink.record(project);
+      toEvidencePlan(makeFixtureProject());
       expect(fetchSpy).not.toHaveBeenCalled();
       expect(dateNowSpy).not.toHaveBeenCalled();
       expect(randomSpy).not.toHaveBeenCalled();
@@ -147,10 +147,17 @@ describe("guardrails — deterministic + offline (SC-4)", () => {
       randomSpy.mockRestore();
     }
   });
+});
 
-  it("produces stable hex ids for the same bytes (content-addressed, no leakage)", () => {
-    const bytes = new TextEncoder().encode("bridge-v2");
-    expect(stubHasher.hash(bytes)).toBe(stubHasher.hash(bytes));
-    expect(stubHasher.hash(bytes)).toMatch(/^[0-9a-f]{16}$/);
+describe("guardrails — the product boundary (evidencegraph-v1-design.md §13a)", () => {
+  it("does not hash anything: no content-addressed id is derivable from a plan alone", () => {
+    // The plan is pure data with no ids in it. This is the structural reason this package cannot
+    // accidentally regrow a dependency on the graph: it has nothing to hash with.
+    const plan = toEvidencePlan(makeFixtureProject());
+    const keys = collectKeys(plan);
+    expect(keys.has("id")).toBe(false);
+    expect(keys.has("nodes")).toBe(true);
+    // Node handles are event ids, which the child's journey already owns — not digests.
+    expect(plan.nodes.every((node) => node.eventId.length > 0)).toBe(true);
   });
 });

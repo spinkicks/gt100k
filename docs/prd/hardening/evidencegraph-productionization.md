@@ -2,6 +2,7 @@
 
 **Status:** Draft v1 · 2026-07-22 · Owner: (product)
 **Addresses:** Weak point #6 — the EvidenceGraph (the "prove the spike" pillar) is entirely pre-production (D1–D6), and the hardest gate — right-to-erasure on an append-only store for child data — is unsolved.
+**Scope:** this is work **inside the EvidenceGraph product**, which is its own product built in this repo for later extraction (`docs/decisions/evidencegraph-v1-design.md` §11 + §13a) and integrated by PassionLab across the `@gt100k/evidence-*` boundary. It sits under `hardening/` because the gate blocks *PassionLab* going live, not because the graph is a PassionLab subsystem.
 **Decision:** adopt the three-layer architecture below (clear engineering recommendation; no user-facing fork).
 **Grounding:** `docs/research/passion-pipeline/hardening/08-evidencegraph-productionization.md`; EvidenceGraph MVP (`passion/packages/evidence-graph/README.md`).
 
@@ -13,13 +14,13 @@ Don't try to *delete from* the append-only graph — arrange things so **nothing
 
 ## 2. The three layers
 
-- **L0 — Immutable Evidence DAG.** Holds only **content-address digests over ciphertext**, plus pseudonymous references, Merkle roots, attestations, and inclusion proofs. No personal data, ever. This is the tamper-evident layer that stays append-only and still verifies every packet.
+- **L0 — Immutable Evidence DAG.** Holds only **content-address digests over ciphertext**, plus pseudonymous references, Merkle roots, attestations, and inclusion proofs. No personal data, ever. This is the tamper-evident layer that stays append-only and still verifies every graph. (v1 removed `EvidencePacket`; the graph is the unit — `docs/decisions/evidencegraph-v1-design.md` §2.)
 - **L1 — Off-graph payload store.** The actual project artifacts/process content, **encrypted under per-child keys**, stored off the DAG.
 - **L2 — Identity/index map.** Maps a real child to their pseudonymous refs and keys. Fully deletable.
 
 ## 3. How erasure works
 
-Erase a child = **hard-delete L2** (identity + index) **+ crypto-shred that child's key** (destroy every copy of the key-encrypting key). L1 ciphertext becomes permanently unreadable; L0 is untouched but is now **anonymous by construction**, so historical packets still verify while nothing personal remains recoverable. Crypto-shred is treated as a **supplement to real deletion of off-graph identifiers**, not a substitute.
+Erase a child = **hard-delete L2** (identity + index) **+ crypto-shred that child's key** (destroy every copy of the key-encrypting key). L1 ciphertext becomes permanently unreadable; L0 is untouched but is now **anonymous by construction**, so historical graphs still verify while nothing personal remains recoverable. Crypto-shred is treated as a **supplement to real deletion of off-graph identifiers**, not a substitute.
 
 ## 4. The one load-bearing invariant (the "digest trap")
 
@@ -30,7 +31,7 @@ Erase a child = **hard-delete L2** (identity + index) **+ crypto-shred that chil
 1. **D2 first — the erasure data model** (three layers + per-child keys + the digest-trap invariant). This must precede external anchoring, or you anchor un-erasable child PII into a third party.
 2. **D1 + D6 — external anchoring + signing.** The MVP is already RFC-6962 / in-toto shaped, so this is "add attestation signing + a transparency-log entry" (Sigstore/Rekor-class), not a redesign — done *after* D2 so only anonymous digests are anchored.
 3. **D3 + D4 — assessment reliability + calibration**, run as a **parallel, shadow-only track** (comparative-judgment reliability + calibrated confidence), never gating a child's record on its own; **humans own every grade** (`assertHumanAuthority`).
-4. **D5 — durable public-export provenance** for the outward evidence packet (the demand-side-pull artifact), built on the signed, anchored, anonymous L0.
+4. **D5 — durable public-export provenance** for the outward evidence export (the demand-side-pull artifact — an *export* of the graph, since v1 removed `EvidencePacket` as an object), built on the signed, anchored, anonymous L0.
 
 ## 6. Standards to build against
 
