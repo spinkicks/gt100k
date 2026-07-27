@@ -100,5 +100,32 @@ single value.
 
 ## Current state
 
-123 resources, all 28 subtopics stocked, zero errors. Eleven subtopics have nothing for
-six-to-eight-year-olds and the validator says so on every run rather than letting it pass quietly.
+**151 resources, all 28 subtopics stocked, every age tier served, zero errors and zero warnings.**
+
+The eleven subtopics that had nothing for six-to-eight-year-olds are filled, and full tier coverage
+is now a test rather than a warning, so losing it fails instead of merely printing.
+
+One caveat is recorded in the library itself rather than resolved, because resolving it would mean
+lying: the two `code-computers/python` entries tagged 6-8 are block-to-Python bridges, not Python.
+Nothing that teaches Python itself is usable by a six-year-old, since Python is a text language, and
+the obvious candidates are explicitly older (Hedy is text entry from level one; the Raspberry Pi
+Foundation's Python pathway says 9+). Those two should read as "on the way to Python" wherever they
+are surfaced.
+
+### What this cost, and the rule it produced
+
+One of the compiling agents noticed that `projects.raspberrypi.org` answers HTTP 200 for **every**
+path, including ones it invented as a control. That arrived after two generic hub URLs had already
+been replaced with deep links and "verified" by status code. Checked in a real browser,
+`pathways/python-intro` was genuine and `pathways/robotics-intro` rendered "Something's gone wrong",
+identical to a made-up URL. A dead end had been shipped by someone who believed they had verified it.
+
+So: **on a single-page-app domain, prefer a collection URL you have seen working over a deep link
+you inferred**, and `check-links.ts` now reads the body rather than only the status. The heuristic
+will not catch a soft 404 that renders a cheerful empty page, which is why the rule stands on its
+own instead of being replaced by the check.
+
+All 151 URLs have since been swept in a real browser, matching soft-404 markers against titles and
+headings. Two entries were dropped for being unverifiable behind Cloudflare rather than assumed
+good, which is the same standard applied consistently: unverifiable and unavailable cost a child the
+same thing.

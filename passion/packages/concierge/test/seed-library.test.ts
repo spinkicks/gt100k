@@ -73,6 +73,18 @@ describe("the shipped library", () => {
     expect(new Set(SEED_LIBRARY.map((r) => r.url)).size).toBe(SEED_LIBRARY.length);
   });
 
+  it("serves every age tier in every subtopic", () => {
+    // Held as a test now that it is true. It was not: eleven subtopics had nothing a six-to-eight
+    // year old could use, which is the dead-end problem one level down — a child of that age
+    // exploring would have found eleven of twenty-eight shelves empty FOR THEM. The validator
+    // reports this as a warning rather than an error, because the tempting fix is re-tagging a
+    // 12-14 resource as 6-8 and that produces a dead end wearing a label. Now that real material
+    // exists, a regression should fail rather than merely warn.
+    const report = validateLibrary(SEED_LIBRARY);
+
+    expect(report.warnings.filter((w) => w.code === "TIER_UNSERVED")).toEqual([]);
+  });
+
   it("uses more than one mode, so the second axis is not dead on arrival", () => {
     // A launcher's only mode signal is which resource a child picks. If everything afforded the
     // same mode there would be no signal to read.
