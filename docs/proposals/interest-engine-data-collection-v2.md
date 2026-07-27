@@ -534,7 +534,9 @@ interface CellEvent {
 
 ## 8. Non-goals
 
-- No changes to the Evidence Graph — separate artifact, out of scope.
+- No changes to the Evidence Graph — a separate product with its own packages and roadmap
+  (`docs/decisions/evidencegraph-v1-design.md` §13a), out of scope here. The finder emits interest signals into
+  `@gt100k/signal-pipeline`; it never writes to the graph.
 - No change to tagging beyond noting that the current `math-puzzles` gadgets are intrinsically integrated
   for **deduction**, not **mathematics** (they would play identically with the numerals swapped for
   symbols). That is an input to the tagging rework already planned, not a request here.

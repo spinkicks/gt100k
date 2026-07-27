@@ -3,7 +3,7 @@
 > Implementation-focused hardening memo for GT100K PassionLab. Takes the shipped, synthetic-only MVP (`passion/packages/evidence-graph`, ports/adapters, six explicitly-deferred gates) to a design that can hold **live child data**. Centers on **D2** — reconciling a tamper-evident, content-addressed DAG with the **right to erasure for children** — and gives a staged productionization plan for **D1–D6**.
 
 **Owners:** EvidenceGraph / Platform hardening track
-**Status:** Research input to PRD §19 / §19.2 (D1–D6), `GOVERNANCE.md` G7 (privacy zones) and G9 (safeguarding legal hold), and the Release Threshold Registry (§33.1). Consumes the shipped domain in `passion/packages/evidence-graph`.
+**Status:** Research input to PRD §19 / §19.2 (D1–D6), `GOVERNANCE.md` G7 (privacy zones) and G9 (safeguarding legal hold), and the Release Threshold Registry (§33.1). Consumes the shipped domain in `passion/packages/evidence-graph`. This memo hardens the **EvidenceGraph as a standalone product** — it is developed in this repo but owned and extracted separately (`docs/decisions/evidencegraph-v1-design.md` §13a), so every D1–D6 item below belongs to that product's roadmap, not PassionLab's; PassionLab is a consumer across the boundary.
 **Grounding:** Anchored in the actual code (`src/model.ts`, `src/merkle.ts`, `src/attestation.ts`, `src/ports.ts`; `adapters/evidence-deferred`; archived `archive/foundation-spine/workflows/deletion/*.go`) and the PRD's existing §19 erasure design.
 **Source honesty:** Only real, verifiable sources are cited, with DOIs/links. Preprints and non-independently-verified items are flagged inline as **[PREPRINT]** / **[UNVERIFIED]**. Legal statements are engineering-grade summaries, **not legal advice**.
 

@@ -1,7 +1,7 @@
 # Passion Pipeline — 03: The Talent-Development Spine
 
 **Subtitle:** Turning a validated spike into world-class expertise in a child, ages 6–14.
-**Scope:** How specialization should be *staged* once discovery hands over a validated spike (candidate domain + work-mode profile). Discovery, spike-validation, motivation measurement, and the Evidence Graph provenance machinery are covered in the sibling memos and the master `passionBrainlift.md`; this memo owns the *ascent* — the pathway from "genuine interest" to "world-class trajectory."
+**Scope:** How specialization should be *staged* once discovery hands over a validated spike (candidate domain + work-mode profile). Discovery, spike-validation, motivation measurement, and the Evidence Graph provenance machinery are covered in the sibling memos and the master `passionBrainlift.md`; this memo owns the *ascent* — the pathway from "genuine interest" to "world-class trajectory." Where the spine below leans on the Evidence Graph (the terminal artifact, "grade the process"), read it as a **separate product PassionLab integrates with** rather than a module of the spine: it is built and extracted standalone (`docs/decisions/evidencegraph-v1-design.md` §13a), and the spine reaches it through an adapter. What it proves about the work is unchanged.
 
 ---
 

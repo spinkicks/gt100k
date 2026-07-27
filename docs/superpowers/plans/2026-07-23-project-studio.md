@@ -2,6 +2,20 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development or superpowers:executing-plans. Checkbox steps; commit after each task. The headless packages (Tasks 0–5) are loop-ready (`tsc -b` + `test`); the **app (Tasks 6–7) is built live** (polish-heavy) with screenshots against `specs/022-project-studio/references/fella-01…09.png`.
 
+> **Superseded in part (2026-07-27):** this plan shipped, but its evidence seam has since been inverted by
+> `docs/decisions/evidencegraph-v1-design.md` §13a (the EvidenceGraph is a separate product; nothing outside the
+> `evidence-*` namespace may import it as a value). Specifically: the `EvidenceSink` port and `toEvidence` mapping
+> (Task 3) no longer live in `@gt100k/project-workspace` as graph-producing code — the domain now exports
+> `toEvidencePlan`, a pure plan with no `@gt100k/evidence-graph` types or values in it. Materialization moved
+> wholly into the adapter, renamed out of the namespace: `@gt100k/evidence-sink-graph` →
+> `@gt100k/project-evidence-sink` (`passion/adapters/project-evidence-sink`). Task 5's instruction to share the
+> mapping with the domain (~72: "import it; the adapter only swaps the hasher") and the matching "keep the mapping
+> in the domain `toEvidence`" note (~104) are **inverted**: the domain owns the plan, the adapter owns the
+> mapping *and* the hasher. The `@gt100k/boundaries` package now fails CI on any value import of `evidence-*`
+> from outside the namespace, so the ~79 `transpilePackages` entry for `@gt100k/evidence-graph` drops out along
+> with the package dependency (~22).
+> Everything else in this plan (engine, guardrails, studio app) stands as written.
+
 **Goal:** Build `022-project-studio` per its spec — a headless `@gt100k/project-workspace` engine (Project + 10 WorkEvent kinds → EvidenceGraph nodes via an `EvidenceSink` port), a real `@gt100k/evidence-sink-graph` adapter over `@gt100k/evidence-graph`, and a **cartoonish child-facing `apps/project-studio`** where a kid runs Type III projects and logs the honest journey. Grade the process, not the polish; no gamification, ever.
 
 **Architecture:** Pure, deterministic engine (append-only work-events) → a typed `EvidenceSink` maps events to the **closed** EvidenceGraph taxonomy (`spec §4.3`). Stub sink (deterministic hasher) powers CI + `LOOP_QA`; the real adapter uses `@gt100k/evidence-graph` `addNode`/`addEdge` + a SHA-256 `Hasher`. The studio is a single-child, neo-brutalist cartoon app; projects seed from D1-brief-shaped fixtures + self-authoring; state persists in `localStorage`; the deterministic seed keeps QA stable.
