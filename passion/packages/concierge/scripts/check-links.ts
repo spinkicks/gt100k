@@ -29,6 +29,35 @@ interface Result {
 const TIMEOUT_MS = 15_000;
 
 /**
+ * A STATUS CODE IS NOT ENOUGH, and this cost us a real dead link before it was understood.
+ *
+ * `projects.raspberrypi.org` is a single-page app that answers 200 for every path, including paths
+ * invented as a control. A plausible-looking deep link was added to the library, "verified" at 200,
+ * and shipped — and it rendered "Something's gone wrong", identically to a made-up URL. Tinkercad
+ * behaves the same way. On those domains an HTTP check confirms only that the app is up, never that
+ * the page exists.
+ *
+ * So the body is checked too. This is a heuristic and will not catch a soft 404 that renders a
+ * cheerful empty page, which is why the honest rule for SPA-backed domains remains: prefer the
+ * collection URL you can see working over a deep link you inferred.
+ */
+const SOFT_404 = [
+  /something'?s gone wrong/i,
+  /page not found/i,
+  /error 404/i,
+  /no longer available/i,
+  /doesn'?t exist/i,
+];
+
+function looksSoft404(body: string): boolean {
+  // Titles and headings only: the words "page not found" appear legitimately in body copy about
+  // broken links, and matching the whole document would flag good pages.
+  const head = /<title[^>]*>([\s\S]{0,200}?)<\/title>/i.exec(body)?.[1] ?? "";
+  const h1 = /<h1[^>]*>([\s\S]{0,200}?)<\/h1>/i.exec(body)?.[1] ?? "";
+  return SOFT_404.some((re) => re.test(`${head} ${h1}`));
+}
+
+/**
  * HEAD first, then GET on failure. Plenty of servers answer HEAD with 405 or 403 while serving GET
  * perfectly, so a HEAD-only check would report healthy links as dead and erode trust in the report.
  */
@@ -44,8 +73,16 @@ async function check(resource: CuratedResource): Promise<Result> {
         headers: { "user-agent": "gt100k-link-check/1.0 (curated library maintenance)" },
       });
       clearTimeout(timer);
-      if (res.ok)
-        return { resource, status: res.status, note: method === "GET" ? "ok (GET)" : "ok" };
+      if (res.ok) {
+        // A HEAD has no body, so on an SPA domain its 200 means only that the app is up. Always
+        // fall through to GET, where the body can be inspected.
+        if (method === "HEAD") continue;
+        const body = await res.text().catch(() => "");
+        if (looksSoft404(body)) {
+          return { resource, status: res.status, note: "SOFT 404 (200 serving an error page)" };
+        }
+        return { resource, status: res.status, note: "ok" };
+      }
       if (method === "GET") return { resource, status: res.status, note: res.statusText };
     } catch (e) {
       clearTimeout(timer);

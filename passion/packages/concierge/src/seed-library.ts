@@ -808,7 +808,7 @@ export const SEED_LIBRARY: readonly CuratedResource[] = [
   {
     id: "res-making-engineering-robotics-raspberry-pi-foundation-projects",
     title: "Raspberry Pi Foundation — Projects",
-    url: "https://projects.raspberrypi.org/en/pathways/robotics-intro",
+    url: "https://projects.raspberrypi.org/en/projects",
     domainPath: ["making-engineering", "robotics"],
     affordedModes: ["build", "debug"],
     reputation: 0.9,
