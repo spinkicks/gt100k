@@ -1371,3 +1371,38 @@ body {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ── Touch targets ─────────────────────────────────────────────────────────────────────────────
+ *
+ * Measured in a browser, not read off the CSS: twelve of the eighteen controls on the main screen
+ * were under the 44px minimum. Ten kind buttons at 34px, the theme button at 39px, the primary
+ * button at 43px, and an 18px checkbox.
+ *
+ * This surface is used by six to fourteen year olds, and our own token contract asks for a 56px
+ * minimum with a 76px primary target on child surfaces, citing the child-UX literature. 34px is
+ * less than half that primary target.
+ *
+ * Sizes are set here rather than by adopting the shared contract, because the studio deliberately
+ * keeps its own token set and that is a separate decision. Height is added with min-height so the
+ * existing padding, type and pill shapes are untouched: nothing moves except the hit area.
+ */
+.kindbtn,
+.themebtn {
+  min-height: 44px;
+}
+
+.btn {
+  min-height: 44px;
+}
+
+/* A checkbox cannot grow without moving its label, so the tappable area is grown around it
+   instead: the input keeps its 18px box and the label carries the target. */
+.stuck {
+  min-height: 44px;
+  align-items: center;
+}
+
+.stuck input {
+  width: 22px;
+  height: 22px;
+}
