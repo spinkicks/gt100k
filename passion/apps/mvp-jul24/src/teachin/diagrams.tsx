@@ -547,52 +547,59 @@ export function RatioMixingDiagram(): JSX.Element {
 }
 
 /**
- * Tune Repair. The phrase as blocks climbing the stage, with one block off the line.
+ * Tune Repair. A melody as blocks, with a sound mark over the note that does not belong.
  *
- * Shows the two things the roll encodes and nothing else: HEIGHT is pitch, WIDTH is how long a note
- * is held. Deliberately no stave, no clef and no note names — the puzzle's rule R1 is that pitch is
- * position rather than notation the child has to already read, and a diagram that taught five lines
- * and a clef would be teaching a different subject.
+ * **The contour here is deliberately irregular**, and that is the whole point of the drawing. An
+ * earlier version showed a tidy staircase with one block off the line, which taught a child to hunt
+ * for a broken pattern — and the redesigned puzzle has no pattern to break, because a shape you can
+ * see is a shape you can solve with the sound off. The wrong note here sits on an ordinary row at an
+ * ordinary height; nothing about its *position* marks it. Only the ear finds it, so the mark in the
+ * picture is a sound cue rather than a spatial one.
+ *
+ * Height is still pitch and width is still duration, which is what the two side labels say. No stave,
+ * no clef, no note names: the roll is not notation a child has to already read.
  */
 export function TuneRepairDiagram(): JSX.Element {
-  const W = 20;
-  const H = 9;
-  const x0 = 44;
-  const baseline = 66;
-  // A rising line of six, with the fourth block sitting well below where the climb wants it.
-  const climb = [0, 1, 2, 1, 4, 5];
-  const wrong = 3;
+  const W = 18;
+  const H = 8;
+  const x0 = 52;
+  const baseline = 68;
+  // An irregular, singable-looking line — no constant step, no single turn, no repeated motif.
+  const melody = [0, 2, 1, 4, 3, 5];
+  const sour = 3;
   return (
     <Stage>
-      {climb.map((step, i) => (
+      {melody.map((step, i) => (
         <rect
           // biome-ignore lint/suspicious/noArrayIndexKey: a fixed row of marks; position is the identity.
           key={i}
-          x={x0 + i * (W + 4)}
+          x={x0 + i * (W + 5)}
           y={baseline - step * H}
-          width={i === climb.length - 1 ? W * 2 : W}
+          width={i === melody.length - 1 ? W * 2 : W}
           height={H - 1}
           rx={2}
-          className={i === wrong ? "ti-cell" : "ti-cell ti-cell-on"}
+          className="ti-cell ti-cell-on"
         />
       ))}
-      {/* Where the odd block should have been, drawn open. */}
-      <rect
-        x={x0 + wrong * (W + 4)}
-        y={baseline - 3 * H}
-        width={W}
-        height={H - 1}
-        rx={2}
-        className="ti-cell-open"
-      />
-      <Tag x={26} y={baseline - 5 * H + 4} anchor="end">
+      {/* A sound cue over the sour note: little arcs, not a position marker. */}
+      <g className="ti-beam">
+        <path
+          d={`M ${x0 + sour * (W + 5) + 3} ${baseline - melody[sour]! * H - 6} q 6 -7 12 0`}
+          fill="none"
+        />
+        <path
+          d={`M ${x0 + sour * (W + 5)} ${baseline - melody[sour]! * H - 11} q 9 -11 18 0`}
+          fill="none"
+        />
+      </g>
+      <Tag x={34} y={baseline - 5 * H + 4} anchor="end">
         higher
       </Tag>
-      <Tag x={26} y={baseline + 6} anchor="end">
+      <Tag x={34} y={baseline + 6} anchor="end">
         lower
       </Tag>
-      <Tag x={x0 + 3.4 * (W + 4)} y={88}>
-        one note is out of place
+      <Tag x={x0 + 3.4 * (W + 5)} y={88}>
+        one note sounds wrong
       </Tag>
     </Stage>
   );

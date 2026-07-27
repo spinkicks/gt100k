@@ -30,11 +30,17 @@
  *  - **No looping or background music.** There is nothing to turn off except the notes themselves.
  */
 
-import { frequencyForDegree } from "./pitch";
+import { TONIC_FROM_A4, frequencyForSemitone } from "./pitch";
 
-/** One note to sound: a diatonic degree, and how long to hold it in beats. */
+/**
+ * One note to sound: a **chromatic semitone** relative to the cabin's reference pitch, and how long
+ * to hold it in beats.
+ *
+ * Semitones rather than diatonic degrees because Tune Repair's whole task is a note OUTSIDE the key
+ * (see that puzzle's logic.ts) — a degree cannot represent one.
+ */
 export interface Note {
-  degree: number;
+  semitone: number;
   beats: number;
 }
 
@@ -145,7 +151,7 @@ export function createAudioEngine(Ctor: AudioContextCtor): AudioEngine {
 
   function scheduleNote(at: number, note: Note, bpm: number): void {
     const { ctx: c, master: m } = ensure();
-    const hz = frequencyForDegree(note.degree);
+    const hz = frequencyForSemitone(TONIC_FROM_A4 + note.semitone);
     const hold = note.beats * beatSeconds(bpm) * GATE;
 
     for (const partial of PARTIALS) {

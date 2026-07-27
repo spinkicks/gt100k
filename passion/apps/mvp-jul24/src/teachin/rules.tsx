@@ -140,10 +140,11 @@ export const TEACH_INS = {
   // --- music -----------------------------------------------------------------------------------
   "tune-repair": {
     title: "Tune Repair",
-    // Says what the picture MEANS (height is pitch, width is length) rather than what a stave means,
-    // because the roll is not notation and a child who reads music would otherwise look for a clef.
-    // Deliberately does not say what the tune's shape is: hearing that is the puzzle.
-    rule: "Press play and listen — the tune goes wrong at exactly one note. Higher up means a higher note and a wider block is held longer, so click the note that sounds out of place, then click where it belongs.",
+    // Leads with LISTEN, because there is no visual route to the answer at all — the sour note sits on
+    // an ordinary row. An earlier wording described the picture first, which quietly invited a child to
+    // hunt for a shape; the shape is not the puzzle and there is no shape to find.
+    // Deliberately does not name the key: being told it would turn listening into lookup.
+    rule: "Press play and listen: one note does not belong in this tune's key, so it sounds sour. Click the note you think it is, then nudge it up or down a step until nothing sounds wrong.",
     Diagram: TuneRepairDiagram,
   },
 } satisfies Record<string, ActivityTeachIn>;

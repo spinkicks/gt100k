@@ -1,148 +1,121 @@
 import { describe, expect, it } from "vitest";
+import { degreeInKey } from "../../audio/pitch";
 import {
   MIN_LENGTH,
+  hasVisiblePattern,
   isArch,
   isRun,
   isSequence,
   isSolved,
-  matchesAnyShape,
   movedIndex,
   notesFor,
+  sourIndices,
 } from "./logic";
 
-describe("isRun", () => {
-  it("accepts a steady walk in either direction", () => {
-    expect(isRun([0, 1, 2, 3, 4, 5])).toBe(true);
-    expect(isRun([5, 4, 3, 2, 1, 0])).toBe(true);
+describe("sourIndices — what 'wrong' means now", () => {
+  it("finds the note outside the key", () => {
+    // C major (key 0): C E G with a C# dropped in at index 1.
+    expect(sourIndices([0, 1, 4, 7], 0)).toEqual([1]);
   });
 
-  it("accepts a walk in thirds", () => {
+  it("finds nothing in a melody entirely in the key", () => {
+    expect(sourIndices([0, 2, 4, 5, 7], 0)).toEqual([]);
+  });
+
+  it("is relative to the key, not to a fixed set of pitches", () => {
+    // F# is sour in C major and perfectly ordinary in D major.
+    expect(sourIndices([6], 0)).toEqual([0]);
+    expect(sourIndices([6], 2)).toEqual([]);
+  });
+
+  it("works across octaves in both directions", () => {
+    expect(sourIndices([1, 13, -11], 0)).toEqual([0, 1, 2]);
+    expect(sourIndices([0, 12, -12], 0)).toEqual([]);
+  });
+});
+
+describe("isSolved", () => {
+  it("is true exactly when nothing is sour", () => {
+    expect(isSolved([0, 2, 4], 0)).toBe(true);
+    expect(isSolved([0, 3, 4], 0)).toBe(false);
+  });
+});
+
+/**
+ * The property that makes this a listening task rather than a looking one.
+ *
+ * Whether a note is sour depends on the KEY, which is audible and is never displayed. Two melodies
+ * with identical contours — the same shape on screen, note for note — differ in which note is sour
+ * once the key differs. So the picture cannot carry the answer, and a solver with only the contour has
+ * strictly less information than one who can hear.
+ */
+describe("the same contour can be right in one key and wrong in another", () => {
+  it("holds for a concrete pair", () => {
+    const contour = [0, 4, 6, 7];
+    // In C major, 6 (F#) is sour.
+    expect(sourIndices(contour, 0)).toEqual([2]);
+    // Transpose the KEY, not the notes: in G major (key 7) every one of those notes belongs.
+    expect(sourIndices(contour, 7)).toEqual([]);
+  });
+
+  it("means an identical drawing has different answers, so the drawing is not the answer", () => {
+    const contour = [0, 2, 3, 5, 7];
+    const soursByKey = new Set(
+      [0, 1, 2, 3, 4, 5].map((key) => sourIndices(contour, key).join(",")),
+    );
+    // Several distinct answers for one picture.
+    expect(soursByKey.size).toBeGreaterThan(1);
+  });
+});
+
+/**
+ * The old shape predicates, kept with their meaning inverted: matching one is now a reason to REJECT a
+ * melody, because a visible regularity is a route to the answer that does not go through the ear.
+ */
+describe("hasVisiblePattern — a rejection filter, not a win condition", () => {
+  it("flags a constant staircase", () => {
     expect(isRun([0, 2, 4, 6, 8])).toBe(true);
+    expect(hasVisiblePattern([0, 2, 4, 6, 8])).toBe(true);
   });
 
-  it("rejects one displaced note", () => {
-    expect(isRun([0, 1, 4, 3, 4, 5])).toBe(false);
+  it("flags a hill and a valley", () => {
+    expect(isArch([0, 2, 4, 6, 4, 2, 0])).toBe(true);
+    expect(isArch([6, 4, 2, 0, 2, 4, 6])).toBe(true);
   });
 
-  it("rejects a step bigger than a third, which would not be heard as a walk", () => {
-    expect(isRun([0, 3, 6, 9, 12])).toBe(false);
+  it("flags a restated motif", () => {
+    // motif (0, 4) restated a semitone higher each time
+    expect(isSequence([0, 4, 1, 5, 2, 6])).toBe(true);
   });
 
-  it("rejects a repeated note, because standing still is not a direction", () => {
-    expect(isRun([2, 2, 2, 2, 2])).toBe(false);
+  it("passes an irregular melody, which is what the generator wants", () => {
+    expect(hasVisiblePattern([0, 4, 2, 7, 5, 9])).toBe(false);
   });
 
-  it("rejects anything too short to hear as a shape", () => {
-    expect(isRun([0, 1, 2, 3])).toBe(false);
+  it("ignores anything too short to read as a pattern", () => {
+    expect(hasVisiblePattern([0, 2, 4, 6])).toBe(false);
     expect(MIN_LENGTH).toBe(5);
-  });
-});
-
-describe("isArch", () => {
-  it("accepts up-then-down with the turn in the middle", () => {
-    expect(isArch([0, 1, 2, 3, 2, 1, 0])).toBe(true);
-  });
-
-  it("accepts a valley as well as a hill", () => {
-    expect(isArch([3, 2, 1, 0, 1, 2, 3])).toBe(true);
-  });
-
-  it("rejects a turn too close to an end to be heard as a turn", () => {
-    // Turn after one step: the first leg is a single interval.
-    expect(isArch([0, 1, 0, -1, -2, -3])).toBe(false);
-    expect(isArch([0, 1, 2, 3, 4, 3])).toBe(false);
-  });
-
-  it("rejects two turns", () => {
-    expect(isArch([0, 1, 2, 1, 2, 3, 2])).toBe(false);
-  });
-
-  it("rejects legs with different step sizes", () => {
-    expect(isArch([0, 1, 2, 3, 1, -1, -3])).toBe(false);
-  });
-
-  it("does not accept a plain run", () => {
-    expect(isArch([0, 1, 2, 3, 4, 5])).toBe(false);
-  });
-});
-
-describe("isSequence", () => {
-  it("accepts a two-note motif restated three times, each a step higher", () => {
-    // motif (0, 2) shifted by +1 each time
-    expect(isSequence([0, 2, 1, 3, 2, 4])).toBe(true);
-  });
-
-  it("accepts a three-note motif restated three times", () => {
-    // motif (0, 2, 1) shifted by +2
-    expect(isSequence([0, 2, 1, 2, 4, 3, 4, 6, 5])).toBe(true);
-  });
-
-  it("rejects a restatement that breaks by one note", () => {
-    expect(isSequence([0, 2, 1, 3, 5, 4])).toBe(false);
-  });
-
-  it("rejects fewer than three restatements, which is not yet a pattern", () => {
-    expect(isSequence([0, 2, 1, 3])).toBe(false);
   });
 
   it("does not double-count a run as a sequence", () => {
-    // (0,1) shifted by 2 is literally 0,1,2,3,4,5 — a run, and must be reported as one only.
     expect(isRun([0, 1, 2, 3, 4, 5])).toBe(true);
     expect(isSequence([0, 1, 2, 3, 4, 5])).toBe(false);
   });
 });
 
-describe("matchesAnyShape", () => {
-  it("is what 'the tune is right' means, across all three shapes", () => {
-    expect(matchesAnyShape([0, 1, 2, 3, 4, 5])).toBe(true);
-    expect(matchesAnyShape([0, 1, 2, 3, 2, 1, 0])).toBe(true);
-    expect(matchesAnyShape([0, 2, 1, 3, 2, 4])).toBe(true);
-  });
-
-  it("rejects a phrase with a displaced note", () => {
-    expect(matchesAnyShape([0, 1, 5, 3, 4, 5])).toBe(false);
-  });
-
-  it("isSolved is the same question, asked of what is on screen", () => {
-    expect(isSolved([0, 1, 2, 3, 4, 5])).toBe(true);
-    expect(isSolved([0, 1, 5, 3, 4, 5])).toBe(false);
-  });
-});
-
-/**
- * The design claim, asserted rather than asserted-in-prose.
- *
- * Every shape predicate reads only the DIFFERENCES between notes, so transposing a whole phrase can
- * never change whether it is well-shaped. That is what makes "the wrong note is in the key" true by
- * construction: there is no privileged set of allowed pitches anywhere in this module, so there is no
- * set for a player to check membership against.
- */
-describe("shape is a property of intervals, not of pitches", () => {
-  const shaped = [
-    [0, 1, 2, 3, 4, 5],
-    [0, 1, 2, 3, 2, 1, 0],
-    [0, 2, 1, 3, 2, 4],
-  ];
-
-  it("is invariant under transposition, over a wide range", () => {
-    for (const phrase of shaped) {
-      for (let by = -24; by <= 24; by++) {
-        expect(matchesAnyShape(phrase.map((d) => d + by))).toBe(true);
-      }
-    }
-  });
-
-  it("stays broken under transposition too", () => {
-    const broken = [0, 1, 5, 3, 4, 5];
-    for (let by = -24; by <= 24; by++) {
-      expect(matchesAnyShape(broken.map((d) => d + by))).toBe(false);
+describe("melodies built from degrees are automatically in key", () => {
+  it("holds for every key", () => {
+    for (let key = 0; key < 12; key++) {
+      const melody = [0, 2, 1, 4, 3, 7].map((d) => degreeInKey(d, key));
+      expect(sourIndices(melody, key)).toEqual([]);
+      expect(isSolved(melody, key)).toBe(true);
     }
   });
 });
 
 describe("movedIndex", () => {
   it("reports which note the player has moved", () => {
-    expect(movedIndex([0, 1, 5, 3], [0, 1, 2, 3])).toBe(2);
+    expect(movedIndex([0, 1, 5, 3], [0, 1, 4, 3])).toBe(2);
   });
 
   it("reports -1 when nothing has been moved", () => {
@@ -151,18 +124,18 @@ describe("movedIndex", () => {
 });
 
 describe("notesFor", () => {
-  it("pairs each degree with its beats", () => {
+  it("pairs each semitone with its beats", () => {
     expect(notesFor([0, 4], [1, 2])).toEqual([
-      { degree: 0, beats: 1 },
-      { degree: 4, beats: 2 },
+      { semitone: 0, beats: 1 },
+      { semitone: 4, beats: 2 },
     ]);
   });
 
   it("defaults a missing duration to one beat rather than to zero", () => {
-    // A zero-beat note would be silent, which would look like a bug in the audio engine.
+    // A zero-beat note would be silent, which would look like an audio bug.
     expect(notesFor([0, 1], [1])).toEqual([
-      { degree: 0, beats: 1 },
-      { degree: 1, beats: 1 },
+      { semitone: 0, beats: 1 },
+      { semitone: 1, beats: 1 },
     ]);
   });
 });

@@ -14,7 +14,7 @@ import {
   resetAudioEngineForTests,
   silentEngine,
 } from "./engine";
-import { frequencyForDegree } from "./pitch";
+import { TONIC_FROM_A4, frequencyForSemitone } from "./pitch";
 
 interface FakeOsc {
   type: string;
@@ -123,10 +123,10 @@ describe("createAudioEngine", () => {
   it("plays one note as three partials on the harmonic series", () => {
     const fake = makeFakeContext();
     const engine = createAudioEngine(fake.Ctor);
-    engine.playNote({ degree: 0, beats: 1 });
+    engine.playNote({ semitone: 0, beats: 1 });
 
     expect(fake.oscs).toHaveLength(3);
-    const base = frequencyForDegree(0);
+    const base = frequencyForSemitone(TONIC_FROM_A4 + 0);
     expect(fake.oscs.map((o) => o.frequency.value)).toEqual([base, base * 2, base * 3]);
     for (const osc of fake.oscs) {
       expect(osc.startedAt).not.toBeNull();
@@ -141,9 +141,9 @@ describe("createAudioEngine", () => {
     // 120 bpm makes a beat exactly 0.5s, so the arithmetic is readable.
     engine.playSequence(
       [
-        { degree: 0, beats: 1 },
-        { degree: 1, beats: 1 },
-        { degree: 2, beats: 2 },
+        { semitone: 0, beats: 1 },
+        { semitone: 1, beats: 1 },
+        { semitone: 2, beats: 2 },
       ],
       120,
     );
@@ -159,8 +159,8 @@ describe("createAudioEngine", () => {
     const engine = createAudioEngine(fake.Ctor);
     const ms = engine.playSequence(
       [
-        { degree: 0, beats: 1 },
-        { degree: 0, beats: 3 },
+        { semitone: 0, beats: 1 },
+        { semitone: 0, beats: 3 },
       ],
       120,
     );
@@ -170,16 +170,16 @@ describe("createAudioEngine", () => {
   it("resumes a suspended context rather than scheduling into silence", () => {
     const fake = makeFakeContext();
     const engine = createAudioEngine(fake.Ctor);
-    engine.playNote({ degree: 0, beats: 1 });
+    engine.playNote({ semitone: 0, beats: 1 });
     fake.ctx.suspend();
-    engine.playNote({ degree: 0, beats: 1 });
+    engine.playNote({ semitone: 0, beats: 1 });
     expect(fake.resumeCalls).toBeGreaterThanOrEqual(1);
   });
 
   it("ramps every voice in and out instead of switching gain on", () => {
     const fake = makeFakeContext();
     const engine = createAudioEngine(fake.Ctor);
-    engine.playNote({ degree: 0, beats: 1 });
+    engine.playNote({ semitone: 0, beats: 1 });
     // Master gain is set directly; each of the three voices contributes an envelope with two ramps.
     expect(fake.gainEvents.filter((e) => e.kind === "ramp")).toHaveLength(6);
     // Every envelope starts silent.
@@ -189,9 +189,9 @@ describe("createAudioEngine", () => {
   it("reuses one context across many plays", () => {
     const fake = makeFakeContext();
     const engine = createAudioEngine(fake.Ctor);
-    engine.playNote({ degree: 0, beats: 1 });
-    engine.playSequence([{ degree: 1, beats: 1 }]);
-    engine.playNote({ degree: 2, beats: 1 });
+    engine.playNote({ semitone: 0, beats: 1 });
+    engine.playSequence([{ semitone: 1, beats: 1 }]);
+    engine.playNote({ semitone: 2, beats: 1 });
     // One context for the whole session: a per-play context would leak one per click, and browsers
     // cap how many a page may create.
     expect(fake.builds).toBe(1);
@@ -203,8 +203,8 @@ describe("mute", () => {
     const fake = makeFakeContext();
     const engine = createAudioEngine(fake.Ctor);
     engine.setMuted(true);
-    engine.playNote({ degree: 0, beats: 1 });
-    engine.playSequence([{ degree: 0, beats: 1 }]);
+    engine.playNote({ semitone: 0, beats: 1 });
+    engine.playSequence([{ semitone: 0, beats: 1 }]);
     expect(fake.oscs).toHaveLength(0);
   });
 
@@ -212,7 +212,7 @@ describe("mute", () => {
     const fake = makeFakeContext();
     const engine = createAudioEngine(fake.Ctor);
     engine.setMuted(true);
-    expect(engine.playSequence([{ degree: 0, beats: 2 }], 120)).toBe(1000);
+    expect(engine.playSequence([{ semitone: 0, beats: 2 }], 120)).toBe(1000);
   });
 
   it("persists across engines", () => {
@@ -232,8 +232,8 @@ describe("stop", () => {
     const fake = makeFakeContext();
     const engine = createAudioEngine(fake.Ctor);
     engine.playSequence([
-      { degree: 0, beats: 1 },
-      { degree: 1, beats: 1 },
+      { semitone: 0, beats: 1 },
+      { semitone: 1, beats: 1 },
     ]);
     for (const osc of fake.oscs) osc.stoppedAt = null;
     engine.stop();
@@ -243,7 +243,7 @@ describe("stop", () => {
   it("survives a voice that has already ended", () => {
     const fake = makeFakeContext();
     const engine = createAudioEngine(fake.Ctor);
-    engine.playNote({ degree: 0, beats: 1 });
+    engine.playNote({ semitone: 0, beats: 1 });
     for (const osc of fake.oscs) {
       osc.stop = () => {
         throw new Error("already stopped");
@@ -268,8 +268,8 @@ describe("getAudioEngine in an environment with no Web Audio", () => {
     expect(
       silentEngine.playSequence(
         [
-          { degree: 0, beats: 1 },
-          { degree: 0, beats: 1 },
+          { semitone: 0, beats: 1 },
+          { semitone: 0, beats: 1 },
         ],
         120,
       ),
@@ -278,7 +278,7 @@ describe("getAudioEngine in an environment with no Web Audio", () => {
 
   it("silent engine satisfies the interface without throwing", () => {
     expect(() => {
-      silentEngine.playNote({ degree: 3, beats: 1 });
+      silentEngine.playNote({ semitone: 3, beats: 1 });
       silentEngine.setMuted(false);
       silentEngine.stop();
     }).not.toThrow();

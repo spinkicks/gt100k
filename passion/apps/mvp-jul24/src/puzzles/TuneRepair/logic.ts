@@ -1,118 +1,112 @@
 /**
- * Tune Repair — what a phrase is, what makes one *shaped*, and what makes a note wrong.
+ * Tune Repair — a melody with one note outside the key, and why that is the whole design.
  *
- * THE ONE DECISION THIS FILE EXISTS TO PROTECT
+ * WHAT CHANGED, AND WHY IT IS NOT A TWEAK
  * ------------------------------------------------------------------------------------------------
- * The wrong note is **in the key and wrong for the phrase**. It is never the odd note out of a
- * permitted set.
+ * The first version defined "wrong" as a note that broke the melody's **shape** — a run, an arch, a
+ * restated motif — with pitch stored as a diatonic degree so every note was in the key by
+ * construction. That guarded against one failure and walked into a worse one, which the first
+ * playtest named immediately: **a broken shape is visible.** Rendered as blocks on a grid it is "find
+ * the bar that breaks the pattern", solvable with the sound off, an IQ-test item wearing a violin.
  *
- * That is not a refinement, it is the difference between this gadget belonging in the music cabin and
- * belonging in `logic-games`. "Find the element that is not in the allowed set" is set membership,
- * i.e. deduction — and `docs/research/passion-pipeline/06-activity-design-ages-6-8.md` conflict C1 is
- * the record of this exact mistake being made across all seven of the app's original puzzles, which
- * is why the `logic-games` / `math` split exists at all. A music gadget that can be solved by
- * checking membership is a logic gadget with a violin painted on it.
+ * Two of the old tests proved it, which is the part worth remembering: one asserted the puzzle was
+ * *"fully solvable in silence"* and called that a feature, and another proved the shape predicates
+ * were transposition-invariant — i.e. that the task was about relations between integers, not sound.
  *
- * Two things enforce it:
+ * So wrongness is now **a note outside the key**, and the properties invert:
  *
- *  1. **Pitch is a diatonic degree** (`src/audio/pitch.ts`), so *every* integer is a legal note in
- *     the key. An out-of-key note is not rejected by a check — it is unrepresentable. The wrong note
- *     is therefore necessarily diatonic, by construction rather than by vigilance.
- *  2. **Wrongness is defined against a SHAPE**, below. A phrase is right when it is a run, an arch or
- *     a sequence; it is broken when exactly one note has been displaced so that the shape no longer
- *     holds. What the child hears is a melody that stops making sense at one point, which is a
- *     musical judgement and not a lookup.
+ * | | shape-breaking (old) | out of key (new) |
+ * |---|---|---|
+ * | audible? | weakly | **yes — it sounds sour** |
+ * | visible? | **yes, obviously** | no: an ordinary row on a chromatic grid |
+ * | solvable with sound off? | **yes** | no |
  *
- * WHY THE SHAPE IS NEVER STATED TO THE PLAYER
+ * The earlier objection to this — "find the note outside the permitted set is set membership, which is
+ * deduction" — was backwards, and that is worth stating plainly because it was my own. Set membership
+ * is only a shortcut **if the player is shown the set.** Nothing here shows a key signature, so the
+ * only access to "which notes belong" is hearing the key. That is not deduction; it is the most
+ * ordinary musical perception there is.
+ *
+ * THE THREE THINGS THAT KEEP IT INVISIBLE
  * ------------------------------------------------------------------------------------------------
- * `matchesAnyShape` is what the answer is checked against, not `matchesShape(kind)`. The player is
- * not told which of the three shapes a phrase is, so any single move that lands the phrase on *any*
- * valid shape is a defensible answer, and the generator's uniqueness requirement is stated over all
- * three (see `naive.ts`). Checking only the generated kind would let the generator ship phrases with
- * a second, musically reasonable answer that the game then called wrong.
+ * 1. **Pitch is a chromatic semitone** and the roll draws every semitone as a row, so an out-of-key
+ *    note sits on a row like any other. There is no gap, no gap-shaped hole, nothing to notice.
+ * 2. **The melody has no visual regularity to break.** `generate.ts` rejects any melody that IS a run,
+ *    arch or sequence — the old shape predicates survive in this file for exactly that purpose, with
+ *    their meaning inverted from "what right looks like" to "what would give the answer away".
+ * 3. **The displacement is one semitone**, the smallest move there is, so the contour barely changes.
  *
- * R1: no function here returns anything for display. Degrees are indices into a layout, never labels.
+ * WHAT THIS COSTS, RECORDED HONESTLY
+ * ------------------------------------------------------------------------------------------------
+ * This activity **cannot be solved without hearing it.** That is the point, and it is a real
+ * regression against `DISCOVERY-APP-PRD.md` §5.2's Layer-3 accessibility mirror, which requires 1:1
+ * parity with the world. A deaf or hard-of-hearing child cannot do this task, and no visual
+ * representation can fix that without turning it back into a shape puzzle. The surface owner accepted
+ * that cost knowingly; the app says so rather than presenting a puzzle that silently cannot be
+ * finished. It is also an argument for the music room holding at least one activity that is not
+ * pitch-perception based.
  */
 
-/** The shapes a well-formed phrase can have. Deliberately few, and all audible in one hearing. */
+import { isInKey } from "../../audio/pitch";
+
+/**
+ * Shapes a melody must NOT have.
+ *
+ * These predicates were the old definition of a correct phrase. They are kept, unchanged in
+ * behaviour and inverted in purpose: a melody matching any of them has a visible regularity, so a
+ * displaced note would be findable by eye and the activity would stop being about listening.
+ * `generate.ts` uses them as a rejection filter.
+ */
 export type ShapeKind = "run" | "arch" | "sequence";
 
 export const SHAPE_KINDS: readonly ShapeKind[] = ["run", "arch", "sequence"];
 
-/** Step sizes a shape may use, in diatonic degrees: neighbouring notes, or thirds. */
-export const ALLOWED_STEPS = [1, 2] as const;
+/** Step sizes, in semitones, that a "regular" pattern could be built from. */
+const REGULAR_STEPS = [1, 2, 3, 4] as const;
 
-/** Shortest phrase any shape may have. Below this nothing is perceptible as a shape at all. */
+/** Shortest melody where a pattern would be perceptible at all. */
 export const MIN_LENGTH = 5;
 
 const diffs = (ds: readonly number[]): number[] => ds.slice(1).map((d, i) => d - (ds[i] as number));
 
-const isAllowedStep = (step: number): boolean =>
-  (ALLOWED_STEPS as readonly number[]).includes(Math.abs(step));
+const isRegularStep = (step: number): boolean =>
+  (REGULAR_STEPS as readonly number[]).includes(Math.abs(step));
 
-/**
- * A **run**: every step identical, so the phrase walks steadily in one direction.
- *
- * Heard as a scale (step 1) or a broken chord (step 2). The most legible shape of the three, which is
- * why the easier tier uses it.
- */
+/** Every step identical: a visible staircase. */
 export function isRun(ds: readonly number[]): boolean {
   if (ds.length < MIN_LENGTH) return false;
   const steps = diffs(ds);
   const first = steps[0] as number;
-  if (first === 0 || !isAllowedStep(first)) return false;
+  if (first === 0 || !isRegularStep(first)) return false;
   return steps.every((s) => s === first);
 }
 
-/**
- * An **arch**: a run up then the same run down, or a valley the other way. Exactly one turn.
- *
- * Both legs must use the same step magnitude and each must be at least two steps long, so the turn
- * reads as a turn rather than as a blip at one end.
- */
+/** A staircase up then the same staircase down: a visible hill or valley. */
 export function isArch(ds: readonly number[]): boolean {
   if (ds.length < MIN_LENGTH) return false;
   const steps = diffs(ds);
   const first = steps[0] as number;
-  if (first === 0 || !isAllowedStep(first)) return false;
-
-  // Where the direction flips. Exactly one flip, with two steps either side of it.
+  if (first === 0 || !isRegularStep(first)) return false;
   const turn = steps.findIndex((s) => Math.sign(s) !== Math.sign(first));
   if (turn < 2 || turn > steps.length - 2) return false;
-
-  const before = steps.slice(0, turn);
-  const after = steps.slice(turn);
-  if (!before.every((s) => s === first)) return false;
-  return after.every((s) => s === -first);
+  return (
+    steps.slice(0, turn).every((s) => s === first) && steps.slice(turn).every((s) => s === -first)
+  );
 }
 
-/**
- * A **sequence**: a short motif restated, each restatement shifted by a constant amount.
- *
- * The musical device behind a great deal of tonal melody — say a thing, say it again higher. Heard as
- * a pattern with a lift, and broken very audibly by one displaced note because the ear is already
- * predicting the restatement.
- *
- * The motif itself must not be a constant walk, or the whole phrase collapses into a run and would be
- * counted twice.
- */
+/** A motif restated at a constant offset: a visible repeat. */
 export function isSequence(ds: readonly number[]): boolean {
   if (ds.length < MIN_LENGTH) return false;
   for (const motif of [2, 3]) {
     const reps = ds.length / motif;
     if (!Number.isInteger(reps) || reps < 3) continue;
-
     const offset = (ds[motif] as number) - (ds[0] as number);
-    if (offset === 0 || !isAllowedStep(offset)) continue;
-
+    if (offset === 0 || !isRegularStep(offset)) continue;
     let ok = true;
     for (let i = 0; i < ds.length && ok; i++) {
-      const rep = Math.floor(i / motif);
-      const within = i % motif;
-      const expected = (ds[within] as number) + rep * offset;
+      const expected = (ds[i % motif] as number) + Math.floor(i / motif) * offset;
       if (ds[i] !== expected) ok = false;
     }
-    // A motif that is itself a constant step makes the whole thing a run, not a sequence.
     if (ok && !isRun(ds)) return true;
   }
   return false;
@@ -124,45 +118,59 @@ const MATCHERS: Record<ShapeKind, (ds: readonly number[]) => boolean> = {
   sequence: isSequence,
 };
 
-export function matchesShape(ds: readonly number[], kind: ShapeKind): boolean {
-  return MATCHERS[kind](ds);
-}
-
 /**
- * Whether a phrase is well-shaped under **any** shape.
+ * Whether a melody has a visible regularity — which is now a REASON TO REJECT IT.
  *
- * This — not `matchesShape` — is the definition of "the tune is right", for the reason in the header:
- * the player is never told which shape they are listening to.
+ * Named for what it detects rather than for what it used to mean, so nobody reads a call site as
+ * "check the answer".
  */
-export function matchesAnyShape(ds: readonly number[]): boolean {
+export function hasVisiblePattern(ds: readonly number[]): boolean {
   return SHAPE_KINDS.some((kind) => MATCHERS[kind](ds));
 }
 
-/** One puzzle instance. Everything the component and the tests need, and nothing displayable. */
+/** One puzzle instance. Pitches are chromatic semitones relative to the cabin's reference. */
 export interface TuneRepairPuzzle {
-  /** Which shape the generator built. Diagnostic and test-facing; never shown, never checked against. */
-  shape: ShapeKind;
-  /** The phrase as it should sound. */
+  /** Tonic pitch class, 0..11. Never shown; the child hears the key, they are not told it. */
+  key: number;
+  /** The melody as it should sound: every note in `key`. */
   correct: readonly number[];
-  /** The phrase as presented: `correct` with exactly one note displaced. */
+  /** The melody as presented: one note moved a semitone out of the key. */
   broken: readonly number[];
-  /** Index of the displaced note. */
+  /** Index of the sour note. */
   brokenIndex: number;
-  /** Beats per note, same length as the phrase. Rhythm is not the puzzle here. */
+  /**
+   * The direction, +1 or -1 semitone, that restores the note the generator actually composed.
+   *
+   * **Not the only accepted answer.** In a major scale every chromatic note lies inside a whole step,
+   * so both nudges of the sour note land back in the key and both are correct — `naive.ts` explains
+   * why that is forced rather than lenient. This field exists so tests can drive the intended move and
+   * so a future feature could show what the melody originally was; the game does not require it.
+   */
+  fix: 1 | -1;
+  /** Beats per note. Rhythm is not the puzzle. */
   beats: readonly number[];
-  /** Inclusive degree range the player may move a note within, and the rows the roll draws. */
+  /** Inclusive chromatic row range the roll draws. */
   lo: number;
   hi: number;
-  /** Playback tempo for this phrase. The easiest tier is slower, which is a difficulty lever. */
+  /** Playback tempo. Slower is easier. */
   bpm: number;
 }
 
-/** The phrase currently on screen is right when it is well-shaped again. */
-export function isSolved(phrase: readonly number[]): boolean {
-  return matchesAnyShape(phrase);
+/** Indices of every note outside the key. A well-formed instance presents exactly one. */
+export function sourIndices(phrase: readonly number[], key: number): number[] {
+  const out: number[] = [];
+  phrase.forEach((semitone, i) => {
+    if (!isInKey(semitone, key)) out.push(i);
+  });
+  return out;
 }
 
-/** Which note differs from the presented phrase, or -1. Used for "you have moved this one". */
+/** The melody is right when nothing in it is sour. */
+export function isSolved(phrase: readonly number[], key: number): boolean {
+  return sourIndices(phrase, key).length === 0;
+}
+
+/** Which note differs from the presented melody, or -1. */
 export function movedIndex(broken: readonly number[], current: readonly number[]): number {
   for (let i = 0; i < broken.length; i++) if (broken[i] !== current[i]) return i;
   return -1;
@@ -170,8 +178,8 @@ export function movedIndex(broken: readonly number[], current: readonly number[]
 
 /** The playable sequence for the audio engine. */
 export function notesFor(
-  degrees: readonly number[],
+  semitones: readonly number[],
   beats: readonly number[],
-): Array<{ degree: number; beats: number }> {
-  return degrees.map((degree, i) => ({ degree, beats: beats[i] ?? 1 }));
+): Array<{ semitone: number; beats: number }> {
+  return semitones.map((semitone, i) => ({ semitone, beats: beats[i] ?? 1 }));
 }

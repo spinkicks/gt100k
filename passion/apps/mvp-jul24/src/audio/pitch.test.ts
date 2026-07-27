@@ -4,9 +4,12 @@ import {
   DEGREES_PER_OCTAVE,
   MAJOR_STEPS,
   TONIC_FROM_A4,
+  degreeInKey,
   degreeToSemitone,
   frequencyForDegree,
   frequencyForSemitone,
+  isInKey,
+  pitchClass,
 } from "./pitch";
 
 describe("degreeToSemitone", () => {
@@ -64,6 +67,63 @@ describe("frequencyForSemitone", () => {
   it("accepts a different reference pitch", () => {
     expect(frequencyForSemitone(0, 415)).toBeCloseTo(415, 6);
     expect(frequencyForSemitone(12, 415)).toBeCloseTo(830, 6);
+  });
+});
+
+describe("isInKey — the definition of 'sour'", () => {
+  it("accepts the seven notes of the major scale and rejects the other five", () => {
+    // C major: C D E F G A B in, the five black notes out.
+    const inC = [0, 2, 4, 5, 7, 9, 11];
+    for (let s = 0; s < 12; s++) {
+      expect(isInKey(s, 0), `semitone ${s}`).toBe(inC.includes(s));
+    }
+  });
+
+  it("transposes with the key", () => {
+    // D major (key 2) contains F# (6) and C# (1), and excludes F (5) and C (0).
+    expect(isInKey(6, 2)).toBe(true);
+    expect(isInKey(1, 2)).toBe(true);
+    expect(isInKey(5, 2)).toBe(false);
+    expect(isInKey(0, 2)).toBe(false);
+  });
+
+  it("is octave-invariant, upward and downward", () => {
+    for (const key of [0, 3, 7, 11]) {
+      for (let s = -36; s < 36; s++) {
+        expect(isInKey(s, key)).toBe(isInKey(s + 12, key));
+      }
+    }
+  });
+
+  it("holds for every key: exactly seven of twelve pitch classes are in", () => {
+    for (let key = 0; key < 12; key++) {
+      const inKey = Array.from({ length: 12 }, (_, s) => isInKey(s, key)).filter(Boolean);
+      expect(inKey).toHaveLength(7);
+    }
+  });
+});
+
+describe("degreeInKey", () => {
+  it("lands on in-key notes for every degree of every key", () => {
+    for (let key = 0; key < 12; key++) {
+      for (let d = -14; d <= 14; d++) {
+        expect(isInKey(degreeInKey(d, key), key), `key ${key} degree ${d}`).toBe(true);
+      }
+    }
+  });
+
+  it("is strictly increasing, so a higher degree is a higher note", () => {
+    for (let d = -14; d < 14; d++) {
+      expect(degreeInKey(d + 1, 5)).toBeGreaterThan(degreeInKey(d, 5));
+    }
+  });
+});
+
+describe("pitchClass", () => {
+  it("wraps negatives into 0..11", () => {
+    expect(pitchClass(-1)).toBe(11);
+    expect(pitchClass(-12)).toBe(0);
+    expect(pitchClass(13)).toBe(1);
   });
 });
 

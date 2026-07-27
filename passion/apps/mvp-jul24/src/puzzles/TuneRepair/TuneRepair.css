@@ -34,6 +34,21 @@
   cursor: pointer;
 }
 
+/* Says out loud that the activity is unsolvable without sound, rather than letting a child hunt for a
+   visual answer that does not exist. See the header note on the Layer-3 parity cost. */
+.tr-needs-sound {
+  /* `<output>` is inline by default. */
+  display: block;
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  border: 2px solid var(--ember-deep);
+  border-radius: var(--r-md);
+  background: rgba(181, 86, 28, 0.22);
+  color: var(--cream);
+  font: 600 1.05rem var(--font-body);
+  max-width: 46rem;
+}
+
 .tr-controls {
   display: flex;
   flex-wrap: wrap;

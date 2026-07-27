@@ -91,27 +91,64 @@ Four gadgets, four distinct musical constructs, density-matched to `logic-games`
 
 ### 2.1 `tune-repair` — Tune Repair *(the slice)*
 
-A short phrase plays. One note is wrong. Click it, then drag it to where it belongs.
+> **This section was rewritten on 2026-07-27 after the design below failed on contact with a player.**
+> The original text is preserved in the box further down, because the mistake is more instructive than
+> the correction and this document is the only place it is recorded.
 
-**Why this is the first one to build.** It has a unique right answer, it generates cleanly from a seed, it
-dual-codes without either channel becoming trivial, and it carries the fewest confounds of the four.
+A short melody plays. One note is **outside the key**, so it sounds sour. Click that note and nudge it
+a semitone up or down; the melody is right when nothing in it is sour.
 
-**What "wrong" must mean, and this is the whole design of the gadget.** The naive version makes the wrong
-note the one *outside the scale*. Do not build that: "find the element not in the permitted set" is a
-set-membership check, which is deduction, which is `logic-games`. Instead the wrong note is **inside the
-scale and wrong for the phrase** — it breaks the phrase's own melodic logic. Generate phrases with a
-strong internal shape (a stepwise ascent, a sequence repeated a step higher, an arch that turns once) and
-then displace exactly one note so the shape breaks while every pitch stays diatonic.
+**What "wrong" means, and why it is this.** Wrongness has to be a property the ear can detect and the
+eye cannot. Out-of-key is exactly that: on a chromatic roll where every semitone is a row, a sour note
+occupies an ordinary row at an ordinary height. Three things keep it invisible — the chromatic display,
+a **generator that rejects any melody with a visible regularity** (a staircase, a hill, a repeated
+motif), and a displacement of a single semitone so the contour barely changes.
 
-That distinction is the difference between a music gadget and a logic gadget in the same wrapper, and it
-is the single most likely thing to be quietly lost in implementation.
+**Swap test.** Replace pitch with an abstract height and the task dies: "which of these bars is sour"
+is not a question about bars. The key is never displayed, so the same drawing has different answers in
+different keys — no function of the picture alone can return the answer. **Passes.**
 
-**Swap test.** Replace pitches with arbitrary symbols and both the audible wrongness and the visual
-contour vanish; nothing marks any element as the broken one. **Passes.**
+**What is unique is the note, not the direction.** In a major scale every chromatic note lies inside a
+whole step, so *both* semitone nudges of a sour note land back in the key, in every key. Requiring a
+unique direction is unsatisfiable — it rejected 100% of candidates before this was noticed. Both
+directions are accepted, and identifying the note is the ear-training task.
 
 **Deliberately not using famous tunes.** "Find the wrong note in *Twinkle Twinkle*" measures whether the
-child knows the tune, which is a cultural-familiarity confound and would make the score partly a proxy
-for musical background. Generated phrases with internal logic are solvable from the phrase itself.
+child knows the tune, which is a cultural-familiarity confound. Generated melodies avoid it.
+
+**The cost, and it is real.** This activity **cannot be solved without hearing it**, which breaks
+`DISCOVERY-APP-PRD.md` §5.2's Layer-3 parity requirement for this gadget: a deaf or hard-of-hearing
+child cannot do it, and no visual representation fixes that without turning it back into a shape
+puzzle. The app says so rather than presenting an unsolvable board. This is the strongest argument in
+the document for the room holding at least one activity that is not pitch-perception based — `downbeat`
+(§2.2) is the candidate, since metrical grouping *is* visible in a duration strip.
+
+> #### The superseded design, and why it failed
+>
+> The original §2.1 defined the wrong note as **inside the key but breaking the phrase's shape** — a
+> stepwise run, an arch, a restated motif, with one note displaced. Pitch was stored as a diatonic
+> degree so every note was in the key by construction. The reasoning was that "find the note outside
+> the permitted set" is set membership, which is deduction, which belongs in `logic-games`.
+>
+> **That reasoning was backwards.** Set membership is only a shortcut *if the player is shown the set*,
+> and nothing here shows a key signature — so hearing which notes belong is not deduction, it is the
+> most ordinary musical perception there is. Meanwhile the criterion actually chosen, a broken shape, is
+> **visible**: rendered as blocks on a grid it is "find the bar that breaks the pattern", an IQ-test
+> item wearing a violin. The first player said so in one sentence, unprompted.
+>
+> Two of the shipped tests proved it and were read as good news at the time — one asserted the puzzle
+> was *"fully solvable in silence"* and called that the dual-coding requirement satisfied; another
+> proved the shape predicates were transposition-invariant, which is a demonstration that the task was
+> about relations between integers rather than sound.
+>
+> **The transferable lesson, which applies to `downbeat`, `chord-fit` and `echo` before they are
+> built:** R1 (§1.1) bans printed *numerals*, and that is necessary but nowhere near sufficient. It
+> does not stop the visual layout from *being* a number line. A music gadget needs a stronger test than
+> R1, and it is this: **name the property that makes a note wrong, and check whether it has a visual
+> signature. If it does, the puzzle is solvable by looking and the audio is decoration.**
+>
+> The shape predicates survive in `logic.ts`, unchanged in behaviour and inverted in purpose: matching
+> one is now a reason to *reject* a melody.
 
 ### 2.2 `downbeat` — Downbeat
 

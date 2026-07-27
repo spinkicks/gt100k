@@ -49,11 +49,26 @@ music room, and painting one demands the gadget roster be final first. Until the
 `src/puzzles/TuneRepair/harness.tsx`. The design, the roster, and why `transpose` was rejected are in
 `docs/superpowers/specs/2026-07-27-music-cabin-design.md`.
 
-The one rule that file calls **R1** binds anything else built for this room: *the visual channel is
-musical notation, never numeric.* Pitch is vertical position, duration is horizontal extent, and no
-music gadget may display a number, note name, interval name or ratio as part of its solvable state. A
-channel showing semitone counts would make the puzzle arithmetic, which is the `math` cabin — the same
-swap-test failure as memo §5's C1, arrived at from the other direction.
+Two rules bind anything else built for this room, and the second one exists because the first was not
+enough.
+
+**R1 — the visual channel is musical notation, never numeric.** Pitch is vertical position, duration is
+horizontal extent, and no music gadget may display a number, note name, interval name or ratio as part
+of its solvable state. A channel showing semitone counts would make the puzzle arithmetic, which is the
+`math` cabin — the same swap-test failure as memo §5's C1 from the other direction.
+
+**R2 — the property that makes an answer wrong must have no visual signature.** Tune Repair originally
+defined "wrong" as a note breaking the melody's *shape*, which satisfies R1 completely and is still a
+**visible** property: as blocks on a grid it is "find the bar that breaks the pattern", solvable with
+the sound off, which is what the first player said in one sentence. Two of its own tests had asserted
+the puzzle was "fully solvable in silence" and treated that as a feature.
+
+So R1 is necessary and nowhere near sufficient: it bans printed numerals, not a layout that *is* a
+number line. Before building `downbeat`, `chord-fit` or `echo`, name what makes a note wrong and ask
+whether an eye can see it. Wrongness is now **out of key** — audible as sour, invisible on a chromatic
+roll — and the cost is recorded honestly rather than hidden: **that gadget cannot be solved without
+hearing it, so its Layer-3 accessibility parity (PRD §5.2) is broken and the room needs at least one
+activity that is not pitch-perception based.**
 
 **The `math` topic id is deliberately reused to mean a different room.** It previously meant
 "Math & Puzzles" and held all seven puzzles; it now means the maths room only, and the puzzles move to

@@ -1,64 +1,73 @@
 import { describe, expect, it } from "vitest";
-import { allRepairs, hasUniqueRepair } from "./naive";
+import { allFixes, hasUniquePosition } from "./naive";
 
-describe("allRepairs", () => {
-  it("finds the one note that restores a run", () => {
-    // 0 1 2 3 4 5 with index 3 pushed to 5.
-    expect(allRepairs([0, 1, 2, 5, 4, 5], -1, 6)).toEqual([{ index: 3, degree: 3 }]);
+describe("allFixes", () => {
+  // C major with a C# (1) at index 1. Both nudges of that note land back in the key.
+  const broken = [0, 1, 4, 7, 5, 0];
+
+  it("finds the sour note, both ways", () => {
+    const fixes = allFixes(broken, 0, -2, 10);
+    expect(fixes).toEqual([
+      { index: 1, fix: 1 },
+      { index: 1, fix: -1 },
+    ]);
   });
 
-  it("excludes the no-op, so an already-correct phrase reports nothing at its own values", () => {
-    const repairs = allRepairs([0, 1, 2, 3, 4, 5], -1, 6);
-    expect(repairs.every((r) => r.degree !== [0, 1, 2, 3, 4, 5][r.index])).toBe(true);
+  /**
+   * The finding that reshaped the design: in a major scale every chromatic note lies INSIDE a whole
+   * step, so a sour note always has an in-key neighbour a semitone away on both sides. Requiring a
+   * unique direction is unsatisfiable — it rejected 100% of candidate instances — so uniqueness is
+   * asserted on POSITION instead.
+   */
+  it("always returns two fixes for a sour note, in every key", () => {
+    for (let key = 0; key < 12; key++) {
+      // The semitone above the tonic is out of key in every major key.
+      const phrase = [key, key + 1, key + 4, key + 7];
+      const fixes = allFixes(phrase, key, key - 3, key + 10);
+      expect(fixes.map((f) => f.index)).toEqual([1, 1]);
+      expect(new Set(fixes.map((f) => f.fix))).toEqual(new Set([1, -1]));
+    }
   });
 
-  it("searches only inside the range it is given", () => {
-    // The answer is degree 3; deny it and nothing is findable.
-    expect(allRepairs([0, 1, 2, 5, 4, 5], 4, 6)).toEqual([]);
+  /**
+   * `allFixes` answers "which nudges leave nothing sour", so on an ALREADY-correct melody it reports
+   * every nudge that happens to keep it correct — B to C, and so on. That is the honest answer to the
+   * question it is asked, and it is why `hasUniquePosition` checks `isSolved` first rather than relying
+   * on this returning empty. Asserted so the division of labour between the two is not "fixed" later.
+   */
+  it("on an already-correct melody, reports the moves that keep it correct", () => {
+    const fixes = allFixes([0, 2, 4, 5, 7], 0, -2, 10);
+    expect(fixes.length).toBeGreaterThan(0);
+    // ...and hasUniquePosition rejects it anyway, because there is nothing to find.
+    expect(hasUniquePosition([0, 2, 4, 5, 7], 0, -2, 10, 1)).toBe(false);
   });
 
-  it("reports several repairs when a phrase genuinely has them", () => {
-    // Two notes from a run: many single changes still fail, but more than one can succeed.
-    const repairs = allRepairs([0, 1, 9, 3, 4, 5], -2, 10);
-    expect(repairs.length).toBeGreaterThanOrEqual(1);
+  it("searches only inside the rows the roll draws", () => {
+    // Deny both destinations and nothing is reachable.
+    expect(allFixes(broken, 0, 1, 1)).toEqual([]);
   });
 
-  it("finds a repair that lands on a different shape than the one it came from", () => {
-    /**
-     * The reason `allRepairs` checks `matchesAnyShape` and not one nominated shape. Here a single
-     * change turns the phrase into a valid ARCH even though the run reading is also available — the
-     * player is never told which shape they are hearing, so both are defensible answers and the
-     * generator must reject an instance like this rather than mark one of them wrong.
-     */
-    const repairs = allRepairs([0, 1, 2, 3, 2, 9], -1, 10);
-    expect(repairs).toContainEqual({ index: 5, degree: 1 });
+  it("finds nothing when two notes are sour, because one nudge cannot fix both", () => {
+    expect(allFixes([0, 1, 3, 7], 0, -2, 10)).toEqual([]);
   });
 });
 
-describe("hasUniqueRepair", () => {
-  const broken = [0, 1, 2, 5, 4, 5];
-  const expected = { index: 3, degree: 3 };
+describe("hasUniquePosition", () => {
+  const broken = [0, 1, 4, 7, 5, 0];
 
-  it("accepts a genuinely unique instance", () => {
-    expect(hasUniqueRepair(broken, -1, 6, expected)).toBe(true);
+  it("accepts an instance whose only fixable note is the intended one", () => {
+    expect(hasUniquePosition(broken, 0, -2, 10, 1)).toBe(true);
   });
 
-  it("rejects a phrase that is not broken at all", () => {
-    expect(hasUniqueRepair([0, 1, 2, 3, 4, 5], -1, 6, expected)).toBe(false);
+  it("rejects a melody that is not sour at all", () => {
+    expect(hasUniquePosition([0, 2, 4, 5, 7], 0, -2, 10, 1)).toBe(false);
   });
 
-  it("rejects an instance whose one answer is not the one intended", () => {
-    expect(hasUniqueRepair(broken, -1, 6, { index: 3, degree: 4 })).toBe(false);
-    expect(hasUniqueRepair(broken, -1, 6, { index: 2, degree: 3 })).toBe(false);
+  it("rejects an instance whose fixable note is not the intended one", () => {
+    expect(hasUniquePosition(broken, 0, -2, 10, 2)).toBe(false);
   });
 
-  it("rejects an instance with more than one answer in reach", () => {
-    // A widened range can expose a second reading; if it does, the instance must not ship.
-    const wide = allRepairs(broken, -8, 14);
-    if (wide.length > 1) {
-      expect(hasUniqueRepair(broken, -8, 14, expected)).toBe(false);
-    } else {
-      expect(hasUniqueRepair(broken, -8, 14, expected)).toBe(true);
-    }
+  it("rejects an instance with nothing reachable to fix", () => {
+    expect(hasUniquePosition(broken, 0, 1, 1, 1)).toBe(false);
   });
 });

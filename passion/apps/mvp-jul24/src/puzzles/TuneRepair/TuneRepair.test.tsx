@@ -1,72 +1,78 @@
 /**
  * The music stand.
  *
- * Two of these tests are the design, not the implementation: **R1** (nothing numeric on screen) and
- * **D7** (nothing that rewards). Both would be easy to break by a reasonable-looking edit, which is
- * why they are asserted against the rendered output rather than trusted to review.
+ * Three of these tests are the design rather than the implementation, and all three would be easy to
+ * break with a reasonable-looking edit:
  *
- * Audio is absent here and deliberately not stubbed: jsdom has no `AudioContext`, so
- * `getAudioEngine()` returns the silent engine by design (see `src/audio/engine.ts`). Every assertion
- * below therefore also proves the puzzle is fully playable with no sound at all, which is the
- * dual-coding requirement the cabin design turns on.
+ *  - **nothing numeric on screen** (no note names, no key, no interval sizes);
+ *  - **nothing that rewards** (PRD §11, memo 06 D7);
+ *  - **the answer is not in the picture** — the test that did not exist in the first version, which is
+ *    why the first version shipped a shape puzzle. An earlier test here actually asserted the puzzle
+ *    was *"fully solvable in silence"* and treated that as a feature. It has been deleted and replaced
+ *    by its opposite.
+ *
+ * jsdom has no `AudioContext`, so `getAudioEngine()` returns the silent engine and these tests drive
+ * the puzzle from its data rather than by ear. That is fine for asserting mechanics — but it is exactly
+ * why "can a player solve this by looking?" has to be asserted against the generator's guarantees
+ * (`generate.test.ts`) rather than inferred from a test suite that always knows the answer.
  */
 
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { resetAudioEngineForTests, silentEngine } from "../../audio/engine";
-import TuneRepair, { stepsLabel } from "./TuneRepair";
+import TuneRepair from "./TuneRepair";
 import { generateForRound } from "./generate";
-import { isSolved } from "./logic";
+import { isSolved, sourIndices } from "./logic";
 
 beforeEach(() => {
   resetAudioEngineForTests();
 });
 
-const setup = (seed = 7) => {
+const setup = (seed = 7, tier = 0) => {
   const onSolved = vi.fn();
   const onExit = vi.fn();
-  const utils = render(<TuneRepair seed={seed} onSolved={onSolved} onExit={onExit} />);
-  return { ...utils, onSolved, onExit, puzzle: generateForRound(seed, 0) };
+  const utils = render(<TuneRepair seed={seed} tier={tier} onSolved={onSolved} onExit={onExit} />);
+  return { ...utils, onSolved, onExit, puzzle: generateForRound(seed, tier) };
 };
 
-/** The notes currently drawn, in time order, as their row positions. */
 const noteButtons = () => screen.getAllByRole("button", { name: /note$|note, picked up$/ });
 
-describe("R1 — the visual channel is musical notation, never numeric", () => {
+/** Pick up the sour note, then nudge it the way that restores the key. */
+function solve(puzzle: ReturnType<typeof generateForRound>) {
+  fireEvent.click(noteButtons()[puzzle.brokenIndex] as HTMLElement);
+  const direction = puzzle.fix > 0 ? "up" : "down";
+  fireEvent.click(screen.getByRole("button", { name: `Nudge it ${direction}` }));
+}
+
+describe("nothing numeric on screen", () => {
   it("renders no digit anywhere in visible text", () => {
     const { container } = setup();
-    // The teach-in and every label are included. A semitone count, degree, interval size or note
-    // name with a number in it would land here and fail.
     expect(container.textContent ?? "").not.toMatch(/[0-9]/);
   });
 
-  it("still renders no digit after a note has been picked up and moved", () => {
+  it("never names the key, which would turn listening into lookup", () => {
     const { container } = setup();
-    const notes = noteButtons();
-    fireEvent.click(notes[2] as HTMLElement);
-    const landing = screen.getAllByRole("button", { name: /^Move it/ })[0] as HTMLElement;
-    fireEvent.click(landing);
-    expect(container.textContent ?? "").not.toMatch(/[0-9]/);
+    const text = (container.textContent ?? "").toLowerCase();
+    for (const word of ["major", "minor", "key of", "sharp", "flat", "semitone"]) {
+      expect(text, `found "${word}"`).not.toContain(word);
+    }
   });
 
-  it("describes a move in relative steps in words, not coordinates", () => {
-    expect(stepsLabel(1)).toBe("a step higher");
-    expect(stepsLabel(-1)).toBe("a step lower");
-    expect(stepsLabel(3)).toBe("three steps higher");
-    expect(stepsLabel(-2)).toBe("two steps lower");
-    expect(stepsLabel(2)).not.toMatch(/[0-9]/);
+  it("describes a nudge as a direction, not a coordinate", () => {
+    setup();
+    fireEvent.click(noteButtons()[2] as HTMLElement);
+    const labels = screen
+      .getAllByRole("button", { name: /^Nudge it/ })
+      .map((b) => b.getAttribute("aria-label"));
+    expect(labels.sort()).toEqual(["Nudge it down", "Nudge it up"]);
   });
 });
 
-describe("D7 — nothing here rewards", () => {
+describe("nothing here rewards", () => {
   it("shows no score, points, stars, streak or timer", () => {
     const { container } = setup();
-    /**
-     * Word boundaries, matching `src/teachin/rules.test.tsx`'s own regex rather than a substring
-     * scan. A substring check fails on the teach-in's "Touch the board to **star**t", which is how
-     * this test was first written and what it caught — the banned thing is reward vocabulary, not
-     * the letters.
-     */
+    // Word boundaries, matching rules.test.tsx: a substring scan trips on the teach-in's own
+    // "Touch the board to start".
     const banned =
       /\b(score|scores|point|points|star|stars|streak|timer|timed|seconds|attempt|attempts|tries|best|record|badge|reward|combo|lives?)\b/i;
     expect(container.textContent ?? "").not.toMatch(banned);
@@ -79,83 +85,107 @@ describe("D7 — nothing here rewards", () => {
   });
 });
 
-/** Click the broken note, then click the landing cell in its column at the correct pitch. */
-function solve(puzzle: ReturnType<typeof generateForRound>) {
-  const notes = noteButtons();
-  fireEvent.click(notes[puzzle.brokenIndex] as HTMLElement);
-  const target = puzzle.correct[puzzle.brokenIndex] as number;
-  const current = puzzle.broken[puzzle.brokenIndex] as number;
-  const label = new RegExp(`^Move it ${stepsLabel(target - current)}$`);
-  fireEvent.click(screen.getByRole("button", { name: label }));
-}
+/**
+ * The replacement for the deleted "solvable in silence" test.
+ *
+ * It cannot prove a negative about human perception, so it asserts the two things it can: the app
+ * *tells* the player sound is required, and the visual channel is not silently sufficient — the only
+ * marker on the roll is which note is currently sounding, never which note is wrong.
+ */
+describe("the answer is not in the picture", () => {
+  it("says so when sound is off, rather than presenting an unsolvable board", () => {
+    const { container } = setup();
+    expect(container.textContent).toContain("needs sound");
+  });
+
+  it("marks no note as wrong, in any state", () => {
+    const { container, puzzle } = setup();
+    expect(sourIndices(puzzle.broken, puzzle.key)).toHaveLength(1);
+    // Nothing in the DOM distinguishes the sour note: no class, no attribute, no label.
+    const sour = noteButtons()[puzzle.brokenIndex] as HTMLElement;
+    const ordinary = noteButtons()[puzzle.brokenIndex === 1 ? 2 : 1] as HTMLElement;
+    expect(sour.className).toBe(ordinary.className);
+    expect(container.querySelectorAll("[class*=sour], [data-sour]")).toHaveLength(0);
+  });
+
+  it("offers only two destinations, so a long column cannot be read for the answer", () => {
+    setup();
+    fireEvent.click(noteButtons()[2] as HTMLElement);
+    expect(screen.getAllByRole("button", { name: /^Nudge it/ })).toHaveLength(2);
+  });
+});
 
 describe("playing it", () => {
-  it("draws one note per beat slot of the phrase", () => {
+  it("draws one note per slot of the melody", () => {
     const { puzzle } = setup();
     expect(noteButtons()).toHaveLength(puzzle.broken.length);
   });
 
-  it("opens unsolved, because the presented phrase is broken", () => {
+  it("opens unsolved, because the melody as presented is sour", () => {
     const { puzzle, onSolved } = setup();
-    expect(isSolved(puzzle.broken)).toBe(false);
+    expect(isSolved(puzzle.broken, puzzle.key)).toBe(false);
     expect(onSolved).not.toHaveBeenCalled();
     expect(screen.queryByText("That is the tune.")).not.toBeInTheDocument();
   });
 
-  it("prompts for a destination once a note is picked up", () => {
+  it("prompts for a direction once a note is picked up", () => {
     setup();
     fireEvent.click(noteButtons()[2] as HTMLElement);
-    expect(screen.getByText("Now click where it should go.")).toBeInTheDocument();
-  });
-
-  it("offers landing places only in the picked-up note's own column", () => {
-    const { puzzle } = setup();
-    fireEvent.click(noteButtons()[2] as HTMLElement);
-    const landings = screen.getAllByRole("button", { name: /^Move it/ });
-    // One per reachable row in that column, minus the row the note already occupies.
-    expect(landings).toHaveLength(puzzle.hi - puzzle.lo);
+    expect(screen.getByText("Nudge it up or down a step.")).toBeInTheDocument();
   });
 
   it("clicking a picked-up note again puts it down without moving it", () => {
     setup();
-    const note = noteButtons()[2] as HTMLElement;
-    fireEvent.click(note);
-    expect(screen.getByText("Now click where it should go.")).toBeInTheDocument();
     fireEvent.click(noteButtons()[2] as HTMLElement);
-    expect(screen.queryByText("Now click where it should go.")).not.toBeInTheDocument();
+    expect(screen.getByText("Nudge it up or down a step.")).toBeInTheDocument();
+    fireEvent.click(noteButtons()[2] as HTMLElement);
+    expect(screen.queryByText("Nudge it up or down a step.")).not.toBeInTheDocument();
   });
 
-  it("fires onSolved exactly once when the tune is right", () => {
+  it("fires onSolved exactly once when the melody is back in key", () => {
     const { puzzle, onSolved } = setup();
     solve(puzzle);
     expect(onSolved).toHaveBeenCalledTimes(1);
   });
 
-  it("does not fire onSolved for a wrong move", () => {
-    const { puzzle, onSolved } = setup();
-    const notes = noteButtons();
-    fireEvent.click(notes[puzzle.brokenIndex] as HTMLElement);
-    // Move it somewhere that is not the answer.
-    const wrong = screen
-      .getAllByRole("button", { name: /^Move it/ })
-      .find(
-        (b) =>
-          b.getAttribute("aria-label") !==
-          `Move it ${stepsLabel((puzzle.correct[puzzle.brokenIndex] as number) - (puzzle.broken[puzzle.brokenIndex] as number))}`,
+  /**
+   * Both directions of the sour note are in the key, so both are accepted — see naive.ts for why that
+   * is forced rather than lenient.
+   */
+  it("accepts either direction on the sour note", () => {
+    for (const direction of ["up", "down"]) {
+      const { unmount } = render(
+        <TuneRepair seed={7} tier={0} onSolved={() => {}} onExit={() => {}} />,
       );
-    fireEvent.click(wrong as HTMLElement);
+      const puzzle = generateForRound(7, 0);
+      const notes = within(document.body).getAllByRole("button", {
+        name: /note$|note, picked up$/,
+      });
+      fireEvent.click(notes[puzzle.brokenIndex] as HTMLElement);
+      fireEvent.click(within(document.body).getByRole("button", { name: `Nudge it ${direction}` }));
+      expect(within(document.body).getByText("That is the tune.")).toBeInTheDocument();
+      unmount();
+    }
+  });
+
+  it("does not solve when a note that was already in key is nudged", () => {
+    const { puzzle, onSolved } = setup();
+    const innocent = puzzle.brokenIndex === 1 ? 2 : 1;
+    fireEvent.click(noteButtons()[innocent] as HTMLElement);
+    fireEvent.click(screen.getAllByRole("button", { name: /^Nudge it/ })[0] as HTMLElement);
     expect(onSolved).not.toHaveBeenCalled();
+    expect(screen.queryByText("That is the tune.")).not.toBeInTheDocument();
   });
 
   it("can be put back, and the control is dead until something has moved", () => {
+    const putBackName = "Put it back";
     const { puzzle } = setup();
-    const putBack = screen.getByRole("button", { name: "Put it back" });
-    expect(putBack).toBeDisabled();
+    expect(screen.getByRole("button", { name: putBackName })).toBeDisabled();
     fireEvent.click(noteButtons()[puzzle.brokenIndex] as HTMLElement);
-    fireEvent.click(screen.getAllByRole("button", { name: /^Move it/ })[0] as HTMLElement);
-    expect(putBack).toBeEnabled();
-    fireEvent.click(putBack);
-    expect(putBack).toBeDisabled();
+    fireEvent.click(screen.getAllByRole("button", { name: /^Nudge it/ })[0] as HTMLElement);
+    expect(screen.getByRole("button", { name: putBackName })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: putBackName }));
+    expect(screen.getByRole("button", { name: putBackName })).toBeDisabled();
   });
 
   it("offers another tune only after this one is right", () => {
@@ -173,24 +203,19 @@ describe("playing it", () => {
   });
 });
 
-/**
- * Added after the first playtest reported the puzzle as too hard. Part of that difficulty was that
- * "did my move fix it?" needed a second, separate click on Play, so the child had to carry the phrase
- * in their ear across it.
- */
 describe("hearing the result of your own move", () => {
-  it("plays the whole phrase back after a note is placed, not just the moved note", () => {
+  it("plays the whole melody back after a nudge, not just the moved note", () => {
     const spy = vi.spyOn(silentEngine, "playSequence");
     const { puzzle } = setup();
     spy.mockClear();
     fireEvent.click(noteButtons()[puzzle.brokenIndex] as HTMLElement);
-    fireEvent.click(screen.getAllByRole("button", { name: /^Move it/ })[0] as HTMLElement);
+    fireEvent.click(screen.getAllByRole("button", { name: /^Nudge it/ })[0] as HTMLElement);
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy.mock.calls[0]?.[0]).toHaveLength(puzzle.broken.length);
     spy.mockRestore();
   });
 
-  it("plays at the phrase's own tempo rather than a hardcoded one", () => {
+  it("plays at the melody's own tempo rather than a hardcoded one", () => {
     const spy = vi.spyOn(silentEngine, "playSequence");
     const { puzzle } = setup();
     fireEvent.click(screen.getByRole("button", { name: /Play the tune/ }));
@@ -198,16 +223,13 @@ describe("hearing the result of your own move", () => {
     spy.mockRestore();
   });
 
-  it("plays back after a WRONG move too, so the replay is feedback and not a reward", () => {
+  it("plays back after a wrong move too, so the replay is feedback and not a reward", () => {
     const spy = vi.spyOn(silentEngine, "playSequence");
     const { puzzle } = setup();
     spy.mockClear();
-    fireEvent.click(noteButtons()[puzzle.brokenIndex] as HTMLElement);
-    const right = `Move it ${stepsLabel((puzzle.correct[puzzle.brokenIndex] as number) - (puzzle.broken[puzzle.brokenIndex] as number))}`;
-    const wrong = screen
-      .getAllByRole("button", { name: /^Move it/ })
-      .find((b) => b.getAttribute("aria-label") !== right);
-    fireEvent.click(wrong as HTMLElement);
+    const innocent = puzzle.brokenIndex === 1 ? 2 : 1;
+    fireEvent.click(noteButtons()[innocent] as HTMLElement);
+    fireEvent.click(screen.getAllByRole("button", { name: /^Nudge it/ })[0] as HTMLElement);
     expect(spy).toHaveBeenCalledTimes(1);
     spy.mockRestore();
   });
@@ -220,19 +242,11 @@ describe("the tier prop", () => {
         <TuneRepair seed={11} tier={tier} onSolved={() => {}} onExit={() => {}} />,
       );
       const expected = generateForRound(11, tier);
-      const notes = within(document.body).getAllByRole("button", {
-        name: /note$|note, picked up$/,
-      });
-      expect(notes).toHaveLength(expected.broken.length);
+      expect(
+        within(document.body).getAllByRole("button", { name: /note$|note, picked up$/ }),
+      ).toHaveLength(expected.broken.length);
       unmount();
     }
-  });
-
-  it("defaults to the easiest tier when nothing asks for one", () => {
-    const { puzzle } = setup(11);
-    expect(puzzle).toEqual(generateForRound(11, 0));
-    // Tier 0 is runs only — the easiness lever, asserted here so a default change is loud.
-    expect(puzzle.shape).toBe("run");
   });
 
   it("plays the easiest tier more slowly than the hardest", () => {
@@ -240,47 +254,21 @@ describe("the tier prop", () => {
   });
 });
 
-describe("with no Web Audio at all", () => {
-  it("hides the sound control rather than offering one that does nothing", () => {
+describe("without Web Audio", () => {
+  it("hides the sound toggle rather than offering one that does nothing", () => {
     setup();
     expect(screen.queryByRole("button", { name: /sound/i })).not.toBeInTheDocument();
   });
 
-  it("still offers play, because the highlight follows the phrase either way", () => {
+  it("says the device has no sound, rather than blaming a setting", () => {
+    const { container } = setup();
+    expect(container.textContent).toContain("this device has none");
+  });
+
+  it("still offers play without throwing", () => {
     setup();
-    expect(screen.getByRole("button", { name: /Play the tune/ })).toBeInTheDocument();
-    // Must not throw when there is nothing to play it with.
     expect(() =>
       fireEvent.click(screen.getByRole("button", { name: /Play the tune/ })),
     ).not.toThrow();
-  });
-
-  it("is fully solvable in silence, which is the dual-coding requirement", () => {
-    const { puzzle, onSolved } = setup(23);
-    solve(puzzle);
-    expect(onSolved).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe("across many instances", () => {
-  it("is solvable from the roll alone for a spread of seeds", () => {
-    for (const seed of [1, 2, 3, 5, 8, 13, 21, 34]) {
-      const { unmount } = render(<TuneRepair seed={seed} onSolved={() => {}} onExit={() => {}} />);
-      const puzzle = generateForRound(seed, 0);
-      const notes = within(document.body).getAllByRole("button", {
-        name: /note$|note, picked up$/,
-      });
-      fireEvent.click(notes[puzzle.brokenIndex] as HTMLElement);
-      const delta =
-        (puzzle.correct[puzzle.brokenIndex] as number) -
-        (puzzle.broken[puzzle.brokenIndex] as number);
-      fireEvent.click(
-        within(document.body).getByRole("button", {
-          name: new RegExp(`^Move it ${stepsLabel(delta)}$`),
-        }),
-      );
-      expect(within(document.body).getByText("That is the tune.")).toBeInTheDocument();
-      unmount();
-    }
   });
 });

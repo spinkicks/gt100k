@@ -78,3 +78,49 @@ export const TONIC_FROM_A4 = -9;
 export function frequencyForDegree(degree: number, a4Hz: number = A4_HZ): number {
   return frequencyForSemitone(TONIC_FROM_A4 + degreeToSemitone(degree), a4Hz);
 }
+
+/**
+ * ================================================================================================
+ * KEYS, AND WHY THIS SECTION EXISTS
+ * ================================================================================================
+ *
+ * The first version of Tune Repair represented pitch ONLY as a diatonic degree, which made every
+ * note in the key by construction. That was the right guard against one failure and it walked
+ * straight into a worse one: with only in-key notes available, "wrong" had to be defined as a broken
+ * *shape*, and a broken shape is **visible**. The puzzle became "find the bar that breaks the
+ * pattern" — an IQ-test item drawn as a bar chart, solvable with the sound off, which is exactly what
+ * the first playtest said.
+ *
+ * So pitch is now a **chromatic semitone**, and wrongness is a note that is **outside the key**. That
+ * inverts the property that matters: an out-of-key note is *audible* (it sounds sour) and *invisible*
+ * (on a chromatic roll it occupies an ordinary row, and the melody deliberately has no visual
+ * regularity for it to break). You cannot see it. You can only hear it.
+ *
+ * Degrees remain the way melodies are BUILT — a melody is composed in scale degrees and then mapped
+ * into semitones — because that keeps the melody diatonic without a check. Degrees are no longer how
+ * pitch is stored.
+ */
+
+/** Semitones in an octave, exported now that callers reason in pitch classes. */
+export const SEMITONES = SEMITONES_PER_OCTAVE;
+
+/** Pitch class of a semitone, always 0..11 (negative semitones included). */
+export function pitchClass(semitone: number): number {
+  return ((semitone % SEMITONES) + SEMITONES) % SEMITONES;
+}
+
+/**
+ * Whether a semitone belongs to the major scale of `key`.
+ *
+ * `key` is a tonic pitch class, 0..11. This is the whole definition of "sour" in Tune Repair: a note
+ * the ear hears as not belonging, with no visual signature whatsoever.
+ */
+export function isInKey(semitone: number, key: number): boolean {
+  const relative = pitchClass(semitone - key);
+  return (MAJOR_STEPS as readonly number[]).includes(relative);
+}
+
+/** The semitone for scale degree `degree` of `key`, relative to the same tonic octave. */
+export function degreeInKey(degree: number, key: number): number {
+  return key + degreeToSemitone(degree);
+}

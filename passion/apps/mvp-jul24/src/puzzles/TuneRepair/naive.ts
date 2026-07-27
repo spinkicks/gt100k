@@ -1,44 +1,33 @@
 /**
- * The reference solver: every single-note repair that makes a broken phrase well-shaped again.
+ * The reference solver: every single-semitone move that leaves the melody entirely in the key.
  *
- * WHAT IT IS FOR
- * ------------------------------------------------------------------------------------------------
- * Two jobs, and the second is the important one.
+ * The player may only nudge a note by one semitone, so the space of moves is small and enumerable, and
+ * this file enumerates all of it in the dumbest possible way. Its value is that it obviously covers the
+ * space — when it and the generator disagree, the generator is wrong.
  *
- *  1. It is the oracle the generator checks itself against: an instance ships only if there is
- *     **exactly one** repair in the whole search space (`generate.ts`).
- *  2. It defines what "exactly one" means honestly. The space is every note position crossed with
- *     every degree the player can actually reach — the same `[lo, hi]` rows the roll draws — and
- *     success is `matchesAnyShape`, not the shape the generator happened to build. So a phrase with a
- *     second, musically defensible answer is rejected rather than shipped and then marked wrong.
- *
- * It is deliberately the dumbest possible implementation. Its whole value is that it obviously
- * enumerates the space, so when it and the generator disagree, the generator is wrong.
+ * `lo`/`hi` are the rows the roll actually draws, so the space searched here and the space the player
+ * can act in are the same interval. If they diverged, "unique" would be a claim about a different game
+ * than the one on screen.
  */
 
-import { matchesAnyShape } from "./logic";
+import { isSolved } from "./logic";
 
-export interface Repair {
+export interface Fix {
   index: number;
-  degree: number;
+  fix: 1 | -1;
 }
 
-/**
- * Every single-note change within `[lo, hi]` that leaves the phrase well-shaped.
- *
- * The no-op is excluded, so a phrase that is *already* well-shaped does not report a repair at every
- * position. Callers that need to know whether the phrase is currently broken should ask
- * `matchesAnyShape` directly.
- */
-export function allRepairs(phrase: readonly number[], lo: number, hi: number): Repair[] {
-  const found: Repair[] = [];
+/** Every one-semitone nudge that leaves nothing sour. */
+export function allFixes(phrase: readonly number[], key: number, lo: number, hi: number): Fix[] {
+  const found: Fix[] = [];
   const working = [...phrase];
   for (let index = 0; index < phrase.length; index++) {
     const original = phrase[index] as number;
-    for (let degree = lo; degree <= hi; degree++) {
-      if (degree === original) continue;
-      working[index] = degree;
-      if (matchesAnyShape(working)) found.push({ index, degree });
+    for (const fix of [1, -1] as const) {
+      const moved = original + fix;
+      if (moved < lo || moved > hi) continue;
+      working[index] = moved;
+      if (isSolved(working, key)) found.push({ index, fix });
     }
     working[index] = original;
   }
@@ -46,23 +35,27 @@ export function allRepairs(phrase: readonly number[], lo: number, hi: number): R
 }
 
 /**
- * Whether a broken phrase has exactly one answer, and it is the intended one.
+ * Whether exactly one NOTE can be fixed, and it is the intended one.
+ *
+ * Position, not direction. In a major scale every chromatic note lies inside a whole step, so both
+ * one-semitone moves of the sour note always land back in the key — there are always two fixes and
+ * they are always at the same index. Requiring one *fix* is unsatisfiable; requiring one *index* is
+ * the real invariant and is what makes the ear-training question well posed.
  *
  * Three conditions, all necessary:
- *  - the presented phrase really is broken, or there is nothing to find;
- *  - there is exactly one repair in reach;
- *  - that repair is the note the generator displaced, so the puzzle the child solves is the puzzle
- *    the generator thinks it built.
+ *  - the melody as presented really is sour somewhere, or there is nothing to find;
+ *  - every available fix is at the same note;
+ *  - that note is the one the generator soured.
  */
-export function hasUniqueRepair(
+export function hasUniquePosition(
   phrase: readonly number[],
+  key: number,
   lo: number,
   hi: number,
-  expected: Repair,
+  expectedIndex: number,
 ): boolean {
-  if (matchesAnyShape(phrase)) return false;
-  const repairs = allRepairs(phrase, lo, hi);
-  if (repairs.length !== 1) return false;
-  const only = repairs[0] as Repair;
-  return only.index === expected.index && only.degree === expected.degree;
+  if (isSolved(phrase, key)) return false;
+  const fixes = allFixes(phrase, key, lo, hi);
+  if (fixes.length === 0) return false;
+  return fixes.every((f) => f.index === expectedIndex);
 }
