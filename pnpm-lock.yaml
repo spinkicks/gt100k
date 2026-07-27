@@ -587,6 +587,8 @@ importers:
         specifier: workspace:*
         version: link:../wellbeing
 
+  passion/packages/boundaries: {}
+
   passion/packages/concierge:
     dependencies:
       '@gt100k/two-axis-tagging':
