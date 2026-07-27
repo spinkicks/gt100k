@@ -7,6 +7,26 @@
 > `investigate` the right work-mode?) sets the key every cell in the demo is derived on, and
 > answering it differently changes Task 2's data.
 
+> **Rebased onto current `main`, and Task 3 was rewritten in the process.** This was first drafted
+> against `main` at `4c6aff6`; `main` has since advanced 23 commits and one of them changes a premise.
+> `signal-pipeline` now ships `MODELESS_ACTIONS = new Set(["open"])`, making `open` a recognised
+> **presence** action rather than a dropped one: it yields no cell but proves the child did not skip a
+> surfaced artifact, and `deriveSkips` consumes it. Consequences, all already applied below:
+>
+> - **Task 3 no longer replaces `open`.** It keeps `open` and *adds* an `inspect` for the case where
+>   the child actually worked the activity, thresholded on the existing `FLOOR_MS`.
+> - **"Every `actionType` is in `ACTION_MODE_RULES`" became "… or in `MODELESS_ACTIONS`."** The
+>   original form would fail on a legitimate `open` and push an implementer into deleting correct
+>   behaviour.
+> - **"`dropped` is empty" became "no `unknown-artifact` and no `unresolved-action`."** Every open
+>   drops as `no-work-mode` by design, so the original assertion could never hold.
+> - **`DerivedRead.droppedCount` became `wiringFailureCount`**, counting only the two reasons that
+>   mean broken wiring — a raw count is never zero and would cry wolf permanently.
+>
+> Unaffected: Task 2's catalog (still the load-bearing gap) and the crosswalk (`math-puzzles` still
+> seeds `logic-puzzles` and `competition-math`; #204's `poker` → `odds-and-chance` rename was under
+> `games-strategy`).
+
 **Goal:** A child plays the game, and an operator sees an interest read that was genuinely derived by the real discovery engines rather than hand-built.
 
 **Architecture:** The whole discovery chain runs **in the browser, inside the game**. Every engine package is pure and imports no Node builtins, so the game imports them and calls `runCycle` directly — no server, no HTTP, no database, no `guide-console` change, and no modification to any engine package. A new `src/backend/` directory holds the game's two missing inputs (a tagged artifact catalog and a backdated seed log) plus the call and an operator-facing read panel.
@@ -47,7 +67,7 @@ Create `passion/apps/mvp-jul24/src/backend/smoke.test.ts`:
 ```ts
 import { expect, test } from "vitest";
 import { ACTION_MODE_RULES, createTaxonomy, makeArtifact } from "@gt100k/two-axis-tagging";
-import { deriveSignals } from "@gt100k/signal-pipeline";
+import { MODELESS_ACTIONS, deriveSignals } from "@gt100k/signal-pipeline";
 import { runCycle, emptyProfile } from "@gt100k/student-profile";
 
 // These are RUNTIME imports, not type-only. The packages export raw .ts, and this app has never
@@ -59,9 +79,12 @@ test("the engine packages are importable at runtime from this app", () => {
   expect(typeof emptyProfile).toBe("function");
   expect(typeof makeArtifact).toBe("function");
   expect(typeof createTaxonomy).toBe("function");
-  // The closed verb vocabulary the emitter has to satisfy. `open` is deliberately NOT in it.
+  // The emitter must satisfy the UNION of two vocabularies: ACTION_MODE_RULES verbs resolve to a
+  // work-mode and yield a cell; MODELESS_ACTIONS verbs yield presence instead. `open` is in the
+  // second, not the first, and that is correct rather than a gap.
   expect(Object.keys(ACTION_MODE_RULES)).toContain("inspect");
   expect(Object.keys(ACTION_MODE_RULES)).not.toContain("open");
+  expect(MODELESS_ACTIONS.has("open")).toBe(true);
 });
 ```
 
@@ -302,9 +325,19 @@ modes to enrich the matrix would invent cells no child entered."
 
 ---
 
-### Task 3: Make the emitted `actionType` resolvable
+### Task 3: Emit the second fact — that the child *worked* the activity
 
-The second of the two independent reasons every record is dropped. `"open"` is not one of `ACTION_MODE_RULES`'s ten verbs, so it resolves to nothing.
+> **⚠️ This task was rewritten after `main` moved.** The original version said to replace `"open"`
+> with `"inspect"` because `open` resolved to nothing. That is now wrong: `main` ships
+> `MODELESS_ACTIONS = new Set(["open"])` in `signal-pipeline/src/model.ts`, so `open` is a recognised
+> **presence** action — no cell, but proof the child did not skip a surfaced artifact, which
+> `deriveSkips` consumes. Replacing it would delete that signal *and* assert that opening a thing is
+> investigating it. Read the design's §2 correction block before starting.
+
+`open` **stays**. What is missing is a second record for a different fact: the child actually worked
+the activity, which is an `inspect` (→ `investigate`). The threshold between the two is `FLOOR_MS`,
+already defined in `signals/log.ts` as the floor below which an open is unlikely to be real
+engagement — reuse it rather than inventing a number.
 
 **Files:**
 - Modify: `passion/apps/mvp-jul24/src/signals/log.ts` (`recordOpen`, `recordDepth`)
@@ -320,26 +353,42 @@ Append to `passion/apps/mvp-jul24/src/signals/log.test.ts`:
 
 ```ts
 import { ACTION_MODE_RULES } from "@gt100k/two-axis-tagging";
+import { MODELESS_ACTIONS } from "@gt100k/signal-pipeline";
 
 // THE TEST WHOSE ABSENCE LET A 100% DROP RATE SHIP LOOKING CORRECT.
-// `actionType` is a closed vocabulary of ten verbs owned by 009. An emitter that invents one is
-// typed correctly and discarded silently, which is the worst combination available.
-test("every emitted actionType is a verb the resolver knows", () => {
-  const c = { now: () => Date.parse("2026-07-26T10:00:00.000Z") };
-  const log = createSignalLog({ sessionId: "s1", now: c.now });
+// Note the `or`: the engine knows two kinds of verb. ACTION_MODE_RULES verbs resolve to a work-mode
+// and produce a cell; MODELESS_ACTIONS verbs (currently just `open`) produce presence instead.
+// Asserting membership in ACTION_MODE_RULES alone would fail on a legitimate `open` and push
+// someone into deleting a correct behaviour.
+test("every emitted actionType is a verb the engine knows", () => {
+  let t = Date.parse("2026-07-26T10:00:00.000Z");
+  const log = createSignalLog({ sessionId: "s1", now: () => (t += 60_000) });
   log.recordOpen("nonogram", FLOOR_MS);
+  log.recordOpen("pipes", 1_000); // under the floor: presence only
   log.recordDepth("nonogram", "unrequired_revision");
 
+  const known = new Set([...Object.keys(ACTION_MODE_RULES), ...MODELESS_ACTIONS]);
   const verbs = [...new Set(log.interactions().map((i) => i.actionType))];
   expect(verbs.length).toBeGreaterThan(0);
-  for (const v of verbs) {
-    expect(Object.keys(ACTION_MODE_RULES), `unknown verb: ${v}`).toContain(v);
-  }
+  for (const v of verbs) expect(known, `unknown verb: ${v}`).toContain(v);
+});
+
+// An open is presence and nothing more. It must NOT claim the child investigated anything.
+test("an open emits `open`, and a worked activity additionally emits `inspect`", () => {
+  let t = Date.parse("2026-07-26T10:00:00.000Z");
+  const log = createSignalLog({ sessionId: "s1", now: () => (t += 60_000) });
+
+  log.recordOpen("pipes", 1_000); // below FLOOR_MS
+  expect(log.interactions().map((i) => i.actionType)).toEqual(["open"]);
+
+  log.recordOpen("nonogram", FLOOR_MS); // at/above the floor
+  const forNonogram = log.interactions().filter((i) => i.artifactId === "nonogram");
+  expect(forNonogram.map((i) => i.actionType).sort()).toEqual(["inspect", "open"]);
 });
 
 test("a depth occurrence carries its kind in depthSignals, not in actionType", () => {
-  const c = { now: () => Date.parse("2026-07-26T10:00:00.000Z") };
-  const log = createSignalLog({ sessionId: "s1", now: c.now });
+  let t = Date.parse("2026-07-26T10:00:00.000Z");
+  const log = createSignalLog({ sessionId: "s1", now: () => (t += 60_000) });
   log.recordDepth("nonogram", "unrequired_revision");
 
   const i = log.interactions().at(-1)!;
@@ -347,6 +396,8 @@ test("a depth occurrence carries its kind in depthSignals, not in actionType", (
   expect(i.depthSignals).toEqual([{ kind: "unrequired_revision", value: 1 }]);
 });
 ```
+
+`MODELESS_ACTIONS` is re-exported from `@gt100k/signal-pipeline`'s index (`export * from "./model.js"`), so that import is valid as written.
 
 - [ ] **Step 2: Run it and watch it fail**
 
@@ -525,16 +576,21 @@ Create `passion/apps/mvp-jul24/src/backend/pipeline.test.ts`:
 
 ```ts
 import { expect, test } from "vitest";
-import { deriveSignals } from "@gt100k/signal-pipeline";
+import { DEFAULTS, buildActionEvents, deriveSignals } from "@gt100k/signal-pipeline";
 import { createSignalLog, FLOOR_MS } from "../signals/log";
 import { GAME_CATALOG } from "./catalog";
 
 /**
  * The end-to-end guard for the wiring this whole plan exists to fix. A read derived from an empty
- * CellEvent stream is indistinguishable from a read of a child who did nothing, so `dropped` being
- * empty is the single most important assertion in this app.
+ * CellEvent stream is indistinguishable from a read of a child who did nothing.
+ *
+ * NOT "dropped is empty": `open` is a MODELESS_ACTION, so every open legitimately lands in
+ * `dropped` with reason `no-work-mode` AND produces a presence record. Asserting emptiness would
+ * assert the engine's designed behaviour away. The two reasons that mean broken wiring are
+ * `unknown-artifact` (the catalog is missing an entry) and `unresolved-action` (the emitter invented
+ * a verb).
  */
-test("a scripted session produces cell events and drops nothing", () => {
+test("a scripted session produces cell events, with no wiring-failure drops", () => {
   let t = Date.parse("2026-07-26T10:00:00.000Z");
   const log = createSignalLog({ sessionId: "s1", now: () => (t += 60_000) });
 
@@ -550,8 +606,23 @@ test("a scripted session produces cell events and drops nothing", () => {
     catalog: GAME_CATALOG,
   });
 
-  expect(dropped).toEqual([]);
+  const wiringFailures = dropped.filter(
+    (d) => d.reason === "unknown-artifact" || d.reason === "unresolved-action",
+  );
+  expect(wiringFailures).toEqual([]);
   expect(cellEvents.length).toBeGreaterThan(0);
+});
+
+// `deriveSignals` destructures `present` from buildActionEvents but does NOT re-expose it — its
+// return type is { actionEvents, cellEvents, dropped }. So presence is asserted one level down,
+// against buildActionEvents directly (exported from the package index via ./actions.js).
+test("opens become presence records, so a skipped artifact stays distinguishable", () => {
+  let t = Date.parse("2026-07-26T10:00:00.000Z");
+  const log = createSignalLog({ sessionId: "s1", now: () => (t += 60_000) });
+  log.recordOpen("nonogram", FLOOR_MS);
+
+  const { present } = buildActionEvents(log.interactions(), GAME_CATALOG, DEFAULTS);
+  expect(present.map((p) => p.artifactId)).toContain("nonogram");
 });
 
 test("emission is on, now that the surfaces are wired", async () => {
@@ -591,9 +662,10 @@ a live log would have under-counted every open while looking well-formed.
 The surfaces are wired and the catalog covers every gadget, so the
 condition session.ts set for flipping this is met.
 
-The guard that matters is dropped === []: a read derived from an empty
-CellEvent stream is indistinguishable from a read of a child who did
-nothing."
+The guard that matters is that no drop has reason unknown-artifact or
+unresolved-action: a read derived from an empty CellEvent stream is
+indistinguishable from a read of a child who did nothing. no-work-mode
+drops are expected — those are the presence records."
 ```
 
 ---
@@ -624,13 +696,20 @@ import { deriveSignals } from "@gt100k/signal-pipeline";
 import { GAME_CATALOG } from "./catalog";
 import { DEMO_NOW, SEED_LOG, SEED_SURFACED } from "./demo-kid";
 
-test("the seed log drops nothing against the real catalog", () => {
+// Not "drops nothing": the seed contains opens, which are MODELESS_ACTIONS and legitimately land in
+// `dropped` as `no-work-mode` while producing presence. What must be absent are the two reasons that
+// mean the seed is malformed: an id the catalog does not know, or a verb the engine does not know.
+test("the seed log has no wiring failures against the real catalog", () => {
   const { dropped } = deriveSignals({
     interactions: SEED_LOG,
     surfaced: SEED_SURFACED,
     catalog: GAME_CATALOG,
   });
-  expect(dropped).toEqual([]);
+  expect(
+    dropped.filter(
+      (d) => d.reason === "unknown-artifact" || d.reason === "unresolved-action",
+    ),
+  ).toEqual([]);
 });
 
 // Distinct days are what E6's confidence gate counts. A seed clustered into one day would look
@@ -699,7 +778,7 @@ part of the demo and must be impossible to mistake for real data."
 **Interfaces:**
 - Consumes: `runCycle`, `emptyProfile` from `@gt100k/student-profile`; `deriveSignals` from `@gt100k/signal-pipeline`; `GAME_CATALOG` (Task 2); `DEMO_KID_ID`, `DEMO_KID_NAME`, `DEMO_NOW`, `SEED_LOG`, `SEED_SURFACED`, `SEED_TARGET_CELL` (Task 6).
 - Produces: `deriveRead(sessionInteractions, sessionSurfaced, now): DerivedRead` where
-  `DerivedRead = { profile: StudentProfile; droppedCount: number }`. Task 8 consumes both fields.
+  `DerivedRead = { profile: StudentProfile; wiringFailureCount: number }`. Task 8 consumes both fields.
 
 `runCycle` discards `dropped` (it destructures only `cellEvents`), so surfacing the drop count means calling `deriveSignals` once more purely as a diagnostic. Both calls are pure, so this is cheap and cannot disagree with itself.
 
@@ -729,7 +808,7 @@ const stateOf = (r: ReturnType<typeof deriveRead>, cellKey: string) =>
 
 test("the seed alone does not reach EMERGING on the target cell", () => {
   const r = deriveRead([], [], DEMO_NOW);
-  expect(r.droppedCount).toBe(0);
+  expect(r.wiringFailureCount).toBe(0);
   expect(stateOf(r, SEED_TARGET_CELL)).not.toBe("EMERGING");
 });
 
@@ -738,7 +817,7 @@ test("the seed alone does not reach EMERGING on the target cell", () => {
 test("seed plus a live session tips the target cell to EMERGING", () => {
   const log = sessionOn(DEMO_NOW.slice(0, 10));
   const r = deriveRead(log.interactions(), log.surfaced(), DEMO_NOW);
-  expect(r.droppedCount).toBe(0);
+  expect(r.wiringFailureCount).toBe(0);
   expect(stateOf(r, SEED_TARGET_CELL)).toBe("EMERGING");
 });
 
@@ -768,8 +847,12 @@ import { DEMO_KID_ID, DEMO_KID_NAME, SEED_LOG, SEED_SURFACED } from "./demo-kid"
 
 export interface DerivedRead {
   readonly profile: StudentProfile;
-  /** Interactions the firewall refused to resolve. MUST be 0; anything else means broken wiring. */
-  readonly droppedCount: number;
+  /**
+   * Drops whose reason indicates BROKEN WIRING — `unknown-artifact` or `unresolved-action`. MUST be
+   * 0. Deliberately NOT the raw `dropped.length`: every `open` is a MODELESS_ACTION and drops as
+   * `no-work-mode` by design, so a raw count is never 0 and would cry wolf permanently.
+   */
+  readonly wiringFailureCount: number;
 }
 
 /**
@@ -779,7 +862,7 @@ export interface DerivedRead {
  * there is no incremental state to keep consistent and no cache to invalidate. If this function
  * ever grows a branch, that branch belongs in an engine package instead.
  *
- * `droppedCount` needs its own `deriveSignals` call because `runCycle` destructures only
+ * `wiringFailureCount` needs its own `deriveSignals` call because `runCycle` destructures only
  * `cellEvents` and discards `dropped`. Both calls are pure over the same input, so they cannot
  * disagree.
  */
@@ -793,6 +876,9 @@ export function deriveRead(
   const ctx = { catalog: GAME_CATALOG, surfaced };
 
   const { dropped } = deriveSignals({ interactions, surfaced, catalog: GAME_CATALOG });
+  const wiringFailureCount = dropped.filter(
+    (d) => d.reason === "unknown-artifact" || d.reason === "unresolved-action",
+  ).length;
   const profile = runCycle(
     emptyProfile(DEMO_KID_ID, DEMO_KID_NAME, [], {}),
     interactions,
@@ -800,7 +886,7 @@ export function deriveRead(
     now,
   );
 
-  return { profile, droppedCount: dropped.length };
+  return { profile, wiringFailureCount };
 }
 ```
 
@@ -824,8 +910,9 @@ test asserts both halves — the seed alone does NOT reach EMERGING and the
 live session tips it — because only the second half proves the play
 session is doing the work.
 
-droppedCount comes from a separate deriveSignals call since runCycle
-discards dropped. Both are pure over the same input."
+wiringFailureCount comes from a separate deriveSignals call since runCycle
+discards dropped, and counts only unknown-artifact / unresolved-action —
+no-work-mode drops are every open, by design."
 ```
 
 ---
@@ -874,9 +961,9 @@ test("renders no scalar score, percentage, or ranking", () => {
 
 // The wiring canary, on screen. A read derived from nothing looks exactly like a read of a child
 // who did nothing, so the operator needs to see the drop count.
-test("shows the dropped count so broken wiring is visible", () => {
+test("shows the wiring-failure count so broken wiring is visible", () => {
   const { container } = render(<ReadPanel now={DEMO_NOW} />);
-  expect(container.textContent).toMatch(/dropped/i);
+  expect(container.textContent).toMatch(/wiring/i);
 });
 ```
 
@@ -909,7 +996,7 @@ Expected: FAIL on `Cannot find module './ReadPanel'` and on `showRead` not exist
 
 `ReadPanel` takes `{ now }: { now?: string }` (defaulting to `DEMO_NOW`), calls `deriveRead(sessionLog.interactions(), sessionLog.surfaced(), now)` in a `useMemo`, and renders per cell: the cell key (`domainPath × workMode`), its lifecycle state, and the evidence count behind it. Where the engine declines to conclude, render an explicit **"not sure yet"** rather than an empty row — a blank is indistinguishable from a bug.
 
-Render `droppedCount` with a visible label containing the word "dropped", and make a non-zero value obvious.
+Render `wiringFailureCount` with a visible label containing the word "wiring", and make a non-zero value obvious. Do **not** render a raw `dropped` total: every `open` drops as `no-work-mode` by design, so a raw total is never zero and an operator would learn to ignore it.
 
 Carry a header comment stating: this is operator-facing and QA-gated, why a child must never reach it (§11, and the readout removed on the previous branch), that the mode axis is degenerate so every cell will share one mode (design §7.1), and that the confident cell rests on a synthetic seed (§3.4) so a demo must say so.
 
@@ -932,8 +1019,8 @@ git add passion/apps/mvp-jul24/src/backend passion/apps/mvp-jul24/src/qa.ts pass
 git commit -m "feat(mvp-jul24): an operator-facing panel for the derived read
 
 Renders the cells runCycle produced, their lifecycle states, an explicit
-\"not sure yet\" where the engine declines to conclude, and the dropped
-count so broken wiring is visible rather than silent.
+\"not sure yet\" where the engine declines to conclude, and the
+wiring-failure count so broken wiring is visible rather than silent.
 
 QA-gated with no nav button, following the precedent set when the
 child-facing time-on-task readout was removed: a child-facing read is a

@@ -50,12 +50,47 @@ contract — `tsc` passes, the records are well-formed, and every one of them is
 1. **No artifact catalog exists.** Nothing in the repo maps `nonogram` — or any other gadget id — to
    an `Artifact { domainPath, affordedModes }`. `catalog.get(artifactId)` misses, so every record is
    dropped `unknown-artifact`.
-2. **`actionType: "open"` is not in `ACTION_MODE_RULES`.** The table
+2. **`actionType: "open"` yields no cell** — but see the correction immediately below, because this
+   is no longer the defect it was when this design was first written. The mode table
    (`passion/packages/two-axis-tagging/src/resolver.ts`) is a closed vocabulary of ten verbs:
    `play`, `assemble`, `inspect`, `tinker`, `write-melody`, `fix`, `teach`, `pitch`, `co-work`,
-   `tend`. `"open"` resolves to nothing, so even *with* a catalog every record would be dropped
-   `unresolved-action`. Depth is also emitted *as* an `actionType`
-   (`recordDepth(id, "unrequired_revision")`), which does not resolve either.
+   `tend`. `"open"` is not among them, so it resolves to no work-mode and produces no `CellEvent`.
+   Depth is also emitted *as* an `actionType` (`recordDepth(id, "unrequired_revision")`), which
+   resolves to nothing and is a straightforward bug.
+
+> ### ⚠️ Correction — `main` moved while this was being written
+>
+> This design was drafted against `main` at `4c6aff6`. `main` has since advanced 23 commits, and one
+> of them changes claim 2 above materially. **`"open"` is now a first-class recognised action.**
+>
+> `passion/packages/signal-pipeline/src/model.ts` now exports
+> `MODELESS_ACTIONS: ReadonlySet<string> = new Set(["open"])` — *"actions that describe presence, not
+> work. They emit no event and resolve to no cell, but they are still proof the child did not pass
+> the thing over, which is what `deriveSkips` needs."* `buildActionEvents` checks it **after** the
+> catalog lookup, records the interaction in `dropped` with a new reason **`"no-work-mode"`**, and
+> **also** emits a new `Presence { kidId, sessionId, artifactId }` that `deriveSkips` consumes. There
+> is a test named `presence-is-not-rejection.test.ts` making the point.
+>
+> **What this changes:**
+>
+> - An `open` is **not** discarded. It carries real disconfirming-signal weight: it is how the engine
+>   knows a surfaced artifact was engaged rather than skipped.
+> - So the fix is **not** "replace `open` with a resolvable verb". Doing that would delete the
+>   presence signal and additionally assert that opening a thing *is* investigating it, which is a
+>   claim about the child that the record does not support.
+> - The corrected design is **two records for two different facts** (§3.2): `open` for the open, and
+>   `inspect` for the child actually working the activity.
+> - `dropped` will therefore legitimately contain `no-work-mode` entries, so "dropped is empty" is
+>   the wrong assertion. The right one is **no `unknown-artifact` and no `unresolved-action`** — the
+>   two reasons that do indicate broken wiring.
+>
+> Claim 1 (no artifact catalog) is unaffected and remains the load-bearing gap. The crosswalk in
+> §3.1 is also unaffected: `math-puzzles` still seeds `competition-math` and `logic-puzzles` on
+> current `main` (the `poker` → `odds-and-chance` rename in #204 was under `games-strategy`).
+>
+> **Open question 5 for the reviewer:** was `MODELESS_ACTIONS` added *for* this game's `open`, or for
+> another caller? If the former, part of this design may already have been anticipated by whoever
+> wrote it, and they should be asked before it is built.
 
 A third fact, inherited from the branch this stacks on: **emission is switched off**, because the
 `backdrop` backend's prop polygons and the bookshelf emit nothing and `backdrop` is now the only
@@ -94,18 +129,27 @@ so `artifactId` needs no translation at the emission boundary.
 `music` / `code` / `art` get **no entries**, because they have no activities. A record referencing
 them would be a bug, and `unknown-artifact` is the correct response to a bug.
 
-### 3.2 The `actionType` vocabulary
+### 3.2 The `actionType` vocabulary — two records for two different facts
 
-`recordOpen` stops emitting `"open"` and emits **`"inspect"`**, which `ACTION_MODE_RULES` resolves to
-the `investigate` work-mode. That is the honest reading: these activities produce understanding
-rather than an artifact, a performance, or a repair.
+**Revised after the correction in §2.** `recordOpen` **keeps** emitting `"open"`. It is in
+`MODELESS_ACTIONS`, so the engine treats it as presence: no cell, but proof the child did not skip a
+surfaced artifact, which is exactly what an open *is* and all it honestly attests.
 
-`recordDepth` stops putting the depth kind in `actionType`. A depth occurrence is an `inspect` that
-additionally carries `depthSignals: [{ kind, value: 1 }]` — which is what the field is for, and what
-`buildActionEvents` reads.
+What was missing is the second fact: **the child worked the activity.** That gets its own record with
+`actionType: "inspect"`, which `ACTION_MODE_RULES` resolves to the `investigate` work-mode — the
+honest reading, since these activities produce understanding rather than an artifact, a performance,
+or a repair.
 
-**This is the only change to the emitter's output shape**, and it is small because `#161` got
-everything else right.
+The distinction is not pedantry. Opening a puzzle and closing it immediately, versus opening it and
+working it, are different observations about a child, and collapsing them into one verb throws away
+the difference. The emitter therefore needs a defensible threshold for "worked it" rather than
+"opened it" — and one already exists and is already used: `FLOOR_MS` in `signals/log.ts`, the floor
+below which an open is unlikely to be real engagement. An open below the floor stays presence only.
+
+`recordDepth` stops putting the depth kind in `actionType` — that part of the original design stands
+and is a plain bug. A depth occurrence is an `inspect` carrying
+`depthSignals: [{ kind, value: 1 }]`, which is the field's purpose and where `buildActionEvents`
+reads it.
 
 ### 3.3 Wiring the surfaces that emit nothing
 
@@ -184,11 +228,17 @@ One direction, no round trip, no persistence beyond localStorage.
 - **Catalog completeness** — every gadget in `GADGETS` has exactly one catalog entry and every entry
   a valid `domainPath` affording ≥1 mode. Same shape as `quads.data.test.ts`'s exactly-once rule,
   which already catches this class of drift at build time.
-- **Every emitted `actionType` resolves.** Assert against the real `ACTION_MODE_RULES`. *This is the
-  test whose absence allowed a 100% drop rate to ship looking correct, and it is the most valuable
-  test in the plan.*
-- **`dropped` is empty** for a scripted session over the real catalog. A read that silently derives
-  from nothing is the failure this pins.
+- **Every emitted `actionType` is one the engine knows** — in `ACTION_MODE_RULES` **or** in
+  `MODELESS_ACTIONS`. *This is the test whose absence allowed a 100% drop rate to ship looking
+  correct, and it is the most valuable test in the plan.* Note the `or`: asserting membership in
+  `ACTION_MODE_RULES` alone would fail on a legitimate `open` and push an implementer to delete a
+  correct behaviour.
+- **No `unknown-artifact` and no `unresolved-action`** in `dropped`, for a scripted session over the
+  real catalog. Those two reasons mean broken wiring. `no-work-mode` entries are **expected** — they
+  are the presence records — so asserting `dropped` is empty would be asserting the engine's designed
+  behaviour away.
+- **Presence is produced for opens.** A scripted session's opens should appear as `present` records,
+  because that is what makes a surfaced-but-not-engaged artifact distinguishable from an engaged one.
 - **Golden transition** — seed + scripted session moves the target cell EXPLORING → EMERGING, and
   seed alone does not. Both halves matter: the second proves the live session is what tipped it.
 - **No child-reachable read** — the same guard the previous branch used, extended to the new panel.
