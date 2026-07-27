@@ -2,7 +2,7 @@
 
 **GT100K** is Alpha School's internal accelerated-gifted layer on TimeBack — an operating system for an intensive, in-person gifted academy that takes an already-admitted child (ages 6–14) from daily academic mastery and passion discovery through to a portable, evidence-backed body of work. Long-horizon goal: MIT-level academic readiness by the end of 8th grade.
 
-> **Status: working monorepo.** 21 packages, 16 adapters, and 9 apps, with **3,640 tests** green (910 engine and adapter, 2,730 app). Every engine is pure, deterministic and offline; all data is synthetic. No real child data touches this system until the pre-live gates pass (see [Pre-live gates](#pre-live-gates)).
+> **Status: working monorepo.** 21 packages, 16 adapters, and 9 apps, with **3,703 tests** green (946 engine and adapter, 2,757 app). Every engine is pure, deterministic and offline; all data is synthetic. No real child data touches this system until the pre-live gates pass (see [Pre-live gates](#pre-live-gates)).
 
 ## Quick start
 
@@ -12,7 +12,7 @@ Requires Node 20+ and `pnpm` (developed on Node 24 / pnpm 9).
 pnpm install
 pnpm exec biome check passion   # lint + formatter, the same gate CI runs
 pnpm exec tsc -b                # typecheck the whole workspace
-pnpm test                       # 910 engine and adapter tests
+pnpm test                       # 946 engine and adapter tests
 ```
 
 **Start here:** the front door routes you to the right surface by role.
