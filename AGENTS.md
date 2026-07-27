@@ -8,7 +8,8 @@
 ## Project
 - **GT100K** — the PassionLab spec lives in `docs/prd/` (`DISCOVERY-APP-PRD.md`, `SPECIALIZATION-PIPELINE-PRD.md`, `passionApps.md`, `passion-roadmap.md`); `docs/research/` (brainlifts + `passion-pipeline/`) holds the evidence base. The prior full-program PRD is archived under `archive/docs/prd/`.
 - **Current stage: active development.** PRD-driven implementation is underway; code ships behind the workflow below. `docs/prd/` remains the canonical spec.
-- **Active scope:** PassionLab, rebuilt from the new design (`docs/prd/passion-roadmap.md`) — the Evidence Graph is kept; discovery + specialization are rebuilt. Family selection (`docs/research/familyBrainlift.md`) is the second focus; the arena/cohort social layer is archived.
+- **Active scope:** PassionLab, rebuilt from the new design (`docs/prd/passion-roadmap.md`) — discovery + specialization are rebuilt. Family selection (`docs/research/familyBrainlift.md`) is the second focus; the arena/cohort social layer is archived.
+- **Two products live here.** PassionLab, and the **EvidenceGraph** (`@gt100k/evidence-*`), which is a separate product developed in this repo and intended for extraction — see `CONTEXT-MAP.md` and `docs/decisions/evidencegraph-v1-design.md` §11/§13a. Separable code, joint value proposition.
 - **New here?** Start with `docs/onboarding/` (`README.md` + `teammate-setup.sh`). It sets up the **same factory the operator runs**: Claude Code (`claude-opus-4-8[1m]`) **+** Codex (`gpt-5.6-sol`), 3 MCPs (context7, aws-knowledge, terraform), context hygiene (auto-compaction ~40%), the loop harness, and the consensus + adversarial-QA review gate. One shared pipeline: everyone's work flows through the same gates below.
 
 ## Agent skills
@@ -23,6 +24,7 @@ Cross-agent skills are configured for this repo (from [`mattpocock/skills`](http
 ## Lanes (CODEOWNERS)
 - Only edit files your operator owns in `.github/CODEOWNERS`. Prefer a **NEW file** over editing a shared one.
 - NEVER create barrel `index.ts` re-exports, a central route array, or edit an applied migration / `*.tfstate`.
+- **NEVER import a value from `@gt100k/evidence-*` from outside that namespace.** `import type` is fine; a runtime import is not. It is a product boundary, and the whole point is that extraction stays a mechanical copy. Cross through one adapter. Same rule in reverse: no `evidence-*` package may import the passion side.
 
 ## Worktrees & runtime
 - One worktree per agent. NEVER open another dev's worktree. `.env.local` is **COPIED**, never symlinked.
