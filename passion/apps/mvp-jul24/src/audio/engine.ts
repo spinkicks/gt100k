@@ -51,6 +51,13 @@ export interface AudioEngine {
   playNote(note: Note, tempoBpm?: number): void;
   /** Play notes in sequence from now. Returns the total duration in ms so a caller can animate. */
   playSequence(notes: readonly Note[], tempoBpm?: number): number;
+  /**
+   * Play notes **simultaneously** — a chord. Returns the duration in ms of the longest note.
+   *
+   * Separate from `playSequence` rather than a flag on it, because the two are different musical
+   * objects: a sequence is a line and a chord is a moment, and `ChordFit` is entirely about the second.
+   */
+  playChord(notes: readonly Note[], tempoBpm?: number): number;
   /** Silence anything currently sounding and cancel anything scheduled. */
   stop(): void;
   isMuted(): boolean;
@@ -105,6 +112,8 @@ export const silentEngine: AudioEngine = {
   playNote: () => {},
   playSequence: (notes, tempoBpm = DEFAULT_BPM) =>
     notes.reduce((ms, n) => ms + n.beats * beatSeconds(tempoBpm) * 1000, 0),
+  playChord: (notes, tempoBpm = DEFAULT_BPM) =>
+    notes.reduce((ms, n) => Math.max(ms, n.beats * beatSeconds(tempoBpm) * 1000), 0),
   stop: () => {},
   isMuted: () => true,
   setMuted: () => {},
@@ -200,6 +209,18 @@ export function createAudioEngine(Ctor: AudioContextCtor): AudioEngine {
         scheduleNote(at, note, tempoBpm);
         at += note.beats * beatSeconds(tempoBpm);
       }
+      return totalMs;
+    },
+    playChord(notes, tempoBpm = DEFAULT_BPM) {
+      const totalMs = notes.reduce(
+        (ms, n) => Math.max(ms, n.beats * beatSeconds(tempoBpm) * 1000),
+        0,
+      );
+      if (muted) return totalMs;
+      const { ctx: c } = ensure();
+      // One shared start time, so the notes fuse into a chord instead of arriving as a fast arpeggio.
+      const at = c.currentTime;
+      for (const note of notes) scheduleNote(at, note, tempoBpm);
       return totalMs;
     },
     stop() {

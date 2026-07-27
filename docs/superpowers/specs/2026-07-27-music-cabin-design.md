@@ -1,6 +1,8 @@
 # The Music cabin — design
 
-**Date:** 2026-07-27 · **Status:** design, for review. **No code written.**
+**Date:** 2026-07-27 · **Status:** live. `tune-repair` + `src/audio` built; the room is not.
+**Revision note:** §2.1 was rewritten and §1.1/§2.1a added the same day, after the first playtest found
+the original design was a shape puzzle. Superseded text is kept in boxes rather than deleted.
 **App:** `passion/apps/mvp-jul24` · **Target band:** ages 9–12, gifted (PROJECT.md)
 **Reads with:** `PROJECT.md` (the app's own record) · `docs/decisions/2026-07-27-discovery-surface.md`
 (including the surface-owner ruling, #212) · `docs/research/passion-pipeline/06-activity-design-ages-6-8.md`
@@ -13,12 +15,16 @@ real, playable third room. The surface-owner ruling of 2026-07-27 keeps `mvp-jul
 surface and re-scopes the discovery-surface evidence "from a reason to replace the surface into the bar
 the surface is audited against," so a new room is now the right unit of work.
 
-Three decisions were taken before this was written and are treated as settled input:
+Three decisions were taken before this was written. **The first has since been reversed by playtest, and
+that reversal is the most important thing in this document:**
 
-1. **Audio is dual-coded.** Every gadget makes real sound, and every gadget also exposes a visual
-   representation sufficient to solve it.
-2. **This document only.** No implementation until it is reviewed.
-3. **The map art gets regenerated** so `music` is a near cabin, not a horizon one.
+1. ~~**Audio is dual-coded.** Every gadget makes real sound, and every gadget also exposes a visual
+   representation sufficient to solve it.~~ **Reversed.** A visual channel *sufficient to solve* makes
+   the sound decoration — see §1.1 and §2.1. Gadgets are now **audible-only**, with the accessibility
+   cost recorded in §8 rather than wished away.
+2. ~~**This document only.** No implementation until it is reviewed.~~ Done; `tune-repair` and
+   `src/audio` are built.
+3. **The map art gets regenerated** so `music` is a near cabin, not a horizon one. Still outstanding.
 
 ---
 
@@ -55,7 +61,7 @@ What is left, once arithmetic and deduction are removed, is the thing that is ir
 **a heard relation between sounds.** Pitch as height, consonance, metrical feel, melodic expectation.
 Those cannot be recovered from symbols, which is precisely what makes them the right content.
 
-### 1.1 The cost of dual-coding, stated honestly
+### 1.1 The cost of dual-coding — and why R1 alone did not pay it
 
 Dual-coding was chosen for good reasons — it preserves the PRD §5.2 Layer-3 accessibility mirror at
 parity (`plainViewEquals`), it keeps the gadgets testable without mocking Web Audio, and it does not
@@ -73,8 +79,19 @@ puzzle *is* arithmetic in that channel, and we have rebuilt the `math` cabin wit
 > room ever displays a number, an interval name, a note name, or a ratio as part of its solvable state.**
 
 A piano-roll contour is musical content: replace it with arbitrary symbols and the task dies, because
-"higher" and "lower" and "longer" stop meaning anything. A column of semitone integers is not. R1 is what
-keeps both channels inside the domain, and it is checkable by a test that greps the rendered output.
+"higher" and "lower" and "longer" stop meaning anything. A column of semitone integers is not. R1 is
+checkable by a test that greps the rendered output, and it is enforced.
+
+> **R1 was necessary and nowhere near sufficient, and the paragraph above is where this document went
+> wrong.** It bans printed numerals; it does not stop the visual layout from *being* a number line. A
+> piano roll of a melody is exactly that, and the first version of `tune-repair` was solvable from it with
+> the sound off. The claim that a contour "dies" under symbol substitution is false when the property
+> being judged — a broken shape — is itself a property of the abstract sequence.
+>
+> **R2 — the property that makes an answer wrong must have no visual signature.** Name what makes a note
+> wrong and ask whether an eye can see it. If it can, the puzzle is solvable by looking and the audio is
+> decoration. In practice R2 means: *do not draw the thing the ear is supposed to judge.* §2.1a applies it
+> to the rest of the roster, where it corrected two of three gadgets.
 
 ---
 
@@ -84,10 +101,14 @@ Four gadgets, four distinct musical constructs, density-matched to `logic-games`
 
 | id | Name | Construct | Slice order |
 |---|---|---|---|
-| `tune-repair` | Tune Repair | melodic expectation | **1 — build first** |
-| `downbeat` | Downbeat | metrical inference | 2 |
-| `chord-fit` | Chord Fit | harmonic function / consonance | 3 |
+| `tune-repair` | Tune Repair | in-key perception (melodic) | **built** |
+| `chord-fit` | Chord Fit | harmonic function / consonance | **next** |
+| `downbeat` | Downbeat | metrical inference (non-pitch) | 3 |
 | `echo` | Echo | aural imitation | 4 |
+
+Order revised by the R2 audit in §2.1a. `tune-repair`'s construct is stated as *in-key perception* rather
+than the original *melodic expectation*, because expectation-of-shape is what turned out to be the visual
+trap.
 
 ### 2.1 `tune-repair` — Tune Repair *(the slice)*
 
@@ -120,8 +141,9 @@ child knows the tune, which is a cultural-familiarity confound. Generated melodi
 `DISCOVERY-APP-PRD.md` §5.2's Layer-3 parity requirement for this gadget: a deaf or hard-of-hearing
 child cannot do it, and no visual representation fixes that without turning it back into a shape
 puzzle. The app says so rather than presenting an unsolvable board. This is the strongest argument in
-the document for the room holding at least one activity that is not pitch-perception based — `downbeat`
-(§2.2) is the candidate, since metrical grouping *is* visible in a duration strip.
+the document for the room holding at least one activity that is not perceptual at all. **`downbeat` was
+the hoped-for candidate and is not one** — §2.1a shows that making it pass R2 makes it audible-only too.
+The gap is recorded as risk 5a in §8.
 
 > #### The superseded design, and why it failed
 >
@@ -150,32 +172,62 @@ the document for the room holding at least one activity that is not pitch-percep
 > The shape predicates survive in `logic.ts`, unchanged in behaviour and inverted in purpose: matching
 > one is now a reason to *reject* a melody.
 
+### 2.1a R2 audit of the rest of the roster *(2026-07-27, after the redesign)*
+
+The roster below was written before R2 existed. **R2: the property that makes an answer wrong must have
+no visual signature.** Re-checked against it, and the result is that two of the three needed the same
+correction — the original spec drew, on screen, the very thing the ear was supposed to judge.
+
+| Gadget | R2 as originally specced | Correction | Verdict |
+|---|---|---|---|
+| `downbeat` | **Fails.** The spec itself conceded "a visual strip of durations can be grouped by eye fairly mechanically" — under R2 that is disqualifying, not a flag. Grouping durations by eye *is* the pattern task. | Carry the metre in **loudness accents**, not note lengths: every block the same width, so the roll holds no grouping information at all. | **Passes after correction** |
+| `chord-fit` | **Fails.** "The visual dual-code stacks the notes vertically so interval spacing is visible" — visible spacing is a learnable shortcut ("the evenly-spaced one is right"). | The three options are **unlabelled, undrawn buttons you play and compare.** No visual representation of the chords whatsoever. | **Passes after correction** |
+| `echo` | **Passes.** There is nothing visual to leak: the stimulus exists only as sound. | None needed. Its "show me" mode is an explicit, recorded easier-variant choice rather than a hidden visual channel, which is a different thing. | **Passes** (working-memory confound unchanged) |
+
+**The generalisation, which is the useful part:** in practice R2 means *do not draw the thing the ear is
+supposed to judge.* Every one of these gadgets had a visual affordance that was added to be helpful and
+would have handed over the answer.
+
+**And the accessibility conclusion sharpens rather than improves.** Every gadget that passes R2 excludes
+a deaf or hard-of-hearing child, necessarily — that is what "audible-only" means. So the room's
+accessibility answer **cannot be a cleverer gadget**, and `downbeat` is no longer the candidate for it.
+It has to be a **musical activity that is not a perceptual one**: notation, instrument mechanics,
+constructing a rhythm to match a written pattern. That is a genuine gap in this spec, it is not
+addressed by anything in the roster, and it is recorded in §8 rather than papered over.
+
+**Build order after the audit:** `chord-fit` next (a genuinely different construct from `tune-repair`,
+no working-memory confound, and the cheapest of the three to get right), then `downbeat`, then `echo`.
+
 ### 2.2 `downbeat` — Downbeat
 
-A rhythm loops with no accents. Place the barlines where the bar restarts.
+A rhythm loops. Place the barlines where the bar restarts.
 
-**Construct:** metrical inference — hearing where time re-anchors. Distinct from the other three (which
-are all pitch or memory), and distinct from `math` provided it is framed as *where does it feel like it
-starts again*, not *what factors of twelve are these*. Generate rhythms whose grouping is genuinely
-perceptible (a longer note or a rest at the group boundary) rather than ambiguous.
+**Construct:** metrical inference — hearing where time re-anchors. The most distant construct from
+`tune-repair` in the roster, and the only non-pitch one, which is why it is worth keeping.
 
-**Swap test.** Metrical feel is temporal and heard; the visual dual-code is a horizontal strip where
-duration is length, so the grouping is still perceptible visually as spacing. Symbols destroy both.
-**Passes**, though less strongly than `tune-repair` — a visual strip of durations can be grouped by eye
-fairly mechanically. Flagged.
+**Corrected per R2 (§2.1a).** The metre is carried by **loudness accents**, and every note is drawn the
+same width, so the roll shows *where the notes are* and nothing about how they group. The original
+design carried the grouping in note lengths, which draws the answer.
 
-### 2.3 `chord-fit` — Chord Fit
+**Swap test.** Accent pattern is heard and nothing else. Passes. Distinct from `math` provided it is
+framed as *where does it feel like it starts again*, never *what factors of twelve are these*.
 
-A melody note sounds. Three chords are offered. Choose the one that supports it.
+### 2.3 `chord-fit` — Chord Fit *(next to build)*
 
-**Construct:** harmonic function and consonance. Consonance is a property of frequency relationships *as
-heard*; it has no symbolic residue. The visual dual-code stacks the notes vertically so interval spacing
-is visible (R1: as spacing, never as an interval name).
+A melody note sounds. Three chords can be played. Pick the one that supports it.
 
-**Swap test.** Passes. **Caveat worth recording:** with three options this is the closest thing in the
-roster to multiple choice, which is the shape memo 06 §2.1 warns about. It survives because the options
-are *sounds the child plays and compares*, not labels they read — but if implementation ever renders the
-three chords as text names, it becomes a quiz and must be cut.
+**Construct:** harmonic function and consonance — a property of frequency relationships as heard, with no
+symbolic residue.
+
+**Corrected per R2 (§2.1a): the chords are never drawn.** Three identical unlabelled buttons; the only
+way to tell them apart is to play them. Drawing stacked notes would let a child learn a spacing.
+
+**Swap test.** Passes. **Two caveats to carry:**
+- With three options a guess is right a third of the time, which is the multiple-choice shape memo 06
+  §2.1 warns about. Mitigated by rounds being short so a session yields several, and by nothing being
+  scored — but it is a genuine weakness of the format and should not be described as solved.
+- If implementation ever renders the three chords as text names or notation, it becomes a quiz and must
+  be cut.
 
 ### 2.4 `echo` — Echo
 
@@ -402,6 +454,12 @@ Order matters: 1 is the part most likely to need rework and has no dependency on
    fairly mechanically by eye. If it does not firm up during design, cut it to three gadgets rather than
    ship a pattern puzzle in a music room.
 4. **`echo` entangles interest with auditory working memory.** May need to stay unbuilt.
+5a. **The room has no activity a deaf child can do, and no gadget in the roster can fix that.**
+   Every R2-passing gadget is audible-only by construction (§2.1a). `downbeat` was the hoped-for
+   fallback and is not one once corrected. So the room needs a **musical activity that is not a
+   perceptual one** — reading or writing notation, instrument mechanics, constructing a rhythm to match
+   a written pattern — and nothing in this spec designs it. Unowned, and the largest gap here.
+
 5. **Density becomes 4 / 5 / 4 across three rooms** — fine, and no worse than today. Cross-cabin
    comparison remains invalid for the reasons PROJECT.md's Risks section already gives; this does not
    improve that and should not be claimed to.

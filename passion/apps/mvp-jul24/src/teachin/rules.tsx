@@ -37,6 +37,7 @@ import {
   MirrorDiagram,
   NonogramDiagram,
   PipesDiagram,
+  ChordFitDiagram,
   RatioMixingDiagram,
   TuneRepairDiagram,
 } from "./diagrams";
@@ -146,6 +147,13 @@ export const TEACH_INS = {
     // Deliberately does not name the key: being told it would turn listening into lookup.
     rule: "Press play and listen: one note does not belong in this tune's key, so it sounds sour. Click the note you think it is, then nudge it up or down a step until nothing sounds wrong.",
     Diagram: TuneRepairDiagram,
+  },
+  "chord-fit": {
+    title: "Chord Fit",
+    // Says that the options are only tellable apart by ear, because the screen shows three identical
+    // buttons and a child could otherwise reasonably assume they were meant to look for a difference.
+    rule: "One note is sounding, and three chords could go under it. Only one of them contains that note, so play each one and pick the chord that holds the note up instead of fighting it.",
+    Diagram: ChordFitDiagram,
   },
 } satisfies Record<string, ActivityTeachIn>;
 

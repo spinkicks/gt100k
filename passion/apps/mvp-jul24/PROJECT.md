@@ -40,13 +40,14 @@ Two cabins are built:
 `music` / `code` / `art` stay on the map as visible **"coming soon"** buttons. They are build state, not a
 design statement (memo §8.1.4) — but see *Risks*, because visible-but-empty is not free.
 
-**Music has a built activity that no room shows yet, and that is deliberate.** `src/puzzles/TuneRepair/`
-is finished and tested, and `src/audio/` is the app's first sound: synthesized at runtime, never
+**Music has two built activities that no room shows yet, and that is deliberate.**
+`src/puzzles/TuneRepair/` (a melody with one note out of key) and `src/puzzles/ChordFit/` (which of three
+chords holds a note up) are both finished and tested, and `src/audio/` is the app's first sound: synthesized at runtime, never
 sampled, because `src/shelf/types.ts` makes offline a hard requirement and an audio file would be the
 first asset to break it. It is **not** in `src/gadgets/registry.ts`, because `quads.data.test.ts` matches
 prop polygons to registered gadgets *exactly in both directions* — so registering it demands a painted
-music room, and painting one demands the gadget roster be final first. Until then it is played through
-`src/puzzles/TuneRepair/harness.tsx`. The design, the roster, and why `transpose` was rejected are in
+music room, and painting one demands the gadget roster be final first. Until then each is played through its own
+`harness.tsx`. The design, the roster, and why `transpose` was rejected are in
 `docs/superpowers/specs/2026-07-27-music-cabin-design.md`.
 
 Two rules bind anything else built for this room, and the second one exists because the first was not
@@ -64,11 +65,17 @@ the sound off, which is what the first player said in one sentence. Two of its o
 the puzzle was "fully solvable in silence" and treated that as a feature.
 
 So R1 is necessary and nowhere near sufficient: it bans printed numerals, not a layout that *is* a
-number line. Before building `downbeat`, `chord-fit` or `echo`, name what makes a note wrong and ask
-whether an eye can see it. Wrongness is now **out of key** — audible as sour, invisible on a chromatic
-roll — and the cost is recorded honestly rather than hidden: **that gadget cannot be solved without
-hearing it, so its Layer-3 accessibility parity (PRD §5.2) is broken and the room needs at least one
-activity that is not pitch-perception based.**
+number line. Before building anything else here, name what makes an answer wrong and ask whether an eye
+can see it. Tune Repair's wrongness is now **out of key** — audible as sour, invisible on a chromatic
+roll. Chord Fit was designed against R2 from the start and therefore **draws nothing at all**: three
+identical buttons whose only difference is what they sound like, because the spec's original plan to
+stack each chord's notes "so interval spacing is visible" was the same mistake a second time.
+
+**The cost is recorded rather than hidden: neither gadget can be solved without hearing it**, so their
+Layer-3 accessibility parity (PRD §5.2) is broken. Applying R2 to the rest of the roster showed this is
+not fixable by a cleverer gadget — every audible-only activity excludes a deaf child by definition — so
+the room needs a musical activity that is **not a perceptual one** (notation, instrument mechanics,
+constructing to a written pattern). Nothing designs that yet; it is risk 5a in the spec.
 
 **The `math` topic id is deliberately reused to mean a different room.** It previously meant
 "Math & Puzzles" and held all seven puzzles; it now means the maths room only, and the puzzles move to

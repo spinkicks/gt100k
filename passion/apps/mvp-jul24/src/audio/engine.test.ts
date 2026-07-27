@@ -198,6 +198,57 @@ describe("createAudioEngine", () => {
   });
 });
 
+describe("playChord", () => {
+  it("starts every note at the same instant, so it fuses into a chord", () => {
+    const fake = makeFakeContext(4);
+    const engine = createAudioEngine(fake.Ctor);
+    engine.playChord(
+      [
+        { semitone: 0, beats: 2 },
+        { semitone: 4, beats: 2 },
+        { semitone: 7, beats: 2 },
+      ],
+      120,
+    );
+    // Three notes x three partials, all sharing one start time — an arpeggio would show three.
+    expect(fake.oscs).toHaveLength(9);
+    expect([...new Set(fake.oscs.map((o) => o.startedAt))]).toEqual([4]);
+  });
+
+  it("reports the longest note's duration, not the sum", () => {
+    const fake = makeFakeContext();
+    const engine = createAudioEngine(fake.Ctor);
+    const ms = engine.playChord(
+      [
+        { semitone: 0, beats: 1 },
+        { semitone: 4, beats: 3 },
+      ],
+      120,
+    );
+    expect(ms).toBe(1500);
+  });
+
+  it("schedules nothing when muted", () => {
+    const fake = makeFakeContext();
+    const engine = createAudioEngine(fake.Ctor);
+    engine.setMuted(true);
+    engine.playChord([{ semitone: 0, beats: 1 }]);
+    expect(fake.oscs).toHaveLength(0);
+  });
+
+  it("the silent engine agrees on duration", () => {
+    expect(
+      silentEngine.playChord(
+        [
+          { semitone: 0, beats: 1 },
+          { semitone: 4, beats: 3 },
+        ],
+        120,
+      ),
+    ).toBe(1500);
+  });
+});
+
 describe("mute", () => {
   it("prevents scheduling entirely, rather than playing at zero volume", () => {
     const fake = makeFakeContext();

@@ -604,3 +604,49 @@ export function TuneRepairDiagram(): JSX.Element {
     </Stage>
   );
 }
+
+/**
+ * Chord Fit. One note held up by a stack, next to two stacks that do not fit it.
+ *
+ * **Deliberately abstract, and this is a rule rather than a style choice.** The gadget's whole claim to
+ * being musical is that the three options differ only in sound (PROJECT.md R2), so a diagram that drew
+ * their actual notes would hand over a spacing to compare and undo the design. What is drawn is the
+ * RELATION — one thing resting on a support that fits, two that do not — with no pitches in it at all.
+ */
+export function ChordFitDiagram(): JSX.Element {
+  const y = 44;
+  const seat = 62;
+  return (
+    <Stage>
+      {/* The melody note: one mark, repeated over each option, because it is the same note each time. */}
+      {[0, 1, 2].map((i) => (
+        <rect
+          key={`n${i}`}
+          x={54 + i * 66}
+          y={y - 10}
+          width={26}
+          height={9}
+          rx={2}
+          className="ti-cell ti-cell-on"
+        />
+      ))}
+      {/* The fitting support: flush under the note. The two others sit askew, so nothing about their
+          height or spacing encodes a pitch — only "meets it" versus "does not". */}
+      <rect x={54} y={seat} width={26} height={9} rx={2} className="ti-cell ti-cell-on" />
+      <rect x={120} y={seat + 6} width={26} height={9} rx={2} className="ti-cell" />
+      <rect x={186} y={seat - 7} width={26} height={9} rx={2} className="ti-cell" />
+      <Tag x={67} y={seat + 26}>
+        fits
+      </Tag>
+      <Tag x={133} y={seat + 26}>
+        clash
+      </Tag>
+      <Tag x={199} y={seat + 26}>
+        clash
+      </Tag>
+      <Tag x={30} y={y - 2} anchor="end">
+        the note
+      </Tag>
+    </Stage>
+  );
+}
