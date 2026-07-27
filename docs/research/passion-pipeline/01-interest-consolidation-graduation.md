@@ -185,6 +185,8 @@ Promote **only if ALL behavioral gates hold AND a human signs off.** Stated inte
 
 > **All numeric thresholds above are theory-anchored engineering defaults, not empirically validated child cut-scores.** Anchor them to each child's own baseline and calibrate with your first cohorts. The *horizons* (weeks/terms) are the best-supported part (Harackiewicz 2008; Linnenbrink-Garcia 2010/2013); the *counts* are ours.
 
+> **On the artifact requirement (gate 4, and §6.5 item 2).** The perseverance artifact lives in the **Evidence Graph**, which is a separate product with its own repo-extractable packages (`docs/decisions/evidencegraph-v1-design.md` §13a). The requirement stands as written — an artifact record is what makes gate 4 falsifiable — and it is an *integration*: the promotion pipeline reads artifact records across a product boundary through an adapter, and a program running without the graph would have to supply the same records some other way rather than drop the gate.
+
 ### 6.3 Keep the gate reward-neutral and reversible
 - Frame promotion as **opportunity/identity** ("you're ready for a mentor and a real project"), **never a prize for hours** (Deci 1999). No points/streaks attached to being promoted.
 - **Off-ramp (define before promoting):** if post-promotion DWR in the cell falls **below ~50% of its pre-promotion baseline for ≥3–4 consecutive weeks** — excluding a single mentor-judged "productive-struggle dip" — auto-flag for review and possible return to Discovery. Maintain the **"current best bet, revisable"** framing throughout (O'Keefe 2018; Vallerand 2003; Alexander 2008).

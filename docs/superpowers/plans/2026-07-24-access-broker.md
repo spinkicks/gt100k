@@ -2,6 +2,12 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development or superpowers:executing-plans. Checkbox steps; commit after each task. The headless package + adapter (Tasks 0–6) are **loop-ready** (`tsc -b` + `test`). The **Access tab (Task 7)** extends the existing guide-console cockpit (reuse its dark theme + tab/panel patterns) and is gated by `next build` + `LOOP_QA`.
 
+> **Amended (2026-07-27):** the deferred E1 coupling (~107, the `transferred`→EvidenceGraph node) must be built as
+> an adapter outside the `evidence-*` namespace, not a dependency of `@gt100k/access-broker`: per
+> `docs/decisions/evidencegraph-v1-design.md` §13a the EvidenceGraph is a separate product and `@gt100k/boundaries`
+> fails CI on any value import of `evidence-*` from outside it. The integration point stands; its direction is now
+> fixed.
+
 **Goal:** Build `023-access-broker` per its spec — one combined `@gt100k/access-broker` engine that brokers the D1 plan's **named** mentor role + audience level against a **full layered synthetic catalog**, ranks candidates with every guardrail gate applied, and tracks a **human-gated access-transfer lifecycle** (`matched → proposed → approved → introduced → active → transferred`). Plus an opt-in `@gt100k/access-broker-live` catalog scaffold (fake data) and a new **"Access" tab** in `apps/guide-console`. The system proposes; the **guide disposes**. "Access transferred" is the deliverable.
 
 **Architecture:** Pure, deterministic engine. `brokerAccess(inputs, {catalog}, now)` reads the `SpecializationPlan` (`018`) current-stage named need + the `016` wellbeing read + `014` age/readiness, queries the `OpportunityCatalog` port, ranks + gates candidates, and returns ranked mentor/audience matches + reconciled `Brokerage`s (never advanced past `proposed`). Pure lifecycle transitions (`proposeMatch`/`approve`/`advanceHandoff`/`declineMatch`) carry the **single guide gate** (guardian consent a required attribute, hard blocker). The stub catalog powers CI + `LOOP_QA`; the live adapter is opt-in fake data. The Access tab reuses the cockpit's existing plan derivation + tab pattern.

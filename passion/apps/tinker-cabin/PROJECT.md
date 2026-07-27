@@ -15,7 +15,12 @@ It is the "cabin" surface of the Discovery loop:
 2. **A code "first taste"** — approaching the desk/coding-station launches a tiny embedded code
    mini-app (a first, low-stakes taste of programming).
 3. **Behavioral signal capture** — the session emits structured signals (dwell time per zone, what
-   the child approached, time-in-mini-app, retries, completion) for the passion evidence graph.
+   the child approached, time-in-mini-app, retries, completion) for the **interest signal pipeline**
+   (`@gt100k/signal-pipeline`), which is where they go when they are wired anywhere. **Not the
+   Evidence Graph.** The graph records *project work* and its
+   provenance, and it is a separate product (`docs/decisions/evidencegraph-v1-design.md` §13a); a
+   discovery cabin produces no project work, so it has no input to it. Same position as
+   `passion/apps/mvp-jul24/PROJECT.md`.
 
 Polish is driven by an iteration loop that judges framed screenshots against `reference/` and grinds
 down the gaps. It is not a game — no combat/scoring; the fireplace, the cat, and the code taste are

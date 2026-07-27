@@ -71,3 +71,6 @@ Two cheap practices we keep regardless, because they cost nothing:
 - Switching the whole product's look later costs one file.
 - Existing apps must be converted: guide console first, then the parent guide, then the
   evidence explorer. The Vite/R3F cabin consumes the token CSS only.
+- The evidence explorer belongs to a separately-extractable product (`evidencegraph-v1-design.md` §13a), so its
+  dependency on `@gt100k/design-tokens` and `@gt100k/ui` has to travel with the extraction or be replaced there.
+  Accepted: the `@gt100k/boundaries` check reports it as a warning, not a failure.

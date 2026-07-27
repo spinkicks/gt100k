@@ -15,7 +15,10 @@ A point-and-click passion-finder: a click-to-select 2D map of topic cabins → a
 a prop → an activity opens as an overlay. **There is no locomotion anywhere** — no avatar on the map, no
 walking in the rooms. Both layers are point-and-click (PRD §5.2, revised 2026-07-25). The question it answers is narrow and stated in the memo's §8.1 —
 **which topic interests this child** — read from what they choose and come back to. It is not a project
-tool, not an assessment, and not an input to the Evidence Graph.
+tool, not an assessment, and not an input to the Evidence Graph. Its signals go to the interest signal
+pipeline (`@gt100k/signal-pipeline`); the Evidence Graph is a separate product that records project work
+(`docs/decisions/evidencegraph-v1-design.md` §13a), and a finder produces none. `passion/apps/tinker-cabin`
+holds the same position.
 
 **Target band: ages 9–12**, in a gifted context. High difficulty is acceptable and wanted — with one
 binding condition attached: **every activity is explained** (see *Teaching*). Difficulty is not allowed
