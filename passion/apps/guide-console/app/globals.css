@@ -306,6 +306,32 @@ body {
   padding: 0 6px;
 }
 
+/* Where the guide's decisions live. Quiet on purpose: it is a statement of fact about durability,
+   not a status the guide has to act on. */
+.sidebar__saved {
+  margin: 0;
+  color: var(--ink-faint);
+  font-size: var(--text-xs);
+  line-height: 1.45;
+}
+
+/* A button that reads as prose, for an action that belongs inside a sentence. Still a button, so it
+   is reachable and announced as one. */
+.linkbtn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.linkbtn:focus-visible {
+  outline: var(--focus-w) solid var(--focus-color);
+  outline-offset: var(--focus-offset);
+}
+
 /* Lifecycle dots — always paired with a text label, so the hue is never the only carrier.
    Deliberately NOT red/amber/green: a lifecycle stage is where a hypothesis sits in the pipeline,
    not a verdict on the child. The accent marks "furthest along", grey marks the rest. */

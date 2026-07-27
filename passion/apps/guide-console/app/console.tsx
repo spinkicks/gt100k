@@ -106,6 +106,18 @@ export function GuideConsole(): JSX.Element {
           <ChildSwitcher ctrl={ctrl} />
           <div className="sidebar__foot">
             <span className="chip chip--soft">Synthetic data only</span>
+            {/* Says where the decisions live, because the honest answer is "this browser" and a
+                guide should not assume more than that. Absent until there is something to say, so
+                a fresh console is not cluttered by a count of nothing. */}
+            {ctrl.decisionCount === 0 ? null : (
+              <p className="sidebar__saved">
+                {ctrl.decisionCount} decision{ctrl.decisionCount === 1 ? "" : "s"} saved in this
+                browser.{" "}
+                <button type="button" className="linkbtn" onClick={ctrl.resetDecisions}>
+                  Reset
+                </button>
+              </p>
+            )}
             {/* Every number on the Overview can be asked "why?" in place; this is the same material
               read end to end, which is also how a new guide gets oriented. */}
             <Link className="why-link" href="/evidence">
