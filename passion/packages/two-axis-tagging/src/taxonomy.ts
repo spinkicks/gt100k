@@ -37,7 +37,7 @@ export const SEED_SUBTOPICS: Record<CabinId, readonly string[]> = {
   "art-motion": ["visual", "animation", "video-editing", "3d-modeling"],
   "influence-media": ["marketing", "storytelling", "psychology", "publishing"],
   "science-nature": ["botany", "physics", "astronomy"],
-  "math-puzzles": ["competition-math", "logic-puzzles", "statistics"],
+  "math-puzzles": ["competition-math", "logic-puzzles", "foundations", "statistics"],
 };
 
 export type DomainPath = readonly [CabinId] | readonly [CabinId, string];
