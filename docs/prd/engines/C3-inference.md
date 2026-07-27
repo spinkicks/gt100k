@@ -4,11 +4,17 @@
 **Purpose:** Turn the behavioral event stream into the revisable, ranked **1–3 candidate spikes**, expressed as calibrated beliefs per `(domain × work-mode)` cell — never a scalar or a fixed label.
 **Grounding:** Discovery App PRD §6.4; measurement-validity hardening spec (leaner program).
 
-> **Pending revision — read before implementing against this.** The ages 6–8 evidence review
+> **Partly superseded — read before implementing against this.** The ages 6–8 evidence review
 > (`docs/research/passion-pipeline/06-activity-design-ages-6-8.md`) overturned several assumptions
-> below, and `docs/proposals/interest-engine-data-collection-v2.md` proposes the changes. **Nothing
-> in that proposal has landed yet**, so this document still describes shipped behaviour except where
-> marked "→ v2". The headline: at 6–8, **choice predicts durable interest and duration does not**.
+> below, and `docs/proposals/interest-engine-data-collection-v2.md` carried the changes. **Most of
+> that proposal has now landed** (E1, E2, E3, E4, E6, E7, E11), so where this document and the
+> proposal disagree, the proposal is the shipped behaviour. The headline holds: at 6–8, **choice
+> predicts durable interest and duration does not**.
+>
+> Concretely, since this was written: `magnitude` is gone, `voluntary_return` split into
+> `cross_day_return` and `same_day_engagement`, declines are recorded as weak negatives normalised
+> by choice-set size, `artifact_competence` no longer scores interest, the marginals are weighted by
+> evidence mass, and confidence now gates on undecayed observation plus a distinct-day floor.
 >
 > **Scope correction.** This engine is not a 6–8 topic finder. Eight packages plus the guide console
 > import `@gt100k/interest-inference` (signal-pipeline, hypothesis-store, student-profile, wellbeing,
