@@ -104,12 +104,14 @@ function NodeMark({
             opacity={0.9}
           />
         ) : null}
-        {/* Emissive halo (dropped in plain mode — low-spectacle). */}
+        {/* A soft wash of the type hue behind the body (dropped in plain mode). On the GT paper it
+            is a printed tint rather than the emissive halo it was on the old dark stage, so the
+            opacities are lower: at the previous values a warm hue at 14% read as a stain. */}
         <circle
           className="node-halo"
           r={NODE_R * 1.9}
           fill={color}
-          opacity={node.isIsland ? 0.05 : 0.14}
+          opacity={node.isIsland ? 0.03 : 0.09}
           filter="url(#glow)"
         />
         {/* Body. */}
@@ -284,11 +286,14 @@ export function Constellation2D({
           const eFrom = emphasisFor?.(e.from) ?? "normal";
           const eTo = emphasisFor?.(e.to) ?? "normal";
           const edgeDimmed = eFrom === "dimmed" || eTo === "dimmed";
+          // A provenance thread is a graphical object that carries meaning (WCAG 1.4.11), so it
+          // takes an ink rather than the hairline --line: on paper that token is 1.3:1 and the
+          // lineage would have been invisible.
           const stroke = lit
             ? "var(--verify)"
             : e.threadStyle === "frayed"
               ? "var(--tamper)"
-              : "var(--line)";
+              : "var(--ink-faint)";
           const baseOpacity = e.flow ? 0.85 : 0.55;
           const opacity = lit
             ? 1

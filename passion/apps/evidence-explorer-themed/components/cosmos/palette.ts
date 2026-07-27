@@ -1,57 +1,33 @@
 /**
- * Cosmos palette bridge (themed demo) — reads the LIVE CSS custom properties so the 3D scene follows
- * the active `data-theme` exactly like the DOM chrome. Colour therefore has ONE source (globals.css
- * tokens); the golden `PALETTE` from `@gt100k/evidence-explorer-view` is kept only as a fallback for
- * SSR / pre-hydration (the cosmos is `ssr:false`, so in practice reads happen client-side).
+ * Cosmos palette bridge (§U8.11): maps the view model's `NodeColorRole` and the semantic tokens to
+ * the exact golden hexes, re-exported from `@gt100k/evidence-explorer-view` so there is a single
+ * source of truth for colour (no hard-coded duplicates on the client). Pure data, safe to import in
+ * a `"use client"` module.
  *
- * The 3D subtree is remounted on theme change (keyed on the active theme in ObservatoryStage), which
- * re-invokes these reads and rebuilds the Three.js materials/lights with the new hexes.
+ * These are deliberately NOT the GT tokens the rest of the app now wears. The 3D stage is the one
+ * place the paper stops: a scene built from emissive bodies, additive light threads and a starfield
+ * needs a dark ground to have anything to be luminous against, and on an off-white sheet it
+ * collapses into pale smudges. So the stage keeps its own dark scene palette and everything around
+ * it (the frame, the tier control, the Inspector that floats over it, the whole rail) is themed.
+ * The `<Canvas>` is `aria-hidden` and carries no text, and the accessible Ledger states everything
+ * it shows, so nothing here is a contrast surface.
  */
 import { type NodeColorRole, PALETTE } from "@gt100k/evidence-explorer-view";
 
-/** Read a CSS custom property off <html>, trimmed; fall back to the golden default off-DOM. */
-function cssVar(name: string, fallback: string): string {
-  if (typeof document === "undefined") return fallback;
-  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  return v || fallback;
-}
-
-/** Type-hue for a node's colour role (Artifact…Outcome) — role names map 1:1 to `--<role>` tokens. */
+/** Type-hue for a node's colour role (Artifact…Outcome). */
 export function roleHex(role: NodeColorRole): string {
-  return cssVar(`--${role}`, PALETTE[role]);
+  return PALETTE[role];
 }
 
-/**
- * Semantic / surface tokens the cosmos needs, resolved live per access via getters so a render after
- * a theme switch (post-remount) picks up the current values. The `--ink-muted` CSS token maps to the
- * view model's `inkMuted`.
- */
+/** Semantic / surface tokens the cosmos needs (subset of the golden palette). */
 export const COSMOS = {
-  get void(): string {
-    return cssVar("--void", PALETTE.void);
-  },
-  get line(): string {
-    return cssVar("--line", PALETTE.line);
-  },
-  get ink(): string {
-    return cssVar("--ink", PALETTE.ink);
-  },
-  get inkMuted(): string {
-    return cssVar("--ink-muted", PALETTE.inkMuted);
-  },
-  get focus(): string {
-    return cssVar("--focus", PALETTE.focus);
-  },
-  get verify(): string {
-    return cssVar("--verify", PALETTE.verify);
-  },
-  get tamper(): string {
-    return cssVar("--tamper", PALETTE.tamper);
-  },
-  get human(): string {
-    return cssVar("--human", PALETTE.human);
-  },
-  get model(): string {
-    return cssVar("--model", PALETTE.model);
-  },
+  void: PALETTE.void,
+  line: PALETTE.line,
+  ink: PALETTE.ink,
+  inkMuted: PALETTE.inkMuted,
+  focus: PALETTE.focus,
+  verify: PALETTE.verify,
+  tamper: PALETTE.tamper,
+  human: PALETTE.human,
+  model: PALETTE.model,
 } as const;
