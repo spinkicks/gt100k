@@ -8,8 +8,12 @@ package plus the app's rendering obligations. All view functions are **pure** ov
 path** (the 3D ring uses the authored `SHELL_SLOTS` table). See [../data-model.md](../data-model.md) Part II
 for view types and Part I for the domain types this package **reads**.
 
-The Explorer **reads** `@gt100k/evidence-graph`; it never modifies it and never re-implements
-hashing/canonicalization/Merkle/attestation/human-authority (D4/D5, FR-E05).
+The view package **reads** `@gt100k/evidence-graph`; it never re-implements
+hashing/canonicalization/Merkle/attestation/human-authority (D4/D5, FR-E05). The **app** additionally
+**appends** to a graph through the domain's own `addNode`/`addEdge` on the manual-add surface
+(`components/manual-add.ts`, driven by the server actions in `app/actions.ts` and the
+`components/AddPanel.tsx` form — `docs/decisions/evidencegraph-v1-design.md` §9): it writes *through* the
+domain, never around it, and still computes no hash of its own.
 
 ## Public functions (view package)
 
@@ -95,18 +99,32 @@ TIERS          // tier capabilities + degrade/recover thresholds (§U8.10)
 BLOOM / DOF / STARFIELD  // atmosphere tokens (§U8.13; app acceptance targets)
 ```
 
-## Domain surface the Explorer READS (from `@gt100k/evidence-graph`)
+## Domain surface the Explorer USES (from `@gt100k/evidence-graph`)
 
 ```text
-addNode(graph, content, hasher) -> { graph, id }      // used only to BUILD the committed fixture
-addEdge(graph, edge) -> graph                          // used only to BUILD the committed fixture
+addNode(graph, content, hasher) -> { graph, id }      // fixture build AND the live manual-add path
+addEdge(graph, edge) -> graph                          // fixture build AND the live manual-add path
 merkleRoot(hashes, hasher) -> string                   // re-derived in buildVerificationView
-assembleEvidencePacket(graph, sel, hasher) -> Packet   // used to build the fixture packet
+assembleEvidencePacket(graph, sel, hasher) -> Packet   // REMOVED in v1 (design doc §2/§14): no packets
 assertHumanAuthority(graph) -> VerificationResult      // the human-authority verify step
 traceEvidence(graph, nodeId) -> string[]               // the "trace from Outcome" highlight
 // ports: Hasher (adapters/evidence-hash-node), Verifier (adapters/evidence-verifier-stub),
-//        TransparencyLog/ErasureService stubs (adapters/evidence-deferred) — read as-is, unchanged.
+//        TransparencyLog/ErasureService stubs (adapters/evidence-deferred) — used as-is.
 ```
+
+`addNode`/`addEdge` are **not** fixture-only. Direct callers today, outside tests:
+`evidence-explorer-view/src/verify.ts` (re-derives a node id) and
+`evidence-explorer-view/src/fixtures/explorer.fixture.ts`;
+`apps/evidence-explorer/components/manual-add.ts` (the live manual-add write path);
+`packages/evidence-tiny-game/src/index.ts` (the demo journey);
+`adapters/evidence-verifier-stub/src/index.ts`, `adapters/evidence-repo-memory/src/demo.ts`,
+`adapters/evidence-repo-postgres/src/demo.ts`; and, outside the `evidence-*` namespace, the single seam
+adapter `@gt100k/project-evidence-sink`, which materializes an `EvidencePlan` from
+`@gt100k/project-workspace` into a graph.
+
+`assembleEvidencePacket` no longer exists: v1 does away with `EvidencePacket` (one graph per project,
+whole-graph Merkle root). Where this contract still names a `packet` argument, read it as the graph-derived
+verification input, not a packet assembled from the domain.
 
 ## App rendering obligations (verified by `next build` + smoke + walkthrough)
 

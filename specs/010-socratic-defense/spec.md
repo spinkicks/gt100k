@@ -12,7 +12,7 @@
 
 ## 1. What this is (and is not)
 
-- **Is:** a metacognition + authorship-verification tool. It interviews a kid about a project they made, to (1) **deepen ownership/understanding** (articulating deepens it) and (2) **surface articulation gaps**, emitting an **evidence record** of the dialogue for the EvidenceGraph/defense.
+- **Is:** a metacognition + authorship-verification tool. It interviews a kid about a project they made, to (1) **deepen ownership/understanding** (articulating deepens it) and (2) **surface articulation gaps**, emitting an **evidence record** of the dialogue for the EvidenceGraph/defense (E1 is a separate product; this package emits a record + a graph-*shaped* node and imports nothing from it at runtime — §4.6a).
 - **Is not:** a content teacher (that is the academic answer-blind tutor), a grader (it emits *evidence*, never an of-record grade — a human owns any grade downstream), or an AI-detector (forbidden; `passionBrainlift` SPOV 4).
 
 ## 2. The architecture (decided): LLM conducts, deterministic scaffold governs
@@ -26,7 +26,7 @@
 ## 3. Scope Fence *(hard)*
 
 ### In scope
-- A **pure TypeScript domain package** `@gt100k/socratic-defense` (`passion/packages/socratic-defense`): facets, the session scaffold (selection/follow-up/stop), coverage math, gap detection, readiness parameterization, evidence-record assembly + content hash (via `@gt100k/evidence-graph` canonicalization — reused, not reinvented), and the human-owns-grade guardrail.
+- A **pure TypeScript domain package** `@gt100k/socratic-defense` (`passion/packages/socratic-defense`): facets, the session scaffold (selection/follow-up/stop), coverage math, gap detection, readiness parameterization, evidence-record assembly + content hash (over this package's **own `canonicalize`**, byte-identical to the graph's and pinned by a parity test — §4.6a), and the human-owns-grade guardrail.
 - **Ports**: `Interviewer.nextQuestion(ctx)` and `AnswerJudge.judge(ctx)` (may be one `Tutor` implementing both).
 - **Adapters**: `@gt100k/tutor-stub` (`passion/adapters/tutor-stub`, deterministic scripted — CI) and `@gt100k/tutor-tfy` (`passion/adapters/tutor-tfy`, TrueFoundry via native `fetch`, opt-in).
 - **Seed fixtures**: synthetic project profiles + one fully-scripted session (questions + judgments) with golden outputs.
@@ -35,7 +35,7 @@
 
 ### Out of scope
 - **Live open-web / RAG** (that is `011-concierge`).
-- **The EvidenceGraph itself** (exists — `passion/packages/evidence-graph`; this feature *emits a record + hash* using its canonicalization and provides a `toEvidenceNode()` mapper; it does not modify the graph).
+- **The EvidenceGraph itself** (exists — `passion/packages/evidence-graph` — and is **its own product**; this feature *emits a record + hash* and a graph-*shaped* node via `toEvidenceNode()` over a locally-declared `EvidenceNodeLike`; it does not modify the graph, and does not import from it at runtime — §4.6a).
 - **Any of-record grade** — the tutor never grades; it emits evidence a human later grades.
 - **A rich chat UI** — a minimal one-question-at-a-time surface may be a later phase; this feature is the headless engine + adapters.
 - **Live network in CI** — the TFY adapter is contract-tested against a recorded fixture; live calls are opt-in.
@@ -61,7 +61,15 @@
 `Session { profile, readinessLevel, turns[], coverageByFacet, gaps, status: "active"|"complete" }`.
 
 ### 4.6 EvidenceRecord (the output)
-`{ studentId, projectId, title, domain, readinessLevel, turns[], coverageByFacet, gaps, createdAt, contentHash }` where `contentHash = sha256(canonicalize(record-without-contentHash))` using `@gt100k/evidence-graph` `canonicalize` + `@gt100k/evidence-hash-node`. It carries **no grade field** (invariant). A `toEvidenceNode(record)` mapper returns an evidence-graph `Artifact`-shaped node for later ingestion.
+`{ studentId, projectId, title, domain, readinessLevel, turns[], coverageByFacet, gaps, createdAt, contentHash }` where `contentHash = sha256(canonicalize(record-without-contentHash))` using this package's own `canonicalize` (§4.6a) + a caller-injected `Hasher`. It carries **no grade field** (invariant). A `toEvidenceNode(record)` mapper returns an `Artifact`-shaped node (the local `EvidenceNodeLike` structural type) for later ingestion.
+
+### 4.6a The content hash + the E1 boundary
+E1 is **its own product**, developed here and extracted later as a mechanical copy (`docs/decisions/evidencegraph-v1-design.md` §11/§13a). The rule that keeps it extractable: **nothing outside `@gt100k/evidence-*` may import a VALUE from inside it** (`import type` is fine; `@gt100k/boundaries` fails CI otherwise). So:
+- This package **owns its own `canonicalize`** — a copy of the graph's small pure function — and a **parity test** (`test/canonical-parity.test.ts`) proves the two stay byte-identical. That test is the one file registered as a boundary exemption, because comparing the two sides is precisely its job.
+- The hasher is **injected**: `assembleEvidenceRecord(session, createdAt, hasher)`; CI passes an inline `node:crypto` hasher rather than importing `@gt100k/evidence-hash-node` (also inside the namespace).
+- `@gt100k/evidence-graph` is therefore a **dev**-only dependency here (the parity test), not a runtime one.
+
+Factoring `canonicalize` into a shared package is the tempting alternative, and it is the worse one: `@gt100k/evidence-graph` would gain an outbound dependency on a passion-side package and stop being buildable in isolation, which is the exact property extraction depends on. A duplicated pure function guarded by a parity test is the cheaper trade.
 
 ### 4.7 The scaffold logic (deterministic — the crux)
 Given the running session + a fresh `Judgment` for the last answer:
@@ -95,7 +103,7 @@ The scaffold depends only on these structural contracts. `runSession({ profile, 
 - **P0** — facets, records, readiness mapping, constants; validators. Unit tests + golden constants.
 - **P1** — the deterministic scaffold (coverage update, follow-up/stop, next-facet, gap detection). Full unit tests + golden. *(The reliable core.)*
 - **P2** — ports + `runSession` + `tutor-stub` (scripted). A fully-scripted golden session (transcript/coverage/gaps).
-- **P3** — evidence-record assembly + content hash (reusing `@gt100k/evidence-graph` canonicalize + `@gt100k/evidence-hash-node`) + `toEvidenceNode` mapper + the human-owns-grade guardrail. Golden hash.
+- **P3** — evidence-record assembly + content hash (the own `canonicalize` + its parity test, §4.6a; injected hasher) + `toEvidenceNode` mapper + the human-owns-grade guardrail. Golden hash.
 - **P4** — `tutor-tfy` adapter (native fetch, `gpt-5.4-mini`, JSON judge) + parse tests vs recorded fixtures + opt-in `tutor:live`.
 - **P5** — `demo` script (scripted session → printed evidence record) + README.
 
@@ -110,7 +118,8 @@ The scaffold depends only on these structural contracts. `runSession({ profile, 
 - **SC-6** a fully-scripted session (fixed profile + recorded Qs + recorded judgments) yields the exact golden ordered transcript, `coverageByFacet`, and `gaps` — golden test.
 - **SC-7** the evidence record has **no grade field**, and its `contentHash` is a stable 64-hex sha256 that is identical across two assemblies of the same session — golden/determinism test (exact literal locked on first green run).
 - **SC-8** `tutor-tfy` `judge` parses a recorded JSON judgment; a malformed response yields the safe default judgment (no throw) — contract test.
-- **SC-9** gate green: `pnpm exec tsc -b` + `pnpm test`.
+- **SC-9** gate green: `pnpm exec tsc -b` + `pnpm test` (which includes the `@gt100k/boundaries` check).
+- **SC-10** the package's own `canonicalize` is byte-identical to `@gt100k/evidence-graph`'s across the fixture record + the shape cases (key order, nesting, `undefined`, non-serializable throw) — parity test (`test/canonical-parity.test.ts`).
 - **manual:** one live `tutor:live` run produces a sensible grounded question + a schema-valid judgment — operator-run, outside CI.
 
 ## 8. Golden Values *(exact)*
@@ -121,7 +130,7 @@ The scaffold depends only on these structural contracts. `runSession({ profile, 
 - **[D1]** LLM conducts (questions + answer-judgment); a deterministic scaffold governs structure + guardrails + evidence emission.
 - **[D2]** 6 fixed facets; coverage `[0,1]`; monotonic-max update; least-covered selection; `THIN`/`COVERED`/`MAX_TURNS`/`MAX_FOLLOWUP` per §8.
 - **[D3]** Readiness (not age) parameterizes scaffolding.
-- **[D4]** Emits an **evidence record**, never a grade; a human owns any downstream grade. Reuse `@gt100k/evidence-graph` canonicalization for the hash (import; don't reinvent).
+- **[D4]** Emits an **evidence record**, never a grade; a human owns any downstream grade. The hash uses an **own copy** of the graph's `canonicalize`, held byte-identical by a parity test (§4.6a); the E1 boundary forbids the value import.
 - **[D5]** TFY via native `fetch`, `…/openai/v1`, `gpt-5.4-mini` (env-overridable `TFY_TUTOR_MODEL`); adapter behind a port; never in CI.
 - **[D6]** Pinned stack: TypeScript / vitest; pnpm monorepo; packages under `passion/`, names `@gt100k/*`.
 - **[D7]** SYNTHETIC ONLY; no real child data; no PII in fixtures.
@@ -131,8 +140,8 @@ For anything unspecified, choose the simplest correct option, record it in `.loo
 
 ## 11. Loop notes
 - **No served app** → `LOOP_QA` N/A; DoD = `pnpm exec tsc -b` + `pnpm test`.
-- **No network in CI**; **no new external dependency** (native `fetch`; reuses in-repo `@gt100k/evidence-graph` + `@gt100k/evidence-hash-node`).
-- **In-lane**: new files under `passion/packages/socratic-defense`, `passion/adapters/tutor-stub`, `passion/adapters/tutor-tfy`, plus added lines in root `tsconfig.json` references. (`@gt100k/evidence-graph`/`evidence-hash-node` are consumed read-only — not modified.)
+- **No network in CI**; **no new external dependency** (native `fetch`; **no runtime dependency on any `@gt100k/evidence-*` package** — §4.6a).
+- **In-lane**: new files under `passion/packages/socratic-defense`, `passion/adapters/tutor-stub`, `passion/adapters/tutor-tfy`, plus added lines in root `tsconfig.json` references. (`@gt100k/evidence-*` is never modified, and now not imported either: `evidence-graph` is a dev-only dep for the parity test.)
 - **Parallel-safe with `009`**: disjoint files except both append a reference line to root `tsconfig.json` (a trivial, one-line merge).
 
 ## 12. Stack + Commands (pinned)
