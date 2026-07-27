@@ -54,6 +54,7 @@ const live = createSignalLog({ sessionId: SESSION_ID, now: () => Date.now() });
 const off: typeof live = {
   recordSurfaced: () => {},
   recordOpen: () => {},
+  recordAction: () => {},
   recordDepth: () => {},
   recordSourceFollow: () => {},
   surfaced: () => [],

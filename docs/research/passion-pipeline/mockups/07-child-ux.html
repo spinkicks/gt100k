@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Child-facing surface at 6–8 — mockups for memo 07</title>
+<style>
+/* ─────────────────────────────────────────────────────────────────────────────
+   Adult review chrome. Follows docs/decisions/2026-07-25-design-language.md:
+   neutral ground, white cards, hairline borders, restrained blue accent.
+   Token names mirror @gt100k/design-tokens so the mapping is obvious.
+   The CHILD panels below deliberately do NOT inherit this — they are the mockup.
+   ───────────────────────────────────────────────────────────────────────────── */
+:root{
+  --canvas:#f4f5f7; --surface:#fff; --surface-2:#f5f5f5;
+  --ink:#111; --ink-muted:#555; --ink-faint:#888;
+  --line:#ddd; --line-strong:#bbb;
+  --accent:#0b6bcb; --accent-weak:#e8f1fb;
+  --good:#1f7a4d; --good-bg:#e7f6ee; --bad:#c0332b; --bad-bg:#fdeceb;
+  --warn:#9a6a00; --warn-bg:#fdf3e2;
+  --radius-sm:4px; --radius-md:8px; --radius-lg:12px;
+  --font-ui:ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --font-display:ui-serif,Georgia,serif;
+  --focus-color:#4a90d9;
+
+  /* The four target sizes this document argues about, in one place. */
+  --size-as-built:38px;   /* measured from MapScreen.css */
+  --size-wcag:44px;       /* :root --control-min, adult */
+  --size-child:56px;      /* [data-mood="child"] --control-min, unreachable today */
+  --size-hourcade:64px;   /* where the child advantage was significant */
+  --size-nng:76px;        /* .u-primary-target, ~2cm */
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--canvas);color:var(--ink);
+  font:16px/1.55 var(--font-ui);
+}
+:focus-visible{outline:3px solid var(--focus-color);outline-offset:2px}
+
+.wrap{max-width:1080px;margin:0 auto;padding:32px 24px 96px}
+header.doc{margin-bottom:28px}
+header.doc h1{
+  font:600 26px/1.25 var(--font-display);margin:0 0 8px;letter-spacing:-.01em;
+}
+header.doc p{margin:0;color:var(--ink-muted);max-width:68ch}
+header.doc code{background:var(--surface-2);padding:1px 5px;border-radius:var(--radius-sm);font-size:.9em}
+
+/* Tabs */
+nav.tabs{display:flex;flex-wrap:wrap;gap:2px;margin:28px 0 0;border-bottom:1px solid var(--line)}
+nav.tabs button{
+  appearance:none;border:1px solid transparent;border-bottom:none;background:none;
+  font:500 14px var(--font-ui);color:var(--ink-muted);
+  padding:10px 14px;border-radius:var(--radius-sm) var(--radius-sm) 0 0;cursor:pointer;
+  min-height:44px;
+}
+nav.tabs button:hover{color:var(--ink);background:#eceef1}
+nav.tabs button[aria-selected=true]{
+  background:var(--surface);border-color:var(--line);color:var(--ink);
+  margin-bottom:-1px;padding-bottom:11px;font-weight:600;
+}
+section.panel{display:none;background:var(--surface);border:1px solid var(--line);border-top:none;
+  border-radius:0 0 var(--radius-md) var(--radius-md);padding:26px}
+section.panel[data-active]{display:block}
+
+h2{font:600 19px/1.3 var(--font-display);margin:0 0 6px}
+h3{font:600 14px var(--font-ui);margin:26px 0 8px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint)}
+.lede{color:var(--ink-muted);max-width:74ch;margin:0 0 20px}
+.cite{font-size:13px;color:var(--ink-faint);max-width:74ch}
+.cite strong{color:var(--ink-muted);font-weight:600}
+
+/* Controls */
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:12px;margin:0 0 18px}
+.controls .grp{display:flex;gap:6px;align-items:center;padding-right:12px;border-right:1px solid var(--line)}
+.controls .grp:last-child{border-right:none;padding-right:0}
+.controls label.lbl{font-size:12px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em}
+.controls button, .controls select{
+  appearance:none;font:500 13px var(--font-ui);
+  background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius-sm);
+  padding:8px 11px;min-height:36px;cursor:pointer;color:var(--ink);
+}
+.controls button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.controls button:hover:not([aria-pressed=true]){background:#eceef1}
+
+/* Hairline border on all four sides plus a tint, per the accepted MUI-style
+   language (white cards, hairline borders). Not a thick single-side accent. */
+.callout{border:1px solid #cddff2;background:var(--accent-weak);
+  padding:13px 15px;border-radius:var(--radius-md);margin:18px 0;font-size:14px}
+.callout.warn{border-color:#e8d3a6;background:var(--warn-bg)}
+.callout.good{border-color:#bfe0cd;background:var(--good-bg)}
+.callout p{margin:0}
+.callout p+p{margin-top:8px}
+
+table.data{border-collapse:collapse;width:100%;font-size:14px;margin:14px 0}
+table.data th,table.data td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+table.data th{background:var(--surface-2);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint)}
+table.data td.num{font-variant-numeric:tabular-nums;text-align:right}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   THE CHILD SURFACE. Its own visual world — warm, high-colourfulness,
+   medium complexity (Wang & Bowerman 2018, ages 7–8). Type never below 16px.
+   ───────────────────────────────────────────────────────────────────────────── */
+.child{
+  --cream:#fff6e8; --cream-soft:#f0e2cd;
+  --wood:#6b4a30; --wood-light:#8a6242; --wood-frame:#4a3524;
+  --ember:#e8863c; --ember-bright:#ffb867; --ember-deep:#b5561c;
+  --leaf:#4f8f5f; --sky:#cfe3d8;
+  position:relative;border-radius:var(--radius-lg);overflow:hidden;
+  border:8px solid var(--wood-frame);
+  background:var(--sky);
+  font-family:var(--font-ui);
+  aspect-ratio:16/9;min-height:420px;
+  user-select:none;
+}
+.child *{font-size:inherit}
+
+/* Map: a uniform template. Only the SUBJECT varies between nodes. (D8) */
+.map-bg{position:absolute;inset:0;
+  background:
+    radial-gradient(120% 90% at 50% 40%, #dbeee0 0%, #b9d6c2 60%, #93b8a1 100%);
+}
+.map-bg::after{ /* paths, purely structural, identical for every node */
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(closest-side, transparent 96%, rgba(255,255,255,.35) 100%) 50% 50%/60% 60% no-repeat;
+}
+.map-nodes{position:absolute;inset:0}
+
+.node{
+  position:absolute;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  background:none;border:none;padding:0;cursor:pointer;color:inherit;
+  font-family:inherit;
+}
+/* The target itself. Size is driven by --target so the demo can change it live. */
+.node-hit{
+  width:var(--target);height:var(--target);
+  display:grid;place-items:center;
+  border-radius:22%;
+  border:3px solid var(--wood-frame);
+  background:linear-gradient(180deg,var(--ember-bright),var(--ember));
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 4px 10px rgba(0,0,0,.35);
+  font-size:calc(var(--target) * .52);line-height:1;
+  transition:transform 120ms cubic-bezier(.22,1,.36,1);
+}
+.node:hover .node-hit,.node:focus-visible .node-hit{transform:scale(1.06)}
+.node-label{
+  font-size:17px;font-weight:700;color:#3a2416;
+  background:rgba(255,246,232,.92);
+  padding:3px 9px;border-radius:999px;
+  border:2px solid var(--wood-frame);
+  white-space:nowrap;
+}
+/* Reading-mask mode: what a ~600-word reader can actually decode. */
+.child[data-reading="novice"] .node-label span.hard{
+  color:transparent;background:repeating-linear-gradient(90deg,#b9a894 0 6px,transparent 6px 9px);
+  border-radius:2px;
+}
+.child[data-labels="icon-only"] .node-label{display:none}
+.child[data-labels="text-only"] .node-hit{background:linear-gradient(180deg,#efe3d2,#d9c8b2);font-size:0}
+
+/* Cabin interior. CSS-drawn so no art assets are needed to judge the structure. */
+.room{position:absolute;inset:0;background:linear-gradient(180deg,#7d5b3f 0%,#6b4a30 58%,#553a24 100%)}
+.room .wall{position:absolute;inset:0 0 26% 0;background:
+  linear-gradient(180deg,#8a6242,#6f4c33);
+  box-shadow:inset 0 -18px 30px rgba(0,0,0,.35)}
+.room .floor{position:absolute;inset:74% 0 0 0;background:
+  repeating-linear-gradient(90deg,#5a3d27 0 46px,#4e3421 46px 92px);
+  box-shadow:inset 0 14px 26px rgba(0,0,0,.4)}
+.room .window{position:absolute;left:6%;top:12%;width:20%;height:34%;
+  background:linear-gradient(180deg,#cfe3d8,#9dc4ad);border:6px solid var(--wood-frame);border-radius:6px}
+.room .shelf{position:absolute;right:8%;top:22%;width:36%;height:8px;background:var(--wood-frame);border-radius:3px}
+.room .rug{position:absolute;left:28%;bottom:6%;width:44%;height:14%;border-radius:50%;
+  background:radial-gradient(closest-side,#b5561c,#8d3f13);opacity:.85}
+.room .vignette{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(115% 95% at 50% 45%,transparent 52%,rgba(36,22,17,.5) 100%)}
+
+/* Ambient motion — the thing D3 says to delete. Off by default, on purpose. */
+.child[data-ambient="on"] .room{animation:breathe 6s ease-in-out infinite}
+.child[data-ambient="on"] .mote{opacity:1}
+@keyframes breathe{0%,100%{transform:scale(1) translate(0,0)}50%{transform:scale(1.02) translate(-.5%,-.4%)}}
+.mote{position:absolute;width:5px;height:5px;border-radius:50%;background:rgba(255,220,170,.85);
+  opacity:0;transition:opacity 200ms;animation:drift 9s linear infinite}
+@keyframes drift{0%{transform:translate(0,0)}50%{transform:translate(26px,-34px)}100%{transform:translate(0,0)}}
+
+/* Props. Every prop is the same kind of object; only SOME are interactable. */
+.prop{
+  position:absolute;transform:translate(-50%,-50%);
+  border:none;background:none;padding:0;cursor:default;color:inherit;font-family:inherit;
+  width:var(--target);height:var(--target);
+  display:grid;place-items:center;
+  font-size:calc(var(--target) * .5);line-height:1;
+  filter:drop-shadow(0 3px 5px rgba(0,0,0,.45));
+}
+.prop[data-interactable]{cursor:pointer}
+
+/* MARKER MODES — the §2.2 experiment, made switchable. */
+/* none: interactable and decorative are perceptually identical → conjunction search */
+/* outline: a static ring — a colour/shape conjunction cue */
+.child[data-marker="outline"] .prop[data-interactable]{
+  outline:3px solid var(--ember-bright);outline-offset:3px;border-radius:8px;
+}
+/* pulse: motion + luminance, exclusive to interactables → FEATURE search (recommended).
+   NOTE, and this is a real constraint discovered by testing this mockup: the pulse
+   animates GLOW ONLY and never transform/scale. A marker that scales the prop makes
+   the hit area a moving target, which fights the very target-size and target-reentry
+   findings in panel 4 — children overshoot stationary targets already. Headless
+   Chromium refused to click the earlier scaling version as "not stable", which is a
+   fair proxy for a 6-year-old with a mouse. Pop-out cue: yes. Moving the target: no. */
+.child[data-marker="pulse"] .prop[data-interactable]{
+  animation:prop-pulse 2.6s ease-in-out infinite;border-radius:10px;
+}
+@keyframes prop-pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(255,184,103,0);filter:drop-shadow(0 3px 5px rgba(0,0,0,.45)) brightness(1)}
+  50%{box-shadow:0 0 24px 8px rgba(255,184,103,.8);filter:drop-shadow(0 3px 5px rgba(0,0,0,.45)) brightness(1.18)}
+}
+@media (prefers-reduced-motion:reduce){
+  .child[data-marker="pulse"] .prop[data-interactable]{
+    animation:none;box-shadow:0 0 20px 6px rgba(255,184,103,.8);
+  }
+  .child[data-ambient="on"] .room{animation:none}
+  .mote{animation:none}
+}
+.prop.found{outline:4px solid #fff;outline-offset:4px;border-radius:8px}
+
+/* Back affordance — presented, never merely available (D7) */
+.child-back{
+  position:absolute;left:14px;top:14px;z-index:5;
+  display:flex;align-items:center;gap:8px;
+  min-height:var(--target);padding:0 16px 0 12px;
+  background:var(--cream);border:3px solid var(--wood-frame);border-radius:999px;
+  font:700 17px var(--font-ui);color:#3a2416;cursor:pointer;
+}
+.child-hud{
+  position:absolute;right:14px;top:14px;z-index:5;
+  background:rgba(58,36,22,.82);color:var(--cream);
+  padding:7px 13px;border-radius:999px;font:600 16px var(--font-ui);
+}
+
+/* Onboarding demo (D6): animated, ~10s, replayable, no text instructions */
+.demo-stage{position:absolute;inset:0;display:grid;place-items:center;background:rgba(30,18,10,.62);z-index:6}
+.demo-card{background:var(--cream);border:5px solid var(--wood-frame);border-radius:18px;
+  padding:22px 26px;text-align:center;max-width:76%}
+.demo-card p{margin:0 0 14px;font:700 19px var(--font-ui);color:#3a2416}
+.demo-hand{font-size:40px;display:inline-block;animation:hand 2.4s ease-in-out infinite}
+@keyframes hand{0%,100%{transform:translate(-30px,10px)}45%,55%{transform:translate(0,0) scale(.9)}}
+
+/* Target-size lab */
+.size-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin:14px 0 6px}
+.size-spec{text-align:center}
+.size-spec .btn{
+  display:grid;place-items:center;border-radius:12px;
+  background:linear-gradient(180deg,var(--ember-bright,#ffb867),#e8863c);
+  border:3px solid #4a3524;color:#3a2416;font-weight:800;cursor:pointer;
+  font-size:15px;
+}
+.size-spec{width:150px}
+.size-spec .cap{font-size:12px;color:var(--ink-faint);margin-top:7px;line-height:1.35;
+  max-width:150px;text-wrap:pretty}
+.size-spec .cap b{display:block;color:var(--ink);font-size:13px}
+
+.hunt-grid{position:relative;background:#6b4a30;border-radius:var(--radius-md);
+  height:300px;overflow:hidden;border:6px solid #4a3524}
+.stat{display:inline-flex;gap:6px;align-items:baseline;font-variant-numeric:tabular-nums}
+.stat b{font-size:22px}
+.statline{display:flex;gap:26px;flex-wrap:wrap;margin:12px 0 0;font-size:14px;color:var(--ink-muted)}
+
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--ink-muted);margin-top:10px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+.footnote{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-faint)}
+.footnote a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="doc">
+  <h1>The child-facing surface at ages 6–8</h1>
+  <p>Clickable companion to <code>docs/research/passion-pipeline/07-child-facing-ux-6-8.md</code>.
+  Every panel is a switch rather than a picture, so you can feel the difference the evidence predicts on
+  your own screen before any art budget is committed. Adult chrome follows the accepted design language;
+  the warm panels are the child surface being proposed.</p>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" id="t-read" aria-controls="p-read" aria-selected="true">The reading gap</button>
+  <button role="tab" id="t-hunt" aria-controls="p-hunt" aria-selected="false">Pop-out vs conjunction</button>
+  <button role="tab" id="t-motion" aria-controls="p-motion" aria-selected="false">Where motion goes</button>
+  <button role="tab" id="t-size" aria-controls="p-size" aria-selected="false">Target size</button>
+  <button role="tab" id="t-onboard" aria-controls="p-onboard" aria-selected="false">Onboarding</button>
+</nav>
+
+<!-- ══════════════════════════ 1 · READING GAP ══════════════════════════ -->
+<section class="panel" id="p-read" role="tabpanel" aria-labelledby="t-read" data-active>
+  <h2>A six-year-old reads ~600 words and hears ~4,000</h2>
+  <p class="lede">Wolf's novice-reader stage puts a typical 6–7-year-old at roughly <b>600 words readable
+  against 4,000 understood when heard</b>. The map below is the built one: cabin identity carried by
+  <b>text alone</b>. Switch on the reading mask to see the same screen as a child at the bottom of the band
+  parses it. Words outside the first-100 high-frequency list are struck out, because they have to be
+  decoded letter by letter, if at all.</p>
+
+  <div class="controls">
+    <div class="grp">
+      <span class="lbl">Labels</span>
+      <button data-set="labels" data-val="both" aria-pressed="true">Icon + text</button>
+      <button data-set="labels" data-val="text-only" aria-pressed="false">Text only (as built)</button>
+      <button data-set="labels" data-val="icon-only" aria-pressed="false">Icon only</button>
+    </div>
+    <div class="grp">
+      <span class="lbl">Reading</span>
+      <button data-set="reading" data-val="fluent" aria-pressed="true">Fluent adult</button>
+      <button data-set="reading" data-val="novice" aria-pressed="false">6-year-old mask</button>
+    </div>
+    <div class="grp">
+      <span class="lbl">Audio</span>
+      <button id="audio-toggle" aria-pressed="true">Speak on hover</button>
+    </div>
+  </div>
+
+  <div class="child" id="map-child" data-labels="both" data-reading="fluent" style="--target:var(--size-nng)">
+    <div class="map-bg"></div>
+    <div class="map-nodes" id="map-nodes"></div>
+  </div>
+
+  <div class="callout good">
+    <p><b>What the mockup applies.</b> D1: every label carries a spoken form on hover and focus (real
+    speech synthesis, try it). D5: the icon depicts the <i>actual referent</i>, a violin rather than a
+    "music" glyph, because young children read icons literally and do not extrapolate adult conventions.
+    D8: every node uses an identical template and only the depicted subject changes, so no cabin can look
+    "better" than another and confound its own signal.</p>
+  </div>
+  <div class="callout warn">
+    <p><b>What the mask shows, and its honest limit.</b> Turn on <i>Text only</i> + <i>6-year-old mask</i>:
+    that is the shipped map, for the youngest user we claim to serve. The mask uses a first-100
+    high-frequency word list as a stand-in for decoding ability, so it illustrates the 600/4,000
+    ratio rather than measuring any particular child. Subtopic names are worse than cabin names:
+    <code>odds-and-chance</code> and <code>agentic-engineering</code> have no depictable referent, which is
+    why icons narrow this gap and only audio closes it.</p>
+  </div>
+  <p class="cite"><strong>Source.</strong> Wolf, M. (2008) <i>Proust and the Squid</i>, novice-reader stage
+  (~600 read / ~4,000 heard, rising to ~3,000 / ~9,000 by the decoding stage at 7–9). Icon constraints:
+  literal interpretation and failure to extrapolate adult conventions (UXmatters synthesis); close semantic
+  distance and single icons aided preschool search (CIKM 2024, eye-tracking).</p>
+</section>
+
+<!-- ══════════════════════ 2 · POP-OUT VS CONJUNCTION ══════════════════════ -->
+<section class="panel" id="p-hunt" role="tabpanel" aria-labelledby="t-hunt">
+  <h2>Find the clickable thing</h2>
+  <p class="lede">This is the memo's central finding made playable. <b>Feature search</b>, where the target is
+  the only thing with some property, is mature by age 6. <b>Conjunction search</b>, where the target is
+  defined by a combination, is still developing at 6–7 and is where distractors bite. A painterly room full
+  of props is a conjunction display. Time yourself in each mode, then remember you are an adult with a fully
+  developed serial search strategy.</p>
+
+  <div class="controls">
+    <div class="grp">
+      <span class="lbl">Marker</span>
+      <button data-hunt="none" aria-pressed="true">None (conjunction)</button>
+      <button data-hunt="outline" aria-pressed="false">Static outline</button>
+      <button data-hunt="pulse" aria-pressed="false">Motion + glow (feature)</button>
+    </div>
+    <div class="grp">
+      <span class="lbl">Clutter</span>
+      <select id="hunt-clutter">
+        <option value="14">Sparse (14 props)</option>
+        <option value="26" selected>Furnished (26 props)</option>
+        <option value="44">Dense (44 props)</option>
+      </select>
+    </div>
+    <div class="grp"><button id="hunt-start">New round</button></div>
+  </div>
+
+  <div class="hunt-grid" id="hunt-grid"></div>
+  <div class="statline">
+    <span class="stat">Time to first correct click: <b id="hunt-time">—</b></span>
+    <span class="stat">Wrong clicks on scenery: <b id="hunt-miss">0</b></span>
+    <span class="stat">Found: <b id="hunt-found">0</b> / <span id="hunt-total">0</span></span>
+  </div>
+  <div class="legend">
+    <span><span class="sw" style="background:#ffb867"></span> interactable (3 per round)</span>
+    <span><span class="sw" style="background:#8a6242"></span> scenery</span>
+  </div>
+
+  <div class="callout">
+    <p><b>The number that matters is the wrong-click count, not the clock.</b> A wrong click on scenery is a
+    child probing a thing that does nothing. In the engine that is not neutral: per memo 06 §8.4 P2, an option
+    that was surfaced and not engaged is scored as a <i>decline</i>. So a child who cannot find the hotspot
+    produces evidence that they <i>rejected the topic</i>. Every miss you just logged is a potential
+    sign-inversion in the interest model, which is why this is a measurement bug rather than a polish item.</p>
+  </div>
+  <div class="callout good">
+    <p><b>Credit where it is due.</b> <code>MapScreen.css</code> already does this correctly on the map:
+    the playable cabin carries <code>animation: node-breathe</code> plus an ember glow, i.e. motion and
+    luminance exclusive to the interactable. D2 is mostly a request to keep that and extend it into the
+    cabin interiors, not to invent it.</p>
+  </div>
+  <p class="cite"><strong>Sources.</strong> Feature search peaks as early as age 6 with little change into
+  adolescence; conjunction search improves through childhood, and 6–7-year-olds performed worse than adults
+  (Donnelly et al. 2007). 6–8-year-olds are susceptible to distractors in conjunction but not feature search.
+  Foveal crowding is elevated in children (maturity ~5–9), so spacing matters alongside size. Colour is a
+  weaker channel at this age than luminance or motion, and is further degraded by irrelevant motion,
+  which is why the recommended marker is motion plus luminance rather than a hue.</p>
+</section>
+
+<!-- ══════════════════════════ 3 · MOTION ══════════════════════════ -->
+<section class="panel" id="p-motion" role="tabpanel" aria-labelledby="t-motion">
+  <h2>Ambient motion is bought out of the hotspot budget</h2>
+  <p class="lede">The PRD asks for a cursor-driven parallax so the frame "breathes", plus drifting dust motes.
+  Motion is the strongest involuntary attention cue at this age, which is exactly why it is the best hotspot
+  marker we have, and exactly why spending it on ambience is subtractive. Turn ambience on and try to keep
+  track of the three interactable props.</p>
+
+  <div class="controls">
+    <div class="grp">
+      <span class="lbl">Ambient motion</span>
+      <button data-set="ambient" data-val="off" aria-pressed="true">Off (recommended)</button>
+      <button data-set="ambient" data-val="on" aria-pressed="false">On (as specified)</button>
+    </div>
+    <div class="grp">
+      <span class="lbl">Hotspot marker</span>
+      <button data-set="marker" data-val="pulse" aria-pressed="true">Motion + glow</button>
+      <button data-set="marker" data-val="none" aria-pressed="false">None</button>
+    </div>
+  </div>
+
+  <div class="child" id="room-child" data-ambient="off" data-marker="pulse" style="--target:var(--size-child)">
+    <div class="room">
+      <div class="wall"></div><div class="window"></div><div class="shelf"></div>
+      <div class="floor"></div><div class="rug"></div>
+      <div class="mote" style="left:22%;top:30%"></div>
+      <div class="mote" style="left:34%;top:46%;animation-delay:-3s"></div>
+      <div class="mote" style="left:58%;top:26%;animation-delay:-6s"></div>
+      <div class="mote" style="left:71%;top:52%;animation-delay:-1.5s"></div>
+      <div class="vignette"></div>
+    </div>
+    <button class="child-back">← <span>Back to the map</span></button>
+    <div class="child-hud" id="room-hud">Tap a glowing thing</div>
+    <div id="room-props"></div>
+  </div>
+
+  <div class="callout warn">
+    <p><b>The sign flips, and that is the point.</b> To an adult reviewing a screenshot, ambient motion reads
+    as "the room is alive". To a 6-year-old's attentional system it reads as noise in the one channel the
+    hotspots need. In eye-tracking with 4–5-year-olds, low-relevance animation <i>lowered</i> comprehension
+    versus static, and children looked <b>less</b> at the relevant elements and more at the irrelevant ones.
+    High-relevance animation was merely equal to static, so ambience has no upside to trade against.</p>
+    <p>This is the one recommendation in the memo that <i>removes</i> work. The reduced-motion code path
+    already renders a still frame, so it is a default change, not new engineering.</p>
+  </div>
+  <p class="cite"><strong>Sources.</strong> Motion is what attracts children's gaze in illustrations
+  (eye-tracking, 4–6). Low-relevant animation lowered picture-book comprehension and redirected gaze
+  (eye-tracking, 4–5, three conditions). Rey (2012), 39 studies: seductive details harmed retention d = 0.30
+  and transfer d = 0.48. Contextual animation added for interest in 9–11-year-olds produced another null.
+  <strong>Limit:</strong> both eye-tracking studies are below band and measure story comprehension rather
+  than hotspot discovery. The extrapolation to parallax versus hotspots is the memo's, and it is testable
+  in our own build.</p>
+</section>
+
+<!-- ══════════════════════════ 4 · TARGET SIZE ══════════════════════════ -->
+<section class="panel" id="p-size" role="tabpanel" aria-labelledby="t-size">
+  <h2>Four sizes, one of which we ship</h2>
+  <p class="lede">Shown at true CSS size. The leftmost is measured from <code>MapScreen.css</code> as built;
+  the rest are the values the token contract and the literature already name. Click each one a few times,
+  then note that you are an adult with a mouse you have used for decades.</p>
+
+  <div class="size-row" id="size-row"></div>
+
+  <table class="data">
+    <thead><tr><th>Target</th><th class="num">4-year-olds</th><th class="num">5-year-olds</th><th class="num">Adults</th></tr></thead>
+    <tbody>
+      <tr><td>16 px</td><td class="num">43 %</td><td class="num">74 %</td><td class="num">90 %</td></tr>
+      <tr><td>32 px</td><td class="num">77 %</td><td class="num">91 %</td><td class="num">96 %</td></tr>
+      <tr><td>64 px</td><td class="num">90 %</td><td class="num">97 %</td><td class="num">99 %</td></tr>
+    </tbody>
+  </table>
+  <p class="cite">Point-and-click accuracy by target size and age. Hourcade, Bederson, Druin &amp;
+  Guimbretière, <i>Accuracy, Target Reentry and Fitts' Law Performance of Preschool Children Using Mice</i>,
+  UMD HCIL. Age <i>F</i>(2,36) = 20.744, <i>p</i> &lt; .001; target size <i>F</i>(2,35) = 34.924,
+  <i>p</i> &lt; .001; distance to target had no effect. The authors: <i>"to achieve the same level of accuracy
+  as adults at 16 pixels, 5 year olds require 32 pixels, and 4 year olds 64 pixels"</i>. And 64 px beat 32 px
+  significantly for children while giving adults nothing.</p>
+
+  <div class="callout warn">
+    <p><b>The finding is not that the token is too small. It is that the right token exists and is unreachable.</b>
+    <code>contract.css</code> already defines <code>[data-mood="child"] --control-min: 56px</code> and a
+    <code>.u-primary-target</code> at 76 px, under a comment citing the child-UX literature. Both are set by
+    <b>nobody</b> (they appear in the repo only at their own declaration sites), and
+    <code>passion/apps/mvp-jul24</code> never imports <code>@gt100k/design-tokens</code> at all. So the child
+    surface renders in adult mode: 38 px cabin nodes, 15.2 px labels, 10.9 px badges, against the contract's
+    own "never below 16px for any user".</p>
+    <p><b>Smallest useful PR:</b> import the token package and set <code>data-mood="child"</code>. Two lines,
+    no art, no audio, and every control goes 44 → 56 px with all body type to ≥16 px at once.</p>
+  </div>
+  <div class="callout warn">
+    <p><b>Which band is this?</b> The sizes above are argued for <b>6–8</b>, the band the PRD's evidence and
+    the discovery-surface doc's rule 6 concern. But <code>mvp-jul24</code>'s own <code>PROJECT.md</code>
+    targets <b>9–12</b>, where NN/g rates fine motor "well developed". So the 38 px node is a much smaller
+    problem for a competent 11-year-old than this panel implies. What holds at <i>any</i> age: the 10.9 px
+    badge and 15.2 px label break the token contract's own "never below 16px for any user" rule, and the
+    token-adoption gap is a plumbing defect regardless of band. See the memo's §2.7 note.</p>
+  </div>
+  <div class="callout">
+    <p><b>And the platform choice compounds it.</b> <code>DISCOVERY-APP-PRD.md:258</code> targets school
+    Windows machines, chosen for GPU headroom, which silently also chose <b>mouse/trackpad over touch</b>,
+    the harder modality at this age. Hourcade's numbers above are mouse numbers, so they are the applicable
+    ones. <b>Honest limit:</b> Hourcade tested 4–5-year-olds and the paper's own opening notes they had
+    <i>not</i> seen the problem in children 7 and older. So read 64 px as "the floor is capability-dependent
+    and far above 44 px at the bottom of our band", not as a measured 6–8 requirement.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 5 · ONBOARDING ══════════════════════════ -->
+<section class="panel" id="p-onboard" role="tabpanel" aria-labelledby="t-onboard">
+  <h2>Show it once, animated. Don't explain it, and don't make the tutorial a game.</h2>
+  <p class="lede">A within-subjects study of a tablet counting game (n = 32) compared a baseline, an
+  <b>animated</b> demonstration, and an <b>interactive</b> demonstration. The animated one beat both, which
+  is why the paper is titled <i>"When Less Can Be More"</i>. Added tutorial interactivity costs load without
+  buying comprehension. Children under ~8–9 also rely predominantly on visual feedback to correct movement.</p>
+
+  <div class="controls">
+    <div class="grp"><button id="demo-replay">Play the demo</button></div>
+    <div class="grp">
+      <span class="lbl">Fallback path</span>
+      <button data-set="fallback" data-val="presented" aria-pressed="true">Presented (D7)</button>
+      <button data-set="fallback" data-val="available" aria-pressed="false">Available only</button>
+    </div>
+  </div>
+
+  <div class="child" id="onboard-child" data-marker="pulse" data-ambient="off" data-fallback="presented"
+       style="--target:var(--size-child)">
+    <div class="room">
+      <div class="wall"></div><div class="window"></div><div class="shelf"></div>
+      <div class="floor"></div><div class="rug"></div><div class="vignette"></div>
+    </div>
+    <div id="onboard-props"></div>
+    <div class="child-hud" id="onboard-hud">Watch</div>
+    <div id="onboard-alt"></div>
+    <div class="demo-stage" id="demo-stage">
+      <div class="demo-card">
+        <p>&nbsp;</p>
+        <div class="demo-hand" aria-hidden="true">👆</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <p><b>An undiscovered affordance is identical to an absent one.</b> NN/g's sharpest negative case: a PBS
+    Kids game offered a click-only alternative to a hard drag, and <i>"none of the kids in our study
+    discovered that function."</i> Flip the fallback switch above: "available only" is the shape our
+    <b>A5 accessibility mirror</b> is currently specified in. It is required to be parity-correct
+    (<code>plainViewEquals</code>) and nowhere required to be <i>findable</i>. A mirror no child discovers
+    passes its test and fails every child who needed it.</p>
+  </div>
+  <p class="cite"><strong>Sources.</strong> Animated &gt; interactive demonstration, within-subjects, n = 32
+  (CHI 2026, <i>When Less Can Be More</i>). Observation beats verbal explanation for unfamiliar actions;
+  under-8/9s rely on visual feedback, shifting around age 9. NN/g: games worked for 7–9-year-olds when paired
+  with "clear instructions with images"; ages 3–12, US and China, with the <b>6–8 group tested in dyads</b>,
+  which raises a question the memo flags as open: we have never decided whether a child uses this surface
+  alone.</p>
+</section>
+
+<p class="footnote">
+  Mockup for <code>docs/research/passion-pipeline/07-child-facing-ux-6-8.md</code> · GT100K PassionLab ·
+  no dependencies, no build step, no network. Speech uses the browser's built-in
+  <code>speechSynthesis</code>. Honours <code>prefers-reduced-motion</code>. Figures and their limits are
+  carried in §2 and §7 of the memo; four sources there are abstract-only and flagged as such.
+</p>
+</div>
+
+<script>
+"use strict";
+
+/* ── Tabs ─────────────────────────────────────────────────────────────── */
+const tabs = [...document.querySelectorAll('nav.tabs button')];
+tabs.forEach(t => t.addEventListener('click', () => {
+  tabs.forEach(x => x.setAttribute('aria-selected', String(x === t)));
+  const target = t.getAttribute('aria-controls');
+  document.querySelectorAll('section.panel').forEach(p =>
+    p.toggleAttribute('data-active', p.id === target));
+  /* The hunt grid lays out from a measured width, so it can only be built once
+     its panel is actually visible. Building it while display:none gives a
+     zero-width rect and places nothing. */
+  if (target === 'p-hunt') newHunt();
+}));
+
+/* ── Generic paired toggles: [data-set][data-val] drives an attribute ── */
+document.querySelectorAll('[data-set]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const key = btn.dataset.set, val = btn.dataset.val;
+    const group = [...document.querySelectorAll(`[data-set="${key}"]`)];
+    group.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    document.querySelectorAll('.child').forEach(c => {
+      if (c.hasAttribute('data-' + key)) c.setAttribute('data-' + key, val);
+    });
+    if (key === 'fallback') renderFallback();
+  });
+});
+
+/* ── Speech. Real audio labels (D1). ──────────────────────────────────── */
+let speakOn = true;
+const audioBtn = document.getElementById('audio-toggle');
+audioBtn.addEventListener('click', () => {
+  speakOn = !speakOn;
+  audioBtn.setAttribute('aria-pressed', String(speakOn));
+  if (!speakOn) try { speechSynthesis.cancel(); } catch (e) {}
+});
+let lastSpoken = '';
+function say(text) {
+  if (!speakOn || !('speechSynthesis' in window)) return;
+  if (text === lastSpoken && speechSynthesis.speaking) return;
+  lastSpoken = text;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.92; u.pitch = 1.05;
+    speechSynthesis.speak(u);
+  } catch (e) { /* speech unavailable — labels still render */ }
+}
+
+/* ── 1 · The map. Uniform template; only the subject varies. ──────────── */
+/* Icons depict the actual referent (D5): a violin, not a "music" glyph.   */
+const CABINS = [
+  { icon:'🎻', label:'Music and Sound',    say:'Music and Sound',    x:22, y:26 },
+  { icon:'💻', label:'Code and Computers', say:'Code and Computers', x:50, y:18 },
+  { icon:'♟️', label:'Games and Puzzles',  say:'Games and Puzzles',  x:78, y:26 },
+  { icon:'🤖', label:'Making and Robots',  say:'Making and Robots',  x:86, y:52 },
+  { icon:'🎨', label:'Art and Drawing',    say:'Art and Drawing',    x:72, y:76 },
+  { icon:'📣', label:'Stories and People', say:'Stories and People', x:46, y:82 },
+  { icon:'🐛', label:'Science and Nature', say:'Science and Nature', x:24, y:74 },
+  { icon:'🔢', label:'Numbers and Shapes', say:'Numbers and Shapes', x:14, y:50 },
+];
+
+/* First-100 high-frequency words, as a stand-in for what a novice reader
+   decodes on sight. An illustration of Wolf's ~600/4,000 ratio, not a
+   measurement of any child. */
+const SIGHT = new Set(`the of and a to in is you that it he was for on are as with his they
+i at be this have from or one had by word but not what all were we when your can said there
+use an each which she do how their if will up other about out many then them these so some
+her would make like him into time has look two more write go see number no way could people
+my than first water been call who oil its now find long down day did get come made may part
+and to a`.split(/\s+/));
+
+function maskLabel(label) {
+  return label.split(' ').map(w => {
+    const bare = w.toLowerCase().replace(/[^a-z]/g, '');
+    return SIGHT.has(bare)
+      ? `<span>${w}</span>`
+      : `<span class="hard" title="not a first-100 sight word — must be decoded">${w}</span>`;
+  }).join(' ');
+}
+
+const mapNodes = document.getElementById('map-nodes');
+CABINS.forEach(c => {
+  const b = document.createElement('button');
+  b.className = 'node';
+  b.style.left = c.x + '%';
+  b.style.top = c.y + '%';
+  b.innerHTML =
+    `<span class="node-hit" aria-hidden="true">${c.icon}</span>` +
+    `<span class="node-label">${maskLabel(c.label)}</span>`;
+  b.setAttribute('aria-label', c.say);
+  const speak = () => say(c.say);
+  b.addEventListener('mouseenter', speak);
+  b.addEventListener('focus', speak);
+  b.addEventListener('click', speak);
+  mapNodes.appendChild(b);
+});
+
+/* ── 2 · Hotspot hunt. Feature vs conjunction search, timed. ──────────── */
+/* Scenery and interactables are drawn from the SAME visual family, so with
+   no marker the target is only findable by a conjunction of properties —
+   which is the search mode that is still developing at 6–7.              */
+const SCENERY = ['🪵','🪑','🧺','🕯️','📚','🫖','🪴','🧶','🥾','🪟','🧦','🪞','🍄','🪶','🧱','🛏️'];
+const ACTIVE  = ['🎻','🔭','⚙️'];
+
+const huntGrid   = document.getElementById('hunt-grid');
+const huntTimeEl = document.getElementById('hunt-time');
+const huntMissEl = document.getElementById('hunt-miss');
+const huntFoundEl= document.getElementById('hunt-found');
+const huntTotalEl= document.getElementById('hunt-total');
+let huntT0 = 0, huntMiss = 0, huntFound = 0, huntFirst = false;
+
+function poisson(n, w, h, pad, minDist) {
+  const pts = [];
+  let guard = 0;
+  while (pts.length < n && guard++ < n * 400) {
+    const p = { x: pad + Math.random() * (w - pad * 2), y: pad + Math.random() * (h - pad * 2) };
+    if (pts.every(q => (q.x - p.x) ** 2 + (q.y - p.y) ** 2 > minDist ** 2)) pts.push(p);
+  }
+  return pts;
+}
+
+function newHunt() {
+  const total = parseInt(document.getElementById('hunt-clutter').value, 10);
+  huntGrid.innerHTML = '';
+  huntMiss = 0; huntFound = 0; huntFirst = false;
+  huntMissEl.textContent = '0'; huntFoundEl.textContent = '0';
+  huntTimeEl.textContent = '—'; huntTotalEl.textContent = '3';
+
+  const r = huntGrid.getBoundingClientRect();
+  /* Spacing respects the crowding finding: keep props from flanking each other. */
+  const pts = poisson(total, r.width, r.height, 46, 62);
+  const activeIdx = new Set();
+  while (activeIdx.size < 3 && activeIdx.size < pts.length) {
+    activeIdx.add(Math.floor(Math.random() * pts.length));
+  }
+
+  pts.forEach((p, i) => {
+    const isActive = activeIdx.has(i);
+    const b = document.createElement('button');
+    b.className = 'prop';
+    b.style.left = p.x + 'px';
+    b.style.top = p.y + 'px';
+    b.style.setProperty('--target', '56px');
+    b.textContent = isActive ? ACTIVE[[...activeIdx].indexOf(i) % 3]
+                             : SCENERY[i % SCENERY.length];
+    if (isActive) {
+      b.setAttribute('data-interactable', '');
+      b.setAttribute('aria-label', 'interactable prop');
+    } else {
+      b.setAttribute('aria-label', 'scenery');
+      b.tabIndex = -1;
+    }
+    b.addEventListener('click', () => {
+      if (isActive && !b.classList.contains('found')) {
+        if (!huntFirst) {
+          huntFirst = true;
+          huntTimeEl.textContent = ((performance.now() - huntT0) / 1000).toFixed(2) + ' s';
+        }
+        b.classList.add('found');
+        huntFound++; huntFoundEl.textContent = String(huntFound);
+      } else if (!isActive) {
+        huntMiss++; huntMissEl.textContent = String(huntMiss);
+      }
+    });
+    huntGrid.appendChild(b);
+  });
+  huntT0 = performance.now();
+}
+document.getElementById('hunt-start').addEventListener('click', newHunt);
+document.getElementById('hunt-clutter').addEventListener('change', newHunt);
+
+/* The hunt panel owns its own marker mode, independent of the room panel.
+   It carries .child so the marker rules and the ember custom properties apply. */
+document.querySelectorAll('[data-hunt]').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('[data-hunt]').forEach(x =>
+      x.setAttribute('aria-pressed', String(x === b)));
+    huntGrid.setAttribute('data-marker', b.dataset.hunt);
+    newHunt();
+  });
+});
+huntGrid.classList.add('child');
+huntGrid.setAttribute('data-marker', 'none');
+/* .child imposes a 16/9 box; the grid sets its own height. */
+huntGrid.style.aspectRatio = 'auto';
+huntGrid.style.minHeight = '0';
+
+/* ── 3 · The room. Same prop family; three are interactable. ──────────── */
+const ROOM_PROPS = [
+  { i:'🎻', a:1,  x:74, y:38, s:'a violin' },
+  { i:'🔭', a:1,  x:30, y:56, s:'a telescope' },
+  { i:'⚙️', a:1,  x:56, y:70, s:'a machine' },
+  { i:'🫖', a:0,  x:86, y:36 }, { i:'📚', a:0, x:64, y:36 },
+  { i:'🪑', a:0,  x:18, y:78 }, { i:'🧺', a:0, x:42, y:80 },
+  { i:'🕯️', a:0, x:50, y:36 }, { i:'🪴', a:0, x:88, y:70 },
+  { i:'🧶', a:0,  x:70, y:82 }, { i:'🪵', a:0, x:34, y:34 },
+];
+const roomProps = document.getElementById('room-props');
+const roomHud = document.getElementById('room-hud');
+let roomFound = 0;
+ROOM_PROPS.forEach(p => {
+  const b = document.createElement('button');
+  b.className = 'prop';
+  b.style.left = p.x + '%'; b.style.top = p.y + '%';
+  b.textContent = p.i;
+  if (p.a) {
+    b.setAttribute('data-interactable', '');
+    b.setAttribute('aria-label', p.s);
+    b.addEventListener('mouseenter', () => say(p.s));
+    b.addEventListener('focus', () => say(p.s));
+    b.addEventListener('click', () => {
+      if (b.classList.contains('found')) return;
+      b.classList.add('found');
+      roomFound++;
+      roomHud.textContent = roomFound >= 3 ? 'Found all three' : `Found ${roomFound} of 3`;
+      say(p.s);
+    });
+  } else {
+    b.setAttribute('aria-label', 'scenery');
+    b.tabIndex = -1;
+  }
+  roomProps.appendChild(b);
+});
+
+/* ── 4 · Target-size lab ─────────────────────────────────────────────── */
+const SIZES = [
+  { px:38, name:'As built',   note:'MapScreen.css cabin node' },
+  { px:44, name:'WCAG 2.5.5', note:':root --control-min (adult)' },
+  { px:56, name:'Child mode', note:'[data-mood="child"] — set by nobody' },
+  { px:64, name:'Hourcade',   note:'where children gained, adults did not' },
+  { px:76, name:'~2 cm',      note:'.u-primary-target — used by nobody' },
+];
+const sizeRow = document.getElementById('size-row');
+SIZES.forEach(s => {
+  const w = document.createElement('div');
+  w.className = 'size-spec';
+  const b = document.createElement('button');
+  b.className = 'btn';
+  b.style.width = s.px + 'px';
+  b.style.height = s.px + 'px';
+  b.textContent = s.px;
+  b.setAttribute('aria-label', `${s.px} pixel target — ${s.name}`);
+  let hits = 0;
+  b.addEventListener('click', () => { hits++; b.textContent = String(hits); });
+  const cap = document.createElement('div');
+  cap.className = 'cap';
+  cap.innerHTML = `<b>${s.name}</b>${s.note}`;
+  w.append(b, cap);
+  sizeRow.appendChild(w);
+});
+
+/* ── 5 · Onboarding. Animated demo, ~10s, replayable, no text steps. ──── */
+const ONBOARD_PROPS = [
+  { i:'🎻', a:1, x:70, y:42, s:'a violin' },
+  { i:'📚', a:0, x:44, y:40 }, { i:'🫖', a:0, x:86, y:40 },
+  { i:'🪑', a:0, x:24, y:76 }, { i:'🧺', a:0, x:56, y:78 },
+];
+const onboardProps = document.getElementById('onboard-props');
+ONBOARD_PROPS.forEach(p => {
+  const b = document.createElement('button');
+  b.className = 'prop';
+  b.style.left = p.x + '%'; b.style.top = p.y + '%';
+  b.textContent = p.i;
+  if (p.a) {
+    b.setAttribute('data-interactable', '');
+    b.setAttribute('aria-label', p.s);
+    b.addEventListener('click', () => { b.classList.add('found'); say(p.s); });
+  } else { b.tabIndex = -1; b.setAttribute('aria-label','scenery'); }
+  onboardProps.appendChild(b);
+});
+
+/* Fallback path (D7): presented on the surface vs merely available. */
+const onboardAlt = document.getElementById('onboard-alt');
+function renderFallback() {
+  const host = document.getElementById('onboard-child');
+  const mode = host.getAttribute('data-fallback');
+  onboardAlt.innerHTML = '';
+  if (mode === 'presented') {
+    const b = document.createElement('button');
+    b.className = 'child-back';
+    b.style.left = '14px'; b.style.top = 'auto'; b.style.bottom = '14px';
+    b.innerHTML = '☰ <span>See a list instead</span>';
+    b.addEventListener('mouseenter', () => say('See a list instead'));
+    b.addEventListener('click', () => say('See a list instead'));
+    onboardAlt.appendChild(b);
+  }
+  /* "available only" renders nothing — the affordance exists in the DOM's
+     keyboard order and nowhere a child would look. That is the point. */
+  else {
+    const b = document.createElement('button');
+    b.className = 'child-back';
+    b.style.cssText = 'position:absolute;left:-9999px;top:0';
+    b.textContent = 'See a list instead';
+    onboardAlt.appendChild(b);
+  }
+}
+renderFallback();
+
+const demoStage = document.getElementById('demo-stage');
+const demoCardP = demoStage.querySelector('p');
+const onboardHud = document.getElementById('onboard-hud');
+let demoTimers = [];
+function playDemo() {
+  demoTimers.forEach(clearTimeout); demoTimers = [];
+  demoStage.style.display = 'grid';
+  onboardHud.textContent = 'Watch';
+  /* Wordless: a hand, a pulsing target, then it opens. Narration is spoken,
+     not written, per D1 — and it is a demonstration, not an instruction. */
+  demoCardP.textContent = 'Watch what happens.';
+  say('Watch what happens.');
+  demoTimers.push(setTimeout(() => {
+    demoCardP.textContent = 'Find the thing that glows.';
+    say('Find the thing that glows.');
+  }, 3400));
+  demoTimers.push(setTimeout(() => {
+    demoCardP.textContent = 'Now you try.';
+    say('Now you try.');
+  }, 6800));
+  demoTimers.push(setTimeout(() => {
+    demoStage.style.display = 'none';
+    onboardHud.textContent = 'Your turn';
+  }, 9600));
+}
+document.getElementById('demo-replay').addEventListener('click', playDemo);
+demoStage.style.display = 'none';
+
+/* Deliberately no build on load: the hunt panel starts hidden and is built on
+   first activation (see the tab handler). Resize only rebuilds when visible. */
+let resizeT;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeT);
+  resizeT = setTimeout(() => {
+    if (document.getElementById('p-hunt').hasAttribute('data-active')) newHunt();
+  }, 200);
+});
+</script>
+</body>
+</html>

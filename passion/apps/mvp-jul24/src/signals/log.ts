@@ -102,6 +102,35 @@ export function createSignalLog({ sessionId, now }: SignalLogOptions) {
     },
 
     /**
+     * Record that the child DID the thing: solved the puzzle, completed the build.
+     *
+     * The only record this app writes that can form a cell. An `open` deliberately resolves to no
+     * work-mode, because being somewhere is not a way of working, so without this the engine sees
+     * presence and never engagement — which was true for weeks and is what `catalog.ts` and this
+     * method together fix. `actionType` is the gadget's solve verb from the crosswalk, because that
+     * is what `resolveEngagedModes` reads to decide which cell the event lands in.
+     *
+     * `depthSignals` ride HERE rather than being their own interaction. A depth kind is not an
+     * action and does not resolve to a mode on its own, so `recordDepth`'s records were silently
+     * discarded as `unresolved-action`. Attached to a real verb they arrive.
+     */
+    recordAction(artifactId: string, verb: string, depth?: readonly string[]): void {
+      const s = read();
+      s.interactions.push({
+        kidId: KID_ID,
+        artifactId,
+        actionType: verb,
+        timestamp: stamp(),
+        prompted: false,
+        sessionId,
+        ...(depth && depth.length > 0
+          ? { depthSignals: depth.map((kind) => ({ kind, value: 1 })) }
+          : {}),
+      });
+      write(s);
+    },
+
+    /**
      * Record a depth-family signal. Never floor-gated: a depth signal is a
      * discrete accomplished action, so its evidential value does not depend on
      * how long it took.
