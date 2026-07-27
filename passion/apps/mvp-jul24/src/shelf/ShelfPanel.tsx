@@ -23,6 +23,8 @@
  */
 
 import { type JSX, useEffect, useRef, useState } from "react";
+import type { TopicId } from "../game/types";
+import { sessionLog } from "../signals/session";
 import { ShelfDiagram } from "./diagrams";
 import type { ShelfCard, ShelfDeck } from "./types";
 import "./shelf.css";
@@ -181,14 +183,14 @@ export function ShelfPanel({
             ))}
           </nav>
 
-          {open ? <ShelfCardPage card={open} /> : null}
+          {open ? <ShelfCardPage card={open} topic={deck.topic} /> : null}
         </div>
       </div>
     </div>
   );
 }
 
-function ShelfCardPage({ card }: { card: ShelfCard }): JSX.Element {
+function ShelfCardPage({ card, topic }: { card: ShelfCard; topic: TopicId }): JSX.Element {
   return (
     <article className="shelf-card" data-card={card.id} data-kind={card.kind}>
       <h3 className="shelf-card-title">{card.title}</h3>
@@ -201,7 +203,15 @@ function ShelfCardPage({ card }: { card: ShelfCard }): JSX.Element {
             link leaves the app, and it opens in a new tab so a child is never navigated out of the
             cabin they are standing in. */}
         {card.source.url ? (
-          <a href={card.source.url} target="_blank" rel="noreferrer noopener">
+          <a
+            href={card.source.url}
+            target="_blank"
+            rel="noreferrer noopener"
+            // The child is leaving to learn, which is the one act on this shelf worth recording.
+            // Attributed to the card's subject, never the shelf: an activity card is about its
+            // gadget, the invitation is about the whole cabin, and that difference is the point.
+            onClick={() => sessionLog.recordSourceFollow(card.gadgetId ?? topic)}
+          >
             {card.source.label}
           </a>
         ) : (

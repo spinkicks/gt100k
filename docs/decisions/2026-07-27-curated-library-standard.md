@@ -50,6 +50,13 @@ with an empty shelf is the cleanest possible way to do that to someone.
 
 ### Warnings, which inform
 
+**No maximum, on purpose.** Eleven shelves hold more than Patall's 3-5, one of them nine. That is
+not a defect to fix by deletion. The library is a *store*; 3-5 is a property of a *choice moment*,
+and which subset a child sees is the surface's decision. The number is also weaker than it is
+usually quoted as: the option-count moderator is marginal (Q(2) = 5.62, p < .06 fixed effects, and
+not significant at p = .20 under random effects). Trimming verified resources to satisfy a
+presentation rule would be the wrong trade in both directions.
+
 **A shelf with fewer than two things on it.** A child who does not like the first has nowhere to go
 but back. Not an error, because one genuinely good resource beats three padded ones. Patall, Cooper
 & Robinson (2008) put the useful range at 3–5 options per choice moment
