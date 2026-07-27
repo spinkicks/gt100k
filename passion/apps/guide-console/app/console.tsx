@@ -174,7 +174,12 @@ export function GuideConsole(): JSX.Element {
               and each of them is a change to the map or to what a guide has said about this child.
               Keyed by child so the recorded overrides never carry across a switch. */}
           {view === "maps" ? (
-            <MapsPanel key={ctrl.kid} maps={REVIEW_MAPS} work={workForKid(ctrl.kid)} />
+            <MapsPanel
+              key={ctrl.kid}
+              maps={REVIEW_MAPS}
+              work={workForKid(ctrl.kid)}
+              store={ctrl.store}
+            />
           ) : null}
 
           <Legend />

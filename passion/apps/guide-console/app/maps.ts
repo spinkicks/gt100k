@@ -14,7 +14,7 @@
 // tallies finished ones, or divides one by the other. `test/maps.test.ts` holds that line on the
 // view model and `test/maps-panel.test.tsx` holds it on the rendered markup, which is the surface
 // the ban is actually about.
-import type { HumanActor } from "@gt100k/hypothesis-store";
+import type { HumanActor, HypothesisStore } from "@gt100k/hypothesis-store";
 import {
   applyEdit,
   canPublish,
@@ -500,8 +500,9 @@ export function childReadView(
   work: ChildWork,
   overrides: readonly GuideOverride[],
   now: string = REVIEW_NOW,
+  store?: HypothesisStore,
 ): ChildReadVM {
-  const { stage, fromPlan } = stageForDomain(work.kidId, map.domainPath);
+  const { stage, fromPlan } = stageForDomain(work.kidId, map.domainPath, store);
   const childStage = stageText(stage);
   // Against the record just earned, not the one the map arrived carrying, for the same reason
   // `mapView` re-validates: an edit since then replaced the text the stored record was earned by.

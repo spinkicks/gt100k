@@ -21,6 +21,7 @@
 // children aged roughly 10 to 12 it depressed interest and later performance. So every row below
 // carries the artefacts it was derived from, including when there are none.
 import { useState, type JSX } from "react";
+import type { HypothesisStore } from "@gt100k/hypothesis-store";
 import type { MapStatus, MasteryMap } from "@gt100k/mastery-map";
 import type { ChildWork } from "./map-evidence.js";
 import {
@@ -490,11 +491,16 @@ function MapCard({
 export function MapsPanel({
   maps,
   work,
+  store,
 }: {
   maps: readonly MasteryMap[];
   /** The selected child and what they have made. Absent means the tab is showing the maps alone,
       which is a coherent thing to look at: a map is domain knowledge and holds nobody in it. */
   work?: ChildWork;
+  /** The live lifecycle store. Where a child stands on a map comes from their plan, and a plan
+      exists only for a certified spike, so without this the tab would report the seed's answer and
+      ignore a certification the guide made this session. */
+  store?: HypothesisStore;
 }): JSX.Element {
   // The maps themselves are held here, not their view models, because both of the things a guide
   // can do are changes to the MAP: a status is a decision about use, and an edit runs through the
@@ -512,7 +518,7 @@ export function MapsPanel({
     setCurrent((prev) => prev.map((m) => (m.id === id ? f(m) : m)));
 
   const readOf = (map: MasteryMap): ChildReadVM | null =>
-    child === undefined ? null : childReadView(map, child, child.overrides);
+    child === undefined ? null : childReadView(map, child, child.overrides, undefined, store);
 
   return (
     <section className="wbpanel" aria-label="Mastery maps" data-testid="maps-panel">

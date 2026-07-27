@@ -48,10 +48,10 @@ export function useConsole() {
   const familyObservations = useMemo(() => familyObservationsForKid(kid), [kid]);
   // The selected child's certified-spike specialization plans (018-D1). Derived from the log + the
   // same wellbeing reads, with the DETERMINISTIC STUB brief — synchronous + offline for LOOP_QA.
-  const plans = useMemo(() => plansForKid(kid), [kid]);
+  const plans = useMemo(() => plansForKid(kid, store), [kid, store]);
   // The selected child's per-certified-spike access broker plans (023-D3/D4). Same plans + wellbeing
   // reads, run through the pure brokerAccess engine against a synthetic opportunity catalog.
-  const access = useMemo(() => accessForKid(kid), [kid]);
+  const access = useMemo(() => accessForKid(kid, store), [kid, store]);
 
   // Switching child resets the transient view state so the detail pane / filter never point at a
   // stale card from the previous kid.
@@ -154,6 +154,9 @@ export function useConsole() {
 
   return {
     children: CHILDREN,
+    // The live lifecycle store. Exposed so panels derived from certification (Plan, Access, Maps)
+    // can read the guide's decisions rather than the module-scope seed.
+    store,
     kid,
     setKid,
     activeChild,

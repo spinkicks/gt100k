@@ -4,7 +4,7 @@
 // curated resources for the cell, and run the pure engine with the DETERMINISTIC STUB brief (no
 // network) → a staged `SpecializationPlan` the guide can DISPOSE. The system proposes; nothing is
 // applied to the child. No child-facing label/score anywhere.
-import { getForKid } from "@gt100k/hypothesis-store";
+import { getForKid, type HypothesisStore } from "@gt100k/hypothesis-store";
 import {
   curatedForCell,
   derivePlanInputs,
@@ -31,15 +31,25 @@ export interface PlanCardVM {
 /**
  * The selected child's certified-spike plans, escalations sorted first (so "needs your review" leads).
  * Deterministic + synchronous (stub brief) so `next build` + LOOP_QA stay offline.
+ *
+ * `store` is the LIVE hypothesis store, the one a guide's promote/park writes to. It has to be
+ * passed in: `profile.store` is the module-scope seed built once at import, so reading certification
+ * from there meant a promotion made in the console produced no plan, and Access, which is built on
+ * this function, stayed silent too. Defaulting to the seed keeps callers that only want the
+ * as-seeded view (the tests, and any static render) working unchanged.
+ *
+ * Note it is only CERTIFICATION that comes from the store. The readiness signals still come from the
+ * profile's interaction log, because promoting a spike does not change what the child did.
  */
-export function plansForKid(kidId: string): readonly PlanCardVM[] {
+export function plansForKid(kidId: string, store?: HypothesisStore): readonly PlanCardVM[] {
   const profile = profileFor(kidId);
   if (!profile) return [];
+  const lifecycle = store ?? profile.store;
 
   const reads = new Map(wellbeingForKid(kidId).map((c) => [c.cellKey, c.read]));
 
   const out: PlanCardVM[] = [];
-  for (const h of getForKid(profile.store, kidId)) {
+  for (const h of getForKid(lifecycle, kidId)) {
     // An early-out only. `derivePlanInputs` enforces the same rule and returns null regardless, so
     // this skips work rather than deciding anything; the rule itself lives in the engine.
     if (!isPlannableState(h.state)) continue;
@@ -47,7 +57,9 @@ export function plansForKid(kidId: string): readonly PlanCardVM[] {
     if (!read) continue;
     const inputs = derivePlanInputs(
       profile,
-      profile.store,
+      // The live store again, not the seed: the deriver re-checks certification itself, so handing
+      // it the seed here would refuse the very promotion this function is meant to react to.
+      lifecycle,
       h.cellKey,
       read,
       ROSTER_NOW,
@@ -71,6 +83,6 @@ export function plansForKid(kidId: string): readonly PlanCardVM[] {
 }
 
 /** How many of the child's certified-spike plans need a human's review (rest/deload/advance). */
-export function planReviewCount(kidId: string): number {
-  return plansForKid(kidId).filter((c) => c.plan.escalateToHuman).length;
+export function planReviewCount(kidId: string, store?: HypothesisStore): number {
+  return plansForKid(kidId, store).filter((c) => c.plan.escalateToHuman).length;
 }

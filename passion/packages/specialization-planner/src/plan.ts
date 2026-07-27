@@ -63,7 +63,7 @@ const PCDE_BY_STAGE: Record<Stage, readonly Pcde[]> = {
 
 const CRAFT_FLOOR_HINT: Record<Stage, string> = {
   S1_IGNITION:
-    "Keep it playful — the only floor is noticing what you enjoy and choosing to come back.",
+    "Keep it playful. The only floor is noticing what you enjoy and choosing to come back.",
   S2_FOUNDATIONS: "Pair the project with one small, chosen, bounded practice on a core technique.",
   S3_AUTHORSHIP:
     "Anchor the project with a chosen, capped practice on the craft your audience will notice.",
@@ -74,7 +74,7 @@ const STAGE_PURPOSE: Record<Stage, string> = {
   S1_IGNITION: "fall in love and keep coming back",
   S2_FOUNDATIONS: "get precise without killing the fun",
   S3_AUTHORSHIP: "make it real for a community",
-  S4_SIGNATURE: "find your voice — portfolio-defining work",
+  S4_SIGNATURE: "find your voice, portfolio-defining work",
 };
 
 // How far a child goes is theirs, so the first half of this no longer sets a ceiling by age. It
@@ -201,9 +201,9 @@ function derivePlanCore(inputs: PlanInputs, resources: readonly CuratedResource[
   };
 
   const escalationReason = strained
-    ? "The wellbeing read proposes rest/back-off — holding the stage and reducing load; please review."
+    ? "The wellbeing read proposes rest/back-off, so we hold the stage and reduce load. Please review."
     : proposedAdvance
-      ? `Proposes ${stage} for this spike — please ratify before committing the child.`
+      ? `Proposes ${stage} for this spike. Please ratify before committing the child.`
       : undefined;
 
   const signals: string[] = [
@@ -213,20 +213,20 @@ function derivePlanCore(inputs: PlanInputs, resources: readonly CuratedResource[
   if (inputs.stretchSeeking) signals.push("voluntarily reaching for harder work");
   if (inputs.producerIdentity) signals.push("shipping/sharing for others");
 
-  const rationale = `On readiness signals (${signals.join(", ")}), this spike sits at ${stage} — ${STAGE_PURPOSE[stage]}. ${inputs.monthsInPursuit} months in pursuit is indicative only; stages advance on readiness, never age. ${
+  const rationale = `On readiness signals (${signals.join(", ")}), this spike sits at ${stage}, to ${STAGE_PURPOSE[stage]}. ${inputs.monthsInPursuit} months in pursuit is indicative only; stages advance on readiness, never age. ${
     strained
-      ? "The wellbeing read shows strain, so we hold the stage and propose a guilt-free rest / deload and more autonomy — protect the rage to master."
+      ? "The wellbeing read shows strain, so we hold the stage and propose a guilt-free rest / deload and more autonomy, to protect the rage to master."
       : "The mentor is a relay and the audience widens with authenticity; deliberate practice stays small and serves the child's own project."
   }`;
 
   const guardrailNotes: readonly string[] = [
-    `DP is bounded: ${dpDose} < ${INVESTMENT_LOAD} investment-year load — practice serves the project, never the reverse.`,
+    `DP is bounded: ${dpDose} < ${INVESTMENT_LOAD} investment-year load. Practice serves the project, never the reverse.`,
     `Rest is mandatory: ${REST_DAYS_PER_WEEK} days/week and ${REST_MONTHS_PER_YEAR} months/year off the primary spike, in ~${REST_INCREMENT_MONTHS}-month increments.`,
-    "The child owns the problem, method, and pace — this brief is an offer (opportunity/structure/access), never an assignment.",
+    "The child owns the problem, method, and pace. This brief is an offer (opportunity/structure/access), never an assignment.",
     "Trajectory, not eminence: this plan protects a climb, it does not forecast where it ends.",
     ...(strained
       ? [
-          "Strain present — holding the stage and proposing rest/deload to protect the rage to master.",
+          "Strain present, so we hold the stage and propose rest/deload to protect the rage to master.",
         ]
       : []),
   ];
