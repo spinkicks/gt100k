@@ -15,6 +15,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "Voluntary returns",
     area: "Reading the child",
     basis: "evidence",
+    band: "adult",
     why: "What a child comes back to on their own, once nobody is prompting them, is the most trustworthy sign of real interest.",
     sources: [
       {
@@ -36,6 +37,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "Voluntary vs prompted",
     area: "Reading the child",
     basis: "evidence",
+    band: "adult",
     why: "We separate visits the child chose from visits we nudged them into, because only the unprompted ones tell you the interest is theirs.",
     sources: [
       { authors: "Ryan & Deci", year: 2000, url: "https://doi.org/10.1037/0003-066X.55.1.68" },
@@ -53,6 +55,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "Depth signals",
     area: "Reading the child",
     basis: "evidence",
+    band: "6-14",
     why: "Moments where a child redid something nobody asked them to, chose the harder path, or recovered from a failure count for more than simply showing up.",
     sources: [
       { authors: "Kapur", year: 2008, url: "https://doi.org/10.1080/07370000802212669" },
@@ -68,6 +71,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "Coverage",
     area: "Reading the child",
     basis: "evidence",
+    band: "adult",
     why: "An empty area means we have not given this child a real chance at it yet, not that they dislike it.",
     sources: [
       { authors: "Hidi & Renninger", year: 2006, url: "https://doi.org/10.1207/s15326985ep4102_4" },
@@ -95,6 +99,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "Comparing areas",
     area: "Reading the child",
     basis: "evidence",
+    band: "9-11",
     why: "Read this as where a child spent time, not as which area they like most, because some activities are simply more appealing regardless of their subject.",
     sources: [
       {
@@ -116,6 +121,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "Plural and reversible",
     area: "Reading the child",
     basis: "evidence",
+    band: "adult",
     why: "A child can hold more than one interest and can always park one, because the damage attributed to specialising early is really the damage of being locked in.",
     sources: [
       {
@@ -146,6 +152,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "Not sure yet",
     area: "How we measure",
     basis: "evidence",
+    band: "structural",
     why: "When the evidence is thin we say so plainly instead of showing a confident-looking number.",
     sources: [
       {
@@ -162,6 +169,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "No single score",
     area: "How we measure",
     basis: "evidence",
+    band: "structural",
     why: "We never reduce a child to one number, because a single score invites comparison and ranking rather than a decision about what to do next.",
     sources: [
       {
@@ -177,6 +185,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "No points or streaks",
     area: "How we measure",
     basis: "evidence",
+    band: "6-14",
     why: "Rewarding something a child already enjoys reliably reduces how much they choose to do it later, and the effect is worse in children than adults.",
     sources: [
       {
@@ -217,6 +226,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "Quiet devaluation",
     area: "Wellbeing",
     basis: "evidence",
+    band: "12-14",
     why: "A child going quietly through the motions matters more than a child saying they are tired, because that quiet fade is what predicts dropping out.",
     sources: [
       { authors: "Raedeke & Smith", year: 2001, url: "https://doi.org/10.1123/jsep.23.4.281" },
@@ -232,6 +242,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "Pressure down before challenge down",
     area: "Wellbeing",
     basis: "evidence",
+    band: "12-14",
     why: "When the stakes rise we suggest more freedom and less evaluation, which is the opposite of the usual adult reflex to tighten up.",
     sources: [
       {
@@ -249,6 +260,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "Hard but doable",
     area: "Wellbeing",
     basis: "evidence",
+    band: "structural",
     why: "Learning is fastest when a child succeeds about 85% of the time, so we aim difficulty at that band rather than at always winning.",
     sources: [
       {
@@ -262,6 +274,8 @@ export const CLAIMS: readonly Claim[] = [
         url: "https://doi.org/10.1111/j.1469-7610.1976.tb00381.x",
       },
     ],
+    limit:
+      "The 85% figure has never been tested on a child, or on any person. Wilson et al. derived it mathematically for gradient-descent learners and demonstrated it on three simulations: a one-layer Perceptron with artificial stimuli, a two-layer network sorting MNIST handwritten digits, and a model of monkeys learning a Random Dot Motion task. The scaffolding work alongside it studied thirty children aged three to five, below this product's whole range. Treating 85% as a target for a nine-year-old is an extrapolation across species and substrate, not only across age. The idea that difficulty has a sweet spot is well supported; the number is not a finding about children.",
   },
 
   // ---------------------------------------------------------------- The plan
@@ -270,6 +284,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "Staged climb",
     area: "The plan",
     basis: "evidence",
+    band: "adult",
     why: "Talent develops in stages, each needing a different kind of teacher, so the plan moves by readiness rather than by age.",
     sources: [
       {
@@ -283,12 +298,15 @@ export const CLAIMS: readonly Claim[] = [
         url: "https://www.penguinrandomhouse.com/books/15009/developing-talent-in-young-people-by-benjamin-bloom/",
       },
     ],
+    limit:
+      "The stages describe childhood but were established from ADULTS looking back: Bloom interviewed roughly 120 people who had already reached world-class level by about 35, and their parents. Nobody watched these stages happen.",
   },
   {
     id: "plan-type-iii",
     label: "Real projects for a real audience",
     area: "The plan",
     basis: "evidence",
+    band: "6-14",
     why: "Progress comes from widening who the work is for, not from adding practice hours.",
     sources: [
       {
@@ -310,6 +328,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "The teachable bottleneck",
     area: "The plan",
     basis: "evidence",
+    band: "adult",
     why: "What usually stalls a talented child is a set of learnable skills, like coping with feedback and setting their own goals, not a lack of ability.",
     sources: [
       {
@@ -323,6 +342,8 @@ export const CLAIMS: readonly Claim[] = [
         url: "https://doi.org/10.1177/1529100611418056",
       },
     ],
+    limit:
+      "Established on adult elite performers recalling their development (7 world-class athletes aged 21 to 37, then 24 performers aged 25 to 56), not on children being observed. Which of these skills can be taught at 9 rather than recognised at 30 is not something these studies can tell us.",
   },
 
   // ---------------------------------------------------------------- Family
@@ -331,6 +352,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "Autonomy support",
     area: "Family",
     basis: "evidence",
+    band: "6-14",
     why: "Families who support a child's own choices grow a calm, durable love of the thing; families who take it over grow an anxious one.",
     sources: [
       {
@@ -352,6 +374,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "Warmth that does not depend on results",
     area: "Family",
     basis: "evidence",
+    band: "12-14",
     why: "When affection rises and falls with performance it carries real emotional costs, so we watch for it and coach against it.",
     sources: [
       {
@@ -371,6 +394,7 @@ export const CLAIMS: readonly Claim[] = [
     label: "A human always decides",
     area: "How we measure",
     basis: "evidence",
+    band: "adult",
     why: "The software only ever proposes; a person owns every decision about a child, because human override is what catches the model when it is wrong.",
     sources: [
       {
