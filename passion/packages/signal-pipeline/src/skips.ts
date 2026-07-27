@@ -2,7 +2,7 @@ import type { Artifact } from "@gt100k/two-axis-tagging";
 import type { CellEvent } from "@gt100k/interest-inference";
 import { serializeCellKey } from "@gt100k/interest-inference";
 import type { SurfacedRecord, PipelineConfig } from "./model.js";
-import type { BuiltEvent } from "./actions.js";
+import type { BuiltEvent, Presence } from "./actions.js";
 import { isNovelty, exposureKey } from "./novelty.js";
 
 const ka = (kidId: string, artifactId: string): string => `${kidId}::${artifactId}`;
@@ -58,6 +58,7 @@ export function deriveSkips(
   built: readonly BuiltEvent[],
   catalog: ReadonlyMap<string, Artifact>,
   config: PipelineConfig,
+  present: readonly Presence[] = [],
 ): CellEvent[] {
   const engagedByKidArtifact = new Map<string, Map<string, string>>(); // ka -> Map<cellKey, mode>
   const engagedCells = new Set<string>(); // exposureKey(kid, cell) — every cell this kid has engaged
@@ -81,6 +82,30 @@ export function deriveSkips(
     const sKey = ks(b.event.kidId, b.sessionId);
     const set = engagedBySession.get(sKey) ?? new Set<string>();
     set.add(b.cellKey);
+    engagedBySession.set(sKey, set);
+  }
+
+  // Presence counts as taking, not as passing over. A mode-less action resolves to no cell, so it
+  // cannot be an engagement, but it is still proof the child did not skip the thing: without this
+  // the child who opened one gadget and left earns a full-weight decrement against the one cell
+  // they demonstrably chose to look at. Every cell the artifact offers is marked, not just the
+  // first afforded mode, or the same bug survives one mode along.
+  //
+  // The reverse error is real and accepted: a child who opens something, glances and leaves will
+  // now suppress a decline that arguably should fire. It is the safer of the two. A false decline
+  // is negative evidence against a cell the child actively chose; a missing one is a single absent
+  // weak negative inside a choice set that E4 already normalises by size.
+  for (const p of present) {
+    const art = catalog.get(p.artifactId);
+    if (!art) continue;
+    const sKey = ks(p.kidId, p.sessionId);
+    const set = engagedBySession.get(sKey) ?? new Set<string>();
+    for (const cellKey of offeredCells(
+      art,
+      engagedByKidArtifact.get(ka(p.kidId, p.artifactId)),
+    ).keys()) {
+      set.add(cellKey);
+    }
     engagedBySession.set(sKey, set);
   }
 

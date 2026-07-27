@@ -27,14 +27,14 @@ export function deriveSignals(input: DeriveInput): {
   dropped: DroppedInteraction[];
 } {
   const config: PipelineConfig = { ...DEFAULTS, ...input.config };
-  const { built, dropped } = buildActionEvents(input.interactions, input.catalog, config);
+  const { built, dropped, present } = buildActionEvents(input.interactions, input.catalog, config);
 
   // Classification needs the whole stream (the previous engagement of the same kid+cell), so it
   // runs once over `built` and is handed to the per-event mapping.
   const returns = classifyReturns(built);
   const cellEvents: CellEvent[] = [];
   built.forEach((b, i) => cellEvents.push(...actionToCellEvents(b.event, b.artifact, returns[i]!)));
-  cellEvents.push(...deriveSkips(input.surfaced ?? [], built, input.catalog, config));
+  cellEvents.push(...deriveSkips(input.surfaced ?? [], built, input.catalog, config, present));
 
   return { actionEvents: built.map((b) => b.event), cellEvents, dropped };
 }
