@@ -1,6 +1,16 @@
 # Proposal — Interest engine v2: what the engine should collect, and what it should stop scoring
 
-**Status:** Proposal, needs sign-off. Not implemented.
+**Status:** Mostly landed. This is now a working record, not a request. As of 2026-07-26:
+
+| | Items |
+|---|---|
+| **Shipped** | E1, E2, E3, E4, E6 (+ the E6a amendment), E7, E11 |
+| **Withdrawn** | E8 — the premise named the wrong construct; the rename it should have been is done |
+| **Open, ours** | E9's second half (`solves` → difficulty calibration), E10 (out-of-product channel) |
+| **Blocked** | E5 (nothing surfaces system-driven content yet, so there is nothing to down-weight), E12 (needs cross-child data) |
+
+Each section below carries its own outcome. Where an item shipped, the section says what actually
+landed rather than what was asked for, because in three cases those differ.
 **Author:** Felipe Caicedo (via research pass 2026-07-25)
 **Affects:** `specs/011-interest-inference` (`@gt100k/interest-inference`), `specs/012-signal-pipeline`,
 `docs/prd/DISCOVERY-APP-PRD.md` §6.2–6.4, and the event-emission side in `passion/apps/mvp-jul24`.
