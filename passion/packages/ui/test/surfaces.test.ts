@@ -4,7 +4,12 @@
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { readSurfaceEnv, resolveSurfaces, type SurfaceEnv } from "../src/surfaces.js";
+import {
+  readSurfaceEnv,
+  resolveHomeUrl,
+  resolveSurfaces,
+  type SurfaceEnv,
+} from "../src/surfaces.js";
 
 const NO_URLS: SurfaceEnv["urls"] = {};
 
@@ -56,6 +61,33 @@ describe("resolveSurfaces", () => {
       "evidence:record",
       "concierge:record",
     ]);
+  });
+});
+
+describe("resolveHomeUrl", () => {
+  it("is the front door's own port in development", () => {
+    expect(resolveHomeUrl({ nodeEnv: "development", urls: NO_URLS })).toBe("http://localhost:3000");
+  });
+
+  it("is null in production until it is told otherwise", () => {
+    expect(resolveHomeUrl({ nodeEnv: "production", urls: NO_URLS })).toBeNull();
+  });
+
+  it("prefers an explicit home URL", () => {
+    const env = {
+      nodeEnv: "production",
+      urls: { home: "https://passionlab.example.com" },
+    } as const;
+
+    expect(resolveHomeUrl(env)).toBe("https://passionlab.example.com");
+  });
+
+  it("keeps home out of the switcher, which lists peers only", () => {
+    // Home is reachable from the wordmark. Listing it as a sixth surface would put the same
+    // destination on screen twice and make every header a row longer.
+    const ids = resolveSurfaces({ nodeEnv: "development", urls: NO_URLS }).map((s) => s.id);
+
+    expect(ids).not.toContain("home");
   });
 });
 

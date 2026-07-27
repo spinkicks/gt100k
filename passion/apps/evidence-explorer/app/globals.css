@@ -2,6 +2,7 @@
    the values live in themes.css, so importing the contract alone would load no theme at all and
    data-theme would do nothing, silently. */
 @import "@gt100k/design-tokens";
+@import "@gt100k/ui/styles.css";
 
 /*
  * Provenance Observatory, wearing the GT School identity via [data-theme="gt"] in

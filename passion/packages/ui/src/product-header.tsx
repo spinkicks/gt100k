@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-import { findSurface, resolveSurfaces, type Surface } from "./surfaces.js";
+import { findSurface, resolveHomeUrl, resolveSurfaces, type Surface } from "./surfaces.js";
 
 /**
  * The one piece of chrome every adult surface shares: who we are, where you are, and one click to
@@ -18,6 +18,11 @@ export interface ProductHeaderProps {
    * destinations twice on one screen makes the page look busier without making it faster.
    */
   readonly showSwitcher?: boolean;
+  /**
+   * Where the front door lives. Defaults to the registry's answer for this environment; pass null
+   * to force a plain wordmark. The front door never links to itself.
+   */
+  readonly homeUrl?: string | null;
 }
 
 export function ProductHeader({
@@ -25,6 +30,7 @@ export function ProductHeader({
   currentLabel,
   surfaces,
   showSwitcher = true,
+  homeUrl,
 }: ProductHeaderProps): JSX.Element {
   const all = surfaces ?? resolveSurfaces();
   const label = currentLabel ?? findSurface(all, current)?.label;
@@ -32,12 +38,25 @@ export function ProductHeader({
     ? all.filter((s): s is Surface & { url: string } => s.id !== current && s.url !== null)
     : [];
 
-  return (
-    <header className="plh">
+  const home = homeUrl === undefined ? resolveHomeUrl() : homeUrl;
+  const wordmark = (
+    <>
       <span className="plh__mark" aria-hidden="true">
         P
       </span>
       <span className="plh__product">PassionLab</span>
+    </>
+  );
+
+  return (
+    <header className="plh">
+      {home === null || current === "home" ? (
+        wordmark
+      ) : (
+        <a className="plh__home" href={home}>
+          {wordmark}
+        </a>
+      )}
       {label === undefined ? null : (
         <>
           <span className="plh__sep" aria-hidden="true">

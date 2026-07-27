@@ -113,7 +113,7 @@ export function TimeScrub({
   );
 
   const valueText = currentNode
-    ? `Beat ${revealedCount} of ${count}: ${groupLabel(currentBeat?.group ?? "")} — ${currentNode.label}`
+    ? `Beat ${revealedCount} of ${count}: ${groupLabel(currentBeat?.group ?? "")}: ${currentNode.label}`
     : `Beat 0 of ${count}: milestone not yet grown`;
 
   return (
