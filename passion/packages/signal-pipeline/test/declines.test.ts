@@ -17,41 +17,66 @@ const synth: Artifact = {
   tagConfidence: 1,
   tagStatus: "TRUSTED",
 };
-const catalog = new Map([["synth-01", synth]]);
+/**
+ * Something in another cabin for the child to actually take, in the sessions where the point is
+ * that they took nothing from the synth.
+ *
+ * A session with no engagement at all now yields nothing (see `no-choice-no-decline.test.ts`), so
+ * "passed the synth over" is only expressible if the child was demonstrably choosing. It affords
+ * exactly one mode and that mode is always engaged, which keeps it out of every not-chosen set and
+ * leaves the choice-set sizes below reading as the synth's own three cells.
+ */
+const loom: Artifact = {
+  ...synth,
+  id: "loom-01",
+  domainPath: ["making-engineering", "textiles"],
+  affordedModes: ["build"],
+};
+const catalog = new Map([
+  ["synth-01", synth],
+  ["loom-01", loom],
+]);
 
-const engage = (sessionId: string, timestamp: string): Interaction => ({
+const engage = (
+  sessionId: string,
+  timestamp: string,
+  artifactId = "synth-01",
+): Interaction => ({
   kidId: "k",
-  artifactId: "synth-01",
+  artifactId,
   actionType: "assemble",
   timestamp,
   prompted: false,
   sessionId,
 });
-const surface = (sessionId: string, timestamp: string): SurfacedRecord => ({
+const surface = (
+  sessionId: string,
+  timestamp: string,
+  artifactId = "synth-01",
+): SurfacedRecord => ({
   kidId: "k",
-  artifactId: "synth-01",
+  artifactId,
   sessionId,
   timestamp,
 });
 
-// s0: first sight, build engaged. s1: build engaged again. s2: nothing engaged.
+// s0: first sight, build engaged. s1: build engaged again. s2: the loom is taken and the synth is
+// not, which is what makes s2 a pass-over rather than an absence.
 const INTERACTIONS: Interaction[] = [
   engage("s0", "2026-01-01T00:00:00.000Z"),
   engage("s1", "2026-02-01T00:00:00.000Z"),
+  engage("s2", "2026-03-01T00:00:00.000Z", "loom-01"),
 ];
 const SURFACED: SurfacedRecord[] = [
   surface("s0", "2026-01-01T00:00:00.000Z"),
   surface("s1", "2026-02-01T00:00:00.000Z"),
   surface("s2", "2026-03-01T00:00:00.000Z"),
+  surface("s2", "2026-03-01T00:00:00.000Z", "loom-01"),
 ];
 
 const derive = (interactions: Interaction[], surfaced: SurfacedRecord[]) =>
-  deriveSkips(
-    surfaced,
-    buildActionEvents(interactions, catalog, DEFAULTS).built,
-    catalog,
-    DEFAULTS,
-  );
+  deriveSkips(surfaced, buildActionEvents(interactions, catalog, DEFAULTS).built, catalog, DEFAULTS)
+    .events;
 
 describe("deriveSkips — declines (E4)", () => {
   it("a cell engaged in the session is neither skipped nor declined", () => {
@@ -86,16 +111,25 @@ describe("deriveSkips — declines (E4)", () => {
     expect(sized("2026-01-01T00:00:00.000Z")).toEqual([]);
     // s1: build was taken, so the two untouched modes are the whole choice set.
     expect(sized("2026-02-01T00:00:00.000Z")).toEqual([2, 2]);
-    // s2: nothing taken → all three cells were passed over.
+    // s2: the loom was taken, so all three of the synth's cells were passed over. The loom's own
+    // cell is engaged and so is not part of the choice that was declined.
     expect(sized("2026-03-01T00:00:00.000Z")).toEqual([3, 3, 3]);
   });
 
   it("cells inside the novelty window are still excluded", () => {
     // Every cell of this artifact is first seen on 2026-01-01; the second look is one day later,
-    // well inside the 3-day window.
+    // well inside the 3-day window. s1 takes the loom, so the emptiness below is the novelty rule
+    // doing its job and not the no-choice rule quietly standing in for it.
     const events = derive(
-      [engage("s0", "2026-01-01T00:00:00.000Z")],
-      [surface("s0", "2026-01-01T00:00:00.000Z"), surface("s1", "2026-01-02T00:00:00.000Z")],
+      [
+        engage("s0", "2026-01-01T00:00:00.000Z"),
+        engage("s1", "2026-01-02T00:00:00.000Z", "loom-01"),
+      ],
+      [
+        surface("s0", "2026-01-01T00:00:00.000Z"),
+        surface("s1", "2026-01-02T00:00:00.000Z"),
+        surface("s1", "2026-01-02T00:00:00.000Z", "loom-01"),
+      ],
     );
     expect(events).toHaveLength(0);
   });

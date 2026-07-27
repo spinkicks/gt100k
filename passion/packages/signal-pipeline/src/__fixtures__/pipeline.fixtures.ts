@@ -124,6 +124,22 @@ export const INTERACTIONS: Interaction[] = [
     prompted: true,
     sessionId: "s11",
   },
+  // The child plays the synth in surf1 rather than assembling it, which is what makes surf1's build
+  // cell a pass-over rather than an absence: a session with no engagement at all now yields nothing
+  // (see `no-choice-no-decline.test.ts`), so without this the skip below would simply vanish.
+  //
+  // `play` resolves to `perform`, deliberately. Engaging `investigate` here would work too, but it
+  // would land two days after the prompted inspect and so add an eleventh cross-day return to a
+  // fixture whose day-gap sequence is one of the things under test. `perform` has no history, so it
+  // reads as a novel same-day engagement and leaves that sequence alone.
+  {
+    kidId: "k",
+    artifactId: "synth-01",
+    actionType: "play",
+    timestamp: "2026-02-27T00:00:00.000Z",
+    prompted: false,
+    sessionId: "surf1",
+  },
 ];
 
 // synth surfaced in a session where the build cell was NOT engaged, past novelty → a `skip` on build
