@@ -3,7 +3,7 @@
 // Shared controller for every prototype: owns the roster store, the selected child, the lifecycle
 // filter, the selected card, the human actions, and the `window.__qa` install. Keeping this in one
 // place means all four prototypes render the exact same behaviour and only differ in presentation.
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { GateStatus, HumanActor, HypothesisStore } from "@gt100k/hypothesis-store";
 import {
   consoleViewModel,
@@ -14,6 +14,12 @@ import {
   type HypothesisCard,
 } from "@gt100k/hypothesis-store";
 import { applyGuidePrimaryAction, buildQaState, topPromotableId } from "./console-state.js";
+import {
+  applyDecisions,
+  DECISIONS_KEY,
+  parseDecisionLog,
+  type GuideDecision,
+} from "./decisions.js";
 import { installQa } from "./qa.js";
 import { CHILDREN, buildRosterGates, buildRosterStore, type Child } from "./console-data.js";
 import { escalationCount, wellbeingForKid } from "./wellbeing.js";
@@ -34,6 +40,10 @@ export interface ChildSummary {
 
 export function useConsole() {
   const [store, setStore] = useState<HypothesisStore>(() => buildRosterStore());
+  // The decisions this browser has recorded. Held beside the store rather than derived from it,
+  // because the store is the RESULT and the log is the record: see `decisions.ts` for why we
+  // persist the second and replay it, instead of snapshotting the first.
+  const [decisions, setDecisions] = useState<readonly GuideDecision[]>([]);
   const [kid, setKidRaw] = useState<string>(CHILDREN[0]!.id);
   const [filter, setFilter] = useState<Filter>("ALL");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -61,6 +71,46 @@ export function useConsole() {
     setFilter("ALL");
   }
 
+  // Load after mount, never during render: reading storage while rendering would make the server
+  // and client markup disagree, and this is a client-only fact about one browser.
+  useEffect(() => {
+    const log = parseDecisionLog(window.localStorage.getItem(DECISIONS_KEY));
+    if (log.length === 0) return;
+    setDecisions(log);
+    setStore(applyDecisions(buildRosterStore(), log, buildRosterGates()).store);
+  }, []);
+
+  /**
+   * Append one decision and write the log. Writing can throw (private mode, quota), and when it
+   * does the decision still applies to this session: losing persistence is worse than losing the
+   * action, and pretending the click did not happen would be the wrong failure.
+   */
+  const record = useCallback((decision: GuideDecision): void => {
+    setDecisions((prev) => {
+      const next = [...prev, decision];
+      try {
+        window.localStorage.setItem(DECISIONS_KEY, JSON.stringify(next));
+      } catch {
+        // Session-only from here. The console still behaves; it just will not survive a reload.
+      }
+      return next;
+    });
+    // Stable: the only thing it closes over is a setState, so the QA effect below can depend on it
+    // without reinstalling the contract on every render.
+  }, []);
+
+  /** Forget every recorded decision and return the roster to its seeded state. */
+  function resetDecisions(): void {
+    try {
+      window.localStorage.removeItem(DECISIONS_KEY);
+    } catch {
+      // Nothing to do: the in-memory reset below is what the guide asked for either way.
+    }
+    setDecisions([]);
+    setStore(buildRosterStore());
+    setSelectedId(null);
+  }
+
   const ref = useRef({ store, kid, selectedId, gates });
   ref.current = { store, kid, selectedId, gates };
 
@@ -74,16 +124,21 @@ export function useConsole() {
           escalationCount(ref.current.kid),
         ),
       () => {
+        const now = isoNow();
+        const id = topPromotableId(ref.current.store, ref.current.kid, ref.current.gates);
         const next = applyGuidePrimaryAction(
           ref.current.store,
           ref.current.kid,
           ref.current.gates,
-          isoNow(),
+          now,
         );
-        if (next) setStore(next);
+        if (next && id) {
+          record({ action: "promote", hypothesisId: id, at: now });
+          setStore(next);
+        }
       },
     );
-  }, []);
+  }, [record]);
 
   const counts = useMemo(() => {
     const m = new Map<string, number>();
@@ -112,16 +167,26 @@ export function useConsole() {
   const promotableId = topPromotableId(store, kid, gates);
 
   function advanceTop(): void {
-    const next = applyGuidePrimaryAction(store, kid, gates, isoNow());
-    if (next) {
-      if (promotableId) setSelectedId(promotableId);
+    const now = isoNow();
+    const next = applyGuidePrimaryAction(store, kid, gates, now);
+    if (next && promotableId) {
+      setSelectedId(promotableId);
+      record({ action: "promote", hypothesisId: promotableId, at: now });
       setStore(next);
     }
   }
 
+  const PARK_REASON = "guide parked from console";
+  const CONTEST_REASON = "guide contested from console";
+
   function runAction(action: string, card: HypothesisCard): void {
     const now = isoNow();
     setSelectedId(card.id);
+    // Computed eagerly rather than inside a `setStore` updater. The updater runs during the later
+    // render, so a throw from it would escape this try entirely and surface as a render error; the
+    // guard only works if the transition is attempted here. It also means a refused action records
+    // nothing, which is the property that keeps the log replayable.
+    let next: HypothesisStore;
     try {
       if (action === "promote") {
         const gate: GateStatus = card.gate ?? {
@@ -130,18 +195,31 @@ export function useConsole() {
           hasArtifact: false,
           passed: false,
         };
-        setStore((s) => promote(s, card.id, GUIDE, { gate, autonomySignOff: true }, now));
+        next = promote(store, card.id, GUIDE, { gate, autonomySignOff: true }, now);
       } else if (action === "park") {
-        setStore((s) => park(s, card.id, GUIDE, "guide parked from console", now));
+        next = park(store, card.id, GUIDE, PARK_REASON, now);
       } else if (action === "reopen") {
-        setStore((s) => reopen(s, card.id, GUIDE, now));
+        next = reopen(store, card.id, GUIDE, now);
       } else if (action === "contest") {
-        setStore((s) => contest(s, card.id, GUIDE, "guide contested from console", now));
+        next = contest(store, card.id, GUIDE, CONTEST_REASON, now);
+      } else {
+        return;
       }
     } catch {
       // Illegal/disabled action (e.g. promote before the gate passes) is a no-op — the button is
       // already disabled for these; this guard just keeps a stray click from throwing.
+      return;
     }
+
+    const reason =
+      action === "park" ? PARK_REASON : action === "contest" ? CONTEST_REASON : undefined;
+    record({
+      action: action as GuideDecision["action"],
+      hypothesisId: card.id,
+      at: now,
+      ...(reason === undefined ? {} : { reason }),
+    });
+    setStore(next);
   }
 
   // Promote from EMERGING requires a passed gate; CANDIDATE→ACTIVE does not. Disable the button when
@@ -157,6 +235,8 @@ export function useConsole() {
     // The live lifecycle store. Exposed so panels derived from certification (Plan, Access, Maps)
     // can read the guide's decisions rather than the module-scope seed.
     store,
+    decisionCount: decisions.length,
+    resetDecisions,
     kid,
     setKid,
     activeChild,
