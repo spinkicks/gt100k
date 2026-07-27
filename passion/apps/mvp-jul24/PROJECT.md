@@ -40,6 +40,21 @@ Two cabins are built:
 `music` / `code` / `art` stay on the map as visible **"coming soon"** buttons. They are build state, not a
 design statement (memo §8.1.4) — but see *Risks*, because visible-but-empty is not free.
 
+**Music has a built activity that no room shows yet, and that is deliberate.** `src/puzzles/TuneRepair/`
+is finished and tested, and `src/audio/` is the app's first sound: synthesized at runtime, never
+sampled, because `src/shelf/types.ts` makes offline a hard requirement and an audio file would be the
+first asset to break it. It is **not** in `src/gadgets/registry.ts`, because `quads.data.test.ts` matches
+prop polygons to registered gadgets *exactly in both directions* — so registering it demands a painted
+music room, and painting one demands the gadget roster be final first. Until then it is played through
+`src/puzzles/TuneRepair/harness.tsx`. The design, the roster, and why `transpose` was rejected are in
+`docs/superpowers/specs/2026-07-27-music-cabin-design.md`.
+
+The one rule that file calls **R1** binds anything else built for this room: *the visual channel is
+musical notation, never numeric.* Pitch is vertical position, duration is horizontal extent, and no
+music gadget may display a number, note name, interval name or ratio as part of its solvable state. A
+channel showing semitone counts would make the puzzle arithmetic, which is the `math` cabin — the same
+swap-test failure as memo §5's C1, arrived at from the other direction.
+
 **The `math` topic id is deliberately reused to mean a different room.** It previously meant
 "Math & Puzzles" and held all seven puzzles; it now means the maths room only, and the puzzles move to
 `logic-games`. Anything keyed on `math` from before the split refers to the old, mixed room and is not

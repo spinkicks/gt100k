@@ -545,3 +545,55 @@ export function RatioMixingDiagram(): JSX.Element {
     </Stage>
   );
 }
+
+/**
+ * Tune Repair. The phrase as blocks climbing the stage, with one block off the line.
+ *
+ * Shows the two things the roll encodes and nothing else: HEIGHT is pitch, WIDTH is how long a note
+ * is held. Deliberately no stave, no clef and no note names — the puzzle's rule R1 is that pitch is
+ * position rather than notation the child has to already read, and a diagram that taught five lines
+ * and a clef would be teaching a different subject.
+ */
+export function TuneRepairDiagram(): JSX.Element {
+  const W = 20;
+  const H = 9;
+  const x0 = 44;
+  const baseline = 66;
+  // A rising line of six, with the fourth block sitting well below where the climb wants it.
+  const climb = [0, 1, 2, 1, 4, 5];
+  const wrong = 3;
+  return (
+    <Stage>
+      {climb.map((step, i) => (
+        <rect
+          // biome-ignore lint/suspicious/noArrayIndexKey: a fixed row of marks; position is the identity.
+          key={i}
+          x={x0 + i * (W + 4)}
+          y={baseline - step * H}
+          width={i === climb.length - 1 ? W * 2 : W}
+          height={H - 1}
+          rx={2}
+          className={i === wrong ? "ti-cell" : "ti-cell ti-cell-on"}
+        />
+      ))}
+      {/* Where the odd block should have been, drawn open. */}
+      <rect
+        x={x0 + wrong * (W + 4)}
+        y={baseline - 3 * H}
+        width={W}
+        height={H - 1}
+        rx={2}
+        className="ti-cell-open"
+      />
+      <Tag x={26} y={baseline - 5 * H + 4} anchor="end">
+        higher
+      </Tag>
+      <Tag x={26} y={baseline + 6} anchor="end">
+        lower
+      </Tag>
+      <Tag x={x0 + 3.4 * (W + 4)} y={88}>
+        one note is out of place
+      </Tag>
+    </Stage>
+  );
+}

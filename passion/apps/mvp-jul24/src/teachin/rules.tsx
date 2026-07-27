@@ -38,6 +38,7 @@ import {
   NonogramDiagram,
   PipesDiagram,
   RatioMixingDiagram,
+  TuneRepairDiagram,
 } from "./diagrams";
 
 export interface ActivityTeachIn {
@@ -134,6 +135,16 @@ export const TEACH_INS = {
     title: "Ratio Mixing",
     rule: "Fill the jar to the brim so the mix holds dye and water in exactly the ratio on the order card. A poured ladle cannot be taken back, but pouring the jar out and starting again is always free.",
     Diagram: RatioMixingDiagram,
+  },
+
+  // --- music -----------------------------------------------------------------------------------
+  "tune-repair": {
+    title: "Tune Repair",
+    // Says what the picture MEANS (height is pitch, width is length) rather than what a stave means,
+    // because the roll is not notation and a child who reads music would otherwise look for a clef.
+    // Deliberately does not say what the tune's shape is: hearing that is the puzzle.
+    rule: "Press play and listen — the tune goes wrong at exactly one note. Higher up means a higher note and a wider block is held longer, so click the note that sounds out of place, then click where it belongs.",
+    Diagram: TuneRepairDiagram,
   },
 } satisfies Record<string, ActivityTeachIn>;
 
