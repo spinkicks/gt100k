@@ -75,9 +75,14 @@ Behavior only (no affect/face). No scalar "passion score," no fixed label — be
 
 - Exact novelty-decay window, trajectory weighting, and the "not sure yet" threshold are **calibratable defaults** (horizons are evidence-anchored; the numbers are ours to tune on cohort 1).
 - Feedback-loop monitoring (since the randomized reserve was dropped) leans harder on coverage-breadth + reopen-rate as tripwires.
-- **`W_APT = 0.5` cites SMPY, which identifies at age 13 and offers no validated early-childhood
-  analogue.** Down-weighting it for younger children is proposed, and blocked on threading an age
-  band through the engine.
+- ~~**`W_APT = 0.5` cites SMPY**, so down-weight it for younger children.~~ **Withdrawn 2026-07-26.**
+  The argument named the wrong construct. The field is populated in exactly one place,
+  `timeback/src/map.ts`, as a weighted mean of subject **mastery** — that is achievement, not
+  above-level aptitude testing, so the SMPY citation never fitted it in either direction. For
+  achievement at ages 7–10 our own brainlift records the opposite finding (Garon-Carrier et al.
+  2016: prior achievement predicts later intrinsic motivation, not the reverse), which argues for
+  keeping the weight where it is. The field and constant are now named `masteryTilt` / `W_MASTERY`,
+  because the misleading name is what produced the proposal. See the withdrawn E8.
 - **Cross-cabin comparison is confounded** until an artifact-appeal baseline exists: generic game
   affinity independently predicted voluntary return (β = 0.267, p = .003). Any surface that compares
   a child's time across cabins must carry that caveat.

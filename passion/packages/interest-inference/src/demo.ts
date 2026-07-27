@@ -14,7 +14,7 @@ export function runDemo(): InterestRead {
   const now = Date.parse("2026-01-12T00:00:00.000Z");
   const day = (d: number): string => `2026-01-${String(d).padStart(2, "0")}T00:00:00.000Z`;
   const priors: DomainPrior[] = [
-    { domain: "music-sound", inEnvironment: true, aptitudeTilt: 0, discretionaryTilt: 0 },
+    { domain: "music-sound", inEnvironment: true, masteryTilt: 0, discretionaryTilt: 0 },
   ];
   const events: CellEvent[] = [
     ...[5, 6, 7, 8, 9, 10, 11, 12].map(

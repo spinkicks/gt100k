@@ -24,7 +24,7 @@ const SYNTH: Artifact = {
 };
 const CATALOG: ReadonlyMap<string, Artifact> = new Map([[SYNTH.id, SYNTH]]);
 const PRIORS: readonly DomainPrior[] = [
-  { domain: "music-sound", inEnvironment: true, aptitudeTilt: 0, discretionaryTilt: 0 },
+  { domain: "music-sound", inEnvironment: true, masteryTilt: 0, discretionaryTilt: 0 },
 ];
 const ARTIFACTS = { [BUILD_KEY]: "defense-record-042" };
 

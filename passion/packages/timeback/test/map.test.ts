@@ -22,46 +22,46 @@ describe("toDomainPriors (golden)", () => {
 
   it("math-puzzles: math(w1,m0.8) → aptitude 0.8, discretionary 0.60", () => {
     const p = byDomain.get("math-puzzles")!;
-    expect(p.aptitudeTilt).toBeCloseTo(0.8, 5);
+    expect(p.masteryTilt).toBeCloseTo(0.8, 5);
     expect(p.discretionaryTilt).toBeCloseTo(0.6, 5);
     expect(p.inEnvironment).toBe(true);
   });
 
   it("code-computers: math(w0.5) → aptitude 0.8, discretionary 0.30", () => {
     const p = byDomain.get("code-computers")!;
-    expect(p.aptitudeTilt).toBeCloseTo(0.8, 5);
+    expect(p.masteryTilt).toBeCloseTo(0.8, 5);
     expect(p.discretionaryTilt).toBeCloseTo(0.3, 5);
     expect(p.inEnvironment).toBe(true);
   });
 
   it("games-strategy: math(w0.5) → aptitude 0.8, discretionary 0.30", () => {
     const p = byDomain.get("games-strategy")!;
-    expect(p.aptitudeTilt).toBeCloseTo(0.8, 5);
+    expect(p.masteryTilt).toBeCloseTo(0.8, 5);
     expect(p.discretionaryTilt).toBeCloseTo(0.3, 5);
   });
 
   it("science-nature: science(w1,m0.5) → aptitude 0.5, discretionary 0.20", () => {
     const p = byDomain.get("science-nature")!;
-    expect(p.aptitudeTilt).toBeCloseTo(0.5, 5);
+    expect(p.masteryTilt).toBeCloseTo(0.5, 5);
     expect(p.discretionaryTilt).toBeCloseTo(0.2, 5);
   });
 
   it("making-engineering: science(w0.5) → aptitude 0.5, discretionary 0.10", () => {
     const p = byDomain.get("making-engineering")!;
-    expect(p.aptitudeTilt).toBeCloseTo(0.5, 5);
+    expect(p.masteryTilt).toBeCloseTo(0.5, 5);
     expect(p.discretionaryTilt).toBeCloseTo(0.1, 5);
   });
 
   it("influence-media: writing(w1,m0.9) → aptitude 0.9, discretionary 0.20", () => {
     const p = byDomain.get("influence-media")!;
-    expect(p.aptitudeTilt).toBeCloseTo(0.9, 5);
+    expect(p.masteryTilt).toBeCloseTo(0.9, 5);
     expect(p.discretionaryTilt).toBeCloseTo(0.2, 5);
   });
 
   it("every tilt is in [0,1]", () => {
     for (const p of priors) {
-      expect(p.aptitudeTilt).toBeGreaterThanOrEqual(0);
-      expect(p.aptitudeTilt).toBeLessThanOrEqual(1);
+      expect(p.masteryTilt).toBeGreaterThanOrEqual(0);
+      expect(p.masteryTilt).toBeLessThanOrEqual(1);
       expect(p.discretionaryTilt).toBeGreaterThanOrEqual(0);
       expect(p.discretionaryTilt).toBeLessThanOrEqual(1);
     }
@@ -78,7 +78,7 @@ describe("toDomainPriors (fail-safe)", () => {
     });
     const mp = priors.find((p) => p.domain === "math-puzzles")!;
     expect(mp.discretionaryTilt).toBe(0);
-    expect(mp.aptitudeTilt).toBeCloseTo(0.7, 5);
+    expect(mp.masteryTilt).toBeCloseTo(0.7, 5);
   });
 
   it("NaN / negative mastery never yields an out-of-range tilt", () => {
@@ -88,9 +88,9 @@ describe("toDomainPriors (fail-safe)", () => {
       subjects: [{ subject: "math", mastery: Number.NaN, discretionaryXp: 10, offered: true }],
     });
     const mp = priors.find((p) => p.domain === "math-puzzles")!;
-    expect(Number.isNaN(mp.aptitudeTilt)).toBe(false);
-    expect(mp.aptitudeTilt).toBeGreaterThanOrEqual(0);
-    expect(mp.aptitudeTilt).toBeLessThanOrEqual(1);
+    expect(Number.isNaN(mp.masteryTilt)).toBe(false);
+    expect(mp.masteryTilt).toBeGreaterThanOrEqual(0);
+    expect(mp.masteryTilt).toBeLessThanOrEqual(1);
   });
 
   it("unknown subject contributes nothing (no prior, no throw)", () => {

@@ -1,9 +1,10 @@
 // The core mapper (spec §3.4): a TimeBackSnapshot → 011's cabin-keyed `DomainPrior[]`. PURE + deterministic.
-// For each cabin with ≥1 OFFERED contributing subject: inEnvironment=true; aptitudeTilt = weighted mean of
+// For each cabin with ≥1 OFFERED contributing subject: inEnvironment=true; masteryTilt = weighted mean of
 // subject mastery; discretionaryTilt = weighted sum of each subject's SHARE of the kid's total free-choice XP.
 // Cabins with no offered contributor are OMITTED (→ 011 uses its blank prior). `clamp01` (011, verbatim) guards
 // [0,1] so a NaN/negative/absent field never poisons a tilt. This produces the prior; it NEVER gates (011
-// excludes the prior from evidenceMass, and only events create cells — proven by the standing no-gate test).
+// excludes the prior from BOTH masses — `evidenceMass` subtracts it and `observedMass` only ever
+// accumulates inside a scoring branch — and only events create cells, per the standing no-gate test).
 
 import { type DomainPrior, clamp01 } from "@gt100k/interest-inference";
 import { CABINS } from "@gt100k/two-axis-tagging";
@@ -36,7 +37,7 @@ export function toDomainPriors(snapshot: TimeBackSnapshot): readonly DomainPrior
     priors.push({
       domain: cabin,
       inEnvironment: true,
-      aptitudeTilt: clamp01(sumWMastery / sumW),
+      masteryTilt: clamp01(sumWMastery / sumW),
       discretionaryTilt: clamp01(sumWShare),
     });
   }

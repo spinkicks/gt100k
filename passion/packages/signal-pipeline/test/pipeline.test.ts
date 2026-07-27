@@ -33,7 +33,7 @@ describe("deriveSignals", () => {
 
     const read = runInference(
       cellEvents,
-      [{ domain: "music-sound", inEnvironment: true, aptitudeTilt: 0, discretionaryTilt: 0 }],
+      [{ domain: "music-sound", inEnvironment: true, masteryTilt: 0, discretionaryTilt: 0 }],
       NOW,
     );
     const build = read.cells.find((c) => c.mode === "build");

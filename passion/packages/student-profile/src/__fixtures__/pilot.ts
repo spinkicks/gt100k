@@ -74,7 +74,7 @@ export const PILOT_CATALOG: ReadonlyMap<string, Artifact> = new Map(
 const prior = (domain: string): DomainPrior => ({
   domain,
   inEnvironment: true,
-  aptitudeTilt: 0.2,
+  masteryTilt: 0.2,
   discretionaryTilt: 0.2,
 });
 

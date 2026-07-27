@@ -10,13 +10,13 @@ describe("buildPrior", () => {
     const p: DomainPrior = {
       domain: "music-sound",
       inEnvironment: true,
-      aptitudeTilt: 0,
+      masteryTilt: 0,
       discretionaryTilt: 0,
     };
     expect(buildPrior(p)).toEqual({ alphaPrior: 1.5, betaPrior: 1 });
     expect(buildPrior(undefined)).toEqual({ alphaPrior: 1, betaPrior: 1 });
     expect(
-      buildPrior({ domain: "x", inEnvironment: false, aptitudeTilt: 1, discretionaryTilt: 1 }),
+      buildPrior({ domain: "x", inEnvironment: false, masteryTilt: 1, discretionaryTilt: 1 }),
     ).toEqual({ alphaPrior: 2, betaPrior: 1 });
   });
 });
@@ -24,7 +24,7 @@ describe("buildPrior", () => {
 describe("foldEvents", () => {
   it("excludes novelty, prompted and artifact_competence; adds returns/depth to alpha; skips to beta", () => {
     const priors: DomainPrior[] = [
-      { domain: "music-sound", inEnvironment: true, aptitudeTilt: 0, discretionaryTilt: 0 },
+      { domain: "music-sound", inEnvironment: true, masteryTilt: 0, discretionaryTilt: 0 },
     ];
     const evts: CellEvent[] = [
       {
@@ -99,7 +99,7 @@ describe("foldEvents", () => {
 
   it("same_day_engagement is counted but moves nothing (E2)", () => {
     const priors: DomainPrior[] = [
-      { domain: "music-sound", inEnvironment: true, aptitudeTilt: 0, discretionaryTilt: 0 },
+      { domain: "music-sound", inEnvironment: true, masteryTilt: 0, discretionaryTilt: 0 },
     ];
     const sameDayOnly: CellEvent[] = [
       {
