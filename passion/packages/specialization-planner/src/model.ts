@@ -101,13 +101,35 @@ export interface ProjectBriefGenerator {
   generate(ctx: BriefContext): Promise<ProjectBrief>;
 }
 
+/**
+ * The 013 lifecycle states a specialization may be planned for. Both are reached only by a HUMAN
+ * transition (`promote`), which is the whole point: planning a specialization is the system acting
+ * on a claim about who a child is, and it may only do that downstream of a person deciding.
+ *
+ * Every other state is refused, each for its own reason. EXPLORING and EMERGING are pre-human, and
+ * EXPLORING in particular is the state a hypothesis is BORN in. PARKED and CONTESTED are a human or
+ * the evidence actively saying not this, and planning over them would overturn that silently.
+ * REOPENED is a parked interest being reconsidered, which is a question, not an answer.
+ */
+export const PLANNABLE_STATES = ["CANDIDATE", "ACTIVE"] as const;
+export type PlannableState = (typeof PLANNABLE_STATES)[number];
+
+export function isPlannableState(state: string): state is PlannableState {
+  return (PLANNABLE_STATES as readonly string[]).includes(state);
+}
+
 /** The engine's inputs for ONE spike (§3.2). Readiness signals — NEVER an age. */
 export interface PlanInputs {
   readonly kidId: string;
   readonly cellKey: string;
   readonly domainPath: DomainPath; // the (domain × work-mode) cell of the spike
   readonly mode: string;
-  readonly hypothesisState: string; // 013 state (expects ACTIVE / CANDIDATE)
+  /**
+   * The 013 state. Typed to the plannable states rather than `string`, so the guard is the type
+   * system's: an uncertified spike cannot be assembled into `PlanInputs` at all, whether it comes
+   * from `derivePlanInputs` (which returns null) or from a caller building inputs by hand.
+   */
+  readonly hypothesisState: PlannableState;
   readonly monthsInPursuit: number; // indicative only — surfaced, never a gate
   readonly voluntaryReturnsRecent: number; // sustained voluntary return (readiness, not age)
   readonly depthAccumulation: number; // depth-weighted craft-floor proxy

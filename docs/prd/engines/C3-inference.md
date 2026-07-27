@@ -81,9 +81,15 @@ Behavior only (no affect/face). No scalar "passion score," no fixed label — be
 - **Cross-cabin comparison is confounded** until an artifact-appeal baseline exists: generic game
   affinity independently predicted voluntary return (β = 0.267, p = .003). Any surface that compares
   a child's time across cabins must carry that caveat.
-- **`hypothesisState` is written but never read.** `PlanInputs.hypothesisState` is documented as
-  "expects ACTIVE / CANDIDATE", and `derive.ts` populates it with `hyp?.state ?? "UNKNOWN"`, but no
-  code in the planner reads it and `plan.ts` never references a lifecycle state. So the documented
-  precondition is unenforced, and a plan can be produced from an `EXPLORING`, `PARKED`, or unresolved
-  hypothesis. GC4 asserts that a `CANDIDATE`/`ACTIVE` was put there by a human, but it is a detective
-  audit over the store, not a preventive guard at the planner's input boundary.
+- ~~**`hypothesisState` is written but never read.**~~ **Fixed 2026-07-26.** It was worse than
+  described: the deriver's own S3 fixture sat at `EXPLORING`, the state every hypothesis is born in,
+  and still produced full `S3_AUTHORSHIP` inputs, so the planner would return a staged plan with a
+  technical mentor and a real-community audience for a spike nobody had looked at. The guide console
+  filtered for `ACTIVE`/`CANDIDATE` before calling in, so nothing shipped wrong, but the rule lived
+  in the caller and the next caller would have inherited nothing.
+
+  The guard is now at the input boundary, where the detective GC4 audit could never reach:
+  `derivePlanInputs` returns `null` unless a human has certified the hypothesis, and
+  `PlanInputs.hypothesisState` is typed `PlannableState` rather than `string`, so an uncertified
+  spike cannot be assembled into plan inputs even by a caller building them by hand. The console now
+  imports `isPlannableState` instead of keeping its own copy of the rule.
