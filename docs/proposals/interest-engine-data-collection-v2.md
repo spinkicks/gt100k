@@ -4,9 +4,9 @@
 
 | | Items |
 |---|---|
-| **Shipped** | E1, E2, E3, E4, E6 (+ the E6a amendment), E7, E11 |
+| **Shipped** | E1, E2, E3, E4, E6 (+ the E6a amendment), E7, E10 (report half), E11 |
 | **Withdrawn** | E8 — the premise named the wrong construct; the rename it should have been is done |
-| **Open, ours** | E9's second half (`solves` → difficulty calibration), E10 (out-of-product channel) |
+| **Open, ours** | E9's second half (`solves` → difficulty calibration) |
 | **Blocked** | E5 (nothing surfaces system-driven content yet, so there is nothing to down-weight), E12 (needs cross-child data) |
 
 Each section below carries its own outcome. Where an item shipped, the section says what actually
@@ -374,6 +374,34 @@ At 7–8 in-session telemetry discriminated nothing. The engine needs to be able
 `focused` vs `broad` **is** the wrapper-vs-domain distinction, already operationalized. Suggest a distinct
 `kind: "external_report"` with low weight and an explicit `reporter` field, kept clearly separate from
 behavioural traces so it can be excluded from analyses that need behaviour only.
+
+> **LANDED 2026-07-27, the report half. The pressure-off half needed nothing.**
+>
+> `external_report` is an `EventKind` carrying `reportScope: "focused" | "broad"` and a required
+> `reporter`. Only `broad` scores, at `A_REPORT_BROAD = 0.25`: a `focused` report says the interest
+> stayed with the materials rather than reaching the topic, so it is evidence about the wrapper and
+> not about this domain. Scoring both would discard the discrimination the coding exists to make.
+> The weight is **ours, not the research's** — the literature validates the instrument and its
+> timing but supplies no number, so it is a calibratable default sitting below `A_DEPTH`, because an
+> adult's recollection weeks later must never outvote something the child was seen doing.
+>
+> **A report buys no distinct day, and that is the load-bearing part.** `confident` needs
+> `MIN_DISTINCT_DAYS` days on which the belief moved, and a report is a day an *adult spoke*, not a
+> day the child did anything. Without the exclusion, two parent reports and no behaviour at all
+> could make a cell confident, and 013 would then permit a human to promote it. With it, an adult's
+> account can strengthen a belief the child's own behaviour earned and can never manufacture one.
+> Pinned by test, and mutation-checked: letting a report mark a day fails two of them.
+>
+> **The pressure-off return probe required no engine change**, which is why it is not built. A
+> return under no pressure is already exactly a `cross_day_return` with `prompted: false`, and
+> `prompted_return` already scores zero. The two-week no-prompt window is an operational guarantee
+> that nobody prompts, not something the engine can observe. Building an abstraction with no emitter
+> is the error `chosen_challenge` already taught us, at some cost.
+>
+> One thing this exposed: nothing tested that the console had plain language for every kind the
+> engine can emit, so `external_report` nearly reached a guide as a raw key. `EVENT_KINDS` is now a
+> value as well as a type, and `guide-console/test/vocabulary-coverage.test.ts` fails when a kind
+> has no vocabulary, no label, or a label with an underscore in it.
 
 ### E11 — Drop `artifact_competence` from the finder's event set
 

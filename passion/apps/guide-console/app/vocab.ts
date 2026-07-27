@@ -29,6 +29,10 @@ export const SIGNALS: Record<string, Term> = {
     label: "Prompted Return",
     desc: "Came back, but only after a nudge. Counts for less than a voluntary return.",
   },
+  external_report: {
+    label: "Noticed At Home",
+    desc: "A parent or guide reported, weeks later, that this had carried over into the child's own time and into the subject itself, not just the activity we gave them. It counts for less than something we watched them do, and on its own it can never make a read confident.",
+  },
   gap_survived: {
     label: "Survived a Break",
     desc: "Returned to it after a long gap. The interest held up on its own.",

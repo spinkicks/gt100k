@@ -9,6 +9,17 @@ export const A_RETURN = 1.0;
 export const A_DEPTH = 0.5;
 export const B_SKIP = 0.5;
 /**
+ * Alpha for a `broad` delayed adult report (E10), before recency decay.
+ *
+ * OURS, NOT THE RESEARCH'S. The literature validates the instrument and its timing (a delayed
+ * interview at ~7 weeks, range 32 to 67 days, mean 51, coding focused versus broad) but supplies no
+ * weight, so this is a calibratable default and should be recalibrated on the first cohort like the
+ * other thresholds. It sits below `A_DEPTH` deliberately: an adult's recollection weeks later is
+ * weaker evidence than something the child was observed doing, and it must never be able to
+ * outvote behaviour. A `focused` report scores zero, so it has no constant.
+ */
+export const A_REPORT_BROAD = 0.25;
+/**
  * Beta per `decline` × recency, divided by the choice-set size (E4).
  *
  * A decline is a cell that was available and passed over and that the child has never engaged.
@@ -78,10 +89,27 @@ export type DepthFamily = (typeof DEPTH_FAMILIES)[number];
  * engaged before and passed over anyway; `decline` is one they have never engaged. A cell must
  * never produce both for the same session, or one behavioural fact would be scored twice.
  */
+/**
+ * Every kind the engine can put on a `CellEvent`, as a value rather than only a type, so a surface
+ * that has to say something about each of them can be tested for covering all of them. Adding a
+ * kind without giving a guide plain language for it is a real failure mode: the console renders
+ * these keys, and an unmapped one reaches a human as `external_report`.
+ */
+export const EVENT_KINDS = [
+  "cross_day_return",
+  "same_day_engagement",
+  "prompted_return",
+  "external_report",
+  ...DEPTH_FAMILIES,
+  "skip",
+  "decline",
+] as const;
+
 export type EventKind =
   | "cross_day_return"
   | "same_day_engagement"
   | "prompted_return"
+  | "external_report"
   | DepthFamily
   | "skip"
   | "decline";
@@ -134,6 +162,22 @@ export interface CellEvent {
    * in full to each. Absent means "not a choice moment", which scores at full weight.
    */
   readonly choiceSetSize?: number;
+  /**
+   * How a delayed adult report coded the interest (E10). Required on `external_report`, meaningless
+   * elsewhere.
+   *
+   * `broad` means the interest transferred to the topic itself; `focused` means it stayed bound to
+   * the specific materials the child was given. That is the wrapper-versus-domain distinction, and
+   * it is the reason the instrument is worth having: only `broad` is evidence about the DOMAIN,
+   * which is what a domain read is trying to establish. A `focused` report is recorded and scores
+   * nothing, because scoring both would throw away the discrimination the coding exists to make.
+   */
+  readonly reportScope?: "focused" | "broad";
+  /**
+   * Who made the report. A named human, always: an anonymous opinion should not move a child's
+   * read, and every other human judgement in this system is attributable by construction.
+   */
+  readonly reporter?: string;
 }
 
 export interface CellBelief {
