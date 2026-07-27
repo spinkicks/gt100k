@@ -1,5 +1,5 @@
+import { canonicalize } from "./canonical.js";
 import type { EvidenceRecord, Session, Hasher } from "./model.js";
-import { canonicalize } from "@gt100k/evidence-graph";
 
 export function assembleEvidenceRecord(
   session: Session,
