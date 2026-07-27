@@ -1,9 +1,121 @@
 # The child-facing discovery surface: game, catalog, or neither
 
-**Status:** Recommendation, for the surface owner to accept or reject. Not a decision I can make alone.
-**Date:** 2026-07-27
-**Question:** Should the 3D exploration game be replaced by a browse/catalog app ("Netflix for
-learning") where a child can start learning anything?
+**Status:** **Recommendation: build the curated launcher (§0). Retire the game.** For the surface
+owner to accept or reject.
+**Date:** 2026-07-27 (rev 2 the same day: rev 1 evaluated the wrong artefact, see §0)
+**Question:** Should the 3D exploration game be replaced by a browse app where a child can start
+learning anything?
+
+---
+
+## 0. Correction to rev 1, and the actual recommendation
+
+**Rev 1 evaluated a recommender. The thing actually proposed is a directory, and the difference is
+the whole argument.**
+
+What was described: a child picks an umbrella topic (a cabin), picks a subtopic from that cabin's
+fixed list, and gets a small curated set of vetted external links — YouTube, sites, courses — then
+**leaves to learn**. The lists are curated, age-filtered and reputation-ranked. Nothing is
+personalised. Nothing is predicted.
+
+Rev 1's central objection was that recommendation makes E4 non-identifiable, because a decline and a
+non-surfacing produce the same log. **That objection does not apply to a fixed taxonomy.** When the
+choice set is the cabin's subtopic list — the same list for every child, every time — we know
+exactly what was on offer, so a decline is exactly as interpretable as it is today. The objection
+was to the ranker, not to the browsing.
+
+So the recommendation changes: **build the launcher, retire the game.** Rev 1's evidence against the
+game stands unchanged and is if anything more relevant, because the launcher is cheap and the game
+is not.
+
+### Why "we do not want retention" is the strongest thing about this proposal
+
+It reads like a concession. It is the opposite: it is the canonical instrument.
+
+Deci, Koestner & Ryan (1999), a meta-analysis of 128 studies, states the measure plainly: *"The
+primary measure of intrinsic motivation, introduced by Deci (1971), is the degree to which
+participants **return to and persist at the target activity during a free-choice period subsequent
+to the experimental phase**."* <https://doi.org/10.1037/0033-2909.125.6.627>
+
+That is our product's core measurement, described in 1971, and it is why our own Insight 1 says the
+reliable signal is *voluntary return after external pressure is removed*. It also tells us exactly
+what retention mechanics would do to it: engagement-contingent, completion-contingent and
+performance-contingent rewards undermined free-choice intrinsic motivation at **d = −0.40, −0.36 and
+−0.28**, and the paper notes tangible rewards *"tended to be more detrimental for children than
+college students."*
+
+A streak, a badge or a return-nudge is not a neutral growth tactic bolted onto the side of the
+measurement. It **is** the reward contingency whose removal defines the measurement. Adding one does
+not bias the instrument; it destroys the thing being measured, and does so harder in children. This
+is the same finding that already gives us GC1 and GC6; it simply binds much more tightly once
+"comes back on their own" is the primary outcome rather than a nice property.
+
+One caveat worth carrying, since it is the obvious next suggestion: the same meta-analysis found
+positive *verbal* feedback enhanced free-choice behaviour (d = 0.33), so praise is not in the same
+category as a badge. But it also found verbal rewards *"tended to be less enhancing for children
+than college students"*, so it is not a lever to reach for either.
+
+### Most of it is already built
+
+The launcher's backend is not new work. `curatedForCell(library, domainPath, ageTier)` already
+returns age-filtered, reputation-ranked resources for a domain path, and `@gt100k/concierge` is a
+child-safe RAG pipeline with a curated library behind it. The subtopic-to-links step — the part that
+sounds like the hard part — exists. What does not exist is a child-facing list.
+
+The taxonomy is also already the right shape. Patall's optimum is 3–5 options per choice moment, and
+`SEED_SUBTOPICS` gives 3 or 4 subtopics in every one of the eight cabins. Nobody designed it for
+this and it landed there anyway.
+
+### What it costs, stated plainly
+
+**The in-app depth channel mostly goes away.** "Chose harder work", "unrequired revision" and
+"self-authored scope" have no expression in a page of links. This is a real loss and it is the
+strongest argument the game had.
+
+It is survivable for one specific reason: our own evidence says that at ages 7 to 8, in-session
+telemetry *discriminated nothing* and only the delayed out-of-product probe did
+(partial eta-squared .24). A surface that sends a child away and then asks an adult, weeks later,
+whether the interest reached the topic itself is **aligned** with that finding rather than working
+against it. That makes E10's report channel — built 2026-07-27 — load-bearing rather than a nice
+addition, and it means the `focused` versus `broad` coding is now the main depth instrument we have,
+not a supplement to a richer in-app one.
+
+### The honest tension nobody should paper over
+
+**We must not induce return, but we must still be able to observe it.** A child who never opens the
+app again is indistinguishable, in our logs, from a child with no durable interest — and one of
+those is a measurement failure.
+
+The resolution is a distinction, not a mechanic: the app may be worth returning to for a reason
+**intrinsic to the pursuit** (it is where the good chess links are) and never for a reason
+**extrinsic to it** (points, streaks, notifications, unlocks). The first is the activity; the second
+is the contingency Deci measured the removal of. Where the child pursues the topic entirely outside
+our product, we do not see it at all and are relying on E10's adult report to catch it. That is a
+known blind spot, and it is the right one to have rather than the one where we chase them.
+
+### Design rules that follow
+
+1. **The choice moment is a topic label, not a thumbnail.** Javora et al. found children chose the
+   prettier version of the *same* game 62% of the time and learned no more (d > 0.86 preference).
+   In a grid of video cards, the thumbnail is most of what differentiates options, so we would be
+   measuring thumbnail quality. Text and a uniform icon per subtopic; the links themselves may show
+   richer previews *after* the choice is recorded, because by then the choice is already measured.
+2. **Uniform presentation across topics.** Same layout, same density, same icon treatment. Any topic
+   that looks better than another is a confound with the topic's own signal.
+3. **Fixed sets, no personalisation, no ranking by predicted interest.** This is what keeps E4
+   interpretable. If resources within a subtopic are ever ordered by anything child-specific, E5
+   (`W_SURFACED`, currently unbuilt) stops being deferred and becomes mandatory.
+4. **No streak, badge, point, notification or unlock.** See above; this is not a style preference.
+5. **Log the offered set, not just the pick.** `SurfacedRecord` already does this at the artifact
+   level. A list surface should also record position, which it does not today, so ordering bias can
+   be separated from preference.
+6. **Reading age.** A two-level text taxonomy assumes a six-year-old can read `agentic-engineering`.
+   It cannot. Icons and audio labels are a requirement at the bottom of the band, not a polish item.
+   *No evidence gathered on this; flagged as an open design question rather than answered.*
+7. **The destination is not ours.** YouTube autoplay and its own recommender will pull a child off
+   the chosen topic within a video or two. Our child-safe RAG vets *what we link to*; it says nothing
+   about where the child ends up three clicks later. Prefer destinations without autoplay where a
+   choice exists, and treat "what happened after they left" as unmeasured rather than assumed good.
 
 ---
 
