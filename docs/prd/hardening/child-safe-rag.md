@@ -31,7 +31,7 @@ The concierge answers live from the open web, but **retrieval is treated as untr
 - **Injection defense** — layered controls per OWASP LLM01 (spotlighting/delimiting retrieved content; treat all retrieved text as untrusted); injection "cannot be patched," so defense is architectural, not a single filter.
 - **Source reputation/allowlist service** — maintains domain trust scores that bias retrieval ranking (step 4) and feed the vetting queue priority.
 - **Age-tier + readability service** — maps the server-side age tier to reading level, tone, and refusal strictness.
-- **Vetting/promotion workflow** — the async human-vet queue + signed promotion into A6 (shares the provenance/audit machinery with the EvidenceGraph).
+- **Vetting/promotion workflow** — the async human-vet queue + signed promotion into A6, carrying **its own** provenance/audit trail. Same shape as the EvidenceGraph's, not shared code: the graph is a separate product across the `@gt100k/evidence-*` boundary (`docs/decisions/evidencegraph-v1-design.md` §11 + §13a), which A6 may not import a value from. The precedent is `@gt100k/socratic-defense` owning its own `canonicalize` with a parity test.
 - **Escalation router** — distress/safety → human (shared with the burnout/wellbeing escalation path, F2/F1).
 
 ## 4. Standards to build against

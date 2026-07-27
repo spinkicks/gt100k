@@ -3,6 +3,14 @@
 **Status:** design, awaiting review. Slice 1 only (the map itself). No child-facing surface.
 **Date:** 2026-07-25
 
+> **Amended (2026-07-27):** where this doc says a `demonstration` "feeds the Evidence Graph" and that "every
+> milestone lands in the Evidence Graph as real work" (~91, 160, 179, 272, 291), that is still the intent, but the
+> seam is now explicit. `docs/decisions/evidencegraph-v1-design.md` §13a makes the EvidenceGraph a separate
+> product, extractable by `git subtree`, and no package outside the `evidence-*` namespace may import it as a
+> value. So `@gt100k/mastery-map` names the artefact and stops there; getting it into a graph goes through an
+> adapter (the pattern `@gt100k/project-evidence-sink` sets for the project workspace), never a direct import.
+> The seam to E1 is unchanged as a product claim.
+
 ## 1. The gap
 
 The specialization planner (018) answers "what should this child do next" with a single

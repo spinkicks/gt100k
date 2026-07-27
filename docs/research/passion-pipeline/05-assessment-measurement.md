@@ -3,7 +3,7 @@
 > Brainlift-style research memo for GT100K. Grounds two measurement problems: **(A)** behavioral measurement of durable interest in children 6–14, and **(B)** process-based authorship/competence assessment. Sibling to [`passionBrainlift.md`](../passionBrainlift.md); this memo goes deeper on *operationalization* (how to actually compute the signals) and shares its citation base.
 
 **Owners:** Passion Pipeline research track
-**Status:** Research input to PRD §14 (Interest Lab), §19 (EvidenceGraph & evaluation)
+**Status:** Research input to PRD §14 (Interest Lab), §19 (EvidenceGraph & evaluation). The EvidenceGraph half is now specified standalone in [`docs/decisions/evidencegraph-v1-design.md`](../../decisions/evidencegraph-v1-design.md); the graph is its own product (§13a) and the capture and node-type recommendations below (~87, 267, 269, 271) are requirements *on* it, which PassionLab's grading surfaces consume through an adapter rather than by importing it.
 **Scope honesty:** Priority band is ages 6–14. Where the strongest evidence comes from adults or higher education, it is flagged inline as **[ADULT-EXTRAPOLATION]** or **[HE-EXTRAPOLATION]**. Only real, verifiable sources are cited, with DOIs/links; uncertainty is flagged explicitly.
 
 ---

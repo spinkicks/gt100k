@@ -2,6 +2,10 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development or superpowers:executing-plans. Checkbox steps; commit after each task.
 
+> **Amended (2026-07-27):** the "Evidence-Graph grading (E1)" item in the final `passionApps.md` update (~108) now
+> refers to a separate product reached through an adapter — see `docs/decisions/evidencegraph-v1-design.md` §13a; no
+> package outside the `evidence-*` namespace may import it as a value.
+
 **Goal:** Build `018-specialization-planner` per its spec — a headless domain package (`@gt100k/specialization-planner`: a pure `deriveStage` + `planSpecialization` engine implementing the research §6 four-stage blueprint, a `derivePlanInputs` deriver over the 014 profile / 013 store / 016 wellbeing read, a `curatedForCell` resolver over the **merged 015 curated library (A6)**, and a `ProjectBriefGenerator` port with a deterministic stub that grounds briefs on those curated resources) + a **real TFY adapter** (`@gt100k/planner-live`) + a **"Plan" panel** in `apps/guide-console` that renders the staged plan and **preserves the existing `window.__qa` / `LOOP_QA`**.
 
 **Architecture:** Pure, deterministic engine (certified spike + readiness signals + a wellbeing read → a staged plan with the next authentic project + bounded DP + rest + PCDE focus, never a grade / score / reward / child-facing field). Stage advances on **readiness not age**; strain **holds** the stage. The project brief comes from a **port** (deterministic stub in CI / default; TFY real adapter opt-in), **grounded on the merged 015 curated library** so the craft scaffold points at real vetted resources. The guide-console gains a panel so the **system proposes a plan and the human disposes**.

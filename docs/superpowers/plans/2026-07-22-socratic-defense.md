@@ -2,6 +2,16 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **Superseded in part (2026-07-27):** this plan shipped, but its one cross-package import is gone.
+> `docs/decisions/evidencegraph-v1-design.md` §13a makes the EvidenceGraph a separate product that nothing outside
+> the `evidence-*` namespace may import as a value, so `@gt100k/socratic-defense` no longer imports `canonicalize`
+> from `@gt100k/evidence-graph` (~7, 9, 16, 41, 52, 63, 529, 587, 886). It now owns a **local copy** of
+> `canonicalize`, held to the original by a **parity test** that fails if the two implementations diverge; the
+> golden content hash (~639) is unchanged, which is what the parity test protects. The scope fence that
+> "forbids editing evidence-graph" (~175–176) still holds, and for the same reason it always did — the local copy
+> is what removes the need. The domain's dependency direction is now zero cross-namespace edges, checked in CI by
+> `@gt100k/boundaries`. Everything else in this plan stands as written.
+
 **Goal:** Build the `010-socratic-defense` feature per `specs/010-socratic-defense/spec.md` — an LLM-conducted project interview governed by a deterministic, unit-tested scaffold that emits a tamper-evident evidence record.
 
 **Architecture:** A pure domain package (`@gt100k/socratic-defense`) owns the session scaffold (facet selection, follow-up/stop, coverage math, gap detection, readiness) and evidence-record assembly (reusing `@gt100k/evidence-graph` `canonicalize` + the `Hasher` port). Two ports — `Interviewer` and `AnswerJudge` — have a deterministic `tutor-stub` (CI) and a TrueFoundry `tutor-tfy` (opt-in, native `fetch`). CI is fully offline + deterministic.

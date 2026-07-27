@@ -78,6 +78,8 @@ The playful, kid facing side; opens on *Build a Mini Arcade Game*.
 
 The honest record of a project, plus proof it was not faked or changed. The themed build shares Project Studio's look and switcher.
 
+> **If someone asks whether this is one product or two, the honest answer is a good one:** the Evidence Graph is its own product, built so it can stand alone and be lifted out whole. It needs nothing from the rest of GT100K to work. That is deliberate — it means any school, competition or program could use it on work we had nothing to do with. What you are watching is the two halves working together, which is where the value is: a spike nobody can verify is just a claim, and a provenance system with nothing worth proving is just plumbing.
+
 1. "Every real step is a dot; lines connect each step back to what it was built on, a directed acyclic graph."
 2. **Theme switcher.** Same themes as Project Studio, re-skinning the whole 3D world. One design language across apps.
 3. **3D / 2D toggle.** "Same record either way; nobody is forced into the fancy view."

@@ -11,7 +11,7 @@
 ---
 
 ## 1. Why & where it sits
-The D1 planner names the relay *role* and audience *level* per stage but explicitly defers the **brokering** to D3/D4. This engine is that broker. It consumes the `SpecializationPlan` (`018`), the `016` wellbeing read, and the `014` readiness/age context; it feeds the D2 workspace (an approved audience becomes a project's real audience) and — later — the EvidenceGraph ("access transferred" as a provenance node). It is **guide-facing only**: connecting a child to real people is the highest-stakes act in the program, so it is gated by a human and never surfaces to the child. Progression is **widening the audience + access, not adding hours** (PRD [D2]).
+The D1 planner names the relay *role* and audience *level* per stage but explicitly defers the **brokering** to D3/D4. This engine is that broker. It consumes the `SpecializationPlan` (`018`), the `016` wellbeing read, and the `014` readiness/age context; it feeds the D2 workspace (an approved audience becomes a project's real audience) and, later, the EvidenceGraph, where "access transferred" becomes a provenance node emitted **through a passion-side sink adapter, never a direct import** (§4.6). It is **guide-facing only**: connecting a child to real people is the highest-stakes act in the program, so it is gated by a human and never surfaces to the child. Progression is **widening the audience + access, not adding hours** (PRD [D2]).
 
 ## 2. Scope Fence *(hard)*
 
@@ -24,7 +24,7 @@ The D1 planner names the relay *role* and audience *level* per stage but explici
 - **Real mentor/competition/publishing/marketplace integrations** — the catalog is synthetic; the live adapter is an opt-in scaffold with fake data until real APIs exist.
 - **Real guardian-consent / identity / COPPA plumbing (G3)** — consent is a **recorded boolean** on the guide gate here; the real consent + identity + erasure system is the G3 pre-live gate.
 - **Real safety/vetting/moderation pipeline (G4)** — `vetting` is a synthetic field; only `"vetted"` opportunities surface. The real vetting + moderation service is the G4 pre-live gate.
-- **EvidenceGraph "access transferred" node emission** — the `transferred` state is the deliverable; emitting an E1 provenance node is deferred until the teammate's EvidenceGraph API settles (mapping noted §4.6).
+- **EvidenceGraph "access transferred" node emission** — the `transferred` state is the deliverable; emitting an E1 provenance node is deferred. When it lands it goes through a **passion-side sink adapter**, because E1 is a separate product with an enforced no-inbound-value-imports boundary (mapping + the required shape in §4.6).
 - **Any child-facing surface** — the broker is guide-facing only; no broker output ever reaches the child (no auto-labels; PRD §8.3).
 - **Real scheduling/calendar logistics** — v1 tracks the lifecycle + the engineered-handoff attributes (warm intro / overlap / why-now), not live calendar integration.
 - **Grading / scoring** — the broker never scores anyone; no score/rank field anywhere.
@@ -38,7 +38,7 @@ The D1 planner names the relay *role* and audience *level* per stage but explici
 - **[D6]** **Everything:** engine + deterministic stub catalog + opt-in live adapter scaffold (fake data) + the Access tab.
 - **[D7]** **Guardrails baked in** (PRD §5/§7/§8/§9): readiness/stage-gated (expert/master only surface at S3–S4 via `minStage`); **wellbeing back-off holds new access** (widening audience/access = raising stakes → hold, never auto-advance); **craft floor** (audience never widens above `SELF` without the plan's `craftScaffold`); vetting + age-tier gates; **system proposes, guide disposes** (engine never advances past `proposed`); no gamification; no child-facing output.
 - **[D8]** **Reuses `018` types** (`Stage`, `MentorRole`, `AudienceLevel`, `AgeBand`, `SpecializationPlan`) + the `016` `WellbeingRead`; **deterministic, synthetic, no network**; the stub-catalog + opt-in live-adapter pattern mirrors TimeBack (`020`) / planner-live (`018`).
-- **[D9]** **Integration points noted, deferred:** an approved `audience` brokerage can set a D2 project's real audience; a `transferred` brokerage maps to an EvidenceGraph node — both wired once E1's API settles.
+- **[D9]** **Integration points noted, deferred:** an approved `audience` brokerage can set a D2 project's real audience; a `transferred` brokerage maps to an EvidenceGraph node, wired through a **passion-side sink adapter** (§4.6) and never by importing the graph into this engine.
 
 ## 4. Domain model *(decisions made — do not re-open)*
 
@@ -119,7 +119,10 @@ A handful of `Opportunity`s per pilot cell (e.g. music/audio, chess, code) cover
 
 ### 4.6 Integration points *(noted, deferred)*
 - **→ D2**: an `audience` brokerage reaching `approved`/`active` can set a `apps/project-studio` project's real `audience` — wired when the two are connected.
-- **→ E1**: a `transferred` brokerage maps to an EvidenceGraph node (an "access-transfer" `Outcome`/`Review` with `released_as`/`validates`) — wired once the teammate's EvidenceGraph API settles (like D2's stub-until-ready posture).
+- **→ E1**: a `transferred` brokerage maps to an EvidenceGraph node (an "access-transfer" `Outcome`/`Review` with `released_as`/`validates`), deferred until the teammate's EvidenceGraph API settles. **It must not be wired by importing `@gt100k/evidence-graph` into `@gt100k/access-broker`** — E1 is its own product, extracted later as a mechanical copy (`docs/decisions/evidencegraph-v1-design.md` §11/§13a), and the rule is enforced: nothing outside `@gt100k/evidence-*` may import a **value** from inside it (`import type` is fine). `@gt100k/boundaries` checks this under the root `pnpm test`, so a PR that adds the inbound import goes red. When it is built:
+  1. `@gt100k/access-broker` **stays graph-free**: it emits **pure data** describing the node + its edges (the shape `@gt100k/project-workspace`'s `toEvidencePlan` emits), and may name graph types by `import type` only.
+  2. Materialization (hashing, `addNode`/`addEdge`) happens in a **sink adapter on the passion side**, the same shape as `@gt100k/project-evidence-sink`, the plan-in/graph-out seam described in `022` §4.4. The adapter lives **outside** the `evidence-*` namespace so extraction lifts the graph and leaves the adapter behind.
+  3. **Prefer extending the existing seam** (`@gt100k/project-evidence-sink`, generalized to take an access-transfer plan) over standing up a second one. `@gt100k/boundaries` exempts exactly **one** package by design; a second exemption is a deliberate boundary change to agree with the E1 owner and record in the decision doc, not something a feature PR adds to `EXEMPT_PACKAGES` to get green.
 
 ## 5. `window.__qa` contract (app)
 Extend the guide-console `state()` **additively**: `access: { proposals: number; brokerages: number; held: boolean }`. Keep `ready`, `error`, and the **existing `primaryAction()`** (promote the top hypothesis candidate) unchanged so the current `LOOP_QA` stays green. No score/grade in the state.
@@ -135,7 +138,7 @@ Extend the guide-console `state()` **additively**: `access: { proposals: number;
 - **SC-8** determinism: identical inputs → identical `BrokerPlan` (stable ranking, tie-break by id); the stub catalog uses **no network** — test.
 - **SC-9** live adapter: `@gt100k/access-broker-live` returns the `Opportunity` shape (fake data), is opt-in, and is **never imported by a domain test** — hermetic test.
 - **SC-10 (app)** the Access tab renders per-spike proposals + each brokerage's lifecycle + guide approve(+consent)/advance/decline; `window.__qa.ready === true`, `error === null`, and the existing `primaryAction()` still works (LOOP_QA unbroken) — app smoke + `LOOP_QA`.
-- **SC-11** gate: `pnpm exec tsc -b` + `pnpm test` (domain + adapter) + `apps/guide-console` `next build` + `LOOP_QA` pass.
+- **SC-11** gate: `pnpm exec tsc -b` + `pnpm test` (domain + adapter, **including the `@gt100k/boundaries` check** — no value import of `@gt100k/evidence-*` from this engine, §4.6) + `apps/guide-console` `next build` + `LOOP_QA` pass.
 
 ## 7. Fixtures
 In `src/__fixtures__/`: (a) one `SpecializationPlan` per stage (`S1`…`S4`) naming its role/level/domainPath/craftScaffold; (b) the **seed catalog** (§4.5) across all layers/channels with the gate-exercising spread; (c) `WellbeingRead`s (ok, and a `rest`/`backOff`); (d) a craft-floor case (audience > `SELF`, empty scaffold) and a stage-gate case (S1 plan vs an S4 `MASTER` opportunity); (e) a plurality pair (two cells → independent broker plans). Assert `mentorMatches`/`audienceMatches` (score order, fit, `blocked`), `held`, `escalateToHuman`, and every lifecycle transition incl. the consent refusal.
