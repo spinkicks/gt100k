@@ -153,6 +153,8 @@ export interface TuneRepairPuzzle {
   /** Inclusive degree range the player may move a note within, and the rows the roll draws. */
   lo: number;
   hi: number;
+  /** Playback tempo for this phrase. The easiest tier is slower, which is a difficulty lever. */
+  bpm: number;
 }
 
 /** The phrase currently on screen is right when it is well-shaped again. */

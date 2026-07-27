@@ -103,8 +103,19 @@ const ORDINALS = [
 
 const ordinal = (i: number): string => ORDINALS[i] ?? "later";
 
-export default function TuneRepair({ seed, onSolved, onExit }: PuzzleProps) {
-  const [stand, setStand] = useState<Stand>(() => makeStand(seed, 0));
+/**
+ * `tier` is the round to open at, and this component genuinely reads it — so a registry entry for
+ * Tune Repair must set `supportsTier: true` (see the doc comment on `Gadget.supportsTier`).
+ *
+ * Round index and tier index are the same number by construction: `tierForIndex` cycles the tiers in
+ * order, so opening at round N opens at tier N, and each subsequent tune advances through the cycle
+ * from there. That is what lets "give me an easier one" be a one-number change rather than a mode.
+ *
+ * It is never rendered. A visible tier would be a quantified display of the child's own engagement,
+ * which PRD §11 refuses.
+ */
+export default function TuneRepair({ seed, tier = 0, onSolved, onExit }: PuzzleProps) {
+  const [stand, setStand] = useState<Stand>(() => makeStand(seed, tier));
   const { puzzle, phrase } = stand;
   /** Which note the player has picked up, or null. */
   const [held, setHeld] = useState<number | null>(null);
@@ -137,11 +148,11 @@ export default function TuneRepair({ seed, onSolved, onExit }: PuzzleProps) {
       clearTimers();
       engine.stop();
       const seq = notesFor(notes, puzzle.beats);
-      engine.playSequence(seq);
+      engine.playSequence(seq, puzzle.bpm);
       // The highlight follows the same schedule whether or not sound is playing, so a muted or
       // silent session still shows which note is which.
       let atMs = 0;
-      const beatMs = 60_000 / 108;
+      const beatMs = 60_000 / puzzle.bpm;
       seq.forEach((note, i) => {
         timers.current.push(
           window.setTimeout(() => setSounding(i), atMs),
@@ -150,7 +161,7 @@ export default function TuneRepair({ seed, onSolved, onExit }: PuzzleProps) {
         atMs += note.beats * beatMs;
       });
     },
-    [clearTimers, engine, puzzle.beats],
+    [clearTimers, engine, puzzle.beats, puzzle.bpm],
   );
 
   const rows = useMemo(() => {
@@ -162,13 +173,21 @@ export default function TuneRepair({ seed, onSolved, onExit }: PuzzleProps) {
 
   const placeAt = (degree: number) => {
     if (held === null) return;
-    setStand((s) => {
-      const next = [...s.phrase];
-      next[held] = degree;
-      return { ...s, phrase: next };
-    });
-    engine.playNote({ degree, beats: 1 });
+    const next = [...phrase];
+    next[held] = degree;
+    setStand((s) => ({ ...s, phrase: next }));
     setHeld(null);
+    /**
+     * Play the whole phrase back, not just the note that moved.
+     *
+     * The first playtest's complaint was that the puzzle is hard, and a large part of that is that
+     * "did my move fix it?" required pressing Play again — so the child had to hold the phrase in
+     * their ear across a click. Hearing the result of your own move immediately is the tight loop
+     * this task needs, and it is not autoplay in the policy sense (it is the direct consequence of a
+     * click) nor a reward (it plays whether the move was right or wrong; being right just sounds
+     * right, which is the intrinsic confirmation the design asks for).
+     */
+    play(next);
   };
 
   const pickUp = (i: number) => {

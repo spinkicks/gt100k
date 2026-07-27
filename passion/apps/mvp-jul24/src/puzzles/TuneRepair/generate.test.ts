@@ -110,49 +110,95 @@ describe("the wrong note hides among the phrase's own pitches", () => {
     return inside / SEEDS.length;
   };
 
-  it("tier 0 hides it more often than not", () => {
-    expect(insideFraction(0)).toBeGreaterThan(0.5);
+  /**
+   * Measured over seeds 1..500: tier 0 **100%**, tier 1 **57.2%**, tier 2 **100%**.
+   *
+   * Tier 1's dip is structural rather than a defect: at length 6 with single steps and a displacement
+   * of two or three degrees, some positions in an arch have no inward landing at all. Every tier is
+   * still well above the level where the answer could be found by scanning for the extreme pitch.
+   */
+  it("every tier hides it more often than not", () => {
+    for (const tier of TIER_INDICES) {
+      expect(insideFraction(tier), `tier ${tier}`).toBeGreaterThan(0.5);
+    }
   });
 
-  it("tier 1 essentially always hides it", () => {
-    expect(insideFraction(1)).toBeGreaterThanOrEqual(0.95);
+  /**
+   * The important one for the easiest tier. Tier 0 exists to be *easy*, and the cheap way to make a
+   * puzzle easy here would have been to let the wrong note stick out above or below the phrase — at
+   * which point it is found by scanning pitches, which is deduction, and the on-ramp would teach the
+   * wrong solving strategy before the child ever reached a tier that punished it.
+   */
+  it("tier 0 is easy WITHOUT letting the wrong note stick out of the range", () => {
+    expect(insideFraction(0)).toBe(1);
   });
 });
 
 describe("shape coverage", () => {
-  it("tier 0 uses runs and arches", () => {
+  /**
+   * Tier 0 is runs only, and that is the single biggest easiness lever in the design.
+   *
+   * With a run the ear predicts the next note from the previous two, so the displaced note
+   * contradicts a prediction the listener has already made. An arch demands working out where the
+   * turn is first — a second inference on top of the one the puzzle is about. The first playtest
+   * reported the puzzle as too hard when the easiest tier was a coin flip between the two.
+   */
+  it("tier 0 is runs only", () => {
     const shapes = new Set(SEEDS.map((s) => generatePuzzle(s, 0).shape));
+    expect(shapes).toEqual(new Set(["run"]));
+  });
+
+  it("tier 1 adds the arch", () => {
+    const shapes = new Set(SEEDS.map((s) => generatePuzzle(s, 1).shape));
     expect(shapes).toEqual(new Set(["run", "arch"]));
   });
 
-  it("tier 1 uses all three shapes, so a session is not one trick", () => {
-    const shapes = new Set(SEEDS.map((s) => generatePuzzle(s, 1).shape));
+  it("tier 2 uses all three shapes, so a session is not one trick", () => {
+    const shapes = new Set(SEEDS.map((s) => generatePuzzle(s, 2).shape));
     expect(shapes).toEqual(new Set(["run", "arch", "sequence"]));
   });
 
-  it("tier 1 includes single-degree displacements, the hardest to hear", () => {
-    const nearMisses = SEEDS.map((s) => generatePuzzle(s, 1)).filter(
+  const nearMissCount = (tier: number) =>
+    SEEDS.map((s) => generatePuzzle(s, tier)).filter(
       (p) =>
         Math.abs((p.broken[p.brokenIndex] as number) - (p.correct[p.brokenIndex] as number)) === 1,
-    );
-    // Measured: 230 of 500.
-    expect(nearMisses.length).toBeGreaterThan(100);
+    ).length;
+
+  it("only tier 2 uses single-degree displacements, the hardest case to hear", () => {
+    // Measured: 230 of 500 at tier 2, none below it.
+    expect(nearMissCount(2)).toBeGreaterThan(100);
+    expect(nearMissCount(0)).toBe(0);
+    expect(nearMissCount(1)).toBe(0);
   });
 
-  it("tier 0 excludes them, which is what makes it the easier tier", () => {
+  it("tier 0 moves the note by exactly two degrees — audible, but not a leap", () => {
     for (const seed of SEEDS) {
       const p = generatePuzzle(seed, 0);
       const delta = Math.abs(
         (p.broken[p.brokenIndex] as number) - (p.correct[p.brokenIndex] as number),
       );
-      expect(delta).toBeGreaterThanOrEqual(2);
+      expect(delta).toBe(2);
+    }
+  });
+});
+
+describe("tempo is a difficulty lever", () => {
+  it("gets faster as the tiers get harder, so the easiest tier gives the most time", () => {
+    const bpms = TIERS.map((t) => t.bpm);
+    expect(bpms).toEqual([...bpms].sort((a, b) => a - b));
+    expect(new Set(bpms).size).toBe(bpms.length);
+  });
+
+  it("travels with the instance, so the component never hardcodes a tempo", () => {
+    for (const tier of TIER_INDICES) {
+      expect(generatePuzzle(1, tier).bpm).toBe(TIERS[tier]?.bpm);
     }
   });
 });
 
 describe("session sequencing", () => {
-  it("alternates tiers so a session meets both", () => {
-    expect([0, 1, 2, 3].map(tierForIndex)).toEqual([0, 1, 0, 1]);
+  it("starts at the easiest tier and cycles, so no session ends on its hardest phrase", () => {
+    expect([0, 1, 2, 3, 4, 5, 6].map(tierForIndex)).toEqual([0, 1, 2, 0, 1, 2, 0]);
   });
 
   it("gives consecutive rounds different phrases", () => {

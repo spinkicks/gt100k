@@ -45,21 +45,46 @@ export interface Tier {
   steps: readonly number[];
   /** How far the displaced note may move. */
   deltas: readonly number[];
+  /** Playback tempo. Slower gives more time to hold the phrase in the ear. */
+  bpm: number;
 }
 
 /**
- * Two tiers, and the harder one is harder in the ways that are musical.
+ * Three tiers, and each is harder than the last in ways that are musical rather than fiddly.
  *
- * It is longer (more to hold in the ear), it admits sequences (a restated motif is a subtler
- * prediction than a scale), it uses thirds as well as steps, and it allows a displacement of one
- * degree — which is the hardest case to hear, because the note is still nearly right.
+ * **Tier 0 exists because the first playtest said the puzzle was too hard**, and that feedback was
+ * right: before it, the easiest phrase available was a coin flip between a run and an *arch*, and an
+ * arch is a much harder listen. With a run the ear predicts the next note from the previous two, so
+ * the broken one contradicts a prediction you have already made. With an arch you must first work out
+ * where the turn is, which is a second inference on top of the one the puzzle is about.
+ *
+ * So tier 0 is **runs only**: one scale, walking one direction, at a slow tempo, with a displacement
+ * of two degrees. It is the on-ramp, and it is deliberately the only tier where the shape is knowable
+ * from the first two notes.
+ *
+ * The two harder tiers escalate on four separate axes — shape predictability, phrase length, step
+ * variety, and how near-miss the displacement is. Tier 2's single-degree displacement is the hardest
+ * case in the game, because the wrong note is still almost right.
  */
 export const TIERS: readonly Tier[] = [
-  { length: 6, shapes: ["run", "arch"], steps: [1], deltas: [2, 3, -2, -3] },
-  { length: 8, shapes: ["run", "arch", "sequence"], steps: [1, 2], deltas: [1, 2, 3, -1, -2, -3] },
+  { length: 6, shapes: ["run"], steps: [1], deltas: [2, -2], bpm: 76 },
+  { length: 6, shapes: ["run", "arch"], steps: [1], deltas: [2, 3, -2, -3], bpm: 96 },
+  {
+    length: 8,
+    shapes: ["run", "arch", "sequence"],
+    steps: [1, 2],
+    deltas: [1, 2, 3, -1, -2, -3],
+    bpm: 108,
+  },
 ];
 
-/** Alternate tiers so a session meets both. */
+/**
+ * Which tier the nth phrase of a session uses.
+ *
+ * Starts at the easiest and cycles, rather than ramping and staying hard: a finder is measuring
+ * whether the child comes back, so a session that gets monotonically harder ends every session on the
+ * child's worst experience of the room.
+ */
 export function tierForIndex(index: number): number {
   return index % TIERS.length;
 }
@@ -158,7 +183,7 @@ export function generatePuzzle(seed: number, tierIndex = 0): TuneRepairPuzzle {
     if (!hasUniqueRepair(broken, lo, hi, expected)) continue;
 
     const beats = Array.from({ length: tier.length }, (_, i) => (i === tier.length - 1 ? 2 : 1));
-    return { shape: kind, correct, broken, brokenIndex, beats, lo, hi };
+    return { shape: kind, correct, broken, brokenIndex, beats, lo, hi, bpm: tier.bpm };
   }
   throw new GenerationExhausted(`no unique instance for seed ${seed} tier ${tierIndex}`);
 }

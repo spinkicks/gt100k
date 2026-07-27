@@ -13,7 +13,7 @@
 
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { resetAudioEngineForTests } from "../../audio/engine";
+import { resetAudioEngineForTests, silentEngine } from "../../audio/engine";
 import TuneRepair, { stepsLabel } from "./TuneRepair";
 import { generateForRound } from "./generate";
 import { isSolved } from "./logic";
@@ -170,6 +170,73 @@ describe("playing it", () => {
     const { onExit } = setup();
     fireEvent.click(screen.getByRole("button", { name: "← Back" }));
     expect(onExit).toHaveBeenCalledTimes(1);
+  });
+});
+
+/**
+ * Added after the first playtest reported the puzzle as too hard. Part of that difficulty was that
+ * "did my move fix it?" needed a second, separate click on Play, so the child had to carry the phrase
+ * in their ear across it.
+ */
+describe("hearing the result of your own move", () => {
+  it("plays the whole phrase back after a note is placed, not just the moved note", () => {
+    const spy = vi.spyOn(silentEngine, "playSequence");
+    const { puzzle } = setup();
+    spy.mockClear();
+    fireEvent.click(noteButtons()[puzzle.brokenIndex] as HTMLElement);
+    fireEvent.click(screen.getAllByRole("button", { name: /^Move it/ })[0] as HTMLElement);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.mock.calls[0]?.[0]).toHaveLength(puzzle.broken.length);
+    spy.mockRestore();
+  });
+
+  it("plays at the phrase's own tempo rather than a hardcoded one", () => {
+    const spy = vi.spyOn(silentEngine, "playSequence");
+    const { puzzle } = setup();
+    fireEvent.click(screen.getByRole("button", { name: /Play the tune/ }));
+    expect(spy).toHaveBeenCalledWith(expect.anything(), puzzle.bpm);
+    spy.mockRestore();
+  });
+
+  it("plays back after a WRONG move too, so the replay is feedback and not a reward", () => {
+    const spy = vi.spyOn(silentEngine, "playSequence");
+    const { puzzle } = setup();
+    spy.mockClear();
+    fireEvent.click(noteButtons()[puzzle.brokenIndex] as HTMLElement);
+    const right = `Move it ${stepsLabel((puzzle.correct[puzzle.brokenIndex] as number) - (puzzle.broken[puzzle.brokenIndex] as number))}`;
+    const wrong = screen
+      .getAllByRole("button", { name: /^Move it/ })
+      .find((b) => b.getAttribute("aria-label") !== right);
+    fireEvent.click(wrong as HTMLElement);
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.mockRestore();
+  });
+});
+
+describe("the tier prop", () => {
+  it("opens at the tier it is given, so 'an easier one' is one number", () => {
+    for (const tier of [0, 1, 2]) {
+      const { unmount } = render(
+        <TuneRepair seed={11} tier={tier} onSolved={() => {}} onExit={() => {}} />,
+      );
+      const expected = generateForRound(11, tier);
+      const notes = within(document.body).getAllByRole("button", {
+        name: /note$|note, picked up$/,
+      });
+      expect(notes).toHaveLength(expected.broken.length);
+      unmount();
+    }
+  });
+
+  it("defaults to the easiest tier when nothing asks for one", () => {
+    const { puzzle } = setup(11);
+    expect(puzzle).toEqual(generateForRound(11, 0));
+    // Tier 0 is runs only — the easiness lever, asserted here so a default change is loud.
+    expect(puzzle.shape).toBe("run");
+  });
+
+  it("plays the easiest tier more slowly than the hardest", () => {
+    expect(generateForRound(11, 0).bpm).toBeLessThan(generateForRound(11, 2).bpm);
   });
 });
 

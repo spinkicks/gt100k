@@ -379,3 +379,31 @@ Order matters: 1 is the part most likely to need rework and has no dependency on
    nobody has checked that `tune-repair`'s "diatonic but shape-breaking" wrong note is reliably
    perceptible to a 9-year-old. That is a playtest, and it is the cheapest thing that would de-risk the
    whole roster.
+
+   **Update, same day: the first playtest happened, and it said "this is really hard."** One adult, one
+   session, so treat it as a signal and not a measurement — but it points the right way, because an
+   adult struggling means a 9-year-old struggles more. Three causes were identified and two were fixed:
+
+   - **The easiest tier was a coin flip between a run and an arch.** An arch demands working out where
+     the turn is *before* the puzzle's own question can be asked. Fixed: a new **tier 0 is runs only**,
+     six notes, single steps, a two-degree displacement, at **76 bpm** instead of 108. The old tiers
+     became 1 and 2, and `tierForIndex` now cycles all three starting from the easiest.
+   - **Checking your own move cost a second click.** The child had to carry the phrase in their ear
+     across pressing Play again. Fixed: placing a note **replays the whole phrase immediately**. It is
+     not autoplay (it follows a click) and not a reward (it replays after a wrong move too).
+   - **Not fixed, and the real remaining gap: you never hear what "right" sounds like.** Ear-training
+     normally gives a reference. Here the child must infer the intended shape *and* locate the
+     deviation — two inferences. Every fix above reduces the first; none removes it. If tier 0 is still
+     too hard, that is the next thing to change, and it needs a design decision rather than a parameter,
+     because the obvious version (play the correct phrase first) gives away the answer.
+
+   Worth recording that **the easier tier did not cost construct validity**: measured over 500 seeds,
+   tier 0 puts the wrong note *inside* the phrase's own pitch range **100%** of the time, so it is still
+   not solvable by scanning for the extreme note. The easiness comes from shape predictability and
+   tempo, which are musical levers, rather than from reinstating the spot-the-outlier shortcut.
+
+   And a note on difficulty as a *product* question rather than a tuning one: `PuzzleProps.tier` already
+   exists for "the child asked for an easier/harder one", and `chosen_challenge` is already a designed
+   signal in memo 06 §8.5. So *offering* the choice is in-model, and which way a child takes it is
+   evidence rather than a settings screen. `TuneRepair` now reads `tier`, so a registry entry for it must
+   set `supportsTier: true`.
