@@ -26,6 +26,13 @@ and in the confidence column, because the honest summary is that **a 6-year-old 
 from each other on every dimension in this memo than two adults twenty years apart do**, and no single design
 serves both without an explicit capability switch.
 
+**One scoping fact that belongs up here, not in a footnote.** The band this memo argues is **6–8**, because
+that is what `DISCOVERY-APP-PRD.md` (6–14, evidenced at 6–8) and `2026-07-27-discovery-surface.md` rule 6 ask
+about. But **`mvp-jul24` itself targets 9–12** (`PROJECT.md`), and the surface-owner ruling records the
+mismatch explicitly. So the *findings* are about the bottom of the PRD's band, while the *app audit* in §2.7
+is partly out of band — §2.7 says which of its rows survive a 9–12 bar and which do not. Do not cite §2.7
+against `mvp-jul24` without reading that note first.
+
 **This is a single desk-research pass, not memo 06's harness.** No fan-out, no 3-vote adversarial verification,
 no refuted-claims list. Confidence below is my own read, driven mostly by *how far the sample sits from 6–8*.
 Four sources were paywalled (HTTP 403) and are cited from abstracts and indexer summaries rather than full text;
@@ -254,6 +261,24 @@ affordance is identical to an absent one.** Our fallbacks must be *presented*, n
 
 Measured from `passion/apps/mvp-jul24/src/`, not from the specs. Reported at this length because the gap between
 the two is the finding.
+
+> **Read the band before reading the table — this audit is scoped, and I got it wrong first.** `mvp-jul24`'s
+> own `PROJECT.md` states **"Target band: ages 9–12, in a gifted context"**, and the surface-owner ruling
+> (2026-07-27, #212) says the same thing about this memo's evidence: *"the age bands do not line up: this
+> doc's evidence is 6-8, the app targets 9-12."* The rest of this memo argues the 6–8 case because that is
+> what `DISCOVERY-APP-PRD.md` (6–14, evidenced at 6–8) and the discovery-surface doc's rule 6 ask about.
+> **Against a 9–12 bar, two of the four rows below substantially weaken:** the reading gap largely closes
+> by the decoding stage (~3,000 words read at 7–9, and 9–12 sits in Wolf's *fluent* stage), and NN/g rates
+> 9–12 fine motor and coordination **"well developed"** against "limited" at 6–8, so a 38 px node is a far
+> smaller problem for a competent 11-year-old with a mouse.
+>
+> **What survives at 9–12, and why the table is still worth acting on:** the 10.9 px badge and 15.2 px label
+> violate the token contract's own **"never below 16px for any user"** rule, which is not age-scoped; the
+> token-adoption gap (K1) is a plumbing defect at any age; and §2.2's conjunction-vs-feature search argument
+> is about display design, not reading, so it applies to the room whoever is in it. **What does not survive
+> as stated:** treating the 38 px node as a motor-accuracy failure. Corrected here rather than quietly
+> softened, because a reviewer who spots an out-of-band audit is right to discount the memo that contains it.
+> If `mvp-jul24` is ever pointed at the bottom of the PRD's band, the full table returns.
 
 **Already correct, and it should be said first: the map marks the playable cabin with pulsing amber glow**
 (`MapScreen.css`, `animation: node-breathe 3.4s`, plus an ember gradient and `--glow-ember`). That is **motion +
