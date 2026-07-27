@@ -42,6 +42,15 @@ import { TONIC_FROM_A4, frequencyForSemitone } from "./pitch";
 export interface Note {
   semitone: number;
   beats: number;
+  /**
+   * Loudness, 0..1, defaulting to 1.
+   *
+   * Exists for `Downbeat`, where **metre is carried entirely by accent**. That gadget draws every pulse
+   * identically on purpose (PROJECT.md R2), so loudness is the only channel the grouping lives in — if
+   * it were carried by note length instead, the pattern would be visible in the roll and the activity
+   * would be a shape puzzle rather than a listening one.
+   */
+  velocity?: number;
 }
 
 export interface AudioEngine {
@@ -168,12 +177,13 @@ export function createAudioEngine(Ctor: AudioContextCtor): AudioEngine {
       const gain = c.createGain();
       osc.type = "sine";
       osc.frequency.value = hz * partial.ratio;
+      const peak = partial.gain * (note.velocity ?? 1);
 
       // A ramped envelope, because a gain that jumps from 0 to full produces an audible click that
       // reads as a percussive attack on every single note.
       gain.gain.setValueAtTime(0, at);
-      gain.gain.linearRampToValueAtTime(partial.gain, at + ATTACK);
-      gain.gain.setValueAtTime(partial.gain, at + hold);
+      gain.gain.linearRampToValueAtTime(peak, at + ATTACK);
+      gain.gain.setValueAtTime(peak, at + hold);
       gain.gain.linearRampToValueAtTime(0, at + hold + RELEASE);
 
       osc.connect(gain);

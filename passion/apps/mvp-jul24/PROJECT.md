@@ -40,9 +40,10 @@ Two cabins are built:
 `music` / `code` / `art` stay on the map as visible **"coming soon"** buttons. They are build state, not a
 design statement (memo §8.1.4) — but see *Risks*, because visible-but-empty is not free.
 
-**Music has two built activities that no room shows yet, and that is deliberate.**
-`src/puzzles/TuneRepair/` (a melody with one note out of key) and `src/puzzles/ChordFit/` (which of three
-chords holds a note up) are both finished and tested, and `src/audio/` is the app's first sound: synthesized at runtime, never
+**Music has three built activities that no room shows yet, and that is deliberate.**
+`src/puzzles/TuneRepair/` (a melody with one note out of key), `src/puzzles/ChordFit/` (which of three
+chords holds a note up) and `src/puzzles/Downbeat/` (where the bar starts, heard from stress alone) are
+finished and tested, and `src/audio/` is the app's first sound: synthesized at runtime, never
 sampled, because `src/shelf/types.ts` makes offline a hard requirement and an audio file would be the
 first asset to break it. It is **not** in `src/gadgets/registry.ts`, because `quads.data.test.ts` matches
 prop polygons to registered gadgets *exactly in both directions* — so registering it demands a painted
@@ -71,7 +72,13 @@ roll. Chord Fit was designed against R2 from the start and therefore **draws not
 identical buttons whose only difference is what they sound like, because the spec's original plan to
 stack each chord's notes "so interval spacing is visible" was the same mistake a second time.
 
-**The cost is recorded rather than hidden: neither gadget can be solved without hearing it**, so their
+Downbeat is the room's only **non-pitch** activity — it asks about time rather than pitch, which is a
+separate musical faculty, and three gadgets all measuring pitch discrimination would give the room a far
+narrower read than its three doors suggest. It carries its metre in **loudness accents** with every pulse
+drawn identically, because the spec's original design carried it in note lengths and a wide block every
+third position writes the answer on the screen.
+
+**The cost is recorded rather than hidden: none of the three can be solved without hearing it**, so their
 Layer-3 accessibility parity (PRD §5.2) is broken. Applying R2 to the rest of the roster showed this is
 not fixable by a cleverer gadget — every audible-only activity excludes a deaf child by definition — so
 the room needs a musical activity that is **not a perceptual one** (notation, instrument mechanics,

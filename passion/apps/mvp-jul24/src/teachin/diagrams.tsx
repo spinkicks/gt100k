@@ -650,3 +650,48 @@ export function ChordFitDiagram(): JSX.Element {
     </Stage>
   );
 }
+
+/**
+ * Downbeat. A row of identical pulses with sound-wave marks over the stressed ones.
+ *
+ * **The blocks are all the same size, deliberately.** The gadget carries metre in loudness precisely so
+ * that the strip holds no grouping information (PROJECT.md R2), and a diagram that drew wider blocks at
+ * the bar starts would teach a child to look for exactly the thing the real screen refuses to show. The
+ * stress is drawn as a sound cue above the block, not as a difference in the block.
+ */
+export function DownbeatDiagram(): JSX.Element {
+  const W = 20;
+  const gap = 6;
+  const x0 = 44;
+  const y = 46;
+  const count = 9;
+  return (
+    <Stage>
+      {Array.from({ length: count }, (_, i) => (
+        <rect
+          // biome-ignore lint/suspicious/noArrayIndexKey: a fixed strip; position is the identity.
+          key={i}
+          x={x0 + i * (W + gap)}
+          y={y}
+          width={W}
+          height={22}
+          rx={2}
+          className="ti-cell ti-cell-on"
+        />
+      ))}
+      {/* Louder pulses: every third, drawn as arcs above rather than as a bigger block. */}
+      {[0, 3, 6].map((i) => (
+        <g className="ti-beam" key={`a${i}`}>
+          <path d={`M ${x0 + i * (W + gap) + 3} ${y - 8} q 7 -8 14 0`} fill="none" />
+          <path d={`M ${x0 + i * (W + gap)} ${y - 14} q 10 -12 20 0`} fill="none" />
+        </g>
+      ))}
+      <Tag x={30} y={y + 16} anchor="end">
+        same
+      </Tag>
+      <Tag x={x0 + 4.2 * (W + gap)} y={88}>
+        the louder ones start the bar
+      </Tag>
+    </Stage>
+  );
+}

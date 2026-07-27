@@ -38,6 +38,7 @@ import {
   NonogramDiagram,
   PipesDiagram,
   ChordFitDiagram,
+  DownbeatDiagram,
   RatioMixingDiagram,
   TuneRepairDiagram,
 } from "./diagrams";
@@ -154,6 +155,13 @@ export const TEACH_INS = {
     // buttons and a child could otherwise reasonably assume they were meant to look for a difference.
     rule: "One note is sounding, and three chords could go under it. Only one of them contains that note, so play each one and pick the chord that holds the note up instead of fighting it.",
     Diagram: ChordFitDiagram,
+  },
+  downbeat: {
+    title: "Downbeat",
+    // Names LOUDER explicitly, because every pulse looks identical and a child could otherwise spend the
+    // whole activity hunting the strip for a difference that is deliberately not drawn.
+    rule: "Every pulse in this loop looks the same, but some of them sound louder, and a louder pulse is where a new bar starts. Play it, then mark every pulse you hear stressed.",
+    Diagram: DownbeatDiagram,
   },
 } satisfies Record<string, ActivityTeachIn>;
 

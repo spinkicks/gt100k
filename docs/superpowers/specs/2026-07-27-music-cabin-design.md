@@ -102,8 +102,8 @@ Four gadgets, four distinct musical constructs, density-matched to `logic-games`
 | id | Name | Construct | Slice order |
 |---|---|---|---|
 | `tune-repair` | Tune Repair | in-key perception (melodic) | **built** |
-| `chord-fit` | Chord Fit | harmonic function / consonance | **next** |
-| `downbeat` | Downbeat | metrical inference (non-pitch) | 3 |
+| `chord-fit` | Chord Fit | harmonic function / consonance | **built** |
+| `downbeat` | Downbeat | metrical inference (non-pitch) | **built** |
 | `echo` | Echo | aural imitation | 4 |
 
 Order revised by the R2 audit in §2.1a. `tune-repair`'s construct is stated as *in-key perception* rather
@@ -198,7 +198,7 @@ addressed by anything in the roster, and it is recorded in §8 rather than paper
 **Build order after the audit:** `chord-fit` next (a genuinely different construct from `tune-repair`,
 no working-memory confound, and the cheapest of the three to get right), then `downbeat`, then `echo`.
 
-### 2.2 `downbeat` — Downbeat
+### 2.2 `downbeat` — Downbeat *(built)*
 
 A rhythm loops. Place the barlines where the bar restarts.
 
@@ -212,7 +212,7 @@ design carried the grouping in note lengths, which draws the answer.
 **Swap test.** Accent pattern is heard and nothing else. Passes. Distinct from `math` provided it is
 framed as *where does it feel like it starts again*, never *what factors of twelve are these*.
 
-### 2.3 `chord-fit` — Chord Fit *(next to build)*
+### 2.3 `chord-fit` — Chord Fit *(built)*
 
 A melody note sounds. Three chords can be played. Pick the one that supports it.
 
