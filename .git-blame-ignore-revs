@@ -12,3 +12,11 @@
 # 196 files. The formatter config had been committed for months without ever being enforced.
 # Verified neutral: 683 engine tests, 830 app tests and 9 builds identical before and after.
 de8dadb94dc015972776c04fc52638c4ee638379
+
+# docs: test counts, after the correctness work landed (#199)
+# A two-line edit that rewrote all 131 lines: the README was one of ~28 CRLF stragglers in an
+# otherwise LF repo, and the tool that made the edit normalised it. The normalisation is correct
+# (LF matches the other ~90% of tracked files) but the blame noise is not, so skip it here.
+# The repo still has no .gitattributes, so this will recur; that is a repo-wide call, not a
+# drive-by, because adding one renormalises on checkout and churns whatever is left.
+6be0649ea627e5e4979166cf3677e97285eb691f
