@@ -4,6 +4,13 @@ The **Provenance Observatory** — the Next.js app that renders the `@gt100k/evi
 navigable, content-addressed evidence DAG. Reads the deterministic view model from
 `@gt100k/evidence-explorer-view`; computes no grade and no crypto in the UI. Synthetic data only.
 
+The app is part of the standalone EvidenceGraph product (`docs/decisions/evidencegraph-v1-design.md`
+§11/§13a), so no GT package imports a value from it. Unlike the `@gt100k/evidence-*` packages, though, it is
+**not** dependency-free in the other direction: it uses `@gt100k/design-tokens` and `@gt100k/ui`, the shared
+GT School design system (PRs #188/#189). Those two would have to travel with the app or be replaced when the
+product is extracted. The `@gt100k/boundaries` check reports this as a **warning** rather than failing the
+build, because sharing one design system across GT surfaces is a cohesion decision made on purpose.
+
 ## Run
 
 ```bash

@@ -12,7 +12,10 @@
 
 ## Summary
 
-Build the code-first core of GT100K's EvidenceGraph (PRD §19) as a **pure, framework-agnostic TypeScript domain package** (`packages/evidence-graph`): a content-addressed evidence DAG of eight PROV-extended node types and six edge types; a deterministic Merkle root and an in-toto-style attestation for a per-milestone `EvidencePacket`; and the non-negotiable human-authority invariant (humans own every grade; a model output is only a cited `Assistance`/`Review`, never a grade or an authorship accusation). All I/O sits behind ports — `Hasher` (SHA-256, Node-crypto adapter), `Verifier` (deterministic stub adapter), `EvidenceRepository` (in-memory adapter) — so the domain stays deterministic and 100% unit-testable. The genuinely-hard parts (external transparency-log anchoring, crypto-shred erasure, comparative-judgment reliability, conformal calibration) are **stubs / out of scope** per §19.2. Synthetic-only; consent/legal machinery is a stubbed field.
+Build the code-first core of the EvidenceGraph (PRD §19) — a **standalone product** developed in this repo
+and intended for extraction as a mechanical `git subtree` copy (`docs/decisions/evidencegraph-v1-design.md`
+§11/§13a), so nothing outside `@gt100k/evidence-*` may import a value from inside it — as a **pure,
+framework-agnostic TypeScript domain package** (`packages/evidence-graph`): a content-addressed evidence DAG of eight PROV-extended node types and six edge types; a deterministic Merkle root and an in-toto-style attestation for a per-milestone `EvidencePacket`; and the non-negotiable human-authority invariant (humans own every grade; a model output is only a cited `Assistance`/`Review`, never a grade or an authorship accusation). All I/O sits behind ports — `Hasher` (SHA-256, Node-crypto adapter), `Verifier` (deterministic stub adapter), `EvidenceRepository` (in-memory adapter) — so the domain stays deterministic and 100% unit-testable. The genuinely-hard parts (external transparency-log anchoring, crypto-shred erasure, comparative-judgment reliability, conformal calibration) are **stubs / out of scope** per §19.2. Synthetic-only; consent/legal machinery is a stubbed field.
 
 **Loop-ready**: [spec.md](./spec.md) folds in a hard scope fence, ordered phasing (P0…P4), machine-checkable success criteria (SC-001…SC-012) each mapped to a named test, and **pinned golden values** (exact SHA-256 node ids and Merkle roots) that are the loop's deterministic acceptance targets. The build gate is `pnpm exec tsc -b` + `pnpm test`; a seeded smoke test keeps the gate green from iteration 1. The canonicalization and Merkle schemes are pinned exactly (see spec **Decisions Already Made**): node id = `sha256_hex(utf8(JCS(content)))`; Merkle via the **RFC-6962 raw-byte scheme** over the per-node 32-byte SHA-256 digests with `leaf=sha256(0x00 || digestBytes)`, `interior=sha256(0x01 || leftHashBytes || rightHashBytes)`, leaves sorted ascending by digest bytes, odd level promotes the lone right-most node unchanged (never duplicated) — the certificate-transparency standard, for interoperability with the deferred §19.2 D1 transparency log.
 
@@ -267,11 +270,12 @@ is edited. The **only** shared-file touch is adding a composite project referenc
 `packages/evidence-explorer-view` to the root `tsconfig.json` — the **final, isolated task** (T-ROOT, §U9
 U7). The root `build` script (student-compass) is not modified; the Explorer app is built via its filter.
 
-## Reads the domain (unchanged)
+## Uses the domain
 
 | Domain API (`@gt100k/evidence-graph`) | Used for |
 |---|---|
-| `addNode` / `addEdge` / `assembleEvidencePacket` | building the committed synthetic fixture only |
+| `addNode` / `addEdge` | the committed synthetic fixture **and** the live manual-add write path (`apps/evidence-explorer/components/manual-add.ts`, via `app/actions.ts` + `components/AddPanel.tsx`); also `evidence-explorer-view/src/verify.ts`, `evidence-tiny-game`, the repo/verifier adapters, and the seam adapter `@gt100k/project-evidence-sink` |
+| ~~`assembleEvidencePacket`~~ | **removed in v1** — `EvidencePacket` is gone (design doc §2/§14); the root is derived from the whole graph |
 | `merkleRoot` | re-derived in `buildVerificationView` (the merkle step + verify light-wave) |
 | `assertHumanAuthority` | the human-authority verify step |
 | `traceEvidence` | the "trace from Outcome" highlight |

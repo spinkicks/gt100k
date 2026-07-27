@@ -2,7 +2,7 @@
 
 **Status:** Draft v1 · 2026-07-22 · Owner: (product)
 **Addresses:** Weak point #4 — the "thin human layer" risks either not scaling to 100k students or degrading into rubber-stamping, which would gut the "a human owns every grade" principle.
-**Decision source:** design session. **Grounding:** EvidenceGraph SPOV 6 + `assertHumanAuthority`; push/back-off memo guardrail #3; LearnLM RCT (AI can conduct at human level).
+**Decision source:** design session. **Grounding:** SPOV 6 + `assertHumanAuthority` from the EvidenceGraph — a **separate product** PassionLab integrates rather than owns (`docs/decisions/evidencegraph-v1-design.md` §11 + §13a), so the invariant is enforced inside the graph and relied on here; push/back-off memo guardrail #3; LearnLM RCT (AI can conduct at human level).
 
 ---
 
@@ -16,7 +16,7 @@ Humans are nominally required at many judgment points (autonomy sign-offs, wellb
 
 **Carve-out A — Child wellbeing/safety actions are human-owned.** Any burnout **back-off/rest/quit** action, any **distress or safety** escalation, and any interpretation of a sustained multi-signal decline is proposed by the system but **owned and executed by a human**. Grounding: push/back-off guardrail #3 ("the system proposes, humans dispose; no automated burnout label ever reaches the child"); the burnout signal is lagging and multi-caused, and the cost of a wrong automated call is a harmed child.
 
-**Carve-out B — Grades/authorship "of record" are human-owned.** Any grade, defense verdict, or portfolio judgment that **leaves the system to an external gatekeeper** (admissions, competitions, the public evidence packet) has a **human owner**. Grounding: EvidenceGraph SPOV 6 + `assertHumanAuthority`; human ownership *is* the authorship moat and the safeguard against a machine wrongly judging a child. In-system formative assessment stays audit-only; only the outward, high-stakes "of record" judgment is carved out.
+**Carve-out B — Grades/authorship "of record" are human-owned.** Any grade, defense verdict, or portfolio judgment that **leaves the system to an external gatekeeper** (admissions, competitions, the public evidence export) has a **human owner**. Grounding: SPOV 6 + `assertHumanAuthority`, enforced in the graph product; human ownership *is* the authorship moat and the safeguard against a machine wrongly judging a child. In-system formative assessment stays audit-only; only the outward, high-stakes "of record" judgment is carved out.
 
 ## 3. Routing: escalate by calibrated uncertainty + risk flags
 

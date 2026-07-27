@@ -8,6 +8,13 @@
 
 **Input**: User description: "A code-first, framework-agnostic core for GT100K's EvidenceGraph (PRD §19): a content-addressed evidence DAG of typed provenance nodes and edges; per-milestone EvidencePacket assembly with a Merkle root and an in-toto-style attestation; deterministic verification behind a port; and the human-authority invariant that every final grade is human-owned and a model output is only a cited Assistance/Review node, never a grade or an authorship accusation. Synthetic-only; consent/legal machinery stubbed; the genuinely-hard parts (external transparency-log anchoring, crypto-shred erasure, comparative-judgment reliability, conformal calibration) are deferred to stubs per §19.2."
 
+> **Standalone product (binding, read with the Input above).** The EvidenceGraph is **its own product**,
+> developed in this repo and intended for extraction as a mechanical `git subtree` copy
+> (`docs/decisions/evidencegraph-v1-design.md` §11/§13a). Read "GT100K's EvidenceGraph" in the Input as *the
+> EvidenceGraph, built inside GT100K*: the `@gt100k/evidence-*` packages carry no GT dependency, and nothing
+> outside that namespace may import a **value** from inside it (`import type` is fine; the one exempt seam
+> adapter is `@gt100k/project-evidence-sink`). `@gt100k/boundaries` enforces this in CI.
+
 > **Loop-ready note (read first).** This spec is written to be built by an autonomous loop whose gate is
 > `pnpm exec tsc -b` + `pnpm test`. It pre-answers the decisions (see **Decisions Already Made**), pins the
 > stack and commands, gives **exact golden hashes** as deterministic acceptance targets, and states one
@@ -45,7 +52,10 @@
   - the **human-authority invariant** (`assertHumanAuthority`);
   - deterministic **Merkle root** over a milestone node set;
   - the **in-toto-style attestation** (typed Statement shape, unsigned);
-  - **EvidencePacket assembly** (`assembleEvidencePacket`) + reviewer trace (`traceEvidence`).
+  - ~~**EvidencePacket assembly** (`assembleEvidencePacket`)~~ **removed in v1** — one graph per project,
+    so the packet's jobs (Merkle root, the human-authority invariant, the ledgers) moved up to the graph
+    itself and became views over it. See `docs/decisions/evidencegraph-v1-design.md` §2 and §14 — plus
+    reviewer trace (`traceEvidence`), which stayed.
 - **Ports**: `Hasher` (SHA-256), `Verifier` (deterministic stub), `EvidenceRepository` (in-memory), plus
   **deferred stub ports** `TransparencyLog` (§19.2 D1) and `ErasureService` (§19.2 D2).
 - **Adapters** (each its own package): `adapters/evidence-hash-node` (Node-crypto SHA-256 — the only crypto
@@ -1861,13 +1871,19 @@ The loop proceeds on the **default**; it escalates only per §U3.
 
 ## §U14 · Assumptions
 
-- **Builds on the completed Part I domain.** `@gt100k/evidence-graph` (+ its adapters) is available and
-  **unchanged**; this expansion reuses its public API (`addNode`/`addEdge`/`merkleRoot`/
-  `assembleEvidencePacket`/`assertHumanAuthority`/`traceEvidence`, the `Hasher`/`Verifier` ports, and the
-  deferred `TransparencyLog`/`ErasureService` stubs) and reads it — it never edits it. The domain's golden
-  values (Part I **Golden Values**) remain the arbiter.
-- **Synthetic-only, read-only.** No real learners/consent/admissions/legal; the fixture is committed
-  synthetic + pseudonymous; the app renders read-only and needs no auth/persistence/network.
+- **Builds on the Part I domain.** `@gt100k/evidence-graph` (+ its adapters) is available; this expansion
+  reuses its public API (`addNode`/`addEdge`/`merkleRoot`/`assertHumanAuthority`/`traceEvidence`, the
+  `Hasher`/`Verifier` ports, and the deferred `TransparencyLog`/`ErasureService` stubs) rather than
+  re-implementing any of it. Two corrections to the original "available and unchanged" wording: v1 **did**
+  evolve the domain (`docs/decisions/evidencegraph-v1-design.md` §14 — `EvidencePacket` and
+  `assembleEvidencePacket` removed, whole-graph Merkle root, graph-shaped repository), and the Explorer app
+  now **writes** as well as reads. What holds is narrower and still load-bearing: nothing here edits the
+  domain *package's* source, and no consumer re-implements hashing/Merkle/attestation/human-authority. The
+  domain's golden values (Part I **Golden Values**) remain the arbiter.
+- **Synthetic-only.** No real learners/consent/admissions/legal; the fixture is committed synthetic +
+  pseudonymous. The Explorer is **not** read-only: the manual-add surface (design doc §9) appends nodes and
+  edges through the domain's own `addNode`/`addEdge` and persists them via the `EvidenceRepository` port. No
+  auth and no network calls beyond that store.
 - **The app owns *presentation of* provenance, not the integrity/grade logic.** The domain owns
   hashing/Merkle/attestation/human-authority; the app displays them. Humans own every grade — the app shows
   the domain's human-owned `Outcome`; it never computes a grade or an accusation.

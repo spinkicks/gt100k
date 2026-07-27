@@ -1,8 +1,10 @@
 # @gt100k/evidence-explorer-view
 
-The **deterministic, framework-agnostic view model** for the Provenance Observatory (GT100K feature
-`002-evidence-graph`, Part II). It reads the `@gt100k/evidence-graph` domain and produces everything a
-renderer needs — a 2D + 3D layout, golden art / motion / visual / camera / tier registries, a build
+The **deterministic, framework-agnostic view model** for the Provenance Observatory. It is part of the
+standalone EvidenceGraph product (`docs/decisions/evidencegraph-v1-design.md` §11/§13a) and travels with it on
+extraction: it depends on `@gt100k/evidence-graph` and nothing else, and no GT package may import a value from
+it. Its spec lives in `specs/002-evidence-graph` Part II. It reads the `@gt100k/evidence-graph` domain and
+produces everything a renderer needs — a 2D + 3D layout, golden art / motion / visual / camera / tier registries, a build
 timeline, a verification view, and an accessible Ledger — with **no React, no three.js, no DOM**.
 
 > **Reads the domain, computes no grade and no crypto, deterministic layout.**
