@@ -88,6 +88,28 @@
   box-shadow: var(--shadow-raised), var(--glow-ember);
 }
 
+/* Same weight as "← Back", on purpose: the harder variant is offered, not recommended, so neither
+   button outranks the other. */
+.gadget-overlay-solved-harder {
+  margin-top: 0;
+  border: 2px solid var(--ink-soft);
+  background: var(--parchment);
+  color: var(--ink);
+  border-radius: var(--r-pill);
+  padding: 0.6rem 1.5rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-raised);
+  transition: transform 120ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+
+.gadget-overlay-solved-harder:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-raised), var(--glow-ember);
+}
+
 .gadget-overlay-confetti {
   position: absolute;
   inset: 0;

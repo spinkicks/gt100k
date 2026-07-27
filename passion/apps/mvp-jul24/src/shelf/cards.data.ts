@@ -75,7 +75,7 @@ const LOGIC_GAMES_DECK: ShelfDeck = {
       diagram: "reflection",
       body: [
         "Draw a line at right angles to the mirror where the beam lands. The angle the beam arrives at, measured from that line, is exactly the angle it leaves at, on the other side. That is the whole behaviour of a mirror, it has never needed a correction, and Hero of Alexandria wrote it down about two thousand years ago. A mirror set at 45° in a square grid therefore turns a beam by exactly 90°, which is why this maze can be solved on paper before you touch it.",
-        "One consequence is worth more than the rule itself: reflection is reversible. If a beam gets from the emitter to the target along some path, then a beam fired backwards from the target follows that same path home. So when the forward trace gets messy, start at the target and work backwards — you are not cheating, you are using a symmetry the physics guarantees.",
+        "One consequence is worth more than the rule itself: reflection is reversible. If a beam gets from the emitter to the target along some path, then a beam fired backwards from the target follows that same path home. So when the forward trace gets messy, start at the target and work backwards — you are not cheating, you are using a symmetry the physics guarantees. The Fraction Laser in the Math cabin is this same maze with one thing changed: the beam's turns are governed by fractional quantities instead of by 45° mirrors, so the geometry solved here is the part that stays and the arithmetic is the part that arrives.",
       ],
       source: {
         label:
@@ -160,7 +160,7 @@ const MATH_DECK: ShelfDeck = {
       diagram: "unit-fractions",
       body: [
         "Splitting a beam is splitting 1. If it divides into a half, a third and a sixth, those pieces must add back to exactly one whole — and they do, once you rename them so they are the same kind of thing: 3/6 + 2/6 + 1/6 = 6/6. That renaming is the only real skill in adding fractions. Pieces of different sizes cannot be added as they stand, any more than you can add three apples to two Tuesdays.",
-        "Fractions with a 1 on top have a name, unit fractions, and ancient Egyptian scribes wrote nearly everything with them — as sums of *different* unit fractions, like 1/2 + 1/3 + 1/16. The Rhind Papyrus, copied out around 1550 BC, is essentially a lookup table for doing that. It is not only history, either: it is still unknown whether every fraction of the form 4/n can be written as three unit fractions. That question is older than your grandparents and nobody has settled it.",
+        "Fractions with a 1 on top have a name, unit fractions, and ancient Egyptian scribes wrote nearly everything with them — as sums of *different* unit fractions, like 1/2 + 1/3 + 1/16. The Rhind Papyrus, copied out around 1550 BC, is essentially a lookup table for doing that. It is not only history, either: it is still unknown whether every fraction of the form 4/n can be written as three unit fractions. That question is older than your grandparents and nobody has settled it. The Mirror Maze in the Logic Games cabin is this same board with the fractions taken out: the beam still reflects, but nothing has to be divided, so what is left is the spatial reasoning on its own.",
       ],
       source: {
         label:

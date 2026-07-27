@@ -14,7 +14,7 @@
 > - **Layer 2 (cabin interior) — fixed camera, permanently.** The previous design, a walkable "bounded, hyper-real 3D showroom" in which the child moves through the room and *walks up to a gadget → clicks*, is **withdrawn**. This is not a staging decision to revisit when there is more budget; the art economics that motivate it do not change with budget.
 > - **Layer 1 (overworld) — click-to-select map of cabin signposts now, walkable overworld deferred.** The previous "2D walkable overworld" the child's avatar moves through is **deferred, not rejected**. It is a real option for later; it simply adds embodiment rather than signal, since both of this layer's signal-bearing choices are fully capturable from clicks.
 >
-> Rationale for both is recorded in §5.2. Everything else in those sections stands: free choice of where to go and the Duolingo-path lesson, the single-persistent-canvas rule, the doorway/portal transition carrying colour + emblem, the Layer-3 accessibility mirror, and §5.4's three-layer interaction with its intrinsic-integration requirement.
+> Rationale for both is recorded in §5.2. Everything else in those sections stands: free choice of where to go and the Duolingo-path lesson, the single-persistent-canvas rule (dormant while the interior is a still — see §5.2), the doorway/portal transition carrying colour + emblem, the Layer-3 accessibility mirror, and §5.4's three-layer interaction with its intrinsic-integration requirement.
 
 > **Companion doc:** the specialization half of the pipeline lives in `SPECIALIZATION-PIPELINE-PRD.md`. This PRD covers **Discovery** only, up to and including the evidence it produces for the graduation gate.
 
@@ -72,6 +72,19 @@ Three layers, deliberately separated:
 
 - **Layer 1 — 2D map of cabin signposts (navigation).** A cheap, legible 2D map the child **clicks** to *find and revisit cabins* — every cabin reachable in one click from the map, no avatar and no locomotion. **Two signal-bearing choices live here:** which cabin to approach, and which cabin they **come back to unprompted** (the return signal, read as a cabin revisit). No heavy 3D on this layer. Free choice of where to go is preserved (the Duolingo-path lesson: over-railing destroys the self-directed revisit our signal depends on) — that constraint is about *what the child is allowed to choose*, not about how they travel, so it is unaffected by the change below.
 - **Layer 2 — 3D fixed-camera cabin interior (the doing).** Entering a cabin cuts to **one composed 3D frame** of that cabin's interior. The camera is **fixed**: the child does not move through the room. Gadgets are props staged inside that frame, and the interaction is **point-and-click** — click a prop → the three-layer interaction (§5.4). **One cabin's 3D loads at a time**, on a **single persistent canvas whose contents swap** on enter/exit (never a fresh scene per cabin — the one architectural rule that must not be violated).
+
+**Status as of 2026-07-26: dormant, not withdrawn.** The interior is now served by a generated
+still plate with clickable perspective prop polygons (`backdrop`), which uses no WebGL and holds no
+3D scene context, so there is no scene-shaped canvas to persist. (The aliveness layer does mount a
+`<canvas>` for its dust-mote effect in rooms with a window shaft, but that canvas is a decorative
+2D drawing surface holding no scene — not what this rule was ever about.) The rule is unchanged and
+binds any future 3D interior; it simply has nothing to govern while the interior is a still. It was
+never satisfied
+while 3D *was* the default — `<Canvas>` mounted inside `Cabin3D` and unmounted on exit to the map,
+which is the fresh-scene-per-cabin case the rule names — so this records a rule going dormant, not
+a rule being met. Do not delete it on the grounds that nothing currently violates it: the 3× art
+budget saving it protects is the reason the fixed camera is permanent, and a future walkable or
+free-camera interior needs to argue with this sentence first.
 - **Layer 3 — 2D accessibility mirror.** A DOM/list rendering of the *same* cabins/gadgets/return-state for keyboard/screen-reader users, at 1:1 parity with the world (`plainViewEquals`). Distinct from Layer 1; justified by accessibility, not hardware.
 
 **There is no locomotion anywhere in the product** — not on the map, not in the interiors. Both layers are point-and-click.
@@ -82,7 +95,16 @@ Three layers, deliberately separated:
 
 **Life comes from camera motion inside the frame, not from locomotion.** Two devices, both small: a **cursor-driven parallax/dolly** so the frame breathes slightly as the pointer moves, and a **push-in** when a gadget takes focus. Both are **disabled under reduced-motion**. Legibility of what is clickable is therefore carried entirely by composition and prop affordance (§5.3), since the child can no longer approach a thing to discover it.
 
-Transitions use a doorway/portal metaphor with color+emblem carried from cabin to interior, a persistent "back to world" exit, and (on capable machines) a brief settle onto the composed frame; reduced-motion = instant cut.
+**Which backend serves Layer 2 (2026-07-26).** One: `backdrop`, a generated still plate with
+clickable perspective prop polygons in the art's own coordinate space. The real-time R3F room and
+the flat-illustration fallback are parked in the tree, not deleted
+(`passion/apps/mvp-jul24/src/cabin/CabinView.tsx` records how to reverse it). The still buys
+fidelity the hand-built room could not reach at roughly zero GPU cost, which is the same
+pre-rendered-adventure economics that makes the fixed camera correct — the two decisions share one
+argument. Note this does **not** reopen Layer 3: `backdrop` needing no WebGL is a hardware fact and
+has nothing to do with the accessibility mirror, which is still required on its own grounds.
+
+Transitions use a doorway/portal metaphor with color+emblem carried from cabin to interior, a persistent "back to world" exit, and a brief settle onto the composed frame; reduced-motion = instant cut. (The settle is a CSS transition on a still image, not a render-cost concern — the "on capable machines" hedge this line carried when Layer 2 was a live 3D showroom no longer applies.)
 
 ### 5.3 Cabins (the domain axis)
 

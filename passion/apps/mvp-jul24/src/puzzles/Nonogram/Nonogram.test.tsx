@@ -1,5 +1,5 @@
 import { fireEvent, render } from "@testing-library/react";
-import Nonogram from "./Nonogram";
+import Nonogram, { SIZES, sizeForRound, sizeForTier } from "./Nonogram";
 
 const solutionSignature = () =>
   Array.from(document.querySelectorAll(".ng-grid-cell"))
@@ -52,4 +52,32 @@ test("after solving, 'Next puzzle' appears, regenerates a different puzzle, and 
   // Solving the new puzzle fires onSolved again (once per puzzle).
   fillSolutionCells();
   expect(onSolved).toHaveBeenCalledTimes(2);
+});
+
+// Alternation, not a climb: a session meets both sizes, and nothing escalates past what the child
+// chose. Same convention as GearTrain/BalanceScale/RatioMixing in the math cabin.
+test("consecutive rounds are not all the same size", () => {
+  const sizes = [0, 1, 2, 3].map(sizeForRound);
+  expect(new Set(sizes).size).toBeGreaterThan(1);
+});
+
+test("round 0 is the easier size, so a first visit is never the hard one", () => {
+  expect(sizeForRound(0)).toBe(Math.min(...SIZES));
+});
+
+test("every size is one the generator can actually satisfy", () => {
+  for (const size of SIZES) expect(size).toBeGreaterThanOrEqual(5);
+});
+
+// Regression guard for the Critical: `sizeForRound(tier)` wrapped back to the smallest size on
+// the third "harder" press (tier=2, SIZES.length=2). `sizeForTier` must never do that — it holds
+// at the hardest size instead of cycling back down.
+test("sizeForTier never wraps back to a smaller size as tier climbs", () => {
+  const tiers = [0, 1, 2, 3, 4, 10];
+  const sizes = tiers.map(sizeForTier);
+  for (let i = 1; i < sizes.length; i++) {
+    expect(sizes[i]!).toBeGreaterThanOrEqual(sizes[i - 1]!);
+  }
+  expect(sizeForTier(SIZES.length - 1)).toBe(Math.max(...SIZES));
+  expect(sizeForTier(SIZES.length + 5)).toBe(Math.max(...SIZES));
 });

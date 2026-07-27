@@ -46,15 +46,32 @@ function PipeArt({ kind }: { kind: TileKind }) {
   }
 }
 
+/**
+ * The two board sizes this cabin alternates between, easier first.
+ *
+ * Same convention as Nonogram/GearTrain/BalanceScale/RatioMixing: alternation, not a climb, so a
+ * session meets both tiers and round 0 is always the easier one.
+ */
+export const SIZES = [EASY_SIZE, HARD_SIZE] as const;
+
+/**
+ * ALTERNATES, deliberately — it does not climb. Same convention as GearTrain, BalanceScale and
+ * RatioMixing, whose comment states the reason: a session should meet both. A monotonic ramp is an
+ * escalation the child never chose, and offering a choice is what the harder-variant control is for.
+ */
+export function sizeForRound(round: number): number {
+  return SIZES[round % SIZES.length]!;
+}
+
 export default function Pipes({ seed, onSolved, onExit }: PuzzleProps) {
   // `seed` gives session variety while `puzzleIndex` ("Next puzzle" clicks)
   // always advances to a fresh, deterministic-per-index generated level —
   // there's no fixed level list to run out of, so this is effectively
   // unlimited puzzles. Difficulty alternates between the two supported grid
-  // sizes so both get exercised over a play session.
+  // sizes (via `sizeForRound`) so both get exercised over a play session.
   const [puzzleIndex, setPuzzleIndex] = useState(0);
   const genSeed = useMemo(() => nextSeed(seed, puzzleIndex), [seed, puzzleIndex]);
-  const size = puzzleIndex % 2 === 0 ? EASY_SIZE : HARD_SIZE;
+  const size = sizeForRound(puzzleIndex);
   const level = useMemo(() => generateLevel(genSeed, size), [genSeed, size]);
   const [grid, setGrid] = useState<Grid>(() => makeGrid(level, genSeed));
   // Visual-only quarter-turn counter per cell (unbounded, unlike Tile.rotation)

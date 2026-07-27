@@ -7,9 +7,14 @@ import GadgetOverlay from "./overlay/GadgetOverlay";
 import "./App.css";
 
 /**
- * Top-level router: a persistent top bar (Map / Interest nav) and a body that
- * switches on the current game screen. The cabin A/B backend toggle lives
- * inside CabinView, so it isn't duplicated here.
+ * Top-level router: a persistent top bar and a body that switches on the current game screen.
+ *
+ * There is deliberately NO interest / readout entry point here. A child-facing display of their own
+ * time-on-task is refused by PRD §11 three times over — it is a quantified display of the child's
+ * own engagement, it makes the measured quantity a target (converting the instrument into an
+ * engagement-contingent reward, d = -0.46 in children and growing to -0.55 by ~2 weeks), and "your
+ * interests" asserts the fixed discovered-interest model. The screen still exists for operators
+ * behind `window.__qa.showReadout()` — see src/qa.ts. Do not re-add a button.
  */
 export default function App() {
   useInterestTracker();
@@ -44,14 +49,6 @@ export default function App() {
             onClick={() => useGame.getState().goToMap()}
           >
             Map
-          </button>
-          <button
-            type="button"
-            className={`app-topbar-btn${screen === "readout" ? " active" : ""}`}
-            aria-current={screen === "readout" ? "page" : undefined}
-            onClick={() => useGame.getState().goToReadout()}
-          >
-            Interest
           </button>
         </nav>
       </header>

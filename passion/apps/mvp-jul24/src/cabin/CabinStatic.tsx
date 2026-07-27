@@ -13,11 +13,17 @@ import "./CabinStatic.css";
  * The image is decorative — if `/art/cabin-${topic}.png` 404s, the container's
  * fallback background keeps the scene intentional and never blocks the objects.
  *
- * A topic with no gadgets is a supported, non-degenerate state, not an error: `math` currently has
- * zero (see src/gadgets/registry.ts) because its games land in a later PR. The map deliberately lets
- * a player walk into it, and what they get is the painted room with nothing to click — so this
- * component must never assume the list is non-empty. It doesn't: `gadgets.map` over `[]` just leaves
- * the backdrop and hearthlight standing.
+ * A topic with no gadgets is a supported, non-degenerate state, not an error, even though none of
+ * the nine shipped gadgets currently exercise it (`math` holds all five of its activities — see
+ * src/gadgets/registry.ts — and `music`/`code`/`art` are simply unbuilt cabins). The map deliberately
+ * lets a player walk into an empty one, and what they get is the painted room with nothing to click
+ * — so this component must never assume the list is non-empty. It doesn't: `gadgets.map` over `[]`
+ * just leaves the backdrop and hearthlight standing.
+ *
+ * This component is PARKED, not rendered: `backdrop` is the only live cabin backend (see
+ * CabinView.tsx). Kept in the tree, compiling, and covered by its own tests in case a static-image
+ * backend is ever needed again, but it is not on the render path and should not be brought back onto
+ * it as a side effect of an unrelated change.
  */
 export const CabinStatic: React.FC<{ topic: TopicId }> = ({ topic }) => {
   const gadgets = gadgetsForTopic(topic);

@@ -11,10 +11,16 @@ import "./GadgetOverlay.css";
 export default function GadgetOverlay() {
   const focusedGadgetId = useGame((s) => s.focusedGadgetId);
   const [solved, setSolved] = useState(false);
+  const [tier, setTier] = useState(0);
   const reduce = useReducedMotion();
+  // Whether *this* gadget's component actually honours `tier` (see `Gadget.supportsTier`). Only
+  // Nonogram does today; the offer must stay hidden for the other eight, whose own round state
+  // would otherwise reset to easy on remount and hand back a board easier than the one just solved.
+  const offersHarder = !!(focusedGadgetId && gadgetById(focusedGadgetId)?.supportsTier);
 
   useEffect(() => {
     setSolved(false);
+    setTier(0);
     if (!focusedGadgetId) return;
     const id = focusedGadgetId;
     useInterest.getState().recordOpen(id);
@@ -56,9 +62,20 @@ export default function GadgetOverlay() {
             transition={{ type: "spring", stiffness: 260, damping: 24 }}
           >
             {solved ? (
-              <Solved reduce={!!reduce} onBack={() => useGame.getState().closeGadget()} />
+              <Solved
+                reduce={!!reduce}
+                onBack={() => useGame.getState().closeGadget()}
+                onHarder={
+                  offersHarder
+                    ? () => {
+                        setTier((t) => t + 1);
+                        setSolved(false);
+                      }
+                    : undefined
+                }
+              />
             ) : (
-              <GadgetPuzzle id={focusedGadgetId} onSolved={() => setSolved(true)} />
+              <GadgetPuzzle id={focusedGadgetId} tier={tier} onSolved={() => setSolved(true)} />
             )}
           </motion.div>
         </motion.div>
@@ -67,8 +84,26 @@ export default function GadgetOverlay() {
   );
 }
 
-/** Delightful win state: a warm glow, a star that pops, and a little confetti. */
-function Solved({ reduce, onBack }: { reduce: boolean; onBack: () => void }) {
+/**
+ * The win state, and the one shared place a harder variant is OFFERED — when there is one to
+ * offer. `onHarder` is OPTIONAL: the overlay omits it for any gadget without `supportsTier`, so the
+ * button only appears where a harder board is actually backed by the puzzle. Where it does appear,
+ * both buttons are present and neither is preferred — nothing is gated (see shelf/types.ts for why
+ * — a completion gate would make "went deeper" a deterministic function of "solved it", and
+ * `solves` indexes prior ability), and the harder board is a choice the child makes rather than an
+ * escalation the app performs. No achievement copy, and no tier number: §11 refuses a quantified
+ * display of the child's own engagement. Where the offer is absent, nothing was withheld either —
+ * there was never a harder variant to withhold.
+ */
+function Solved({
+  reduce,
+  onBack,
+  onHarder,
+}: {
+  reduce: boolean;
+  onBack: () => void;
+  onHarder?: () => void;
+}) {
   const confetti = ["--ember", "--ember-bright", "--ember-deep", "--parchment-edge"];
   return (
     <div className="gadget-overlay-solved">
@@ -112,11 +147,24 @@ function Solved({ reduce, onBack }: { reduce: boolean; onBack: () => void }) {
       <button type="button" className="gadget-overlay-solved-back" onClick={onBack}>
         ← Back
       </button>
+      {onHarder ? (
+        <button type="button" className="gadget-overlay-solved-harder" onClick={onHarder}>
+          Try a harder one
+        </button>
+      ) : null}
     </div>
   );
 }
 
-function GadgetPuzzle({ id, onSolved }: { id: string; onSolved: () => void }) {
+function GadgetPuzzle({
+  id,
+  tier,
+  onSolved,
+}: {
+  id: string;
+  tier: number;
+  onSolved: () => void;
+}) {
   const gadget = gadgetById(id);
   const Puzzle = gadget && gadget.status !== "coming-soon" ? gadget.Puzzle : undefined;
   const Component = Puzzle ?? ComingSoon;
@@ -128,6 +176,7 @@ function GadgetPuzzle({ id, onSolved }: { id: string; onSolved: () => void }) {
   return (
     <Component
       seed={seed}
+      tier={tier}
       onSolved={() => {
         useInterest.getState().recordSolve(id);
         onSolved();

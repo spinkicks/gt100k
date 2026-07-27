@@ -1,11 +1,11 @@
 /**
  * Screenshot tool for the LAAS visual-delta loop. Points a headless Chromium at the running
- * mvp-jul24 dev/preview server, captures the map screen and the cabin (static backend) at a
- * fixed demo viewport, and writes PNGs into shots/.
+ * mvp-jul24 dev/preview server, captures the map screen and the cabin (backdrop backend, the only
+ * one left) at a fixed demo viewport, and writes PNGs into shots/.
  *
  * Ported from passion/apps/tinker-cabin/tools/shoot.ts. Simplified for mvp-jul24: the shots we
- * care about here are plain DOM/CSS (map illustration + static cabin backend), so there's no
- * need for tinker-cabin's WebGL-launch-recipe probing or its own dev-server bootstrapping — this
+ * care about here are plain DOM/CSS/SVG (map illustration + backdrop cabin, no WebGL), so there's
+ * no need for tinker-cabin's WebGL-launch-recipe probing or its own dev-server bootstrapping — this
  * assumes `pnpm --filter @gt100k/mvp-jul24 preview` (or `dev`) is already running on :5178.
  *
  *   pnpm shoot
@@ -63,9 +63,9 @@ export async function shoot(args: Args = {}): Promise<ShootResult> {
     const page = await browser.newPage({ viewport: VIEWPORT, deviceScaleFactor: 1 });
     page.on("pageerror", (e) => console.error("[pageerror]", e.message));
 
-    // `?cabin=static` pins the cabin A/B backend to the static illustration (no WebGL needed)
-    // before the map even mounts — see src/game/store.ts's `initialBackend`.
-    const url = `${base}/?cabin=static`;
+    // The backdrop is the only backend and needs no WebGL (an <img> plus SVG polygons), so the
+    // headless shooter takes the default with no query param.
+    const url = `${base}/`;
     console.log(`[shoot] ${url}`);
     await page.goto(url, { waitUntil: "domcontentloaded" });
 
@@ -77,7 +77,7 @@ export async function shoot(args: Args = {}): Promise<ShootResult> {
     // `logic-games` is the cabin with all seven puzzles in it (src/map/cabins.data.ts). `math` is
     // also active but deliberately empty until its games ship, so it isn't the useful shot here.
     await page.click('[data-cabin="logic-games"]');
-    await page.waitForSelector(".cabin-static", { timeout });
+    await page.waitForSelector(".cabin-backdrop", { timeout });
     await page.waitForTimeout(300);
     console.log(`[shoot] cabin → ${cabinOut}`);
     await page.screenshot({ path: cabinOut });
