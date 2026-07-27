@@ -177,6 +177,7 @@ export const DOMAINS: Record<string, string> = {
   computers: "Computers",
   "audio-systems": "Audio Systems",
   chess: "Chess",
+  "odds-and-chance": "Odds & Chance",
   go: "Go",
   software: "Software",
   dance: "Dance",
