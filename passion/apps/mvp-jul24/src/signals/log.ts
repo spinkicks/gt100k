@@ -120,6 +120,35 @@ export function createSignalLog({ sessionId, now }: SignalLogOptions) {
       write(s);
     },
 
+    /**
+     * Record that the child followed a shelf card's source link out of the product.
+     *
+     * The one act on the shelf worth recording. The surface owner's ruling deliberately leaves open
+     * whether the child leaves to learn or stays and does the activity
+     * (`docs/decisions/2026-07-27-discovery-surface.md` §-1), and this is the only place that
+     * question produces data rather than argument. Recording it presumes neither answer.
+     *
+     * `subjectId` is the card's own subject — the gadget for an activity card, the cabin for the
+     * invitation — and never the shelf. A child who follows the invitation's link has moved from the
+     * puzzle to the field, which is precisely the distinction the invitation card exists to create
+     * and the one E10's delayed report codes for. Collapsing both onto "the shelf" would throw it
+     * away.
+     *
+     * Not floor-gated: following a link is a discrete act, complete the moment it happens.
+     */
+    recordSourceFollow(subjectId: string): void {
+      const s = read();
+      s.interactions.push({
+        kidId: KID_ID,
+        artifactId: subjectId,
+        actionType: "follow-source",
+        timestamp: stamp(),
+        prompted: false,
+        sessionId,
+      });
+      write(s);
+    },
+
     interactions(): readonly EmittedInteraction[] {
       return read().interactions;
     },
