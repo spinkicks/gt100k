@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+
+// The three GT faces, self-hosted as packages so rendering never depends on a network. Literata
+// sets display, Inter Tight everything functional, Inconsolata the marks (buttons, tags, badges).
+import "@fontsource-variable/literata";
+import "@fontsource-variable/inter-tight";
+import "@fontsource-variable/inconsolata";
 import "./globals.css";
 import { DEFAULT_THEME, THEME_KEY } from "./theme.js";
 

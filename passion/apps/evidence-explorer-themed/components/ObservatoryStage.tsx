@@ -31,7 +31,6 @@ import {
   useState,
 } from "react";
 import type { JSX } from "react";
-import { useActiveTheme } from "../app/use-active-theme.js";
 import { Inspector } from "./Inspector.js";
 import { TimeScrub } from "./TimeScrub.js";
 import { VerifyBox } from "./VerifyBox.js";
@@ -114,11 +113,6 @@ export function ObservatoryStage({
   // Shared selection (UX4): the selected node drives the Inspector, the camera fly-to, and the beat
   // highlight — one concept, whether it came from the Ledger, a scrub beat, or a pointer-pick.
   const { selectedNodeId, origin, select, clear } = useSelection();
-
-  // Active theme id — the 3D cosmos reads colours from computed CSS vars (cosmos/palette.ts), so it
-  // must remount when the theme changes to rebuild its Three.js materials. The 2D SVG + DOM chrome
-  // recolour on their own via the CSS cascade and need no remount.
-  const activeTheme = useActiveTheme();
 
   // HUD presentation state (UX5, UE044–UE045) — filter/trace emphasis + the display toggles
   // (tier / reduced-motion / plain / captions). All presentation-only; the `ExplorerView` never changes.
@@ -241,7 +235,6 @@ export function ObservatoryStage({
           <div className="cosmos-viewport">
             <CanvasBoundary onError={() => setWebglFailed(true)}>
               <Cosmos3D
-                key={activeTheme}
                 view={view}
                 tier={activeTier}
                 plainMode={plainMode}

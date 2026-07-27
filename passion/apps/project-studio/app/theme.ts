@@ -1,6 +1,6 @@
-// Theme registry + apply/persist helpers. Nine presets across three families; each id matches a
+// Theme registry + apply/persist helpers. Eight presets across four families; each id matches a
 // [data-theme="..."] block in globals.css. The chip colors are only for the switcher swatches.
-export type ThemeFamily = "cartoon" | "minimal" | "tech";
+export type ThemeFamily = "gt" | "cartoon" | "minimal" | "tech";
 
 export interface ThemePreset {
   readonly id: string;
@@ -16,6 +16,13 @@ export interface ThemeGroup {
 }
 
 export const THEME_GROUPS: readonly ThemeGroup[] = [
+  {
+    family: "gt",
+    label: "GT School",
+    blurb: "Paper and ink",
+    // Paper, Navy, Gold: the page, the structure, and the accent surface.
+    presets: [{ id: "gt-school", name: "GT School", chips: ["#fcf4ef", "#002a3a", "#e48b53"] }],
+  },
   {
     family: "cartoon",
     label: "Cartoon",
@@ -46,7 +53,7 @@ export const THEME_GROUPS: readonly ThemeGroup[] = [
   },
 ];
 
-export const DEFAULT_THEME = "cartoon-sun";
+export const DEFAULT_THEME = "gt-school";
 export const THEME_KEY = "gt100k.project-studio.theme";
 export const ALL_THEME_IDS: readonly string[] = THEME_GROUPS.flatMap((g) =>
   g.presets.map((p) => p.id),

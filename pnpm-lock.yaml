@@ -155,6 +155,15 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
     devDependencies:
+      '@fontsource-variable/inconsolata':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource-variable/inter-tight':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource-variable/literata':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@types/react':
         specifier: ^18.3.12
         version: 18.3.31
@@ -189,6 +198,9 @@ importers:
       '@electric-sql/pglite':
         specifier: ^0.5.4
         version: 0.5.4
+      '@gt100k/design-tokens':
+        specifier: workspace:*
+        version: link:../../packages/design-tokens
       '@gt100k/evidence-deferred':
         specifier: workspace:*
         version: link:../../adapters/evidence-deferred
@@ -238,6 +250,15 @@ importers:
         specifier: ^0.169.0
         version: 0.169.0
     devDependencies:
+      '@fontsource-variable/inconsolata':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource-variable/inter-tight':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource-variable/literata':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@types/react':
         specifier: ^18.3.12
         version: 18.3.31
@@ -253,6 +274,9 @@ importers:
       '@electric-sql/pglite':
         specifier: ^0.5.4
         version: 0.5.4
+      '@gt100k/design-tokens':
+        specifier: workspace:*
+        version: link:../../packages/design-tokens
       '@gt100k/evidence-deferred':
         specifier: workspace:*
         version: link:../../adapters/evidence-deferred
@@ -302,6 +326,15 @@ importers:
         specifier: ^0.169.0
         version: 0.169.0
     devDependencies:
+      '@fontsource-variable/inconsolata':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource-variable/inter-tight':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource-variable/literata':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@types/react':
         specifier: ^18.3.12
         version: 18.3.31
@@ -525,6 +558,15 @@ importers:
 
   passion/apps/project-studio:
     dependencies:
+      '@fontsource-variable/inconsolata':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource-variable/inter-tight':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource-variable/literata':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@gt100k/project-workspace':
         specifier: workspace:*
         version: link:../../packages/project-workspace

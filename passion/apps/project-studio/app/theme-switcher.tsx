@@ -1,14 +1,14 @@
 "use client";
 
-// Theme switcher: a button in the topbar that opens a popover of the nine presets. Applying a theme
-// sets [data-theme] on <html> and persists it. The popover is position:fixed so it escapes any
-// overflow/stacking context, closes on outside click or Escape, and reflects the active preset.
+// Theme switcher: a button in the topbar that opens a popover of the eight presets. Applying a
+// theme sets [data-theme] on <html> and persists it. The popover is position:fixed so it escapes
+// any overflow/stacking context, closes on outside click or Escape, and reflects the active preset.
 import { useEffect, useRef, useState, type JSX } from "react";
-import { THEME_GROUPS, applyTheme, readActiveTheme } from "./theme.js";
+import { DEFAULT_THEME, THEME_GROUPS, applyTheme, readActiveTheme } from "./theme.js";
 
 export function ThemeSwitcher(): JSX.Element {
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState<string>("cartoon-sun");
+  const [active, setActive] = useState<string>(DEFAULT_THEME);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

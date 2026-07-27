@@ -134,9 +134,10 @@ export function Inspector({
           </svg>
         </span>
         <div className="insp-heading">
-          <span className="insp-type" style={{ color: hue }}>
-            {panel.type}
-          </span>
+          {/* The type hue stays on the glyph and off the label. The theme's chart colours were
+              chosen to clear 3:1 as graphics, not 4.5:1 as ink: Gold Deep measures 4.39 on the
+              panel, so setting an 11px label in it would have failed AA by a hair. */}
+          <span className="insp-type">{panel.type}</span>
           <h3 className="insp-label">{panel.label}</h3>
         </div>
         <button type="button" className="insp-close" onClick={onClose} aria-label="Close details">

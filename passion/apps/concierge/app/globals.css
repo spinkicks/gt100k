@@ -4,60 +4,31 @@
 @import "@gt100k/ui/styles.css";
 
 /*
- * PassionLab Concierge — a calm, legible chat surface (NOT a game). A child asks a niche question; the
- * concierge answers from a curated library first, or grounded open-web retrieval on a genuine gap, and
- * ALWAYS shows where each claim came from (citations) + the smallest testable next step (a probe).
- * The response KIND (answer / refused / escalated) is carried by a text label + glyph, never colour
- * alone (WCAG 2.2 AA). Motion is subtle and disabled under prefers-reduced-motion. Fonts are
- * self-hosted (fonts.ts) so nothing is fetched at build time. Synthetic data only.
+ * PassionLab Concierge, a calm and legible chat surface (NOT a game). A child asks a niche question;
+ * the concierge answers from a curated library first, or grounded open-web retrieval on a genuine
+ * gap, and ALWAYS shows where each claim came from (citations) + the smallest testable next step (a
+ * probe). The response KIND (answer / refused / escalated) is carried by a text label + glyph, never
+ * colour alone (WCAG 2.2 AA). Motion is subtle and disabled under prefers-reduced-motion. Synthetic
+ * data only.
+ *
+ * This surface wears the GT School identity via [data-theme="gt"] in @gt100k/design-tokens: warm
+ * off-white paper, white cards lifted off it, Navy doing the structural work and the ink, Gold as a
+ * tint and never as text.
+ *
+ * It used to be the opposite: a deliberate near-black instrument, with color-scheme: dark and its
+ * own dark palette declared in a local :root. That was a considered choice and it is now reversed:
+ * the concierge joins the house identity. The local :root is gone entirely rather than retuned,
+ * because a local :root beats [data-theme] on equal specificity by coming later, so 21 of those
+ * declarations would have silently won and the retheme would have changed nothing on screen. The
+ * two app-local names it also held (--surface-3, --line-quote) went with it: both existed to
+ * describe a third step in a dark ramp, and on paper the roles they served are contract tokens.
+ *
+ * Nothing below states a colour or a font family. Three faces, assigned by size rather than by
+ * element: Literata 300 sets display type at 1.1rem and above; Inter Tight sets the prose, the
+ * controls and every compact heading beneath that floor (THE SERIF HAS A FLOOR, since a light serif
+ * never labels a data row); Inconsolata sets the marks, which here are the two badges, the Ask
+ * button and the reputation figure, and nothing else.
  */
-
-/*
- * A dark, near-black instrument rather than a bright reading surface. These are OVERRIDES of the
- * shared contract, not a private vocabulary: the names are the contract's, so a token rename lands
- * here too, while the values stay the concierge's own. One contract, per-surface themes.
- */
-:root {
-  color-scheme: dark;
-
-  --canvas: #262624;
-  --surface: #302f2d;
-  --surface-2: #3a3936;
-  /* App-local: the contract stops at two surface layers, and the hover state needs a third. */
-  --surface-3: #454440;
-
-  --line: rgba(255, 255, 255, 0.08);
-  --line-strong: rgba(255, 255, 255, 0.13);
-  /* App-local: the contract has only two border weights, and the probe's rule is a visibly
-     heavier third — folding it into --line-strong would flatten two distinct edges into one. */
-  --line-quote: rgba(255, 255, 255, 0.2);
-
-  --ink: #f0efec;
-  --ink-muted: #b0aea7;
-  --ink-faint: #86847c;
-  --focus-color: rgba(255, 255, 255, 0.6);
-
-  --good: #cfe8d6;
-  --warn: #f0e2c4;
-  --bad: #f0cfcf;
-
-  /* The accent was the one contract role this surface never re-pointed, because nothing here used
-     it. The shared product header does, and the contract's default (#333 ink meant for a white
-     ground) vanishes on this one — so it is mapped like every other name above: the surface's own
-     near-white, with the ground as its ink. */
-  --accent: #e8e6e1;
-  --accent-hover: #ffffff;
-  --accent-weak: rgba(255, 255, 255, 0.08);
-  --accent-ink: #262624;
-
-  --font-body: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    sans-serif;
-  --font-mono: var(--font-mono-face), ui-monospace, "SFMono-Regular", Menlo, monospace;
-
-  /* Softer than the contract's 12px/4px: the panels here are chat furniture, not controls. */
-  --radius-lg: 14px;
-  --radius-sm: 9px;
-}
 
 * {
   box-sizing: border-box;
@@ -73,18 +44,20 @@ body {
   min-height: 100vh;
   background: var(--canvas);
   color: var(--ink);
+  /* Inter Tight, not the display face, and at the brand's Body step rather than the old 15px.
+     Tracking is normal, per the reference scale, and there is no -webkit-font-smoothing:
+     antialiased, which thins dark-on-light text and costs contrast on paper this warm. */
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: var(--text-base);
   line-height: 1.55;
-  letter-spacing: -0.006em;
-  -webkit-font-smoothing: antialiased;
+  letter-spacing: normal;
   text-rendering: optimizeLegibility;
 }
 
+/* Tabular figures so a column of reputation scores lines up. */
 .mono {
   font-family: var(--font-mono);
-  font-size: 0.86em;
-  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 /* --- Layout ------------------------------------------------------------------------------------ */
@@ -100,30 +73,47 @@ body {
   justify-content: space-between;
   gap: 12px;
   padding-bottom: 18px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: var(--line-w) solid var(--line);
   margin-bottom: 28px;
 }
+/* The page's one display moment. It clears the 1.1rem serif floor with room to spare, so it takes
+   Literata at 300, with the weight override that used to bold it removed, because size carries the
+   hierarchy and a light serif is the point of the face. */
 .brand h1 {
   margin: 0;
-  font-size: 1.15rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 1.9rem);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 .brand p {
-  margin: 4px 0 0;
+  margin: 6px 0 0;
   color: var(--ink-faint);
   font-size: 0.85rem;
+  text-wrap: pretty;
 }
 
-.chip {
+/* --- Marks ------------------------------------------------------------------------------------- */
+/* THE UTILITY FACE IS FOR MARKS. Two badges: the standing "synthetic data" note on the paper, and
+   the response kind inside the card. Both label their surroundings rather than read as part of
+   them, so both take Inconsolata uppercase on a warm tint. Squarer than a pill, per the brand. */
+.chip,
+.kind {
   display: inline-flex;
   align-items: center;
+  gap: 8px;
+  padding: 4px 9px;
+  color: var(--ink-muted);
+  background: var(--surface-2);
+  border: var(--line-w) solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
   font-size: 0.72rem;
-  color: var(--ink-faint);
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 3px 9px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
@@ -133,38 +123,66 @@ body {
   gap: 10px;
   margin-bottom: 24px;
 }
+/* White field on the warm page, so the entry area reads as the active surface. */
 .composer input {
   flex: 1;
+  min-width: 0;
   background: var(--surface);
   color: var(--ink);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-lg);
+  border: var(--line-w) solid var(--line-strong);
+  border-radius: var(--radius-md);
   padding: 12px 14px;
   font: inherit;
 }
-.composer input:focus-visible,
-.btn:focus-visible {
-  outline: 2px solid var(--focus-color);
-  outline-offset: 2px;
+/* A placeholder needs the same 4.5:1 as body text, so it is the muted ink rather than a pale grey. */
+.composer input::placeholder {
+  color: var(--ink-faint);
+  opacity: 1;
 }
+
+/* --- Buttons ----------------------------------------------------------------------------------- */
+/* Ask is the primary action, and under the dark palette it was a hairline-bordered --surface-2 tile
+   that survived the retheme as a Gold Lightest ghost on Gold-tinted paper: technically present,
+   visually absent. It gets real presence back from four things at once: the Navy fill, which is the
+   strongest value separation the identity has against paper; the utility face, uppercase and
+   tracked, which reads as a control rather than a word; a full 44px target; and the notch. */
 .btn {
-  background: var(--surface-2);
-  color: var(--ink);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-lg);
-  padding: 12px 16px;
-  font: inherit;
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--control-min);
+  padding: 12px 20px;
+  color: var(--accent-ink);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   cursor: pointer;
 }
-.btn:hover {
-  background: var(--surface-3);
-}
-.btn:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
+
+/* The quiet way in. Body sans, sentence case, outlined and uncut: these two are suggestions, and a
+   suggestion that shouts as loud as the primary is not a suggestion. */
 .btn--ghost {
-  background: transparent;
+  min-height: 0;
+  padding: 8px 12px;
+  color: var(--ink);
+  border: var(--line-w) solid var(--line-strong);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.btn--ghost:hover {
+  background: var(--accent-weak);
+  border-color: var(--accent);
 }
 
 .seedrow {
@@ -174,23 +192,60 @@ body {
   margin-bottom: 28px;
 }
 
+/* ONE NOTCH PER SCREEN. The chamfer marks the single most important action in view, which here is
+ * Ask and nothing else: the two seed buttons are the quiet way in and keep their square corners,
+ * and no card, badge or field is cut.
+ *
+ * CHAMFER ON A PSEUDO-ELEMENT: clip-path clips the focus ring along with the corner, so the cut
+ * goes on a layer behind the content and the button itself stays unclipped. */
+.btn:not(.btn--ghost)::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: var(--accent);
+  border-radius: var(--radius-md);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--cut-br, 14px)),
+    calc(100% - var(--cut-br, 14px)) 100%,
+    0 100%
+  );
+  transition: background var(--dur-fast) var(--ease);
+}
+.btn:not(.btn--ghost):hover::before {
+  background: var(--accent-hover);
+}
+
+/* Ask starts disabled, on an empty composer, so this is the first thing anyone sees. It stays a
+   filled, notched block that loses only the Navy, which is what carries "live", rather than dropping
+   to opacity: 0.5, which composited the label down to about 3.2:1 against the paper. */
+.btn:disabled {
+  cursor: default;
+}
+.btn:not(.btn--ghost):disabled {
+  color: var(--ink-muted);
+}
+.btn:not(.btn--ghost):disabled::before {
+  background: var(--line-strong);
+}
+
 /* --- Response card ----------------------------------------------------------------------------- */
 .card {
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--line-w) solid var(--line);
   border-radius: var(--radius-lg);
   padding: 20px 22px;
+  /* The GT theme's own elevation: a warm shadow, because a neutral-black one goes grey and dirty
+     against warm paper. */
+  box-shadow: var(--elev-raised);
 }
 .kind {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.74rem;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--ink-muted);
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
+/* Colour is never the only channel, since the kind is spelled out in the label beside this dot, but
+   the dot still earns its hue: the three status inks all clear 3:1 as a graphic on the tint. */
 .kind .dot {
   width: 8px;
   height: 8px;
@@ -207,26 +262,37 @@ body {
   background: var(--warn);
 }
 
+/* Prose, so it keeps the body face however large it gets. The measure is tuned for Inter Tight,
+   whose "0" is wide relative to its average advance: 52ch here lands at about 74 characters. */
 .answer {
   margin: 0 0 16px;
-  font-size: 1.02rem;
+  max-width: 52ch;
+  font-size: 1.05rem;
+  text-wrap: pretty;
 }
+/* The smallest testable next step. A warm tint under a Navy rule, per WARM TINTS UNDER COOL
+   ACCENTS: the rule is the heaviest edge on the card, which is the whole point of the block. */
 .probe {
   margin: 0 0 18px;
   padding: 12px 14px;
-  border-left: 2px solid var(--line-quote);
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   color: var(--ink-muted);
-  font-size: 0.92rem;
+  background: var(--surface-2);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.94rem;
+  text-wrap: pretty;
 }
 
+/* Under the serif floor and labelling a list rather than opening a passage, so Inter Tight 620
+   rather than a light serif, and not a mark either, since the utility face is already spending
+   itself on the two badges and the button. */
 .eyebrow {
   margin: 0 0 8px;
+  color: var(--ink-muted);
   font-size: 0.72rem;
+  font-weight: 620;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--ink-faint);
 }
 .cites {
   list-style: none;
@@ -238,39 +304,53 @@ body {
 }
 .cite {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
   padding: 8px 12px;
-  border: 1px solid var(--line);
+  border: var(--line-w) solid var(--line);
   border-radius: var(--radius-sm);
 }
 .cite a {
-  color: var(--ink);
+  color: var(--accent);
   text-decoration: none;
-  border-bottom: 1px solid var(--line-strong);
+  border-bottom: var(--line-w) solid var(--line-strong);
 }
 .cite a:hover {
-  border-bottom-color: var(--ink);
+  color: var(--accent-hover);
+  border-bottom-color: var(--accent);
 }
+/* A reputation figure is a mark, not prose. */
 .rep {
-  color: var(--ink-faint);
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  color: var(--ink-muted);
+  background: var(--surface-2);
+  border: var(--line-w) solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
 .foot {
   margin-top: 32px;
   color: var(--ink-faint);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
+  text-wrap: pretty;
 }
 
 .pending {
-  color: var(--ink-faint);
+  color: var(--ink-muted);
   font-style: italic;
 }
 
 /* Subtle entrance, disabled for reduced motion. */
 .card {
-  animation: rise 220ms ease-out both;
+  animation: rise var(--dur-base) ease-out both;
 }
 @keyframes rise {
   from {
@@ -282,9 +362,33 @@ body {
     transform: none;
   }
 }
+
+:where(.btn, .composer input, .cite a):focus-visible {
+  outline: var(--focus-w) solid var(--focus-color);
+  outline-offset: var(--focus-offset);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+/* The chamfer paints Ask's fill on a pseudo-element, which Windows High Contrast drops. Without
+ * this the label would be near-white on the paper. Give the button its own fill back in
+ * forced-colors mode and lose the notch, which is decoration, rather than the button.
+ * (This is also why an automated contrast checker reports this one control as failing: it cannot
+ * see a pseudo-element's background. The real pair is Near White on Navy, 14.6:1.) */
+@media (forced-colors: active) {
+  .btn:not(.btn--ghost) {
+    color: ButtonText;
+    background: ButtonFace;
+    border: var(--line-w) solid ButtonText;
+  }
+  .btn:not(.btn--ghost)::before {
+    display: none;
   }
 }

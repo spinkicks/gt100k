@@ -2,7 +2,8 @@
  * Project Studio, a kid-facing project quest studio (ref: specs/022-project-studio/references).
  *
  * TOKEN-DRIVEN THEMING: every component reads design tokens, and each theme (set via
- * [data-theme] on <html>) fills those tokens. Nine presets across three families:
+ * [data-theme] on <html>) fills those tokens. Eight presets across four families:
+ *   gt-school  the GT School identity: warm paper, Navy structure, Gold as a surface, one notch.
  *   cartoon-*  bold neo-brutalist: thick outlines, hard offset shadows, chunky display type.
  *   minimal-*  ultra-minimal: hairline borders, no shadows, calm type, generous whitespace.
  *   tech-*     code/computer: dark canvas, monospace, faint grid, neon glow.
@@ -48,6 +49,57 @@
   --hi: #ffe27a;
   --hi-ink: #191813;
   --btn-ink: #191813;
+}
+
+/* ---- GT School family -------------------------------------------------
+ * The GT School identity: warm off-white paper carries the content, Navy does the structural work,
+ * Gold is an accent surface and never ink, three faces are assigned by size, and one corner of the
+ * single most important action is cut away. Every property :root declares is reassigned here, so
+ * nothing inherits a cartoon value. The type roles and the notch live in their own section further
+ * down; where one of the identity's named rules decides something, the comment says which one.
+ */
+[data-theme="gt-school"] {
+  /* Literata sets display, Inter Tight everything functional, Inconsolata the marks. */
+  --font-body: "Inter Tight Variable", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Inconsolata Variable", ui-monospace, Consolas, monospace;
+  --font-display: "Literata Variable", "Palatino Linotype", Palatino, Georgia, serif;
+  --dt: none; /* an editorial serif is set sentence case, never shouted */
+  --dw: 300;
+  --ds: -0.02em;
+
+  /* Hairline warm rules; 12px on containers, 8px on controls, 4px on tags. */
+  --line-w: 1px;
+  --line-w-lg: 1px;
+  --r: 12px;
+  --r-sm: 8px;
+
+  /* A neutral black shadow turns grey and dirty against warm paper, so the elevation is warm too. */
+  --sh: 0 1px 2px rgb(90 60 40 / 0.07), 0 1px 3px rgb(90 60 40 / 0.06);
+  --sh-sm: 0 1px 2px rgb(90 60 40 / 0.06);
+  --sh-hover: 0 4px 12px rgb(90 60 40 / 0.12);
+  --sh-active: 0 1px 2px rgb(90 60 40 / 0.1);
+  --lift: 0px; /* motion conveys state here, not decoration: nothing slides under the pointer */
+  --press: 0px;
+
+  /* Page is paper, panels lift off it in white, grouped regions take a warm tint. */
+  --bg: #fcf4ef;
+  --paper: #ffffff;
+  --paper-2: #f8e8de;
+  --ink: #001117;
+  --muted: #4a6470; /* 5.8 on paper, 6.3 on a white panel, 5.2 on the warm tint */
+  --line: #ecd9cb;
+
+  /* GOLD IS NOT INK. --accent also sets text (the quest question's bold run) and Gold on paper is
+     2.4:1, so Navy carries the accent and Gold does its real work as a surface: --paper-2, --hi,
+     and the one chamfered button. The three accents stay far apart in hue and value so the log's
+     make / help / struggle nodes still read apart: Blue 8.6:1, Navy 14.6:1, warm deep 7.9:1, each
+     against --btn-ink. */
+  --accent: #002a3a;
+  --accent-2: #6f4526;
+  --accent-3: #004f71;
+  --hi: #ebba9b;
+  --hi-ink: #001117;
+  --btn-ink: #fbfbfb;
 }
 
 /* ---- cartoon family ---------------------------------------------------- */
@@ -1145,6 +1197,166 @@ body {
   pointer-events: none;
   background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0 1px, transparent 1px 3px);
   opacity: 0.4;
+}
+
+/* ---- GT School: type roles, warm surfaces, and the signature notch ----
+ *
+ * Three faces assigned by size, not by element, exactly as the identity asks.
+ */
+
+/* The floating confetti belongs to the cartoon family, not to a printed academic reference. */
+[data-theme="gt-school"] .shapes {
+  display: none;
+}
+
+/* THE SERIF HAS A FLOOR. Literata 300 is a display face, so only type that clears about 1.1rem
+ * takes it: the product title at 1.5rem, the project title at 1.9rem, the showcase heading at
+ * 1.5rem. They inherit the face and the 300 weight from the token block and only need the
+ * identity's display leading, which is looser than the cartoon family's 1.05. */
+[data-theme="gt-school"] .brand__title,
+[data-theme="gt-school"] .hero__title,
+[data-theme="gt-school"] .modal__h {
+  line-height: 1.15;
+}
+
+/* Below that floor a light serif would be labelling a data row, so every compact heading and label
+ * keeps Inter Tight 620 instead. This is also what drops the cartoon family's 800 weights. */
+[data-theme="gt-school"] .projlist__label,
+[data-theme="gt-school"] .composer__title,
+[data-theme="gt-school"] .themepop__label,
+[data-theme="gt-school"] .projcard__title,
+[data-theme="gt-school"] .tl-kind,
+[data-theme="gt-school"] .swatch__name {
+  font-family: var(--font-body);
+  font-weight: 620;
+  letter-spacing: normal;
+}
+
+/* THE UTILITY FACE IS FOR MARKS. Inconsolata sets buttons, tags and badges, never prose. */
+[data-theme="gt-school"] .btn,
+[data-theme="gt-school"] .themebtn {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+[data-theme="gt-school"] .chip,
+[data-theme="gt-school"] .mini {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border-width: 1px;
+  border-radius: 4px; /* a tag is squarer than a pill */
+}
+
+/* An emoji inside an uppercase mono mark reads as a glitch. The celebration keeps its place in the
+ * showcase card, where it is prose rather than a button label. */
+[data-theme="gt-school"] .btn .deco-emoji {
+  display: none;
+}
+
+/* The warm hairline is the right border colour and the wrong spine: at 30% of #ecd9cb the journey
+ * line disappears against the paper, so it takes --muted the way the minimal family does. */
+[data-theme="gt-school"] .tl-item::before {
+  background: var(--muted);
+  opacity: 0.4;
+}
+
+/* WARM TINTS UNDER COOL ACCENTS. A context panel comes from the Gold family even though the
+ * accents here are Navy and Blue. Dark Navy on Gold Lighter is 14.7:1. */
+[data-theme="gt-school"] .callout {
+  background: #f5ddcd;
+  color: var(--ink);
+  border-color: #ebba9b;
+  font-weight: 500;
+}
+[data-theme="gt-school"] .callout__icon {
+  color: #6f4526;
+}
+
+[data-theme="gt-school"] .themepop {
+  box-shadow: 0 8px 24px rgb(90 60 40 / 0.14);
+}
+
+/* The identity's focus ring is Blue, which --accent cannot be here because --accent also sets text.
+ * One rule rather than an override per control. */
+[data-theme="gt-school"] .themebtn:focus-visible,
+[data-theme="gt-school"] .swatch:focus-visible,
+[data-theme="gt-school"] .projcard:focus-visible,
+[data-theme="gt-school"] .kindbtn:focus-visible,
+[data-theme="gt-school"] .composer__in:focus-visible,
+[data-theme="gt-school"] .btn:focus-visible {
+  outline-color: #004f71;
+}
+
+/* ONE NOTCH PER SCREEN. The chamfer marks the single most important action in view, and on this
+ * screen that is Add: the control that puts the child's next entry into the quest log. Nothing
+ * else on the page is cut, because repeating a signature turns it into wallpaper.
+ *
+ * CHAMFER ON A PSEUDO-ELEMENT: clip-path clips the focus outline along with the corner, so the cut
+ * goes on an absolutely positioned layer behind the content and the button itself stays unclipped.
+ *
+ * This is also the one place Gold appears at full strength. Its label is Dark Navy at 7.4:1; white
+ * on Gold is 2.6:1 and would fail.
+ */
+[data-theme="gt-school"] .btn--add {
+  position: relative;
+  isolation: isolate;
+  color: var(--ink);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+[data-theme="gt-school"] .btn--add::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: #e48b53;
+  border-radius: var(--r-sm);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+  transition: background 0.15s ease;
+}
+/* The brand's own secondary hover is Gold Deep, but Dark Navy on Gold Deep measures 4.4:1, just
+ * under the floor for a label this size, so the hover brightens to Gold Light (11:1) instead. */
+[data-theme="gt-school"] .btn--add:hover::before {
+  background: #ebba9b;
+}
+
+/* Child-facing surface: where the identity and a child's hands disagree, the hands win. GT's own
+ * controls are more compact than this, and swapping the cartoon family's 3px outlines for
+ * hairlines takes another 4px off every box, so the 44px floor is set explicitly. The checkbox
+ * input keeps its 18px box; its label carries the 44px target. */
+[data-theme="gt-school"] .btn,
+[data-theme="gt-school"] .themebtn,
+[data-theme="gt-school"] .kindbtn,
+[data-theme="gt-school"] .composer__in,
+[data-theme="gt-school"] .projcard,
+[data-theme="gt-school"] .swatch,
+[data-theme="gt-school"] .stuck {
+  min-height: 44px;
+}
+/* A button is inline-block by default, which would leave the label sitting above the added height. */
+[data-theme="gt-school"] .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The notch paints the button's fill on a pseudo-element, which Windows High Contrast drops.
+ * Without this the label would be Dark Navy on the composer's own tint. Give the element its fill
+ * back in forced-colors mode and lose the notch, which is decoration, rather than the button. */
+@media (forced-colors: active) {
+  [data-theme="gt-school"] .btn--add {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+  }
+
+  [data-theme="gt-school"] .btn--add::before {
+    display: none;
+  }
 }
 
 @media (max-width: 820px) {

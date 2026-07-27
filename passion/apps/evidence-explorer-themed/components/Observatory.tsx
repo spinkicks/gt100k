@@ -15,7 +15,6 @@ import { type ExplorerView, buildLedgerView } from "@gt100k/evidence-explorer-vi
  */
 import type { EvidenceGraph } from "@gt100k/evidence-graph";
 import { type JSX, useMemo, useState } from "react";
-import { ThemeSwitcher } from "../app/theme-switcher.js";
 import { AddPanel } from "./AddPanel.js";
 import { Hud } from "./Hud.js";
 import { Ledger } from "./Ledger.js";
@@ -71,7 +70,6 @@ export function Observatory({ seed }: { seed: SyntheticSeed }): JSX.Element {
             <span className="obs-dot" aria-hidden="true" />
             Synthetic
           </span>
-          <ThemeSwitcher />
         </div>
       </header>
 
