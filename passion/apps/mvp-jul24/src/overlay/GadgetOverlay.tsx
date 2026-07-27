@@ -2,6 +2,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { gadgetById } from "../gadgets/registry";
 import { useGame } from "../game/store";
+import { solveVerbFor } from "../signals/catalog";
 import { useInterest } from "../interest/store";
 import ComingSoon from "../puzzles/ComingSoon";
 import { FLOOR_MS } from "../signals/log";
@@ -38,7 +39,8 @@ export default function GadgetOverlay() {
       // puzzle owed them nothing. Gated on the same floor so a misclick on a
       // finished gadget is not read as depth.
       if (activeMs >= FLOOR_MS && solvesAtOpen > 0) {
-        sessionLog.recordDepth(id, "unrequired_revision");
+        const verb = solveVerbFor(id);
+        if (verb) sessionLog.recordAction(id, verb, ["unrequired_revision"]);
       }
     };
   }, [focusedGadgetId]);
@@ -69,9 +71,14 @@ export default function GadgetOverlay() {
                   offersHarder
                     ? () => {
                         // A child voluntarily reaching for harder work, which is the definition of
-                        // `chosen_challenge`. Not floor-gated: depth is a discrete accomplished
-                        // action, and the ask is complete the moment it is made.
-                        sessionLog.recordDepth(focusedGadgetId, "chosen_challenge");
+                        // `chosen_challenge`. Carried on the gadget's own verb rather than as its
+                        // own actionType: a depth kind resolves to no mode, so `recordDepth`'s
+                        // records were silently discarded as unresolved-action. Not floor-gated —
+                        // the ask is complete the moment it is made.
+                        const verb = solveVerbFor(focusedGadgetId);
+                        if (verb) {
+                          sessionLog.recordAction(focusedGadgetId, verb, ["chosen_challenge"]);
+                        }
                         setTier((t) => t + 1);
                         setSolved(false);
                       }
@@ -79,7 +86,17 @@ export default function GadgetOverlay() {
                 }
               />
             ) : (
-              <GadgetPuzzle id={focusedGadgetId} tier={tier} onSolved={() => setSolved(true)} />
+              <GadgetPuzzle
+                id={focusedGadgetId}
+                tier={tier}
+                onSolved={() => {
+                  // The one record that can form a cell. An `open` resolves to no work-mode by
+                  // design, so without this the engine only ever sees that the child was here.
+                  const verb = solveVerbFor(focusedGadgetId);
+                  if (verb) sessionLog.recordAction(focusedGadgetId, verb);
+                  setSolved(true);
+                }}
+              />
             )}
           </motion.div>
         </motion.div>

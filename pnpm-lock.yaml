@@ -406,6 +406,9 @@ importers:
       '@gt100k/signal-pipeline':
         specifier: workspace:*
         version: link:../../packages/signal-pipeline
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../../packages/two-axis-tagging
       '@testing-library/jest-dom':
         specifier: 6.9.1
         version: 6.9.1

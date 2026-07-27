@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@gt100k/signal-pipeline": "workspace:*",
+    "@gt100k/two-axis-tagging": "workspace:*",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.3.0",

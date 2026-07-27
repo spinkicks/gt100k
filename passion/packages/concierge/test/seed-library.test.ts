@@ -42,6 +42,14 @@ describe("the shipped library", () => {
   it("gives every subtopic a real choice, not a single take-it-or-leave-it link", () => {
     // Patall et al. (2008) put the useful range at 3-5 options per choice moment. Two is the floor
     // below which a child who does not like the first has nowhere to go but back.
+    //
+    // There is deliberately NO CEILING here, and the distinction matters because eleven shelves
+    // currently hold more than five. The library is a STORE; 3-5 is a property of a CHOICE MOMENT,
+    // which is the surface's to enforce by showing a subset. Capping the store would mean deleting
+    // verified resources to satisfy a number about presentation, and the number is weak anyway:
+    // Patall's option-count moderator is marginal (Q(2) = 5.62, p < .06 fixed effects, and not
+    // significant at p = .20 under random effects). A future edit that wants to trim a nine-item
+    // shelf should change what the surface shows, not what the library holds.
     for (const cabin of CABINS) {
       for (const sub of SEED_SUBTOPICS[cabin]) {
         const here = SEED_LIBRARY.filter(
