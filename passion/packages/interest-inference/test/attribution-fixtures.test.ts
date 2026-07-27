@@ -22,6 +22,7 @@ function toBeliefs(grid: readonly AttrGrid[]): CellBelief[] {
       sd: 0.1,
       lowerBound: g.mean,
       evidenceMass: 6,
+      observedMass: 6,
       distinctDays: 2,
       confident: true,
       attribution: null,

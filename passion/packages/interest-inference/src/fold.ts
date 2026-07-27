@@ -52,6 +52,22 @@ export interface CellAccum {
    * they found it, so none of them can help satisfy a gate about evidence being spread over time.
    */
   days: Set<string>;
+  /**
+   * The same per-event weights as alpha/beta, summed WITHOUT the recency factor: how much looking
+   * happened, as opposed to how much of it still counts toward today's belief.
+   *
+   * These have to be separate numbers. Decay is geometric, so a steady cadence sums to a converging
+   * series: at HALFLIFE_DAYS = 14, returns a fortnight apart ceiling at 2.0, and MIN_EVIDENCE_MASS
+   * is 6. A child returning every other week could therefore never be confident at any n, while the
+   * 013 promotion gate was simultaneously demanding a 56-day span with a 14-day quiet gap in it. The
+   * two gates were asking for opposite things and the arithmetic made the slow, durable pursuit
+   * unrepresentable.
+   *
+   * Recency answers "what do we believe now" and belongs in alpha/beta. It does not answer "have we
+   * observed enough to say anything", because observing does not un-happen. Membership follows the
+   * same rule as `days`: only events that actually scored contribute.
+   */
+  observedMass: number;
 }
 
 export function foldEvents(
@@ -82,6 +98,7 @@ export function foldEvents(
         prompted: 0,
         sameDay: 0,
         days: new Set<string>(),
+        observedMass: 0,
       };
       cells.set(cellKey, cell);
     }
@@ -110,6 +127,7 @@ export function foldEvents(
     if (e.kind === "cross_day_return") {
       const add = A_RETURN * roleScale * w;
       cell.alpha += add;
+      cell.observedMass += A_RETURN * roleScale;
       cell.positiveByKind[e.kind] = (cell.positiveByKind[e.kind] ?? 0) + add;
       markDay();
     } else if (isDepthFamily(e.kind)) {
@@ -119,6 +137,7 @@ export function foldEvents(
       if (!scoresInterest(e.kind)) continue;
       const add = A_DEPTH * roleScale * w;
       cell.alpha += add;
+      cell.observedMass += A_DEPTH * roleScale;
       cell.positiveByKind[e.kind] = (cell.positiveByKind[e.kind] ?? 0) + add;
       markDay();
     } else if (e.kind === "skip" || e.kind === "decline") {
@@ -131,9 +150,11 @@ export function foldEvents(
       const divisor = Math.max(1, e.choiceSetSize ?? 1);
       if (e.kind === "skip") {
         cell.beta += (B_SKIP * w) / divisor;
+        cell.observedMass += B_SKIP / divisor;
         cell.skips += 1;
       } else {
         cell.beta += (B_DECLINED * w) / divisor;
+        cell.observedMass += B_DECLINED / divisor;
         cell.declines += 1;
       }
       markDay();

@@ -15,6 +15,9 @@ function belief(domain: string, mode: string, mean: number, evidenceMass: number
     sd: 0.1,
     lowerBound: mean,
     evidenceMass,
+    // These beliefs exercise marginal weighting, which reads the DECAYED mass. Sufficiency is not
+    // what is under test, so it is set to match rather than varied independently.
+    observedMass: evidenceMass,
     distinctDays: 2,
     confident: true,
     attribution: null,

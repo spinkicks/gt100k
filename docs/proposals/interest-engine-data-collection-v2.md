@@ -237,6 +237,49 @@ This is explicitly a calibration decision, per PRD §14.3 — the *direction* is
 > unscored kinds buy no day; and two sittings either side of local midnight inside one UTC day count
 > once.
 
+#### E6a — the floor now counts observation, not decayed evidence *(amended 2026-07-26)*
+
+Raising the floor to 6 exposed a defect that predates it. `evidenceMass` is the sum of every event's
+weight **after** recency decay, and it gated `confident`. Decay is geometric, so a steady cadence
+sums to a converging series with a hard ceiling. At `HALFLIFE_DAYS = 14`, returns only:
+
+| Cadence | Ceiling on decayed mass | Reaches 6? |
+|---|---|---|
+| every 2 days | 10.61 | yes |
+| weekly | 3.41 | **never, at any n** |
+| fortnightly | 2.00 | **never, at any n** |
+| every 3 weeks | 1.55 | **never, at any n** |
+
+A child returning to the same pursuit every fortnight for two years finishes at 2.00. Not "slowly" —
+never. Their hypothesis stays `EXPLORING`, so it cannot be promoted, so no plan can be made. At the
+old floor of 3 the weekly child squeaked past at 3.41; raising it to 6 shut them out too.
+
+Meanwhile 013's promotion gate asks for the *opposite* shape on purpose: a span of `MIN_TERM_DAYS`
+(56) containing a `GAP_DAYS` (14) quiet period the child came back from. The two gates were demanding
+incompatible things, and the only silhouette satisfying both is a long sparse tail plus a recent
+dense burst, which is exactly, and accidentally, what the synthetic pilot's Dulce has.
+
+The category error is using one number for two questions. **Sufficiency** ("have we observed enough
+to say anything") is about how much looking happened, and looking does not un-happen because time
+passed. **Strength** ("how much of what we saw still bears on today's belief") is what decay is for.
+
+So `CellBelief` now carries both. `observedMass` sums the same per-event weights undecayed and is
+what `confident` gates on; `evidenceMass` keeps its decayed meaning and its E7 job weighting the
+marginals, where a cell the child has drifted from should count for less. No constant moved, so the
+6 still means the same six returns' worth it always did.
+
+**The limit of this fix, stated plainly.** The CI-width gate converges the same way, because it is
+computed from the decayed α/β. A fortnightly cadence drives α to a ceiling of 3.0, where `2·sd`
+settles at 0.387 against `MAX_CI_WIDTH` 0.35, so that child is still refused — now on precision
+rather than sufficiency. That refusal is honest: if we forget this fast, that little contact really
+does not add up to a sharp belief. The lever is `HALFLIFE_DAYS`, a separate decision about how
+quickly a child's past should stop counting. **Weekly returners now pass; fortnightly and slower
+still do not.**
+
+Guarded by `interest-inference/test/observed-mass.test.ts`, which pins the weekly child becoming
+confident, the fortnightly one still being refused *and why*, and that neither the day gate nor the
+novelty exclusion was loosened on the way through.
+
 ### E7 — Weight the marginals by evidence mass
 
 The rank-1 decomposition currently takes **unweighted** means over cells, so a cabin with one gadget gets

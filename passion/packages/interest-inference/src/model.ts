@@ -133,13 +133,29 @@ export interface CellBelief {
   readonly mean: number;
   readonly sd: number;
   readonly lowerBound: number;
+  /**
+   * Observation weight AFTER recency decay: how much of what we saw still bears on today's belief.
+   * This is what weights a cell's contribution to the domain and mode marginals (E7), where a cell
+   * the child has drifted away from SHOULD count for less.
+   */
   readonly evidenceMass: number;
+  /**
+   * The same weights WITHOUT decay: how much looking happened at all. This is what `confident`
+   * gates on.
+   *
+   * Splitting the two fixed a case the single number could not express. Decay is geometric, so a
+   * steady cadence converges: fortnightly returns ceiling at 2.0 against MIN_EVIDENCE_MASS of 6,
+   * meaning a child who came back every other week for years could never be confident, at any n.
+   * Meanwhile 013's promotion gate wants precisely that shape, a 56-day span containing a 14-day
+   * quiet gap the child returned from. Observing does not un-happen because time passed.
+   */
+  readonly observedMass: number;
   /**
    * How many distinct UTC calendar days carried an event that actually moved alpha or beta (E6).
    *
    * Only scored events count, so this is a count of days on which the belief changed, not of days
-   * the child was seen. Reported alongside `evidenceMass` because a reader needs both to judge a
-   * cell: the same mass spread over six days and piled into one are very different claims.
+   * the child was seen. Reported alongside the masses because a reader needs all three to judge a
+   * cell: the same observation spread over six days and piled into one are very different claims.
    */
   readonly distinctDays: number;
   readonly confident: boolean;

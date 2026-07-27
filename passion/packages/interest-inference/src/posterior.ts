@@ -13,9 +13,15 @@ export function toBelief(cell: CellAccum): CellBelief {
   // E6: enough evidence, spread over enough days, and tight enough to be worth saying out loud.
   // The day gate is the one that separates an afternoon's enthusiasm from a durable interest —
   // mass alone counts three returns in one sitting the same as three returns across three weeks.
+  //
+  // Sufficiency reads `observedMass`, not the decayed `evidenceMass`. The decayed sum converges:
+  // at HALFLIFE_DAYS = 14 a fortnightly cadence ceilings at 2.0 against this threshold of 6, so
+  // gating on it made a steady slow pursuit unconfirmable at any n, while 013's promotion gate was
+  // asking for exactly that shape (a 56-day span with a 14-day gap survived). Decay says how much
+  // of what we saw still bears on today's belief; it should not say whether we ever looked.
   const distinctDays = cell.days.size;
   const confident =
-    evidenceMass >= MIN_EVIDENCE_MASS &&
+    cell.observedMass >= MIN_EVIDENCE_MASS &&
     distinctDays >= MIN_DISTINCT_DAYS &&
     2 * sd <= MAX_CI_WIDTH;
 
@@ -38,6 +44,7 @@ export function toBelief(cell: CellAccum): CellBelief {
     sd,
     lowerBound,
     evidenceMass,
+    observedMass: cell.observedMass,
     distinctDays,
     confident,
     attribution: null,
