@@ -12,6 +12,7 @@ import {
 } from "@gt100k/project-workspace";
 import { useStudio } from "./useStudio.js";
 import { Mascot } from "./mascot.js";
+import { HomeLink } from "./home-link.js";
 import { ThemeSwitcher } from "./theme-switcher.js";
 import { KindIcon, SparkIcon } from "./icons.js";
 import { ENTRY_KINDS, audienceLabel, entryFor } from "./studio-state.js";
@@ -54,6 +55,7 @@ export function Studio(): JSX.Element {
             </div>
           </div>
           <div className="topbar__spacer" />
+          <HomeLink />
           <ThemeSwitcher />
         </header>
 

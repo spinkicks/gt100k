@@ -23,7 +23,7 @@ export interface PanelCopy {
 /** Full (default) copy — the precise, technical wording. */
 export const FULL_COPY: PanelCopy = {
   addressLabel: "Content-address",
-  addressNote: "content-addressed — the id is the hash of the content",
+  addressNote: "content-addressed: the id is the hash of the content",
   inputsEmpty: "No upstream inputs (a source of the milestone).",
 };
 
@@ -31,7 +31,7 @@ export const FULL_COPY: PanelCopy = {
 export const PLAIN_COPY: PanelCopy = {
   addressLabel: "Fingerprint",
   addressNote: "This id is a fingerprint of the item's exact contents.",
-  inputsEmpty: "Nothing came before this — it's a starting point.",
+  inputsEmpty: "Nothing came before this. It's a starting point.",
 };
 
 /** The panel copy for the current plain-mode flag (presentation-only). */

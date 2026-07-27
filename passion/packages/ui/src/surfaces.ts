@@ -25,6 +25,14 @@ export interface Surface {
 
 export type SurfaceId = "guide" | "parent" | "studio" | "evidence" | "concierge";
 
+/**
+ * The front door is addressable but is not a surface in the switcher: it is reached from the
+ * wordmark on every page, and listing it as a sixth destination would put it on screen twice.
+ */
+export type AddressableId = SurfaceId | "home";
+
+const HOME_DEV_PORT = 3000;
+
 interface SurfaceDef {
   readonly id: SurfaceId;
   readonly label: string;
@@ -75,7 +83,7 @@ const DEFS: readonly SurfaceDef[] = [
 export interface SurfaceEnv {
   /** Usually process.env.NODE_ENV. Only the exact string "development" enables localhost. */
   readonly nodeEnv: string | undefined;
-  readonly urls: Readonly<Partial<Record<SurfaceId, string | undefined>>>;
+  readonly urls: Readonly<Partial<Record<AddressableId, string | undefined>>>;
 }
 
 /**
@@ -91,14 +99,20 @@ export function readSurfaceEnv(): SurfaceEnv {
       studio: process.env.NEXT_PUBLIC_SURFACE_URL_STUDIO,
       evidence: process.env.NEXT_PUBLIC_SURFACE_URL_EVIDENCE,
       concierge: process.env.NEXT_PUBLIC_SURFACE_URL_CONCIERGE,
+      home: process.env.NEXT_PUBLIC_SURFACE_URL_HOME,
     },
   };
 }
 
-function resolveUrl(def: SurfaceDef, env: SurfaceEnv): string | null {
-  const explicit = env.urls[def.id];
+function resolveOne(id: AddressableId, devPort: number, env: SurfaceEnv): string | null {
+  const explicit = env.urls[id];
   if (explicit !== undefined && explicit.trim() !== "") return explicit.trim();
-  return env.nodeEnv === "development" ? `http://localhost:${def.devPort}` : null;
+  return env.nodeEnv === "development" ? `http://localhost:${devPort}` : null;
+}
+
+/** Where the front door lives, under the same asymmetric fallback as every surface. */
+export function resolveHomeUrl(env: SurfaceEnv = readSurfaceEnv()): string | null {
+  return resolveOne("home", HOME_DEV_PORT, env);
 }
 
 export function resolveSurfaces(env: SurfaceEnv = readSurfaceEnv()): readonly Surface[] {
@@ -107,7 +121,7 @@ export function resolveSurfaces(env: SurfaceEnv = readSurfaceEnv()): readonly Su
     label: def.label,
     audience: def.audience,
     blurb: def.blurb,
-    url: resolveUrl(def, env),
+    url: resolveOne(def.id, def.devPort, env),
   }));
 }
 

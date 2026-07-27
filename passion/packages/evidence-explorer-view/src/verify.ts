@@ -148,7 +148,7 @@ export function buildVerificationView(
     status: "stub",
     nonProduction: true,
     detail: {
-      note: "Deferred D1 seam — deterministic placeholder; never blocks the seal.",
+      note: "Deferred D1 seam: a deterministic placeholder that never blocks the seal.",
       verifierOk: verifierResult.ok,
     },
   };

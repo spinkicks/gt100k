@@ -33,13 +33,26 @@ Two more that would have broken things on contact:
 
 | Surface | Why it looks the way it does | Is that deliberate? |
 |---|---|---|
-| `concierge` | Dark near-black instrument | **Yes**, stated in its own CSS header |
-| `project-studio` | Seven child themes, own token set | **Yes**, specified in its plan |
-| `evidence-explorer` | Plain, where the EvidenceGraph work happens | Unresolved duplicate |
-| `evidence-explorer-themed` | Seven themes, the README calls it the observatory | Unresolved duplicate |
+| `concierge` | Dark near-black instrument | Was deliberate; **now GT** (#188) |
+| `project-studio` | Eight child themes, own token set | **Yes**, specified in its plan. GT added as the default (#188) |
+| `evidence-explorer` | Plain, where the EvidenceGraph work happens | **Resolved.** GT (#188), and the sole survivor |
+| `evidence-explorer-themed` | Seven themes, the README called it the observatory | **Deleted.** See below |
 | `design-lab` | Multi-theme on purpose | **Yes**, it is the comparison surface |
 
-So there is no surface left that is un-branded *by accident*. That is the finding.
+So there is no surface left that is un-branded *by accident*. That was the finding.
+
+### Resolution of the duplicate, 2026-07-26
+
+Both explorers were re-themed to GT in #188, which made them byte-identical apart from eight files,
+and that comparison is what finally settled which to keep. `-themed` was ahead on two counts: its
+user-visible copy had been cleared of em-dashes, and `Threads.tsx` carried a real fix, memoising the
+endpoint array so drei stops rebuilding every line's geometry each time Verify re-renders. It was
+behind on one: it had dropped the milestone ref from the heading, so the page no longer said which
+milestone you were looking at, and its `.obs-ref` rule styled nothing.
+
+So the survivor keeps the **name** `evidence-explorer`, because seven private palettes are gone and
+"themed" now describes nothing, and the **content** of `-themed`, with the milestone ref and the
+add-panel sub-label restored. The logic in the two was identical, so nothing was lost.
 
 ## 3. What is safe to do without a decision
 

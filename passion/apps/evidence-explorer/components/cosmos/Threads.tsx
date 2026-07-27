@@ -8,7 +8,7 @@
  */
 import type { EdgeView, NodeView } from "@gt100k/evidence-explorer-view";
 import { Line } from "@react-three/drei";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import type { JSX } from "react";
 import * as THREE from "three";
 import { type VerifyVisualState, isEdgeLit } from "../verify-machine.js";
@@ -30,7 +30,7 @@ const DASH: Record<EdgeView["threadStyle"], DashSpec> = {
   frayed: { dashed: true, dashSize: 0.08, gapSize: 0.22 },
 };
 
-function Thread({
+const Thread = memo(function Thread({
   edge,
   from,
   to,
@@ -76,13 +76,21 @@ function Thread({
     };
   }, [from, to]);
 
+  // Endpoints as a STABLE reference (keyed on the bodies, not the verify state). drei's <Line>
+  // rebuilds its geometry whenever `points` changes by reference, so a fresh array literal each
+  // render would regenerate every thread when Verify re-renders the scene. Memoising holds it still.
+  const points = useMemo<[number, number, number][]>(
+    () => [
+      [from.pos3d[0], from.pos3d[1], from.pos3d[2]],
+      [to.pos3d[0], to.pos3d[1], to.pos3d[2]],
+    ],
+    [from, to],
+  );
+
   return (
     <group>
       <Line
-        points={[
-          [from.pos3d[0], from.pos3d[1], from.pos3d[2]],
-          [to.pos3d[0], to.pos3d[1], to.pos3d[2]],
-        ]}
+        points={points}
         color={color}
         lineWidth={width}
         transparent
@@ -96,7 +104,7 @@ function Thread({
       </mesh>
     </group>
   );
-}
+});
 
 export function Threads({
   edges,

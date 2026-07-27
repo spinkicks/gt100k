@@ -73,7 +73,7 @@ export function friendlyError(err: unknown): string {
     return "Enter a title and an actor reference before adding a node.";
   }
   if (message.startsWith("CYCLE")) {
-    return "That edge would create a cycle — evidence flows one way, from sources to outcomes.";
+    return "That edge would create a cycle. Evidence flows one way, from sources to outcomes.";
   }
   if (message.startsWith("DANGLING_REF")) {
     return "That edge points to a node that isn't in the graph yet.";

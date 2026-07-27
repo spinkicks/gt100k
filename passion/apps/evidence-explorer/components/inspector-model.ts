@@ -33,7 +33,7 @@ export function headerBadge(panel: LedgerPanel): HeaderBadge {
     return { kind: "human-owned", text: `Human-owned outcome${owner}` };
   }
   if (panel.isCitedAssistance) {
-    return { kind: "cited", text: "Declared AI assistance — cited as supporting evidence" };
+    return { kind: "cited", text: "Declared AI assistance, cited as supporting evidence" };
   }
   return { kind: "none" };
 }
@@ -66,13 +66,13 @@ export function actorChipView(actor: ActorChip): ActorChipView {
 /** The consent-scope line, always tagged "synthetic" (§U5.8 — synthetic data only). */
 export function consentLabel(panel: LedgerPanel): string {
   const { scope, purpose } = panel.consentScope;
-  const p = purpose ? ` — ${purpose}` : "";
+  const p = purpose ? `: ${purpose}` : "";
   return `${scope}${p}`;
 }
 
 /** Stringify a payload value for a described key/value row. */
 function formatValue(value: unknown): string {
-  if (value === null || value === undefined) return "—";
+  if (value === null || value === undefined) return "none";
   if (typeof value === "object") return JSON.stringify(value);
   return String(value);
 }

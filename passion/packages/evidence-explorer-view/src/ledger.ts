@@ -35,16 +35,16 @@ function stateWords(node: NodeView): string {
 /**
  * Accessible name = type + label + state + actor + human-owned/cited marker (§U5.12). Neutral and
  * non-accusatory: a `model` actor reads as "declared AI assistance, cited"; a grade `Outcome` reads
- * as "human-owned by <owner>" (e.g. "Outcome — Final grade, in milestone, human-owned by …").
+ * as "human-owned by <owner>" (e.g. "Outcome: Final grade, in milestone, human-owned by …").
  */
 function accessibleName(node: NodeView): string {
-  const head = `${node.type} — ${node.label}`;
+  const head = `${node.type}: ${node.label}`;
   const state = stateWords(node);
   let who: string;
   if (node.isHumanOwned) {
     who = `human-owned by ${actorName(node)}`;
   } else if (node.isCitedAssistance) {
-    who = `declared AI assistance, cited — by ${actorName(node)}`;
+    who = `declared AI assistance, cited, by ${actorName(node)}`;
   } else {
     who = `by ${actorName(node)}`;
   }
@@ -100,9 +100,9 @@ function stepStatusText(status: string, nonProduction: boolean): string {
 function sealText(state: SealState): string {
   switch (state) {
     case "verified":
-      return "Verified — Merkle root re-derived, attestation subject matched, every grade human-owned.";
+      return "Verified. Merkle root re-derived, attestation subject matched, every grade human-owned.";
     case "mismatch":
-      return "Mismatch — the re-derived Merkle root differs from the committed root (bytes changed).";
+      return "Mismatch. The re-derived Merkle root differs from the committed root (bytes changed).";
     default:
       return "Not yet verified.";
   }
@@ -148,7 +148,7 @@ export function buildLedgerView(view: ExplorerView, verification?: VerificationV
       nodeId: beat.nodeId,
       birthOrder: beat.birthOrder,
       group: beat.group,
-      label: node ? `${node.type} — ${node.label}` : beat.nodeId,
+      label: node ? `${node.type}: ${node.label}` : beat.nodeId,
     };
   });
 

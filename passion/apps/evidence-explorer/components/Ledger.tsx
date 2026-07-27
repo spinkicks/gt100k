@@ -29,7 +29,7 @@ export function Ledger({ ledger }: { ledger: LedgerView }): JSX.Element {
   // Only the accessible "marked subset" note matters when a filter or trace is actually active.
   const marking = hasTrace || !allTypesActive;
   const labelById = useMemo(
-    () => new Map(ledger.tree.map((t) => [t.id, `${t.type} — ${t.label}`])),
+    () => new Map(ledger.tree.map((t) => [t.id, `${t.type}: ${t.label}`])),
     [ledger.tree],
   );
   const verification = ledger.verification;
@@ -56,7 +56,7 @@ export function Ledger({ ledger }: { ledger: LedgerView }): JSX.Element {
                     {s.status === "pass" ? "✓" : s.status === "fail" ? "✕" : "◔"}
                   </span>
                   <span>
-                    {s.label} — {s.statusText}
+                    {s.label}: {s.statusText}
                     {s.nonProduction ? " (non-production)" : ""}
                   </span>
                 </li>
@@ -100,7 +100,7 @@ export function Ledger({ ledger }: { ledger: LedgerView }): JSX.Element {
                   <span className="ledger-name">{item.accessibleName}</span>
                   {marked ? (
                     <span className="sr-only">
-                      {emphasis === "traced" ? " — in the traced lineage" : " — matches the filter"}
+                      {emphasis === "traced" ? ", in the traced lineage" : ", matches the filter"}
                     </span>
                   ) : null}
                 </button>

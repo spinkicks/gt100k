@@ -7,10 +7,15 @@
 
 | Order | App | For | URL |
 |---|---|---|---|
-| 0 (optional) | **Discovery Cabin** (early prototype) | child clicks around a 3D cabin | http://localhost:3040 |
+| 0 (optional) | **Front Door** | pick a role and go | http://localhost:3000 |
+| 0 (optional) | **Discovery Cabin** (early prototype) | child clicks around a 3D cabin | http://localhost:5178 |
 | 1 | **Guide Console** | the guide | http://localhost:3020 |
 | 2 | **Project Studio** | the child | http://localhost:3010 |
 | 3 | **Evidence Explorer** | the honest record of the work | http://localhost:3030 |
+
+Every port above is pinned in the app's own `dev` script and matches the surfaces registry in
+`@gt100k/ui`, which is what the in-product links resolve to. Start an app on a different port and its
+neighbours will still point here. The Cabin is a Vite app on 5178, not 3040; 3040 is the Concierge.
 
 > Short on time: Guide Console, Project Studio, Evidence Explorer. The Cabin is an optional, rough scene-setter; skip it or frame it as an early prototype. Open links in incognito for a clean slate; refresh once if a tab looks stuck.
 

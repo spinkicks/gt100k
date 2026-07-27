@@ -47,6 +47,27 @@
   white-space: nowrap;
 }
 
+/* The wordmark doubles as the way back to the front door. It is deliberately not styled as a link:
+   underlining it or tinting it would turn the product name into a call to action competing with the
+   page, and the affordance people already expect from a logo is that it goes home. */
+.plh__home {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+
+.plh__home:hover .plh__product {
+  color: var(--accent);
+}
+
+.plh__home:focus-visible {
+  outline: var(--focus-w) solid var(--focus-color);
+  outline-offset: var(--focus-offset);
+}
+
 .plh__sep {
   color: var(--ink-faint);
 }

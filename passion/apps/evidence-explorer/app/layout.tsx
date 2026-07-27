@@ -1,3 +1,4 @@
+import { ProductHeader } from "@gt100k/ui";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
@@ -15,17 +16,25 @@ import "@fontsource-variable/inconsolata";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "GT100K — Provenance Observatory",
+  title: "GT100K Provenance Observatory",
   description:
-    "A navigable, content-addressed evidence DAG for one milestone — rendered as a calm, forensic-precise observatory. Synthetic data only.",
+    "A content-addressed evidence graph for one milestone, shown as a 3D observatory. Synthetic data only.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    // data-theme="gt" selects the GT School values inside @gt100k/design-tokens. Without it the
-    // contract's own neutral defaults would render and the identity would be absent, silently.
+    // data-theme="gt" selects the GT School values inside @gt100k/design-tokens. It is a static
+    // attribute now: this app used to carry a registry of eight presets, a swatch popover and a
+    // pre-paint script that read the last choice out of localStorage. All of it is gone. The
+    // request was GT branding on the evidence explorer, and seven private palettes are the
+    // opposite of an identity. With one theme there is nothing to persist, nothing to broadcast
+    // and nothing to flash, so the FOUC guard, the storage key and suppressHydrationWarning went
+    // with them.
     <html lang="en" data-theme="gt">
-      <body>{children}</body>
+      <body>
+        <ProductHeader current="evidence" />
+        {children}
+      </body>
     </html>
   );
 }

@@ -83,7 +83,7 @@ jobs:
       - name: Typecheck (apps)
         run: |
           for app in home guide-console project-studio parent-guide concierge design-lab \
-                     evidence-explorer evidence-explorer-themed mvp-jul24 tinker-cabin; do
+                     evidence-explorer mvp-jul24 tinker-cabin; do
             echo "::group::$app"
             pnpm --filter "./passion/apps/$app" exec tsc --noEmit
             echo "::endgroup::"
@@ -100,7 +100,7 @@ jobs:
       - name: Test (apps)
         run: |
           for app in home guide-console project-studio parent-guide concierge-app \
-                     evidence-explorer evidence-explorer-themed mvp-jul24 tinker-cabin-app; do
+                     evidence-explorer mvp-jul24 tinker-cabin-app; do
             echo "::group::$app"
             pnpm --filter "@gt100k/$app" test
             echo "::endgroup::"
@@ -112,7 +112,7 @@ jobs:
       - name: Build apps
         run: |
           for app in home guide-console parent-guide project-studio design-lab concierge-app \
-                     evidence-explorer evidence-explorer-themed mvp-jul24 tinker-cabin-app; do
+                     evidence-explorer mvp-jul24 tinker-cabin-app; do
             echo "::group::$app"
             pnpm --filter "@gt100k/$app" build
             echo "::endgroup::"

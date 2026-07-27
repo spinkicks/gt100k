@@ -133,7 +133,7 @@ export function VerifyBox({
             <span className="verifybox-root-label">
               Merkle root{verified ? "" : " (committed)"}
             </span>
-            <code className="mono verifybox-root-value">{committedRoot ?? "—"}</code>
+            <code className="mono verifybox-root-value">{committedRoot ?? "none yet"}</code>
             <button
               type="button"
               className="verifybox-copy"
@@ -160,7 +160,7 @@ export function VerifyBox({
               {tamperOn ? "Hide tamper" : "Show tamper"}
             </button>
             <span className="verifybox-note">
-              Presentation only — no grade, no crypto in the app.
+              Presentation only. No grade, no crypto in the app.
             </span>
           </div>
         </div>

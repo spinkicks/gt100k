@@ -124,7 +124,7 @@ describe("U3 verify — deterministic presentation sequencing (pure)", () => {
       litEdgeCount: 0,
       fractureNodeId: null,
     });
-    expect(shortRoot(null)).toBe("—");
+    expect(shortRoot(null)).toBe("none");
     expect(shortRoot("0123456789abcdef0123")).toContain("…");
     expect(shortRoot("short")).toBe("short");
   });

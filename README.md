@@ -2,7 +2,7 @@
 
 **GT100K** is Alpha School's internal accelerated-gifted layer on TimeBack — an operating system for an intensive, in-person gifted academy that takes an already-admitted child (ages 6–14) from daily academic mastery and passion discovery through to a portable, evidence-backed body of work. Long-horizon goal: MIT-level academic readiness by the end of 8th grade.
 
-> **Status: working monorepo.** 20 packages, 15 adapters, and 11 apps, with **1,523 tests** green (693 engine and adapter, 830 app). Every engine is pure, deterministic and offline; all data is synthetic. No real child data touches this system until the pre-live gates pass (see [Pre-live gates](#pre-live-gates)).
+> **Status: working monorepo.** 21 packages, 16 adapters, and 9 apps, with **3,640 tests** green (910 engine and adapter, 2,730 app). Every engine is pure, deterministic and offline; all data is synthetic. No real child data touches this system until the pre-live gates pass (see [Pre-live gates](#pre-live-gates)).
 
 ## Quick start
 
@@ -12,7 +12,7 @@ Requires Node 20+ and `pnpm` (developed on Node 24 / pnpm 9).
 pnpm install
 pnpm exec biome check passion   # lint + formatter, the same gate CI runs
 pnpm exec tsc -b                # typecheck the whole workspace
-pnpm test                       # 693 engine and adapter tests
+pnpm test                       # 910 engine and adapter tests
 ```
 
 **Start here:** the front door routes you to the right surface by role.
@@ -21,13 +21,16 @@ pnpm test                       # 693 engine and adapter tests
 pnpm --filter @gt100k/home exec next dev -p 3000
 ```
 
-Or go straight to one (the ports are fixed, because the front door and the shared header link to them):
+Or go straight to one. Each app pins its own port in its `dev` script, matching the surfaces
+registry in `@gt100k/ui`, so the front door and the shared header always resolve to a real address:
 
 ```bash
-pnpm --filter @gt100k/guide-console  exec next dev -p 3020   # the guide's cockpit
-pnpm --filter @gt100k/project-studio exec next dev -p 3010   # the child's project studio
-pnpm --filter @gt100k/parent-guide   exec next dev -p 3055   # the parent playbook
-pnpm --filter @gt100k/design-lab     exec next dev -p 3060   # design-system reference
+pnpm --filter @gt100k/project-studio    dev   # 3010, the child's project studio
+pnpm --filter @gt100k/guide-console     dev   # 3020, the guide's cockpit
+pnpm --filter @gt100k/evidence-explorer dev   # 3030, the provenance observatory
+pnpm --filter @gt100k/concierge-app     dev   # 3040, sourced answers
+pnpm --filter @gt100k/parent-guide      dev   # 3055, the parent playbook
+pnpm --filter @gt100k/design-lab        dev   # 3060, design-system reference
 ```
 
 ## How it fits together
@@ -87,7 +90,7 @@ Pure, deterministic, dependency-light. No network, no LLM, no clock.
 | `project-studio` | The child's project journal |
 | `parent-guide` | The Warm-Demanding Parent Playbook (static export, hosted on AWS) |
 | `mvp-jul24`, `tinker-cabin` | The child-facing discovery game (Vite + React Three Fiber) |
-| `evidence-explorer-themed` | The provenance observatory, 2D and 3D |
+| `evidence-explorer` | The provenance observatory, 2D and 3D |
 | `concierge`, `design-lab` | Concierge demo; design-system reference |
 
 Adapters in `passion/adapters/` supply the real implementations behind engine ports (Postgres, filesystem, live tagging/tutoring), so every engine stays testable with a deterministic stub.

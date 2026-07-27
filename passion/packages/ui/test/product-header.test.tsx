@@ -15,6 +15,14 @@ function anchors(html: string): readonly { href: string; text: string }[] {
   }));
 }
 
+/**
+ * The home link wraps two elements rather than bare text, so `anchors` above cannot see it. Read it
+ * by its class instead, and return null when the wordmark is not a link at all.
+ */
+function homeHref(html: string): string | null {
+  return /<a\b[^>]*class="plh__home"[^>]*href="([^"]*)"/.exec(html)?.[1] ?? null;
+}
+
 const PROD = { nodeEnv: "production", urls: {} } as const;
 const DEV = { nodeEnv: "development", urls: {} } as const;
 
@@ -64,10 +72,54 @@ describe("ProductHeader", () => {
 
   it("shows a label for a surface that is not in the registry", () => {
     const html = renderToStaticMarkup(
-      <ProductHeader current="home" currentLabel="Home" surfaces={resolveSurfaces(PROD)} />,
+      <ProductHeader
+        current="home"
+        currentLabel="Home"
+        surfaces={resolveSurfaces(PROD)}
+        homeUrl={null}
+      />,
     );
 
     expect(html).toContain(">Home</span>");
     expect(anchors(html)).toEqual([]);
+  });
+
+  it("turns the wordmark into the way back to the front door", () => {
+    // Every surface was a dead end before this: the switcher moved you sideways between peers and
+    // nothing pointed home, so the front door could only ever be reached by typing its address.
+    const html = renderToStaticMarkup(
+      <ProductHeader
+        current="evidence"
+        surfaces={resolveSurfaces(DEV)}
+        homeUrl="http://localhost:3000"
+      />,
+    );
+
+    expect(homeHref(html)).toBe("http://localhost:3000");
+    expect(html).toContain("PassionLab");
+  });
+
+  it("does not link the front door to itself", () => {
+    const html = renderToStaticMarkup(
+      <ProductHeader
+        current="home"
+        currentLabel="Home"
+        surfaces={resolveSurfaces(DEV)}
+        homeUrl="http://localhost:3000"
+      />,
+    );
+
+    expect(homeHref(html)).toBeNull();
+  });
+
+  it("leaves the wordmark as plain text when production was never told where home is", () => {
+    // Same rule as every other surface: no address, no link. A parent on the public playbook must
+    // not be handed a localhost href.
+    const html = renderToStaticMarkup(
+      <ProductHeader current="parent" surfaces={resolveSurfaces(PROD)} homeUrl={null} />,
+    );
+
+    expect(homeHref(html)).toBeNull();
+    expect(html).toContain("PassionLab");
   });
 });

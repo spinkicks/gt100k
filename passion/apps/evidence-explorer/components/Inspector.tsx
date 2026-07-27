@@ -121,7 +121,7 @@ export function Inspector({
       ref={ref}
       className="inspector"
       style={{ transformOrigin: originCss }}
-      aria-label={`${panel.type} — ${panel.label} details`}
+      aria-label={`${panel.type}: ${panel.label} details`}
       initial={enter.initial}
       animate={enter.animate}
       exit={enter.exit}

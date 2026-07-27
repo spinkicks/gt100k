@@ -88,7 +88,7 @@ const SEEDS: readonly Seed[] = [
       inputs: [],
       timestamp: at(3),
       consentScope: { scope: SCOPE, purpose: "learning-record" },
-      payload: { title: "game.js v1 — canvas + game loop", kind: "source" },
+      payload: { title: "game.js v1: canvas + game loop", kind: "source" },
     },
   },
   {
@@ -99,7 +99,7 @@ const SEEDS: readonly Seed[] = [
       inputs: [],
       timestamp: at(4),
       consentScope: { scope: SCOPE, purpose: "build-record" },
-      payload: { title: "Run v1 — player falls through floor", success: "false" },
+      payload: { title: "Run v1: player falls through floor", success: "false" },
     },
   },
   {
@@ -126,7 +126,7 @@ const SEEDS: readonly Seed[] = [
       inputs: [],
       timestamp: at(6),
       consentScope: { scope: SCOPE, purpose: "learning-record" },
-      payload: { title: "game.js v2 — ground collision + jump", kind: "source" },
+      payload: { title: "game.js v2: ground collision + jump", kind: "source" },
     },
   },
   {
@@ -137,7 +137,7 @@ const SEEDS: readonly Seed[] = [
       inputs: [],
       timestamp: at(7),
       consentScope: { scope: SCOPE, purpose: "build-record" },
-      payload: { title: "Run v2 — jump + collision pass", success: "true" },
+      payload: { title: "Run v2: jump + collision pass", success: "true" },
     },
   },
   {

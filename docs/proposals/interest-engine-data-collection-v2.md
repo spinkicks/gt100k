@@ -243,10 +243,41 @@ The rank-1 decomposition currently takes **unweighted** means over cells, so a c
 equal footing with a cabin with seven. That biases topic-vs-style attribution toward thin cabins. Weight
 each cell's contribution to `domainMarginal` / `modeMarginal` by its `evidenceMass`.
 
-### E8 — Down-weight `aptitudeTilt` at 6–8
+### E8 — Down-weight `aptitudeTilt` at 6–8 — **WITHDRAWN 2026-07-26, premise does not hold**
 
-`W_APT = 0.5` cites SMPY, which identifies at **age 13** and supplies no validated early-childhood
-analogue. Suggested: `W_APT → 0.15` for ages ≤ 8, or gate it on capability rather than applying flat.
+The request was: `W_APT = 0.5` cites SMPY, which identifies at **age 13** and supplies no validated
+early-childhood analogue, so drop it to `0.15` for ages ≤ 8 or gate it on capability.
+
+**`W_APT` is unchanged, and should stay at 0.5.** The argument mis-identifies the signal it is
+arguing about, and once the signal is named correctly the evidence points the other way.
+
+`aptitudeTilt` is not an aptitude measure. It is populated in exactly one place —
+`passion/packages/timeback/src/map.ts:39` — as `clamp01(sumWMastery / sumW)`, a weighted mean of
+**subject mastery** from a TimeBack snapshot. That is *achievement*: what the child has already been
+graded as knowing. SMPY's construct is above-level aptitude testing, which is a different measurement
+taken for a different purpose. The SMPY citation is a poor fit for `W_APT` regardless of which
+direction you adjust it, and the age-13 objection inherits that mismatch.
+
+For achievement, in the band this proposal is scoped to, we already hold a finding that runs the
+other way. Garon-Carrier et al. (2016), recorded in `docs/research/passionBrainlift.md` §1.5 and
+Insight 13: across grades 1–4 (ages 7–10), **prior achievement predicts later intrinsic motivation,
+while motivation does not predict later achievement.** Our own design implication, written down
+before this proposal existed, is "build competence first — achievement feeds motivation in the
+youngest band." A prior that lets demonstrated mastery in a subject lift the belief that a child will
+engage with the matching cabin is the engine doing what that finding describes. Halving it at 6–8
+would weaken the term precisely where its evidence is strongest.
+
+Two honest limits, so this is not read as more settled than it is. Garon-Carrier measured
+*same-subject* achievement against *same-subject* motivation; our crosswalk maps school subjects onto
+cabins, so the term travels a short distance beyond what the study establishes. And the prior is
+still a prior: it moves the starting belief only, never `evidenceMass`, and cannot gate anything —
+the standing no-gate test in `timeback` holds that line. Those are reasons to keep the weight
+bounded, which 0.5 against a `clamp01`-ed input already is. They are not reasons to cut it.
+
+What should change is the **name**, not the number. Calling an achievement mean `aptitudeTilt` is
+what produced this proposal item, and it will produce the next one too. Renaming it (`masteryTilt`)
+is a mechanical rename across `interest-inference`, `timeback` and their fixtures, and it is the
+actual fix. Filed as a follow-up rather than done here, because it touches a published contract.
 
 ### E9 — Repurpose the two signals we already collect, rather than deleting them
 
@@ -363,7 +394,7 @@ interface CellEvent {
 | `W_SURFACED` | — | **0.5** | new, α multiplier when system-surfaced (E5) |
 | `MIN_EVIDENCE_MASS` | 3 | **6** | (E6) |
 | `MIN_DISTINCT_DAYS` | — | **2** | new gate; matters more than the count (E6) |
-| `W_APT` | 0.5 | **0.15** | ages ≤ 8 (E8) |
+| `W_APT` | 0.5 | 0.5 | **unchanged** — E8 withdrawn, see above |
 | `HALFLIFE_DAYS` | 14 | 14 | unchanged |
 | `K_LCB`, `SPIKE_THRESHOLD`, `MAX_CANDIDATES` | 1.0 / 0.6 / 3 | unchanged | recalibrate after E6 lands |
 
@@ -376,7 +407,7 @@ interface CellEvent {
 | **P0** | App-side emission: persist events with `timestamp`, `sessionId`, `choiceSet`, `surfacedBy`. **No engine change.** Nothing today records day-grain data, so this unblocks everything else. | — |
 | **P1** | E1 + E2 + E11 — delete `magnitude`, split return kinds, drop `artifact_competence`. | P0 |
 | **P2** | E3 + E4 + E5 — choice set into the model; declines as weak negatives; propensity down-weighting. | P1 |
-| **P3** | E6 + E7 + E8 — recalibrate gates, weight marginals, down-weight aptitude. | P2 |
+| **P3** | E6 + E7 — recalibrate gates, weight marginals. (E8 withdrawn; nothing to build.) | P2 |
 | **P4** | E10 — out-of-product channel. | P1 |
 | **P5** | E12 — appeal baseline. | needs cross-child data |
 | **P6** | E9 — `activeMs` floor + diagnostic flag; `solves` → difficulty calibration. | P0 |
