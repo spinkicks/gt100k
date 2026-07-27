@@ -3,7 +3,10 @@
  * live `window.__qa` are verified by LOOP_QA; here we pin the pure wiring: certified spikes produce
  * deterministic, grounded, guide-facing plans with the stub brief — no network, no child-facing score.
  */
+import { promote } from "@gt100k/hypothesis-store";
 import { describe, expect, it } from "vitest";
+import { buildRosterGates, buildRosterStore, ROSTER_NOW } from "../app/console-data.js";
+import { topPromotableId } from "../app/console-state.js";
 import { plansForKid, planReviewCount } from "../app/plan.js";
 
 const DULCE = "kid-synthetic-004"; // has an ACTIVE (game-dev) + a CANDIDATE (production) spike
@@ -47,5 +50,25 @@ describe("guide-console Plan view-model (018-D1)", () => {
   it("a child with no certified spike gets an empty (but rendered) plan list", () => {
     expect(plansForKid(ARI)).toEqual([]);
     expect(planReviewCount(ARI)).toBe(0);
+  });
+
+  it("a promotion made in this session produces a plan", () => {
+    // The console kept two stores. `useConsole` holds the mutable one a guide's promote/park writes
+    // to, while this view-model read `profileFor(kidId).store`, the module-scope seed, which nothing
+    // in the UI can change. So a guide could promote a spike, watch the Hypotheses tab move to
+    // ACTIVE, switch to Plan, and find nothing there: the primary action of the whole console had no
+    // visible downstream effect, and Access inherited the same silence through `plansForKid`.
+    const seed = buildRosterStore();
+    const id = topPromotableId(seed, ARI, buildRosterGates(seed));
+    expect(id).not.toBeNull();
+
+    const gate = buildRosterGates(seed).get(id!);
+    const actor = { id: "guide-synthetic", role: "guide" };
+    let store = promote(seed, id!, actor, { gate: gate!, autonomySignOff: true }, ROSTER_NOW);
+    store = promote(store, id!, actor, { gate: gate!, autonomySignOff: true }, ROSTER_NOW);
+
+    expect(plansForKid(ARI, store).length).toBeGreaterThan(0);
+    // And the seed is still what it was, so passing no store keeps the old behaviour.
+    expect(plansForKid(ARI)).toEqual([]);
   });
 });

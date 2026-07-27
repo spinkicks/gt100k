@@ -17,6 +17,7 @@ import {
   type Opportunity,
   type Stage,
 } from "@gt100k/access-broker";
+import type { HypothesisStore } from "@gt100k/hypothesis-store";
 import type { DomainPath } from "@gt100k/specialization-planner";
 import { ROSTER_NOW } from "./console-data.js";
 import { plansForKid, type PlanCardVM } from "./plan.js";
@@ -128,8 +129,10 @@ function opportunitiesForCard(card: PlanCardVM): readonly Opportunity[] {
 }
 
 /** The selected child's per-certified-spike broker plans (ranked matches + the access-transfer state). */
-export function accessForKid(kidId: string): readonly AccessCardVM[] {
-  const cards = plansForKid(kidId);
+export function accessForKid(kidId: string, store?: HypothesisStore): readonly AccessCardVM[] {
+  // Threaded straight through: Access is downstream of the plans, so it was silent for exactly as
+  // long as they were.
+  const cards = plansForKid(kidId, store);
   if (cards.length === 0) return [];
 
   const reads = new Map(wellbeingForKid(kidId).map((c) => [c.cellKey, c.read]));

@@ -34,7 +34,7 @@ const TEMPLATES: Record<Stage, StageTemplate> = {
     title: (d) => `Play with ${d}`,
     drivingQuestion: (d) => `What about ${d} makes you want to come back and try more?`,
     authenticMethod: (d, mode) =>
-      `Run lots of short, playful ${mode} experiments in ${d} — follow whatever is fun, no wrong answers.`,
+      `Run lots of short, playful ${mode} experiments in ${d}. Follow whatever is fun, no wrong answers.`,
     successLooksLike:
       "You kept choosing to come back, and you can point to something you made and enjoyed.",
     defaultCraft: (d) =>
@@ -64,7 +64,7 @@ const TEMPLATES: Record<Stage, StageTemplate> = {
   S4_SIGNATURE: {
     title: (d) => `Your signature ${d} work`,
     drivingQuestion: (d) =>
-      `What is the ${d} work only you would make — the piece that shows your voice?`,
+      `What is the ${d} work only you would make, the piece that shows your voice?`,
     authenticMethod: (d, mode) =>
       `Lead a flagship ${mode} project in ${d} and build a coherent body of work around it, apprentice-style with a master.`,
     successLooksLike:

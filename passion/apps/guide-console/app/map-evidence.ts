@@ -30,6 +30,7 @@ import type { Project } from "@gt100k/project-workspace";
 import type { DomainPath, Stage } from "@gt100k/specialization-planner";
 
 import { CHILDREN } from "./console-data.js";
+import type { HypothesisStore } from "@gt100k/hypothesis-store";
 import { plansForKid } from "./plan.js";
 
 /** One thing the child made. `kind` is the artefact kind a `WorkEvent` already carries. It holds no
@@ -312,8 +313,12 @@ export interface ChildStage {
  * A child with no certified spike this map serves has no plan and therefore no read, and sits at
  * the first rung. That is the honest answer: they have not been placed anywhere here.
  */
-export function stageForDomain(kidId: string, domainPath: DomainPath): ChildStage {
-  const plans = plansForKid(kidId);
+export function stageForDomain(
+  kidId: string,
+  domainPath: DomainPath,
+  store?: HypothesisStore,
+): ChildStage {
+  const plans = plansForKid(kidId, store);
   const plan =
     plans.find((p) => samePath(p.domainPath, domainPath)) ??
     plans.find((p) => servesPath(domainPath, p.domainPath));
