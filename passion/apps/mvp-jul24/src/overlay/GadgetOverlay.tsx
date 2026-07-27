@@ -68,6 +68,10 @@ export default function GadgetOverlay() {
                 onHarder={
                   offersHarder
                     ? () => {
+                        // A child voluntarily reaching for harder work, which is the definition of
+                        // `chosen_challenge`. Not floor-gated: depth is a discrete accomplished
+                        // action, and the ask is complete the moment it is made.
+                        sessionLog.recordDepth(focusedGadgetId, "chosen_challenge");
                         setTier((t) => t + 1);
                         setSolved(false);
                       }

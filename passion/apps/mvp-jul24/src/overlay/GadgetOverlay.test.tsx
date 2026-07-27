@@ -5,9 +5,29 @@ import { useGame } from "../game/store";
 import type { Gadget, PuzzleProps } from "../game/types";
 import { useInterest } from "../interest/store";
 import { SIZES } from "../puzzles/Nonogram/Nonogram";
+import { sessionLog } from "../signals/session";
 import GadgetOverlay from "./GadgetOverlay";
 
+// The real `sessionLog` is a no-op (EMISSION_ENABLED is false while the backdrop emits nothing), so
+// the wiring under test would run against a sink and assert nothing. Same swap `signals/wiring.test`
+// makes, and for the same reason: bypass the on/off decision, keep the actual wiring code running.
+vi.mock("../signals/session", async () => {
+  const { createSignalLog } = await import("../signals/log");
+  return {
+    SESSION_ID: "overlay-test",
+    EMISSION_ENABLED: true,
+    sessionLog: createSignalLog({ sessionId: "overlay-test", now: () => Date.now() }),
+  };
+});
+
+const depthKinds = (): readonly string[] =>
+  sessionLog
+    .interactions()
+    .flatMap((i) => i.depthSignals ?? [])
+    .map((d) => d.kind);
+
 beforeEach(() => {
+  localStorage.clear();
   useGame.getState().goToMap();
   useInterest.getState().reset();
 });
@@ -82,6 +102,41 @@ test("no tier or level number is ever rendered", () => {
   fireEvent.click(screen.getByRole("button", { name: /harder/i }));
   expect(container.textContent).not.toMatch(/\b(tier|level|difficulty)\b/i);
   expect(container.textContent).not.toMatch(/\b\d+\s*\/\s*\d+\b/);
+  spy.mockRestore();
+});
+
+// The click is the observation. `chosen_challenge` is defined as a child voluntarily reaching for
+// harder work, and this button is the only place in the product where that is a thing a child can
+// do, so if it emits nothing the signal does not exist. It did not, and the cost was out of all
+// proportion to the gap: `stretchSeeking` derives solely from `chosen_challenge`, both
+// S3_AUTHORSHIP and S4_SIGNATURE require `stretchSeeking`, so no child could reach either stage and
+// every branch milestone in every mastery map was unreachable by construction.
+test("asking for a harder one is recorded as chosen_challenge", () => {
+  const spy = mockStubGadget();
+  useGame.getState().focusGadget("nonogram");
+  render(<GadgetOverlay />);
+  fireEvent.click(screen.getByTestId("qa-solve"));
+
+  expect(depthKinds()).not.toContain("chosen_challenge");
+  fireEvent.click(screen.getByRole("button", { name: /harder/i }));
+
+  expect(depthKinds()).toContain("chosen_challenge");
+  spy.mockRestore();
+});
+
+// Not floor-gated, and it must not be. Depth is a discrete accomplished action, and asking for a
+// harder variant is complete the instant it is asked; how long the child then spends is a separate
+// question that `open` already answers.
+test("each further ask is its own observation", () => {
+  const spy = mockStubGadget();
+  useGame.getState().focusGadget("nonogram");
+  render(<GadgetOverlay />);
+  fireEvent.click(screen.getByTestId("qa-solve"));
+  fireEvent.click(screen.getByRole("button", { name: /harder/i }));
+  fireEvent.click(screen.getByTestId("qa-solve"));
+  fireEvent.click(screen.getByRole("button", { name: /harder/i }));
+
+  expect(depthKinds().filter((k) => k === "chosen_challenge")).toHaveLength(2);
   spy.mockRestore();
 });
 
