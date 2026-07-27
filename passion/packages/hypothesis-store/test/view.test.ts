@@ -22,6 +22,7 @@ const read: InterestRead = {
       lowerBound: 0.7,
       // Above both E6 gates, so the read is one the engine could actually emit.
       evidenceMass: 6.5,
+      observedMass: 6.5,
       distinctDays: 6,
       confident: true,
       attribution: "style",
@@ -38,6 +39,7 @@ const read: InterestRead = {
       sd: 0.2,
       lowerBound: 0.3,
       evidenceMass: 0.5,
+      observedMass: 0.5,
       distinctDays: 1,
       confident: false,
       attribution: null,

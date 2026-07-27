@@ -3,7 +3,7 @@
 // stage, plan, and guardrail tests so the golden values live in exactly one place.
 import type { DomainPath } from "@gt100k/two-axis-tagging";
 import type { WellbeingRead } from "@gt100k/wellbeing";
-import type { PlanInputs } from "../model.js";
+import type { PlanInputs, PlannableState } from "../model.js";
 
 const NOW = "2026-07-23T00:00:00.000Z";
 
@@ -46,7 +46,7 @@ interface MakeArgs {
   readonly kidId?: string;
   readonly domainPath?: DomainPath;
   readonly mode?: string;
-  readonly hypothesisState?: string;
+  readonly hypothesisState?: PlannableState;
   readonly monthsInPursuit?: number;
   readonly voluntaryReturnsRecent: number;
   readonly depthAccumulation: number;

@@ -8,6 +8,7 @@ import { getForKid } from "@gt100k/hypothesis-store";
 import {
   curatedForCell,
   derivePlanInputs,
+  isPlannableState,
   planSpecializationWithStub,
   type CuratedResource,
   type DomainPath,
@@ -27,11 +28,6 @@ export interface PlanCardVM {
   readonly plan: SpecializationPlan;
 }
 
-/** A spike is CERTIFIED (plannable) once a human has advanced it to CANDIDATE or ACTIVE. */
-function isCertified(state: string): boolean {
-  return state === "ACTIVE" || state === "CANDIDATE";
-}
-
 /**
  * The selected child's certified-spike plans, escalations sorted first (so "needs your review" leads).
  * Deterministic + synchronous (stub brief) so `next build` + LOOP_QA stay offline.
@@ -44,7 +40,9 @@ export function plansForKid(kidId: string): readonly PlanCardVM[] {
 
   const out: PlanCardVM[] = [];
   for (const h of getForKid(profile.store, kidId)) {
-    if (!isCertified(h.state)) continue;
+    // An early-out only. `derivePlanInputs` enforces the same rule and returns null regardless, so
+    // this skips work rather than deciding anything; the rule itself lives in the engine.
+    if (!isPlannableState(h.state)) continue;
     const read = reads.get(h.cellKey);
     if (!read) continue;
     const inputs = derivePlanInputs(

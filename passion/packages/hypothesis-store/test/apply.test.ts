@@ -15,9 +15,11 @@ function read(confident: boolean, lowerBound: number): InterestRead {
         mean: 0.77,
         sd: 0.14,
         lowerBound,
-        // Kept consistent with `confident` under the E6 gates: a confident cell now needs mass
-        // ≥ 6 spread over ≥ 2 distinct days, and a thin one has neither.
+        // Kept consistent with `confident` under the E6 gates: a confident cell needs observation
+        // ≥ 6 spread over ≥ 2 distinct days, and a thin one has neither. The two masses are set
+        // equal here because this fixture is about the lifecycle, not about decay.
         evidenceMass: confident ? 6.5 : 0.5,
+        observedMass: confident ? 6.5 : 0.5,
         distinctDays: confident ? 6 : 1,
         confident,
         attribution: confident ? "style" : null,

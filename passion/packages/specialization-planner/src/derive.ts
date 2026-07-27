@@ -17,7 +17,7 @@ import type { Artifact } from "@gt100k/two-axis-tagging";
 import { isCabinId, type DomainPath } from "@gt100k/two-axis-tagging";
 import type { CellEvent } from "@gt100k/interest-inference";
 import { isDepthFamily, serializeCellKey } from "@gt100k/interest-inference";
-import { RETURN_WINDOW_DAYS, type PlanInputs } from "./model.js";
+import { isPlannableState, RETURN_WINDOW_DAYS, type PlanInputs } from "./model.js";
 
 const DAY_MS = 86_400_000;
 const MONTH_DAYS = 30;
@@ -35,7 +35,8 @@ function toDomainPath(dp: readonly string[]): DomainPath | null {
 
 /**
  * Derive the per-spike PlanInputs for `cellKey`. Returns `null` when the cell has no voluntary
- * engagement in the log (not a specialization cell) or the domain path is outside the taxonomy.
+ * engagement in the log (not a specialization cell), the domain path is outside the taxonomy, or
+ * no human has certified the hypothesis to CANDIDATE / ACTIVE.
  */
 export function derivePlanInputs(
   profile: StudentProfile,
@@ -85,13 +86,18 @@ export function derivePlanInputs(
   const hyp = Object.values(store.byId).find(
     (h) => h.kidId === profile.kidId && h.cellKey === cellKey,
   );
+  // The preventive guard. GC4 already audits the store for uncertified promotions after the fact,
+  // but a detective check cannot stop a plan being produced; this is the input boundary, so it is
+  // where the precondition belongs. A cell with no hypothesis at all is refused for the same
+  // reason as an EXPLORING one, and more strongly: nobody has looked at it.
+  if (hyp === undefined || !isPlannableState(hyp.state)) return null;
 
   return {
     kidId: profile.kidId,
     cellKey,
     domainPath,
     mode: sample.mode,
-    hypothesisState: hyp?.state ?? "UNKNOWN",
+    hypothesisState: hyp.state,
     monthsInPursuit,
     voluntaryReturnsRecent,
     depthAccumulation,

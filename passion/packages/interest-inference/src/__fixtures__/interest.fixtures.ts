@@ -32,8 +32,11 @@ export const GOLDEN_CELL_KEY = "music-sound/audio-systems::build";
  *   α = 1.5 + 5.320436 + 0.883848                                        = 7.704284
  *   β = 1.0 + 0.5·w(4)                                                   = 1.410168
  *   evidenceMass = (α − 1.5) + (β − 1.0) = 6.204284 + 0.410168           = 6.614452
+ *   observedMass = the same weights undecayed: 6 returns + 0.5·2 depth + 0.5·1 skip = 7.5
  *   mean 0.845282 · sd 0.113710 · lowerBound 0.731572 · distinctDays 6
- * Confident: mass 6.614452 ≥ 6, days 6 ≥ 2, 2·sd 0.227421 ≤ 0.35. Spike: 0.731572 ≥ 0.6.
+ * Confident: OBSERVED 7.5 ≥ 6, days 6 ≥ 2, 2·sd 0.227421 ≤ 0.35. Spike: 0.731572 ≥ 0.6.
+ * The gate reads `observedMass`, not `evidenceMass`; this cell clears either, because its evidence
+ * is recent enough that the two barely differ. They come apart when the returns are spread out.
  *
  * Excluded from the belief, and each one is here to prove it stays excluded — including from the
  * day count, which is why Jan 2 is not one of the six scored days:

@@ -23,6 +23,7 @@ const emerging: InterestRead = {
       lowerBound: 0.7,
       // Mass and day count sit above the E6 gates, so the read is one the engine could emit.
       evidenceMass: 6.5,
+      observedMass: 6.5,
       distinctDays: 6,
       confident: true,
       attribution: "style",

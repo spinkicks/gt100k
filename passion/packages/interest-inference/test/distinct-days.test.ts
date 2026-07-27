@@ -52,6 +52,7 @@ function accum(over: Partial<CellAccum>): CellAccum {
     prompted: 0,
     sameDay: 0,
     days: new Set<string>(),
+    observedMass: 0,
     ...over,
   };
 }
@@ -87,26 +88,30 @@ describe("one day is never enough (E6)", () => {
 });
 
 describe("the mass floor and the day gate are independent (E6)", () => {
-  it("many distinct days do not excuse mass below the floor", () => {
-    // Six returns on six consecutive days. Decay alone puts the mass at
-    // 1 + 0.951695 + 0.905724 + 0.861973 + 0.820335 + 0.780709 = 5.320436 — just short of 6.
-    const b = read([3, 4, 5, 6, 7, 8].map((d) => at(day(d))));
-    expect(b.evidenceMass).toBeCloseTo(5.320436, 5);
-    expect(b.distinctDays).toBe(6);
+  it("many distinct days do not excuse too few observations", () => {
+    // Five returns on five consecutive days. Five observations is five however they are spread, so
+    // the day gate passing five times over cannot make up the missing sixth.
+    //
+    // This used to read six returns and lean on decay to hold the total at 5.32, just under the
+    // floor. That reasoning is gone: the floor now counts observations, so six returns is 6.0 and
+    // clears it, which is the behaviour change. The independence being asserted is the same.
+    const b = read([4, 5, 6, 7, 8].map((d) => at(day(d))));
+    expect(b.observedMass).toBe(5);
+    expect(b.distinctDays).toBe(5);
     expect(b.confident).toBe(false);
   });
 
-  it("mass exactly at the floor with exactly MIN_DISTINCT_DAYS days is confident", () => {
-    // alpha 7 / beta 1.5 over priors 1.5 / 1 → mass (7 − 1.5) + (1.5 − 1) = 6.0 exactly.
+  it("observation exactly at the floor with exactly MIN_DISTINCT_DAYS days is confident", () => {
     const b = toBelief(
       accum({
         alphaPrior: 1.5,
         alpha: 7,
         beta: 1.5,
+        observedMass: MIN_EVIDENCE_MASS,
         days: new Set(["2026-01-07", "2026-01-08"]),
       }),
     );
-    expect(b.evidenceMass).toBe(MIN_EVIDENCE_MASS);
+    expect(b.observedMass).toBe(MIN_EVIDENCE_MASS);
     expect(b.distinctDays).toBe(MIN_DISTINCT_DAYS);
     expect(b.confident).toBe(true);
   });
@@ -115,13 +120,32 @@ describe("the mass floor and the day gate are independent (E6)", () => {
     const b = toBelief(
       accum({
         alphaPrior: 1.5,
-        alpha: 6.999999,
+        alpha: 7,
         beta: 1.5,
+        observedMass: MIN_EVIDENCE_MASS - 0.000001,
         days: new Set(["2026-01-07", "2026-01-08"]),
       }),
     );
-    expect(b.evidenceMass).toBeLessThan(MIN_EVIDENCE_MASS);
+    expect(b.observedMass).toBeLessThan(MIN_EVIDENCE_MASS);
     expect(b.confident).toBe(false);
+  });
+
+  it("a decayed cell that was observed plenty is confident, and says both numbers", () => {
+    // The case the split exists for, stated at the level of one accumulator: a lot of looking, most
+    // of it long enough ago to have decayed away. Sufficiency says yes; the decayed mass, which is
+    // what weights the marginals, still reports the small number it should.
+    const b = toBelief(
+      accum({
+        alpha: 4.5,
+        beta: 1,
+        observedMass: 12,
+        days: new Set(["2026-01-02", "2026-01-16", "2026-01-30"]),
+      }),
+    );
+    expect(b.observedMass).toBe(12);
+    expect(b.evidenceMass).toBe(3.5);
+    expect(b.evidenceMass).toBeLessThan(MIN_EVIDENCE_MASS); // would have failed the old gate
+    expect(b.confident).toBe(true);
   });
 });
 
