@@ -4,6 +4,15 @@
 **Date:** 2026-07-27
 **Why now:** the launcher decision made the library the product rather than a fallback.
 
+> **Note added 2026-07-27, after the surface owner kept the game**
+> (`2026-07-27-discovery-surface.md` §-1). The premise in the line above is now **conditional**: the
+> library is the surface only if the child leaves the product to learn, which is deliberately still
+> open. **Every rule below stands unchanged regardless**, and the argument is the same one, one step
+> weaker: a subtopic offered with nothing behind it raises a domain and fails to maintain it, which
+> §2.3's n = 212 finding says leaves a child *below* where they started. That holds whether the empty
+> shelf is the whole surface or one shelf inside a room. What is *not* yet true is the wiring — the
+> game's shelf reads its own hand-authored `cards.data.ts`, not this library.
+
 ---
 
 ## The change in stakes

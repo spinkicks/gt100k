@@ -1,14 +1,112 @@
 # The child-facing discovery surface: game, catalog, or neither
 
-**Status:** **Recommendation: build the curated launcher (§0). Retire the game.** For the surface
-owner to accept or reject.
-**Date:** 2026-07-27 (rev 2 the same day: rev 1 evaluated the wrong artefact, see §0)
+**Status:** **DECIDED by the surface owner, 2026-07-27 (see §-1): keep the existing game. Do not build
+a separate launcher app. Whether the child leaves the product to learn is deliberately left open.**
+The recommendation in §0 — build the launcher, retire the game — is **not adopted**; its evidence is
+retained and re-scoped as the bar the game has to meet.
+**Date:** 2026-07-27 (rev 3 the same day: rev 1 evaluated the wrong artefact, see §0; rev 3 is the
+owner's ruling)
 **Question:** Should the 3D exploration game be replaced by a browse app where a child can start
 learning anything?
 
 ---
 
-## 0. Correction to rev 1, and the actual recommendation
+## -1. The surface owner's ruling
+
+**Keep the game we have. It already has the menu.**
+
+The launcher's central mechanic is a fixed, non-personalised choice moment over a taxonomy the child
+reads and picks from. `mvp-jul24` already implements that shape: a **click-to-select 2D map of topic
+cabins** → a cabin interior → click a prop → an activity opens as an overlay, with **no locomotion
+anywhere** (`passion/apps/mvp-jul24/PROJECT.md`, Mission; PRD §5.2 revised 2026-07-25). So the
+requirements in §0 are applied **to the existing surface by adjustment**, not by standing up a second
+child-facing app.
+
+This also disposes of one of §0's own arguments in the game's favour rather than against it: rev 2's
+prescription for fixing the game *by subtraction* was "drop the 3D navigation shell." That already
+happened on 2026-07-25 — there is no avatar, no walking, and the interior camera is permanently
+fixed. The navigation-load and cost-of-entry objections were aimed at a shell the app no longer has.
+
+### What stays open, on purpose
+
+**Whether the child leaves the product to learn.** Not deferred for want of an opinion — held open
+because both channels already exist in the app and the choice between them is about which one is
+load-bearing, not which one to build:
+
+- **Leaving** already exists. Every cabin's always-open shelf carries **3–6 offline explainer cards,
+  each with a real citation and one outbound link**, plus exactly one domain-invitation card
+  (`PROJECT.md`, *The shelf is the D5 maintenance path*). That is the launcher's "follow a vetted
+  link and go" in miniature, already stocked and already justified on different grounds.
+  **But it is a different store:** the shelf's links are hand-authored in
+  `mvp-jul24/src/shelf/cards.data.ts` and nothing in the app calls `curatedForCell`, so the
+  151-resource curated library and the shelf a child actually opens are today unconnected. Answering
+  the open question in favour of leaving means wiring one to the other; answering it in favour of
+  staying means deciding whether two curated collections should continue to exist side by side.
+- **Staying** already exists, and is the thing a launcher cannot have: an active generative task per
+  topic. §0 concedes this is the game's one property worth preserving, and the swap test
+  (`PROJECT.md`, *Why the split exists*) is what keeps it evidence rather than wrapper engagement.
+
+So the open question is narrow and answerable later without rework: **is the shelf a maintenance
+surface behind in-app activities, or is it the primary destination and the activities the trigger?**
+Nothing below forecloses either answer.
+
+### What this changes about §0's conclusions
+
+| §0 said | After the ruling |
+|---|---|
+| Retire the game | **Not adopted.** The surface is fixed; the design rules must be met inside it. |
+| Build a launcher app | **Not adopted.** No second child-facing surface. |
+| Evidence against a game shell (Brom 2022; the art confound; navigation load) | **Retained, not withdrawn.** It stops being a reason to replace the surface and becomes the list the surface is audited against — see the two rules below that the game does *not* currently satisfy. |
+| The in-app depth channel mostly goes away | **Reversed.** Keeping the activities keeps `chosen_challenge`, `unrequired_revision` and `self_authored_scope` expressible. E10's out-of-product report stays valuable but is no longer the *only* depth instrument. |
+| The curated library **is** the surface | **Conditional on the open question.** Either way the library keeps its value — the launcher's shelf if the child leaves, the cabin's shelf stock if they do not — and `2026-07-27-curated-library-standard.md` is unchanged. |
+
+### The two design rules the game does not currently satisfy
+
+Recorded here rather than in a follow-up, because keeping the game means keeping these open:
+
+1. **Rule 1 — the choice moment is a topic label, not a thumbnail.** The map offers pictorial cabins
+   and the in-cabin choice is painted props, which is the Javora confound in its most direct form.
+   `PROJECT.md` already logs the residual honestly ("Slight inter-room visual variation keeps a small
+   C8 aesthetics-confound exposure… wrapper appeal independently predicts voluntary return, β = 0.267,
+   p = .003") and the shared shell — same geometry, same lighting rig, same camera, both rooms lit at
+   dusk — removes most of it. **Keeping the game means that residual stays and is not closed by a
+   text-label surface.** Rule 2 (uniform presentation) is therefore largely already met; rule 1 is
+   not, and cannot be fully met by a surface whose choice affordance is a painting.
+2. **Rule 5 — log the offered set, including position.** `SurfacedRecord.position` (#203) was added
+   for a list, and a map has ordering too: signpost order, prop placement, what falls under the
+   cursor first. It applies here and is not currently emitted — and per `PROJECT.md`'s last logged
+   risk, **the backdrop backend's prop polygons and bookshelf emit nothing at all today**, so
+   emission is silently partial before position is even considered.
+
+Rule 4 (no streak, badge, point, notification or unlock) is already satisfied, and on a stronger
+argument than this doc's: nothing is gated, there is no completion-triggered offer, and the reason is
+that a completion gate would launder an ability measure into a depth measure (`PROJECT.md`, *Depth and
+unlocking*).
+
+### Two consequences worth stating
+
+**#203's engine pieces stand, but one of its premises does not.** Its rationale was that "a launcher
+has no furniture: the child picks a subtopic, which IS a DomainPath." Keeping the game means the
+gadget→taxonomy crosswalk is **back in scope**. It is also cheaper than #203 assumed: the taxonomy
+already models the app's room split as `math-puzzles/logic-puzzles` and
+`math-puzzles/competition-math`, both in `SEED_SUBTOPICS`, so no minting is required. That work is
+already designed on `dev/mvp-jul24/backend-wiring-plan`, which this ruling promotes from conflicting
+with the decision to being the path through it.
+
+**The age bands do not line up, and that is a reason this ruling leaves the leave/stay question
+open.** This doc's evidence is 6–8 (Brom's own band is the authors' assumption, ~8–10); `mvp-jul24`
+targets **9–12** and says so explicitly. The specific finding §0 used to argue that losing the in-app
+depth channel was survivable — in-session telemetry discriminated nothing at 7–8, only the delayed
+out-of-product probe did — is **not known to hold** at 9–12. It cannot be leaned on to force the
+child out of the product, and its converse cannot be leaned on to keep them in.
+
+---
+
+## 0. Correction to rev 1, and the recommendation as it stood
+
+> **Superseded in part by §-1.** Everything below is the analysis as it stood before the owner ruled,
+> kept whole because its evidence is still in force. Only its two *conclusions* — build a launcher,
+> retire the game — were rejected. Do not read this section on its own.
 
 **Rev 1 evaluated a recommender. The thing actually proposed is a directory, and the difference is
 the whole argument.**
@@ -119,7 +217,7 @@ known blind spot, and it is the right one to have rather than the one where we c
 
 ---
 
-## Recommendation
+## Recommendation (as it stood — see §-1 for the ruling)
 
 **Do not build the recommendation-driven catalog. Do not defend the current game either.**
 
