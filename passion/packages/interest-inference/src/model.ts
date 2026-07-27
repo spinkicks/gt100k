@@ -2,7 +2,8 @@
 export const ALPHA0 = 1;
 export const BETA0 = 1;
 export const W_ENV = 0.5;
-export const W_APT = 0.5;
+/** Weight on `DomainPrior.masteryTilt`. Was `W_APT`; see that field for why the name changed. */
+export const W_MASTERY = 0.5;
 export const W_XP = 0.5;
 export const A_RETURN = 1.0;
 export const A_DEPTH = 0.5;
@@ -91,7 +92,18 @@ export type Attribution = "domain" | "style" | "mixed";
 export interface DomainPrior {
   readonly domain: string;
   readonly inEnvironment: boolean;
-  readonly aptitudeTilt: number; // [0,1]
+  /**
+   * How well the child is already doing in this domain's school subjects, in [0,1]. Populated in one
+   * place, `timeback/src/map.ts`, as a weighted mean of subject mastery from a TimeBack snapshot.
+   *
+   * Called `aptitudeTilt` until 2026-07-26, which was wrong and cost us a bad proposal. Mastery is
+   * ACHIEVEMENT, what a child has already been graded as knowing. Aptitude is a different
+   * construct measured a different way, and reading the old name as aptitude led to an argument to
+   * halve this weight for six-year-olds on the strength of an SMPY citation about above-level
+   * testing at thirteen. For achievement in that band the evidence runs the other way (see the
+   * withdrawn E8 in docs/proposals/interest-engine-data-collection-v2.md).
+   */
+  readonly masteryTilt: number;
   readonly discretionaryTilt: number; // [0,1]
 }
 

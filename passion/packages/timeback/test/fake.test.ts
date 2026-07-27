@@ -64,13 +64,13 @@ describe("PILOT_TIMEBACK (pilot kids → stable priors)", () => {
     ]);
     // art contributes w1 mastery 0.5, xp 5 of 100 → aptitude 0.5, discretionary 0.05
     const art = priors.find((p) => p.domain === "art-motion")!;
-    expect(art.aptitudeTilt).toBeCloseTo(0.5, 5);
+    expect(art.masteryTilt).toBeCloseTo(0.5, 5);
     expect(art.discretionaryTilt).toBeCloseTo(0.05, 5);
     expect(art.inEnvironment).toBe(true);
     // every tilt in range (SC-4)
     for (const p of priors) {
-      expect(p.aptitudeTilt).toBeGreaterThanOrEqual(0);
-      expect(p.aptitudeTilt).toBeLessThanOrEqual(1);
+      expect(p.masteryTilt).toBeGreaterThanOrEqual(0);
+      expect(p.masteryTilt).toBeLessThanOrEqual(1);
       expect(p.discretionaryTilt).toBeGreaterThanOrEqual(0);
       expect(p.discretionaryTilt).toBeLessThanOrEqual(1);
     }
@@ -83,6 +83,6 @@ describe("PILOT_TIMEBACK (pilot kids → stable priors)", () => {
     const p2 = toDomainPriors(PILOT_TIMEBACK["kid-synthetic-002"]!).find(
       (p) => p.domain === "math-puzzles",
     )!;
-    expect(p2.aptitudeTilt).not.toBeCloseTo(p1.aptitudeTilt, 5);
+    expect(p2.masteryTilt).not.toBeCloseTo(p1.masteryTilt, 5);
   });
 });

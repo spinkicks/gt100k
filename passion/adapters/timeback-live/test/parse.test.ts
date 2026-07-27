@@ -33,8 +33,8 @@ describe("parseSnapshot", () => {
     const priors = toDomainPriors(parseSnapshot("kid-1", ASSUMED_PAYLOAD));
     expect(priors.length).toBeGreaterThan(0);
     for (const p of priors) {
-      expect(p.aptitudeTilt).toBeGreaterThanOrEqual(0);
-      expect(p.aptitudeTilt).toBeLessThanOrEqual(1);
+      expect(p.masteryTilt).toBeGreaterThanOrEqual(0);
+      expect(p.masteryTilt).toBeLessThanOrEqual(1);
       expect(p.discretionaryTilt).toBeGreaterThanOrEqual(0);
       expect(p.discretionaryTilt).toBeLessThanOrEqual(1);
     }

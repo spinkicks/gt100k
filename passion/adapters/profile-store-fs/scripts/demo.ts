@@ -33,7 +33,7 @@ async function main(): Promise<void> {
     emptyProfile(
       KID,
       "Ari",
-      [{ domain: "music-sound", inEnvironment: true, aptitudeTilt: 0, discretionaryTilt: 0 }],
+      [{ domain: "music-sound", inEnvironment: true, masteryTilt: 0, discretionaryTilt: 0 }],
       {
         "music-sound/audio-systems::build": "defense-record-042",
       },

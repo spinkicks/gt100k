@@ -318,9 +318,13 @@ the standing no-gate test in `timeback` holds that line. Those are reasons to ke
 bounded, which 0.5 against a `clamp01`-ed input already is. They are not reasons to cut it.
 
 What should change is the **name**, not the number. Calling an achievement mean `aptitudeTilt` is
-what produced this proposal item, and it will produce the next one too. Renaming it (`masteryTilt`)
-is a mechanical rename across `interest-inference`, `timeback` and their fixtures, and it is the
-actual fix. Filed as a follow-up rather than done here, because it touches a published contract.
+what produced this proposal item, and it would have produced the next one too.
+
+**Done 2026-07-26:** `DomainPrior.aptitudeTilt` → `masteryTilt`, `W_APT` → `W_MASTERY`, across
+`interest-inference`, `timeback`, `signal-pipeline`, `student-profile`, two adapters and their
+fixtures. The field now carries a comment saying where it comes from and why the old name was wrong,
+so the next reader cannot repeat the mistake from the type alone. Dated plan documents keep the old
+name deliberately: they are a record of what was decided then, not a description of the code now.
 
 ### E9 — Repurpose the two signals we already collect, rather than deleting them
 

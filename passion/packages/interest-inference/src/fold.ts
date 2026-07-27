@@ -8,7 +8,7 @@ import {
   ALPHA0,
   BETA0,
   W_ENV,
-  W_APT,
+  W_MASTERY,
   W_XP,
   clamp01,
   isDepthFamily,
@@ -22,7 +22,7 @@ export function buildPrior(prior?: DomainPrior): { alphaPrior: number; betaPrior
   const alphaPrior =
     ALPHA0 +
     (prior?.inEnvironment ? W_ENV : 0) +
-    W_APT * clamp01(prior?.aptitudeTilt ?? 0) +
+    W_MASTERY * clamp01(prior?.masteryTilt ?? 0) +
     W_XP * clamp01(prior?.discretionaryTilt ?? 0);
   return { alphaPrior, betaPrior: BETA0 };
 }

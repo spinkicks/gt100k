@@ -11,7 +11,7 @@ export function runDemo(): { cellEventCount: number; read: InterestRead } {
   });
   const read = runInference(
     cellEvents,
-    [{ domain: "music-sound", inEnvironment: true, aptitudeTilt: 0, discretionaryTilt: 0 }],
+    [{ domain: "music-sound", inEnvironment: true, masteryTilt: 0, discretionaryTilt: 0 }],
     NOW,
   );
   return { cellEventCount: cellEvents.length, read };

@@ -3,7 +3,7 @@ import type { CellEvent, DomainPrior } from "../model.js";
 export const GOLDEN_NOW = Date.parse("2026-01-08T00:00:00.000Z");
 
 export const GOLDEN_PRIORS: DomainPrior[] = [
-  { domain: "music-sound", inEnvironment: true, aptitudeTilt: 0, discretionaryTilt: 0 },
+  { domain: "music-sound", inEnvironment: true, masteryTilt: 0, discretionaryTilt: 0 },
 ];
 
 export const GOLDEN_CELL_KEY = "music-sound/audio-systems::build";

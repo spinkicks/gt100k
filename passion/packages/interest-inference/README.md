@@ -26,7 +26,7 @@ events + priors ─▶ foldEvents ─▶ toBelief ─▶ rankCandidates + attrib
 
 Each `(domain × work-mode)` cell is a Beta-Bernoulli posterior.
 
-- **Prior** (from the domain's `DomainPrior`): `alpha_prior = 1 + (inEnvironment ? 0.5 : 0) + 0.5·aptitudeTilt + 0.5·discretionaryTilt`, `beta_prior = 1`.
+- **Prior** (from the domain's `DomainPrior`): `alpha_prior = 1 + (inEnvironment ? 0.5 : 0) + 0.5·masteryTilt + 0.5·discretionaryTilt`, `beta_prior = 1`.
 - **Evidence** (per event, recency-weighted `w = 0.5^(ageDays/14)`):
   - `cross_day_return` (a prior engagement of the cell on an earlier UTC day) → `alpha += 1.0·w`
   - depth family (`unrequired_revision`, `chosen_challenge`, `failure_recovery`, `self_authored_scope`, `artifact_competence`) → `alpha += 0.5·w`
@@ -54,7 +54,7 @@ Each `(domain × work-mode)` cell is a Beta-Bernoulli posterior.
 |---|---|---|---|---|
 | `ALPHA0`/`BETA0` | `1`/`1` | | `HALFLIFE_DAYS` | `14` |
 | `W_ENV` | `0.5` | | `MIN_EVIDENCE_MASS` | `6` |
-| `W_APT`/`W_XP` | `0.5`/`0.5` | | `MIN_DISTINCT_DAYS` | `2` |
+| `W_MASTERY`/`W_XP` | `0.5`/`0.5` | | `MIN_DISTINCT_DAYS` | `2` |
 | `A_RETURN` | `1.0` | | `MAX_CI_WIDTH` | `0.35` |
 | `A_DEPTH` | `0.5` | | `K_LCB` | `1.0` |
 | `B_SKIP` | `0.5` | | `SPIKE_THRESHOLD` | `0.6` |
