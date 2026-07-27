@@ -48,6 +48,19 @@ export interface SurfacedRecord {
   readonly artifactId: string;
   readonly sessionId: string;
   readonly timestamp: string; // ISO-8601
+  /**
+   * Zero-based place in the list this was offered in, when the surface has an order.
+   *
+   * A scene shows a handful of things at once and has no ordering to report. A list does, and
+   * people pick the top of one far more often than the bottom whatever is in it, so on a list
+   * surface "chose the first subtopic" and "preferred that subtopic" stop being the same claim.
+   *
+   * Recorded and otherwise unused, on purpose. Correcting for position needs the size of the effect
+   * in this surface with these children, which cannot be known before the surface exists; a
+   * position not captured at surfacing time cannot be recovered later. Optional, because inventing
+   * one for an unordered surface would be worse than leaving it out.
+   */
+  readonly position?: number;
 }
 
 export interface PipelineConfig {

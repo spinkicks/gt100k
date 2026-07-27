@@ -8,3 +8,6 @@ export * from "./ports.js";
 export * from "./stubs.js";
 export * from "./pipeline.js";
 export * from "./promote.js";
+export * from "./as-artifact.js";
+export * from "./validate-library.js";
+export * from "./seed-library.js";
