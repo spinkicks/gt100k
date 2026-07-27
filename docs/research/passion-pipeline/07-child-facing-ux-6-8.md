@@ -142,7 +142,7 @@ hotspot discovery. The extrapolation from "animation pulls gaze off relevant pic
 pulls gaze off hotspots" is mine, not the authors'. It is also **directly testable** in our own build and
 should be, before the art budget is committed.
 
-### 2.4 Our target-size floor is an adult value, and the platform we chose is the harder input modality *(high confidence on the numbers; the band is the caveat)*
+### 2.4 The child target sizes are already written and reachable by nobody, and the platform we chose is the harder input modality *(high confidence on the numbers; the band is the caveat)*
 
 **First, a correction to what I assumed before reading the code.** `contract.css:98` sets
 `--control-min: 44px /* WCAG 2.5.5 */` — an adult minimum — but the contract does **not** stop there.
