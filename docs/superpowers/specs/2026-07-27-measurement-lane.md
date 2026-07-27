@@ -1,7 +1,39 @@
 # Connecting the measurement lane
 
-**Status:** Spec, ready for review. Not implemented.
-**Date:** 2026-07-27 (rev 2, after a red-team pass that found four blockers in rev 1)
+**Status:** §2.1 and §2.2 implemented. The rest is on hold pending a decision about the child surface.
+**Date:** 2026-07-27 (rev 3; rev 2 followed a red-team that found four blockers in rev 1)
+
+> ## The child surface may not be a game
+>
+> The discovery surface is under review: the game may be replaced by a browse/catalog app where a
+> child can start learning anything. That does not invalidate this spec, but it splits it cleanly in
+> two, and only one half is worth building before the decision lands.
+>
+> **Surface-independent, and now built (§2.1, §2.2).** How the pipeline treats presence is a fact
+> about the engine, not about the game. An action that is presence rather than work resolves to no
+> mode and emits no event, and must not thereby read as a rejection of the thing the child chose to
+> look at. That is true of opening a gadget and equally true of opening a video card.
+>
+> **It gets more important under a browse surface, not less.** A room with a handful of gadgets puts
+> a handful of cells on offer per session. A catalog puts hundreds. The not-chosen set grows with
+> the shelf, so the cost of misclassifying the one item the child actually touched grows with it,
+> and `choiceSetSize` normalisation makes each individual decline weaker at exactly the moment the
+> single false decline against the chosen item stays at full weight.
+>
+> **Surface-dependent, and on hold (§3 to §7).** The crosswalk, the artifact catalog, the action
+> verbs and the guide-facing copy all describe nine specific gadgets. If the surface becomes a
+> catalog, every row of §4 is thrown away, `supportsTier` and §6's one-gadget caveat stop existing,
+> and §3's action verbs are replaced by whatever a browse surface can honestly claim a child did.
+> Building it now would be building it twice.
+>
+> **What a browse surface would need instead, in one line each,** so the decision can be made with
+> its cost visible: a domain for every catalog item (the same crosswalk problem at a much larger
+> scale, and no longer hand-writable as a table); an honest work-mode for items whose only
+> affordance is watching, which for most video is *none*, meaning §2's mode-less path becomes the
+> common case rather than the exception; and a rule for whether a recommended item counts as a
+> choice at all, because E5 (`W_SURFACED`) exists precisely to down-weight system-surfaced
+> engagement and is currently unbuilt for want of anything that surfaces.
+
 **Affects:** `@gt100k/signal-pipeline`, `passion/apps/mvp-jul24`, and the guide-facing copy in
 `@gt100k/mastery-map` + `guide-console` that currently promises the opposite of what this delivers.
 **Prior art:** the TimeBack subject-to-cabin crosswalk (G2/020) is the precedent for §4's table.
@@ -234,8 +266,14 @@ Making it general is content work: more gadgets with tiers.
 
 ## 7. Order of work
 
-1. **`signal-pipeline`**: `no-work-mode` as a distinct drop reason; opens mark their artifact's cells
-   engaged for the session so §2.2's inversion cannot fire. Tightest tests in the change.
+1. ~~**`signal-pipeline`**: `no-work-mode` as a distinct drop reason; opens mark their artifact's
+   cells engaged for the session so §2.2's inversion cannot fire.~~ **Done.** `MODELESS_ACTIONS`
+   holds the set (today just `open`), `buildActionEvents` returns a third list of `Presence` records
+   alongside `built` and `dropped`, and `deriveSkips` expands each through `offeredCells` so every
+   afforded mode is covered rather than just the first. Nine tests, including the three that pin the
+   disconfirming signal has not been blunted wholesale and the one that keeps presence
+   session-scoped. Order matters in the implementation: the catalog is checked first, so presence in
+   an unmapped artifact is still `unknown-artifact` rather than being forgiven.
 2. **`mvp-jul24`**: crosswalk table beside the registry; catalog literals built from it, including
    cabin entries; emit the action verb on solve; `recordDepth` rides an action; re-define
    `unrequired_revision` to fire on re-solve.

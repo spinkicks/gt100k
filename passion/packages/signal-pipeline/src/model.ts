@@ -60,7 +60,25 @@ export const DEFAULTS: PipelineConfig = {
   noveltyWindowDays: 3,
 };
 
-export type DropReason = "unknown-artifact" | "unresolved-action" | "invalid-for-artifact";
+/**
+ * `no-work-mode` is not a failure. It marks an action that is presence rather than a way of
+ * working, which the engine deliberately declines to give a mode: opening a thing says the child
+ * was there, not that they built or investigated anything, and the mode read exists to absorb noise
+ * rather than to receive it. Kept distinct from `unresolved-action` so a reader of `dropped` can
+ * tell "by design" from "we could not resolve this, which may be an emitter fault". Collapsing them
+ * would bury real faults in a pile of expected noise.
+ */
+export type DropReason =
+  | "unknown-artifact"
+  | "unresolved-action"
+  | "invalid-for-artifact"
+  | "no-work-mode";
+
+/**
+ * Actions that describe presence, not work. They emit no event and resolve to no cell, but they are
+ * still proof the child did not pass the thing over, which is what `deriveSkips` needs.
+ */
+export const MODELESS_ACTIONS: ReadonlySet<string> = new Set(["open"]);
 
 /** An interaction that emitted no signal, recorded for observability (never guessed). */
 export interface DroppedInteraction {

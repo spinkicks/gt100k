@@ -2,12 +2,24 @@ import type { Artifact, ActionEvent } from "@gt100k/two-axis-tagging";
 import { resolveEngagedModes } from "@gt100k/two-axis-tagging";
 import { serializeCellKey } from "@gt100k/interest-inference";
 import type { Interaction, PipelineConfig, DroppedInteraction } from "./model.js";
+import { MODELESS_ACTIONS } from "./model.js";
 import { buildFirstExposure, isNovelty } from "./novelty.js";
 
 /**
  * An ActionEvent plus the context downstream steps need, so they never re-`find` the source
  * interaction (which would need a fragile kid+artifact+timestamp composite key).
  */
+/**
+ * A record that emitted no event but proves the child was there: a mode-less action on a known
+ * artifact. Carried separately from `built` because it has no cell and no mode, and separately from
+ * `dropped` because `deriveSkips` has to act on it.
+ */
+export interface Presence {
+  readonly kidId: string;
+  readonly sessionId: string;
+  readonly artifactId: string;
+}
+
 export interface BuiltEvent {
   readonly event: ActionEvent;
   readonly artifact: Artifact;
@@ -25,7 +37,7 @@ export function buildActionEvents(
   interactions: readonly Interaction[],
   catalog: ReadonlyMap<string, Artifact>,
   config: PipelineConfig,
-): { built: BuiltEvent[]; dropped: DroppedInteraction[] } {
+): { built: BuiltEvent[]; dropped: DroppedInteraction[]; present: Presence[] } {
   // First-exposure over the ENGAGEMENTS that resolve to a cell (per kid+cell).
   const exposures: Array<{ kidId: string; cellKey: string; timestamp: string }> = [];
   for (const i of interactions) {
@@ -43,10 +55,19 @@ export function buildActionEvents(
 
   const built: BuiltEvent[] = [];
   const dropped: DroppedInteraction[] = [];
+  const present: Presence[] = [];
   for (const i of interactions) {
     const art = catalog.get(i.artifactId);
     if (!art) {
       dropped.push({ interaction: i, reason: "unknown-artifact" });
+      continue;
+    }
+    // Checked AFTER the catalog, so presence in something we cannot identify is still reported as
+    // `unknown-artifact`. An open on an unmapped id tells us nothing and must not be forgiven by
+    // being presence.
+    if (MODELESS_ACTIONS.has(i.actionType)) {
+      dropped.push({ interaction: i, reason: "no-work-mode" });
+      present.push({ kidId: i.kidId, sessionId: i.sessionId, artifactId: i.artifactId });
       continue;
     }
     const r = resolveEngagedModes(art, { artifactId: i.artifactId, actionType: i.actionType });
@@ -69,5 +90,5 @@ export function buildActionEvents(
     };
     built.push({ event, artifact: art, cellKey, sessionId: i.sessionId });
   }
-  return { built, dropped };
+  return { built, dropped, present };
 }
