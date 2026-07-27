@@ -35,7 +35,7 @@ pnpm --filter @gt100k/design-lab        dev   # 3060, design-system reference
 
 ## How it fits together
 
-A child's behaviour becomes a revisable interest read, which a **human** promotes into a staged plan, which produces real projects with a tamper-evident record.
+A child's behaviour becomes a revisable interest read, which a **human** promotes into a staged plan, which produces real projects — and those projects get a tamper-evident record from a **separate product** this repo also develops.
 
 ```
 interactions ─► signal-pipeline ─► interest-inference ─► hypothesis-store ─► guide console
@@ -44,8 +44,16 @@ interactions ─► signal-pipeline ─► interest-inference ─► hypothesis-
                                             certified spike ────┼──► specialization-planner (D1)
                                                                 ├──► access-broker (D3/D4)
                                                                 ├──► wellbeing (F2) · family (F3)
-                                                                └──► project-workspace ──► evidence-graph
+                                                                └──► project-workspace
+                                                                          │
+        ══════════ product boundary ═══════════════════════════════════════╪══════════
+                                                                           ▼
+                                                                     evidence-graph
 ```
+
+**That boundary is real, and it is the one architectural rule in this repo.** The EvidenceGraph is its own product, developed here to reuse the toolchain and intended for extraction as a `git subtree` copy. PassionLab crosses to it one-way through a single adapter and never the reverse. `import type` may cross; a runtime import may not. See [`docs/decisions/evidencegraph-v1-design.md`](docs/decisions/evidencegraph-v1-design.md) §11 and §13a.
+
+Separable code, though — not a separable pitch. The two products need each other commercially: a spike nobody can verify is just a claim, and a provenance system with nothing worth proving is just plumbing.
 
 Two rules hold everywhere, and most of the design follows from them:
 
@@ -72,8 +80,7 @@ Pure, deterministic, dependency-light. No network, no LLM, no clock.
 | `specialization-planner` | The staged ascent from a certified spike to a signature body of work |
 | `access-broker` | Brokers real mentors and audiences; guardian consent is a hard blocker |
 | `socratic-defense` | Authorship verified by a spoken defense, never by an AI detector |
-| `project-workspace` | The child's project log, feeding the evidence graph |
-| `evidence-graph` | Content-addressed, tamper-evident record of how work was actually made |
+| `project-workspace` | The child's project log, and the mapping from it onto provenance |
 | `concierge` | Child-safe retrieval behind a staged defense-in-depth pipeline |
 | `guardrails` | Executable compliance checks (GC1–GC6) over the whole spine |
 | `timeback` | Academic signals as priors only, never a gate |
@@ -90,10 +97,24 @@ Pure, deterministic, dependency-light. No network, no LLM, no clock.
 | `project-studio` | The child's project journal |
 | `parent-guide` | The Warm-Demanding Parent Playbook (static export, hosted on AWS) |
 | `mvp-jul24`, `tinker-cabin` | The child-facing discovery game (Vite + React Three Fiber) |
-| `evidence-explorer` | The provenance observatory, 2D and 3D |
 | `concierge`, `design-lab` | Concierge demo; design-system reference |
 
 Adapters in `passion/adapters/` supply the real implementations behind engine ports (Postgres, filesystem, live tagging/tutoring), so every engine stays testable with a deterministic stub.
+
+### The EvidenceGraph — the other product
+
+Everything under the `@gt100k/evidence-*` name is a **separate product**, not a PassionLab engine. It is developed here to reuse the toolchain and green tests, and is meant to leave as a `git subtree` copy. It has no GT dependency and is demonstrable on its own.
+
+| Package | What it does |
+|---|---|
+| `evidence-graph` | Content-addressed, tamper-evident record of how work was actually made. Pure domain: no framework, storage, network, clock or runtime crypto |
+| `evidence-explorer-view` | The deterministic view model behind the observatory, 2D and 3D |
+| `evidence-tiny-game` | The reproducible demo journey — a small game built over N steps |
+| `apps/evidence-explorer` | The provenance observatory (port 3030), 2D and 3D |
+
+Its adapters (`evidence-hash-node`, `evidence-repo-postgres`, `evidence-repo-memory`, `evidence-verifier-stub`, `evidence-deferred`) sit behind its own ports, on the same stub-plus-real pattern.
+
+**If you are adding code here, the rule is one line:** nothing outside `@gt100k/evidence-*` may import a *value* from inside it. Types may cross. Everything PassionLab needs goes through one adapter.
 
 ## Where to start
 
