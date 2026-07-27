@@ -14,10 +14,25 @@ export const CABINS = [
 
 export type CabinId = (typeof CABINS)[number];
 
+/**
+ * Seed subtopics. A rough draft, expected to be expanded.
+ *
+ * `games-strategy/odds-and-chance` was `poker` until 2026-07-27. Two independent resource-compilation
+ * passes reached the same conclusion: there is almost nothing on the open web teaching poker to
+ * children that is not operated by, sponsored by, or linking to a real-money gambling site. The best
+ * material found for the underlying skill was not about poker at all — press-your-luck dice games,
+ * fair-bet reasoning, uneven odds — and filing those under a shelf labelled "Poker" would have been
+ * the same error as tagging a resource for an age it cannot serve: a label promising one thing and a
+ * shelf delivering another.
+ *
+ * `odds-and-chance` names the transferable construct, which is the thing worth discovering anyway:
+ * decisions under uncertainty. The one genuinely poker resource we keep (MIT OCW 15.S50, poker as
+ * probability and decision theory) still fits, and its own title says what it is.
+ */
 export const SEED_SUBTOPICS: Record<CabinId, readonly string[]> = {
   "music-sound": ["audio-systems", "production", "instruments", "music-theory"],
   "code-computers": ["game-dev", "python", "hardware", "agentic-engineering"],
-  "games-strategy": ["chess", "poker", "board-games"],
+  "games-strategy": ["chess", "odds-and-chance", "board-games"],
   "making-engineering": ["robotics", "electronics", "3d-printing"],
   "art-motion": ["visual", "animation", "video-editing", "3d-modeling"],
   "influence-media": ["marketing", "storytelling", "psychology", "publishing"],
