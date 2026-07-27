@@ -22,6 +22,11 @@ anywhere** (`passion/apps/mvp-jul24/PROJECT.md`, Mission; PRD §5.2 revised 2026
 requirements in §0 are applied **to the existing surface by adjustment**, not by standing up a second
 child-facing app.
 
+**The scope of the ruling is "the surface we have now," not "the surface forever."** It settles what
+gets built against today and stops a parallel app being stood up; it is not a commitment to `mvp-jul24`
+as the permanent child-facing surface. The two rules below that it does not satisfy are the terms on
+which that could be revisited, and revisiting it needs a new ruling rather than a quiet drift.
+
 This also disposes of one of §0's own arguments in the game's favour rather than against it: rev 2's
 prescription for fixing the game *by subtraction* was "drop the 3D navigation shell." That already
 happened on 2026-07-25 — there is no avatar, no walking, and the interior camera is permanently
