@@ -706,7 +706,7 @@ importers:
         version: link:../two-axis-tagging
 
   passion/packages/socratic-defense:
-    dependencies:
+    devDependencies:
       '@gt100k/evidence-graph':
         specifier: workspace:*
         version: link:../evidence-graph

@@ -53,10 +53,14 @@ by a person **explaining their own work** (`passionBrainlift.md` SPOV 5, the fiv
 |---|---|
 | `Interviewer` / `AnswerJudge` | `@gt100k/tutor-stub` (scripted, CI) · `@gt100k/tutor-tfy` (TrueFoundry, opt-in) |
 
-The evidence hash reuses `@gt100k/evidence-graph` `canonicalize` (imported, not reinvented); the record
-carries **no grade field** (invariant). `assembleEvidenceRecord` is a separate step from `runSession`, so
-the interview and the hashing stay decoupled; the `Hasher` is injected (tests/demo use a `node:crypto`
-inline hasher).
+The evidence hash uses this package's own `canonicalize` (`src/canonical.ts`), a deliberate copy of the
+one in `@gt100k/evidence-graph`. The `evidence-*` packages are a separate product intended for
+extraction, and nothing outside that namespace may import a value from inside it
+(`docs/decisions/evidencegraph-v1-design.md` §13a) — so the 37-line serializer is duplicated rather than
+imported, and `test/canonical-parity.test.ts` proves the two stay byte-identical across 22 fixtures plus
+the throwing cases. The record carries **no grade field** (invariant). `assembleEvidenceRecord` is a
+separate step from `runSession`, so the interview and the hashing stay decoupled; the `Hasher` is
+injected (tests/demo use a `node:crypto` inline hasher).
 
 ## Live adapter (opt-in, never in CI)
 
