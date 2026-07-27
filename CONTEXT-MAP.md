@@ -34,10 +34,11 @@ one yet, and its design docs stand in (`docs/decisions/evidencegraph-v1-*.md`).
   `docs/adr/` ADR-0004 and `DISCOVERY-APP-PRD.md` §6.5.)*
 - **PassionLab (internal)** — Discovery → `InterestHypothesis` → Specialization → project work.
 - **PassionLab → EvidenceGraph** — a **cross-product seam, not an internal call.** PassionLab's project
-  work becomes provenance in the graph. The direction is one-way: the graph never reads PassionLab.
-  The seam is meant to be a single adapter, so that neither side names the other at runtime.
-  *In flight (2026-07-27): today it is not a single adapter — a few runtime imports cross directly, and
-  they are being removed and then machine-checked. See `docs/decisions/evidencegraph-v1-design.md` §13a.*
+  work becomes provenance in the graph, through exactly one adapter
+  (`@gt100k/project-evidence-sink`), so neither side names the other at runtime. The direction is
+  one-way: the graph never reads PassionLab. `@gt100k/project-workspace` maps a project onto the closed
+  taxonomy as a *plan* (pure data); the adapter materializes it. **Enforced**, not merely intended — see
+  `@gt100k/boundaries` and `docs/decisions/evidencegraph-v1-design.md` §13a.
 
 ## Decisions
 
