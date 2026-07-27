@@ -89,7 +89,8 @@ describe("a session in which the child chose nothing", () => {
     // room with four doors, so the fix has to hold as the offer set grows.
     const many = Array.from({ length: 40 }, (_, i) => `extra-${i}`);
     const bigCatalog = new Map(CATALOG);
-    for (const id of many) bigCatalog.set(id, { ...base, id, domainPath: [id, "intro"] } as Artifact);
+    for (const id of many)
+      bigCatalog.set(id, { ...base, id, domainPath: [id, "intro"] } as Artifact);
     const show = (session: string, at: string): SurfacedRecord[] =>
       [...CABINS, ...many].map((c) => surfaced(c, session, at));
 
@@ -105,20 +106,16 @@ describe("a session in which the child chose nothing", () => {
 
 describe("but a session in which the child did choose still speaks", () => {
   it("declines the alternatives that lost to something the child took", () => {
-    const out = run(
-      [acted("math-puzzles", "s9", day(20))],
-      [...WARMUP, ...allOf("s9", day(20))],
-    );
+    const out = run([acted("math-puzzles", "s9", day(20))], [...WARMUP, ...allOf("s9", day(20))]);
 
-    const declined = against(out).map((e) => e.domainPath[0]).sort();
+    const declined = against(out)
+      .map((e) => e.domainPath[0])
+      .sort();
     expect(declined).toEqual(["art-motion", "code-computers", "making-engineering"]);
   });
 
   it("still normalises those declines by the size of the choice they lost", () => {
-    const out = run(
-      [acted("math-puzzles", "s9", day(20))],
-      [...WARMUP, ...allOf("s9", day(20))],
-    );
+    const out = run([acted("math-puzzles", "s9", day(20))], [...WARMUP, ...allOf("s9", day(20))]);
 
     for (const e of against(out)) expect(e.choiceSetSize).toBe(3);
   });
@@ -141,10 +138,10 @@ describe("but a session in which the child did choose still speaks", () => {
       [...WARMUP, ...allOf("s9", day(20))],
     );
 
-    expect(against(out).map((e) => e.domainPath[0]).sort()).toEqual([
-      "art-motion",
-      "code-computers",
-      "making-engineering",
-    ]);
+    expect(
+      against(out)
+        .map((e) => e.domainPath[0])
+        .sort(),
+    ).toEqual(["art-motion", "code-computers", "making-engineering"]);
   });
 });

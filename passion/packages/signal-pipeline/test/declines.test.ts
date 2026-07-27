@@ -37,11 +37,7 @@ const catalog = new Map([
   ["loom-01", loom],
 ]);
 
-const engage = (
-  sessionId: string,
-  timestamp: string,
-  artifactId = "synth-01",
-): Interaction => ({
+const engage = (sessionId: string, timestamp: string, artifactId = "synth-01"): Interaction => ({
   kidId: "k",
   artifactId,
   actionType: "assemble",

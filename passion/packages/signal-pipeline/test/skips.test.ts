@@ -45,7 +45,11 @@ const engage = (sessionId: string, timestamp: string, artifactId = "synth-01"): 
   sessionId,
 });
 
-const surface = (sessionId: string, timestamp: string, artifactId = "synth-01"): SurfacedRecord => ({
+const surface = (
+  sessionId: string,
+  timestamp: string,
+  artifactId = "synth-01",
+): SurfacedRecord => ({
   kidId: "k",
   artifactId,
   sessionId,
