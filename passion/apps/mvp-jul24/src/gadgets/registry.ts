@@ -77,8 +77,11 @@ export const GADGETS: Gadget[] = [
     status: "active",
     Puzzle: Nonogram,
     hotspot: { xPct: 15, yPct: 60, label: "Nonogram" },
-    // Nonogram is the one gadget whose component reads `PuzzleProps.tier` (see Nonogram.tsx and
-    // the doc comment on `Gadget.supportsTier`) — the other eight ignore it and must not set this.
+    // Reads `PuzzleProps.tier` (see Nonogram.tsx and the doc comment on `Gadget.supportsTier`).
+    // Only a gadget whose component actually honours `tier` may set this flag. WHICH gadgets those
+    // are is not listed here on purpose: this comment has twice claimed to be the complete roster and
+    // twice been made false by a cabin opening. registry.test.ts enforces the roster, so it is the
+    // one place that cannot go stale.
     supportsTier: true,
   },
   {
@@ -114,6 +117,12 @@ export const GADGETS: Gadget[] = [
     status: "active",
     Puzzle: BalanceScale,
     hotspot: { xPct: 20, yPct: 55, label: "Balance Scale" },
+    // Reads `PuzzleProps.tier` as the tier to open at, and the prop is the *base* its own round ramp
+    // adds to (see `tierFor` in BalanceScale.tsx) — so the remount that "Try a harder one" causes
+    // cannot hand back an easier board, which is the failure `supportsTier` exists to prevent. Its
+    // tier 0 is the gentle first encounter and the tight anti-flailing budget starts at tier 1, so
+    // there is now a genuinely harder board for the offer to lead to.
+    supportsTier: true,
   },
   {
     id: "gear-train",
