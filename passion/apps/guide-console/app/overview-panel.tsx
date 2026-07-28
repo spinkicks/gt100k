@@ -13,6 +13,8 @@
 import { useMemo, type JSX } from "react";
 import { AreaChart, BarChart, Donut, Spark } from "./charts.js";
 import { buildOverview, type ShareSlice, type StatTile, type TimeSeries } from "./overview.js";
+import { offersForKid } from "./offer-next.js";
+import { profileFor } from "./console-data.js";
 import { WhyThis } from "./why.js";
 import type { ConsoleController } from "./useConsole.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
@@ -78,6 +80,40 @@ function Tile({ t }: { t: StatTile }): JSX.Element {
   );
 }
 
+/**
+ * What to put in front of this child next, and why.
+ *
+ * Above the specializations table on purpose. That table is a read on what has already happened;
+ * this is the only thing on the page that asks the guide to do something, and the thing it is
+ * guarding against is invisible without it: a domain triggered and then dropped leaves a child
+ * *less* interested than never trying it at all.
+ */
+function OfferNext({ kidId }: { kidId: string }): JSX.Element | null {
+  const offers = useMemo(() => offersForKid(profileFor(kidId)), [kidId]);
+  if (offers.length === 0) return null;
+
+  return (
+    <section className="card">
+      <div className="card__hd">
+        <div>
+          <h2>What to offer next</h2>
+          <p>
+            Based on what this child has already been shown, not on what we think they will like
+          </p>
+        </div>
+      </div>
+      <ul className="offer-next">
+        {offers.map((o) => (
+          <li key={`${o.reason}:${o.label}`} data-reason={o.reason}>
+            <span className="offer-next__what">{o.label}</span>
+            <span className="offer-next__why">{o.because}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export function OverviewPanel({
   ctrl,
   onReview,
@@ -140,6 +176,8 @@ export function OverviewPanel({
           )}
         </div>
       </section>
+
+      <OfferNext kidId={ctrl.kid} />
 
       <section className="card">
         <div className="card__hd">

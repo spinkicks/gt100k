@@ -28,11 +28,15 @@ export const CabinView: React.FC = () => {
 
   // Every gadget on the wall was on offer, so each one the child walked past is a decline against a
   // visible alternative. Recorded once per session — a re-render must not inflate availability.
+  // `position` is the wall order, which is a genuine list here rather than an inferred one: the
+  // registry order is the order the props are placed. Recorded and unread, for the same reason as
+  // on the map — a position effect has to be measured in the surface it happens in, and it cannot
+  // be reconstructed after the fact.
   useEffect(() => {
     if (!cabinId) return;
-    for (const gadget of gadgetsForTopic(cabinId)) {
-      sessionLog.recordSurfaced(gadget.id);
-    }
+    gadgetsForTopic(cabinId).forEach((gadget, position) =>
+      sessionLog.recordSurfaced(gadget.id, position),
+    );
   }, [cabinId]);
 
   if (!cabinId) return null;

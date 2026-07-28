@@ -21,6 +21,7 @@
     "@gt100k/research": "workspace:*",
     "@gt100k/specialization-planner": "workspace:*",
     "@gt100k/student-profile": "workspace:*",
+    "@gt100k/surfacing": "workspace:*",
     "@gt100k/two-axis-tagging": "workspace:*",
     "@gt100k/ui": "workspace:*",
     "@gt100k/wellbeing": "workspace:*",

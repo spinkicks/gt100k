@@ -310,6 +310,9 @@ importers:
       '@gt100k/student-profile':
         specifier: workspace:*
         version: link:../../packages/student-profile
+      '@gt100k/surfacing':
+        specifier: workspace:*
+        version: link:../../packages/surfacing
       '@gt100k/two-axis-tagging':
         specifier: workspace:*
         version: link:../../packages/two-axis-tagging

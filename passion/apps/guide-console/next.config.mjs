@@ -15,6 +15,7 @@ const nextConfig = {
     "@gt100k/signal-pipeline",
     "@gt100k/two-axis-tagging",
     "@gt100k/student-profile",
+    "@gt100k/surfacing",
     "@gt100k/specialization-planner",
     "@gt100k/ui",
     "@gt100k/wellbeing",

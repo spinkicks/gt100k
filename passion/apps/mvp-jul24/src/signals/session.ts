@@ -38,9 +38,13 @@ export const SESSION_ID = newSessionId();
  *     recording, and why it is attributed to the card's subject rather than to the shelf.
  *
  * WHAT IS STILL NOT EMITTED, so this stays truth-in-labelling rather than a claim of completeness:
- * `SurfacedRecord.position` (the map and the room both have ordering, and neither reports it), and
- * `failure_recovery` / `self_authored_scope`, which have no affordance to emit from. Records are
- * complete for what the child DID; they are not yet complete for where it sat on screen.
+ * `failure_recovery` and `self_authored_scope`, which have no affordance to emit from. Records are
+ * complete for what the child DID.
+ *
+ * `SurfacedRecord.position` used to be on that list and now is not: the map reports reading order
+ * among the cabins actually on offer, the room reports wall order. Nothing reads either yet, which
+ * is deliberate — the size of a position effect can only be measured in this surface with these
+ * children, and a position not captured at surfacing time cannot be recovered later.
  *
  * Note what this is NOT: it is not a privacy control. It governs whether records are WRITTEN, and
  * writing is local. Whether anything is SENT is `INGEST_URL` below, which is a separate switch on
