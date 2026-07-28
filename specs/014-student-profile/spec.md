@@ -20,7 +20,7 @@
 ### In scope
 - **Domain package** `@gt100k/student-profile` (`passion/packages/student-profile`):
   - the **`StudentProfile`** record (§3.1) and `emptyProfile(...)`;
-  - the **orchestrator** `runCycle(profile, newInteractions, ctx, now)` — append to the log, then `deriveSignals` → `runInference` → `applyInterestRead` onto the **existing** store, then attach synthetic perseverance artifacts; **full replay, idempotent** (§3.2);
+  - the **orchestrator** `runCycle(profile, batch, ctx, now)` where `batch` is a `CycleBatch { interactions, surfaced }` — append to BOTH logs, then `deriveSignals` → `runInference` → `applyInterestRead` onto the **existing** store, then attach synthetic perseverance artifacts; **full replay, idempotent** (§3.2);
   - `deriveGates(profile, now)` — compute each hypothesis's graduation gate from the **voluntary-return timeline in the log** (replaces the console's hand-built gates) (§3.3);
   - `currentRead(profile, ctx, now)` — recompute the `InterestRead` for any consumer;
   - a **`ProfileStore` port** (`load` / `save` / `list`, async) + an **in-memory adapter** `createMemoryProfileStore()` (§3.4).
@@ -51,15 +51,24 @@ StudentProfile {
   store: HypothesisStore;                          // 013 durable lifecycle record for THIS kid
   updatedAt: string;                               // ISO-8601
 }
-OrchestratorContext { catalog: ReadonlyMap<string, Artifact>; surfaced?: readonly SurfacedRecord[]; config?: Partial<PipelineConfig>; }
+OrchestratorContext { catalog: ReadonlyMap<string, Artifact>; config?: Partial<PipelineConfig>; }
+CycleBatch { interactions: readonly Interaction[]; surfaced: readonly SurfacedRecord[]; }   // EMPTY_BATCH = both empty
 Roster = ReadonlyMap<string /*kidId*/, StudentProfile>
 ```
 `Interaction`, `SurfacedRecord`, `PipelineConfig` come from `@gt100k/signal-pipeline`; `Artifact` from `@gt100k/two-axis-tagging`; `DomainPrior`/`InterestRead` from `@gt100k/interest-inference`; `HypothesisStore`/`GateStatus` from `@gt100k/hypothesis-store`. **Reuse them — do not redefine.**
 
 ### 3.2 `runCycle` — full replay, idempotent
-`runCycle(profile, newInteractions, ctx, now)`:
-1. `interactions' = [...profile.interactions, ...newInteractions]` (append-only; preserve order).
-2. `{ cellEvents } = deriveSignals({ interactions: interactions', surfaced: ctx.surfaced, catalog: ctx.catalog, config: ctx.config })`.
+
+> **Amended 2026-07-27.** `surfaced` used to live on `OrchestratorContext`, which is rebuilt per call
+> and never persisted, and nothing in the repository ever populated it — so every read this package
+> produced was derived with no record of what the child was OFFERED, and the novelty window (which
+> dates from first exposure, usually a surfacing) was silently redated. It is now a second
+> append-only log on the profile, and a cycle takes both together so a caller cannot append one and
+> forget the other. See `docs/decisions/2026-07-27-live-wiring.md`.
+
+`runCycle(profile, batch, ctx, now)`:
+1. `interactions' = [...profile.interactions, ...batch.interactions]` and `surfaced' = [...profile.surfaced, ...batch.surfaced]` (both append-only; preserve order).
+2. `{ cellEvents } = deriveSignals({ interactions: interactions', surfaced: surfaced', catalog: ctx.catalog, config: ctx.config })`.
 3. `read = runInference(cellEvents, profile.priors, Date.parse(now))`.
 4. `store' = applyInterestRead(profile.store, profile.kidId, read, now)` — updates beliefs, auto-advances the cheap phases, **preserves human transitions**.
 5. `store'' = attachArtifacts(store', profile.kidId, profile.perseveranceArtifacts)` — set `perseveranceArtifactRef` on matching hypotheses (synthetic pilot; never fabricated by 013 itself).

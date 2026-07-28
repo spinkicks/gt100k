@@ -11,9 +11,9 @@
 
 ## 0. Status log (2026-07-23)
 
-**Repo gate on `main`:** `pnpm exec tsc -b` exit 0 · `pnpm test` (`vitest run`, repo root) **1,109 tests / 186 files green**, plus **3,174** app tests across the nine apps, which the root suite does not run and CI does.
+**Repo gate on `main`:** `pnpm exec tsc -b` exit 0 · `pnpm test` (`vitest run`, repo root) **1,109 tests / 184 files green**, plus **3,174** app tests across the nine apps, which the root suite does not run and CI does.
 
-> **What a ✅ in this document means.** The package exists and its tests pass, on synthetic data. It does *not* mean a child can use it and a guide sees the result. That gap was the product's critical path until 2026-07-27 and is now closed for discovery specifically — see `docs/decisions/2026-07-27-live-wiring.md` — but read every mark below as a claim about a package rather than about a journey.
+> **What a ✅ in this document means.** The package exists and its tests pass, on synthetic data. It does *not* mean a child can use it and a guide sees the result. That gap was the product's critical path until 2026-07-27, when a discovery session became able to reach a guide's console. Read that narrowly. It is a local, opt-in seam with no authentication and no rate limiting, the guardian who consents cannot be verified as the guardian, and a child's project evidence still cannot be erased. What closed is the path; the gates it has to pass are still shut — see `docs/decisions/2026-07-27-live-wiring.md` — but read every mark below as a claim about a package rather than about a journey.
 
 **Built + merged so far** (all reconstruct-and-run verified before merge):
 
@@ -23,7 +23,7 @@
 | **C3** Interest Inference | ✅ done | `specs/011-interest-inference` | Beta-Bernoulli belief engine; ML-tuning deferred until longitudinal labels accrue (G5) |
 | **C1** Behavioral Event Capture (Signal Firewall) | ✅ done (engine) | `specs/012-signal-pipeline` | the Interaction→ActionEvent→CellEvent derivation engine is done; the **UI that emits raw `Interaction`s is game-side** (teammate) |
 | **C4** Hypothesis Store + Lifecycle | ✅ done | `specs/013-hypothesis-store` | versioned hypotheses + lifecycle + Phase 2→3 gate (det. checks + human sign-off) + console view-model |
-| **G1** Student Profile + Discovery Orchestrator | ✅ done | `specs/014-student-profile` (+ `@gt100k/profile-store-fs`) | per-kid profile + append-only interaction log + a pure, idempotent full-replay `runCycle` wiring **012→011→013**; gates derived from the log; JSON-file-per-kid persistence. **The guide console now renders GENUINELY-DERIVED reads** (no more hand-built seed). Real TimeBack priors now fed by **G2 (020)**; consent/erasure (G3) later |
+| **G1** Student Profile + Discovery Orchestrator | ✅ done | `specs/014-student-profile` (+ `@gt100k/profile-store-fs`) | per-kid profile + append-only interaction log + a pure, idempotent full-replay `runCycle` wiring **012→011→013**; gates derived from the log; JSON-file-per-kid persistence. **The guide console now renders GENUINELY-DERIVED reads** (no more hand-built seed). Real TimeBack priors now fed by **G2 (020)**; consent/erasure now gated by **G3** (`@gt100k/consent`), enforced at the ingest route |
 | **E2** Assessment / Oral Defense | ✅ done (engine) | `specs/010-socratic-defense` (+`tutor-stub`/`tutor-tfy`) | LLM-conducts + deterministic scaffold + evidence record; sampling cadence + UI integration still to wire |
 | **F1** Guide + Wellbeing **Console (guide part)** | 🟡 partial | `specs/013` app `@gt100k/guide-console` (redesigned; fed by 014 + 016 + 018 + 019) | one **tabbed operator cockpit** per child — **Hypotheses / Wellbeing (F2) / Plan (D1) / Family (F3)**, each with a count + a "needs your review" dot — fed by the 014 orchestrator (real derived reads) with real 020 TimeBack priors; polished (contrast/focus/reduced-motion, hidden scrollbars, ambient Galaxy backdrop). The of-record grade ownership tie-in remains |
 | **F2** Push/Back-off + Burnout Monitor | ✅ done (engine) | `specs/016-wellbeing` (`@gt100k/wellbeing`) | pure two-knob engine (challenge PUSH/HOLD/SCAFFOLD × pressure AUTONOMY_UP/STEADY + back-off/rest/escalate) implementing the §6.2 table + 9 guardrails (devaluation weighted highest; push only from strength; missingness → human; counter-cyclical autonomy; never gamify; no child-facing label; behavioral-only), a deriver over the 014 log/013 store, and the guide-console panel; **guide surface functional, polish pending** |
@@ -38,11 +38,13 @@
 | **A2** Cabin 3D Interiors | 🟡 partial | `apps/tinker-cabin` (game-side MVP) | one photoreal cabin + realism-loop harness; the rest of the world is the teammate's track |
 | **A4** Taste Apps + Embedding SDK | 🟡 partial | intern apps exist | the embedding SDK + measurable-panel standard is not built |
 
-**In flight (🔨):** *nothing actively building.* **D3/D4 access broker (023)** just merged: the combined mentor-relay + audience-broker engine + live adapter + a guide-console **Access tab** (ranked mentor/audience matches, the guide-gated access-transfer lifecycle with a guardian-consent hard blocker, plus wellbeing/stage/craft-floor gates). Next candidates: **D5** (PCDE curriculum) or the **pre-live gates** (G3/G4). *(The D2 Project Studio app, the guide-console cockpit, and the teammate's themed Evidence Explorer are all merged.)*
+**In flight (🔨):** *nothing actively building.* **D3/D4 access broker (023)** just merged: the combined mentor-relay + audience-broker engine + live adapter + a guide-console **Access tab** (ranked mentor/audience matches, the guide-gated access-transfer lifecycle with a guardian-consent hard blocker, plus wellbeing/stage/craft-floor gates). Next candidates: **D5** (PCDE curriculum), **G4** (safety at scale), or finishing **G3** (identity verification and route auth are what is left). *(The D2 Project Studio app, the guide-console cockpit, and the teammate's themed Evidence Explorer are all merged.)*
 
-**Not started (⬜):** A1 world · A3 asset pipeline · A5 accessibility mirror · D5 PCDE curriculum · G3 consent/privacy · G4 safety/moderation · G5 calibration harness.
+**Not started (⬜):** A1 world · A3 asset pipeline · A5 accessibility mirror · D5 PCDE curriculum · G4 safety/moderation · G5 calibration harness.
 
-**Wiring gap — RESOLVED (014 + 020):** the discovery engines are wired end-to-end (`Interaction`s → 012 → 011 → 013 through the per-kid **G1** orchestrator), the console renders the derived read, and **real priors now flow from TimeBack (G2/020)** as a soft, never-gating starting hint. The remaining real input is the game-side `Interaction` emitter (C1 UI, teammate).
+**Partly built (🟡):** **G3 consent/privacy** — `@gt100k/consent` ships per-purpose consent, absolute withdrawal, a one-year retention review and deny-by-default, and the ingest route enforces it per request (403 with a reason). What is missing needs something outside this repository: identity verification, so `guide-asserted` is the strongest claim a pilot can honestly make. Erasure is half done — a profile is a file and deletes cleanly; the EvidenceGraph is content-addressed and cannot, which is E1 **D2**. See `docs/decisions/2026-07-27-g3-consent.md`.
+
+**Wiring gap — engine-side resolved (014 + 020), and since 2026-07-27 the child surface reaches it too:** the discovery engines are wired end-to-end (`Interaction`s → 012 → 011 → 013 through the per-kid **G1** orchestrator), the console renders the derived read, and **real priors now flow from TimeBack (G2/020)** as a soft, never-gating starting hint. That emitter now exists: `mvp-jul24` emits and can post a session to the console's ingest route (2026-07-27). What remains is not the emitter but the measurement questions behind it.
 
 **Division of labor:** teammate owns the game/visual track (A1/A2/A3, world QA harness) **and E1 EvidenceGraph productionization**; we own the engines + RAG + ML + everything else (B, C, D1, F, G).
 
@@ -96,7 +98,7 @@
 
 - **G1. Student Profile / Longitudinal Record** *(net-new)* — The unified per-kid state across Discovery, Specialization, and academics (the shared PassionLab state, above the canvas). *Fits:* the spine every other artifact reads/writes.
 - **G2. TimeBack Integration** *(✅ done — `specs/020-timeback-integration`)* — Pulls aptitude tilt + discretionary-XP prior; orchestrates the two-block daily loop. *Fits:* connects academics to the passion signal (prior only, never gate).
-- **G3. Identity / Consent / Privacy Layer** *(net-new; pre-live gate)* — COPPA, consent scope, retention, parental access, and erasure. *Fits:* gates any live child; the erasure-on-append-only problem is unsolved.
+- **G3. Identity / Consent / Privacy Layer** *(🟡 partly built; still a pre-live gate)* — COPPA, consent scope, retention, parental access, and erasure. *v1 build:* `@gt100k/consent` — consent per purpose, absolute withdrawal, a one-year retention review, deny-by-default on anything missing or unreadable, and `eraseEverywhere`, which names the stores that could **not** forget rather than reporting success. The ingest route calls it per request and returns 403 with the reason. *Still open, and each needs something this repository does not have:* verifying that the guardian who consented is the guardian (so `guide-asserted` is the strongest honest claim), authentication and rate limiting on the route, enforced deletion when a grant goes stale rather than a prompt, and erasure on the content-addressed EvidenceGraph, which is E1 **D2** and remains unsolved. *Fits:* still gates any live child.
 - **G4. Content Safety / Moderation Service** *(net-new)* — Shared child-safety moderation across concierge, resources, and defense. *Fits:* one safety spine for all child-facing generation/retrieval.
 - **G5. Calibration / Validation Harness** *(net-new)* — Tunes thresholds and validates the inference model as longitudinal outcomes accrue; tracks spike persistence (the ground-truth labels). *Fits:* the answer to "how do we know the measurement works?" — a first-class response to weak-point #1.
 - **G6. Metrics / Analytics / Guardrail-Compliance** *(✅ done — `specs/017-guardrails`)* — Program-level dashboards (never kid-facing) + automated guardrail checks (no scalar-score leakage, no prompted returns counted, novelty discounted). *Fits:* measures whether the pipeline works and stays honest.
@@ -127,7 +129,10 @@ flowchart TB
 
   subgraph Meas["Measurement & Inference"]
     Events["C1 Behavioral Event Capture (6 families)"]
+    Xwalk["discovery-catalog: gadget to taxonomy crosswalk, shared by emitter and receiver"]
+    Ingest["POST /api/ingest: the game's session becomes a profile (consent-gated)"]
     Tags["C2 Two-Axis Tagging"]
+    Offer["surfacing: what to offer next, debts before breadth"]
     Infer["C3 Interest Inference Engine (Bayesian to ML)"]
     Hypo["C4 Hypothesis Store + Lifecycle"]
   end
@@ -159,7 +164,7 @@ flowchart TB
 
   subgraph Plat["Platform & Cross-Cutting"]
     Profile["G1 Student Profile / Longitudinal Record"]
-    Consent["G3 Identity / Consent / Privacy"]
+    Consent["G3 Identity / Consent / Privacy (partly built: @gt100k/consent, enforced at ingest)"]
     SafetySvc["G4 Content Safety / Moderation"]
     Calib["G5 Calibration / Validation Harness"]
     Metrics["G6 Metrics / Guardrail-Compliance"]
@@ -213,7 +218,7 @@ flowchart TB
 - **Next up (in order):**
   1. **D5 PCDE curriculum** (the rest of the specialization lane).
   2. **Pre-live gates:** E1 D1–D6 productionization (teammate, inside the separate EvidenceGraph product), G3 consent/erasure, G4 safety-at-scale, G5 calibration (once outcome data accrues).
-  3. **Real evidence wiring:** the seam is settled — the engine emits a plan (`toEvidencePlan`) and `@gt100k/project-evidence-sink` holds both the stub and the SHA-256 sink. What remains is choosing the real sink in the studio's composition root; no engine change, and no new import across the `@gt100k/evidence-*` boundary.
+  3. **Real evidence wiring:** the seam is settled — the engine emits a plan (`toEvidencePlan`) and `@gt100k/project-evidence-sink` holds both the stub and the SHA-256 sink. The studio now calls `graphEvidenceSink()` server-side at `POST /api/evidence`, with the real SHA-256 hasher rather than the CI stub. What remains is durable export and E1's pre-live gates; no engine change, and no new import across the `@gt100k/evidence-*` boundary.
 - **Original critical path (for reference):** A1 → A2/A3 → A4 → C2 → C1 → C3 → C4 → F1 (+ G1, G2). Concierge (B1/B2) and the external router (A6) can follow once the bounded loop reads signal.
 - **Highest-risk / longest-lead:** B2 (child-safe open-web RAG), C3 + G5 (inference with no launch labels), E1 D1–D6 (all pre-production), G3 (erasure on append-only child data — a hard pre-live gate).
 - **Pre-live gates (block any live child):** G3 erasure/consent, E1 provenance productionization, G4 safety at child scale. **Erasure sequencing:** E1 **D2 (erasure data model) must precede D1 (external anchoring)** — never anchor un-erasable child PII into a third party.

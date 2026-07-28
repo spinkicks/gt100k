@@ -49,8 +49,13 @@
 
 ## 1. What is actually broken
 
-The engine receives nothing from the discovery game. There are **four** blocks between a child's
-click and a posterior, and they are in series, so fixing any three changes nothing observable.
+> **All four blocks are now clear (2026-07-27).** The engine receives the game's emissions, the
+> crosswalk lives in `@gt100k/discovery-catalog`, `math-puzzles/foundations` is minted, and a session
+> can be posted to the console and derived into a real read. The original diagnosis follows because
+> the series argument is the reason the order mattered.
+
+~~The engine receives nothing from the discovery game. There are **four** blocks between a child's
+click and a posterior, and they are in series, so fixing any three changes nothing observable.~~
 
 **Block 0 — DONE. Emission is on** as of #216, and the precondition this block set was met rather than
 waived: the backdrop's prop polygons turned out to have been wired all along, and the shelf now emits
@@ -292,11 +297,18 @@ Making it general is content work: more gadgets with tiers.
    rules table is §2's point, not an omission.
 4. **Guide-facing copy**: retire the seven ceiling assertions, with the honest replacement from §6.
 5. **End to end**: play the game's emissions through `deriveSignals` and assert what comes out. This
-   must `vi.mock` the session module the way `wiring.test.tsx` does, because `sessionLog` is a no-op.
+   must `vi.mock` the session module the way `wiring.test.tsx` does, because `sessionLog` was a no-op
+   at the time. It is not any more, and `src/signals/end-to-end.test.tsx` is where this landed.
 
-Block 0 is **not** in this list. This spec makes the lane correct; it does not turn it on. Flipping
+~~Block 0 is **not** in this list. This spec makes the lane correct; it does not turn it on. Flipping
 `EMISSION_ENABLED` requires wiring the backdrop and shelf first, and that should be its own decision
-with its own scope.
+with its own scope.~~
+
+**It got its own decision and it passed.** #216 turned emission on after the precondition was met
+rather than waived: the backdrop's prop polygons turned out to have been wired all along (verified by
+a probe click, not by reading), and the shelf now emits `follow-source`. Everything numbered above has
+since landed. Do not follow this list as a work plan; read it as the reasoning behind work already
+done.
 
 ---
 

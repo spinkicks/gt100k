@@ -103,7 +103,7 @@ The honest record of a project, plus proof it was not faked or changed. The them
 
 ## 8. Likely questions
 
-- **Real kid data?** No, all sample. Real use waits behind privacy and consent work already mapped out.
+- **Real kid data?** No, all sample. The consent gate is built and enforced, not just mapped out: consent is per purpose, the default is refusal, and the ingest route returns a 403 with the reason. What real use still waits on is narrower — nobody can yet verify the guardian who consented is the guardian, and erasure is complete for a child's discovery record but not for their project evidence, which is content-addressed and cannot forget.
 - **How do you know what a kid likes?** What they return to after the newness wears off, not one click.
 - **Does it grade kids?** No. It suggests; a human owns the decision.
 - **What stops a parent pushing too hard?** We coach toward support and flag pressure for a human.

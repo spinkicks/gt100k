@@ -1,5 +1,10 @@
 # `mvp-jul24` — a room worth being in: Implementation Plan
 
+> **Historical, 2026-07-27.** This plan pins `EMISSION_ENABLED = false` and tests for it. Emission
+> was turned on in #216 once its precondition was met rather than waived, so those two lines describe
+> a state the app has left. Nothing else here changed.
+
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Make the discovery-cabins game better at being a room — retire a child-facing PRD §11 violation, collapse three cabin backends to one, and give the `logic-games` cabin the difficulty variety its generators already support.

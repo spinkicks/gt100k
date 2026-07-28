@@ -1,5 +1,11 @@
 # Student Profile + Discovery Orchestrator Implementation Plan
 
+> **Amended 2026-07-27.** `surfaced` moved off `OrchestratorContext` onto the profile as a second
+> append-only log, and `runCycle` now takes a `CycleBatch { interactions, surfaced }` rather than a bare
+> array (`EMPTY_BATCH` for a no-op cycle). Nothing had ever populated the context field, so every read
+> was derived with no record of what the child was offered. The signatures below predate that.
+
+
 > **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development or superpowers:executing-plans. Checkbox steps; commit after each task.
 
 **Goal:** Build `014-student-profile` per its spec — a headless domain package (`@gt100k/student-profile`: the `StudentProfile` record, the pure `runCycle` orchestrator, `deriveGates`, and a `ProfileStore` port + in-memory adapter) + a headless adapter package (`@gt100k/profile-store-fs`: JSON-file-per-kid persistence) + a rewire of `@gt100k/guide-console` so it renders **genuinely-derived** reads over synthetic activity logs.

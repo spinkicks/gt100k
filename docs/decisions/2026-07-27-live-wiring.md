@@ -53,9 +53,11 @@ Records carrying another child's `kidId` are rejected and counted in the respons
 ## Egress is off by default
 
 `VITE_GT100K_INGEST_URL` is unset everywhere, so nothing leaves the device unless a person sets it.
-Opt-in because the things that would make egress safe do not exist: there is no consent record, no
-retention rule and no erasure path (G3 is unbuilt), and `KID_ID` is a fixed synthetic string rather
-than an identity. A demo that quietly posted a child's session would be deciding all of that by
+Opt-in because the things that would make egress safe did not exist when this was written, and most
+still do not. **G3 landed later the same day** (`docs/decisions/2026-07-27-g3-consent.md`): there is
+now a consent record, a retention review and an erasure path, and the ingest route refuses without
+consent. What is still absent is identity verification, so nobody can show that the guardian who
+consented is the guardian; `KID_ID` remains a fixed synthetic string rather than an identity. A demo that quietly posted a child's session would be deciding all of that by
 default.
 
 This is a separate switch from `EMISSION_ENABLED`, which governs whether records are *written*, and
@@ -83,5 +85,6 @@ synchronous call sites is the real fix and it is a much larger change than this 
 The profile store is a directory of JSON files. That is right for one guide on one machine and wrong
 for anything else.
 
-Nothing rate-limits or authenticates the ingest route. It is a local development seam, and it should
-not be exposed before G3 exists.
+Nothing rate-limits or authenticates the ingest route, and consent alone does not fix that: G3 answers
+"may we collect this child's data", not "is this request from who it claims to be". It is a local
+development seam and should not be exposed.

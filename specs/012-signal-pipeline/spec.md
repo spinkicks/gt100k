@@ -1,5 +1,13 @@
 # Feature Specification: Signal Pipeline (Interaction → CellEvent)
 
+> **Amended 2026-07-27, twice.** A surfaced-but-unengaged cell is no longer scored in a session where
+> the child engaged nothing at all: no choice happened, so there is nothing to infer, and the old rule
+> made the damage scale with the size of the catalogue. `deriveSignals` therefore also returns
+> `silentSessions`, naming the sessions it stayed quiet on, so a mis-stamped `sessionId` shows up as a
+> reported anomaly instead of silently deleting every disconfirming signal in the product.
+> See `docs/decisions/2026-07-27-no-choice-no-decline.md`.
+
+
 **Feature Branch**: `012-signal-pipeline`
 **Created**: 2026-07-23
 **Status**: Draft (loop-ready) — **but DELIVERED.** The code is merged and tested; it lives in `@gt100k/signal-pipeline`. This field tracks the state of the DOCUMENT, which was never revised after the build, and a reader comparing it against the ✅ in `docs/prd/passionApps.md` should trust the packages and their tests over either. What a ✅ does *not* mean is that a child can use it end to end.

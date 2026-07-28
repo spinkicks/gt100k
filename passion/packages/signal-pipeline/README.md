@@ -42,6 +42,20 @@ Interaction[]  ──resolveEngagedModes (009)──▶  ActionEvent  ──▶ 
   The two are disjoint by construction. Surfacing counts as an exposure for the novelty window,
   which is what lets a never-engaged cell ever leave it.
 
+  **A session in which the child engaged nothing yields neither.** No choice happened, so there is
+  nothing to infer from, and the old rule made the harm scale with the catalogue: a child who loaded
+  the map, could not find a way in and left earned one disconfirming event against every cabin on
+  screen. Those sessions cluster wherever the surface is hardest to read, so the error tracked cabin
+  art rather than interest. `deriveSkips` therefore returns `{ events, silentSessions }` rather than
+  a bare array, and `deriveSignals` passes `silentSessions` out: a rule that removes signal has to be
+  auditable, or a surface that stamps a different `sessionId` on its surfacings than on its
+  interactions would silence every skip and decline in the product while every other number kept
+  moving. See `docs/decisions/2026-07-27-no-choice-no-decline.md`.
+
+  Mode-less actions (an `open`) are presence, not a pass-over: they build no event, but they mark the
+  artifact's cells engaged for the session so the child is not scored as having skipped the one thing
+  they demonstrably looked at.
+
 ## Golden defaults
 
 | Constant | Value |

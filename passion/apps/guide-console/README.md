@@ -2,11 +2,17 @@
 
 The **guide console** — the Next.js app where a human promotes / parks / reopens / contests interest
 hypotheses with the evidence in front of them. It renders the pure `consoleViewModel` from
-`@gt100k/hypothesis-store` for one synthetic kid: it computes no belief and no gate math in the UI (that
+`@gt100k/hypothesis-store`: it computes no belief and no gate math in the UI (that
 lives in the domain package), and it never shows a scalar passion score or a fixed label — only
 separated supporting / disconfirming evidence, coverage gaps, the next distinguishing probe, calibrated
-uncertainty, lifecycle state, and the currently-legal human actions. **Synthetic data only** — no real
-child data ever. It is a calm, legible **data console, not a game**.
+uncertainty, lifecycle state, and the currently-legal human actions.
+
+**Data.** Four synthetic children ship with it, derived by running the real orchestrator over authored
+logs. Since 2026-07-27 it can also receive a real one: the discovery game posts sessions to
+`POST /api/ingest`, which persists a profile and renders that child through identical code in the same
+switcher. That path is off unless someone points the game at it, and refuses outright without a
+guardian's consent on file for the purpose (`@gt100k/consent`). It has no authentication and no rate
+limiting, so it is a local seam and not something to expose. It is a calm, legible **data console, not a game**.
 
 ## Run
 
@@ -17,7 +23,8 @@ pnpm --filter @gt100k/guide-console start   # serve the production build (used b
 pnpm --filter @gt100k/guide-console test    # app smoke tests (vitest, node env — no jsdom)
 ```
 
-No secrets and no env vars are required.
+No secrets are required. Two optional env vars: `GT100K_PROFILE_DIR` (where ingested profiles and
+`consent.json` live, default `.profiles`) and nothing else.
 
 ## What the console shows
 

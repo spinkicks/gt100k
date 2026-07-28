@@ -10,8 +10,13 @@
 > open. **Every rule below stands unchanged regardless**, and the argument is the same one, one step
 > weaker: a subtopic offered with nothing behind it raises a domain and fails to maintain it, which
 > §2.3's n = 212 finding says leaves a child *below* where they started. That holds whether the empty
-> shelf is the whole surface or one shelf inside a room. What is *not* yet true is the wiring — the
-> game's shelf reads its own hand-authored `cards.data.ts`, not this library.
+> shelf is the whole surface or one shelf inside a room. ~~What is *not* yet true is the wiring — the
+> game's shelf reads its own hand-authored `cards.data.ts`, not this library.~~
+>
+> **Wired 2026-07-27.** Every shelf card ends in a "Where to go next" list drawn from this library by
+> `curatedForCell`, keyed by the card's own subject: an activity card by its gadget's subtopic, the
+> invitation by its cabin. The card prose stays hand-authored and should: a card is an argument for
+> caring about something, and a link is somewhere to go once that argument has worked.
 
 ---
 

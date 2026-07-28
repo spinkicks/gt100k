@@ -71,10 +71,14 @@ Pure, deterministic, dependency-light. No network, no LLM, no clock.
 | Package | What it does |
 |---|---|
 | `two-axis-tagging` | The domain × work-mode taxonomy (8 cabins, 9 modes) every signal is keyed by |
-| `signal-pipeline` | Raw `Interaction`s → `CellEvent`s. Novelty, voluntary-vs-prompted, skips |
+| `signal-pipeline` | Raw `Interaction`s → `CellEvent`s. Novelty, voluntary-vs-prompted, and the disconfirming half |
 | `interest-inference` | Beta-Bernoulli belief per cell; separates topic-love from style-love; reports "not sure yet" |
 | `hypothesis-store` | Versioned, revisable hypotheses and their lifecycle |
-| `student-profile` | Per-child append-only log + the orchestrator that replays it |
+| `student-profile` | Per-child append-only logs, of what was done AND what was offered, + the orchestrator that replays them |
+| `consent` | Whether this child's data may be collected, for what, and how to take it back (G3) |
+| `discovery-catalog` | The gadget → taxonomy crosswalk, shared so emitter and receiver cannot disagree |
+| `surfacing` | What a session must offer regardless of belief: debts before breadth |
+| `mastery-map` | Domain pathways, and a child's standing derived from work rather than a checkbox |
 | `wellbeing` | Burnout and strain from behaviour only. No cameras, no emotion inference |
 | `family` | Warm-demanding family coaching; watches for family-driven pressure |
 | `specialization-planner` | The staged ascent from a certified spike to a signature body of work |
