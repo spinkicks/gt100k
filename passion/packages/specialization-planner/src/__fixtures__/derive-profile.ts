@@ -93,8 +93,7 @@ const ARTIFACTS: Readonly<Record<string, string>> = {
 export function buildS3Profile(now: string = DERIVE_NOW): StudentProfile {
   const ctx = { catalog: DERIVE_CATALOG };
   const derived = runCycle(
-    emptyProfile(DERIVE_KID, "Synthetic Authorship", [], ARTIFACTS),
-    LOG,
+    emptyProfile(DERIVE_KID, "Synthetic Authorship", [], ARTIFACTS),{ interactions: LOG, surfaced: [] },
     ctx,
     now,
   );

@@ -4,6 +4,8 @@ const nextConfig = {
     "@gt100k/access-broker",
     "@gt100k/concierge",
     "@gt100k/design-tokens",
+    "@gt100k/discovery-catalog",
+    "@gt100k/profile-store-fs",
     "@gt100k/family",
     "@gt100k/guardrails",
     "@gt100k/hypothesis-store",

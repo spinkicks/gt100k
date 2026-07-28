@@ -18,7 +18,7 @@ export function currentRead(
 ): InterestRead {
   const { cellEvents } = deriveSignals({
     interactions: profile.interactions,
-    surfaced: ctx.surfaced,
+    surfaced: profile.surfaced,
     catalog: ctx.catalog,
     config: ctx.config,
   });
@@ -38,7 +38,7 @@ export function deriveGates(
 ): ReadonlyMap<string /*hypId*/, GateStatus> {
   const { cellEvents } = deriveSignals({
     interactions: profile.interactions,
-    surfaced: ctx.surfaced,
+    surfaced: profile.surfaced,
     catalog: ctx.catalog,
     config: ctx.config,
   });

@@ -37,8 +37,7 @@ function ariProfile(): StudentProfile {
     { "music-sound/audio-systems::build": "defense-record-042" },
   );
   return runCycle(
-    p0,
-    [
+    p0,{ interactions: [
       {
         kidId: KID,
         artifactId: "synth-01",
@@ -88,7 +87,7 @@ function ariProfile(): StudentProfile {
         sessionId: "s5",
         depthSignals: [{ kind: "artifact_competence", value: 1 }],
       },
-    ],
+    ], surfaced: [] },
     { catalog: CATALOG },
     NOW,
   );
@@ -143,8 +142,7 @@ describe("createFsProfileStore", () => {
     const p1 = ariProfile();
     await store.save(p1);
     const p2 = runCycle(
-      p1,
-      [
+      p1,{ interactions: [
         {
           kidId: KID,
           artifactId: "synth-01",
@@ -153,7 +151,7 @@ describe("createFsProfileStore", () => {
           prompted: false,
           sessionId: "s6",
         },
-      ],
+      ], surfaced: [] },
       { catalog: CATALOG },
       NOW,
     );

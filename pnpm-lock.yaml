@@ -280,6 +280,9 @@ importers:
       '@gt100k/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
+      '@gt100k/discovery-catalog':
+        specifier: workspace:*
+        version: link:../../packages/discovery-catalog
       '@gt100k/family':
         specifier: workspace:*
         version: link:../../packages/family
@@ -292,6 +295,9 @@ importers:
       '@gt100k/mastery-map':
         specifier: workspace:*
         version: link:../../packages/mastery-map
+      '@gt100k/profile-store-fs':
+        specifier: workspace:*
+        version: link:../../adapters/profile-store-fs
       '@gt100k/project-workspace':
         specifier: workspace:*
         version: link:../../packages/project-workspace
@@ -304,6 +310,9 @@ importers:
       '@gt100k/student-profile':
         specifier: workspace:*
         version: link:../../packages/student-profile
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../../packages/two-axis-tagging
       '@gt100k/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -378,6 +387,9 @@ importers:
 
   passion/apps/mvp-jul24:
     dependencies:
+      '@gt100k/discovery-catalog':
+        specifier: workspace:*
+        version: link:../../packages/discovery-catalog
       '@react-three/drei':
         specifier: ^9.114.0
         version: 9.122.0(@react-three/fiber@8.18.0(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.169.0))(@types/react@18.3.31)(@types/three@0.169.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.169.0)(use-sync-external-store@1.6.0(react@18.3.1))
@@ -599,6 +611,12 @@ importers:
         version: link:../two-axis-tagging
 
   passion/packages/design-tokens: {}
+
+  passion/packages/discovery-catalog:
+    dependencies:
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../two-axis-tagging
 
   passion/packages/evidence-explorer-view:
     dependencies:

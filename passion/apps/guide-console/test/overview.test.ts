@@ -3,7 +3,7 @@
 // that a chart never renders with data it cannot draw (NaN axis, zero denominator, 0% donut slice).
 import { describe, expect, test } from "vitest";
 import { consoleViewModel, type HypothesisCard } from "@gt100k/hypothesis-store";
-import { buildRosterGates, buildRosterStore, CHILDREN } from "../app/console-data.js";
+import { buildRosterGates, buildRosterStore, children } from "../app/console-data.js";
 import { wellbeingForKid } from "../app/wellbeing.js";
 import { buildOverview, type Overview } from "../app/overview.js";
 
@@ -24,7 +24,7 @@ const CYRUS = "kid-synthetic-003";
 const DULCE = "kid-synthetic-004";
 
 describe("every child renders something drawable or an honest empty state", () => {
-  for (const child of CHILDREN) {
+  for (const child of children()) {
     test(child.name, () => {
       const ov = overviewFor(child.id);
 

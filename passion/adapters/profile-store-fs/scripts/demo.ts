@@ -37,8 +37,7 @@ async function main(): Promise<void> {
       {
         "music-sound/audio-systems::build": "defense-record-042",
       },
-    ),
-    [
+    ),{ interactions: [
       {
         kidId: KID,
         artifactId: "synth-01",
@@ -88,7 +87,7 @@ async function main(): Promise<void> {
         sessionId: "s5",
         depthSignals: [{ kind: "artifact_competence", value: 1 }],
       },
-    ],
+    ], surfaced: [] },
     CTX,
     NOW,
   );

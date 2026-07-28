@@ -4,6 +4,7 @@
     { "path": "passion/packages/evidence-explorer-view" },
     { "path": "passion/packages/interest-inference" },
     { "path": "passion/packages/surfacing" },
+    { "path": "passion/packages/discovery-catalog" },
     { "path": "passion/packages/socratic-defense" },
     { "path": "passion/adapters/tutor-stub" },
     { "path": "passion/adapters/tutor-tfy" },
