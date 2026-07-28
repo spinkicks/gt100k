@@ -90,14 +90,24 @@ describe("runCycle", () => {
   });
 
   it("is idempotent on state: runCycle(p, EMPTY_BATCH, ctx, now).store deep-equals p.store", () => {
-    const p1 = runCycle(emptyProfile(KID, "Kid", PRIORS, ARTIFACTS), { interactions: INTERACTIONS, surfaced: [] }, CTX, NOW);
+    const p1 = runCycle(
+      emptyProfile(KID, "Kid", PRIORS, ARTIFACTS),
+      { interactions: INTERACTIONS, surfaced: [] },
+      CTX,
+      NOW,
+    );
     const p2 = runCycle(p1, EMPTY_BATCH, CTX, NOW);
     expect(p2.store).toEqual(p1.store);
     expect(p2.interactions).toEqual(p1.interactions);
   });
 
   it("preserves a human transition across a no-op cycle", () => {
-    const p1 = runCycle(emptyProfile(KID, "Kid", PRIORS, ARTIFACTS), { interactions: INTERACTIONS, surfaced: [] }, CTX, NOW);
+    const p1 = runCycle(
+      emptyProfile(KID, "Kid", PRIORS, ARTIFACTS),
+      { interactions: INTERACTIONS, surfaced: [] },
+      CTX,
+      NOW,
+    );
     // A human promotes the EMERGING build hypothesis to CANDIDATE (gate + sign-off).
     const promoted = promote(
       p1.store,

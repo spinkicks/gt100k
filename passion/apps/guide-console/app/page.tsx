@@ -21,11 +21,9 @@ export const dynamic = "force-dynamic";
  */
 async function loadIngested(): Promise<readonly StudentProfile[]> {
   try {
-    const store = createFsProfileStore(process.env["GT100K_PROFILE_DIR"] ?? ".profiles");
+    const store = createFsProfileStore(process.env.GT100K_PROFILE_DIR ?? ".profiles");
     const ids = await store.list();
-    const loaded = await Promise.all(
-      ids.map((id) => store.load(id).catch(() => null)),
-    );
+    const loaded = await Promise.all(ids.map((id) => store.load(id).catch(() => null)));
     return loaded.filter((p): p is StudentProfile => p !== null);
   } catch {
     // No directory yet, which is the normal state before anyone has played.

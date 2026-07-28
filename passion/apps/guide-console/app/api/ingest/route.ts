@@ -32,7 +32,7 @@ export const dynamic = "force-dynamic";
  * everywhere else: a test that sets the variable after importing writes to the previous test's
  * directory and then reads an empty one.
  */
-const profileDir = (): string => process.env["GT100K_PROFILE_DIR"] ?? ".profiles";
+const profileDir = (): string => process.env.GT100K_PROFILE_DIR ?? ".profiles";
 
 interface IngestRequest {
   readonly kidId?: unknown;

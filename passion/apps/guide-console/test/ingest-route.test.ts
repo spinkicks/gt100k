@@ -15,7 +15,7 @@ let dir: string;
 
 beforeEach(async () => {
   dir = await mkdtemp(join(tmpdir(), "gt-ingest-"));
-  process.env["GT100K_PROFILE_DIR"] = dir;
+  process.env.GT100K_PROFILE_DIR = dir;
 });
 
 afterEach(async () => {

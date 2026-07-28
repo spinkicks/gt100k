@@ -25,6 +25,9 @@
 import { type JSX, useEffect, useRef, useState } from "react";
 import type { TopicId } from "../game/types";
 import { sessionLog } from "../signals/session";
+import { curatedForCell, SEED_LIBRARY } from "@gt100k/concierge";
+import { artifactFor, pathForTopic } from "@gt100k/discovery-catalog";
+import { MAX_SHELF_LINKS, SHELF_AGE_TIERS } from "./age-band";
 import { ShelfDiagram } from "./diagrams";
 import type { ShelfCard, ShelfDeck } from "./types";
 import "./shelf.css";
@@ -218,7 +221,52 @@ function ShelfCardPage({ card, topic }: { card: ShelfCard; topic: TopicId }): JS
           <span>{card.source.label}</span>
         )}
       </footer>
+      <GoDeeper card={card} topic={topic} />
     </article>
+  );
+}
+
+/**
+ * Where a child goes when the card has done its job.
+ *
+ * The card explains; these are places to actually go and learn the thing, and until now they existed
+ * only in `@gt100k/concierge`'s curated library, which 157 verified resources deep was read by
+ * nothing. The shelf is the one surface in the product where a child has just been handed a reason
+ * to care about a topic, so it is where a link is worth the most.
+ *
+ * The path comes from the card's subject and not from the shelf, for the same reason
+ * `recordSourceFollow` is attributed that way: an activity card is about its gadget and inherits its
+ * subtopic, while the invitation is about the whole field and stays at the cabin. Collapsing them
+ * would serve a child who liked the balance scale the same links as one who liked the room.
+ *
+ * Nothing is rendered when the library has nothing, rather than an empty heading. A child reading
+ * "where to go next" followed by nothing has been told the product has nothing for them.
+ */
+function GoDeeper({ card, topic }: { card: ShelfCard; topic: TopicId }): JSX.Element | null {
+  const path = card.gadgetId ? artifactFor(card.gadgetId)?.domainPath : pathForTopic(topic);
+  if (!path) return null;
+
+  const resources = curatedForCell(SEED_LIBRARY, path, SHELF_AGE_TIERS, MAX_SHELF_LINKS);
+  if (resources.length === 0) return null;
+
+  return (
+    <section className="shelf-card-deeper">
+      <h4 className="shelf-card-deeper-title">Where to go next</h4>
+      <ul className="shelf-card-deeper-list">
+        {resources.map((r) => (
+          <li key={r.id}>
+            <a
+              href={r.url}
+              target="_blank"
+              rel="noreferrer noopener"
+              onClick={() => sessionLog.recordSourceFollow(card.gadgetId ?? topic)}
+            >
+              {r.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

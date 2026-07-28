@@ -11,4 +11,4 @@
 // exports literals and map lookups, imports `Artifact` as a type, and contains no engine logic. A
 // runtime import of anything that computes belongs on the receiver's side of the wire.
 export type { SolveVerb } from "./gadgets.js";
-export { CATALOG, artifactFor, solveVerbFor } from "./gadgets.js";
+export { CATALOG, artifactFor, pathForTopic, solveVerbFor } from "./gadgets.js";

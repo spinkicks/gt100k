@@ -36,7 +36,8 @@ describe("withPriors (SC-6)", () => {
     const ctx: OrchestratorContext = { catalog: new Map() };
 
     const withP = runCycle(
-      withPriors(emptyProfile("k", "K"), priors, GOLDEN_SNAPSHOT.asOf),EMPTY_BATCH,
+      withPriors(emptyProfile("k", "K"), priors, GOLDEN_SNAPSHOT.asOf),
+      EMPTY_BATCH,
       ctx,
       now,
     );

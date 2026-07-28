@@ -387,6 +387,9 @@ importers:
 
   passion/apps/mvp-jul24:
     dependencies:
+      '@gt100k/concierge':
+        specifier: workspace:*
+        version: link:../../packages/concierge
       '@gt100k/discovery-catalog':
         specifier: workspace:*
         version: link:../../packages/discovery-catalog

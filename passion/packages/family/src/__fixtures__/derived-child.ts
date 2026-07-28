@@ -55,7 +55,8 @@ const LOG: readonly Interaction[] = [
 /** The single-dominant-spike profile: run the real 012→011→013 chain over the hand-authored log. */
 export function buildDominantSpikeProfile(now: string = DOMINANT_NOW): StudentProfile {
   return runCycle(
-    emptyProfile(DOMINANT_KID, "Synthetic Dominant"),{ interactions: LOG, surfaced: [] },
+    emptyProfile(DOMINANT_KID, "Synthetic Dominant"),
+    { interactions: LOG, surfaced: [] },
     { catalog: DOMINANT_CATALOG },
     now,
   );

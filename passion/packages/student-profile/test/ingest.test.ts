@@ -114,7 +114,10 @@ describe("a batch belongs to exactly one child", () => {
   it("does not relabel them to make them fit", () => {
     const result = ingest(
       emptyProfile(KID, "Test"),
-      batch([engage("2026-03-20T00:00:00.000Z", "kid-2")], [show("2026-03-20T00:00:00.000Z", "kid-2")]),
+      batch(
+        [engage("2026-03-20T00:00:00.000Z", "kid-2")],
+        [show("2026-03-20T00:00:00.000Z", "kid-2")],
+      ),
       ctx,
       NOW,
     );

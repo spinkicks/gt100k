@@ -59,8 +59,7 @@ export const EMISSION_ENABLED = true;
  * `VITE_GT100K_INGEST_URL` is a person choosing to, for a synthetic child, against a console they
  * are running.
  */
-export const INGEST_URL: string | undefined =
-  import.meta.env["VITE_GT100K_INGEST_URL"] || undefined;
+export const INGEST_URL: string | undefined = import.meta.env.VITE_GT100K_INGEST_URL || undefined;
 
 const live = createSignalLog({ sessionId: SESSION_ID, now: () => Date.now() });
 

@@ -89,7 +89,9 @@ let cache: Roster | null = null;
 export function setIngested(profiles: readonly StudentProfile[]): void {
   const changed =
     profiles.length !== ingested.length ||
-    profiles.some((p, i) => p.kidId !== ingested[i]?.kidId || p.updatedAt !== ingested[i]?.updatedAt);
+    profiles.some(
+      (p, i) => p.kidId !== ingested[i]?.kidId || p.updatedAt !== ingested[i]?.updatedAt,
+    );
   if (!changed) return;
   ingested = profiles;
   cache = null;
