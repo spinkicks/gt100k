@@ -1,6 +1,8 @@
 import type { Gadget, TopicId } from "../game/types";
 import BalanceScale from "../puzzles/BalanceScale/BalanceScale";
 import Chess from "../puzzles/Chess/Chess";
+import ChordFit from "../puzzles/ChordFit/ChordFit";
+import Downbeat from "../puzzles/Downbeat/Downbeat";
 import FractionLaser from "../puzzles/FractionLaser/FractionLaser";
 import FunctionMachine from "../puzzles/FunctionMachine/FunctionMachine";
 import GearTrain from "../puzzles/GearTrain/GearTrain";
@@ -8,6 +10,7 @@ import Mirror from "../puzzles/Mirror/Mirror";
 import Nonogram from "../puzzles/Nonogram/Nonogram";
 import Pipes from "../puzzles/Pipes/Pipes";
 import RatioMixing from "../puzzles/RatioMixing/RatioMixing";
+import TuneRepair from "../puzzles/TuneRepair/TuneRepair";
 
 /**
  * Every gadget in the game, keyed to the cabin (topic) it lives in.
@@ -74,8 +77,11 @@ export const GADGETS: Gadget[] = [
     status: "active",
     Puzzle: Nonogram,
     hotspot: { xPct: 15, yPct: 60, label: "Nonogram" },
-    // Nonogram is the one gadget whose component reads `PuzzleProps.tier` (see Nonogram.tsx and
-    // the doc comment on `Gadget.supportsTier`) — the other eight ignore it and must not set this.
+    // Reads `PuzzleProps.tier` (see Nonogram.tsx and the doc comment on `Gadget.supportsTier`).
+    // Only a gadget whose component actually honours `tier` may set this flag. WHICH gadgets those
+    // are is not listed here on purpose: this comment has twice claimed to be the complete roster and
+    // twice been made false by a cabin opening. registry.test.ts enforces the roster, so it is the
+    // one place that cannot go stale.
     supportsTier: true,
   },
   {
@@ -111,6 +117,12 @@ export const GADGETS: Gadget[] = [
     status: "active",
     Puzzle: BalanceScale,
     hotspot: { xPct: 20, yPct: 55, label: "Balance Scale" },
+    // Reads `PuzzleProps.tier` as the tier to open at, and the prop is the *base* its own round ramp
+    // adds to (see `tierFor` in BalanceScale.tsx) — so the remount that "Try a harder one" causes
+    // cannot hand back an easier board, which is the failure `supportsTier` exists to prevent. Its
+    // tier 0 is the gentle first encounter and the tight anti-flailing budget starts at tier 1, so
+    // there is now a genuinely harder board for the offer to lead to.
+    supportsTier: true,
   },
   {
     id: "gear-train",
@@ -143,6 +155,46 @@ export const GADGETS: Gadget[] = [
     status: "active",
     Puzzle: RatioMixing,
     hotspot: { xPct: 50, yPct: 82, label: "Ratio Mixing" },
+  },
+
+  // --- music: the MUSIC is the mechanic, and in all three it is a question the eye is not given.
+  // Each is audible-only by construction (PROJECT.md R2), which is also their known accessibility
+  // cost — see the risk list there, because no gadget in this room's designed roster fixes it.
+  //
+  // `supportsTier` is set on all three because each reads `PuzzleProps.tier` to open at a difficulty.
+  // That flag is only honest because each routes it through `puzzles/openTier.ts` first: their
+  // generators resolve a round with `index % TIERS.length`, and handed the overlay's unbounded press
+  // counter that wraps to the EASIEST board on the third press of "Try a harder one". Do not set this
+  // on a fourth music gadget without doing the same.
+  //
+  // Order within the topic is the order props are placed and the `position` recorded on each
+  // `SurfacedRecord`, so it is left-to-right as painted: lute, organ, drum.
+  {
+    id: "tune-repair",
+    topic: "music",
+    label: "Tune Repair",
+    status: "active",
+    Puzzle: TuneRepair,
+    hotspot: { xPct: 17, yPct: 39, label: "Tune Repair" },
+    supportsTier: true,
+  },
+  {
+    id: "chord-fit",
+    topic: "music",
+    label: "Chord Fit",
+    status: "active",
+    Puzzle: ChordFit,
+    hotspot: { xPct: 47, yPct: 46, label: "Chord Fit" },
+    supportsTier: true,
+  },
+  {
+    id: "downbeat",
+    topic: "music",
+    label: "Downbeat",
+    status: "active",
+    Puzzle: Downbeat,
+    hotspot: { xPct: 68, yPct: 69, label: "Downbeat" },
+    supportsTier: true,
   },
 ];
 

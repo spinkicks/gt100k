@@ -108,10 +108,37 @@ describe.each(TIERS.map((_, i) => i))("tier %i", (tierIndex) => {
   });
 });
 
-test("harder tier is not easier than the first", () => {
-  const mean = (tierIndex: number): number => {
-    const lens = SEEDS.map((s) => generateLevel(s, tierIndex).solution.length);
-    return lens.reduce((a, b) => a + b, 0) / lens.length;
-  };
-  expect(mean(1)).toBeGreaterThan(mean(0));
+/**
+ * REWRITTEN, and the reason is a real change of shape rather than a threshold nudged to go green.
+ *
+ * This used to assert `mean(1) > mean(0)` on solution length, when there were two tiers and length
+ * was the only axis separating them. There are now three, and tiers 0 and 1 are DELIBERATELY the same
+ * board family — same weights, same scramble depth, same length window — differing only in how much
+ * room the budget gives (`slack` 4 against 1). So solution length no longer separates them, and in
+ * fact tier 0's mean comes out marginally *longer* (5.79 against 5.67): asking for a wider budget
+ * makes the generator's blind-rate filter reject more of the shallow candidates, which pulls the
+ * survivors slightly deeper.
+ *
+ * Each axis is therefore asserted where it actually lives.
+ */
+const meanLength = (tierIndex: number): number => {
+  const lens = SEEDS.map((s) => generateLevel(s, tierIndex).solution.length);
+  return lens.reduce((a, b) => a + b, 0) / lens.length;
+};
+
+test("the deep tier asks for longer solutions than the tiers before it", () => {
+  expect(meanLength(2)).toBeGreaterThan(meanLength(1));
+  expect(meanLength(2)).toBeGreaterThan(meanLength(0));
+});
+
+test("the first encounter is the roomiest, and every tier after it is tighter", () => {
+  // Headroom is budget minus a perfect line of play: how many wrong turns the child can afford.
+  const headroom = (tierIndex: number): number[] =>
+    SEEDS.map((s) => {
+      const level = generateLevel(s, tierIndex);
+      return level.budget - level.solution.length;
+    });
+  for (let tierIndex = 1; tierIndex < TIERS.length; tierIndex++) {
+    expect(Math.max(...headroom(tierIndex))).toBeLessThan(Math.min(...headroom(0)));
+  }
 });

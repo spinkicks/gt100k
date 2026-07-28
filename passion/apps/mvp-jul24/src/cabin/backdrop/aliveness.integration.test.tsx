@@ -208,11 +208,11 @@ describe("the effects are mounted over the painting", () => {
 });
 
 describe("a room with no measured light renders the still, unchanged", () => {
-  // This case used `math` while that room was unauthored. It has measured light of its own now, so
-  // the case moved to `music`, which has no interior at all. The property under test is unchanged:
-  // wrong regions look worse than none, because a glow on a wall the fire is not on reads as a bug.
+  // A MOVING FIXTURE, and it has moved twice: `math` while that room was unauthored, then `music`,
+  // then `code`, which has no interior at all. The property under test never changes: wrong regions
+  // look worse than none, because a glow on a wall the fire is not on reads as a bug.
   test("a topic with no authored interior gets no effects and no frame loop", () => {
-    const { container } = render(<CabinBackdrop topic="music" />);
+    const { container } = render(<CabinBackdrop topic="code" />);
     expect(q(container, ".cabin-backdrop")).not.toBeNull();
     expect(q(container, ".cabin-backdrop-aliveness")).toBeNull();
     expect(q(container, ".cabin-aliveness")).toBeNull();
@@ -228,6 +228,24 @@ describe("a room with no measured light renders the still, unchanged", () => {
     // worth asserting: it proves the room's regions were measured rather than copied.
     expect(backdropRoomFor("math")?.aliveness?.firelight?.sconce).not.toBeNull();
     expect(backdropRoomFor("logic-games")?.aliveness?.firelight?.sconce).toBeNull();
+  });
+
+  test("music has a lantern and deliberately no shaft, and both halves of that are pinned", () => {
+    const { container } = render(<CabinBackdrop topic="music" />);
+    // The lantern is a real emitter in that painting and `FirelightRegions.core` names the lantern
+    // case, so the room breathes rather than sitting still while the other two move — uneven polish
+    // between rooms is a measurement problem (PRD §5.3, memo 06 C8), not a finish one.
+    expect(q(container, ".cabin-backdrop-aliveness")).not.toBeNull();
+    expect(q(container, '[data-fx="firelight"]')).not.toBeNull();
+    expect(backdropRoomFor("music")?.aliveness?.firelight?.core.w).toBeLessThan(100);
+
+    // NO SHAFT, and that is measured rather than skipped: the plate's window is its brightest object
+    // but throws no legible beam, so there is no painted haze to trace and a quad would be inventing
+    // one — with motes drawn inside it. Asserted so restoring it has to be a decision.
+    expect(backdropRoomFor("music")?.aliveness?.shaft).toBeUndefined();
+    expect(q(container, '[data-fx="shaft"]')).toBeNull();
+    // The other two rooms do have one, so this is a difference between plates and not a broken layer.
+    expect(backdropRoomFor("logic-games")?.aliveness?.shaft).toBeDefined();
   });
 
   test("`alive={false}` puts an authored room back exactly as it was", () => {

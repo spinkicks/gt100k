@@ -21,6 +21,7 @@ import {
 // The app's one seeded PRNG — the measured blind-guess rates depend on its exact stream. See
 // src/lib/rng.ts.
 import { mulberry32 } from "../../lib/rng";
+import { RAIL_KS, splitBlockers, unblockingMoves } from "./split";
 
 export interface StrategyResult {
   solved: boolean;
@@ -109,6 +110,47 @@ export function biggestStoneFirst(scale: Scale, budget?: number): StrategyResult
   );
 }
 
+/**
+ * FOLLOW THE GLOW — the strategy the new split rail could be accused of handing to a child.
+ *
+ * When a split is blocked, the rail marks the leftovers and lights every palette move that reduces
+ * the number of blocking piles (`unblockingMoves`). A child could ignore the maths entirely and just
+ * keep pressing whatever is lit, then split the moment the control unlatches. If that solved levels,
+ * the affordance would have quietly become a walkthrough and `Tier.maxBlindRate` would be measuring
+ * the wrong thing — so it is written here as executable code and held to the same bar as the other
+ * attacks.
+ *
+ * IT IS A REAL ATTACK, and finding that out is why it is here. Left out of the generator's filter it
+ * solves 39 of 120 tier-0 levels inside budget, 47 of 120 at tier 1 and 18 of 120 at tier 2 — a third
+ * of the game, walked through by a hint added to make the move findable. With it in the filter those
+ * levels are never generated: 0 of 120 at every tier.
+ *
+ * Where it stalls, and why that is the puzzle rather than a weakness in the hint: reducing the blocker
+ * count is a ONE-STEP lookahead, and real solutions routinely pass through states with MORE blockers
+ * (break a 10 into two 5s, twice, then strip, then divide). Greedy glow-following gives up exactly
+ * where the puzzle asks you to plan several moves ahead.
+ */
+export function followTheGlow(scale: Scale, budget?: number): StrategyResult {
+  return run(
+    scale,
+    (s) => {
+      const moves = legalMoves(s);
+      const divide = moves.find((m) => m.kind === "divide");
+      if (divide) return divide;
+      // The rail a child is looking at: whichever blocked split is closest to legal.
+      const byDistance = [...RAIL_KS].sort(
+        (a, b) => splitBlockers(s, a).length - splitBlockers(s, b).length,
+      );
+      for (const k of byDistance) {
+        const lit = unblockingMoves(s, k);
+        if (lit.length > 0) return lit[0] as Move;
+      }
+      return null;
+    },
+    budget,
+  );
+}
+
 /** Undirected clicking, seeded so the test is deterministic. */
 export function randomLegal(scale: Scale, seed: number, budget?: number): StrategyResult {
   // A separate generator instance, so measuring a candidate never advances the generator's own
@@ -132,4 +174,9 @@ export const DETERMINISTIC_STRATEGIES: ReadonlyArray<{
   { name: "greedyThreeMove", run: greedyThreeMove },
   { name: "alwaysDivide", run: alwaysDivide },
   { name: "biggestStoneFirst", run: biggestStoneFirst },
+  // In the GENERATOR's reject filter, not just in the tests, and it had to be: adding it changed
+  // which levels ship at every tier, because without it a third of them were solvable by following
+  // the split rail's hint (see the doc comment above for the counts). Levels are now selected to
+  // resist the affordance that makes the move findable.
+  { name: "followTheGlow", run: followTheGlow },
 ];

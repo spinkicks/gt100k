@@ -37,9 +37,11 @@ describe("authored rooms", () => {
     // pin is inverted rather than deleted.
     expect(backdropRoomFor("logic-games")).toBeDefined();
     expect(backdropRoomFor("math")).toBeDefined();
+    // `music` joined them on 2026-07-27, painted for exactly its three built activities.
+    expect(backdropRoomFor("music")).toBeDefined();
     // The rest have no interior at all and must come back undefined rather than throwing, because
     // the map lets a player reach them.
-    for (const topic of ["music", "code", "art", "science", "words", "nonsense"]) {
+    for (const topic of ["code", "art", "science", "words", "nonsense"]) {
       expect(backdropRoomFor(topic)).toBeUndefined();
     }
   });

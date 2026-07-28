@@ -30,29 +30,41 @@ to become a reading-the-mind-of-the-designer test.
 > at 7–8) are *not* known to hold here. The structural claims we lean on — intrinsic integration,
 > choice-over-duration, direct instruction over unguided probing — are not age-bounded.
 
-## Structure: two cabins, one split
+## Structure: three cabins, one split
 
-Two cabins are built:
+Three cabins are built:
 
 - **`logic-games` — "Logic Games."** Holds four deduction puzzles: **Nonogram, Pipes, Mirror Maze,
   Chess Puzzle.** It held seven until 2026-07-25; see *The trim to four* below.
 - **`math` — "Math."** Reserved for **genuinely mathematical** activities; nothing else goes in it. It
-  opens on day one as a real, furnished, deliberately **gadget-free** room, so the split is visible to a
-  player from the start rather than arriving later as a surprise new cabin.
+  opened on day one as a real, furnished, deliberately **gadget-free** room, so the split was visible to
+  a player from the start rather than arriving later as a surprise new cabin. It holds five now.
+- **`music` — "Music."** Holds three: **Tune Repair, Chord Fit, Downbeat.** Opened 2026-07-27.
 
-`music` / `code` / `art` stay on the map as visible **"coming soon"** buttons. They are build state, not a
+`code` / `art` stay on the map as visible **"coming soon"** buttons. They are build state, not a
 design statement (memo §8.1.4) — but see *Risks*, because visible-but-empty is not free.
 
-**Music has three built activities that no room shows yet, and that is deliberate.**
+**Music's three activities are now a room a child can walk into.**
 `src/puzzles/TuneRepair/` (a melody with one note out of key), `src/puzzles/ChordFit/` (which of three
-chords holds a note up) and `src/puzzles/Downbeat/` (where the bar starts, heard from stress alone) are
-finished and tested, and `src/audio/` is the app's first sound: synthesized at runtime, never
-sampled, because `src/shelf/types.ts` makes offline a hard requirement and an audio file would be the
-first asset to break it. It is **not** in `src/gadgets/registry.ts`, because `quads.data.test.ts` matches
-prop polygons to registered gadgets *exactly in both directions* — so registering it demands a painted
-music room, and painting one demands the gadget roster be final first. Until then each is played through its own
-`harness.tsx`. The design, the roster, and why `transpose` was rejected are in
+chords holds a note up) and `src/puzzles/Downbeat/` (where the bar starts, heard from stress alone) were
+finished and tested for a while before any room showed them, because `quads.data.test.ts` matches prop
+polygons to registered gadgets *exactly in both directions* — so registering one demanded a painted
+music room, and painting one demanded the roster be final first. Both are done:
+`public/art/cabin-backdrop-music.png` paints a lute, a pump organ, a hand drum and a bookcase, and
+`src/cabin/backdrop/quads.data.ts` traces them. `src/audio/` is the app's first sound: synthesized at
+runtime, never sampled, because `src/shelf/types.ts` makes offline a hard requirement and an audio file
+would be the first asset to break it. The design, the roster, and why `transpose` was rejected are in
 `docs/superpowers/specs/2026-07-27-music-cabin-design.md`.
+
+**`echo` is designed and deliberately unbuilt**, so the room is painted for three. The same
+exactly-both-directions rule means adding it later is a repaint, not a registry line — which is why the
+roster had to be settled before the art rather than during it.
+
+**The map was repainted for this** (`public/art/map-v2.png`, three equally-lit near cabins instead of
+two). Promoting `music` while leaving it on a small mist-washed horizon cabin would have made its choice
+affordance visibly worse than its competitors', which biases the app's primary signal by paint. The old
+plate is kept, not overwritten; `src/map/cabins.data.ts` carries the argument and the coordinates to
+revert to.
 
 Two rules bind anything else built for this room, and the second one exists because the first was not
 enough.
@@ -346,11 +358,17 @@ duration. **Do not re-add a child-facing one.**
 
 Stated without softening.
 
-- **The "coming soon" cabins are a D5 trigger with no maintenance path.** A visible Music / Code / Art
-  button is a trigger — it is exactly the "engineered trigger" the evidence says works — and there is
-  nothing behind it and no re-exposure plan. On §2.3's evidence that is the trigger-then-abandon shape
-  that ends up *below* baseline for those domains, and the shelf mitigation does not reach them because
-  they have no shelf.
+- **The "coming soon" cabins are a D5 trigger with no maintenance path.** A visible Code / Art button is
+  a trigger — it is exactly the "engineered trigger" the evidence says works — and there is nothing
+  behind it and no re-exposure plan. On §2.3's evidence that is the trigger-then-abandon shape that ends
+  up *below* baseline for those domains, and the shelf mitigation does not reach them because they have
+  no shelf. Music left this list on 2026-07-27 by being built, which is the only way off it.
+- **The music room has no activity a deaf or hard-of-hearing child can do**, and no gadget in its
+  designed roster fixes that. All three are audible-only *by construction* — that is what R2 forces —
+  so the answer cannot be a cleverer gadget; it has to be a musical activity that is not a perceptual
+  one (reading or writing notation, instrument mechanics, constructing to a written pattern). Nothing
+  designs that yet. Their Layer-3 parity (PRD §5.2) is broken and the room says so rather than serving
+  an unsolvable board. This is risk 5a in the music spec, unowned and the largest gap in that room.
 - **Slight inter-room visual variation keeps a small C8 aesthetics-confound exposure.** The shared shell
   removes most of it; accent colour, emblem and props still differ, and generic wrapper appeal
   independently predicts voluntary return (β = 0.267, p = .003). We accept the residual rather than

@@ -23,30 +23,55 @@ export interface CabinNode {
 /**
  * Cabin nodes shown on the world map.
  *
- * Two are playable: `logic-games` (the four deduction puzzles that used to be filed under `math` —
- * see the TopicId doc comment in src/game/types.ts for why they moved, and src/gadgets/registry.ts
- * for why there are four of them and not the original seven) and `math`, which is
- * deliberately active-but-empty. `math` opens a real, furnished, gadget-free room; its games land in
- * a later PR. Keeping it on the map from day one means the split is visible to a player instead of
- * appearing later as a surprise sixth cabin.
+ * Three are playable. `logic-games` holds the four deduction puzzles that used to be filed under
+ * `math` — see the TopicId doc comment in src/game/types.ts for why they moved, and
+ * src/gadgets/registry.ts for why there are four and not the original seven. `math` holds five.
+ * `music` joined them on 2026-07-27 with three: see src/cabin/backdrop/quads.data.ts for its painted
+ * room and src/signals/catalog.ts for how its activities enter the product taxonomy.
  *
- * The other three are `active: false` and render as visible "coming soon" signposts — deliberately
+ * The other two are `active: false` and render as visible "coming soon" signposts — deliberately
  * NOT padlocks and NOT hidden. A greyed-but-legible node advertises what's coming; a padlock reads
  * as "you failed to unlock this", which is the wrong message for content that simply doesn't exist
  * yet.
  *
  * Layout: `xPct`/`yPct` are percentages of the framed 16:9 map and each node is centered on its
  * point (translate(-50%, -50%) in MapScreen). They're tuned to sit on the painted cabins in
- * `/art/map.png`, which is composed for exactly this split (see scripts/gen-art.mjs): two large,
- * warmly-lit cabins near the bottom — a puzzle den on the left, a clockmaker's workshop on the
- * right — and three small, mist-washed cabins strung along the horizon. So the two active labels
- * ride just above the roofs of the two near cabins and the three coming-soon labels sit just under
- * the three distant ones, which puts the whole "playable vs. later" hierarchy in the art rather than
- * only in the pill styling.
+ * **`/art/map-v2.png`** — the plate `MapScreen` loads since 2026-07-27 — in which THREE cabins stand
+ * large and warmly lit in the foreground (puzzle den left, musician's cabin centre, clockmaker's
+ * workshop right, each the same size, each equally lit, each with its own path to the bottom edge)
+ * and only TWO remain small and mist-washed on the horizon.
  *
- * The map art is square and rendered `object-fit: cover` in a 16:9 frame, so only the middle ~56% of
- * the image height is on screen: `yPct` 0–100 maps to image y 21.9%–78.1%. Anything computed against
- * the raw artwork has to go through that conversion.
+ * WHY THE MAP WAS SWAPPED, since it is the more atmospheric composition that was given up. The
+ * previous plate put `music` on a distant, unlit, pathless cabin, so promoting it would have shipped
+ * a topic whose choice affordance was visibly worse than its competitors'. That is the Javora
+ * confound the surface-owner ruling names as one of two rules the game did not satisfy: children
+ * chose the prettier version of the *same* game 62% of the time and learned no more, so a topic that
+ * simply looks better wins clicks that mean nothing. Topic choice is this app's primary signal, so it
+ * must not be decided by paint. Equal size and equal light across the three playable cabins is a
+ * MEASUREMENT requirement (PRD §5.3), not a finish preference.
+ *
+ * **TO REVERT TO THE OLDER PLATE**, which is still on disk as `/art/map.png` and was not overwritten:
+ * point `MapScreen`'s background image back at it and restore these coordinates, recorded here
+ * rather than only in `git log` because the two files look interchangeable and are not —
+ * `logic-games` 27/45, `math` 72/43, `music` 19/26 (`#7a6a86`), `code` 54/18, `art` 83/27.
+ *
+ * The three active labels ride just above the roofs of the near cabins (yPct ~40) and the two
+ * coming-soon labels sit above the distant ones in the mist (yPct ~19), which keeps the two rows well
+ * clear of each other while leaving the hierarchy in the art rather than only in the pill styling.
+ *
+ * The plate is rendered `object-fit: cover` in a 16:9 frame, so part of its height is always off
+ * screen and anything computed against the raw artwork has to go through that conversion. **The
+ * conversion changed when the plate was repainted at 1536x1024.** A 1:1 plate had to scale to 1.875x
+ * to fill the frame's width, which left only the middle ~56% of its height visible (`yPct` 0–100
+ * mapped to image y 21.9%–78.1%). At 3:2 it scales 1.25x, so ~84% is visible and `yPct` 0–100 maps to
+ * image y **7.8%–92.2%**. That is most of a quarter of the painting recovered, and it is why these
+ * numbers all moved: the same cabin in the same place in the art now lands at a different `yPct`.
+ *
+ * The values below were measured off `map-v2.png` by overlaying candidate crosshairs on the plate and
+ * reading the cabins' centres, not estimated: near cabins at x 18.5 / 49 / 82, horizon cabins at
+ * x 17.4 / 77.1, roofs topping out at image y ~44%, labels placed at image y 41.5% (near) and 24%
+ * (far). `code` sits almost directly above `logic-games` because that is where the art puts it; the
+ * two are 21 points apart vertically, which is ~128px in the framed map, so the pills stay clear.
  *
  * Horizontal values are also chosen so no two pills overlap within a shared row — the widest label,
  * "Logic Games", spans roughly 14% of the frame, and a "coming soon" node roughly 16%.
@@ -57,8 +82,8 @@ export const CABINS: CabinNode[] = [
   {
     id: "logic-games",
     label: "Logic Games",
-    xPct: 27,
-    yPct: 45,
+    xPct: 18.5,
+    yPct: 40,
     active: true,
     accent: "#5b7fa6",
     emblem: "grid",
@@ -66,8 +91,8 @@ export const CABINS: CabinNode[] = [
   {
     id: "math",
     label: "Math",
-    xPct: 72,
-    yPct: 43,
+    xPct: 82,
+    yPct: 40,
     active: true,
     accent: "#c9962f",
     emblem: "gear",
@@ -77,17 +102,20 @@ export const CABINS: CabinNode[] = [
   {
     id: "music",
     label: "Music",
-    xPct: 19,
-    yPct: 26,
-    active: false,
-    accent: "#7a6a86",
+    xPct: 49,
+    yPct: 40,
+    active: true,
+    // Saturated now that it is a near, playable cabin: the old value was deliberately desaturated to
+    // sit back in the horizon row. Plum reads as distinct from the puzzle den's slate blue and the
+    // clockmaker's brass, which is all this hue has to do.
+    accent: "#a8607e",
     emblem: "note",
   },
   {
     id: "code",
     label: "Code",
-    xPct: 54,
-    yPct: 18,
+    xPct: 17.4,
+    yPct: 19,
     active: false,
     accent: "#4f7a6a",
     emblem: "bracket",
@@ -95,8 +123,8 @@ export const CABINS: CabinNode[] = [
   {
     id: "art",
     label: "Art",
-    xPct: 83,
-    yPct: 27,
+    xPct: 77.1,
+    yPct: 19,
     active: false,
     accent: "#a5705c",
     emblem: "brush",

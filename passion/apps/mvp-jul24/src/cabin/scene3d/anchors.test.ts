@@ -61,11 +61,15 @@ test("chess and mirror props sit on the floor, away from the back wall", () => {
   expect(mirror?.position[2]).toBeGreaterThan(-2);
 });
 
-// `math` is deliberately gadget-free until its games ship, and `music`/`code`/`art` aren't built at
-// all — every one of them must map to an empty prop list so the 3D room just renders unfurnished.
-// `math` used to be in this list and is not any more: its five maths activities now ship, so an
-// empty result for it would be the regression rather than the expectation.
-test.each(["music", "code", "art"] as const)(
+// `code`/`art` aren't built at all, so both must map to an empty prop list and the 3D room just
+// renders unfurnished.
+//
+// THIS LIST IS A MOVING FIXTURE, and it has now moved twice: `math` left it when its five activities
+// shipped, and `music` left it on 2026-07-27 when its three did. Music's gadgets have no entry in
+// KNOWN_PROPS, so `gadgetProps3D` gives them `fallbackProp` placements — which is the designed
+// behaviour rather than a gap, and moot in any case while `backdrop` is the only backend serving
+// Layer 2 (see PROJECT.md).
+test.each(["code", "art"] as const)(
   "returns an empty list for %s, which has no registered gadgets",
   (topic) => {
     expect(gadgetProps3D(topic)).toEqual([]);

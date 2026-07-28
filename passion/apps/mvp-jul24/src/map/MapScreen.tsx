@@ -8,9 +8,21 @@ import "./MapScreen.css";
 /**
  * Painterly world map: a background illustration framed like a page in a
  * storybook, with absolutely-positioned cabin node signposts layered on top.
- * The image itself is decorative — if `/art/map.png` 404s, the container's
+ * The image itself is decorative — if the plate 404s, the container's
  * fallback background keeps the scene looking intentional and never blocks the
  * node layer.
+ *
+ * WHICH PLATE, AND WHY BOTH ARE STILL ON DISK. `map-v2.png` paints THREE equally-lit near cabins;
+ * `map.png` paints two, with `music` small and mist-washed on the horizon. The swap happened when
+ * `music` became playable, because promoting a cabin while leaving it distant and unlit would bias
+ * topic choice by paint — the Javora confound, and topic choice is this app's primary signal (see
+ * cabins.data.ts, which carries the argument and the re-measured node coordinates).
+ *
+ * `map.png` is deliberately NOT overwritten or deleted. #215 committed the candidate to its own file
+ * precisely because generated art can come back worse, and the older plate is the more atmospheric
+ * painting — so this is one `src` and five coordinate pairs to revert, not an archaeology exercise.
+ * If the v2 composition is rejected, change this line back and restore the coordinates from
+ * cabins.data.ts's own record of what they were.
  *
  * Not-yet-built cabins stay on the map as legible "coming soon" signposts (see cabins.data.ts).
  * They use `aria-disabled` rather than the `disabled` attribute so they remain tabbable and
@@ -46,7 +58,7 @@ export const MapScreen: React.FC = () => {
 
   return (
     <div className="map-screen">
-      <img className="map-screen-bg" src="/art/map.png" alt="" aria-hidden="true" />
+      <img className="map-screen-bg" src="/art/map-v2.png" alt="" aria-hidden="true" />
       <div className="map-screen-vignette" aria-hidden="true" />
       {CABINS.map((cabin, i) => (
         <motion.button

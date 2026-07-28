@@ -58,23 +58,31 @@ const TARGETS = {
     prompt: `The inside of a clockmaker's workshop in a cozy wooden cabin, viewed from a fixed first-person perspective looking straight at the far wall. A long dark-wood workbench strewn with brass gears, cogs, springs, coiled mainsprings, tiny screwdrivers, tweezers and half-assembled clock movements. Behind it the wood-plank wall is hung with pendulum clocks whose faces have been removed to show their exposed brass clockwork, plus a few completely blank plain round dials with simple hands and no markings at all, swinging brass pendulums, and weights on chains. A wall of small parts drawers, a pair of brass balance scales, brass calipers and a set square. Warm lantern and candle light, dust motes drifting in a shaft of afternoon sun through a small window, exposed beams overhead, worn wooden floorboards and a small rug. Painterly storybook illustration style, rich warm brass-and-amber palette, snug and inviting. No people, no characters. ${NO_TEXT}`,
   },
   /**
-   * The music room concept still, 1536x1024 to match the other two backdrops.
+   * The music room's shipping plate, 1536x1024 to match the other two backdrops.
    *
-   * THREE PROP SURFACES, ONE PER BUILT GADGET, WELL SEPARATED. `quads.data.test.ts` matches prop
-   * polygons to registered gadgets exactly in both directions, so the painting has to contain exactly
-   * one clearly-bounded, traceable surface for each of tune-repair, chord-fit and downbeat — and no
-   * fourth, because `echo` is not built and a surface with no gadget breaks the build. Adding echo later
-   * means a repaint; that is the trade the roster note in PROJECT.md records.
+   * The ONLY backdrop this file produces, and the reason it can: the other two rooms are a concept
+   * still plus `gen-cabins.mjs` prop surgery, because their props are combinatorial boards a
+   * diffusion model gets wrong. Nothing in the music room is a board — a lute, an organ, a drum and a
+   * bookcase are just objects — so one text-to-image pass is the whole pipeline here. Hence the
+   * `cabin-backdrop-` name: this writes the file the room actually loads, not a reference for a later
+   * stage. (It wrote `cabin-music.png`, the legacy `CabinStatic` name, while there was no room.)
+   *
+   * FOUR SURFACES: three props and a shelf. `quads.data.test.ts` matches prop polygons to registered
+   * gadgets exactly in both directions, so the painting has to contain exactly one clearly-bounded,
+   * traceable surface for each of tune-repair, chord-fit and downbeat — and no fourth *prop*, because
+   * `echo` is not built and a surface with no gadget breaks the build. The bookcase is the fourth
+   * object but not a fourth prop: a `ShelfProp` is a separate field and is not gadget-backed. Adding
+   * echo later means a repaint; that is the trade the roster note in PROJECT.md records.
    *
    * Equal polish with the other two rooms is a MEASUREMENT requirement, not a finish nicety (PRD §5.3):
    * uneven art makes the topic ranking inherit the production schedule. Hence the same framing, the same
    * fixed first-person view of the far wall, the same lantern-lit palette and the same painterly
    * storybook language as cabin-logic-games and cabin-math above.
    */
-  "cabin-music": {
-    file: "cabin-music.png",
+  "cabin-backdrop-music": {
+    file: "cabin-backdrop-music.png",
     size: "1536x1024",
-    prompt: `The inside of a musician's workshop in a cozy wooden cabin, viewed from a fixed first-person perspective looking straight at the far wall, wide landscape composition. THREE clearly separated instruments, each isolated with empty wall or floor around it so none overlaps another. On the LEFT, hanging flat against the wood-plank wall, a warm honey-coloured lute with a rounded body and a long straight neck, seen face-on and complete. In the CENTRE, standing against the back wall, a small upright wooden pump organ with a plain keyboard of pale and dark keys and a simple carved music desk above it, seen straight on. On the RIGHT, resting on the floorboards, a single round hand drum on a low wooden stand with a taut pale skin head facing the viewer. Between them the room is quiet and uncluttered: a lantern casting warm light, a plain wooden stool, a rolled rug, exposed beams overhead, worn floorboards, and a small window on one side letting in a soft shaft of afternoon light with dust motes. Painterly storybook illustration style, rich warm amber-and-honey palette, snug and inviting, the same cozy hand-painted look as a clockmaker's workshop or a puzzle den. No people, no characters, no sheet music, no notation, no staves. ${NO_TEXT}`,
+    prompt: `The inside of a musician's workshop in a cozy wooden cabin, viewed from a fixed first-person perspective looking straight at the far wall, wide landscape composition. FOUR clearly separated objects, each isolated with empty wall or floor around it so none overlaps another, spread evenly across the width of the room. On the far LEFT, hanging flat against the wood-plank wall, a warm honey-coloured lute with a rounded body and a long straight neck, seen face-on and complete. In the CENTRE, standing against the back wall, a small upright wooden pump organ with a plain keyboard of pale and dark keys and a simple carved music desk above it, seen straight on. To the RIGHT of the organ, resting on the floorboards, a single round hand drum on a low wooden stand with a taut pale skin head facing the viewer. On the far RIGHT against the right-hand wall, a short open wooden bookcase of two or three shelves, packed with worn leather-bound books and a few rolled papers standing upright, seen straight on with its whole front visible and unobstructed. Between them the room is quiet and uncluttered: a lantern casting warm light, a plain wooden stool, a rolled rug, exposed beams overhead, worn floorboards, and a small window on the left letting in a soft shaft of afternoon light with dust motes. Painterly storybook illustration style, rich warm amber-and-honey palette, snug and inviting, the same cozy hand-painted look as a clockmaker's workshop or a puzzle den. No people, no characters, no sheet music, no notation, no staves. ${NO_TEXT}`,
   },
   /**
    * Candidate replacement map with THREE near cabins instead of two.
@@ -89,10 +97,32 @@ const TARGETS = {
    * visibly worse than its competitors', which is the Javora confound the surface-owner ruling names as
    * one of two rules the game does not satisfy. Topic choice is the primary signal, so it must not be
    * biased by paint.
+   *
+   * THE FIRST CANDIDATE WAS REJECTED, and the three faults are fixed here rather than re-rolled, since
+   * each was in the instructions rather than in the model's luck:
+   *
+   * 1. `size` was absent, so it fell through to the 1024x1024 default and came back SQUARE. MapScreen
+   *    renders the plate at `aspect-ratio: 16 / 9` with `object-fit: cover`, so a square painting loses
+   *    roughly a quarter of its height to the crop — sky off the top, foreground off the bottom, which
+   *    is where the paths and the props live. 1536x1024 is the widest the gateway offers and is what
+   *    the three cabin backdrops already use.
+   *
+   * 2. The dial asked for "two simple hands and a completely blank empty face" — a contradiction, and
+   *    the model resolved it toward blank, so the clockmaker's cabin came back with no hands at all.
+   *    "Blank" was only ever meant to satisfy the no-numerals rule in NO_TEXT. It now says tick marks
+   *    and hands, and says the numerals are the thing being excluded. `map.png` gets this right, which
+   *    is the proof it is expressible.
+   *
+   * 3. "equal size, equal prominence and equally golden light" produced three cabins with the same
+   *    roof, the same porch and the same lantern, reading as one building painted three times. Equal
+   *    PROMINENCE is the measurement requirement (PRD §5.3 — uneven art makes topic ranking inherit the
+   *    production schedule); equal APPEARANCE is not, and it costs the child the ability to tell the
+   *    doors apart. Each cabin now names its own roof material and timber, with prominence held equal.
    */
   "map-v2": {
     file: "map-v2.png",
-    prompt: `A warm, painterly parchment-style fantasy world map, like an illustrated overworld from a cozy storybook game. Flat hand-painted 2D illustration on aged parchment texture with soft muted colors — an illustrated map, not a 3D render, not a photograph. Five small wooden cabins sit in the landscape, and the composition is deliberately split into a bright near half and a hazy far half. NEAR, large and prominent across the foreground and midground, THREE cozy cabins glow with warm inviting light, sharply painted and richly coloured, each on its own green hillock, each joined to the bottom edge of the map by a wide sunlit winding path, and each given equal size, equal prominence and equally golden light: on the left a puzzle den with a lantern on its porch, a chequered board, scattered coloured wooden pegs and interlocking block shapes on the grass outside; in the centre a musician's cabin with a honey-coloured lute leaning by its door, a small round hand drum on the grass and a lantern glowing on its porch; on the right a clockmaker's workshop with brass cogs and gears leaning against its wall, a swinging pendulum under the eaves and a big plain round dial with two simple hands and a completely blank empty face on its gable. FAR AWAY near the horizon, only TWO much smaller cabins are faint, pale, dim and half-swallowed by cool blue mist and rolling hills — clearly visible but distant, shuttered and unlit with dark empty windows, washed-out and desaturated, with no paths leading to them: one with a faint web of thin branching glowing threads and tiny firefly-like dots of light creeping over the ground around it like a circuit, and one with a small easel, a palette and pale watery paint splashes on the grass beside it. Gentle rolling hills, soft clouds, hand-drawn storybook illustration style, strong depth: crisp golden light and saturated colour on the three near cabins, soft grey-blue atmospheric haze on the two distant ones. ${NO_TEXT}`,
+    size: "1536x1024",
+    prompt: `A warm, painterly parchment-style fantasy world map, like an illustrated overworld from a cozy storybook game. Flat hand-painted 2D illustration on aged parchment texture with soft muted colors — an illustrated map, not a 3D render, not a photograph. Wide landscape composition, warm golden-hour light raking in low from one side. A thin, plain parchment edge only — no wide decorative border and no double ruled frame eating into the picture. Five small wooden cabins sit in the landscape, and the composition is deliberately split into a bright near half and a hazy far half. NEAR, LARGE and dominant, filling most of the lower two thirds of the picture and close enough to the viewer that their doors, lanterns and the props on the grass are all clearly legible, THREE cozy cabins glow with warm inviting light, sharply painted and richly coloured, each on its own green hillock, each joined to the bottom edge of the map by a wide sunlit winding path, and each given equal size, equal prominence and equally golden light — but each is plainly a DIFFERENT building, with its own roof pitch, roofing material and timber colour, so that no two silhouettes repeat: on the left a puzzle den under mossy green thatch with a lantern on its porch, a chequered board, scattered coloured wooden pegs and interlocking block shapes on the grass outside; in the centre a musician's cabin under warm split-cedar shingles with a honey-coloured lute leaning by its door, a small round hand drum on the grass and a lantern glowing beside the doorway; on the right a clockmaker's workshop under weathered grey slate with brass cogs and gears leaning against its wall, a swinging pendulum under the eaves, and on its gable a modest round dial, no wider than one of the cabin's windows, bearing plain tick marks and two simple dark clock hands, with no numerals of any kind anywhere on the face. The three near cabins carry EQUAL VISUAL WEIGHT: the same footprint width, the same wall height, the same amount of clutter and glow around each, so that no single cabin dominates the eye — the clockmaker's dial and gears must not make it heavier than the puzzle den or the musician's cabin. All three near cabins sit FULLY INSIDE the painting, with a clear margin of grass and hillside between the outermost cabins and the left and right edges — nothing cropped and nothing touching the border — and the most important detail is kept clear of the extreme top and bottom edges. The three near cabins stand at the SAME distance from the viewer, in one row at one depth, deliberately equal — do not push one further back or make one smaller. FAR AWAY, in a NARROW band of cool blue mist tight against the horizon, with no wide flat expanse of pale empty ground between that band and the near cabins, only TWO much smaller cabins are faint, pale, dim and half-swallowed by rolling hills — clearly visible but distant, shuttered and unlit with dark empty windows, washed-out and desaturated, with no paths leading to them: one with a faint web of thin branching glowing threads and tiny firefly-like dots of light creeping over the ground around it like a circuit, and one with a small angled easel holding a canvas covered in pale watery colour washes, a painter's palette and soft paint splashes on the grass beside it. The sunlit foreground grass carries small hand-painted detail — grass tufts, tiny wildflowers, worn stones set into the winding paths — rich but uncluttered. EACH NEAR CABIN CARRIES ONLY ITS OWN CRAFT'S PROPS and nothing belonging to another: beside the puzzle den only the chequered board and the coloured wooden blocks; beside the musician's cabin only the lute, the hand drum and its lantern; beside the clockmaker's workshop only the brass cogs, gears and the swinging pendulum. There is NO easel, NO painter's palette, NO paint, NO paintbrush and NO glowing threads or circuitry anywhere near the three near cabins — the easel and palette belong solely to the small distant cabin on the horizon, and the glowing threads solely to the other distant one. Gentle rolling hills, soft clouds, hand-drawn storybook illustration style, strong depth: crisp golden light and saturated colour on the three near cabins, soft grey-blue atmospheric haze on the two distant ones. ${NO_TEXT}`,
   },
   "cabin-logic-games": {
     file: "cabin-logic-games.png",

@@ -30,7 +30,8 @@ import { getAudioEngine } from "../../audio/engine";
 import type { PuzzleProps } from "../../game/types";
 import TeachIn from "../../teachin/TeachIn";
 import "./Downbeat.css";
-import { generateForRound } from "./generate";
+import { openTier } from "../openTier";
+import { TIERS, generateForRound } from "./generate";
 import { type DownbeatPuzzle, isSolved, markingDiff, notesFor } from "./logic";
 
 interface Strip {
@@ -76,8 +77,13 @@ const ORDINALS = [
 ] as const;
 const ordinal = (i: number): string => ORDINALS[i] ?? "later";
 
+/**
+ * `tier` is the loop to open at, so the registry entry for this gadget sets `supportsTier: true`.
+ * Clamped through `openTier`, because the overlay's counter grows without bound while `TIERS` has
+ * three entries — see `puzzles/openTier.ts`. The "Next loop" path below still wraps on purpose.
+ */
 export default function Downbeat({ seed, tier = 0, onSolved, onExit }: PuzzleProps) {
-  const [strip, setStrip] = useState<Strip>(() => makeStrip(seed, tier));
+  const [strip, setStrip] = useState<Strip>(() => makeStrip(seed, openTier(tier, TIERS.length)));
   const { puzzle, marked } = strip;
   const [sounding, setSounding] = useState<number | null>(null);
   const [checked, setChecked] = useState(false);

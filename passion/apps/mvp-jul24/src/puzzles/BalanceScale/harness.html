@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="en">
   <head><meta charset="utf-8" /><title>Balance Scale harness</title></head>
-  <body style="margin:0;background:#1a120a"><div id="root"></div>
+  <!-- No inline background: theme.css owns the page, so the harness shows the app's own backdrop
+       behind the app's own overlay panel. The hardcoded #1a120a this used to carry is what made a
+       cream-on-parchment contrast bug look fine in review. -->
+  <body><div id="root"></div>
   <script type="module" src="./harness.tsx"></script></body>
 </html>

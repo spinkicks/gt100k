@@ -63,8 +63,19 @@ test('gadgetsForTopic("math") holds only the maths activities', () => {
   }
 });
 
+test("music holds its three activities", () => {
+  expect(gadgetsForTopic("music").map((g) => g.id)).toEqual([
+    "tune-repair",
+    "chord-fit",
+    "downbeat",
+  ]);
+});
+
 test("the still-unbuilt cabins return an empty list", () => {
-  for (const topic of ["music", "code", "art"] as const) {
+  // `music` left this list on 2026-07-27. `echo` is designed but not built, and deliberately not
+  // registered: quads.data.test.ts matches props to gadgets exactly both ways, so registering a
+  // fourth would demand a repainted room.
+  for (const topic of ["code", "art"] as const) {
     expect(gadgetsForTopic(topic)).toEqual([]);
   }
 });
@@ -77,9 +88,21 @@ test("gadgetById returns the matching gadget or undefined", () => {
 // Pins the invariant the doc comment on `Gadget.supportsTier` (src/game/types.ts) describes but
 // nothing previously enforced: only a gadget whose component actually reads `PuzzleProps.tier` may
 // set this flag, because `GadgetOverlay` uses it to decide whether to show the "harder" offer at
-// all, and an unbacked flag would promise a harder board the puzzle can't deliver. Nonogram is the
-// only one wired up today.
+// all, and an unbacked flag would promise a harder board the puzzle can't deliver.
+//
+// This assertion is the roster, and it is deliberately the ONLY roster — the comment in registry.ts
+// that used to enumerate them has twice been made false by a cabin opening, so it now defers here.
+// Five gadgets are wired up: Nonogram reads `tier` as its board size, Balance Scale as the tier to
+// open at (its budget and board family), and the three music activities as the difficulty to open at.
+// All five read it as the tier to OPEN at, which is what makes them survive the remount the offer
+// causes. Order follows the GADGETS array, so a gadget moving cabins changes this line.
 test("supportsTier is set on exactly the gadgets whose component honours it", () => {
   const withSupportsTier = GADGETS.filter((g) => g.supportsTier).map((g) => g.id);
-  expect(withSupportsTier).toEqual(["nonogram"]);
+  expect(withSupportsTier).toEqual([
+    "nonogram",
+    "balance-scale",
+    "tune-repair",
+    "chord-fit",
+    "downbeat",
+  ]);
 });

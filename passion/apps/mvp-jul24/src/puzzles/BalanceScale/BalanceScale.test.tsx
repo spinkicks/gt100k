@@ -1,8 +1,8 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { expect, test, vi } from "vitest";
-import BalanceScale from "./BalanceScale";
-import { generateLevel } from "./generate";
-import { moveLabel } from "./logic";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, test, vi } from "vitest";
+import BalanceScale, { tierFor } from "./BalanceScale";
+import { TIERS, generateLevel } from "./generate";
+import { type Move, isLegal, moveLabel } from "./logic";
 
 /** Drive the component through a level's real solution by clicking the labelled move buttons. */
 function solveByClicking(seed: number, tierRound = 0): void {
@@ -71,14 +71,20 @@ test("spending the whole budget resets rather than failing, and never blames the
   // any strip move. One of two things must happen -- solved, or reset. Asserting the disjunction
   // keeps the test honest whichever way this seed lands, rather than depending on a lucky path.
   for (let i = 0; i < level.budget + 3; i++) {
-    const buttons = screen.getAllByRole("button");
+    // `aria-disabled` buttons are excluded because the split rail is always present now and a
+    // blocked split is a control that deliberately does nothing to the board (see BalanceScale.tsx).
+    // Clicking one would burn a loop iteration without spending a move, and the assertion below
+    // would go quietly vacuous.
+    const buttons = screen
+      .getAllByRole("button")
+      .filter((b) => b.getAttribute("aria-disabled") !== "true");
     // Any real move, in a deliberately unhelpful order: exchanges first (never progress), then
     // strips, then divides. Including divides matters — some states offer nothing else, and
     // stopping there would leave the budget unspent and the assertion vacuous.
     const next =
       buttons.find((b) => (b.textContent ?? "").startsWith("Break a")) ??
       buttons.find((b) => (b.textContent ?? "").startsWith("Take")) ??
-      buttons.find((b) => (b.textContent ?? "").startsWith("Split both pans"));
+      buttons.find((b) => (b.textContent ?? "").includes("Split both pans"));
     if (!next) break;
     fireEvent.click(next);
     // Stop as soon as something is announced. Clicking on would clear the note again, because a
@@ -109,6 +115,148 @@ test("the move counter never goes below zero", () => {
   }
   expect(screen.getByText(/moves? left/)).toBeInTheDocument();
   expect(screen.queryByText(/-\d+ moves? left/)).toBeNull();
+});
+
+/* ------------------------------------------------------------------------------------------------
+ * THE SPLIT RAIL. Regression tests for a move that was reported invisible twice: rendered only while
+ * legal (10 of 360 opening boards), then replaced with a sentence that also did not land. What is
+ * asserted here is that the control EXISTS on every board and that its unavailability is expressed on
+ * the board rather than by absence.
+ * ---------------------------------------------------------------------------------------------- */
+
+/** The rail control for a given factor, found by its accessible name. */
+function railSplit(k: number): HTMLElement {
+  return screen.getByRole("button", { name: moveLabel({ kind: "divide", k }) });
+}
+
+/**
+ * Play a level's own solution up to the point where its divide becomes legal, and return that k.
+ * Legal splits are far too rare on opening boards to find one by rendering seeds.
+ */
+function advanceToLegalSplit(seed: number): number {
+  const level = generateLevel(seed, 0);
+  for (const move of level.solution) {
+    if (move.kind === "divide") return move.k;
+    fireEvent.click(screen.getByRole("button", { name: moveLabel(move) }));
+  }
+  throw new Error("this tier guarantees a divide in the shortest solution");
+}
+
+describe("the split rail", () => {
+  test("is on every board, legal or not — ÷2 and ÷3 always have a control", () => {
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+      const { unmount } = render(
+        <BalanceScale seed={seed} onSolved={() => {}} onExit={() => {}} />,
+      );
+      expect(screen.getByTestId("bs-rail")).toBeInTheDocument();
+      for (const k of [2, 3]) expect(railSplit(k)).toBeInTheDocument();
+      unmount();
+    }
+  });
+
+  test("marks a blocked split as unavailable instead of hiding or disabling it", () => {
+    const level = generateLevel(5, 0);
+    render(<BalanceScale seed={5} onSolved={() => {}} onExit={() => {}} />);
+    for (const k of [2, 3]) {
+      const control = railSplit(k);
+      if (isLegal(level.scale, { kind: "divide", k })) continue;
+      // Present, focusable, not `disabled` — a disabled control cannot be hovered, focused or
+      // pressed, and therefore cannot explain itself. This is the whole affordance argument.
+      expect(control).toHaveAttribute("aria-disabled", "true");
+      expect(control).not.toHaveAttribute("disabled");
+      // Focusing it opens the preview, which is a state update — hence act().
+      act(() => control.focus());
+      expect(control).toHaveFocus();
+    }
+  });
+
+  test("pressing a blocked split marks the leftovers on the pans, and pressing it again clears them", () => {
+    const { container } = render(<BalanceScale seed={5} onSolved={() => {}} onExit={() => {}} />);
+    const control = railSplit(2);
+    expect(container.querySelectorAll(".bs-left-over")).toHaveLength(0);
+    fireEvent.click(control);
+    // The reason is now drawn on the objects that carry it, not written underneath the board.
+    expect(container.querySelectorAll(".bs-left-over").length).toBeGreaterThan(0);
+    fireEvent.click(control);
+    expect(container.querySelectorAll(".bs-left-over")).toHaveLength(0);
+  });
+
+  test("pressing a blocked split spends no move", () => {
+    render(<BalanceScale seed={5} onSolved={() => {}} onExit={() => {}} />);
+    const before = screen.getByText(/moves? left/).textContent;
+    fireEvent.click(railSplit(2));
+    fireEvent.click(railSplit(3));
+    expect(screen.getByText(/moves? left/).textContent).toBe(before);
+  });
+
+  test("a blocked split lights the moves that would clear a leftover", () => {
+    const { container } = render(<BalanceScale seed={5} onSolved={() => {}} onExit={() => {}} />);
+    fireEvent.click(railSplit(2));
+    // The causal chain, shown: these buttons change a pile that is in the way. Never all of them —
+    // a palette where everything glows points at nothing.
+    const lit = container.querySelectorAll(".bs-move-lit");
+    expect(lit.length).toBeGreaterThan(0);
+    expect(lit.length).toBeLessThan(container.querySelectorAll(".bs-move").length);
+  });
+
+  test("focusing a legal split previews what it would take away, before any move is spent", () => {
+    const { container } = render(<BalanceScale seed={7} onSolved={() => {}} onExit={() => {}} />);
+    const k = advanceToLegalSplit(7);
+    const before = screen.getByText(/moves? left/).textContent;
+    fireEvent.focus(railSplit(k));
+    expect(container.querySelectorAll(".bs-goes").length).toBeGreaterThan(0);
+    expect(container.querySelectorAll(".bs-left-over")).toHaveLength(0);
+    expect(screen.getByText(/moves? left/).textContent).toBe(before);
+    fireEvent.blur(railSplit(k));
+    expect(container.querySelectorAll(".bs-goes")).toHaveLength(0);
+  });
+
+  test("pressing a legal split plays it", () => {
+    const { container } = render(<BalanceScale seed={7} onSolved={() => {}} onExit={() => {}} />);
+    const k = advanceToLegalSplit(7);
+    const stonesBefore = container.querySelectorAll(".bs-stone").length;
+    fireEvent.click(railSplit(k));
+    // A split halves or thirds everything on both pans, so the board must have got smaller.
+    expect(container.querySelectorAll(".bs-stone").length).toBeLessThan(stonesBefore);
+  });
+});
+
+/* ------------------------------------------------------------------------------------------------
+ * TIERS. The tight budget is now a harder tier rather than the first thing a child meets.
+ * ---------------------------------------------------------------------------------------------- */
+
+describe("which tier a sitting opens at", () => {
+  test("the first encounter gives more moves than the tier the harder-one offer leads to", () => {
+    const budgetOnScreen = (tier: number): number => {
+      const { unmount } = render(
+        <BalanceScale seed={31} tier={tier} onSolved={() => {}} onExit={() => {}} />,
+      );
+      const text = screen.getByText(/moves? left/).textContent ?? "";
+      unmount();
+      return Number(/(\d+) moves? left/.exec(text)?.[1]);
+    };
+    expect(budgetOnScreen(0)).toBeGreaterThan(budgetOnScreen(1));
+  });
+
+  test("asking for a harder one never hands back an easier board", () => {
+    // The failure `Gadget.supportsTier` exists to prevent: the offer remounts the puzzle, so the
+    // asked-for tier has to arrive as a prop and has to be a floor, not a suggestion.
+    for (let round = 0; round < 4; round++) {
+      for (let chosen = 0; chosen < TIERS.length + 1; chosen++) {
+        expect(tierFor(round, chosen + 1)).toBeGreaterThanOrEqual(tierFor(round, chosen));
+        expect(tierFor(round, chosen)).toBeGreaterThanOrEqual(Math.min(chosen, TIERS.length - 1));
+        expect(tierFor(round, chosen)).toBeLessThanOrEqual(TIERS.length - 1);
+      }
+    }
+  });
+
+  test("the round ramp still alternates, on top of whatever tier was asked for", () => {
+    expect(tierFor(0, 0)).toBe(0);
+    expect(tierFor(1, 0)).toBe(1);
+    expect(tierFor(2, 0)).toBe(0);
+    expect(tierFor(0, 1)).toBe(1);
+    expect(tierFor(1, 1)).toBe(2);
+  });
 });
 
 test("advancing to the next puzzle produces a fresh unsolved scale", () => {
