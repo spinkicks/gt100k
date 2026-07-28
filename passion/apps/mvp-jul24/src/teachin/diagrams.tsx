@@ -545,3 +545,153 @@ export function RatioMixingDiagram(): JSX.Element {
     </Stage>
   );
 }
+
+/**
+ * Tune Repair. A melody as blocks, with a sound mark over the note that does not belong.
+ *
+ * **The contour here is deliberately irregular**, and that is the whole point of the drawing. An
+ * earlier version showed a tidy staircase with one block off the line, which taught a child to hunt
+ * for a broken pattern — and the redesigned puzzle has no pattern to break, because a shape you can
+ * see is a shape you can solve with the sound off. The wrong note here sits on an ordinary row at an
+ * ordinary height; nothing about its *position* marks it. Only the ear finds it, so the mark in the
+ * picture is a sound cue rather than a spatial one.
+ *
+ * Height is still pitch and width is still duration, which is what the two side labels say. No stave,
+ * no clef, no note names: the roll is not notation a child has to already read.
+ */
+export function TuneRepairDiagram(): JSX.Element {
+  const W = 18;
+  const H = 8;
+  const x0 = 52;
+  const baseline = 68;
+  // An irregular, singable-looking line — no constant step, no single turn, no repeated motif.
+  const melody = [0, 2, 1, 4, 3, 5];
+  const sour = 3;
+  return (
+    <Stage>
+      {melody.map((step, i) => (
+        <rect
+          // biome-ignore lint/suspicious/noArrayIndexKey: a fixed row of marks; position is the identity.
+          key={i}
+          x={x0 + i * (W + 5)}
+          y={baseline - step * H}
+          width={i === melody.length - 1 ? W * 2 : W}
+          height={H - 1}
+          rx={2}
+          className="ti-cell ti-cell-on"
+        />
+      ))}
+      {/* A sound cue over the sour note: little arcs, not a position marker. */}
+      <g className="ti-beam">
+        <path
+          d={`M ${x0 + sour * (W + 5) + 3} ${baseline - melody[sour]! * H - 6} q 6 -7 12 0`}
+          fill="none"
+        />
+        <path
+          d={`M ${x0 + sour * (W + 5)} ${baseline - melody[sour]! * H - 11} q 9 -11 18 0`}
+          fill="none"
+        />
+      </g>
+      <Tag x={34} y={baseline - 5 * H + 4} anchor="end">
+        higher
+      </Tag>
+      <Tag x={34} y={baseline + 6} anchor="end">
+        lower
+      </Tag>
+      <Tag x={x0 + 3.4 * (W + 5)} y={88}>
+        one note sounds wrong
+      </Tag>
+    </Stage>
+  );
+}
+
+/**
+ * Chord Fit. One note held up by a stack, next to two stacks that do not fit it.
+ *
+ * **Deliberately abstract, and this is a rule rather than a style choice.** The gadget's whole claim to
+ * being musical is that the three options differ only in sound (PROJECT.md R2), so a diagram that drew
+ * their actual notes would hand over a spacing to compare and undo the design. What is drawn is the
+ * RELATION — one thing resting on a support that fits, two that do not — with no pitches in it at all.
+ */
+export function ChordFitDiagram(): JSX.Element {
+  const y = 44;
+  const seat = 62;
+  return (
+    <Stage>
+      {/* The melody note: one mark, repeated over each option, because it is the same note each time. */}
+      {[0, 1, 2].map((i) => (
+        <rect
+          key={`n${i}`}
+          x={54 + i * 66}
+          y={y - 10}
+          width={26}
+          height={9}
+          rx={2}
+          className="ti-cell ti-cell-on"
+        />
+      ))}
+      {/* The fitting support: flush under the note. The two others sit askew, so nothing about their
+          height or spacing encodes a pitch — only "meets it" versus "does not". */}
+      <rect x={54} y={seat} width={26} height={9} rx={2} className="ti-cell ti-cell-on" />
+      <rect x={120} y={seat + 6} width={26} height={9} rx={2} className="ti-cell" />
+      <rect x={186} y={seat - 7} width={26} height={9} rx={2} className="ti-cell" />
+      <Tag x={67} y={seat + 26}>
+        fits
+      </Tag>
+      <Tag x={133} y={seat + 26}>
+        clash
+      </Tag>
+      <Tag x={199} y={seat + 26}>
+        clash
+      </Tag>
+      <Tag x={30} y={y - 2} anchor="end">
+        the note
+      </Tag>
+    </Stage>
+  );
+}
+
+/**
+ * Downbeat. A row of identical pulses with sound-wave marks over the stressed ones.
+ *
+ * **The blocks are all the same size, deliberately.** The gadget carries metre in loudness precisely so
+ * that the strip holds no grouping information (PROJECT.md R2), and a diagram that drew wider blocks at
+ * the bar starts would teach a child to look for exactly the thing the real screen refuses to show. The
+ * stress is drawn as a sound cue above the block, not as a difference in the block.
+ */
+export function DownbeatDiagram(): JSX.Element {
+  const W = 20;
+  const gap = 6;
+  const x0 = 44;
+  const y = 46;
+  const count = 9;
+  return (
+    <Stage>
+      {Array.from({ length: count }, (_, i) => (
+        <rect
+          // biome-ignore lint/suspicious/noArrayIndexKey: a fixed strip; position is the identity.
+          key={i}
+          x={x0 + i * (W + gap)}
+          y={y}
+          width={W}
+          height={22}
+          rx={2}
+          className="ti-cell ti-cell-on"
+        />
+      ))}
+      {/* Louder pulses: every third, drawn as arcs above rather than as a bigger block. */}
+      {[0, 3, 6].map((i) => (
+        <g className="ti-beam" key={`a${i}`}>
+          <path d={`M ${x0 + i * (W + gap) + 3} ${y - 8} q 7 -8 14 0`} fill="none" />
+          <path d={`M ${x0 + i * (W + gap)} ${y - 14} q 10 -12 20 0`} fill="none" />
+        </g>
+      ))}
+      <Tag x={30} y={y + 16} anchor="end">
+        same
+      </Tag>
+      <Tag x={x0 + 4.2 * (W + gap)} y={88}>
+        the louder ones start the bar
+      </Tag>
+    </Stage>
+  );
+}
