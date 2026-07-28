@@ -21,7 +21,44 @@ export interface Tile {
   /** One line, in words a nine-year-old reads without help. Never a pitch. */
   readonly blurb: string;
   readonly cabin: CabinId;
+  /** Absent where no image has been made yet, and the tile falls back to its glyph. */
+  readonly image?: string;
 }
+
+/**
+ * Which tiles have art, and the rule the art follows.
+ *
+ * All twelve were generated from one prompt scaffold: the same flat-vector house style, the same
+ * four-colour palette, the same charcoal ground, the same light from the upper left. That
+ * uniformity is the measurement, not a style preference. Javora (2019) varied only the aesthetic
+ * treatment of identical content and children aged 9-11 chose the prettier version 62% of the time
+ * with no learning benefit; holding execution constant is what leaves subject preference as the
+ * thing that differs.
+ *
+ * Each one depicts THE ACTIVITY BEING DONE — hands on the thing — rather than a wonder-shot of the
+ * subject. A galaxy photograph would sell astronomy as passive awe when the work is patient
+ * measurement in the cold, and a child pulled in by the photograph bounces off the reality. Hands
+ * on a balance scale promises what the cabin actually contains.
+ *
+ * The residual risk is real and it is bounded: a picture can buy a first click that the topic has
+ * not earned. It cannot buy a cross-day return, and the return is what the belief is built on.
+ */
+const IMAGES: Record<string, string> = {
+  "math-puzzles": "/topics/topic-math-puzzles.webp",
+  "code-computers": "/topics/topic-code-computers.webp",
+  "games-strategy": "/topics/topic-games-strategy.webp",
+  "making-engineering": "/topics/topic-making-engineering.webp",
+  "art-motion": "/topics/topic-art-motion.webp",
+  "music-sound": "/topics/topic-music-sound.webp",
+  "science-nature": "/topics/topic-science-nature.webp",
+  "influence-media": "/topics/topic-influence-media.webp",
+  // Music & Sound is the one cabin whose subtopics are illustrated, as a prototype of what the
+  // second level costs: four more images per cabin, thirty-one in total.
+  "music-sound/audio-systems": "/topics/sub-audio-systems.webp",
+  "music-sound/production": "/topics/sub-production.webp",
+  "music-sound/instruments": "/topics/sub-instruments.webp",
+  "music-sound/music-theory": "/topics/sub-music-theory.webp",
+};
 
 /**
  * Cabin names as a child would say them, and one line each on what you would actually be doing.
@@ -85,15 +122,20 @@ export const CABIN_TILES: readonly Tile[] = CABINS.map((c) => ({
   label: CABIN_COPY[c].label,
   blurb: CABIN_COPY[c].blurb,
   cabin: c,
+  ...(IMAGES[c] ? { image: IMAGES[c] } : {}),
 }));
 
 export function subtopicTiles(cabin: CabinId): readonly Tile[] {
-  return SEED_SUBTOPICS[cabin].map((s) => ({
-    id: `${cabin}/${s}`,
-    label: SUBTOPIC_COPY[s]?.label ?? s,
-    blurb: SUBTOPIC_COPY[s]?.blurb ?? "",
-    cabin,
-  }));
+  return SEED_SUBTOPICS[cabin].map((s) => {
+    const id = `${cabin}/${s}`;
+    return {
+      id,
+      label: SUBTOPIC_COPY[s]?.label ?? s,
+      blurb: SUBTOPIC_COPY[s]?.blurb ?? "",
+      cabin,
+      ...(IMAGES[id] ? { image: IMAGES[id] } : {}),
+    };
+  });
 }
 
 export function resourcesFor(cabin: CabinId, subtopic: string): readonly CuratedResource[] {

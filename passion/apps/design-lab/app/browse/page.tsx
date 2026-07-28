@@ -185,12 +185,20 @@ export default function BrowsePage(): JSX.Element {
               onFocus={() => setSelected(t.id)}
               onClick={() => open(t)}
             >
-              {/* Only at cabin level. Memo 07 §2.5: an icon works when it depicts the referent, and
-                nothing depicts "3D Modelling" as against "Animation" — repeating the cabin's glyph
-                across its four subtopics would put the same picture on every tile and discriminate
-                nothing. Below the cabin the word does the work, which is also what that memo
-                concludes: icons fix cabins, only audio fixes subtopics. */}
-              {step === "cabin" ? <CabinGlyph cabin={t.cabin} /> : null}
+              {t.image ? (
+                // Decorative. The label beside it already names the tile, so alt text here would
+                // make a screen reader announce every tile twice.
+                // A plain <img> rather than next/image on purpose: the optimiser would re-encode
+                // these, and the prototype exists to look at the art as it was generated. They are
+                // already WebP at render size, 19.8 MB of PNG down to 0.29 MB for all twelve.
+                <img className="tile__art" src={t.image} alt="" loading="lazy" decoding="async" />
+              ) : step === "cabin" ? (
+                // The fallback where no art exists yet. Memo 07 §2.5: an icon works when it depicts
+                // the referent, and nothing depicts "3D Modelling" as against "Animation" —
+                // repeating the cabin's glyph across its subtopics would put the same picture on
+                // every tile and discriminate nothing. Below the cabin the word does the work.
+                <CabinGlyph cabin={t.cabin} />
+              ) : null}
               <span className="tile__label">{t.label}</span>
               {/* Position is shown because this is a prototype and the measurement is the point. It
                 would not appear in the product. */}

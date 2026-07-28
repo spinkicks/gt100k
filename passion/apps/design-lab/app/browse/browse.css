@@ -39,7 +39,7 @@
   color: var(--ink);
   font-family: var(--font-sans, system-ui), sans-serif;
   display: grid;
-  grid-template-columns: 1fr min(30rem, 34vw);
+  grid-template-columns: 1fr min(26rem, 30vw);
   grid-template-rows: auto minmax(0, 1fr) auto;
   height: 100vh;
   overflow: hidden;
@@ -134,11 +134,12 @@
   align-items: flex-start;
   justify-content: flex-end;
   gap: 0.55rem;
-  min-height: clamp(9rem, 19vh, 13rem);
+  min-height: clamp(9rem, 17vh, 12rem);
   padding: 1.25rem;
   border: none;
   border-radius: 4px;
   background: oklch(var(--l) var(--c) var(--hue) / 0.32);
+  overflow: hidden;
   color: var(--ink);
   font: inherit;
   text-align: left;
@@ -192,11 +193,51 @@
   outline-offset: -3px;
 }
 
+/* The art fills the tile; the label sits over a scrim at the foot of it, which is the reference's
+   arrangement. `object-fit: cover` rather than contain, so every tile is the same shape whatever
+   the image is — a letterboxed tile among filled ones is a difference in presentation, and that is
+   the one difference this design exists to remove. */
+.tile__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Biased upward. Every image puts the hands and the object in the middle and empty bench at the
+     foot, so a centred crop spends the bottom third on table and clips the thing being done.
+     
+     Setting `aspect-ratio: 4/3` on the tile to remove cropping entirely was the first attempt and
+     it was wrong: it forced tiles so large that four of the eight cabins fell outside the viewport,
+     and a child cannot choose what is not on the screen. The crop is uniform in any case — every
+     image is 4:3 going into an identical tile — so what needed fixing was only where it cuts. */
+  object-position: 50% 38%;
+  /* Held slightly back so white label text clears 4.5:1 over any part of the art, and so the
+     selection ring stays the loudest thing on the screen. */
+  opacity: 0.86;
+}
+
+/* The scrim. Without it the label's contrast depends on whatever the illustration happens to put
+   under it, which varies per tile and would be a legibility lottery. */
+.tile::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 62%;
+  background: linear-gradient(to top, oklch(14% 0.01 265 / 0.94), oklch(14% 0.01 265 / 0));
+  pointer-events: none;
+}
+
 .tile__glyph {
   width: 44px;
   height: 44px;
   color: oklch(95% 0.03 var(--hue));
   opacity: 0.92;
+}
+
+.tile__label,
+.tile__pos {
+  position: relative; /* above the scrim */
+  z-index: 1;
 }
 
 .tile__label {
