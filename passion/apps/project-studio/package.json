@@ -12,6 +12,7 @@
     "@fontsource-variable/inconsolata": "^5.3.0",
     "@fontsource-variable/inter-tight": "^5.3.0",
     "@fontsource-variable/literata": "^5.3.0",
+    "@gt100k/project-evidence-sink": "workspace:*",
     "@gt100k/project-workspace": "workspace:*",
     "@gt100k/ui": "workspace:*",
     "next": "^14.2.15",
