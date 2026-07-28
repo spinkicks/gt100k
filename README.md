@@ -2,7 +2,7 @@
 
 **GT100K** is Alpha School's internal accelerated-gifted layer on TimeBack — an operating system for an intensive, in-person gifted academy that takes an already-admitted child (ages 6–14) from daily academic mastery and passion discovery through to a portable, evidence-backed body of work. Long-horizon goal: MIT-level academic readiness by the end of 8th grade.
 
-> **Status: working monorepo.** 25 packages, 17 adapters, and 9 apps, with **4,286 tests** green (1,109 engine and adapter, 3,177 app). Every engine is pure, deterministic and offline; all data is synthetic. No real child data touches this system until the pre-live gates pass (see [Pre-live gates](#pre-live-gates)): the discovery game can now post a session to the guide console, but only when someone sets `VITE_GT100K_INGEST_URL` (unset everywhere) *and* a guardian's consent for that purpose is on file, which the route checks per request and denies by default.
+> **Status: working monorepo.** 25 packages, 17 adapters, and 9 apps, with **4,295 tests** green (1,109 engine and adapter, 3,186 app). Every engine is pure, deterministic and offline; all data is synthetic. No real child data touches this system until the pre-live gates pass (see [Pre-live gates](#pre-live-gates)): the discovery game can now post a session to the guide console, but only when someone sets `VITE_GT100K_INGEST_URL` (unset everywhere) *and* a guardian's consent for that purpose is on file, which the route checks per request and denies by default.
 
 ## Quick start
 
