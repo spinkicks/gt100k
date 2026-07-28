@@ -2,7 +2,7 @@
 
 **Feature Branch**: `020-timeback-integration`
 **Created**: 2026-07-23
-**Status**: Draft (loop-ready)
+**Status**: Draft (loop-ready) — **but DELIVERED.** The code is merged and tested; it lives in `@gt100k/timeback`. This field tracks the state of the DOCUMENT, which was never revised after the build, and a reader comparing it against the ✅ in `docs/prd/passionApps.md` should trust the packages and their tests over either. What a ✅ does *not* mean is that a child can use it end to end.
 
 **Input**: G2 in `docs/prd/passionApps.md` (TimeBack Integration) — connect the academics platform (TimeBack) to the discovery signal by turning what school already knows about a kid into a **soft starting hint** for our interest inference: an **aptitude tilt** (how strong the kid is per subject) + a **discretionary-XP tilt** (where they voluntarily spend free-choice time). These become the `DomainPrior[]` the 011 inference engine already consumes (`buildPrior`), and they **only shift the starting point — they never gate** (011's `evidenceMass` subtracts the prior, so a prior can never make a hypothesis `confident` or a candidate on its own). Also encode the **two-block daily loop** as a light one-way handoff (school → passion hint; blocks independent; passion block reward-neutral). Grounding: `docs/research/passionBrainlift.md` (aptitude/ability as necessary-not-sufficient; SMPY; environment/opportunity priors; intrinsic-motivation protection — never gate/reward on the prior), `docs/prd/passionApps.md` (G2: "aptitude tilt + discretionary-XP prior … prior only, never gate"), `passion/CONTEXT.md`, and the existing `@gt100k/interest-inference` prior interface.
 
