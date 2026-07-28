@@ -43,7 +43,7 @@ load-bearing, not which one to build:
   (`PROJECT.md`, *The shelf is the D5 maintenance path*). That is the launcher's "follow a vetted
   link and go" in miniature, already stocked and already justified on different grounds.
   **But it is a different store:** the shelf's links are hand-authored in
-  `mvp-jul24/src/shelf/cards.data.ts` and nothing in the app calls `curatedForCell`, so the
+  `mvp-jul24/src/shelf/cards.data.ts` and nothing in the app called `curatedForCell` (it does now, from the shelf — 2026-07-27), so the
   151-resource curated library and the shelf a child actually opens are today unconnected. Answering
   the open question in favour of leaving means wiring one to the other; answering it in favour of
   staying means deciding whether two curated collections should continue to exist side by side.

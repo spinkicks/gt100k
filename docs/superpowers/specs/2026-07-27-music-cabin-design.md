@@ -380,7 +380,7 @@ that does not exist is worse than a card with no link: it teaches a child that c
 A diagram in `diagrams.tsx` where one earns its space; contour is a good candidate.
 
 Note the correction the ruling records: **the shelf and the curated library are not the same store.** The
-shelf reads hand-authored `cards.data.ts` and nothing in the app calls `curatedForCell`. So the music
+shelf reads hand-authored `cards.data.ts` and nothing in the app called `curatedForCell` when this was written; the shelf does now, and the music room's rows landed with #222. So the music
 cards are new writing, not a query.
 
 ### 5.3 Signals
@@ -435,7 +435,7 @@ Order matters: 1 is the part most likely to need rework and has no dependency on
 - The other three gadgets (registered `coming-soon`, painted, not implemented).
 - The general gadget-to-taxonomy crosswalk — `dev/mvp-jul24/backend-wiring-plan`.
 - `code` and `art` cabins.
-- Any change to how the shelf sources content (`curatedForCell` stays uncalled here).
+- Any change to how the shelf sources content (~~`curatedForCell` stays uncalled here~~ — superseded: the shelf calls it, and the music room needed a cabin-level topic row so its invitation card would not narrow to `music-theory`).
 - The leave/stay question the ruling deliberately left open.
 
 ---

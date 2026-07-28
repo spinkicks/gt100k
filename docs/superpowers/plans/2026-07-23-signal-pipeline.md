@@ -1,5 +1,11 @@
 # Signal Pipeline Implementation Plan
 
+> **Amended 2026-07-27.** `deriveSkips` returns `{ events, silentSessions }` rather than a bare
+> `CellEvent[]`, and a session in which the child engaged NOTHING now yields no skip and no decline.
+> A child who loaded the map, could not find a way in and left used to earn one disconfirming event
+> against every cabin on screen. See `docs/decisions/2026-07-27-no-choice-no-decline.md`.
+
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans. Steps use checkbox (`- [ ]`) syntax.
 
 **Goal:** Build `012-signal-pipeline` per `specs/012-signal-pipeline/spec.md` — the headless "Signal Firewall" that turns raw child interactions into `@gt100k/interest-inference` `CellEvent`s via `@gt100k/two-axis-tagging`, applying novelty, voluntary/prompted, depth, and skip logic.

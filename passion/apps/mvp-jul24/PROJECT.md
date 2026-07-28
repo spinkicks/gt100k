@@ -298,12 +298,19 @@ brass instruments (the weakest read of the five) and is not any more.
 These are known gaps with known fixes. They are out of scope for now by decision, and each stays
 recorded so it is not rediscovered as a surprise.
 
-- **All signals and measurement.** `activeMs` / `opens` / `solves` stay **exactly as they are**. No
-  `CellEvent` work, no choice-set recording, no return-horizon split. This leaves memo §8.4's **P1**
+- ~~**All signals and measurement.**~~ **SUPERSEDED, 2026-07-27.** This deferral is spent. The app
+  emits `Interaction` and `SurfacedRecord` (with `position`), the gadget crosswalk lives in
+  `@gt100k/discovery-catalog`, and a session can be posted to the guide console, which derives a real
+  read from it. The original text follows because the reasoning for deferring was sound and the order
+  it implied is what actually happened. ~~`activeMs` / `opens` / `solves` stay **exactly as they are**. No
+  `CellEvent` work, no choice-set recording, no return-horizon split.~~ This leaves memo §8.4's **P1**
   (magnitude re-importing dwell), **P2** (no choice set, so "voluntary" is not interpretable) and **P4**
   (`voluntary_return` conflating same-session reopen with cross-day return) open, and it leaves the app's
-  read entirely in-session. The consequence is stated plainly: **this build does not produce a defensible
-  interest read.** It produces a room worth being in.
+  read entirely in-session. The consequence was stated plainly: **this build does not produce a defensible
+  interest read.** It produces a room worth being in.~~ That is no longer where things stand, though the
+  honest version is narrower than "solved": the app now produces a read, and what makes it defensible or
+  not is the measurement work tracked in
+  `docs/superpowers/specs/2026-07-27-measurement-lane.md`, not the absence of emission.
 - **A walkable 2D overworld** — an avatar the child moves across the map instead of clicking a signpost
   (PRD §5.2, deferred there rather than rejected). It costs nothing to defer: the two signal-bearing
   choices on that layer are which cabin gets approached and which cabin is returned to unprompted, and

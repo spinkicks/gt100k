@@ -27,7 +27,7 @@
 | **Access broker** (D3 mentor, D4 audience) | ✅ merged — `023` (combined engine + live adapter + guide-console Access tab) |
 | **Parent Playbook** (F4) | ✅ merged + **hosted on AWS** — `docs/superpowers/specs/2026-07-24-parent-guide-design.md` (no `specs/NNN`); static-exported `apps/parent-guide`; Family Check-In mirrors `@gt100k/family` (512-combination parity test). Manager MVP item 2 |
 | **Rest of specialization** (D5 PCDE) | ⬜ not started |
-| **Pre-live gates** (G3 consent/erasure, G4 safety-at-scale, G5 calibration, E1 D1–D6) | ⬜ not started (E1 productionization = teammate, and it is work *inside* the separate EvidenceGraph product) |
+| **Pre-live gates** (G3 consent/erasure, G4 safety-at-scale, G5 calibration, E1 D1–D6) | 🟡 G3 partly built (`@gt100k/consent`, enforced at ingest); G4/G5 not started (E1 productionization = teammate, and it is work *inside* the separate EvidenceGraph product) |
 
 **Synthetic-first:** every merged feature is built + tested on synthetic/pilot data. No real child data until the Phase 5 pre-live gates pass.
 
@@ -43,7 +43,7 @@
 **Goal:** a kid's behavior produces a real, revisable interest read a guide can act on — on synthetic/pilot data.
 - **`009-two-axis-tagging`** → **C2** ✅ — domain × work-mode taxonomy; afforded + action-resolved engaged mode; tag-validity gate.
 - **`011-interest-inference`** → **C3** ✅ — Beta-Bernoulli belief-per-cell, novelty decay, voluntary-vs-prompted, topic-vs-style, calibrated "not sure yet".
-- **`012-signal-pipeline`** → **C1** ✅ — Interaction → CellEvent firewall (engine done; the game-side emitter is teammate).
+- **`012-signal-pipeline`** → **C1** ✅ — Interaction → CellEvent firewall. The game-side emitter landed 2026-07-27, so this is no longer engine-only: `mvp-jul24` emits and can post a session to the console.
 - **`013-hypothesis-store`** → **C4 + F1 (MVP)** ✅ — versioned hypotheses + lifecycle + Phase 2→3 gate + the guide console.
 - **`014-student-profile`** → **G1** ✅ — per-kid profile + append-only log + idempotent `runCycle` wiring 012→011→013; the console reads genuinely-derived data.
 - **Still open here:** **A4** taste-app embedding SDK (intern apps exist; SDK not built); **A1/A5** discovery world + accessibility mirror (teammate track; only one **A2** cabin exists).
@@ -71,7 +71,7 @@
 - **`019-family-coengagement`** → **F3** ✅ (engine + surface) — warm-demanding coaching, door-opening asks, showcases + family-driven-pressure backstop (`remaining-weakpoints.md` #5). Surface polish pending.
 - **D3 mentor relay + D4 audience broker** ✅ merged (`023`: one combined access-broker engine + opt-in live adapter + the guide-console **Access tab** — ranked mentor/audience matches, a guide-gated access-transfer lifecycle with a guardian-consent hard blocker, and wellbeing/stage/craft-floor guardrails).
 
-## Phase 5 — Pre-live gates (block any real child) ⬜ not started
+## Phase 5 — Pre-live gates (block any real child) 🟡 G3 partly built, the rest not started
 
 **Goal:** everything required before a live child touches the system.
 - **E1 D1–D6 productionization** (`hardening/evidencegraph-productionization.md`): **D2 erasure data model first**, then anchoring/signing, then the rest. **Teammate-owned**, and delivered inside the separate EvidenceGraph product. *Blocks live use.*
