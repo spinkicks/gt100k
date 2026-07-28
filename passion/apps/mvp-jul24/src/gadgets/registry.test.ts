@@ -63,8 +63,19 @@ test('gadgetsForTopic("math") holds only the maths activities', () => {
   }
 });
 
+test("music holds its three activities", () => {
+  expect(gadgetsForTopic("music").map((g) => g.id)).toEqual([
+    "tune-repair",
+    "chord-fit",
+    "downbeat",
+  ]);
+});
+
 test("the still-unbuilt cabins return an empty list", () => {
-  for (const topic of ["music", "code", "art"] as const) {
+  // `music` left this list on 2026-07-27. `echo` is designed but not built, and deliberately not
+  // registered: quads.data.test.ts matches props to gadgets exactly both ways, so registering a
+  // fourth would demand a repainted room.
+  for (const topic of ["code", "art"] as const) {
     expect(gadgetsForTopic(topic)).toEqual([]);
   }
 });
@@ -80,6 +91,8 @@ test("gadgetById returns the matching gadget or undefined", () => {
 // all, and an unbacked flag would promise a harder board the puzzle can't deliver. Nonogram is the
 // only one wired up today.
 test("supportsTier is set on exactly the gadgets whose component honours it", () => {
+  // Nonogram reads `tier` for its board size; all three music activities read it to open at a
+  // difficulty, which is what keeps "give me an easier one" a one-number change rather than a mode.
   const withSupportsTier = GADGETS.filter((g) => g.supportsTier).map((g) => g.id);
-  expect(withSupportsTier).toEqual(["nonogram"]);
+  expect(withSupportsTier).toEqual(["nonogram", "tune-repair", "chord-fit", "downbeat"]);
 });

@@ -214,7 +214,75 @@ const MATH_DECK: ShelfDeck = {
   ],
 };
 
-export const SHELF_DECKS: readonly ShelfDeck[] = [LOGIC_GAMES_DECK, MATH_DECK];
+const MUSIC_DECK: ShelfDeck = {
+  topic: "music",
+  title: "The bookcase",
+  intro:
+    "Four pages about what your ears are actually doing in this room. Read any of them, in any order.",
+  cards: [
+    {
+      id: "key-belonging",
+      kind: "activity",
+      gadgetId: "tune-repair",
+      title: "A tune has a home, and one note has left it",
+      body: [
+        "There are twelve different pitches in an octave, but almost no tune uses all twelve. A tune picks seven of them and keeps coming back to one in particular — the note it feels finished on. That choice of seven is what a key is, and because any of the twelve pitches can be the home note, and there are two common flavours of scale, there are twenty-four keys altogether. The seven chosen notes are called diatonic; the five left over are chromatic.",
+        "This matters for what your ear does without being asked. After a few notes you have already worked out which seven the tune is using, so strongly that when a chromatic note arrives you hear it as a mistake rather than as a new colour. Nothing about it looks different — it is an ordinary pitch, and composers use chromatic notes deliberately all the time. It only sounds wrong because your ear had already committed to a home, and that is the whole of Tune Repair.",
+      ],
+      source: {
+        label:
+          "Wikipedia, “Key (music)” — twelve possible tonics give twenty-four keys; chromatic notes are rarer, not forbidden",
+        url: "https://en.wikipedia.org/wiki/Key_(music)",
+      },
+    },
+    {
+      id: "consonance-ratios",
+      kind: "activity",
+      gadgetId: "chord-fit",
+      title: "Why some notes together sound settled and others fight",
+      body: [
+        "Play two notes at once and they either blend or grind. The ancient Greeks noticed that the blending pairs came from strings whose lengths were in simple whole-number ratios — two to one for the octave, three to two for the fifth, four to three for the fourth. From roughly the seventeenth century onward those same relationships were restated in terms of frequency rather than string length, and the pattern held: the simpler the ratio, the more the two notes sound like one thing rather than two.",
+        "That is what you are judging in Chord Fit. A chord that already contains the melody note shares partials with it, so the two fuse; a chord that does not contain it leaves the note sticking out against the others. Consonance is not a rule somebody wrote down and it is not entirely fixed either — how harsh an interval sounds depends on the style you are used to, and a chord that unsettled listeners in one century became ordinary in the next.",
+      ],
+      source: {
+        label:
+          "Wikipedia, “Consonance and dissonance” — string-length ratios in antiquity, restated as frequency ratios from about the 17th century",
+        url: "https://en.wikipedia.org/wiki/Consonance_and_dissonance",
+      },
+    },
+    {
+      id: "metre-inference",
+      kind: "activity",
+      gadgetId: "downbeat",
+      title: "The beat is something you supply, not something you hear",
+      body: [
+        "A metre is a repeating pattern of strong and weak pulses, and the strange thing about it is that the strong ones do not have to be played at all. A performer can leave a downbeat silent and you will still feel exactly where it was, because by then you are the one generating the pattern. It is the same reflex that makes a clock go tick-tock when in fact it is making the identical sound over and over — the alternation is yours, not the clock's.",
+        "Once your ear has settled on a grouping it holds onto it stubbornly. One writer on rhythm puts it that a listener will keep an established metre going as long as even minimal evidence for it is present. That is why Downbeat gives you several bars rather than one stressed pulse: a single loud noise is an event, and it takes a recurrence before your ear commits to a pattern it can then be tested on.",
+      ],
+      source: {
+        label:
+          "Wikipedia, “Metre (music)”, citing Lester, The Rhythms of Tonal Music (1986) — listeners maintain an established metre on minimal evidence",
+        url: "https://en.wikipedia.org/wiki/Metre_(music)",
+      },
+    },
+    {
+      id: "music-is-physics",
+      kind: "invitation",
+      title: "Musicians and physicists are studying the same thing",
+      body: [
+        "Every question in this room is also a measurable physical question, and there are university physics departments that do nothing else. One of the oldest music-acoustics groups in the world sits in a physics school and publishes how a flute, a clarinet, a violin and the human voice actually work — with real measured curves, not diagrams drawn to look convincing. You can run their hearing test in a browser and plot the shape of your own ear's sensitivity.",
+        "If you do, you will find you hear best somewhere between one and four thousand cycles a second, and that a person your age can usually hear all the way up to sixteen thousand while most adults no longer can. That is worth sitting with: there is a part of every piece of music that you can hear and the people who made it may not be able to. Music is not only a thing to be good at. It is a thing that can be taken apart.",
+      ],
+      source: {
+        label:
+          "UNSW School of Physics, Music Acoustics (Joe Wolfe) — an online hearing test and measured acoustics of real instruments",
+        url: "https://newt.phys.unsw.edu.au/jw/hearing.html",
+      },
+    },
+  ],
+};
+
+export const SHELF_DECKS: readonly ShelfDeck[] = [LOGIC_GAMES_DECK, MATH_DECK, MUSIC_DECK];
 
 /** The deck for a topic, or undefined for a cabin with no shelf contents written yet. */
 export function shelfDeckFor(topic: TopicId): ShelfDeck | undefined {

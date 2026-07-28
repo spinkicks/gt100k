@@ -1,6 +1,8 @@
 import type { Gadget, TopicId } from "../game/types";
 import BalanceScale from "../puzzles/BalanceScale/BalanceScale";
 import Chess from "../puzzles/Chess/Chess";
+import ChordFit from "../puzzles/ChordFit/ChordFit";
+import Downbeat from "../puzzles/Downbeat/Downbeat";
 import FractionLaser from "../puzzles/FractionLaser/FractionLaser";
 import FunctionMachine from "../puzzles/FunctionMachine/FunctionMachine";
 import GearTrain from "../puzzles/GearTrain/GearTrain";
@@ -8,6 +10,7 @@ import Mirror from "../puzzles/Mirror/Mirror";
 import Nonogram from "../puzzles/Nonogram/Nonogram";
 import Pipes from "../puzzles/Pipes/Pipes";
 import RatioMixing from "../puzzles/RatioMixing/RatioMixing";
+import TuneRepair from "../puzzles/TuneRepair/TuneRepair";
 
 /**
  * Every gadget in the game, keyed to the cabin (topic) it lives in.
@@ -136,6 +139,38 @@ export const GADGETS: Gadget[] = [
     Puzzle: FunctionMachine,
     hotspot: { xPct: 80, yPct: 55, label: "Function Machine" },
   },
+  // --- music: the MUSIC is the mechanic, and in all three it is a question the eye is not given.
+  // Each is audible-only by construction (PROJECT.md R2), which is also their known accessibility
+  // cost. `supportsTier` is set on all three because each reads PuzzleProps.tier to open at a
+  // difficulty, which is how "give me an easier one" stays a one-number change.
+  {
+    id: "tune-repair",
+    topic: "music",
+    label: "Tune Repair",
+    status: "active",
+    Puzzle: TuneRepair,
+    hotspot: { xPct: 17, yPct: 39, label: "Tune Repair" },
+    supportsTier: true,
+  },
+  {
+    id: "chord-fit",
+    topic: "music",
+    label: "Chord Fit",
+    status: "active",
+    Puzzle: ChordFit,
+    hotspot: { xPct: 47, yPct: 46, label: "Chord Fit" },
+    supportsTier: true,
+  },
+  {
+    id: "downbeat",
+    topic: "music",
+    label: "Downbeat",
+    status: "active",
+    Puzzle: Downbeat,
+    hotspot: { xPct: 68, yPct: 69, label: "Downbeat" },
+    supportsTier: true,
+  },
+
   {
     id: "ratio-mixing",
     topic: "math",

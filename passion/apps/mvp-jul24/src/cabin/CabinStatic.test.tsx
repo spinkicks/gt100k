@@ -64,14 +64,14 @@ test("renders the cabin background image with the topic-specific src", () => {
 });
 
 // A gadget-free topic has to give a normal (if quiet) room rather than throwing or rendering nothing.
-// This used `math` while that cabin was deliberately empty; `math` now has five activities, so the
-// case moved to `music`, which is on the map as "coming soon" and genuinely has none.
+// The fixture keeps moving as cabins get built: it was `math` until its five activities shipped, then
+// `music` until its three did on 2026-07-27. `code` is the empty one now.
 test("a topic with no gadgets renders the room with zero hotspots and does not throw", () => {
-  expect(() => render(<CabinStatic topic="music" />)).not.toThrow();
+  expect(() => render(<CabinStatic topic="code" />)).not.toThrow();
 
   expect(document.querySelector(".cabin-static")).toBeInTheDocument();
   expect(document.querySelector("img.cabin-static-bg")?.getAttribute("src")).toBe(
-    "/art/cabin-music.png",
+    "/art/cabin-code.png",
   );
   expect(document.querySelector(".cabin-static-hearthlight")).toBeInTheDocument();
   expect(document.querySelectorAll("[data-gadget]")).toHaveLength(0);

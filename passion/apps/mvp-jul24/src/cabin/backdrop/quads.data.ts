@@ -487,7 +487,114 @@ const MATH: BackdropRoom = {
   ],
 };
 
-export const BACKDROP_ROOMS: readonly BackdropRoom[] = [LOGIC_GAMES, MATH];
+// ---------------------------------------------------------------------------------------------
+// music
+// ---------------------------------------------------------------------------------------------
+
+const MUSIC_SOURCES = ["/art/cabin-backdrop-music.png"] as const;
+
+/**
+ * The music room.
+ *
+ * Three props, one per BUILT gadget, and no fourth. `quads.data.test.ts` matches props to registered
+ * gadgets exactly in both directions, so a surface painted for the unbuilt `echo` would fail the suite
+ * rather than sit harmlessly unused. Adding echo later therefore means regenerating this plate — the
+ * cost PROJECT.md's roster note records, and the reason the roster had to be settled before the art.
+ *
+ * All three instruments are painted flat against the back wall or standing square to the camera, and
+ * every quad below is traced off a 128px coordinate grid (`node scripts/art-inspect.mjs grid`) rather
+ * than estimated. The room was composed with wide empty wall between the objects specifically so the
+ * hit regions could be generous without touching each other — memo 07's target-size finding says a
+ * child's floor is well above an adult's, and there is no reason to be stingy when the wall is free.
+ *
+ * `kind` is `object` for all three. None of them is a flat plane the app could warp a live puzzle
+ * preview onto: a lute is a curved body, an organ is a box seen straight on with a recessed keyboard,
+ * a drum is a cylinder. Calling any of them `flat` would let a preview be skewed across a best-fit
+ * plane the painting does not actually have, which `types.ts` warns looks worse than no preview. None
+ * of the three has a preview component either, and `hasPreview` already treats that as normal.
+ */
+const MUSIC: BackdropRoom = {
+  topic: "music",
+  sources: MUSIC_SOURCES,
+  artWidth: ART_WIDTH,
+  artHeight: ART_HEIGHT,
+  props: [
+    {
+      // The lute hanging on the left wall. Outline is the rounded body plus the neck, because the
+      // neck is what makes it read as a lute and a child aiming at the instrument will aim at all of
+      // it. Traced as a hexagon rather than a box so the hit region does not claim the wall beside
+      // the narrow neck.
+      kind: "object",
+      gadgetId: "tune-repair",
+      label: "Lute hanging on the left wall",
+      outline: [
+        [243, 225],
+        [288, 225],
+        [300, 385],
+        [352, 480],
+        [318, 585],
+        [272, 614],
+        [222, 580],
+        [192, 480],
+        [228, 385],
+      ],
+    },
+    {
+      // The pump organ against the back wall. Outline is the upper case — carved back panel, stop
+      // knobs and keyboard — and deliberately stops above the stool, which stands in front of the
+      // lower body and would otherwise be inside the organ's hit region.
+      kind: "object",
+      gadgetId: "chord-fit",
+      label: "Pump organ against the back wall",
+      outline: [
+        [552, 352],
+        [900, 352],
+        [900, 596],
+        [552, 596],
+        [552, 470],
+        [540, 470],
+        [540, 420],
+        [552, 420],
+      ],
+    },
+    {
+      // The hand drum on its floor stand, right of the organ. Outline follows the head ellipse down
+      // into the shell and out to the stand's feet.
+      kind: "object",
+      gadgetId: "downbeat",
+      label: "Hand drum on a floor stand",
+      outline: [
+        [1010, 630],
+        [1090, 630],
+        [1136, 668],
+        [1136, 748],
+        [1096, 792],
+        [1002, 792],
+        [958, 748],
+        [958, 668],
+      ],
+    },
+  ],
+  // The bookcase on the right-hand wall. Not a prop and has no gadget: see the `ShelfProp` note in
+  // types.ts for why a shelf must never enter the props array. The outline follows the overhanging
+  // top plank and then the narrower case below it, which is what makes it genuinely non-rectangular
+  // — both bottom corners of its bounding box are outside it, as shelf.geometry.test.ts requires.
+  shelf: {
+    label: "Bookcase of worn books on the right wall",
+    outline: [
+      [1185, 566],
+      [1474, 566],
+      [1474, 588],
+      [1462, 588],
+      [1462, 798],
+      [1197, 798],
+      [1197, 588],
+      [1185, 588],
+    ],
+  },
+};
+
+export const BACKDROP_ROOMS: readonly BackdropRoom[] = [LOGIC_GAMES, MATH, MUSIC];
 
 export function backdropRoomFor(topic: string): BackdropRoom | undefined {
   return BACKDROP_ROOMS.find((room) => room.topic === topic);
