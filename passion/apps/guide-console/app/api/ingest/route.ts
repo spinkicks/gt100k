@@ -37,6 +37,42 @@ export const dynamic = "force-dynamic";
  */
 const profileDir = (): string => process.env.GT100K_PROFILE_DIR ?? ".profiles";
 
+/**
+ * Which origin may post here.
+ *
+ * The game is a Vite app on another port, so every request it makes is cross-origin and the browser
+ * sends a preflight first. Without an answer to that preflight nothing arrives at all, and nothing
+ * appears to go wrong: the child plays, the log fills up locally, the console stays empty, and the
+ * only evidence is a message in devtools nobody has open. This was exactly the state of things until
+ * a browser was pointed at it, because the route tests call `POST` directly and a direct call has no
+ * origin to check.
+ *
+ * Never `*`. This endpoint takes children's behavioural data and writes it to disk under a `kidId`
+ * the caller chooses; a wildcard would let any page in any tab post into it. One origin, overridable
+ * for whoever is running the game somewhere else.
+ */
+const allowedOrigin = (): string => process.env.GT100K_INGEST_ORIGIN ?? "http://localhost:5178";
+
+const corsHeaders = (origin: string | null): Record<string, string> => {
+  const allowed = allowedOrigin();
+  // Echoed rather than reflected: an origin we do not recognise gets the allowed one back, which the
+  // browser then refuses to match. Reflecting the caller's own origin would defeat the check.
+  return {
+    "Access-Control-Allow-Origin": origin === allowed ? origin : allowed,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "content-type",
+    "Access-Control-Max-Age": "86400",
+  };
+};
+
+/** The preflight. Without this the POST below is never sent. */
+export function OPTIONS(request: Request): NextResponse {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders(request.headers.get("origin")),
+  });
+}
+
 interface IngestRequest {
   readonly kidId?: unknown;
   readonly displayName?: unknown;
@@ -66,15 +102,20 @@ async function consentRecords(): Promise<readonly ConsentRecord[]> {
 }
 
 export async function POST(request: Request): Promise<NextResponse> {
+  // On every path below, including the refusals. A 403 the browser throws away for want of a header
+  // is indistinguishable from a network failure, and "no consent" is precisely the answer an emitter
+  // needs to be able to read.
+  const cors = corsHeaders(request.headers.get("origin"));
   let body: IngestRequest;
   try {
     body = (await request.json()) as IngestRequest;
   } catch {
-    return NextResponse.json({ error: "body is not JSON" }, { status: 400 });
+    return NextResponse.json({ error: "body is not JSON" }, { status: 400, headers: cors });
   }
 
   const kidId = typeof body.kidId === "string" ? body.kidId.trim() : "";
-  if (!kidId) return NextResponse.json({ error: "kidId is required" }, { status: 400 });
+  if (!kidId)
+    return NextResponse.json({ error: "kidId is required" }, { status: 400, headers: cors });
 
   // Rejected rather than coerced. An empty array is a legitimate batch (a child who was shown
   // things and did nothing is real data), but a malformed one is an emitter bug, and accepting it
@@ -82,7 +123,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   if (!isRecordArray(body.interactions) || !isRecordArray(body.surfaced)) {
     return NextResponse.json(
       { error: "interactions and surfaced must both be arrays of objects" },
-      { status: 400 },
+      { status: 400, headers: cors },
     );
   }
 
@@ -106,7 +147,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   if (!decision.allowed) {
     return NextResponse.json(
       { error: "no consent for discovery-measurement", reason: decision.reason },
-      { status: 403 },
+      { status: 403, headers: cors },
     );
   }
 
@@ -121,13 +162,16 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   // `rejected` is returned rather than logged, so a misconfigured emitter finds out from the
   // response instead of from a guide noticing a child's cabin is empty.
-  return NextResponse.json({
-    kidId,
-    accepted: result.accepted,
-    rejected: result.rejected,
-    totals: {
-      interactions: result.profile.interactions.length,
-      surfaced: result.profile.surfaced.length,
+  return NextResponse.json(
+    {
+      kidId,
+      accepted: result.accepted,
+      rejected: result.rejected,
+      totals: {
+        interactions: result.profile.interactions.length,
+        surfaced: result.profile.surfaced.length,
+      },
     },
-  });
+    { headers: cors },
+  );
 }

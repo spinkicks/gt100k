@@ -101,6 +101,7 @@ export function startUplink(): () => void {
   const uplink = createUplink({
     endpoint: INGEST_URL,
     kidId: KID_ID,
+    displayName: "Demo Child",
     interactions: () => sessionLog.interactions(),
     surfaced: () => sessionLog.surfaced(),
   });
