@@ -37,7 +37,10 @@ import {
   MirrorDiagram,
   NonogramDiagram,
   PipesDiagram,
+  ChordFitDiagram,
+  DownbeatDiagram,
   RatioMixingDiagram,
+  TuneRepairDiagram,
 } from "./diagrams";
 
 export interface ActivityTeachIn {
@@ -134,6 +137,31 @@ export const TEACH_INS = {
     title: "Ratio Mixing",
     rule: "Fill the jar to the brim so the mix holds dye and water in exactly the ratio on the order card. A poured ladle cannot be taken back, but pouring the jar out and starting again is always free.",
     Diagram: RatioMixingDiagram,
+  },
+
+  // --- music -----------------------------------------------------------------------------------
+  "tune-repair": {
+    title: "Tune Repair",
+    // Leads with LISTEN, because there is no visual route to the answer at all — the sour note sits on
+    // an ordinary row. An earlier wording described the picture first, which quietly invited a child to
+    // hunt for a shape; the shape is not the puzzle and there is no shape to find.
+    // Deliberately does not name the key: being told it would turn listening into lookup.
+    rule: "Press play and listen: one note does not belong in this tune's key, so it sounds sour. Click the note you think it is, then nudge it up or down a step until nothing sounds wrong.",
+    Diagram: TuneRepairDiagram,
+  },
+  "chord-fit": {
+    title: "Chord Fit",
+    // Says that the options are only tellable apart by ear, because the screen shows three identical
+    // buttons and a child could otherwise reasonably assume they were meant to look for a difference.
+    rule: "One note is sounding, and three chords could go under it. Only one of them contains that note, so play each one and pick the chord that holds the note up instead of fighting it.",
+    Diagram: ChordFitDiagram,
+  },
+  downbeat: {
+    title: "Downbeat",
+    // Names LOUDER explicitly, because every pulse looks identical and a child could otherwise spend the
+    // whole activity hunting the strip for a difference that is deliberately not drawn.
+    rule: "Every pulse in this loop looks the same, but some of them sound louder, and a louder pulse is where a new bar starts. Play it, then mark every pulse you hear stressed.",
+    Diagram: DownbeatDiagram,
   },
 } satisfies Record<string, ActivityTeachIn>;
 

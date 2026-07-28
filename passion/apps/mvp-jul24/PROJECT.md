@@ -43,6 +43,50 @@ Two cabins are built:
 `music` / `code` / `art` stay on the map as visible **"coming soon"** buttons. They are build state, not a
 design statement (memo §8.1.4) — but see *Risks*, because visible-but-empty is not free.
 
+**Music has three built activities that no room shows yet, and that is deliberate.**
+`src/puzzles/TuneRepair/` (a melody with one note out of key), `src/puzzles/ChordFit/` (which of three
+chords holds a note up) and `src/puzzles/Downbeat/` (where the bar starts, heard from stress alone) are
+finished and tested, and `src/audio/` is the app's first sound: synthesized at runtime, never
+sampled, because `src/shelf/types.ts` makes offline a hard requirement and an audio file would be the
+first asset to break it. It is **not** in `src/gadgets/registry.ts`, because `quads.data.test.ts` matches
+prop polygons to registered gadgets *exactly in both directions* — so registering it demands a painted
+music room, and painting one demands the gadget roster be final first. Until then each is played through its own
+`harness.tsx`. The design, the roster, and why `transpose` was rejected are in
+`docs/superpowers/specs/2026-07-27-music-cabin-design.md`.
+
+Two rules bind anything else built for this room, and the second one exists because the first was not
+enough.
+
+**R1 — the visual channel is musical notation, never numeric.** Pitch is vertical position, duration is
+horizontal extent, and no music gadget may display a number, note name, interval name or ratio as part
+of its solvable state. A channel showing semitone counts would make the puzzle arithmetic, which is the
+`math` cabin — the same swap-test failure as memo §5's C1 from the other direction.
+
+**R2 — the property that makes an answer wrong must have no visual signature.** Tune Repair originally
+defined "wrong" as a note breaking the melody's *shape*, which satisfies R1 completely and is still a
+**visible** property: as blocks on a grid it is "find the bar that breaks the pattern", solvable with
+the sound off, which is what the first player said in one sentence. Two of its own tests had asserted
+the puzzle was "fully solvable in silence" and treated that as a feature.
+
+So R1 is necessary and nowhere near sufficient: it bans printed numerals, not a layout that *is* a
+number line. Before building anything else here, name what makes an answer wrong and ask whether an eye
+can see it. Tune Repair's wrongness is now **out of key** — audible as sour, invisible on a chromatic
+roll. Chord Fit was designed against R2 from the start and therefore **draws nothing at all**: three
+identical buttons whose only difference is what they sound like, because the spec's original plan to
+stack each chord's notes "so interval spacing is visible" was the same mistake a second time.
+
+Downbeat is the room's only **non-pitch** activity — it asks about time rather than pitch, which is a
+separate musical faculty, and three gadgets all measuring pitch discrimination would give the room a far
+narrower read than its three doors suggest. It carries its metre in **loudness accents** with every pulse
+drawn identically, because the spec's original design carried it in note lengths and a wide block every
+third position writes the answer on the screen.
+
+**The cost is recorded rather than hidden: none of the three can be solved without hearing it**, so their
+Layer-3 accessibility parity (PRD §5.2) is broken. Applying R2 to the rest of the roster showed this is
+not fixable by a cleverer gadget — every audible-only activity excludes a deaf child by definition — so
+the room needs a musical activity that is **not a perceptual one** (notation, instrument mechanics,
+constructing to a written pattern). Nothing designs that yet; it is risk 5a in the spec.
+
 **The `math` topic id is deliberately reused to mean a different room.** It previously meant
 "Math & Puzzles" and held all seven puzzles; it now means the maths room only, and the puzzles move to
 `logic-games`. Anything keyed on `math` from before the split refers to the old, mixed room and is not
