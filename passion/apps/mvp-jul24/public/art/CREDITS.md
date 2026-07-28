@@ -91,9 +91,15 @@ wash; the image is decorative there and a 404 is a supported state.
 
 ## Inputs not in this repo
 
-`shots/` is gitignored, and the rendered puzzle references live outside the repo
-entirely, so the finished PNGs are committed but cannot be re-derived from a
-fresh checkout without both:
+Every image here needs a gateway key in `ANTHROPIC_CUSTOM_HEADERS` to regenerate,
+which is not committed and never will be. Beyond that, the two `gen-cabins.mjs`
+backdrops need local inputs the repo does not carry: `shots/` is gitignored and
+the rendered puzzle references live outside the repo entirely, so those two
+finished PNGs are committed but cannot be re-derived from a fresh checkout
+without both:
 
 - `shots/concept/concept-logic.png`, `shots/concept/concept-math.png`
 - the reference boards, located by `GEN_CABINS_REFS` (see `gen-cabins.mjs`)
+
+The `gen-art.mjs` targets — the maps and `cabin-backdrop-music.png` — need no
+such inputs: prompt in, image out.
