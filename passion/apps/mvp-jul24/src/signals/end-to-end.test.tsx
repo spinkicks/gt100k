@@ -17,7 +17,7 @@ import { beforeEach, expect, test, vi } from "vitest";
 import App from "../App";
 import { useGame } from "../game/store";
 import { useInterest } from "../interest/store";
-import { CATALOG } from "./catalog";
+import { CATALOG } from "@gt100k/discovery-catalog";
 import { FLOOR_MS } from "./log";
 import { sessionLog } from "./session";
 

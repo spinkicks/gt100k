@@ -3,7 +3,10 @@ const nextConfig = {
   transpilePackages: [
     "@gt100k/access-broker",
     "@gt100k/concierge",
+    "@gt100k/consent",
     "@gt100k/design-tokens",
+    "@gt100k/discovery-catalog",
+    "@gt100k/profile-store-fs",
     "@gt100k/family",
     "@gt100k/guardrails",
     "@gt100k/hypothesis-store",
@@ -13,6 +16,7 @@ const nextConfig = {
     "@gt100k/signal-pipeline",
     "@gt100k/two-axis-tagging",
     "@gt100k/student-profile",
+    "@gt100k/surfacing",
     "@gt100k/specialization-planner",
     "@gt100k/ui",
     "@gt100k/wellbeing",

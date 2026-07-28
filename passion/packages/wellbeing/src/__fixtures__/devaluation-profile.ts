@@ -47,5 +47,10 @@ const LOG: readonly Interaction[] = [
 
 /** The devaluation profile: run the real 012→011→013 chain over the hand-authored log. */
 export function buildDevaluationProfile(now: string = DEVAL_NOW): StudentProfile {
-  return runCycle(emptyProfile(DEVAL_KID, "Synthetic Deval"), LOG, { catalog: DEVAL_CATALOG }, now);
+  return runCycle(
+    emptyProfile(DEVAL_KID, "Synthetic Deval"),
+    { interactions: LOG, surfaced: [] },
+    { catalog: DEVAL_CATALOG },
+    now,
+  );
 }

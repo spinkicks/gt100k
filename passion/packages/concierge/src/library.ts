@@ -16,7 +16,7 @@ import {
   type CabinId,
   type DomainPath,
 } from "@gt100k/two-axis-tagging";
-import { MAX_DOCS, type ConciergeRequest, type CuratedResource } from "./model.js";
+import { MAX_DOCS, type AgeTier, type ConciergeRequest, type CuratedResource } from "./model.js";
 
 /** An immutable curated library value. */
 export type CuratedLibrary = readonly CuratedResource[];
@@ -95,6 +95,35 @@ export function resolve(
     .slice()
     .sort(byReputationThenId)
     .slice(0, MAX_DOCS);
+}
+
+/**
+ * Every age-eligible resource for a cell, ranked, without going through a message.
+ *
+ * `resolve` exists for the concierge, where a child has typed something and the path has to be
+ * inferred from it. A surface that already knows where the child is standing should not have to
+ * write a sentence for the inferrer to take apart again: a shelf in the maths cabin knows it is the
+ * maths cabin, and round-tripping that through prose could only lose it.
+ *
+ * `ageTiers` is a set rather than one tier because a surface serves a band and not a birthday, and
+ * the PRD is explicit that age is not a gate. A resource is eligible if it suits any tier in the
+ * band. Ordering is `resolve`'s, so the same cell ranks the same way whichever door it is asked
+ * through.
+ */
+export function curatedForCell(
+  lib: CuratedLibrary,
+  domainPath: DomainPath,
+  ageTiers: readonly AgeTier[],
+  limit = MAX_DOCS,
+): readonly CuratedResource[] {
+  return lib
+    .filter(
+      (r) =>
+        r.ageTiers.some((t) => ageTiers.includes(t)) && pathsCompatible(domainPath, r.domainPath),
+    )
+    .slice()
+    .sort(byReputationThenId)
+    .slice(0, limit);
 }
 
 /** Whether the library can answer this request from curated material (curated-first gate). */

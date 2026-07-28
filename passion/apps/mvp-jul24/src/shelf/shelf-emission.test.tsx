@@ -82,15 +82,32 @@ test("opening the shelf on its own records no engagement", () => {
   expect(kinds().filter((k) => k === "follow-source")).toEqual([]);
 });
 
-test("a card with no link records nothing, because nothing happened", () => {
+test("an unlinkable source records nothing, because there is nothing to click", () => {
   const unlinked = {
     ...DECK,
     cards: DECK.cards.map((c) => ({ ...c, source: { label: c.source.label } })),
   };
   render(<ShelfPanel deck={unlinked} onClose={() => {}} />);
 
-  expect(document.querySelector('a[href^="https://"]')).toBeNull();
+  // Scoped to the footer. The card may still offer curated links under "where to go next", and it
+  // should: a source we cannot link is a citation problem, not a reason to strand the child. What
+  // this test is about is the footer not inventing an anchor when it has no URL.
+  expect(document.querySelector(".shelf-card-source a")).toBeNull();
   expect(kinds()).toEqual([]);
+});
+
+test("the curated links are a real offer, not decoration", () => {
+  // The 157-resource library existed for weeks and was read by nothing. This is the assertion that
+  // it is now actually on a shelf a child can reach, and that following one is observed the same
+  // way following a citation is.
+  render(<ShelfPanel deck={DECK} onClose={() => {}} />);
+
+  const deeper = document.querySelectorAll<HTMLAnchorElement>(".shelf-card-deeper-list a");
+  expect(deeper.length).toBeGreaterThan(0);
+  for (const a of deeper) expect(a.href).toMatch(/^https:\/\//);
+
+  fireEvent.click(deeper[0]!);
+  expect(kinds().filter((k) => k === "follow-source")).toHaveLength(1);
 });
 
 test("each follow is its own observation", () => {

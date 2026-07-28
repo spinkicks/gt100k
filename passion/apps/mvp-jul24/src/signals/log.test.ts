@@ -33,6 +33,44 @@ describe("surfaced records", () => {
     expect(later.surfaced()).toHaveLength(2);
     expect(later.surfaced().map((s) => s.sessionId)).toEqual(["s1", "s2"]);
   });
+
+  test("records where in the order the thing sat, when the surface knows", () => {
+    const c = clock(Date.parse("2026-07-25T10:00:00.000Z"));
+    const log = createSignalLog({ sessionId: "s1", now: c.now });
+
+    log.recordSurfaced("nonogram", 0);
+    log.recordSurfaced("logic-grid", 1);
+
+    expect(log.surfaced().map((s) => s.position)).toEqual([0, 1]);
+  });
+
+  test("leaves the key out entirely when it does not, rather than writing undefined", () => {
+    // The field is optional because inventing a position for an unordered surface is worse than
+    // leaving it out, and the difference has to survive `JSON.stringify`, which drops `undefined`
+    // values and would otherwise make "no order here" and "order lost in transit" the same record.
+    const c = clock(Date.parse("2026-07-25T10:00:00.000Z"));
+    const log = createSignalLog({ sessionId: "s1", now: c.now });
+
+    log.recordSurfaced("nonogram");
+
+    expect(Object.keys(log.surfaced()[0]!)).toEqual([
+      "kidId",
+      "artifactId",
+      "sessionId",
+      "timestamp",
+    ]);
+  });
+
+  test("position zero survives, which is the one an ordinal bug eats", () => {
+    // `position && { position }` would drop the first item in every list, and the first item is the
+    // one a position effect is most about.
+    const c = clock(Date.parse("2026-07-25T10:00:00.000Z"));
+    const log = createSignalLog({ sessionId: "s1", now: c.now });
+
+    log.recordSurfaced("nonogram", 0);
+
+    expect(log.surfaced()[0]).toHaveProperty("position", 0);
+  });
 });
 
 describe("interactions", () => {

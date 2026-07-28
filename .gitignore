@@ -66,3 +66,6 @@ secrets/
 
 # subagent-driven-development scratch (ledger, briefs, review packages) — never commit
 .superpowers/
+
+# Ingested student profiles: real child data, never committed.
+.profiles/

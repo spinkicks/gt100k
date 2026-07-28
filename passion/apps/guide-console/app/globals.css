@@ -3993,3 +3993,49 @@ body {
     display: none;
   }
 }
+
+/* --- what to offer next ----------------------------------------------------------------------
+   A list rather than tiles: it is read top to bottom in priority order, and the order is the
+   policy. Debts before breadth. */
+.offer-next {
+  margin: 0;
+  padding: 0 var(--sp-4) var(--sp-4);
+  list-style: none;
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.offer-next li {
+  display: grid;
+  grid-template-columns: minmax(9rem, auto) 1fr;
+  gap: var(--sp-3);
+  align-items: baseline;
+  padding: var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+/* A debt is the one with a cost attached to ignoring it, so it is the only one marked. Amber and
+   not red: this is a nudge about sequencing, not a child at risk, and spending red here would make
+   the wellbeing panel's red mean less. */
+.offer-next li[data-reason="maintenance-debt"] {
+  border-inline-start: 3px solid var(--warn-fg, var(--accent));
+}
+
+.offer-next__what {
+  font-weight: 600;
+}
+
+.offer-next__why {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 40rem) {
+  .offer-next li {
+    grid-template-columns: 1fr;
+    gap: var(--sp-1);
+  }
+}

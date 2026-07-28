@@ -85,6 +85,33 @@ export const CATALOG: ReadonlyMap<string, Artifact> = new Map(
   ]),
 );
 
+/**
+ * The cabin each of the game's topics belongs to.
+ *
+ * A topic is a room; a gadget is a thing in it. The rows above answer "what is this object", and
+ * this answers "what is this room about", which is the question an invitation card asks: it is
+ * addressed to the whole field rather than to any one puzzle, so it cannot borrow a gadget's path
+ * without narrowing itself to that gadget's subtopic.
+ *
+ * Cabin-level on purpose, with no subtopic. A room contains several, and picking one would quietly
+ * decide that a child who liked the maths room liked fractions specifically.
+ *
+ * The rooms with no interior yet (`music`, `art`, `science`, `words`) are absent rather than guessed.
+ * Music is the one to watch: #215 landed its design and its first sound, so the moment a gadget of its
+ * own is registered this needs a row or its shelf will offer nothing. An absent row yields no resources, which is visibly nothing; a wrong row yields the
+ * wrong resources, which looks like it worked.
+ */
+const TOPIC_CABINS = {
+  "logic-games": ["math-puzzles"],
+  math: ["math-puzzles"],
+  code: ["code-computers"],
+} as const satisfies Readonly<Record<string, readonly [string]>>;
+
+/** The cabin path for one of the game's topics, or undefined when that room has no mapping yet. */
+export function pathForTopic(topicId: string): Artifact["domainPath"] | undefined {
+  return (TOPIC_CABINS as Readonly<Record<string, Artifact["domainPath"]>>)[topicId];
+}
+
 /** Solve verb per gadget, derived from the same rows so the two cannot disagree. */
 const VERBS: ReadonlyMap<string, SolveVerb> = new Map(ROWS.map(([id, , , verb]) => [id, verb]));
 

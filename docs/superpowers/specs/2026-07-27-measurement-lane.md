@@ -3,7 +3,14 @@
 **Status:** §2.1 and §2.2 implemented. The rest is on hold pending a decision about the child surface.
 **Date:** 2026-07-27 (rev 3; rev 2 followed a red-team that found four blockers in rev 1)
 
-> ## The child surface may not be a game
+> ## SUPERSEDED on the surface question. The child surface IS a game.
+>
+> The heading below was written while that was open. It was settled the same day, against this
+> document's own analysis: `docs/decisions/2026-07-27-discovery-surface.md` §-1 keeps the game and
+> declines the launcher. Anything here that holds work back *pending the surface decision* is
+> therefore unblocked, not waiting.
+>
+> ## (superseded) The child surface may not be a game
 >
 > The discovery surface is under review: the game may be replaced by a browse/catalog app where a
 > child can start learning anything. That does not invalidate this spec, but it splits it cleanly in
@@ -45,7 +52,11 @@
 The engine receives nothing from the discovery game. There are **four** blocks between a child's
 click and a posterior, and they are in series, so fixing any three changes nothing observable.
 
-**Block 0 — emission is switched off.** `EMISSION_ENABLED = false`
+**Block 0 — DONE. Emission is on** as of #216, and the precondition this block set was met rather than
+waived: the backdrop's prop polygons turned out to have been wired all along, and the shelf now emits
+`follow-source`. The original text follows.
+
+~~**Block 0 — emission is switched off.** `EMISSION_ENABLED = false`~~
 (`mvp-jul24/src/signals/session.ts:38`) and `sessionLog` is a no-op with the same shape. Nothing is
 recorded at all. This is deliberate and documented: the backdrop's prop polygons and the shelf are
 not wired to `recordOpen`/`recordSurfaced`, so a live log would under-count every open, and the

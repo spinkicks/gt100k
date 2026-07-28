@@ -26,10 +26,22 @@ export const MapScreen: React.FC = () => {
   // Availability is what makes a decline readable: a cabin the child could have
   // entered and didn't is evidence; a locked one is not. So only enterable
   // cabins are surfaced.
+  // `position` is reading order among the cabins that were actually on offer: top to bottom, then
+  // left to right. It is recorded and nothing reads it yet, which is the point — the size of a
+  // position effect can only be measured in this surface with these children, and a position not
+  // captured at surfacing time cannot be recovered afterwards.
+  //
+  // Read it as a convention rather than as a measured order of attention. On a painted landscape the
+  // thing that actually pulls a young child's eye is salience, and memo 07 §2.3 puts motion at the
+  // top of that list: the two enterable cabins glow and breathe while the rest sit mist-washed on
+  // the horizon, so their pull has more to do with that than with where they sit in a scan. What
+  // this number can honestly support is a left-versus-right comparison between the two, which is a
+  // real bias and a cheap one to check for.
   useEffect(() => {
-    for (const cabin of CABINS) {
-      if (cabin.active) sessionLog.recordSurfaced(cabin.id);
-    }
+    const offered = CABINS.filter((c) => c.active)
+      .slice()
+      .sort((a, b) => (a.yPct !== b.yPct ? a.yPct - b.yPct : a.xPct - b.xPct));
+    offered.forEach((cabin, position) => sessionLog.recordSurfaced(cabin.id, position));
   }, []);
 
   return (

@@ -2,7 +2,7 @@
 
 **Feature Branch**: `009-two-axis-tagging`
 **Created**: 2026-07-22
-**Status**: Draft (loop-ready)
+**Status**: Draft (loop-ready) — **but DELIVERED.** The code is merged and tested; it lives in `@gt100k/two-axis-tagging`. This field tracks the state of the DOCUMENT, which was never revised after the build, and a reader comparing it against the ✅ in `docs/prd/passionApps.md` should trust the packages and their tests over either. What a ✅ does *not* mean is that a child can use it end to end.
 
 **Input**: The tagging substrate for PassionLab discovery. Every artifact a child can engage with (cabin gadget, taste app, curated/open-web resource) is tagged on **two axes** — a hierarchical **domain** (topic) and a **work-mode** (style, from a fixed set of 9 verbs). Artifacts carry the work-modes they **afford**; a child's **actions resolve which mode they actually engaged**. Tags come from a manually-curated **gold** set plus an **LLM auto-tagger** (TrueFoundry gateway) for the long tail, and a **validity harness** measures tag reliability and gates trust. This is `C2` in `docs/prd/passionApps.md`; it feeds `C1` (event capture) → `C3` (inference). Grounding: `docs/prd/engines/C2-tagging.md`, `DISCOVERY-APP-PRD.md` §6.1, `hardening/measurement-validity.md`.
 

@@ -2,7 +2,7 @@
 
 **Feature Branch**: `012-signal-pipeline`
 **Created**: 2026-07-23
-**Status**: Draft (loop-ready)
+**Status**: Draft (loop-ready) — **but DELIVERED.** The code is merged and tested; it lives in `@gt100k/signal-pipeline`. This field tracks the state of the DOCUMENT, which was never revised after the build, and a reader comparing it against the ✅ in `docs/prd/passionApps.md` should trust the packages and their tests over either. What a ✅ does *not* mean is that a child can use it end to end.
 
 **Input**: The bridge between the discovery world and the inference engine — the **"Signal Firewall."** It turns raw child-interaction traces into the `CellEvent` stream `@gt100k/interest-inference` (011) consumes, by resolving engaged work-modes (via `@gt100k/two-axis-tagging` 009), classifying **novelty vs durable**, **voluntary vs prompted**, extracting **depth** signals, and deriving **skip** (disconfirming) signals. It also emits the intermediate `ActionEvent`s. Grounding: `docs/prd/passionApps.md` (C1), `docs/prd/engines/C2-tagging.md`, `DISCOVERY-APP-PRD.md` §6, `passion/CONTEXT.md` (Signal Firewall, Voluntary Return).
 

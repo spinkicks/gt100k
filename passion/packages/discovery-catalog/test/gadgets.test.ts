@@ -15,29 +15,15 @@
  * case: the game files it under `logic-games` for a sound reason, and the product has
  * `games-strategy/chess` exactly. A child returning to the chess puzzle is telling us about chess,
  * and routing that into `logic-puzzles` would discard it.
+ *
+ * Coverage against the game's own gadget registry is NOT here. Only the app knows what furniture it
+ * has, and this package must not depend on an app, so that half lives in
+ * `mvp-jul24/src/signals/catalog-covers-registry.test.ts` and fails there instead.
  */
 import { type CABINS, SEED_SUBTOPICS, isCabinId, isWorkMode } from "@gt100k/two-axis-tagging";
 import { describe, expect, it } from "vitest";
 
-import { GADGETS } from "../gadgets/registry";
-import { CATALOG, artifactFor } from "./catalog";
-
-describe("every gadget in the room is on the map", () => {
-  it("maps each one, so nothing a child can touch emits into nothing", () => {
-    for (const g of GADGETS) {
-      expect(artifactFor(g.id), `${g.id} has no crosswalk row`).toBeDefined();
-    }
-  });
-
-  it("has no rows for gadgets that do not exist", () => {
-    // A stale row is a silent lie: it resolves, so nothing fails, and it files a child's engagement
-    // under a domain nothing in the app can reach.
-    const ids = new Set(GADGETS.map((g) => g.id));
-    for (const id of CATALOG.keys()) {
-      expect(ids.has(id), `${id} is in the crosswalk but not in the registry`).toBe(true);
-    }
-  });
-});
+import { CATALOG, artifactFor } from "../src/gadgets.js";
 
 describe("every row names something the taxonomy actually has", () => {
   it("uses a real cabin", () => {

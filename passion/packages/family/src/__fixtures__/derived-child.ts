@@ -10,8 +10,9 @@ import { emptyProfile, runCycle, type StudentProfile } from "@gt100k/student-pro
 import { assessWellbeing, type WellbeingRead } from "@gt100k/wellbeing";
 
 // Derive the log element type from the orchestrator's signature (avoids a direct dependency on
-// @gt100k/signal-pipeline — family's deps stay the pinned five).
-type Interaction = Parameters<typeof runCycle>[1][number];
+// @gt100k/signal-pipeline — family's deps stay the pinned five). The batch carries both logs now,
+// so this reaches through it rather than indexing an array.
+type Interaction = Parameters<typeof runCycle>[1]["interactions"][number];
 
 export const DOMINANT_NOW = "2026-04-01T00:00:00.000Z";
 export const DOMINANT_KID = "kid-synthetic-919";
@@ -55,7 +56,7 @@ const LOG: readonly Interaction[] = [
 export function buildDominantSpikeProfile(now: string = DOMINANT_NOW): StudentProfile {
   return runCycle(
     emptyProfile(DOMINANT_KID, "Synthetic Dominant"),
-    LOG,
+    { interactions: LOG, surfaced: [] },
     { catalog: DOMINANT_CATALOG },
     now,
   );

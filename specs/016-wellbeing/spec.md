@@ -2,7 +2,7 @@
 
 **Feature Branch**: `016-wellbeing`
 **Created**: 2026-07-23
-**Status**: Draft (loop-ready)
+**Status**: Draft (loop-ready) — **but DELIVERED.** The code is merged and tested; it lives in `@gt100k/wellbeing`. This field tracks the state of the DOCUMENT, which was never revised after the build, and a reader comparing it against the ✅ in `docs/prd/passionApps.md` should trust the packages and their tests over either. What a ✅ does *not* mean is that a child can use it end to end.
 
 **Input**: F2 in `docs/prd/passionApps.md` (Push/Back-off + Burnout Monitor) — the behavioral-signal → action engine that keeps a deepening pursuit healthy, and the guide-console surface that shows a human the recommendation so **the system proposes and the human disposes**. A headless **domain package** turns per-spike behavioral signals into a recommendation on **two independent knobs** (a *challenge* move — PUSH/HOLD/SCAFFOLD — and a *pressure* move — autonomy up/steady), plus **BACK-OFF / REST / hand-to-a-human** when strain shows, weighting quiet **devaluation** as the earliest alarm. A **guide-console panel** renders it. Grounding: `docs/research/passion-pipeline/02-push-vs-backoff-burnout.md` (§6.2 decision table, §6.3 the nine guardrails), `docs/prd/hardening/remaining-weakpoints.md` (#2 per-spike quiet periods; #5 leading indicators), `SPECIALIZATION-PIPELINE-PRD.md` (push/back-off playbook), `passion/CONTEXT.md`.
 

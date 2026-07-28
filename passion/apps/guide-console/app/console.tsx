@@ -24,10 +24,25 @@ import { mapsForReview } from "./maps.js";
 import { REVIEW_MAPS } from "./maps-seed.js";
 import { workForKid } from "./map-evidence.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
+import type { StudentProfile } from "@gt100k/student-profile";
+import { setIngested } from "./console-data.js";
 
 type View = "overview" | "hypotheses" | "wellbeing" | "plan" | "family" | "access" | "maps";
 
-export function GuideConsole(): JSX.Element {
+export interface GuideConsoleProps {
+  /**
+   * Children whose play has actually been ingested, read from the profile store by the server
+   * component. Empty in every environment where nobody has posted anything, which is most of them.
+   */
+  readonly ingested?: readonly StudentProfile[];
+}
+
+export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Element {
+  // Before `useConsole`, deliberately. The controller reads the roster during its first render, so
+  // handing it the real children afterwards would render one frame of a console that has forgotten
+  // them, and on the server that frame is the HTML the client then has to match.
+  setIngested(ingested);
+
   const ctrl = useConsole();
   const [view, setView] = useState<View>("overview");
   // Domain knowledge, not a read on a child, so it does not move when the child switcher does.

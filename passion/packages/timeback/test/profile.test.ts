@@ -3,7 +3,7 @@
 // never manufactures a hypothesis: empty log + any priors ⇒ empty store either way).
 import { describe, expect, it } from "vitest";
 import type { OrchestratorContext } from "@gt100k/student-profile";
-import { emptyProfile, runCycle } from "@gt100k/student-profile";
+import { emptyProfile, runCycle, EMPTY_BATCH } from "@gt100k/student-profile";
 import { toDomainPriors, withPriors } from "../src/index.js";
 import { GOLDEN_SNAPSHOT } from "../src/__fixtures__/snapshots.js";
 
@@ -37,11 +37,11 @@ describe("withPriors (SC-6)", () => {
 
     const withP = runCycle(
       withPriors(emptyProfile("k", "K"), priors, GOLDEN_SNAPSHOT.asOf),
-      [],
+      EMPTY_BATCH,
       ctx,
       now,
     );
-    const without = runCycle(emptyProfile("k", "K"), [], ctx, now);
+    const without = runCycle(emptyProfile("k", "K"), EMPTY_BATCH, ctx, now);
 
     // empty log + any priors ⇒ empty store either way (the prior never gates)
     expect(Object.keys(withP.store.byId)).toHaveLength(0);
