@@ -45,6 +45,8 @@ function writeWatermark(w: Watermark): void {
 export interface UplinkOptions {
   readonly endpoint: string;
   readonly kidId: string;
+  /** What a guide should see in the child switcher. Falls back to the id. */
+  readonly displayName?: string;
   readonly interactions: () => readonly EmittedInteraction[];
   readonly surfaced: () => readonly SurfacedRecord[];
   /** Injected so tests do not reach the network. */
@@ -56,10 +58,23 @@ const defaultPost = async (url: string, body: string): Promise<boolean> => {
     method: "POST",
     headers: { "content-type": "application/json" },
     body,
-    // The console is a different origin in development. A failure here is indistinguishable from
-    // the console being closed, which is the normal case, so it is treated the same way.
+    // The console is a different origin in development, so this is a real cross-origin request and
+    // the route has to answer a preflight. It does; it did not until someone pointed a browser at
+    // it, because every test of that route calls the handler directly and a direct call has no
+    // origin to check.
     mode: "cors",
   });
+
+  // A 4xx is a CONFIGURATION problem, not the console being closed, and the two are worth
+  // distinguishing even though both end in "try again later". Silence is right for the child and
+  // wrong for whoever set this up: without this line, forgetting the consent file looks exactly
+  // like everything working, and the only evidence is a 403 in a devtools panel nobody has open.
+  if (!res.ok && res.status >= 400 && res.status < 500) {
+    const detail = await res.text().catch(() => "");
+    console.warn(
+      `[uplink] the console refused this batch (${res.status}). Nothing was recorded. ${detail}`,
+    );
+  }
   return res.ok;
 };
 
@@ -99,7 +114,14 @@ export function createUplink(opts: UplinkOptions) {
       try {
         const ok = await post(
           opts.endpoint,
-          JSON.stringify({ kidId: opts.kidId, interactions, surfaced }),
+          JSON.stringify({
+            kidId: opts.kidId,
+            // So a guide sees a name rather than an id in the switcher. Not PII: the id is a fixed
+            // synthetic string and this is a label for it.
+            displayName: opts.displayName ?? opts.kidId,
+            interactions,
+            surfaced,
+          }),
         );
         if (ok) {
           writeWatermark({ interactions: allI.length, surfaced: allS.length });

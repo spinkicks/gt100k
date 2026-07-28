@@ -120,7 +120,14 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
         <aside className="sidebar">
           <ChildSwitcher ctrl={ctrl} />
           <div className="sidebar__foot">
-            <span className="chip chip--soft">Synthetic data only</span>
+            {/* Stops being true the moment a real session is ingested, and a false reassurance about
+                data provenance is worse than none: it is the label someone checks before deciding
+                what they may do with what is on screen. */}
+            <span className="chip chip--soft">
+              {ingested.length === 0
+                ? "Synthetic data only"
+                : `Synthetic, plus ${ingested.length} ingested`}
+            </span>
             {/* Says where the decisions live, because the honest answer is "this browser" and a
                 guide should not assume more than that. Absent until there is something to say, so
                 a fresh console is not cluttered by a count of nothing. */}
