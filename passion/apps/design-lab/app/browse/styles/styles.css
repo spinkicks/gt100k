@@ -1,0 +1,90 @@
+/* The register comparison. Tiles are rendered at the size they appear in the real grid, because a
+   register that reads at 900px and falls apart at 250px has not been evaluated. */
+
+.styles {
+  --bg: oklch(16% 0.012 265);
+  --surface: oklch(23% 0.015 265);
+  --ink: oklch(97% 0.005 265);
+  --ink-soft: oklch(78% 0.012 265);
+  --line: oklch(34% 0.015 265);
+  --ring: oklch(84% 0.16 92);
+
+  min-height: 100vh;
+  padding: 2rem clamp(1rem, 4vw, 3rem) 3rem;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans, system-ui), sans-serif;
+}
+
+.styles__head {
+  max-width: 46rem;
+  margin-bottom: 2.5rem;
+}
+
+.styles__head h1 {
+  margin: 0 0 0.6rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.15;
+}
+
+.styles__head p,
+.styles__foot p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+
+.styles__row {
+  display: grid;
+  grid-template-columns: minmax(0, 18rem) 1fr;
+  gap: 2rem;
+  align-items: start;
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.styles__meta h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+}
+
+.styles__meta p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.styles__tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+/* Matches the real grid's tile geometry, 254 x 381 at 1440. Comparing at any other size would be
+   comparing something the child never sees. */
+.styles__tile {
+  position: relative;
+  min-height: 22rem;
+  overflow: hidden;
+  cursor: default;
+}
+
+.styles__foot {
+  max-width: 46rem;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 62rem) {
+  .styles__row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .styles__tile {
+    min-height: 14rem;
+  }
+}
