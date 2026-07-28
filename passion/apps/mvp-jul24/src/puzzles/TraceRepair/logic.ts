@@ -29,7 +29,7 @@
  * and a board and nothing to read: the intended result is shown as a creature that moves, never as a
  * sentence describing where it should go.
  */
-import { type MachineState, type Pose } from "../../code/interpret";
+import type { MachineState, Pose } from "../../code/interpret";
 import { MAX_OPS, type Program, type Statement } from "../../code/program";
 import { run } from "../../code/trace";
 import { poseSequence } from "../SpriteLoop/logic";
@@ -60,7 +60,9 @@ export function isSolved(puzzle: TraceRepairPuzzle, attempt: Program): boolean {
   const want = posesOf(puzzle, puzzle.intended);
   const got = posesOf(puzzle, attempt);
   if (got.length !== want.length) return false;
-  return want.every((p, i) => p.x === got[i]!.x && p.y === got[i]!.y && p.facing === got[i]!.facing);
+  return want.every(
+    (p, i) => p.x === got[i]!.x && p.y === got[i]!.y && p.facing === got[i]!.facing,
+  );
 }
 
 /** Whether two programs finish in the same place, facing the same way. The weaker criterion. */

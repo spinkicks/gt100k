@@ -63,13 +63,15 @@ function pick<T>(rng: Rng, xs: readonly T[]): T {
 /** Every statement that could stand in for `s` — the ways one line can be wrong. */
 function corruptionsOf(s: Statement): readonly Statement[] {
   switch (s.kind) {
-    case "move":
+    case "move": {
       // Off-by-one in both directions, plus a bigger slip.
-      return [
+      const slips: readonly Statement[] = [
         { kind: "move", steps: s.steps + 1 },
         { kind: "move", steps: Math.max(1, s.steps - 1) },
         { kind: "move", steps: s.steps + 2 },
-      ].filter((c) => c.steps !== s.steps);
+      ];
+      return slips.filter((c) => c.kind === "move" && c.steps !== s.steps);
+    }
     case "turn":
       // The wrong way round: the single most ordinary bug in this vocabulary.
       return [{ kind: "turn", quarters: -s.quarters }];
@@ -94,8 +96,13 @@ function acceptable(puzzle: TraceRepairPuzzle): boolean {
   // Both programs stay on the board for their whole run.
   if (!wantPoses.every(inBounds) || !gotPoses.every(inBounds)) return false;
 
-  // The intended run has to be worth watching.
-  if (wantPoses.every((p) => p.x === puzzle.start.x && p.y === puzzle.start.y)) return false;
+  // The intended run has to be worth watching, and "not stationary" turned out to be far too weak a
+  // bar. The first version of this rule admitted a round of four turns and one step: the creature
+  // spun on the spot and shuffled one cell, the two runs differed only by a rotation, and the whole
+  // thing was both dull to watch and needlessly subtle to read. A run has to actually go somewhere,
+  // so it must visit at least three distinct cells.
+  const visited = new Set(wantPoses.map((p) => `${p.x},${p.y}`));
+  if (visited.size < 3) return false;
 
   // 1. They part company inside the run, not only at the very end.
   const d = divergenceTick(wantPoses, gotPoses);

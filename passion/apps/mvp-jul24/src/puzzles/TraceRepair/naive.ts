@@ -55,9 +55,7 @@ export function repairsByRun(puzzle: TraceRepairPuzzle): readonly Repair[] {
 
 /** Edits that merely finish where the intended run finishes. Never a solve check. */
 export function repairsByEnding(puzzle: TraceRepairPuzzle): readonly Repair[] {
-  return allSingleLineEdits(puzzle).filter((r) =>
-    sameEnding(puzzle, r.program, puzzle.intended),
-  );
+  return allSingleLineEdits(puzzle).filter((r) => sameEnding(puzzle, r.program, puzzle.intended));
 }
 
 /** Which lines a child could blame if they judged only by where the creature stopped. */

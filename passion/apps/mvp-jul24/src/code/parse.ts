@@ -21,7 +21,10 @@ export const VERBS = ["move", "turn", "wait"] as const;
 
 export type ParseResult =
   | { readonly ok: true; readonly statement: Statement }
-  | { readonly ok: false; readonly reason: "empty" | "unknown-word" | "needs-number" | "needs-side" };
+  | {
+      readonly ok: false;
+      readonly reason: "empty" | "unknown-word" | "needs-number" | "needs-side";
+    };
 
 /**
  * Parse one line.

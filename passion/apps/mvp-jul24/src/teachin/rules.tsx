@@ -41,6 +41,7 @@ import {
   DownbeatDiagram,
   RatioMixingDiagram,
   SpriteLoopDiagram,
+  TraceRepairDiagram,
   TuneRepairDiagram,
 } from "./diagrams";
 
@@ -174,6 +175,15 @@ export const TEACH_INS = {
     // as the place to begin without the copy having to gesture at it.
     rule: "One creature keeps moving in a pattern, over and over. Build yours out of blocks so it goes the same places, in the same order, at the same speed.",
     Diagram: SpriteLoopDiagram,
+  },
+  "trace-repair": {
+    title: "Trace & Repair",
+    // Says STEP THROUGH IT, because the round is built so the ending cannot tell you which line is at
+    // fault -- several lines could explain where the creature stops, and only the middle of the run
+    // separates them. A child who reads only the final board will blame the wrong line, so the one
+    // instruction worth spending a sentence on is the scrubber.
+    rule: "This program was meant to move the pale creature's way, but one line sends yours somewhere else. Drag the slider to step through both and watch for the moment they stop agreeing, then retype that line.",
+    Diagram: TraceRepairDiagram,
   },
 } satisfies Record<string, ActivityTeachIn>;
 

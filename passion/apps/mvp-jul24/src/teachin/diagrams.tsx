@@ -776,3 +776,55 @@ export function SpriteLoopDiagram(): JSX.Element {
     </Stage>
   );
 }
+
+/**
+ * Trace & Repair. A short listing beside two creatures that have parted company.
+ *
+ * **No line is marked as the faulty one**, because finding it is the puzzle and a diagram that
+ * pointed at a line would teach a child to expect the room to do the same. What the picture says
+ * instead is the shape of the task: there is a list, there are two creatures, and somewhere partway
+ * along they stop agreeing.
+ */
+export function TraceRepairDiagram(): JSX.Element {
+  const rowH = 13;
+  const y0 = 12;
+  const lines = 5;
+  return (
+    <Stage>
+      {/* The listing: identical bars, none singled out. */}
+      {Array.from({ length: lines }, (_, i) => (
+        <rect
+          // biome-ignore lint/suspicious/noArrayIndexKey: a fixed listing; position is the identity.
+          key={i}
+          x={16}
+          y={y0 + i * rowH}
+          width={78}
+          height={9}
+          rx={2}
+          className="ti-cell"
+        />
+      ))}
+      <Tag x={55} y={y0 + lines * rowH + 12}>
+        one line is wrong
+      </Tag>
+
+      {/* The two creatures, together at first and apart later. */}
+      <circle cx={140} cy={26} r={5} className="ti-node" />
+      <circle cx={140} cy={26} r={9} className="ti-node-on" fillOpacity={0} />
+      <Tag x={140} y={14}>
+        together
+      </Tag>
+
+      <circle cx={214} cy={26} r={5} className="ti-node" />
+      <circle cx={238} cy={46} r={5} className="ti-node-on" />
+      <Tag x={226} y={14}>
+        then not
+      </Tag>
+      {/* Centred inside the 260-wide stage. An earlier version anchored this at x=196 with
+          anchor="start" and it ran off the right edge, rendering as "step through t". */}
+      <Tag x={186} y={76}>
+        step through to see
+      </Tag>
+    </Stage>
+  );
+}

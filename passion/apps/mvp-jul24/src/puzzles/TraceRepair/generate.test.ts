@@ -43,6 +43,15 @@ describe("generateForRound", () => {
     }
   });
 
+  it("gives every round a run that actually goes somewhere", () => {
+    // Not merely "not stationary": a round of four turns and one step passed that bar and was dull
+    // to watch and subtle to read. Three distinct cells is the floor.
+    for (const { seed, index, puzzle } of ROUNDS) {
+      const visited = new Set(posesOf(puzzle, puzzle.intended).map((p) => `${p.x},${p.y}`));
+      expect(visited.size, `seed ${seed} tier ${index}`).toBeGreaterThanOrEqual(3);
+    }
+  });
+
   it("uses the line lengths its tier promises", () => {
     for (const { index, puzzle } of ROUNDS) {
       expect(puzzle.buggy).toHaveLength(TIERS[index]!.lines);
@@ -95,5 +104,8 @@ describe("the fallback round", () => {
     expect(linesBlamedByEnding(p).size).toBeGreaterThanOrEqual(2);
     expect(posesOf(p, p.intended).every(inBounds)).toBe(true);
     expect(posesOf(p, p.buggy).every(inBounds)).toBe(true);
+    expect(new Set(posesOf(p, p.intended).map((q) => `${q.x},${q.y}`)).size).toBeGreaterThanOrEqual(
+      3,
+    );
   });
 });

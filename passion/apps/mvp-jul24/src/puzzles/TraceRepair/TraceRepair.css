@@ -1,0 +1,171 @@
+/**
+ * Trace & Repair's board, listing and scrubber.
+ *
+ * NO LINE IS EVER MARKED AS THE WRONG ONE. The line being edited gets focus styling like any input,
+ * and a line that cannot be read yet says so — but nothing here distinguishes the faulty line, because
+ * finding it is the puzzle.
+ *
+ * The two creatures use the same pale-versus-ember weighting as Sprite Loop, on purpose: a child
+ * arriving from that door should not have to relearn which one is theirs.
+ */
+
+.tr {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem 1.5rem;
+  color: var(--cream);
+  font-family: var(--font-body);
+}
+
+.tr-exit {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 2px solid var(--wood-frame);
+  border-radius: var(--r-pill);
+  background: linear-gradient(180deg, var(--wood-light), var(--wood));
+  color: var(--cream);
+  font: 600 1rem var(--font-display);
+  cursor: pointer;
+}
+
+/* Board and listing side by side where there is room, stacked where there is not. */
+.tr-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.tr-board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  width: min(100%, 22rem);
+  aspect-ratio: 1;
+  padding: 0.5rem;
+  border: 2px solid var(--wood-frame);
+  border-radius: var(--r-md);
+  background: var(--wood-deep);
+  box-shadow: var(--shadow-panel);
+}
+
+.tr-cell {
+  border: 1px solid var(--wood);
+  border-radius: 2px;
+  background: var(--wood-deep);
+}
+
+.tr-intended,
+.tr-mine {
+  place-self: center;
+  width: 70%;
+  height: 70%;
+  clip-path: polygon(50% 0%, 100% 100%, 50% 78%, 0% 100%);
+  transition: transform 140ms var(--ease-out);
+}
+
+.tr-intended {
+  background: var(--cream-soft);
+  opacity: 0.45;
+}
+
+.tr-mine {
+  background: var(--ember-bright);
+  box-shadow: var(--glow-ember);
+}
+
+.tr-listing {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 15rem;
+  margin: 0;
+  padding: 0.5rem;
+  border: 2px solid var(--wood-frame);
+  border-radius: var(--r-md);
+  background: var(--wood);
+  list-style: none;
+  counter-reset: line;
+}
+
+.tr-line {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/*
+ * Every line is an editable field, so nothing has to tell a child which ones can be changed. A
+ * monospace face because the listing is code and reads as code.
+ */
+.tr-input {
+  flex: 1;
+  min-height: 40px;
+  padding: 0 0.6rem;
+  border: 2px solid var(--wood-frame);
+  border-radius: var(--r-sm);
+  background: var(--wood-deep);
+  color: var(--cream);
+  font: 600 1rem ui-monospace, "SFMono-Regular", "Menlo", monospace;
+}
+
+.tr-input:focus-visible {
+  border-color: var(--ember-bright);
+  box-shadow: var(--glow-ember);
+  outline: none;
+}
+
+/* Not-yet-readable, which is not the same as wrong. Dashed rather than red. */
+.tr-input-unread {
+  border-style: dashed;
+  border-color: var(--ember-deep);
+}
+
+.tr-problem {
+  color: var(--cream-soft);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.tr-scrub {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.tr-scrub input[type="range"] {
+  width: min(100%, 22rem);
+  accent-color: var(--ember);
+}
+
+.tr-scrub-label {
+  font: 600 1rem var(--font-display);
+}
+
+.tr-say,
+.tr-words {
+  margin: 0;
+  text-align: center;
+  color: var(--cream-soft);
+}
+
+.tr-words {
+  font-size: 0.9rem;
+}
+
+.tr-next {
+  align-self: center;
+  min-height: 44px;
+  padding: 0 1.5rem;
+  border: 2px solid var(--ember-deep);
+  border-radius: var(--r-pill);
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  color: var(--ink);
+  font: 700 1.05rem var(--font-display);
+  cursor: pointer;
+}
