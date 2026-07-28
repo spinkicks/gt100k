@@ -173,9 +173,15 @@ importers:
 
   passion/apps/design-lab:
     dependencies:
+      '@gt100k/concierge':
+        specifier: workspace:*
+        version: link:../../packages/concierge
       '@gt100k/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../../packages/two-axis-tagging
       next:
         specifier: ^14.2.15
         version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

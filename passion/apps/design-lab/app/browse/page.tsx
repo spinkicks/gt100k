@@ -1,0 +1,255 @@
+"use client";
+
+// A browse prototype for the child-facing surface, in the shape of a Kaleidescape covers wall.
+//
+// WHAT IS TAKEN FROM THE REFERENCE: a dense grid on a dark ground, content edge to edge with almost
+// no chrome, one selected tile ringed in a bright colour, and a panel that names the selection and
+// says one line about it. The posture is the valuable part — everything is on offer, nothing is
+// gated, nothing is recommended at you, and the interface gets out of the way.
+//
+// WHAT IS DELIBERATELY NOT TAKEN, and why each one would cost us something:
+//
+//   The shuffle. Kaleidescape reorders around whatever you linger on, which makes it a recommender:
+//   the choice set changes per child and per moment, so a decline and a never-shown become the same
+//   log line and E4 stops being identifiable. Here the order is random per session and the MEMBERSHIP
+//   IS FIXED. Random order is better than a fixed one, because it decorrelates position from
+//   content. Random membership would be trigger-and-abandon, which finishes below never-triggered.
+//
+//   Poster art. A movie poster's entire job is to out-compete the poster beside it. Javora (2019),
+//   ages 9-11: same content at two aesthetic treatments, the prettier chosen 62% of the time,
+//   d > 0.86, with no learning benefit. Tiles here are uniform by construction — one glyph
+//   vocabulary, one stroke weight, and hue varying at CONSTANT LIGHTNESS AND CHROMA in OKLCH, so
+//   cabins are distinguishable without any of them being nicer to look at.
+//
+//   The density. A wall of fifty is a conjunction-search display, and Patall's optimum is 3-5 per
+//   choice moment. But the robust finding in that paper is not about options per screen at all: it
+//   is 2-4 SUCCESSIVE choices at d = 0.61 against d = 0.21 for one. So this is a sequence — cabin,
+//   then subtopic, then resource. Three moments, each small, and far more than fifty things reachable.
+import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from "react";
+
+import { CabinGlyph, ExternalGlyph } from "./glyphs.js";
+import { CABIN_TILES, resourcesFor, shuffled, subtopicTiles, type Tile } from "./model.js";
+import "./browse.css";
+
+type Step = "cabin" | "subtopic";
+
+/** What the surface would emit. Rendered on screen so the measurement is visible, not implied. */
+interface Surfaced {
+  /** One entry per screen, so a re-render cannot inflate what was offered. */
+  readonly key: string;
+  readonly step: Step;
+  readonly ids: readonly string[];
+}
+
+export default function BrowsePage(): JSX.Element {
+  // One seed per page load, so the order is stable while the child is looking at it and different
+  // the next time they come. Fixed on the server pass to keep hydration honest.
+  //
+  // `seed` starts fixed so the server and the first client render agree, then moves once on mount.
+  // `ready` gates the offer log through that transition: the pre-hydration order was never on a
+  // screen anyone saw, and counting it would report eight offers that did not happen.
+  const [seed, setSeed] = useState(1);
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    setSeed(Math.floor(Math.random() * 2 ** 31) || 1);
+    setReady(true);
+  }, []);
+
+  const [cabin, setCabin] = useState<Tile | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [log, setLog] = useState<readonly Surfaced[]>([]);
+
+  const step: Step = cabin === null ? "cabin" : "subtopic";
+  const tiles = useMemo(
+    () => shuffled(cabin === null ? CABIN_TILES : subtopicTiles(cabin.cabin), seed),
+    [cabin, seed],
+  );
+
+  // Every tile on screen is an offer, and an offer nobody logged cannot be declined later. Position
+  // rides along because it can only be captured now: after the fact there is no way to know where a
+  // thing sat, and with the order randomised it is the variable that makes the bias measurable.
+  //
+  // Keyed on the screen and recorded once per screen. Appending on every effect pass counted the
+  // same offer two or three times, which is the exact failure `recordSurfaced` guards against in
+  // the real emitter: a re-render is not a second time the child was shown something.
+  const screenKey = `${step}:${cabin?.id ?? "root"}:${seed}`;
+  useEffect(() => {
+    if (!ready) return;
+    setLog((prev) =>
+      prev.some((s) => s.key === screenKey)
+        ? prev
+        : [...prev, { key: screenKey, step, ids: tiles.map((t) => t.id) }],
+    );
+    setSelected(tiles[0]?.id ?? null);
+  }, [ready, screenKey, tiles, step]);
+
+  const current = tiles.find((t) => t.id === selected) ?? tiles[0] ?? null;
+  const resources = useMemo(
+    () =>
+      cabin && current && step === "subtopic"
+        ? resourcesFor(cabin.cabin, current.id.split("/")[1] ?? "")
+        : [],
+    [cabin, current, step],
+  );
+
+  const gridRef = useRef<HTMLUListElement>(null);
+  // Follows the count so the grid fills the screen rather than stranding one short row against a
+  // half-empty wall. The reference's density is most of what makes it feel like a library, and a
+  // visible hole where a tile should be reads as something failing to load.
+  //
+  // Chosen to leave no gap: three across in one row beats two-and-a-orphan, four goes two-by-two.
+  const columns =
+    tiles.length <= 2 ? tiles.length : tiles.length === 4 ? 2 : tiles.length <= 6 ? 3 : 4;
+
+  // Arrow keys move the selection the way the eye expects; Enter opens. A grid a child can only
+  // reach with a mouse excludes the ones using a keyboard, and `PROJECT.md` records that the school
+  // hardware decision quietly also chose mouse-and-trackpad, the harder modality at this age.
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      const i = tiles.findIndex((t) => t.id === selected);
+      if (i < 0) return;
+      const delta: Record<string, number> = {
+        ArrowRight: 1,
+        ArrowLeft: -1,
+        ArrowDown: columns,
+        ArrowUp: -columns,
+      };
+      const d = delta[e.key];
+      if (d === undefined) return;
+      e.preventDefault();
+      const next = tiles[Math.min(Math.max(i + d, 0), tiles.length - 1)];
+      if (next) {
+        setSelected(next.id);
+        gridRef.current
+          ?.querySelector<HTMLElement>(`[data-tile="${CSS.escape(next.id)}"]`)
+          ?.focus();
+      }
+    },
+    // `columns` belongs here: it changes between levels, and without it ArrowDown would jump by
+    // the previous screen's row width after drilling in.
+    [columns, selected, tiles],
+  );
+
+  const open = (t: Tile): void => {
+    if (step === "cabin") {
+      setCabin(t);
+      return;
+    }
+    // At subtopic level the tile is already open: its links are in the panel. There is nowhere
+    // further to click, because the next step leaves the product.
+    setSelected(t.id);
+  };
+
+  return (
+    <main className="browse" data-mood="child">
+      <header className="browse__bar">
+        <button
+          type="button"
+          className="browse__back"
+          onClick={() => {
+            setCabin(null);
+            setSelected(null);
+          }}
+          disabled={cabin === null}
+        >
+          All topics
+        </button>
+        {cabin ? <span className="browse__crumb">{cabin.label}</span> : null}
+        <p className="browse__hint">
+          {cabin === null ? "Pick anything. You can come back." : "Pick one to see where to start."}
+        </p>
+      </header>
+      {/* A list, which is what it is. `role="grid"` was the first attempt and it promises rows and
+          gridcells to a screen reader that this does not have; claiming a pattern without
+          implementing it describes the screen wrongly, which is worse than describing it plainly.
+          A real <ul> also gets a blind child something the others could not: the count, announced
+          before they start moving through it. */}
+      <ul
+        className="browse__grid"
+        aria-label={cabin === null ? "Topics" : `Inside ${cabin.label}`}
+        ref={gridRef}
+        onKeyDown={onKeyDown}
+        style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
+      >
+        {tiles.map((t, i) => (
+          <li key={t.id}>
+            <button
+              type="button"
+              data-tile={t.id}
+              className="tile"
+              data-cabin={t.cabin}
+              aria-current={t.id === current?.id}
+              // Roving tabindex: one stop for the whole grid, then arrows inside it. Thirty-two tab
+              // stops to cross a screen is a keyboard trap with extra steps.
+              tabIndex={t.id === current?.id ? 0 : -1}
+              onFocus={() => setSelected(t.id)}
+              onClick={() => open(t)}
+            >
+              {/* Only at cabin level. Memo 07 §2.5: an icon works when it depicts the referent, and
+                nothing depicts "3D Modelling" as against "Animation" — repeating the cabin's glyph
+                across its four subtopics would put the same picture on every tile and discriminate
+                nothing. Below the cabin the word does the work, which is also what that memo
+                concludes: icons fix cabins, only audio fixes subtopics. */}
+              {step === "cabin" ? <CabinGlyph cabin={t.cabin} /> : null}
+              <span className="tile__label">{t.label}</span>
+              {/* Position is shown because this is a prototype and the measurement is the point. It
+                would not appear in the product. */}
+              <span className="tile__pos" aria-hidden="true">
+                {i + 1}
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {current ? (
+        <aside className="panel" aria-live="polite">
+          <h2 className="panel__title">{current.label}</h2>
+          <p className="panel__blurb">{current.blurb}</p>
+
+          {step === "subtopic" ? (
+            resources.length > 0 ? (
+              <ul className="panel__rows">
+                {resources.map((r) => (
+                  <li key={r.id}>
+                    <a href={r.url} target="_blank" rel="noreferrer noopener" className="row">
+                      <span className="row__title">{r.title}</span>
+                      <ExternalGlyph />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              // Said plainly rather than hidden. A child who picked this deserves to know the
+              // product has nothing here yet, instead of a panel that quietly ends.
+              <p className="panel__empty">Nothing here yet. Try another one.</p>
+            )
+          ) : (
+            <>
+              {/* What is behind the door, before committing to it. Not a second set of buttons —
+                  that would turn one choice moment into two competing ones. Just the answer to
+                  "what would I even find in here", which a picture and two words cannot give. */}
+              <p className="panel__more">Inside you would find</p>
+              <ul className="panel__inside">
+                {subtopicTiles(current.cabin).map((s) => (
+                  <li key={s.id}>{s.label}</li>
+                ))}
+              </ul>
+            </>
+          )}
+        </aside>
+      ) : null}
+
+      <footer className="browse__meter">
+        <span>
+          Offered this session: <strong>{log.reduce((n, s) => n + s.ids.length, 0)}</strong> across{" "}
+          <strong>{log.length}</strong> {log.length === 1 ? "screen" : "screens"}
+        </span>
+        <span className="browse__meter-note">
+          Every tile shown is logged as offered, with its position. Order is random per session;
+          which topics appear is not.
+        </span>
+      </footer>
+    </main>
+  );
+}
