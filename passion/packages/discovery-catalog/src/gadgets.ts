@@ -29,6 +29,20 @@
 //   the four maths activities → math-puzzles/foundations, NOT competition-math. Balance, ratio,
 //   fractions and functions are foundational. Filing them under competition maths would serve AMC
 //   papers to a child who liked a balance scale, because `curatedForCell` matches on path.
+//
+//   tune-repair → DEBUG, not investigate. The child hears that something is wrong and corrects it,
+//   which is what `debug` is; `fix` is already in ACTION_MODE_RULES and the gadget is called Repair.
+//   The other two music activities are judgements rather than corrections, so they stay `investigate`.
+//   This is also the only thing stopping the music room reading as a single cell — see below.
+//
+// A LIMITATION OF THE MUSIC ROW SET, recorded rather than discovered later. All three music
+// activities map to `music-sound/music-theory`, because the product taxonomy's music subtopics are
+// audio-systems / production / instruments / music-theory and none of the three involves playing an
+// instrument or making a track. So the room can tell us a child likes musical structure and CANNOT
+// tell us whether it was melody, harmony or rhythm that held them — the distinction exists in the
+// activities and has nowhere to land in the taxonomy. Splitting the modes (debug vs investigate)
+// recovers a little of it; a `music-theory` subtopic split would recover the rest, and that is a
+// change to the product taxonomy rather than to this file.
 import type { Artifact } from "@gt100k/two-axis-tagging";
 
 /**
@@ -40,7 +54,7 @@ import type { Artifact } from "@gt100k/two-axis-tagging";
  * why the two gadgets that genuinely do both use it rather than `inspect`, which would engage one
  * and leave the other generating skip-noise against a cell the child was in fact working in.
  */
-export type SolveVerb = "inspect" | "tinker" | "play" | "assemble";
+export type SolveVerb = "inspect" | "tinker" | "play" | "assemble" | "fix";
 
 /**
  * One row per gadget in `gadgets/registry.ts`. Coverage in both directions is a test: a gadget with
@@ -62,6 +76,12 @@ const ROWS = [
   ["function-machine", ["math-puzzles", "foundations"], ["investigate"], "inspect"],
   ["ratio-mixing", ["math-puzzles", "foundations"], ["investigate"], "inspect"],
   ["gear-train", ["making-engineering"], ["build", "investigate"], "tinker"],
+
+  // music — all three are audible-only judgements about musical structure, so all three are theory.
+  // tune-repair is the odd one on the mode axis: it is a correction, not a verdict.
+  ["tune-repair", ["music-sound", "music-theory"], ["debug", "investigate"], "fix"],
+  ["chord-fit", ["music-sound", "music-theory"], ["investigate"], "inspect"],
+  ["downbeat", ["music-sound", "music-theory"], ["investigate"], "inspect"],
 ] as const satisfies readonly (readonly [
   string,
   readonly [string] | readonly [string, string],
@@ -96,15 +116,19 @@ export const CATALOG: ReadonlyMap<string, Artifact> = new Map(
  * Cabin-level on purpose, with no subtopic. A room contains several, and picking one would quietly
  * decide that a child who liked the maths room liked fractions specifically.
  *
- * The rooms with no interior yet (`music`, `art`, `science`, `words`) are absent rather than guessed.
- * Music is the one to watch: #215 landed its design and its first sound, so the moment a gadget of its
- * own is registered this needs a row or its shelf will offer nothing. An absent row yields no resources, which is visibly nothing; a wrong row yields the
+ * The rooms with no interior yet (`art`, `science`, `words`) are absent rather than guessed.
+ *
+ * Music was on that list until #222 built it, and its row went in with that PR because the omission
+ * is exactly the failure this comment was written to catch: the room's three activities all map to
+ * `music-sound/music-theory`, so with no cabin-level row the invitation card would have narrowed
+ * itself to theory and handed a child who liked the whole room only theory links. An absent row yields no resources, which is visibly nothing; a wrong row yields the
  * wrong resources, which looks like it worked.
  */
 const TOPIC_CABINS = {
   "logic-games": ["math-puzzles"],
   math: ["math-puzzles"],
   code: ["code-computers"],
+  music: ["music-sound"],
 } as const satisfies Readonly<Record<string, readonly [string]>>;
 
 /** The cabin path for one of the game's topics, or undefined when that room has no mapping yet. */

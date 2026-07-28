@@ -18,7 +18,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* If /art/map.png 404s, the fallback background color on .map-screen still shows through. */
+  /* If the map plate 404s, the fallback background color on .map-screen still shows through. */
 }
 
 /* Soft firelit vignette so the map reads as a lit illustration, not a raw <img>. */

@@ -487,7 +487,173 @@ const MATH: BackdropRoom = {
   ],
 };
 
-export const BACKDROP_ROOMS: readonly BackdropRoom[] = [LOGIC_GAMES, MATH];
+// ---------------------------------------------------------------------------------------------
+// music
+// ---------------------------------------------------------------------------------------------
+
+const MUSIC_SOURCES = ["/art/cabin-backdrop-music.png"] as const;
+
+/**
+ * ===========================================================================================
+ * THE MUSIC ROOM. MEASURED AGAINST `public/art/cabin-backdrop-music.png`, 1536x1024 — a
+ * committed, shipping asset, so the placeholder banner at the top of this file does not apply.
+ * ===========================================================================================
+ *
+ * Three props, one per BUILT gadget, and no fourth. `quads.data.test.ts` matches props to registered
+ * gadgets exactly in both directions, so a surface painted for the unbuilt `echo` would fail the suite
+ * rather than sit harmlessly unused. Adding echo later therefore means regenerating this plate — the
+ * cost PROJECT.md's roster note records, and the reason the roster had to be settled before the art.
+ *
+ * Unlike the other two rooms, this plate is a single text-to-image pass (`scripts/gen-art.mjs
+ * cabin-backdrop-music`) with no `gen-cabins.mjs` prop surgery, and it needs none: nothing in it is a
+ * combinatorial board a diffusion model gets wrong. A lute, an organ, a drum and a bookcase are just
+ * objects, so what is painted is what the quads trace.
+ *
+ * HOW THEY WERE MEASURED. Corners read off a labelled coordinate grid burned over the plate
+ * (`node scripts/art-inspect.mjs grid`), then — because a numerically defensible polygon can still be
+ * visibly wrong — every outline was **composited back over the plate at 1:1 and inspected**. That is
+ * the check that matters here and it is not the same as a browser screenshot, which is scaled down far
+ * enough to hide a 20px miss. It caught one: the lute's outline was initially too narrow and too high
+ * and cut off the body's lower bulge, and it was retraced to nine points.
+ *
+ * The room was composed with wide empty wall between the objects specifically so the hit regions could
+ * be generous without touching each other — memo 07's target-size finding says a child's floor is well
+ * above an adult's, and there is no reason to be stingy when the wall is free.
+ *
+ * `kind` is `object` for all three. None of them is a flat plane the app could warp a live puzzle
+ * preview onto: a lute is a curved body, an organ is a box seen straight on with a recessed keyboard,
+ * a drum is a cylinder. Calling any of them `flat` would let a preview be skewed across a best-fit
+ * plane the painting does not actually have, which `types.ts` warns looks worse than no preview. None
+ * of the three has a preview component either, and `hasPreview` already treats that as normal.
+ */
+
+/**
+ * Light in the music plate: the lantern, and nothing else.
+ *
+ * ===========================================================================================
+ * MEASURED AGAINST `public/art/cabin-backdrop-music.png`. RE-MEASURE IF THE PLATE CHANGES.
+ * ===========================================================================================
+ * Same method and same warning as the other two rooms: these numbers trace *lighting*, which a
+ * regenerated plate can move without violating anything anyone asked for, and the failure is quiet —
+ * nothing throws, the room just glows on a bare stretch of floor.
+ *
+ * WHAT THE PIXELS SAID, rather than what the painting looks like at a glance:
+ *  - The brightest 16x16 block in the lower two-thirds of the plate is at (440, 728), which is the
+ *    flame inside the lantern's glass. The globe runs x 412..470 / y 692..760, so the hot core is a
+ *    62x72 ellipse — small, because a lantern is. `FirelightRegions.core`'s own doc names the lantern
+ *    case, so this is the intended use and not a fireplace approximated by one.
+ *  - The floorboards immediately below and right of it carry a visible warm splash out to x~547,
+ *    fading into the rolled rug on the left at x~360 and into shadow under the organ on the right.
+ *    That is the floor pool: a wide, shallow 200x95 ellipse centred at (452, 830).
+ *  - Bounce is the same over-large, very-low-amplitude whole-room wash the other rooms use, sat over
+ *    the lantern because that is the only place light enters this room from.
+ *  - **No sconce.** There is exactly one emitting object in the painting.
+ *
+ * NO SHAFT, AND THAT IS MEASURED RATHER THAN SKIPPED. The plate does have a window, top left, and it
+ * is the single brightest thing in the image (mean luminance 228 at (8, 312)) — but it throws no
+ * legible beam anywhere. A luminance profile down x=120 through where a shaft would fall reads 13, 39,
+ * 55, 40, 86, 72, 65, 69, 80, 135, 137, 102, 96 … which is wood grain, not a band of light; the same
+ * across the left wall at y=350 is 120, 90, 148, 106, 151, 108, 83, 119, 75 … equally shapeless. There
+ * is no painted haze to trace, so authoring a quad would be inventing a beam and then drawing motes
+ * inside it. `shaft` is optional precisely so this is a one-key retreat.
+ *
+ * Worth recording for whoever regenerates this plate: a cool-light detector run over the whole image
+ * finds **zero** pixels where blue exceeds red by even 6/255 — this interior is the warmest-graded of
+ * the three. So if a shaft is ever added here, `DEFAULT_SHAFT_TINT` (cool daylight) would make its
+ * motes the only cold pixels in the room, exactly as the other two rooms' notes warn, and it must be
+ * given the warm white they use.
+ */
+const MUSIC_ALIVENESS: RoomAliveness = {
+  firelight: {
+    core: { x: 441, y: 726, w: 62, h: 72 },
+    floor: { x: 452, y: 830, w: 200, h: 95 },
+    bounce: { x: 470, y: 730, w: 2200, h: 1800 },
+    sconce: null,
+  },
+};
+const MUSIC: BackdropRoom = {
+  topic: "music",
+  sources: MUSIC_SOURCES,
+  artWidth: ART_WIDTH,
+  artHeight: ART_HEIGHT,
+  aliveness: MUSIC_ALIVENESS,
+  props: [
+    {
+      // The lute hanging on the left wall. Outline is the rounded body plus the neck, because the
+      // neck is what makes it read as a lute and a child aiming at the instrument will aim at all of
+      // it. Traced as a hexagon rather than a box so the hit region does not claim the wall beside
+      // the narrow neck.
+      kind: "object",
+      gadgetId: "tune-repair",
+      label: "Lute hanging on the left wall",
+      outline: [
+        [243, 225],
+        [288, 225],
+        [300, 385],
+        [352, 480],
+        [318, 585],
+        [272, 614],
+        [222, 580],
+        [192, 480],
+        [228, 385],
+      ],
+    },
+    {
+      // The pump organ against the back wall. Outline is the upper case — carved back panel, stop
+      // knobs and keyboard — and deliberately stops above the stool, which stands in front of the
+      // lower body and would otherwise be inside the organ's hit region.
+      kind: "object",
+      gadgetId: "chord-fit",
+      label: "Pump organ against the back wall",
+      outline: [
+        [552, 352],
+        [900, 352],
+        [900, 596],
+        [552, 596],
+        [552, 470],
+        [540, 470],
+        [540, 420],
+        [552, 420],
+      ],
+    },
+    {
+      // The hand drum on its floor stand, right of the organ. Outline follows the head ellipse down
+      // into the shell and out to the stand's feet.
+      kind: "object",
+      gadgetId: "downbeat",
+      label: "Hand drum on a floor stand",
+      outline: [
+        [1010, 630],
+        [1090, 630],
+        [1136, 668],
+        [1136, 748],
+        [1096, 792],
+        [1002, 792],
+        [958, 748],
+        [958, 668],
+      ],
+    },
+  ],
+  // The bookcase on the right-hand wall. Not a prop and has no gadget: see the `ShelfProp` note in
+  // types.ts for why a shelf must never enter the props array. The outline follows the overhanging
+  // top plank and then the narrower case below it, which is what makes it genuinely non-rectangular
+  // — both bottom corners of its bounding box are outside it, as shelf.geometry.test.ts requires.
+  shelf: {
+    label: "Bookcase of worn books on the right wall",
+    outline: [
+      [1185, 566],
+      [1474, 566],
+      [1474, 588],
+      [1462, 588],
+      [1462, 798],
+      [1197, 798],
+      [1197, 588],
+      [1185, 588],
+    ],
+  },
+};
+
+export const BACKDROP_ROOMS: readonly BackdropRoom[] = [LOGIC_GAMES, MATH, MUSIC];
 
 export function backdropRoomFor(topic: string): BackdropRoom | undefined {
   return BACKDROP_ROOMS.find((room) => room.topic === topic);
