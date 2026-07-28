@@ -1,7 +1,13 @@
 import { describe, expect, test } from "vitest";
 import { TIERS, generateLevel } from "./generate";
 import type { Scale } from "./logic";
-import { DETERMINISTIC_STRATEGIES, alwaysDivide, greedyThreeMove, randomLegal } from "./naive";
+import {
+  DETERMINISTIC_STRATEGIES,
+  alwaysDivide,
+  followTheGlow,
+  greedyThreeMove,
+  randomLegal,
+} from "./naive";
 
 const SEEDS = Array.from({ length: 120 }, (_, i) => i + 1);
 
@@ -35,6 +41,30 @@ describe("the naive strategies are genuine attacks", () => {
 
   test("undirected clicking also cracks it, given room", () => {
     expect(randomLegal(WEAK, 1).solved).toBe(true);
+  });
+
+  test("followTheGlow cracks it too, so the split rail's hint is being held to a real bar", () => {
+    // The strategy a child could run without doing any arithmetic: press whatever the blocked split
+    // lights up, then split. It has to be able to win *somewhere* or its zero score below is worthless.
+    expect(followTheGlow(WEAK).solved).toBe(true);
+  });
+});
+
+/**
+ * The test that guards the split rail against becoming a walkthrough.
+ *
+ * This is not a hypothetical: measured before `followTheGlow` joined the generator's reject filter,
+ * pressing only what the rail lit up solved 39 of 120 tier-0 levels inside budget, 47 of 120 at tier 1
+ * and 18 of 120 at tier 2. A change made purely to help a child FIND the divide move had handed a
+ * third of the game away. The filter withdraws those levels; this test is what keeps them withdrawn.
+ */
+describe.each(TIERS.map((_, i) => i))("tier %i resists the split rail's own hint", (tierIndex) => {
+  test("following the lit moves and splitting on sight solves nothing", () => {
+    const beaten = SEEDS.filter((seed) => {
+      const level = generateLevel(seed, tierIndex);
+      return followTheGlow(level.scale, level.budget).solved;
+    });
+    expect(beaten).toEqual([]);
   });
 });
 
