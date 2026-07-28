@@ -5,7 +5,7 @@
  * Both halves are needed: a rule in the table that no puzzle mounts explains nothing, and this is the
  * cheapest possible guard on PROJECT.md's binding condition that every activity is explained.
  *
- * The list is the fifteen components in the tree, not the nine in the registry, because three are
+ * The list is the sixteen components in the tree, not the nine in the registry, because three are
  * parked rather than deleted (see src/gadgets/registry.ts) and re-adding one is meant to be a
  * one-line change — and Tune Repair is built but not yet registered, because the music room needs an
  * art pass before it can hold a gadget (see docs/superpowers/specs/2026-07-27-music-cabin-design.md).
@@ -28,6 +28,7 @@ import Mirror from "../puzzles/Mirror/Mirror";
 import Nonogram from "../puzzles/Nonogram/Nonogram";
 import Pipes from "../puzzles/Pipes/Pipes";
 import RatioMixing from "../puzzles/RatioMixing/RatioMixing";
+import SpriteLoop from "../puzzles/SpriteLoop/SpriteLoop";
 import TuneRepair from "../puzzles/TuneRepair/TuneRepair";
 import { TEACH_INS, type TeachInId } from "./rules";
 
@@ -47,9 +48,10 @@ const ACTIVITIES: Array<[TeachInId, ComponentType<PuzzleProps>]> = [
   ["tune-repair", TuneRepair],
   ["chord-fit", ChordFit],
   ["downbeat", Downbeat],
+  ["sprite-loop", SpriteLoop],
 ];
 
-test("the mounted list and the rule table describe the same fifteen activities", () => {
+test("the mounted list and the rule table describe the same sixteen activities", () => {
   expect(ACTIVITIES.map(([id]) => id).sort()).toEqual(Object.keys(TEACH_INS).sort());
 });
 

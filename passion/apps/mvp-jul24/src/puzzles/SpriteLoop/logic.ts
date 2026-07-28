@@ -30,7 +30,7 @@
  * room does not read what it displays.
  */
 import { type MachineState, type Pose, poseOf } from "../../code/interpret";
-import { MAX_OPS, type Program } from "../../code/program";
+import { MAX_OPS, type Program, type Statement } from "../../code/program";
 import { run } from "../../code/trace";
 
 /**
@@ -74,6 +74,26 @@ export function isSolved(puzzle: SpriteLoopPuzzle, attempt: Program): boolean {
   const got = poseSequence(attempt, puzzle.start);
   if (got.length !== want.length) return false;
   return want.every((p, i) => p.x === got[i]!.x && p.y === got[i]!.y && p.facing === got[i]!.facing);
+}
+
+/**
+ * The statement a tray block becomes when it is dropped into the stack.
+ *
+ * Lives here rather than in the component because both the generator and the board need it and they
+ * must not disagree: the generator draws targets out of the tray, and a child spelling the same
+ * blocks has to produce the same program, or a round would be unsolvable by construction.
+ */
+export function statementFor(b: TrayBlock): Statement {
+  switch (b.kind) {
+    case "move":
+      return { kind: "move", steps: b.steps };
+    case "turn":
+      return { kind: "turn", quarters: b.quarters };
+    case "wait":
+      return { kind: "wait", ticks: b.ticks };
+    case "repeat":
+      return { kind: "repeat", times: b.times, body: [] };
+  }
 }
 
 export function cellKey(x: number, y: number): string {

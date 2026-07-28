@@ -23,7 +23,14 @@
 import type { MachineState } from "../../code/interpret";
 import type { Program, Statement } from "../../code/program";
 import { type Rng, mulberry32 } from "../../lib/rng";
-import { GRID, type SpriteLoopPuzzle, type TrayBlock, inBounds, poseSequence } from "./logic";
+import {
+  GRID,
+  type SpriteLoopPuzzle,
+  type TrayBlock,
+  inBounds,
+  poseSequence,
+  statementFor,
+} from "./logic";
 
 /** Middle of the board, facing north. The same start every round, so only the motion differs. */
 export const START_POSE: MachineState = {
@@ -86,18 +93,6 @@ function pick<T>(rng: Rng, xs: readonly T[]): T {
   return xs[Math.floor(rng() * xs.length)]!;
 }
 
-function statementFor(b: TrayBlock): Statement {
-  switch (b.kind) {
-    case "move":
-      return { kind: "move", steps: b.steps };
-    case "turn":
-      return { kind: "turn", quarters: b.quarters };
-    case "wait":
-      return { kind: "wait", ticks: b.ticks };
-    case "repeat":
-      return { kind: "repeat", times: b.times, body: [] };
-  }
-}
 
 function draw(rng: Rng, tier: Tier): Program {
   const out: Statement[] = [];

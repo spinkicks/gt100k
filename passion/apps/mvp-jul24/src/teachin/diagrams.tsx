@@ -695,3 +695,84 @@ export function DownbeatDiagram(): JSX.Element {
     </Stage>
   );
 }
+
+/**
+ * Sprite Loop. Two creatures on an empty strip of cells, one to copy and one to build.
+ *
+ * **No path is drawn between the cells, deliberately.** The board itself draws no trail because a
+ * drawn path turns the activity into "match this shape" (rule X2), and a diagram that drew one would
+ * teach a child to look for exactly the thing the real screen refuses to show. What the diagram can
+ * say instead is that the copy happens *over time*: the ghost above, the child's creature below, and
+ * a pause marked as a gap in the row rather than as a position on a line.
+ *
+ * The cells are all identical. Nothing about the picture says where the creature goes — that is the
+ * answer, and it exists only in the motion.
+ */
+export function SpriteLoopDiagram(): JSX.Element {
+  const W = 18;
+  const gap = 5;
+  const x0 = 52;
+  const count = 7;
+  const yGhost = 16;
+  const yMine = 52;
+  const cellX = (i: number): number => x0 + i * (W + gap);
+  return (
+    <Stage>
+      {/* The one to copy. Identical cells: the row carries time, never place. */}
+      {Array.from({ length: count }, (_, i) => (
+        <rect
+          // biome-ignore lint/suspicious/noArrayIndexKey: a fixed strip; position is the identity.
+          key={`g${i}`}
+          x={cellX(i)}
+          y={yGhost}
+          width={W}
+          height={18}
+          rx={3}
+          className="ti-cell"
+        />
+      ))}
+      {/* Where the ghost is on three of those ticks. A pause is the repeated cell, not a wide one. */}
+      {[0, 2, 2, 4].map((i, n) => (
+        <circle
+          // biome-ignore lint/suspicious/noArrayIndexKey: fixed sequence of tick markers.
+          key={`gm${n}`}
+          cx={cellX(i) + W / 2}
+          cy={yGhost + 9}
+          r={4}
+          className="ti-node-on"
+        />
+      ))}
+      {Array.from({ length: count }, (_, i) => (
+        <rect
+          // biome-ignore lint/suspicious/noArrayIndexKey: a fixed strip; position is the identity.
+          key={`m${i}`}
+          x={cellX(i)}
+          y={yMine}
+          width={W}
+          height={18}
+          rx={3}
+          className="ti-cell"
+        />
+      ))}
+      {[0, 2, 2, 4].map((i, n) => (
+        <circle
+          // biome-ignore lint/suspicious/noArrayIndexKey: fixed sequence of tick markers.
+          key={`mm${n}`}
+          cx={cellX(i) + W / 2}
+          cy={yMine + 9}
+          r={4}
+          className="ti-node"
+        />
+      ))}
+      <Tag x={44} y={yGhost + 13} anchor="end">
+        copy
+      </Tag>
+      <Tag x={44} y={yMine + 13} anchor="end">
+        yours
+      </Tag>
+      <Tag x={cellX(3) + W / 2} y={88}>
+        same places, same order, same speed
+      </Tag>
+    </Stage>
+  );
+}

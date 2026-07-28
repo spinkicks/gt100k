@@ -40,6 +40,7 @@ import {
   ChordFitDiagram,
   DownbeatDiagram,
   RatioMixingDiagram,
+  SpriteLoopDiagram,
   TuneRepairDiagram,
 } from "./diagrams";
 
@@ -162,6 +163,17 @@ export const TEACH_INS = {
     // whole activity hunting the strip for a difference that is deliberately not drawn.
     rule: "Every pulse in this loop looks the same, but some of them sound louder, and a louder pulse is where a new bar starts. Play it, then mark every pulse you hear stressed.",
     Diagram: DownbeatDiagram,
+  },
+
+  // --- code ------------------------------------------------------------------------------------
+  "sprite-loop": {
+    title: "Sprite Loop",
+    // Two sentences, and the second one carries the load: **at the same speed**. The board draws no
+    // path behind the creature, so a child could otherwise reasonably read the job as matching a
+    // shape — which is the one reading rule X2 exists to prevent. "Blocks" names the tray so it reads
+    // as the place to begin without the copy having to gesture at it.
+    rule: "One creature keeps moving in a pattern, over and over. Build yours out of blocks so it goes the same places, in the same order, at the same speed.",
+    Diagram: SpriteLoopDiagram,
   },
 } satisfies Record<string, ActivityTeachIn>;
 
