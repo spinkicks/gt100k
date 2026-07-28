@@ -8,7 +8,7 @@
 
 ## 1. What it produces
 
-A **living, adaptive plan** per spike: a staged sequence of increasingly ambitious **Renzulli Type III** real-audience projects, each with **bounded deliberate practice embedded** and **PCDEs woven in**, plus curated/generated resources and the next milestone. Ambition scales by **widening the audience, not adding hours**. Every project is wrapped by the EvidenceGraph.
+A **living, adaptive plan** per spike: a staged sequence of increasingly ambitious **Renzulli Type III** real-audience projects, each with **bounded deliberate practice embedded** and **PCDEs woven in**, plus curated/generated resources and the next milestone. Ambition scales by **widening the audience, not adding hours**. Every project is wrapped by the EvidenceGraph — which is **its own product**, integrated across a boundary rather than a planner subsystem (`docs/decisions/evidencegraph-v1-design.md` §11 + §13a): the write path is the single seam adapter `@gt100k/project-evidence-sink`, and the planner itself imports nothing from `@gt100k/evidence-*`.
 
 ## 2. Scaffolded co-authorship (the decided product stance)
 
@@ -36,7 +36,7 @@ The plan's shape follows the four-stage spine (Ignition → Foundations → Auth
 ## 6. Interfaces
 
 - **In:** hypothesis store (C4, the validated spike), TimeBack aptitude (G2), environment inventory, F2 (burnout/challenge signals), project history.
-- **Out:** the plan + next options → Project Workspace (D2); each project → EvidenceGraph (E1); PCDE scaffolds → D5; audience/submission asks → D4 (real-audience broker); mentor handoffs → D3.
+- **Out:** the plan + next options → Project Workspace (D2); each project → an EvidenceGraph (E1, across the product boundary via `@gt100k/project-evidence-sink`); PCDE scaffolds → D5; audience/submission asks → D4 (real-audience broker); mentor handoffs → D3.
 
 ## 7. Hard constraints
 

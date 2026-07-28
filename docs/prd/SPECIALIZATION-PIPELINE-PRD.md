@@ -51,7 +51,7 @@ The gate certifies the **Hidi–Renninger Phase 2 (maintained situational) → P
 
 1. **Depth-weighted, self-initiated return that survives a deliberately inserted ≥2-week no-prompt / no-new-content gap** (novelty filter), and
 2. **is sustained across a full term (~8–12 weeks, ≥2 review cycles) with flat-or-rising depth** (durability is a months-scale property; short windows only filter novelty), **plus**
-3. **at least one EvidenceGraph artifact showing iteration *past* a failure** (a perseverance signal — return + made something, not novelty clicks), **plus**
+3. **at least one artifact in the project's EvidenceGraph showing iteration *past* a failure** (a perseverance signal — return + made something, not novelty clicks), **plus**
 4. **a structured human autonomy sign-off** that the return is **autonomous (harmonious), not pressured, rewarded, or defaulted** — invisible to logs, so a human must confirm it.
 
 **Notes:**
@@ -80,7 +80,7 @@ One spine, four stages, gated by **experience/readiness, not age**. A validated 
 |---|---|---|---|---|---|
 | **S1 — Ignition** ("fall in love") | ~6–9 / first 12–18 mo post-validation | **Warm first mentor** — relatedness-first; protects the "rage to master" | Many short (2–4 wk) playful micro-projects; audience = *self* (+ family); high deliberate **play** | Near-zero formal DP | Enjoyment, relatedness, identity spark ("I do X"), basic self-regulation |
 | **S2 — Foundations** ("get precise") | ~9–11 | **Technical mentor** — standards, correction; sets challenge≈skill (ZPD) | Fewer, term-length projects (2–3/yr); audience = *mentor + peers* | Small, bounded DP embedded in projects; rising fraction; rest cycles enforced | Goal-setting, quality practice, planning, realistic self-evaluation; buffer the early-adolescent motivation dip |
-| **S3 — Authorship** ("make it real") | ~11–13 | **Domain-expert mentor** — transmits *insider knowledge*, opens doors, brokers next tier | 1–2 major Renzulli **Type III** authentic real-audience projects/yr; EvidenceGraph wraps each | Moderate, targeted DP serving the project; still capped below investment loads | Coping with public feedback, strategic risk-taking, self-advocacy; learner→producer shift begins |
+| **S3 — Authorship** ("make it real") | ~11–13 | **Domain-expert mentor** — transmits *insider knowledge*, opens doors, brokers next tier | 1–2 major Renzulli **Type III** authentic real-audience projects/yr; each gets an EvidenceGraph (§7.2) | Moderate, targeted DP serving the project; still capped below investment loads | Coping with public feedback, strategic risk-taking, self-advocacy; learner→producer shift begins |
 | **S4 — Signature** ("find your voice") | ~13–14+ → hand off to investment years (16+) | **Master mentor** — near-peer apprenticeship; shapes personal style; opens field networks | One flagship portfolio-defining project + coherent evidence body + public defense | Highest in-program DP, still bounded; child self-directs the regime | Autonomy/ownership, resilience under stakes, managing competition, networking/insider access |
 
 ### 5.1 The mentor relay (handoffs are first-class)
@@ -98,7 +98,7 @@ The mentor is a **sequence** (warm → technical → expert → master), and the
 
 ### 5.3 The PCDE curriculum (staged, embedded, assessable)
 
-Psychosocial skills are the **actual rate-limiter** and are **teachable** (Subotnik 2011; MacNamara/Button/Collins 2010). Treat PCDEs as a graded curriculum **embedded in project work** (not a standalone class), AI/mentor-coached, and **assessed via the EvidenceGraph process + defense**, introduced **progressively by readiness**: S1 relatedness/enjoyment/identity/self-regulation → S2 goal-setting/quality-practice/self-evaluation → S3 coping-with-feedback/strategic-risk/self-advocacy → S4 self-direction/resilience/networking + the explicit learner→producer identity shift. Design the mentor+family environment to be **"complex"** (high support *and* high challenge together; Csikszentmihalyi).
+Psychosocial skills are the **actual rate-limiter** and are **teachable** (Subotnik 2011; MacNamara/Button/Collins 2010). Treat PCDEs as a graded curriculum **embedded in project work** (not a standalone class), AI/mentor-coached, and **assessed against the EvidenceGraph process record + the defense** (§7.2), introduced **progressively by readiness**: S1 relatedness/enjoyment/identity/self-regulation → S2 goal-setting/quality-practice/self-evaluation → S3 coping-with-feedback/strategic-risk/self-advocacy → S4 self-direction/resilience/networking + the explicit learner→producer identity shift. Design the mentor+family environment to be **"complex"** (high support *and* high challenge together; Csikszentmihalyi).
 
 ---
 
@@ -110,7 +110,7 @@ A **living, adaptive, project-first** planner (AI-drafts, human-owns):
 - **Output:** a **staged sequence of increasingly ambitious Renzulli Type III real-audience projects**, with **bounded deliberate practice embedded** and PCDEs woven in; **ambition scales by widening the audience, not adding hours**.
 - **Generation:** LLM-generated **personalized** project/curriculum drafts, **grounded in a curated library + RAG** (so niche spikes are covered, not just library topics); every draft **human-reviewed**.
 - **Adaptation:** **continuously replans** against progress, mastery, voluntary return, and burnout signals — keeping challenge in the **80–90% stretch zone** and **cutting pressure before difficulty** when strain shows (§8).
-- **Wrapping:** the EvidenceGraph wraps every project (§7 below).
+- **Wrapping:** every project gets an EvidenceGraph (§7.2 — an integration with a separate product, not a planner feature).
 
 ---
 
@@ -124,7 +124,7 @@ A **living, adaptive, project-first** planner (AI-drafts, human-owns):
 
 ### 7.2 EvidenceGraph integration + assessment
 
-- **Every specialization project is wrapped by the EvidenceGraph** — a tamper-evident, content-addressed DAG of the real process, with declared AI help as a neutral, status-equal node (honesty is architecture; SPOV 6).
+- **Every specialization project is wrapped by the EvidenceGraph** — a tamper-evident, content-addressed DAG of the real process, with declared AI help as a neutral, status-equal node (honesty is architecture; SPOV 6). **The graph is its own product, not a pipeline subsystem** (`docs/decisions/evidencegraph-v1-design.md` §11 + §13a), so "wraps" is an integration across a product boundary: the pipeline writes into it through a single seam adapter (`@gt100k/project-evidence-sink`) and nothing else outside `@gt100k/evidence-*` may import a value from inside it (`import type` excepted; enforced by `@gt100k/boundaries` in CI). Separable codebases, joint value proposition — a spike no one can verify is still just a claim (`passionBrainlift.md` Insight 12).
 - **Grade the process, not the polish** — a messy-deep process can outscore a clean-shallow one, and a reasoned honest failure can outscore a tidy success (Kapur productive failure).
 - **The rubric is readiness-staged, NOT age-staged.** Productive failure *reverses* for the least-ready learners (Sinha & Kapur 2021) because it requires domain prior-knowledge + self-regulation. So scaffolding/rubric key off **measured domain experience + aptitude/ability + self-regulation**, estimated from demonstrated behavior — catching the genius-8yo (low scaffold, productive-failure rubric) and the floundering-14yo (more structure) correctly. The soft self-regulation floor in the very young is handled by **measuring** readiness, not assuming from age.
 - **Authorship is verified structurally, never by a detector:** a **sampled, multi-touchpoint, anxiety-safe interactive oral defense**, **age-adapted** (younger: talk-through / show-and-tell; older: Socratic probing on decisions & dead-ends), **AI-conducts + human-owns** (Dawson; Corbin/Dawson/Liu 2025). **No AI-text detector ever touches a child** (Liang 2023; Weber-Wulff 2023).
@@ -197,7 +197,7 @@ The family is the **biggest lever** (familyBrainlift) *and* the biggest risk if 
 - **Spike outcome** — a validated differentiated spike + signature portfolio (domain-calibrated).
 - **Wellbeing (co-primary, not a side-constraint)** — harmonious-vs-obsessive indicators, burnout/dropout rate, sustained voluntary engagement. **A spike achieved through burnout is a failure, not a success.**
 - **Authorship** — defense pass rates + EvidenceGraph integrity.
-- **External validation** — the **verifiable evidence packet** (EvidenceGraph portfolio + defense) valued by real gatekeepers (elite admissions, competitions, real audiences); real-world outcomes (competition results, published/shipped work, admissions); the **demand-side-pull bet** — get ≥1 gatekeeper to *require* the packet (the riskiest, highest-value bet; passionBrainlift Insight 15).
+- **External validation** — the **verifiable evidence record** (a project's EvidenceGraph + its defense) valued by real gatekeepers (elite admissions, competitions, real audiences); real-world outcomes (competition results, published/shipped work, admissions); the **demand-side-pull bet** — get ≥1 gatekeeper to *require* that record (the riskiest, highest-value bet; passionBrainlift Insight 15). *(EvidenceGraph v1 removed `EvidencePacket` as an object — `docs/decisions/evidencegraph-v1-design.md` §2; the graph itself is the record, and the durable outward export is E1's deferred **D5 export provenance**, not started.)*
 - **Longitudinal ground-truth** — track **which spikes persisted** to train the discovery inference layer over time (the labels that don't exist at launch).
 
 Why a spike at all: at the most selective tier, a **deep, differentiated ("angular") spike beats an equally-credentialed well-rounded profile**, and the value is in the **thoughtful, verifiable process**, not novelty (passionBrainlift Category 5).
@@ -214,7 +214,7 @@ Why a spike at all: at the most selective tier, a **deep, differentiated ("angul
 ## 12. Non-Functional Requirements
 
 - **Software-first** delivery; thin human layer owns judgments (§7.1).
-- **EvidenceGraph:** content-addressed DAG, human-owned grades (`assertHumanAuthority`), declared-AI-help neutral. **Pre-live gates (non-production in the MVP):** transparency-log anchoring (D1), crypto-shred erasure (D2), comparative-judgment reliability (D3), conformal calibration (D4), durable public-export provenance (D5), attestation signing (D6).
+- **EvidenceGraph:** content-addressed DAG, human-owned grades (`assertHumanAuthority`), declared-AI-help neutral. Delivered by the **separate EvidenceGraph product** (§7.2), so these are its gates, not the pipeline's. **Pre-live gates (non-production in the MVP):** transparency-log anchoring (D1), crypto-shred erasure (D2), comparative-judgment reliability (D3), conformal calibration (D4), durable public-export provenance (D5), attestation signing (D6).
 - **Privacy:** minor data — data minimization + explicit consent scope; retention limits; no child data used to train third-party models; parental access. Right-to-erasure on an append-only store (D2) is a **pre-live gate, unsolved**.
 - **Platform:** target school **Windows** machines; web stack shared with Discovery.
 
@@ -223,7 +223,7 @@ Why a spike at all: at the most selective tier, a **deep, differentiated ("angul
 ## 13. Open Questions / Pre-Live Gates
 
 1. **Right-to-erasure on append-only child data** (EvidenceGraph D2) — must be solved before any live child.
-2. **Demand-side pull** — securing ≥1 gatekeeper that *requires* the evidence packet (the pipeline's riskiest bet).
+2. **Demand-side pull** — securing ≥1 gatekeeper that *requires* the verifiable evidence record (graph + defense; the durable outward export is E1 D5, not built). The pipeline's riskiest bet.
 3. **Extrapolation validation** — the staged models, PCDEs, and burnout signals skew sport/music and adolescent; downward extension to 6–10 and sideways into academic/maker domains is ours to validate on real cohorts.
 4. **Numeric thresholds** (gate horizons/counts, DP fractions, stretch-zone %, rest cadence) — calibratable defaults to tune per domain and child.
 5. **Mentor-relay handoff design** — the operational detail of engineered, low-attrition handoffs at scale.
@@ -235,5 +235,5 @@ Why a spike at all: at the most selective tier, a **deep, differentiated ("angul
 
 - Brainlifts: `docs/research/gtBrainlift.md`, `passionBrainlift.md`, `familyBrainlift.md`.
 - Research memos (full citations within): `docs/research/passion-pipeline/{01-interest-consolidation-graduation, 02-push-vs-backoff-burnout, 03-talent-development-spine, 04-reversibility-plurality-switching, 05-assessment-measurement}.md`.
-- EvidenceGraph MVP: `passion/packages/evidence-graph/README.md`.
+- EvidenceGraph MVP: `passion/packages/evidence-graph/README.md`; v1 direction + the standalone/extraction decision: `docs/decisions/evidencegraph-v1-design.md` (§11, §13a).
 - Key sources: Subotnik, Olszewski-Kubilius & Worrell (2011); Bloom (1985); Côté, Lidor & Hackfort (2009); Ericsson, Krampe & Tesch-Römer (1993); Macnamara, Hambrick & Oswald (2014); Renzulli (1977); MacNamara, Button & Collins (2010); Winner (1996); Csikszentmihalyi, Rathunde & Whalen (1993); Vallerand et al. (2003); Mageau et al. (2009); Bartholomew et al. (2011); Raedeke & Smith (2001); Isoard-Gautheur et al. (2016); Kim et al. (2013); Grolnick & Pomerantz (2009); Deci, Koestner & Ryan (1999); Sinha & Kapur (2021); Dawson / Corbin, Dawson & Liu (2025); Marcia (1966); Sala & Gobet (2017); Hidi & Renninger (2006); Boeder et al. (2021); Harackiewicz et al. (2008).

@@ -7,6 +7,14 @@ found. Slice 1 had a spec and a plan and this had neither, which is the gap this
 this does not restate them.
 **Date:** 2026-07-26
 
+> **Amended (2026-07-27):** the deferred item this doc plans for — evidence links coming "from the Evidence Graph"
+> in production (~16, 120, 147) — now has a shape it did not have on 2026-07-26.
+> `docs/decisions/evidencegraph-v1-design.md` §13a makes the EvidenceGraph a separate product and forbids any
+> value import of `evidence-*` from outside that namespace, enforced in CI by `@gt100k/boundaries`. So "swapping in
+> the Evidence Graph later" means an adapter that translates a graph into the link records `readMap` already takes,
+> not a direct dependency from `@gt100k/mastery-map`. The engine's input model is unchanged, which is the property
+> §5 was already relying on.
+
 ## 1. Scope
 
 **In:** reading a map against what one child has actually made. `readMap` in the engine, the

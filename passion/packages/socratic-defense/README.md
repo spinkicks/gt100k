@@ -53,8 +53,17 @@ by a person **explaining their own work** (`passionBrainlift.md` SPOV 5, the fiv
 |---|---|
 | `Interviewer` / `AnswerJudge` | `@gt100k/tutor-stub` (scripted, CI) · `@gt100k/tutor-tfy` (TrueFoundry, opt-in) |
 
-The evidence hash reuses `@gt100k/evidence-graph` `canonicalize` (imported, not reinvented); the record
-carries **no grade field** (invariant). `assembleEvidenceRecord` is a separate step from `runSession`, so
+The evidence hash uses this package's **own copy** of `canonicalize` (JCS key ordering), kept
+honest by a parity test that pins it byte-for-byte against `@gt100k/evidence-graph`'s implementation. It is
+deliberately not imported: the EvidenceGraph is a standalone product intended for extraction
+(`docs/decisions/evidencegraph-v1-design.md` §11/§13a), and nothing outside `@gt100k/evidence-*` may import a
+value from inside it. Hoisting `canonicalize` into a shared package would invert the dependency —
+evidence-graph would then depend on a passion-side package and stop being buildable in isolation — so a small
+duplicate under a parity test is the cheaper trade. `Hasher` and `EvidenceNodeLike` are local structural types
+for the same reason, so this package imports no value from the `evidence-*` namespace; the record it emits is
+plain data that an evidence sink materializes.
+
+The record carries **no grade field** (invariant). `assembleEvidenceRecord` is a separate step from `runSession`, so
 the interview and the hashing stay decoupled; the `Hasher` is injected (tests/demo use a `node:crypto`
 inline hasher).
 

@@ -1,19 +1,20 @@
-// HERMETIC parse test for the REAL `@gt100k/evidence-sink-graph` adapter (plan Task 5 / spec §4.4).
+// HERMETIC parse test for the REAL `@gt100k/project-evidence-sink` adapter (plan Task 5 / spec §4.4).
 // Builds a synthetic project through the public `@gt100k/project-workspace` API, folds it through the
 // real SHA-256 adapter, and asserts: (a) a schema-valid `EvidenceGraph` the E1 verifier accepts;
-// (b) the adapter REUSES the domain `toEvidence` mapping, swapping ONLY the hasher; (c) FAIL-SAFE —
+// (b) the adapter REUSES the domain `toEvidencePlan` mapping, swapping ONLY the hasher; (c) FAIL-SAFE —
 // a malformed event is skipped, the rest stays intact, and `record` NEVER throws. No network, no clock.
 //
-// This file is NEVER imported by a domain (`@gt100k/project-workspace`) test — the adapter is the only
-// place that touches the teammate's evolving E1 `addNode`/`addEdge` API.
+// This file is NEVER imported by a domain (`@gt100k/project-workspace`) test. This adapter is the only
+// code outside the `@gt100k/evidence-*` namespace that touches the E1 `addNode`/`addEdge` API — a single
+// named exemption to the product boundary, which is why the mapping and the materialization are split.
 import { EDGE_TYPES, NODE_TYPES, assertHumanAuthority } from "@gt100k/evidence-graph";
 import type { EdgeType, EvidenceGraph, NodeType } from "@gt100k/evidence-graph";
 import { NodeCryptoHasher } from "@gt100k/evidence-hash-node";
-import { logEvent, startProject, stubHasher, toEvidence } from "@gt100k/project-workspace";
+import { logEvent, startProject, toEvidencePlan } from "@gt100k/project-workspace";
 import type { Project, ProjectBrief, WorkEvent } from "@gt100k/project-workspace";
 import { describe, expect, it } from "vitest";
 
-import { graphEvidenceSink } from "../src/index.js";
+import { graphEvidenceSink, materialize, stubHasher } from "../src/index.js";
 
 const BRIEF: ProjectBrief = {
   title: "The strongest paper bridge",
@@ -179,12 +180,12 @@ describe("graphEvidenceSink — real SHA-256 EvidenceSink over @gt100k/evidence-
     expect(withDefault).toEqual(withExplicit);
   });
 
-  it("shares the domain toEvidence mapping, swapping only the hasher", () => {
+  it("shares the domain toEvidencePlan mapping, swapping only the hasher", () => {
     const project = makeProject();
     // Injecting the stub hasher must reproduce the domain mapping byte-for-byte — the adapter adds no
     // mapping of its own; it only substitutes the SHA-256 hasher for the stub.
     const viaAdapter = graphEvidenceSink(stubHasher).record(project);
-    const viaDomain = toEvidence(project, stubHasher);
+    const viaDomain = materialize(toEvidencePlan(project), stubHasher);
     expect(viaAdapter).toEqual(viaDomain);
   });
 

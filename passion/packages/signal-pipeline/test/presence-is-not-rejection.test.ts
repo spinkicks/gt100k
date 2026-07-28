@@ -40,9 +40,17 @@ const PIPES: Artifact = {
   affordedModes: ["build", "investigate"],
 };
 
+/** A different cabin entirely, so engaging it cannot cover nonogram's cell by sharing its path. */
+const SPRITE: Artifact = {
+  ...NONOGRAM,
+  id: "sprite",
+  domainPath: ["art-motion", "animation"],
+};
+
 const CATALOG = new Map<string, Artifact>([
   [NONOGRAM.id, NONOGRAM],
   [PIPES.id, PIPES],
+  [SPRITE.id, SPRITE],
 ]);
 
 const KID = "kid-1";
@@ -129,21 +137,30 @@ describe("but it has not blunted the disconfirming signal wholesale", () => {
     expect(declined.every((e) => e.mode === "build" || e.mode === "investigate")).toBe(true);
   });
 
-  it("a session where the child opened nothing still declines everything offered", () => {
-    const out = run([], [...WARMUP, surfaced("nonogram", "s9", day(20))]);
-
-    expect(out.cellEvents.filter((e) => e.kind === "decline").length).toBeGreaterThan(0);
-  });
+  // A test asserting the opposite of this used to live here: "a session where the child opened
+  // nothing still declines everything offered". It was guarding against over-suppression, and it
+  // was wrong. A session with no engagement is not a session that rejected the offer, and its
+  // decrement lands on whatever the system chose to surface, which penalises exposure rather than
+  // measuring interest. See `no-choice-no-decline.test.ts` for the argument and the replacement.
 
   it("an open in one session does not excuse a pass-over in another", () => {
-    // Presence is session-scoped, exactly as engagement is.
+    // Presence is session-scoped, exactly as engagement is. s10 needs a choice of its own for the
+    // pass-over to be readable at all, so the child engages sprite there; the question is whether
+    // the s9 open leaks across and protects nonogram in s10. Sprite is in another cabin on purpose,
+    // or engaging it would cover nonogram's cell by sharing a domain path and the test would pass
+    // without testing anything.
     const out = run(
-      [opened("nonogram", "s9", day(20))],
-      [...WARMUP, surfaced("nonogram", "s9", day(20)), surfaced("nonogram", "s10", day(21))],
+      [opened("nonogram", "s9", day(20)), acted("sprite", "s10", day(21))],
+      [
+        ...WARMUP,
+        surfaced("nonogram", "s9", day(20)),
+        surfaced("nonogram", "s10", day(21)),
+        surfaced("sprite", "s10", day(21)),
+      ],
     );
 
     const against = out.cellEvents.filter((e) => e.kind === "skip" || e.kind === "decline");
-    expect(against.length).toBe(1);
+    expect(against.map((e) => e.domainPath)).toEqual([["math-puzzles", "logic-puzzles"]]);
     expect(against[0]?.timestamp).toBe(day(21));
   });
 });

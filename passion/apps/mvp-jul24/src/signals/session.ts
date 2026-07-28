@@ -16,26 +16,34 @@ function newSessionId(): string {
 export const SESSION_ID = newSessionId();
 
 /**
- * WHETHER THIS APP EMITS SIGNAL RECORDS AT ALL. It does not, and that is a decision.
+ * WHETHER THIS APP EMITS SIGNAL RECORDS AT ALL. It now does, and the precondition that gated it has
+ * been met rather than waived.
  *
- * The `backdrop` backend is the only one left, and its interaction surfaces — the perspective prop
- * polygons and the bookshelf — emit nothing. So a log left switched on would be *silently partial*:
- * records exist, they look well-formed, and they under-count every prop opened through the backdrop.
- * Anyone reading that data without reading this comment would treat missing engagement as absence of
- * engagement, which is the one misreading `SurfacedRecord` exists to prevent.
+ * This was off because the `backdrop` backend's two interaction surfaces — the perspective prop
+ * polygons and the bookshelf — emitted nothing, so a live log would have been *silently partial*:
+ * records that exist, look well-formed, and under-count every prop opened through the backdrop.
+ * Anyone reading that without reading this comment would treat missing engagement as absence of
+ * engagement, which is the one misreading `SurfacedRecord` exists to prevent. The instruction was
+ * "wire the backdrop's prop polygons and the shelf FIRST, then flip this."
  *
- * PROJECT.md's instruction is "either wire the backdrop props into emission before trusting any of
- * it, or gate the backdrop out of sessions whose records are analysed. Do not split the difference."
- * Wiring emission is measurement work, deferred by decision, so this is the other branch — taken
- * explicitly, in one place, instead of left implicit.
+ * BOTH ARE NOW COVERED, and the first turned out to have been covered all along:
  *
- * TO TURN IT BACK ON: wire the backdrop's prop polygons and the shelf into `recordOpen` /
- * `recordSurfaced` FIRST, then flip this. Flipping it alone reinstates the silent under-count.
+ *   - **Prop polygons.** Verified by test, not by reading: clicking one calls `focusGadget`, which
+ *     mounts `GadgetOverlay`, which records the open on unmount. A probe click on a real polygon
+ *     produced `open:nonogram` with all four gadgets surfaced. The comment claiming otherwise had
+ *     gone stale.
+ *   - **The shelf.** Genuinely unwired, now emits `follow-source` when a child follows a card's
+ *     outbound link — see `recordSourceFollow` for why that is the one act on the shelf worth
+ *     recording, and why it is attributed to the card's subject rather than to the shelf.
  *
- * Note what this is NOT: it is not a claim the records would be wrong if complete, and it is not a
- * privacy control. It is truth-in-labelling on coverage.
+ * WHAT IS STILL NOT EMITTED, so this stays truth-in-labelling rather than a claim of completeness:
+ * `SurfacedRecord.position` (the map and the room both have ordering, and neither reports it), and
+ * `failure_recovery` / `self_authored_scope`, which have no affordance to emit from. Records are
+ * complete for what the child DID; they are not yet complete for where it sat on screen.
+ *
+ * Note what this is NOT: it is not a privacy control, and nothing here leaves the device.
  */
-export const EMISSION_ENABLED = false;
+export const EMISSION_ENABLED = true;
 
 const live = createSignalLog({ sessionId: SESSION_ID, now: () => Date.now() });
 
@@ -46,7 +54,9 @@ const live = createSignalLog({ sessionId: SESSION_ID, now: () => Date.now() });
 const off: typeof live = {
   recordSurfaced: () => {},
   recordOpen: () => {},
+  recordAction: () => {},
   recordDepth: () => {},
+  recordSourceFollow: () => {},
   surfaced: () => [],
   interactions: () => [],
 };

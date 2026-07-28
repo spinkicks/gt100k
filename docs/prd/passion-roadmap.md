@@ -4,7 +4,7 @@
 **Purpose:** Sequence the `passionApps.md` artifacts into a phased, dependency-ordered build path, mapped to the **actual** Spec-Kit features under `specs/`. Each feature is `specs/NNN-<slug>/spec.md` → a `writing-plans` implementation plan (`docs/superpowers/plans/…`) → execution (factory loop).
 **Reads with:** `passionApps.md` (artifact catalog + live status log), the two PRDs, and `hardening/`.
 
-> **Numbering note (read this first):** the actual build order diverged from the v1 proposal. The real spec numbers are the source of truth: `009` two-axis-tagging, `010` socratic-defense, `011` interest-inference, `012` signal-pipeline, `013` hypothesis-store + guide console, `014` student-profile + orchestrator, `015` concierge + child-safe RAG + curated library, `016` wellbeing, `017` guardrails, `018` specialization-planner, `019` family-coengagement, `020` timeback. `002` evidence-graph predates the sequence. `001/003/004/005/006/007/008` are archived.
+> **Numbering note (read this first):** the actual build order diverged from the v1 proposal. The real spec numbers are the source of truth: `009` two-axis-tagging, `010` socratic-defense, `011` interest-inference, `012` signal-pipeline, `013` hypothesis-store + guide console, `014` student-profile + orchestrator, `015` concierge + child-safe RAG + curated library, `016` wellbeing, `017` guardrails, `018` specialization-planner, `019` family-coengagement, `020` timeback. `002` evidence-graph predates the sequence **and is not a PassionLab feature at all** — the EvidenceGraph is its own product, built in this repo for later extraction (`docs/decisions/evidencegraph-v1-design.md` §11 + §13a). It is sequenced here because PassionLab integrates it and its pre-live gates block going live; the codebase is separable, the pitch is not. `001/003/004/005/006/007/008` are archived.
 
 ---
 
@@ -18,16 +18,16 @@
 | **Concierge + child-safe RAG + curated library** (B1/B2/A6) | ✅ built + merged — `015` |
 | **Wellbeing** (F2) | ✅ built + merged — `016` |
 | **Guardrails / metrics + compliance** (G6) | ✅ built + merged — `017` |
-| **EvidenceGraph** (E1 MVP) | ✅ MVP merged — `002`; D1–D6 productionization **owned by teammate** |
+| **EvidenceGraph** (E1 MVP) — *separate product* | ✅ MVP merged — `002`; D1–D6 productionization **owned by teammate**. Integrated across a hard boundary: no value imports out of `@gt100k/evidence-*` (`import type` excepted), enforced by `@gt100k/boundaries` in CI, with the seam adapter `@gt100k/project-evidence-sink` the single exemption |
 | **Specialization planner** (D1) | ✅ engine + Plan tab merged — `018` |
 | **Family co-engagement** (F3) | ✅ engine + Family tab merged — `019` / `021` |
 | **TimeBack priors** (G2) | ✅ merged — `020` (fake data now; live adapter opt-in) |
-| **Project workspace** (D2) | ✅ engine + evidence-sink adapter + **project-studio app** merged — `022` (child-facing journey-timeline studio, 7-preset theme switcher, `window.__qa`/LOOP_QA; stub EvidenceSink until E1's API settles) |
+| **Project workspace** (D2) | ✅ engine + seam adapter + **project-studio app** merged — `022` (child-facing journey-timeline studio, 7-preset theme switcher, `window.__qa`/LOOP_QA). The engine emits a pure plan (`toEvidencePlan`); the `EvidenceSink` port, both sinks and all materialization live in `@gt100k/project-evidence-sink`, deliberately outside the `@gt100k/evidence-*` namespace so extraction leaves the adapter behind with PassionLab |
 | **Game/visual world** (A1 world, A2 cabins, A3 assets, A5 mirror) | 🟡 partial / teammate — tinker cabin + realism loop |
 | **Access broker** (D3 mentor, D4 audience) | ✅ merged — `023` (combined engine + live adapter + guide-console Access tab) |
 | **Parent Playbook** (F4) | ✅ merged + **hosted on AWS** — `docs/superpowers/specs/2026-07-24-parent-guide-design.md` (no `specs/NNN`); static-exported `apps/parent-guide`; Family Check-In mirrors `@gt100k/family` (512-combination parity test). Manager MVP item 2 |
 | **Rest of specialization** (D5 PCDE) | ⬜ not started |
-| **Pre-live gates** (G3 consent/erasure, G4 safety-at-scale, G5 calibration, E1 D1–D6) | ⬜ not started (E1 productionization = teammate) |
+| **Pre-live gates** (G3 consent/erasure, G4 safety-at-scale, G5 calibration, E1 D1–D6) | ⬜ not started (E1 productionization = teammate, and it is work *inside* the separate EvidenceGraph product) |
 
 **Synthetic-first:** every merged feature is built + tested on synthetic/pilot data. No real child data until the Phase 5 pre-live gates pass.
 
@@ -35,7 +35,7 @@
 
 ## Phase 0 — Substrate ✅ done
 
-- `002-evidence-graph` (E1 MVP) merged; a synthetic project graph builds + verifies. Productionization (D1–D6) is a Phase-5 gate, now owned by teammate.
+- `002-evidence-graph` (E1 MVP) merged; a synthetic project graph builds + verifies. Productionization (D1–D6) is a Phase-5 gate, now owned by teammate. "Substrate" here means an **integrated dependency**, not a PassionLab layer — see the numbering note above.
 - The discovery *engines* were built directly as `009`–`014` (the old `003-interest-lab` monolith was archived and split).
 
 ## Phase 1 — Discovery MVP ✅ done (engines) / 🟡 world partial
@@ -61,7 +61,7 @@
 - **Phase 2→3 certification** ✅ — shipped as the `013`/`014` gate (gap-surviving return + full-term durability + perseverance artifact + human autonomy sign-off).
 - **`018-specialization-planner`** → **D1** ✅ (engine + Plan panel) — four-stage ascent (readiness-gated), bounded DP, rest cadence, mentor relay, PCDE focus, grounded on the `015` curated library; guide-console Plan panel. Surface polish pending.
 - **`010-socratic-defense`** → **E2** ✅ (engine) — AI-conducted, sampled, anxiety-safe oral defense + evidence record; human owns the of-record grade. Sampling cadence + UI wiring remain.
-- **D2 project workspace** (Type III PBL wrapped by E1) ✅ **engine + evidence-sink adapter + `apps/project-studio` merged** (`022`; child-facing journey-timeline studio, 7-preset theme switcher, `window.__qa`/LOOP_QA, stub EvidenceSink until E1's API settles). · **D5 PCDE curriculum** ⬜.
+- **D2 project workspace** (Type III PBL; each project gets an E1 graph, an integration across the product boundary) ✅ **engine + seam adapter + `apps/project-studio` merged** (`022`; child-facing journey-timeline studio, 7-preset theme switcher, `window.__qa`/LOOP_QA; engine emits a plan, `@gt100k/project-evidence-sink` materializes it and holds both sinks). · **D5 PCDE curriculum** ⬜.
 
 ## Phase 4 — Specialization, full + the human/family layer 🟡 partial (F2/F3 engines merged)
 
@@ -74,7 +74,7 @@
 ## Phase 5 — Pre-live gates (block any real child) ⬜ not started
 
 **Goal:** everything required before a live child touches the system.
-- **E1 D1–D6 productionization** (`hardening/evidencegraph-productionization.md`): **D2 erasure data model first**, then anchoring/signing, then the rest. **Teammate-owned.** *Blocks live use.*
+- **E1 D1–D6 productionization** (`hardening/evidencegraph-productionization.md`): **D2 erasure data model first**, then anchoring/signing, then the rest. **Teammate-owned**, and delivered inside the separate EvidenceGraph product. *Blocks live use.*
 - **G3 identity/consent/privacy**: consent scope, retention, parental access, erasure wiring. *Blocks live use.*
 - **G4 safety-at-scale**: harden + consolidate the shared moderation service (concierge already ships in-app safety stages). *Blocks live use.*
 - **G5 inference validation**: once real outcomes land, re-fit and validate the model.
@@ -89,7 +89,7 @@
 ## Critical path & risks
 
 - **MVP critical path (done):** 009 tagging → 011 inference → 013 hypothesis store + guide console → 014 orchestrator. The discovery read is live on synthetic data.
-- **Longest-lead / riskiest (remaining):** 015/B2 child-safe live open-web (shipped behind stubs; live path is opt-in), C3 + G5 (inference validation with no launch labels yet), E1 D1–D6 (all pre-production, teammate), G3 (erasure on append-only child data — a hard pre-live gate).
+- **Longest-lead / riskiest (remaining):** 015/B2 child-safe live open-web (shipped behind stubs; live path is opt-in), C3 + G5 (inference validation with no launch labels yet), E1 D1–D6 (all pre-production, teammate, inside the separate EvidenceGraph product), G3 (erasure on append-only child data — a hard pre-live gate).
 - **Hard ordering rule:** E1 **D2 (erasure data model) before D1 (external anchoring)** — never anchor un-erasable child PII externally.
 
 ## Next step
@@ -100,4 +100,4 @@
   - **A front door and a shared header** (#172). `@gt100k/ui` holds the surfaces registry and `ProductHeader`; `apps/home` (port 3000) routes by role and does nothing else. Surface URLs resolve to `localhost` only in development and to `null` otherwise, so the publicly deployed Playbook can never ship a dead link to a parent.
   - **Deliberately excluded:** `project-studio`, because a child must not be handed a switcher into the adult tools.
 - **Still open on cohesion.** The **duplicate evidence explorers** need a decision, and the obvious one is wrong: retiring the plain `evidence-explorer` in favour of the themed copy would delete live work, since the EvidenceGraph branches are editing `Cosmos3D.tsx`, `synthetic-view.ts` and `a11y.test.ts` in the *plain* one. The themed app is the fork. Needs a conversation, not a delete. A **single deployment** is also still open; only the Playbook is hosted.
-- **Feature gaps still unowned** (both named in the manager's long-term goals): the **admissions-facing portfolio / evidence packet** (E1 v1 explicitly removed packets; export provenance is E1 D5, teammate, not started) and a **workshop builder for guides** (zero coverage anywhere in the repo). Then **D5 PCDE** and the **pre-live gates** (G3/G4, G5 once outcomes accrue). Real E1 evidence wiring lands once the teammate's EvidenceGraph API settles.
+- **Feature gaps still unowned** (both named in the manager's long-term goals): the **admissions-facing portfolio / outward evidence export** (E1 v1 explicitly removed `EvidencePacket`; durable export provenance is E1 **D5**, a capability of the separate EvidenceGraph product, teammate, not started) and a **workshop builder for guides** (zero coverage anywhere in the repo). Then **D5 PCDE** and the **pre-live gates** (G3/G4, G5 once outcomes accrue). Real E1 evidence wiring is now a composition-root choice inside `@gt100k/project-evidence-sink`, not a pending API question.
