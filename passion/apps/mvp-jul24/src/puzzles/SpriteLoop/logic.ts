@@ -73,7 +73,9 @@ export function isSolved(puzzle: SpriteLoopPuzzle, attempt: Program): boolean {
   const want = poseSequence(puzzle.target, puzzle.start);
   const got = poseSequence(attempt, puzzle.start);
   if (got.length !== want.length) return false;
-  return want.every((p, i) => p.x === got[i]!.x && p.y === got[i]!.y && p.facing === got[i]!.facing);
+  return want.every(
+    (p, i) => p.x === got[i]!.x && p.y === got[i]!.y && p.facing === got[i]!.facing,
+  );
 }
 
 /**

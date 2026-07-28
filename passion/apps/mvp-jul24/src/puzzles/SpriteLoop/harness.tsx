@@ -10,11 +10,7 @@ import SpriteLoop from "./SpriteLoop";
 import { TIERS } from "./generate";
 import "../../theme.css";
 
-const LABELS = [
-  "0 — short walk and turn",
-  "1 — longer, may double back",
-  "2 — timing matters",
-];
+const LABELS = ["0 — short walk and turn", "1 — longer, may double back", "2 — timing matters"];
 
 function Harness(): JSX.Element {
   const [seed, setSeed] = useState(7);

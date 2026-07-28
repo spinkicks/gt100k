@@ -94,6 +94,10 @@
 }
 
 .sl-tray {
+  /* A fieldset by element, so its default chrome is reset here rather than fought in the markup. */
+  margin: 0;
+  padding: 0;
+  border: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;

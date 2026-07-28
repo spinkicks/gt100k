@@ -39,13 +39,7 @@ import TeachIn from "../../teachin/TeachIn";
 import { openTier } from "../openTier";
 import "./SpriteLoop.css";
 import { TIERS, generateForRound } from "./generate";
-import {
-  GRID,
-  type TrayBlock,
-  isSolved,
-  poseSequence,
-  statementFor,
-} from "./logic";
+import { GRID, type TrayBlock, isSolved, poseSequence, statementFor } from "./logic";
 
 /** How long one tick of the demonstration is held, in ms. Presentation only. */
 const TICK_MS = 520;
@@ -129,10 +123,7 @@ export default function SpriteLoop({ seed, tier, onSolved, onExit }: PuzzleProps
     () => poseSequence(puzzle.target, puzzle.start),
     [puzzle.target, puzzle.start],
   );
-  const myPoses = useMemo(
-    () => poseSequence(program, puzzle.start),
-    [program, puzzle.start],
-  );
+  const myPoses = useMemo(() => poseSequence(program, puzzle.start), [program, puzzle.start]);
 
   /**
    * The demonstration loops on its own while idle, so there is nothing to press to see it.
@@ -249,10 +240,12 @@ export default function SpriteLoop({ seed, tier, onSolved, onExit }: PuzzleProps
           : "The pale one is moving in a pattern. Build yours to match it."}
       </p>
 
-      <div className="sl-tray" role="group" aria-label="Blocks you can use">
+      {/* A fieldset rather than a div with role=group: the semantic element is the accessible one,
+          and biome enforces that. aria-label rather than a legend, because a visible "Blocks you can
+          use" heading would be copy doing an affordance's job. */}
+      <fieldset className="sl-tray" aria-label="Blocks you can use">
         {puzzle.tray.map((b, i) => (
           <button
-            // biome-ignore lint/suspicious/noArrayIndexKey: the tray is fixed per round.
             key={`${b.kind}-${i}`}
             type="button"
             className="sl-block"
@@ -265,12 +258,11 @@ export default function SpriteLoop({ seed, tier, onSolved, onExit }: PuzzleProps
             {blockLabel(b)}
           </button>
         ))}
-      </div>
+      </fieldset>
 
       <ol className="sl-stack" aria-label="Your program">
         {program.map((s, i) => (
           <li
-            // biome-ignore lint/suspicious/noArrayIndexKey: order in the stack is the identity.
             key={`${s.kind}-${i}`}
             className={s.kind === "repeat" ? "sl-step sl-step-repeat" : "sl-step"}
           >
@@ -278,7 +270,6 @@ export default function SpriteLoop({ seed, tier, onSolved, onExit }: PuzzleProps
             {s.kind === "repeat" ? (
               <ol className="sl-bracket" aria-label="Inside the repeat">
                 {s.body.map((inner, n) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: order is the identity.
                   <li className="sl-step" key={`${inner.kind}-${n}`}>
                     <span className="sl-step-label">{statementLabel(inner)}</span>
                   </li>

@@ -57,10 +57,7 @@ export function enumeratePrograms(
   return out;
 }
 
-export function solutionsByPose(
-  puzzle: SpriteLoopPuzzle,
-  maxLength: number,
-): readonly Program[] {
+export function solutionsByPose(puzzle: SpriteLoopPuzzle, maxLength: number): readonly Program[] {
   return enumeratePrograms(puzzle.tray, maxLength).filter((p) => isSolved(puzzle, p));
 }
 
@@ -69,10 +66,7 @@ function sameSet(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
 }
 
 /** The weaker criterion: same cells visited, timing and order discarded. Never a solve check. */
-export function solutionsByTrail(
-  puzzle: SpriteLoopPuzzle,
-  maxLength: number,
-): readonly Program[] {
+export function solutionsByTrail(puzzle: SpriteLoopPuzzle, maxLength: number): readonly Program[] {
   const want = trailOf(poseSequence(puzzle.target, puzzle.start));
   return enumeratePrograms(puzzle.tray, maxLength).filter((p) =>
     sameSet(want, trailOf(poseSequence(p, puzzle.start))),

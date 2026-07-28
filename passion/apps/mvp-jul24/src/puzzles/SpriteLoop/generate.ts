@@ -93,7 +93,6 @@ function pick<T>(rng: Rng, xs: readonly T[]): T {
   return xs[Math.floor(rng() * xs.length)]!;
 }
 
-
 function draw(rng: Rng, tier: Tier): Program {
   const out: Statement[] = [];
   for (let i = 0; i < tier.length; i++) out.push(statementFor(pick(rng, tier.tray)));
