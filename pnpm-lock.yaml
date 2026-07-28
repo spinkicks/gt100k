@@ -390,6 +390,9 @@ importers:
       '@gt100k/concierge':
         specifier: workspace:*
         version: link:../../packages/concierge
+      '@gt100k/design-tokens':
+        specifier: workspace:*
+        version: link:../../packages/design-tokens
       '@gt100k/discovery-catalog':
         specifier: workspace:*
         version: link:../../packages/discovery-catalog
