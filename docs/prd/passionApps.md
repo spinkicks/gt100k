@@ -11,7 +11,7 @@
 
 ## 0. Status log (2026-07-23)
 
-**Repo gate on `main`:** `pnpm exec tsc -b` exit 0 · `pnpm test` (`vitest run`, repo root) **1,109 tests / 184 files green**, plus **3,174** app tests across the nine apps, which the root suite does not run and CI does.
+**Repo gate on `main`:** `pnpm exec tsc -b` exit 0 · `pnpm test` (`vitest run`, repo root) **1,109 tests / 184 files green**, plus **3,177** app tests across the nine apps, which the root suite does not run and CI does.
 
 > **What a ✅ in this document means.** The package exists and its tests pass, on synthetic data. It does *not* mean a child can use it and a guide sees the result. That gap was the product's critical path until 2026-07-27, when a discovery session became able to reach a guide's console. Read that narrowly. It is a local, opt-in seam with no authentication and no rate limiting, the guardian who consents cannot be verified as the guardian, and a child's project evidence still cannot be erased. What closed is the path; the gates it has to pass are still shut — see `docs/decisions/2026-07-27-live-wiring.md` — but read every mark below as a claim about a package rather than about a journey.
 
