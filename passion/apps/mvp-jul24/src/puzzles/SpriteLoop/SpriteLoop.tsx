@@ -116,8 +116,13 @@ export default function SpriteLoop({ seed, tier, onSolved, onExit }: PuzzleProps
   const [solved, setSolved] = useState(false);
   /** Which tick of the child's own run is showing, or null when it is not running. */
   const [runTick, setRunTick] = useState<number | null>(null);
-  /** Which tick of the demonstration is showing. Loops forever. */
-  const [ghostTick, setGhostTick] = useState(0);
+  /**
+   * Which tick of the demonstration is showing **while nothing is running**.
+   *
+   * While a run IS in progress the demonstration is driven by `runTick` instead, so the two creatures
+   * step in lockstep — see the note on `ghost` below. This tick only advances the idle loop.
+   */
+  const [idleTick, setIdleTick] = useState(0);
 
   const puzzle = useMemo(() => generateForRound(seed, roundIndex), [seed, roundIndex]);
   const ghostPoses = useMemo(
@@ -129,20 +134,33 @@ export default function SpriteLoop({ seed, tier, onSolved, onExit }: PuzzleProps
     [program, puzzle.start],
   );
 
-  /** The demonstration loops on its own, always, so there is nothing to press to see it. */
+  /**
+   * The demonstration loops on its own while idle, so there is nothing to press to see it.
+   *
+   * Paused during a run, because a run drives it from the shared tick instead.
+   */
   useEffect(() => {
-    setGhostTick(0);
-    const id = setInterval(() => setGhostTick((t) => (t + 1) % ghostPoses.length), TICK_MS);
+    if (runTick !== null) return;
+    const id = setInterval(() => setIdleTick((t) => (t + 1) % ghostPoses.length), TICK_MS);
     return () => clearInterval(id);
-  }, [ghostPoses.length]);
+  }, [ghostPoses.length, runTick]);
 
-  /** The child's run walks its own poses once and stays on the last one. */
+  /**
+   * A run lasts as long as the LONGER of the two walks, and each creature holds its last pose after
+   * it finishes.
+   *
+   * Stopping at the child's own length would mean a child whose program is too short never sees the
+   * rest of the demonstration — the run would cut off exactly where their answer ran out, hiding the
+   * part they still had to account for. Running to the longer length shows them where the two parted
+   * company, which is feedback they can read rather than a verdict.
+   */
+  const runLength = Math.max(myPoses.length, ghostPoses.length);
   useEffect(() => {
     if (runTick === null) return;
-    if (runTick >= myPoses.length - 1) return;
+    if (runTick >= runLength - 1) return;
     const id = setTimeout(() => setRunTick((t) => (t === null ? null : t + 1)), TICK_MS);
     return () => clearTimeout(id);
-  }, [runTick, myPoses.length]);
+  }, [runTick, runLength]);
 
   const add = useCallback((b: TrayBlock) => {
     setRunTick(null);
@@ -171,11 +189,28 @@ export default function SpriteLoop({ seed, tier, onSolved, onExit }: PuzzleProps
   const nextRound = useCallback(() => {
     setProgram([]);
     setRunTick(null);
+    setIdleTick(0);
     setSolved(false);
     setRoundIndex((i) => i + 1);
   }, []);
 
-  const ghost = ghostPoses[ghostTick] ?? puzzle.start;
+  /**
+   * THE TWO CREATURES MOVE ON THE SAME TICK DURING A RUN, AND THAT IS NOT A DETAIL.
+   *
+   * The demonstration used to loop on its own timer while a run played out on another, which meant
+   * the two were never in motion at the same moment — so comparing them was a memory task, and the
+   * activity quietly measured how well a child can hold a pattern in their head. That is the same
+   * construct confound the music spec flags for `echo` (auditory working memory entangled with
+   * interest), arriving here through the back door.
+   *
+   * Driving both from `runTick` makes the comparison *visible* instead of remembered. It also buys the
+   * clearest success signal the room has: a correct program is the same length as the target, so the
+   * two creatures walk in step and end the run superimposed — they become one arrow.
+   */
+  const ghost =
+    runTick === null
+      ? (ghostPoses[idleTick] ?? puzzle.start)
+      : (ghostPoses[Math.min(runTick, ghostPoses.length - 1)] ?? puzzle.start);
   const mine = runTick === null ? myPoses[0]! : (myPoses[runTick] ?? myPoses[myPoses.length - 1]!);
 
   /** Where the hovered block would leave the creature. Never committed, never a trail. */
