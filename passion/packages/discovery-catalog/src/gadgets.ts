@@ -96,8 +96,9 @@ export const CATALOG: ReadonlyMap<string, Artifact> = new Map(
  * Cabin-level on purpose, with no subtopic. A room contains several, and picking one would quietly
  * decide that a child who liked the maths room liked fractions specifically.
  *
- * The three rooms with no interior yet (`music`, `art`, `science`, `words`) are absent rather than
- * guessed. An absent row yields no resources, which is visibly nothing; a wrong row yields the
+ * The rooms with no interior yet (`music`, `art`, `science`, `words`) are absent rather than guessed.
+ * Music is the one to watch: #215 landed its design and its first sound, so the moment a gadget of its
+ * own is registered this needs a row or its shelf will offer nothing. An absent row yields no resources, which is visibly nothing; a wrong row yields the
  * wrong resources, which looks like it worked.
  */
 const TOPIC_CABINS = {
