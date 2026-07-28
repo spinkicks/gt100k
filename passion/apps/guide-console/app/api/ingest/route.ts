@@ -14,6 +14,9 @@ import {
 } from "@gt100k/student-profile";
 import { createFsProfileStore } from "@gt100k/profile-store-fs";
 import { CATALOG } from "@gt100k/discovery-catalog";
+import { decideConsent, type ConsentRecord } from "@gt100k/consent";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
 /**
  * Node, not edge: the store writes files.
@@ -44,6 +47,24 @@ interface IngestRequest {
 const isRecordArray = (v: unknown): v is readonly Record<string, unknown>[] =>
   Array.isArray(v) && v.every((x) => typeof x === "object" && x !== null);
 
+/**
+ * Consent records, from a file beside the profiles.
+ *
+ * A file rather than a database because there is no database, and a missing file therefore has to
+ * mean NO CONSENT rather than "not configured yet". That is the whole point of the gate: the state
+ * where nobody has set anything up is exactly the state where a child's data must not be collected,
+ * and any code that treats absence as permission has inverted it.
+ */
+async function consentRecords(): Promise<readonly ConsentRecord[]> {
+  try {
+    const raw = await readFile(join(profileDir(), "consent.json"), "utf8");
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as ConsentRecord[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 export async function POST(request: Request): Promise<NextResponse> {
   let body: IngestRequest;
   try {
@@ -69,6 +90,25 @@ export async function POST(request: Request): Promise<NextResponse> {
     interactions: body.interactions,
     surfaced: body.surfaced,
   } as unknown as CycleBatch;
+
+  // G3. Before anything is read, written or derived.
+  //
+  // 403 rather than 400: the request is well-formed and the answer is that we are not allowed to
+  // accept it. The reason is returned because the emitter is the only thing that can act on it, and
+  // a child's session silently vanishing into a refusal is the failure mode this is meant to
+  // prevent rather than create.
+  const decision = decideConsent(
+    await consentRecords(),
+    kidId,
+    "discovery-measurement",
+    new Date().toISOString(),
+  );
+  if (!decision.allowed) {
+    return NextResponse.json(
+      { error: "no consent for discovery-measurement", reason: decision.reason },
+      { status: 403 },
+    );
+  }
 
   const store = createFsProfileStore(profileDir());
   const existing: StudentProfile | null = await store.load(kidId);

@@ -75,7 +75,7 @@
 
 **Goal:** everything required before a live child touches the system.
 - **E1 D1–D6 productionization** (`hardening/evidencegraph-productionization.md`): **D2 erasure data model first**, then anchoring/signing, then the rest. **Teammate-owned**, and delivered inside the separate EvidenceGraph product. *Blocks live use.*
-- **G3 identity/consent/privacy**: consent scope, retention, parental access, erasure wiring. *Blocks live use.*
+- **G3 identity/consent/privacy**: consent scope, retention, parental access, erasure wiring. *Still blocks live use, but no longer absent.* `@gt100k/consent` ships per-purpose consent, absolute withdrawal, a one-year retention review and deny-by-default, and the ingest route enforces it per request. What is still missing is the part that needs something outside this repository: identity verification, so `guide-asserted` is the strongest claim a pilot can honestly make. Erasure is half done — a profile is a file and can be deleted, the EvidenceGraph is content-addressed and cannot, which is E1 **D2**. `eraseEverywhere` names the stores that could not forget rather than reporting success. See `docs/decisions/2026-07-27-g3-consent.md`.
 - **G4 safety-at-scale**: harden + consolidate the shared moderation service (concierge already ships in-app safety stages). *Blocks live use.*
 - **G5 inference validation**: once real outcomes land, re-fit and validate the model.
 

@@ -6,16 +6,36 @@
  * `@gt100k/student-profile` covers, but that a batch shaped the way the game actually emits arrives,
  * persists, and comes back out as a child the console can render.
  */
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 let dir: string;
 
+/**
+ * A guardian has said yes. Written per test because the G3 gate reads it per request, and because
+ * the default state of a fresh directory has to be "no consent" for the gate to mean anything.
+ */
+const grantConsent = async (kidId = "local-demo"): Promise<void> => {
+  await writeFile(
+    join(dir, "consent.json"),
+    JSON.stringify([
+      {
+        kidId,
+        guardianRef: "guardian-1",
+        method: "signed-form",
+        purposes: ["discovery-measurement"],
+        grantedAt: new Date().toISOString(),
+      },
+    ]),
+  );
+};
+
 beforeEach(async () => {
   dir = await mkdtemp(join(tmpdir(), "gt-ingest-"));
   process.env.GT100K_PROFILE_DIR = dir;
+  await grantConsent();
 });
 
 afterEach(async () => {
@@ -116,5 +136,61 @@ describe("a batch that is wrong", () => {
     const body = (await res.json()) as { rejected: number; totals: { interactions: number } };
     expect(body.rejected).toBe(1);
     expect(body.totals.interactions).toBe(1);
+  });
+});
+
+describe("the G3 gate", () => {
+  it("refuses a child nobody has consented for, with the reason", async () => {
+    // The default state of a fresh install is no consent file at all, and that has to deny. Code
+    // that reads a missing file as "not configured yet, carry on" has inverted the entire gate.
+    await rm(join(dir, "consent.json"));
+
+    const res = await post(play());
+    expect(res.status).toBe(403);
+    expect(((await res.json()) as { reason: string }).reason).toBe("no-record");
+  });
+
+  it("refuses after a withdrawal, and stores nothing", async () => {
+    await writeFile(
+      join(dir, "consent.json"),
+      JSON.stringify([
+        {
+          kidId: "local-demo",
+          guardianRef: "guardian-1",
+          method: "signed-form",
+          purposes: ["discovery-measurement"],
+          grantedAt: new Date(Date.now() - 86_400_000).toISOString(),
+          withdrawnAt: new Date().toISOString(),
+        },
+      ]),
+    );
+
+    expect((await post(play())).status).toBe(403);
+
+    const { createFsProfileStore } = await import("@gt100k/profile-store-fs");
+    expect(await createFsProfileStore(dir).load("local-demo")).toBeNull();
+  });
+
+  it("refuses when the consent on file is for something else", async () => {
+    await writeFile(
+      join(dir, "consent.json"),
+      JSON.stringify([
+        {
+          kidId: "local-demo",
+          guardianRef: "guardian-1",
+          method: "signed-form",
+          purposes: ["family-coaching"],
+          grantedAt: new Date().toISOString(),
+        },
+      ]),
+    );
+
+    const res = await post(play());
+    expect(((await res.json()) as { reason: string }).reason).toBe("purpose-not-granted");
+  });
+
+  it("does not let one child's consent admit another's data", async () => {
+    const res = await post(play("someone-else"));
+    expect(res.status).toBe(403);
   });
 });

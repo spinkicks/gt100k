@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@gt100k/access-broker": "workspace:*",
+    "@gt100k/consent": "workspace:*",
     "@gt100k/design-tokens": "workspace:*",
     "@gt100k/discovery-catalog": "workspace:*",
     "@gt100k/family": "workspace:*",

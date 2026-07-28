@@ -277,6 +277,9 @@ importers:
       '@gt100k/access-broker':
         specifier: workspace:*
         version: link:../../packages/access-broker
+      '@gt100k/consent':
+        specifier: workspace:*
+        version: link:../../packages/consent
       '@gt100k/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
@@ -621,6 +624,8 @@ importers:
       '@gt100k/two-axis-tagging':
         specifier: workspace:*
         version: link:../two-axis-tagging
+
+  passion/packages/consent: {}
 
   passion/packages/design-tokens: {}
 
