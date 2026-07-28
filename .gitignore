@@ -69,3 +69,4 @@ secrets/
 
 # Ingested student profiles: real child data, never committed.
 .profiles/
+.next-build/
