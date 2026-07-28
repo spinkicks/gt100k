@@ -20,8 +20,17 @@ test('logic-games node carries data-cabin="logic-games" and is enabled', () => {
   expect(node).toBeInTheDocument();
   expect(node).not.toBeDisabled();
   expect(node).not.toHaveAttribute("aria-disabled");
-  expect(node.style.left).toBe("12%");
-  expect(node.style.top).toBe("35%");
+  // Positioned FROM the data, not at a literal percentage. The old assertion pinned "12%"/"35%" and
+  // broke the moment the plate was repainted at 3:2 and the coordinates were re-measured against it —
+  // while never checking the thing that actually matters, since a label floating in the empty sky
+  // would have satisfied it just as well. Whether a label sits on its cabin is a visual property and
+  // is verified against the plate itself (see the measurement note in cabins.data.ts). What a unit
+  // test can hold is that MapScreen applies each cabin's own coordinates and does not swap the axes.
+  const logic = CABINS.find((c) => c.id === "logic-games");
+  expect(logic).toBeDefined();
+  expect(node.style.left).toBe(`${logic?.xPct}%`);
+  expect(node.style.top).toBe(`${logic?.yPct}%`);
+  expect(node.style.left).not.toBe(node.style.top);
 });
 
 // `math` is active and openable even though it has no gadgets yet — the empty room is deliberate

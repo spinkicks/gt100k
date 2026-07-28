@@ -16,6 +16,31 @@ the horizon would have biased topic choice by paint. `map.png` is deliberately
 kept rather than overwritten — generated art can come back worse, and this way
 reverting is one `src` and five coordinate pairs. See `src/map/cabins.data.ts`.
 
+**`map-v2.png` was repainted on 2026-07-28** after review rejected the first
+attempt, and the three faults were in the instructions rather than in the
+model's luck, so the prompt was corrected instead of re-rolled:
+
+- No `size`, so it fell through to the 1024x1024 default and came back square.
+  The plate is displayed `object-fit: cover` in a 16:9 frame, which threw away
+  about a quarter of a square painting's height — the sky off the top and the
+  paths and props off the bottom. Now 1536x1024, matching the cabin backdrops.
+- The dial asked for "two simple hands and a completely blank empty face", a
+  contradiction the model resolved toward blank, so the clockmaker's cabin had
+  no hands at all. "Blank" only ever meant the no-numerals rule in `NO_TEXT`.
+- "Equal size, equal prominence and equally golden light" produced one building
+  painted three times. Equal *prominence* is the measurement requirement (PRD
+  §5.3); equal *appearance* is not, and it costs a child the ability to tell the
+  three doors apart. Each cabin now names its own roof material and timber.
+
+Five candidates were generated and read before one was kept. Rejected: an
+oversized dial that made the clockmaker's cabin visually heavier than the other
+two, which is the same prominence confound in miniature; and a painter's palette
+that leaked onto the clockmaker's cabin, where an art prop on the Math door
+would misdirect a child. The kept plate is the one where each near cabin carries
+only its own craft's props. The three cabins deliberately stand in one flat row
+at one depth: staggering them for a more interesting composition would make them
+different sizes, which is the confound itself.
+
 ## `cabin-backdrop-music.png` — the Music cabin backdrop
 
 Text-to-image in **one pass**, `gpt-image-1.5`, via `scripts/gen-art.mjs

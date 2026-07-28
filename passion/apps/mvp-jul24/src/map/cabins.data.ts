@@ -55,13 +55,23 @@ export interface CabinNode {
  * rather than only in `git log` because the two files look interchangeable and are not —
  * `logic-games` 27/45, `math` 72/43, `music` 19/26 (`#7a6a86`), `code` 54/18, `art` 83/27.
  *
- * The three active labels ride just above the roofs of the near cabins (yPct ~35) and the two
- * coming-soon labels sit above the distant ones in the mist (yPct ~6), which keeps the two rows well
+ * The three active labels ride just above the roofs of the near cabins (yPct ~40) and the two
+ * coming-soon labels sit above the distant ones in the mist (yPct ~19), which keeps the two rows well
  * clear of each other while leaving the hierarchy in the art rather than only in the pill styling.
  *
- * The map art is square and rendered `object-fit: cover` in a 16:9 frame, so only the middle ~56% of
- * the image height is on screen: `yPct` 0–100 maps to image y 21.9%–78.1%. Anything computed against
- * the raw artwork has to go through that conversion.
+ * The plate is rendered `object-fit: cover` in a 16:9 frame, so part of its height is always off
+ * screen and anything computed against the raw artwork has to go through that conversion. **The
+ * conversion changed when the plate was repainted at 1536x1024.** A 1:1 plate had to scale to 1.875x
+ * to fill the frame's width, which left only the middle ~56% of its height visible (`yPct` 0–100
+ * mapped to image y 21.9%–78.1%). At 3:2 it scales 1.25x, so ~84% is visible and `yPct` 0–100 maps to
+ * image y **7.8%–92.2%**. That is most of a quarter of the painting recovered, and it is why these
+ * numbers all moved: the same cabin in the same place in the art now lands at a different `yPct`.
+ *
+ * The values below were measured off `map-v2.png` by overlaying candidate crosshairs on the plate and
+ * reading the cabins' centres, not estimated: near cabins at x 18.5 / 49 / 82, horizon cabins at
+ * x 17.4 / 77.1, roofs topping out at image y ~44%, labels placed at image y 41.5% (near) and 24%
+ * (far). `code` sits almost directly above `logic-games` because that is where the art puts it; the
+ * two are 21 points apart vertically, which is ~128px in the framed map, so the pills stay clear.
  *
  * Horizontal values are also chosen so no two pills overlap within a shared row — the widest label,
  * "Logic Games", spans roughly 14% of the frame, and a "coming soon" node roughly 16%.
@@ -72,8 +82,8 @@ export const CABINS: CabinNode[] = [
   {
     id: "logic-games",
     label: "Logic Games",
-    xPct: 12,
-    yPct: 35,
+    xPct: 18.5,
+    yPct: 40,
     active: true,
     accent: "#5b7fa6",
     emblem: "grid",
@@ -81,8 +91,8 @@ export const CABINS: CabinNode[] = [
   {
     id: "math",
     label: "Math",
-    xPct: 83.5,
-    yPct: 35,
+    xPct: 82,
+    yPct: 40,
     active: true,
     accent: "#c9962f",
     emblem: "gear",
@@ -92,8 +102,8 @@ export const CABINS: CabinNode[] = [
   {
     id: "music",
     label: "Music",
-    xPct: 49.3,
-    yPct: 35,
+    xPct: 49,
+    yPct: 40,
     active: true,
     // Saturated now that it is a near, playable cabin: the old value was deliberately desaturated to
     // sit back in the horizon row. Plum reads as distinct from the puzzle den's slate blue and the
@@ -104,8 +114,8 @@ export const CABINS: CabinNode[] = [
   {
     id: "code",
     label: "Code",
-    xPct: 18.6,
-    yPct: 6,
+    xPct: 17.4,
+    yPct: 19,
     active: false,
     accent: "#4f7a6a",
     emblem: "bracket",
@@ -113,8 +123,8 @@ export const CABINS: CabinNode[] = [
   {
     id: "art",
     label: "Art",
-    xPct: 79.1,
-    yPct: 6,
+    xPct: 77.1,
+    yPct: 19,
     active: false,
     accent: "#a5705c",
     emblem: "brush",
