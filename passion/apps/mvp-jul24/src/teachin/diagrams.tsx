@@ -828,3 +828,67 @@ export function TraceRepairDiagram(): JSX.Element {
     </Stage>
   );
 }
+
+/**
+ * Teach the Helper. One corridor you can see, and two you cannot.
+ *
+ * **The unseen floors are drawn as empty outlines with question marks, never with parcels on them.**
+ * A diagram that showed where the hidden parcels were would hand over the one thing the round keeps
+ * back, and a child who had studied it would write for those positions instead of learning the
+ * lesson. What the picture says is only that other floors exist.
+ */
+export function TeachHelperDiagram(): JSX.Element {
+  const W = 16;
+  const gap = 4;
+  const x0 = 74;
+  const count = 6;
+  const cellX = (i: number): number => x0 + i * (W + gap);
+  const row = (y: number, filled: readonly number[], unknown: boolean) => (
+    <>
+      {Array.from({ length: count }, (_, i) => (
+        <rect
+          // biome-ignore lint/suspicious/noArrayIndexKey: a fixed strip; position is the identity.
+          key={`${y}-${i}`}
+          x={cellX(i)}
+          y={y}
+          width={W}
+          height={14}
+          rx={2}
+          className="ti-cell"
+        />
+      ))}
+      {unknown
+        ? null
+        : filled.map((i) => (
+            <circle
+              key={`${y}-p${i}`}
+              cx={cellX(i) + W / 2}
+              cy={y + 7}
+              r={4}
+              className="ti-node-on"
+            />
+          ))}
+      {unknown ? (
+        <text x={cellX(count - 1) + W + 10} y={y + 11} className="ti-tag" textAnchor="start">
+          ?
+        </text>
+      ) : null}
+    </>
+  );
+  return (
+    <Stage>
+      {row(10, [1, 4], false)}
+      <Tag x={66} y={21} anchor="end">
+        you see
+      </Tag>
+      {row(34, [], true)}
+      {row(52, [], true)}
+      <Tag x={66} y={49} anchor="end">
+        you do not
+      </Tag>
+      <Tag x={130} y={82}>
+        write for all of them
+      </Tag>
+    </Stage>
+  );
+}

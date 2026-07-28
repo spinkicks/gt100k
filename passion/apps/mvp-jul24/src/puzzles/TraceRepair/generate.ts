@@ -80,6 +80,10 @@ function corruptionsOf(s: Statement): readonly Statement[] {
         { kind: "wait", ticks: s.ticks + 1 },
         { kind: "move", steps: 1 },
       ];
+    // No corruption for `take`: this door's rounds are motion, and a round whose bug was "the helper
+    // grabbed at nothing" would be invisible on a board with nothing to grab.
+    case "take":
+      return [];
     case "repeat":
       return [{ kind: "repeat", times: s.times + 1, body: s.body }];
   }

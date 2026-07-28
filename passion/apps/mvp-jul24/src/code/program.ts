@@ -30,15 +30,26 @@ export type Statement =
   | { readonly kind: "move"; readonly steps: number }
   | { readonly kind: "turn"; readonly quarters: number }
   | { readonly kind: "wait"; readonly ticks: number }
+  | { readonly kind: "take" }
   | { readonly kind: "repeat"; readonly times: number; readonly body: readonly Statement[] };
 
 export type Program = readonly Statement[];
 
-/** One tick's worth of work. `step` advances a cell, `idle` passes time, `turn` rotates. */
+/**
+ * One tick's worth of work. `step` advances a cell, `idle` passes time, `turn` rotates.
+ *
+ * `take` is here even though the shared stepper does nothing with it. The reason is the claim this
+ * file opens with: **one language, three doors**. Teach the Helper needs a verb that acts on the
+ * world rather than on the creature, and giving that door a private language would have made the
+ * blocks-to-typed climb a change of subject at the third step. So the *word* is shared and only its
+ * *effect* is door-specific — `interpret.ts` moves the creature and leaves the world alone, and
+ * `TeachHelper/world.ts` layers the world effect on top of exactly the same ops.
+ */
 export type Op =
   | { readonly kind: "step" }
   | { readonly kind: "turn"; readonly quarters: number }
-  | { readonly kind: "idle" };
+  | { readonly kind: "idle" }
+  | { readonly kind: "take" };
 
 export interface FlattenResult {
   readonly ops: readonly Op[];
@@ -89,6 +100,9 @@ export function flatten(program: Program, maxOps: number): FlattenResult {
           break;
         case "turn":
           if (!push({ kind: "turn", quarters: s.quarters })) return false;
+          break;
+        case "take":
+          if (!push({ kind: "take" })) return false;
           break;
         case "repeat":
           for (let i = 0; i < Math.trunc(s.times); i++) {

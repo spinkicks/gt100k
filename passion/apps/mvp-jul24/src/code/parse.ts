@@ -17,7 +17,7 @@
 import type { Statement } from "./program";
 
 /** Every word a line may start with. Rendered on screen by the puzzle; never duplicated there. */
-export const VERBS = ["move", "turn", "wait"] as const;
+export const VERBS = ["move", "turn", "wait", "take"] as const;
 
 export type ParseResult =
   | { readonly ok: true; readonly statement: Statement }
@@ -38,6 +38,7 @@ export function parseLine(text: string): ParseResult {
   if (parts.length === 0) return { ok: false, reason: "empty" };
 
   const [verb, arg] = parts;
+  if (verb === "take") return { ok: true, statement: { kind: "take" } };
   if (verb === "turn") {
     if (arg === "left") return { ok: true, statement: { kind: "turn", quarters: -1 } };
     if (arg === "right") return { ok: true, statement: { kind: "turn", quarters: 1 } };
@@ -70,6 +71,8 @@ export function printLine(s: Statement): string {
       return `wait ${s.ticks}`;
     case "turn":
       return s.quarters > 0 ? "turn right" : "turn left";
+    case "take":
+      return "take";
     case "repeat":
       return `repeat ${s.times}`;
   }

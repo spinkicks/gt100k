@@ -48,7 +48,7 @@ describe("generateForRound", () => {
     for (const seed of SEEDS) {
       for (let index = 0; index < TIERS.length; index++) {
         const p = generateForRound(seed, index);
-        const kinds = new Set(p.tray.map((b) => b.kind));
+        const kinds = new Set<string>(p.tray.map((b) => b.kind));
         for (const s of p.target) expect(kinds.has(s.kind)).toBe(true);
       }
     }

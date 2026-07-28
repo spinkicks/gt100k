@@ -67,6 +67,9 @@ export function step(ops: readonly Op[], state: MachineState): MachineState {
     case "turn":
       return { x: state.x, y: state.y, facing: rotate(state.facing, op.quarters), pc };
     case "idle":
+    // `take` acts on the world, not on the creature, so here it is exactly an idle tick. The world
+    // effect lives in `TeachHelper/world.ts`, which walks these same ops. See the note on `Op`.
+    case "take":
       return { x: state.x, y: state.y, facing: state.facing, pc };
   }
 }

@@ -41,6 +41,7 @@ import {
   DownbeatDiagram,
   RatioMixingDiagram,
   SpriteLoopDiagram,
+  TeachHelperDiagram,
   TraceRepairDiagram,
   TuneRepairDiagram,
 } from "./diagrams";
@@ -184,6 +185,14 @@ export const TEACH_INS = {
     // instruction worth spending a sentence on is the scrubber.
     rule: "This program was meant to move the pale creature's way, but one line sends yours somewhere else. Drag the slider to step through both and watch for the moment they stop agreeing, then retype that line.",
     Diagram: TraceRepairDiagram,
+  },
+  "teach-helper": {
+    title: "Teach the Helper",
+    // Says OTHER FLOORS YOU WILL NOT SEE, and stops there. Naming the trap outright -- "so take
+    // everywhere" -- would replace the insight with an instruction, and the insight is the thing this
+    // door detects. A child has to be told the rules of the game; they must not be told the answer.
+    rule: "Write instructions and the helper will follow them on this floor and on other floors you will not see, which have parcels in different places. It only picks something up if you tell it to take while it is standing there.",
+    Diagram: TeachHelperDiagram,
   },
 } satisfies Record<string, ActivityTeachIn>;
 

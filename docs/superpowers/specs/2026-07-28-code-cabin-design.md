@@ -392,7 +392,20 @@ the shelf is hand-authored and the library is a separate concern.
 
 ## 10. Risks and open questions
 
-**10.1 Teach the Helper may not be honest enough to ship.** A deliberately literal interpreter is one
+**10.1 RESOLVED 2026-07-28 — and not by the fallback.** The risk below was real and it turned out to
+live entirely in the *near-natural-language framing*, not in the construct. A helper interpreting
+almost-English and doing something amusingly wrong when it is ambiguous is one step from
+guess-what-the-parser-wants; a child writing the **same four-word language the other two doors use**,
+where every word has one visible rule and the whole list is on screen, has nothing to second-guess.
+
+So the framing is gone and *specification that generalises* is kept, carried by the thing that was
+always doing the work: the program runs on **three arrangements the child never sees**. A program
+written for the floor in front of them fails; one written for what could be there passes. The guard
+is the same shape as the other two doors' — `generate.ts` rejection-samples until the naive program
+fails at least one hidden arrangement, so a round can never accept the answer the visible board
+suggests. `abstract-it` was not needed and is not built.
+
+~~**Teach the Helper may not be honest enough to ship.**~~ A deliberately literal interpreter is one
 step from guess-the-parser. §2.3's mitigations — complete displayed vocabulary, per-word rules in the
 teach-in, replay naming the instruction being executed — are the plan, and they may not be enough.
 **Fallback, decided now so PR 2 does not stall on it: `abstract-it`** — factor a program's repeated

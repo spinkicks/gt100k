@@ -71,6 +71,10 @@ function statementLabel(s: Statement): string {
       return s.quarters > 0 ? "turn right" : "turn left";
     case "wait":
       return s.ticks === 1 ? "wait" : `wait ${s.ticks}`;
+    // In the language but in no Sprite Loop tray — `take` belongs to Teach the Helper, which has a
+    // world to take things from. Handled rather than ignored so the switch stays exhaustive.
+    case "take":
+      return "take";
     case "repeat":
       return `repeat ${s.times}`;
   }
