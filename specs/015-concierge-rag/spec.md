@@ -2,7 +2,7 @@
 
 **Feature Branch**: `015-concierge-rag`
 **Created**: 2026-07-23
-**Status**: Draft (loop-ready)
+**Status**: Draft (loop-ready) — **but DELIVERED.** The code is merged and tested; it lives in `@gt100k/concierge`. This field tracks the state of the DOCUMENT, which was never revised after the build, and a reader comparing it against the ✅ in `docs/prd/passionApps.md` should trust the packages and their tests over either. What a ✅ does *not* mean is that a child can use it end to end.
 
 **Input**: B1 (Concierge Companion) + B2 (Routing + Safety Pipeline) + A6 (External Resource Router + Curated Library) in `docs/prd/passionApps.md`. A child asks the concierge a question about a niche; the system answers from a **curated library first**, falls back to **allowlist-biased open-web retrieval only on a genuine gap**, and wraps everything in a **staged, defense-in-depth safety pipeline** (the model is never the only gate). Served results are cached and **asynchronously vetted + promoted** into the curated library so it compounds. Grounding: `docs/prd/hardening/child-safe-rag.md` (the 10-stage pipeline, components, standards), `DISCOVERY-APP-PRD.md` (concierge as a porous escape valve; chat is never scored), `passion/CONTEXT.md`.
 

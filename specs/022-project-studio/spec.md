@@ -2,7 +2,7 @@
 
 **Feature Branch**: `022-project-studio`
 **Created**: 2026-07-23
-**Status**: Draft (grilled + gap-closed; pending final approval)
+**Status**: Draft (grilled + gap-closed; pending final approval) — **but DELIVERED.** The code is merged and tested; it lives in `@gt100k/project-workspace` and `apps/project-studio`. This field tracks the state of the DOCUMENT, which was never revised after the build, and a reader comparing it against the ✅ in `docs/prd/passionApps.md` should trust the packages and their tests over either. What a ✅ does *not* mean is that a child can use it end to end.
 
 **Input**: D2 in `docs/prd/passionApps.md` + `SPECIALIZATION-PIPELINE-PRD.md` §6/§7.2 — where a child **does** a Renzulli **Type III** authentic project (the one the D1 planner proposed, or a self-chosen one) over weeks, and the **EvidenceGraph (E1) wraps every project** (E1 is its own product; the seam is §4.4) by capturing the honest **process** (attempts, failures, revisions, artifacts, declared AI help) — because we **grade the process, not the polish**. This is the **first child-facing** surface in the program. Design settled via a `/grilling` + brainstorming session (decisions §3). Aesthetic inspiration: `references/fella-*.png` (screenshots of smartfellaorfartsmella.com — a neo-brutalist cartoon look), borrowed for **look + voice only, never its scoring mechanic**.
 

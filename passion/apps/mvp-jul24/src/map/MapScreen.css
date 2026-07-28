@@ -31,10 +31,21 @@
 }
 
 /* Cabin node — a warm wooden signpost pill, centered on its point. */
+/* The target is a token, not a measurement of the text inside it.
+ *
+ * This pill used to be sized entirely by its padding and label, which came out at about 38px tall.
+ * `--control-min` is 56px under `data-mood="child"`, which is the figure the child-UX literature
+ * gives and which the design system has carried, unused, since it was written.
+ *
+ * Undersized targets are a measurement problem before they are a usability one. A child who misses
+ * a cabin generates no engagement with it, and `deriveSkips` reads a surfaced cabin with no
+ * engagement as evidence the child was not interested. So the pill being too small to hit does not
+ * produce a missing observation, it produces a wrong one. */
 .map-screen-node {
   position: absolute;
   display: inline-flex;
   align-items: center;
+  min-height: var(--control-min, 44px);
   gap: 0.4rem;
   padding: 0.5rem 1rem;
   border-radius: var(--r-pill);
@@ -43,7 +54,9 @@
   color: var(--cream);
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.95rem;
+  /* The cabin's name is the content of this control, so it gets the base size rather than the
+     0.95rem (15px) it used to sit at, which was under the contract's floor too. */
+  font-size: var(--text-base, 1rem);
   white-space: nowrap;
   cursor: pointer;
   box-shadow: var(--shadow-raised);
@@ -114,13 +127,17 @@
 .map-screen-node-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.05rem 0.45rem;
+  padding: 0.15rem 0.5rem;
   border-radius: var(--r-pill);
   font-family: var(--font-body);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  /* Was 0.68rem, which is 10.9px in caps: a child squints at it and an adult does too.
+     Deliberately NOT raised to `--text-base`, which is where this first went and which inverted the
+     hierarchy: the badge then outsized the cabin's own name, so the loudest thing on an unavailable
+     cabin was the word UNAVAILABLE rather than what the cabin is.
+     Sentence case instead of uppercase, because caps and letter-spacing cost legibility at small
+     sizes on top of whatever the size costs, and this is the one place we want small. */
+  font-size: 0.9rem;
+  font-weight: 600;
   background: rgba(0, 0, 0, 0.25);
   color: var(--cream);
 }

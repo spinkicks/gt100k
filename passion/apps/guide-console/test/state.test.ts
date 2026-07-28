@@ -9,7 +9,7 @@
  * the primary action (promote the top gate-passed candidate) actually moving `state()`.
  */
 import { applyGuidePrimaryAction, buildQaState, topPromotableId } from "../app/console-state.js";
-import { CHILDREN, ROSTER_NOW, buildRosterGates, buildRosterStore } from "../app/console-data.js";
+import { children, ROSTER_NOW, buildRosterGates, buildRosterStore } from "../app/console-data.js";
 import { escalationCount, wellbeingForKid } from "../app/wellbeing.js";
 import { serializeCellKey } from "@gt100k/interest-inference";
 import { consoleViewModel, getForKid } from "@gt100k/hypothesis-store";
@@ -24,13 +24,13 @@ const ARI_TOP_ID = `${ARI}::${ARI_BUILD_KEY}`;
 
 describe("guide-console derived roster", () => {
   it("renders the four canonical synthetic kids, Ari first (the window.__qa kid)", () => {
-    expect(CHILDREN.map((c) => c.id)).toEqual([
+    expect(children().map((c) => c.id)).toEqual([
       "kid-synthetic-001",
       "kid-synthetic-002",
       "kid-synthetic-003",
       "kid-synthetic-004",
     ]);
-    expect(CHILDREN[0]).toEqual({ id: ARI, name: "Ari Mercado" });
+    expect(children()[0]).toEqual({ id: ARI, name: "Ari Mercado" });
     expect(ROSTER_NOW).toBe("2026-04-01T00:00:00.000Z");
   });
 

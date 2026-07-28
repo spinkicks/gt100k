@@ -158,11 +158,23 @@ export function selectHoldOut(input: HoldOutInput): HoldOut {
   // 3. Breadth, and only with the debts clear. §2.3 again: a new domain the child then never sees
   //    again leaves them below where they started, so an outstanding debt blocks exploration
   //    rather than competing with it.
+  //
+  //    Compared at CABIN level, which the two steps above are not and do not need to be. A belief
+  //    and an exposure both carry a full path (`math-puzzles/logic-puzzles`); `candidates` carries
+  //    cabins (`math-puzzles`). Testing one against the other by string equality never matches, so
+  //    this step used to consider a cabin the child had been inside a dozen times to be new, and
+  //    would spend the breadth budget on their most familiar room while a genuinely unseen cabin
+  //    sat behind it in the sort. It could also re-offer the cabin the probe had just claimed,
+  //    which reads to a guide as two separate asks.
+  const seenCabins = new Set<string>();
+  for (const k of occasions.keys()) seenCabins.add(k.split("/")[0] ?? k);
+  for (const k of taken) seenCabins.add(k.split("/")[0] ?? k);
+
   const fresh =
     owed.length > 0
       ? undefined
       : [...input.candidates]
-          .filter((c) => !occasions.has(c) && !taken.has(c))
+          .filter((c) => !seenCabins.has(c))
           .sort((a, b) => a.localeCompare(b))
           .map((c) => toDomainPath([c]))
           .find((p): p is DomainPath => p !== null);

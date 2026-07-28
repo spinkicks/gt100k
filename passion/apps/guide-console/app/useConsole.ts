@@ -21,7 +21,7 @@ import {
   type GuideDecision,
 } from "./decisions.js";
 import { installQa } from "./qa.js";
-import { CHILDREN, buildRosterGates, buildRosterStore, type Child } from "./console-data.js";
+import { children, buildRosterGates, buildRosterStore, type Child } from "./console-data.js";
 import { escalationCount, wellbeingForKid } from "./wellbeing.js";
 import { familyForKid, familyObservationsForKid } from "./family.js";
 import { plansForKid } from "./plan.js";
@@ -44,7 +44,7 @@ export function useConsole() {
   // because the store is the RESULT and the log is the record: see `decisions.ts` for why we
   // persist the second and replay it, instead of snapshotting the first.
   const [decisions, setDecisions] = useState<readonly GuideDecision[]>([]);
-  const [kid, setKidRaw] = useState<string>(CHILDREN[0]!.id);
+  const [kid, setKidRaw] = useState<string>(children()[0]!.id);
   const [filter, setFilter] = useState<Filter>("ALL");
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -149,7 +149,7 @@ export function useConsole() {
   // Per-child summaries for the switcher (tracked count, how many are gate-ready, the top state).
   const summaries = useMemo(() => {
     const m = new Map<string, ChildSummary>();
-    for (const child of CHILDREN) {
+    for (const child of children()) {
       const cvm = consoleViewModel(store, child.id, gates);
       m.set(child.id, {
         tracked: cvm.cards.length,
@@ -228,10 +228,10 @@ export function useConsole() {
     return action === "promote" && card.state === "EMERGING" && card.gate?.passed !== true;
   }
 
-  const activeChild: Child | undefined = CHILDREN.find((c) => c.id === kid);
+  const activeChild: Child | undefined = children().find((c) => c.id === kid);
 
   return {
-    children: CHILDREN,
+    children: children(),
     // The live lifecycle store. Exposed so panels derived from certification (Plan, Access, Maps)
     // can read the guide's decisions rather than the module-scope seed.
     store,

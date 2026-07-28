@@ -2,7 +2,7 @@
 
 **Feature Branch**: `013-hypothesis-store`
 **Created**: 2026-07-23
-**Status**: Draft (loop-ready)
+**Status**: Draft (loop-ready) — **but DELIVERED.** The code is merged and tested; it lives in `@gt100k/hypothesis-store`. This field tracks the state of the DOCUMENT, which was never revised after the build, and a reader comparing it against the ✅ in `docs/prd/passionApps.md` should trust the packages and their tests over either. What a ✅ does *not* mean is that a child can use it end to end.
 
 **Input**: The durable output of discovery and the thin-human surface (C4 in `docs/prd/passionApps.md`). A **domain package** holds the revisable `InterestHypothesis` per candidate spike, its **lifecycle state machine** (`EXPLORING → EMERGING → CANDIDATE → ACTIVE` + `PARKED / CONTESTED / REOPENED`), the **Phase 2→3 graduation gate** (deterministic checks + a required human autonomy sign-off), and a pure **console view-model**. A **guide-console app** (Next.js) renders it so a human promotes/parks/reopens with the evidence in front of them. Grounding: `DISCOVERY-APP-PRD.md` §8, `SPECIALIZATION-PIPELINE-PRD.md` §3, `passion/CONTEXT.md` (InterestHypothesis, Revisable Hypothesis), `docs/prd/hardening/human-scaling.md` (human-owns-of-record), consumes `@gt100k/interest-inference` (011).
 

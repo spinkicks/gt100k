@@ -68,13 +68,19 @@ export function createSignalLog({ sessionId, now }: SignalLogOptions) {
      * (session, artifact): availability is a session-level fact, so re-renders
      * must not inflate it.
      */
-    recordSurfaced(artifactId: string): void {
+    recordSurfaced(artifactId: string, position?: number): void {
       const s = read();
       const already = s.surfaced.some(
         (r) => r.sessionId === sessionId && r.artifactId === artifactId,
       );
       if (already) return;
-      s.surfaced.push({ kidId: KID_ID, artifactId, sessionId, timestamp: stamp() });
+      s.surfaced.push({
+        kidId: KID_ID,
+        artifactId,
+        sessionId,
+        timestamp: stamp(),
+        ...(position === undefined ? {} : { position }),
+      });
       write(s);
     },
 

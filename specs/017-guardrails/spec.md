@@ -2,7 +2,7 @@
 
 **Feature Branch**: `017-guardrails`
 **Created**: 2026-07-23
-**Status**: Draft (loop-ready)
+**Status**: Draft (loop-ready) — **but DELIVERED.** The code is merged and tested; it lives in `@gt100k/guardrails`. This field tracks the state of the DOCUMENT, which was never revised after the build, and a reader comparing it against the ✅ in `docs/prd/passionApps.md` should trust the packages and their tests over either. What a ✅ does *not* mean is that a child can use it end to end.
 
 **Input**: G6 in `docs/prd/passionApps.md` — the "honesty layer": **program-level metrics (never kid-facing)** + **automated guardrail-compliance checks** that keep the discovery pipeline from silently violating its own invariants. A headless **domain package** reads the merged discovery-spine artifacts (the 014 `Roster` of per-kid 013 stores, built from 011/012) and produces (a) aggregate `ProgramMetrics` and (b) a `ComplianceReport` that flags any violation of the locked rules (no scalar score/label, prompted ≠ voluntary, novelty discounted, no auto-promotion, no demote-on-silence, no gamification). Grounding: `docs/prd/hardening/measurement-validity.md` §5 (watch the self-fulfilling loop via **coverage-breadth + reopen-rate**, "G6"), and the "Decisions Already Made" in specs 011/012/013 (never a scalar/label; voluntary vs prompted; novelty discounted; human-owned promotions; never demote on silence).
 

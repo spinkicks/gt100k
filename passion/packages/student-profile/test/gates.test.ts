@@ -60,7 +60,12 @@ const passed = (p: Partial<GateStatus>): GateStatus => ({
 });
 
 function gateOf(log: Interaction[], artifacts: Readonly<Record<string, string>>): GateStatus {
-  const p = runCycle(emptyProfile(KID, "Kid", PRIORS, artifacts), log, CTX, NOW);
+  const p = runCycle(
+    emptyProfile(KID, "Kid", PRIORS, artifacts),
+    { interactions: log, surfaced: [] },
+    CTX,
+    NOW,
+  );
   const gates = deriveGates(p, CTX, NOW);
   const g = gates.get(BUILD_ID);
   expect(g).toBeDefined();
@@ -101,7 +106,12 @@ describe("deriveGates", () => {
 
 describe("currentRead", () => {
   it("recomputes the InterestRead from the full log (build cell present)", () => {
-    const p = runCycle(emptyProfile(KID, "Kid", PRIORS, WITH_ARTIFACT), PASS_LOG, CTX, NOW);
+    const p = runCycle(
+      emptyProfile(KID, "Kid", PRIORS, WITH_ARTIFACT),
+      { interactions: PASS_LOG, surfaced: [] },
+      CTX,
+      NOW,
+    );
     const read = currentRead(p, CTX, NOW);
     expect(read.cells.find((c) => c.cellKey === BUILD_KEY)).toBeDefined();
   });

@@ -38,57 +38,60 @@ function ariProfile(): StudentProfile {
   );
   return runCycle(
     p0,
-    [
-      {
-        kidId: KID,
-        artifactId: "synth-01",
-        actionType: "assemble",
-        timestamp: "2026-01-01T00:00:00.000Z",
-        prompted: false,
-        sessionId: "s0",
-      },
-      {
-        kidId: KID,
-        artifactId: "synth-01",
-        actionType: "assemble",
-        timestamp: "2026-02-20T00:00:00.000Z",
-        prompted: false,
-        sessionId: "s1",
-      },
-      {
-        kidId: KID,
-        artifactId: "synth-01",
-        actionType: "assemble",
-        timestamp: "2026-02-22T00:00:00.000Z",
-        prompted: false,
-        sessionId: "s2",
-      },
-      {
-        kidId: KID,
-        artifactId: "synth-01",
-        actionType: "assemble",
-        timestamp: "2026-02-24T00:00:00.000Z",
-        prompted: false,
-        sessionId: "s3",
-      },
-      {
-        kidId: KID,
-        artifactId: "synth-01",
-        actionType: "assemble",
-        timestamp: "2026-02-26T00:00:00.000Z",
-        prompted: false,
-        sessionId: "s4",
-      },
-      {
-        kidId: KID,
-        artifactId: "synth-01",
-        actionType: "assemble",
-        timestamp: "2026-02-28T00:00:00.000Z",
-        prompted: false,
-        sessionId: "s5",
-        depthSignals: [{ kind: "artifact_competence", value: 1 }],
-      },
-    ],
+    {
+      interactions: [
+        {
+          kidId: KID,
+          artifactId: "synth-01",
+          actionType: "assemble",
+          timestamp: "2026-01-01T00:00:00.000Z",
+          prompted: false,
+          sessionId: "s0",
+        },
+        {
+          kidId: KID,
+          artifactId: "synth-01",
+          actionType: "assemble",
+          timestamp: "2026-02-20T00:00:00.000Z",
+          prompted: false,
+          sessionId: "s1",
+        },
+        {
+          kidId: KID,
+          artifactId: "synth-01",
+          actionType: "assemble",
+          timestamp: "2026-02-22T00:00:00.000Z",
+          prompted: false,
+          sessionId: "s2",
+        },
+        {
+          kidId: KID,
+          artifactId: "synth-01",
+          actionType: "assemble",
+          timestamp: "2026-02-24T00:00:00.000Z",
+          prompted: false,
+          sessionId: "s3",
+        },
+        {
+          kidId: KID,
+          artifactId: "synth-01",
+          actionType: "assemble",
+          timestamp: "2026-02-26T00:00:00.000Z",
+          prompted: false,
+          sessionId: "s4",
+        },
+        {
+          kidId: KID,
+          artifactId: "synth-01",
+          actionType: "assemble",
+          timestamp: "2026-02-28T00:00:00.000Z",
+          prompted: false,
+          sessionId: "s5",
+          depthSignals: [{ kind: "artifact_competence", value: 1 }],
+        },
+      ],
+      surfaced: [],
+    },
     { catalog: CATALOG },
     NOW,
   );
@@ -144,16 +147,19 @@ describe("createFsProfileStore", () => {
     await store.save(p1);
     const p2 = runCycle(
       p1,
-      [
-        {
-          kidId: KID,
-          artifactId: "synth-01",
-          actionType: "assemble",
-          timestamp: "2026-02-29T00:00:00.000Z",
-          prompted: false,
-          sessionId: "s6",
-        },
-      ],
+      {
+        interactions: [
+          {
+            kidId: KID,
+            artifactId: "synth-01",
+            actionType: "assemble",
+            timestamp: "2026-02-29T00:00:00.000Z",
+            prompted: false,
+            sessionId: "s6",
+          },
+        ],
+        surfaced: [],
+      },
       { catalog: CATALOG },
       NOW,
     );

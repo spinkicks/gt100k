@@ -2,7 +2,7 @@
 
 **Feature Branch**: `011-interest-inference`
 **Created**: 2026-07-22
-**Status**: Draft (loop-ready)
+**Status**: Draft (loop-ready) — **but DELIVERED.** The code is merged and tested; it lives in `@gt100k/interest-inference`. This field tracks the state of the DOCUMENT, which was never revised after the build, and a reader comparing it against the ✅ in `docs/prd/passionApps.md` should trust the packages and their tests over either. What a ✅ does *not* mean is that a child can use it end to end.
 
 **Input**: The "brain" of discovery (`C3` in `docs/prd/passionApps.md`). It turns a stream of per-`(domain × work-mode)` behavioral events into a **calibrated belief per cell** that the cell is a genuine, durable interest, ranks the top **1–3 candidate spikes**, separates **topic-love from style-love**, and honestly reports **"not sure yet"** when evidence is thin — **never a scalar "passion score" or a fixed label**. It uses a closed-form **Beta-Bernoulli** model with **no training data** (principled priors now; a learned model later). Grounding: `docs/prd/engines/C3-inference.md`, `DISCOVERY-APP-PRD.md` §6, `docs/research/passion-pipeline/hardening/06-measurement-validity-coldstart.md`, `passion/CONTEXT.md`.
 

@@ -4,7 +4,7 @@
 
 **Created**: 2026-07-20
 
-**Status**: Draft (loop-ready)
+**Status**: Draft (loop-ready) — **but DELIVERED.** The code is merged and tested; it lives in `@gt100k/evidence-graph`. This field tracks the state of the DOCUMENT, which was never revised after the build, and a reader comparing it against the ✅ in `docs/prd/passionApps.md` should trust the packages and their tests over either. What a ✅ does *not* mean is that a child can use it end to end.
 
 **Input**: User description: "A code-first, framework-agnostic core for GT100K's EvidenceGraph (PRD §19): a content-addressed evidence DAG of typed provenance nodes and edges; per-milestone EvidencePacket assembly with a Merkle root and an in-toto-style attestation; deterministic verification behind a port; and the human-authority invariant that every final grade is human-owned and a model output is only a cited Assistance/Review node, never a grade or an authorship accusation. Synthetic-only; consent/legal machinery stubbed; the genuinely-hard parts (external transparency-log anchoring, crypto-shred erasure, comparative-judgment reliability, conformal calibration) are deferred to stubs per §19.2."
 

@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { EMPTY_BATCH } from "../src/model.js";
 import type { Artifact } from "@gt100k/two-axis-tagging";
 import type { Interaction } from "@gt100k/signal-pipeline";
 import type { DomainPrior } from "@gt100k/interest-inference";
@@ -73,7 +74,7 @@ const GUIDE: HumanActor = { id: "guide-1", role: "guide" };
 describe("runCycle", () => {
   it("appends to the log and derives a confident hypothesis from the full log", () => {
     const p0 = emptyProfile(KID, "Kid", PRIORS, ARTIFACTS);
-    const p1 = runCycle(p0, INTERACTIONS, CTX, NOW);
+    const p1 = runCycle(p0, { interactions: INTERACTIONS, surfaced: [] }, CTX, NOW);
 
     expect(p1.interactions).toHaveLength(INTERACTIONS.length);
     expect(p1.updatedAt).toBe(NOW);
@@ -88,15 +89,25 @@ describe("runCycle", () => {
     expect(build!.perseveranceArtifactRef).toBe("defense-record-042");
   });
 
-  it("is idempotent on state: runCycle(p, [], ctx, now).store deep-equals p.store", () => {
-    const p1 = runCycle(emptyProfile(KID, "Kid", PRIORS, ARTIFACTS), INTERACTIONS, CTX, NOW);
-    const p2 = runCycle(p1, [], CTX, NOW);
+  it("is idempotent on state: runCycle(p, EMPTY_BATCH, ctx, now).store deep-equals p.store", () => {
+    const p1 = runCycle(
+      emptyProfile(KID, "Kid", PRIORS, ARTIFACTS),
+      { interactions: INTERACTIONS, surfaced: [] },
+      CTX,
+      NOW,
+    );
+    const p2 = runCycle(p1, EMPTY_BATCH, CTX, NOW);
     expect(p2.store).toEqual(p1.store);
     expect(p2.interactions).toEqual(p1.interactions);
   });
 
   it("preserves a human transition across a no-op cycle", () => {
-    const p1 = runCycle(emptyProfile(KID, "Kid", PRIORS, ARTIFACTS), INTERACTIONS, CTX, NOW);
+    const p1 = runCycle(
+      emptyProfile(KID, "Kid", PRIORS, ARTIFACTS),
+      { interactions: INTERACTIONS, surfaced: [] },
+      CTX,
+      NOW,
+    );
     // A human promotes the EMERGING build hypothesis to CANDIDATE (gate + sign-off).
     const promoted = promote(
       p1.store,
@@ -107,14 +118,14 @@ describe("runCycle", () => {
     );
     expect(getForKid(promoted, KID).find((h) => h.id === BUILD_ID)!.state).toBe("CANDIDATE");
 
-    const p3 = runCycle({ ...p1, store: promoted }, [], CTX, NOW);
+    const p3 = runCycle({ ...p1, store: promoted }, EMPTY_BATCH, CTX, NOW);
     const build = getForKid(p3.store, KID).find((h) => h.id === BUILD_ID)!;
     expect(build.state).toBe("CANDIDATE"); // the human transition survives the no-op replay
   });
 
   it("never mutates the input profile", () => {
     const p0 = emptyProfile(KID, "Kid", PRIORS, ARTIFACTS);
-    runCycle(p0, INTERACTIONS, CTX, NOW);
+    runCycle(p0, { interactions: INTERACTIONS, surfaced: [] }, CTX, NOW);
     expect(p0.interactions).toHaveLength(0);
     expect(Object.keys(p0.store.byId)).toHaveLength(0);
   });

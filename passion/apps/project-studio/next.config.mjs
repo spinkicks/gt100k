@@ -3,6 +3,7 @@ const nextConfig = {
   transpilePackages: [
     "@gt100k/project-workspace",
     "@gt100k/evidence-graph",
+    "@gt100k/project-evidence-sink",
     "@gt100k/specialization-planner",
   ],
   experimental: {

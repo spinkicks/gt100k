@@ -2,7 +2,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { gadgetById } from "../gadgets/registry";
 import { useGame } from "../game/store";
-import { solveVerbFor } from "../signals/catalog";
+import { solveVerbFor } from "@gt100k/discovery-catalog";
 import { useInterest } from "../interest/store";
 import ComingSoon from "../puzzles/ComingSoon";
 import { FLOOR_MS } from "../signals/log";

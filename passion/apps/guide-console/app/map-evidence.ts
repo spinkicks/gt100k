@@ -29,7 +29,7 @@ import {
 import type { Project } from "@gt100k/project-workspace";
 import type { DomainPath, Stage } from "@gt100k/specialization-planner";
 
-import { CHILDREN } from "./console-data.js";
+import { children } from "./console-data.js";
 import type { HypothesisStore } from "@gt100k/hypothesis-store";
 import { plansForKid } from "./plan.js";
 
@@ -199,7 +199,7 @@ export function workForKid(kidId: string): ChildWork {
   if (held) return held;
   return {
     kidId,
-    name: CHILDREN.find((c) => c.id === kidId)?.name ?? kidId,
+    name: children().find((c) => c.id === kidId)?.name ?? kidId,
     projects: [],
     overrides: [],
   };
