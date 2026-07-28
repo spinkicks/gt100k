@@ -36,9 +36,12 @@ test("the map surfaces only the cabins a child can actually enter", () => {
   const ids = sessionLog.surfaced().map((s) => s.artifactId);
   expect(ids).toContain("math");
   expect(ids).toContain("logic-games");
+  // `music` opened on 2026-07-27 and so joins the choice set. That is the point rather than a side
+  // effect: a cabin a child COULD have entered and did not is a decline, and declining is evidence.
+  // It only became true once the cabin was reachable.
+  expect(ids).toContain("music");
   // Locked cabins are not available, so they are not declinable either —
   // surfacing them would manufacture declines against unreachable content.
-  expect(ids).not.toContain("music");
   expect(ids).not.toContain("code");
   expect(ids).not.toContain("art");
 });

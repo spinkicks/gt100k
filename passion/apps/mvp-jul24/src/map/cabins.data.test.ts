@@ -4,9 +4,12 @@ test("the map holds exactly the five cabins, in the documented order", () => {
   expect(CABINS.map((c) => c.id)).toEqual(["logic-games", "math", "music", "code", "art"]);
 });
 
-test("logic-games and math are the two active cabins; the rest are coming soon", () => {
-  expect(CABINS.filter((c) => c.active).map((c) => c.id)).toEqual(["logic-games", "math"]);
-  expect(CABINS.filter((c) => !c.active).map((c) => c.id)).toEqual(["music", "code", "art"]);
+test("logic-games, math and music are the active cabins; the rest are coming soon", () => {
+  // `music` moved across on 2026-07-27, when the map was repainted so its cabin stands in the
+  // foreground at the same size and light as the other two — see cabins.data.ts on why equal
+  // prominence is a measurement requirement rather than a finish preference.
+  expect(CABINS.filter((c) => c.active).map((c) => c.id)).toEqual(["logic-games", "math", "music"]);
+  expect(CABINS.filter((c) => !c.active).map((c) => c.id)).toEqual(["code", "art"]);
 });
 
 // accent/emblem are authored ahead of the visual pass that consumes them, so nothing renders them

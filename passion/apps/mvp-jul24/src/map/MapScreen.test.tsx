@@ -20,8 +20,8 @@ test('logic-games node carries data-cabin="logic-games" and is enabled', () => {
   expect(node).toBeInTheDocument();
   expect(node).not.toBeDisabled();
   expect(node).not.toHaveAttribute("aria-disabled");
-  expect(node.style.left).toBe("27%");
-  expect(node.style.top).toBe("45%");
+  expect(node.style.left).toBe("12%");
+  expect(node.style.top).toBe("35%");
 });
 
 // `math` is active and openable even though it has no gadgets yet — the empty room is deliberate
@@ -45,28 +45,26 @@ test("renders a node for all five cabins", () => {
   }
 });
 
-test.each(["music", "code", "art"])(
-  "the %s node reads as coming soon and does not open a cabin",
-  (id) => {
-    render(<MapScreen />);
-    const node = document.querySelector(`[data-cabin="${id}"]`) as HTMLButtonElement;
-    expect(node.className).toMatch(/inactive/);
-    expect(node.textContent).toMatch(/coming soon/i);
+test.each(["code", "art"])("the %s node reads as coming soon and does not open a cabin", (id) => {
+  render(<MapScreen />);
+  const node = document.querySelector(`[data-cabin="${id}"]`) as HTMLButtonElement;
+  expect(node.className).toMatch(/inactive/);
+  expect(node.textContent).toMatch(/coming soon/i);
 
-    fireEvent.click(node);
-    expect(useGame.getState().screen).toBe("map");
-    expect(useGame.getState().cabinId).toBeNull();
-  },
-);
+  fireEvent.click(node);
+  expect(useGame.getState().screen).toBe("map");
+  expect(useGame.getState().cabinId).toBeNull();
+});
 
 // aria-disabled rather than the `disabled` attribute, so keyboard users can still reach the node and
 // hear what's coming instead of having it skipped entirely (see MapScreen.tsx).
 test("coming-soon nodes stay focusable and announce themselves as coming soon", () => {
   render(<MapScreen />);
-  const node = document.querySelector('[data-cabin="music"]') as HTMLButtonElement;
+  // Was `music` until that cabin opened on 2026-07-27; `code` is a coming-soon node now.
+  const node = document.querySelector('[data-cabin="code"]') as HTMLButtonElement;
   expect(node).not.toBeDisabled();
   expect(node).toHaveAttribute("aria-disabled", "true");
-  expect(node).toHaveAccessibleName("Music — coming soon");
+  expect(node).toHaveAccessibleName("Code — coming soon");
 
   node.focus();
   expect(document.activeElement).toBe(node);
