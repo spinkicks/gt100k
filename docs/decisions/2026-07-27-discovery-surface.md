@@ -77,11 +77,22 @@ Recorded here rather than in a follow-up, because keeping the game means keeping
    dusk — removes most of it. **Keeping the game means that residual stays and is not closed by a
    text-label surface.** Rule 2 (uniform presentation) is therefore largely already met; rule 1 is
    not, and cannot be fully met by a surface whose choice affordance is a painting.
-2. **Rule 5 — log the offered set, including position.** `SurfacedRecord.position` (#203) was added
-   for a list, and a map has ordering too: signpost order, prop placement, what falls under the
-   cursor first. It applies here and is not currently emitted — and per `PROJECT.md`'s last logged
-   risk, **the backdrop backend's prop polygons and bookshelf emit nothing at all today**, so
-   emission is silently partial before position is even considered.
+2. ~~**Rule 5 — log the offered set, including position.**~~ **SATISFIED, 2026-07-27 (#216, #220).**
+   Both halves of the objection are closed: the prop polygons turned out to have been wired all
+   along (verified by a probe click rather than by reading the risk log, which had gone stale), the
+   shelf now emits `follow-source`, and `position` is emitted from both surfacings — the room reports
+   wall order, which is a genuine list, and the map reports reading order among the cabins actually
+   on offer.
+
+   The map's number carries a caveat in the code rather than a pretence. On a painted landscape what
+   pulls a young child's eye is salience, and memo 07 §2.3 puts motion at the top of that, so the two
+   glowing cabins do not owe their pull to scan order. What it honestly supports is a left-versus-right
+   comparison. Nothing reads it yet, deliberately: the size of a position effect can only be measured
+   in this surface with these children, and a position not captured at surfacing time cannot be
+   recovered afterwards.
+
+   So **rule 1 is the only one of the five the surface still fails**, and it is the one a painted
+   choice affordance cannot fully meet.
 
 Rule 4 (no streak, badge, point, notification or unlock) is already satisfied, and on a stronger
 argument than this doc's: nothing is gated, there is no completion-triggered offer, and the reason is
