@@ -116,15 +116,19 @@ export const CATALOG: ReadonlyMap<string, Artifact> = new Map(
  * Cabin-level on purpose, with no subtopic. A room contains several, and picking one would quietly
  * decide that a child who liked the maths room liked fractions specifically.
  *
- * The rooms with no interior yet (`music`, `art`, `science`, `words`) are absent rather than guessed.
- * Music is the one to watch: #215 landed its design and its first sound, so the moment a gadget of its
- * own is registered this needs a row or its shelf will offer nothing. An absent row yields no resources, which is visibly nothing; a wrong row yields the
+ * The rooms with no interior yet (`art`, `science`, `words`) are absent rather than guessed.
+ *
+ * Music was on that list until #222 built it, and its row went in with that PR because the omission
+ * is exactly the failure this comment was written to catch: the room's three activities all map to
+ * `music-sound/music-theory`, so with no cabin-level row the invitation card would have narrowed
+ * itself to theory and handed a child who liked the whole room only theory links. An absent row yields no resources, which is visibly nothing; a wrong row yields the
  * wrong resources, which looks like it worked.
  */
 const TOPIC_CABINS = {
   "logic-games": ["math-puzzles"],
   math: ["math-puzzles"],
   code: ["code-computers"],
+  music: ["music-sound"],
 } as const satisfies Readonly<Record<string, readonly [string]>>;
 
 /** The cabin path for one of the game's topics, or undefined when that room has no mapping yet. */
