@@ -4,9 +4,33 @@ All images here are AI-generated placeholder art, produced via the TrueFoundry
 image gateway (`https://tfy.promptlens.trilogy.com`). They are for prototyping
 and demo purposes; replace with commissioned or licensed art before production.
 
-## `map.png`
+## `map.png` and `map-v2.png`
 
-World map. Text-to-image, `gpt-image-1.5`, via `scripts/gen-art.mjs map`.
+World maps. Text-to-image, `gpt-image-1.5`, via `scripts/gen-art.mjs map` and
+`scripts/gen-art.mjs map-v2`.
+
+**`map-v2.png` is the one the app loads**, since 2026-07-27: it paints three
+equally-lit near cabins where `map.png` paints two, and it was generated because
+promoting `music` to a playable cabin while leaving it small and mist-washed on
+the horizon would have biased topic choice by paint. `map.png` is deliberately
+kept rather than overwritten — generated art can come back worse, and this way
+reverting is one `src` and five coordinate pairs. See `src/map/cabins.data.ts`.
+
+## `cabin-backdrop-music.png` — the Music cabin backdrop
+
+Text-to-image in **one pass**, `gpt-image-1.5`, via `scripts/gen-art.mjs
+cabin-backdrop-music`. The only backdrop this repo can regenerate from a fresh
+checkout, and the only one that needs no `gen-cabins.mjs` prop surgery: nothing
+in the room is a combinatorial board, so there is no layout for a diffusion
+model to get wrong. A lute, a pump organ, a hand drum and a bookcase are just
+objects, and the prompt's job is only to keep them separated enough to trace.
+
+Regenerated once after the first attempt came back with no bookcase, which a
+room with three activities and no explainer shelf needed.
+
+Its predecessor `cabin-music.png` (same image, legacy `CabinStatic` filename,
+added in #215 before the room existed) was deleted when this file landed rather
+than kept as a byte-identical 3.2 MB duplicate.
 
 ## `cabin-backdrop-logic-games.png` — the Logic Games cabin backdrop
 
@@ -59,8 +83,11 @@ byte. Its props (gear train, pan balance, vial rack) are a later pass;
 ## `cabin-logic-games.png`, `cabin-math.png` — legacy
 
 First-pass whole-room text-to-image art (`gpt-image-1.5`, `scripts/gen-art.mjs`),
-still loaded by `src/cabin/CabinStatic.tsx`. Superseded for the backdrop path by
-the `cabin-backdrop-*.png` files above.
+1024x1024, still referenced by `src/cabin/CabinStatic.tsx` — which is itself
+parked and unreachable (PROJECT.md, "The backend fork is closed"). Superseded for
+the backdrop path by the `cabin-backdrop-*.png` files above. There is no
+`cabin-music.png`, so `CabinStatic topic="music"` falls back to its own warm
+wash; the image is decorative there and a 404 is a supported state.
 
 ## Inputs not in this repo
 

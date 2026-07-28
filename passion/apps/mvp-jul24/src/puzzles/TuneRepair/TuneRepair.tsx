@@ -41,7 +41,8 @@ import { getAudioEngine } from "../../audio/engine";
 import type { PuzzleProps } from "../../game/types";
 import TeachIn from "../../teachin/TeachIn";
 import "./TuneRepair.css";
-import { generateForRound } from "./generate";
+import { openTier } from "../openTier";
+import { TIERS, generateForRound } from "./generate";
 import { type TuneRepairPuzzle, isSolved, notesFor } from "./logic";
 
 interface Stand {
@@ -75,9 +76,14 @@ const ordinal = (i: number): string => ORDINALS[i] ?? "later";
  * `tier` is the round to open at, so a registry entry for this gadget must set `supportsTier: true`.
  * Round index and tier index are the same number by construction, which makes "give me an easier one"
  * a one-number change. Never rendered: a visible tier would quantify the child's own engagement.
+ *
+ * It is routed through `openTier` rather than used raw, and that is load-bearing: the overlay's
+ * counter grows without bound while `TIERS` has three entries, so `tierForIndex`'s wrap would hand
+ * back the EASIEST round on the third press of "Try a harder one". See `puzzles/openTier.ts` — the
+ * within-mount "Next puzzle" path below still wraps on purpose.
  */
 export default function TuneRepair({ seed, tier = 0, onSolved, onExit }: PuzzleProps) {
-  const [stand, setStand] = useState<Stand>(() => makeStand(seed, tier));
+  const [stand, setStand] = useState<Stand>(() => makeStand(seed, openTier(tier, TIERS.length)));
   const { puzzle, phrase } = stand;
   const [held, setHeld] = useState<number | null>(null);
   const [sounding, setSounding] = useState<number | null>(null);

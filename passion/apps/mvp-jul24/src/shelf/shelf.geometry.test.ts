@@ -29,8 +29,8 @@ const centroid = (polygon: Polygon): [number, number] => [
 ];
 
 describe("authored shelves", () => {
-  it("exists in both built rooms (otherwise everything below is vacuous)", () => {
-    expect(SHELVES.map((s) => s.room.topic)).toEqual(["logic-games", "math"]);
+  it("exists in all three built rooms (otherwise everything below is vacuous)", () => {
+    expect(SHELVES.map((s) => s.room.topic)).toEqual(["logic-games", "math", "music"]);
   });
 
   it("gives every shelf a non-empty accessible name", () => {
@@ -78,7 +78,7 @@ describe("authored shelves", () => {
     }
   });
 
-  it("traces more than four points, because both painted shelves are partly occluded", () => {
+  it("traces more than four points, because every painted shelf has a stepped silhouette", () => {
     // A four-point shelf would mean someone drew a rectangle over the case's front and called it a
     // silhouette. Logic Games has an overhanging cornice and a table across its foot; Math has an
     // armchair in front of it. Neither is a quad, and the outlines say so.

@@ -36,7 +36,8 @@ import { getAudioEngine } from "../../audio/engine";
 import type { PuzzleProps } from "../../game/types";
 import TeachIn from "../../teachin/TeachIn";
 import "./ChordFit.css";
-import { generateForRound } from "./generate";
+import { openTier } from "../openTier";
+import { TIERS, generateForRound } from "./generate";
 import { type ChordFitPuzzle, isCorrect, voicingFor } from "./logic";
 
 interface Bench {
@@ -55,8 +56,13 @@ const makeBench = (seed: number, index: number): Bench => ({
 /** Positional words, so nothing on screen is a digit (R1). */
 const PLACES = ["first", "second", "third"] as const;
 
+/**
+ * `tier` is the round to open at, so the registry entry for this gadget sets `supportsTier: true`.
+ * Clamped through `openTier`, because the overlay's counter grows without bound while `TIERS` has
+ * three entries — see `puzzles/openTier.ts`. The "Next round" path below still wraps on purpose.
+ */
 export default function ChordFit({ seed, tier = 0, onSolved, onExit }: PuzzleProps) {
-  const [bench, setBench] = useState<Bench>(() => makeBench(seed, tier));
+  const [bench, setBench] = useState<Bench>(() => makeBench(seed, openTier(tier, TIERS.length)));
   const { puzzle, picked } = bench;
   /** Which option is ringing, purely so the button can show it is the one you are hearing. */
   const [ringing, setRinging] = useState<number | null>(null);
