@@ -14,7 +14,11 @@
  * found, so the card that pushes past the puzzle toward the domain is the one that can start one).
  *
  * THE SOURCES ARE REAL AND WERE CHECKED
- * Every URL below was fetched and read while this file was written, 2026-07-26. That is the standard
+ * Every URL below was fetched and read while this file was written — the first two decks 2026-07-26,
+ * the music deck 2026-07-27, and the music deck's four re-checked against the claims made about them
+ * on 2026-07-28, which is what caught the invitation card asserting that "most adults" cannot hear
+ * 16 kHz where its source says only that very low sensitivity up there is not uncommon. Sourcing a
+ * card and then overstating the source is the same failure one step later. That is the standard
  * because a card citing something that does not exist is worse than a card with no link: it teaches a
  * child that citations are decoration. `ShelfSource.url` is optional for exactly this reason — a
  * source we cannot confidently link gets named and left unlinked rather than given a plausible URL.
@@ -271,7 +275,7 @@ const MUSIC_DECK: ShelfDeck = {
       title: "Musicians and physicists are studying the same thing",
       body: [
         "Every question in this room is also a measurable physical question, and there are university physics departments that do nothing else. One of the oldest music-acoustics groups in the world sits in a physics school and publishes how a flute, a clarinet, a violin and the human voice actually work — with real measured curves, not diagrams drawn to look convincing. You can run their hearing test in a browser and plot the shape of your own ear's sensitivity.",
-        "If you do, you will find you hear best somewhere between one and four thousand cycles a second, and that a person your age can usually hear all the way up to sixteen thousand while most adults no longer can. That is worth sitting with: there is a part of every piece of music that you can hear and the people who made it may not be able to. Music is not only a thing to be good at. It is a thing that can be taken apart.",
+        "If you do, you will probably find you hear best somewhere between one and four thousand cycles a second, and that you hear sixteen thousand moderately well — where for an adult that depends on their age and how much loud sound they have been around, and very low sensitivity right at the top is not unusual. That is worth sitting with: there may be a part of a piece of music that you can hear and some of the people who made it cannot. Music is not only a thing to be good at. It is a thing that can be taken apart.",
       ],
       source: {
         label:
