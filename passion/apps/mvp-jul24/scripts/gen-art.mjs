@@ -57,6 +57,43 @@ const TARGETS = {
     file: "cabin-math.png",
     prompt: `The inside of a clockmaker's workshop in a cozy wooden cabin, viewed from a fixed first-person perspective looking straight at the far wall. A long dark-wood workbench strewn with brass gears, cogs, springs, coiled mainsprings, tiny screwdrivers, tweezers and half-assembled clock movements. Behind it the wood-plank wall is hung with pendulum clocks whose faces have been removed to show their exposed brass clockwork, plus a few completely blank plain round dials with simple hands and no markings at all, swinging brass pendulums, and weights on chains. A wall of small parts drawers, a pair of brass balance scales, brass calipers and a set square. Warm lantern and candle light, dust motes drifting in a shaft of afternoon sun through a small window, exposed beams overhead, worn wooden floorboards and a small rug. Painterly storybook illustration style, rich warm brass-and-amber palette, snug and inviting. No people, no characters. ${NO_TEXT}`,
   },
+  /**
+   * The music room concept still, 1536x1024 to match the other two backdrops.
+   *
+   * THREE PROP SURFACES, ONE PER BUILT GADGET, WELL SEPARATED. `quads.data.test.ts` matches prop
+   * polygons to registered gadgets exactly in both directions, so the painting has to contain exactly
+   * one clearly-bounded, traceable surface for each of tune-repair, chord-fit and downbeat — and no
+   * fourth, because `echo` is not built and a surface with no gadget breaks the build. Adding echo later
+   * means a repaint; that is the trade the roster note in PROJECT.md records.
+   *
+   * Equal polish with the other two rooms is a MEASUREMENT requirement, not a finish nicety (PRD §5.3):
+   * uneven art makes the topic ranking inherit the production schedule. Hence the same framing, the same
+   * fixed first-person view of the far wall, the same lantern-lit palette and the same painterly
+   * storybook language as cabin-logic-games and cabin-math above.
+   */
+  "cabin-music": {
+    file: "cabin-music.png",
+    size: "1536x1024",
+    prompt: `The inside of a musician's workshop in a cozy wooden cabin, viewed from a fixed first-person perspective looking straight at the far wall, wide landscape composition. THREE clearly separated instruments, each isolated with empty wall or floor around it so none overlaps another. On the LEFT, hanging flat against the wood-plank wall, a warm honey-coloured lute with a rounded body and a long straight neck, seen face-on and complete. In the CENTRE, standing against the back wall, a small upright wooden pump organ with a plain keyboard of pale and dark keys and a simple carved music desk above it, seen straight on. On the RIGHT, resting on the floorboards, a single round hand drum on a low wooden stand with a taut pale skin head facing the viewer. Between them the room is quiet and uncluttered: a lantern casting warm light, a plain wooden stool, a rolled rug, exposed beams overhead, worn floorboards, and a small window on one side letting in a soft shaft of afternoon light with dust motes. Painterly storybook illustration style, rich warm amber-and-honey palette, snug and inviting, the same cozy hand-painted look as a clockmaker's workshop or a puzzle den. No people, no characters, no sheet music, no notation, no staves. ${NO_TEXT}`,
+  },
+  /**
+   * Candidate replacement map with THREE near cabins instead of two.
+   *
+   * Written to its own file rather than over `map.png` on purpose. Generated art can come back worse
+   * than the composition it replaces, and the current map was built deliberately for the two-playable
+   * split — so the old one stays until a human approves this.
+   *
+   * Why regenerate at all: `cabins.data.ts` documents that the map paints the playable cabins large and
+   * warm in the foreground and the coming-soon ones small and mist-washed on the horizon. Promoting
+   * `music` while leaving it on a distant misty cabin would ship a topic whose choice affordance is
+   * visibly worse than its competitors', which is the Javora confound the surface-owner ruling names as
+   * one of two rules the game does not satisfy. Topic choice is the primary signal, so it must not be
+   * biased by paint.
+   */
+  "map-v2": {
+    file: "map-v2.png",
+    prompt: `A warm, painterly parchment-style fantasy world map, like an illustrated overworld from a cozy storybook game. Flat hand-painted 2D illustration on aged parchment texture with soft muted colors — an illustrated map, not a 3D render, not a photograph. Five small wooden cabins sit in the landscape, and the composition is deliberately split into a bright near half and a hazy far half. NEAR, large and prominent across the foreground and midground, THREE cozy cabins glow with warm inviting light, sharply painted and richly coloured, each on its own green hillock, each joined to the bottom edge of the map by a wide sunlit winding path, and each given equal size, equal prominence and equally golden light: on the left a puzzle den with a lantern on its porch, a chequered board, scattered coloured wooden pegs and interlocking block shapes on the grass outside; in the centre a musician's cabin with a honey-coloured lute leaning by its door, a small round hand drum on the grass and a lantern glowing on its porch; on the right a clockmaker's workshop with brass cogs and gears leaning against its wall, a swinging pendulum under the eaves and a big plain round dial with two simple hands and a completely blank empty face on its gable. FAR AWAY near the horizon, only TWO much smaller cabins are faint, pale, dim and half-swallowed by cool blue mist and rolling hills — clearly visible but distant, shuttered and unlit with dark empty windows, washed-out and desaturated, with no paths leading to them: one with a faint web of thin branching glowing threads and tiny firefly-like dots of light creeping over the ground around it like a circuit, and one with a small easel, a palette and pale watery paint splashes on the grass beside it. Gentle rolling hills, soft clouds, hand-drawn storybook illustration style, strong depth: crisp golden light and saturated colour on the three near cabins, soft grey-blue atmospheric haze on the two distant ones. ${NO_TEXT}`,
+  },
   "cabin-logic-games": {
     file: "cabin-logic-games.png",
     prompt: `The inside of a puzzle den in a cozy wooden cabin, viewed from a fixed first-person perspective looking straight at the far wall. Large framed grid puzzles hang on the wood-plank wall — big empty chequered lattices and blank grids of plain squares studded with coloured wooden pegs, no writing on them. To one side a tall wooden pegboard is threaded with looping bright coloured pipes and rubber tubes running between its holes. In the middle of the room a small round table holds a carved wooden chess set mid-game. On the other side stands a narrow mirror maze of tall angled mirrors reflecting warm lamplight into infinity. A shelf of interlocking wooden block puzzles and flat tangram shapes, a lantern casting warm light, exposed beams overhead, worn floorboards and a patterned rug. Painterly storybook illustration style, warm inviting palette with bright pops of puzzle-piece colour. No people, no characters. ${NO_TEXT}`,
@@ -101,7 +138,7 @@ function extractApiKey() {
   return key;
 }
 
-async function generateImage({ model, prompt, apiKey }) {
+async function generateImage({ model, prompt, apiKey, size = "1024x1024" }) {
   const res = await fetch(GATEWAY_URL, {
     method: "POST",
     headers: {
@@ -109,7 +146,7 @@ async function generateImage({ model, prompt, apiKey }) {
       "x-tfy-api-key": apiKey,
       Authorization: `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({ model, prompt, n: 1, size: "1024x1024" }),
+    body: JSON.stringify({ model, prompt, n: 1, size }),
   });
 
   if (!res.ok) {
@@ -181,11 +218,11 @@ async function main() {
 
   let hadError = false;
   for (const name of targets) {
-    const { file, prompt } = TARGETS[name];
+    const { file, prompt, size } = TARGETS[name];
     const outPath = join(ART_DIR, file);
     try {
       console.log(`  -> ${name}: requesting...`);
-      const raw = await generateImage({ model, prompt, apiKey });
+      const raw = await generateImage({ model, prompt, apiKey, size });
       const bytes = await shrinkPng(raw);
       writeFileSync(outPath, bytes);
       console.log(`  -> ${name}: wrote ${outPath} (${bytes.length} bytes)`);
