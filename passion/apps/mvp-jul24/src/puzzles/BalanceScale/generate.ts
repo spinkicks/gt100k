@@ -50,7 +50,55 @@ export interface Tier {
   maxBlindRate: number;
 }
 
+/**
+ * Three tiers, and the FIRST one is new: the tight budget moved up rather than being loosened.
+ *
+ * What was wrong. Tier 0 shipped with `slack: 1` — one move more than a perfect line of play, on a
+ * puzzle whose whole point is a divisibility step that is legal on 1 of 120 opening boards. A first
+ * encounter therefore had room for exactly one wasted click before the scale reset, which is not a
+ * budget a child meets while still working out what the moves do. The product owner's report was
+ * "the number of moves is too low for first shot — maybe introduce it as a harder mode", and that is
+ * exactly what happens below.
+ *
+ * Why loosening tier 0 in place would have been the wrong fix. The budget is not decoration: a
+ * random walk solves this puzzle on essentially every level *given room*, because every removal and
+ * every division shrinks the scale toward "one bag alone" and there are no dead ends. The budget is
+ * the only thing standing between "reasoned it out" and "clicked until it fell over" — see
+ * `Level.budget` and `Tier.maxBlindRate`. So the loose budget gets its own tier, and the two tiers
+ * that carry the anti-flailing guarantee are kept byte-for-byte as they were and simply moved up.
+ *
+ * Measured over 120 seeds × 20 undirected runs each, at each tier's own budget (`naive.test.ts`):
+ *   tier 0 (new, slack 4): budget 9–10 for a 5–6 move solution · blind solve 2.33% · 0/480 deterministic
+ *   tier 1 (was tier 0):   budget 5–7  for a 4–6 move solution · blind solve 1.21% · 0/480
+ *   tier 2 (was tier 1):   budget 8–11 for a 6–9 move solution · blind solve 0.92% · 0/480
+ * The easy tier stays under the same 4% ceiling the others do, because the generator re-measures the
+ * blind rate *at the tier's own budget* and rejects candidates a wider budget would hand over. The
+ * cost is paid in generation attempts (757ms for 120 levels against 344ms), not in the guarantee.
+ *
+ * Slack 4 rather than 5 or 6, from the same sweep: 2 → 1.79%, 3 → 1.96%, 4 → 2.33%, 5 → 3.25%,
+ * 6 → 3.33%. All clear the ceiling, so the deciding number is the one in `Level.budget`: undirected
+ * play needs a MEDIAN OF 12 moves over the optimum to land, and 4 is comfortably the wrong side of
+ * that while still being roughly double a perfect line of play.
+ *
+ * Tiers 1 and 2 are the old tiers with their parameters unchanged, but their *levels* are not
+ * identical to what shipped before: `followTheGlow` joined the reject filter in the same change, and
+ * it withdraws levels that the new split rail's hint would have walked a child through (39, 47 and 18
+ * of 120 respectively, before it was added). That is a difficulty guarantee getting stricter, not a
+ * budget getting looser.
+ */
 export const TIERS: readonly Tier[] = [
+  {
+    // The first encounter. Same boards as the tier below — same weights, same scramble depth, same
+    // solution-length window — with room to explore. Nothing here is easier to *reason* about; what
+    // is easier is affording a wrong turn, which is how a child finds out what a move does.
+    weights: [2, 3, 4, 6],
+    scramble: 6,
+    minSteps: 4,
+    maxSteps: 7,
+    requireDivide: true,
+    slack: 4,
+    maxBlindRate: 0.04,
+  },
   {
     weights: [2, 3, 4, 6],
     scramble: 6,
