@@ -193,6 +193,43 @@ importers:
         specifier: ^18.3.1
         version: 18.3.7(@types/react@18.3.31)
 
+  passion/apps/discovery:
+    dependencies:
+      '@gt100k/concierge':
+        specifier: workspace:*
+        version: link:../../packages/concierge
+      '@gt100k/design-tokens':
+        specifier: workspace:*
+        version: link:../../packages/design-tokens
+      '@gt100k/discovery-catalog':
+        specifier: workspace:*
+        version: link:../../packages/discovery-catalog
+      '@gt100k/signal-pipeline':
+        specifier: workspace:*
+        version: link:../../packages/signal-pipeline
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../../packages/two-axis-tagging
+      chess.js:
+        specifier: ^1.4.0
+        version: 1.4.0
+      next:
+        specifier: ^14.2.15
+        version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.12
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: ^18.3.1
+        version: 18.3.7(@types/react@18.3.31)
+
   passion/apps/evidence-explorer:
     dependencies:
       '@electric-sql/pglite':
