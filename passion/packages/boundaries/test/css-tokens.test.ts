@@ -225,11 +225,17 @@ describe("every CSS custom property this repo uses is defined somewhere", () => 
 
   it("actually discovered the stylesheets, so a passing run cannot mean an empty scan", () => {
     // The failure mode this guards, borrowed from boundaries.test.ts: a path typo makes the scan find
-    // nothing, report zero problems, and read as a clean repo forever.
-    expect(report.stylesheetsScanned.length).toBeGreaterThan(40);
+    // nothing, report zero problems, and read as a clean repo forever. The threshold only has to be
+    // high enough that a near-empty scan trips it: mvp-jul24 (32 stylesheets) was archived out of the
+    // workspace, so the live count fell from ~68 to ~36 — 30 keeps the guard meaningful below that.
+    expect(report.stylesheetsScanned.length).toBeGreaterThan(30);
     expect(report.stylesheetsScanned).toContain("passion/apps/guide-console/app/globals.css");
     expect(report.stylesheetsScanned).toContain("passion/packages/design-tokens/src/index.css");
-    expect(report.stylesheetsScanned).toContain("passion/apps/mvp-jul24/src/theme.css");
+    // The discovery app's ported theme — a real app stylesheet, pinned so the scan reaching into
+    // passion/apps at all stays proven after mvp-jul24 (which used to anchor this) was archived.
+    expect(report.stylesheetsScanned).toContain(
+      "passion/apps/discovery/runtime/host/theme-tokens.css",
+    );
   });
 
   it("actually collected the token vocabulary, so a passing run cannot mean an empty dictionary", () => {
