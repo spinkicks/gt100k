@@ -43,3 +43,17 @@ describe("Explore disclosure", () => {
     expect(src).toMatch(/aria-expanded/);
   });
 });
+
+describe("Verify reads plainly on top, verbatim underneath", () => {
+  it("VerifyBox uses the plain verifyLine copy", () => {
+    expect(read("VerifyBox.tsx")).toMatch(/verifyLine/);
+  });
+  it("VerifyBox keeps the verbatim technical steps in the detail", () => {
+    // the step list is the auditor's verbatim view — it must remain.
+    expect(read("VerifyBox.tsx")).toMatch(/verifybox-steps/);
+  });
+  it("the tamper control reads plainly (not 'tamper')", () => {
+    const src = read("VerifyBox.tsx");
+    expect(src).toMatch(/Try changing the record|Undo the change|Change one/i);
+  });
+});

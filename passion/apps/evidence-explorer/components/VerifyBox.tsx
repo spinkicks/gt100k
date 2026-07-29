@@ -1,9 +1,10 @@
 "use client";
 /**
  * Compact verify box (§U8.8, simplification pass) — the quiet, text-first replacement for the big
- * cinematic Verify panel. Collapsed it is a single status line (`✓ Verified · merkle root …`); expanded
- * it lists the domain-derived checklist + the full Merkle root (mono, copyable) and offers a small
- * **Show tamper** toggle. There is **no light-wave, no seal-forge, no stepped choreography** — the panel
+ * cinematic Verify panel. Collapsed it is a single plain-language status line (from `verifyLine`)
+ * with the seal mark and short root; expanded it lists the domain-derived checklist + the full
+ * Merkle root (mono, copyable) and offers a small **Try changing the record** toggle. There is
+ * **no light-wave, no seal-forge, no stepped choreography** — the panel
  * sequences nothing; it just reads the server-derived `VerificationView` truth (no client crypto, no
  * grade computed here).
  *
@@ -14,6 +15,7 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import type { JSX } from "react";
+import { verifyLine } from "./copy.js";
 import { ChevronIcon } from "./icons.js";
 import { sealCaption } from "./plain.js";
 import type { SyntheticVerification } from "./synthetic-view.js";
@@ -94,7 +96,7 @@ export function VerifyBox({
           {verified ? "Verified" : "MISMATCH"}
         </span>
         <span className="verifybox-line">
-          <span className="verifybox-line-label">merkle root</span>{" "}
+          <span className="verifybox-line-label">{verifyLine(verified)}</span>{" "}
           {verified ? (
             <span className="mono">{shortRoot(committedRoot)}</span>
           ) : (
@@ -157,10 +159,11 @@ export function VerifyBox({
               aria-pressed={tamperOn}
               onClick={() => setTamperOn((v) => !v)}
             >
-              {tamperOn ? "Hide tamper" : "Show tamper"}
+              {tamperOn ? "Undo the change" : "Try changing the record"}
             </button>
             <span className="verifybox-note">
-              Presentation only. No grade, no crypto in the app.
+              Change one saved item and the check fails — that&rsquo;s how you know the record is
+              real.
             </span>
           </div>
         </div>
