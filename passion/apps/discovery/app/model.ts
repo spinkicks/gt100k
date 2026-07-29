@@ -11,6 +11,7 @@ import {
   type AgeTier,
   type CuratedResource,
 } from "@gt100k/concierge";
+import { artifactFor } from "@gt100k/discovery-catalog";
 
 /** `PROJECT.md` puts the target band at 9-12, so the shelf serves the two tiers that span it. */
 export const AGE_TIERS: readonly AgeTier[] = ["9-11", "12-14"];
@@ -170,4 +171,72 @@ export function shuffled<T>(items: readonly T[], seed: number): readonly T[] {
     [out[i], out[j]] = [out[j]!, out[i]!];
   }
   return out;
+}
+
+/**
+ * A game reachable from a cell, named for a child.
+ *
+ * This is a COMPONENTS-FREE index on purpose. The playable component and its `supportsTier` flag
+ * live in `runtime/gadgets/registry.ts`, which imports all fifteen puzzles (plus the audio engine,
+ * motion and chess.js). If the wall imported that to decide *which cell has a game*, the entire game
+ * bundle would join the wall's first load — the wall is the child's front door and must stay light.
+ * So the door only needs an id and a label; `runtime/host` resolves the id to a component and mounts
+ * it lazily when a child actually opens one (see `GameLauncher`).
+ *
+ * The registry is the source of truth for the roster. If a gadget is added there, add its id +
+ * child-facing label here too — the build will not catch the omission, only a missing game will.
+ */
+export interface GameRef {
+  readonly id: string;
+  readonly label: string;
+}
+
+/**
+ * The fifteen active gadgets, in registry order, labelled the way a child would read them. The
+ * cell each one belongs to is NOT written here — it is read from the crosswalk (`artifactFor`), so
+ * the taxonomy stays owned by `@gt100k/discovery-catalog` and this list only ever holds copy.
+ */
+const GAMES: readonly GameRef[] = [
+  { id: "nonogram", label: "Nonogram" },
+  { id: "mirror", label: "Mirror Maze" },
+  { id: "pipes", label: "Pipes" },
+  { id: "chess", label: "Chess" },
+  { id: "balance-scale", label: "Balance Scale" },
+  { id: "fraction-laser", label: "Fraction Laser" },
+  { id: "function-machine", label: "Function Machine" },
+  { id: "ratio-mixing", label: "Ratio Mixing" },
+  { id: "gear-train", label: "Gear Train" },
+  { id: "tune-repair", label: "Tune Repair" },
+  { id: "chord-fit", label: "Chord Fit" },
+  { id: "downbeat", label: "Downbeat" },
+  { id: "sprite-loop", label: "Sprite Loop" },
+  { id: "trace-repair", label: "Trace & Repair" },
+  { id: "teach-helper", label: "Teach the Helper" },
+];
+
+/** Index built once from the crosswalk: `cabin` or `cabin/subtopic` → the games that live there. */
+const GAMES_BY_CELL: ReadonlyMap<string, readonly GameRef[]> = (() => {
+  const m = new Map<string, GameRef[]>();
+  for (const g of GAMES) {
+    const path = artifactFor(g.id)?.domainPath;
+    if (!path) continue; // a gadget with no crosswalk row is simply unreachable, not an error here
+    const key = path.join("/");
+    const bucket = m.get(key);
+    if (bucket) bucket.push(g);
+    else m.set(key, [g]);
+  }
+  return m;
+})();
+
+/**
+ * The game(s) a child can play at a cell — the generative act that sits beside the curated links.
+ *
+ * Called with a subtopic for the leaf view, and with the cabin alone for the cabin view (which is
+ * where the one cabin-level gadget, `gear-train` under Making & Building, becomes reachable — the
+ * only game that would otherwise have no door). Membership is fixed and returned in registry order;
+ * this is inside an already-chosen subtopic, not a cross-topic choice moment, so it is not part of
+ * the offered-set the wall randomises and logs.
+ */
+export function gamesForCell(cabin: CabinId, subtopic?: string): readonly GameRef[] {
+  return GAMES_BY_CELL.get(subtopic ? `${cabin}/${subtopic}` : cabin) ?? [];
 }

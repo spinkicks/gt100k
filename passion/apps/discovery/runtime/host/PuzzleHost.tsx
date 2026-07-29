@@ -12,6 +12,9 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useState, type JSX } from "react";
 import type { Gadget } from "../game/types";
 import ComingSoon from "../puzzles/ComingSoon";
+// The cabin palette the ported games' CSS expects, scoped to the overlay so it cannot touch the
+// wall. Loaded before PuzzleHost.css and every game stylesheet so the tokens exist when they resolve.
+import "./theme-tokens.css";
 import "./PuzzleHost.css";
 
 export interface PuzzleHostProps {

@@ -26,10 +26,23 @@
 //   is 2-4 SUCCESSIVE choices at d = 0.61 against d = 0.21 for one. So this is a sequence — cabin,
 //   then subtopic, then resource. Three moments, each small, and far more than fifty things reachable.
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from "react";
+import dynamic from "next/dynamic";
 
 import { CabinGlyph, ExternalGlyph } from "./glyphs.js";
-import { CABIN_TILES, resourcesFor, shuffled, subtopicTiles, type Tile } from "./model.js";
+import {
+  CABIN_TILES,
+  gamesForCell,
+  resourcesFor,
+  shuffled,
+  subtopicTiles,
+  type Tile,
+} from "./model.js";
 import "./browse.css";
+
+// The games load only when a child opens one — the whole roster (fifteen components, the audio
+// engine, chess.js) stays out of the wall's first paint behind this boundary. `ssr: false` because
+// a puzzle is a client-only, interactive thing; there is nothing meaningful to render on the server.
+const GameLauncher = dynamic(() => import("./GameLauncher"), { ssr: false });
 
 type Step = "cabin" | "subtopic";
 
@@ -58,6 +71,11 @@ export default function BrowsePage(): JSX.Element {
   const [cabin, setCabin] = useState<Tile | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [log, setLog] = useState<readonly Surfaced[]>([]);
+  // The gadget id currently mounted over the wall, or null. A game is opened from the panel, not by
+  // clicking a tile: the tile selects, the panel is where the child sees both what to play and where
+  // to read, and chooses between them. That is the merge — the game as the generative act, the
+  // curated links beside it — rather than a game that hijacks the click.
+  const [playing, setPlaying] = useState<string | null>(null);
 
   const step: Step = cabin === null ? "cabin" : "subtopic";
   const tiles = useMemo(
@@ -91,6 +109,17 @@ export default function BrowsePage(): JSX.Element {
         : [],
     [cabin, current, step],
   );
+
+  // The games at the cell the child is looking at. At subtopic level that is the selected leaf; at
+  // cabin level it is the cabin itself, which surfaces the one cabin-level gadget (gear-train under
+  // Making & Building) that has no subtopic to live under. Most cells have one game, a few have up
+  // to four; membership is fixed, order is the registry's.
+  const games = useMemo(() => {
+    if (!current) return [];
+    return step === "subtopic"
+      ? gamesForCell(current.cabin, current.id.split("/")[1] ?? "")
+      : gamesForCell(current.cabin);
+  }, [current, step]);
 
   const gridRef = useRef<HTMLUListElement>(null);
   // Follows the count so the grid fills the screen rather than stranding one short row against a
@@ -215,21 +244,54 @@ export default function BrowsePage(): JSX.Element {
           <h2 className="panel__title">{current.label}</h2>
           <p className="panel__blurb">{current.blurb}</p>
 
-          {step === "subtopic" ? (
-            resources.length > 0 ? (
-              <ul className="panel__rows">
-                {resources.map((r) => (
-                  <li key={r.id}>
-                    <a href={r.url} target="_blank" rel="noreferrer noopener" className="row">
-                      <span className="row__title">{r.title}</span>
-                      <ExternalGlyph />
-                    </a>
+          {/* The generative act, and it leads. The merge decision was that a cell offers BOTH a
+              thing to make and things to read, not one instead of the other — so the game is not
+              buried under a link list, and the links are not hidden behind the game. A child who
+              wants to do sees the doing first; a child who wants to read scrolls a thumb's width.
+              Doing this is not scored, gated, or counted back at the child (Rule 4) — it is just a
+              door that happens to open onto making rather than reading. */}
+          {games.length > 0 ? (
+            <div className="panel__play">
+              <p className="panel__play-lead">
+                {games.length === 1 ? "Try it yourself" : "Try one yourself"}
+              </p>
+              <ul className="panel__play-list">
+                {games.map((g) => (
+                  <li key={g.id}>
+                    <button
+                      type="button"
+                      className="panel__play-btn"
+                      onClick={() => setPlaying(g.id)}
+                    >
+                      {g.label}
+                    </button>
                   </li>
                 ))}
               </ul>
-            ) : (
+            </div>
+          ) : null}
+
+          {step === "subtopic" ? (
+            resources.length > 0 ? (
+              <>
+                {/* Named only when there is also a game above, so the two halves read as two
+                    halves rather than one undifferentiated list. */}
+                {games.length > 0 ? <p className="panel__rows-lead">Or read about it</p> : null}
+                <ul className="panel__rows">
+                  {resources.map((r) => (
+                    <li key={r.id}>
+                      <a href={r.url} target="_blank" rel="noreferrer noopener" className="row">
+                        <span className="row__title">{r.title}</span>
+                        <ExternalGlyph />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : games.length > 0 ? null : (
               // Said plainly rather than hidden. A child who picked this deserves to know the
-              // product has nothing here yet, instead of a panel that quietly ends.
+              // product has nothing here yet, instead of a panel that quietly ends. Only shown
+              // when there is neither a game nor a link — a cell with a game is not empty.
               <p className="panel__empty">Nothing here yet. Try another one.</p>
             )
           ) : (
@@ -258,6 +320,24 @@ export default function BrowsePage(): JSX.Element {
           which topics appear is not.
         </span>
       </footer>
+
+      {/* The game mounts over the wall as a full-screen overlay (see PuzzleHost). Loaded lazily, so
+          the wall paid nothing for it until this moment. `onSolve` / `onHarder` are the seam for
+          Phase 4: a solve becomes a work-mode interaction and a harder board becomes
+          `chosen_challenge`, both attributed to this gadget's artifact. Left as stubs here so the
+          merged UI is provable before the emitter is wired. */}
+      {playing ? (
+        <GameLauncher
+          gadgetId={playing}
+          onExit={() => setPlaying(null)}
+          onSolve={() => {
+            /* Phase 4: sessionLog.recordAction(...) for this gadget's artifact. */
+          }}
+          onHarder={() => {
+            /* Phase 4: emit `chosen_challenge`. */
+          }}
+        />
+      ) : null}
     </main>
   );
 }

@@ -398,3 +398,72 @@
   color: var(--ink-soft);
   font-size: 0.95rem;
 }
+
+/* ── the play affordance ───────────────────────────────────────────────────────────────────── */
+
+/* The game at a cell, given more weight than the link rows below it because the merge decision
+   was that making leads and reading sits beside it. Deliberately NOT gold: the ring is the
+   selection colour and only that, so borrowing it here would make "there is a game" look like
+   "this is selected". Instead a raised, warmer-neutral surface a child reads as the thing to
+   press, sized for the mouse-and-trackpad modality the school hardware quietly chose. */
+.panel__play {
+  margin: 0 0 1.4rem;
+}
+
+.panel__play-lead {
+  margin: 0 0 0.55rem;
+  color: var(--ink-soft);
+  font-size: 1rem;
+}
+
+.panel__play-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.panel__play-btn {
+  min-height: 56px;
+  padding: 0.7rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: oklch(37% 0.02 70);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    transform 120ms ease;
+}
+
+.panel__play-btn:hover,
+.panel__play-btn:focus-visible {
+  background: oklch(44% 0.03 70);
+}
+
+.panel__play-btn:active {
+  transform: translateY(1px);
+}
+
+.panel__play-btn:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Separates the two halves once a game is present above the links. */
+.panel__rows-lead {
+  margin: 0 0 0.55rem;
+  color: var(--ink-soft);
+  font-size: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel__play-btn {
+    transition: none;
+  }
+}
