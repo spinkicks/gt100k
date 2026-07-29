@@ -77,6 +77,11 @@ describe("CommitLog is a git-log-style, non-linear history", () => {
   it("rows are clickable to jump to a beat", () => {
     expect(src).toMatch(/onSelectBeat\(beat\.nodeId\)/);
   });
+  it("keeps the current row scrolled into view (no animated scroll)", () => {
+    const src = read("CommitLog.tsx");
+    expect(src).toMatch(/scrollIntoView\(\{\s*block:\s*"nearest"\s*\}\)/);
+    expect(src).not.toMatch(/behavior:\s*"smooth"/);
+  });
 });
 
 describe("useStoryPlayback reuses the pure step logic and honors reduced motion", () => {
