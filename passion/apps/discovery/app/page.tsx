@@ -28,6 +28,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from "react";
 import dynamic from "next/dynamic";
 
+import { solveVerbFor } from "@gt100k/discovery-catalog";
+
 import { CabinGlyph, ExternalGlyph } from "./glyphs.js";
 import {
   CABIN_TILES,
@@ -37,6 +39,7 @@ import {
   subtopicTiles,
   type Tile,
 } from "./model.js";
+import { sessionLog, startUplink } from "../runtime/signals/session";
 import "./browse.css";
 
 // The games load only when a child opens one — the whole roster (fifteen components, the audio
@@ -45,14 +48,6 @@ import "./browse.css";
 const GameLauncher = dynamic(() => import("./GameLauncher"), { ssr: false });
 
 type Step = "cabin" | "subtopic";
-
-/** What the surface would emit. Rendered on screen so the measurement is visible, not implied. */
-interface Surfaced {
-  /** One entry per screen, so a re-render cannot inflate what was offered. */
-  readonly key: string;
-  readonly step: Step;
-  readonly ids: readonly string[];
-}
 
 export default function BrowsePage(): JSX.Element {
   // One seed per page load, so the order is stable while the child is looking at it and different
@@ -68,9 +63,18 @@ export default function BrowsePage(): JSX.Element {
     setReady(true);
   }, []);
 
+  // Ship the log if — and only if — an ingest endpoint was configured. A mount-scoped effect so it
+  // starts once and tears down on unmount; a no-op when nothing is configured, which is the default
+  // in every environment (see `startUplink` / `INGEST_URL`).
+  useEffect(() => startUplink(), []);
+
   const [cabin, setCabin] = useState<Tile | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
-  const [log, setLog] = useState<readonly Surfaced[]>([]);
+  // A version counter bumped after every emission, purely so the meter re-reads the (localStorage-
+  // backed, non-reactive) log. `screens` counts distinct browse screens seen, for the same meter.
+  const [emitVersion, setEmitVersion] = useState(0);
+  const [screens, setScreens] = useState<ReadonlySet<string>>(() => new Set());
+  const bumpEmit = useCallback(() => setEmitVersion((v) => v + 1), []);
   // The gadget id currently mounted over the wall, or null. A game is opened from the panel, not by
   // clicking a tile: the tile selects, the panel is where the child sees both what to play and where
   // to read, and chooses between them. That is the merge — the game as the generative act, the
@@ -87,19 +91,18 @@ export default function BrowsePage(): JSX.Element {
   // rides along because it can only be captured now: after the fact there is no way to know where a
   // thing sat, and with the order randomised it is the variable that makes the bias measurable.
   //
-  // Keyed on the screen and recorded once per screen. Appending on every effect pass counted the
-  // same offer two or three times, which is the exact failure `recordSurfaced` guards against in
-  // the real emitter: a re-render is not a second time the child was shown something.
+  // `recordSurfaced` is idempotent per (session, artifact), so running it on each render carries the
+  // position without inflating the count — a re-render is not a second time the child was shown
+  // something. `screens` and `emitVersion` exist only for the meter; the log itself lives in
+  // localStorage, not React state.
   const screenKey = `${step}:${cabin?.id ?? "root"}:${seed}`;
   useEffect(() => {
     if (!ready) return;
-    setLog((prev) =>
-      prev.some((s) => s.key === screenKey)
-        ? prev
-        : [...prev, { key: screenKey, step, ids: tiles.map((t) => t.id) }],
-    );
+    tiles.forEach((t, position) => sessionLog.recordSurfaced(t.id, position));
+    setScreens((prev) => (prev.has(screenKey) ? prev : new Set(prev).add(screenKey)));
+    bumpEmit();
     setSelected(tiles[0]?.id ?? null);
-  }, [ready, screenKey, tiles, step]);
+  }, [ready, screenKey, tiles, bumpEmit]);
 
   const current = tiles.find((t) => t.id === selected) ?? tiles[0] ?? null;
   const resources = useMemo(
@@ -120,6 +123,20 @@ export default function BrowsePage(): JSX.Element {
       ? gamesForCell(current.cabin, current.id.split("/")[1] ?? "")
       : gamesForCell(current.cabin);
   }, [current, step]);
+
+  // The games shown in the panel are offers too — and unlike the topic tiles they resolve to
+  // catalog artifacts, so THESE are the surfacings a later non-engagement reads as a skip
+  // (`deriveSkips` only forms a decline for ids in the crosswalk). Positioned within the play list.
+  useEffect(() => {
+    if (!ready || games.length === 0) return;
+    games.forEach((g, position) => sessionLog.recordSurfaced(g.id, position));
+    bumpEmit();
+  }, [ready, games, bumpEmit]);
+
+  // The meter reads the real log rather than a parallel React copy, so what it shows is exactly what
+  // was written. `emitVersion` is the only reason this re-computes — `surfaced()` is a localStorage
+  // read, not reactive state — and it counts distinct (session, artifact) offers, tiles and games.
+  const offered = useMemo(() => sessionLog.surfaced().length, [emitVersion]);
 
   const gridRef = useRef<HTMLUListElement>(null);
   // Follows the count so the grid fills the screen rather than stranding one short row against a
@@ -280,7 +297,17 @@ export default function BrowsePage(): JSX.Element {
                 <ul className="panel__rows">
                   {resources.map((r) => (
                     <li key={r.id}>
-                      <a href={r.url} target="_blank" rel="noreferrer noopener" className="row">
+                      <a
+                        href={r.url}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="row"
+                        // Following a link out is the one act on the panel worth recording, and it
+                        // is attributed to the subtopic cell the child is standing in — never to the
+                        // shelf — so a follow reads as "left THIS cell to learn more". See
+                        // `recordSourceFollow`. Fires alongside navigation; not gated on it.
+                        onClick={() => current && sessionLog.recordSourceFollow(current.id)}
+                      >
                         <span className="row__title">{r.title}</span>
                         <ExternalGlyph />
                       </a>
@@ -312,8 +339,8 @@ export default function BrowsePage(): JSX.Element {
 
       <footer className="browse__meter">
         <span>
-          Offered this session: <strong>{log.reduce((n, s) => n + s.ids.length, 0)}</strong> across{" "}
-          <strong>{log.length}</strong> {log.length === 1 ? "screen" : "screens"}
+          Offered this session: <strong>{offered}</strong> across <strong>{screens.size}</strong>{" "}
+          {screens.size === 1 ? "screen" : "screens"}
         </span>
         <span className="browse__meter-note">
           Every tile shown is logged as offered, with its position. Order is random per session;
@@ -322,19 +349,28 @@ export default function BrowsePage(): JSX.Element {
       </footer>
 
       {/* The game mounts over the wall as a full-screen overlay (see PuzzleHost). Loaded lazily, so
-          the wall paid nothing for it until this moment. `onSolve` / `onHarder` are the seam for
-          Phase 4: a solve becomes a work-mode interaction and a harder board becomes
-          `chosen_challenge`, both attributed to this gadget's artifact. Left as stubs here so the
-          merged UI is provable before the emitter is wired. */}
+          the wall paid nothing for it until this moment.
+
+          The three callbacks are the whole engagement contract, and each maps to one emitter method:
+          `onOpen` reports presence when the child leaves (an `open` with a dwell bucket — without it
+          a game the child opened but did not finish reads to `deriveSkips` as a decline); `onSolve`
+          is the one record that forms a work-mode cell, tagged with the gadget's crosswalk verb; and
+          `onHarder` is that same verb carrying `chosen_challenge`, the voluntary-difficulty depth
+          signal. All three are attributed to the gadget id, which is what the crosswalk resolves. */}
       {playing ? (
         <GameLauncher
           gadgetId={playing}
           onExit={() => setPlaying(null)}
-          onSolve={() => {
-            /* Phase 4: sessionLog.recordAction(...) for this gadget's artifact. */
+          onOpen={(id, activeMs) => sessionLog.recordOpen(id, activeMs)}
+          onSolve={(id) => {
+            const verb = solveVerbFor(id);
+            if (verb) sessionLog.recordAction(id, verb);
+            bumpEmit();
           }}
-          onHarder={() => {
-            /* Phase 4: emit `chosen_challenge`. */
+          onHarder={(id) => {
+            const verb = solveVerbFor(id);
+            if (verb) sessionLog.recordAction(id, verb, ["chosen_challenge"]);
+            bumpEmit();
           }}
         />
       ) : null}

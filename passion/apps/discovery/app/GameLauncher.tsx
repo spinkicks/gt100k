@@ -16,7 +16,9 @@ export interface GameLauncherProps {
   readonly gadgetId: string;
   /** Close the game and return to the wall. */
   readonly onExit: () => void;
-  /** The child solved. Phase 4 turns this into a work-mode interaction. */
+  /** The child left the game; `activeMs` is time actually spent here (hidden time excluded). */
+  readonly onOpen?: (gadgetId: string, activeMs: number) => void;
+  /** The child solved — the one record that forms a work-mode cell. */
   readonly onSolve?: (gadgetId: string) => void;
   /** The child asked for a harder board (`chosen_challenge`). */
   readonly onHarder?: (gadgetId: string) => void;
@@ -25,6 +27,7 @@ export interface GameLauncherProps {
 export default function GameLauncher({
   gadgetId,
   onExit,
+  onOpen,
   onSolve,
   onHarder,
 }: GameLauncherProps): JSX.Element | null {
@@ -33,6 +36,12 @@ export default function GameLauncher({
   // throw under a child: the wall behind is still fully usable.
   if (!gadget) return null;
   return (
-    <PuzzleHost gadget={gadget} onExit={onExit} onSolve={onSolve} onHarder={onHarder} />
+    <PuzzleHost
+      gadget={gadget}
+      onExit={onExit}
+      onOpen={onOpen}
+      onSolve={onSolve}
+      onHarder={onHarder}
+    />
   );
 }

@@ -17,34 +17,27 @@ function newSessionId(): string {
 export const SESSION_ID = newSessionId();
 
 /**
- * WHETHER THIS APP EMITS SIGNAL RECORDS AT ALL. It now does, and the precondition that gated it has
- * been met rather than waived.
+ * WHETHER THIS APP EMITS SIGNAL RECORDS AT ALL. It does. The precondition that once gated it — that
+ * every interaction surface actually be wired, so a live log is never *silently partial* — is the
+ * bar this comment has to keep honest, because a record that exists, looks well-formed, and
+ * under-counts is the one misreading `SurfacedRecord` exists to prevent.
  *
- * This was off because the `backdrop` backend's two interaction surfaces — the perspective prop
- * polygons and the bookshelf — emitted nothing, so a live log would have been *silently partial*:
- * records that exist, look well-formed, and under-count every prop opened through the backdrop.
- * Anyone reading that without reading this comment would treat missing engagement as absence of
- * engagement, which is the one misreading `SurfacedRecord` exists to prevent. The instruction was
- * "wire the backdrop's prop polygons and the shelf FIRST, then flip this."
+ * WHAT THE DISCOVERY WALL EMITS, surface by surface:
  *
- * BOTH ARE NOW COVERED, and the first turned out to have been covered all along:
- *
- *   - **Prop polygons.** Verified by test, not by reading: clicking one calls `focusGadget`, which
- *     mounts `GadgetOverlay`, which records the open on unmount. A probe click on a real polygon
- *     produced `open:nonogram` with all four gadgets surfaced. The comment claiming otherwise had
- *     gone stale.
- *   - **The shelf.** Genuinely unwired, now emits `follow-source` when a child follows a card's
- *     outbound link — see `recordSourceFollow` for why that is the one act on the shelf worth
- *     recording, and why it is attributed to the card's subject rather than to the shelf.
+ *   - **Every tile.** The browse wall records each topic tile as surfaced with its grid position the
+ *     moment a screen is shown (`page.tsx`). Topic ids are browse-level: they do not resolve in the
+ *     crosswalk, so they anchor position and offered-set counts but never form a skip on their own.
+ *   - **Every game in the panel.** Each game offered at a cell is surfaced with its position too, and
+ *     these DO resolve to catalog artifacts — so a game surfaced and never engaged is what
+ *     `deriveSkips` reads as a decline. Opening one records an `open` (presence, with a dwell bucket)
+ *     via `PuzzleHost`; solving records the gadget's crosswalk verb (the one record that forms a
+ *     work-mode cell); asking for a harder board records that same verb tagged `chosen_challenge`.
+ *   - **The resource links.** Following a curated link out records `follow-source`, attributed to the
+ *     subtopic cell the child left — see `recordSourceFollow` for why that subject, not "the panel".
  *
  * WHAT IS STILL NOT EMITTED, so this stays truth-in-labelling rather than a claim of completeness:
- * `failure_recovery` and `self_authored_scope`, which have no affordance to emit from. Records are
- * complete for what the child DID.
- *
- * `SurfacedRecord.position` used to be on that list and now is not: the map reports reading order
- * among the cabins actually on offer, the room reports wall order. Nothing reads either yet, which
- * is deliberate — the size of a position effect can only be measured in this surface with these
- * children, and a position not captured at surfacing time cannot be recovered later.
+ * `failure_recovery` and `self_authored_scope`, which have no affordance on this surface to emit
+ * from. Records are complete for what the child DID.
  *
  * Note what this is NOT: it is not a privacy control. It governs whether records are WRITTEN, and
  * writing is local. Whether anything is SENT is `INGEST_URL` below, which is a separate switch on

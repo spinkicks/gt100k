@@ -9,7 +9,7 @@
 // stays a pure presentation host and the emission contract lives in one place (Phase 4).
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useState, type JSX } from "react";
+import { useEffect, useRef, useState, type JSX } from "react";
 import type { Gadget } from "../game/types";
 import ComingSoon from "../puzzles/ComingSoon";
 // The cabin palette the ported games' CSS expects, scoped to the overlay so it cannot touch the
@@ -22,16 +22,58 @@ export interface PuzzleHostProps {
   gadget: Gadget;
   /** Leave the game and return to the wall. */
   onExit: () => void;
+  /**
+   * Fired once when the child leaves the game, with the time actually spent here in ms (time while
+   * the tab was hidden is not counted). The caller turns this into an `open` record whose dwell
+   * bucket tells the engine the child WAS present — which is what keeps a game a child opened but
+   * did not solve from reading as a decline.
+   */
+  onOpen?: (gadgetId: string, activeMs: number) => void;
   /** Fired when the child solves. The caller decides what this emits (a work-mode action). */
   onSolve?: (gadgetId: string) => void;
   /** Fired when the child voluntarily asks for a harder board (`chosen_challenge`). */
   onHarder?: (gadgetId: string) => void;
 }
 
-export default function PuzzleHost({ gadget, onExit, onSolve, onHarder }: PuzzleHostProps): JSX.Element {
+export default function PuzzleHost({
+  gadget,
+  onExit,
+  onOpen,
+  onSolve,
+  onHarder,
+}: PuzzleHostProps): JSX.Element {
   const [solved, setSolved] = useState(false);
   const [tier, setTier] = useState(0);
   const reduce = useReducedMotion();
+
+  // Presence tracking. We report the open exactly once, when the child leaves this game (unmount),
+  // carrying the ACTIVE time — wall-clock minus any stretch the tab was hidden — so a child who
+  // opened a puzzle and wandered off to another tab is not credited with a long engagement. The
+  // latest `onOpen` is read through a ref so a new callback identity from the parent cannot retrigger
+  // the mount-scoped effect and fire the open early.
+  const onOpenRef = useRef(onOpen);
+  onOpenRef.current = onOpen;
+  useEffect(() => {
+    const openedAt = Date.now();
+    let hiddenMs = 0;
+    let hiddenSince = document.visibilityState === "hidden" ? openedAt : null;
+    const onVis = (): void => {
+      if (document.visibilityState === "hidden") {
+        hiddenSince = Date.now();
+      } else if (hiddenSince !== null) {
+        hiddenMs += Date.now() - hiddenSince;
+        hiddenSince = null;
+      }
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      document.removeEventListener("visibilitychange", onVis);
+      if (hiddenSince !== null) hiddenMs += Date.now() - hiddenSince;
+      const activeMs = Math.max(0, Date.now() - openedAt - hiddenMs);
+      onOpenRef.current?.(gadget.id, activeMs);
+    };
+  }, [gadget.id]);
+
   // Only offer a harder board where the component actually reads `tier` (see Gadget.supportsTier),
   // or "harder" would remount the puzzle to its own easy default — a board easier than the one just
   // solved.
