@@ -31,12 +31,21 @@ import { useCallback, useMemo, useState } from "react";
 import { VERBS, parseLine } from "../../code/parse";
 import type { Program, Statement } from "../../code/program";
 import type { PuzzleProps } from "../../game/types";
+import { cellKey } from "../SpriteLoop/logic";
 import TeachIn from "../../teachin/TeachIn";
 import { openTier } from "../openTier";
 import "./TeachHelper.css";
 import { TIERS, generateForRound } from "./generate";
 import { isSolved, leftovers, outcomes } from "./logic";
-import { corridorCells } from "./world";
+import { HELPER_START, corridorCells } from "./world";
+
+/**
+ * The helper stands on the same cell at the start of every floor — the left end, facing east (see
+ * `HELPER_START`). Drawing it there is what makes "it picks up whatever is under the helper's feet"
+ * and "take while it is standing there" something the child can see rather than infer: without a
+ * marker the board is a row of cells and parcels with no actor in it, and the rule has no referent.
+ */
+const START_KEY = cellKey(HELPER_START.x, HELPER_START.y);
 
 const REASON_TEXT: Record<string, string> = {
   empty: "",
@@ -62,6 +71,15 @@ function Corridor({
         {corridorCells().map((key) => (
           <div className="th-cell" key={key}>
             {parcels.has(key) ? <span className="th-parcel" aria-hidden="true" /> : null}
+            {/* A ring, not a disc, so a parcel on the helper's own cell — the one it must `take`
+                from where it stands — still shows through the middle. */}
+            {key === START_KEY ? (
+              <span
+                className="th-helper"
+                role="img"
+                aria-label="the helper, at the start, facing right"
+              />
+            ) : null}
           </div>
         ))}
       </div>

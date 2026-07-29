@@ -80,6 +80,33 @@
 }
 
 /*
+ * The helper itself. A cream ring rather than a disc so a parcel on its own starting cell — the one
+ * it has to `take` from where it stands — reads through the middle instead of being covered by the
+ * actor that is supposed to pick it up. The chevron on the ring's right edge is its facing: east,
+ * the direction `move` carries it before any `turn`, so the child can see the corridor the way the
+ * helper does. Cream, not ember, so it never reads as one more parcel.
+ */
+.th-helper {
+  position: relative;
+  width: 86%;
+  height: 86%;
+  border: 3px solid var(--cream);
+  border-radius: 50%;
+  box-shadow: var(--shadow-soft);
+}
+
+.th-helper::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -6px;
+  transform: translateY(-50%);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid var(--cream);
+}
+
+/*
  * A verdict is a sentence, not a colour: "something left behind" says what happened, and the parcels
  * still drawn on that floor are the actual evidence. Colour alone would carry it for nobody who
  * cannot separate these two hues.

@@ -36,6 +36,24 @@ describe("TeachHelper", () => {
     expect(container.querySelectorAll(".th-corridor").length).toBeGreaterThan(1);
   });
 
+  it("draws the helper on the visible floor, on the first cell it starts from", () => {
+    // Without a marker the board is cells and parcels with no actor in it, and "take while it is
+    // standing there" has nothing to point at. It stands on the left end (HELPER_START).
+    const { container } = renderPuzzle();
+    const first = container.querySelector(".th-corridor .th-cell");
+    expect(first?.querySelector(".th-helper")).not.toBeNull();
+    expect(container.querySelectorAll(".th-helper")).toHaveLength(1);
+  });
+
+  it("draws the helper on every floor once the hidden ones appear", () => {
+    // Each floor runs the same program from the same start, so each must show where that start is.
+    const { container } = renderPuzzle();
+    write(asText(writtenForWhatCouldBeThere()));
+    send();
+    const corridors = container.querySelectorAll(".th-corridor").length;
+    expect(container.querySelectorAll(".th-helper")).toHaveLength(corridors);
+  });
+
   it("echoes back what the helper understood as the child types", () => {
     renderPuzzle();
     write("take\nmove 1");
