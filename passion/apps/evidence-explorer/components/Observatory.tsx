@@ -1,9 +1,9 @@
 "use client";
 import { type ExplorerView, buildLedgerView } from "@gt100k/evidence-explorer-view";
 /**
- * Provenance Observatory shell. Composes the header, the tier-selecting render stage (calm-2D SVG or
- * the 3D cosmos — equal modes), the legend, the accessible ledger, and the manual Add panel from one
- * shared working graph.
+ * Provenance Observatory shell. Composes the header, the calm-2D render stage (the story's hero) and,
+ * behind a collapsed Explore disclosure, the legend, the accessible ledger, and the manual Add panel —
+ * all from one shared working graph.
  *
  * Phase 4 makes this the **stateful parent**: it is seeded from the server-built synthetic snapshot
  * (`SyntheticSeed` — a plain, serializable `{ graph, view, verification, projectRef, subjectDigest }`)
@@ -15,9 +15,7 @@ import { type ExplorerView, buildLedgerView } from "@gt100k/evidence-explorer-vi
  */
 import type { EvidenceGraph } from "@gt100k/evidence-graph";
 import { type JSX, useMemo, useState } from "react";
-import { AddPanel } from "./AddPanel.js";
-import { Hud } from "./Hud.js";
-import { Ledger } from "./Ledger.js";
+import { ExplorePanel } from "./ExplorePanel.js";
 import { ObservatoryStage } from "./ObservatoryStage.js";
 import { VerifyPanel } from "./VerifyPanel.js";
 import { HudProvider } from "./hud-state.js";
@@ -110,19 +108,16 @@ export function Observatory({ seed }: { seed: SyntheticSeed }): JSX.Element {
                 verifyVisual={verifyVisual}
               />
             </div>
-            <div className="obs-side">
-              <Hud view={view} />
-              <AddPanel
-                graph={graph}
-                nodes={view.nodes}
-                onApply={(next) => {
-                  setGraph(next.graph);
-                  setView(next.view);
-                  setVerification(next.verification);
-                }}
-              />
-              <Ledger ledger={ledger} />
-            </div>
+            <ExplorePanel
+              view={view}
+              ledger={ledger}
+              graph={graph}
+              onApply={(next) => {
+                setGraph(next.graph);
+                setView(next.view);
+                setVerification(next.verification);
+              }}
+            />
           </div>
         </HudProvider>
       </SelectionProvider>

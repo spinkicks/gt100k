@@ -26,3 +26,20 @@ describe("single-column story-first composition", () => {
     expect(read("ObservatoryStage.tsx")).not.toMatch(/VerifyBox/);
   });
 });
+
+describe("Explore disclosure", () => {
+  it("Observatory delegates the tools to ExplorePanel, not directly", () => {
+    const src = read("Observatory.tsx");
+    expect(src).toMatch(/ExplorePanel/);
+    // The tools now live inside ExplorePanel, not the Observatory shell.
+    expect(src).not.toMatch(/<Hud\b/);
+    expect(src).not.toMatch(/<Ledger\b/);
+    expect(src).not.toMatch(/<AddPanel\b/);
+  });
+
+  it("ExplorePanel is collapsed by default", () => {
+    const src = read("ExplorePanel.tsx");
+    expect(src).toMatch(/useState\(false\)/);
+    expect(src).toMatch(/aria-expanded/);
+  });
+});
