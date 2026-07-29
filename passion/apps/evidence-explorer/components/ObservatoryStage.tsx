@@ -10,23 +10,24 @@ import { useCallback, useMemo, useState } from "react";
 import type { JSX } from "react";
 import { Inspector } from "./Inspector.js";
 import { TimeScrub } from "./TimeScrub.js";
-import { VerifyBox } from "./VerifyBox.js";
 import { Constellation2D } from "./constellation/Constellation2D.js";
 import { useHud } from "./hud-state.js";
 import { type SelectionOrigin, panelById } from "./inspector-model.js";
 import { effectiveFocusId, revealedNodeIds } from "./scrub.js";
 import { useSelection } from "./selection.js";
 import type { SyntheticVerification } from "./synthetic-view.js";
-import { IDLE_VISUAL, type VerifyVisualState } from "./verify-machine.js";
+import type { VerifyVisualState } from "./verify-machine.js";
 
 export function ObservatoryStage({
   view,
   verification,
   ledger,
+  verifyVisual,
 }: {
   view: ExplorerView;
   verification: SyntheticVerification;
   ledger: LedgerView;
+  verifyVisual: VerifyVisualState;
 }): JSX.Element {
   // Shared selection (UX4): the selected node drives the Inspector, the camera fly-to, and the beat
   // highlight — one concept, whether it came from the Ledger, a scrub beat, or a pointer-pick.
@@ -34,7 +35,7 @@ export function ObservatoryStage({
 
   // HUD presentation state (UX5, UE044–UE045) — filter/trace emphasis + the display toggles
   // (reduced-motion / plain / captions). All presentation-only; the `ExplorerView` never changes.
-  const { emphasisFor, reducedMotion, plainMode, audioCaptions } = useHud();
+  const { emphasisFor, reducedMotion, plainMode } = useHud();
 
   // Time-scrub state (§U5.4) — presentation-only: it reveals a subset of the one `ExplorerView`,
   // never mutates it. Starts fully grown so the default view matches the calm baseline.
@@ -69,8 +70,8 @@ export function ObservatoryStage({
   );
 
   // Verify-sequence visual state (§U8.8) — the light-wave / seal / byte-fracture the tiers render.
-  // Presentation-only: it never mutates the `ExplorerView`. Idle by default so the baseline is unchanged.
-  const [verifyVisual, setVerifyVisual] = useState<VerifyVisualState>(IDLE_VISUAL);
+  // Presentation-only: it never mutates the `ExplorerView`. Lifted to `Observatory` (Task 2) so the
+  // header Verify panel and this stage share one `verifyVisual` source.
   const waveOrder = verification.verified.verifyWaveOrder;
 
   return (
@@ -111,12 +112,6 @@ export function ObservatoryStage({
         onScrub={setRevealedCount}
         focusNodeId={effFocus}
         onSelectBeat={select}
-      />
-
-      <VerifyBox
-        verification={verification}
-        audioCaptions={audioCaptions}
-        onVisualChange={setVerifyVisual}
       />
     </div>
   );

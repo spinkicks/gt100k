@@ -270,6 +270,35 @@ button {
   animation: obs-pulse 2.6s ease-in-out infinite;
 }
 
+/* Header Verify control (§Task 2): toggles the verify panel now shared above the graph column. */
+.obs-verify-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+  box-shadow: var(--shadow-panel);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 620;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.obs-verify-btn[aria-expanded="true"] {
+  border-color: color-mix(in oklab, var(--verify) 32%, var(--line));
+  color: var(--verify);
+}
+
+/* Verify panel (§Task 2): full-width above the graph column, one click deeper than the header. */
+.verify-panel {
+  grid-column: 1 / -1;
+}
+
 @keyframes obs-pulse {
   0%,
   100% {
