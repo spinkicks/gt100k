@@ -1,6 +1,9 @@
 import type { Gadget, TopicId } from "../game/types";
 import BalanceScale from "../puzzles/BalanceScale/BalanceScale";
 import Chess from "../puzzles/Chess/Chess";
+import SpriteLoop from "../puzzles/SpriteLoop/SpriteLoop";
+import TeachHelper from "../puzzles/TeachHelper/TeachHelper";
+import TraceRepair from "../puzzles/TraceRepair/TraceRepair";
 import ChordFit from "../puzzles/ChordFit/ChordFit";
 import Downbeat from "../puzzles/Downbeat/Downbeat";
 import FractionLaser from "../puzzles/FractionLaser/FractionLaser";
@@ -195,6 +198,35 @@ export const GADGETS: Gadget[] = [
     Puzzle: Downbeat,
     hotspot: { xPct: 68, yPct: 69, label: "Downbeat" },
     supportsTier: true,
+  },
+
+  // --- code: three doors, one language. Blocks on the first, typed on the other two, which is a
+  // gradient by design: a child who climbs from the block door to a typed one has told us something.
+  // Each door reaches a different `code-computers` subtopic (see discovery-catalog/src/gadgets.ts), so
+  // unlike the music room this room's read decomposes rather than collapsing to one cell.
+  {
+    id: "sprite-loop",
+    topic: "code",
+    label: "Sprite Loop",
+    status: "active",
+    Puzzle: SpriteLoop,
+    hotspot: { xPct: 12, yPct: 68, label: "Sprite Loop" },
+  },
+  {
+    id: "trace-repair",
+    topic: "code",
+    label: "Trace & Repair",
+    status: "active",
+    Puzzle: TraceRepair,
+    hotspot: { xPct: 45, yPct: 60, label: "Trace & Repair" },
+  },
+  {
+    id: "teach-helper",
+    topic: "code",
+    label: "Teach the Helper",
+    status: "active",
+    Puzzle: TeachHelper,
+    hotspot: { xPct: 69, yPct: 55, label: "Teach the Helper" },
   },
 ];
 

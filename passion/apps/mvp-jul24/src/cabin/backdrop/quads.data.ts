@@ -653,7 +653,174 @@ const MUSIC: BackdropRoom = {
   },
 };
 
-export const BACKDROP_ROOMS: readonly BackdropRoom[] = [LOGIC_GAMES, MATH, MUSIC];
+const CODE_SOURCES = ["/art/cabin-backdrop-code.png"] as const;
+
+/**
+ * ===========================================================================================
+ * THE CODE ROOM. MEASURED AGAINST `public/art/cabin-backdrop-code.png`, 1536x1024 — a committed,
+ * shipping asset, so the placeholder banner at the top of this file does not apply.
+ * ===========================================================================================
+ *
+ * Three props, one per registered gadget, and a shelf. Unlike the music room this plate needed no
+ * fourth-surface decision: all three doors were built before the art was generated, so the roster was
+ * final and `quads.data.test.ts`'s exact both-directions match was satisfiable in one pass.
+ *
+ * Same pipeline as the music room — a single text-to-image pass (`scripts/gen-art.mjs
+ * cabin-backdrop-code`) with no `gen-cabins.mjs` prop surgery, and it needs none: a clockwork toy, a
+ * tape reader, a standing automaton and a bookcase are objects, not combinatorial boards, so what is
+ * painted is what these quads trace.
+ *
+ * HOW THEY WERE MEASURED. Corners read off a labelled 100px coordinate grid burned over the plate
+ * (`node scripts/art-inspect.mjs grid public/art/cabin-backdrop-code.png <out> 100`), then every
+ * outline composited back over the plate at 1:1 and inspected, which is the check that matters and is
+ * not the same as a browser screenshot — a screenshot is scaled down far enough to hide a 20px miss,
+ * and that is exactly the miss it caught in the music room.
+ *
+ * `kind` is `object` for all three, and none has a preview component. None of them is a flat plane the
+ * app could warp a live puzzle preview onto: the beetle sits on a circular track seen in perspective,
+ * the tape reader is a box with two cylinders on top, and the automaton is a figure. Calling any of
+ * them `flat` would let a preview be skewed across a best-fit plane the painting does not have, which
+ * `types.ts` warns looks worse than no preview at all.
+ *
+ * The room was composed with wide empty wall between the objects so the hit regions can be generous
+ * without touching — memo 07's target-size finding puts a child's floor well above an adult's, and
+ * there is no reason to be stingy when the wall is free.
+ */
+
+/**
+ * Light in the code plate: the lantern, and nothing else.
+ *
+ * ===========================================================================================
+ * MEASURED AGAINST `public/art/cabin-backdrop-code.png`. RE-MEASURE IF THE PLATE CHANGES.
+ * ===========================================================================================
+ *
+ * WHAT THE PIXELS SAID, including one thing that would have gone wrong if taken at face value:
+ *  - **The brightest thing in the image is not a light.** A brightest-16x16-block search over the
+ *    whole plate returns (600, 464) at mean luminance 226 — the pale punched paper tape. Running the
+ *    same search over the lower two-thirds returns (608, 469), the same tape where it spills onto the
+ *    floor. Both are reflective paper, not emission, and centring `firelight` on either would put the
+ *    room's glow on a prop. So the flame was found by searching the lantern's own neighbourhood
+ *    instead: core at **(176, 278)**, mean 229, with the hot glass running x 165..185 / y 254..302 at
+ *    half-maximum — a 20x48 ellipse, narrow because a lantern flame is narrow.
+ *  - **The floor pool is placed by geometry, not by brightness**, and that is a deliberate departure
+ *    from the music room's note. The brightest floorboard patch left of centre is (469, 837), which is
+ *    the tape again. So the pool sits under the lantern where the warm wash actually falls, rather
+ *    than on the brightest pixels.
+ *  - **No sconce.** There is one emitting object in the painting.
+ *
+ * NO SHAFT, AND THAT IS MEASURED RATHER THAN SKIPPED. The plate has a window at top left and it is
+ * bright — a luminance profile across y=350 reads 225, 177, 90, 40, 36, 59, 105, 63, 120, 133 from
+ * x=20 outward, so it falls off to wall values within ~80px. Down x=120 it reads 19, 33, 46, 36, 64,
+ * 70, 121, 79, 61, 42, 67, 54, 47, 30, which is wood grain rather than a band of light. There is no
+ * painted haze to trace, so authoring a quad would be inventing a beam and then drawing motes inside
+ * it. `shaft` is optional precisely so this is a one-key retreat.
+ *
+ * Worth recording for whoever regenerates this plate: a cool-light detector finds **8** pixels in
+ * 1,572,864 where blue exceeds red by 6/255. Like the music room this interior is warm-graded
+ * throughout, so a shaft added later must be given a warm white — `DEFAULT_SHAFT_TINT` (cool daylight)
+ * would make its motes the only cold pixels in the room.
+ */
+const CODE_ALIVENESS: RoomAliveness = {
+  firelight: {
+    core: { x: 176, y: 278, w: 20, h: 48 },
+    floor: { x: 210, y: 860, w: 210, h: 90 },
+    bounce: { x: 200, y: 300, w: 2200, h: 1800 },
+    sconce: null,
+  },
+};
+
+const CODE: BackdropRoom = {
+  topic: "code",
+  sources: CODE_SOURCES,
+  artWidth: ART_WIDTH,
+  artHeight: ART_HEIGHT,
+  aliveness: CODE_ALIVENESS,
+  props: [
+    {
+      // The clockwork beetle on its circular brass track, on the low table at the far left. The
+      // outline takes in the whole toy — beetle AND track — because the track is what makes it read
+      // as a thing that goes round and round, and a child aiming at it will aim at all of it.
+      kind: "object",
+      gadgetId: "sprite-loop",
+      label: "Clockwork beetle on a circular track",
+      // Retraced after compositing the first attempt over the plate at 1:1: it stopped at x=336 while
+      // the brass ring runs to x~355, so the whole right arc of the track was unclickable. Exactly the
+      // class of miss a browser screenshot hides and this check exists to find. Widened again at 2x
+      // zoom to take in the outer brass rim's tips: the wall either side is empty, and memo 07's
+      // target-size finding says a child's floor is well above an adult's, so there is nothing to buy
+      // by being tight.
+      outline: [
+        [38, 726],
+        [100, 690],
+        [180, 632],
+        [258, 642],
+        [325, 690],
+        [370, 726],
+        [250, 770],
+        [92, 756],
+      ],
+    },
+    {
+      // The punched-tape reader in the centre: cabinet plus the two brass spools above it. The
+      // spilled ribbon is deliberately NOT in the outline — it wanders across the floor and over the
+      // cabinet front, so including it would claim a large irregular slice of floorboard that is not
+      // the machine, and a child aiming at the ribbon is aiming at the machine anyway.
+      kind: "object",
+      gadgetId: "trace-repair",
+      label: "Punched-tape reader with two spools",
+      outline: [
+        [515, 526],
+        [520, 466],
+        [572, 428],
+        [800, 426],
+        [875, 456],
+        [866, 528],
+        [860, 800],
+        [700, 812],
+        [530, 804],
+      ],
+    },
+    {
+      // The brass automaton standing against the back wall, holding its basket. Traced round the
+      // figure including the arms and basket, which is where a child will aim, rather than round a
+      // box that would claim the wall either side of the narrow legs.
+      kind: "object",
+      gadgetId: "teach-helper",
+      label: "Brass clockwork helper holding a basket",
+      outline: [
+        [1030, 326],
+        [1082, 326],
+        [1108, 366],
+        [1146, 470],
+        [1144, 566],
+        [1122, 802],
+        [1012, 804],
+        [988, 566],
+        [986, 470],
+        [1008, 366],
+      ],
+    },
+  ],
+  // The bookcase on the right-hand wall. Not a prop and has no gadget: see the `ShelfProp` note in
+  // types.ts for why a shelf must never enter the props array. The outline follows the overhanging top
+  // plank and then the narrower case below it, which is what makes it genuinely non-rectangular —
+  // both bottom corners of its bounding box fall outside it, as shelf.geometry.test.ts requires.
+  shelf: {
+    label: "Bookcase of worn books on the right wall",
+    outline: [
+      [1198, 562],
+      [1478, 562],
+      [1478, 588],
+      [1462, 588],
+      [1462, 800],
+      [1210, 800],
+      [1210, 588],
+      [1198, 588],
+    ],
+  },
+};
+
+export const BACKDROP_ROOMS: readonly BackdropRoom[] = [LOGIC_GAMES, MATH, MUSIC, CODE];
 
 export function backdropRoomFor(topic: string): BackdropRoom | undefined {
   return BACKDROP_ROOMS.find((room) => room.topic === topic);

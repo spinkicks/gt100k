@@ -40,9 +40,10 @@ test("the map surfaces only the cabins a child can actually enter", () => {
   // effect: a cabin a child COULD have entered and did not is a decline, and declining is evidence.
   // It only became true once the cabin was reachable.
   expect(ids).toContain("music");
+  // `code` opened on 2026-07-28 and joins the choice set for the same reason `music` did.
+  expect(ids).toContain("code");
   // Locked cabins are not available, so they are not declinable either —
-  // surfacing them would manufacture declines against unreachable content.
-  expect(ids).not.toContain("code");
+  // surfacing them would manufacture declines against unreachable content. `art` is the last one.
   expect(ids).not.toContain("art");
 });
 

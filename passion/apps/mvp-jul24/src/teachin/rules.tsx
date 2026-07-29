@@ -40,6 +40,9 @@ import {
   ChordFitDiagram,
   DownbeatDiagram,
   RatioMixingDiagram,
+  SpriteLoopDiagram,
+  TeachHelperDiagram,
+  TraceRepairDiagram,
   TuneRepairDiagram,
 } from "./diagrams";
 
@@ -162,6 +165,34 @@ export const TEACH_INS = {
     // whole activity hunting the strip for a difference that is deliberately not drawn.
     rule: "Every pulse in this loop looks the same, but some of them sound louder, and a louder pulse is where a new bar starts. Play it, then mark every pulse you hear stressed.",
     Diagram: DownbeatDiagram,
+  },
+
+  // --- code ------------------------------------------------------------------------------------
+  "sprite-loop": {
+    title: "Sprite Loop",
+    // Two sentences, and the second one carries the load: **at the same speed**. The board draws no
+    // path behind the creature, so a child could otherwise reasonably read the job as matching a
+    // shape — which is the one reading rule X2 exists to prevent. "Blocks" names the tray so it reads
+    // as the place to begin without the copy having to gesture at it.
+    rule: "One creature keeps moving in a pattern, over and over. Build yours out of blocks so it goes the same places, in the same order, at the same speed.",
+    Diagram: SpriteLoopDiagram,
+  },
+  "trace-repair": {
+    title: "Trace & Repair",
+    // Says STEP THROUGH IT, because the round is built so the ending cannot tell you which line is at
+    // fault -- several lines could explain where the creature stops, and only the middle of the run
+    // separates them. A child who reads only the final board will blame the wrong line, so the one
+    // instruction worth spending a sentence on is the scrubber.
+    rule: "This program was meant to move the pale creature's way, but one line sends yours somewhere else. Drag the slider to step through both and watch for the moment they stop agreeing, then retype that line.",
+    Diagram: TraceRepairDiagram,
+  },
+  "teach-helper": {
+    title: "Teach the Helper",
+    // Says OTHER FLOORS YOU WILL NOT SEE, and stops there. Naming the trap outright -- "so take
+    // everywhere" -- would replace the insight with an instruction, and the insight is the thing this
+    // door detects. A child has to be told the rules of the game; they must not be told the answer.
+    rule: "Write instructions and the helper will follow them on this floor and on other floors you will not see, which have parcels in different places. It only picks something up if you tell it to take while it is standing there.",
+    Diagram: TeachHelperDiagram,
   },
 } satisfies Record<string, ActivityTeachIn>;
 

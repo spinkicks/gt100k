@@ -41,7 +41,7 @@ describe("authored rooms", () => {
     expect(backdropRoomFor("music")).toBeDefined();
     // The rest have no interior at all and must come back undefined rather than throwing, because
     // the map lets a player reach them.
-    for (const topic of ["code", "art", "science", "words", "nonsense"]) {
+    for (const topic of ["art", "science", "words", "nonsense"]) {
       expect(backdropRoomFor(topic)).toBeUndefined();
     }
   });

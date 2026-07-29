@@ -36,8 +36,8 @@ test("the three activities parked off the roster keep their rules, so re-adding 
   }
 });
 
-test("all fifteen activities in the tree are covered, registered or not", () => {
-  expect(Object.keys(TEACH_INS)).toHaveLength(15);
+test("all eighteen activities in the tree are covered, registered or not", () => {
+  expect(Object.keys(TEACH_INS)).toHaveLength(18);
 });
 
 describe.each(Object.entries(TEACH_INS))("%s", (id, entry) => {

@@ -695,3 +695,200 @@ export function DownbeatDiagram(): JSX.Element {
     </Stage>
   );
 }
+
+/**
+ * Sprite Loop. Two creatures on an empty strip of cells, one to copy and one to build.
+ *
+ * **No path is drawn between the cells, deliberately.** The board itself draws no trail because a
+ * drawn path turns the activity into "match this shape" (rule X2), and a diagram that drew one would
+ * teach a child to look for exactly the thing the real screen refuses to show. What the diagram can
+ * say instead is that the copy happens *over time*: the ghost above, the child's creature below, and
+ * a pause marked as a gap in the row rather than as a position on a line.
+ *
+ * The cells are all identical. Nothing about the picture says where the creature goes — that is the
+ * answer, and it exists only in the motion.
+ */
+export function SpriteLoopDiagram(): JSX.Element {
+  const W = 18;
+  const gap = 5;
+  const x0 = 52;
+  const count = 7;
+  const yGhost = 16;
+  const yMine = 52;
+  const cellX = (i: number): number => x0 + i * (W + gap);
+  return (
+    <Stage>
+      {/* The one to copy. Identical cells: the row carries time, never place. */}
+      {Array.from({ length: count }, (_, i) => (
+        <rect
+          // biome-ignore lint/suspicious/noArrayIndexKey: a fixed strip; position is the identity.
+          key={`g${i}`}
+          x={cellX(i)}
+          y={yGhost}
+          width={W}
+          height={18}
+          rx={3}
+          className="ti-cell"
+        />
+      ))}
+      {/* Where the ghost is on three of those ticks. A pause is the repeated cell, not a wide one. */}
+      {[0, 2, 2, 4].map((i, n) => (
+        <circle
+          // biome-ignore lint/suspicious/noArrayIndexKey: fixed sequence of tick markers.
+          key={`gm${n}`}
+          cx={cellX(i) + W / 2}
+          cy={yGhost + 9}
+          r={4}
+          className="ti-node-on"
+        />
+      ))}
+      {Array.from({ length: count }, (_, i) => (
+        <rect
+          // biome-ignore lint/suspicious/noArrayIndexKey: a fixed strip; position is the identity.
+          key={`m${i}`}
+          x={cellX(i)}
+          y={yMine}
+          width={W}
+          height={18}
+          rx={3}
+          className="ti-cell"
+        />
+      ))}
+      {[0, 2, 2, 4].map((i, n) => (
+        <circle
+          // biome-ignore lint/suspicious/noArrayIndexKey: fixed sequence of tick markers.
+          key={`mm${n}`}
+          cx={cellX(i) + W / 2}
+          cy={yMine + 9}
+          r={4}
+          className="ti-node"
+        />
+      ))}
+      <Tag x={44} y={yGhost + 13} anchor="end">
+        copy
+      </Tag>
+      <Tag x={44} y={yMine + 13} anchor="end">
+        yours
+      </Tag>
+      <Tag x={cellX(3) + W / 2} y={88}>
+        same places, same order, same speed
+      </Tag>
+    </Stage>
+  );
+}
+
+/**
+ * Trace & Repair. A short listing beside two creatures that have parted company.
+ *
+ * **No line is marked as the faulty one**, because finding it is the puzzle and a diagram that
+ * pointed at a line would teach a child to expect the room to do the same. What the picture says
+ * instead is the shape of the task: there is a list, there are two creatures, and somewhere partway
+ * along they stop agreeing.
+ */
+export function TraceRepairDiagram(): JSX.Element {
+  const rowH = 13;
+  const y0 = 12;
+  const lines = 5;
+  return (
+    <Stage>
+      {/* The listing: identical bars, none singled out. */}
+      {Array.from({ length: lines }, (_, i) => (
+        <rect
+          // biome-ignore lint/suspicious/noArrayIndexKey: a fixed listing; position is the identity.
+          key={i}
+          x={16}
+          y={y0 + i * rowH}
+          width={78}
+          height={9}
+          rx={2}
+          className="ti-cell"
+        />
+      ))}
+      <Tag x={55} y={y0 + lines * rowH + 12}>
+        one line is wrong
+      </Tag>
+
+      {/* The two creatures, together at first and apart later. */}
+      <circle cx={140} cy={26} r={5} className="ti-node" />
+      <circle cx={140} cy={26} r={9} className="ti-node-on" fillOpacity={0} />
+      <Tag x={140} y={14}>
+        together
+      </Tag>
+
+      <circle cx={214} cy={26} r={5} className="ti-node" />
+      <circle cx={238} cy={46} r={5} className="ti-node-on" />
+      <Tag x={226} y={14}>
+        then not
+      </Tag>
+      {/* Centred inside the 260-wide stage. An earlier version anchored this at x=196 with
+          anchor="start" and it ran off the right edge, rendering as "step through t". */}
+      <Tag x={186} y={76}>
+        step through to see
+      </Tag>
+    </Stage>
+  );
+}
+
+/**
+ * Teach the Helper. One corridor you can see, and two you cannot.
+ *
+ * **The unseen floors are drawn as empty outlines with question marks, never with parcels on them.**
+ * A diagram that showed where the hidden parcels were would hand over the one thing the round keeps
+ * back, and a child who had studied it would write for those positions instead of learning the
+ * lesson. What the picture says is only that other floors exist.
+ */
+export function TeachHelperDiagram(): JSX.Element {
+  const W = 16;
+  const gap = 4;
+  const x0 = 74;
+  const count = 6;
+  const cellX = (i: number): number => x0 + i * (W + gap);
+  const row = (y: number, filled: readonly number[], unknown: boolean) => (
+    <>
+      {Array.from({ length: count }, (_, i) => (
+        <rect
+          // biome-ignore lint/suspicious/noArrayIndexKey: a fixed strip; position is the identity.
+          key={`${y}-${i}`}
+          x={cellX(i)}
+          y={y}
+          width={W}
+          height={14}
+          rx={2}
+          className="ti-cell"
+        />
+      ))}
+      {unknown
+        ? null
+        : filled.map((i) => (
+            <circle
+              key={`${y}-p${i}`}
+              cx={cellX(i) + W / 2}
+              cy={y + 7}
+              r={4}
+              className="ti-node-on"
+            />
+          ))}
+      {unknown ? (
+        <text x={cellX(count - 1) + W + 10} y={y + 11} className="ti-tag" textAnchor="start">
+          ?
+        </text>
+      ) : null}
+    </>
+  );
+  return (
+    <Stage>
+      {row(10, [1, 4], false)}
+      <Tag x={66} y={21} anchor="end">
+        you see
+      </Tag>
+      {row(34, [], true)}
+      {row(52, [], true)}
+      <Tag x={66} y={49} anchor="end">
+        you do not
+      </Tag>
+      <Tag x={130} y={82}>
+        write for all of them
+      </Tag>
+    </Stage>
+  );
+}
