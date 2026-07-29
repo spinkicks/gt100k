@@ -58,7 +58,7 @@ Make the app 2D-only: delete the cosmos subtree, drop the three.js deps, simplif
 - Modify: `components/ObservatoryStage.tsx`, `components/hud-state.tsx`, `test/a11y.test.ts`, `package.json`
 
 **Interfaces:**
-- Produces: `ObservatoryStage` new prop shape (adds `verifyVisual: VerifyVisualState`, removes internal verify state — consumed by Task 2). `hud-state` `useHud()` loses `tierOverride`/`setTierOverride`.
+- Produces: `hud-state` `useHud()` loses `tierOverride`/`setTierOverride` (consumed by Task 2, which lifts verify). `ObservatoryStage`'s signature is unchanged in this task; the verify lift (new `verifyVisual` prop + removed local state) is Task 2.
 
 - [ ] **Step 1: Write the guard test (failing).** Create `test/no-3d.test.ts`:
 
@@ -148,27 +148,25 @@ In `components/ObservatoryStage.tsx`:
 - Remove the `Cosmos3D` dynamic import (line ~46) and the `TIER_LABEL`, `detectWebGL`, `lowerTier`, `stepDown`, `CanvasBoundary` helpers.
 - Remove imports no longer used: `RenderCaps`, `RenderTier`, `TIER_LADDER`, `resolveRenderTier`, `dynamic`, `Component`, `ErrorInfo`, `ReactNode`.
 - Remove state: `mounted`, `device`, `degradedTo`, `webglFailed`, and their effects; remove `tierOverride`/`setTierOverride` from the `useHud()` destructure; remove `activeTier`/`is3D`.
-- Remove the `VerifyBox` render and its `verifyVisual` local state + `setVerifyVisual`. **Add `verifyVisual` to the component's props** (Task 2 will pass it down); use it where `verify={verifyVisual}` is read.
+- **Keep** the stage-owned `VerifyBox`, its `verifyVisual` local state + `setVerifyVisual`, and the `verify={verifyVisual}` wiring exactly as today — the verify **lift** happens in Task 2, so Task 1 stays self-contained and builds green without touching `Observatory.tsx`'s call site.
 - Remove the entire `.obs-stage-bar` block (the `Rendering: …` readout + the 3D/2D `role="radiogroup"` toggle).
-- The `<div className="obs-viewport">` renders `<Constellation2D … verify={verifyVisual} />` directly (drop the `is3D ?` branch and the `.cosmos-viewport` wrapper). Keep the `Inspector` `<AnimatePresence>` block and the `TimeScrub` render.
+- The `<div className="obs-viewport">` renders `<Constellation2D … verify={verifyVisual} />` directly (drop the `is3D ?` branch and the `.cosmos-viewport` wrapper). Keep the `Inspector` `<AnimatePresence>` block, the `TimeScrub` render, and the `VerifyBox` render.
 
-Resulting props:
+Resulting props (unchanged from today — the signature does **not** change in this task):
 
 ```ts
 export function ObservatoryStage({
   view,
   verification,
   ledger,
-  verifyVisual,
 }: {
   view: ExplorerView;
   verification: SyntheticVerification;
   ledger: LedgerView;
-  verifyVisual: VerifyVisualState;
 }): JSX.Element
 ```
 
-Keep `verification`/`ledger` in the signature (still used by `panelById(ledger, …)` and `waveOrder = verification.verified.verifyWaveOrder`).
+`verification`/`ledger` stay in the signature (still used by `panelById(ledger, …)`, `waveOrder = verification.verified.verifyWaveOrder`, and the stage-owned `VerifyBox`).
 
 - [ ] **Step 6: Remove tier state from `hud-state.tsx`.**
 
@@ -200,10 +198,10 @@ git commit -m "feat(evidence): retire the 3D render path (2D-only explorer)"
 Move verification from a panel at the bottom of the stage to a **Verify button in the header** that toggles a Verify panel. The byte-fracture visual (`verifyVisual`) is lifted to `Observatory` so both the panel (which sets it) and `Constellation2D` (which reads it) share one source.
 
 **Files:**
-- Modify: `components/Observatory.tsx`, `components/ObservatoryStage.tsx` (consume the new prop from Task 1)
+- Modify: `components/Observatory.tsx` (lift verify state, header Verify button, render VerifyBox), `components/ObservatoryStage.tsx` (add `verifyVisual` prop, remove the stage-owned `VerifyBox` + its local `verifyVisual`/`setVerifyVisual` state)
 
 **Interfaces:**
-- Consumes: `ObservatoryStage` prop `verifyVisual` (Task 1). `VerifyBox` props `{ verification, audioCaptions?, onVisualChange? }` (unchanged). `VerifyVisualState`, `IDLE_VISUAL` from `./verify-machine.js`.
+- Produces: `ObservatoryStage` gains prop `verifyVisual: VerifyVisualState` (passed to `Constellation2D` as `verify=`); its local verify state is removed. `VerifyBox` props `{ verification, audioCaptions?, onVisualChange? }` (unchanged). `VerifyVisualState`, `IDLE_VISUAL` from `./verify-machine.js`.
 - Produces: header `Verify` button behavior consumed by Task 4's copy pass.
 
 - [ ] **Step 1: Write the structure guard test (failing).** Create `test/structure.test.ts`:
@@ -238,7 +236,7 @@ describe("single-column story-first composition", () => {
 - [ ] **Step 2: Run it — verify it fails.**
 
 Run: `pnpm --filter @gt100k/evidence-explorer test -- structure`
-Expected: FAIL (`verifyOpen`/`obs-verify-btn` absent; stage may still reference VerifyBox until Task 1 landed — after Task 1 the third assertion passes but the first two fail).
+Expected: FAIL — all three assertions fail (Observatory has no `verifyOpen`/`obs-verify-btn`; the stage still renders `VerifyBox`, which Task 1 deliberately left in place).
 
 - [ ] **Step 3: Lift state into `Observatory.tsx`.**
 
@@ -285,9 +283,31 @@ Inside the grid, above the graph column (so it reads as "the proof, one click de
 ) : null}
 ```
 
-- [ ] **Step 6: Pass `verifyVisual` down to the stage.**
+- [ ] **Step 6: Move verify state out of the stage into a `verifyVisual` prop.**
 
-Change the `<ObservatoryStage … />` call to pass `verifyVisual={verifyVisual}` (matching the Task 1 prop). Remove any `audioCaptions` wiring that only existed for the stage-owned VerifyBox (audio captions remain a HUD/plain concern, untouched).
+In `components/ObservatoryStage.tsx`:
+- Add `verifyVisual: VerifyVisualState` to the props (import the type from `./verify-machine.js`) and delete the local `const [verifyVisual, setVerifyVisual] = useState(...)`.
+- Delete the `<VerifyBox … />` render from the stage (it now lives in `Observatory`). Keep the `Inspector` and `TimeScrub` renders.
+- The `verify={verifyVisual}` prop on `<Constellation2D>` now reads the incoming prop instead of local state.
+- Remove the now-unused `VerifyBox`/`useState`/`IDLE_VISUAL` imports if nothing else in the file uses them.
+
+New signature:
+
+```ts
+export function ObservatoryStage({
+  view,
+  verification,
+  ledger,
+  verifyVisual,
+}: {
+  view: ExplorerView;
+  verification: SyntheticVerification;
+  ledger: LedgerView;
+  verifyVisual: VerifyVisualState;
+}): JSX.Element
+```
+
+Then in `Observatory.tsx`, change the `<ObservatoryStage … />` call to pass `verifyVisual={verifyVisual}`.
 
 - [ ] **Step 7: Run the guards + gate.**
 
