@@ -331,6 +331,180 @@ button {
   gap: 14px;
 }
 
+/* ── Story Mode hero (Phase 2 §Task 6): constellation left, git-log commit list right ───────── */
+.obs-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+@media (min-width: 960px) {
+  .obs-hero {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  }
+}
+
+/* Commit log: the growth timeline read as a git log, chronological top-to-bottom. A capped
+   max-height + internal scroll keeps a long history from ever pushing the transport bar off
+   screen (the graph edges, not this ordering, stay authoritative for branch/merge structure). */
+.commit-log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 22rem;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+}
+.commit-row {
+  border-bottom: 1px solid var(--line-soft);
+  transition: background-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+.commit-row:last-child {
+  border-bottom: 0;
+}
+/* Not-yet-revealed steps are dimmed, not hidden — the shape of the road ahead stays visible. */
+.commit-row.is-future {
+  opacity: 0.4;
+}
+/* Emphasis on background + an inset accent bar, never a margin/padding/border-width shift. */
+.commit-row.is-current {
+  background: var(--tint);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.commit-jump {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  transition: background-color 160ms ease;
+}
+.commit-jump:hover {
+  background: var(--tint);
+}
+.commit-jump:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: var(--focus-offset);
+}
+.commit-hash {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  color: var(--ink-muted);
+}
+.commit-merge {
+  flex: none;
+  color: var(--accent);
+  font-size: var(--text-label);
+}
+.commit-msg {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-label);
+  color: var(--ink);
+}
+
+/* Story transport: the current caption, transport controls, and the closing verify nudge. */
+.story-transport {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--space-4);
+}
+.story-caption {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--ink);
+}
+.story-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.story-prev,
+.story-next,
+.story-play {
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  font-size: var(--text-label);
+  font-weight: 620;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+.story-prev:hover:not(:disabled),
+.story-next:hover:not(:disabled),
+.story-play:hover {
+  background: var(--tint);
+}
+.story-prev:disabled,
+.story-next:disabled {
+  color: var(--ink-faint);
+  cursor: not-allowed;
+}
+.story-play[aria-pressed="true"] {
+  background: var(--tint-strong);
+}
+/* Native range, themed to match .scrub-range's vocabulary. */
+.story-scrub {
+  flex: 1;
+  min-width: 120px;
+  height: 6px;
+  margin: 2px 0;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: var(--radius-sm);
+  background: var(--tint-strong);
+}
+.story-scrub::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  border: 3px solid var(--panel);
+}
+.story-scrub::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-sm);
+  border: 3px solid var(--panel);
+  background: var(--accent);
+}
+.story-nudge {
+  margin: 0;
+  font-size: var(--text-label);
+  color: var(--ink-muted);
+}
+/* The one CTA in this bar: filled with the accent so it stands out from the transport buttons. */
+.story-verify {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: var(--text-label);
+  font-weight: 620;
+  transition: background-color 160ms ease;
+}
+.story-verify:hover {
+  background: var(--accent-hover);
+}
+
 /* Visually-hidden but screen-reader-available (WCAG-safe clip). */
 .sr-only {
   position: absolute;
