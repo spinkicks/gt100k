@@ -111,7 +111,19 @@ export default function SpriteLoop({ seed, tier, onSolved, onExit }: PuzzleProps
   const [roundIndex, setRoundIndex] = useState(() => openTier(tier ?? 0, TIERS.length));
   const [program, setProgram] = useState<Statement[]>([]);
   const [hovered, setHovered] = useState<TrayBlock | null>(null);
-  const [solved, setSolved] = useState(false);
+  /**
+   * Whether this round's solve has already been REPORTED. Deliberately not the same thing as whether
+   * the program currently matches.
+   *
+   * Two concerns that look like one and are not. What the room *says* has to follow the program the
+   * child has right now, or a solve followed by one more block leaves the room claiming success for a
+   * program that no longer matches — it lied, and a child who edits after solving is exactly the child
+   * exploring. What the room *counts* must not follow it: `solves` feeds the belief math, and letting
+   * `onSolved` fire again on every re-solve would inflate one round into several.
+   *
+   * So the banner reads `matches`, computed live, and this sticky flag guards the callback.
+   */
+  const [reported, setReported] = useState(false);
   /** Which tick of the child's own run is showing, or null when it is not running. */
   const [runTick, setRunTick] = useState<number | null>(null);
   /**
@@ -128,6 +140,14 @@ export default function SpriteLoop({ seed, tier, onSolved, onExit }: PuzzleProps
     [puzzle.target, puzzle.start],
   );
   const myPoses = useMemo(() => poseSequence(program, puzzle.start), [program, puzzle.start]);
+
+  /** Whether the program as it stands reproduces the demonstration. Recomputed, never stored. */
+  const matches = useMemo(
+    () => program.length > 0 && isSolved(puzzle, program as Program),
+    [puzzle, program],
+  );
+  /** Success is only claimed after a run, because before one the child has not seen it happen. */
+  const showSuccess = runTick !== null && matches;
 
   /**
    * The demonstration loops on its own while idle, so there is nothing to press to see it.
@@ -175,17 +195,17 @@ export default function SpriteLoop({ seed, tier, onSolved, onExit }: PuzzleProps
    */
   const runProgram = useCallback(() => {
     setRunTick(0);
-    if (program.length > 0 && isSolved(puzzle, program as Program) && !solved) {
-      setSolved(true);
+    if (matches && !reported) {
+      setReported(true);
       onSolved();
     }
-  }, [program, puzzle, solved, onSolved]);
+  }, [matches, reported, onSolved]);
 
   const nextRound = useCallback(() => {
     setProgram([]);
     setRunTick(null);
     setIdleTick(0);
-    setSolved(false);
+    setReported(false);
     setRoundIndex((i) => i + 1);
   }, []);
 
@@ -239,7 +259,7 @@ export default function SpriteLoop({ seed, tier, onSolved, onExit }: PuzzleProps
       </div>
 
       <p className="sl-say">
-        {solved
+        {showSuccess
           ? "Yours moves the same way."
           : "The pale one is moving in a pattern. Build yours to match it."}
       </p>
@@ -304,7 +324,7 @@ export default function SpriteLoop({ seed, tier, onSolved, onExit }: PuzzleProps
         >
           Run
         </button>
-        {solved ? (
+        {showSuccess ? (
           <button type="button" className="sl-next" onClick={nextRound}>
             Next one
           </button>

@@ -80,7 +80,8 @@ export default function TeachHelper({ seed, tier, onSolved, onExit }: PuzzleProp
 
   const [text, setText] = useState("");
   const [ran, setRan] = useState(false);
-  const [solved, setSolved] = useState(false);
+  /** See SpriteLoop.tsx: what the room SAYS follows the instructions; what it COUNTS must not. */
+  const [reported, setReported] = useState(false);
 
   /** What the helper understood, line by line — echoed live so no word has to be trusted blind. */
   const { program, problems } = useMemo(() => {
@@ -103,18 +104,23 @@ export default function TeachHelper({ seed, tier, onSolved, onExit }: PuzzleProp
    */
   const left = useMemo(() => (ran ? leftovers(puzzle, program) : null), [ran, puzzle, program]);
 
+  /** Whether the instructions as they stand clear every floor. Recomputed, never stored. */
+  const matches = useMemo(() => program.length > 0 && isSolved(puzzle, program), [puzzle, program]);
+  /** Success is only claimed after a send, because before one the child has not watched it happen. */
+  const showSuccess = ran && matches;
+
   const send = useCallback(() => {
     setRan(true);
-    if (program.length > 0 && isSolved(puzzle, program) && !solved) {
-      setSolved(true);
+    if (matches && !reported) {
+      setReported(true);
       onSolved();
     }
-  }, [program, puzzle, solved, onSolved]);
+  }, [matches, reported, onSolved]);
 
   const nextRound = useCallback(() => {
     setText("");
     setRan(false);
-    setSolved(false);
+    setReported(false);
     setRoundIndex((i) => i + 1);
   }, []);
 
@@ -187,7 +193,7 @@ export default function TeachHelper({ seed, tier, onSolved, onExit }: PuzzleProp
       ) : null}
 
       <p className="th-say">
-        {solved
+        {showSuccess
           ? "It worked on every floor, including the ones you never saw."
           : ran
             ? "Send it again when you have changed something."
@@ -198,7 +204,7 @@ export default function TeachHelper({ seed, tier, onSolved, onExit }: PuzzleProp
         <button type="button" className="th-send" onClick={send} disabled={program.length === 0}>
           Send the helper
         </button>
-        {solved ? (
+        {showSuccess ? (
           <button type="button" className="th-next" onClick={nextRound}>
             Next one
           </button>

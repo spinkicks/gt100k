@@ -97,12 +97,13 @@ export default function TraceRepair({ seed, tier, onSolved, onExit }: PuzzleProp
 
   const [lines, setLines] = useState<string[]>(() => puzzle.buggy.map(printLine));
   const [tick, setTick] = useState(0);
-  const [solved, setSolved] = useState(false);
+  /** See SpriteLoop.tsx: what the room SAYS follows the program; what it COUNTS must not. */
+  const [reported, setReported] = useState(false);
 
   useEffect(() => {
     setLines(puzzle.buggy.map(printLine));
     setTick(0);
-    setSolved(false);
+    setReported(false);
   }, [puzzle]);
 
   const { program, problems } = useMemo(() => readProgram(lines), [lines]);
@@ -121,14 +122,15 @@ export default function TraceRepair({ seed, tier, onSolved, onExit }: PuzzleProp
   const intendedNow = at(intendedPoses);
   const mineNow = at(myPoses);
 
+  /** Whether the program as it stands reproduces the intended run. Recomputed, never stored. */
+  const matches = problems.size === 0 && program.length > 0 && isSolved(puzzle, program);
+
   /** Reported the moment the run matches, so a child never has to scrub to the end to be counted. */
   useEffect(() => {
-    if (solved) return;
-    if (problems.size > 0) return;
-    if (!isSolved(puzzle, program)) return;
-    setSolved(true);
+    if (reported || !matches) return;
+    setReported(true);
     onSolved();
-  }, [puzzle, program, problems.size, solved, onSolved]);
+  }, [matches, reported, onSolved]);
 
   const editLine = useCallback((i: number, text: string) => {
     setLines((ls) => ls.map((old, n) => (n === i ? text : old)));
@@ -192,7 +194,7 @@ export default function TraceRepair({ seed, tier, onSolved, onExit }: PuzzleProp
       </label>
 
       <p className="tr-say">
-        {solved
+        {matches
           ? "Both go the same way now."
           : "The pale one shows what it should do. Find the line that sends yours somewhere else."}
       </p>
@@ -201,7 +203,7 @@ export default function TraceRepair({ seed, tier, onSolved, onExit }: PuzzleProp
         Words you can use: {VERBS.join(", ")} — and for turn, left or right.
       </p>
 
-      {solved ? (
+      {matches ? (
         <button type="button" className="tr-next" onClick={nextRound}>
           Next one
         </button>

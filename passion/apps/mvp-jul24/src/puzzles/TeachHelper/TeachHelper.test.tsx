@@ -93,6 +93,29 @@ describe("TeachHelper", () => {
     expect(container.querySelectorAll(".th-corridor")).toHaveLength(1);
   });
 
+  it("stops claiming success once the instructions are edited again", () => {
+    // Found by review: the success state was sticky and only reset on a new round.
+    renderPuzzle();
+    write(asText(writtenForWhatCouldBeThere()));
+    send();
+    expect(screen.getByText(/worked on every floor/i)).toBeInTheDocument();
+    write("take");
+    expect(screen.queryByText(/worked on every floor/i)).toBeNull();
+  });
+
+  it("counts one round's solve once, even if it is broken and solved again", () => {
+    const onSolved = vi.fn();
+    render(<TeachHelper seed={7} tier={0} onSolved={onSolved} onExit={vi.fn()} />);
+    write(asText(writtenForWhatCouldBeThere()));
+    send();
+    expect(onSolved).toHaveBeenCalledTimes(1);
+    write("take");
+    send();
+    write(asText(writtenForWhatCouldBeThere()));
+    send();
+    expect(onSolved).toHaveBeenCalledTimes(1);
+  });
+
   it("shows the word list, so no word has to be guessed", () => {
     renderPuzzle();
     const words = screen.getByText(/words the helper knows/i).textContent ?? "";

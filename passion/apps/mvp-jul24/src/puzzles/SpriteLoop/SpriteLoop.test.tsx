@@ -75,6 +75,45 @@ describe("SpriteLoop", () => {
     expect(onSolved).not.toHaveBeenCalled();
   });
 
+  it("stops claiming success once the program is edited again", () => {
+    // Found by review. The success state used to be sticky and reset only on a new round, so a child
+    // who solved a round and then added one more block was told "yours moves the same way" about a
+    // program that no longer did. Editing after solving is exactly what an exploring child does.
+    renderPuzzle();
+    buildTarget(7, 0);
+    fireEvent.click(screen.getByRole("button", { name: /^run$/i }));
+    expect(screen.getByText(/moves the same way/i)).toBeInTheDocument();
+    fireEvent.click(within(tray()).getAllByRole("button")[0]!);
+    expect(screen.queryByText(/moves the same way/i)).toBeNull();
+    expect(screen.queryByRole("button", { name: /next one/i })).toBeNull();
+  });
+
+  it("counts one round's solve once, even if it is broken and solved again", () => {
+    // The other half of the same fix: what the room SAYS follows the program, what it COUNTS must not,
+    // because `solves` reaches the belief math and one round must not inflate into several.
+    const onSolved = vi.fn();
+    const puzzle = generateForRound(7, 0);
+    render(<SpriteLoop seed={7} tier={0} onSolved={onSolved} onExit={vi.fn()} />);
+    buildTarget(7, 0);
+    fireEvent.click(screen.getByRole("button", { name: /^run$/i }));
+    expect(onSolved).toHaveBeenCalledTimes(1);
+    // Break it, then rebuild the same answer and run again.
+    fireEvent.click(within(stack()).getAllByRole("button", { name: /remove/i })[0]!);
+    fireEvent.click(screen.getByRole("button", { name: /^run$/i }));
+    const buttons = within(tray()).getAllByRole("button");
+    const first = puzzle.tray.findIndex((b) => {
+      const s = puzzle.target[0]!;
+      if (b.kind !== s.kind) return false;
+      if (b.kind === "move" && s.kind === "move") return b.steps === s.steps;
+      if (b.kind === "turn" && s.kind === "turn") return b.quarters === s.quarters;
+      if (b.kind === "wait" && s.kind === "wait") return b.ticks === s.ticks;
+      return false;
+    });
+    fireEvent.click(buttons[first]!);
+    fireEvent.click(screen.getByRole("button", { name: /^run$/i }));
+    expect(onSolved).toHaveBeenCalledTimes(1);
+  });
+
   it("shows no score, points, stars, streak or timer", () => {
     // Downbeat's exact list, so the whole app is held to one bar (PRD §11, memo 06 D7). Word
     // boundaries matter: without them this matches "star" inside the teach-in's own "touch the board

@@ -58,6 +58,30 @@ describe("TraceRepair", () => {
     expect(onSolved).toHaveBeenCalledTimes(1);
   });
 
+  it("stops claiming success once a line is edited again", () => {
+    // Found by review: the success state was sticky and only reset on a new round.
+    const puzzle = generateForRound(7, 0);
+    renderPuzzle();
+    fireEvent.change(inputs()[puzzle.bugLine]!, {
+      target: { value: printLine(puzzle.intended[puzzle.bugLine]!) },
+    });
+    expect(screen.getByText(/both go the same way/i)).toBeInTheDocument();
+    fireEvent.change(inputs()[0]!, { target: { value: "move 4" } });
+    expect(screen.queryByText(/both go the same way/i)).toBeNull();
+  });
+
+  it("counts one round's solve once, even if it is broken and repaired again", () => {
+    const onSolved = vi.fn();
+    const puzzle = generateForRound(7, 0);
+    render(<TraceRepair seed={7} tier={0} onSolved={onSolved} onExit={vi.fn()} />);
+    const fix = printLine(puzzle.intended[puzzle.bugLine]!);
+    fireEvent.change(inputs()[puzzle.bugLine]!, { target: { value: fix } });
+    expect(onSolved).toHaveBeenCalledTimes(1);
+    fireEvent.change(inputs()[puzzle.bugLine]!, { target: { value: "move 4" } });
+    fireEvent.change(inputs()[puzzle.bugLine]!, { target: { value: fix } });
+    expect(onSolved).toHaveBeenCalledTimes(1);
+  });
+
   it("says what an unreadable line needs rather than calling it invalid", () => {
     const { container } = renderPuzzle();
     fireEvent.change(inputs()[0]!, { target: { value: "move" } });
