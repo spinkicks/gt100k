@@ -1,11 +1,11 @@
 # The child-facing surface: merge the game into the browse wall
 
-**Status:** **PROPOSED — needs a surface-owner ruling.** This revisits and, if adopted, **supersedes
-the 2026-07-27 ruling** ([`2026-07-27-discovery-surface.md`](./2026-07-27-discovery-surface.md)),
+**Status:** **DECIDED by the surface owner, 2026-07-29: build the merge.** This revisits and
+**supersedes the 2026-07-27 ruling** ([`2026-07-27-discovery-surface.md`](./2026-07-27-discovery-surface.md)),
 which kept the `mvp-jul24` game and declined a second child-facing surface. That doc scoped itself to
 *"the surface we have now, not the surface forever"* and required that revisiting it *"needs a new
-ruling rather than a quiet drift"* (§-1). This is that revisit. **No merge code ships until this is
-ruled on** — shipping first would be the quiet drift the prior doc forbids.
+ruling rather than a quiet drift"* (§-1). This is that new ruling — the merge is adopted and built
+under `passion/apps/discovery`; the two originals retire to reference after cutover (Phase 5).
 **Date:** 2026-07-29
 **Question:** Should the child-facing surface become the `#237` browse wall, with the 15 built games
 ported in as the generative activity behind each cabin?
