@@ -1,0 +1,400 @@
+/*
+ * WHICH SURFACE THIS PUZZLE ACTUALLY SITS ON, because getting that wrong made the text invisible.
+ *
+ * Every puzzle is mounted inside `.gadget-overlay-panel`, which is PARCHMENT (GadgetOverlay.css).
+ * This file used to set `.bs-root { color: var(--cream) }` — the token annotated "on dark wood" — so
+ * the rule, the status line and the answer itself were cream on parchment. Measured against the
+ * panel's own gradient: `--cream` 1.02–1.30:1, `--cream-soft` 1.25–1.79:1, and `--ember-bright`
+ * (which carried "One bag weighs 5", the entire point of the puzzle) 1.06–1.52:1. White on white,
+ * exactly as reported. It survived review because the dev harness rendered on a dark page, so the
+ * only surface anyone ever screenshotted was the one the app does not use; the harness now mounts
+ * the real panel (see harness.tsx).
+ *
+ * The rule, therefore: text on the PANEL uses `--ink` / `--ink-soft`; text inside `.bs-scale`, which
+ * paints its own dark wood, uses `--cream` / `--cream-soft`. Both are ≥ 4.5:1 across the whole of
+ * their gradient — the worst cases are `--ink` on `--parchment-edge` at 9.38:1 and `--cream-soft` on
+ * the pan surface over `--wood` at 5.61:1.
+ *
+ * Type size floor: 1rem. `docs/research/passion-pipeline/07-child-facing-ux-6-8.md` §2.7 flags body
+ * text below 16px against the token contract's own "never below 16px for any user", and notes that
+ * this row survives at 9–12 where its motor-accuracy rows do not.
+ */
+/*
+ * COLOURS COME FROM src/theme.css TOKENS, not from hex written here.
+ *
+ * This file used to hold ~40 hand-picked hexes and zero tokens, while the ten puzzles written
+ * alongside it used the tokens heavily. That drift is what made the game read as washed out: every
+ * screen invented its own slightly-different warm mid-tone, so text and surface kept landing a few
+ * steps apart instead of the separation the token set guarantees (`--cream` and `--ink` are annotated
+ * >= 4.5:1 against their intended backgrounds; ad-hoc tans are not annotated as anything).
+ *
+ * Material pigments stay literal on purpose — brass and stone are pigments, not semantic roles, and
+ * the token set has no name for them. Anything that is TEXT or a SURFACE uses a token.
+ */
+/* Balance Scale — warm wood and parchment, matching the cabin puzzles (see Mirror/FractionLaser). */
+
+.bs-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.25rem 1rem 2rem;
+  /* On the parchment overlay panel — see the surface note at the top of this file. */
+  color: var(--ink);
+}
+
+.bs-back,
+.bs-next,
+.bs-reset,
+.bs-move {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid var(--wood-light);
+  background: linear-gradient(var(--parchment-hi), var(--parchment-edge));
+  color: var(--ink);
+  /* 0.55rem of vertical padding puts every control at ~44px, WCAG 2.5.5's floor. The child-mode
+     56px floor in the token contract is the right target and needs the token rollout that
+     research memo 07 §2.7 K1 asks for; this file cannot reach it alone. */
+  padding: 0.55rem 1rem;
+  min-height: 44px;
+  box-shadow: 0 1px 0 var(--parchment-hi) inset;
+}
+
+.bs-back:hover,
+.bs-next:hover,
+.bs-reset:hover,
+.bs-move:hover {
+  background: linear-gradient(var(--parchment-hi), var(--parchment-edge));
+}
+
+.bs-back:focus-visible,
+.bs-next:focus-visible,
+.bs-reset:focus-visible,
+.bs-move:focus-visible {
+  outline: 3px solid var(--ember-bright);
+  outline-offset: 2px;
+}
+
+.bs-back {
+  align-self: flex-start;
+}
+
+/*
+ * The rule sits BELOW the teach-in's `?`, which is the third legibility bug this file had and the one
+ * only a browser could show. `.ti` is a zero-height anchor mounted as the puzzle's first child and its
+ * `?` is absolutely positioned at that anchor's top-right (TeachIn.css) — which is exactly where this
+ * paragraph's first line was, so the badge sat on top of the words "then the". Invisible while the text
+ * was cream-on-cream; obvious the moment the contrast was fixed. A top margin the height of the badge
+ * moves the text rather than the badge, so no shared stylesheet has to change.
+ */
+.bs-rule {
+  max-width: 34rem;
+  margin: 1.3rem 0 0;
+  text-align: center;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+/* The scale itself: a fulcrum, a tilting beam, and two pans hanging off it. */
+.bs-scale {
+  position: relative;
+  width: min(40rem, 100%);
+  padding: 2.2rem 1rem 1rem;
+  border-radius: 12px;
+  border: 4px solid var(--wood-frame);
+  background: radial-gradient(120% 90% at 50% 0%, rgba(255, 177, 94, 0.16), transparent 70%),
+    linear-gradient(var(--wood), var(--wood-deep));
+}
+
+/*
+ * The rig is static on purpose: every legal move changes both pans equally, so the beam is level by
+ * construction and can never tilt. See the note at the top of BalanceScale.tsx. Drawing a proper
+ * fulcrum and hangers is what makes it read as a balance rather than as a divider line.
+ */
+.bs-rig {
+  position: relative;
+  height: 2.6rem;
+}
+
+.bs-beam {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 0.6rem;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(#e0b352, #8a6320);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.bs-hanger {
+  position: absolute;
+  top: 1rem;
+  width: 2px;
+  height: 1.6rem;
+  background: linear-gradient(#c9962f, #7a5518);
+}
+
+.bs-hanger-left {
+  left: 12%;
+}
+
+.bs-hanger-right {
+  right: 12%;
+}
+
+/* Triangular pivot under the middle of the beam. */
+.bs-fulcrum {
+  position: absolute;
+  left: 50%;
+  top: 0.9rem;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 0.85rem solid transparent;
+  border-right: 0.85rem solid transparent;
+  border-bottom: 1.5rem solid var(--wood-light);
+}
+
+.bs-pans {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1.4rem;
+}
+
+.bs-pan {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 8rem;
+  padding: 0.7rem;
+  border-radius: 10px 10px 26px 26px;
+  border: 2px solid var(--wood-light);
+  background: linear-gradient(rgba(246, 231, 200, 0.09), rgba(246, 231, 200, 0.03));
+}
+
+.bs-pan-contents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+/* The bag IS the unknown: an opaque sack, gathered neck, heavy base. Never a glyph, never an "x". */
+.bs-bag {
+  width: 1.9rem;
+  height: 2.5rem;
+  border-radius: 34% 34% 48% 48% / 22% 22% 60% 60%;
+  background: linear-gradient(#8a6a4a, #5d4229);
+  border: 1px solid var(--ink);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
+}
+
+.bs-stone {
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: var(--ink);
+  background: linear-gradient(#cfd4da, #a7aeb6);
+  border: 1px solid #7d848c;
+  border-radius: 5px;
+}
+
+/* Size carries the value redundantly with the printed number, so it reads without colour. The boxes
+   grew with the numerals: every printed value is now ≥ 1rem (the 16px floor), and the three sizes
+   stay strictly ordered so the redundant channel still works. */
+.bs-stone-1 {
+  width: 1.75rem;
+  height: 1.75rem;
+  font-size: 1rem;
+}
+.bs-stone-5 {
+  width: 2.15rem;
+  height: 1.95rem;
+  font-size: 1.05rem;
+}
+.bs-stone-10 {
+  width: 2.75rem;
+  height: 2.25rem;
+  font-size: 1.1rem;
+}
+
+/* Inside .bs-scale, so this one is correctly cream: 5.61:1 on the pan surface over wood. */
+.bs-pan-readout {
+  font-size: 1rem;
+  color: var(--cream-soft);
+}
+
+.bs-status {
+  margin: 0;
+  font-size: 1rem;
+  /* `--ink`, not `--ink-soft`: soft measures 4.49:1 against the panel's darkest patch, which misses
+     AA by a hair. Secondary text earns its rank here by weight and position, not by fading out. */
+  color: var(--ink);
+}
+
+/*
+ * The answer. `--ember-bright` on parchment was 1.06–1.52:1 — the one sentence the whole puzzle
+ * exists to produce, invisible. Ember stays, as the chip's edge where it is decoration rather than
+ * text; the words themselves are ink on the lightest parchment, 13.47:1, and never inherit the
+ * panel's gradient. `:not(:empty)` keeps the chrome away while the output is empty, which is most of
+ * the time.
+ */
+.bs-note {
+  min-height: 1.6rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--ink);
+  text-align: center;
+}
+
+.bs-note:not(:empty) {
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  border: 2px solid var(--ember-deep);
+  background: var(--parchment-hi);
+}
+
+.bs-moves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  max-width: 40rem;
+}
+
+.bs-reset {
+  background: linear-gradient(var(--parchment), var(--parchment-edge));
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * THE SPLIT RAIL, and the two things the pans can say about a split.
+ *
+ * Bolted under the pans so splitting is part of the apparatus rather than one pill among nine in a
+ * wrapping row — the old palette gave the move that every solution needs the same weight as "break a
+ * 5 stone", on the boards where it showed it at all.
+ * ---------------------------------------------------------------------------------------------- */
+.bs-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 2px solid var(--wood-light);
+}
+
+.bs-rail-split {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  /* The primary affordance on this screen, so it gets the 56px child-mode floor rather than the 44px
+     adult one (research memo 07 §2.4). */
+  min-height: 56px;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  border: 2px solid var(--ember-deep);
+  background: linear-gradient(var(--parchment-hi), var(--parchment-edge));
+  color: var(--ink);
+  box-shadow: 0 2px 0 rgba(20, 10, 4, 0.35);
+}
+
+.bs-rail-split:focus-visible {
+  outline: 3px solid var(--ember-bright);
+  outline-offset: 2px;
+}
+
+/* The ÷ sign, big enough to be the thing you see first. This is the maths cabin and ÷ is the
+   notation these levels are about, so it is a symbol the reader already owns.
+   Ink rather than ember, and contrast.test.ts is why: `--ember-deep` on this pill measures 2.73:1 at
+   the parchment-edge end of the gradient, which is a glyph you can see and cannot read. Ember does
+   the pop-out work from the border, where it is decoration and not text. */
+.bs-rail-glyph {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.bs-rail-label {
+  font-size: 1rem;
+}
+
+/*
+ * BLOCKED, NOT ABSENT AND NOT GREYED INTO ILLEGIBILITY. Text contrast is untouched (ink, 9.38:1 at
+ * worst) because a child has to be able to read the thing they cannot use yet; what changes is the
+ * surface, the dashed edge, and the flattened shadow — the control reads as unlatched rather than as
+ * decoration. It stays focusable and clickable on purpose: pressing it is how the board explains it.
+ */
+.bs-rail-split-blocked {
+  border-style: dashed;
+  border-color: var(--wood-frame);
+  background: var(--parchment-edge);
+  box-shadow: none;
+}
+
+.bs-rail-split-blocked .bs-rail-glyph {
+  color: var(--wood-frame);
+}
+
+/* Pointed at or held open: the rail control and the marks on the pans are one gesture, so the
+   control has to look connected to what just happened on the board. */
+.bs-rail-split-shown {
+  border-color: var(--ember-deep);
+  border-style: solid;
+  box-shadow: 0 0 0 3px rgba(194, 90, 31, 0.35);
+}
+
+/*
+ * "These go away if you take this split." Half of everything, faded but still countable, so the
+ * child sees the consequence before spending a move. Dashed, because a dashed outline reads as
+ * provisional in every other puzzle in this app too.
+ */
+.bs-goes {
+  opacity: 0.32;
+  outline: 2px dashed var(--cream-soft);
+  outline-offset: 1px;
+}
+
+/*
+ * "These are left over, and they are why the split is off." The remainder, marked on the objects
+ * themselves — one stone under a ÷2 means one left over, which is both the reason and the
+ * arithmetic. Glow and outline only: research memo 07 §2.2 wants exactly one popped-out feature, and
+ * D2a forbids moving a target to mark it (a scaling marker made headless Chromium call the element
+ * unstable, and a child who overshoots stationary targets fares worse).
+ */
+.bs-left-over {
+  outline: 3px solid var(--ember-deep);
+  outline-offset: 2px;
+  animation: bs-left-over-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes bs-left-over-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 184, 103, 0);
+  }
+  50% {
+    box-shadow: 0 0 10px 3px rgba(255, 184, 103, 0.75);
+  }
+}
+
+/*
+ * A palette move that would clear one of those leftovers. This is the causal chain drawn rather than
+ * described: the blocked ÷2 lights the stones in the way, and the same gesture lights the buttons
+ * that change them. It claims only "this touches a pile that is in the way" — never "this is the
+ * next move", which is the reasoning the puzzle is made of.
+ */
+.bs-move-lit {
+  border-color: var(--ember-deep);
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  box-shadow: 0 0 12px rgba(255, 184, 103, 0.6);
+}

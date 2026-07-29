@@ -1,0 +1,65 @@
+/* The games' "firelit cabin" palette, ported from mvp-jul24/src/theme.css.
+ *
+ * WHY SCOPED TO `.gadget-overlay` RATHER THAN `:root`. In mvp-jul24 these tokens sat on `:root`
+ * because the whole app was the cabin. Here the games mount as an overlay INSIDE the browse wall,
+ * whose own dark theme (`.browse`) redefines `--ink`, `--ink-soft` and friends to near-white for a
+ * dark ground. `.browse` is an ancestor of the overlay, so on `:root` those wall values would win
+ * inside the game and paint dark-on-parchment text in the wall's near-white — invisible. Setting the
+ * tokens on `.gadget-overlay`, a closer ancestor, means the game subtree resolves them to the cabin
+ * palette and the wall keeps its own. Nothing leaks either way.
+ *
+ * WHAT WAS DROPPED from theme.css and why: the global `body` background/colour and `html,body,#root`
+ * sizing (the wall owns the page chrome), the `h1/h2/h3` and `:focus-visible` element rules (the wall
+ * and the games each style their own), and the Google Fonts `@import` (an external network dependency
+ * the offline-first surface should not take on — `--font-display`/`--font-body` keep their system
+ * fallbacks). Only the custom-property definitions are ported; they are all the games' CSS needs.
+ */
+.gadget-overlay {
+  /* — Wood (structure) — */
+  --wood-deep: #241611;
+  --wood: #3a2519;
+  --wood-frame: #5a3a24;
+  --wood-light: #6a4326;
+
+  /* — Ember (firelight accent) — */
+  --ember: #e8863c;
+  --ember-bright: #ffb867;
+  --ember-deep: #c25a1f;
+
+  /* — Parchment (surfaces) — */
+  --parchment: #f3e4c6;
+  --parchment-hi: #fbf1da;
+  --parchment-edge: #e0c99e;
+
+  /* — Ink & cream (text) — */
+  --ink: #33230f;
+  --ink-soft: #6a5334;
+  --cream: #f2e6cd;
+  --cream-soft: #cbb489;
+
+  /* — Radii — */
+  --r-sm: 10px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-pill: 999px;
+
+  /* — Warm layered shadows — */
+  --shadow-soft: 0 2px 8px rgba(20, 10, 4, 0.35);
+  --shadow-raised: 0 3px 0 rgba(20, 10, 4, 0.25), 0 6px 16px rgba(20, 10, 4, 0.4);
+  --shadow-panel: 0 4px 8px rgba(20, 10, 4, 0.35), 0 24px 60px rgba(15, 8, 4, 0.55);
+  --glow-ember: 0 0 18px rgba(232, 134, 60, 0.55);
+  --glow-ember-strong: 0 0 30px rgba(255, 184, 103, 0.7);
+
+  /* — Type (system fallbacks; the cabin faces are not loaded here) — */
+  --font-display: "Baloo 2", ui-rounded, system-ui, sans-serif;
+  --font-body: "Nunito Sans", "Nunito", system-ui, sans-serif;
+
+  /* — Semantic z-index scale — */
+  --z-backdrop: 0;
+  --z-panel: 10;
+  --z-overlay: 50;
+  --z-toast: 80;
+
+  /* — Motion — */
+  --ease-out: cubic-bezier(0.22, 0.7, 0.3, 1);
+}
