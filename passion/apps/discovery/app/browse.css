@@ -436,9 +436,7 @@
   font-size: 1.0625rem;
   font-weight: 600;
   cursor: pointer;
-  transition:
-    background 160ms ease,
-    transform 120ms ease;
+  transition: background 160ms ease, transform 120ms ease;
 }
 
 .panel__play-btn:hover,

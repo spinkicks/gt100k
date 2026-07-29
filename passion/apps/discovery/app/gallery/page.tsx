@@ -16,7 +16,9 @@ export default function GalleryPage(): JSX.Element {
     <main style={{ padding: "2rem", fontFamily: "var(--font-sans)" }}>
       <h1>Game gallery (QA)</h1>
       <p>{GADGETS.length} gadgets registered. Click one to mount it.</p>
-      <ul style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", listStyle: "none", padding: 0 }}>
+      <ul
+        style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", listStyle: "none", padding: 0 }}
+      >
         {GADGETS.map((g) => (
           <li key={g.id}>
             <button

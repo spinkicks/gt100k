@@ -195,7 +195,8 @@ export default function TeachHelper({ seed, tier, onSolved, onExit }: PuzzleProp
 
       <ul className="th-understood" aria-label="What the helper understood">
         {program.map((s, i) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: order is the identity.
+          // The composite key already carries the index, so noArrayIndexKey does not fire and needs
+          // no suppression here; order is the step's identity in this read-only recap.
           <li className="th-chip" key={`${s.kind}-${i}`}>
             {s.kind === "move" ? `move ${s.steps}` : s.kind === "turn" ? "turn" : s.kind}
           </li>

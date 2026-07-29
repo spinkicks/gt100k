@@ -70,11 +70,11 @@ export default function BrowsePage(): JSX.Element {
 
   const [cabin, setCabin] = useState<Tile | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
-  // A version counter bumped after every emission, purely so the meter re-reads the (localStorage-
-  // backed, non-reactive) log. `screens` counts distinct browse screens seen, for the same meter.
-  const [emitVersion, setEmitVersion] = useState(0);
+  // The meter's two numbers, mirrored into React state because the log itself lives in localStorage
+  // and is not reactive: `offered` is snapshotted from `sessionLog.surfaced()` right after each
+  // surfacing effect writes, and `screens` counts the distinct browse screens seen.
+  const [offered, setOffered] = useState(0);
   const [screens, setScreens] = useState<ReadonlySet<string>>(() => new Set());
-  const bumpEmit = useCallback(() => setEmitVersion((v) => v + 1), []);
   // The gadget id currently mounted over the wall, or null. A game is opened from the panel, not by
   // clicking a tile: the tile selects, the panel is where the child sees both what to play and where
   // to read, and chooses between them. That is the merge — the game as the generative act, the
@@ -93,16 +93,16 @@ export default function BrowsePage(): JSX.Element {
   //
   // `recordSurfaced` is idempotent per (session, artifact), so running it on each render carries the
   // position without inflating the count — a re-render is not a second time the child was shown
-  // something. `screens` and `emitVersion` exist only for the meter; the log itself lives in
-  // localStorage, not React state.
+  // something. The `setOffered`/`setScreens` snapshots exist only for the meter; the log itself
+  // lives in localStorage, not React state.
   const screenKey = `${step}:${cabin?.id ?? "root"}:${seed}`;
   useEffect(() => {
     if (!ready) return;
     tiles.forEach((t, position) => sessionLog.recordSurfaced(t.id, position));
     setScreens((prev) => (prev.has(screenKey) ? prev : new Set(prev).add(screenKey)));
-    bumpEmit();
+    setOffered(sessionLog.surfaced().length);
     setSelected(tiles[0]?.id ?? null);
-  }, [ready, screenKey, tiles, bumpEmit]);
+  }, [ready, screenKey, tiles]);
 
   const current = tiles.find((t) => t.id === selected) ?? tiles[0] ?? null;
   const resources = useMemo(
@@ -130,13 +130,8 @@ export default function BrowsePage(): JSX.Element {
   useEffect(() => {
     if (!ready || games.length === 0) return;
     games.forEach((g, position) => sessionLog.recordSurfaced(g.id, position));
-    bumpEmit();
-  }, [ready, games, bumpEmit]);
-
-  // The meter reads the real log rather than a parallel React copy, so what it shows is exactly what
-  // was written. `emitVersion` is the only reason this re-computes — `surfaced()` is a localStorage
-  // read, not reactive state — and it counts distinct (session, artifact) offers, tiles and games.
-  const offered = useMemo(() => sessionLog.surfaced().length, [emitVersion]);
+    setOffered(sessionLog.surfaced().length);
+  }, [ready, games]);
 
   const gridRef = useRef<HTMLUListElement>(null);
   // Follows the count so the grid fills the screen rather than stranding one short row against a
@@ -365,12 +360,10 @@ export default function BrowsePage(): JSX.Element {
           onSolve={(id) => {
             const verb = solveVerbFor(id);
             if (verb) sessionLog.recordAction(id, verb);
-            bumpEmit();
           }}
           onHarder={(id) => {
             const verb = solveVerbFor(id);
             if (verb) sessionLog.recordAction(id, verb, ["chosen_challenge"]);
-            bumpEmit();
           }}
         />
       ) : null}
