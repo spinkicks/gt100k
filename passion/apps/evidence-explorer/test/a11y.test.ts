@@ -1,8 +1,8 @@
 /**
  * UE047 — WCAG 2.2 AA acceptance for the Provenance Observatory (SC-E13).
  *
- * The 3D `<Canvas>` and the calm-2D constellation are decorative; the DOM **Ledger** is the single
- * accessible source of truth (FR-E12). These tests pin, at the source/view level:
+ * The calm-2D constellation is decorative; the DOM **Ledger** is the single accessible source of
+ * truth (FR-E12). These tests pin, at the source/view level:
  *   1. every canvas/decorative render layer is `aria-hidden` (or wrapped in an `aria-hidden` parent);
  *   2. the Ledger exposes a keyboard-navigable `role="tree"` whose items describe each node;
  *   3. focus is always visible (a `:focus-visible` outline on the `--focus` token);
@@ -26,16 +26,6 @@ function buildView() {
 }
 
 describe("UE047 · decorative layers are aria-hidden (SC-E13)", () => {
-  it("the 3D <Canvas> is aria-hidden", () => {
-    const cosmos = src("components/cosmos/Cosmos3D.tsx");
-    // Find the JSX element (`<Canvas` + whitespace), not the doc-comment `<Canvas>` mention.
-    const el = cosmos.search(/<Canvas\s/);
-    expect(el).toBeGreaterThan(-1);
-    // The opening tag's attributes fit well within this window (aria-hidden is the first attr).
-    const openTag = cosmos.slice(el, el + 400);
-    expect(openTag).toContain('aria-hidden="true"');
-  });
-
   it("the calm-2D constellation root <svg> is aria-hidden (not an exposed role=img)", () => {
     const c2d = src("components/constellation/Constellation2D.tsx");
     const svgOpen = c2d.slice(c2d.indexOf("<svg"), c2d.indexOf(">", c2d.indexOf("<svg")) + 1);

@@ -8,7 +8,6 @@ import type { ExplorerView } from "@gt100k/evidence-explorer-view";
  * ("trace from Outcome"). Both the render tiers and the accessible Ledger read `emphasisFor` from
  * here, so the highlighted subset is identical everywhere (parity by construction).
  */
-import type { TierOverride } from "@gt100k/evidence-explorer-view";
 import { NODE_TYPES, type NodeType } from "@gt100k/evidence-graph";
 import {
   type ReactNode,
@@ -50,9 +49,6 @@ interface HudContextValue {
   setReducedMotionMode(m: ReducedMotionMode): void;
   readonly systemReducedMotion: boolean;
   readonly reducedMotion: boolean;
-  /** Render-tier override (auto / cinematic / standard3d / calm2d) — surfaced in the HUD cluster. */
-  readonly tierOverride: TierOverride;
-  setTierOverride(t: TierOverride): void;
   /** Audio captions (muted default, §U5.10): caption ids only in the verify status live regions. */
   readonly audioCaptions: boolean;
   toggleAudioCaptions(): void;
@@ -75,7 +71,6 @@ export function HudProvider({
   const [plainMode, setPlainMode] = useState(false);
   const [reducedMotionMode, setReducedMotionMode] = useState<ReducedMotionMode>("system");
   const [systemReducedMotion, setSystemReducedMotion] = useState(false);
-  const [tierOverride, setTierOverride] = useState<TierOverride>("auto");
   const [audioCaptions, setAudioCaptions] = useState(false);
 
   // Track the OS reduced-motion preference for the "system" tri-state option (SSR-safe: false until
@@ -134,8 +129,6 @@ export function HudProvider({
       setReducedMotionMode,
       systemReducedMotion,
       reducedMotion,
-      tierOverride,
-      setTierOverride,
       audioCaptions,
       toggleAudioCaptions,
     }),
@@ -152,7 +145,6 @@ export function HudProvider({
       reducedMotionMode,
       systemReducedMotion,
       reducedMotion,
-      tierOverride,
       audioCaptions,
       toggleAudioCaptions,
     ],
