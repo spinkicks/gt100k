@@ -175,18 +175,6 @@ button {
   justify-content: space-between;
 }
 
-/* THE UTILITY FACE IS FOR MARKS. The kicker labels the document rather than reading as part of it,
-   so it is one of the few places that earns Inconsolata. */
-.obs-eyebrow {
-  margin: 0 0 6px;
-  font-family: var(--font-mono);
-  font-size: var(--text-label);
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--focus);
-}
-
 .obs-header h1 {
   font-family: var(--font-display);
   font-weight: 300;
@@ -196,8 +184,12 @@ button {
   text-wrap: balance;
 }
 
-.obs-ref {
+/* Plain-language subtitle (§Task 4): the story-first sentence under the headline. */
+.obs-subtitle {
+  font-family: var(--font-sans);
   color: var(--ink-muted);
+  margin: 6px 0 0;
+  max-width: 46ch;
 }
 
 /* Diegetic telemetry readout: compact stat tiles plus a live "Synthetic" status. */
@@ -1922,7 +1914,6 @@ button {
  *
  * The marks are excluded from the body's word-spacing correction, since they carry their own
  * tracking already. */
-.obs-eyebrow,
 .obs-synthetic,
 .scrub-play,
 .scrub-beat-order,

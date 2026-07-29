@@ -17,6 +17,7 @@
 import type { LedgerView } from "@gt100k/evidence-explorer-view";
 import { useMemo } from "react";
 import type { JSX } from "react";
+import { nodeGloss } from "./copy.js";
 import { useHud } from "./hud-state.js";
 import { actorChipView, consentLabel, headerBadge, payloadRows } from "./inspector-model.js";
 import { panelCopy, sealCaption } from "./plain.js";
@@ -115,6 +116,10 @@ export function Ledger({ ledger }: { ledger: LedgerView }): JSX.Element {
                     </p>
                   ) : null}
                   <dl className="ledger-panel-fields">
+                    <dt>Type</dt>
+                    <dd>
+                      {item.type} · {nodeGloss(item.type)}
+                    </dd>
                     <dt>{copy.addressLabel}</dt>
                     <dd>
                       <code className="mono">{item.panel.id}</code>

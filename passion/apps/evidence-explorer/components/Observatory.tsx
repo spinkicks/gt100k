@@ -18,6 +18,7 @@ import { type JSX, useMemo, useState } from "react";
 import { ExplorePanel } from "./ExplorePanel.js";
 import { ObservatoryStage } from "./ObservatoryStage.js";
 import { VerifyPanel } from "./VerifyPanel.js";
+import { DEMO_BADGE, HEADLINE, SUBTITLE } from "./copy.js";
 import { HudProvider } from "./hud-state.js";
 import { NodesIcon, ThreadsIcon, UnlinkedIcon } from "./icons.js";
 import { SelectionProvider } from "./selection.js";
@@ -49,10 +50,8 @@ export function Observatory({ seed }: { seed: SyntheticSeed }): JSX.Element {
     <main className="observatory">
       <header className="obs-header">
         <div className="obs-title">
-          <p className="obs-eyebrow">Provenance Observatory</p>
-          <h1>
-            Milestone <span className="mono obs-ref">{view.milestoneRef}</span>
-          </h1>
+          <h1>{HEADLINE}</h1>
+          <p className="obs-subtitle">{SUBTITLE}</p>
         </div>
         <div className="obs-readout" aria-label="Milestone summary">
           <div className="obs-stat">
@@ -60,25 +59,27 @@ export function Observatory({ seed }: { seed: SyntheticSeed }): JSX.Element {
               <NodesIcon size={16} />
             </span>
             <span className="obs-stat-num mono">{milestoneCount}</span>
-            <span className="obs-stat-label">nodes</span>
+            <span className="obs-stat-label">steps</span>
           </div>
-          <div className="obs-stat">
-            <span className="obs-stat-glyph" aria-hidden="true">
-              <UnlinkedIcon size={16} />
-            </span>
-            <span className="obs-stat-num mono">{view.nodes.length - milestoneCount}</span>
-            <span className="obs-stat-label">unlinked</span>
-          </div>
+          {view.nodes.length - milestoneCount > 0 ? (
+            <div className="obs-stat">
+              <span className="obs-stat-glyph" aria-hidden="true">
+                <UnlinkedIcon size={16} />
+              </span>
+              <span className="obs-stat-num mono">{view.nodes.length - milestoneCount}</span>
+              <span className="obs-stat-label">unlinked</span>
+            </div>
+          ) : null}
           <div className="obs-stat">
             <span className="obs-stat-glyph" aria-hidden="true">
               <ThreadsIcon size={16} />
             </span>
             <span className="obs-stat-num mono">{threadCount}</span>
-            <span className="obs-stat-label">threads</span>
+            <span className="obs-stat-label">links</span>
           </div>
           <span className="obs-synthetic">
             <span className="obs-dot" aria-hidden="true" />
-            Synthetic
+            {DEMO_BADGE}
           </span>
           <button
             type="button"
