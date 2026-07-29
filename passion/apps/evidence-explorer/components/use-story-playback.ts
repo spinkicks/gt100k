@@ -14,7 +14,6 @@ export interface StoryPlayback {
   readonly next: () => void;
   readonly prev: () => void;
   readonly pause: () => void;
-  readonly restart: () => void;
 }
 
 export function useStoryPlayback({
@@ -84,11 +83,6 @@ export function useStoryPlayback({
     onScrub(prevCount(revealedRef.current));
   }, [pause, onScrub]);
 
-  const restart = useCallback(() => {
-    pause();
-    onScrub(0);
-  }, [pause, onScrub]);
-
   return {
     playing,
     atStart: isAtStart(revealedCount),
@@ -98,6 +92,5 @@ export function useStoryPlayback({
     next,
     prev,
     pause,
-    restart,
   };
 }
