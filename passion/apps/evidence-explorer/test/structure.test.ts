@@ -78,3 +78,22 @@ describe("CommitLog is a git-log-style, non-linear history", () => {
     expect(src).toMatch(/onSelectBeat\(beat\.nodeId\)/);
   });
 });
+
+describe("useStoryPlayback reuses the pure step logic and honors reduced motion", () => {
+  const src = read("use-story-playback.ts");
+  it("advances on the STORY_STEP_MS interval", () => {
+    expect(src).toMatch(/setInterval/);
+    expect(src).toMatch(/STORY_STEP_MS/);
+  });
+  it("suppresses auto-advance under reduced motion (step-only)", () => {
+    expect(src).toMatch(/canAutoAdvance|canAutoPlay/);
+    expect(src).toMatch(/if \(!canAutoPlay\)/);
+  });
+  it("reuses the pure playback helpers rather than re-deriving them", () => {
+    expect(src).toMatch(/nextCount/);
+    expect(src).toMatch(/prevCount/);
+  });
+  it("is presentation-only (never imports the domain graph)", () => {
+    expect(src).not.toMatch(/@gt100k\/evidence-graph/);
+  });
+});
