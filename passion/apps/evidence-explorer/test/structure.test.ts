@@ -57,3 +57,24 @@ describe("Verify reads plainly on top, verbatim underneath", () => {
     expect(src).toMatch(/Try changing the record|Undo the change|Change one/i);
   });
 });
+
+describe("CommitLog is a git-log-style, non-linear history", () => {
+  const src = read("CommitLog.tsx");
+  it("renders a real short content-address per beat", () => {
+    expect(src).toMatch(/shortHash\(beat\.nodeId\)/);
+  });
+  it("marks the current beat with aria-current=\"step\"", () => {
+    expect(src).toMatch(/aria-current/);
+    expect(src).toMatch(/"step"/);
+  });
+  it("dims future (unrevealed) beats", () => {
+    expect(src).toMatch(/is-future/);
+  });
+  it("shows a merge cue for multi-input (non-linear) steps", () => {
+    expect(src).toMatch(/isMerge/);
+    expect(src).toMatch(/is-merge/);
+  });
+  it("rows are clickable to jump to a beat", () => {
+    expect(src).toMatch(/onSelectBeat\(beat\.nodeId\)/);
+  });
+});
