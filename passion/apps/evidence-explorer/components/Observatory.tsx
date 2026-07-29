@@ -19,7 +19,7 @@ import { AddPanel } from "./AddPanel.js";
 import { Hud } from "./Hud.js";
 import { Ledger } from "./Ledger.js";
 import { ObservatoryStage } from "./ObservatoryStage.js";
-import { VerifyBox } from "./VerifyBox.js";
+import { VerifyPanel } from "./VerifyPanel.js";
 import { HudProvider } from "./hud-state.js";
 import { NodesIcon, ThreadsIcon, UnlinkedIcon } from "./icons.js";
 import { SelectionProvider } from "./selection.js";
@@ -33,7 +33,10 @@ export function Observatory({ seed }: { seed: SyntheticSeed }): JSX.Element {
   const [verification, setVerification] = useState<SyntheticVerification>(seed.verification);
 
   // Verify panel state (lifted from the stage, §Task 2): the header toggles the panel, and the
-  // byte-fracture visual it produces is shared with the constellation via a prop, not local stage state.
+  // byte-fracture visual it produces is shared with the constellation via a prop, not local stage
+  // state. The panel itself renders via `VerifyPanel`, a thin child that wraps `VerifyBox` — it has
+  // to live *inside* `<HudProvider>` (below) to read `audioCaptions`, since this component renders
+  // the provider and a provider can't consume its own context.
   const [verifyOpen, setVerifyOpen] = useState(false);
   const [verifyVisual, setVerifyVisual] = useState<VerifyVisualState>(IDLE_VISUAL);
 
@@ -96,7 +99,7 @@ export function Observatory({ seed }: { seed: SyntheticSeed }): JSX.Element {
           <div className="obs-grid">
             {verifyOpen ? (
               <div id="verify-panel" className="verify-panel">
-                <VerifyBox verification={verification} onVisualChange={setVerifyVisual} />
+                <VerifyPanel verification={verification} onVisualChange={setVerifyVisual} />
               </div>
             ) : null}
             <div className="panel stage" aria-label="Provenance constellation">
