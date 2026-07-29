@@ -95,14 +95,44 @@ destroyed, so it can return behind a flag if ever wanted.
 A guided, auto-advancing narration over the beats that **already exist** (`view.growthTimeline`).
 It is **presentation-only**: it drives the existing scrub-reveal (`revealedCount`) forward on a timer.
 
-- **One plain caption per beat**, authored in a small caption table keyed by beat/node
-  (e.g. *"First run — the player fell through the floor…"*, *"…fixed it — added ground collision"*).
-  Fallback = the node's existing plain label if a beat has no authored caption.
+- **One plain caption per beat**, authored in a small caption table keyed by beat position
+  (e.g. *"First build run — it didn't pass yet. That's normal, and it's recorded too."*,
+  *"After a fix, the next run passes."*). Fallback = the node's existing plain label if a beat has
+  no authored caption.
 - **Highlights the newest node** as each beat reveals (reuse the existing focus/emphasis path).
 - **Controls:** Play / Pause + Next / Prev (reuse the scrubber's step logic). Respects reduced-motion
   (no auto-advance animation; step-only) per the existing motion budget.
 - **Ends** on a nudge: *"…and here's the proof → Verify"* that opens the Verify panel.
 - **No new domain data.** Captions live in the app layer; the graph/view are read, never mutated.
+
+### 6.1 Phase 2 lock (2026-07-29) — "the git of a project"
+
+The framing the operator wants: EvidenceGraph is *git for how a project was built* — a
+content-addressed, tamper-evident **DAG**, not a straight line. Phase 2 makes that legible without
+redesigning the graph:
+
+- **A `git log`-style commit list beside the 2D constellation.** Each of the 12 beats is a row:
+  the node's **real short content-address** (`shortHash(node.id)` = first 7 chars of its sha256) +
+  a plain message. The constellation stays the authoritative shape; the list is the readable spine.
+- **Not linear.** The list is chronological but must not imply a single rope. Rows whose node draws
+  on more than one earlier step (`node.inputs.length > 1`) get a small **merge** cue; the root step
+  (no inputs) reads as the start. Branch/merge structure lives in the graph edges — the list only
+  hints at it.
+- **Story Mode owns the transport.** The existing `TimeScrub` play/timer/beat-chips are **retired**
+  and folded into the new Story surface (Play/Pause, Prev/Next, an accessible scrub slider, the
+  caption line, the commit list, the end nudge). `scrub.ts` pure reveal logic is kept and reused.
+- **Highlight without hijack.** The newest node is highlighted via the constellation's `focusNodeId`
+  prop directly (the focus ring), **not** via `select()` — so auto-play does not pop the Inspector
+  open on every beat. Clicking a commit row still `select()`s (Inspector opens deliberately).
+- **Captions keyed by beat position** (`birthOrder` 0–11), authored to the real demo fixture —
+  **tiny-runner-v1** (`@gt100k/evidence-tiny-game`), a student building a one-button endless runner —
+  honest to each step (cited tutor help, a *failed* first run kept in the record: "player falls
+  through floor", a credited free CC0 asset, a human-owned final grade). The two source-code Artifacts
+  are the DAG's merge points (each combines prior code with cited tutor help), computed from the view
+  edges. A guard test binds captions to the actual beats so a fixture change fails loudly.
+- **Cadence** is a single app constant (`STORY_STEP_MS`, ~2.6s/beat) — slow enough to read, not a
+  motion token (a JS interval, not a CSS animation). Any CSS added (caption fade, current-row
+  emphasis) animates only `transform`/`opacity`/`filter` and is neutralized under reduced motion.
 
 ## 7. What does NOT change
 
