@@ -85,9 +85,15 @@ describe("useStoryPlayback reuses the pure step logic and honors reduced motion"
     expect(src).toMatch(/setInterval/);
     expect(src).toMatch(/STORY_STEP_MS/);
   });
+  it("clears the auto-advance timer (unmount/pause cleanup)", () => {
+    expect(src).toMatch(/clearInterval/);
+  });
   it("suppresses auto-advance under reduced motion (step-only)", () => {
     expect(src).toMatch(/canAutoAdvance|canAutoPlay/);
     expect(src).toMatch(/if \(!canAutoPlay\)/);
+  });
+  it("stops playback if reduced motion turns on mid-play", () => {
+    expect(src).toMatch(/if \(!canAutoPlay && playing\) pause\(\)/);
   });
   it("reuses the pure playback helpers rather than re-deriving them", () => {
     expect(src).toMatch(/nextCount/);
