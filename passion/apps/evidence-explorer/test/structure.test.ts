@@ -124,3 +124,27 @@ describe("StoryTransport renders caption, controls, and the Verify nudge", () =>
     expect(src).toMatch(/STORY_END_NUDGE/);
   });
 });
+
+describe("Story Mode is wired into the stage (TimeScrub retired)", () => {
+  const stage = read("ObservatoryStage.tsx");
+  it("renders the CommitLog and the StoryTransport, not TimeScrub", () => {
+    expect(stage).toMatch(/<CommitLog/);
+    expect(stage).toMatch(/<StoryTransport/);
+    expect(stage).not.toMatch(/TimeScrub/);
+  });
+  it("drives the playback engine off the shared revealedCount", () => {
+    expect(stage).toMatch(/useStoryPlayback/);
+    expect(stage).toMatch(/setRevealedCount/);
+  });
+  it("highlights the frontier node via focusNodeId during play (no Inspector hijack)", () => {
+    expect(stage).toMatch(/storyFocus/);
+    expect(stage).toMatch(/frontierNodeId/);
+  });
+  it("accepts and forwards an onOpenVerify for the end nudge", () => {
+    expect(stage).toMatch(/onOpenVerify/);
+  });
+  const obs = read("Observatory.tsx");
+  it("Observatory opens Verify from the stage nudge", () => {
+    expect(obs).toMatch(/onOpenVerify=\{\(\) => setVerifyOpen\(true\)\}/);
+  });
+});

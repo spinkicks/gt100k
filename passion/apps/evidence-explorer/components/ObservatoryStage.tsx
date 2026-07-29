@@ -8,14 +8,17 @@ import type { ExplorerView, LedgerView } from "@gt100k/evidence-explorer-view";
 import { AnimatePresence } from "motion/react";
 import { useCallback, useMemo, useState } from "react";
 import type { JSX } from "react";
+import { CommitLog } from "./CommitLog.js";
 import { Inspector } from "./Inspector.js";
-import { TimeScrub } from "./TimeScrub.js";
+import { StoryTransport } from "./StoryTransport.js";
 import { Constellation2D } from "./constellation/Constellation2D.js";
 import { useHud } from "./hud-state.js";
 import { type SelectionOrigin, panelById } from "./inspector-model.js";
 import { effectiveFocusId, revealedNodeIds } from "./scrub.js";
 import { useSelection } from "./selection.js";
+import { frontierNodeId } from "./story.js";
 import type { SyntheticVerification } from "./synthetic-view.js";
+import { useStoryPlayback } from "./use-story-playback.js";
 import type { VerifyVisualState } from "./verify-machine.js";
 
 export function ObservatoryStage({
@@ -23,11 +26,13 @@ export function ObservatoryStage({
   verification,
   ledger,
   verifyVisual,
+  onOpenVerify,
 }: {
   view: ExplorerView;
   verification: SyntheticVerification;
   ledger: LedgerView;
   verifyVisual: VerifyVisualState;
+  onOpenVerify: () => void;
 }): JSX.Element {
   // Shared selection (UX4): the selected node drives the Inspector, the camera fly-to, and the beat
   // highlight — one concept, whether it came from the Ledger, a scrub beat, or a pointer-pick.
@@ -59,6 +64,29 @@ export function ObservatoryStage({
     [view, revealedCount, select],
   );
 
+  const playback = useStoryPlayback({
+    count: view.growthTimeline.count,
+    revealedCount,
+    onScrub: setRevealedCount,
+    reducedMotion,
+  });
+
+  // Clicking a commit row jumps the reveal to that beat and selects it (Inspector opens on purpose).
+  const jumpToBeat = useCallback(
+    (nodeId: string) => {
+      playback.pause();
+      const beat = view.growthTimeline.beats.find((b) => b.nodeId === nodeId);
+      if (beat) setRevealedCount(beat.birthOrder + 1);
+      select(nodeId);
+    },
+    [playback, view, select],
+  );
+
+  // During auto-play, highlight the newest node with the focus ring only — NOT select() —
+  // so the Inspector does not pop open on every beat.
+  const frontier = frontierNodeId(view, revealedCount);
+  const storyFocus = playback.playing && frontier ? frontier : effFocus;
+
   const selectedNode = useMemo(
     () => (effFocus ? (view.nodes.find((n) => n.id === effFocus) ?? null) : null),
     [view.nodes, effFocus],
@@ -76,42 +104,46 @@ export function ObservatoryStage({
 
   return (
     <div className="obs-stage">
-      <div className="obs-viewport">
-        <Constellation2D
-          view={view}
-          revealed={revealed}
-          focusNodeId={effFocus}
-          waveOrder={waveOrder}
-          verify={verifyVisual}
-          emphasisFor={emphasisFor}
-          plainMode={plainMode}
-          onSelect={selectNode}
-        />
+      <div className="obs-hero">
+        <div className="obs-viewport">
+          <Constellation2D
+            view={view}
+            revealed={revealed}
+            focusNodeId={storyFocus}
+            waveOrder={waveOrder}
+            verify={verifyVisual}
+            emphasisFor={emphasisFor}
+            plainMode={plainMode}
+            onSelect={selectNode}
+          />
 
-        {/* Drill-down inspector — opens over the viewport for the selected body (UX4). */}
-        <AnimatePresence>
-          {selectedNode && selectedPanel ? (
-            <Inspector
-              key={selectedNode.id}
-              panel={selectedPanel}
-              node={selectedNode}
-              origin={origin}
-              labelFor={labelFor}
-              plainMode={plainMode}
-              reducedMotion={reducedMotion}
-              onSelectInput={selectNode}
-              onClose={clear}
-            />
-          ) : null}
-        </AnimatePresence>
+          {/* Drill-down inspector — opens over the viewport for the selected body (UX4). */}
+          <AnimatePresence>
+            {selectedNode && selectedPanel ? (
+              <Inspector
+                key={selectedNode.id}
+                panel={selectedPanel}
+                node={selectedNode}
+                origin={origin}
+                labelFor={labelFor}
+                plainMode={plainMode}
+                reducedMotion={reducedMotion}
+                onSelectInput={selectNode}
+                onClose={clear}
+              />
+            ) : null}
+          </AnimatePresence>
+        </div>
+
+        <CommitLog view={view} revealedCount={revealedCount} onSelectBeat={jumpToBeat} />
       </div>
 
-      <TimeScrub
+      <StoryTransport
         view={view}
         revealedCount={revealedCount}
         onScrub={setRevealedCount}
-        focusNodeId={effFocus}
-        onSelectBeat={select}
+        onOpenVerify={onOpenVerify}
+        playback={playback}
       />
     </div>
   );

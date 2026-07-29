@@ -107,6 +107,7 @@ export function Observatory({ seed }: { seed: SyntheticSeed }): JSX.Element {
                 verification={verification}
                 ledger={ledger}
                 verifyVisual={verifyVisual}
+                onOpenVerify={() => setVerifyOpen(true)}
               />
             </div>
             <ExplorePanel
