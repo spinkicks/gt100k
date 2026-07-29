@@ -103,3 +103,24 @@ describe("useStoryPlayback reuses the pure step logic and honors reduced motion"
     expect(src).not.toMatch(/@gt100k\/evidence-graph/);
   });
 });
+
+describe("StoryTransport renders caption, controls, and the Verify nudge", () => {
+  const src = read("StoryTransport.tsx");
+  it("shows the caption in an aria-live region", () => {
+    expect(src).toMatch(/story-caption/);
+    expect(src).toMatch(/aria-live="polite"/);
+  });
+  it("has Play/Pause + Prev + Next controls", () => {
+    expect(src).toMatch(/story-play/);
+    expect(src).toMatch(/story-prev/);
+    expect(src).toMatch(/story-next/);
+  });
+  it("hides auto-play under reduced motion (canAutoPlay gate)", () => {
+    expect(src).toMatch(/playback\.canAutoPlay \?/);
+  });
+  it("ends on a nudge that opens Verify", () => {
+    expect(src).toMatch(/playback\.atEnd/);
+    expect(src).toMatch(/onOpenVerify/);
+    expect(src).toMatch(/STORY_END_NUDGE/);
+  });
+});
