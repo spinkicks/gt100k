@@ -1684,11 +1684,6 @@ button {
   color: var(--verify);
 }
 
-.obs-stage-tag {
-  color: var(--ink-muted);
-  font-weight: 400;
-}
-
 /* Plain mode (§U12): drop the wash behind the calm-2D bodies. */
 .constellation.is-plain .node-halo {
   display: none;
