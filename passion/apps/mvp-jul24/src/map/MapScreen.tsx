@@ -58,7 +58,7 @@ export const MapScreen: React.FC = () => {
 
   return (
     <div className="map-screen">
-      <img className="map-screen-bg" src="/art/map-v2.png" alt="" aria-hidden="true" />
+      <img className="map-screen-bg" src="/art/map-v3.png" alt="" aria-hidden="true" />
       <div className="map-screen-vignette" aria-hidden="true" />
       {CABINS.map((cabin, i) => (
         <motion.button

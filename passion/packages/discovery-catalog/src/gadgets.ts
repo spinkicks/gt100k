@@ -82,6 +82,24 @@ const ROWS = [
   ["tune-repair", ["music-sound", "music-theory"], ["debug", "investigate"], "fix"],
   ["chord-fit", ["music-sound", "music-theory"], ["investigate"], "inspect"],
   ["downbeat", ["music-sound", "music-theory"], ["investigate"], "inspect"],
+
+  // code — three different subtopics on purpose, which is the fix for the limitation recorded above:
+  // the music room's three activities all land on `music-theory`, so it cannot say what held a child.
+  //
+  // sprite-loop -> game-dev, and the verb is `assemble` rather than `tinker`: the child produces a
+  // working behaviour and nothing is being probed, so `build` is the whole of it.
+  //
+  // trace-repair -> DEBUG, for the same reason tune-repair is debug: the child is handed something
+  // that is wrong and corrects it. It affords investigate too, because reading an execution to find
+  // where it diverged genuinely is probing, and the verb picks debug as primary.
+  //
+  // teach-helper -> agentic-engineering, which is the one row here that is not a stretch of the
+  // taxonomy but a use of it: writing a specification that holds for inputs you cannot see is what
+  // that subtopic names. It affords `build` alone -- see §4.1 of the design spec for why `explain` was
+  // NOT added to ACTION_MODE_RULES to make a second mode reachable.
+  ["sprite-loop", ["code-computers", "game-dev"], ["build"], "assemble"],
+  ["trace-repair", ["code-computers", "python"], ["debug", "investigate"], "fix"],
+  ["teach-helper", ["code-computers", "agentic-engineering"], ["build"], "assemble"],
 ] as const satisfies readonly (readonly [
   string,
   readonly [string] | readonly [string, string],
@@ -116,7 +134,8 @@ export const CATALOG: ReadonlyMap<string, Artifact> = new Map(
  * Cabin-level on purpose, with no subtopic. A room contains several, and picking one would quietly
  * decide that a child who liked the maths room liked fractions specifically.
  *
- * The rooms with no interior yet (`art`, `science`, `words`) are absent rather than guessed.
+ * The rooms with no interior yet (`art`, `science`, `words`) are absent rather than guessed. `code`
+ * already had its row before the room existed, which is why nothing had to be added here for it.
  *
  * Music was on that list until #222 built it, and its row went in with that PR because the omission
  * is exactly the failure this comment was written to catch: the room's three activities all map to

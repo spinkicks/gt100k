@@ -22,7 +22,7 @@ describe("every shelf has contents, and the contents fit the room", () => {
 
   it("returns undefined for cabins with no interior rather than throwing", () => {
     // `music` left this list on 2026-07-27 when its room and bookcase were painted.
-    for (const topic of ["code", "art", "science", "words"] as const) {
+    for (const topic of ["art", "science", "words"] as const) {
       expect(shelfDeckFor(topic)).toBeUndefined();
     }
   });

@@ -75,7 +75,7 @@ test("the still-unbuilt cabins return an empty list", () => {
   // `music` left this list on 2026-07-27. `echo` is designed but not built, and deliberately not
   // registered: quads.data.test.ts matches props to gadgets exactly both ways, so registering a
   // fourth would demand a repainted room.
-  for (const topic of ["code", "art"] as const) {
+  for (const topic of ["art"] as const) {
     expect(gadgetsForTopic(topic)).toEqual([]);
   }
 });
