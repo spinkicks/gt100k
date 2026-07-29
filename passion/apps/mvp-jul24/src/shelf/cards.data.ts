@@ -286,9 +286,93 @@ const MUSIC_DECK: ShelfDeck = {
   ],
 };
 
-export const SHELF_DECKS: readonly ShelfDeck[] = [LOGIC_GAMES_DECK, MATH_DECK, MUSIC_DECK];
+/**
+ * The code room's shelf.
+ *
+ * Four cards, one per door plus the invitation. Every source here was fetched and read rather than
+ * recalled, and two of them changed what the cards say: a first draft of the Sprite Loop card was
+ * going to date loop constructs to Superplan and ALGOL, and the article that was supposed to support
+ * that makes no such claim, so the card is about Bohm and Jacopini's theorem instead — which is both
+ * true and a better idea. The Lovelace card carries the dispute over what she actually wrote, because
+ * the shelf's job is to be honest about a field rather than to sell it.
+ */
+const CODE_DECK: ShelfDeck = {
+  topic: "code",
+  title: "The bookcase",
+  intro:
+    "Four pages about what you are really doing when you tell a machine what to do. Read any of them, in any order.",
+  cards: [
+    {
+      id: "ordering-a-machine",
+      kind: "invitation",
+      title: "It will do whatever you know how to order it to do",
+      body: [
+        "In 1843 Ada Lovelace published an English translation of an Italian write-up of one of Charles Babbage's lectures, and added seven notes of her own, A to G, which together came to about three times the length of the thing she was translating. Note G set out a full procedure for working out a sequence called the Bernoulli numbers on Babbage's Analytical Engine — a machine that was never finished, so the procedure was never run. It is often called the first published computer program, and who deserves the credit is genuinely argued over: one historian says all but one of the procedures in her notes had been worked out by Babbage years earlier, and another says nothing of Babbage's is as clean as her Bernoulli calculation.",
+        "The sentence of hers worth carrying out of this room is from the same note: the engine \u201chas no pretensions whatever to originate anything. It can do whatever we know how to order it to perform.\u201d That is not a complaint about machines, it is the whole job. She also saw further than the arithmetic — she wrote that such an engine might act on things besides number, and used music as her example, suggesting it could compose pieces of any complexity if the relations between sounds could be written down. Everything in this room is a small version of her problem: knowing how to order something about.",
+      ],
+      source: {
+        label:
+          "Wikipedia, \u201cAda Lovelace\u201d \u2014 Note G, the Bernoulli procedure, and the disputed credit",
+        url: "https://en.wikipedia.org/wiki/Ada_Lovelace",
+      },
+    },
+    {
+      id: "three-shapes",
+      kind: "activity",
+      gadgetId: "sprite-loop",
+      title: "Almost everything a program does is three shapes",
+      body: [
+        "In 1964 Corrado Bohm described a language built out of just two ways of putting instructions together, and showed that every function a machine can work out at all could be written in it. Two years later, with Giuseppe Jacopini, he published a fuller result in Communications of the ACM under the title \u201cFlow Diagrams, Turing Machines and Languages with Only Two Formation Rules\u201d. Between them they showed that three shapes are enough for anything computable: doing one thing then the next, choosing between two things, and repeating something while a condition holds. Jacopini proved any tangled program can be rewritten using only those; Bohm showed the choosing is not even strictly needed.",
+        "So when you drag a few moves into a stack and wrap some of them in a repeat, you are not using a beginner's version of programming. You are using two of the three shapes the theorem is about, and the third one arrives the moment a program has to ask a question about the world. It is worth knowing that the paper has a reputation for being cited more often than it is read closely, and that the rewriting it describes usually costs you some extra bookkeeping. A true theorem and a tidy program are not quite the same thing.",
+      ],
+      source: {
+        label:
+          "Wikipedia, \u201cStructured program theorem\u201d \u2014 Bohm 1964; Bohm and Jacopini, CACM 9(5), 1966",
+        url: "https://en.wikipedia.org/wiki/Structured_program_theorem",
+      },
+    },
+    {
+      id: "where-it-went-wrong",
+      kind: "activity",
+      gadgetId: "trace-repair",
+      title: "The word for this is older than computers",
+      body: [
+        "Thomas Edison was calling the faults in his inventions \u201cBugs\u201d in 1878, and debugging was being done to aircraft before it was ever done to programs \u2014 the word turns up in a letter of Robert Oppenheimer's dated 27 October 1944 and in a 1945 aeronautics journal about testing engines. There is a famous tale of a moth found stuck in a relay of the Harvard Mark II in the 1940s, logged as the first actual case of a bug being found, and it is usually told as the origin of the word. It almost certainly is not; the joke only works because both meanings were already in use.",
+        "What you are doing with the slider has a name too. Running a program one step at a time so you can look at its insides is called interactive debugging, and it is what real debuggers are for: pausing a program, examining what it holds, changing it, and starting it again. Practitioners also mark places to stop \u2014 and putting one just after the end of a loop is described as a convenient way to examine repeating code, which is exactly the moment where a program that looked fine has quietly gone wrong. Finding out *where* a thing broke is most of the work of fixing it.",
+      ],
+      source: {
+        label:
+          "Wikipedia, \u201cDebugging\u201d \u2014 Edison 1878; Oppenheimer 27 October 1944; the moth as \u201cprobably a joke\u201d; interactive stepping and breakpoints",
+        url: "https://en.wikipedia.org/wiki/Debugging",
+      },
+    },
+    {
+      id: "fitting-the-floor-you-saw",
+      kind: "activity",
+      gadgetId: "teach-helper",
+      title: "Solving the example instead of the problem",
+      body: [
+        "There is a name for answering the case in front of you rather than the question: overfitting. It is usually talked about in statistics and machine learning, where it means building something that matches one particular set of data too closely and therefore fails on data it has not met. The sharpest way it is described is that such a model has begun to memorise what it was shown rather than learning to generalise from it \u2014 and taken far enough, something with enough adjustable parts can match everything it was given perfectly and still be badly wrong about anything new.",
+        "The fix people use is to keep some of the data back. You fit on what you can see and then judge on what was held out, because those two things being different is the entire problem \u2014 the trouble starts when the thing you optimise is not the thing you are actually judged on. The floors the helper walks that you never saw are held-out data, and instructions that only pick up parcels where you happened to spot one are overfitted to a single floor. Writing for what could be there instead of what is there is a habit, and it is worth more than any particular language.",
+      ],
+      source: {
+        label:
+          "Wikipedia, \u201cOverfitting\u201d \u2014 memorising training data rather than generalising; judging on unseen data",
+        url: "https://en.wikipedia.org/wiki/Overfitting",
+      },
+    },
+  ],
+};
+
+export const SHELF_DECKS: readonly ShelfDeck[] = [
+  LOGIC_GAMES_DECK,
+  MATH_DECK,
+  MUSIC_DECK,
+  CODE_DECK,
+];
 
 /** The deck for a topic, or undefined for a cabin with no shelf contents written yet. */
+
 export function shelfDeckFor(topic: TopicId): ShelfDeck | undefined {
   return SHELF_DECKS.find((deck) => deck.topic === topic);
 }

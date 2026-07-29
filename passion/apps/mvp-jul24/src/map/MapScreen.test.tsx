@@ -54,7 +54,7 @@ test("renders a node for all five cabins", () => {
   }
 });
 
-test.each(["code", "art"])("the %s node reads as coming soon and does not open a cabin", (id) => {
+test.each(["art"])("the %s node reads as coming soon and does not open a cabin", (id) => {
   render(<MapScreen />);
   const node = document.querySelector(`[data-cabin="${id}"]`) as HTMLButtonElement;
   expect(node.className).toMatch(/inactive/);
@@ -69,11 +69,13 @@ test.each(["code", "art"])("the %s node reads as coming soon and does not open a
 // hear what's coming instead of having it skipped entirely (see MapScreen.tsx).
 test("coming-soon nodes stay focusable and announce themselves as coming soon", () => {
   render(<MapScreen />);
-  // Was `music` until that cabin opened on 2026-07-27; `code` is a coming-soon node now.
-  const node = document.querySelector('[data-cabin="code"]') as HTMLButtonElement;
+  // Was `music` until that cabin opened on 2026-07-27, then `code` until it opened on 2026-07-28.
+  // `art` is the only coming-soon node left, so when it opens this test needs a different subject —
+  // or deleting, because there will be nothing left for it to assert.
+  const node = document.querySelector('[data-cabin="art"]') as HTMLButtonElement;
   expect(node).not.toBeDisabled();
   expect(node).toHaveAttribute("aria-disabled", "true");
-  expect(node).toHaveAccessibleName("Code — coming soon");
+  expect(node).toHaveAccessibleName("Art — coming soon");
 
   node.focus();
   expect(document.activeElement).toBe(node);
@@ -89,9 +91,9 @@ test("renders the map background image", () => {
   render(<MapScreen />);
   const img = document.querySelector("img.map-screen-bg") as HTMLImageElement;
   expect(img).toBeInTheDocument();
-  // `map-v2.png`, not `map.png`, since 2026-07-27: the three-near-cabin plate the node coordinates
+  // `map-v3.png`, not `map-v2.png`, since 2026-07-28: the three-near-cabin plate the node coordinates
   // in cabins.data.ts are measured against. Asserted rather than left implicit because the two files
   // are both on disk on purpose, so pointing at the wrong one would misplace every label and throw
   // no error at all.
-  expect(img.getAttribute("src")).toBe("/art/map-v2.png");
+  expect(img.getAttribute("src")).toBe("/art/map-v3.png");
 });

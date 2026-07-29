@@ -29,8 +29,8 @@ const centroid = (polygon: Polygon): [number, number] => [
 ];
 
 describe("authored shelves", () => {
-  it("exists in all three built rooms (otherwise everything below is vacuous)", () => {
-    expect(SHELVES.map((s) => s.room.topic)).toEqual(["logic-games", "math", "music"]);
+  it("exists in all four built rooms (otherwise everything below is vacuous)", () => {
+    expect(SHELVES.map((s) => s.room.topic)).toEqual(["logic-games", "math", "music", "code"]);
   });
 
   it("gives every shelf a non-empty accessible name", () => {

@@ -67,11 +67,11 @@ test("renders the cabin background image with the topic-specific src", () => {
 // The fixture keeps moving as cabins get built: it was `math` until its five activities shipped, then
 // `music` until its three did on 2026-07-27. `code` is the empty one now.
 test("a topic with no gadgets renders the room with zero hotspots and does not throw", () => {
-  expect(() => render(<CabinStatic topic="code" />)).not.toThrow();
+  expect(() => render(<CabinStatic topic="art" />)).not.toThrow();
 
   expect(document.querySelector(".cabin-static")).toBeInTheDocument();
   expect(document.querySelector("img.cabin-static-bg")?.getAttribute("src")).toBe(
-    "/art/cabin-code.png",
+    "/art/cabin-art.png",
   );
   expect(document.querySelector(".cabin-static-hearthlight")).toBeInTheDocument();
   expect(document.querySelectorAll("[data-gadget]")).toHaveLength(0);

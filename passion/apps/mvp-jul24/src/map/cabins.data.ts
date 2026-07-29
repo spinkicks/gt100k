@@ -29,14 +29,14 @@ export interface CabinNode {
  * `music` joined them on 2026-07-27 with three: see src/cabin/backdrop/quads.data.ts for its painted
  * room and src/signals/catalog.ts for how its activities enter the product taxonomy.
  *
- * The other two are `active: false` and render as visible "coming soon" signposts — deliberately
+ * The last one is `active: false` and renders as a visible "coming soon" signpost — deliberately
  * NOT padlocks and NOT hidden. A greyed-but-legible node advertises what's coming; a padlock reads
  * as "you failed to unlock this", which is the wrong message for content that simply doesn't exist
  * yet.
  *
  * Layout: `xPct`/`yPct` are percentages of the framed 16:9 map and each node is centered on its
  * point (translate(-50%, -50%) in MapScreen). They're tuned to sit on the painted cabins in
- * **`/art/map-v2.png`** — the plate `MapScreen` loads since 2026-07-27 — in which THREE cabins stand
+ * **`/art/map-v3.png`** — the plate `MapScreen` loads since 2026-07-28 — in which FOUR cabins stand
  * large and warmly lit in the foreground (puzzle den left, musician's cabin centre, clockmaker's
  * workshop right, each the same size, each equally lit, each with its own path to the bottom edge)
  * and only TWO remain small and mist-washed on the horizon.
@@ -82,7 +82,7 @@ export const CABINS: CabinNode[] = [
   {
     id: "logic-games",
     label: "Logic Games",
-    xPct: 18.5,
+    xPct: 13.3,
     yPct: 40,
     active: true,
     accent: "#5b7fa6",
@@ -91,7 +91,7 @@ export const CABINS: CabinNode[] = [
   {
     id: "math",
     label: "Math",
-    xPct: 82,
+    xPct: 56.6,
     yPct: 40,
     active: true,
     accent: "#c9962f",
@@ -102,7 +102,7 @@ export const CABINS: CabinNode[] = [
   {
     id: "music",
     label: "Music",
-    xPct: 49,
+    xPct: 35.2,
     yPct: 40,
     active: true,
     // Saturated now that it is a near, playable cabin: the old value was deliberately desaturated to
@@ -114,17 +114,22 @@ export const CABINS: CabinNode[] = [
   {
     id: "code",
     label: "Code",
-    xPct: 17.4,
-    yPct: 19,
-    active: false,
-    accent: "#4f7a6a",
+    xPct: 80.7,
+    yPct: 40,
+    active: true,
+    // Saturated on promotion, exactly as `music` was: the old #4f7a6a was chosen to sit back in the
+    // horizon row. Green-teal is picked for being unmistakable against the puzzle den's slate blue,
+    // the clockmaker's brass and the musician's plum — deliberately NOT matched to the glowing amber
+    // threads in the painting, because brass is already the clockmaker's and two gold accents would
+    // undo the one job this hue has.
+    accent: "#3f9d80",
     emblem: "bracket",
   },
   {
     id: "art",
     label: "Art",
-    xPct: 77.1,
-    yPct: 19,
+    xPct: 61.2,
+    yPct: 30,
     active: false,
     accent: "#a5705c",
     emblem: "brush",

@@ -69,7 +69,7 @@ test("chess and mirror props sit on the floor, away from the back wall", () => {
 // KNOWN_PROPS, so `gadgetProps3D` gives them `fallbackProp` placements — which is the designed
 // behaviour rather than a gap, and moot in any case while `backdrop` is the only backend serving
 // Layer 2 (see PROJECT.md).
-test.each(["code", "art"] as const)(
+test.each(["art"] as const)(
   "returns an empty list for %s, which has no registered gadgets",
   (topic) => {
     expect(gadgetProps3D(topic)).toEqual([]);

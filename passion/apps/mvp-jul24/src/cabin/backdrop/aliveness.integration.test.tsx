@@ -212,7 +212,7 @@ describe("a room with no measured light renders the still, unchanged", () => {
   // then `code`, which has no interior at all. The property under test never changes: wrong regions
   // look worse than none, because a glow on a wall the fire is not on reads as a bug.
   test("a topic with no authored interior gets no effects and no frame loop", () => {
-    const { container } = render(<CabinBackdrop topic="code" />);
+    const { container } = render(<CabinBackdrop topic="art" />);
     expect(q(container, ".cabin-backdrop")).not.toBeNull();
     expect(q(container, ".cabin-backdrop-aliveness")).toBeNull();
     expect(q(container, ".cabin-aliveness")).toBeNull();

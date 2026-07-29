@@ -184,7 +184,7 @@ describe("the shelf does not disturb the room it is in", () => {
 
   it("renders no shelf at all for a topic with no authored room", () => {
     // `music` has a painted bookcase now, so only code/art are shelf-less.
-    for (const topic of ["code", "art"] as const) {
+    for (const topic of ["art"] as const) {
       const { container, unmount } = render(<CabinBackdrop topic={topic} />);
       expect(container.querySelector(".shelf-hotspot-layer")).toBeNull();
       unmount();
