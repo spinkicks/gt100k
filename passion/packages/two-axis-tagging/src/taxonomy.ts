@@ -28,15 +28,26 @@ export type CabinId = (typeof CABINS)[number];
  * `odds-and-chance` names the transferable construct, which is the thing worth discovering anyway:
  * decisions under uncertainty. The one genuinely poker resource we keep (MIT OCW 15.S50, poker as
  * probability and decision theory) still fits, and its own title says what it is.
+ *
+ * SIX ADDED 2026-07-29, and the reason is worth keeping. The three digital-making cells
+ * (`robotics`, `electronics`, `3d-printing`) had no home for a child who cuts wood or sews, and the
+ * three natural-science cells had none for one who watches birds or measures rain. Filing those at
+ * the cabin was the tempting shortcut and is a bug: a cabin-level path is compatible with EVERY
+ * subtopic under it, so a woodworking entry filed at `making-engineering` would surface on the
+ * robotics shelf. `handcraft` deliberately holds both wood and cloth, because the belief worth
+ * forming is "makes physical things by hand" and a cell has to be coarse enough to accumulate one.
+ * `security` and `rhetoric` exist for the narrower reason that folding capture-the-flag into
+ * `hardware`, or formal debate into `marketing`, would conflate two different things inside one
+ * belief.
  */
 export const SEED_SUBTOPICS: Record<CabinId, readonly string[]> = {
   "music-sound": ["audio-systems", "production", "instruments", "music-theory"],
-  "code-computers": ["game-dev", "python", "hardware", "agentic-engineering"],
+  "code-computers": ["game-dev", "python", "hardware", "agentic-engineering", "security"],
   "games-strategy": ["chess", "odds-and-chance", "board-games"],
-  "making-engineering": ["robotics", "electronics", "3d-printing"],
+  "making-engineering": ["robotics", "electronics", "3d-printing", "handcraft", "rocketry"],
   "art-motion": ["visual", "animation", "video-editing", "3d-modeling"],
-  "influence-media": ["marketing", "storytelling", "psychology", "publishing"],
-  "science-nature": ["botany", "physics", "astronomy"],
+  "influence-media": ["marketing", "storytelling", "psychology", "publishing", "rhetoric"],
+  "science-nature": ["botany", "physics", "astronomy", "wildlife", "weather"],
   "math-puzzles": ["competition-math", "logic-puzzles", "foundations", "statistics"],
 };
 

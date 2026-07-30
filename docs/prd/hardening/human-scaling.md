@@ -1,6 +1,6 @@
 # Hardening Mini-Spec — Human:Student Scaling (Weak Point #4)
 
-**Status:** Draft v1 · 2026-07-22 · Owner: (product)
+**Status:** Draft v1 · 2026-07-22 · Reviewed against the code 2026-07-28; §4 is unbuilt (see §7) · Owner: (product)
 **Addresses:** Weak point #4 — the "thin human layer" risks either not scaling to 100k students or degrading into rubber-stamping, which would gut the "a human owns every grade" principle.
 **Decision source:** design session. **Grounding:** SPOV 6 + `assertHumanAuthority` from the EvidenceGraph — a **separate product** PassionLab integrates rather than owns (`docs/decisions/evidencegraph-v1-design.md` §11 + §13a), so the invariant is enforced inside the graph and relied on here; push/back-off memo guardrail #3; LearnLM RCT (AI can conduct at human level).
 
@@ -20,7 +20,7 @@ Humans are nominally required at many judgment points (autonomy sign-offs, wellb
 
 ## 3. Routing: escalate by calibrated uncertainty + risk flags
 
-The inference engine (C3) already emits **calibrated uncertainty**, so routing is confidence/risk-based, not blanket:
+The inference engine (C3) already emits **per-cell uncertainty** — a Beta posterior with a standard deviation, a lower bound, and a `confident` flag gated on undecayed evidence mass and a distinct-day floor — so routing can be confidence/risk-based rather than blanket. It is not yet *calibrated* in the sense this spec eventually wants: conformal calibration is the EvidenceGraph's deferred D4 and validation is G5, neither started, so today's confidences are principled but unvalidated and the routing thresholds inherit that.
 
 - **High-confidence, low-risk, internal** → automated + sampled audit.
 - **Low-confidence / contested / high-stakes / carve-out A or B** → human owner.
@@ -59,3 +59,4 @@ Instrument each probability on the first cohorts; the audit sample rate and the 
 - The right **per-human engagement cap** and the resulting ratio are empirical — measure on cohort 1.
 - **Automation bias** in the human owners (deferring to the AI recommendation) is a real risk even with anti-rubber-stamp UX; audit human calibration for it.
 - The boundary between "in-system formative" and "of-record" grades must be drawn precisely so carve-out B doesn't quietly expand to swallow everything (re-collapsing scale) or contract to nothing (losing the moat).
+- **None of §4 is built, and the guide console currently does the thing §4 exists to prevent.** Promotion from the console passes `autonomySignOff: true` unconditionally, so the sign-off the graduation gate treats as a human judgement is a constant. There is no evidence-interaction requirement, no reason capture on agreement, no owner-calibration audit and no batch cap. The store still refuses an auto-promotion — the transition is recorded against a human actor and GC4 audits for it — so what exists is attribution, not engagement, and attribution is exactly what rubber-stamping satisfies.

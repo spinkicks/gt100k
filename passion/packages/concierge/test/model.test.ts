@@ -56,6 +56,7 @@ describe("concierge model — type smoke (spec §3.1)", () => {
       title: "Chess Openings for Beginners",
       url: "https://www.khanacademy.org/chess-openings",
       domainPath: ["games-strategy", "chess"],
+      pursuits: ["chess"],
       affordedModes: ["perform", "explain"],
       reputation: 0.95,
       ageTiers: ["6-8", "9-11", "12-14"],

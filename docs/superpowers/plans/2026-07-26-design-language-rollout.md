@@ -1,8 +1,9 @@
 # Rolling the design language across the remaining surfaces
 
-**Status:** revised after review. **The conclusion changed: this is not a rollout, it is three
-product decisions.** Two of them are yours.
-**Date:** 2026-07-26
+**Status:** all three decisions are now taken, and the adult surfaces are done. **The concierge went
+GT, one evidence explorer survives and wears GT, and the Project Studio kept its own token set while
+its undersized controls were fixed.** What is left is named at the end of §4.2 and in §5.
+**Date:** 2026-07-26 · **Resolved:** 2026-07-28
 
 > **Amended (2026-07-27):** `docs/decisions/evidencegraph-v1-design.md` §13a makes the EvidenceGraph its own
 > product, extractable by `git subtree`, which gives this plan's decision about `evidence-explorer` (~38, ~115) a
@@ -46,9 +47,16 @@ Two more that would have broken things on contact:
 | `project-studio` | Eight child themes, own token set | **Yes**, specified in its plan. GT added as the default (#188) |
 | `evidence-explorer` | Plain, where the EvidenceGraph work happens | **Resolved.** GT (#188), and the sole survivor |
 | `evidence-explorer-themed` | Seven themes, the README called it the observatory | **Deleted.** See below |
-| `design-lab` | Multi-theme on purpose | **Yes**, it is the comparison surface |
+| `design-lab` | Multi-theme on purpose | Was the comparison surface; **no longer**. See below |
 
 So there is no surface left that is un-branded *by accident*. That was the finding.
+
+**Two more surfaces settled it further.** The GT identity is worn by five apps today — guide console,
+parent guide, evidence explorer, concierge and the `home` front door — all through
+`[data-theme="gt"]` in `@gt100k/design-tokens`. The comparison the whole exercise turned on is over:
+the losing Horizon theme has been deleted from the token package rather than kept as an opt-in, and
+the MUI values it lost to are now unqualified on `:root`, so importing the package is enough to get
+them. Anything still setting `data-theme="horizon"` falls through to those values.
 
 ### Resolution of the duplicate, 2026-07-26
 
@@ -72,9 +80,21 @@ and GT is now canonical. That is genuinely mechanical. It also needs the three f
 not currently have, and its existing `mui` option matches no theme block, which is a small
 pre-existing bug worth fixing while there.
 
+> **Overtaken by events.** None of this was done and none of it should be: `design-lab` stopped being
+> a theme-comparison surface. Its static MUI console mockup (`app/console.tsx`, `app/console.css`,
+> `app/charts.tsx`) was deleted once the real console had been restyled — a second console that no
+> longer matched the first taught only the wrong answer — and the lab is now an index of prototypes,
+> currently the child-facing browse wall and a tile-art comparison. There is no theme switcher left
+> to add GT to and no `mui` option left to fix.
+
 ## 4. The three decisions
 
 ### 4.1 Should the concierge stop being dark?
+
+**Answered: yes.** It went GT in #188 and the dark instrument is gone. Its `globals.css` records the
+trap this section predicted — a local `:root` outranks `[data-theme]` on equal specificity by coming
+later — as the reason its own palette was removed rather than retuned. The reasoning below is what
+the decision was taken against.
 
 It is an adult surface, so GT would suit it. But the darkness is a deliberate choice about what the
 surface *is*: a calm instrument rather than a reading surface. Changing it is reasonable and it is
@@ -118,7 +138,20 @@ That is a real defect with a real user, it needs no architectural decision, and 
 whether or not the studio ever adopts the contract. **It is the only item in this document I would
 start without asking.**
 
+**Both halves happened.** The studio kept its own token set and gained `gt-school` as an eighth
+preset and the default, so the recommendation stands and the contract question is still open. The
+undersized controls were fixed on their own merits: `globals.css` now sets an explicit `min-height`
+on the kind buttons, the theme button, the primary button and the checkbox's label, and cites the
+measurements in this section as the reason. **The floor it sets is 44px, not the contract's 56px
+child minimum**, which closes the accessibility defect without pre-deciding the token question —
+worth knowing, since this section is the only record that 56px was the number the research asked
+for.
+
 ### 4.3 Which evidence explorer survives?
+
+**Settled the same day, as §2 records: the plain one survives, keeps the name, and takes the themed
+one's content.** The four colliding theme ids stopped being a risk with the seven private palettes
+they belonged to. The blocked state below is kept for the shape of the argument.
 
 Unchanged from the first draft, and still blocked. The README calls the themed one the observatory;
 the EvidenceGraph work is in the plain one. Both are on their own CSS. Theming either before this is

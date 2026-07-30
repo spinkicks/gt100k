@@ -1,5 +1,26 @@
 # PROJECT — Tinker Workshop Cabin
 
+> **Status, recorded 2026-07-28: superseded in position, and kept anyway.** The last feature work
+> here was #143 on 2026-07-24. Everything since is repo-wide housekeeping that swept through the
+> directory — a lint pass (#165) and the Evidence Graph boundary enforcement (#213) — not work on
+> the cabin. Nothing in the repository imports this app; it appears only in documentation and the
+> lockfile. `passion/apps/mvp-jul24` took over as the child-facing discovery surface, and the
+> surface owner's ruling of 2026-07-27 (`docs/decisions/2026-07-27-discovery-surface.md` §-1) fixed
+> that surface and explicitly declined to stand up a second child-facing app.
+>
+> **The brief below is not merely paused, it now conflicts with a live decision**, and that is worth
+> saying plainly rather than leaving for someone to discover mid-build. Its central mechanic is
+> first-person WASD locomotion through a room. PRD §5.2, revised 2026-07-25, removed locomotion from
+> the discovery surface entirely and made the interior camera permanently fixed, for reasons recorded
+> in `passion/apps/mvp-jul24/PROJECT.md` — the money goes into one frame per cabin rather than into a
+> room that has to hold up from every angle. Reviving this app means reopening that, not just
+> resuming a queue.
+>
+> It is not deleted, and should not be. It is where the photoreal loop was proven, and `mvp-jul24`'s
+> 3D scene, asset fetcher and shoot/compare harness were all ported out of it — by copy, so the two
+> now drift independently. Read what follows as the brief it was written as, not as a description of
+> anything currently being built. `STATUS.md` and `DELTA.md` beside it are older still.
+
 The brief. Sets **what** and **what-not** and the **measurable floors**; deliberately does not
 prescribe *how* (architecture/execution is the loop's job). Modeled on the voxel-world `PROJECT.md`,
 adapted for a **photoreal interior** instead of a stylized voxel exterior.

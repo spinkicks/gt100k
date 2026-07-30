@@ -349,9 +349,10 @@ export function validateMap(map: MasteryMap, now?: string): ValidationRecord {
       warnings.push(
         warn(
           "W3_EARLY_BRANCH",
-          "this branch sits below expert entry, where divergence is usually expected. Note that no " +
-            "child can currently be placed above S2_FOUNDATIONS at all, so every branch is " +
-            "unreachable at every height until chosen_challenge is emitted.",
+          "this branch sits below expert entry, where divergence is usually expected. Note that a " +
+            "child is very unlikely to be placed above S2_FOUNDATIONS yet, because that needs " +
+            "chosen_challenge and only one gadget in the product asks for it, so branches are in " +
+            "practice still out of reach at every height.",
           m.id,
         ),
       );

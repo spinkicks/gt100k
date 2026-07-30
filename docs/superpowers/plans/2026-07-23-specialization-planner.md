@@ -1,5 +1,13 @@
 # Specialization Planner (the ascent engine) — Implementation Plan
 
+> **Complete.** `@gt100k/specialization-planner` ships the four-stage engine, `deriveStage`,
+> `curatedForCell`, the brief-generator port with its grounded stub, `derivePlanInputs`, the
+> `planner-live` adapter with its opt-in script, and the guide console's Plan panel;
+> `docs/prd/passionApps.md` records D1 as done in engine form with surface polish pending. One
+> addition since: a `ProjectBrief` can now carry a `milestoneId`, stamped by the planner from the
+> caller and never read from the generator's output
+> (`../specs/2026-07-26-milestone-project-wiring.md` §4).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development or superpowers:executing-plans. Checkbox steps; commit after each task.
 
 > **Amended (2026-07-27):** the "Evidence-Graph grading (E1)" item in the final `passionApps.md` update (~108) now
@@ -23,23 +31,23 @@
 
 ### Task 0: Scaffold `@gt100k/specialization-planner`
 **Files:** `passion/packages/specialization-planner/{package.json,tsconfig.json,src/index.ts,test/smoke.test.ts}`; root `tsconfig.json`.
-- [ ] Failing smoke test; `package.json` (`@gt100k/specialization-planner`; deps `@gt100k/student-profile`, `@gt100k/hypothesis-store`, `@gt100k/wellbeing`, `@gt100k/interest-inference`, `@gt100k/two-axis-tagging`, `@gt100k/concierge`; `test` script `vitest run --root ../.. packages/specialization-planner/test`); `tsconfig.json` (extends base; references all six dep packages); `src/index.ts` → `export {};`; append the root reference.
-- [ ] `pnpm install` → `pnpm exec tsc -b && pnpm test` PASS. **Commit** `feat(planner): scaffold @gt100k/specialization-planner`.
+- [x] Failing smoke test; `package.json` (`@gt100k/specialization-planner`; deps `@gt100k/student-profile`, `@gt100k/hypothesis-store`, `@gt100k/wellbeing`, `@gt100k/interest-inference`, `@gt100k/two-axis-tagging`, `@gt100k/concierge`; `test` script `vitest run --root ../.. packages/specialization-planner/test`); `tsconfig.json` (extends base; references all six dep packages); `src/index.ts` → `export {};`; append the root reference.
+- [x] `pnpm install` → `pnpm exec tsc -b && pnpm test` PASS. **Commit** `feat(planner): scaffold @gt100k/specialization-planner`.
 
 ---
 
 ### Task 1: Types + constants (P0)
 **Files:** `src/model.ts`, `test/model.test.ts`; barrel.
-- [ ] Define `Stage`, `MentorRole`, `AudienceLevel`, `ProjectCadence`, `Pcde`, `RestCadence`, `ProjectBrief`, `PlanInputs`, `SpecializationPlan`, `BriefContext` (spec §3.2/§3.4) + the golden constants `DP_S1..S4`, `INVESTMENT_LOAD`, `DEPTH_S2..S4`, `RETURN_S2..S4`, `REST_DAYS_PER_WEEK`, `REST_MONTHS_PER_YEAR`, `REST_INCREMENT_MONTHS`, `RETURN_WINDOW_DAYS` (§3.7). Reuse `DomainPath` from `@gt100k/interest-inference` and `WellbeingRead` from `@gt100k/wellbeing`.
-- [ ] Unit test pins the constants (incl. `DP_S1 ≤ DP_S2 ≤ DP_S3 ≤ DP_S4 < INVESTMENT_LOAD`). **Commit** `feat(planner): types + golden constants`.
+- [x] Define `Stage`, `MentorRole`, `AudienceLevel`, `ProjectCadence`, `Pcde`, `RestCadence`, `ProjectBrief`, `PlanInputs`, `SpecializationPlan`, `BriefContext` (spec §3.2/§3.4) + the golden constants `DP_S1..S4`, `INVESTMENT_LOAD`, `DEPTH_S2..S4`, `RETURN_S2..S4`, `REST_DAYS_PER_WEEK`, `REST_MONTHS_PER_YEAR`, `REST_INCREMENT_MONTHS`, `RETURN_WINDOW_DAYS` (§3.7). Reuse `DomainPath` from `@gt100k/interest-inference` and `WellbeingRead` from `@gt100k/wellbeing`.
+- [x] Unit test pins the constants (incl. `DP_S1 ≤ DP_S2 ≤ DP_S3 ≤ DP_S4 < INVESTMENT_LOAD`). **Commit** `feat(planner): types + golden constants`.
 
 ---
 
 ### Task 2: `deriveStage` (P1)
 **Files:** `src/stage.ts`, `test/stage.test.ts`; barrel.
 **Interface:** `deriveStage(inputs: PlanInputs): Stage`. Highest-qualifying stage wins (S4→S3→S2→S1) using the §3.3 thresholds; **takes no age** (`monthsInPursuit` is indicative only, never a gate).
-- [ ] **Failing golden test:** one `PlanInputs` per stage → its `Stage`; plus SC-2 (identical readiness + different `monthsInPursuit` → same stage; high-months/low-readiness → still `S1`).
-- [ ] Implement. **Commit** `feat(planner): deriveStage (readiness not age)`.
+- [x] **Failing golden test:** one `PlanInputs` per stage → its `Stage`; plus SC-2 (identical readiness + different `monthsInPursuit` → same stage; high-months/low-readiness → still `S1`).
+- [x] Implement. **Commit** `feat(planner): deriveStage (readiness not age)`.
 
 ---
 
@@ -49,23 +57,23 @@
 - `curatedForCell(library: CuratedLibrary, domainPath: DomainPath, ageTier: AgeTier): readonly CuratedResource[]` — a thin deterministic filter (age-eligible + `domainPath`-compatible; ranked reputation-desc; capped). Reuse `@gt100k/concierge`'s `CuratedResource`/`CuratedLibrary` types + `@gt100k/two-axis-tagging` path helpers (implement the cabin+subtopic compatibility locally; `pathsCompatible` is not exported from concierge). Re-export the consumed concierge types from the planner barrel.
 - `ProjectBriefGenerator { generate(ctx: BriefContext): Promise<ProjectBrief> }`; `BriefContext { domainPath; mode; stage; audience; craftFloorHint; resources: readonly CuratedResource[] }`.
 - `stubBriefGenerator` builds a deterministic, valid Type III `ProjectBrief` from `domainPath` (humanized leaf) × `mode` × `stage` × `audience` × `craftFloorHint`, with a `craftScaffold` that **cites the passed `resources`** (title/url of the vetted A6 material) when present and a generic scaffold otherwise — a driving question with no right answer, an authentic method, a process-based `successLooksLike`, `childOwnsChoice: true`, `source: "stub"`. No network.
-- [ ] `src/__fixtures__/curated.ts`: a small synthetic `CuratedLibrary` tagged to the pilot cells (music/audio, chess, …) with reputations + age-tiers.
-- [ ] **Failing unit tests:** `curatedForCell` returns the matching resources ranked (and `[]` on no match); the stub returns a schema-valid brief for each stage/audience; identical `ctx` → identical brief; `craftScaffold` non-empty and **cites the fixture resource** when `resources` is non-empty; `childOwnsChoice === true`.
-- [ ] Implement. **Commit** `feat(planner): curatedForCell (A6 grounding) + ProjectBriefGenerator port + grounded stub`.
+- [x] `src/__fixtures__/curated.ts`: a small synthetic `CuratedLibrary` tagged to the pilot cells (music/audio, chess, …) with reputations + age-tiers.
+- [x] **Failing unit tests:** `curatedForCell` returns the matching resources ranked (and `[]` on no match); the stub returns a schema-valid brief for each stage/audience; identical `ctx` → identical brief; `craftScaffold` non-empty and **cites the fixture resource** when `resources` is non-empty; `childOwnsChoice === true`.
+- [x] Implement. **Commit** `feat(planner): curatedForCell (A6 grounding) + ProjectBriefGenerator port + grounded stub`.
 
 ---
 
 ### Task 4: `planSpecialization` engine (P3) — CORE
 **Files:** `src/plan.ts`, `test/plan.test.ts`; barrel.
 **Interface:** `planSpecialization(inputs: PlanInputs, deps: { generator: ProjectBriefGenerator }, now: string): Promise<SpecializationPlan>`. Compute the stage (`deriveStage`, then apply the strain hold from §3.5), map the stage → `mentorRole`/`audience`/`cadence`/`dpDose`/`pcdeFocus`/`restCadence`/`terminalNote` from the §3.1 table + §3.7 constants, fold in the `wellbeing` replan (`deload`/`restWindow`/`autonomyUp`/`holdStage`), set `escalateToHuman` (rest/deload OR a proposed stage advance), and generate `nextProject` via `deps.generator` (on throw → `stubBriefGenerator` fallback). Plain-language `rationale` + `guardrailNotes`.
-- [ ] **Failing golden table test (SC-1):** one `PlanInputs` fixture per stage → the exact plan head (stage + mentorRole + audience + cadence + dpDose + pcdeFocus + restCadence). Assert `rationale`/`guardrailNotes`/`terminalNote` presence (not exact prose beyond the stable stub brief strings).
-- [ ] Implement. **Commit** `feat(planner): planSpecialization staged blueprint + wellbeing replan`.
+- [x] **Failing golden table test (SC-1):** one `PlanInputs` fixture per stage → the exact plan head (stage + mentorRole + audience + cadence + dpDose + pcdeFocus + restCadence). Assert `rationale`/`guardrailNotes`/`terminalNote` presence (not exact prose beyond the stable stub brief strings).
+- [x] Implement. **Commit** `feat(planner): planSpecialization staged blueprint + wellbeing replan`.
 
 ---
 
 ### Task 5: Guardrail invariants (P4)
 **Files:** `test/guardrails.test.ts`.
-- [ ] Tests (spec §3.5 / SC-3..SC-10):
+- [x] Tests (spec §3.5 / SC-3..SC-10):
   - **DP monotone + capped:** `dpDose` non-decreasing S1→S4 and every value `< INVESTMENT_LOAD`;
   - **craft floor:** `audience !== "SELF"` ⇒ `nextProject.craftScaffold` non-empty; `childOwnsChoice === true` in every plan;
   - **rest mandatory:** `restCadence.daysOffPerWeek ≥ 1` and `monthsOffPerYear ≥ 1` in every plan;
@@ -74,43 +82,43 @@
   - **system proposes (SC-8):** any `replan.restWindow`/`deload` or a proposed advance ⇒ `escalateToHuman: true`;
   - **plurality (SC-9):** two cells for one kid → independent plans;
   - **determinism + fail-safe (SC-10):** identical inputs → identical plan; a throwing generator → stub-fallback `nextProject` (never empty/invalid).
-- [ ] Fix the engine if any invariant fails (these are non-negotiable). **Commit** `test(planner): guardrail invariants (DP cap, rest, autonomy, no gamification, strain-hold)`.
+- [x] Fix the engine if any invariant fails (these are non-negotiable). **Commit** `test(planner): guardrail invariants (DP cap, rest, autonomy, no gamification, strain-hold)`.
 
 ---
 
 ### Task 6: `derivePlanInputs` (P5)
 **Files:** `src/derive.ts`, `test/derive.test.ts`; barrel.
 **Interface:** `derivePlanInputs(profile: StudentProfile, store: HypothesisStore, cellKey: string, wellbeing: WellbeingRead, now: string, catalog: Catalog): PlanInputs`. From the 014 interaction log for the cell (spec §3.6): `monthsInPursuit` (earliest voluntary engagement → `now`), `voluntaryReturnsRecent` (voluntary returns within `RETURN_WINDOW_DAYS`), `depthAccumulation` (depth-weighted depth-family count), `stretchSeeking` (`chosen_challenge`), `producerIdentity` (shares/ships proxy; else `false`); `hypothesisState` from the 013 store; `wellbeing` passed through. A cell with no voluntary engagement is not planned.
-- [ ] **Failing golden test (SC-11):** a synthetic profile whose log shows sustained voluntary return + depth accumulation + stretch-seeking → derived inputs that `planSpecialization` reads as `S3_AUTHORSHIP`; a strained variant (same readiness + `wellbeing.rest`) → held at its stage with `escalateToHuman`. Reuse `@gt100k/student-profile` fixtures / `runCycle` or a small hand-built log.
-- [ ] Implement. **Commit** `feat(planner): derivePlanInputs from the 014 profile + 013 store + 016 read`.
+- [x] **Failing golden test (SC-11):** a synthetic profile whose log shows sustained voluntary return + depth accumulation + stretch-seeking → derived inputs that `planSpecialization` reads as `S3_AUTHORSHIP`; a strained variant (same readiness + `wellbeing.rest`) → held at its stage with `escalateToHuman`. Reuse `@gt100k/student-profile` fixtures / `runCycle` or a small hand-built log.
+- [x] Implement. **Commit** `feat(planner): derivePlanInputs from the 014 profile + 013 store + 016 read`.
 
 ---
 
 ### Task 7: Adapter `@gt100k/planner-live` (P6)
 **Files:** `passion/adapters/planner-live/{package.json,tsconfig.json,src/index.ts,src/tfy-generator.ts,test/parse.test.ts}`; root `tsconfig.json`; `scripts/planner-live.ts` (opt-in).
 **Interface:** a `ProjectBriefGenerator` calling TFY (OpenAI-compatible `fetch`, `response_format: json_object`, `temperature: 0`, `TFY_API_KEY`, default `gpt-5.4-mini`, `TFY_PLANNER_MODEL` override) that prompts for a Type III brief **grounded on the passed curated `resources`** (cite the vetted titles/urls in the craft scaffold, like `concierge-live`'s `TfyGenerator` grounds on spotlighted docs), parses the JSON, **validates every field and coerces/falls back to `stubBriefGenerator` on any malformed/empty result** (`source: "llm"` on success). Mirror `concierge-live`'s structure exactly (a `chat()` helper returning `""` on any transport/HTTP error → stub fallback; `tfyConfigFromEnv` never called at import time or in a test).
-- [ ] `package.json` (dep `@gt100k/specialization-planner` + native `fetch`; `test` script scoped to the adapter's parse test); `tsconfig.json` (references `../../packages/specialization-planner`); append root reference. `pnpm install`.
-- [ ] **Parse test (hermetic, no network):** feed a captured/synthetic TFY JSON payload → a schema-valid `ProjectBrief`; feed a malformed payload → the stub fallback. The adapter is **never imported by a domain test**.
-- [ ] `scripts/planner-live.ts`: an opt-in `planner:live` that generates one real brief for a seeded spike (manual). **Commit** `feat(planner-live): TFY ProjectBriefGenerator (opt-in) + parse/coerce tests`.
+- [x] `package.json` (dep `@gt100k/specialization-planner` + native `fetch`; `test` script scoped to the adapter's parse test); `tsconfig.json` (references `../../packages/specialization-planner`); append root reference. `pnpm install`.
+- [x] **Parse test (hermetic, no network):** feed a captured/synthetic TFY JSON payload → a schema-valid `ProjectBrief`; feed a malformed payload → the stub fallback. The adapter is **never imported by a domain test**.
+- [x] `scripts/planner-live.ts`: an opt-in `planner:live` that generates one real brief for a seeded spike (manual). **Commit** `feat(planner-live): TFY ProjectBriefGenerator (opt-in) + parse/coerce tests`.
 
 ---
 
 ### Task 8: Guide-console "Plan" panel (P7) + preserve window.__qa
 **Files:** `passion/apps/guide-console/app/*` (a new `plan.ts` view-model + `plan-panel.tsx` + `plan-library.ts` seed + wiring in `console.tsx`/`useConsole.ts`), optional `app/api/plan-brief/route.ts`, `package.json` (+ `@gt100k/specialization-planner` dep + `transpilePackages`), `app/console-state.ts`/`app/qa.ts` (extend additively).
-- [ ] Add the dep + `transpilePackages`. `pnpm install`.
-- [ ] `plan-library.ts`: a small synthetic `CuratedLibrary` (from `@gt100k/concierge` `CuratedResource`s) tagged to the pilot cells (music/audio, chess, …) so the panel shows real grounded scaffolds. SYNTHETIC ONLY.
-- [ ] `plan.ts` (mirror `wellbeing.ts`): for the selected kid, for each **certified** spike (`ACTIVE`, plus `CANDIDATE`), resolve `resources = curatedForCell(PLAN_LIBRARY, domainPath, ageTier)`, then `derivePlanInputs(profile, store, cellKey, wellbeingRead, PILOT_NOW, PILOT_CATALOG)` → `planSpecialization(inputs, { generator: stubBriefGenerator }, PILOT_NOW)` (passing `resources` through the `BriefContext`) → a `PlanCardVM`. Reuse the 016 `wellbeingForKid` reads so the same `WellbeingRead` drives both panels. **Default = stub generator** (synchronous-deterministic; no network) so `LOOP_QA` stays offline.
-- [ ] Render a **functional-but-plain** panel: per certified spike, show the stage ("what this stage is for"), mentor role, audience level, the next project (driving question, authentic method, craft scaffold + its **vetted curated resources** as title→link, who it's for), the practice dose + rest cadence, the PCDE focus, and any **"Needs your review"** replan (rest/deload/stage-advance) with a plain rationale + the honest `terminalNote`. Guide-facing; grayscale-safe; reuse the console tokens + the `vocab.ts`/humanized `specPath`. No child-facing text; no reward/score/grade.
-- [ ] Optional `PLANNER_LIVE=1` server route (`app/api/plan-brief`) that regenerates a brief via `@gt100k/planner-live`; a "Regenerate brief (AI)" affordance calls it. Default (no flag) → stub; never in the gate.
-- [ ] **Preserve `window.__qa`:** keep `state()` (may add `plans: number`) + `primaryAction()` (still promotes the top gate-passed candidate). The existing `test/state.test.ts` must keep passing (update only additively).
-- [ ] gate: `pnpm exec tsc -b` + `pnpm test`; then **stop any dev server on the port first**, `pnpm --filter @gt100k/guide-console build`, run `LOOP_QA` (`next start` + harness): `window.__qa.ready === true`, `primaryAction()` still promotes (state + DOM change), and the Plan panel renders. **Commit** `feat(console): specialization Plan panel (system proposes, human disposes)`.
+- [x] Add the dep + `transpilePackages`. `pnpm install`.
+- [x] `plan-library.ts`: a small synthetic `CuratedLibrary` (from `@gt100k/concierge` `CuratedResource`s) tagged to the pilot cells (music/audio, chess, …) so the panel shows real grounded scaffolds. SYNTHETIC ONLY.
+- [x] `plan.ts` (mirror `wellbeing.ts`): for the selected kid, for each **certified** spike (`ACTIVE`, plus `CANDIDATE`), resolve `resources = curatedForCell(PLAN_LIBRARY, domainPath, ageTier)`, then `derivePlanInputs(profile, store, cellKey, wellbeingRead, PILOT_NOW, PILOT_CATALOG)` → `planSpecialization(inputs, { generator: stubBriefGenerator }, PILOT_NOW)` (passing `resources` through the `BriefContext`) → a `PlanCardVM`. Reuse the 016 `wellbeingForKid` reads so the same `WellbeingRead` drives both panels. **Default = stub generator** (synchronous-deterministic; no network) so `LOOP_QA` stays offline.
+- [x] Render a **functional-but-plain** panel: per certified spike, show the stage ("what this stage is for"), mentor role, audience level, the next project (driving question, authentic method, craft scaffold + its **vetted curated resources** as title→link, who it's for), the practice dose + rest cadence, the PCDE focus, and any **"Needs your review"** replan (rest/deload/stage-advance) with a plain rationale + the honest `terminalNote`. Guide-facing; grayscale-safe; reuse the console tokens + the `vocab.ts`/humanized `specPath`. No child-facing text; no reward/score/grade.
+- [x] Optional `PLANNER_LIVE=1` server route (`app/api/plan-brief`) that regenerates a brief via `@gt100k/planner-live`; a "Regenerate brief (AI)" affordance calls it. Default (no flag) → stub; never in the gate.
+- [x] **Preserve `window.__qa`:** keep `state()` (may add `plans: number`) + `primaryAction()` (still promotes the top gate-passed candidate). The existing `test/state.test.ts` must keep passing (update only additively).
+- [x] gate: `pnpm exec tsc -b` + `pnpm test`; then **stop any dev server on the port first**, `pnpm --filter @gt100k/guide-console build`, run `LOOP_QA` (`next start` + harness): `window.__qa.ready === true`, `primaryAction()` still promotes (state + DOM change), and the Plan panel renders. **Commit** `feat(console): specialization Plan panel (system proposes, human disposes)`.
 
 ---
 
 ### Final verification (SC-13) + PR
-- [ ] `pnpm exec tsc -b` clean; `pnpm test` all green (domain + adapter parse); `pnpm --filter @gt100k/guide-console build` clean; `LOOP_QA` pass.
-- [ ] `passionApps.md`: mark D1 engine done (guide surface functional; polish pending); note that briefs are grounded on the merged A6 curated library, and the mentor-relay logistics (D3) + project workspace (D2) + Evidence-Graph grading (E1) + live-web gap-fill remain.
-- [ ] Open PR (gh, pushed as `spinkicks`); `gh pr update-branch` if `main` moved; squash-merge after CI + branch up to date.
+- [x] `pnpm exec tsc -b` clean; `pnpm test` all green (domain + adapter parse); `pnpm --filter @gt100k/guide-console build` clean; `LOOP_QA` pass.
+- [x] `passionApps.md`: mark D1 engine done (guide surface functional; polish pending); note that briefs are grounded on the merged A6 curated library, and the mentor-relay logistics (D3) + project workspace (D2) + Evidence-Graph grading (E1) + live-web gap-fill remain.
+- [x] Open PR (gh, pushed as `spinkicks`); `gh pr update-branch` if `main` moved; squash-merge after CI + branch up to date.
 
 ## Notes on likely snags (pre-solved)
 - **Readiness not age is structural:** `deriveStage` must not receive age; `monthsInPursuit` is display-only. A high-months/low-readiness kid must read `S1` (SC-2).

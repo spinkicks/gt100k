@@ -275,11 +275,13 @@ function fingerprint(value: unknown): string {
  *   array happened to be in. Two entries tie here only when every field on them matches, and then
  *   the reads are deep-equal and the list is the same list either way round.
  *
- * `stage` is the child's current stage, from the planner. Note that nothing above `S2_FOUNDATIONS`
- * is reachable by any child today: `deriveStage` requires `stretchSeeking` for both higher stages,
- * `stretchSeeking` derives solely from `chosen_challenge`, and nothing in production emits that
- * event (escalated in PR #163). Every branch milestone sits at or above `S3_AUTHORSHIP`, so a
- * trunk-only reachable set is the correct output of this function and not a fault in it.
+ * `stage` is the child's current stage, from the planner. Almost nothing above `S2_FOUNDATIONS` is
+ * reachable today: `deriveStage` requires `stretchSeeking` for both higher stages and
+ * `stretchSeeking` derives solely from `chosen_challenge`. That event was emitted by nothing when
+ * this was written (escalated in PR #163); since #216 the game's "Try a harder one" button records
+ * it, but only Nonogram sets `supportsTier`, so one gadget of nine offers the ask and the signal
+ * arrives through a single cell. Every branch milestone sits at or above `S3_AUTHORSHIP`, so a
+ * trunk-only reachable set remains the ordinary output of this function rather than a fault in it.
  */
 export function readMap(
   map: MasteryMap,

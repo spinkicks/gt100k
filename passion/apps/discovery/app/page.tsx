@@ -1,44 +1,58 @@
 "use client";
 
-// A browse prototype for the child-facing surface, in the shape of a Kaleidescape covers wall.
+// The child-facing discovery surface: forty-four concrete pursuits, flat, on one screen, each one
+// offering both something to make and somewhere to read.
 //
-// WHAT IS TAKEN FROM THE REFERENCE: a dense grid on a dark ground, content edge to edge with almost
-// no chrome, one selected tile ringed in a bright colour, and a panel that names the selection and
-// says one line about it. The posture is the valuable part — everything is on offer, nothing is
-// gated, nothing is recommended at you, and the interface gets out of the way.
+// WHY FLAT, AND WHY THIS MANY. Hutchinson, Bederson & Druin ran the closest thing to this product
+// that exists — 36 children aged 6-11, a children's digital library, a 14-category hierarchy
+// replaced by 44 flat concrete categories. The flat version was faster in EVERY grade, needed 116
+// hints against 221, and produced 224 exploratory queries against 104. Nineteen children preferred
+// it and four preferred the tree. They had already tried fixing the hierarchy by narrowing it to
+// six top-level categories and that failed too, which is the finding: the problem was never
+// branching factor, it was abstraction. Only about half of kindergarteners and first-graders sort
+// superordinate categories taxonomically at all, while they sort basic-level ones like adults by
+// three. Their flat version was a ring of category ICONS rather than a list of words, which is why
+// the tiles here carry art; `browse.css` has the rest of that argument.
 //
-// WHAT IS DELIBERATELY NOT TAKEN, and why each one would cost us something:
+// WHY NO PAGING, EVER. In the same study, of twelve first-graders, ZERO found the "More Choices"
+// control unaided. Anything behind a pager does not exist for the youngest half of the band — and
+// a pursuit a child never sees produces no signal, which is a silent hole in the measurement rather
+// than a mere usability cost. Whatever is on this screen is, for a small child, the whole world.
 //
-//   The shuffle. Kaleidescape reorders around whatever you linger on, which makes it a recommender:
-//   the choice set changes per child and per moment, so a decline and a never-shown become the same
-//   log line and E4 stops being identifiable. Here the order is random per session and the MEMBERSHIP
-//   IS FIXED. Random order is better than a fixed one, because it decorrelates position from
-//   content. Random membership would be trigger-and-abandon, which finishes below never-triggered.
+// WHY THE CABINS ARE CHIPS AND NOT A STEP. They remain the model's coordinate system: a belief has
+// to live in a cell coarse enough to accumulate evidence, and the surfacing engine pays maintenance
+// debts per domain. None of that requires making a child walk through the abstraction to reach a
+// thing they can do. This replaced a two-step cabin-then-subtopic wall, which was that walk.
 //
-//   Poster art. A movie poster's entire job is to out-compete the poster beside it. Javora (2019),
-//   ages 9-11: same content at two aesthetic treatments, the prettier chosen 62% of the time,
-//   d > 0.86, with no learning benefit. Tiles here are uniform by construction — one glyph
-//   vocabulary, one stroke weight, and hue varying at CONSTANT LIGHTNESS AND CHROMA in OKLCH, so
-//   cabins are distinguishable without any of them being nicer to look at.
+// WHERE THE GAMES WENT. They are on the tiles, in the panel, above the links — the merge decision
+// was that a pursuit offers BOTH a thing to make and things to read, not one instead of the other.
+// A game is opened from the panel rather than by clicking a tile, so the click still selects and
+// the child chooses between playing and reading rather than having the choice made for them.
 //
-//   The density. A wall of fifty is a conjunction-search display, and Patall's optimum is 3-5 per
-//   choice moment. But the robust finding in that paper is not about options per screen at all: it
-//   is 2-4 SUCCESSIVE choices at d = 0.61 against d = 0.21 for one. So this is a sequence — cabin,
-//   then subtopic, then resource. Three moments, each small, and far more than fifty things reachable.
-import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from "react";
+// WHAT IS DELIBERATELY ABSENT. No popularity, no "others liked", no recommendation. Salganik's
+// 14,341-person experiment showed social influence increases both the inequality AND the
+// unpredictability of what succeeds — show a child what other children chose and the return data
+// measures a cascade rather than that child. And no reward of any kind: the signal is voluntary
+// cross-day return, so anything that manufactures engagement corrupts the thing being read.
 import dynamic from "next/dynamic";
+import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from "react";
 
 import { solveVerbFor } from "@gt100k/discovery-catalog";
 
-import { CabinGlyph, ExternalGlyph } from "./glyphs.js";
+import { ExternalGlyph } from "./glyphs.js";
 import {
-  CABIN_TILES,
-  gamesForCell,
+  artFor,
+  CABIN_LABEL,
+  CABINS,
+  gamesFor,
+  PURSUITS,
+  reachableAt,
   resourcesFor,
   shuffled,
-  subtopicTiles,
-  type Tile,
+  type CabinId,
+  type Pursuit,
 } from "./model.js";
+import { useFittedColumns } from "./useFittedColumns.js";
 import { sessionLog, startUplink } from "../runtime/signals/session";
 import "./browse.css";
 
@@ -47,15 +61,24 @@ import "./browse.css";
 // a puzzle is a client-only, interactive thing; there is nothing meaningful to render on the server.
 const GameLauncher = dynamic(() => import("./GameLauncher"), { ssr: false });
 
-type Step = "cabin" | "subtopic";
+/**
+ * Dwell before the panel follows the pointer.
+ *
+ * Crossing a wall of forty-four sweeps the cursor through a dozen tiles. Without a dwell each one
+ * would take the ring and rewrite the panel on the way past, and what the child sees is a flicker.
+ */
+const HOVER_MS = 90;
 
-export default function BrowsePage(): JSX.Element {
+/** Ages the surface can be viewed at, to make the floors visible rather than theoretical. */
+const AGES = [6, 8, 10, 12, 14] as const;
+
+export default function DiscoveryPage(): JSX.Element {
   // One seed per page load, so the order is stable while the child is looking at it and different
   // the next time they come. Fixed on the server pass to keep hydration honest.
   //
   // `seed` starts fixed so the server and the first client render agree, then moves once on mount.
   // `ready` gates the offer log through that transition: the pre-hydration order was never on a
-  // screen anyone saw, and counting it would report eight offers that did not happen.
+  // screen anyone saw, and counting it would report offers that did not happen.
   const [seed, setSeed] = useState(1);
   const [ready, setReady] = useState(false);
   useEffect(() => {
@@ -68,83 +91,72 @@ export default function BrowsePage(): JSX.Element {
   // in every environment (see `startUplink` / `INGEST_URL`).
   useEffect(() => startUplink(), []);
 
-  const [cabin, setCabin] = useState<Tile | null>(null);
+  const [age, setAge] = useState<number>(10);
+  const [cabin, setCabin] = useState<CabinId | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
-  // The meter's two numbers, mirrored into React state because the log itself lives in localStorage
-  // and is not reactive: `offered` is snapshotted from `sessionLog.surfaced()` right after each
-  // surfacing effect writes, and `screens` counts the distinct browse screens seen.
   const [offered, setOffered] = useState(0);
-  const [screens, setScreens] = useState<ReadonlySet<string>>(() => new Set());
-  // The gadget id currently mounted over the wall, or null. A game is opened from the panel, not by
-  // clicking a tile: the tile selects, the panel is where the child sees both what to play and where
-  // to read, and chooses between them. That is the merge — the game as the generative act, the
-  // curated links beside it — rather than a game that hijacks the click.
+  // The gadget id currently mounted over the wall, or null.
   const [playing, setPlaying] = useState<string | null>(null);
 
-  const step: Step = cabin === null ? "cabin" : "subtopic";
-  const tiles = useMemo(
-    () => shuffled(cabin === null ? CABIN_TILES : subtopicTiles(cabin.cabin), seed),
-    [cabin, seed],
-  );
+  // Age first, then cabin. Age is a hard filter because the alternative is showing a child a door
+  // that is locked; cabin is a soft one the child chose.
+  const tiles = useMemo(() => {
+    const byAge = reachableAt(age, PURSUITS);
+    const byCabin = cabin === null ? byAge : byAge.filter((p) => p.cabin === cabin);
+    return shuffled(byCabin, seed);
+  }, [age, cabin, seed]);
+
+  const hidden = PURSUITS.length - reachableAt(age, PURSUITS).length;
+
+  const current: Pursuit | null =
+    selected === null ? null : (tiles.find((t) => t.id === selected) ?? null);
+  const resources = useMemo(() => (current ? resourcesFor(current) : []), [current]);
+  const games = useMemo(() => (current ? gamesFor(current.id) : []), [current]);
 
   // Every tile on screen is an offer, and an offer nobody logged cannot be declined later. Position
   // rides along because it can only be captured now: after the fact there is no way to know where a
   // thing sat, and with the order randomised it is the variable that makes the bias measurable.
   //
-  // `recordSurfaced` is idempotent per (session, artifact), so running it on each render carries the
+  // `recordSurfaced` is idempotent per (session, artifact), so running it on each change carries the
   // position without inflating the count — a re-render is not a second time the child was shown
-  // something. The `setOffered`/`setScreens` snapshots exist only for the meter; the log itself
-  // lives in localStorage, not React state.
-  const screenKey = `${step}:${cabin?.id ?? "root"}:${seed}`;
+  // something.
   useEffect(() => {
     if (!ready) return;
     tiles.forEach((t, position) => sessionLog.recordSurfaced(t.id, position));
-    setScreens((prev) => (prev.has(screenKey) ? prev : new Set(prev).add(screenKey)));
     setOffered(sessionLog.surfaced().length);
-    setSelected(tiles[0]?.id ?? null);
-  }, [ready, screenKey, tiles]);
+  }, [ready, tiles]);
 
-  const current = tiles.find((t) => t.id === selected) ?? tiles[0] ?? null;
-  const resources = useMemo(
-    () =>
-      cabin && current && step === "subtopic"
-        ? resourcesFor(cabin.cabin, current.id.split("/")[1] ?? "")
-        : [],
-    [cabin, current, step],
-  );
-
-  // The games at the cell the child is looking at. At subtopic level that is the selected leaf; at
-  // cabin level it is the cabin itself, which surfaces the one cabin-level gadget (gear-train under
-  // Making & Building) that has no subtopic to live under. Most cells have one game, a few have up
-  // to four; membership is fixed, order is the registry's.
-  const games = useMemo(() => {
-    if (!current) return [];
-    return step === "subtopic"
-      ? gamesForCell(current.cabin, current.id.split("/")[1] ?? "")
-      : gamesForCell(current.cabin);
-  }, [current, step]);
-
-  // The games shown in the panel are offers too — and unlike the topic tiles they resolve to
-  // catalog artifacts, so THESE are the surfacings a later non-engagement reads as a skip
-  // (`deriveSkips` only forms a decline for ids in the crosswalk). Positioned within the play list.
+  // The games shown in the panel are offers too — and unlike the tiles they resolve to catalog
+  // artifacts, so THESE are the surfacings a later non-engagement reads as a skip (`deriveSkips`
+  // only forms a decline for ids in the crosswalk). Positioned within the play list.
   useEffect(() => {
     if (!ready || games.length === 0) return;
     games.forEach((g, position) => sessionLog.recordSurfaced(g.id, position));
     setOffered(sessionLog.surfaced().length);
   }, [ready, games]);
 
-  const gridRef = useRef<HTMLUListElement>(null);
-  // Follows the count so the grid fills the screen rather than stranding one short row against a
-  // half-empty wall. The reference's density is most of what makes it feel like a library, and a
-  // visible hole where a tile should be reads as something failing to load.
-  //
-  // Chosen to leave no gap: three across in one row beats two-and-a-orphan, four goes two-by-two.
-  const columns =
-    tiles.length <= 2 ? tiles.length : tiles.length === 4 ? 2 : tiles.length <= 6 ? 3 : 4;
+  const { ref: gridRef, cols, tileW, labelFontPx } = useFittedColumns(tiles.length);
+  const hoverTimer = useRef<number | null>(null);
+  useEffect(
+    () => () => {
+      if (hoverTimer.current !== null) window.clearTimeout(hoverTimer.current);
+    },
+    [],
+  );
 
-  // Arrow keys move the selection the way the eye expects; Enter opens. A grid a child can only
-  // reach with a mouse excludes the ones using a keyboard, and `PROJECT.md` records that the school
-  // hardware decision quietly also chose mouse-and-trackpad, the harder modality at this age.
+  const pointAt = useCallback((id: string): void => {
+    if (hoverTimer.current !== null) window.clearTimeout(hoverTimer.current);
+    hoverTimer.current = window.setTimeout(() => setSelected(id), HOVER_MS);
+  }, []);
+
+  const cancelPoint = useCallback((): void => {
+    if (hoverTimer.current !== null) window.clearTimeout(hoverTimer.current);
+    hoverTimer.current = null;
+  }, []);
+
+  // Arrow keys move the selection the way the eye expects. A grid a child can only reach with a
+  // mouse excludes the ones using a keyboard, and the school-hardware decision quietly also chose
+  // mouse-and-trackpad, the harder modality at this age.
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       const i = tiles.findIndex((t) => t.id === selected);
@@ -152,8 +164,8 @@ export default function BrowsePage(): JSX.Element {
       const delta: Record<string, number> = {
         ArrowRight: 1,
         ArrowLeft: -1,
-        ArrowDown: columns,
-        ArrowUp: -columns,
+        ArrowDown: cols,
+        ArrowUp: -cols,
       };
       const d = delta[e.key];
       if (d === undefined) return;
@@ -166,51 +178,67 @@ export default function BrowsePage(): JSX.Element {
           ?.focus();
       }
     },
-    // `columns` belongs here: it changes between levels, and without it ArrowDown would jump by
-    // the previous screen's row width after drilling in.
-    [columns, selected, tiles],
+    // `cols` belongs here: the fit changes with the viewport and the filter, and without it
+    // ArrowDown would jump by a row width the grid no longer has.
+    [cols, gridRef, selected, tiles],
   );
-
-  const open = (t: Tile): void => {
-    if (step === "cabin") {
-      setCabin(t);
-      return;
-    }
-    // At subtopic level the tile is already open: its links are in the panel. There is nowhere
-    // further to click, because the next step leaves the product.
-    setSelected(t.id);
-  };
 
   return (
     <main className="browse" data-mood="child">
       <header className="browse__bar">
-        <button
-          type="button"
-          className="browse__back"
-          onClick={() => {
-            setCabin(null);
-            setSelected(null);
-          }}
-          disabled={cabin === null}
-        >
-          All topics
-        </button>
-        {cabin ? <span className="browse__crumb">{cabin.label}</span> : null}
-        <p className="browse__hint">
-          {cabin === null ? "Pick anything. You can come back." : "Pick one to see where to start."}
-        </p>
+        {/* biome-ignore lint/a11y/useSemanticElements: <fieldset> groups form controls, and these
+            are filters outside any form; its UA groove border and min-inline-size would also
+            reshape the wrapping chip row. */}
+        <div className="browse__facets" role="group" aria-label="Filter by area">
+          <button
+            type="button"
+            className="chip"
+            aria-pressed={cabin === null}
+            onClick={() => setCabin(null)}
+          >
+            Everything
+          </button>
+          {CABINS.map((c) => (
+            <button
+              key={c}
+              type="button"
+              className="chip"
+              aria-pressed={cabin === c}
+              onClick={() => setCabin(cabin === c ? null : c)}
+            >
+              {CABIN_LABEL[c]}
+            </button>
+          ))}
+        </div>
+        <label className="browse__age">
+          Age
+          <select value={age} onChange={(e) => setAge(Number(e.target.value))}>
+            {AGES.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+        </label>
       </header>
-      {/* A list, which is what it is. `role="grid"` was the first attempt and it promises rows and
-          gridcells to a screen reader that this does not have; claiming a pattern without
-          implementing it describes the screen wrongly, which is worse than describing it plainly.
-          A real <ul> also gets a blind child something the others could not: the count, announced
-          before they start moving through it. */}
+
+      {/* A list, which is what it is. `role="grid"` promises rows and gridcells to a screen reader
+          that this does not have; claiming a pattern without implementing it describes the screen
+          wrongly, which is worse than describing it plainly. A real <ul> also gets a blind child
+          the count, announced before they start moving through it. */}
       <ul
         className="browse__grid"
-        aria-label={cabin === null ? "Topics" : `Inside ${cabin.label}`}
+        aria-label={cabin === null ? "Things to try" : CABIN_LABEL[cabin]}
         ref={gridRef}
+        style={
+          {
+            "--cols": cols,
+            "--tile-w": `${tileW}px`,
+            "--label-font": `${labelFontPx}px`,
+          } as React.CSSProperties
+        }
         onKeyDown={onKeyDown}
-        style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
+        onMouseLeave={cancelPoint}
       >
         {tiles.map((t, i) => (
           <li key={t.id}>
@@ -220,75 +248,94 @@ export default function BrowsePage(): JSX.Element {
               className="tile"
               data-cabin={t.cabin}
               aria-current={t.id === current?.id}
-              // Roving tabindex: one stop for the whole grid, then arrows inside it. Thirty-two tab
+              // Roving tabindex: one stop for the whole grid, then arrows inside it. Forty-four tab
               // stops to cross a screen is a keyboard trap with extra steps.
-              tabIndex={t.id === current?.id ? 0 : -1}
+              tabIndex={current === null ? (i === 0 ? 0 : -1) : t.id === current.id ? 0 : -1}
+              onMouseEnter={() => pointAt(t.id)}
               onFocus={() => setSelected(t.id)}
-              onClick={() => open(t)}
+              // Click selects rather than navigating: the panel already holds everything behind
+              // this tile, and on a touch screen there is no hover to select with.
+              onClick={() => setSelected(t.id)}
             >
-              {t.image ? (
-                // Decorative. The label beside it already names the tile, so alt text here would
-                // make a screen reader announce every tile twice.
-                // A plain <img> rather than next/image on purpose: the optimiser would re-encode
-                // these, and the prototype exists to look at the art as it was generated. They are
-                // already WebP at render size, 19.8 MB of PNG down to 0.29 MB for all twelve.
-                <img className="tile__art" src={t.image} alt="" loading="lazy" decoding="async" />
-              ) : step === "cabin" ? (
-                // The fallback where no art exists yet. Memo 07 §2.5: an icon works when it depicts
-                // the referent, and nothing depicts "3D Modelling" as against "Animation" —
-                // repeating the cabin's glyph across its subtopics would put the same picture on
-                // every tile and discriminate nothing. Below the cabin the word does the work.
-                <CabinGlyph cabin={t.cabin} />
-              ) : null}
+              {/* Empty alt, deliberately: the picture and the word name the same thing, so
+                  describing it would make a screen reader say everything twice.
+
+                  A plain `img` and not `next/image`, because these are forty-four local files that
+                  are already sized and already compressed, and routing them through the optimiser
+                  buys nothing an export can use. */}
+              <img
+                className="tile__art"
+                src={artFor(t)}
+                alt=""
+                width={480}
+                height={320}
+                decoding="async"
+              />
               <span className="tile__label">{t.label}</span>
-              {/* Position is shown because this is a prototype and the measurement is the point. It
-                would not appear in the product. */}
-              <span className="tile__pos" aria-hidden="true">
-                {i + 1}
-              </span>
             </button>
           </li>
         ))}
       </ul>
 
-      {current ? (
-        <aside className="panel" aria-live="polite">
-          <h2 className="panel__title">{current.label}</h2>
-          <p className="panel__blurb">{current.blurb}</p>
+      {/* Always mounted, so the wall does not shift sideways the first time a child points. */}
+      <aside className="panel" aria-live="polite">
+        {current === null ? (
+          <p className="panel__prompt">Point at anything to see what it is.</p>
+        ) : (
+          <>
+            <img
+              className="panel__art"
+              src={artFor(current)}
+              alt=""
+              width={480}
+              height={320}
+              decoding="async"
+            />
+            <h2 className="panel__title">{current.label}</h2>
+            <p className="panel__blurb">{current.blurb}</p>
 
-          {/* The generative act, and it leads. The merge decision was that a cell offers BOTH a
-              thing to make and things to read, not one instead of the other — so the game is not
-              buried under a link list, and the links are not hidden behind the game. A child who
-              wants to do sees the doing first; a child who wants to read scrolls a thumb's width.
-              Doing this is not scored, gated, or counted back at the child (Rule 4) — it is just a
-              door that happens to open onto making rather than reading. */}
-          {games.length > 0 ? (
-            <div className="panel__play">
-              <p className="panel__play-lead">
-                {games.length === 1 ? "Try it yourself" : "Try one yourself"}
-              </p>
-              <ul className="panel__play-list">
-                {games.map((g) => (
-                  <li key={g.id}>
-                    <button
-                      type="button"
-                      className="panel__play-btn"
-                      onClick={() => setPlaying(g.id)}
-                    >
-                      {g.label}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
+            {/* The generative act, and it leads. A child who wants to do sees the doing first; a
+                child who wants to read scrolls a thumb's width. Doing this is not scored, gated, or
+                counted back at the child (Rule 4) — it is a door that happens to open onto making. */}
+            {games.length > 0 ? (
+              <div className="panel__play">
+                <p className="panel__play-lead">
+                  {games.length === 1 ? "Try it yourself" : "Try one yourself"}
+                </p>
+                <ul className="panel__play-list">
+                  {games.map((g) => (
+                    <li key={g.id}>
+                      <button
+                        type="button"
+                        className="panel__play-btn"
+                        onClick={() => setPlaying(g.id)}
+                      >
+                        {g.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
 
-          {step === "subtopic" ? (
-            resources.length > 0 ? (
+            {/* Who will tell this child they are getting better. Named, because a pursuit with no
+                venue is a topic, and because the child should be able to see the judge is real and
+                is not us. */}
+            <p className="panel__more">Who says you are good at it</p>
+            <a className="row" href={current.venue.url} target="_blank" rel="noreferrer noopener">
+              <span className="row__title">{current.venue.name}</span>
+              <ExternalGlyph />
+            </a>
+            <p className="panel__meta">
+              From age {current.minAge}
+              {current.costUsd === 0 ? " · free" : ` · about $${current.costUsd} a year`}
+            </p>
+
+            {resources.length > 0 ? (
               <>
-                {/* Named only when there is also a game above, so the two halves read as two
-                    halves rather than one undifferentiated list. */}
-                {games.length > 0 ? <p className="panel__rows-lead">Or read about it</p> : null}
+                <p className="panel__more">
+                  {games.length > 0 ? "Or read about it" : "Where to start"}
+                </p>
                 <ul className="panel__rows">
                   {resources.map((r) => (
                     <li key={r.id}>
@@ -298,10 +345,9 @@ export default function BrowsePage(): JSX.Element {
                         rel="noreferrer noopener"
                         className="row"
                         // Following a link out is the one act on the panel worth recording, and it
-                        // is attributed to the subtopic cell the child is standing in — never to the
-                        // shelf — so a follow reads as "left THIS cell to learn more". See
-                        // `recordSourceFollow`. Fires alongside navigation; not gated on it.
-                        onClick={() => current && sessionLog.recordSourceFollow(current.id)}
+                        // is attributed to the pursuit the child is standing on — never to the
+                        // shelf — so a follow reads as "left THIS tile to learn more".
+                        onClick={() => sessionLog.recordSourceFollow(current.id)}
                       >
                         <span className="row__title">{r.title}</span>
                         <ExternalGlyph />
@@ -312,34 +358,28 @@ export default function BrowsePage(): JSX.Element {
               </>
             ) : games.length > 0 ? null : (
               // Said plainly rather than hidden. A child who picked this deserves to know the
-              // product has nothing here yet, instead of a panel that quietly ends. Only shown
-              // when there is neither a game nor a link — a cell with a game is not empty.
+              // product has nothing here yet, instead of a panel that quietly ends. Only shown when
+              // there is neither a game nor a link — a tile with a game is not empty.
               <p className="panel__empty">Nothing here yet. Try another one.</p>
-            )
-          ) : (
-            <>
-              {/* What is behind the door, before committing to it. Not a second set of buttons —
-                  that would turn one choice moment into two competing ones. Just the answer to
-                  "what would I even find in here", which a picture and two words cannot give. */}
-              <p className="panel__more">Inside you would find</p>
-              <ul className="panel__inside">
-                {subtopicTiles(current.cabin).map((s) => (
-                  <li key={s.id}>{s.label}</li>
-                ))}
-              </ul>
-            </>
-          )}
-        </aside>
-      ) : null}
+            )}
+          </>
+        )}
+      </aside>
 
       <footer className="browse__meter">
         <span>
-          Offered this session: <strong>{offered}</strong> across <strong>{screens.size}</strong>{" "}
-          {screens.size === 1 ? "screen" : "screens"}
+          Showing <strong>{tiles.length}</strong> of <strong>{PURSUITS.length}</strong>
+          {hidden > 0 ? (
+            <>
+              {" "}
+              · <strong>{hidden}</strong> need you to be older
+            </>
+          ) : null}
         </span>
         <span className="browse__meter-note">
-          Every tile shown is logged as offered, with its position. Order is random per session;
-          which topics appear is not.
+          {ready
+            ? `Offered this session: ${offered}. Order is random; which pursuits exist is not.`
+            : "\u00a0"}
         </span>
       </footer>
 

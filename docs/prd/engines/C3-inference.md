@@ -1,6 +1,6 @@
 # Engine Spec — Interest Inference Engine (C3)
 
-**Status:** Draft v1 · 2026-07-22 · **Amended 2026-07-25** · Owner: (eng)
+**Status:** Draft v1 · 2026-07-22 · **Amended 2026-07-25, 2026-07-26 and 2026-07-28** · Owner: (eng)
 **Purpose:** Turn the behavioral event stream into the revisable, ranked **1–3 candidate spikes**, expressed as calibrated beliefs per `(domain × work-mode)` cell — never a scalar or a fixed label.
 **Grounding:** Discovery App PRD §6.4; measurement-validity hardening spec (leaner program).
 
@@ -16,9 +16,10 @@
 > by choice-set size, `artifact_competence` no longer scores interest, the marginals are weighted by
 > evidence mass, and confidence now gates on undecayed observation plus a distinct-day floor.
 >
-> **Scope correction.** This engine is not a 6–8 topic finder. Eight packages plus the guide console
+> **Scope correction.** This engine is not a 6–8 topic finder. Nine packages plus the guide console
 > import `@gt100k/interest-inference` (signal-pipeline, hypothesis-store, student-profile, wellbeing,
-> family, timeback, guardrails, specialization-planner), so it is the spine of the whole 6–14 system.
+> family, timeback, guardrails, specialization-planner, surfacing), so it is the spine of the whole
+> 6–14 system.
 > Any age-conditional parameter needs an age band threaded through the engine first: it models no age
 > today, only recency decay.
 
@@ -32,15 +33,17 @@ For each `(domain × work-mode)` cell (at both coarse and fine domain levels): a
 
 A transparent Bayesian model:
 
-1. **Prior** — start from environment inventory + aptitude tilt + discretionary-XP prior, **shrunk toward similar-kid patterns** (partial pooling) so a new kid isn't judged off one data point (cold-start).
+1. **Prior** — start from environment inventory + mastery tilt + discretionary-XP prior, **shrunk toward similar-kid patterns** (partial pooling) so a new kid isn't judged off one data point (cold-start). *(The three tilts ship as `W_ENV` / `W_MASTERY` / `W_XP` on a Beta prior; the partial pooling toward similar kids does not exist yet and needs cross-child data.)*
 2. **Update over a trajectory** — fold in the depth signal families as they arrive (five today:
    `unrequired_revision`, `chosen_challenge`, `failure_recovery`, `self_authored_scope`,
    `artifact_competence`), weighting by:
    - **novelty-decay** (first-exposure discounted until a decay window passes),
    - **voluntary vs. prompted** (only voluntary returns feed the interest signal).
-     **→ v2:** split into `cross_day_return` (the signal) and `same_session_reopen` (recorded,
+     **→ v2:** split into `cross_day_return` (the signal) and `same_day_engagement` (recorded,
      weight 0). Reopening something 30 seconds later is not the same evidence as coming back on
-     day 4, and the split is what makes the PRD's 7- and 30-day horizons computable at all.
+     day 4, and the split is what makes the PRD's 7- and 30-day horizons computable at all. The
+     proposal named the second kind `same_session_reopen`; it shipped as `same_day_engagement`,
+     because it also covers a first-ever touch and a same-day return in a different session.
    - **depth** (active construction > passive dwell). **→ v2:** delete the `magnitude` field.
      It is specified only as "depth for returns, strength for depth families", which invites an
      implementation as active time — and because it multiplies α, duration would silently become

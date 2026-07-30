@@ -38,10 +38,11 @@ const shapes = (problems: readonly ValidationProblem[]): WarningShape[] =>
 const REACHABLE_TODAY = ["S1_IGNITION", "S2_FOUNDATIONS"];
 
 /**
- * Nothing above S2_FOUNDATIONS is reachable by any child today, because both higher stages need
- * `stretchSeeking` and nothing emits `chosen_challenge`. So each fixture has to hold a complete
- * path made only of trunk milestones at or below that floor. Without it the golden would assert on
- * structure no child can enter.
+ * Almost nothing above S2_FOUNDATIONS is reachable today, because both higher stages need
+ * `stretchSeeking` and the only route to `chosen_challenge` is one gadget of nine (nothing emitted
+ * it at all before #216). So each fixture has to hold a complete path made only of trunk milestones
+ * at or below that floor. Without it the golden would assert on structure a child is very unlikely
+ * to be able to enter.
  */
 function assertReachableTrunkPath(map: MasteryMap): void {
   const trunk = map.milestones.filter((m) => m.modes.length === 0);

@@ -31,7 +31,7 @@ one yet, and its design docs stand in (`docs/decisions/evidencegraph-v1-*.md`).
 
 - **Academics → PassionLab** — TimeBack surfaces a daily academic signal (which section a student pours
   *discretionary* XP into); PassionLab reads it as one **weak prior**, not a score. *(Resolved — see
-  `docs/adr/` ADR-0004 and `DISCOVERY-APP-PRD.md` §6.5.)*
+  `DISCOVERY-APP-PRD.md` §6.5, where the 2026-07-22 session recorded it rather than in a numbered ADR.)*
 - **PassionLab (internal)** — Discovery → `InterestHypothesis` → Specialization → project work.
 - **PassionLab → EvidenceGraph** — a **cross-product seam, not an internal call.** PassionLab's project
   work becomes provenance in the graph, through exactly one adapter

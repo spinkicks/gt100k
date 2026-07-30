@@ -14,13 +14,16 @@ build, because sharing one design system across GT surfaces is a cohesion decisi
 ## Run
 
 ```bash
-pnpm --filter @gt100k/evidence-explorer dev     # local dev server
+pnpm --filter @gt100k/evidence-explorer dev     # local dev server on :3030
 pnpm --filter @gt100k/evidence-explorer build   # production build (part of the gate)
 pnpm --filter @gt100k/evidence-explorer test    # app smoke tests (vitest)
 ```
 
-No secrets are required. Non-secret `NEXT_PUBLIC_*` knobs (with safe defaults) are documented in
-`.env.local.example`; copy it to a git-ignored `.env.local` to override locally.
+No secrets are required, and there is nothing to copy: the two knobs both have working defaults.
+`NEXT_PUBLIC_EXPLORER_SEED` (default 42) seeds the starfield, which is byte-reproducible from it and
+carries no data; `PGLITE_DATA_DIR` moves the embedded Postgres the project store writes to, which
+otherwise lands in a git-ignored `.pglite-data` beside the app. Set either in a git-ignored
+`.env.local` if you need to.
 
 ## Tiers
 
@@ -36,6 +39,20 @@ The tier resolves from device caps + `prefers-reduced-motion` + a manual overrid
 (Cinematic → Standard → Calm 2D) when the frame budget slips, and falls back to Calm 2D on no-WebGL /
 context loss **with no lost state**. Every node reads as a distinct **shape + glyph + text label**, so
 meaning never rests on colour alone.
+
+The override is a plain **3D / 2D** segmented control in the bar above the view, beside a live readout
+of which tier is actually running — not a four-way tier picker. "3D" means `auto`, so the app still
+picks the best 3D tier the device can hold and still degrades under it; "2D" pins Calm 2D. The
+remaining presentation switches (reduced motion, plain mode, audio captions) sit one tap deeper, in
+the HUD's **Display** drawer.
+
+## Adding to the graph
+
+The observatory is not read-only. An **Add** drawer in the rail appends nodes and edges to the working
+graph, append-only, with no edit or delete affordance. Hashing and validation are server-side — the
+Node SHA-256 hasher never reaches the client — and the domain's DAG and no-dangling invariants are
+what reject a bad add, returned as an inline message rather than an accusation. The working graph
+persists in an embedded Postgres (PGlite) on disk, which is what `PGLITE_DATA_DIR` above points at.
 
 ## Accessibility & performance (U6)
 

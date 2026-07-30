@@ -3,8 +3,12 @@
  * side-by-side against Horizon UI. Crisper, hairline borders, restrained blue accent.
  *
  * The MUI values are applied to :root, so any app that imports the token package gets the
- * canonical look with no attribute to set and no chance of an unthemed flash. Horizon is
- * kept only as an opt-in override for comparison; delete it once nobody is comparing.
+ * canonical look with no attribute to set and no chance of an unthemed flash.
+ *
+ * The losing side of that comparison used to live here as an opt-in [data-theme="horizon"]
+ * override, on the condition that it be deleted once nobody was comparing. That is now the
+ * case, so it is gone. Anything still setting data-theme="horizon" will fall through to the
+ * canonical values on :root, which is the correct outcome rather than an unstyled one.
  */
 
 :root {
@@ -139,51 +143,4 @@
 
   /* The signature: a cut across the bottom-right corner of the single most important action. */
   --cut-br: 14px;
-}
-
-/* Opt-in comparison theme only. Not canonical. */
-[data-theme="horizon"] {
-  --canvas: #f4f7fe;
-  --rail: #ffffff;
-  --rail-2: #f4f7fe;
-  --surface: #ffffff;
-  --surface-2: #f4f7fe;
-
-  --ink: #1b2559;
-  --ink-muted: #707eae;
-  --ink-faint: #a3aed0;
-
-  --line: #e9edf7;
-  --line-strong: #d6dcec;
-
-  --accent: #4318ff;
-  --accent-hover: #3311db;
-  --accent-weak: #ebe8ff;
-  --accent-ink: #ffffff;
-
-  --good: #01a97b;
-  --good-bg: #e0f8f1;
-  --warn: #b07400;
-  --warn-bg: #fff4e0;
-  --bad: #d0362a;
-  --bad-bg: #ffeceb;
-
-  --chart-1: #4318ff;
-  --chart-2: #6ad2ff;
-  --chart-3: #01b574;
-  --chart-4: #ffb547;
-
-  --positive: #01a97b;
-  --alarm: #d0362a;
-  --alarm-bg: #ffeceb;
-  --alarm-ink: #9e2820;
-
-  --uncertain: #a3aed0;
-  --uncertain-bg: #eef2fb;
-
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --elev-raised: 0 18px 40px rgb(112 144 176 / 0.12);
-  --focus-color: #7551ff;
 }

@@ -1,5 +1,14 @@
 # EvidenceGraph PRD Revision Implementation Plan
 
+> **Executed 2026-07-19; the file it edits no longer lives here.** Every task landed: §19 carries the
+> PROV alignment, the content-addressed integrity backbone, the export-only C2PA demotion and the
+> crypto-shred erasure paragraph, §19.2 Post-M4 hardening exists with its §33.1 gate and §34 risk
+> rows, and the §0 change log records all of it as v1.6. Two further hardening rounds followed
+> (v1.7, v1.8), and the PRD was later split into `docs/prd/` and
+> `docs/decisions/evidencegraph-v1-design.md`, leaving the original at `archive/docs/prd/PRD.md`.
+> The `old_string` anchors below therefore no longer address a live file; they are kept because they
+> record exactly what was changed and why.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Revise PRD §19 (EvidenceGraph) to match the deep-research prior-art findings — fix the integrity architecture, adopt standard provenance formats, reconcile immutability with child-data erasure — and defer the genuinely hard parts to an explicit pre-live-enrollment hardening gate.
@@ -48,12 +57,12 @@ All edits trace to the completed deep-research run (task `w3l0o76rk`), verified 
 
 **Files:** none (git only)
 
-- [ ] **Step 1: Confirm PRD ownership**
+- [x] **Step 1: Confirm PRD ownership**
 
 Run: `grep -n "PRD.md" .github/CODEOWNERS 2>/dev/null || echo "no CODEOWNERS entry"`
 Expected: an entry showing the current operator owns `PRD.md`, or a documented decision to proceed. If another lane owns it, stop and coordinate.
 
-- [ ] **Step 2: Branch from latest origin/main**
+- [x] **Step 2: Branch from latest origin/main**
 
 ```bash
 git fetch origin
@@ -61,7 +70,7 @@ git switch -c dev/prd/evidencegraph-hardening origin/main
 ```
 Expected: new branch created off `origin/main` (not off `add-admissions-prd`).
 
-- [ ] **Step 3: Confirm the current §19 anchors still match**
+- [x] **Step 3: Confirm the current §19 anchors still match**
 
 Run: `grep -n "EvidenceGraph stores a content-addressed evidence DAG" PRD.md`
 Expected: exactly one match in §19. If zero, re-read §19 and update the `old_string` anchors in Tasks 2–6 before proceeding.
@@ -72,12 +81,12 @@ Expected: exactly one match in §19. If zero, re-read §19 and update the `old_s
 
 **Files:** none (read-only checks that later tasks re-run)
 
-- [ ] **Step 1: Record current C2PA mentions**
+- [x] **Step 1: Record current C2PA mentions**
 
 Run: `grep -n "C2PA" PRD.md`
 Expected: matches at ~§19 (line ~1076), §21 (~1114), §24 [STD-02] (~1157). Note them; Tasks 2, 8, 9 change them.
 
-- [ ] **Step 2: Record current section headers**
+- [x] **Step 2: Record current section headers**
 
 Run: `grep -n "^### 19.1\|^## 20. Reality Gateway\|^### 33.1\|^## 34. Principal" PRD.md`
 Expected: all four present. §19.2 (Task 7) inserts between §19.1 and §20.
@@ -92,7 +101,7 @@ Expected: all four present. §19.2 (Task 7) inserts between §19.1 and §20.
 **Interfaces:**
 - Produces: the term "transparency log (§19.2)" and "export-only C2PA (§21)" that Tasks 7 and 8 rely on.
 
-- [ ] **Step 1: Add the PROV-alignment sentence to §19 ¶1**
+- [x] **Step 1: Add the PROV-alignment sentence to §19 ¶1**
 
 Edit — match this exact `old_string`:
 
@@ -106,7 +115,7 @@ Replace with:
 Each node records hashes, actor, toolchain or container version, model involvement, inputs, timestamp, and consent scope. The node and edge taxonomy is modeled as a domain extension of the W3C PROV data model (PROV's `Entity`, `Activity`, and `Agent`), not a bespoke ontology, so external tools can consume the graph and GT100K inherits PROV's interoperability and existing extensions (e.g. ProvONE, PROV-ML). [STD-03, ENG]
 ```
 
-- [ ] **Step 2: Replace the EvidencePacket / integrity paragraph**
+- [x] **Step 2: Replace the EvidencePacket / integrity paragraph**
 
 Edit — match this exact `old_string`:
 
@@ -120,12 +129,12 @@ Replace with:
 Each milestone creates an `EvidencePacket` serialized as a Workflow Run RO-Crate (WRROC) profile, with source and artifact hashes, failed branches, reproducible run instructions, verifier output, contribution attestations, assistance lineage, review evidence, and outcomes tied to an exact release. Following WRROC, each packet separates *prospective* provenance (the declared plan — a `Transformation` node) from *retrospective* provenance (what actually ran — the `Attempt` node's inputs, outputs, tools, timing, and success). The integrity backbone is a content-addressed DAG over a collision-resistant hash (SHA-256 or BLAKE3) whose per-milestone Merkle roots are attested with in-toto and anchored in an append-only transparency log (§19.2), following the SLSA pattern of publishing a hash-of-attestation plus a transparency-log pointer. WASI verifiers run without ambient network or filesystem access. C2PA / Content Credentials are supported only as an optional *export* format for public artifacts (§21), never as the integrity layer. [STD-04, STD-05, ENG]
 ```
 
-- [ ] **Step 3: Verify**
+- [x] **Step 3: Verify**
 
 Run: `grep -n "Workflow Run RO-Crate\|integrity backbone is a content-addressed DAG\|never as the integrity layer" PRD.md`
 Expected: three matches in §19. Run `grep -c "C2PA or in-toto attestations" PRD.md` → expected `0` (old backbone phrasing gone).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add PRD.md
@@ -139,7 +148,7 @@ git commit -m "docs: PRD §19 integrity backbone to in-toto + transparency log; 
 **Files:**
 - Modify: `PRD.md` (§19, new paragraph after the EvidencePacket paragraph)
 
-- [ ] **Step 1: Insert the integrity note**
+- [x] **Step 1: Insert the integrity note**
 
 Edit — match this exact `old_string` (the end of the paragraph edited in Task 2):
 
@@ -159,12 +168,12 @@ Replace with:
 Evaluation combines deterministic checks with human judgment.
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `grep -n "Integrity is anchor-conditional" PRD.md`
 Expected: one match, positioned before "Evaluation combines deterministic checks".
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add PRD.md
@@ -178,7 +187,7 @@ git commit -m "docs: PRD §19 state tamper-evidence is anchor-conditional, not i
 **Files:**
 - Modify: `PRD.md` (§19, new paragraph after the anchor-conditional note)
 
-- [ ] **Step 1: Insert the erasure paragraph**
+- [x] **Step 1: Insert the erasure paragraph**
 
 Edit — match this exact `old_string`:
 
@@ -198,12 +207,12 @@ GT100K therefore treats the root anchor and its independent monitoring — not c
 Evaluation combines deterministic checks with human judgment.
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `grep -n "Erasure without breaking the chain\|crypto-shredding" PRD.md`
 Expected: at least the §19 match here (Task 7 adds §19.2/§34 mentions later).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add PRD.md
@@ -217,7 +226,7 @@ git commit -m "docs: PRD §19 reconcile immutability with erasure via off-graph 
 **Files:**
 - Modify: `PRD.md` (§19, the "Open-ended work" evaluation paragraph)
 
-- [ ] **Step 1: Replace the comparative-judgment paragraph**
+- [x] **Step 1: Replace the comparative-judgment paragraph**
 
 Edit — match this exact `old_string`:
 
@@ -231,12 +240,12 @@ Replace with:
 Open-ended work uses adaptive comparative judgment (ACJ) and anchored rubrics. ACJ reliability must be reported as the de-biased all-play-all coefficient, not the inflated adaptive figure, and the comparison budget is set from evidence (published guidance indicates a substantially higher per-item comparison count than early estimates); validating that budget against reviewer capacity is a pre-live item (§19.2). [E3] Calibrated model panels may *suggest* comparisons, and conformal-interval triggers *route* uncertain work to more human review — both run shadow-only during the Month 4 beta and gain no triage authority over a live grade until calibrated and validated (§8.5, §19.2). A human owns the result. A sampled live defense asks the student to explain a decision, modify a component, or reconstruct a step. Reviewers treat discontinuity as a sampling signal, never proof of misconduct.
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `grep -n "de-biased all-play-all\|shadow-only during the Month 4 beta and gain no triage" PRD.md`
 Expected: both matches in §19.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add PRD.md
@@ -250,7 +259,7 @@ git commit -m "docs: PRD §19 report de-biased ACJ reliability; keep model panel
 **Files:**
 - Modify: `PRD.md` (§19.1 acceptance-criteria list)
 
-- [ ] **Step 1: Append two bullets to the §19.1 list**
+- [x] **Step 1: Append two bullets to the §19.1 list**
 
 Edit — match this exact `old_string`:
 
@@ -270,12 +279,12 @@ Replace with:
 ## 20. Reality Gateway
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `grep -n "verifies without C2PA\|renders their off-graph payloads unrecoverable" PRD.md`
 Expected: two matches, both before "## 20. Reality Gateway".
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add PRD.md
@@ -294,7 +303,7 @@ This task records the **significant difficulties** as deferred, gated items. It 
 **Interfaces:**
 - Consumes: "transparency log (§19.2)" and "pre-live hardening item (§19.2)" references written in Tasks 2 and 4.
 
-- [ ] **Step 1: Insert §19.2 immediately before §20**
+- [x] **Step 1: Insert §19.2 immediately before §20**
 
 Edit — match this exact `old_string` (created by Task 6):
 
@@ -323,7 +332,7 @@ Residual evidence gap: the assessment-validity (D3) and erasure-precedent (D2) c
 ## 20. Reality Gateway
 ```
 
-- [ ] **Step 2: Add the pre-live gate row to §33.1**
+- [x] **Step 2: Add the pre-live gate row to §33.1**
 
 Edit — match this exact `old_string`:
 
@@ -338,7 +347,7 @@ Replace with:
 | EvidenceGraph integrity & erasure *(pre-live gate, §19.2)* | External transparency-log inclusion and consistency proofs verify for 100 percent of sampled milestone roots; split-view monitoring active; a per-subject crypto-shred renders payloads unrecoverable while retained packets still verify; comparative-judgment comparison budget validated against reviewer capacity with de-biased reliability reported. | EvidenceGraph owner and safeguarding; block live enrollment until met. |
 ```
 
-- [ ] **Step 3: Add two risk rows to §34**
+- [x] **Step 3: Add two risk rows to §34**
 
 Edit — match this exact `old_string`:
 
@@ -354,12 +363,12 @@ Replace with:
 | Immutable provenance blocks a child's right to erasure. | Store payloads encrypted off-graph under per-subject keys; erase by crypto-shredding with keyref tombstones (§19, §29); complete and adversarially test the full erasure workflow before live PII exists (§19.2 D2); minimize on-graph fields to renderable-anonymous. |
 ```
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 Run: `grep -n "### 19.2 Post-M4 hardening\|EvidenceGraph integrity & erasure\|Provenance integrity is over-trusted\|Immutable provenance blocks" PRD.md`
 Expected: four matches (§19.2 header, §33.1 row, two §34 rows).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add PRD.md
@@ -373,7 +382,7 @@ git commit -m "docs: PRD add §19.2 post-M4 hardening gate + §33.1/§34 pre-liv
 **Files:**
 - Modify: `PRD.md` (§21, the C2PA sentence)
 
-- [ ] **Step 1: Replace the §21 C2PA sentence**
+- [x] **Step 1: Replace the §21 C2PA sentence**
 
 Edit — match this exact `old_string`:
 
@@ -387,12 +396,12 @@ Replace with:
 W3C Verifiable Credentials carry issuer, subject, competency, evidence, validity, and status data. C2PA / Content Credentials optionally link *public* artifacts to provenance records for external viewers; it is an export convenience, not the integrity backbone (§19), and its known limitations (strippable manifests, no truth guarantee) are assumed. [SEC-01]
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `grep -n "export convenience, not the integrity backbone" PRD.md`
 Expected: one match in §21.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add PRD.md
@@ -406,7 +415,7 @@ git commit -m "docs: PRD §21 clarify C2PA is export-only, not the integrity bac
 **Files:**
 - Modify: `PRD.md` (§24 evidence-anchor list)
 
-- [ ] **Step 1: Insert new anchors after [SRC-10]**
+- [x] **Step 1: Insert new anchors after [SRC-10]**
 
 Edit — match this exact `old_string`:
 
@@ -430,14 +439,14 @@ Replace with:
 ## 25. Architecture mandate
 ```
 
-- [ ] **Step 2: Verify anchor ids resolve**
+- [x] **Step 2: Verify anchor ids resolve**
 
 Run: `grep -c "\[STD-03\|\[STD-04\|\[STD-05\|\[SEC-01\|\[SEC-02\|\[SRC-11" PRD.md`
 Expected: each id appears at its §24 definition **and** at every use site introduced in Tasks 2–8. Then run:
 `for id in STD-03 STD-04 STD-05 SEC-01 SEC-02 SRC-11; do echo -n "$id: "; grep -c "$id" PRD.md; done`
 Expected: every count ≥ 1 (definition present); STD-04, STD-05, SEC-01, SRC-11 ≥ 2 (defined and cited).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add PRD.md
@@ -451,7 +460,7 @@ git commit -m "docs: PRD §24 add PROV, RO-Crate, SLSA/in-toto, C2PA-security, A
 **Files:**
 - Modify: `PRD.md` (§0 change log, above the v1.5 block)
 
-- [ ] **Step 1: Insert the v1.6 entry**
+- [x] **Step 1: Insert the v1.6 entry**
 
 Edit — match this exact `old_string`:
 
@@ -479,17 +488,17 @@ Replace with:
 **v1.5 (2026-07-19) — phased Academic Mastery OS delivery (build on the partner engine first, in-house second).**
 ```
 
-- [ ] **Step 2: Update the header version pointer if present**
+- [x] **Step 2: Update the header version pointer if present**
 
 Run: `grep -n "PRD v1.5\|v1\.5\b\|version.*1\.5" PRD.md | head`
 Expected: if a document-version header names v1.5, bump it to v1.6 in the same commit. If none, skip.
 
-- [ ] **Step 3: Verify**
+- [x] **Step 3: Verify**
 
 Run: `grep -n "v1.6 (2026-07-19) — EvidenceGraph provenance hardening" PRD.md`
 Expected: one match, immediately under `## 0. Change log` and above the v1.5 entry.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add PRD.md
@@ -502,32 +511,32 @@ git commit -m "docs: PRD §0 add v1.6 change log for EvidenceGraph provenance ha
 
 **Files:** none (verification only; fix inline if a check fails)
 
-- [ ] **Step 1: No stray "C2PA as backbone" language remains**
+- [x] **Step 1: No stray "C2PA as backbone" language remains**
 
 Run: `grep -n "C2PA" PRD.md`
 Expected: mentions only at §19 (export-only), §19.1 (verifies without C2PA), §21 (export convenience), §24 [STD-02] and [SEC-01]. No mention presents C2PA as an integrity/tamper mechanism.
 
-- [ ] **Step 2: All new cross-references resolve**
+- [x] **Step 2: All new cross-references resolve**
 
 Run: `grep -n "§19.2" PRD.md`
 Expected: §19.2 is defined once (header) and referenced from §19 body, §33.1 row, and §34 rows.
 
-- [ ] **Step 3: Section ordering intact**
+- [x] **Step 3: Section ordering intact**
 
 Run: `grep -n "^### 19.1\|^### 19.2\|^## 20. Reality Gateway" PRD.md`
 Expected: 19.1, then 19.2, then §20, in that order.
 
-- [ ] **Step 4: Evidence ids all defined**
+- [x] **Step 4: Evidence ids all defined**
 
 Run: `for id in STD-03 STD-04 STD-05 SEC-01 SEC-02 SRC-11; do grep -q "\*\*\[$id" PRD.md && echo "$id defined" || echo "$id MISSING DEFINITION"; done`
 Expected: all six report "defined".
 
-- [ ] **Step 5: Diff size within PR budget**
+- [x] **Step 5: Diff size within PR budget**
 
 Run: `git diff --stat origin/main -- PRD.md`
 Expected: well under ~400 changed lines. If over, split the PR (e.g. Tasks 2–6 in one PR, Tasks 7–10 in a follow-up).
 
-- [ ] **Step 6: Open the PR**
+- [x] **Step 6: Open the PR**
 
 ```bash
 git push -u origin dev/prd/evidencegraph-hardening

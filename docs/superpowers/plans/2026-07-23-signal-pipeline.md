@@ -1,5 +1,13 @@
 # Signal Pipeline Implementation Plan
 
+> **Complete, and since extended.** `@gt100k/signal-pipeline` ships `deriveSignals` with the cells,
+> novelty, returns, skips and actions modules, the fixtures, the demo and the README;
+> `docs/prd/passionApps.md` records C1 as done in engine form. Two changes have landed on top of it.
+> The engine grew a mode-less `Presence` path, so an `open` is dropped as `no-work-mode` and marks
+> its artifact's cells engaged rather than earning a decline against the very cell the child chose
+> (`../specs/2026-07-27-measurement-lane.md` §2). And the emitter this plan waited on now exists:
+> `apps/mvp-jul24` emits real interactions into it.
+
 > **Amended 2026-07-27.** `deriveSkips` returns `{ events, silentSessions }` rather than a bare
 > `CellEvent[]`, and a session in which the child engaged NOTHING now yields no skip and no decline.
 > A child who loaded the map, could not find a way in and left used to earn one disconfirming event
@@ -28,14 +36,14 @@
 
 **Files:** `passion/packages/signal-pipeline/{package.json,tsconfig.json,src/index.ts,test/smoke.test.ts}`; modify root `tsconfig.json`.
 
-- [ ] **Step 1: Failing smoke test**
+- [x] **Step 1: Failing smoke test**
 ```ts
 // test/smoke.test.ts
 import { describe, it, expect } from "vitest";
 import * as pkg from "../src/index.js";
 describe("package", () => { it("imports", () => { expect(pkg).toBeTypeOf("object"); }); });
 ```
-- [ ] **Step 2: package.json**
+- [x] **Step 2: package.json**
 ```json
 {
   "name": "@gt100k/signal-pipeline", "version": "0.1.0", "private": true, "type": "module",
@@ -44,7 +52,7 @@ describe("package", () => { it("imports", () => { expect(pkg).toBeTypeOf("object
   "scripts": { "test": "vitest run --root ../.. packages/signal-pipeline/test" }
 }
 ```
-- [ ] **Step 3: tsconfig.json**
+- [x] **Step 3: tsconfig.json**
 ```json
 {
   "extends": "../../../tsconfig.base.json",
@@ -53,10 +61,10 @@ describe("package", () => { it("imports", () => { expect(pkg).toBeTypeOf("object
   "include": ["src/**/*.ts", "test/**/*.ts"]
 }
 ```
-- [ ] **Step 4:** `src/index.ts` → `export {};`
-- [ ] **Step 5:** **append** `{ "path": "passion/packages/signal-pipeline" }` to root `tsconfig.json` references (keep all existing).
-- [ ] **Step 6: Install + gate** → `pnpm install` then `pnpm exec tsc -b && pnpm test` → PASS.
-- [ ] **Step 7: Commit** → `git add passion/packages/signal-pipeline tsconfig.json pnpm-lock.yaml && git commit -m "feat(signal): scaffold @gt100k/signal-pipeline"`
+- [x] **Step 4:** `src/index.ts` → `export {};`
+- [x] **Step 5:** **append** `{ "path": "passion/packages/signal-pipeline" }` to root `tsconfig.json` references (keep all existing).
+- [x] **Step 6: Install + gate** → `pnpm install` then `pnpm exec tsc -b && pnpm test` → PASS.
+- [x] **Step 7: Commit** → `git add passion/packages/signal-pipeline tsconfig.json pnpm-lock.yaml && git commit -m "feat(signal): scaffold @gt100k/signal-pipeline"`
 
 ---
 
@@ -66,7 +74,7 @@ describe("package", () => { it("imports", () => { expect(pkg).toBeTypeOf("object
 
 **Interfaces:** `Interaction`, `SurfacedRecord`, `PipelineConfig`, `DroppedInteraction`, `DEFAULTS`; `NoveltyIndex` with `firstExposureMap(interactions, surfaced)` + `isNovelty(index, kidId, cellKey, timestamp, cfg)`.
 
-- [ ] **Step 1: Failing test**
+- [x] **Step 1: Failing test**
 ```ts
 // test/novelty.test.ts
 import { describe, it, expect } from "vitest";
@@ -90,8 +98,8 @@ describe("novelty", () => {
   });
 });
 ```
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: model.ts**
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: model.ts**
 ```ts
 // src/model.ts
 import type { DepthSignal } from "@gt100k/two-axis-tagging";
@@ -125,7 +133,7 @@ export const DEFAULTS: PipelineConfig = { noveltyWindowDays: 3, secondaryWeight:
 export type DropReason = "unknown-artifact" | "unresolved-action" | "invalid-for-artifact";
 export interface DroppedInteraction { readonly interaction: Interaction; readonly reason: DropReason; }
 ```
-- [ ] **Step 4: novelty.ts**
+- [x] **Step 4: novelty.ts**
 ```ts
 // src/novelty.ts
 import type { PipelineConfig } from "./model.js";
@@ -155,7 +163,7 @@ export function isNovelty(idx: Map<string, number>, kidId: string, cellKey: stri
   return ageDays <= cfg.noveltyWindowDays;
 }
 ```
-- [ ] **Step 5: Run** → PASS. **Step 6: Commit** → `feat(signal): inputs, config, novelty engine`.
+- [x] **Step 5: Run** → PASS. **Step 6: Commit** → `feat(signal): inputs, config, novelty engine`.
 
 ---
 
@@ -165,7 +173,7 @@ export function isNovelty(idx: Map<string, number>, kidId: string, cellKey: stri
 
 **Interfaces:** consumes 009 `resolveEngagedModes`, `Artifact`, `ActionEvent`; 011 `serializeCellKey`. Produces `BuiltEvent` + `buildActionEvents(interactions, catalog, config): { built: BuiltEvent[]; dropped: DroppedInteraction[] }`. A `BuiltEvent` carries the `ActionEvent` **plus** the `depth`, `sessionId`, `artifact`, and `cellKey` so downstream steps never re-`find` the source interaction (kills the latent kid+artifact+timestamp key-collision the reviewer flagged).
 
-- [ ] **Step 1: Failing test**
+- [x] **Step 1: Failing test**
 ```ts
 // test/actions.test.ts
 import { describe, it, expect } from "vitest";
@@ -209,8 +217,8 @@ describe("buildActionEvents", () => {
   });
 });
 ```
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: actions.ts**
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: actions.ts**
 ```ts
 // src/actions.ts
 import type { Artifact, ActionEvent } from "@gt100k/two-axis-tagging";
@@ -267,7 +275,7 @@ export function buildActionEvents(
 }
 ```
 > `r.reason` is `"invalid-for-artifact" | "unresolved"`; map `"unresolved"` → `"unresolved-action"`.
-- [ ] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(signal): ActionEvent construction (BuiltEvent) with drop rules`.
+- [x] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(signal): ActionEvent construction (BuiltEvent) with drop rules`.
 
 ---
 
@@ -277,7 +285,7 @@ export function buildActionEvents(
 
 **Interfaces:** consumes 011 `CellEvent`, `isDepthFamily`, `clamp01`; 009 `Artifact`, `ActionEvent`. Produces `actionToCellEvents(event, artifact, config): CellEvent[]`.
 
-- [ ] **Step 1: Failing test**
+- [x] **Step 1: Failing test**
 ```ts
 // test/cells.test.ts
 import { describe, it, expect } from "vitest";
@@ -315,8 +323,8 @@ describe("actionToCellEvents", () => {
   });
 });
 ```
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: cells.ts** — `depth` is passed explicitly (the 009 `ActionEvent` has no depth field; `BuiltEvent.depth` carries it from the source `Interaction`).
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: cells.ts** — `depth` is passed explicitly (the 009 `ActionEvent` has no depth field; `BuiltEvent.depth` carries it from the source `Interaction`).
 ```ts
 // src/cells.ts
 import type { Artifact, ActionEvent } from "@gt100k/two-axis-tagging";
@@ -341,7 +349,7 @@ export function actionToCellEvents(event: ActionEvent, artifact: Artifact, depth
   return out;
 }
 ```
-- [ ] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(signal): ActionEvent→CellEvent mapping`.
+- [x] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(signal): ActionEvent→CellEvent mapping`.
 
 ---
 
@@ -353,7 +361,7 @@ export function actionToCellEvents(event: ActionEvent, artifact: Artifact, depth
 
 > **Design (the fix for the reviewer's blocker):** a `skip` is disconfirming evidence about a **known interest** — a cell the child has *actually engaged before*. So skips key on the artifact's **engaged** cells (derived from `built`), NOT on `affordedModes[0]` (which may be a mode the child never engages — the golden `synth`'s first afforded mode `perform` is never engaged, so the old design could never emit a skip). Novelty is measured against each engaged cell's **engaged** first-exposure. A skip fires when: the artifact was surfaced in a session, the child had engaged one of its cells before (non-novel by then), and did NOT engage that cell in the surfaced session.
 
-- [ ] **Step 1: Failing test**
+- [x] **Step 1: Failing test**
 ```ts
 // test/skips.test.ts
 import { describe, it, expect } from "vitest";
@@ -389,8 +397,8 @@ describe("deriveSkips", () => {
   });
 });
 ```
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: skips.ts**
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: skips.ts**
 ```ts
 // src/skips.ts
 import type { Artifact } from "@gt100k/two-axis-tagging";
@@ -445,7 +453,7 @@ export function deriveSkips(
   return out;
 }
 ```
-- [ ] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(signal): skip derivation keyed on engaged cells`.
+- [x] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(signal): skip derivation keyed on engaged cells`.
 
 ---
 
@@ -455,7 +463,7 @@ export function deriveSkips(
 
 **Interfaces:** `deriveSignals(input): { actionEvents, cellEvents, dropped }`.
 
-- [ ] **Step 1: pipeline.ts** (uses `built` — no fragile key/`find`)
+- [x] **Step 1: pipeline.ts** (uses `built` — no fragile key/`find`)
 ```ts
 // src/pipeline.ts
 import type { Artifact, ActionEvent } from "@gt100k/two-axis-tagging";
@@ -486,7 +494,7 @@ export function deriveSignals(input: DeriveInput): { actionEvents: ActionEvent[]
 ```
 > Skip-novelty is measured against each engaged cell's first-exposure (inside `deriveSkips`); a surfaced artifact the child never engaged emits no skip (we only "skip" a known interest). Document this in the README.
 
-- [ ] **Step 2: fixtures** — `src/__fixtures__/pipeline.fixtures.ts` (VERBATIM; sized so the build cell reaches `confident` under 011's 14-day recency decay: 5 non-novel voluntary returns clustered near `NOW`, + a depth signal, + a skip).
+- [x] **Step 2: fixtures** — `src/__fixtures__/pipeline.fixtures.ts` (VERBATIM; sized so the build cell reaches `confident` under 011's 14-day recency decay: 5 non-novel voluntary returns clustered near `NOW`, + a depth signal, + a skip).
 ```ts
 // src/__fixtures__/pipeline.fixtures.ts
 import type { Artifact } from "@gt100k/two-axis-tagging";
@@ -517,7 +525,7 @@ export const SURFACED: SurfacedRecord[] = [
   { kidId: "k", artifactId: "synth-01", sessionId: "surf1", timestamp: "2026-02-27T00:00:00.000Z" },
 ];
 ```
-- [ ] **Step 3: Failing integration test**
+- [x] **Step 3: Failing integration test**
 ```ts
 // test/pipeline.test.ts
 import { describe, it, expect } from "vitest";
@@ -542,8 +550,8 @@ describe("deriveSignals", () => {
 });
 ```
 > If `confident` is marginally false on first run, nudge the fixture (add one more near-`NOW` return) until it holds — the target is `evidenceMass ≥ 3` and `2·sd ≤ 0.35`. The 5-return fixture above computes to `evidenceMass ≈ 4.9`, `2·sd ≈ 0.27` → confident.
-- [ ] **Step 4: index.ts** → `export * from "./model.js"; export * from "./novelty.js"; export * from "./actions.js"; export * from "./cells.js"; export * from "./skips.js"; export * from "./pipeline.js";`
-- [ ] **Step 5: demo.ts + demo-run.ts + demo.test.ts** (verbatim)
+- [x] **Step 4: index.ts** → `export * from "./model.js"; export * from "./novelty.js"; export * from "./actions.js"; export * from "./cells.js"; export * from "./skips.js"; export * from "./pipeline.js";`
+- [x] **Step 5: demo.ts + demo-run.ts + demo.test.ts** (verbatim)
 ```ts
 // src/demo.ts
 import { runInference } from "@gt100k/interest-inference";
@@ -574,9 +582,9 @@ describe("demo", () => {
 });
 ```
 Add a `"demo": "tsx src/demo-run.ts"` script to package.json.
-- [ ] **Step 6: README** — Signal Firewall; the `deriveSignals` contract; novelty/voluntary/skip rules (incl. "skip fires only on a previously-engaged, non-novel cell"); `pnpm --filter @gt100k/signal-pipeline test`.
-- [ ] **Step 7: Install + gate** → `pnpm install` then `pnpm exec tsc -b && pnpm test` → PASS.
-- [ ] **Step 8: Commit** → `git add passion/packages/signal-pipeline tsconfig.json pnpm-lock.yaml && git commit -m "feat(signal): deriveSignals orchestrator + fixtures + demo + README"`
+- [x] **Step 6: README** — Signal Firewall; the `deriveSignals` contract; novelty/voluntary/skip rules (incl. "skip fires only on a previously-engaged, non-novel cell"); `pnpm --filter @gt100k/signal-pipeline test`.
+- [x] **Step 7: Install + gate** → `pnpm install` then `pnpm exec tsc -b && pnpm test` → PASS.
+- [x] **Step 8: Commit** → `git add passion/packages/signal-pipeline tsconfig.json pnpm-lock.yaml && git commit -m "feat(signal): deriveSignals orchestrator + fixtures + demo + README"`
 
 ---
 

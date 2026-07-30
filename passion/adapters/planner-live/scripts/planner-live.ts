@@ -10,6 +10,7 @@ const SEED_RESOURCES: readonly CuratedResource[] = [
     title: "Home Studio: Recording & Mixing Basics",
     url: "https://curated.example/music/home-studio-basics",
     domainPath: ["music-sound", "production"],
+    pursuits: ["making-tracks"],
     affordedModes: ["build", "compose"],
     reputation: 0.92,
     ageTiers: ["12-14"],

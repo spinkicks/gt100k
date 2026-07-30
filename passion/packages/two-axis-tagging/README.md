@@ -27,15 +27,28 @@ import { StubTagger } from "@gt100k/tagger-stub";
 const tax = createTaxonomy();
 const ref: ArtifactRef = { id: "synth-01", kind: "gadget", label: "Synth" };
 
-// suggest → validate → accept (mints a novel sub-topic parented to its cabin if needed)
-const suggestion = await new StubTagger().suggest(ref);
+// `StubTagger` is seeded by artifact id; an unseeded id gets a zero-confidence fallback, which is
+// below CONFIDENCE_FLOOR and therefore routes to review rather than becoming a tag.
+const tagger = new StubTagger({
+  "synth-01": {
+    domainPath: ["music-sound", "audio-systems"],
+    affordedModes: ["perform", "build", "investigate"],
+    confidence: 0.9,
+    rationale: "seeded",
+  },
+});
+
+// suggest → validate → accept (mints a novel sub-topic parented to its cabin if needed).
+// `acceptSuggestion` THROWS on a suggestion that fails validation; call `validateSuggestion`
+// first when the caller is meant to route a rejection somewhere rather than crash.
+const suggestion = await tagger.suggest(ref);
 const artifact = acceptSuggestion(tax, ref, suggestion);
 
 // A child's raw action resolves the engaged mode(s), constrained to the afforded set.
 const r = resolveEngagedModes(artifact, { artifactId: "synth-01", actionType: "play" });
 if (r.ok) {
   const cell = `${serializePath(artifact.domainPath)}::${r.engagedModes.primary}`;
-  // e.g. "music-sound/audio-systems::perform"
+  // "music-sound/audio-systems::perform"
 }
 ```
 
@@ -52,7 +65,7 @@ matrix. See `test/demo.test.ts` for its golden output.
 | `WORK_MODES`, `WORK_MODE_DEFS`, `isWorkMode` | The fixed 9 work-modes (golden order) + machine-readable definitions. |
 | `makeArtifact` | Validate + construct an `Artifact` against a taxonomy (rejects unresolvable paths / empty afforded set). |
 | `resolveEngagedModes`, `ACTION_MODE_RULES` | The engaged-mode resolver: `actionType` → afforded-constrained, priority-ordered modes; unresolved/invalid never coerced. |
-| `validateSuggestion`, `acceptSuggestion`, `CONFIDENCE_FLOOR` | The suggest → validate → accept pipeline (mints novel sub-topics, carries confidence through). |
+| `validateSuggestion`, `acceptSuggestion`, `CONFIDENCE_FLOOR` | The suggest → validate → accept pipeline (mints novel sub-topics, carries confidence through). A suggestion below `CONFIDENCE_FLOOR` (`0.5`) is rejected as `low-confidence`; `acceptSuggestion` throws on any rejection. |
 | `krippendorffAlphaNominal`, `topicTrust`, `applyTrust`, `ALPHA_BAR` | The validity harness: inter-tagger α + the per-topic `TRUSTED`/`PROVISIONAL` gate. |
 | `createReviewQueue` | Headless review-queue surface (low-confidence auto-tags + `unresolved` actions + audit sample). |
 

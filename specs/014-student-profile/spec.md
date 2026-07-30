@@ -2,7 +2,7 @@
 
 **Feature Branch**: `014-student-profile`
 **Created**: 2026-07-23
-**Status**: Draft (loop-ready) — **but DELIVERED.** The code is merged and tested; it lives in `@gt100k/student-profile`. This field tracks the state of the DOCUMENT, which was never revised after the build, and a reader comparing it against the ✅ in `docs/prd/passionApps.md` should trust the packages and their tests over either. What a ✅ does *not* mean is that a child can use it end to end.
+**Status**: Delivered, and unrevised since. `@gt100k/student-profile`, the `@gt100k/profile-store-fs` adapter and the console rewire are all merged and green, and the console renders genuinely-derived reads rather than the old hand-built seed. Two details below have drifted from the code: §3.3 filters the return timeline on `kind === "voluntary_return"`, but 011 retired that kind and `gates.ts` now filters `cross_day_return`; and §3.2's step 6 return value predates the `surfaced` log the amendment above added, which `runCycle` does carry.
 
 **Input**: G1 in `docs/prd/passionApps.md` (Student Profile / Longitudinal Record) plus the **orchestration** that wires the four discovery engines end-to-end. Today each engine is a separate green package and the guide console reads a **hand-built** `InterestRead`. This feature adds a durable **per-kid Student Profile** (identity + priors + an append-only interaction log + the kid's hypothesis store) and a pure **orchestrator** that runs the real chain — `@gt100k/signal-pipeline` (012) → `@gt100k/interest-inference` (011) → `@gt100k/hypothesis-store` (013) — and rewires `@gt100k/guide-console` to render **genuinely-derived** reads. Grounding: `passionApps.md` §0 "Key wiring gap", `passion/CONTEXT.md`, and the 011/012/013 specs.
 

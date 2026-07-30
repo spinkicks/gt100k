@@ -60,28 +60,77 @@ export type SolveVerb = "inspect" | "tinker" | "play" | "assemble" | "fix";
  * One row per gadget in `gadgets/registry.ts`. Coverage in both directions is a test: a gadget with
  * no row emits into nothing, and a row with no gadget files engagement under a domain nothing in
  * the app can reach.
+ *
+ * THE FOURTH COLUMN IS THE MENU, NOT THE MODEL, and the two are deliberately allowed to disagree.
+ * `domainPath` is where a belief is held and must not move — a child who plays Balance Scale is
+ * telling us about `math-puzzles/foundations` whatever tile they found it under. `pursuits` is which
+ * of the 44 tiles on the wall offers the game, and the wall is a different partition of the same
+ * space: there is no Foundations tile, because "fractions, ratios and functions" share no action
+ * program and so are not a thing a child does.
+ *
+ * The comment below used to warn that filing the four maths activities under competition maths would
+ * "serve AMC papers to a child who liked a balance scale, because `curatedForCell` matches on path".
+ * That was correct when one key did both jobs. It no longer applies to the tile: the belief still
+ * lands on `foundations`, and the shelf a child reaches from the Competition Maths tile is the one
+ * curated for that tile — Beast Academy's playground and Math Kangaroo's grade 1-2 papers, which is
+ * exactly the right next thing for a child who liked a balance scale. The old objection is the
+ * reason to keep the columns separate rather than a reason to leave the games unreachable.
  */
 const ROWS = [
   // logic-games — deduction. Solving these is investigating a system, not building one.
-  ["nonogram", ["math-puzzles", "logic-puzzles"], ["investigate"], "inspect"],
-  ["mirror", ["math-puzzles", "logic-puzzles"], ["investigate"], "inspect"],
+  //
+  // All three go to the Sudoku tile, whose shelf is NRICH, Transum and Mathigon's puzzle calendars
+  // — general grid deduction rather than sudoku specifically, which is what these are.
+  ["nonogram", ["math-puzzles", "logic-puzzles"], ["investigate"], "inspect", ["sudoku"]],
+  ["mirror", ["math-puzzles", "logic-puzzles"], ["investigate"], "inspect", ["sudoku"]],
   // Routing a pipe network is construction first, deduction second. Both are engaged, so both
   // are afforded, and the verb the emitter uses decides which is primary.
-  ["pipes", ["math-puzzles", "logic-puzzles"], ["build", "investigate"], "tinker"],
-  ["chess", ["games-strategy", "chess"], ["perform"], "play"],
+  ["pipes", ["math-puzzles", "logic-puzzles"], ["build", "investigate"], "tinker", ["sudoku"]],
+  ["chess", ["games-strategy", "chess"], ["perform"], "play", ["chess"]],
 
-  // math — foundational, not competition.
-  ["balance-scale", ["math-puzzles", "foundations"], ["investigate"], "inspect"],
-  ["fraction-laser", ["math-puzzles", "foundations"], ["investigate"], "inspect"],
-  ["function-machine", ["math-puzzles", "foundations"], ["investigate"], "inspect"],
-  ["ratio-mixing", ["math-puzzles", "foundations"], ["investigate"], "inspect"],
-  ["gear-train", ["making-engineering"], ["build", "investigate"], "tinker"],
+  // math — foundational, not competition. On the belief axis. See the note above for why the tile
+  // is Competition Maths anyway.
+  [
+    "balance-scale",
+    ["math-puzzles", "foundations"],
+    ["investigate"],
+    "inspect",
+    ["competition-maths"],
+  ],
+  [
+    "fraction-laser",
+    ["math-puzzles", "foundations"],
+    ["investigate"],
+    "inspect",
+    ["competition-maths"],
+  ],
+  [
+    "function-machine",
+    ["math-puzzles", "foundations"],
+    ["investigate"],
+    "inspect",
+    ["competition-maths"],
+  ],
+  [
+    "ratio-mixing",
+    ["math-puzzles", "foundations"],
+    ["investigate"],
+    "inspect",
+    ["competition-maths"],
+  ],
+  // Assembling a working train of gears, offered from the tile about machines that move.
+  ["gear-train", ["making-engineering"], ["build", "investigate"], "tinker", ["robotics"]],
 
   // music — all three are audible-only judgements about musical structure, so all three are theory.
   // tune-repair is the odd one on the mode axis: it is a correction, not a verdict.
-  ["tune-repair", ["music-sound", "music-theory"], ["debug", "investigate"], "fix"],
-  ["chord-fit", ["music-sound", "music-theory"], ["investigate"], "inspect"],
-  ["downbeat", ["music-sound", "music-theory"], ["investigate"], "inspect"],
+  //
+  // The tiles recover the distinction the taxonomy cannot hold, which the note below records as a
+  // limitation: pitch goes to Singing, harmony to Songwriting, rhythm to Drums. The belief is still
+  // one cell, so nothing about the model changes — but a child who was held by rhythm now finds the
+  // game under the tile about rhythm.
+  ["tune-repair", ["music-sound", "music-theory"], ["debug", "investigate"], "fix", ["singing"]],
+  ["chord-fit", ["music-sound", "music-theory"], ["investigate"], "inspect", ["songwriting"]],
+  ["downbeat", ["music-sound", "music-theory"], ["investigate"], "inspect", ["drums"]],
 
   // code — three different subtopics on purpose, which is the fix for the limitation recorded above:
   // the music room's three activities all land on `music-theory`, so it cannot say what held a child.
@@ -97,14 +146,21 @@ const ROWS = [
   // taxonomy but a use of it: writing a specification that holds for inputs you cannot see is what
   // that subtopic names. It affords `build` alone -- see §4.1 of the design spec for why `explain` was
   // NOT added to ACTION_MODE_RULES to make a second mode reachable.
-  ["sprite-loop", ["code-computers", "game-dev"], ["build"], "assemble"],
-  ["trace-repair", ["code-computers", "python"], ["debug", "investigate"], "fix"],
-  ["teach-helper", ["code-computers", "agentic-engineering"], ["build"], "assemble"],
+  ["sprite-loop", ["code-computers", "game-dev"], ["build"], "assemble", ["game-jam"]],
+  ["trace-repair", ["code-computers", "python"], ["debug", "investigate"], "fix", ["programming"]],
+  [
+    "teach-helper",
+    ["code-computers", "agentic-engineering"],
+    ["build"],
+    "assemble",
+    ["programming"],
+  ],
 ] as const satisfies readonly (readonly [
   string,
   readonly [string] | readonly [string, string],
   readonly string[],
   SolveVerb,
+  readonly string[],
 ])[];
 
 export const CATALOG: ReadonlyMap<string, Artifact> = new Map(
@@ -158,6 +214,18 @@ export function pathForTopic(topicId: string): Artifact["domainPath"] | undefine
 /** Solve verb per gadget, derived from the same rows so the two cannot disagree. */
 const VERBS: ReadonlyMap<string, SolveVerb> = new Map(ROWS.map(([id, , , verb]) => [id, verb]));
 
+/**
+ * Which browse tiles offer each gadget, keyed by pursuit id.
+ *
+ * Opaque strings rather than a `PursuitId` import, for the same reason `CuratedResource.pursuits`
+ * is: this package is held by the wall as data with no engine behind it, and pulling
+ * `@gt100k/pursuits` in here would put the catalogue's prose into a bundle that does not need it.
+ * `test/catalog.test.ts` checks the ids against the real catalogue, which a test can do freely.
+ */
+const PURSUITS: ReadonlyMap<string, readonly string[]> = new Map(
+  ROWS.map(([id, , , , pursuits]) => [id, pursuits]),
+);
+
 /** The artifact for a gadget id, or undefined when the id is not one of ours. */
 export function artifactFor(gadgetId: string): Artifact | undefined {
   return CATALOG.get(gadgetId);
@@ -166,4 +234,9 @@ export function artifactFor(gadgetId: string): Artifact | undefined {
 /** The verb a solve on this gadget represents. See {@link SolveVerb}. */
 export function solveVerbFor(gadgetId: string): SolveVerb | undefined {
   return VERBS.get(gadgetId);
+}
+
+/** The browse tiles that offer this gadget. Empty for an id that is not one of ours. */
+export function pursuitsFor(gadgetId: string): readonly string[] {
+  return PURSUITS.get(gadgetId) ?? [];
 }

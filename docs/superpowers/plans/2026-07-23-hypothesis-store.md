@@ -1,5 +1,12 @@
 # Hypothesis Store + Guide Console Implementation Plan
 
+> **Complete.** `@gt100k/hypothesis-store` ships the lifecycle, the graduation gate, the human
+> transitions and the console view-model, and `docs/prd/passionApps.md` records C4 as done. The
+> `apps/guide-console` this plan scaffolded in Tasks 6–7 has since grown into the cockpit for
+> everything guide-facing — seven tabs (Overview, Hypotheses, Wellbeing, Plan, Family, Access, Maps)
+> plus an Evidence base route — so its shape is much larger than what is described here, but the
+> `window.__qa` contract and the LOOP_QA gate set up here are still what drives it.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development or superpowers:executing-plans. Checkbox steps.
 
 **Goal:** Build `013-hypothesis-store` per its spec — a headless domain package (`@gt100k/hypothesis-store`: hypotheses, lifecycle, graduation gate, console view-model) + a Next guide-console app (`@gt100k/guide-console`) that renders it and implements the `window.__qa` contract.
@@ -22,8 +29,8 @@
 
 **Files:** `passion/packages/hypothesis-store/{package.json,tsconfig.json,src/index.ts,test/smoke.test.ts}`; root `tsconfig.json`.
 
-- [ ] **Step 1: smoke test** (as in prior plans).
-- [ ] **Step 2: package.json**
+- [x] **Step 1: smoke test** (as in prior plans).
+- [x] **Step 2: package.json**
 ```json
 {
   "name": "@gt100k/hypothesis-store", "version": "0.1.0", "private": true, "type": "module",
@@ -32,11 +39,11 @@
   "scripts": { "test": "vitest run --root ../.. packages/hypothesis-store/test" }
 }
 ```
-- [ ] **Step 3: tsconfig.json** — extends base; `references: [{ "path": "../interest-inference" }]`; include src+test.
-- [ ] **Step 4:** `src/index.ts` → `export {};`
-- [ ] **Step 5:** append `{ "path": "passion/packages/hypothesis-store" }` to root references (keep existing).
-- [ ] **Step 6: Install + gate** → `pnpm install` then `pnpm exec tsc -b && pnpm test` → PASS.
-- [ ] **Step 7: Commit** → `feat(hypothesis): scaffold @gt100k/hypothesis-store` (add pnpm-lock.yaml).
+- [x] **Step 3: tsconfig.json** — extends base; `references: [{ "path": "../interest-inference" }]`; include src+test.
+- [x] **Step 4:** `src/index.ts` → `export {};`
+- [x] **Step 5:** append `{ "path": "passion/packages/hypothesis-store" }` to root references (keep existing).
+- [x] **Step 6: Install + gate** → `pnpm install` then `pnpm exec tsc -b && pnpm test` → PASS.
+- [x] **Step 7: Commit** → `feat(hypothesis): scaffold @gt100k/hypothesis-store` (add pnpm-lock.yaml).
 
 ---
 
@@ -46,7 +53,7 @@
 
 **Interfaces:** `Lifecycle`, `LIFECYCLE`, `TransitionKind`, `canTransition(from, to, by): boolean`, constants `GAP_DAYS/MIN_TERM_DAYS/MIN_REVIEW_CYCLES/SPIKE_THRESHOLD`.
 
-- [ ] **Step 1: Failing test**
+- [x] **Step 1: Failing test**
 ```ts
 // test/lifecycle.test.ts
 import { describe, it, expect } from "vitest";
@@ -69,8 +76,8 @@ describe("transition legality", () => {
   });
 });
 ```
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: lifecycle.ts**
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: lifecycle.ts**
 ```ts
 // src/lifecycle.ts
 export const LIFECYCLE = ["EXPLORING", "EMERGING", "CANDIDATE", "ACTIVE", "PARKED", "CONTESTED", "REOPENED"] as const;
@@ -102,7 +109,7 @@ export function canTransition(from: Lifecycle, to: Lifecycle, by: TransitionKind
   return table.some(([f, t]) => f === from && t === to);
 }
 ```
-- [ ] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(hypothesis): lifecycle states + transition legality`.
+- [x] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(hypothesis): lifecycle states + transition legality`.
 
 ---
 
@@ -112,7 +119,7 @@ export function canTransition(from: Lifecycle, to: Lifecycle, by: TransitionKind
 
 **Interfaces:** `InterestHypothesis`, `HumanActor`, `HistoryEntry`, `HypothesisStore`, `emptyStore()`, `applyInterestRead(store, kidId, read, now): HypothesisStore`.
 
-- [ ] **Step 1: Failing test**
+- [x] **Step 1: Failing test**
 ```ts
 // test/apply.test.ts
 import { describe, it, expect } from "vitest";
@@ -147,8 +154,8 @@ describe("applyInterestRead", () => {
   });
 });
 ```
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: model.ts**
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: model.ts**
 ```ts
 // src/model.ts
 import type { Attribution, DomainPath } from "@gt100k/interest-inference";
@@ -174,7 +181,7 @@ export interface InterestHypothesis {
 
 export interface HypothesisStore { readonly byId: Readonly<Record<string, InterestHypothesis>>; }
 ```
-- [ ] **Step 4: store.ts**
+- [x] **Step 4: store.ts**
 ```ts
 // src/store.ts
 import type { InterestRead } from "@gt100k/interest-inference";
@@ -226,7 +233,7 @@ export function withState(h: InterestHypothesis, to: InterestHypothesis["state"]
   return { ...h, state: to, updatedAt: now, history: [...h.history, entry] };
 }
 ```
-- [ ] **Step 5: Run** → PASS. **Step 6: Commit** → `feat(hypothesis): records + applyInterestRead (auto lifecycle)`.
+- [x] **Step 5: Run** → PASS. **Step 6: Commit** → `feat(hypothesis): records + applyInterestRead (auto lifecycle)`.
 
 ---
 
@@ -236,7 +243,7 @@ export function withState(h: InterestHypothesis, to: InterestHypothesis["state"]
 
 **Interfaces:** `GateStatus`, `evaluateGate(hyp, returnTimeline, now): GateStatus` where `returnTimeline: readonly string[]` = voluntary, non-novel return timestamps for the cell.
 
-- [ ] **Step 1: Failing golden test**
+- [x] **Step 1: Failing golden test**
 ```ts
 // test/gate.test.ts
 import { describe, it, expect } from "vitest";
@@ -270,8 +277,8 @@ describe("evaluateGate", () => {
   });
 });
 ```
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: gate.ts**
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: gate.ts**
 ```ts
 // src/gate.ts
 import type { InterestHypothesis } from "./model.js";
@@ -303,7 +310,7 @@ export function evaluateGate(hyp: InterestHypothesis, returnTimeline: readonly s
   return { gapSurvived, durable, hasArtifact, passed: gapSurvived && durable && hasArtifact };
 }
 ```
-- [ ] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(hypothesis): Phase 2→3 graduation gate`.
+- [x] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(hypothesis): Phase 2→3 graduation gate`.
 
 ---
 
@@ -313,7 +320,7 @@ export function evaluateGate(hyp: InterestHypothesis, returnTimeline: readonly s
 
 **Interfaces:** `promote(store, id, actor, opts)`, `park(store, id, actor, reason)`, `reopen(store, id, actor)`, `contest(store, id, actor, reason)` — all return a new store or throw.
 
-- [ ] **Step 1: Failing test**
+- [x] **Step 1: Failing test**
 ```ts
 // test/actions.test.ts
 import { describe, it, expect } from "vitest";
@@ -350,8 +357,8 @@ describe("human transitions", () => {
   });
 });
 ```
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: actions.ts**
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: actions.ts**
 ```ts
 // src/actions.ts
 import type { HypothesisStore, HumanActor } from "./model.js";
@@ -407,7 +414,7 @@ export function contest(store: HypothesisStore, id: string, actor: HumanActor, r
 }
 ```
 > `require` shadows a global-ish name; rename to `mustGet` to avoid confusion with CommonJS `require` (ESM has none, but keep it clean). Use `mustGet` in the final code.
-- [ ] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(hypothesis): human-owned transitions (promote/park/reopen/contest)`.
+- [x] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(hypothesis): human-owned transitions (promote/park/reopen/contest)`.
 
 ---
 
@@ -417,8 +424,8 @@ export function contest(store: HypothesisStore, id: string, actor: HumanActor, r
 
 **Interfaces:** `HypothesisCard`, `consoleViewModel(store, kidId, gates?): { kidId; cards: HypothesisCard[] }`.
 
-- [ ] **Step 1: Failing test** — assert cards ranked by lowerBound; `supporting`/`disconfirming` present as separate arrays; `allowedActions` reflects state per `actionsFor` (EMERGING → `["promote","park","contest"]`; CANDIDATE → `["promote","park","contest"]`; ACTIVE/CONTESTED → `["park"]`; PARKED → `["reopen"]`); no scalar `score` field. (Assert against the exact `actionsFor` output — do not hand-write a shorter list.)
-- [ ] **Step 2: Implement view.ts**
+- [x] **Step 1: Failing test** — assert cards ranked by lowerBound; `supporting`/`disconfirming` present as separate arrays; `allowedActions` reflects state per `actionsFor` (EMERGING → `["promote","park","contest"]`; CANDIDATE → `["promote","park","contest"]`; ACTIVE/CONTESTED → `["park"]`; PARKED → `["reopen"]`); no scalar `score` field. (Assert against the exact `actionsFor` output — do not hand-write a shorter list.)
+- [x] **Step 2: Implement view.ts**
 ```ts
 // src/view.ts
 import type { HypothesisStore, InterestHypothesis } from "./model.js";
@@ -456,8 +463,8 @@ export function consoleViewModel(store: HypothesisStore, kidId: string, gates: R
   return { kidId, cards };
 }
 ```
-- [ ] **Step 3: index.ts** → export lifecycle, model, store, gate, actions, view.
-- [ ] **Step 4: Run + Commit** → `feat(hypothesis): console view-model`.
+- [x] **Step 3: index.ts** → export lifecycle, model, store, gate, actions, view.
+- [x] **Step 4: Run + Commit** → `feat(hypothesis): console view-model`.
 
 ---
 
@@ -465,7 +472,7 @@ export function consoleViewModel(store: HypothesisStore, kidId: string, gates: R
 
 **Files:** `passion/apps/guide-console/{package.json,next.config.mjs,tsconfig.json,app/layout.tsx,app/page.tsx,app/qa.ts,app/seed.ts,app/console-state.ts,test/state.test.ts,vitest.config.mts}`; root `tsconfig.json`.
 
-- [ ] **Step 1: package.json** (mirror evidence-explorer)
+- [x] **Step 1: package.json** (mirror evidence-explorer)
 ```json
 {
   "name": "@gt100k/guide-console", "version": "0.1.0", "private": true,
@@ -477,9 +484,9 @@ export function consoleViewModel(store: HypothesisStore, kidId: string, gates: R
   "devDependencies": { "@types/react": "^18.3.12", "@types/react-dom": "^18.3.1" }
 }
 ```
-- [ ] **Step 2: next.config.mjs** — `transpilePackages: ["@gt100k/hypothesis-store","@gt100k/interest-inference"]` + the `.js→.ts/.tsx` extensionAlias (mirror evidence-explorer).
-- [ ] **Step 3: seed.ts** — build a synthetic store from a seeded `InterestRead` (one confident candidate + one thin cell) via `applyInterestRead`.
-- [ ] **Step 4: console-state.ts** — a pure `buildQaState(store, kidId, selectedId)` → `{ selectedId, count, states }` (used by both the page and the CI test).
+- [x] **Step 2: next.config.mjs** — `transpilePackages: ["@gt100k/hypothesis-store","@gt100k/interest-inference"]` + the `.js→.ts/.tsx` extensionAlias (mirror evidence-explorer).
+- [x] **Step 3: seed.ts** — build a synthetic store from a seeded `InterestRead` (one confident candidate + one thin cell) via `applyInterestRead`.
+- [x] **Step 4: console-state.ts** — a pure `buildQaState(store, kidId, selectedId)` → `{ selectedId, count, states }` (used by both the page and the CI test).
 ```ts
 // app/console-state.ts
 import type { HypothesisStore } from "@gt100k/hypothesis-store";
@@ -489,16 +496,16 @@ export function buildQaState(store: HypothesisStore, kidId: string, selectedId: 
   return { selectedId, count: cards.length, states: cards.map((h) => h.state) };
 }
 ```
-- [ ] **Step 5: qa.ts** — a helper that installs `window.__qa` given `state()` + `primaryAction()`; called from the page's effect. `ready:true`, `error:null`.
-- [ ] **Step 6: page.tsx** — a client component: holds `store` in `useState` (seeded), renders `consoleViewModel(store, kidId).cards` (each card: domain/mode, state, separate supporting/disconfirming lists, lowerBound, allowedActions as buttons); buttons call `promote/park/reopen` (with a hardcoded synthetic `guide` actor + a passed-gate/signoff toggle for the demo) and `setStore`.
+- [x] **Step 5: qa.ts** — a helper that installs `window.__qa` given `state()` + `primaryAction()`; called from the page's effect. `ready:true`, `error:null`.
+- [x] **Step 6: page.tsx** — a client component: holds `store` in `useState` (seeded), renders `consoleViewModel(store, kidId).cards` (each card: domain/mode, state, separate supporting/disconfirming lists, lowerBound, allowedActions as buttons); buttons call `promote/park/reopen` (with a hardcoded synthetic `guide` actor + a passed-gate/signoff toggle for the demo) and `setStore`.
   - **`window.__qa` must not go stale.** Keep the latest `store`/`selectedId` in a `ref` updated every render, and install `window.__qa` once with `state: () => buildQaState(ref.current.store, kidId, ref.current.selectedId)` and `primaryAction: () => ref.current.promoteTopCandidate()` — so the harness's before/after `state()` diff reads *current* state, never a stale closure. (Equivalently, re-run the install effect on `[store, selectedId]`; the ref pattern is simpler + avoids re-registering.)
   - `ready:true`, `error:null` set once mounted. Reduced-motion respected; WCAG roles/labels; calm styling (no game).
-- [ ] **Step 7: layout.tsx** — minimal HTML shell + a `globals.css` (calm, legible, `prefers-reduced-motion`).
-- [ ] **Step 8: vitest.config.mts** — node env; include `test/**`.
-- [ ] **Step 9: state.test.ts** — CI test on `buildQaState` + `consoleViewModel` wiring (pure; no jsdom). The real DOM is verified by `LOOP_QA`.
-- [ ] **Step 10:** **Do NOT add the app to root `tsconfig.json` references.** Confirmed: root references list only packages + adapters, never apps (`apps/evidence-explorer` is absent). Next apps are typechecked/built by `next build` + their own tsconfig, not the root `tsc -b` composite. Only `passion/packages/hypothesis-store` goes in root references (Task 0 Step 5). The guide-console app gets its own `tsconfig.json` (extends base, `jsx: "preserve"`, `noEmit`, includes `app/**` + `test/**`; mirror `apps/evidence-explorer/tsconfig.json`).
-- [ ] **Step 11: Install + gate** → `pnpm install`; `pnpm exec tsc -b && pnpm test`; `pnpm --filter @gt100k/guide-console build`.
-- [ ] **Step 12: Commit** → `feat(guide-console): Next app scaffold + window.__qa + seed`.
+- [x] **Step 7: layout.tsx** — minimal HTML shell + a `globals.css` (calm, legible, `prefers-reduced-motion`).
+- [x] **Step 8: vitest.config.mts** — node env; include `test/**`.
+- [x] **Step 9: state.test.ts** — CI test on `buildQaState` + `consoleViewModel` wiring (pure; no jsdom). The real DOM is verified by `LOOP_QA`.
+- [x] **Step 10:** **Do NOT add the app to root `tsconfig.json` references.** Confirmed: root references list only packages + adapters, never apps (`apps/evidence-explorer` is absent). Next apps are typechecked/built by `next build` + their own tsconfig, not the root `tsc -b` composite. Only `passion/packages/hypothesis-store` goes in root references (Task 0 Step 5). The guide-console app gets its own `tsconfig.json` (extends base, `jsx: "preserve"`, `noEmit`, includes `app/**` + `test/**`; mirror `apps/evidence-explorer/tsconfig.json`).
+- [x] **Step 11: Install + gate** → `pnpm install`; `pnpm exec tsc -b && pnpm test`; `pnpm --filter @gt100k/guide-console build`.
+- [x] **Step 12: Commit** → `feat(guide-console): Next app scaffold + window.__qa + seed`.
 
 > **Check evidence-explorer's root-reference treatment first** (Step 10): Next apps often aren't part of the `tsc -b` composite (they build via `next build`). Match whatever `apps/evidence-explorer` does so `tsc -b` stays green.
 
@@ -506,13 +513,13 @@ export function buildQaState(store: HypothesisStore, kidId: string, selectedId: 
 
 ### Task 7: Console interactions + a11y + LOOP_QA (P6)
 
-- [ ] **Step 1:** Wire promote/park/reopen buttons → store transitions → re-render; a selection state drives `selectedId`.
-- [ ] **Step 2:** `primaryAction()` promotes the top gate-passed candidate (for the demo, seed one hypothesis whose gate passes so `primaryAction` is live and changes `state()`).
-- [ ] **Step 3:** a11y pass — semantic landmarks, labelled buttons, focus states, color-independent status, `prefers-reduced-motion` disables motion.
-- [ ] **Step 4:** empty/first-run state ("No hypotheses yet — exploration in progress").
-- [ ] **Step 5:** README (what the console shows; the `window.__qa` contract; `LOOP_QA` run command).
-- [ ] **Step 6: LOOP_QA note** — run with `LOOP_QA=1 LOOP_QA_CMD="pnpm --filter @gt100k/guide-console start" LOOP_QA_PORT=<port>` (after `next build`); the gate drives the console, reads `window.__qa.state()` before/after a promote, and hard-fails if the primary action is dead.
-- [ ] **Step 7: Commit** → `feat(guide-console): interactions, a11y, primary action`.
+- [x] **Step 1:** Wire promote/park/reopen buttons → store transitions → re-render; a selection state drives `selectedId`.
+- [x] **Step 2:** `primaryAction()` promotes the top gate-passed candidate (for the demo, seed one hypothesis whose gate passes so `primaryAction` is live and changes `state()`).
+- [x] **Step 3:** a11y pass — semantic landmarks, labelled buttons, focus states, color-independent status, `prefers-reduced-motion` disables motion.
+- [x] **Step 4:** empty/first-run state ("No hypotheses yet — exploration in progress").
+- [x] **Step 5:** README (what the console shows; the `window.__qa` contract; `LOOP_QA` run command).
+- [x] **Step 6: LOOP_QA note** — run with `LOOP_QA=1 LOOP_QA_CMD="pnpm --filter @gt100k/guide-console start" LOOP_QA_PORT=<port>` (after `next build`); the gate drives the console, reads `window.__qa.state()` before/after a promote, and hard-fails if the primary action is dead.
+- [x] **Step 7: Commit** → `feat(guide-console): interactions, a11y, primary action`.
 
 ---
 

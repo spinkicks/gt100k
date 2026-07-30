@@ -1,5 +1,9 @@
 # Interest Inference Engine Implementation Plan
 
+> **Complete.** `@gt100k/interest-inference` ships every module this plan names — `model`, `fold`,
+> `posterior`, `aggregate`, `inference` — plus the named fixtures, the demo, the README and fifteen
+> test files. `docs/prd/passionApps.md` records C3 as done.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build the `011-interest-inference` feature per `specs/011-interest-inference/spec.md` — a pure, deterministic Beta-Bernoulli engine that turns per-`(domain × work-mode)` behavioral events into calibrated beliefs, ranked 1–3 candidate spikes, and a topic-vs-style attribution, honestly reporting "not sure yet".
@@ -24,14 +28,14 @@
 
 **Files:** Create `passion/packages/interest-inference/{package.json,tsconfig.json,src/index.ts,test/smoke.test.ts}`; modify root `tsconfig.json`.
 
-- [ ] **Step 1: Failing smoke test**
+- [x] **Step 1: Failing smoke test**
 ```ts
 // test/smoke.test.ts
 import { describe, it, expect } from "vitest";
 import * as pkg from "../src/index.js";
 describe("package", () => { it("imports", () => { expect(pkg).toBeTypeOf("object"); }); });
 ```
-- [ ] **Step 2: package.json**
+- [x] **Step 2: package.json**
 ```json
 {
   "name": "@gt100k/interest-inference", "version": "0.1.0", "private": true, "type": "module",
@@ -39,14 +43,14 @@ describe("package", () => { it("imports", () => { expect(pkg).toBeTypeOf("object
   "scripts": { "test": "vitest run --root ../.. packages/interest-inference/test", "demo": "tsx src/demo-run.ts" }
 }
 ```
-- [ ] **Step 3: tsconfig.json**
+- [x] **Step 3: tsconfig.json**
 ```json
 { "extends": "../../../tsconfig.base.json", "compilerOptions": { "rootDir": ".", "outDir": "dist" }, "include": ["src/**/*.ts", "test/**/*.ts"] }
 ```
-- [ ] **Step 4: Entrypoint** → `// src/index.ts` → `export {};`
-- [ ] **Step 5: Root reference** — **append** `{ "path": "passion/packages/interest-inference" }` to root `tsconfig.json` `references` (keep EVERY existing entry, e.g. `passion/packages/evidence-explorer-view`; the resulting array must contain both). Do not replace the array.
-- [ ] **Step 6: Gate** → `pnpm exec tsc -b && pnpm test` → PASS.
-- [ ] **Step 7: Commit** → `git add passion/packages/interest-inference tsconfig.json && git commit -m "feat(inference): scaffold @gt100k/interest-inference package"`
+- [x] **Step 4: Entrypoint** → `// src/index.ts` → `export {};`
+- [x] **Step 5: Root reference** — **append** `{ "path": "passion/packages/interest-inference" }` to root `tsconfig.json` `references` (keep EVERY existing entry, e.g. `passion/packages/evidence-explorer-view`; the resulting array must contain both). Do not replace the array.
+- [x] **Step 6: Gate** → `pnpm exec tsc -b && pnpm test` → PASS.
+- [x] **Step 7: Commit** → `git add passion/packages/interest-inference tsconfig.json && git commit -m "feat(inference): scaffold @gt100k/interest-inference package"`
 
 ---
 
@@ -56,7 +60,7 @@ describe("package", () => { it("imports", () => { expect(pkg).toBeTypeOf("object
 
 **Interfaces:** Produces all types (`CellEvent`, `DomainPrior`, `CellBelief`, `Candidate`, `InterestRead`, `EventKind`, `DomainPath`), constants, `DEPTH_FAMILIES`, `isDepthFamily`, `serializeCellKey`, `recencyWeight`.
 
-- [ ] **Step 1: Failing test**
+- [x] **Step 1: Failing test**
 ```ts
 // test/model.test.ts
 import { describe, it, expect } from "vitest";
@@ -79,8 +83,8 @@ describe("model", () => {
   });
 });
 ```
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement model.ts**
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: Implement model.ts**
 ```ts
 // src/model.ts
 export const ALPHA0 = 1;
@@ -174,7 +178,7 @@ export function clamp01(x: number): number {
   return x < 0 ? 0 : x > 1 ? 1 : x;
 }
 ```
-- [ ] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(inference): types, constants, cell keys, recency`.
+- [x] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(inference): types, constants, cell keys, recency`.
 
 ---
 
@@ -184,7 +188,7 @@ export function clamp01(x: number): number {
 
 **Interfaces:** Produces `buildPrior(prior?)`, `CellAccum`, `foldEvents(events, priors, now): Map<string, CellAccum>`.
 
-- [ ] **Step 1: Failing test**
+- [x] **Step 1: Failing test**
 ```ts
 // test/fold.test.ts
 import { describe, it, expect } from "vitest";
@@ -224,8 +228,8 @@ describe("foldEvents", () => {
   });
 });
 ```
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement fold.ts**
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: Implement fold.ts**
 ```ts
 // src/fold.ts
 import type { CellEvent, DomainPath, DomainPrior } from "./model.js";
@@ -278,7 +282,7 @@ export function foldEvents(events: readonly CellEvent[], priors: readonly Domain
   return cells;
 }
 ```
-- [ ] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(inference): prior construction + evidence folding`.
+- [x] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(inference): prior construction + evidence folding`.
 
 ---
 
@@ -288,7 +292,7 @@ export function foldEvents(events: readonly CellEvent[], priors: readonly Domain
 
 **Interfaces:** Consumes `CellAccum`. Produces `toBelief(cell): CellBelief`.
 
-- [ ] **Step 1: Failing golden test**
+- [x] **Step 1: Failing golden test**
 ```ts
 // test/posterior.test.ts
 import { describe, it, expect } from "vitest";
@@ -320,8 +324,8 @@ describe("toBelief (golden)", () => {
   });
 });
 ```
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement posterior.ts**
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: Implement posterior.ts**
 ```ts
 // src/posterior.ts
 import type { CellAccum } from "./fold.js";
@@ -353,7 +357,7 @@ export function toBelief(cell: CellAccum): CellBelief {
   };
 }
 ```
-- [ ] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(inference): posterior stats + supporting/disconfirming reasons`.
+- [x] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(inference): posterior stats + supporting/disconfirming reasons`.
 
 ---
 
@@ -363,7 +367,7 @@ export function toBelief(cell: CellAccum): CellBelief {
 
 **Interfaces:** Consumes `CellBelief`. Produces `rankCandidates(beliefs): CellBelief[]`, `attributionFor(target, all): Attribution`.
 
-- [ ] **Step 1: Failing test** (uses preset means to test attribution in isolation)
+- [x] **Step 1: Failing test** (uses preset means to test attribution in isolation)
 ```ts
 // test/aggregate.test.ts
 import { describe, it, expect } from "vitest";
@@ -412,8 +416,8 @@ describe("attributionFor", () => {
   });
 });
 ```
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement aggregate.ts**
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: Implement aggregate.ts**
 ```ts
 // src/aggregate.ts
 import type { Attribution, CellBelief } from "./model.js";
@@ -443,7 +447,7 @@ export function attributionFor(target: CellBelief, all: readonly CellBelief[]): 
   return "mixed";
 }
 ```
-- [ ] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(inference): candidate ranking + topic-vs-style attribution`.
+- [x] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(inference): candidate ranking + topic-vs-style attribution`.
 
 ---
 
@@ -453,7 +457,7 @@ export function attributionFor(target: CellBelief, all: readonly CellBelief[]): 
 
 **Interfaces:** Produces `runInference(events, priors, now): InterestRead`; `runDemo()`.
 
-- [ ] **Step 1: Failing orchestrator test**
+- [x] **Step 1: Failing orchestrator test**
 ```ts
 // test/inference.test.ts
 import { describe, it, expect } from "vitest";
@@ -487,8 +491,8 @@ describe("runInference", () => {
   });
 });
 ```
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement inference.ts**
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: Implement inference.ts**
 ```ts
 // src/inference.ts
 import type { CellBelief, CellEvent, Candidate, DomainPrior, InterestRead } from "./model.js";
@@ -514,7 +518,7 @@ export function runInference(events: readonly CellEvent[], priors: readonly Doma
   return { cells, candidates: [...attrByKey.values()] };
 }
 ```
-- [ ] **Step 3b: Create the named `src/__fixtures__/` file (spec §6 deliverable) + an end-to-end golden test.**
+- [x] **Step 3b: Create the named `src/__fixtures__/` file (spec §6 deliverable) + an end-to-end golden test.**
 
 ```ts
 // src/__fixtures__/interest.fixtures.ts
@@ -565,8 +569,8 @@ describe("golden end-to-end", () => {
 
 > Closes the reviewer's gap (SC-4 was previously split across `fold.test` + a hand-built `CellAccum` in `posterior.test`). `fold.test.ts` may import `GOLDEN_EVENTS`/`GOLDEN_PRIORS`/`GOLDEN_NOW` from this file instead of inlining.
 
-- [ ] **Step 4: Public index.ts** → `export * from "./model.js"; export * from "./fold.js"; export * from "./posterior.js"; export * from "./aggregate.js"; export * from "./inference.js";`
-- [ ] **Step 5: demo.ts + demo.test.ts**
+- [x] **Step 4: Public index.ts** → `export * from "./model.js"; export * from "./fold.js"; export * from "./posterior.js"; export * from "./aggregate.js"; export * from "./inference.js";`
+- [x] **Step 5: demo.ts + demo.test.ts**
 ```ts
 // src/demo.ts
 import type { CellEvent, DomainPrior, InterestRead } from "./model.js";
@@ -604,9 +608,9 @@ Also add a print-only runner (keeps `runDemo` side-effect-free so importing it n
 import { runDemo } from "./demo.js";
 console.log(JSON.stringify(runDemo(), null, 2));
 ```
-- [ ] **Step 6: README** — mirror `evidence-graph/README.md`: what it is (events → beliefs → candidates), the Beta-Bernoulli model + constants table, the `InterestRead` shape, "no scalar/label" guardrail, `pnpm --filter @gt100k/interest-inference test`.
-- [ ] **Step 7: Gate** → `pnpm exec tsc -b && pnpm test` → PASS.
-- [ ] **Step 8: Commit** → `feat(inference): orchestrator, public API, demo, README`.
+- [x] **Step 6: README** — mirror `evidence-graph/README.md`: what it is (events → beliefs → candidates), the Beta-Bernoulli model + constants table, the `InterestRead` shape, "no scalar/label" guardrail, `pnpm --filter @gt100k/interest-inference test`.
+- [x] **Step 7: Gate** → `pnpm exec tsc -b && pnpm test` → PASS.
+- [x] **Step 8: Commit** → `feat(inference): orchestrator, public API, demo, README`.
 
 ---
 

@@ -8,9 +8,10 @@ import { SIZES } from "../puzzles/Nonogram/Nonogram";
 import { sessionLog } from "../signals/session";
 import GadgetOverlay from "./GadgetOverlay";
 
-// The real `sessionLog` is a no-op (EMISSION_ENABLED is false while the backdrop emits nothing), so
-// the wiring under test would run against a sink and assert nothing. Same swap `signals/wiring.test`
-// makes, and for the same reason: bypass the on/off decision, keep the actual wiring code running.
+// A fresh log per test rather than the app-wide singleton. The original reason for this swap was
+// that `EMISSION_ENABLED` was false and the real `sessionLog` was a no-op, so there was nothing to
+// assert against; emission has since been switched on, and the swap now earns its place by keeping
+// each file's records out of every other file's. Same swap `signals/wiring.test` makes.
 vi.mock("../signals/session", async () => {
   const { createSignalLog } = await import("../signals/log");
   return {

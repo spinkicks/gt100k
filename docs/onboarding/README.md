@@ -47,8 +47,13 @@ Read **`AGENTS.md`** at the gt100k root — branching (`dev/<lane>/<slug>`), PR 
 
 ## 5. Daily flow (interactive)
 1. `cd ~/code/gt100k`
-2. `claude` (or `/speckit-specify` to turn PRD sections into tasks) — or `codex` for the Codex agent
-3. Work on a `dev/<lane>/<slug>` branch → open a PR → CI must pass → squash-merge.
+2. First time only: `npm i -g pnpm && pnpm install`. The repo is a pnpm workspace under `passion/`
+   (packages, adapters and apps) and `teammate-setup.sh` does not install pnpm or the dependencies,
+   so a fresh clone will not build or test until you do this.
+3. `claude` (or `/speckit-specify` to turn PRD sections into tasks) — or `codex` for the Codex agent
+4. Work on a `dev/<lane>/<slug>` branch → open a PR → CI must pass → squash-merge.
+5. Before pushing, run what CI runs: `pnpm lint`, `pnpm typecheck`, `pnpm test`. CI also typechecks,
+   tests and builds each app individually, so green locally is necessary and not sufficient.
 
 ## 6. Running the factory (autonomous loop)
 The harness lives in `~/code/gt100k-factory/harness`. To autonomously build a loop-ready repo:
@@ -86,6 +91,7 @@ claude mcp list                           # expect context7, aws-knowledge, terr
 gh auth status                            # GitHub authed
 ls ~/code/gt100k ~/code/gt100k-factory    # both repos cloned
 grep -q CLAUDE_AUTOCOMPACT_PCT_OVERRIDE ~/.claude/settings.json && echo "hygiene set"
+cd ~/code/gt100k && pnpm install && pnpm test   # the repo builds and its suite passes
 ~/code/gt100k-factory/harness/run-loop.sh ~/code/gt100k --check   # harness plumbing (optional)
 ```
 Report which checks passed. Then read `~/code/gt100k/AGENTS.md` before doing any work.

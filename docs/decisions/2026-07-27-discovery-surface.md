@@ -43,10 +43,17 @@ load-bearing, not which one to build:
   (`PROJECT.md`, *The shelf is the D5 maintenance path*). That is the launcher's "follow a vetted
   link and go" in miniature, already stocked and already justified on different grounds.
   **But it is a different store:** the shelf's links are hand-authored in
-  `mvp-jul24/src/shelf/cards.data.ts` and nothing in the app called `curatedForCell` (it does now, from the shelf — 2026-07-27), so the
-  151-resource curated library and the shelf a child actually opens are today unconnected. Answering
+  `mvp-jul24/src/shelf/cards.data.ts` and nothing in the app called `curatedForCell`, so the curated
+  library and the shelf a child actually opens were unconnected when this was written. Answering
   the open question in favour of leaving means wiring one to the other; answering it in favour of
   staying means deciding whether two curated collections should continue to exist side by side.
+  **Wired later the same day:** `ShelfPanel` now calls `curatedForCell` and every card ends in a
+  "Where to go next" list drawn from the library (`2026-07-27-curated-library-standard.md`). That
+  removes the mechanical obstacle to "leaving" and answers none of the question above — the card
+  prose is still hand-authored, so two collections do still exist side by side, and which one is
+  load-bearing is still open. The library holds 274 resources today, over 35 subtopics and all 44
+  pursuits — up from 157 over 29 subtopics after the 2026-07-29 re-tag, which is recorded in the
+  standard.
 - **Staying** already exists, and is the thing a launcher cannot have: an active generative task per
   topic. §0 concedes this is the game's one property worth preserving, and the swap test
   (`PROJECT.md`, *Why the split exists*) is what keeps it evidence rather than wrapper engagement.
@@ -77,11 +84,22 @@ Recorded here rather than in a follow-up, because keeping the game means keeping
    dusk — removes most of it. **Keeping the game means that residual stays and is not closed by a
    text-label surface.** Rule 2 (uniform presentation) is therefore largely already met; rule 1 is
    not, and cannot be fully met by a surface whose choice affordance is a painting.
-2. **Rule 5 — log the offered set, including position.** `SurfacedRecord.position` (#203) was added
-   for a list, and a map has ordering too: signpost order, prop placement, what falls under the
-   cursor first. It applies here and is not currently emitted — and per `PROJECT.md`'s last logged
-   risk, **the backdrop backend's prop polygons and bookshelf emit nothing at all today**, so
-   emission is silently partial before position is even considered.
+2. ~~**Rule 5 — log the offered set, including position.**~~ **SATISFIED, 2026-07-27 (#216, #220).**
+   Both halves of the objection are closed: the prop polygons turned out to have been wired all
+   along (verified by a probe click rather than by reading the risk log, which had gone stale), the
+   shelf now emits `follow-source`, and `position` is emitted from both surfacings — the room reports
+   wall order, which is a genuine list, and the map reports reading order among the cabins actually
+   on offer.
+
+   The map's number carries a caveat in the code rather than a pretence. On a painted landscape what
+   pulls a young child's eye is salience, and memo 07 §2.3 puts motion at the top of that, so the two
+   glowing cabins do not owe their pull to scan order. What it honestly supports is a left-versus-right
+   comparison. Nothing reads it yet, deliberately: the size of a position effect can only be measured
+   in this surface with these children, and a position not captured at surfacing time cannot be
+   recovered afterwards.
+
+   So **rule 1 is the only one of the five the surface still fails**, and it is the one a painted
+   choice affordance cannot fully meet.
 
 Rule 4 (no streak, badge, point, notification or unlock) is already satisfied, and on a stronger
 argument than this doc's: nothing is gated, there is no completion-triggered offer, and the reason is
@@ -317,6 +335,15 @@ and then spent *less* time with what they picked. **Ages 4–5, below our band**
   non-monotonic. We would be back on the one signal we ruled out.
 - **Card art becomes the dominant choice cue**, in a grid where thumbnail and title are nearly all
   that distinguishes options. Javora, industrialised.
+
+  *Addendum, 2026-07-28.* This one has since been answered in the prototype rather than argued with.
+  The wall at `passion/apps/design-lab/app/browse` generates all forty-four tiles from a single
+  scaffold — one object, one camera, one light, one palette, no people — and then normalises them to
+  a common mean luminance, taking the raw renders' 3.84:1 spread down to 1.06:1, with a test that
+  fails the build if it reopens. Javora's manipulation was *between* treatments of the same content;
+  what this removes is the *within-set* variance, which is the form the objection takes here. It does
+  not answer the other bullets and it does not disturb the ruling: art was never the load-bearing
+  argument against the catalog, E4 was.
 - **Shallow sampling costs calendar time.** More items spreads a fixed number of sessions thinner,
   so each topic accumulates fewer cross-day returns before a decision can be made.
 - **Parents enter the measurement.** In catalog products adults do much of the searching, which

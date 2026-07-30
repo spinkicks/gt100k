@@ -6,12 +6,16 @@
     "dev": "next dev -p 3070",
     "build": "next build",
     "start": "next start -p 3070",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --config vitest.config.mts",
+    "build-art": "node scripts/build-art.mjs",
+    "shoot": "node scripts/shoot.mjs"
   },
   "dependencies": {
     "@gt100k/concierge": "workspace:*",
     "@gt100k/design-tokens": "workspace:*",
     "@gt100k/discovery-catalog": "workspace:*",
+    "@gt100k/pursuits": "workspace:*",
     "@gt100k/signal-pipeline": "workspace:*",
     "@gt100k/two-axis-tagging": "workspace:*",
     "chess.js": "^1.4.0",
@@ -22,6 +26,7 @@
   },
   "devDependencies": {
     "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1"
+    "@types/react-dom": "^18.3.1",
+    "playwright": "^1.48.0"
   }
 }

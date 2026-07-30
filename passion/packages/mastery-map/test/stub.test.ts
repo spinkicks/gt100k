@@ -29,6 +29,7 @@ const USABLE: CuratedResource = {
   title: "A worked introduction",
   url: "https://example.org/intro",
   domainPath: ["games-strategy", "chess"],
+  pursuits: ["chess"],
   affordedModes: ["investigate"],
   reputation: 0.9,
   ageTiers: ["9-11"],

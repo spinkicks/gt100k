@@ -1,5 +1,10 @@
 # D2 — Project Studio Implementation Plan
 
+> **Complete, with the evidence seam inverted afterwards.** The engine, the guardrails and the
+> studio app all shipped and `docs/prd/passionApps.md` records D2 as done. The one part of this plan
+> that no longer describes the code is where the graph mapping lives; the note below says exactly
+> how it moved, and Task 5's `@gt100k/evidence-sink-graph` is now `@gt100k/project-evidence-sink`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development or superpowers:executing-plans. Checkbox steps; commit after each task. The headless packages (Tasks 0–5) are loop-ready (`tsc -b` + `test`); the **app (Tasks 6–7) is built live** (polish-heavy) with screenshots against `specs/022-project-studio/references/fella-01…09.png`.
 
 > **Superseded in part (2026-07-27):** this plan shipped, but its evidence seam has since been inverted by
@@ -33,16 +38,16 @@
 
 ### Task 0: Scaffold `@gt100k/project-workspace`
 **Files:** `passion/packages/project-workspace/{package.json,tsconfig.json,src/index.ts,test/smoke.test.ts}`; root `tsconfig.json`.
-- [ ] Failing smoke test; `package.json` (`@gt100k/project-workspace`; deps `@gt100k/evidence-graph`, `@gt100k/specialization-planner`; `test` = `vitest run --root ../.. packages/project-workspace/test`); `tsconfig.json` (extends base; references `../evidence-graph`, `../specialization-planner`); `src/index.ts` → `export {};`; append root reference.
-- [ ] `pnpm install` → `pnpm exec tsc -b && pnpm test` PASS. **Commit** `feat(project-workspace): scaffold @gt100k/project-workspace`.
+- [x] Failing smoke test; `package.json` (`@gt100k/project-workspace`; deps `@gt100k/evidence-graph`, `@gt100k/specialization-planner`; `test` = `vitest run --root ../.. packages/project-workspace/test`); `tsconfig.json` (extends base; references `../evidence-graph`, `../specialization-planner`); `src/index.ts` → `export {};`; append root reference.
+- [x] `pnpm install` → `pnpm exec tsc -b && pnpm test` PASS. **Commit** `feat(project-workspace): scaffold @gt100k/project-workspace`.
 
 ---
 
 ### Task 1: Types + constants (P0)
 **Files:** `src/model.ts`, `test/model.test.ts`; barrel.
 **Produces:** `AgeBand`, `ProjectSource`, `WorkEventKind` (the 10), `WorkEvent`, `Project` (spec §4.1). Reuse `ProjectBrief` from `@gt100k/specialization-planner`.
-- [ ] Define the types exactly per §4.1 (append-only `events`; **no score/grade/reward field**). Constant `WORK_EVENT_KINDS` (the 10) for iteration/validation.
-- [ ] Unit test pins `WORK_EVENT_KINDS` (length 10, exact members). **Commit** `feat(project-workspace): Project + WorkEvent model`.
+- [x] Define the types exactly per §4.1 (append-only `events`; **no score/grade/reward field**). Constant `WORK_EVENT_KINDS` (the 10) for iteration/validation.
+- [x] Unit test pins `WORK_EVENT_KINDS` (length 10, exact members). **Commit** `feat(project-workspace): Project + WorkEvent model`.
 
 ---
 
@@ -52,8 +57,8 @@
 - `startProject(input: { brief: ProjectBrief; kidId; ageBand } | { selfAuthored: { kidId; ageBand; title; drivingQuestion; authenticMethod; audience } }, now: string): Project` — from a D1 brief (carries drivingQuestion/method/audience/craftScaffold, `source:"planner"`) or self-authored (`source:"self"`, blank events).
 - `logEvent(project: Project, event: Omit<WorkEvent,"id">, now: string): Project` — appends an immutable event with a derived id; validates `kind ∈ WORK_EVENT_KINDS`.
 - `hasPerseverance(project: Project): boolean` — true when an `outcome{stuck:true}` is followed by a `revision`/`attempt`/`artifact` that `refs` it.
-- [ ] **Failing tests:** brief → project carries fields + `source:"planner"`; self → blank + `source:"self"`; `logEvent` appends immutably (original unchanged); all 10 kinds accepted; the stuck→revision→artifact chain → `hasPerseverance:true`, a clean run → `false`.
-- [ ] Implement. **Commit** `feat(project-workspace): startProject + logEvent (append-only) + perseverance`.
+- [x] **Failing tests:** brief → project carries fields + `source:"planner"`; self → blank + `source:"self"`; `logEvent` appends immutably (original unchanged); all 10 kinds accepted; the stuck→revision→artifact chain → `hasPerseverance:true`, a clean run → `false`.
+- [x] Implement. **Commit** `feat(project-workspace): startProject + logEvent (append-only) + perseverance`.
 
 ---
 
@@ -63,48 +68,48 @@
 - `interface EvidenceSink { record(project: Project): EvidenceGraph }` (`EvidenceGraph` from `@gt100k/evidence-graph`).
 - `interface Hasher { hash(bytes: Uint8Array): string }` (matches `@gt100k/evidence-graph` `addNode`); `stubHasher` = a deterministic non-crypto digest (e.g. FNV-1a → hex), stable ids, no network.
 - `toEvidence(project: Project, hasher: Hasher): EvidenceGraph` — fold events via `addNode`/`addEdge` from `@gt100k/evidence-graph` using the **§4.3 mapping** (each kind → its closed `NodeType`, `actor.kind`, edges). `stubEvidenceSink.record = (p) => toEvidence(p, stubHasher)`.
-- [ ] **Failing golden test:** the fixture project → a graph where every node has a **valid closed `NodeType`**, edges resolve (`ai_help`→`Assistance`+`actor.kind:"model"`+`used_tool`; `outcome{stuck}`→`Outcome`+`contradicts`; `revision`→`Transformation`+`derived_from`; `artifact`→`Artifact`+`authored_by`; etc.); the graph passes the package's verifier; identical project → identical graph (stable ids).
-- [ ] Implement. **Commit** `feat(project-workspace): EvidenceSink port + stub + toEvidence mapping (closed taxonomy)`.
+- [x] **Failing golden test:** the fixture project → a graph where every node has a **valid closed `NodeType`**, edges resolve (`ai_help`→`Assistance`+`actor.kind:"model"`+`used_tool`; `outcome{stuck}`→`Outcome`+`contradicts`; `revision`→`Transformation`+`derived_from`; `artifact`→`Artifact`+`authored_by`; etc.); the graph passes the package's verifier; identical project → identical graph (stable ids).
+- [x] Implement. **Commit** `feat(project-workspace): EvidenceSink port + stub + toEvidence mapping (closed taxonomy)`.
 
 ---
 
 ### Task 4: Guardrail invariants (P3)
 **Files:** `test/guardrails.test.ts`.
-- [ ] Tests (spec §7 / SC-5, SC-6, SC-4):
+- [x] Tests (spec §7 / SC-5, SC-6, SC-4):
   - **no gamification:** `Project`, `WorkEvent`, and the `toEvidence` output carry **no** key matching `/score|grade|streak|points|xp|badge|rank|leaderboard|win|lose/i` (recursive shape scan + type-level check);
   - **AI help neutral:** an `ai_help` event → `Assistance` node, `actor.kind:"model"`, `used_tool` edge; nothing flags it negative/penalized;
   - **determinism/offline:** identical project → identical stub graph; `stubEvidenceSink`/`toEvidence` touch no network/clock (ids come from content only).
-- [ ] Fix if any invariant fails (non-negotiable). **Commit** `test(project-workspace): guardrail invariants (no gamification, AI-help neutral, deterministic)`.
+- [x] Fix if any invariant fails (non-negotiable). **Commit** `test(project-workspace): guardrail invariants (no gamification, AI-help neutral, deterministic)`.
 
 ---
 
 ### Task 5: Real adapter `@gt100k/evidence-sink-graph` (P4)
 **Files:** `passion/adapters/evidence-sink-graph/{package.json,tsconfig.json,src/index.ts,test/parse.test.ts}`; root `tsconfig.json`.
 **Interface:** `graphEvidenceSink(hasher?: Hasher): EvidenceSink` — real `EvidenceSink` using `@gt100k/evidence-graph` `addNode`/`addEdge` + a SHA-256 `Hasher` from `@gt100k/evidence-hash-node` (default). Same §4.3 mapping as the stub; a malformed event is **skipped, never throws** to the caller.
-- [ ] `package.json` (deps `@gt100k/project-workspace`, `@gt100k/evidence-graph`, `@gt100k/evidence-hash-node`; scoped test script); `tsconfig.json` references those; append root reference. `pnpm install`.
-- [ ] **Hermetic test** (no network): a fixture project → a schema-valid `EvidenceGraph` that the verifier accepts; a project with a malformed event → that event skipped, rest intact, no throw. (Never imported by a domain test.)
-- [ ] Implement, sharing the mapping with the domain `toEvidence` (import it; the adapter only swaps the hasher). **Commit** `feat(evidence-sink-graph): real EvidenceSink over @gt100k/evidence-graph (SHA-256), fail-safe`.
+- [x] `package.json` (deps `@gt100k/project-workspace`, `@gt100k/evidence-graph`, `@gt100k/evidence-hash-node`; scoped test script); `tsconfig.json` references those; append root reference. `pnpm install`.
+- [x] **Hermetic test** (no network): a fixture project → a schema-valid `EvidenceGraph` that the verifier accepts; a project with a malformed event → that event skipped, rest intact, no throw. (Never imported by a domain test.)
+- [x] Implement, sharing the mapping with the domain `toEvidence` (import it; the adapter only swaps the hasher). **Commit** `feat(evidence-sink-graph): real EvidenceSink over @gt100k/evidence-graph (SHA-256), fail-safe`.
 
 ---
 
 ### Task 6: `apps/project-studio` — cartoonish studio (P5) — built live
 **Files:** `passion/apps/project-studio/{package.json,tsconfig.json,next.config.mjs,vitest.config.mts,app/*,test/*}`; root `tsconfig.json`.
 **Reference the whole time:** `specs/022-project-studio/references/fella-01…09.png` (neo-brutalist cartoon: thick black outlines, flat colors, hard card shadows, condensed display type, mascot, floating shapes, grid).
-- [ ] Scaffold Next 14 app; **own cartoonish token set** (bright flat palette + thick-outline system + one condensed display face + a readable body face; self-hosted/local fonts, no external fetch); `transpilePackages: ["@gt100k/project-workspace","@gt100k/evidence-graph","@gt100k/specialization-planner"]`. `pnpm install`.
-- [ ] `app/seed.ts`: a small set of **`ProjectBrief` fixtures** (reuse the planner type) → `startProject` → seeded projects for **one demo child**; a self-authored starter. Deterministic.
-- [ ] `app/useStudio.ts`: single-child controller — the child's projects, the open project, `logEvent` actions (map the 10 kid-facing entries), `localStorage` persistence (namespaced; seed always present on fresh load), and the `window.__qa` install.
-- [ ] Studio UI (single child, **no switcher**): a project picker; the open project's **driving question + next step**; a **quest log** (the journey, entries by kind) + a **journey map** motif; an entry composer for each kind ("I tried…", "here's what happened / I got stuck", "I made this", "a robot helped with…", …); a **mascot** guide with warm punchy microcopy; artifacts attached **locally/by-reference**; a **simulated showcase** screen (mock audience, no real post). Celebrate trying/iterating/making — **no score/rank/streak**.
-- [ ] `app/qa.ts` + `app/studio-state.ts`: `window.__qa` = `ready`/`error`/`state()` (`{projectId,eventCount,kinds,hasPerseverance}`) / `primaryAction()` (log a seeded `attempt` → `eventCount`++ + DOM entry). Pure state helpers + a headless CI test (mirror guide-console `state.test.ts`).
-- [ ] a11y: AA contrast, keyboard nav + visible focus, alt text, 44px targets, `prefers-reduced-motion` alternative for all motion.
-- [ ] gate: `pnpm exec tsc -b` + `pnpm --filter @gt100k/project-studio test`; then `next build`; run `LOOP_QA` (stub sink, deterministic): `window.__qa.ready===true`, `primaryAction()` logs an attempt (state + DOM), no external fetch. Screenshot vs `references/`. **Commit** `feat(project-studio): cartoonish Type III project studio (quest log + evidence capture)`.
+- [x] Scaffold Next 14 app; **own cartoonish token set** (bright flat palette + thick-outline system + one condensed display face + a readable body face; self-hosted/local fonts, no external fetch); `transpilePackages: ["@gt100k/project-workspace","@gt100k/evidence-graph","@gt100k/specialization-planner"]`. `pnpm install`.
+- [x] `app/seed.ts`: a small set of **`ProjectBrief` fixtures** (reuse the planner type) → `startProject` → seeded projects for **one demo child**; a self-authored starter. Deterministic.
+- [x] `app/useStudio.ts`: single-child controller — the child's projects, the open project, `logEvent` actions (map the 10 kid-facing entries), `localStorage` persistence (namespaced; seed always present on fresh load), and the `window.__qa` install.
+- [x] Studio UI (single child, **no switcher**): a project picker; the open project's **driving question + next step**; a **quest log** (the journey, entries by kind) + a **journey map** motif; an entry composer for each kind ("I tried…", "here's what happened / I got stuck", "I made this", "a robot helped with…", …); a **mascot** guide with warm punchy microcopy; artifacts attached **locally/by-reference**; a **simulated showcase** screen (mock audience, no real post). Celebrate trying/iterating/making — **no score/rank/streak**.
+- [x] `app/qa.ts` + `app/studio-state.ts`: `window.__qa` = `ready`/`error`/`state()` (`{projectId,eventCount,kinds,hasPerseverance}`) / `primaryAction()` (log a seeded `attempt` → `eventCount`++ + DOM entry). Pure state helpers + a headless CI test (mirror guide-console `state.test.ts`).
+- [x] a11y: AA contrast, keyboard nav + visible focus, alt text, 44px targets, `prefers-reduced-motion` alternative for all motion.
+- [x] gate: `pnpm exec tsc -b` + `pnpm --filter @gt100k/project-studio test`; then `next build`; run `LOOP_QA` (stub sink, deterministic): `window.__qa.ready===true`, `primaryAction()` logs an attempt (state + DOM), no external fetch. Screenshot vs `references/`. **Commit** `feat(project-studio): cartoonish Type III project studio (quest log + evidence capture)`.
 
 ---
 
 ### Task 7: Polish + verify (P6)
-- [ ] Live polish pass: microcopy + mascot character + motion (reduced-motion safe); tune to the `references/` energy without any gamification.
-- [ ] `pnpm exec tsc -b` clean; `pnpm test` green (domain + adapter); `next build` clean; `LOOP_QA` pass.
-- [ ] `passionApps.md`: D2 engine + studio done (synthetic/local; real storage/publish gated); note the evidence mapping is coordinated with E1.
-- [ ] Open PR (gh, pushed as `spinkicks`); `gh pr update-branch` if `main` moved; squash-merge after CI.
+- [x] Live polish pass: microcopy + mascot character + motion (reduced-motion safe); tune to the `references/` energy without any gamification.
+- [x] `pnpm exec tsc -b` clean; `pnpm test` green (domain + adapter); `next build` clean; `LOOP_QA` pass.
+- [x] `passionApps.md`: D2 engine + studio done (synthetic/local; real storage/publish gated); note the evidence mapping is coordinated with E1.
+- [x] Open PR (gh, pushed as `spinkicks`); `gh pr update-branch` if `main` moved; squash-merge after CI.
 
 ## Self-review (spec coverage)
 - Every spec section maps to a task: types §4.1 → T1; startProject/logEvent/perseverance §4.1–4.2 → T2; EvidenceSink/mapping §4.3–4.4 → T3; guardrails §3/§7 → T4; real adapter §4.4 → T5; app §2/§5/§6 (single-child, seed fixtures, quest log, showcase, `window.__qa`, a11y) → T6; polish/verify §8 → T7. SC-1…SC-10 each land on a task's tests.

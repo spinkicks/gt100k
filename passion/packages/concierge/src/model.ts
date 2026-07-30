@@ -30,6 +30,35 @@ export interface CuratedResource {
   readonly title: string;
   readonly url: string;
   readonly domainPath: DomainPath;
+  /**
+   * Which browse tiles this stocks, by pursuit id. May be empty.
+   *
+   * WHY THIS IS NOT DERIVABLE FROM `domainPath`. The two are different partitions of the same
+   * space, and neither one implies the other. `domainPath` is the MODEL'S COORDINATE SYSTEM —
+   * beliefs are held per (domain × mode) cell, so it is what the engine reads and it has to stay
+   * stable while the menu changes. `pursuits` is the MENU: the thing a child actually taps. One
+   * cell can be four tiles (`music-sound/instruments` is piano, violin, drums and guitar), one
+   * tile can draw on two cells (Stop-Motion wants both animation and video-editing material), and
+   * some cells name no tile at all (`math-puzzles/statistics`).
+   *
+   * WHAT WENT WRONG WITHOUT IT. The browse wall resolved a pursuit against its CABIN, because that
+   * was the only key both sides shared. So all eight music tiles returned one shelf, and a child
+   * who tapped Speaker Design was handed four links about orchestral instruments. That is worse
+   * than a thin shelf: a thin shelf is honest about having little, whereas a wrong one tells the
+   * child the app did not understand what they just chose.
+   *
+   * EMPTY IS LEGAL AND MEANS SOMETHING. A resource promoted from the open web has no tile yet, and
+   * the statistics material stocks a cell the wall does not currently surface. Neither is a defect.
+   * The defect is a PURSUIT with nothing behind it, and `validateLibrary` raises that as an error
+   * rather than inferring one direction from the other.
+   *
+   * OPAQUE IDS RATHER THAN AN IMPORT. Typing this as `PursuitId` would put `@gt100k/pursuits` in
+   * this package's dependencies and therefore in `mvp-jul24`'s bundle, which holds the engine
+   * packages as `import type` precisely so they erase at build. Validity is checked instead by
+   * `validateLibrary`'s `knownPursuits` option, which the shipped library's test hands the real
+   * set — so a typo still fails CI, just not the compiler.
+   */
+  readonly pursuits: readonly string[];
   readonly affordedModes: readonly WorkMode[];
   readonly reputation: number;
   readonly ageTiers: readonly AgeTier[];
