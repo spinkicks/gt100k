@@ -198,6 +198,15 @@ importers:
 
   passion/apps/discovery:
     dependencies:
+      '@fontsource-variable/inconsolata':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource-variable/inter-tight':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource-variable/literata':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@gt100k/concierge':
         specifier: workspace:*
         version: link:../../packages/concierge

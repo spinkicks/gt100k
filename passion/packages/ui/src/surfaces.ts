@@ -23,7 +23,7 @@ export interface Surface {
   readonly url: string | null;
 }
 
-export type SurfaceId = "guide" | "parent" | "studio" | "evidence" | "concierge";
+export type SurfaceId = "guide" | "parent" | "discovery" | "studio" | "evidence" | "concierge";
 
 /**
  * The front door is addressable but is not a surface in the switcher: it is reached from the
@@ -43,6 +43,17 @@ interface SurfaceDef {
 }
 
 const DEFS: readonly SurfaceDef[] = [
+  {
+    // The child's front door, and the one surface a child reaches on their own. It was missing from
+    // this registry while `Audience` already had a `child` member, so the role-based landing page
+    // offered "I'm a child" and had nowhere to send them but the Project Studio — which is where a
+    // child works on something they have ALREADY chosen. The step before that had no door.
+    id: "discovery",
+    label: "Discovery Wall",
+    audience: "child",
+    blurb: "Forty-four things a person can get good at. Point at one to see what it is.",
+    devPort: 3080,
+  },
   {
     id: "guide",
     label: "Guide Console",
@@ -96,6 +107,7 @@ export function readSurfaceEnv(): SurfaceEnv {
     urls: {
       guide: process.env.NEXT_PUBLIC_SURFACE_URL_GUIDE,
       parent: process.env.NEXT_PUBLIC_SURFACE_URL_PARENT,
+      discovery: process.env.NEXT_PUBLIC_SURFACE_URL_DISCOVERY,
       studio: process.env.NEXT_PUBLIC_SURFACE_URL_STUDIO,
       evidence: process.env.NEXT_PUBLIC_SURFACE_URL_EVIDENCE,
       concierge: process.env.NEXT_PUBLIC_SURFACE_URL_CONCIERGE,
