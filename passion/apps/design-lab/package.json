@@ -5,14 +5,9 @@
   "scripts": {
     "dev": "next dev -p 3060",
     "build": "next build",
-    "start": "next start -p 3060",
-    "test": "vitest run --config vitest.config.mts",
-    "build-art": "node scripts/build-art.mjs",
-    "shoot": "node scripts/shoot.mjs"
+    "start": "next start -p 3060"
   },
   "dependencies": {
-    "@gt100k/concierge": "workspace:*",
-    "@gt100k/pursuits": "workspace:*",
     "@gt100k/design-tokens": "workspace:*",
     "@gt100k/two-axis-tagging": "workspace:*",
     "next": "^14.2.15",
@@ -21,7 +16,6 @@
   },
   "devDependencies": {
     "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
-    "playwright": "^1.48.0"
+    "@types/react-dom": "^18.3.1"
   }
 }

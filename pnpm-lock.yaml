@@ -173,15 +173,9 @@ importers:
 
   passion/apps/design-lab:
     dependencies:
-      '@gt100k/concierge':
-        specifier: workspace:*
-        version: link:../../packages/concierge
       '@gt100k/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
-      '@gt100k/pursuits':
-        specifier: workspace:*
-        version: link:../../packages/pursuits
       '@gt100k/two-axis-tagging':
         specifier: workspace:*
         version: link:../../packages/two-axis-tagging
@@ -201,9 +195,6 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.1
         version: 18.3.7(@types/react@18.3.31)
-      playwright:
-        specifier: ^1.48.0
-        version: 1.61.1
 
   passion/apps/discovery:
     dependencies:
@@ -216,6 +207,9 @@ importers:
       '@gt100k/discovery-catalog':
         specifier: workspace:*
         version: link:../../packages/discovery-catalog
+      '@gt100k/pursuits':
+        specifier: workspace:*
+        version: link:../../packages/pursuits
       '@gt100k/signal-pipeline':
         specifier: workspace:*
         version: link:../../packages/signal-pipeline
@@ -244,6 +238,9 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.1
         version: 18.3.7(@types/react@18.3.31)
+      playwright:
+        specifier: ^1.48.0
+        version: 1.61.1
 
   passion/apps/evidence-explorer:
     dependencies:
@@ -611,6 +608,10 @@ importers:
       '@gt100k/two-axis-tagging':
         specifier: workspace:*
         version: link:../two-axis-tagging
+    devDependencies:
+      '@gt100k/pursuits':
+        specifier: workspace:*
+        version: link:../pursuits
 
   passion/packages/evidence-explorer-view:
     dependencies:
