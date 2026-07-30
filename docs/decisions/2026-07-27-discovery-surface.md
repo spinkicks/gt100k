@@ -43,10 +43,17 @@ load-bearing, not which one to build:
   (`PROJECT.md`, *The shelf is the D5 maintenance path*). That is the launcher's "follow a vetted
   link and go" in miniature, already stocked and already justified on different grounds.
   **But it is a different store:** the shelf's links are hand-authored in
-  `mvp-jul24/src/shelf/cards.data.ts` and nothing in the app called `curatedForCell` (it does now, from the shelf — 2026-07-27), so the
-  151-resource curated library and the shelf a child actually opens are today unconnected. Answering
+  `mvp-jul24/src/shelf/cards.data.ts` and nothing in the app called `curatedForCell`, so the curated
+  library and the shelf a child actually opens were unconnected when this was written. Answering
   the open question in favour of leaving means wiring one to the other; answering it in favour of
   staying means deciding whether two curated collections should continue to exist side by side.
+  **Wired later the same day:** `ShelfPanel` now calls `curatedForCell` and every card ends in a
+  "Where to go next" list drawn from the library (`2026-07-27-curated-library-standard.md`). That
+  removes the mechanical obstacle to "leaving" and answers none of the question above — the card
+  prose is still hand-authored, so two collections do still exist side by side, and which one is
+  load-bearing is still open. The library holds 274 resources today, over 35 subtopics and all 44
+  pursuits — up from 157 over 29 subtopics after the 2026-07-29 re-tag, which is recorded in the
+  standard.
 - **Staying** already exists, and is the thing a launcher cannot have: an active generative task per
   topic. §0 concedes this is the game's one property worth preserving, and the swap test
   (`PROJECT.md`, *Why the split exists*) is what keeps it evidence rather than wrapper engagement.
@@ -328,6 +335,15 @@ and then spent *less* time with what they picked. **Ages 4–5, below our band**
   non-monotonic. We would be back on the one signal we ruled out.
 - **Card art becomes the dominant choice cue**, in a grid where thumbnail and title are nearly all
   that distinguishes options. Javora, industrialised.
+
+  *Addendum, 2026-07-28.* This one has since been answered in the prototype rather than argued with.
+  The wall at `passion/apps/design-lab/app/browse` generates all forty-four tiles from a single
+  scaffold — one object, one camera, one light, one palette, no people — and then normalises them to
+  a common mean luminance, taking the raw renders' 3.84:1 spread down to 1.06:1, with a test that
+  fails the build if it reopens. Javora's manipulation was *between* treatments of the same content;
+  what this removes is the *within-set* variance, which is the form the objection takes here. It does
+  not answer the other bullets and it does not disturb the ruling: art was never the load-bearing
+  argument against the catalog, E4 was.
 - **Shallow sampling costs calendar time.** More items spreads a fixed number of sessions thinner,
   so each topic accumulates fewer cross-day returns before a decision can be made.
 - **Parents enter the measurement.** In catalog products adults do much of the searching, which

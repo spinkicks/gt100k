@@ -57,16 +57,26 @@
 }
 
 .styles__tiles {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2px;
+  display: flex;
+  align-items: start;
+  gap: 5px;
 }
 
-/* Matches the real grid's tile geometry, 254 x 381 at 1440. Comparing at any other size would be
-   comparing something the child never sees. */
+/* The real tile, at the real size: 124px wide with a 3:2 picture over a two-line label, which is
+   what the wall produces for the full forty-four-pursuit catalogue on a 1440x900 laptop.
+ *
+ * Small enough to look like a mistake on a page this wide, and that is the point of the page. A
+ * register that reads at 900px and falls apart here has not been evaluated, and the earlier version
+ * of this comparison — 340px tiles, from back when the wall showed eight cabins — was flattering
+ * all three. `--label-font` is normally set by `useFittedColumns`; there is no grid here to set it,
+ * so it is pinned to what that hook returns at this width. */
 .styles__tile {
   position: relative;
-  min-height: 22rem;
+  /* `.tile` carries `flex: 1` for the grid it normally lives in, which here would let it grow to
+     the row and undo the whole point of rendering at the real size. */
+  flex: none;
+  width: 124px;
+  --label-font: 14.4px;
   overflow: hidden;
   cursor: default;
 }
@@ -82,9 +92,5 @@
   .styles__row {
     grid-template-columns: 1fr;
     gap: 1rem;
-  }
-
-  .styles__tile {
-    min-height: 14rem;
   }
 }

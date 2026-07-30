@@ -27,7 +27,7 @@ const sans = localFont({
 
 export const metadata: Metadata = {
   title: "PassionLab Design Lab",
-  description: "Three candidate directions rendered from one token contract.",
+  description: "Prototypes rendered from the same token contract as the real apps.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }): JSX.Element {
