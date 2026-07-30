@@ -72,6 +72,21 @@ const HOVER_MS = 90;
 /** Ages the surface can be viewed at, to make the floors visible rather than theoretical. */
 const AGES = [6, 8, 10, 12, 14] as const;
 
+/**
+ * Below this age the names start pinned open.
+ *
+ * The wall shows pictures and reveals a name when a tile is pointed at, which is the right trade for
+ * anyone who can read one: the art scans faster than forty-four words and the name is a 90ms dwell
+ * away. It is the wrong trade for a child who cannot yet name the object, because several of these
+ * renders are honestly ambiguous — two are telescopes, two are small machines — and a wall of
+ * pictures they cannot identify is a wall they have to interview one tile at a time.
+ *
+ * Memo 07 D1 puts the label channel as most load-bearing exactly where reading is weakest, so this
+ * follows the age the child is already being filtered by rather than adding a second thing to set.
+ * It is a default and not a lock: the toggle is on the bar in both directions.
+ */
+const NAMES_ON_BELOW = 10;
+
 export default function DiscoveryPage(): JSX.Element {
   // One seed per page load, so the order is stable while the child is looking at it and different
   // the next time they come. Fixed on the server pass to keep hydration honest.
@@ -94,6 +109,10 @@ export default function DiscoveryPage(): JSX.Element {
   const [age, setAge] = useState<number>(10);
   const [cabin, setCabin] = useState<CabinId | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
+  // `null` means "follow the age"; once the child touches the toggle their choice sticks, because a
+  // preference that silently reverts when some other control moves is worse than no preference.
+  const [namesPinned, setNamesPinned] = useState<boolean | null>(null);
+  const showNames = namesPinned ?? age < NAMES_ON_BELOW;
   const [offered, setOffered] = useState(0);
   // The gadget id currently mounted over the wall, or null.
   const [playing, setPlaying] = useState<string | null>(null);
@@ -184,7 +203,7 @@ export default function DiscoveryPage(): JSX.Element {
   );
 
   return (
-    <main className="browse" data-mood="child">
+    <main className="browse" data-mood="child" data-names={showNames ? "on" : "off"}>
       <header className="browse__bar">
         {/* biome-ignore lint/a11y/useSemanticElements: <fieldset> groups form controls, and these
             are filters outside any form; its UA groove border and min-inline-size would also
@@ -210,6 +229,17 @@ export default function DiscoveryPage(): JSX.Element {
             </button>
           ))}
         </div>
+        {/* Presented, not merely offered. Memo 07 D7 records a case where no child found the
+            click-only alternative because it was one level in; this is a chip on the same row as
+            the filters, in both states, so a child who needs the names can see that they exist. */}
+        <button
+          type="button"
+          className="chip browse__names"
+          aria-pressed={showNames}
+          onClick={() => setNamesPinned(!showNames)}
+        >
+          Names
+        </button>
         <label className="browse__age">
           Age
           <select value={age} onChange={(e) => setAge(Number(e.target.value))}>
