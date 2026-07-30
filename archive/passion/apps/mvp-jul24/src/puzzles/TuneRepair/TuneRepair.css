@@ -1,0 +1,188 @@
+/**
+ * Tune Repair's music stand.
+ *
+ * Two things carry meaning and neither is a number: a note's HEIGHT on the roll is its pitch, and its
+ * WIDTH is how long it is held (rule R1). Colour carries nothing that position does not — the held
+ * note and the sounding note are also scaled and outlined, so the roll works without hue.
+ *
+ * Sizing note: cells are generous because this is a click-then-place interaction and a missed click
+ * on a music stand costs a wrong answer. `--tr-row` is well above the app's 44px control floor.
+ */
+
+.tr {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem 1.5rem;
+  color: var(--cream);
+  font-family: var(--font-body);
+
+  --tr-row: 46px;
+  --tr-gap: 4px;
+}
+
+.tr-exit {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 2px solid var(--wood-frame);
+  border-radius: var(--r-pill);
+  background: linear-gradient(180deg, var(--wood-light), var(--wood));
+  color: var(--cream);
+  font: 600 1rem var(--font-display);
+  cursor: pointer;
+}
+
+/* Says out loud that the activity is unsolvable without sound, rather than letting a child hunt for a
+   visual answer that does not exist. See the header note on the Layer-3 parity cost. */
+.tr-needs-sound {
+  /* `<output>` is inline by default. */
+  display: block;
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  border: 2px solid var(--ember-deep);
+  border-radius: var(--r-md);
+  background: rgba(181, 86, 28, 0.22);
+  color: var(--cream);
+  font: 600 1.05rem var(--font-body);
+  max-width: 46rem;
+}
+
+.tr-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.tr-controls button {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: var(--r-pill);
+  border: 2px solid var(--wood-frame);
+  background: linear-gradient(180deg, var(--wood-light), var(--wood));
+  color: var(--cream);
+  font: 600 1rem var(--font-body);
+  cursor: pointer;
+}
+
+/* The one warm control: the thing you are meant to do first is listen. */
+.tr-play {
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember)) !important;
+  border-color: var(--ember-deep) !important;
+  color: var(--ink) !important;
+  box-shadow: var(--glow-ember);
+}
+
+.tr-controls button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* --- The roll ------------------------------------------------------------------------------- */
+
+.tr-roll {
+  display: grid;
+  gap: var(--tr-gap);
+  padding: 0.75rem;
+  border: 2px solid var(--wood-frame);
+  border-radius: var(--r-md);
+  background: linear-gradient(180deg, rgba(28, 18, 12, 0.55), rgba(18, 11, 7, 0.7));
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Empty cells are the paper, not holes: a faint lane per row so pitch height stays readable even
+   where no note sits, which is what makes the contour legible as a shape. */
+.tr-cell {
+  min-height: var(--tr-row);
+  border: none;
+  border-radius: var(--r-sm);
+  background: rgba(255, 246, 232, 0.045);
+  padding: 0;
+  cursor: default;
+}
+
+.tr-cell:disabled {
+  cursor: default;
+}
+
+/* A note. Width comes from the grid column's fr, so a two-beat note is literally twice as wide. */
+.tr-note {
+  background: linear-gradient(180deg, var(--cream), var(--cream-soft));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+.tr-note:hover {
+  filter: brightness(1.08);
+}
+
+/* Picked up: lifted and outlined, so "I am carrying this one" does not depend on colour. */
+.tr-held {
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  outline: 3px solid var(--cream);
+  outline-offset: 2px;
+  transform: scale(1.04);
+}
+
+/* Somewhere the held note may go. Dashed, so a landing place never reads as a note. */
+.tr-landing {
+  background: rgba(255, 184, 103, 0.14);
+  border: 2px dashed var(--ember-bright);
+  cursor: pointer;
+}
+
+.tr-landing:hover {
+  background: rgba(255, 184, 103, 0.3);
+}
+
+/* Currently sounding. Deliberately a glow and NOT a transform: a scaling target moves its own hit
+   area, which fights the click-accuracy this interaction depends on. */
+.tr-sounding {
+  box-shadow: 0 0 0 3px var(--ember-bright), 0 0 18px 6px rgba(255, 184, 103, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tr-held {
+    transform: none;
+  }
+  .tr-note,
+  .tr-landing {
+    transition: none;
+  }
+}
+
+/* --- The stand ----------------------------------------------------------------------------- */
+
+.tr-stand {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  min-height: 44px;
+}
+
+.tr-note-hint,
+.tr-note-right {
+  font: 600 1.05rem var(--font-display);
+}
+
+.tr-note-hint {
+  color: var(--cream-soft);
+}
+
+.tr-note-right {
+  color: var(--ember-bright);
+}
+
+.tr-next {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: var(--r-pill);
+  border: 2px solid var(--ember-deep);
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  color: var(--ink);
+  font: 700 1rem var(--font-body);
+  cursor: pointer;
+}

@@ -3998,47 +3998,104 @@ body {
 }
 
 /* --- what to offer next ----------------------------------------------------------------------
-   A list rather than tiles: it is read top to bottom in priority order, and the order is the
-   policy. Debts before breadth. */
+   Groups, read top to bottom in priority order, because the order is the policy: debts before
+   breadth. One group per reason, its sentence stated once, then the domains it applies to.
+
+   This block used to name `--sp-1`…`--sp-4`, `--ink-soft` and `--warn-fg`. NONE OF THEM EXIST —
+   the tokens are `--space-*` and `--ink-muted`, and there is no `--warn-fg`. An unresolved
+   custom property makes the whole declaration invalid at computed-value time, so every padding
+   and gap here silently computed to zero: rows drew their border and then set the text flush
+   against it, and the two columns closed up into each other. That is the "no space between the
+   start of the line and first letter" the panel was reported for.
+
+   Spacing is in literal px, matching `.card`, `.checks` and every other panel in this file, which
+   uses no spacing tokens at all. Reaching for `--space-*` here would be the second scale in one
+   stylesheet. */
 .offer-next {
-  margin: 0;
-  padding: 0 var(--sp-4) var(--sp-4);
-  list-style: none;
   display: grid;
-  gap: var(--sp-2);
+  gap: 14px;
 }
 
-.offer-next li {
-  display: grid;
-  grid-template-columns: minmax(9rem, auto) 1fr;
-  gap: var(--sp-3);
-  align-items: baseline;
-  padding: var(--sp-3);
+.offer-grp {
+  padding: 12px 14px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   background: var(--surface-2);
+}
+
+.offer-grp__hd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  /* A group heading labels data rows, so it takes the utility face rather than the display serif,
+     per the type rule at the top of this file. */
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 620;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
 }
 
 /* A debt is the one with a cost attached to ignoring it, so it is the only one marked. Amber and
    not red: this is a nudge about sequencing, not a child at risk, and spending red here would make
-   the wellbeing panel's red mean less. */
-.offer-next li[data-reason="maintenance-debt"] {
-  border-inline-start: 3px solid var(--warn-fg, var(--accent));
+   the wellbeing panel's red mean less. A pip rather than the 3px side border this used to draw —
+   the pip is the mark this console already uses for status (see `.checks`), and the heading text
+   beside it carries the same meaning for anyone who cannot see the colour. */
+.offer-grp__pip {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line-3);
 }
 
-.offer-next__what {
+.offer-grp[data-reason="maintenance-debt"] .offer-grp__pip {
+  background: var(--warn);
+}
+
+/* How many domains are in the group, so the count is legible without counting rows. */
+.offer-grp__n {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
   font-weight: 600;
+  letter-spacing: normal;
+  color: var(--ink-muted);
 }
 
-.offer-next__why {
-  color: var(--ink-soft);
-  font-size: 0.9rem;
-  line-height: 1.4;
+.offer-grp__why {
+  margin: 6px 0 0;
+  max-width: 62ch;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.offer-grp__list {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Each domain is one thing a guide could go and do, so it gets its own bounded surface on the
+   card's own background: the group is the context, these are the choices inside it. */
+.offer-grp__list li {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink);
 }
 
 @media (max-width: 40rem) {
-  .offer-next li {
-    grid-template-columns: 1fr;
-    gap: var(--sp-1);
+  .offer-grp__list {
+    display: grid;
   }
 }

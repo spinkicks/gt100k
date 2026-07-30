@@ -1,0 +1,183 @@
+/**
+ * Chord Fit's listening bench.
+ *
+ * The three options are drawn IDENTICALLY on purpose — same size, same colour, same everything. Rule R2:
+ * the property that makes an answer wrong must have no visual signature, and this activity's whole claim
+ * to being musical is that the only difference between the options is what they sound like. Any styling
+ * that distinguishes one option from another before it is chosen is a bug, not a flourish.
+ *
+ * The only state a card ever shows is which one is currently ringing (so you know what you are hearing)
+ * and, after a choice, whether it held the note up. Neither is available before the child commits.
+ */
+
+.cf {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem 1.5rem;
+  color: var(--cream);
+  font-family: var(--font-body);
+}
+
+.cf-exit {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 2px solid var(--wood-frame);
+  border-radius: var(--r-pill);
+  background: linear-gradient(180deg, var(--wood-light), var(--wood));
+  color: var(--cream);
+  font: 600 1rem var(--font-display);
+  cursor: pointer;
+}
+
+.cf-needs-sound {
+  display: block;
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  border: 2px solid var(--ember-deep);
+  border-radius: var(--r-md);
+  background: rgba(181, 86, 28, 0.22);
+  color: var(--cream);
+  font: 600 1.05rem var(--font-body);
+  max-width: 46rem;
+}
+
+.cf-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.cf-controls button {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: var(--r-pill);
+  border: 2px solid var(--wood-frame);
+  background: linear-gradient(180deg, var(--wood-light), var(--wood));
+  color: var(--cream);
+  font: 600 1rem var(--font-body);
+  cursor: pointer;
+}
+
+/* Hearing the note you are trying to support is the first thing to do, so it is the warm control. */
+.cf-note {
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember)) !important;
+  border-color: var(--ember-deep) !important;
+  color: var(--ink) !important;
+  box-shadow: var(--glow-ember);
+}
+
+/* --- The three options ---------------------------------------------------------------------- */
+
+.cf-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cf-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 1.1rem 1.25rem;
+  min-width: 9.5rem;
+  border: 2px solid var(--wood-frame);
+  border-radius: var(--r-lg);
+  background: linear-gradient(180deg, rgba(60, 42, 28, 0.9), rgba(40, 27, 18, 0.9));
+  box-shadow: var(--shadow-raised);
+}
+
+.cf-play {
+  min-height: 56px;
+  min-width: 56px;
+  border-radius: 50%;
+  border: 2px solid var(--cream-soft);
+  background: linear-gradient(180deg, var(--cream), var(--cream-soft));
+  color: var(--ink);
+  font-size: 1.35rem;
+  cursor: pointer;
+}
+
+.cf-play:hover {
+  filter: brightness(1.06);
+}
+
+.cf-pick {
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: var(--r-pill);
+  border: 2px solid var(--wood-frame);
+  background: linear-gradient(180deg, var(--wood-light), var(--wood));
+  color: var(--cream);
+  font: 600 0.98rem var(--font-body);
+  cursor: pointer;
+}
+
+.cf-pick:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* Currently ringing. A glow rather than a transform: a card that scales moves its own buttons. */
+.cf-ringing {
+  box-shadow: 0 0 0 3px var(--ember-bright), 0 0 20px 6px rgba(255, 184, 103, 0.5);
+}
+
+/* Post-choice states. Each carries a text label in the bench line too, so hue is never the only
+   carrier of meaning. */
+.cf-chosen-right {
+  border-color: var(--ember-bright);
+}
+
+.cf-chosen-wrong {
+  border-color: var(--line-strong, #8a6242);
+  opacity: 0.75;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-option,
+  .cf-play {
+    transition: none;
+  }
+}
+
+/* --- The bench ------------------------------------------------------------------------------ */
+
+.cf-bench {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  min-height: 44px;
+}
+
+.cf-note-clash,
+.cf-note-right {
+  font: 600 1.05rem var(--font-display);
+}
+
+.cf-note-clash {
+  color: var(--cream-soft);
+}
+
+.cf-note-right {
+  color: var(--ember-bright);
+}
+
+.cf-next {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: var(--r-pill);
+  border: 2px solid var(--ember-deep);
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  color: var(--ink);
+  font: 700 1rem var(--font-body);
+  cursor: pointer;
+}

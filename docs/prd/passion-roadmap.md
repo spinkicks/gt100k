@@ -46,7 +46,7 @@
 **Goal:** a kid's behavior produces a real, revisable interest read a guide can act on — on synthetic/pilot data.
 - **`009-two-axis-tagging`** → **C2** ✅ — domain × work-mode taxonomy; afforded + action-resolved engaged mode; tag-validity gate.
 - **`011-interest-inference`** → **C3** ✅ — Beta-Bernoulli belief-per-cell, novelty decay, voluntary-vs-prompted, topic-vs-style, calibrated "not sure yet".
-- **`012-signal-pipeline`** → **C1** ✅ — Interaction → CellEvent firewall. The game-side emitter landed 2026-07-27, so this is no longer engine-only: `mvp-jul24` emits and can post a session to the console.
+- **`012-signal-pipeline`** → **C1** ✅ — Interaction → CellEvent firewall. The game-side emitter landed 2026-07-27 and now lives in `discovery` (the child surface `mvp-jul24` was ported into, then archived), so this is no longer engine-only: the child surface emits and can post a session to the console.
 - **`013-hypothesis-store`** → **C4 + F1 (MVP)** ✅ — versioned hypotheses + lifecycle + Phase 2→3 gate + the guide console.
 - **`014-student-profile`** → **G1** ✅ — per-kid profile + append-only log + idempotent `runCycle` wiring 012→011→013; the console reads genuinely-derived data.
 - **Still open here:** **A4** taste-app embedding SDK (intern apps exist; the SDK and the measurable-panel standard are not built); **A5** accessibility mirror, unbuilt and now the sharper gap, because the Music gadgets are deliberately audible-only and the map is a pointer surface; **A2/A3** three of the five cabins on the map are still closed.

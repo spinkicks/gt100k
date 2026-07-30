@@ -2,7 +2,7 @@
 
 **GT100K** is Alpha School's internal accelerated-gifted layer on TimeBack — an operating system for an intensive, in-person gifted academy that takes an already-admitted child (ages 6–14) from daily academic mastery and passion discovery through to a portable, evidence-backed body of work. Long-horizon goal: MIT-level academic readiness by the end of 8th grade.
 
-> **Status: working monorepo.** 25 packages, 16 adapters, and 9 apps, with **4,211 tests** green (1,109 engine and adapter, 3,102 app). Every engine is pure, deterministic and offline; all data is synthetic. No real child data touches this system until the pre-live gates pass (see [Pre-live gates](#pre-live-gates)): the discovery game can now post a session to the guide console, but only when someone sets `VITE_GT100K_INGEST_URL` (unset everywhere) *and* a guardian's consent for that purpose is on file, which the route checks per request and denies by default.
+> **Status: working monorepo.** 25 packages, 16 adapters, and 9 apps, with **1,468 tests** green (1,149 engine and adapter, 319 app). Every engine is pure, deterministic and offline; all data is synthetic. No real child data touches this system until the pre-live gates pass (see [Pre-live gates](#pre-live-gates)): the discovery game can now post a session to the guide console, but only when someone sets `NEXT_PUBLIC_GT100K_INGEST_URL` (unset everywhere) *and* a guardian's consent for that purpose is on file, which the route checks per request and denies by default.
 
 ## Quick start
 
@@ -12,7 +12,7 @@ Requires Node 20+ and `pnpm` (developed on Node 24 / pnpm 9).
 pnpm install
 pnpm exec biome check passion   # lint + formatter, the same gate CI runs
 pnpm exec tsc -b                # typecheck the whole workspace
-pnpm test                       # 1,109 engine and adapter tests
+pnpm test                       # 1,149 engine and adapter tests
 ```
 
 **Start here:** the front door routes you to the right surface by role.
@@ -101,10 +101,9 @@ Pure, deterministic, dependency-light. No network, no LLM, no clock.
 | `guide-console` | The guide's cockpit: overview dashboard, hypotheses, wellbeing, plan, family, access |
 | `project-studio` | The child's project journal |
 | `parent-guide` | The Warm-Demanding Parent Playbook (static export, hosted on AWS) |
-| `mvp-jul24`, `tinker-cabin` | The child-facing discovery game (Vite + React Three Fiber) |
+| `discovery` | The child-facing discovery surface: a browse wall with the games ported into it (Next.js) |
+| `tinker-cabin` | An earlier child-facing discovery prototype (Vite) |
 | `concierge`, `design-lab` | Concierge demo; the prototype lab, where a surface is looked at full size before it is built |
-
-The lab's current occupant is a child-facing discovery wall at `/browse`: the real taxonomy (`@gt100k/two-axis-tagging`) and the real curated library (`@gt100k/concierge`) laid out as browsable tiles, where hovering reads a topic and clicking goes into it. Its order re-deals on idle and on re-entry, so where a tile sat can be told apart from whether a child wanted it. It is a prototype wired to no engine, not a shipped surface.
 
 Adapters in `passion/adapters/` supply the real implementations behind engine ports (Postgres, filesystem, live tagging/tutoring), so every engine stays testable with a deterministic stub.
 

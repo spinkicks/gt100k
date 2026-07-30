@@ -10,19 +10,23 @@ on:
 permissions:
   contents: read
 
+# Cancel superseded pushes on a PR, but never cancel a merge-queue run or a
+# build of main: those two are the ones whose result something downstream is
+# waiting on. Keyed on the PR number so a force-push supersedes correctly.
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  ci:
-    name: ci
+  # Cheap, always-on, and independent of the toolchain: no Node, no install.
+  # Secret scanning runs even for a docs-only change, because a leaked key in a
+  # markdown file is still a leaked key.
+  guards:
+    name: guards
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       # gitleaks CLI (not gitleaks-action@v2): the action makes GitHub API calls
       # (license-user lookup + PR-commits fetch) that hard-fail on any API
@@ -30,6 +34,8 @@ jobs:
       # auto-loads .gitleaks.toml (documented false-positive allowlist).
       # Version + sha256 are pinned (supply-chain hardening); the binary is
       # unpacked to RUNNER_TEMP so it is neither scanned nor tripping large-file.
+      # `dir` scans the working tree, not history, so a full-depth clone buys
+      # nothing here — hence the shallow checkout above.
       - name: Secret scan (gitleaks)
         run: |
           VER=8.24.3
@@ -51,10 +57,101 @@ jobs:
         run: |
           echo "Tracked files: $(git ls-files | wc -l)"
 
-      # Everything below was the "add these as code lands" TODO that outlived the docs stage.
-      # Until now CI only scanned for secrets and oversized files, so a change could break the
-      # build or the suite and still merge green — which is exactly how a broken assertion
-      # reached main. Local runs were catching it; nothing enforced them.
+  # Two outputs, one runner, no toolchain:
+  #
+  #   code — did this change touch anything a compiler or a test can see? A
+  #     prose-only PR used to pay the full six minutes; the docs lane is busy
+  #     enough here that this is most of the win on those PRs.
+  #
+  #   apps — the app list, derived from the workspace instead of hand-maintained.
+  #     Three separate hardcoded lists used to encode it (typecheck by directory
+  #     name, test and build by package name, each with its own omissions and its
+  #     own "add a line when an app gains a suite" comment). They agreed with
+  #     reality as of this commit, which is the most you can say for a list a
+  #     human has to remember. Now an app's own package.json decides what runs
+  #     against it, and a new app is in CI the moment it exists.
+  plan:
+    name: plan
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.changes.outputs.code }}
+      apps: ${{ steps.apps.outputs.apps }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect code changes
+        id: changes
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          # Anything that is not a pull request (merge queue, push to main) is
+          # never fast-pathed: those runs gate the trunk, so they run in full.
+          if [ "$EVENT" != "pull_request" ]; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            echo "Not a pull request — running everything."
+            exit 0
+          fi
+          git fetch --no-tags --depth=1 origin "$BASE"
+          changed=$(git diff --name-only "$BASE" HEAD)
+          echo "::group::Changed files"; echo "$changed"; echo "::endgroup::"
+          # Prose is: the docs tree, the archived tree (covered by no gate — not
+          # in biome's `passion` target, the tsc references, the vitest globs or
+          # the workspace), root-level markdown, and LICENSE.
+          #
+          # Markdown *inside* passion/ is deliberately NOT prose. A package README
+          # can be load-bearing: evidence-graph/test/readme.test.ts reads its own
+          # README and asserts every public API and port is documented in it, so a
+          # README-only edit can fail a real test. Root-level `[^/]*\.md` keeps
+          # AGENTS.md / CLAUDE.md / the RESEARCH-*.md notes on the fast path.
+          #
+          # Grep for the complement: one path outside prose is enough to run in full.
+          if echo "$changed" | grep -qvE '^docs/|^archive/|^[^/]*\.md$|^LICENSE$'; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            echo "Code paths touched — running everything."
+          else
+            echo "code=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Docs-only change — skipping lint, typecheck, test and build."
+          fi
+
+      - name: Enumerate apps
+        id: apps
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, pathlib, sys
+
+          apps = []
+          for pkg in sorted(pathlib.Path("passion/apps").glob("*/package.json")):
+              meta = json.loads(pkg.read_text())
+              scripts = meta.get("scripts", {})
+              app_dir = pkg.parent
+              apps.append({
+                  "dir": app_dir.name,
+                  "name": meta["name"],
+                  "test": "test" in scripts,
+                  "build": "build" in scripts,
+                  # Only Next apps have a .next/cache worth restoring.
+                  "next": any(app_dir.glob("next.config.*")),
+              })
+          print("apps=" + json.dumps(apps))
+          for a in apps:
+              print(f"{a['name']}: test={a['test']} build={a['build']} next={a['next']}", file=sys.stderr)
+          PY
+
+  # Everything that looks at the repo as a whole rather than one app: the linter,
+  # the root composite typecheck (packages + adapters, which are consumed as
+  # source — `main` points at src/index.ts — so this emits nothing an app build
+  # needs and can run alongside them), and the root vitest project.
+  static:
+    name: static
+    needs: plan
+    if: needs.plan.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
@@ -67,59 +164,125 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      # `check` is lint + formatter. The formatter was enforced from the reformat commit recorded
-      # in .git-blame-ignore-revs; before that the tree had drifted 196 files from the config that
-      # was already sitting in the repo.
+      # `check` is lint + formatter. The formatter was enforced from the reformat
+      # commit recorded in .git-blame-ignore-revs; before that the tree had
+      # drifted 196 files from the config that was already sitting in the repo.
       - name: Lint and format check
         run: pnpm exec biome check passion
 
       - name: Typecheck (packages + adapters)
         run: pnpm exec tsc -b
 
-      # `tsc -b` follows the root project references, which list packages and adapters and
-      # deliberately not apps: a Next app is built by `next build`, not by the composite. So no gate
-      # covered app types at all, and the guide console had accumulated 36 errors in one test file
-      # without anything noticing. Each app owns a tsconfig; check them.
-      - name: Typecheck (apps)
-        run: |
-          for app in home guide-console project-studio parent-guide concierge design-lab \
-                     evidence-explorer mvp-jul24 tinker-cabin; do
-            echo "::group::$app"
-            pnpm --filter "./passion/apps/$app" exec tsc --noEmit
-            echo "::endgroup::"
-          done
-
       - name: Test (engines + adapters)
         run: pnpm test
 
-      # The root vitest config only globs passion/packages and passion/adapters, so every app
-      # suite sat outside the gate. Apps are listed explicitly rather than swept with `pnpm -r`,
-      # because each carries its own vitest config and environment (jsdom, WebGL stubs) and a
-      # recursive run would silently pick up packages whose `test` script re-enters the root
-      # config. Add a line when an app gains a suite.
-      # design-lab's suite shells out to ImageMagick to measure the browse wall's tile art, so the
-      # runner needs it. Preinstalled on ubuntu-latest; asserted rather than assumed, because the
-      # failure mode otherwise is a confusing ENOENT inside a test about luminance.
+  # One job per app, all at once. The slowest single app now sets the wall clock
+  # instead of the sum of all nine, and a failure names the app in the check list
+  # rather than somewhere inside a 300-line fold.
+  #
+  # `tsc -b` follows the root project references, which list packages and
+  # adapters and deliberately not apps: a Next app is built by `next build`, not
+  # by the composite. So the app typecheck below is the only thing covering app
+  # types — the guide console once accumulated 36 errors in one test file with
+  # nothing noticing. And a green suite does not mean the thing compiles, so the
+  # build stays a gate of its own: parent-guide is statically exported to AWS,
+  # where a build break ships as a broken site rather than a failed test.
+  apps:
+    name: ${{ matrix.app.dir }}
+    needs: plan
+    if: needs.plan.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      # Report every broken app in one run. Bisecting nine apps one re-run at a
+      # time is the slow kind of fast.
+      fail-fast: false
+      matrix:
+        app: ${{ fromJSON(needs.plan.outputs.apps) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Next's own recommendation: .next/cache is what makes an incremental build
+      # incremental, and a runner starts with an empty one every time. Keyed on
+      # the commit so each run writes a fresh entry, with restore-keys falling
+      # back to the newest cache for this app.
+      - name: Restore Next build cache
+        if: matrix.app.next
+        uses: actions/cache@v4
+        with:
+          path: passion/apps/${{ matrix.app.dir }}/.next/cache
+          key: next-${{ matrix.app.dir }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            next-${{ matrix.app.dir }}-${{ hashFiles('pnpm-lock.yaml') }}-
+            next-${{ matrix.app.dir }}-
+
+      - name: Typecheck
+        run: pnpm --filter "./passion/apps/${{ matrix.app.dir }}" exec tsc --noEmit
+
+      # design-lab's suite shells out to ImageMagick to measure the browse wall's
+      # tile art, which is how the uniformity claim is checked rather than
+      # asserted. Preinstalled on ubuntu-latest; named here rather than assumed,
+      # because the failure otherwise is an ENOENT inside a test about luminance.
       - name: Check ImageMagick
+        if: matrix.app.dir == 'design-lab'
         run: convert --version
 
-      - name: Test (apps)
-        run: |
-          for app in home guide-console project-studio parent-guide concierge-app \
-                     design-lab evidence-explorer mvp-jul24 tinker-cabin-app; do
-            echo "::group::$app"
-            pnpm --filter "@gt100k/$app" test
-            echo "::endgroup::"
-          done
+      # Each app carries its own vitest config and environment (jsdom, WebGL
+      # stubs), so it is run through its own package script rather than swept
+      # recursively — a recursive run picks up packages whose `test` script
+      # re-enters the root config.
+      - name: Test
+        if: matrix.app.test
+        run: pnpm --filter "${{ matrix.app.name }}" test
 
-      # A green suite does not mean the thing compiles: the type checker does not run Next's
-      # build, and parent-guide is statically exported to AWS, so a build break ships as a
-      # broken site rather than a failed test.
-      - name: Build apps
+      - name: Build
+        if: matrix.app.build
+        run: pnpm --filter "${{ matrix.app.name }}" build
+
+  # The one required status check in the ruleset is named `ci`, and the merge
+  # queue waits on it. Keeping a job by that name means the split above needs no
+  # change to branch protection. It has to survive its dependencies being
+  # skipped (docs-only) without turning that into a pass-by-absence, hence
+  # `always()` plus an explicit look at each result.
+  ci:
+    name: ci
+    if: always()
+    needs: [guards, plan, static, apps]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify every gate
+        env:
+          GUARDS: ${{ needs.guards.result }}
+          PLAN: ${{ needs.plan.result }}
+          STATIC: ${{ needs.static.result }}
+          APPS: ${{ needs.apps.result }}
         run: |
-          for app in home guide-console parent-guide project-studio design-lab concierge-app \
-                     evidence-explorer mvp-jul24 tinker-cabin-app; do
-            echo "::group::$app"
-            pnpm --filter "@gt100k/$app" build
-            echo "::endgroup::"
+          failed=0
+          for gate in "guards=$GUARDS" "plan=$PLAN" "static=$STATIC" "apps=$APPS"; do
+            name=${gate%%=*}
+            result=${gate#*=}
+            echo "$name: $result"
+            case "$result" in
+              # `skipped` is the docs-only fast path. It cannot hide a failure:
+              # every job is in `needs`, so a job skipped because an upstream one
+              # failed is accompanied by that upstream failure, which is checked
+              # here too. A matrix job's result is the aggregate, so one broken
+              # app makes `apps` a failure.
+              success|skipped) ;;
+              *) echo "::error::$name: $result"; failed=1 ;;
+            esac
           done
+          [ "$failed" -eq 0 ] || exit 1
+          echo "All gates passed."

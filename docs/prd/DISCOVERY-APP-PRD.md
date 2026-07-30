@@ -98,7 +98,7 @@ free-camera interior needs to argue with this sentence first.
 **Which backend serves Layer 2 (2026-07-26).** One: `backdrop`, a generated still plate with
 clickable perspective prop polygons in the art's own coordinate space. The real-time R3F room and
 the flat-illustration fallback are parked in the tree, not deleted
-(`passion/apps/mvp-jul24/src/cabin/CabinView.tsx` records how to reverse it). The still buys
+(`archive/passion/apps/mvp-jul24/src/cabin/CabinView.tsx` records how to reverse it). The still buys
 fidelity the hand-built room could not reach at roughly zero GPU cost, which is the same
 pre-rendered-adventure economics that makes the fixed camera correct — the two decisions share one
 argument. Note this does **not** reopen Layer 3: `backdrop` needing no WebGL is a hardware fact and

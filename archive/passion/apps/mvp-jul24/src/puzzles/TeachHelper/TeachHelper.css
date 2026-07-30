@@ -1,0 +1,213 @@
+/**
+ * Teach the Helper's floors, instruction box and readout.
+ *
+ * THE HIDDEN FLOORS HAVE NO STYLING FOR A "NOT YET RUN" STATE, because they are not rendered at all
+ * until the helper has been sent. A greyed-out row would tell a child there are three of them and
+ * invite them to reason about what might be on them, which is a smaller version of showing them.
+ *
+ * Every cell is styled identically. The floor says where cells are and nothing about where parcels
+ * tend to be.
+ */
+
+.th {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem 1.5rem;
+  color: var(--cream);
+  font-family: var(--font-body);
+}
+
+.th-exit {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 2px solid var(--wood-frame);
+  border-radius: var(--r-pill);
+  background: linear-gradient(180deg, var(--wood-light), var(--wood));
+  color: var(--cream);
+  font: 600 1rem var(--font-display);
+  cursor: pointer;
+}
+
+.th-boards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.th-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.th-row-label {
+  min-width: 7rem;
+  text-align: right;
+  color: var(--cream-soft);
+  font-size: 0.9rem;
+}
+
+.th-corridor {
+  display: grid;
+  grid-template-columns: repeat(7, 2.4rem);
+  gap: 3px;
+  padding: 0.35rem;
+  border: 2px solid var(--wood-frame);
+  border-radius: var(--r-md);
+  background: var(--wood-deep);
+}
+
+.th-cell {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border: 1px solid var(--wood);
+  border-radius: 2px;
+}
+
+.th-parcel {
+  width: 58%;
+  height: 58%;
+  border-radius: 3px;
+  background: var(--ember-bright);
+  box-shadow: var(--glow-ember);
+}
+
+/*
+ * The helper itself. A cream ring rather than a disc so a parcel on its own starting cell — the one
+ * it has to `take` from where it stands — reads through the middle instead of being covered by the
+ * actor that is supposed to pick it up. The chevron on the ring's right edge is its facing: east,
+ * the direction `move` carries it before any `turn`, so the child can see the corridor the way the
+ * helper does. Cream, not ember, so it never reads as one more parcel.
+ */
+.th-helper {
+  position: relative;
+  width: 86%;
+  height: 86%;
+  border: 3px solid var(--cream);
+  border-radius: 50%;
+  box-shadow: var(--shadow-soft);
+}
+
+.th-helper::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -6px;
+  transform: translateY(-50%);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid var(--cream);
+}
+
+/*
+ * A verdict is a sentence, not a colour: "something left behind" says what happened, and the parcels
+ * still drawn on that floor are the actual evidence. Colour alone would carry it for nobody who
+ * cannot separate these two hues.
+ */
+.th-verdict {
+  min-width: 9rem;
+  color: var(--cream-soft);
+  font-size: 0.9rem;
+}
+
+.th-verdict-ok {
+  color: var(--ember-bright);
+}
+
+.th-write {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.th-write-label {
+  font: 600 1rem var(--font-display);
+}
+
+.th-text {
+  width: 100%;
+  padding: 0.6rem;
+  border: 2px solid var(--wood-frame);
+  border-radius: var(--r-md);
+  background: var(--wood-deep);
+  color: var(--cream);
+  font: 600 1rem ui-monospace, "SFMono-Regular", "Menlo", monospace;
+  resize: vertical;
+}
+
+.th-text:focus-visible {
+  border-color: var(--ember-bright);
+  box-shadow: var(--glow-ember);
+  outline: none;
+}
+
+.th-words {
+  margin: 0;
+  color: var(--cream-soft);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* What the helper understood, echoed live. The proof that a word worked. */
+.th-understood {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.th-chip {
+  padding: 0.2rem 0.6rem;
+  border: 2px solid var(--ember-deep);
+  border-radius: var(--r-pill);
+  background: var(--wood);
+  font: 600 0.85rem ui-monospace, "SFMono-Regular", "Menlo", monospace;
+}
+
+.th-problems {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--cream-soft);
+  font-size: 0.9rem;
+}
+
+.th-say {
+  margin: 0;
+  text-align: center;
+  color: var(--cream-soft);
+}
+
+.th-controls {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.th-send,
+.th-next {
+  min-height: 44px;
+  padding: 0 1.5rem;
+  border: 2px solid var(--ember-deep);
+  border-radius: var(--r-pill);
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  color: var(--ink);
+  font: 700 1.05rem var(--font-display);
+  cursor: pointer;
+}
+
+.th-send:disabled {
+  background: var(--wood);
+  color: var(--cream-soft);
+  opacity: 0.6;
+  cursor: not-allowed;
+}

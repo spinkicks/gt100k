@@ -13,7 +13,7 @@
 import { useMemo, type JSX } from "react";
 import { AreaChart, BarChart, Donut, Spark } from "./charts.js";
 import { buildOverview, type ShareSlice, type StatTile, type TimeSeries } from "./overview.js";
-import { offersForKid } from "./offer-next.js";
+import { groupOffers, offersForKid } from "./offer-next.js";
 import { profileFor } from "./console-data.js";
 import { WhyThis } from "./why.js";
 import type { ConsoleController } from "./useConsole.js";
@@ -89,8 +89,8 @@ function Tile({ t }: { t: StatTile }): JSX.Element {
  * *less* interested than never trying it at all.
  */
 function OfferNext({ kidId }: { kidId: string }): JSX.Element | null {
-  const offers = useMemo(() => offersForKid(profileFor(kidId)), [kidId]);
-  if (offers.length === 0) return null;
+  const groups = useMemo(() => groupOffers(offersForKid(profileFor(kidId))), [kidId]);
+  if (groups.length === 0) return null;
 
   return (
     <section className="card">
@@ -102,14 +102,33 @@ function OfferNext({ kidId }: { kidId: string }): JSX.Element | null {
           </p>
         </div>
       </div>
-      <ul className="offer-next">
-        {offers.map((o) => (
-          <li key={`${o.reason}:${o.label}`} data-reason={o.reason}>
-            <span className="offer-next__what">{o.label}</span>
-            <span className="offer-next__why">{o.because}</span>
-          </li>
+      {/* Grouped by reason, not one flat list. The reason sentence belongs to the reason code, so a
+          flat list repeats it verbatim on every row and four rows read as one paragraph. Each group
+          is a real <section> with a real heading, so a screen reader gets the same structure a
+          sighted guide does and can jump between the groups. */}
+      <div className="offer-next">
+        {groups.map((g) => (
+          <section className="offer-grp" key={g.reason} data-reason={g.reason}>
+            <h3 className="offer-grp__hd">
+              {/* Colour is doubled by the heading text beside it, per this console's rule that
+                  meaning never rests on colour. */}
+              <span className="offer-grp__pip" aria-hidden="true" />
+              {g.heading}
+              {/* Only worth saying when it is more than one. "Owed a follow-up 4" tells a guide
+                  something at a glance; "1" beside a single row is just noise. */}
+              {g.offers.length > 1 ? <span className="offer-grp__n">{g.offers.length}</span> : null}
+            </h3>
+            <p className="offer-grp__why">{g.because}</p>
+            <ul className="offer-grp__list">
+              {/* The path is unique within a slate, so it is a stable key AND the thing that tells
+                  two subtopics of one cabin apart. Keyed on the label before, which collided. */}
+              {g.offers.map((o) => (
+                <li key={o.domainPath.join("/")}>{o.label}</li>
+              ))}
+            </ul>
+          </section>
         ))}
-      </ul>
+      </div>
     </section>
   );
 }

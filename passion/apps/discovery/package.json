@@ -1,0 +1,27 @@
+{
+  "name": "@gt100k/discovery",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3070",
+    "build": "next build",
+    "start": "next start -p 3070",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@gt100k/concierge": "workspace:*",
+    "@gt100k/design-tokens": "workspace:*",
+    "@gt100k/discovery-catalog": "workspace:*",
+    "@gt100k/signal-pipeline": "workspace:*",
+    "@gt100k/two-axis-tagging": "workspace:*",
+    "chess.js": "^1.4.0",
+    "motion": "^11.11.0",
+    "next": "^14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1"
+  }
+}

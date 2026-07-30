@@ -70,3 +70,9 @@ secrets/
 # Ingested student profiles: real child data, never committed.
 .profiles/
 .next-build/
+
+# The impeccable design hook writes a per-session cache keyed by ABSOLUTE paths. The root one is
+# tracked and predates this rule; nested per-app copies must never be committed, because they embed
+# machine paths (AGENTS.md forbids those in committed files) and they fail the formatter check.
+passion/apps/*/.impeccable/
+apps/*/.impeccable/

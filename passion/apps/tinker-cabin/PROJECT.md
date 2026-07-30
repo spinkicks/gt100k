@@ -41,7 +41,7 @@ It is the "cabin" surface of the Discovery loop:
    Evidence Graph.** The graph records *project work* and its
    provenance, and it is a separate product (`docs/decisions/evidencegraph-v1-design.md` §13a); a
    discovery cabin produces no project work, so it has no input to it. Same position as
-   `passion/apps/mvp-jul24/PROJECT.md`.
+   `archive/passion/apps/mvp-jul24/PROJECT.md`.
 
 Polish is driven by an iteration loop that judges framed screenshots against `reference/` and grinds
 down the gaps. It is not a game — no combat/scoring; the fireplace, the cat, and the code taste are

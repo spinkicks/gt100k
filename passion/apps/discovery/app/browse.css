@@ -1,0 +1,467 @@
+/* The browse prototype.
+ *
+ * Dark, content-first, almost no chrome — the posture the reference gets right. What it does not
+ * copy is the part that would cost us the measurement: every tile here is the same weight, and the
+ * only thing that varies between them is hue and a glyph.
+ */
+
+.browse {
+  --bg: oklch(16% 0.012 265);
+  --surface: oklch(23% 0.015 265);
+  --surface-hi: oklch(29% 0.02 265);
+  --ink: oklch(97% 0.005 265);
+  --ink-soft: oklch(78% 0.012 265);
+  --ring: oklch(84% 0.16 92); /* the reference's gold, as the selection colour only */
+  --line: oklch(34% 0.015 265);
+
+  /* EVERY CABIN HUE AT THE SAME LIGHTNESS AND CHROMA.
+   *
+   * This is the whole anti-confound trick and it is why the palette is in OKLCH rather than hex.
+   * Hue tells a child which room they are in; identical L and C mean no room is prettier than
+   * another. In sRGB the same eight hues would differ in perceived lightness by a wide margin and
+   * one of them would win, which is precisely the effect Javora measured. */
+  --l: 62%;
+  --c: 0.13;
+  /* Evenly spaced 45° apart around the wheel. The first pass clustered them — 20 and 40 were both
+     red-brown, 135 and 155 both green — and two cabins a child cannot tell apart at a glance are
+     worse than no colour at all, because the colour then looks like it means something it does not. */
+  --h-words: 25;
+  --h-making: 70;
+  --h-science: 135;
+  --h-music: 165;
+  --h-code: 215;
+  --h-math: 260;
+  --h-games: 305;
+  --h-art: 350;
+
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans, system-ui), sans-serif;
+  display: grid;
+  grid-template-columns: 1fr min(26rem, 30vw);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100vh;
+  overflow: hidden;
+  grid-template-areas: "bar bar" "grid panel" "meter meter";
+  gap: 0;
+}
+
+/* ── the bar ─────────────────────────────────────────────────────────────────────────────── */
+
+.browse__bar {
+  grid-area: bar;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.browse__back,
+.tile,
+.row {
+  /* The child-mode floor from the token contract. 56px is the figure the child-UX literature gives,
+     and every interactive thing on this screen clears it. */
+  min-height: var(--control-min, 56px);
+}
+
+.browse__back {
+  padding: 0 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.browse__back:hover:not(:disabled) {
+  background: var(--surface-hi);
+  border-color: var(--ring);
+}
+
+.browse__back:disabled {
+  /* Dimmed, never removed. A control that vanishes takes its own explanation with it, and a child
+     who learns the back button is always there can stop watching for it. */
+  opacity: 0.4;
+  cursor: default;
+}
+
+.browse__crumb {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.browse__hint {
+  margin: 0 0 0 auto;
+  color: var(--ink-soft);
+  font-size: 1rem;
+}
+
+/* ── the grid ────────────────────────────────────────────────────────────────────────────── */
+
+.browse__grid {
+  grid-area: grid;
+  margin: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  /* Rows share the height rather than stacking from the top. Without this the wall is two rows of
+     tiles above a large empty field, which reads as a page that failed to load rather than as a
+     library. Density is most of what the reference gets right. */
+  grid-auto-rows: 1fr;
+  gap: 2px; /* nearly edge to edge, like the reference, without tiles actually touching */
+  padding: 2px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.browse__grid > li {
+  display: flex;
+  min-height: 0;
+}
+
+.tile {
+  --hue: var(--h-math);
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  min-height: clamp(9rem, 17vh, 12rem);
+  padding: 1.25rem;
+  border: none;
+  border-radius: 4px;
+  background: oklch(var(--l) var(--c) var(--hue) / 0.32);
+  overflow: hidden;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  /* 160ms: inside the 150-300ms band. Fast enough not to be waited on, slow enough to be seen. */
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.tile[data-cabin="math-puzzles"] {
+  --hue: var(--h-math);
+}
+.tile[data-cabin="code-computers"] {
+  --hue: var(--h-code);
+}
+.tile[data-cabin="games-strategy"] {
+  --hue: var(--h-games);
+}
+.tile[data-cabin="making-engineering"] {
+  --hue: var(--h-making);
+}
+.tile[data-cabin="art-motion"] {
+  --hue: var(--h-art);
+}
+.tile[data-cabin="music-sound"] {
+  --hue: var(--h-music);
+}
+.tile[data-cabin="science-nature"] {
+  --hue: var(--h-science);
+}
+.tile[data-cabin="influence-media"] {
+  --hue: var(--h-words);
+}
+
+.tile:hover {
+  background: oklch(var(--l) var(--c) var(--hue) / 0.44);
+}
+
+/* The selection, and the ONLY loud thing on the screen.
+ *
+ * Motion and contrast are the strongest attention cues at this age (memo 07 §2.3), which is exactly
+ * why nothing else here animates or glows: an ambient effect somewhere else would be competing for
+ * the channel this needs. The inset ring rather than an outline keeps the grid geometry from
+ * shifting when selection moves, so the wall stays still under the child's hand. */
+.tile[aria-current="true"] {
+  background: oklch(var(--l) var(--c) var(--hue) / 0.52);
+  box-shadow: inset 0 0 0 3px var(--ring);
+}
+
+.tile:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: -3px;
+}
+
+/* The art fills the tile; the label sits over a scrim at the foot of it, which is the reference's
+   arrangement. `object-fit: cover` rather than contain, so every tile is the same shape whatever
+   the image is — a letterboxed tile among filled ones is a difference in presentation, and that is
+   the one difference this design exists to remove. */
+.tile__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Biased upward. Every image puts the hands and the object in the middle and empty bench at the
+     foot, so a centred crop spends the bottom third on table and clips the thing being done.
+     
+     Setting `aspect-ratio: 4/3` on the tile to remove cropping entirely was the first attempt and
+     it was wrong: it forced tiles so large that four of the eight cabins fell outside the viewport,
+     and a child cannot choose what is not on the screen. The crop is uniform in any case — every
+     image is 4:3 going into an identical tile — so what needed fixing was only where it cuts. */
+  object-position: 50% 38%;
+  /* Held slightly back so white label text clears 4.5:1 over any part of the art, and so the
+     selection ring stays the loudest thing on the screen. */
+  opacity: 0.86;
+}
+
+/* The scrim. Without it the label's contrast depends on whatever the illustration happens to put
+   under it, which varies per tile and would be a legibility lottery. */
+.tile::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 62%;
+  background: linear-gradient(to top, oklch(14% 0.01 265 / 0.94), oklch(14% 0.01 265 / 0));
+  pointer-events: none;
+}
+
+.tile__glyph {
+  width: 44px;
+  height: 44px;
+  color: oklch(95% 0.03 var(--hue));
+  opacity: 0.92;
+}
+
+.tile__label,
+.tile__pos {
+  position: relative; /* above the scrim */
+  z-index: 1;
+}
+
+.tile__label {
+  /* Larger with no glyph above it, because below the cabin the word is the only thing carrying the
+     tile and it should read from across a room. */
+  font-size: clamp(1.0625rem, 1.4vw, 1.35rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.tile__pos {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.7rem;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+  opacity: 0.5;
+}
+
+/* ── the panel ───────────────────────────────────────────────────────────────────────────── */
+
+.panel {
+  grid-area: panel;
+  padding: 1.6rem 1.5rem;
+  border-left: 1px solid var(--line);
+  background: var(--surface);
+  overflow-y: auto;
+}
+
+.panel__title {
+  margin: 0 0 0.4rem;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.panel__blurb {
+  margin: 0 0 1.4rem;
+  color: var(--ink-soft);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+
+.panel__more,
+.panel__empty {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 1rem;
+}
+
+.panel__rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 2px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+  background: var(--surface-hi);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 1.0625rem;
+  line-height: 1.35;
+  transition: background 160ms ease;
+}
+
+.row:hover,
+.row:focus-visible {
+  background: oklch(35% 0.02 265);
+}
+
+.row:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.row__title {
+  flex: 1;
+}
+
+.row__out {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  color: var(--ink-soft);
+}
+
+/* ── the meter ───────────────────────────────────────────────────────────────────────────── */
+
+/* Visible because this is a prototype and what it is proving is that the measurement is real. A
+   child would never see this row. */
+.browse__meter {
+  grid-area: meter;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.8rem 1.5rem;
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.browse__meter-note {
+  margin-left: auto;
+  opacity: 0.75;
+}
+
+/* ── smaller screens ─────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 60rem) {
+  .browse {
+    grid-template-columns: 1fr;
+    grid-template-areas: "bar" "grid" "panel" "meter";
+  }
+
+  .browse__grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .panel {
+    border-left: none;
+    border-top: 1px solid var(--line);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile,
+  .row,
+  .browse__back {
+    transition: none;
+  }
+}
+
+/* What is inside a cabin, shown before the child commits to opening it. Deliberately plain text and
+   not buttons: two sets of choices on one screen is two choice moments competing, and the sequence
+   is the thing that makes the choice worth d = 0.61. */
+.panel__inside {
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.panel__inside li {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+/* ── the play affordance ───────────────────────────────────────────────────────────────────── */
+
+/* The game at a cell, given more weight than the link rows below it because the merge decision
+   was that making leads and reading sits beside it. Deliberately NOT gold: the ring is the
+   selection colour and only that, so borrowing it here would make "there is a game" look like
+   "this is selected". Instead a raised, warmer-neutral surface a child reads as the thing to
+   press, sized for the mouse-and-trackpad modality the school hardware quietly chose. */
+.panel__play {
+  margin: 0 0 1.4rem;
+}
+
+.panel__play-lead {
+  margin: 0 0 0.55rem;
+  color: var(--ink-soft);
+  font-size: 1rem;
+}
+
+.panel__play-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.panel__play-btn {
+  min-height: 56px;
+  padding: 0.7rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: oklch(37% 0.02 70);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 160ms ease, transform 120ms ease;
+}
+
+.panel__play-btn:hover,
+.panel__play-btn:focus-visible {
+  background: oklch(44% 0.03 70);
+}
+
+.panel__play-btn:active {
+  transform: translateY(1px);
+}
+
+.panel__play-btn:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Separates the two halves once a game is present above the links. */
+.panel__rows-lead {
+  margin: 0 0 0.55rem;
+  color: var(--ink-soft);
+  font-size: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel__play-btn {
+    transition: none;
+  }
+}

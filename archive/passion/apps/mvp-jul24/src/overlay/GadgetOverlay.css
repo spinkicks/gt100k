@@ -1,0 +1,167 @@
+/* Dark firelit backdrop — the puzzle opens like a book on a table by the fire. */
+.gadget-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 2.5rem);
+  overflow: auto;
+  background: radial-gradient(60% 55% at 50% 46%, rgba(232, 134, 60, 0.16) 0%, transparent 70%),
+    rgba(20, 11, 6, 0.78);
+  backdrop-filter: blur(3px);
+}
+
+/* Parchment page framed in wood, with a warm drop shadow. */
+.gadget-overlay-panel {
+  position: relative;
+  max-width: min(680px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  border-radius: var(--r-lg);
+  border: 8px solid var(--wood-frame);
+  background: radial-gradient(120% 90% at 50% 0%, var(--parchment-hi), transparent 55%),
+    linear-gradient(160deg, var(--parchment) 0%, var(--parchment-edge) 100%);
+  color: var(--ink);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), var(--shadow-panel);
+}
+
+/* — Win celebration — */
+.gadget-overlay-solved {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.5rem 1rem 0.5rem;
+  font-family: var(--font-body);
+  color: var(--ink);
+  text-align: center;
+}
+
+.gadget-overlay-star {
+  width: clamp(64px, 12vw, 92px);
+  height: clamp(64px, 12vw, 92px);
+  filter: drop-shadow(0 0 16px rgba(255, 184, 103, 0.8));
+}
+
+.gadget-overlay-star svg {
+  width: 100%;
+  height: 100%;
+}
+
+.gadget-overlay-solved-message {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2rem;
+  color: var(--ember-deep);
+}
+
+.gadget-overlay-solved-sub {
+  margin: 0;
+  max-width: 26ch;
+  text-wrap: balance;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.gadget-overlay-solved-back {
+  margin-top: 0.75rem;
+  border: 2px solid var(--ember-deep);
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  color: var(--ink);
+  border-radius: var(--r-pill);
+  padding: 0.6rem 1.5rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-raised);
+  transition: transform 120ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+
+.gadget-overlay-solved-back:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-raised), var(--glow-ember);
+}
+
+/* Same weight as "← Back", on purpose: the harder variant is offered, not recommended, so neither
+   button outranks the other. */
+.gadget-overlay-solved-harder {
+  margin-top: 0;
+  border: 2px solid var(--ink-soft);
+  background: var(--parchment);
+  color: var(--ink);
+  border-radius: var(--r-pill);
+  padding: 0.6rem 1.5rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-raised);
+  transition: transform 120ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+
+.gadget-overlay-solved-harder:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-raised), var(--glow-ember);
+}
+
+.gadget-overlay-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.gadget-overlay-confetti-bit {
+  position: absolute;
+  top: 0;
+  width: 9px;
+  height: 14px;
+  border-radius: 2px;
+}
+
+/* Coming-soon fallback — scoped to the panel so it never touches the cabin's
+   `.cabin-static-hotspot.coming-soon` objects, which share the class name. */
+.gadget-overlay-panel .coming-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem 1rem;
+  font-family: var(--font-body);
+  color: var(--ink);
+  text-align: center;
+}
+
+.gadget-overlay-panel .coming-soon-exit {
+  align-self: flex-start;
+  border: 2px solid var(--wood-frame);
+  background: linear-gradient(180deg, var(--parchment-hi), var(--parchment-edge));
+  color: var(--ink);
+  border-radius: var(--r-pill);
+  padding: 0.45rem 1.1rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: transform 120ms var(--ease-out), background 160ms var(--ease-out);
+}
+
+.gadget-overlay-panel .coming-soon-exit:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+}
+
+.gadget-overlay-panel .coming-soon-message {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.6rem;
+  color: var(--ink-soft);
+}

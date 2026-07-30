@@ -24,22 +24,25 @@ this walkthrough, and it is written that way so the difference stays visible.
 ## 2. Start the console
 
 ```bash
-pnpm --filter @gt100k/guide-console dev        # http://localhost:3020
+GT100K_INGEST_ORIGIN=http://localhost:3070 pnpm --filter @gt100k/guide-console dev   # http://localhost:3020
 ```
+
+The discovery app serves on `:3070`; the route's built-in origin allowlist still names the old
+`:5178` surface, so pass `GT100K_INGEST_ORIGIN` to let the browser's cross-origin post through.
 
 ## 3. Start the game, pointed at it
 
 ```bash
-VITE_GT100K_INGEST_URL=http://localhost:3020/api/ingest pnpm --filter @gt100k/mvp-jul24 dev
+NEXT_PUBLIC_GT100K_INGEST_URL=http://localhost:3020/api/ingest pnpm --filter @gt100k/discovery dev
 ```
 
-`http://localhost:5178`. Without that variable the game behaves exactly as it always has and writes
+`http://localhost:3070`. Without that variable the game behaves exactly as it always has and writes
 its log only to `localStorage`.
 
 ## 4. Play
 
-Click into **Logic Games** or **Math** (the two enterable cabins), open something on the wall, and
-close it again. The open is recorded when the overlay closes, not when it opens.
+Pick any topic on the wall, then a subtopic, then open a game from its panel and close it again. The
+open is recorded when the game overlay closes, not when it opens.
 
 A session flushes when the tab is hidden, and otherwise every 30 seconds. To force one without
 waiting, switch tabs, or in devtools:
@@ -60,8 +63,9 @@ a reassurance about data provenance that has quietly stopped being true is worse
 
 ## What you should expect to see, and not see
 
-**Surfaced records arrive immediately.** Entering a cabin records every gadget on the wall as
-*offered*, with its position. That is half the measurement and it is the half most systems throw away.
+**Surfaced records arrive immediately.** Every tile on a browse screen is recorded as *offered* with
+its position, and so is every game in a subtopic's panel. That is half the measurement and it is the
+half most systems throw away.
 
 **One open will not produce a hypothesis, and that is correct.** An `open` resolves to no work-mode:
 it proves the child was there, not that they worked. Cells form from what a child *does* — solving a
@@ -80,10 +84,11 @@ The uplink never disturbs the child, so it fails quietly. It does warn in devtoo
 - `403 ... "reason":"no-record"` — step 1 was skipped, or `GT100K_PROFILE_DIR` differs between the
   script and the console.
 - `403 ... "reason":"withdrawn"` or `"expired"` — the record is there and not currently valid.
-- **A CORS error** — the game is on a port the route does not allow. It permits
-  `http://localhost:5178` by default; set `GT100K_INGEST_ORIGIN` on the console to change it.
-- **Nothing at all in the network tab** — `VITE_GT100K_INGEST_URL` is not set. Vite only reads it at
-  startup, so restart the game after setting it.
+- **A CORS error** — the console is allowing a different origin than the game's. The route permits
+  `http://localhost:5178` unless `GT100K_INGEST_ORIGIN` is set, so start the console with
+  `GT100K_INGEST_ORIGIN=http://localhost:3070` (step 2) to match the discovery app.
+- **Nothing at all in the network tab** — `NEXT_PUBLIC_GT100K_INGEST_URL` is not set. Next.js only
+  reads it at startup, so restart the game after setting it.
 
 Re-sending is safe. The receiver deduplicates, so a retry after a lost response costs a round trip
 and never a doubled log.

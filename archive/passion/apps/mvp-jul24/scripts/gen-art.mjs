@@ -1,0 +1,334 @@
+#!/usr/bin/env node
+/**
+ * gen-art.mjs — generate the game's art (world map + cabin backgrounds) via
+ * the TrueFoundry image gateway.
+ *
+ * NOTE: the cabin BACKDROPS used by the backdrop renderer
+ * (`public/art/cabin-backdrop-*.png`) are NOT produced here — they are built by
+ * scripts/gen-cabins.mjs, which edits approved concept stills in place rather
+ * than generating a room, so that the composition cannot drift. The
+ * `cabin-math` / `cabin-logic-games` targets below produce the older
+ * whole-room images still loaded by src/cabin/CabinStatic.tsx. Running them
+ * will not touch the backdrops.
+ *
+ * Usage:
+ *   node scripts/gen-art.mjs [target...] [--model <gpt-image-1|gpt-image-1.5|gemini-3-pro-image-preview>]
+ *
+ * With no target, generates every target in TARGETS. Writes PNG/JPEG bytes
+ * straight to public/art/<target>.<ext>.
+ *
+ * Auth: reads the gateway key out of process.env.ANTHROPIC_CUSTOM_HEADERS,
+ * which holds a string like "x-tfy-api-key: tfy_...". The key is extracted,
+ * trimmed, and sent as both the x-tfy-api-key header and an Authorization:
+ * Bearer header. The key is never logged, printed, or written to a file.
+ */
+
+import { writeFileSync } from "node:fs";
+import { mkdirSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ART_DIR = join(__dirname, "..", "public", "art");
+
+const GATEWAY_URL = "https://tfy.promptlens.trilogy.com/api/llm/images/generations";
+const DEFAULT_MODEL = "gpt-image-1.5";
+const VALID_MODELS = new Set(["gpt-image-1", "gpt-image-1.5", "gemini-3-pro-image-preview"]);
+
+/**
+ * Shared negative-constraint tail. Image models bake lettering into signage,
+ * clock dials and framed art unless told repeatedly not to, so every prompt
+ * ends with this.
+ */
+const NO_TEXT =
+  "Absolutely no text, no letters, no words, no writing, no numbers, no " +
+  "numerals, no digits, no labels, no captions, no signs, no signposts, no " +
+  "banners, no scrolls, no map legend, no compass rose, no watermark and no " +
+  "UI elements of any kind anywhere in the image. Every surface, frame, dial " +
+  "and board is blank of writing.";
+
+/** Named art targets: prompt + output filename. */
+const TARGETS = {
+  map: {
+    file: "map.png",
+    prompt: `A warm, painterly parchment-style fantasy world map, like an illustrated overworld from a cozy storybook game. Flat hand-painted 2D illustration on aged parchment texture with soft muted colors — an illustrated map, not a 3D render, not a photograph. Five small wooden cabins sit in the landscape, and the composition is deliberately split into a bright near half and a hazy far half. NEAR, large and prominent in the foreground and midground, two cozy cabins glow with warm inviting light, sharply painted and richly coloured, each on its own green hillock, joined to the bottom edge of the map by a wide sunlit winding path: on the left a puzzle den with a lantern on its porch, a chequered board, scattered coloured wooden pegs and interlocking block shapes on the grass outside; on the right a clockmaker's workshop with brass cogs and gears leaning against its wall, a swinging pendulum under the eaves and a big plain round dial with two simple hands and a completely blank empty face on its gable. FAR AWAY near the horizon, three much smaller cabins are faint, pale, dim and half-swallowed by cool blue mist and rolling hills — clearly visible but distant, shuttered and unlit with dark empty windows, washed-out and desaturated, with no paths leading to them: one tucked among trees with faint ghostly silhouettes of a harp and a horn beside it, one with a faint web of thin branching glowing threads and tiny firefly-like dots of light creeping over the ground around it like a circuit, and one with a small easel, a palette and pale watery paint splashes on the grass beside it. Gentle rolling hills, soft clouds, hand-drawn storybook illustration style, strong depth: crisp golden light and saturated colour on the two near cabins, soft grey-blue atmospheric haze on the three distant ones. ${NO_TEXT}`,
+  },
+  "cabin-math": {
+    file: "cabin-math.png",
+    prompt: `The inside of a clockmaker's workshop in a cozy wooden cabin, viewed from a fixed first-person perspective looking straight at the far wall. A long dark-wood workbench strewn with brass gears, cogs, springs, coiled mainsprings, tiny screwdrivers, tweezers and half-assembled clock movements. Behind it the wood-plank wall is hung with pendulum clocks whose faces have been removed to show their exposed brass clockwork, plus a few completely blank plain round dials with simple hands and no markings at all, swinging brass pendulums, and weights on chains. A wall of small parts drawers, a pair of brass balance scales, brass calipers and a set square. Warm lantern and candle light, dust motes drifting in a shaft of afternoon sun through a small window, exposed beams overhead, worn wooden floorboards and a small rug. Painterly storybook illustration style, rich warm brass-and-amber palette, snug and inviting. No people, no characters. ${NO_TEXT}`,
+  },
+  /**
+   * The music room's shipping plate, 1536x1024 to match the other two backdrops.
+   *
+   * The ONLY backdrop this file produces, and the reason it can: the other two rooms are a concept
+   * still plus `gen-cabins.mjs` prop surgery, because their props are combinatorial boards a
+   * diffusion model gets wrong. Nothing in the music room is a board — a lute, an organ, a drum and a
+   * bookcase are just objects — so one text-to-image pass is the whole pipeline here. Hence the
+   * `cabin-backdrop-` name: this writes the file the room actually loads, not a reference for a later
+   * stage. (It wrote `cabin-music.png`, the legacy `CabinStatic` name, while there was no room.)
+   *
+   * FOUR SURFACES: three props and a shelf. `quads.data.test.ts` matches prop polygons to registered
+   * gadgets exactly in both directions, so the painting has to contain exactly one clearly-bounded,
+   * traceable surface for each of tune-repair, chord-fit and downbeat — and no fourth *prop*, because
+   * `echo` is not built and a surface with no gadget breaks the build. The bookcase is the fourth
+   * object but not a fourth prop: a `ShelfProp` is a separate field and is not gadget-backed. Adding
+   * echo later means a repaint; that is the trade the roster note in PROJECT.md records.
+   *
+   * Equal polish with the other two rooms is a MEASUREMENT requirement, not a finish nicety (PRD §5.3):
+   * uneven art makes the topic ranking inherit the production schedule. Hence the same framing, the same
+   * fixed first-person view of the far wall, the same lantern-lit palette and the same painterly
+   * storybook language as cabin-logic-games and cabin-math above.
+   */
+  "cabin-backdrop-music": {
+    file: "cabin-backdrop-music.png",
+    size: "1536x1024",
+    prompt: `The inside of a musician's workshop in a cozy wooden cabin, viewed from a fixed first-person perspective looking straight at the far wall, wide landscape composition. FOUR clearly separated objects, each isolated with empty wall or floor around it so none overlaps another, spread evenly across the width of the room. On the far LEFT, hanging flat against the wood-plank wall, a warm honey-coloured lute with a rounded body and a long straight neck, seen face-on and complete. In the CENTRE, standing against the back wall, a small upright wooden pump organ with a plain keyboard of pale and dark keys and a simple carved music desk above it, seen straight on. To the RIGHT of the organ, resting on the floorboards, a single round hand drum on a low wooden stand with a taut pale skin head facing the viewer. On the far RIGHT against the right-hand wall, a short open wooden bookcase of two or three shelves, packed with worn leather-bound books and a few rolled papers standing upright, seen straight on with its whole front visible and unobstructed. Between them the room is quiet and uncluttered: a lantern casting warm light, a plain wooden stool, a rolled rug, exposed beams overhead, worn floorboards, and a small window on the left letting in a soft shaft of afternoon light with dust motes. Painterly storybook illustration style, rich warm amber-and-honey palette, snug and inviting, the same cozy hand-painted look as a clockmaker's workshop or a puzzle den. No people, no characters, no sheet music, no notation, no staves. ${NO_TEXT}`,
+  },
+  /**
+   * The code room's shipping plate, 1536x1024 to match the other three backdrops.
+   *
+   * Same one-pass pipeline as the music room and for the same reason: nothing in this room is a
+   * combinatorial board a diffusion model gets wrong. A clockwork toy, a tape reader, a standing
+   * automaton and a bookcase are just objects, so what is painted is what the quads can trace.
+   *
+   * FOUR SURFACES: three props and a shelf, one prop per registered gadget, because
+   * `quads.data.test.ts` matches prop polygons to gadgets exactly in both directions. All three doors
+   * are built, so unlike the music room this plate needs no fourth-surface decision — the roster is
+   * final (see docs/superpowers/specs/2026-07-28-code-cabin-design.md §5).
+   *
+   * THE THREE PROPS ARE DELIBERATELY DIFFERENT KINDS OF OBJECT. An earlier draft had two of them as
+   * "a device on a workbench", which reads as one prop painted twice and gives a child two doors that
+   * look like the same door. So: a small moving toy on a track (Sprite Loop, whose subject is motion
+   * that repeats), a punched-tape reader with a long ribbon (Trace & Repair, whose subject is
+   * execution you step through), and a standing figure holding a basket (Teach the Helper, whose
+   * subject is instructing something to go and fetch).
+   *
+   * NO OPEN BOOKS OR SCROLLS ANYWHERE, and that is a constraint rather than a taste. The spec's first
+   * sketch put "a lectern with an open instruction book" beside the helper; NO_TEXT forbids writing,
+   * and an open page is the single most reliable way to make an image model paint some. A closed
+   * ledger and a blank slate say the same thing and cannot fail that way.
+   *
+   * Equal polish with the other three rooms is a MEASUREMENT requirement, not a finish nicety
+   * (PRD §5.3): uneven art makes the topic ranking inherit the production schedule. Hence the same
+   * framing, the same fixed first-person view of the far wall, the same lantern-lit palette and the
+   * same painterly storybook language as the three backdrops above.
+   */
+  "cabin-backdrop-code": {
+    file: "cabin-backdrop-code.png",
+    size: "1536x1024",
+    prompt: `The inside of an inventor's workshop in a cozy wooden cabin, viewed from a fixed first-person perspective looking straight at the far wall, wide landscape composition. FOUR clearly separated objects, each isolated with empty wall or floor around it so none overlaps another, spread evenly across the width of the room. On the far LEFT, on a low wooden side table, a small brass clockwork beetle toy sitting on a closed circular brass track laid flat on the tabletop, the whole loop of track visible from slightly above. In the CENTRE, standing against the back wall, a waist-high wooden machine with two large brass spools side by side and a long pale ribbon of punched paper tape running between them and spilling in a gentle curve onto the floorboards, the tape pierced with small round holes and completely blank of writing. To the RIGHT of it, standing upright on the floorboards, a tall thin brass clockwork servant figure with a rounded head, jointed arms and visible gears at its shoulders, holding a small empty wicker basket in both hands, facing the viewer. On the far RIGHT against the right-hand wall, a short open wooden bookcase of two or three shelves, packed with worn leather-bound books and a few closed rolled papers standing upright, seen straight on with its whole front visible and unobstructed. Between them the room is quiet and uncluttered: a lantern casting warm light, a plain wooden stool, a coil of brass wire on a peg, exposed beams overhead, worn floorboards, and a small window on the left letting in a soft shaft of afternoon light with dust motes. Painterly storybook illustration style, rich warm amber-and-honey palette, snug and inviting, the same cozy hand-painted look as a clockmaker's workshop or a puzzle den. No people, no characters, no open books, no unrolled scrolls, no printed pages, no schematics, no diagrams, no dials with numbers. ${NO_TEXT}`,
+  },
+  /**
+   * Candidate replacement map with THREE near cabins instead of two.
+   *
+   * Written to its own file rather than over `map.png` on purpose. Generated art can come back worse
+   * than the composition it replaces, and the current map was built deliberately for the two-playable
+   * split — so the old one stays until a human approves this.
+   *
+   * Why regenerate at all: `cabins.data.ts` documents that the map paints the playable cabins large and
+   * warm in the foreground and the coming-soon ones small and mist-washed on the horizon. Promoting
+   * `music` while leaving it on a distant misty cabin would ship a topic whose choice affordance is
+   * visibly worse than its competitors', which is the Javora confound the surface-owner ruling names as
+   * one of two rules the game does not satisfy. Topic choice is the primary signal, so it must not be
+   * biased by paint.
+   *
+   * THE FIRST CANDIDATE WAS REJECTED, and the three faults are fixed here rather than re-rolled, since
+   * each was in the instructions rather than in the model's luck:
+   *
+   * 1. `size` was absent, so it fell through to the 1024x1024 default and came back SQUARE. MapScreen
+   *    renders the plate at `aspect-ratio: 16 / 9` with `object-fit: cover`, so a square painting loses
+   *    roughly a quarter of its height to the crop — sky off the top, foreground off the bottom, which
+   *    is where the paths and the props live. 1536x1024 is the widest the gateway offers and is what
+   *    the three cabin backdrops already use.
+   *
+   * 2. The dial asked for "two simple hands and a completely blank empty face" — a contradiction, and
+   *    the model resolved it toward blank, so the clockmaker's cabin came back with no hands at all.
+   *    "Blank" was only ever meant to satisfy the no-numerals rule in NO_TEXT. It now says tick marks
+   *    and hands, and says the numerals are the thing being excluded. `map.png` gets this right, which
+   *    is the proof it is expressible.
+   *
+   * 3. "equal size, equal prominence and equally golden light" produced three cabins with the same
+   *    roof, the same porch and the same lantern, reading as one building painted three times. Equal
+   *    PROMINENCE is the measurement requirement (PRD §5.3 — uneven art makes topic ranking inherit the
+   *    production schedule); equal APPEARANCE is not, and it costs the child the ability to tell the
+   *    doors apart. Each cabin now names its own roof material and timber, with prominence held equal.
+   */
+  "map-v2": {
+    file: "map-v2.png",
+    size: "1536x1024",
+    prompt: `A warm, painterly parchment-style fantasy world map, like an illustrated overworld from a cozy storybook game. Flat hand-painted 2D illustration on aged parchment texture with soft muted colors — an illustrated map, not a 3D render, not a photograph. Wide landscape composition, warm golden-hour light raking in low from one side. A thin, plain parchment edge only — no wide decorative border and no double ruled frame eating into the picture. Five small wooden cabins sit in the landscape, and the composition is deliberately split into a bright near half and a hazy far half. NEAR, LARGE and dominant, filling most of the lower two thirds of the picture and close enough to the viewer that their doors, lanterns and the props on the grass are all clearly legible, THREE cozy cabins glow with warm inviting light, sharply painted and richly coloured, each on its own green hillock, each joined to the bottom edge of the map by a wide sunlit winding path, and each given equal size, equal prominence and equally golden light — but each is plainly a DIFFERENT building, with its own roof pitch, roofing material and timber colour, so that no two silhouettes repeat: on the left a puzzle den under mossy green thatch with a lantern on its porch, a chequered board, scattered coloured wooden pegs and interlocking block shapes on the grass outside; in the centre a musician's cabin under warm split-cedar shingles with a honey-coloured lute leaning by its door, a small round hand drum on the grass and a lantern glowing beside the doorway; on the right a clockmaker's workshop under weathered grey slate with brass cogs and gears leaning against its wall, a swinging pendulum under the eaves, and on its gable a modest round dial, no wider than one of the cabin's windows, bearing plain tick marks and two simple dark clock hands, with no numerals of any kind anywhere on the face. The three near cabins carry EQUAL VISUAL WEIGHT: the same footprint width, the same wall height, the same amount of clutter and glow around each, so that no single cabin dominates the eye — the clockmaker's dial and gears must not make it heavier than the puzzle den or the musician's cabin. All three near cabins sit FULLY INSIDE the painting, with a clear margin of grass and hillside between the outermost cabins and the left and right edges — nothing cropped and nothing touching the border — and the most important detail is kept clear of the extreme top and bottom edges. The three near cabins stand at the SAME distance from the viewer, in one row at one depth, deliberately equal — do not push one further back or make one smaller. FAR AWAY, in a NARROW band of cool blue mist tight against the horizon, with no wide flat expanse of pale empty ground between that band and the near cabins, only TWO much smaller cabins are faint, pale, dim and half-swallowed by rolling hills — clearly visible but distant, shuttered and unlit with dark empty windows, washed-out and desaturated, with no paths leading to them: one with a faint web of thin branching glowing threads and tiny firefly-like dots of light creeping over the ground around it like a circuit, and one with a small angled easel holding a canvas covered in pale watery colour washes, a painter's palette and soft paint splashes on the grass beside it. The sunlit foreground grass carries small hand-painted detail — grass tufts, tiny wildflowers, worn stones set into the winding paths — rich but uncluttered. EACH NEAR CABIN CARRIES ONLY ITS OWN CRAFT'S PROPS and nothing belonging to another: beside the puzzle den only the chequered board and the coloured wooden blocks; beside the musician's cabin only the lute, the hand drum and its lantern; beside the clockmaker's workshop only the brass cogs, gears and the swinging pendulum. There is NO easel, NO painter's palette, NO paint, NO paintbrush and NO glowing threads or circuitry anywhere near the three near cabins — the easel and palette belong solely to the small distant cabin on the horizon, and the glowing threads solely to the other distant one. Gentle rolling hills, soft clouds, hand-drawn storybook illustration style, strong depth: crisp golden light and saturated colour on the three near cabins, soft grey-blue atmospheric haze on the two distant ones. ${NO_TEXT}`,
+  },
+  /**
+   * Candidate replacement map with FOUR near cabins, for the Code cabin opening.
+   *
+   * Its own file rather than over `map-v2.png`, following the convention #215 set: generated art can
+   * come back worse than what it replaces, so the plate in use stays until a human approves the new
+   * one. `map.png` (two near cabins) and `map-v2.png` (three) both remain on disk.
+   *
+   * Why regenerate at all: `cabins.data.ts` records that the map paints playable cabins large and warm
+   * in the foreground and coming-soon ones small and mist-washed on the horizon. Promoting `code` while
+   * leaving it a distant misty cabin would ship a topic whose choice affordance is visibly worse than
+   * its competitors' — the Javora confound, where children chose the prettier version of the *same*
+   * game 62% of the time (d > 0.86). Topic choice is the primary signal and must not be biased by paint.
+   *
+   * THE CODE CABIN'S SILHOUETTE IS DELIBERATELY NOT CLOCKWORK. `math` is the clockmaker's workshop,
+   * with brass cogs and a pendulum. An inventor's cabin full of gears would read as the same craft
+   * twice, and two cabins that look like one craft is a worse failure here than an ugly cabin: it makes
+   * the child's choice between two topics a coin flip about paint. So `code` gets the glowing branching
+   * threads that were on the distant cabin in map-v2, plus a ribbon of punched tape and a small brass
+   * automaton — no cogs, no gears, no pendulum, no dial.
+   *
+   * `art` is now the only horizon cabin. The narrow mist band and the no-paths rule are unchanged.
+   */
+  "map-v3": {
+    file: "map-v3.png",
+    size: "1536x1024",
+    prompt: `A warm, painterly parchment-style fantasy world map, like an illustrated overworld from a cozy storybook game. Flat hand-painted 2D illustration on aged parchment texture with soft muted colors — an illustrated map, not a 3D render, not a photograph. Wide landscape composition, warm golden-hour light raking in low from one side. A thin, plain parchment edge only — no wide decorative border and no double ruled frame eating into the picture. Five small wooden cabins sit in the landscape, and the composition is deliberately split into a bright near half and a hazy far half. NEAR, LARGE and dominant, filling most of the lower two thirds of the picture and close enough to the viewer that their doors, lanterns and the props on the grass are all clearly legible, FOUR cozy cabins glow with warm inviting light, sharply painted and richly coloured, each on its own green hillock, each joined to the bottom edge of the map by a wide sunlit winding path, and each given equal size, equal prominence and equally golden light — but each is plainly a DIFFERENT building, with its own roof pitch, roofing material and timber colour, so that no two silhouettes repeat: on the far left a puzzle den under mossy green thatch with a lantern on its porch, a chequered board, scattered coloured wooden pegs and interlocking block shapes on the grass outside; second from left a musician's cabin under warm split-cedar shingles with a honey-coloured lute leaning by its door, a small round hand drum on the grass and a lantern glowing beside the doorway; third, a clockmaker's workshop under weathered grey slate with brass cogs and gears leaning against its wall and a swinging pendulum under the eaves; on the far right an inventor's cabin under dark red-brown board-and-batten planks, with a web of thin branching glowing threads and tiny firefly-like dots of light creeping over the grass beside it like a circuit, a long pale ribbon of punched paper tape spilling from a crate by its door, and a small brass automaton figure standing on the grass — and absolutely no cogs, no gears, no pendulum and no clock dial anywhere near this inventor's cabin, because those belong to the clockmaker. The four near cabins carry EQUAL VISUAL WEIGHT: the same footprint width, the same wall height, the same amount of clutter and glow around each, so that no single cabin dominates the eye. All four near cabins sit FULLY INSIDE the painting, with a clear margin of grass and hillside between the outermost cabins and the left and right edges — nothing cropped and nothing touching the border — and the most important detail is kept clear of the extreme top and bottom edges. The four near cabins stand at the SAME distance from the viewer, in one row at one depth, deliberately equal — do not push one further back or make one smaller. FAR AWAY, in a NARROW band of cool blue mist tight against the horizon, with no wide flat expanse of pale empty ground between that band and the near cabins, only ONE much smaller cabin is faint, pale, dim and half-swallowed by rolling hills — clearly visible but distant, shuttered and unlit with dark empty windows, washed-out and desaturated, with no path leading to it, with a small angled easel holding a canvas covered in pale watery colour washes, a painter's palette and soft paint splashes on the grass beside it. The sunlit foreground grass carries small hand-painted detail — grass tufts, tiny wildflowers, worn stones set into the winding paths — rich but uncluttered. EACH NEAR CABIN CARRIES ONLY ITS OWN CRAFT'S PROPS and nothing belonging to another. There is NO easel, NO painter's palette, NO paint and NO paintbrush anywhere near the four near cabins — the easel and palette belong solely to the small distant cabin on the horizon. Gentle rolling hills, soft clouds, hand-drawn storybook illustration style, strong depth: crisp golden light and saturated colour on the four near cabins, soft grey-blue atmospheric haze on the single distant one. ${NO_TEXT}`,
+  },
+  "cabin-logic-games": {
+    file: "cabin-logic-games.png",
+    prompt: `The inside of a puzzle den in a cozy wooden cabin, viewed from a fixed first-person perspective looking straight at the far wall. Large framed grid puzzles hang on the wood-plank wall — big empty chequered lattices and blank grids of plain squares studded with coloured wooden pegs, no writing on them. To one side a tall wooden pegboard is threaded with looping bright coloured pipes and rubber tubes running between its holes. In the middle of the room a small round table holds a carved wooden chess set mid-game. On the other side stands a narrow mirror maze of tall angled mirrors reflecting warm lamplight into infinity. A shelf of interlocking wooden block puzzles and flat tangram shapes, a lantern casting warm light, exposed beams overhead, worn floorboards and a patterned rug. Painterly storybook illustration style, warm inviting palette with bright pops of puzzle-piece colour. No people, no characters. ${NO_TEXT}`,
+  },
+};
+
+function parseArgs(argv) {
+  const targets = [];
+  let model = DEFAULT_MODEL;
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === "--model") {
+      model = argv[++i];
+    } else if (arg.startsWith("--model=")) {
+      model = arg.slice("--model=".length);
+    } else if (!arg.startsWith("--")) {
+      targets.push(arg);
+    }
+  }
+  if (!VALID_MODELS.has(model)) {
+    console.error(`Unknown --model "${model}". Valid models: ${[...VALID_MODELS].join(", ")}`);
+    process.exit(1);
+  }
+  return { targets: targets.length > 0 ? targets : Object.keys(TARGETS), model };
+}
+
+function extractApiKey() {
+  const raw = process.env.ANTHROPIC_CUSTOM_HEADERS;
+  if (!raw) {
+    throw new Error(
+      'ANTHROPIC_CUSTOM_HEADERS is not set. Expected something like "x-tfy-api-key: tfy_...".',
+    );
+  }
+  const match = raw.match(/x-tfy-api-key:\s*(.+)/i);
+  if (!match) {
+    throw new Error("ANTHROPIC_CUSTOM_HEADERS is set but does not contain an x-tfy-api-key entry.");
+  }
+  const key = match[1].trim();
+  if (!key) {
+    throw new Error("Extracted x-tfy-api-key value is empty.");
+  }
+  return key;
+}
+
+async function generateImage({ model, prompt, apiKey, size = "1024x1024" }) {
+  const res = await fetch(GATEWAY_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-tfy-api-key": apiKey,
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({ model, prompt, n: 1, size }),
+  });
+
+  if (!res.ok) {
+    const bodyText = await res.text().catch(() => "<no body>");
+    const snippet = bodyText.slice(0, 500);
+    throw new Error(`Gateway request failed: HTTP ${res.status} ${res.statusText}\n${snippet}`);
+  }
+
+  const json = await res.json();
+  const item = json?.data?.[0];
+  if (!item) {
+    throw new Error(`Unexpected gateway response shape: ${JSON.stringify(json).slice(0, 500)}`);
+  }
+
+  if (item.b64_json) {
+    return Buffer.from(item.b64_json, "base64");
+  }
+
+  if (item.url) {
+    const imgRes = await fetch(item.url);
+    if (!imgRes.ok) {
+      throw new Error(`Failed to fetch generated image URL: HTTP ${imgRes.status}`);
+    }
+    return Buffer.from(await imgRes.arrayBuffer());
+  }
+
+  throw new Error("Gateway response contained neither b64_json nor url.");
+}
+
+/**
+ * Re-encode a PNG losslessly at max compression. The gateway's PNGs are
+ * under-compressed (~2.4 MB for 1024x1024); this shaves ~13% off with
+ * pixel-identical output, which matters because public/art/ is committed.
+ * Returns the original bytes if sharp is unavailable or does not help.
+ */
+async function shrinkPng(bytes) {
+  try {
+    const { default: sharp } = await import("sharp");
+    const out = await sharp(bytes)
+      .png({ compressionLevel: 9, adaptiveFiltering: true, palette: false })
+      .toBuffer();
+    return out.length < bytes.length ? out : bytes;
+  } catch {
+    return bytes;
+  }
+}
+
+async function main() {
+  const { targets, model } = parseArgs(process.argv.slice(2));
+
+  const unknown = targets.filter((t) => !(t in TARGETS));
+  if (unknown.length > 0) {
+    console.error(`Unknown target(s): ${unknown.join(", ")}`);
+    console.error(`Valid targets: ${Object.keys(TARGETS).join(", ")}`);
+    process.exit(1);
+  }
+
+  let apiKey;
+  try {
+    apiKey = extractApiKey();
+  } catch (err) {
+    console.error(`Auth error: ${err.message}`);
+    process.exit(1);
+  }
+
+  mkdirSync(ART_DIR, { recursive: true });
+
+  console.log(`Generating ${targets.length} art target(s) with model "${model}"...`);
+
+  let hadError = false;
+  for (const name of targets) {
+    const { file, prompt, size } = TARGETS[name];
+    const outPath = join(ART_DIR, file);
+    try {
+      console.log(`  -> ${name}: requesting...`);
+      const raw = await generateImage({ model, prompt, apiKey, size });
+      const bytes = await shrinkPng(raw);
+      writeFileSync(outPath, bytes);
+      console.log(`  -> ${name}: wrote ${outPath} (${bytes.length} bytes)`);
+    } catch (err) {
+      hadError = true;
+      console.error(`  -> ${name}: FAILED — ${err.message}`);
+    }
+  }
+
+  if (hadError) {
+    process.exit(1);
+  }
+}
+
+main().catch((err) => {
+  console.error(`Unexpected error: ${err.message}`);
+  process.exit(1);
+});
