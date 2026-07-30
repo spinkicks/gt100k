@@ -20,9 +20,17 @@
 // (1988) is the reason: a bare verdict with no task anchoring behaves like a grade, and in 132
 // children aged roughly 10 to 12 it depressed interest and later performance. So every row below
 // carries the artefacts it was derived from, including when there are none.
+//
+// SLICE 3 IS DESIGNED AND LANDS HERE, not in a new tab: milestone attestation, where a child brings
+// back external links as the artefact (the work happens on chess.com, not on our surfaces) and a
+// scoped socratic-defense session examines them, because a link proves the game happened and only
+// the examination proves it was theirs. That extends the artefact source this panel already reads
+// rather than changing what it renders. See `docs/decisions/2026-07-30-mastery-scaffold.md` §5.
 import { useState, type JSX } from "react";
-import type { HypothesisStore } from "@gt100k/hypothesis-store";
-import type { MapStatus, MasteryMap } from "@gt100k/mastery-map";
+import type { HypothesisCard, HypothesisStore } from "@gt100k/hypothesis-store";
+import { servesPath, type MapStatus, type MasteryMap } from "@gt100k/mastery-map";
+import { CABINS, type DomainPath } from "@gt100k/two-axis-tagging";
+import { specPath } from "./vocab.js";
 import type { ChildWork } from "./map-evidence.js";
 import {
   childReadView,
@@ -488,15 +496,79 @@ function MapCard({
   );
 }
 
+/**
+ * A view card widens `domainPath` to `readonly string[]`, so that the view layer does not have to
+ * import the taxonomy's literal union. `servesPath` needs the narrow type, and the rule it holds is
+ * the kind that must not be reimplemented (see `mastery-map/resolve.ts`), so this narrows instead —
+ * a real check against the cabin list rather than a cast, because a cast here would be a claim
+ * about data that arrived from a store this file does not own.
+ */
+function asDomainPath(path: readonly string[]): DomainPath | null {
+  const [cabin, sub] = path;
+  if (path.length !== 2 || cabin === undefined || sub === undefined) return null;
+  return (CABINS as readonly string[]).includes(cabin) ? ([cabin, sub] as DomainPath) : null;
+}
+
+/**
+ * What the maps below do and do not cover of THIS child's specializations.
+ *
+ * The Maps tab is the one place where the rail and the main pane can describe disjoint sets: the
+ * rail lists what a child is actually into, the maps list the domains somebody has written a map
+ * for, and today those barely overlap. Without this line a guide reads "Where Ari would go next on
+ * this map" under a domain Ari has never touched and can reasonably take it for Ari's path.
+ *
+ * It is a coverage statement, not a filter. Scoping the tab to the selected specialization the way
+ * Wellbeing and Plan are scoped would empty it for almost every child and take the map review
+ * surface with it, and reviewing a map is a job that has nothing to do with which child is loaded.
+ */
+function MapCoverage({
+  maps,
+  specs,
+}: {
+  maps: readonly MasteryMap[];
+  specs: readonly HypothesisCard[];
+}): JSX.Element | null {
+  if (specs.length === 0) return null;
+  const covered = specs.filter((s) => {
+    const path = asDomainPath(s.domainPath);
+    return path !== null && maps.some((m) => servesPath(m.domainPath, path));
+  });
+  const missing = specs.filter((s) => !covered.includes(s));
+  const names = (cards: readonly HypothesisCard[]): string =>
+    cards.map((c) => specPath(c.domainPath)).join(", ");
+  return (
+    <p className="mapcover">
+      {covered.length === 0 ? (
+        <>
+          <strong>No map yet for what this child is actually into.</strong> Their specializations
+          are {names(specs)}. The maps below are the ones that exist, shown so you can review them;
+          none of them is this child&rsquo;s path.
+        </>
+      ) : missing.length === 0 ? (
+        <>Every one of this child&rsquo;s specializations has a map below.</>
+      ) : (
+        <>
+          Mapped: {names(covered)}. <strong>Not yet mapped:</strong> {names(missing)} — so nothing
+          below describes {missing.length === 1 ? "that one" : "those"}.
+        </>
+      )}
+    </p>
+  );
+}
+
 export function MapsPanel({
   maps,
   work,
+  specs = [],
   store,
 }: {
   maps: readonly MasteryMap[];
   /** The selected child and what they have made. Absent means the tab is showing the maps alone,
       which is a coherent thing to look at: a map is domain knowledge and holds nobody in it. */
   work?: ChildWork;
+  /** The child's tracked specializations, for the coverage line only. Empty renders no line, which
+      is right for a console showing the maps with no child loaded. */
+  specs?: readonly HypothesisCard[];
   /** The live lifecycle store. Where a child stands on a map comes from their plan, and a plan
       exists only for a certified spike, so without this the tab would report the seed's answer and
       ignore a certification the guide made this session. */
@@ -528,6 +600,10 @@ export function MapsPanel({
           what the software wrote. Where a child appears, it is read off the work they made.
         </span>
       </header>
+
+      {/* `current`, not `shown`: coverage is a question about the maps themselves, and `shown` is
+          their view models, which carry a display string rather than a path to match on. */}
+      <MapCoverage maps={current} specs={specs} />
 
       {shown.length === 0 ? (
         <output className="wbpanel__empty">

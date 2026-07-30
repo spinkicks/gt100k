@@ -284,9 +284,13 @@ export function AccessPanel({ cards }: { cards: readonly AccessCardVM[] }): JSX.
       </header>
 
       {cards.length === 0 ? (
+        // Scoped to one specialization, so this speaks about that one. Read as a whole-child claim
+        // it would be actively misleading here: "no mentor options for this kid" is the sort of
+        // thing a guide acts on, and it may be false one rail row away.
         <output className="wbpanel__empty">
-          No certified spikes to broker yet. A spike gets mentor and audience options once you
-          promote it to a candidate or an active specialization.
+          This one is not a certified spike yet, so there is nothing to broker for it. A spike gets
+          mentor and audience options once you promote it to a candidate or an active
+          specialization.
         </output>
       ) : (
         <ul className="wblist" data-testid="access-list">
