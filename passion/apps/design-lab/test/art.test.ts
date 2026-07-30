@@ -11,8 +11,8 @@ import { fileURLToPath } from "node:url";
 import { PURSUITS } from "@gt100k/pursuits";
 import { describe, expect, it } from "vitest";
 
-// @ts-expect-error -- a plain .mjs helper with no types; shared with `scripts/build-art.mjs` so the
-// test and the tool that produced the files agree on which binary they are talking to.
+// Shared with `scripts/build-art.mjs`, so the test and the tool that produced the files cannot
+// disagree about which binary they are talking to.
 import { magick } from "../scripts/imagemagick.mjs";
 
 const ART = resolve(dirname(fileURLToPath(import.meta.url)), "..", "public", "pursuits");
