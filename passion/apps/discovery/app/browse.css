@@ -90,38 +90,108 @@
 
 /* ── the bar ─────────────────────────────────────────────────────────────────────────────── */
 
+/* A sentence and three controls, where there used to be a strip of nine identical pills.
+ *
+ * The pills were the loudest thing above the wall and did the least important job. Eight cabin
+ * filters at the 56px child touch floor is the largest furniture on the screen spent on abstract
+ * category words, directly above a wall that is flat and concrete precisely because children of
+ * this age do not sort abstract categories reliably. `page.tsx` carries the full argument.
+ *
+ * The left is a sentence rather than a wordmark. This is the first screen a child sees and it has
+ * no title anywhere; one line that says what the room is for costs nothing and is the only warm
+ * thing in the chrome.
+ */
 .browse__bar {
   grid-area: bar;
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.7rem 1rem;
+  padding: 0.5rem 0.95rem;
   border-bottom: 1px solid var(--line);
 }
 
-.browse__facets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+.browse__lede {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 1.0625rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
-/* The cabins, demoted. They are a filter a child may use, not a step they must pass through, and
-   the styling should not suggest otherwise: quieter than a tile, and never the first thing read. */
+/* The three controls, grouped. Same shape, same height, same vocabulary — the product register's
+   consistency rule, and the reason the bar reads as one thing instead of three. */
+.browse__view {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.browse__pick,
+.browse__age {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  white-space: nowrap;
+}
+
+/* Native selects, kept native. The product register's "reinventing standard affordances" ban is the
+   whole argument: a custom dropdown would cost the OS picker on touch, keyboard type-ahead, and the
+   screen reader's own vocabulary, in exchange for matching a pill. So the pill matches them. */
+.browse__pick select,
+.browse__age select {
+  min-height: var(--control-min, 56px);
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: border-color 140ms ease;
+}
+
+.browse__age select {
+  font-variant-numeric: tabular-nums;
+}
+
+.browse__pick select:hover,
+.browse__age select:hover {
+  border-color: var(--surface-hi);
+}
+
+.browse__pick select:focus-visible,
+.browse__age select:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* The one button left on the bar. Kept as a chip because it toggles rather than picks: a two-state
+   control that shows its state is a button, and putting it in a select would hide that state. */
 .chip {
-  padding: 0.35rem 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-min, 56px);
+  padding: 0.3rem 0.95rem;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: transparent;
   color: var(--ink-soft);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: 0.9375rem;
+  line-height: 1.2;
+  white-space: nowrap;
   cursor: pointer;
-  transition: background 160ms ease, color 160ms ease;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
 }
 
 .chip:hover {
   background: var(--surface);
   color: var(--ink);
+  border-color: var(--surface-hi);
 }
 
 .chip[aria-pressed="true"] {
@@ -135,27 +205,12 @@
   outline-offset: 2px;
 }
 
-/* Pushed to the right end of the bar, next to the age it takes its default from, so the two
-   controls that decide how much help a child gets sit together. */
-.browse__names {
-  margin-left: auto;
-}
-
-.browse__age {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--ink-soft);
-  font-size: 0.9rem;
-}
-
-.browse__age select {
-  padding: 0.3rem 0.5rem;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--ink);
-  font: inherit;
+/* The lede is the first thing to go when the bar runs out of room: it is orientation, and the
+   controls are function. */
+@media (max-width: 56rem) {
+  .browse__lede {
+    display: none;
+  }
 }
 
 /* ── the grid ────────────────────────────────────────────────────────────────────────────── */
@@ -194,6 +249,12 @@
   align-content: safe center;
   gap: var(--tile-gap, 5px);
   min-height: 0;
+  /* Grid items default to `min-width: auto`, which is their content size — and this item's content
+     is fixed-px column tracks derived from measuring this item. That is a feedback loop: at a 390px
+     viewport the hook read a container that its own previous answer had already widened, settled on
+     six columns, and pushed the whole page 240px sideways. Pinning the floor to zero makes the
+     container the authority again, so the measurement converges on the viewport. */
+  min-width: 0;
   /* Only ever reached when the viewport is too small for the search to find a fit. A scrollbar is
      at least visible, which the "More Choices" control the study measured was not: of twelve
      first-graders, zero found it unaided. */
@@ -260,28 +321,30 @@
   background: oklch(12% 0.01 265);
 }
 
-.tile[data-cabin="math-puzzles"] {
+/* One source for the eight hue assignments, matched on the attribute alone rather than on `.tile`,
+   so a chip's legend dot and a tile's name scrim cannot drift apart. */
+[data-cabin="math-puzzles"] {
   --hue: var(--h-math);
 }
-.tile[data-cabin="code-computers"] {
+[data-cabin="code-computers"] {
   --hue: var(--h-code);
 }
-.tile[data-cabin="games-strategy"] {
+[data-cabin="games-strategy"] {
   --hue: var(--h-games);
 }
-.tile[data-cabin="making-engineering"] {
+[data-cabin="making-engineering"] {
   --hue: var(--h-making);
 }
-.tile[data-cabin="art-motion"] {
+[data-cabin="art-motion"] {
   --hue: var(--h-art);
 }
-.tile[data-cabin="music-sound"] {
+[data-cabin="music-sound"] {
   --hue: var(--h-music);
 }
-.tile[data-cabin="science-nature"] {
+[data-cabin="science-nature"] {
   --hue: var(--h-science);
 }
-.tile[data-cabin="influence-media"] {
+[data-cabin="influence-media"] {
   --hue: var(--h-words);
 }
 
@@ -367,65 +430,194 @@
 
 /* ── the panel ───────────────────────────────────────────────────────────────────────────── */
 
+/* The panel is the only place on this screen with words in it, and it was losing to the wall.
+ *
+ * WHAT WAS WRONG: every element sat inside one octave. The name at 1.4rem, the line under it at
+ * 1.06rem, two section labels at 0.9rem and five link rows at 1rem, all of them either `--ink` or
+ * `--ink-soft`, all on the same grey. Nothing led, so the eye had to read the panel top to bottom
+ * to find anything — next to a wall of photographs that can be scanned in one pass.
+ *
+ * WHAT FIXED IT was not more colour. It was widening the range: the name is now roughly twice the
+ * body, the line under it moved from the muted grey up to full ink because it is content rather
+ * than caption, the section labels dropped further back, and the accent went to exactly one
+ * element. Same tokens, same palette, more distance between the loudest and quietest thing.
+ */
 .panel {
   grid-area: panel;
-  padding: 1.4rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1.15rem 1.5rem;
   border-left: 1px solid var(--line);
   background: var(--surface);
   overflow-y: auto;
+  /* The scrollbar appears the moment a shelf runs long, and a light one on this ground reads as a
+     bright vertical stripe next to the art. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-hi) transparent;
 }
 
-.panel__prompt {
-  margin: 0;
+.card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* ── the empty state, which teaches rather than reports ── */
+
+.prompt {
+  margin: auto 0;
+  padding-bottom: 2rem;
+}
+
+.prompt__lead {
+  margin: 0 0 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.prompt__body {
+  margin: 0 0 0.7rem;
+  max-width: 34ch;
   color: var(--ink-soft);
   font-size: 1rem;
-  line-height: 1.5;
-  opacity: 0.7;
+  line-height: 1.55;
+  text-wrap: pretty;
 }
 
-/* The same render, large. Worth the space: the tile version is small enough that a child may have
-   guessed at the object, and this is where the guess is confirmed against the words. */
+.prompt__body strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ── the object ── */
+
+/* The same render, larger than the tile but capped.
+ *
+ * It confirms the guess: the tile is small enough that a child may have read the object wrong, and
+ * this is where the picture and the word are seen together. At full 3:2 in a 384px column that is
+ * 231px of a 833px panel, which is what pushed the venue block off the bottom — so it is capped and
+ * cropped from the centre instead. The renders put the subject in the middle sixty percent of the
+ * frame, so the crop takes background rather than object. */
 .panel__art {
   width: 100%;
-  height: auto; /* see `.tile__art` */
+  max-height: 168px;
   aspect-ratio: 3 / 2;
   display: block;
-  margin: 0 0 0.9rem;
-  border-radius: 10px;
+  margin: 0 0 0.85rem;
+  border-radius: 8px;
   object-fit: cover;
+  object-position: 50% 50%;
   background: oklch(12% 0.01 265);
 }
 
+/* Roughly twice the body, which is the point: this is the answer to the question the child asked by
+   pointing, and everything below it is elaboration. Negative tracking because at this size the
+   default spacing on a UI sans reads loose — held well inside the -0.04em floor. */
 .panel__title {
-  margin: 0 0 0.4rem;
-  font-size: 1.4rem;
-  line-height: 1.2;
+  margin: 0 0 0.35rem;
+  font-size: 1.9rem;
+  font-weight: 650;
+  line-height: 1.08;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
 }
 
+/* Full ink, not the muted grey it used to be. It is the sentence that says what you would actually
+   be doing — content, not a caption — and dropping it to `--ink-soft` put it at the same weight as
+   the section labels, which is most of what made the panel read flat. */
 .panel__blurb {
-  margin: 0 0 1.2rem;
-  color: var(--ink-soft);
+  margin: 0 0 1.1rem;
+  max-width: 34ch;
+  color: var(--ink);
   font-size: 1.0625rem;
-  line-height: 1.5;
+  line-height: 1.45;
+  text-wrap: pretty;
 }
 
-.panel__more {
-  margin: 1.1rem 0 0.5rem;
+/* ── the one action ── */
+
+.panel__play {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0 0 1.15rem;
+}
+
+/* The accent lives here and nowhere else on the panel.
+ *
+ * `--ring` is already the selection colour, so spending it on the primary action keeps one accent
+ * doing one job: this is the thing the wall is pointing at, and this is the thing you can do with
+ * it. Filled rather than outlined because an outlined button beside four outlined link rows is a
+ * fifth link. `u-primary-target` is the token contract's 76px child floor, from the child-UX
+ * literature's ~2cm recommendation — this is the one control on the surface that earns it. */
+.play {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: var(--control-min, 56px);
+  padding: 0.75rem 1.1rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--ring);
+  color: oklch(22% 0.05 92);
+  font: inherit;
+  font-size: 1.125rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 140ms var(--ease, ease-out), filter 140ms var(--ease, ease-out);
+}
+
+.play:hover,
+.play:focus-visible {
+  filter: brightness(1.08);
+}
+
+.play:active {
+  transform: scale(0.985);
+}
+
+.play:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.play__mark {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  fill: currentColor;
+}
+
+/* ── the shelf ── */
+
+.panel__sect {
+  margin: 0 0 1.1rem;
+}
+
+/* Quiet, sentence case, and no tracking.
+ *
+ * The reflex here is a tiny uppercase tracked eyebrow, which is the single most over-used label
+ * treatment in generated interfaces and would also be the worst possible choice for this audience:
+ * all-caps costs word-shape, which is exactly the cue a weak reader leans on. */
+.panel__label {
+  margin: 0 0 0.5rem;
   color: var(--ink-soft);
-  font-size: 0.9rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.3;
 }
 
 .panel__empty {
-  margin: 0.5rem 0 0;
+  margin: 0.25rem 0 1.25rem;
   color: var(--ink-soft);
-  font-size: 0.95rem;
-}
-
-.panel__meta {
-  margin: 0.5rem 0 0;
-  color: var(--ink-soft);
-  font-size: 0.85rem;
-  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
 }
 
 .panel__rows {
@@ -433,32 +625,35 @@
   padding: 0;
   list-style: none;
   display: grid;
-  gap: 2px;
+  gap: 3px;
 }
 
+/* A list, styled like a list. It used to be five filled boxes at the same weight as the venue and
+   the game, which is how a panel with one action ends up looking like a panel with six. The fill
+   is gone at rest; the row earns it on hover. */
 .row {
   display: flex;
   align-items: center;
   gap: 0.7rem;
   min-height: var(--control-min, 56px);
-  padding: 0.7rem 0.85rem;
+  padding: 0.6rem 0.75rem;
   border-radius: 8px;
-  background: var(--surface-hi);
+  background: transparent;
   color: var(--ink);
   text-decoration: none;
   font-size: 1rem;
   line-height: 1.35;
-  transition: background 160ms ease;
+  transition: background 140ms ease;
 }
 
 .row:hover,
 .row:focus-visible {
-  background: oklch(35% 0.02 265);
+  background: var(--surface-hi);
 }
 
 .row:focus-visible {
   outline: 3px solid var(--ring);
-  outline-offset: 2px;
+  outline-offset: -1px;
 }
 
 .row__title {
@@ -466,10 +661,94 @@
 }
 
 .row__out {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   flex: none;
   color: var(--ink-soft);
+  transition: color 140ms ease;
+}
+
+.row:hover .row__out,
+.row:focus-visible .row__out {
+  color: var(--ink);
+}
+
+/* ── who judges this, at the foot ── */
+
+/* Pushed to the bottom of the panel and given a rule, because it answers a different question from
+   everything above it. The shelf is "what do I do this week"; this is "what does getting good at it
+   eventually mean, and who decides". Rendering it as a sixth grey box put those on the same footing.
+   `margin-top: auto` pins it to the foot on short panels so the block does not float mid-column. */
+/* Sticky to the foot of the panel, and this is the one place a sticky element earns it.
+ *
+ * The shelf is variable-length and some titles run to three lines, so on a dense pursuit the panel
+ * scrolls and this block goes below the fold — measured at 52px over on a 1600x950 laptop and 202px
+ * at 1280x800. What falls off is the answer to "who will eventually say I am good at this", which
+ * is the claim the whole surface rests on: the judge is real, external, and is not us. Pinning it
+ * means the shelf scrolls under it and that answer never leaves the screen.
+ *
+ * `margin-top: auto` still does the work on short panels, where there is nothing to scroll and the
+ * block should sit at the foot rather than float mid-column. */
+.judge {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+  /* The panel's own bottom padding, repaid — the sticky block has to cover the full gutter or rows
+     show through beneath it as they scroll past. */
+  box-shadow: 0 1.5rem 0 var(--surface);
+}
+
+.judge__lead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0 0 0.15rem;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.judge__who {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: var(--control-min, 56px);
+  padding: 0.2rem 0;
+  color: var(--ink);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-decoration: none;
+  /* Underlined rather than boxed: it is a name that happens to be reachable, and the underline says
+     "link" without borrowing the shelf's shape. */
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+  transition: text-decoration-color 140ms ease;
+}
+
+.judge__who:hover,
+.judge__who:focus-visible {
+  text-decoration-color: var(--ring);
+}
+
+.judge__who:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.judge__meta {
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
 }
 
 /* ── the meter ───────────────────────────────────────────────────────────────────────────── */
@@ -478,84 +757,111 @@
   grid-area: meter;
   display: flex;
   align-items: baseline;
+  justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
-  padding: 0.6rem 1rem;
+  padding: 0.55rem 0.95rem;
   border-top: 1px solid var(--line);
-  color: var(--ink-soft);
-  font-size: 0.9rem;
 }
 
-.browse__meter-note {
-  margin-left: auto;
-  opacity: 0.75;
-}
-
-/* The game, in the panel, above the links.
- *
- * A button rather than a row, and it leads, because the two halves of a tile are not the same kind
- * of thing: one is somewhere to go and the other is something to do here. Styling them alike would
- * make the doing read as a fifth link.
- *
- * 56px is the child-mode target floor from the token contract, not a round number — memo 07 §2.4
- * measures touch offset at roughly 4mm at this age, and a miss on this control is recorded by the
- * engine as a game the child was offered and declined. */
-.panel__play {
-  margin: 0 0 1.4rem;
-}
-
-.panel__play-lead {
-  margin: 0 0 0.55rem;
-  color: var(--ink-soft);
-  font-size: 1rem;
-}
-
-.panel__play-list {
+/* The child's half. Legible, in ink, because it answers "where did the rest go". */
+.meter__count {
   margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
 }
 
-.panel__play-btn {
-  min-height: var(--control-min, 56px);
-  padding: 0.7rem 1.2rem;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: oklch(37% 0.02 70);
+.meter__count strong {
   color: var(--ink);
-  font-family: inherit;
-  font-size: 1.0625rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 160ms ease, transform 120ms ease;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
 }
 
-.panel__play-btn:hover,
-.panel__play-btn:focus-visible {
-  background: oklch(44% 0.03 70);
+/* The adult's half. Deliberately smaller and dimmer than anything a child is meant to read: it is
+   an honesty note about how the wall measures itself, and it should be findable without competing. */
+.meter__note {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  /* 0.6 measured at 4.1:1 against the ground, under the 4.5:1 floor. Quiet is a hierarchy decision;
+     unreadable is a defect, and the two are one decimal apart here. */
+  opacity: 0.78;
 }
 
-.panel__play-btn:active {
-  transform: translateY(1px);
+/* Below this the nine chips cannot hold one row at 0.84rem, and a wrapped bar costs the panel a
+   whole 60px row. Padding goes before font size does: a smaller label is a legibility cost paid by
+   every child, and horizontal padding is paid by nobody. Height is never touched. */
+@media (max-width: 100rem) {
+  .chip {
+    padding: 0.3rem 0.5rem;
+  }
+
+  .browse__bar {
+    gap: 0.6rem;
+  }
 }
 
-.panel__play-btn:focus-visible {
-  outline: 3px solid var(--ring);
-  outline-offset: 2px;
-}
-
+/* Narrow: one column, and the page scrolls.
+ *
+ * The wide layout pins itself to `100vh` with `overflow: hidden`, which is right when the wall and
+ * the panel sit side by side and neither should move. Stacked, that same lock cuts the grid off
+ * mid-row and traps the panel below the fold — at 390px it also pushed the age control off the
+ * right edge with no way to scroll to it, so a control the wall depends on was simply unreachable.
+ *
+ * This is not the target hardware — the PRD chose school desktops — but a control that cannot be
+ * reached is a defect at any width, and "it is not the target" is how that ships. */
 @media (max-width: 60rem) {
   .browse {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
     grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
     grid-template-areas: "bar" "grid" "panel" "meter";
+  }
+
+  .browse__bar {
+    flex-wrap: wrap;
+  }
+
+  .browse__view {
+    flex-wrap: wrap;
+    /* No longer pushed right: on a wrapped bar `auto` margin strands the controls against the edge
+       with the gap collapsed, which reads as an accident. */
+    margin-left: 0;
+  }
+
+  /* A select sizes itself to its widest option, and the widest here is "Words & Persuasion". At
+     390px that alone overflowed the viewport and took the age control off the right edge with it.
+     `min-width: 0` lets the flex item shrink below its content; the chosen option truncates in the
+     closed state and the open picker is the OS's, at full width, which is the whole reason for
+     keeping this control native. */
+  .browse__pick,
+  .browse__age {
+    min-width: 0;
+  }
+
+  .browse__pick select {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .browse__grid {
+    overflow-y: visible;
   }
 
   .panel {
     border-left: none;
     border-top: 1px solid var(--line);
+    overflow-y: visible;
+  }
+
+  /* Sticky needs a scroll container with a bottom, and stacked there is none — it would pin to the
+     viewport and follow the reader up the page. */
+  .judge {
+    position: static;
+    box-shadow: none;
   }
 }
 
@@ -568,9 +874,15 @@
   .tile,
   .tile__label,
   .row,
+  .row__out,
   .chip,
-  .panel__play-btn {
+  .play,
+  .judge__who {
     transition: none;
+  }
+
+  .play:active {
+    transform: none;
   }
 
   .tile:hover,

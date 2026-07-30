@@ -49,9 +49,24 @@ export function artFor(p: Pursuit): string {
   return `/pursuits/${p.id}.webp`;
 }
 
+/**
+ * How many links the panel shows.
+ *
+ * Four rather than five, and it is the surface's call to make: the curated-library standard says
+ * plainly that the library is a STORE, that Patall's 3-5 is a property of a choice moment, and that
+ * which subset a child sees is decided here. Four sits inside that range.
+ *
+ * The reason to spend the fifth is measured. These titles are long — "Djembe drumming and rhythms
+ * from West Africa (Oak National Academy, Y8)" runs to three lines — so a fifth row pushed the
+ * venue block off the bottom of the panel at 1600x950. That block answers who will eventually judge
+ * the work, which is the whole external-validation claim, and a fifth link is worth less than
+ * keeping it on screen without scrolling.
+ */
+const SHELF_LIMIT = 4;
+
 /** Where to start on this tile: the shelf curated for it, never for its cabin. */
 export function resourcesFor(p: Pursuit): readonly CuratedResource[] {
-  return curatedForPursuit(SEED_LIBRARY, p.id, AGE_TIERS, 5);
+  return curatedForPursuit(SEED_LIBRARY, p.id, AGE_TIERS, SHELF_LIMIT);
 }
 
 /**

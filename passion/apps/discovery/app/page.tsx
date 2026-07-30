@@ -39,7 +39,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from "rea
 
 import { solveVerbFor } from "@gt100k/discovery-catalog";
 
-import { ExternalGlyph } from "./glyphs.js";
+import { ExternalGlyph, PlayGlyph } from "./glyphs.js";
 import {
   artFor,
   CABIN_LABEL,
@@ -204,52 +204,65 @@ export default function DiscoveryPage(): JSX.Element {
 
   return (
     <main className="browse" data-mood="child" data-names={showNames ? "on" : "off"}>
+      {/* THE CABINS ARE A SELECT NOW, AND THAT IS AN ARGUMENT RATHER THAN A SPACE SAVING.
+       *
+       * They were nine buttons across the top, each at the 56px child touch floor, which is the
+       * largest and most prominent furniture on a child's screen — spent on eight abstract
+       * superordinate words. That contradicts the wall directly beneath them: the only reason it is
+       * flat and concrete is that children of this age do not sort superordinate categories
+       * reliably, which is the whole Hutchinson finding. Putting "Words & Persuasion" in 56px type
+       * above a photograph of a typewriter argues with the photograph.
+       *
+       * THE OBJECTION, AND WHY IT DOES NOT HOLD. Hiding things behind a control is exactly what
+       * failed in that study: zero of twelve first-graders found "More Choices". But that control
+       * hid CONTENT. This one only narrows a wall that is already complete — a child who never
+       * opens it sees all forty-four, which is the default and the recommended state. Nothing
+       * becomes unreachable by ignoring it, so the lesson does not transfer.
+       *
+       * It also fixes a real defect: nine chips could not hold one row below 1600px, and a wrapped
+       * bar cost the panel a 60px row at every laptop size. */}
       <header className="browse__bar">
-        {/* biome-ignore lint/a11y/useSemanticElements: <fieldset> groups form controls, and these
-            are filters outside any form; its UA groove border and min-inline-size would also
-            reshape the wrapping chip row. */}
-        <div className="browse__facets" role="group" aria-label="Filter by area">
+        <p className="browse__lede">Find something worth getting good at.</p>
+
+        <div className="browse__view">
+          <label className="browse__pick">
+            Show
+            <select
+              value={cabin ?? "all"}
+              onChange={(e) =>
+                setCabin(e.target.value === "all" ? null : (e.target.value as CabinId))
+              }
+            >
+              <option value="all">Everything</option>
+              {CABINS.map((c) => (
+                <option key={c} value={c}>
+                  {CABIN_LABEL[c]}
+                </option>
+              ))}
+            </select>
+          </label>
+          {/* Presented, not merely offered. Memo 07 D7 records a case where no child found the
+              click-only alternative because it was one level in; this sits on the bar in both
+              states, so a child who needs the names can see that they exist. */}
           <button
             type="button"
             className="chip"
-            aria-pressed={cabin === null}
-            onClick={() => setCabin(null)}
+            aria-pressed={showNames}
+            onClick={() => setNamesPinned(!showNames)}
           >
-            Everything
+            Names
           </button>
-          {CABINS.map((c) => (
-            <button
-              key={c}
-              type="button"
-              className="chip"
-              aria-pressed={cabin === c}
-              onClick={() => setCabin(cabin === c ? null : c)}
-            >
-              {CABIN_LABEL[c]}
-            </button>
-          ))}
+          <label className="browse__age">
+            Age
+            <select value={age} onChange={(e) => setAge(Number(e.target.value))}>
+              {AGES.map((a) => (
+                <option key={a} value={a}>
+                  {a}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
-        {/* Presented, not merely offered. Memo 07 D7 records a case where no child found the
-            click-only alternative because it was one level in; this is a chip on the same row as
-            the filters, in both states, so a child who needs the names can see that they exist. */}
-        <button
-          type="button"
-          className="chip browse__names"
-          aria-pressed={showNames}
-          onClick={() => setNamesPinned(!showNames)}
-        >
-          Names
-        </button>
-        <label className="browse__age">
-          Age
-          <select value={age} onChange={(e) => setAge(Number(e.target.value))}>
-            {AGES.map((a) => (
-              <option key={a} value={a}>
-                {a}
-              </option>
-            ))}
-          </select>
-        </label>
       </header>
 
       {/* A list, which is what it is. `role="grid"` promises rows and gridcells to a screen reader
@@ -307,12 +320,31 @@ export default function DiscoveryPage(): JSX.Element {
         ))}
       </ul>
 
-      {/* Always mounted, so the wall does not shift sideways the first time a child points. */}
+      {/* Always mounted, so the wall does not shift sideways the first time a child points.
+       *
+       * ORDERED BY WHAT A CHILD NEEDS NEXT, which is not the order these facts were written in.
+       * The name and the one line answer "what is this". The game is the only thing on the panel
+       * that can be done right now, so it comes before anything that leaves the site. The shelf is
+       * where to go if reading is the answer. The venue sits last, because "who will eventually
+       * judge you" is the long-run frame rather than a next step — it used to be third from the
+       * top, in a box identical to the links, which made it read as a fifth place to click. */}
       <aside className="panel" aria-live="polite">
         {current === null ? (
-          <p className="panel__prompt">Point at anything to see what it is.</p>
+          // Teaches the surface rather than reporting that it is empty. This is the first thing a
+          // child sees, so it says what the wall is and what the two controls above it do.
+          <div className="prompt">
+            <p className="prompt__lead">Point at anything.</p>
+            <p className="prompt__body">
+              Everything here is something a person can really get good at. Nothing is locked and
+              nothing is scored, so you can wander.
+            </p>
+            <p className="prompt__body">
+              <strong>Show</strong> narrows the wall to one kind of thing. <strong>Names</strong>{" "}
+              labels all of them at once, so you do not have to point at each one to find out.
+            </p>
+          </div>
         ) : (
-          <>
+          <article className="card">
             <img
               className="panel__art"
               src={artFor(current)}
@@ -324,48 +356,30 @@ export default function DiscoveryPage(): JSX.Element {
             <h2 className="panel__title">{current.label}</h2>
             <p className="panel__blurb">{current.blurb}</p>
 
-            {/* The generative act, and it leads. A child who wants to do sees the doing first; a
-                child who wants to read scrolls a thumb's width. Doing this is not scored, gated, or
-                counted back at the child (Rule 4) — it is a door that happens to open onto making. */}
+            {/* The only thing on this panel that happens HERE rather than somewhere else, so it is
+                the only thing that gets the accent. Doing it is not scored, gated, or counted back
+                at the child (Rule 4) — it is a door that happens to open onto making. */}
             {games.length > 0 ? (
               <div className="panel__play">
-                <p className="panel__play-lead">
-                  {games.length === 1 ? "Try it yourself" : "Try one yourself"}
-                </p>
-                <ul className="panel__play-list">
-                  {games.map((g) => (
-                    <li key={g.id}>
-                      <button
-                        type="button"
-                        className="panel__play-btn"
-                        onClick={() => setPlaying(g.id)}
-                      >
-                        {g.label}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+                {games.map((g) => (
+                  <button
+                    key={g.id}
+                    type="button"
+                    className="play u-primary-target"
+                    onClick={() => setPlaying(g.id)}
+                  >
+                    <PlayGlyph />
+                    <span>{g.label}</span>
+                  </button>
+                ))}
               </div>
             ) : null}
 
-            {/* Who will tell this child they are getting better. Named, because a pursuit with no
-                venue is a topic, and because the child should be able to see the judge is real and
-                is not us. */}
-            <p className="panel__more">Who says you are good at it</p>
-            <a className="row" href={current.venue.url} target="_blank" rel="noreferrer noopener">
-              <span className="row__title">{current.venue.name}</span>
-              <ExternalGlyph />
-            </a>
-            <p className="panel__meta">
-              From age {current.minAge}
-              {current.costUsd === 0 ? " · free" : ` · about $${current.costUsd} a year`}
-            </p>
-
             {resources.length > 0 ? (
-              <>
-                <p className="panel__more">
+              <section className="panel__sect">
+                <h3 className="panel__label">
                   {games.length > 0 ? "Or read about it" : "Where to start"}
-                </p>
+                </h3>
                 <ul className="panel__rows">
                   {resources.map((r) => (
                     <li key={r.id}>
@@ -385,19 +399,52 @@ export default function DiscoveryPage(): JSX.Element {
                     </li>
                   ))}
                 </ul>
-              </>
+              </section>
             ) : games.length > 0 ? null : (
               // Said plainly rather than hidden. A child who picked this deserves to know the
               // product has nothing here yet, instead of a panel that quietly ends. Only shown when
               // there is neither a game nor a link — a tile with a game is not empty.
               <p className="panel__empty">Nothing here yet. Try another one.</p>
             )}
-          </>
+
+            {/* Who will tell this child they are getting better. Named, because a pursuit with no
+                venue is a topic, and because the child should be able to see that the judge is real
+                and is not us. Deliberately not a `.row`: it is a fact with a link in it, not an
+                errand, and rendering it as one more grey box was most of why the panel read as a
+                pile of buttons. */}
+            <footer className="judge">
+              {/* Lead and cost on one line. Three stacked lines put this block below the fold on any
+                  pursuit with a long shelf, and the block is the external-validation claim. */}
+              <p className="judge__lead">
+                Who says you are good at it
+                <span className="judge__meta">
+                  from age {current.minAge}
+                  {current.costUsd === 0 ? " · free" : ` · about $${current.costUsd}/yr`}
+                </span>
+              </p>
+              <a
+                className="judge__who"
+                href={current.venue.url}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <span>{current.venue.name}</span>
+                <ExternalGlyph />
+              </a>
+            </footer>
+          </article>
         )}
       </aside>
 
+      {/* Two audiences on one line, and they used to be set identically.
+       *
+       * The left half is for the child: it is the only thing on the screen that explains why the
+       * wall is missing eight things, and without it the gap reads as the product being small. The
+       * right half is instrumentation for whoever is evaluating the measurement. Setting them at
+       * the same size and colour was the clearest single tell that nobody had decided who this
+       * surface is talking to. */}
       <footer className="browse__meter">
-        <span>
+        <p className="meter__count">
           Showing <strong>{tiles.length}</strong> of <strong>{PURSUITS.length}</strong>
           {hidden > 0 ? (
             <>
@@ -405,12 +452,10 @@ export default function DiscoveryPage(): JSX.Element {
               · <strong>{hidden}</strong> need you to be older
             </>
           ) : null}
-        </span>
-        <span className="browse__meter-note">
-          {ready
-            ? `Offered this session: ${offered}. Order is random; which pursuits exist is not.`
-            : "\u00a0"}
-        </span>
+        </p>
+        <p className="meter__note">
+          {ready ? `${offered} offered this session · order random, roster fixed` : "\u00a0"}
+        </p>
       </footer>
 
       {/* The game mounts over the wall as a full-screen overlay (see PuzzleHost). Loaded lazily, so
