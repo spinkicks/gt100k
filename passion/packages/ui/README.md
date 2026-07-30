@@ -25,7 +25,19 @@ NEXT_PUBLIC_SURFACE_URL_GUIDE=https://guide.example.com
 NEXT_PUBLIC_SURFACE_URL_PARENT=https://playbook.example.com
 ```
 
-Ports in development: guide 3020, parent 3055, studio 3010, evidence 3030, concierge 3040.
+Every variable is named literally in `readSurfaceEnv`, never looked up as `process.env[key]`: Next inlines
+`NEXT_PUBLIC_*` by textual substitution at build time, so a computed lookup reads as `undefined` in the
+browser.
+
+Ports in development: home 3000, guide 3020, parent 3055, studio 3010, evidence 3030, concierge 3040.
+
+### The front door is addressable but is not a surface
+
+`home` has a URL (`NEXT_PUBLIC_SURFACE_URL_HOME`, resolved by `resolveHomeUrl()` under the same asymmetric
+fallback) and it is what the wordmark links to on every page. It is deliberately absent from
+`resolveSurfaces()`, because listing it as a sixth destination would put it on screen twice. **A deployment
+that sets the five surface URLs and forgets this one gets a wordmark that is plain text everywhere** —
+no dead link, but no way home either.
 
 ## Use
 
@@ -34,6 +46,12 @@ import { ProductHeader } from "@gt100k/ui";
 
 <ProductHeader current="guide" />;
 ```
+
+`ProductHeader` links only to surfaces that resolved to a URL and are not `current`, so an unreachable
+surface is absent rather than dead. Three props exist for the front door's own use of the header:
+`currentLabel` names a page the registry does not know about, `showSwitcher={false}` suppresses the nav on a
+page whose whole body is already the switcher, and `homeUrl={null}` forces a plain wordmark. It renders plain
+anchors, so it works with JavaScript off.
 
 ```css
 @import "@gt100k/ui/styles.css";

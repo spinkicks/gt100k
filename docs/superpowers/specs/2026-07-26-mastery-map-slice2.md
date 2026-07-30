@@ -106,6 +106,11 @@ the planner has this child today, which is about the child's placement and is th
 change. Saying the first about the second is a false statement in front of a guide about a real
 child, so the two have separate copy and separate conditions.
 
+> **The ceiling lifted on 2026-07-27, and the copy did not follow.** `chosen_challenge` is emitted
+> now, through one gadget, so no child being placeable above `S2_FOUNDATIONS` is no longer true. The
+> distinction D6 draws matters more than ever, because the sentence the console currently shows a
+> guide is the false one. See [`2026-07-27-measurement-lane.md`](2026-07-27-measurement-lane.md) §6.
+
 **D7. An override is a record, not a click.** It carries a required reason, the instant it was
 actually signed rather than a pinned review clock, and it goes into the child's record through one
 function that refuses a second override on the same milestone. The engine reads the list as a log

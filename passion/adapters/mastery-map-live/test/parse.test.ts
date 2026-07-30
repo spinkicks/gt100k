@@ -38,6 +38,7 @@ const ABRSM_PAGE: CuratedResource = {
   title: "ABRSM: piano exam requirements and syllabus downloads",
   url: "https://www.abrsm.org/en-gb/instruments/piano",
   domainPath: ["music-sound", "instruments"],
+  pursuits: ["piano"],
   affordedModes: ["perform"],
   reputation: 0.95,
   ageTiers: ["9-11", "12-14"],

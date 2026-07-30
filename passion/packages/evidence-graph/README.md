@@ -101,6 +101,11 @@ code.
 `Hasher.hash` is synchronous. The `Verifier`, `EvidenceRepository`, `TransparencyLog`, and
 `ErasureService` methods are asynchronous. See [`src/ports.ts`](./src/ports.ts) for the exact contracts.
 
+The port types are **not re-exported from the package index** — `src/index.ts` publishes the domain, not the
+seams. Adapters therefore reach them by a relative path into `src/ports.ts` rather than by the package name.
+That is a wart, not a rule: it costs nothing while every adapter sits beside the package in this repo, and it
+would be a one-line fix if a consumer outside the namespace ever needed a port type.
+
 Every adapter above is itself an `@gt100k/evidence-*` package, so the whole set travels with the product on
 extraction.
 

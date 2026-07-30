@@ -25,10 +25,10 @@ export interface CabinNode {
  *
  * Two are playable: `logic-games` (the four deduction puzzles that used to be filed under `math` —
  * see the TopicId doc comment in src/game/types.ts for why they moved, and src/gadgets/registry.ts
- * for why there are four of them and not the original seven) and `math`, which is
- * deliberately active-but-empty. `math` opens a real, furnished, gadget-free room; its games land in
- * a later PR. Keeping it on the map from day one means the split is visible to a player instead of
- * appearing later as a surprise sixth cabin.
+ * for why there are four of them and not the original seven) and `math`, which now holds five:
+ * balance-scale, gear-train, fraction-laser, function-machine and ratio-mixing. It was put on the
+ * map before it had any of them, deliberately active-but-empty, so that the split was visible to a
+ * player from day one rather than appearing later as a surprise sixth cabin.
  *
  * The other three are `active: false` and render as visible "coming soon" signposts — deliberately
  * NOT padlocks and NOT hidden. A greyed-but-legible node advertises what's coming; a padlock reads

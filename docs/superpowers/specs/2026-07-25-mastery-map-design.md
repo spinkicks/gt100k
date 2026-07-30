@@ -1,6 +1,9 @@
 # Mastery Maps: design
 
-**Status:** design, awaiting review. Slice 1 only (the map itself). No child-facing surface.
+**Status:** built through slice 2. Slice 1 (the map itself) and slice 2 (one map read against one
+child) both shipped as `@gt100k/mastery-map` plus the guide console's Maps tab, with a live
+generator adapter in `@gt100k/mastery-map-live`, and projects now carry the milestone they were
+meant to demonstrate. Still no child-facing surface, as designed.
 **Date:** 2026-07-25
 
 > **Amended (2026-07-27):** where this doc says a `demonstration` "feeds the Evidence Graph" and that "every
@@ -125,6 +128,13 @@ Divergence appears to begin at **expert entry, defined by skill rather than age*
 place the separation of expert and intermediate activity profiles around the tenth year of serious
 play, and Bilalić, McLeod & Gobet (2009) find sub-specialisation effects only among titled players.
 So `stageFloor` on a branch milestone is the right mechanism, and branches should sit high.
+
+> **The named dependency below has cleared (2026-07-27).** The discovery game now offers a harder
+> variant and records taking it as `chosen_challenge`, emission is on, and a session reaches the
+> orchestrator through the console's ingest route, so branch milestones are no longer unreachable in
+> principle. The honest replacement claim is narrower: exactly one gadget offers a harder variant, so
+> `stretchSeeking` is reachable through one cell rather than none, and widening that is content work.
+> The trunk-only requirement on fixtures is unaffected and still right.
 
 **A named dependency comes with that, and it is not small.** No child can currently be placed above
 `S2_FOUNDATIONS`. `deriveStage` in `specialization-planner/src/stage.ts` requires `stretchSeeking`

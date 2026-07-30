@@ -1,5 +1,10 @@
 # Socratic Project Defense/Tutor Implementation Plan
 
+> **Complete.** `@gt100k/socratic-defense` shipped with both adapters (`tutor-stub`, `tutor-tfy`),
+> the demo and the README; `docs/prd/passionApps.md` records E2 as done in engine form, with the
+> sampling cadence and UI integration still unwired. The one deviation is the `canonicalize` import,
+> recorded immediately below.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 > **Superseded in part (2026-07-27):** this plan shipped, but its one cross-package import is gone.
@@ -39,7 +44,7 @@
 - Create: `passion/packages/socratic-defense/test/smoke.test.ts`
 - Modify: root `tsconfig.json` (add reference)
 
-- [ ] **Step 1: Failing smoke test**
+- [x] **Step 1: Failing smoke test**
 
 ```ts
 // test/smoke.test.ts
@@ -48,7 +53,7 @@ import * as pkg from "../src/index.js";
 describe("package", () => { it("imports", () => { expect(pkg).toBeTypeOf("object"); }); });
 ```
 
-- [ ] **Step 2: package.json** (depends on evidence-graph for canonicalize + Hasher type)
+- [x] **Step 2: package.json** (depends on evidence-graph for canonicalize + Hasher type)
 
 ```json
 {
@@ -64,7 +69,7 @@ describe("package", () => { it("imports", () => { expect(pkg).toBeTypeOf("object
 }
 ```
 
-- [ ] **Step 3: tsconfig.json**
+- [x] **Step 3: tsconfig.json**
 
 ```json
 {
@@ -75,10 +80,10 @@ describe("package", () => { it("imports", () => { expect(pkg).toBeTypeOf("object
 }
 ```
 
-- [ ] **Step 4: Empty entrypoint** — `// src/index.ts` → `export {};`
-- [ ] **Step 5: Root reference** — **append** `{ "path": "passion/packages/socratic-defense" }` to root `tsconfig.json` `references` (keep every existing entry, e.g. `passion/packages/evidence-explorer-view`). Do not replace the array.
-- [ ] **Step 6: Gate** → `pnpm exec tsc -b && pnpm test` → PASS.
-- [ ] **Step 7: Commit** → `git add passion/packages/socratic-defense tsconfig.json && git commit -m "feat(defense): scaffold @gt100k/socratic-defense package"`
+- [x] **Step 4: Empty entrypoint** — `// src/index.ts` → `export {};`
+- [x] **Step 5: Root reference** — **append** `{ "path": "passion/packages/socratic-defense" }` to root `tsconfig.json` `references` (keep every existing entry, e.g. `passion/packages/evidence-explorer-view`). Do not replace the array.
+- [x] **Step 6: Gate** → `pnpm exec tsc -b && pnpm test` → PASS.
+- [x] **Step 7: Commit** → `git add passion/packages/socratic-defense tsconfig.json && git commit -m "feat(defense): scaffold @gt100k/socratic-defense package"`
 
 ---
 
@@ -91,7 +96,7 @@ describe("package", () => { it("imports", () => { expect(pkg).toBeTypeOf("object
 **Interfaces:**
 - Produces: `Facet`, `FACET_ORDER`, `isFacet`, `ReadinessLevel`, `MAX_FOLLOWUP`, `maxFollowup(level)`, `THIN`, `COVERED`, `MAX_TURNS`, `ProjectProfile`, `Judgment`, `Turn`, `Session`, `EvidenceRecord`.
 
-- [ ] **Step 1: Failing test**
+- [x] **Step 1: Failing test**
 
 ```ts
 // test/model.test.ts
@@ -112,8 +117,8 @@ describe("model", () => {
 });
 ```
 
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement model.ts**
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: Implement model.ts**
 
 ```ts
 // src/model.ts
@@ -188,7 +193,7 @@ export interface EvidenceRecord {
 export interface Hasher { hash(input: Uint8Array): string; }
 ```
 
-- [ ] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(defense): facets, readiness, records, constants`.
+- [x] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(defense): facets, readiness, records, constants`.
 
 ---
 
@@ -201,7 +206,7 @@ export interface Hasher { hash(input: Uint8Array): string; }
 **Interfaces:**
 - Produces: `initialCoverage()`, `updateCoverage(cov, facet, judged)`, `selectNextFacet(cov)`, `isComplete(cov, turnCount)`, `computeGaps(cov)`.
 
-- [ ] **Step 1: Failing test**
+- [x] **Step 1: Failing test**
 
 ```ts
 // test/scaffold.test.ts
@@ -240,8 +245,8 @@ describe("scaffold", () => {
 });
 ```
 
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement scaffold.ts**
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: Implement scaffold.ts**
 
 ```ts
 // src/scaffold.ts
@@ -275,7 +280,7 @@ export function computeGaps(cov: CoverageByFacet): Facet[] {
 }
 ```
 
-- [ ] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(defense): deterministic session scaffold`.
+- [x] **Step 4: Run** → PASS. **Step 5: Commit** → `feat(defense): deterministic session scaffold`.
 
 ---
 
@@ -295,7 +300,7 @@ export function computeGaps(cov: CoverageByFacet): Facet[] {
 - Produces (domain): `Interviewer`, `AnswerJudge`, `TutorPorts`, `runSession(input): Promise<Session>`.
 - Produces (adapter): `ScriptedTutor` implementing both ports from a `{ questions[], judgments[] }` script.
 
-- [ ] **Step 1: Ports**
+- [x] **Step 1: Ports**
 
 ```ts
 // src/ports.ts
@@ -317,7 +322,7 @@ export interface AnswerJudge {
 export interface TutorPorts { interviewer: Interviewer; judge: AnswerJudge; }
 ```
 
-- [ ] **Step 2: runSession**
+- [x] **Step 2: runSession**
 
 ```ts
 // src/session.ts
@@ -376,7 +381,7 @@ export async function runSession(input: RunSessionInput): Promise<Session> {
 }
 ```
 
-- [ ] **Step 3: Scripted-session fixture** (drives the golden test; questions/answers/judgments per turn)
+- [x] **Step 3: Scripted-session fixture** (drives the golden test; questions/answers/judgments per turn)
 
 ```ts
 // src/__fixtures__/scripted-session.ts
@@ -421,7 +426,7 @@ export const JUDGMENTS: readonly Judgment[] = [
 ];
 ```
 
-- [ ] **Step 4: tutor-stub adapter** (package.json + tsconfig like 009's stub, referencing the domain)
+- [x] **Step 4: tutor-stub adapter** (package.json + tsconfig like 009's stub, referencing the domain)
 
 ```ts
 // passion/adapters/tutor-stub/src/index.ts
@@ -483,7 +488,7 @@ describe("ScriptedTutor", () => {
 
 > `tutor-stub` is the reusable scripted adapter for real consumers; the domain's own golden tests inline a tutor to keep the domain package free of any adapter reference (no project-reference cycle). Both `tutor-stub` and `tutor-tfy` depend on the domain, never the reverse.
 
-- [ ] **Step 5: Golden session test** — inline the scripted tutor (do NOT import `@gt100k/tutor-stub`; the domain must not reference an adapter, or `tsc -b` gets a cyclic project reference)
+- [x] **Step 5: Golden session test** — inline the scripted tutor (do NOT import `@gt100k/tutor-stub`; the domain must not reference an adapter, or `tsc -b` gets a cyclic project reference)
 
 ```ts
 // test/session.test.ts
@@ -514,7 +519,7 @@ describe("runSession (golden)", () => {
 });
 ```
 
-- [ ] **Step 6: Write the domain index barrel** so the adapters can resolve `model` symbols (`Judgment`, `Facet`, `THIN`, etc.) and `ports`/`session`. `evidence.js` is added in Task 4.
+- [x] **Step 6: Write the domain index barrel** so the adapters can resolve `model` symbols (`Judgment`, `Facet`, `THIN`, etc.) and `ports`/`session`. `evidence.js` is added in Task 4.
 
 ```ts
 // src/index.ts (as of Task 3 — Task 4 appends "./evidence.js")
@@ -524,8 +529,8 @@ export * from "./scaffold.js";
 export * from "./session.js";
 ```
 
-- [ ] **Step 7: Add root `tutor-stub` reference** — append `{ "path": "passion/adapters/tutor-stub" }` to root `tsconfig.json` `references` (keep every existing entry). **Run the gate** → PASS.
-- [ ] **Step 8: Commit** → `feat(defense): ports, runSession, scripted stub + golden session`.
+- [x] **Step 7: Add root `tutor-stub` reference** — append `{ "path": "passion/adapters/tutor-stub" }` to root `tsconfig.json` `references` (keep every existing entry). **Run the gate** → PASS.
+- [x] **Step 8: Commit** → `feat(defense): ports, runSession, scripted stub + golden session`.
 
 ---
 
@@ -539,7 +544,7 @@ export * from "./session.js";
 - Consumes: `Session`, `EvidenceRecord`, and the local `Hasher` type (Task 1, `model.ts`); `canonicalize` (value) from `@gt100k/evidence-graph`. Tests/demo inject an inline `node:crypto` hasher (no `@gt100k/evidence-hash-node` dependency).
 - Produces: `assembleEvidenceRecord(session, createdAt, hasher): EvidenceRecord`, `toEvidenceNode(record)`.
 
-- [ ] **Step 1: Failing test**
+- [x] **Step 1: Failing test**
 
 ```ts
 // test/evidence.test.ts
@@ -588,8 +593,8 @@ describe("evidence record", () => {
 });
 ```
 
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement evidence.ts**
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: Implement evidence.ts**
 
 ```ts
 // src/evidence.ts
@@ -635,8 +640,8 @@ export function toEvidenceNode(record: EvidenceRecord): EvidenceNodeLike {
 }
 ```
 
-- [ ] **Step 4: Run** → PASS.
-- [ ] **Step 5: Lock the golden hash** — add a test asserting the exact literal:
+- [x] **Step 4: Run** → PASS.
+- [x] **Step 5: Lock the golden hash** — add a test asserting the exact literal:
 
 ```ts
 // append to test/evidence.test.ts (fill LITERAL from the first green run's r.contentHash)
@@ -648,7 +653,7 @@ it("matches the locked golden content hash", async () => {
 
 Run once, copy the printed/asserted hash into the literal, re-run → PASS. (This is how `evidence-graph` locks its golden hashes.)
 
-- [ ] **Step 6: Commit** → `feat(defense): evidence record + content hash + node mapper`.
+- [x] **Step 6: Commit** → `feat(defense): evidence record + content hash + node mapper`.
 
 ---
 
@@ -661,14 +666,14 @@ Run once, copy the printed/asserted hash into the literal, re-run → PASS. (Thi
 **Interfaces:**
 - Produces: `TfyTutor implements Interviewer, AnswerJudge`, `parseJudgment(raw, facet): Judgment | null`, `tfyConfigFromEnv(env?)`.
 
-- [ ] **Step 1: Recorded judge fixture** (a `.ts` file — NOT `.json`; the repo tsconfig does not set `resolveJsonModule`, so JSON imports would fail `tsc -b`)
+- [x] **Step 1: Recorded judge fixture** (a `.ts` file — NOT `.json`; the repo tsconfig does not set `resolveJsonModule`, so JSON imports would fail `tsc -b`)
 
 ```ts
 // src/__fixtures__/judge-response.ts
 export const JUDGE_RESPONSE = { coverage: 0.72, rationale: "Specific mechanism described with a personal reason.", thin: false };
 ```
 
-- [ ] **Step 2: Failing parse test**
+- [x] **Step 2: Failing parse test**
 
 ```ts
 // test/parse.test.ts
@@ -691,7 +696,7 @@ describe("parseJudgment", () => {
 });
 ```
 
-- [ ] **Step 3: package.json + tsconfig** (no external deps; references the domain)
+- [x] **Step 3: package.json + tsconfig** (no external deps; references the domain)
 
 ```json
 // passion/adapters/tutor-tfy/package.json
@@ -715,7 +720,7 @@ describe("parseJudgment", () => {
 }
 ```
 
-- [ ] **Step 4: parse.ts**
+- [x] **Step 4: parse.ts**
 
 ```ts
 // src/parse.ts
@@ -742,7 +747,7 @@ export function parseQuestion(raw: string): string | null {
 }
 ```
 
-- [ ] **Step 5: index.ts (native fetch)**
+- [x] **Step 5: index.ts (native fetch)**
 
 ```ts
 // src/index.ts
@@ -789,7 +794,7 @@ export class TfyTutor implements Interviewer, AnswerJudge {
 }
 ```
 
-- [ ] **Step 6: tutor-live.ts** (opt-in)
+- [x] **Step 6: tutor-live.ts** (opt-in)
 
 ```ts
 // scripts/tutor-live.ts
@@ -810,7 +815,7 @@ async function main() {
 main().catch((e) => { console.error(e); process.exit(1); });
 ```
 
-- [ ] **Step 7: `.env.local.example`**
+- [x] **Step 7: `.env.local.example`**
 
 ```bash
 TFY_API_KEY=your-truefoundry-token
@@ -818,8 +823,8 @@ TFY_BASE_URL=https://tfy.promptlens.trilogy.com/openai/v1
 TFY_TUTOR_MODEL=gpt-5.4-mini
 ```
 
-- [ ] **Step 8: Root reference + gate** — **append** `{ "path": "passion/adapters/tutor-tfy" }` to root `tsconfig.json` `references` (keep all existing entries), then run `pnpm exec tsc -b && pnpm test` → PASS (no network in CI).
-- [ ] **Step 9: Commit** → `feat(defense): TrueFoundry tutor adapter (native fetch, opt-in)`.
+- [x] **Step 8: Root reference + gate** — **append** `{ "path": "passion/adapters/tutor-tfy" }` to root `tsconfig.json` `references` (keep all existing entries), then run `pnpm exec tsc -b && pnpm test` → PASS (no network in CI).
+- [x] **Step 9: Commit** → `feat(defense): TrueFoundry tutor adapter (native fetch, opt-in)`.
 
 ---
 
@@ -831,7 +836,7 @@ TFY_TUTOR_MODEL=gpt-5.4-mini
 - Create: `passion/packages/socratic-defense/test/demo.test.ts`
 - Create: `passion/packages/socratic-defense/README.md`
 
-- [ ] **Step 1: Failing demo test**
+- [x] **Step 1: Failing demo test**
 
 ```ts
 // test/demo.test.ts
@@ -847,9 +852,9 @@ describe("demo", () => {
 });
 ```
 
-- [ ] **Step 2: index.ts** → `export * from "./model.js"; export * from "./ports.js"; export * from "./scaffold.js"; export * from "./session.js"; export * from "./evidence.js";`
+- [x] **Step 2: index.ts** → `export * from "./model.js"; export * from "./ports.js"; export * from "./scaffold.js"; export * from "./session.js"; export * from "./evidence.js";`
 
-- [ ] **Step 3: demo.ts** (inline stub — no adapter import, no cycle)
+- [x] **Step 3: demo.ts** (inline stub — no adapter import, no cycle)
 
 ```ts
 // src/demo.ts
@@ -878,8 +883,8 @@ export async function runDemo(): Promise<EvidenceRecord> {
 
 > The demo uses `node:crypto` directly for its `Hasher` (domain stays framework-free; `node:crypto` is a Node builtin, not a dependency) — no import of `tutor-stub`/`evidence-hash-node`, so no cycle.
 
-- [ ] **Step 4: README** — mirror `evidence-graph/README.md`: what it is (interview → evidence), the LLM-conducts/scaffold-governs split, public API table, ports/adapters, the TFY env note, `pnpm --filter @gt100k/socratic-defense test`.
-- [ ] **Step 5: Gate** → PASS. **Step 6: Commit** → `feat(defense): public API, demo, README`.
+- [x] **Step 4: README** — mirror `evidence-graph/README.md`: what it is (interview → evidence), the LLM-conducts/scaffold-governs split, public API table, ports/adapters, the TFY env note, `pnpm --filter @gt100k/socratic-defense test`.
+- [x] **Step 5: Gate** → PASS. **Step 6: Commit** → `feat(defense): public API, demo, README`.
 
 ---
 

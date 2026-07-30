@@ -1,6 +1,9 @@
 # Mastery Maps, slice 1: the map itself
 
-**Status:** spec, ready for an implementation plan.
+**Status:** built. `@gt100k/mastery-map` ships the model, the validator, the generator port with its
+deterministic stub, the golden fixtures and persistence, and the guide console carries the review
+screen. Two things listed here as out of scope have since been built: slice 2 reads a map against a
+child, and a live generator adapter exists.
 **Design:** [`2026-07-25-mastery-map-design.md`](2026-07-25-mastery-map-design.md). Read it first;
 this document does not restate the reasoning, only what to build.
 **Date:** 2026-07-26
@@ -15,6 +18,12 @@ beyond hints, the admissions portfolio, and child login (G3, a pre-live gate).
 
 **New package:** `@gt100k/mastery-map` in `passion/packages/mastery-map`. Pure, deterministic,
 no network, no clock, no randomness, following every other engine.
+
+> **Cleared (2026-07-27).** `chosen_challenge` is emitted now: the game's harder-variant control
+> records it, emission is on, and a session reaches the orchestrator through the console's ingest
+> route. Branch milestones are reachable in principle, through exactly one gadget — the only one that
+> offers a harder variant — so the caveat on warning rule 3 should now say that rather than saying
+> nothing emits the signal. The trunk-only fixture requirement stands on its own merits.
 
 **Named dependency, and it does not block this slice.** No child can currently be placed above
 `S2_FOUNDATIONS`. `deriveStage` in `specialization-planner/src/stage.ts` requires `stretchSeeking`

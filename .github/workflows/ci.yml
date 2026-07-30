@@ -97,10 +97,16 @@ jobs:
       # because each carries its own vitest config and environment (jsdom, WebGL stubs) and a
       # recursive run would silently pick up packages whose `test` script re-enters the root
       # config. Add a line when an app gains a suite.
+      # design-lab's suite shells out to ImageMagick to measure the browse wall's tile art, so the
+      # runner needs it. Preinstalled on ubuntu-latest; asserted rather than assumed, because the
+      # failure mode otherwise is a confusing ENOENT inside a test about luminance.
+      - name: Check ImageMagick
+        run: convert --version
+
       - name: Test (apps)
         run: |
           for app in home guide-console project-studio parent-guide concierge-app \
-                     evidence-explorer mvp-jul24 tinker-cabin-app; do
+                     design-lab evidence-explorer mvp-jul24 tinker-cabin-app; do
             echo "::group::$app"
             pnpm --filter "@gt100k/$app" test
             echo "::endgroup::"

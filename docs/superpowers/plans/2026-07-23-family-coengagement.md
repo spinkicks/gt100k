@@ -1,5 +1,11 @@
 # Family Co-Engagement System (the environment amplifier) — Implementation Plan
 
+> **Complete, and Task 5's app no longer exists.** `@gt100k/family` shipped in full. The standalone
+> `apps/family` surface that Task 5 builds was retired the next day and folded into the guide
+> console's Family tab — see [`2026-07-23-family-console-consolidation.md`](2026-07-23-family-console-consolidation.md)
+> — so read Task 5 as the history of a surface that has moved, not as a description of where the
+> family read lives today.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development or superpowers:executing-plans. Checkbox steps; commit after each task.
 
 **Goal:** Build `019-family-coengagement` per its spec — a headless domain package (`@gt100k/family`: a pure `assessFamily` engine implementing the research §02 Category-C decision + a `deriveFamilySignals` deriver over the 014 profile / 013 store / 016 wellbeing reads) + a **new `apps/family`** surface (a guide coaching console + a family-facing preview) that renders the reads over the synthetic pilot roster and implements **`window.__qa` / `LOOP_QA`**.
@@ -19,61 +25,61 @@
 
 ### Task 0: Scaffold `@gt100k/family`
 **Files:** `passion/packages/family/{package.json,tsconfig.json,src/index.ts,test/smoke.test.ts}`; root `tsconfig.json`.
-- [ ] Failing smoke test; `package.json` (`@gt100k/family`, deps `@gt100k/student-profile`, `@gt100k/hypothesis-store`, `@gt100k/wellbeing`, `@gt100k/interest-inference`, `@gt100k/two-axis-tagging`; `test` script `vitest run --root ../.. packages/family/test`); `tsconfig.json` (extends base; references all five dep packages); `src/index.ts` → `export {};`; append root reference.
-- [ ] `pnpm install` → `pnpm exec tsc -b && pnpm test` PASS. **Commit** `feat(family): scaffold @gt100k/family`.
+- [x] Failing smoke test; `package.json` (`@gt100k/family`, deps `@gt100k/student-profile`, `@gt100k/hypothesis-store`, `@gt100k/wellbeing`, `@gt100k/interest-inference`, `@gt100k/two-axis-tagging`; `test` script `vitest run --root ../.. packages/family/test`); `tsconfig.json` (extends base; references all five dep packages); `src/index.ts` → `export {};`; append root reference.
+- [x] `pnpm install` → `pnpm exec tsc -b && pnpm test` PASS. **Commit** `feat(family): scaffold @gt100k/family`.
 
 ---
 
 ### Task 1: Types + constants (P0)
 **Files:** `src/model.ts`, `test/model.test.ts`; barrel.
-- [ ] Define `PressureRisk`, `Knob`, `FamilySignals`, `CoachingPosture`, `FamilyRead` (spec §3.2) + constants `OVER_IDENTIFICATION_MIN_SHARE`, `MAX_ASKS`, `MAX_SHARED_ACTIVITIES` (§3.6).
-- [ ] Unit test pins the constants. **Commit** `feat(family): types + golden constants`.
+- [x] Define `PressureRisk`, `Knob`, `FamilySignals`, `CoachingPosture`, `FamilyRead` (spec §3.2) + constants `OVER_IDENTIFICATION_MIN_SHARE`, `MAX_ASKS`, `MAX_SHARED_ACTIVITIES` (§3.6).
+- [x] Unit test pins the constants. **Commit** `feat(family): types + golden constants`.
 
 ---
 
 ### Task 2: `assessFamily` engine (P1) — CORE
 **Files:** `src/assess.ts`, `test/assess.test.ts`; barrel.
 **Interface:** `assessFamily(signals: FamilySignals): FamilyRead`. Implement the **priority-ordered** §3.3 decision (Elevated pressure → Rising stakes → Strain → Low engagement → Baseline), first match wins. Invalid/empty input → safe baseline posture, `risk:"none"`, no fabricated "push harder". Always `posture.warmth === "non_contingent"`. Cap `asks`/`sharedActivities` at their constants.
-- [ ] **Failing golden table test:** one `FamilySignals` fixture per posture → the exact `FamilyRead` (posture + `pressureWatch.risk` + `pressureWatch.antecedents` + `escalateToHuman`). Assert `rationale`/`guardrailNotes` presence (not exact prose); assert `asks`/`sharedActivities` caps.
-- [ ] Implement. **Commit** `feat(family): assessFamily coaching engine (warm-demanding, counter-cyclical)`.
+- [x] **Failing golden table test:** one `FamilySignals` fixture per posture → the exact `FamilyRead` (posture + `pressureWatch.risk` + `pressureWatch.antecedents` + `escalateToHuman`). Assert `rationale`/`guardrailNotes` presence (not exact prose); assert `asks`/`sharedActivities` caps.
+- [x] Implement. **Commit** `feat(family): assessFamily coaching engine (warm-demanding, counter-cyclical)`.
 
 ---
 
 ### Task 3: Guardrail invariants (P2)
 **Files:** `test/guardrails.test.ts`.
-- [ ] Tests (spec §3.4 / SC-2..SC-6):
+- [x] Tests (spec §3.4 / SC-2..SC-6):
   - counter-cyclical: any `anyStakesEvent` (or elevated pressure) ⇒ `autonomySupport:"up"` + `decoupleWorthFromOutcome:true`; the read never contains a "raise pressure / push harder" recommendation;
   - non-contingent warmth: `posture.warmth==="non_contingent"` in every read;
   - no gamification: the `FamilyRead`/`CoachingPosture` types carry **no** reward/streak/points/score field (type-level + shape check);
   - elevated pressure ⇒ `risk:"elevated"` + `escalateToHuman:true` + `antecedents` naming what fired;
   - over-identification ⇒ read protects plurality/reversibility, never narrows to one identity;
   - strain (`anyBackOffOrRest||anyDevaluation`) ⇒ `escalateToHuman:true`; no family-facing/child-facing label field exists.
-- [ ] Fix the engine if any invariant fails (non-negotiable). **Commit** `test(family): guardrail invariants (counter-cyclical, non-contingent warmth, no gamification)`.
+- [x] Fix the engine if any invariant fails (non-negotiable). **Commit** `test(family): guardrail invariants (counter-cyclical, non-contingent warmth, no gamification)`.
 
 ---
 
 ### Task 4: `deriveFamilySignals` (P3)
 **Files:** `src/derive.ts`, `test/derive.test.ts`; barrel.
 **Interface:** `deriveFamilySignals(profile: StudentProfile, store: HypothesisStore, wellbeingReads: readonly WellbeingRead[], now: string, catalog: Catalog): FamilySignals`. From the 013 store: `activeSpikes` (ACTIVE+CANDIDATE count), `overIdentification` (one spike ≥ `OVER_IDENTIFICATION_MIN_SHARE` share). From the 016 reads: `anyStakesEvent` (any `DANGER_WINDOW`/stakes), `anyDevaluation` (any `BURNOUT_TIP`/devaluation), `anyBackOffOrRest` (any `backOff||rest`), `pressuredSpecialization` (a stakes read on a declining-return spike). Leave `lowFamilyEngagement` + the three parental observations `undefined` unless supplied. Pure; no affect inference.
-- [ ] **Failing golden test (SC-7):** a synthetic child (reuse `@gt100k/student-profile` + `@gt100k/wellbeing` fixtures) whose 016 reads include a stakes event + a devaluation on a dominant spike → derived signals (`anyStakesEvent`, `anyDevaluation`, `overIdentification`) → `assessFamily` returns `risk:"elevated"`, `escalateToHuman:true`.
-- [ ] Implement. **Commit** `feat(family): deriveFamilySignals from the 014 profile + 013 store + 016 reads`.
+- [x] **Failing golden test (SC-7):** a synthetic child (reuse `@gt100k/student-profile` + `@gt100k/wellbeing` fixtures) whose 016 reads include a stakes event + a devaluation on a dominant spike → derived signals (`anyStakesEvent`, `anyDevaluation`, `overIdentification`) → `assessFamily` returns `risk:"elevated"`, `escalateToHuman:true`.
+- [x] Implement. **Commit** `feat(family): deriveFamilySignals from the 014 profile + 013 store + 016 reads`.
 
 ---
 
 ### Task 5: `apps/family` surface (P4) + window.__qa
 **Files:** `passion/apps/family/{package.json,tsconfig.json,next.config.*,vitest.config.mts,app/*,test/*}`; root `tsconfig.json`.
-- [ ] Scaffold the Next 14 app mirroring `guide-console` (self-hosted fonts optional; `transpilePackages` the workspace deps; deps `@gt100k/family` + `@gt100k/student-profile` + `@gt100k/wellbeing` + `@gt100k/hypothesis-store` + `@gt100k/interest-inference`). `pnpm install`.
-- [ ] Build the read per child: reuse `buildPilotRoster(PILOT_NOW)` (014) for the roster + `wellbeingForKid`-style reads (016) per spike, then `deriveFamilySignals(profile, store, reads, PILOT_NOW, PILOT_CATALOG)` → `assessFamily(...)`. Deterministic + offline.
-- [ ] Render a **functional-but-plain** two-view surface: (1) a **guide coaching console** per child — the posture (autonomy support / structure / non-contingent warmth / decouple-worth), the door-opening asks, the shared-activity ideas, and any **"Needs your review"** family-driven-pressure escalation (with the named antecedents + a plain rationale); (2) a **family-facing preview** that shows only items the guide has **approved** (the primary action approves the top coaching card). Grayscale-safe; WCAG 2.2 AA; reduced-motion. No child/family-facing label; no reward/score.
-- [ ] **`window.__qa`:** `ready`/`error`/`state()` (selected kid + risk + escalation count + approved count) / `primaryAction()` (approve the top coaching card → observable in `state()` + DOM). Pure state helpers in a `*-state.ts` + a headless CI test (mirror guide-console's `test/state.test.ts`).
-- [ ] gate: `pnpm exec tsc -b` + `pnpm test`; then **stop any dev server on the port first**, `pnpm --filter @gt100k/family build`, run `LOOP_QA` (`next start` + harness): `window.__qa.ready===true`, `primaryAction()` approves (state + DOM change), the coaching console + family preview render. **Commit** `feat(family): apps/family guide coaching console + family preview (system proposes, human disposes)`.
+- [x] Scaffold the Next 14 app mirroring `guide-console` (self-hosted fonts optional; `transpilePackages` the workspace deps; deps `@gt100k/family` + `@gt100k/student-profile` + `@gt100k/wellbeing` + `@gt100k/hypothesis-store` + `@gt100k/interest-inference`). `pnpm install`.
+- [x] Build the read per child: reuse `buildPilotRoster(PILOT_NOW)` (014) for the roster + `wellbeingForKid`-style reads (016) per spike, then `deriveFamilySignals(profile, store, reads, PILOT_NOW, PILOT_CATALOG)` → `assessFamily(...)`. Deterministic + offline.
+- [x] Render a **functional-but-plain** two-view surface: (1) a **guide coaching console** per child — the posture (autonomy support / structure / non-contingent warmth / decouple-worth), the door-opening asks, the shared-activity ideas, and any **"Needs your review"** family-driven-pressure escalation (with the named antecedents + a plain rationale); (2) a **family-facing preview** that shows only items the guide has **approved** (the primary action approves the top coaching card). Grayscale-safe; WCAG 2.2 AA; reduced-motion. No child/family-facing label; no reward/score.
+- [x] **`window.__qa`:** `ready`/`error`/`state()` (selected kid + risk + escalation count + approved count) / `primaryAction()` (approve the top coaching card → observable in `state()` + DOM). Pure state helpers in a `*-state.ts` + a headless CI test (mirror guide-console's `test/state.test.ts`).
+- [x] gate: `pnpm exec tsc -b` + `pnpm test`; then **stop any dev server on the port first**, `pnpm --filter @gt100k/family build`, run `LOOP_QA` (`next start` + harness): `window.__qa.ready===true`, `primaryAction()` approves (state + DOM change), the coaching console + family preview render. **Commit** `feat(family): apps/family guide coaching console + family preview (system proposes, human disposes)`.
 
 ---
 
 ### Final verification (SC-9) + PR
-- [ ] `pnpm exec tsc -b` clean; `pnpm test` all green; `pnpm --filter @gt100k/family build` clean; `LOOP_QA` pass.
-- [ ] `passionApps.md`: mark F3 engine done (surface functional; polish pending); the human lane (F1 guide + F2 wellbeing + F3 family) is now complete in engine form.
-- [ ] Open PR (gh, pushed as `spinkicks`); `gh pr update-branch` if `main` moved; squash-merge after CI + branch up to date.
+- [x] `pnpm exec tsc -b` clean; `pnpm test` all green; `pnpm --filter @gt100k/family build` clean; `LOOP_QA` pass.
+- [x] `passionApps.md`: mark F3 engine done (surface functional; polish pending); the human lane (F1 guide + F2 wellbeing + F3 family) is now complete in engine form.
+- [x] Open PR (gh, pushed as `spinkicks`); `gh pr update-branch` if `main` moved; squash-merge after CI + branch up to date.
 
 ## Notes on likely snags (pre-solved)
 - **Priority order is the whole engine:** get §3.3 right (elevated pressure first, then rising stakes, then strain). A child with a stakes event must read counter-cyclically (autonomy up), never "push harder" (SC-2).

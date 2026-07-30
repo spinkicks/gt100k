@@ -352,10 +352,24 @@ export const STRENGTH_NOTE: Record<EvidenceStrength, string> = {
 
 /**
  * The highest stage the planner can currently place any child at. Both stages above it need
- * `stretchSeeking`, which derives solely from `chosen_challenge`, and nothing in production emits
- * that event (escalated in PR #163). A gate above this is a fact about the product; a gate at or
- * below it is a fact about where this child has been placed today, and the two need different
- * sentences because only one of them is about the child at all.
+ * `stretchSeeking`, which derives solely from `chosen_challenge`.
+ *
+ * That event used to be emitted by nothing, which made this ceiling absolute. Since #216 it IS
+ * emitted: the "Try a harder one" button in `GadgetOverlay` records it. But the button only renders
+ * where the puzzle honours `tier`, and `supportsTier` is set on Nonogram alone, so the whole product
+ * offers exactly one route to the signal and it runs through a single cell.
+ *
+ * KEPT AT FOUNDATIONS DELIBERATELY, and this is the part to revisit rather than trust. The ceiling
+ * is no longer a statement about what the product can emit; it is a statement about what it emits
+ * often enough to place a child on. A child who did ask for a harder Nonogram would earn
+ * `stretchSeeking` honestly and would then be told, wrongly, that the stage above is out of reach
+ * for everyone. That is a smaller and rarer error than the one this replaced — which told every
+ * guide a flatly false thing about every child — but it is still an error, and closing it means
+ * deciding whether one cell is enough to lift the ceiling. That is a product call, not a doc fix.
+ *
+ * A gate above this is a fact about the product; a gate at or below it is a fact about where this
+ * child has been placed today, and the two need different sentences because only one of them is
+ * about the child at all.
  */
 const REACHABLE_CEILING: Stage = "S2_FOUNDATIONS";
 
@@ -369,7 +383,7 @@ const aboveCeiling = (stage: Stage): boolean =>
  * map with no rung above Foundations at all, every clause of it was false.
  */
 const CEILING_NOTE =
-  "Nothing above Foundations can be reached by any child at the moment: both higher stages need a signal the product does not yet emit. Anything gated above that is out of reach for that reason and not for anything this child did or did not do.";
+  "Almost nothing above Foundations is reachable yet: both higher stages need a child to have asked for harder work, and only one puzzle in the whole product currently offers that. Anything gated above Foundations is out of reach for that reason and not for anything this child did or did not do.";
 
 /** And the caveat for a gate the planner could pass tomorrow, which is a different fact. */
 const stageGateNote = (name: string, stage: string): string =>

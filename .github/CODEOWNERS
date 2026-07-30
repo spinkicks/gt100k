@@ -1,4 +1,8 @@
-# CODEOWNERS — lane ownership. Every PR requires the relevant owner's review.
+# CODEOWNERS — lane ownership. This file says who SHOULD look at a change; it does not gate one.
+# The main ruleset sets require_code_owner_review false and required_approving_review_count 0, so
+# review here is a convention and the enforced gate is the `ci` status check. Said plainly because
+# the previous version of this line claimed every PR required an owner's review, which would let
+# someone assume a second pair of eyes had been guaranteed by the platform when it had not.
 # spinkicks is the repo owner. Add teammates + their lanes as the team grows.
 
 # Default owner for everything

@@ -13,10 +13,12 @@ set -uo pipefail
 # you're in the shared Slack. Everything below runs natively on macOS.)
 [ "$(uname -s)" = "Darwin" ] || echo "NOTE: this script targets macOS; on other OSes install node/gh/git/uv yourself, then run steps 2-9."
 
-echo "== 1/9 base tools (node, gh, git, uv) — Homebrew =="
+echo "== 1/9 base tools (node, pnpm, gh, git, uv) — Homebrew =="
 command -v brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || true)"
-brew install node gh git
+# pnpm is not optional: the repo is a pnpm workspace, so npm or yarn will not resolve
+# the `@gt100k/*` links and every command in AGENTS.md assumes it.
+brew install node pnpm gh git
 command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
 export PATH="$HOME/.local/bin:$PATH"
 
@@ -56,10 +58,23 @@ claude mcp add --scope user --transport http aws-knowledge https://knowledge-mcp
 claude mcp add --scope user terraform -- docker run -i --rm hashicorp/terraform-mcp-server || true
 echo "  (Codex reads the same three from ~/.codex/config.toml — copy the operator's [mcp_servers.*] blocks.)"
 
-echo "== 9/9 clone repos =="
+echo "== 9/9 clone repos, install, and prove the checkout works =="
 mkdir -p ~/code && cd ~/code
 gh repo clone spinkicks/gt100k || true
 gh repo clone spinkicks/gt100k-factory || true
+
+# Installing and running the gates here, rather than leaving it to the reader, because the step
+# that used to end at `clone` handed back a checkout that could not build or test anything — and
+# the verification block below would still have printed a clean bill of health for it.
+if [ -d ~/code/gt100k ]; then
+  ( cd ~/code/gt100k \
+    && pnpm install \
+    && echo "-- gates (the same three CI runs first) --" \
+    && pnpm lint \
+    && pnpm typecheck \
+    && pnpm test ) \
+    || echo "NOTE: install or gates failed above. Fix that before writing any code; a red gate here is an environment problem, not a repo problem."
+fi
 
 echo "== context hygiene (auto-compaction ~40%) =="
 [ -f ~/code/gt100k-factory/harness/setup-context-hygiene.sh ] \

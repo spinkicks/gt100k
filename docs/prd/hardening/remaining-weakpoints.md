@@ -1,6 +1,6 @@
 # Hardening Mini-Spec — Remaining Weak Points (#2, #5, #7, #8)
 
-**Status:** Draft v1 · 2026-07-22 · Owner: (product)
+**Status:** Draft v1 · 2026-07-22 · Each weak point re-checked against the code 2026-07-28; per-item status notes below · Owner: (product)
 **Addresses:** the four lower-severity weak points from the PRD review not covered by the dedicated hardening specs.
 **Grounding:** the brainlifts + `docs/research/passion-pipeline/` memos (no new research needed; these are design calls).
 
@@ -14,6 +14,10 @@
 
 **Why:** it preserves the "return after support is removed" construct (Hidi & Renninger; the return signal) inside daily attendance, and it's directly observable on the 2D map. *Implementation note:* the coverage pass still runs first (so a spike can't go "quiet" before it was ever fairly sampled).
 
+**Status 2026-07-28 — still open, and it now has a rule to reconcile with.** Nothing implements a quiet period: no code marks a spike quiet, withholds it from a slate, or reads a return as having happened during one. What exists is the *passive* version in the graduation gate, which looks for a ≥14-day interval between consecutive returns the child produced on their own. That is a filter over history, not the deliberately inserted gap this decision describes, and it cannot distinguish a gap we imposed from a fortnight the child was on holiday.
+
+The reconciliation the implementation note anticipated is bigger than "coverage runs first." `@gt100k/surfacing` now owes every triggered domain **four spaced re-exposures** before it may be dropped, and it pays those debts *before* offering anything new — a rule that comes from the same memo, on the finding that a domain raised and then not maintained leaves a child below where they started. A quiet period is a deliberate suspension of exactly that maintenance. The two are compatible only if the quiet period may start after the debt is paid, and nothing says that yet. Whichever way it is settled, the surfacing policy is where a quiet period has to be expressed, because it is the thing that decides what a session offers.
+
 ---
 
 ## #5 — Family selection selects for intensity, then must keep it warm-not-controlling
@@ -25,6 +29,8 @@
 - **Backstop = leading indicators + re-coaching.** Because knowing ≠ doing — the control reflex is strongest exactly as stakes rise (push/back-off SPOV 3) — keep light **leading-indicator** monitoring (the family's actual engagement style: warm prompts vs demanding scores; plus the kid's obsessive-passion antecedents: over-identification, can't-take-a-day-off) that **precede** devaluation, and trigger targeted re-coaching before harm.
 
 **Why:** turns the selection tension into a strength; moves detection earlier than the lagging devaluation signal; keeps the wellbeing judge off the family (per the human-scaling carve-out).
+
+**Status 2026-07-28 — largely built, with one honest caveat.** Both halves shipped. The conversion lever is `apps/parent-guide`, a hosted playbook that teaches the motivation science with citations rather than asserting a house style. The backstop is `@gt100k/family`, whose read carries the antecedents this decision asked for — over-identification, a pressured specialization, parental over-valuation, conditional regard, observed control — separately from `anyDevaluation`, and escalates to a guide for re-coaching rather than acting. Warmth is a constant on the coaching posture, never a knob, and the read is guide-facing with no family- or child-facing label. The caveat is that the three sharpest antecedents are **guide observations, not software inferences**: a guide has to notice conditional regard and record it. So the leading indicators lead only as far as the guide's attention does, which is a staffing property and not an engine one.
 
 ---
 
@@ -39,6 +45,10 @@
 
 **Why:** honors the "interest is built" thesis and the no-fixed-label rule; converts an apparent dead-end into a diagnosable, recoverable state.
 
+**Status 2026-07-28 — the prohibitions hold; the route does not exist.** Step 3 is the part that is real. A hypothesis is born `EXPLORING`, no automatic transition demotes one for silence, and a gap in the log never lowers a belief — missingness is absence of evidence in the fold, not evidence against. Two of the six guardrail checks name the failure modes directly: GC5 for a demote-after-silence, GC1 for any scalar or label field reaching a hypothesis. They run over the synthetic pilot roster inside the test gate, so a regression that reintroduced either fails CI; nothing runs them over a real child's profile yet. So the "you have no passion" verdict is unreachable today, which is the part that mattered most.
+
+Step 1 is partly served: `@gt100k/surfacing` will offer one never-seen cabin per slate, but only once every maintenance debt is clear, so a child who has been triggered widely and maintained slowly gets *less* breadth, not more — the opposite of what this decision asks for in exactly the case it was written about. Step 2 has nothing at all: no state marks a child as having sampled widely without returning anywhere, so no human review is triggered and the measurement-versus-engagement-versus-wellbeing distinction is never drawn. Coverage breadth is computed program-wide in `@gt100k/guardrails` but is an aggregate metric, not a per-child flag.
+
 ---
 
 ## #8 — "Fast discovery" vs "term-long certification" expectation gap
@@ -51,3 +61,5 @@
 - Message it as **"we explore deeply right away, and lock in serious investment only once it's proven."** No "waiting for a verdict" UI or countdown.
 
 **Why:** aligns expectations with the fast-start/escalating-commitment model (Pipeline PRD §2.2) without overpromising a deterministic early read that the evidence says isn't possible.
+
+**Status 2026-07-28 — the shape holds and the numbers match.** Certification is the months-scale milestone this decision assumes: the gate wants a 56-day span, at least two occasions, and one ≥14-day gap the child returned from, with a human autonomy sign-off on top. The provisional read is the fast half, reachable at two distinct days and a modest evidence mass. Nothing in any family-facing surface counts down to the gate or shows a pending verdict — the parent playbook teaches posture and never reports gate progress, and the gate view is guide-facing — so the "no waiting-for-a-verdict UI" half is honoured by absence rather than by a rule that would notice if someone added one.

@@ -3186,7 +3186,10 @@ body {
 }
 
 /* ── Overview dashboard ───────────────────────────────────────────────────────
-   Lifted from the approved console reference (design-lab/app/console.css). Three names collided
+   Lifted from the approved console reference, a MUI-style mockup that lived at
+   design-lab/app/console.css until 2026-07-28. It was deleted once this console had been restyled
+   past it to the GT School identity and a second console in the old language was only a way to be
+   misled about what the product looks like. These rules are the surviving copy. Three names collided
    with existing rules that mean something else in this console, so they carry an `ov-` prefix here:
    `.legend` is already the collapsible Key disclosure, `.tbl` is already the compact prototype's
    evidence table, and `.ov-sr` / `.ov-blank` / `.ov-foot` / `.ov-none` are new. `.chip`, `.btn` and

@@ -1,5 +1,18 @@
 # Mastery Maps slice 1: implementation plan
 
+> **Complete.** `@gt100k/mastery-map` ships the model, the validator with its errors and warnings,
+> the generator port with the deterministic stub, the golden fixtures and the memory store, and the
+> guide console carries the Maps tab over `app/maps.ts` and `app/maps-panel.tsx`. Two things named
+> below as out of scope have since been built: slice 2 reads a map against one child, and the
+> `planner-live`-style adapter arrived as `@gt100k/mastery-map-live`.
+>
+> **The known dependency has cleared.** `chosen_challenge` is now emitted — the discovery game
+> records it when a child asks for a harder variant, and a session can be posted to the console's
+> ingest route — so branch milestones are no longer unreachable in principle. What replaces the old
+> claim is narrower and still worth saying: exactly one gadget offers a harder variant, so
+> `stretchSeeking` is reachable through one cell rather than none. The package's own copy has not
+> caught up; see `../specs/2026-07-27-measurement-lane.md` §6.
+
 **Spec:** [`../specs/2026-07-26-mastery-map-slice1.md`](../specs/2026-07-26-mastery-map-slice1.md).
 **Design:** [`../specs/2026-07-25-mastery-map-design.md`](../specs/2026-07-25-mastery-map-design.md).
 Read the spec first. This plan does not restate decisions, only the order to build them in.

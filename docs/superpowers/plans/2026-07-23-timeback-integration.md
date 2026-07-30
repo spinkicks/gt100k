@@ -1,5 +1,10 @@
 # TimeBack Integration (real priors, never a gate) — Implementation Plan
 
+> **Complete.** `@gt100k/timeback` ships the subject→cabin crosswalk, `toDomainPriors`, the standing
+> no-gate test, the daily handoff and `withPriors`, the deterministic fake source, and the opt-in
+> `timeback-live` adapter. `docs/prd/passionApps.md` records G2 as done, and notes what this plan
+> already said: the live adapter is a scaffold against no real API yet.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking; commit after each task.
 
 **Goal:** Build `020-timeback-integration` per its spec — a headless `@gt100k/timeback` package (a pure subject→cabin crosswalk + `toDomainPriors` mapper + a light `buildDailyHandoff` + a `withPriors` profile hook + a deterministic fake data source) and an opt-in `@gt100k/timeback-live` adapter (a real-API-shaped `TimeBackClient`, never in the gate), so a kid's school signals become real `DomainPrior[]` that **shift the discovery starting point but never gate an interest**.
@@ -27,11 +32,11 @@
 **Interfaces:**
 - Produces: the `@gt100k/timeback` package (barrel `src/index.ts`), consumed by all later tasks + the adapter.
 
-- [ ] `package.json`: name `@gt100k/timeback`, `"type": "module"`, deps `@gt100k/interest-inference`, `@gt100k/two-axis-tagging`, `@gt100k/student-profile` (all `workspace:*`); `"test": "vitest run --root ../.. packages/timeback/test"`; `"build": "tsc -b"`.
-- [ ] `tsconfig.json`: extend the repo base; `composite: true`; `references` → `../interest-inference`, `../two-axis-tagging`, `../student-profile`.
-- [ ] `src/index.ts` → `export {};`. `test/smoke.test.ts`: `import { expect, it } from "vitest"; it("builds", () => expect(true).toBe(true));`.
-- [ ] Run: `pnpm install` then `pnpm exec tsc -b && pnpm test`. Expected: PASS.
-- [ ] **Commit** `feat(timeback): scaffold @gt100k/timeback`.
+- [x] `package.json`: name `@gt100k/timeback`, `"type": "module"`, deps `@gt100k/interest-inference`, `@gt100k/two-axis-tagging`, `@gt100k/student-profile` (all `workspace:*`); `"test": "vitest run --root ../.. packages/timeback/test"`; `"build": "tsc -b"`.
+- [x] `tsconfig.json`: extend the repo base; `composite: true`; `references` → `../interest-inference`, `../two-axis-tagging`, `../student-profile`.
+- [x] `src/index.ts` → `export {};`. `test/smoke.test.ts`: `import { expect, it } from "vitest"; it("builds", () => expect(true).toBe(true));`.
+- [x] Run: `pnpm install` then `pnpm exec tsc -b && pnpm test`. Expected: PASS.
+- [x] **Commit** `feat(timeback): scaffold @gt100k/timeback`.
 
 ---
 
@@ -47,11 +52,11 @@
   - `interface SubjectSignal { readonly subject: Subject; readonly mastery: number; readonly discretionaryXp: number; readonly offered: boolean; }`
   - `interface TimeBackSnapshot { readonly kidId: string; readonly asOf: string; readonly subjects: readonly SubjectSignal[]; }`
 
-- [ ] Write `test/model.test.ts` that constructs a `TimeBackSnapshot` literal and asserts field access (compile-level shape check + one runtime assertion on `subjects.length`).
-- [ ] Run: `pnpm test` → FAIL (module not found).
-- [ ] Implement `src/model.ts` with the three types above; export from the barrel.
-- [ ] Run: `pnpm exec tsc -b && pnpm test` → PASS.
-- [ ] **Commit** `feat(timeback): raw TimeBack signal types`.
+- [x] Write `test/model.test.ts` that constructs a `TimeBackSnapshot` literal and asserts field access (compile-level shape check + one runtime assertion on `subjects.length`).
+- [x] Run: `pnpm test` → FAIL (module not found).
+- [x] Implement `src/model.ts` with the three types above; export from the barrel.
+- [x] Run: `pnpm exec tsc -b && pnpm test` → PASS.
+- [x] **Commit** `feat(timeback): raw TimeBack signal types`.
 
 ---
 
@@ -69,13 +74,13 @@
   - `function crosswalkFor(subject: Subject): readonly CabinWeight[]` — returns `[]` for an unknown subject (never throws).
   - `function explainPriors(snapshot: TimeBackSnapshot): ReadonlyMap<CabinId, readonly Subject[]>` — per cabin, the offered contributing subjects (provenance).
 
-- [ ] Write `test/crosswalk.test.ts`:
+- [x] Write `test/crosswalk.test.ts`:
   - `crosswalkFor("math")` contains `{ cabin: "math-puzzles", weight: 1 }`;
   - `crosswalkFor("underwater-basket-weaving")` returns `[]` (graceful, no throw);
   - every cabin in every crosswalk row is a valid `CabinId` (`CABINS.includes(...)`);
   - `explainPriors` for a snapshot with `math` offered lists `math` under `math-puzzles`, and omits cabins with no offered contributor.
-- [ ] Run: `pnpm test` → FAIL.
-- [ ] Implement `src/crosswalk.ts` with the table (spec §3.3):
+- [x] Run: `pnpm test` → FAIL.
+- [x] Implement `src/crosswalk.ts` with the table (spec §3.3):
   ```ts
   export const SUBJECT_CABIN_CROSSWALK = {
     math: [{ cabin: "math-puzzles", weight: 1 }, { cabin: "code-computers", weight: 0.5 }, { cabin: "games-strategy", weight: 0.5 }],
@@ -89,8 +94,8 @@
   } as const satisfies Record<string, readonly { cabin: CabinId; weight: number }[]>;
   ```
   `crosswalkFor` reads the record with a `?? []` fallback; `explainPriors` iterates offered subjects → their crosswalk cabins, grouping subjects under each cabin.
-- [ ] Run: `pnpm exec tsc -b && pnpm test` → PASS.
-- [ ] **Commit** `feat(timeback): hand-authored subject→cabin crosswalk + explainPriors`.
+- [x] Run: `pnpm exec tsc -b && pnpm test` → PASS.
+- [x] **Commit** `feat(timeback): hand-authored subject→cabin crosswalk + explainPriors`.
 
 ---
 
@@ -105,7 +110,7 @@
 - Consumes: `TimeBackSnapshot`, `SubjectSignal` (T1); `SUBJECT_CABIN_CROSSWALK`, `crosswalkFor` (T2); `DomainPrior`, `clamp01` from `@gt100k/interest-inference`; `CABINS`, `CabinId` from `@gt100k/two-axis-tagging`.
 - Produces: `function toDomainPriors(snapshot: TimeBackSnapshot): readonly DomainPrior[]` — one `DomainPrior` per cabin with ≥1 offered contributing subject, sorted by `domain` (cabin id) asc; cabins with no contribution omitted. `DomainPrior.domain` is the cabin id string.
 
-- [ ] Add to `src/__fixtures__/snapshots.ts` a `GOLDEN_SNAPSHOT: TimeBackSnapshot`:
+- [x] Add to `src/__fixtures__/snapshots.ts` a `GOLDEN_SNAPSHOT: TimeBackSnapshot`:
   ```ts
   export const GOLDEN_SNAPSHOT: TimeBackSnapshot = {
     kidId: "kid-golden", asOf: "2026-04-01T00:00:00.000Z",
@@ -117,7 +122,7 @@
     ],
   };
   ```
-- [ ] Write `test/map.test.ts` (golden — values hand-computed from spec §3.4; totalDiscretionaryXp = 100):
+- [x] Write `test/map.test.ts` (golden — values hand-computed from spec §3.4; totalDiscretionaryXp = 100):
   - result has cabins `["code-computers","games-strategy","influence-media","making-engineering","math-puzzles","science-nature"]` (sorted; NO `music-sound` since music is `offered:false`);
   - `math-puzzles`: contributors math(w1,m0.8) → `aptitudeTilt = 0.8` (Σw·m/Σw = 0.8/1); `discretionaryTilt = clamp01(1·0.60) = 0.60`; `inEnvironment true`;
   - `code-computers`: math(w0.5) only offered → `aptitudeTilt = 0.8` (0.4/0.5); `discretionaryTilt = clamp01(0.5·0.60)=0.30`;
@@ -127,15 +132,15 @@
   - `influence-media`: writing(w1,m0.9) → `aptitudeTilt 0.9`, `discretionaryTilt 0.20`;
   - every tilt ∈ `[0,1]`.
   - Assert numeric fields with `toBeCloseTo(x, 5)`.
-- [ ] Run: `pnpm test` → FAIL.
-- [ ] Implement `src/map.ts`:
+- [x] Run: `pnpm test` → FAIL.
+- [x] Implement `src/map.ts`:
   - compute `totalXp = Σ subjects.discretionaryXp` (guard 0 → shares are 0);
   - for each `CabinId`, gather offered subjects whose crosswalk includes it with weight `w`;
   - if none → skip (omit);
   - `aptitudeTilt = clamp01(Σ w·mastery / Σ w)`; `discretionaryTilt = clamp01(Σ w·(xp/totalXp))`; `inEnvironment = true`;
   - push `{ domain: cabin, inEnvironment, aptitudeTilt, discretionaryTilt }`; sort by `domain`.
-- [ ] Run: `pnpm exec tsc -b && pnpm test` → PASS.
-- [ ] **Commit** `feat(timeback): toDomainPriors mapper (aptitude + discretionary, graceful)`.
+- [x] Run: `pnpm exec tsc -b && pnpm test` → PASS.
+- [x] **Commit** `feat(timeback): toDomainPriors mapper (aptitude + discretionary, graceful)`.
 
 ---
 
@@ -146,12 +151,12 @@
 **Interfaces:**
 - Consumes: `toDomainPriors` (T3), `GOLDEN_SNAPSHOT` (T3); `runInference`, `type CellEvent`, `serializeCellKey` from `@gt100k/interest-inference`.
 
-- [ ] Write `test/no-gate.test.ts` (no new implementation — this proves the guarantee against the merged 011):
+- [x] Write `test/no-gate.test.ts` (no new implementation — this proves the guarantee against the merged 011):
   - **(a) empty events + priors → empty read:** `const priors = toDomainPriors(GOLDEN_SNAPSHOT); const r = runInference([], priors, Date.parse("2026-04-01")); expect(r.cells).toHaveLength(0); expect(r.candidates).toHaveLength(0);`
   - **(b) evidenceMass is prior-independent:** build a small `events: CellEvent[]` (e.g. 3 `voluntary_return` on `["math-puzzles"], "investigate"` near `now`, `novelty:false`, `magnitude:1`); `const now = Date.parse("2026-04-01"); const withP = runInference(events, priors, now); const without = runInference(events, [], now);` for each `cellKey`, assert `withP.cells.find(...).evidenceMass` ≈ `without.cells.find(...).evidenceMass` (`toBeCloseTo(...,5)`) — the prior never adds evidence.
   - **(c) a priored domain with no events never appears:** assert no cell in `without`/`withP` exists for a cabin that only had a prior (e.g. `influence-media`) but no events.
-- [ ] Run: `pnpm exec tsc -b && pnpm test` → PASS.
-- [ ] **Commit** `test(timeback): standing no-gate proof (prior excluded from evidenceMass; no events → no cell)`.
+- [x] Run: `pnpm exec tsc -b && pnpm test` → PASS.
+- [x] **Commit** `test(timeback): standing no-gate proof (prior excluded from evidenceMass; no events → no cell)`.
 
 ---
 
@@ -168,16 +173,16 @@
   - `function buildDailyHandoff(snapshot: TimeBackSnapshot, date: string): DailyHandoff`
   - `function withPriors(profile: StudentProfile, priors: readonly DomainPrior[]): StudentProfile` — immutable; replaces `priors`; sets `updatedAt` to the caller's value (use the snapshot's `asOf` when wired).
 
-- [ ] Write `test/handoff.test.ts`:
+- [x] Write `test/handoff.test.ts`:
   - `buildDailyHandoff(GOLDEN_SNAPSHOT, "2026-04-01").priors` deep-equals `toDomainPriors(GOLDEN_SNAPSHOT)` (one-way flow);
   - `passionBlockRewardNeutral === true` and `blocksIndependent === true`;
   - shape guard: `Object.keys(handoff)` contains **no** key matching `/reward|point|streak|grade|score/i` beyond the literal `passionBlockRewardNeutral` flag (assert the set of keys equals the documented set).
-- [ ] Write `test/profile.test.ts`:
+- [x] Write `test/profile.test.ts`:
   - `const p = emptyProfile("k","K"); const p2 = withPriors(p, toDomainPriors(GOLDEN_SNAPSHOT));` → `p2.priors.length > 0`, `p.priors.length === 0` (original unchanged), `p2 !== p`.
-- [ ] Run: `pnpm test` → FAIL.
-- [ ] Implement `src/handoff.ts` and `src/profile.ts` per the interfaces (pure/immutable; `withPriors` spreads the profile and replaces `priors`).
-- [ ] Run: `pnpm exec tsc -b && pnpm test` → PASS.
-- [ ] **Commit** `feat(timeback): light two-block daily handoff + immutable withPriors hook`.
+- [x] Run: `pnpm test` → FAIL.
+- [x] Implement `src/handoff.ts` and `src/profile.ts` per the interfaces (pure/immutable; `withPriors` spreads the profile and replaces `priors`).
+- [x] Run: `pnpm exec tsc -b && pnpm test` → PASS.
+- [x] **Commit** `feat(timeback): light two-block daily handoff + immutable withPriors hook`.
 
 ---
 
@@ -193,13 +198,13 @@
   - `function syntheticSnapshot(kidId: string, asOf: string, overrides?: Partial<Record<Subject, Partial<SubjectSignal>>>): TimeBackSnapshot` — deterministic default subjects (math/reading/writing/science/coding/music/art all `offered:true` with fixed mastery + XP), overridable per subject.
   - `const PILOT_TIMEBACK: Readonly<Record<string, TimeBackSnapshot>>` — snapshots for the pilot kids `kid-synthetic-001..004` (distinct, deterministic profiles).
 
-- [ ] Write `test/fake.test.ts`:
+- [x] Write `test/fake.test.ts`:
   - `syntheticSnapshot("k","2026-04-01T00:00:00.000Z")` returns the same value on repeat calls (deep-equal; determinism);
   - `PILOT_TIMEBACK["kid-synthetic-001"]` exists, `asOf` is a valid ISO date, and `toDomainPriors(...)` on it returns a non-empty, in-range `DomainPrior[]` (golden: assert its cabin set + one tilt with `toBeCloseTo`).
-- [ ] Run: `pnpm test` → FAIL.
-- [ ] Implement `src/fake.ts` (deterministic literals; `syntheticSnapshot` merges overrides over the defaults).
-- [ ] Run: `pnpm exec tsc -b && pnpm test` → PASS.
-- [ ] **Commit** `feat(timeback): deterministic fake data source + pilot snapshots`.
+- [x] Run: `pnpm test` → FAIL.
+- [x] Implement `src/fake.ts` (deterministic literals; `syntheticSnapshot` merges overrides over the defaults).
+- [x] Run: `pnpm exec tsc -b && pnpm test` → PASS.
+- [x] **Commit** `feat(timeback): deterministic fake data source + pilot snapshots`.
 
 ---
 
@@ -215,23 +220,23 @@
   - `class TimeBackClient { constructor(cfg); fetchSnapshot(kidId: string): Promise<TimeBackSnapshot>; }` — native `fetch` to `${baseURL}/students/${kidId}/signals`, `Authorization: Bearer`; on transport/HTTP error → the safe empty snapshot via `parseSnapshot`.
   - `function timeBackConfigFromEnv(env?): { baseURL: string; apiKey: string }` — reads `TIMEBACK_BASE_URL` + `TIMEBACK_API_KEY`; **never called at import time or in a test**.
 
-- [ ] `package.json`: name `@gt100k/timeback-live`, dep `@gt100k/timeback` (`workspace:*`); `"test": "vitest run --root ../.. adapters/timeback-live/test"`. `tsconfig.json` references `../../packages/timeback`. `pnpm install`.
-- [ ] `src/__fixtures__/payloads.ts`: an `ASSUMED_PAYLOAD` (documented shape, e.g. `{ asOf, subjects: [{ subject, mastery, discretionaryXp, offered }] }`) and a `MALFORMED_PAYLOAD` (missing/typed-wrong fields).
-- [ ] Write `test/parse.test.ts` (hermetic; imports only `../src/parse.js`, **never** `../src/index.js`):
+- [x] `package.json`: name `@gt100k/timeback-live`, dep `@gt100k/timeback` (`workspace:*`); `"test": "vitest run --root ../.. adapters/timeback-live/test"`. `tsconfig.json` references `../../packages/timeback`. `pnpm install`.
+- [x] `src/__fixtures__/payloads.ts`: an `ASSUMED_PAYLOAD` (documented shape, e.g. `{ asOf, subjects: [{ subject, mastery, discretionaryXp, offered }] }`) and a `MALFORMED_PAYLOAD` (missing/typed-wrong fields).
+- [x] Write `test/parse.test.ts` (hermetic; imports only `../src/parse.js`, **never** `../src/index.js`):
   - `parseSnapshot("k", ASSUMED_PAYLOAD)` → a `TimeBackSnapshot` whose `subjects` map 1:1 and whose tilts (`toDomainPriors`) are in range;
   - `parseSnapshot("k", MALFORMED_PAYLOAD)` → `{ kidId:"k", subjects: [] }` (safe fallback, no throw);
   - `parseSnapshot("k", null)` → safe fallback.
-- [ ] Run: `pnpm test` → FAIL.
-- [ ] Implement `src/parse.ts` (defensive field validation → `SubjectSignal[]`; fallback on any failure) and `src/index.ts` (`TimeBackClient` + `timeBackConfigFromEnv`, mirroring `concierge-live`'s fetch/fail-safe shape). Add `scripts/timeback-live.ts` (opt-in: build a client from env, `fetchSnapshot`, print `toDomainPriors`). Document the assumed payload shape in a header comment.
-- [ ] Run: `pnpm exec tsc -b && pnpm test` → PASS. (The `scripts/timeback-live.ts` is never run by the gate.)
-- [ ] **Commit** `feat(timeback-live): opt-in TimeBackClient scaffold + hermetic parse/fallback tests`.
+- [x] Run: `pnpm test` → FAIL.
+- [x] Implement `src/parse.ts` (defensive field validation → `SubjectSignal[]`; fallback on any failure) and `src/index.ts` (`TimeBackClient` + `timeBackConfigFromEnv`, mirroring `concierge-live`'s fetch/fail-safe shape). Add `scripts/timeback-live.ts` (opt-in: build a client from env, `fetchSnapshot`, print `toDomainPriors`). Document the assumed payload shape in a header comment.
+- [x] Run: `pnpm exec tsc -b && pnpm test` → PASS. (The `scripts/timeback-live.ts` is never run by the gate.)
+- [x] **Commit** `feat(timeback-live): opt-in TimeBackClient scaffold + hermetic parse/fallback tests`.
 
 ---
 
 ### Final verification (SC-9) + PR
-- [ ] `pnpm exec tsc -b` clean; `pnpm test` all green (domain + adapter parse).
-- [ ] `passionApps.md`: mark **G2** done (mapper + fake source + opt-in live scaffold; real API wiring deferred until credentials exist); update the 014 wiring note ("real priors (G2)") to "priors mapper shipped; flip on `timeback-live` when the API lands".
-- [ ] Open PR (gh, pushed as `spinkicks`); `gh pr update-branch` if `main` moved (only the root `tsconfig.json` reference append should conflict with 018/019, trivially); squash-merge after CI + branch up to date.
+- [x] `pnpm exec tsc -b` clean; `pnpm test` all green (domain + adapter parse).
+- [x] `passionApps.md`: mark **G2** done (mapper + fake source + opt-in live scaffold; real API wiring deferred until credentials exist); update the 014 wiring note ("real priors (G2)") to "priors mapper shipped; flip on `timeback-live` when the API lands".
+- [x] Open PR (gh, pushed as `spinkicks`); `gh pr update-branch` if `main` moved (only the root `tsconfig.json` reference append should conflict with 018/019, trivially); squash-merge after CI + branch up to date.
 
 ## Notes on likely snags (pre-solved)
 - **`DomainPrior.domain` is the cabin id** — `foldEvents` keys priors by `domainPath[0]`; emit one prior per cabin, `domain: cabinId`. Sub-topic priors would be ignored.

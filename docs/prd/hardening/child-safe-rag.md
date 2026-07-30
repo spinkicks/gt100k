@@ -1,6 +1,7 @@
 # Hardening Mini-Spec — Child-Safe Concierge RAG (Weak Point #3)
 
-**Status:** Draft v1 · 2026-07-22 · Owner: (product)
+**Status:** Draft v1 · 2026-07-22 · Reviewed against the code 2026-07-28 · Owner: (product)
+**Build state:** all ten stages of §2 exist as pure functions in `@gt100k/concierge`, and the ordering §2 argues for is the ordering the code enforces, including distress before moderation and reputation recomputed from the URL. Every port ships a deterministic stub — the moderator is a denylist, the retriever a fixture — and the model-backed and web-backed ports are opt-in in `@gt100k/concierge-live`, never imported by a test. So the *architecture* of §2 is real and the *classifiers* of §3 are placeholders: the open safety model and the hazard taxonomy are the unbuilt part, and they are what G4 (shared moderation service) is for.
 **Addresses:** Weak point #3 — child-safe open-web retrieval for the concierge was under-specified.
 **Decision:** **Live open-web behind the full harness, uniform across ages** (unknown domains served live after passing the harness; vetting/caching runs async and does not gate serving). Architecture-focused per direction.
 **Grounding:** `docs/research/passion-pipeline/hardening/07-child-safe-rag.md`.

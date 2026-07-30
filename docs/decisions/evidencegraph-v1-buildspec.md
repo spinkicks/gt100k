@@ -1,6 +1,13 @@
 # EvidenceGraph v1 — Build Spec
 
-**Status:** Draft for review · Owner: (you) · Created 2026-07-23
+**Status:** Built. Created 2026-07-23 as a draft for review; all five phases have since landed, so read
+this as the record of what was planned and why, not as work outstanding. Phase 1 — `EvidencePacket` and
+`packet.ts` are gone and `graphMerkleRoot` orders by (timestamp, id). Phase 2 — `@gt100k/evidence-repo-postgres`
+implements `saveGraph`/`getGraph`/`deleteGraph` over Postgres + a blob store, with the PII guard at the
+adapter boundary. Phases 3–4 — `evidence-explorer` has `Inspector`, `TimeScrub`, `VerifyBox` and `AddPanel`.
+Phase 5 — `@gt100k/evidence-tiny-game` plus the adapter's `seed-cli`. Everything under "Out of scope"
+below is still out of scope.
+**Owner:** (you)
 **Companions:** [`evidencegraph-v1-design.md`](./evidencegraph-v1-design.md) (what & why), [`evidencegraph-decisions.md`](./evidencegraph-decisions.md) (decisions).
 **Scope:** the executable plan to take today's synthetic MVP to a persistent, interactive v1 — refactor packet→graph, add Postgres+S3 persistence, and build the Explore + manual-add surfaces around a reproducible tiny-game demo.
 

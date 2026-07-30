@@ -32,13 +32,27 @@ to become a reading-the-mind-of-the-designer test.
 
 ## Structure: two cabins, one split
 
+**What a child can actually reach today**, stated first because the gap between what is built and
+what is *routed to* is where this document has drifted before. `src/gadgets/registry.ts` holds **nine
+gadgets, every one of them `active`, across two topics** — four in `logic-games` and five in `math`.
+`src/map/cabins.data.ts` puts five cabins on the map: those two are enterable, and `music` / `code` /
+`art` are `active: false` signposts that open nothing, for which `gadgetsForTopic` returns an empty
+list. The shared taxonomy (`@gt100k/two-axis-tagging`) has **eight** cabins, so the finder currently
+surfaces **two of eight domains**. That is the number to quote when someone asks what this build
+covers, and it is why a cabin's absence from a child's read says nothing about the child. The
+browsable prototype at `passion/apps/design-lab/app/browse` puts all eight in front of a child on the
+same taxonomy; which of the two shapes the child-facing surface should be is open, and
+`docs/decisions/2026-07-27-discovery-surface.md` §-1 is where that is argued rather than here.
+
 Two cabins are built:
 
 - **`logic-games` — "Logic Games."** Holds four deduction puzzles: **Nonogram, Pipes, Mirror Maze,
   Chess Puzzle.** It held seven until 2026-07-25; see *The trim to four* below.
-- **`math` — "Math."** Reserved for **genuinely mathematical** activities; nothing else goes in it. It
-  opens on day one as a real, furnished, deliberately **gadget-free** room, so the split is visible to a
-  player from the start rather than arriving later as a surprise new cabin.
+- **`math` — "Math."** Reserved for **genuinely mathematical** activities; nothing else goes in it.
+  It opened on day one deliberately **gadget-free**, so the split was visible to a player from the
+  start rather than arriving later as a surprise new cabin. That phase is over: all five of its
+  games are built, registered and painted into `cabin-backdrop-math.png` (#179). The room
+  now furnishes the argument instead of only announcing it.
 
 `music` / `code` / `art` stay on the map as visible **"coming soon"** buttons. They are build state, not a
 design statement (memo §8.1.4) — but see *Risks*, because visible-but-empty is not free.
@@ -121,7 +135,7 @@ same constraint showing up earlier and being worked around instead of accepted.
 spectator watching over a shoulder. **Logic Grid** is reading comprehension as much as deduction, so
 it loads on a second construct and its dwell time is not cleanly attributable. **Minesweeper**
 duplicates Nonogram's construct while adding a luck element and a lose-state neither of the others
-has. Four is also far closer to density-matching the five planned maths games than seven was — which
+has. Four is also far closer to density-matching the five maths games than seven was — which
 does **not** license cross-cabin comparison (see *Risks*, which is unchanged on that point) but does
 stop raw door count being the loudest difference between the rooms.
 
@@ -141,10 +155,11 @@ surface fails the build rather than shipping a puzzle floating on a wall. Those 
 deleted, unlike the placements above, because they were traced onto one specific plate that is being
 regenerated and would be wrong on arrival.
 
-### The five planned maths games
+### The five maths games — built
 
-**Balance Scale · Gear Train · Fraction Laser · Function Machine · Ratio Mixing.** Each must pass the
-swap test — the maths has to *be* the mechanic, not a quiz bolted onto one.
+**Balance Scale · Gear Train · Fraction Laser · Function Machine · Ratio Mixing.** All five are in
+the registry and reachable from the room. Each had to pass the swap test — the maths has to *be* the
+mechanic, not a quiz bolted onto one — and the bar stands for anything added after them.
 
 ### The twin pair: Mirror Maze / Fraction Laser
 
@@ -286,7 +301,7 @@ anyway: every gadget open generates a fresh random puzzle. Chess is the exceptio
 at that size to be wrong in a way a viewer would notice.
 
 **Math room prop mapping**, so the next author does not regenerate a plate that already works — all five
-planned activities already have an object in `cabin-backdrop-math.png`: Gear Train → the brass gear train
+activities have an object in `cabin-backdrop-math.png`: Gear Train → the brass gear train
 on the chimney breast; Balance Scale → the brass balance and its pan; Ratio Mixing → the three vials at
 different fill levels; Fraction Laser → the prism on the table splitting light; Function Machine → the
 upright brass machine (funnel hopper on top, boxy housing with a round window onto its gearing, chute out
@@ -362,15 +377,18 @@ Stated without softening.
   valid**, density included. Any number comparing Logic Games against Math out of this build is an
   artifact of how many doors each room has. Do not let "we density-matched it" become a licence to
   compare.
-- **The backdrop cabin's interaction surfaces emit no signal records, and the app now has a pipeline
-  that does.** #161 added timestamped, session-scoped `Interaction` / `SurfacedRecord` emission. The
-  backdrop backend adds a whole new set of interaction surfaces — perspective prop polygons, and the
-  bookshelf — and by decision they emit **nothing**. So the emission is not merely incomplete, it is
-  **silently partial**: records exist, they look well-formed, and they under-count every prop opened
-  through the backdrop. Anyone reading that data without reading this line will treat missing engagement
-  as absence of engagement, which is the one misreading `SurfacedRecord` exists to prevent. Either wire
-  the backdrop props into emission before trusting any of it, or gate the backdrop out of sessions whose
-  records are analysed. Do not split the difference.
+- ~~**The backdrop cabin's interaction surfaces emit no signal records, and the app now has a
+  pipeline that does.**~~ **CLOSED, 2026-07-27 (#216, #220).** The original text follows because the
+  shape of the worry was right and it is the one to re-run against any new interaction surface.
+  ~~The backdrop backend adds a whole new set of interaction surfaces — perspective prop polygons,
+  and the bookshelf — and by decision they emit **nothing**. So the emission is not merely
+  incomplete, it is **silently partial**: records exist, they look well-formed, and they under-count
+  every prop opened through the backdrop.~~ Both halves are now covered, and the first turned out
+  never to have been broken: a probe click on a real prop polygon produces `open:nonogram` with
+  every gadget on the wall surfaced, because the polygon calls `focusGadget` and the overlay records
+  on unmount. The shelf was genuinely unwired and now emits `follow-source` against the card's own
+  subject. What is still not emitted is `failure_recovery` and `self_authored_scope`, which have no
+  affordance to emit from — see `src/signals/session.ts`, which is where this is kept honest.
 
 ## References
 
@@ -380,4 +398,6 @@ Stated without softening.
   maintenance, §2.4 + §8.6 `solves`/`activeMs`, §2.5a Chen & Klahr, §5 C1/C6/C8, §8.1–8.2 finder-only
   scope and the cross-cabin limit, §8.4 P1–P5, §8.5 the replacement signal model.
 - `docs/proposals/interest-engine-data-collection-v2.md` — the deferred `CellEvent` change request.
-- `passion/apps/tinker-cabin/PROJECT.md` — the sibling brief this document's shape follows.
+- `passion/apps/tinker-cabin/PROJECT.md` — the sibling brief this document's shape follows. Read it
+  as a shape and not as a live plan: that app has had no feature work since 2026-07-24 and its
+  first-person locomotion conflicts with PRD §5.2 as revised the following day.

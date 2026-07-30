@@ -13,6 +13,10 @@ by a person **explaining their own work** (`passionBrainlift.md` SPOV 5, the fiv
 - **Is not:** a content teacher, a grader (it emits *evidence*, never an of-record grade — a human owns any
   grade downstream), or an AI-detector.
 
+**Not yet wired into a product.** The package is complete and tested, but no app under `passion/apps/`
+imports it; its only consumers today are its own tutor adapters and its demo. Treat the API below as
+settled and the integration as unbuilt.
+
 ## Architecture: LLM conducts, deterministic scaffold governs
 
 - The **LLM conducts** (behind ports): it generates each next question grounded in the project +
@@ -27,9 +31,15 @@ by a person **explaining their own work** (`passionBrainlift.md` SPOV 5, the fiv
 
 - **6 fixed facets**, fixed order: `[what, why, how, challenge, next, audience]`. Each has a coverage in
   `[0,1]`, updated **monotonic-max**.
-- **Readiness** (`emerging | developing | fluent`) — not age — parameterizes the follow-up cap
-  (`emerging: 2`, `developing: 1`, `fluent: 1`) and a probe-depth hint.
-- **Scaffold constants:** `THIN = 0.45`, `COVERED = 0.6`, `MAX_TURNS = 12`.
+- **Readiness** (`emerging | developing | fluent`) — not age — is the one thing that changes how the
+  interview runs. Deterministically it sets the follow-up cap (`emerging: 2`, `developing: 1`,
+  `fluent: 1`); it is also passed to both ports every turn, so an LLM interviewer can pitch the question,
+  but the scaffold makes no further use of it.
+- **Scaffold constants:** `COVERED = 0.6` and `MAX_TURNS = 12` drive the loop. `THIN = 0.45` does **not** —
+  the scaffold reads the judge's boolean `Judgment.thin` and never compares a number. `THIN` is exported
+  for the judge side to apply, and `@gt100k/tutor-tfy` uses it exactly once, as the fallback when a model
+  returns a coverage but omits `thin`. Keeping the number here rather than in the adapter is what stops two
+  judges from disagreeing about what "thin" means.
 - The session probes the **least-covered** facet (fixed-order tie-break), re-probes a **thin** facet up to
   the readiness cap, and stops when every facet `≥ COVERED` **or** `turns ≥ MAX_TURNS`. **Gaps** = facets
   `< COVERED` at stop.

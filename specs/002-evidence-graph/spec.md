@@ -4,7 +4,7 @@
 
 **Created**: 2026-07-20
 
-**Status**: Draft (loop-ready) — **but DELIVERED.** The code is merged and tested; it lives in `@gt100k/evidence-graph`. This field tracks the state of the DOCUMENT, which was never revised after the build, and a reader comparing it against the ✅ in `docs/prd/passionApps.md` should trust the packages and their tests over either. What a ✅ does *not* mean is that a child can use it end to end.
+**Status**: Delivered, and unrevised since. Part I is merged and green as `@gt100k/evidence-graph` plus the four `evidence-*` adapters; Part II is merged and green as `@gt100k/evidence-explorer-view` and `apps/evidence-explorer`, 3D canvas and all. Read this document as the as-built record rather than a plan. The one thing it still describes that the repo does not have is `tasks.md` T032: `adapters/evidence-repo-memory` and `adapters/evidence-deferred` are in no composite `references` array, so `tsc -b` skips them. A ✅ in `docs/prd/passionApps.md` means the package exists and its tests pass on synthetic data; it does not mean a child can use it end to end.
 
 **Input**: User description: "A code-first, framework-agnostic core for GT100K's EvidenceGraph (PRD §19): a content-addressed evidence DAG of typed provenance nodes and edges; per-milestone EvidencePacket assembly with a Merkle root and an in-toto-style attestation; deterministic verification behind a port; and the human-authority invariant that every final grade is human-owned and a model output is only a cited Assistance/Review node, never a grade or an authorship accusation. Synthetic-only; consent/legal machinery stubbed; the genuinely-hard parts (external transparency-log anchoring, crypto-shred erasure, comparative-judgment reliability, conformal calibration) are deferred to stubs per §19.2."
 
@@ -471,8 +471,9 @@ Where a genuine judgment is unavoidable, the default is stated so the loop proce
 
 **Sub-feature**: Provenance Explorer (a cinematic 3D UI expansion that *reads* the Part I domain)
 
-**Status**: Draft (loop-ready) · **Created**: 2026-07-20 · **Reads**: Part I (`packages/evidence-graph`),
-unchanged.
+**Status**: Delivered · **Created**: 2026-07-20 · **Reads**: Part I (`packages/evidence-graph`),
+unchanged. Shipped as `@gt100k/evidence-explorer-view` + `apps/evidence-explorer` (react-three-fiber,
+the render-tier ladder, the calm-2D fallback); the whole UE001–UE050 list is done.
 
 **Input**: "Build the evidence graph as a navigable **3D 'Provenance Observatory'** (react-three-fiber +
 drei + three.js). The DAG becomes a living 3D constellation you orbit/fly through: the 8 node types are

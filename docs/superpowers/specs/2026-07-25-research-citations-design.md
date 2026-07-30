@@ -1,6 +1,10 @@
 # Research citations in the product: design
 
-**Date:** 2026-07-25 · **Status:** approved, building
+**Date:** 2026-07-25 · **Status:** built. `@gt100k/research` ships the registry with its three-valued
+`basis`, the guide console carries `WhyThis` and its basis tag over the Overview, and the Evidence
+base page is a route. Every success criterion below has a test behind it: unique ids, a resolvable
+source on every evidence and policy claim, a stated rationale on every chosen default, one plain
+sentence per claim, and no claim phrased as a statement about a specific child.
 
 ## Problem
 

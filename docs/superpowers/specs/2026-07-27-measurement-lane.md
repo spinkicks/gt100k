@@ -1,6 +1,10 @@
 # Connecting the measurement lane
 
-**Status:** §2.1 and §2.2 implemented. The rest is on hold pending a decision about the child surface.
+**Status:** implemented except for §6. The lane is connected end to end — the engine's presence path,
+the crosswalk, the emitted action verbs and the end-to-end test all landed, and the surface question
+that held the rest back was answered the same day. **§6 is the exception and it is not cosmetic:**
+the seven guide-facing assertions that no child can reach S3/S4 are still in the code, and they are
+now false in front of a guide. See §7.
 **Date:** 2026-07-27 (rev 3; rev 2 followed a red-team that found four blockers in rev 1)
 
 > ## SUPERSEDED on the surface question. The child surface IS a game.
@@ -9,6 +13,12 @@
 > document's own analysis: `docs/decisions/2026-07-27-discovery-surface.md` §-1 keeps the game and
 > declines the launcher. Anything here that holds work back *pending the surface decision* is
 > therefore unblocked, not waiting.
+>
+> **The question is being looked at again (2026-07-28.)** The ruling was explicitly scoped to "the
+> surface we have now, not the surface forever", and a browsable catalogue is being prototyped at
+> `passion/apps/design-lab/app/browse/`. Nothing here needs to change for that: §3 to §7 describe
+> nine specific gadgets and would be rewritten by a catalogue, exactly as the superseded text below
+> says.
 >
 > ## (superseded) The child surface may not be a game
 >
@@ -267,6 +277,11 @@ by hand and are `TRUSTED`.
 
 ## 6. Consequences for already-shipped guide-facing copy
 
+> **NOT DONE, and now actively wrong (audited 2026-07-28).** All seven sites still say nothing emits
+> `chosen_challenge`. It has been emitted since #216, so `CEILING_NOTE` tells a guide that "both
+> higher stages need a signal the product does not yet emit" about a product that emits it. This did
+> not land with the rest, and it is the one piece of §7 that is still outstanding.
+
 Seven sites assert that no child can reach S3/S4 because nothing emits `chosen_challenge`, and one
 of them says so to a guide in the product: `REACHABLE_CEILING` / `CEILING_NOTE`
 (`guide-console/app/maps.ts:353-372`), plus `mastery-map/src/select.ts:278`, `src/model.ts:124`,
@@ -296,6 +311,7 @@ Making it general is content work: more gadgets with tiers.
 3. **`two-axis-tagging`**: mint `math-puzzles/foundations`. Nothing else. `open`'s absence from the
    rules table is §2's point, not an omission.
 4. **Guide-facing copy**: retire the seven ceiling assertions, with the honest replacement from §6.
+   **Still outstanding** — see the box on §6. This is the only numbered item that has not landed.
 5. **End to end**: play the game's emissions through `deriveSignals` and assert what comes out. This
    must `vi.mock` the session module the way `wiring.test.tsx` does, because `sessionLog` was a no-op
    at the time. It is not any more, and `src/signals/end-to-end.test.tsx` is where this landed.
@@ -306,9 +322,9 @@ with its own scope.~~
 
 **It got its own decision and it passed.** #216 turned emission on after the precondition was met
 rather than waived: the backdrop's prop polygons turned out to have been wired all along (verified by
-a probe click, not by reading), and the shelf now emits `follow-source`. Everything numbered above has
-since landed. Do not follow this list as a work plan; read it as the reasoning behind work already
-done.
+a probe click, not by reading), and the shelf now emits `follow-source`. Items 1, 2, 3 and 5 have
+since landed; item 4 has not. Read this list as the reasoning behind work already done, except for
+item 4, which is still a work item.
 
 ---
 

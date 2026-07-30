@@ -53,6 +53,11 @@ window.dispatchEvent(new Event("pagehide"));
 Reload `http://localhost:3020`. **Demo Child** is in the switcher with the synthetic four, rendered by
 identical code. `passion/apps/guide-console/.profiles/local-demo.json` is the record it came from.
 
+The tag under the roster is the quickest confirmation that a batch landed: it reads *Synthetic data
+only* until something is ingested and *Synthetic, plus 1 ingested* afterwards. It is worded that way
+because it is the label somebody checks before deciding what they may do with what is on screen, and
+a reassurance about data provenance that has quietly stopped being true is worse than none.
+
 ## What you should expect to see, and not see
 
 **Surfaced records arrive immediately.** Entering a cabin records every gadget on the wall as

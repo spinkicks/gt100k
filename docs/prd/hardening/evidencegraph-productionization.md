@@ -1,6 +1,7 @@
 # Hardening Mini-Spec — EvidenceGraph Productionization & Erasure (Weak Point #6)
 
-**Status:** Draft v1 · 2026-07-22 · Owner: (product)
+**Status:** Draft v1 · 2026-07-22 · Reviewed against the code 2026-07-28; **still entirely pre-production**, and the gate below is still shut · Owner: (product)
+**Build state:** unchanged since this was written. D1 and D2 are the deterministic `stub: true` placeholders in `@gt100k/evidence-deferred`; D3, D4 and D5 have no implementation or interface at all; D6 emits an unsigned in-toto Statement. The §4 digest-trap invariant is not yet enforced in `canonicalize`/`addNode`. What *has* changed is outside this product: `@gt100k/consent` now erases a `StudentProfile` completely and names the stores that could not forget, so the erasure problem has visibly split into the half that is solved off-graph and the half — this one — that blocks live use.
 **Addresses:** Weak point #6 — the EvidenceGraph (the "prove the spike" pillar) is entirely pre-production (D1–D6), and the hardest gate — right-to-erasure on an append-only store for child data — is unsolved.
 **Scope:** this is work **inside the EvidenceGraph product**, which is its own product built in this repo for later extraction (`docs/decisions/evidencegraph-v1-design.md` §11 + §13a) and integrated by PassionLab across the `@gt100k/evidence-*` boundary. It sits under `hardening/` because the gate blocks *PassionLab* going live, not because the graph is a PassionLab subsystem.
 **Decision:** adopt the three-layer architecture below (clear engineering recommendation; no user-facing fork).
