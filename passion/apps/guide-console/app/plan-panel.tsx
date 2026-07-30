@@ -188,9 +188,12 @@ export function PlanPanel({ cards }: { cards: readonly PlanCardVM[] }): JSX.Elem
       </header>
 
       {cards.length === 0 ? (
+        // Singular, because the tab is scoped to one specialization and the banner above has just
+        // named it. The old plural read as a claim about the whole child, which is a different and
+        // wronger statement: the child may well have a planned spike sitting on the next rail row.
         <output className="wbpanel__empty">
-          No certified spikes to plan yet. A spike is planned once you promote it to a candidate or
-          an active specialization.
+          This one is not a certified spike yet, so there is no plan for it. A spike is planned once
+          you promote it to a candidate or an active specialization.
         </output>
       ) : (
         <>

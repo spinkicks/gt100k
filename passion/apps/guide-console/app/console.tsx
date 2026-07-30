@@ -11,7 +11,7 @@
 import Link from "next/link";
 import { useEffect, useState, type JSX } from "react";
 import { useConsole } from "./useConsole.js";
-import { ChildSwitcher, EmptyState, Legend, SpecCard, SpecRail } from "./components.js";
+import { ChildSwitcher, EmptyState, Legend, SpecCard, SpecRail, SpecScope } from "./components.js";
 import { WellbeingPanel } from "./wellbeing-panel.js";
 import { PlanPanel } from "./plan-panel.js";
 import { FamilyPanel } from "./family-panel.js";
@@ -26,6 +26,7 @@ import { workForKid } from "./map-evidence.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 import type { StudentProfile } from "@gt100k/student-profile";
 import { setIngested } from "./console-data.js";
+import { scopeToSpec } from "./console-state.js";
 
 type View = "overview" | "hypotheses" | "wellbeing" | "plan" | "family" | "access" | "maps";
 
@@ -64,9 +65,33 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
     }
   }
 
-  // One number per tab (same treatment: how many items the section holds), plus a small review dot
-  // when that lens has an escalation the guide should look at. Overview summarises every lens, so it
-  // shows the child's tracked count and inherits the wellbeing review dot.
+  // The rail changes WHICH specialization the scoped tabs are showing, so it must not also change
+  // which tab that is: a guide comparing two specializations' wellbeing reads would be thrown back
+  // to Hypotheses on every switch. Overview's Review button still uses `pick`, because there the
+  // ask really is "take me to this one", and Hypotheses is where you act on it.
+  function selectSpec(card: HypothesisCard): void {
+    ctrl.setSelectedId(card.id);
+  }
+
+  // Wellbeing (F2), Plan (D1) and Access (D3/D4) are all per-specialization lenses, and every one of
+  // their view models is keyed by the hypothesis id it was derived from. Showing all of a child's
+  // specializations at once made the tab a list to search rather than a read to act on, and left the
+  // rail's selection doing nothing outside Hypotheses. Overview stays whole-child on purpose: it is
+  // the summary a guide lands on to decide where to look.
+  const spec = ctrl.selectedCard;
+  const scopedTo = <T extends { readonly id: string }>(rows: readonly T[]): readonly T[] =>
+    scopeToSpec(rows, spec?.id);
+
+  // One number per tab (how many items the section holds), plus a small review dot when that lens
+  // has an escalation the guide should look at. Overview summarises every lens, so it shows the
+  // child's tracked count and inherits the wellbeing review dot.
+  //
+  // The two now answer different questions, deliberately. On a scoped tab the COUNT describes what
+  // is about to be on the screen, so it counts the selected specialization only; a count that
+  // disagrees with the rows under it is worse than no count. The REVIEW DOT still watches every
+  // specialization, because it is the signal that this child needs a guide at all, and scoping it
+  // would silently hide an escalation sitting one rail-click away. `SpecRail` carries the same dot
+  // per specialization so the pair resolves to a place to click rather than a puzzle.
   const tabs: readonly { id: View; label: string; count: number; review?: boolean }[] = [
     {
       id: "overview",
@@ -78,13 +103,13 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
     {
       id: "wellbeing",
       label: "Wellbeing",
-      count: ctrl.wellbeing.length,
+      count: scopedTo(ctrl.wellbeing).length,
       review: ctrl.wellbeing.some((c) => c.read.escalateToHuman),
     },
     {
       id: "plan",
       label: "Plan",
-      count: ctrl.plans.length,
+      count: scopedTo(ctrl.plans).length,
       review: ctrl.plans.some((c) => c.plan.escalateToHuman),
     },
     {
@@ -96,7 +121,7 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
     {
       id: "access",
       label: "Access",
-      count: accessProposalCount(ctrl.access),
+      count: accessProposalCount(scopedTo(ctrl.access)),
       review: accessNeedsReview(ctrl.access),
     },
     // How many maps exist, which is the same treatment every other tab gets. Deliberately not how
@@ -149,7 +174,7 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
         </aside>
 
         <div className="railcol">
-          <SpecRail ctrl={ctrl} onPick={pick} />
+          <SpecRail ctrl={ctrl} onPick={selectSpec} />
         </div>
 
         <main className="main main--wb" aria-label="Guide console">
@@ -198,20 +223,37 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
             )
           ) : null}
 
-          {view === "wellbeing" ? <WellbeingPanel cards={ctrl.wellbeing} /> : null}
-          {view === "plan" ? <PlanPanel cards={ctrl.plans} /> : null}
+          {/* Names the specialization the tab is scoped to. Without it a scoped tab is ambiguous in
+              the worst way: it looks like the whole child, so an empty Access tab reads as "no
+              opportunities for this kid" when it means "none for this one specialization". */}
+          {view === "wellbeing" || view === "plan" || view === "access" ? (
+            <SpecScope card={spec} total={ctrl.vm.cards.length} />
+          ) : null}
+
+          {view === "wellbeing" ? <WellbeingPanel cards={scopedTo(ctrl.wellbeing)} /> : null}
+          {view === "plan" ? <PlanPanel cards={scopedTo(ctrl.plans)} /> : null}
+          {/* Not scoped, and cannot be: the family read (019/021) is derived per child, not per
+              specialization, so there is no id here to filter on. Scoping it would mean inventing a
+              per-specialization family signal that the engine does not produce. */}
           {view === "family" ? (
             <FamilyPanel read={ctrl.family} observations={ctrl.familyObservations} />
           ) : null}
-          {view === "access" ? <AccessPanel cards={ctrl.access} /> : null}
+          {view === "access" ? <AccessPanel cards={scopedTo(ctrl.access)} /> : null}
           {/* The maps themselves, not the view models: the panel owns the changes a guide can make,
               and each of them is a change to the map or to what a guide has said about this child.
-              Keyed by child so the recorded overrides never carry across a switch. */}
+              Keyed by child so the recorded overrides never carry across a switch.
+
+              Not scoped to the selected specialization, unlike Wellbeing/Plan/Access. A map is
+              domain knowledge and reviewing one is a job that does not depend on which child is
+              loaded, and today almost no child's specializations have a map at all, so scoping
+              would empty the tab. `specs` is passed for the coverage line, which says that out
+              loud instead of letting the mismatch pass as a read on the child. */}
           {view === "maps" ? (
             <MapsPanel
               key={ctrl.kid}
               maps={REVIEW_MAPS}
               work={workForKid(ctrl.kid)}
+              specs={ctrl.vm.cards}
               store={ctrl.store}
             />
           ) : null}

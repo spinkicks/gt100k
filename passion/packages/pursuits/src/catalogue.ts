@@ -3,6 +3,14 @@ import type { Pursuit } from "./model.js";
 /**
  * The forty-five things a child can actually do, and who will tell them they are getting better.
  *
+ * A CUT IS PENDING against this list (`docs/decisions/2026-07-30-catalogue-scope.md`). The bar is
+ * whether a pursuit credibly helps a child reach a top-ranked university, tested per entry as: can
+ * someone under 18 reach national-or-regional distinction at a named venue, does it route into a
+ * verification channel, and is there a documented admit whose hook was this. Do not add an entry
+ * without an answer to those, and read that decision's recorded dissent before removing one — the
+ * admissions rubric that leaked in the SFFA litigation grades level and never domain, so "this
+ * sounds unserious" is not the test and was explicitly rejected as one.
+ *
  * Every venue below was checked against a primary source on 2026-07-28. Where a claim could not be
  * verified it is written into `note` rather than smoothed over, because a catalogue whose venues do
  * not exist is worse than a short one. The full working, including the seven candidates that failed

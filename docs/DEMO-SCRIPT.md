@@ -114,7 +114,21 @@ Open Demo Child. Then the honest beat, which is the strongest thirty seconds in 
 > back on different days without being asked. What you are looking at came from a scripted week,
 > because we cannot fake a week in a demo."
 
-Show a synthetic child for the fuller read if the panels are thin.
+Show a synthetic child for the fuller read if the panels are thin. **Ari Mercado** is the one to
+pick, because he has two specializations and that is what makes the next beat work.
+
+**Click between the two rows in the Specializations rail** with **Wellbeing** open. The read changes
+under you, and the banner names which one you are looking at.
+
+> "A child is not one thing, and none of this advice is about a child. 'Hold, and lower the dose' is
+> a sentence about a domain. He is steady in audio and the dance read is the one asking for a human,
+> so the tab is scoped to whichever you picked and the rail says which one needs you."
+
+If someone asks why Maps looks different, that is the honest one to take:
+
+> "Those are the maps that exist, and none of them is his. The banner says so rather than letting a
+> piano map read as his path. Writing the maps for what children are actually into is the next
+> piece of work, and it is the one the whole ladder depends on."
 
 ---
 

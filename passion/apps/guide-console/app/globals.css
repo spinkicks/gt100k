@@ -1329,6 +1329,65 @@ body {
   color: var(--ink-muted);
 }
 
+/* Marks a specialization whose wellbeing or plan read is escalating. Sits at the end of the row so
+   the rail still scans as a column of names, and carries the word rather than relying on the
+   colour, which is already spent on the state dot beside it. */
+.railitem__flag {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--warn);
+  background: var(--warn-bg);
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+
+/* Coverage line on the Maps tab: what the maps below do and do not say about this child. Warmer
+   than `.specscope` because it is frequently a caveat rather than orientation. */
+.mapcover {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--warn);
+  border-radius: 8px;
+  background: var(--warn-bg);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+/* Says which specialization a scoped tab is reading. Quiet by design: it is orientation, not the
+   content, and it sits between the tab strip and the panel it describes. */
+.specscope {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2, transparent);
+}
+.specscope__label {
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+}
+.specscope__name {
+  font-weight: 600;
+}
+.specscope__sub {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
+.specscope__hint {
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+}
+
 /* ── Grid layouts + headers ──────────────────────────────────────────────── */
 .app--gallery {
   grid-template-columns: 250px 1fr;

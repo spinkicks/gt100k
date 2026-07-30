@@ -438,3 +438,26 @@ optical illusions, the Exploratorium's science snacks, BrainFacts, Frontiers for
 seven strong resources with no tile, and "find out how seeing works" is a plausible forty-fifth
 pursuit that the three tests in §1 would probably pass. Left visible rather than forced onto
 Reporting, which is not what any of it is about.
+
+---
+
+### 6.2 A fourth test arrives from outside this research (2026-07-30)
+
+§1's three admission tests ask whether a pursuit is real, reachable and judged. A fourth has been
+imposed on top of them by the product owner, and it does not come from anything in this document:
+**does the pursuit credibly help a child reach a top-ranked university?**
+See `docs/decisions/2026-07-30-catalogue-scope.md`.
+
+It is worth being clear about how the two relate, because they can disagree. The tests here were
+built to ask whether a child can genuinely get good at something and be told so by someone outside
+their family. The new one asks whether that achievement is legible to an admissions reader, which
+is a different question with a different answer for at least six entries. The admissions research
+found that the leaked Harvard rubric grades level and never domain, and that prestige operates
+instead through verification infrastructure — a second rating axis for academic competition, faculty
+portfolio review for music, art and making, recruiting for athletics, and for games and puzzle
+sports no channel at all, since the Common App has no category for them.
+
+**That finding does not invalidate anything in §1–§5.** A pursuit that passes the three tests here
+is still a pursuit a child can get genuinely good at. What the cut removes is entries where that is
+true and the fourth test fails anyway, which is a decision about product positioning rather than a
+correction to this research.

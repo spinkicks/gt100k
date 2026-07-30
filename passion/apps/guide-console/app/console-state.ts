@@ -6,6 +6,26 @@
 import type { GateStatus, HypothesisStore } from "@gt100k/hypothesis-store";
 import { consoleViewModel, getForKid, promote } from "@gt100k/hypothesis-store";
 
+/**
+ * Narrows a per-specialization lens to the one the guide has selected.
+ *
+ * Wellbeing (F2), Plan (D1) and Access (D3/D4) each derive one row per interest hypothesis and key
+ * it by that hypothesis id, so every one of them is answerable only about a named specialization:
+ * "hold, and lower the dose" is advice about a domain, not about a child. They were nonetheless
+ * being handed the whole child, which made the rail's selection inert outside the Hypotheses tab and
+ * turned each lens into a list to search.
+ *
+ * A null selection yields nothing rather than everything. The console always has an effective
+ * selection (it falls back to the top-ranked card), so a null here means the child has no
+ * specializations at all, and in that case an empty lens is the honest answer.
+ */
+export function scopeToSpec<T extends { readonly id: string }>(
+  rows: readonly T[],
+  specId: string | null | undefined,
+): readonly T[] {
+  return specId ? rows.filter((r) => r.id === specId) : [];
+}
+
 export interface QaState {
   readonly selectedId: string | null;
   readonly count: number;

@@ -11,6 +11,20 @@ it never touches pace.
 Pure and deterministic: no network, no clock, no randomness. Every type is transcribed from
 `specs/2026-07-26-mastery-map-slice1.md`, where the reasoning lives.
 
+## What is missing, named here so it is not mistaken for a gap in the types
+
+**Nothing tracks where a child stands on a map.** There is no attestation, no completion and no
+position anywhere in this package or its consumers, so a map today is a domain description a guide
+reads rather than a scaffold anyone climbs. That is the blocker between this package and the thing
+it is for, and it is sharpened by the decision that we do not build the learning apps: if a child
+plays their rated games on chess.com, no signal reaches us at all.
+
+The designed mechanism is milestone attestation as a `@gt100k/socratic-defense` session scoped to a
+milestone, taking external links as the artefact — which is what the long-unused `demonstration`
+field on every milestone was for. See `docs/decisions/2026-07-30-mastery-scaffold.md`, which also
+settles what generalises from one domain's map to another: the structure and the domain-general
+learning principles, never the ladder.
+
 ## The one non-obvious idea: every claim names what it rests on, and the strongest claim available is "more than one thing was made"
 
 Two refusals run through the whole package.
