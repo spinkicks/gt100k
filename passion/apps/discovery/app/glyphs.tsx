@@ -18,6 +18,22 @@ import type { JSX } from "react";
 // remains that age filtering leaves them eighteen tiles rather than forty-four. Audio labels are
 // memo 07's actual recommendation and are not built.
 
+/**
+ * Start. On the one button that opens a game.
+ *
+ * The single icon on this surface that is not an adult convention, and it is here because it is the
+ * one shape a child reads before they read words. Filled rather than stroked, unlike everything else
+ * in this file, because it is the primary action and the odd one out on purpose — an outline
+ * triangle beside outline link arrows would read as a fifth link.
+ */
+export function PlayGlyph(): JSX.Element {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" className="play__mark">
+      <path d="M9 6.8v10.4a1 1 0 0 0 1.53.85l8.2-5.2a1 1 0 0 0 0-1.7l-8.2-5.2A1 1 0 0 0 9 6.8Z" />
+    </svg>
+  );
+}
+
 /** An outbound link, on the resource rows. The one place an adult convention is the right call. */
 export function ExternalGlyph(): JSX.Element {
   return (

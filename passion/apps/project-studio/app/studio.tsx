@@ -13,9 +13,9 @@ import {
 import { useStudio } from "./useStudio.js";
 import { Mascot } from "./mascot.js";
 import { HomeLink } from "./home-link.js";
-import { ThemeSwitcher } from "./theme-switcher.js";
 import { KindIcon, SparkIcon } from "./icons.js";
-import { ENTRY_KINDS, audienceLabel, entryFor } from "./studio-state.js";
+import { AskPanel } from "./ask-panel.js";
+import { ENTRY_GROUPS, ENTRY_KINDS, audienceLabel, entryFor } from "./studio-state.js";
 
 export function Studio(): JSX.Element {
   const ctrl = useStudio();
@@ -56,7 +56,6 @@ export function Studio(): JSX.Element {
           </div>
           <div className="topbar__spacer" />
           <HomeLink />
-          <ThemeSwitcher />
         </header>
 
         <div className="layout">
@@ -206,20 +205,32 @@ function Quest({
 
       <div className="composer">
         <h3 className="composer__title">Add to your quest log</h3>
-        <div className="kinds">
-          {ENTRY_KINDS.map((k) => (
-            <button
-              key={k.kind}
-              type="button"
-              className={`kindbtn${k.kind === kind ? " kindbtn--on" : ""}`}
-              aria-pressed={k.kind === kind}
-              onClick={() => setKind(k.kind)}
-            >
-              <KindIcon kind={k.kind} size={16} />
-              {k.label}
-            </button>
-          ))}
-        </div>
+        {/* Three labelled clusters rather than ten pills in a row. The kinds are the engine's and
+            cannot be reduced, but a ten-way choice can be read as three small ones. */}
+        {ENTRY_GROUPS.map((g) => (
+          <div className="kindgroup" key={g.id}>
+            <span className="kindgroup__label" id={`kg-${g.id}`}>
+              {g.label}
+            </span>
+            {/* biome-ignore lint/a11y/useSemanticElements: <fieldset> would add a UA groove border
+                and a min-inline-size that reshapes the wrapping row; the group is labelled by the
+                span above it instead. */}
+            <div className="kinds" role="group" aria-labelledby={`kg-${g.id}`}>
+              {ENTRY_KINDS.filter((k) => k.group === g.id).map((k) => (
+                <button
+                  key={k.kind}
+                  type="button"
+                  className={`kindbtn${k.kind === kind ? " kindbtn--on" : ""}`}
+                  aria-pressed={k.kind === kind}
+                  onClick={() => setKind(k.kind)}
+                >
+                  <KindIcon kind={k.kind} size={16} />
+                  {k.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
         <div className="composer__row">
           <input
             className="composer__in"
@@ -242,6 +253,10 @@ function Quest({
           </label>
         ) : null}
       </div>
+
+      {/* Below the composer and above the log: the question comes up while you are working, so it
+          is answered where you are working. It used to be a separate application. */}
+      <AskPanel />
 
       <div className="timeline" aria-label="Quest log">
         {entries.length === 0 ? (

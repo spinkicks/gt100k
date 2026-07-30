@@ -101,3 +101,24 @@ export function SparkIcon({ size = 18 }: { size?: number }): JSX.Element {
     </svg>
   );
 }
+
+/** A question, on the ask panel. Same stroke vocabulary as the kind glyphs above. */
+export function AskIcon({ size = 18 }: { size?: number }): JSX.Element {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M9.1 9a3 3 0 1 1 4 2.8c-.7.3-1.1 1-1.1 1.7v.5" />
+      <path d="M12 17.5h.01" />
+      <circle cx="12" cy="12" r="9" />
+    </svg>
+  );
+}

@@ -32,7 +32,10 @@ describe("front door", () => {
     expect(roleLinks(renderToStaticMarkup(<Page />))).toEqual([
       { role: "Guide", href: "http://localhost:3020" },
       { role: "Parent", href: "http://localhost:3055" },
-      { role: "Child", href: "http://localhost:3010" },
+      // Two child doors: the wall is where a child with nothing chosen goes looking, the studio is
+      // where one who has already chosen goes back to work.
+      { role: "Child", href: "http://localhost:3080" },
+      { role: "Child, mid-project", href: "http://localhost:3010" },
     ]);
   });
 

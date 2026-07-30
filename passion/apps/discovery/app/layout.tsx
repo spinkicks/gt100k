@@ -1,29 +1,12 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "@gt100k/design-tokens";
+// The GT School identity's three faces, installed as packages rather than fetched from a remote
+// stylesheet so a classroom with a slow or filtered network still renders the right type. Same three
+// the guide console loads, which is the point: one product, one voice.
+import "@fontsource-variable/literata";
+import "@fontsource-variable/inter-tight";
+import "@fontsource-variable/inconsolata";
 import type { JSX } from "react";
-
-const serif = localFont({
-  variable: "--font-serif",
-  display: "swap",
-  src: [
-    { path: "./fonts/Newsreader-400.woff2", weight: "400", style: "normal" },
-    { path: "./fonts/Newsreader-400-italic.woff2", weight: "400", style: "italic" },
-    { path: "./fonts/Newsreader-500.woff2", weight: "500", style: "normal" },
-    { path: "./fonts/Newsreader-600.woff2", weight: "600", style: "normal" },
-  ],
-});
-
-const sans = localFont({
-  variable: "--font-sans",
-  display: "swap",
-  src: [
-    { path: "./fonts/Inter-400.woff2", weight: "400", style: "normal" },
-    { path: "./fonts/Inter-500.woff2", weight: "500", style: "normal" },
-    { path: "./fonts/Inter-600.woff2", weight: "600", style: "normal" },
-    { path: "./fonts/Inter-700.woff2", weight: "700", style: "normal" },
-  ],
-});
 
 export const metadata: Metadata = {
   title: "PassionLab",
@@ -32,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }): JSX.Element {
   return (
-    <html lang="en" className={`${serif.variable} ${sans.variable}`}>
+    <html lang="en">
       <body>{children}</body>
     </html>
   );

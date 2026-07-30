@@ -710,10 +710,37 @@ body {
   font-size: 0.95rem;
   color: var(--muted);
 }
+/* The composer's clusters.
+ *
+ * Ten engine kinds cannot become fewer, so they become three groups instead: a ten-way choice read
+ * as three small ones. The label is quiet and does the whole job — it is what lets a child skip two
+ * thirds of the buttons without reading them. */
+.kindgroup {
+  display: grid;
+  grid-template-columns: minmax(9.5rem, auto) 1fr;
+  align-items: baseline;
+  gap: 10px 14px;
+  margin-bottom: 10px;
+}
+
+.kindgroup__label {
+  color: var(--muted);
+  font-size: 0.9375rem;
+  line-height: 1.3;
+}
+
 .kinds {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+/* Stacked once the label and its row stop fitting side by side. */
+@media (max-width: 52rem) {
+  .kindgroup {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
 }
 .kindbtn {
   display: inline-flex;
@@ -1460,4 +1487,121 @@ body {
 .stuck input {
   width: 22px;
   height: 22px;
+}
+
+/* ── ask ─────────────────────────────────────────────────────────────────────────────────────
+ *
+ * The concierge, folded into the studio. It was a separate application on its own port — one text
+ * field on an empty page — which put "ask a question" a navigation away from the only moment a
+ * child has a question.
+ *
+ * Styled as a quieter sibling of the composer rather than as a second one: the composer is where a
+ * child records what they did, and this is where they find something out. Same paper, same tokens,
+ * lighter border, no fill, so it reads as a margin note next to the log rather than a rival panel.
+ */
+.ask {
+  margin: 18px 0 0;
+  padding: 16px 18px 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.ask__title {
+  margin: 0 0 4px;
+  font-size: 1.125rem;
+  line-height: 1.2;
+}
+
+.ask__lede {
+  margin: 0 0 12px;
+  max-width: 56ch;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.ask__form {
+  display: flex;
+  gap: 8px;
+}
+
+.ask__in {
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1rem;
+}
+
+.ask__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.ask__pending {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.ask__card {
+  margin: 14px 0 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper-2);
+}
+
+/* The kind is a word, never a colour on its own: a refusal and an answer must be distinguishable
+   with the hue removed, which is the whole reason this line exists rather than a coloured border. */
+.ask__kind {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.ask__body {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.ask__probe {
+  margin: 10px 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.ask__sources-lead {
+  margin: 12px 0 4px;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* Every claim carries where it came from. This list is the product's cite-or-refuse promise made
+   visible to the child, so it is never collapsed behind a disclosure. */
+.ask__sources {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.ask__sources a {
+  color: var(--ink);
+}
+
+@media (max-width: 40rem) {
+  .ask__form {
+    flex-wrap: wrap;
+  }
 }

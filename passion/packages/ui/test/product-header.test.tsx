@@ -53,6 +53,7 @@ describe("ProductHeader", () => {
     );
 
     expect(anchors(html)).toEqual([
+      { href: "http://localhost:3080", text: "Discovery Wall" },
       { href: "http://localhost:3055", text: "Parent Playbook" },
       { href: "http://localhost:3010", text: "Project Studio" },
       { href: "http://localhost:3030", text: "Evidence Explorer" },

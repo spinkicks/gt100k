@@ -17,7 +17,7 @@ describe("resolveSurfaces", () => {
   it("resolves every surface to null in production when nothing is configured", () => {
     const surfaces = resolveSurfaces({ nodeEnv: "production", urls: NO_URLS });
 
-    expect(surfaces.length).toBe(5);
+    expect(surfaces.length).toBe(6);
     expect(surfaces.filter((s) => s.url !== null)).toEqual([]);
   });
 
@@ -55,6 +55,9 @@ describe("resolveSurfaces", () => {
     const surfaces = resolveSurfaces({ nodeEnv: "development", urls: NO_URLS });
 
     expect(surfaces.map((s) => `${s.id}:${s.audience}`)).toEqual([
+      // Two child surfaces, and the order is the journey: the wall is where a child chooses, the
+      // studio is where they work on what they already chose.
+      "discovery:child",
       "guide:guide",
       "parent:parent",
       "studio:child",

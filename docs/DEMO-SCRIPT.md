@@ -1,140 +1,151 @@
 # PassionLab Demo Script
 
-**Goal:** in a few minutes, show how we help a child find a real passion and go deep, and hint at the engineering underneath.
-**Golden rules:** lead in plain language, then name the real term and gloss it in one breath ("a Merkle root, basically a digital fingerprint"). Say once, early, that everything on screen is **made-up sample data**. No em-dashes on slides or read aloud.
+**Five minutes.** One driver, one machine, three tabs.
 
-**All apps run on the teammate's laptop (the presentation machine); he drives.** They are already started at the ports below.
+**Say once, early:** everything on screen is sample data, and no real child has used any of this.
 
-| Order | App | For | URL |
-|---|---|---|---|
-| 0 (optional) | **Front Door** | pick a role and go | http://localhost:3000 |
-| 0 (optional) | **Discovery Cabin** (early prototype) | child clicks around a painted cabin | http://localhost:5178 |
-| 1 | **Guide Console** | the guide | http://localhost:3020 |
-| 2 | **Project Studio** | the child | http://localhost:3010 |
-| 3 | **Evidence Explorer** | the honest record of the work | http://localhost:3030 |
-
-Every port above is pinned in the app's own `dev` script and matches the surfaces registry in
-`@gt100k/ui`, which is what the in-product links resolve to. Start an app on a different port and its
-neighbours will still point here. The Cabin is a Vite app on 5178, not 3040; 3040 is the Concierge.
-
-**The Guide Console and Evidence Explorer headers carry a switcher into every other surface, including
-two this script never opens:** the Concierge (3040) and the Parent Playbook (3055). A link to an app
-nobody started fails in front of the room, so either start those two as well or leave the switcher
-alone. The Front Door renders no switcher, and Project Studio has only a way home — a child must not
-be handed a door into the adult tools.
-
-> Short on time: Guide Console, Project Studio, Evidence Explorer. The Cabin is an optional, rough scene-setter; skip it or frame it as an early prototype. Open links in incognito for a clean slate; refresh once if a tab looks stuck.
+**Golden rule:** lead in plain language, then name the real term and gloss it in one breath ("a Merkle root, basically a digital fingerprint"). No em-dashes read aloud.
 
 ---
 
-## 1. What to show
+## Before the room fills
 
-- **Live:** Guide Console, Project Studio, Evidence Explorer (and optionally the Cabin, framed as an early prototype).
-- **Describe only:** the engines that read behavior, watch for burnout, draft the plan, and coach the family. Talk about them; do not click.
+Every port below is pinned in the app's own `dev` script and matches the surfaces registry in
+`@gt100k/ui`, so the in-product links resolve to each other. Start an app on a different port and its
+neighbours will still point at the pinned one.
 
----
+```bash
+pnpm --filter @gt100k/guide-console consent       # once: lets the console accept `local-demo`
+pnpm --filter @gt100k/guide-console seed-demo     # once: a scripted week of play, via the real route
+```
 
-## 2. The 30-second story (say first)
+Then start what you will actually open, plus anything reachable from a header switcher — **a link to
+an app nobody started fails in front of the room.**
 
-> "Most kids never find the thing they could be great at. We help a child, ages 6 to 14, discover a real passion and go deep. The twist: instead of asking what they like, we watch what they keep coming back to. Then we give the adult a clear read, help the kid do real projects, and protect them from burnout the whole way."
+| Port | App | Needed for |
+|---|---|---|
+| 3080 | **Discovery Wall** | Act 1 and 2. The child's surface. |
+| 3020 | **Guide Console** | Act 3. The payoff. |
+| 3000 | Front Door | optional cold open |
+| 3010 · 3030 · 3040 · 3055 | Studio · Evidence · Concierge · Playbook | only so the switcher never dead-ends |
 
-Three ideas to repeat:
-1. **We learn from what kids do, not what they say.** Behavior is honest; surveys are not.
-2. **We reward effort, not a score.** No points, streaks, or leaderboards. Getting stuck and trying again is the win.
-3. **The software suggests; a human always decides.** It never labels or grades a child on its own.
+Start the wall pointed at the console, or nothing will reach it:
 
-The apps share one design language, one type stack and one header, so it reads as one product. Only
-Project Studio still carries a **palette** switcher; every other surface now wears the single GT
-School theme, and the Evidence Explorer's eight presets were deliberately removed. Do not promise a
-theme swap anywhere but the Studio.
+```bash
+GT100K_INGEST_ORIGIN=http://localhost:3080 pnpm --filter @gt100k/guide-console dev
+NEXT_PUBLIC_GT100K_INGEST_URL=http://localhost:3020/api/ingest pnpm --filter @gt100k/discovery dev
+```
 
----
-
-## 3. Act 0 (optional): Discovery Cabin (:5178)
-
-Early prototype, about 30 seconds, set expectations up front. "Before any grown-up tools, a kid just explores. They pick a cabin, look around the room, and try the things in it, and we watch what they come back to. That becomes the signal everything else is built on." It is point and click, one fixed view of the room, like an old adventure game: pick a cabin, click a prop, let its puzzle open, close it, then hand off: "What a child does here becomes the evidence the guide sees next."
-
-Two of the five cabins on the map open: **Logic Games** (four deduction puzzles) and **Math** (five
-maths games). Music, Code and Art are legible "coming soon" signposts and click through to nothing,
-so say so before someone in the room tries one.
-
----
-
-## 4. Act 1: Guide Console (:3020)
-
-The guide's mission control for one child. Left: the list of kids, with the *Synthetic data only* tag underneath — that tag reads *Synthetic, plus N ingested* instead if anyone has run `docs/TRY-THE-WIRING.md` on this machine, so check it before saying the words. Middle: what this child is into. Right: seven tabs — Overview, Hypotheses, Wellbeing, Plan, Family, Access, Maps. Each carries a count, and a dot when that lens has something a human should look at.
-
-1. **Overview loads first**, because guides are not technical and the summary is what orients them before they act. Take the room through it in one line, then use the table's **Review** button, which jumps to the Hypotheses tab with that card highlighted.
-2. **Hypotheses.** "We show what the evidence suggests and how sure we are, always *current evidence suggests*, never *your child is an X*." Technical: "a Bayesian model that keeps a probability per interest and updates as evidence arrives, one belief per *topic by work style*, and honestly reports *not sure yet*."
-3. **Switch child** with the left picker so people see the read change. It returns to Overview each time, on purpose, so no tab is ever pointed at the previous kid's section.
-4. **Wellbeing.** "Watches for strain from behavior only, never cameras or faces, which are scientifically shaky and illegal in EU education. If a child pushes too hard it flags *needs your review* for a human."
-5. **Plan.** "Once an interest is real, we lay out a step by step climb: stage, mentor fit, audience, next real project. The software drafts; the guide approves."
-6. **Family.** "We coach the family with specific ways to help, and watch that support never becomes pressure."
-7. **Access.** "Where we broker the real world: real mentors and audiences, tracked to done." Live: click **Propose handoff**, show that **Approve** stays disabled until **Guardian consent recorded** is ticked ("a hard block in the code"), then **Mark access transferred**.
-8. **Maps** is the seventh tab and the one to skip unless asked. It lays out what getting good at a domain actually involves, for a guide to read and correct, with no approve button anywhere: no guide can certify that an ordering of a whole domain is right, and a signature from someone with no basis for it looks like review without being any. Its count is how many maps exist and never how far through one a child is, because this console derives no progress at all.
-9. Close: "Every suggestion waits for a human. The software never acts on the child by itself."
+**Check before you present:** the console roster shows **Demo Child** and the tag under it reads
+*Synthetic, plus 1 ingested*. If it says *Synthetic data only*, the seed did not land — see
+`docs/TRY-THE-WIRING.md`.
 
 ---
 
-## 5. Act 2: Project Studio (:3010)
+## 0:00 – 0:30 · The problem
 
-The playful, kid facing side; opens on *Build a Mini Arcade Game*.
+> "A child cannot pick a passion off a list of school subjects. Nobody discovers they love ham radio
+> by reading the word 'engineering'. So the first screen is not a menu of subjects."
 
-1. Point at the child's own question driving the project.
-2. **Timeline (the heart).** "The honest record of real work: they tried something, it broke, a helper bot assisted, they fixed it, shipped a first version, and wrote what they learned." The banner above the composer celebrates getting stuck and bouncing back, "not a polished result." It appears because this project has a recovery in it, and it takes its colour from the theme, so do not call it the green one after step 4.
-3. **Add an entry live.** Click **I made this**, type `I added a scoreboard`, press **Add**; it appears at the top.
-4. **Themes.** Switch a couple (Sunbeam, Ink, Synthwave). "Same tool, very different feel."
-5. **Fresh project.** Click **My Robot Buddy**, the child's own idea, just beginning.
-6. Close: "No score, no grade, no streak. It celebrates trying, fixing, making."
+Say the sample-data line here.
 
 ---
 
-## 6. Act 3: Evidence Explorer (:3030)
+## 1. The wall · 0:30 – 1:45 · http://localhost:3080
 
-The honest record of a project, plus proof it was not faked or changed. It wears the same GT identity and the same header as the other surfaces, but it has no palette switcher of its own: that beat belongs to the Studio and only to the Studio.
+Open it and say nothing for two seconds. Let them look.
 
-> **If someone asks whether this is one product or two, the honest answer is a good one:** the Evidence Graph is its own product, built so it can stand alone and be lifted out whole. It needs nothing from the rest of GT100K to work. That is deliberate — it means any school, competition or program could use it on work we had nothing to do with. What you are watching is the two halves working together, which is where the value is: a spike nobody can verify is just a claim, and a provenance system with nothing worth proving is just plumbing.
+> "Forty-four things a person can actually get good at. All of them, on one screen. No categories to
+> walk through, no next page."
 
-1. "Every real step is a dot; lines connect each step back to what it was built on, a directed acyclic graph."
-2. **3D / 2D toggle**, in the bar above the view, beside the line naming which tier is live. "Same record either way; nobody is forced into the fancy view." The 2D view is the accessible one, and the app drops to it by itself on a weak GPU without losing any state.
-3. **Trace lineage**, the big button at the top of the controls panel. Lights up the full chain behind the result, not just the shiny ending.
-4. **Open a step.** Read exactly what happened, including declared AI help, stored as its own neutral node. "Getting help is shown openly, never treated as cheating."
-5. **Show tamper (the big moment).** Expand **Verified**, click **Show tamper**. "Each step's ID is a hash of its own contents, and the whole history rolls up into a Merkle root, one fingerprint for the record. Change one byte and the seal breaks to MISMATCH." The button reads **Hide tamper** while it is on; click it again to restore. (Presentation only; no cryptography computed in the app.)
-6. Close: "A family, school, or competition can trust this is a real, unedited record."
+**Sweep the cursor slowly.** Names appear under whatever you point at.
 
----
+The claim to make, because this audience will ask why:
 
-## 7. Under the hood (for a technical room)
+> "This is copied from the closest study that exists. Thirty-six children, six to eleven, a
+> fourteen-category hierarchy against forty-four flat concrete categories. Flat won in every grade.
+> And of twelve first-graders, zero found the 'More Choices' control on their own. So there is no
+> pager here, ever. Whatever is on this screen is, for a small child, the whole world."
 
-- **Interest with no answer key.** A Bayesian model with one belief per *topic by work style* cell, using a low rank factorization to separate *what topic* a child loves from *what kind of work*. It discounts novelty, separates voluntary from prompted returns, and reports calibrated uncertainty. Hard part: no labeled data at launch, so we ship research based priors and learn over years.
-- **Tamper evident record (EvidenceGraph).** Content addressed nodes rolling up to a Merkle root; change one byte and the root changes. Declared AI help is a first class neutral node, so honesty lives in the data model.
-- **Right to be forgotten vs an append only store.** Crypto shredding: fingerprints over encrypted data plus a per child key; delete the key and that child's data is unreadable forever while everyone's tamper evidence holds. A non negotiable pre live gate.
-- **Burnout without reading a face.** Behavior only: two dials, challenge and pressure; on strain it lowers pressure before difficulty, weights quiet disengagement over tiredness, and treats a quiet week as a question for a human.
-- **Safe web access and authorship.** Fresh web material passes moderation, an age gate, provenance, and human escalation before entering a curated library. Authorship is verified by a short friendly oral defense, never an AI detector (inaccurate and biased).
-- **Deterministic and testable.** Each engine is pure, offline, and reproducible, with a machine checkable contract, so an automated gate verifies the real product in a browser.
+**Two controls, quickly.** Toggle **Names** on and off. Drop **Age** to 6 and watch eight tiles
+leave: *"nothing here is locked, but we do not show a nine-year-old a thing that needs a licence."*
 
----
-
-## 8. Likely questions
-
-- **Real kid data?** No, all sample. The consent gate is built and enforced, not just mapped out: consent is per purpose, the default is refusal, and the ingest route returns a 403 with the reason. What real use still waits on is narrower — nobody can yet verify the guardian who consented is the guardian, and erasure is complete for a child's discovery record but not for their project evidence, which is content-addressed and cannot forget.
-- **How do you know what a kid likes?** What they return to after the newness wears off, not one click.
-- **Does it grade kids?** No. It suggests; a human owns the decision.
-- **What stops a parent pushing too hard?** We coach toward support and flag pressure for a human.
-- **What is next?** Wiring the mentor and audience broker to real partners, and growing the discovery world past its two furnished cabins to the eight the taxonomy already carries.
+If asked about the pictures: every tile is one render from one scaffold, normalised to the same mean
+brightness, because a wall that reads a click as interest cannot afford a tile that is merely
+prettier than its neighbours.
 
 ---
 
-## 9. Two-minute version
+## 2. One pursuit · 1:45 – 3:00
 
-- **Guide Console:** one line story, then **Wellbeing**, then **Plan**.
-- **Project Studio:** timeline, add one entry, switch a theme.
-- **Evidence Explorer:** **Trace lineage**, then **Show tamper**.
+**Point at Drums.** Three things in the panel, and the third is the argument.
+
+> "Something to do right now. Somewhere to read. And who says you are good at it."
+
+Land on the venue:
+
+> "ABRSM grades this child, not us. Every one of the forty-four has a real external judge — a
+> federation, a competition, a licensing body. A pursuit with nobody to judge it is just a topic."
+
+**Click the game.** Play ten seconds. Close it.
+
+> "The games are inside the pursuits now, not a separate app. Picking is one screen; doing is one
+> click in."
 
 ---
 
-## 10. Do not do on stage
+## 3. The handoff · 3:00 – 4:15 · http://localhost:3020
 
-- Do not switch branches or run builds during the demo.
-- If the Studio timeline looks cluttered, reopen it in a fresh incognito window.
-- Do not promise the mentor/audience matching or the full 3D world as finished; two cabins are real and furnished, framed as the first two of eight.
+Switch tabs and reload.
+
+> "Same child, adult side."
+
+**Demo Child** sits in the roster beside four synthetic children, rendered by identical code. The tag
+reads **Synthetic, plus 1 ingested**.
+
+> "That tag is the thing to notice. It says out loud that one of these is real ingested data and the
+> rest are made up, because a reassurance about provenance that has quietly stopped being true is
+> worse than none."
+
+Open Demo Child. Then the honest beat, which is the strongest thirty seconds in the demo:
+
+> "One session of opening things produces nothing here. An open proves the child was there, not that
+> they worked. A belief needs them to actually do something, and a confident one needs them to come
+> back on different days without being asked. What you are looking at came from a scripted week,
+> because we cannot fake a week in a demo."
+
+Show a synthetic child for the fuller read if the panels are thin.
+
+---
+
+## 4. Close · 4:15 – 5:00
+
+What it does not do, said plainly before anyone asks:
+
+- The ingest route has **no authentication and no rate limiting**. It is a local development seam.
+- Consent is **guide-asserted**. Nobody has verified that the guardian who consented is the guardian.
+- A child's project evidence **cannot be erased**, because the EvidenceGraph is content-addressed.
+  That is E1 D2 and it is unsolved.
+
+> "Those are the pre-live gates. They are named in the repo rather than hidden, and they are why
+> nothing here has been in front of a real child."
+
+---
+
+## Questions this audience actually asks
+
+**"Why not just let them search?"** A child who can search already knows the word. The whole problem
+is the child who does not.
+
+**"How do you know they like it rather than like the game?"** Voluntary return across days, with
+nothing prompting it. Everything that could manufacture engagement — streaks, badges, points,
+notifications, unlocks — is deliberately absent, because the signal is what a child does when
+nothing is pushing them.
+
+**"What happens when a child clicks nothing?"** Every tile on screen is logged as offered, with its
+position. That is half the measurement and it is the half most systems throw away — without it, a
+decline and a never-shown are the same row.
+
+**"Is the order the same every time?"** Random per session, fixed roster. Random order decorrelates
+position from preference. A random *roster* would be trigger-and-abandon, which finishes below never
+having triggered the interest at all.

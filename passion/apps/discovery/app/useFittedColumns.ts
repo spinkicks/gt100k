@@ -11,21 +11,16 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 const ART_ASPECT = 3 / 2;
 const GAP_PX = 5;
 
-/** Horizontal padding inside the label strip, in px, matching `.tile__label`. */
-const LABEL_PAD_X = 18;
-/** Vertical padding inside the label strip, in px, matching `.tile__label`. */
-const LABEL_PAD_Y = 13;
-const LABEL_LINES = 2;
-const LABEL_LINE_HEIGHT = 1.2;
+/** Horizontal padding inside the label overlay, in px, matching `.tile__label`. */
+const LABEL_PAD_X = 16;
 
 /**
  * The label's font size at a given tile width, in px.
  *
  * The wall's names have to survive at every tile size the search can produce, and at the smallest
  * of them a fixed size does not: "Watching Stars Change" needs a third line at 97px and gets
- * clipped mid-word by the two-line strip. Truncation is not an option — a child cannot choose a
- * thing whose name is cut off — and a taller strip would spend on the widest tiles what only the
- * narrowest need. So the type scales with the tile.
+ * clipped mid-word by the two-line scrim. Truncation is not an option — a child cannot choose a
+ * thing whose name is cut off — so the type scales with the tile.
  *
  * The divisor is the width budget in ems: the longest line the catalogue produces after wrapping
  * is "Stars Change" at twelve characters, and a 600-weight sans averages about 0.6em per character,
@@ -33,15 +28,13 @@ const LABEL_LINE_HEIGHT = 1.2;
  * already comfortable; the lower is where it would stop being readable, and the search refuses tiles
  * that small anyway.
  *
- * OWNED HERE, NOT IN CSS. The row height depends on it and so does the fit, so a second copy of
- * this arithmetic in a stylesheet would be a second copy that could drift. CSS is handed the answer.
+ * IT NO LONGER AFFECTS THE FIT, since the name overlays the picture rather than sitting under it —
+ * the tile is exactly its art now. It stays owned here anyway because it is derived from `tileW`,
+ * which only this hook knows, and a copy of the arithmetic in a stylesheet would be a copy that
+ * could drift.
  */
 function labelFont(tileW: number, rem: number): number {
   return Math.min(0.9 * rem, Math.max(0.65 * rem, (tileW - LABEL_PAD_X) / 7.2));
-}
-
-function labelHeight(font: number): number {
-  return LABEL_LINES * LABEL_LINE_HEIGHT * font + LABEL_PAD_Y;
 }
 
 /**
@@ -72,14 +65,13 @@ const MAX_TILE_PX = 240;
  * the width allows 111px and the five rows allow 164px, so they are 111px and a third of the
  * vertical space goes unused. Stretching to the full width would have taken the second of those.
  */
-function largestTile(cols: number, count: number, w: number, h: number, rem: number): number {
+function largestTile(cols: number, count: number, w: number, h: number): number {
   const rows = Math.ceil(count / cols);
   const byWidth = (w - (cols - 1) * GAP_PX) / cols;
-  // Reserved at the label's largest, because the height it will actually take depends on the tile
-  // width this line is solving for. Erring high costs a few pixels of slack, which `align-content`
-  // absorbs; erring low would clip a name.
-  const worstLabel = labelHeight(labelFont(Number.POSITIVE_INFINITY, rem));
-  const byHeight = ((h - (rows - 1) * GAP_PX) / rows - worstLabel) * ART_ASPECT;
+  // No label row to subtract any more: the name overlays the picture, so a tile IS its art and the
+  // row height is exactly `tileW / ART_ASPECT`. That reclaims roughly 30px per row, which on a
+  // laptop is a whole extra row's worth of size spread across the wall.
+  const byHeight = ((h - (rows - 1) * GAP_PX) / rows) * ART_ASPECT;
   const tile = Math.min(byWidth, byHeight, MAX_TILE_PX);
   return tile >= MIN_TILE_PX ? tile : 0;
 }
@@ -131,7 +123,7 @@ export function useFittedColumns(count: number): Fit & { ref: React.RefObject<HT
 
     let best = { cols: 0, tileW: 0 };
     for (let c = 1; c <= count; c++) {
-      const tile = largestTile(c, count, w, h, rem);
+      const tile = largestTile(c, count, w, h);
       if (tile > best.tileW) best = { cols: c, tileW: tile };
     }
     if (best.cols === 0) {
