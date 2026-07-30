@@ -81,16 +81,26 @@ describe("the shipped library", () => {
     expect(new Set(SEED_LIBRARY.map((r) => r.url)).size).toBe(SEED_LIBRARY.length);
   });
 
-  it("serves every age tier in every subtopic", () => {
+  it("serves every age tier in every subtopic, except where no honest material exists", () => {
     // Held as a test now that it is true. It was not: eleven subtopics had nothing a six-to-eight
     // year old could use, which is the dead-end problem one level down — a child of that age
     // exploring would have found eleven of twenty-eight shelves empty FOR THEM. The validator
     // reports this as a warning rather than an error, because the tempting fix is re-tagging a
     // 12-14 resource as 6-8 and that produces a dead end wearing a label. Now that real material
     // exists, a regression should fail rather than merely warn.
+    //
+    // The two exceptions are named rather than allowed by loosening the assertion, so that a THIRD
+    // unserved tier still fails here and has to be argued for in this comment. Both cells were
+    // minted in 2026-07-29 for pursuits whose own minimum ages sit above the tiers they miss —
+    // Hacking Puzzles starts at 13 and Debating at 11 — so material for a six-year-old would not
+    // be an omission, it would be a fabrication. This is the standard's own rule about honest gaps
+    // applied to itself.
+    const ALLOWED = new Set(["code-computers/security", "influence-media/rhetoric"]);
     const report = validateLibrary(SEED_LIBRARY);
 
-    expect(report.warnings.filter((w) => w.code === "TIER_UNSERVED")).toEqual([]);
+    expect(
+      report.warnings.filter((w) => w.code === "TIER_UNSERVED" && !ALLOWED.has(w.where)),
+    ).toEqual([]);
   });
 
   it("uses more than one mode, so the second axis is not dead on arrival", () => {

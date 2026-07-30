@@ -2,7 +2,7 @@
 
 The **concierge** — the Next.js chat surface where a child asks a niche question and gets a **child-safe,
 grounded** pointer to real learning material. The UI is thin: a `POST /ask` **server route** runs the
-pure 10-stage pipeline from `@gt100k/concierge` and returns a `ConciergeResponse`, which the page renders
+pure pipeline from `@gt100k/concierge` and returns a `ConciergeResponse`, which the page renders
 with its **kind** (answer / refused / escalated) carried by a text label + glyph (never colour alone,
 WCAG 2.2 AA), the **citations** behind every claim, and the smallest testable next step (a **probe**).
 **Synthetic data only** — no real child data ever. It is a calm instrument, **not a game**.
@@ -10,13 +10,18 @@ WCAG 2.2 AA), the **citations** behind every claim, and the smallest testable ne
 ## Run
 
 ```bash
-pnpm --filter @gt100k/concierge-app dev     # local dev server
+pnpm --filter @gt100k/concierge-app dev     # local dev server on :3040
 pnpm --filter @gt100k/concierge-app build   # production build (part of the gate)
-pnpm --filter @gt100k/concierge-app start   # serve the production build (used by LOOP_QA)
+pnpm --filter @gt100k/concierge-app start   # serve the production build on :3040 (used by LOOP_QA)
 pnpm --filter @gt100k/concierge-app test    # pure handler + qa-state tests (vitest, node env)
 ```
 
 No secrets and no env vars are required for the default (stub) path.
+
+`runConcierge` covers stages 1–9. Stage 10 (cache → vet-queue → promote) is returned as a side value
+next to the response, and this route drops it: nothing a child asks here can promote a web document
+into the curated library. That is the deliberate shape of a demo surface, not an omission to fix in
+passing.
 
 ## Deps: stubs by default, real adapters opt-in
 

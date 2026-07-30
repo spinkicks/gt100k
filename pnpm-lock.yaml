@@ -179,6 +179,9 @@ importers:
       '@gt100k/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
+      '@gt100k/pursuits':
+        specifier: workspace:*
+        version: link:../../packages/pursuits
       '@gt100k/two-axis-tagging':
         specifier: workspace:*
         version: link:../../packages/two-axis-tagging
@@ -198,6 +201,9 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.1
         version: 18.3.7(@types/react@18.3.31)
+      playwright:
+        specifier: ^1.48.0
+        version: 1.61.1
 
   passion/apps/evidence-explorer:
     dependencies:
@@ -633,6 +639,10 @@ importers:
       '@gt100k/two-axis-tagging':
         specifier: workspace:*
         version: link:../two-axis-tagging
+    devDependencies:
+      '@gt100k/pursuits':
+        specifier: workspace:*
+        version: link:../pursuits
 
   passion/packages/consent: {}
 
@@ -742,6 +752,12 @@ importers:
       '@gt100k/specialization-planner':
         specifier: workspace:*
         version: link:../specialization-planner
+
+  passion/packages/pursuits:
+    dependencies:
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../two-axis-tagging
 
   passion/packages/research: {}
 

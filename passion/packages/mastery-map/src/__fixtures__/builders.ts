@@ -13,6 +13,7 @@ const RESOURCE: CuratedResource = {
   title: "A worked introduction",
   url: "https://example.org/intro",
   domainPath: ["games-strategy"],
+  pursuits: [],
   affordedModes: ["investigate"],
   reputation: 0.9,
   ageTiers: ["6-8"],

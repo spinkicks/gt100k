@@ -22,6 +22,7 @@ const RES: CuratedResource = {
   title: "Solar System Exploration",
   url: "https://science.nasa.gov/solar-system/",
   domainPath: ["science-nature", "astronomy"],
+  pursuits: ["asteroid-hunting"],
   affordedModes: ["investigate", "explain"],
   reputation: 0.98,
   ageTiers: ["9-11", "12-14"],
