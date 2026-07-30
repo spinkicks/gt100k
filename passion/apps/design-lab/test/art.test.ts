@@ -4,13 +4,16 @@
 // brighter than the rest renders as the one a child clicks. Both are silent: nothing else in the
 // build has an opinion about a `public/` directory. So this checks the built output rather than the
 // script that built it, because what ships is the output.
-import { execFileSync } from "node:child_process";
 import { readdirSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { PURSUITS } from "@gt100k/pursuits";
 import { describe, expect, it } from "vitest";
+
+// @ts-expect-error -- a plain .mjs helper with no types; shared with `scripts/build-art.mjs` so the
+// test and the tool that produced the files agree on which binary they are talking to.
+import { magick } from "../scripts/imagemagick.mjs";
 
 const ART = resolve(dirname(fileURLToPath(import.meta.url)), "..", "public", "pursuits");
 
@@ -49,12 +52,9 @@ describe("no tile is prettier than another", () => {
    * differently.
    */
   function meanLuminance(id: string): number {
-    const out = execFileSync(
-      "convert",
-      [join(ART, `${id}.webp`), "-colorspace", "Gray", "-format", "%[fx:mean]", "info:"],
-      { encoding: "utf8" },
+    return Number(
+      magick([join(ART, `${id}.webp`), "-colorspace", "Gray", "-format", "%[fx:mean]", "info:"]),
     );
-    return Number(out.trim());
   }
 
   it("holds the brightest tile within a tenth of the dimmest", () => {

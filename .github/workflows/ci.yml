@@ -232,12 +232,14 @@ jobs:
         run: pnpm --filter "./passion/apps/${{ matrix.app.dir }}" exec tsc --noEmit
 
       # design-lab's suite shells out to ImageMagick to measure the browse wall's
-      # tile art, which is how the uniformity claim is checked rather than
-      # asserted. Preinstalled on ubuntu-latest; named here rather than assumed,
-      # because the failure otherwise is an ENOENT inside a test about luminance.
-      - name: Check ImageMagick
+      # tile art, which is how the uniformity claim gets checked rather than
+      # asserted. This step first said `convert --version` on the belief that the
+      # runner ships it; it does not, and the job failed with `command not found`.
+      # Installed rather than skipped, because a luminance test that quietly does
+      # not run leaves the confound unmeasured and the suite green.
+      - name: Install ImageMagick
         if: matrix.app.dir == 'design-lab'
-        run: convert --version
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick
 
       # Each app carries its own vitest config and environment (jsdom, WebGL
       # stubs), so it is run through its own package script rather than swept

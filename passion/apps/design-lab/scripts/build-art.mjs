@@ -30,6 +30,8 @@ import { mkdirSync, readdirSync, rmSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { magick } from "./imagemagick.mjs";
+
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(HERE, "..", "public", "pursuits");
 const CATALOGUE = resolve(HERE, "..", "..", "..", "packages", "pursuits", "src", "catalogue.ts");
@@ -74,9 +76,7 @@ const GAMMA_MAX = 1.8;
 const TOLERANCE = 0.004;
 const MAX_PASSES = 6;
 
-function magick(args) {
-  return execFileSync("convert", args, { encoding: "utf8" }).trim();
-}
+// Resolved rather than hard-coded: ImageMagick 7 calls it `magick` and 6.9 calls it `convert`.
 
 function idsFromCatalogue() {
   const src = execFileSync("cat", [CATALOGUE], { encoding: "utf8" });
