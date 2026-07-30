@@ -58,3 +58,32 @@ test.describe("Evidence Explorer smoke", () => {
     await expect(live.first()).toContainText(/verified/i, { timeout: 5_000 });
   });
 });
+
+test.describe("Story Mode (Phase 2)", () => {
+  test("plays through the git-log commit list and the end nudge opens Verify", async ({ page }) => {
+    // Auto-advance is one beat per ~2.6s (STORY_STEP_MS) over 12 beats — a full run is ~31s.
+    test.setTimeout(60_000);
+
+    await page.goto(BASE, { waitUntil: "networkidle" });
+
+    // The commit log is a real, accessible git-log-style list beside the graph — 12 beats for the
+    // committed tiny-runner-v1 fixture, each a short hash + a plain message.
+    await expect(page.locator("ol.commit-log")).toBeVisible();
+    await expect(page.locator("li.commit-row")).toHaveCount(12);
+
+    // The view opens fully grown (the calm baseline), so Play starts by replaying from the top —
+    // the caption resets to the lead-in and then advances as the reveal counter ticks forward.
+    await page.getByRole("button", { name: /Play the story/ }).click();
+    await expect(page.locator(".story-caption")).not.toHaveText(/Press play to watch how this was built/, {
+      timeout: 10_000,
+    });
+
+    // Let the story run to full reveal — the closing nudge to Verify should appear.
+    const nudge = page.locator(".story-nudge");
+    await expect(nudge).toBeVisible({ timeout: 40_000 });
+
+    // Its Verify CTA opens the same Verify panel as the header control.
+    await nudge.getByRole("button", { name: /^Verify$/ }).click();
+    await expect(page.locator("#verify-panel")).toBeVisible();
+  });
+});
