@@ -125,7 +125,24 @@
   --font-utility: "Inconsolata Variable", ui-monospace, Consolas, monospace;
 
   min-height: 100vh;
-  background: var(--bg);
+  /* Paper, and it is a photograph of paper rather than a flat fill.
+   *
+   * A flat #fcf4ef is correct and slightly dead: forty-four photographed objects on a colour swatch
+   * look like they are floating rather than lying on something. A real sheet under them closes that
+   * gap, which is the whole "printed academic reference" posture the identity is after.
+   *
+   * MEASURED LIKE THE TILES ARE, and for the same reason. A texture with a bright patch in it is a
+   * region of the wall a child's eye lands on for a reason unrelated to what is in that region, and
+   * the tiles get normalised precisely so that cannot happen. Sampled over a 4x3 grid of the frame
+   * this runs 0.963 to 0.965 — a 1.002:1 spread, against the 1.06:1 the tiles are held to. No
+   * vignette, no corners, no focal point.
+   *
+   * Under 20KB, `cover` rather than tiled, and no `filter: blur()`: the grain is already soft at
+   * this scale, and blurring a full-viewport background paints on every frame for nothing.
+   *
+   * The flat token sits BEHIND the image, so a slow or failed load degrades to the right colour
+   * rather than to white. */
+  background: url("/paper-ground.webp") center / cover no-repeat, var(--bg);
   color: var(--ink);
   font-family: var(--font-body);
   display: grid;
