@@ -14,6 +14,7 @@ import { useStudio } from "./useStudio.js";
 import { Mascot } from "./mascot.js";
 import { HomeLink } from "./home-link.js";
 import { KindIcon, SparkIcon } from "./icons.js";
+import { AskPanel } from "./ask-panel.js";
 import { ENTRY_GROUPS, ENTRY_KINDS, audienceLabel, entryFor } from "./studio-state.js";
 
 export function Studio(): JSX.Element {
@@ -252,6 +253,10 @@ function Quest({
           </label>
         ) : null}
       </div>
+
+      {/* Below the composer and above the log: the question comes up while you are working, so it
+          is answered where you are working. It used to be a separate application. */}
+      <AskPanel />
 
       <div className="timeline" aria-label="Quest log">
         {entries.length === 0 ? (
