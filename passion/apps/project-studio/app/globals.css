@@ -86,7 +86,12 @@
   --paper: #ffffff;
   --paper-2: #f8e8de;
   --ink: #001117;
-  --muted: #4a6470; /* 5.8 on paper, 6.3 on a white panel, 5.2 on the warm tint */
+  /* Two-level ink, mirroring the house tokens the rest of the product ships: --muted carries
+     secondary TEXT (the house's ink-muted), --muted-faint is for non-text marks only (its
+     ink-faint). This theme had used the fainter marks value for text — one shade too light, and
+     out of step with every other app, which draws body-muted text in #33505c. */
+  --muted: #33505c; /* 7.9 on paper, 8.6 on a white panel, 7.2 on the warm tint */
+  --muted-faint: #4a6470; /* non-text marks only (the log spine): 5.8 on paper */
   --line: #ecd9cb;
 
   /* GOLD IS NOT INK. --accent also sets text (the quest question's bold run) and Gold on paper is
@@ -1284,9 +1289,10 @@ body {
 }
 
 /* The warm hairline is the right border colour and the wrong spine: at 30% of #ecd9cb the journey
- * line disappears against the paper, so it takes --muted the way the minimal family does. */
+ * line disappears against the paper, so it takes the faint-mark ink (--muted-faint), the house's
+ * ink-faint, which is reserved for exactly this kind of non-text rule. */
 [data-theme="gt-school"] .tl-item::before {
-  background: var(--muted);
+  background: var(--muted-faint);
   opacity: 0.4;
 }
 
