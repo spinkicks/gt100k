@@ -231,15 +231,22 @@ jobs:
       - name: Typecheck
         run: pnpm --filter "./passion/apps/${{ matrix.app.dir }}" exec tsc --noEmit
 
-      # design-lab's suite shells out to ImageMagick to measure the browse wall's
-      # tile art, which is how the uniformity claim gets checked rather than
-      # asserted. This step first said `convert --version` on the belief that the
-      # runner ships it; it does not, and the job failed with `command not found`.
-      # Installed rather than skipped, because a luminance test that quietly does
-      # not run leaves the confound unmeasured and the suite green.
-      - name: Install ImageMagick
-        if: matrix.app.dir == 'design-lab'
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick
+      # The wall's suite shells out to ImageMagick to measure its tile art, which
+      # is how the uniformity claim gets checked rather than asserted. Installed
+      # rather than skipped, because a luminance test that quietly does not run
+      # leaves the confound unmeasured and the suite green.
+      #
+      # Detected from the tree rather than named by app, and that is the second
+      # correction here. The step first ran `convert --version` believing the
+      # runner ships ImageMagick, which it does not. Then it installed it, gated
+      # to `design-lab` — and the art moved to `discovery` one commit later, so
+      # the gate stopped matching and the test failed on the missing binary
+      # instead. Whoever owns the art is whoever has the directory.
+      - name: Install ImageMagick where there is tile art to measure
+        run: |
+          if [ -d "passion/apps/${{ matrix.app.dir }}/public/pursuits" ]; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick
+          fi
 
       # Each app carries its own vitest config and environment (jsdom, WebGL
       # stubs), so it is run through its own package script rather than swept
