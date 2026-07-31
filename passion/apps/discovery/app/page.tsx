@@ -1,6 +1,6 @@
 "use client";
 
-// The child-facing discovery surface: forty-four concrete pursuits, flat, on one screen, each one
+// The child-facing discovery surface: thirty-seven concrete pursuits, flat, on one screen, each one
 // offering both something to make and somewhere to read.
 //
 // WHY FLAT, AND WHY THIS MANY. Hutchinson, Bederson & Druin ran the closest thing to this product
@@ -64,7 +64,7 @@ const GameLauncher = dynamic(() => import("./GameLauncher"), { ssr: false });
 /**
  * Dwell before the panel follows the pointer.
  *
- * Crossing a wall of forty-four sweeps the cursor through a dozen tiles. Without a dwell each one
+ * Crossing a wall of thirty-seven sweeps the cursor through a dozen tiles. Without a dwell each one
  * would take the ring and rewrite the panel on the way past, and what the child sees is a flicker.
  */
 const HOVER_MS = 90;
@@ -76,7 +76,7 @@ const AGES = [6, 8, 10, 12, 14] as const;
  * Below this age the names start pinned open.
  *
  * The wall shows pictures and reveals a name when a tile is pointed at, which is the right trade for
- * anyone who can read one: the art scans faster than forty-four words and the name is a 90ms dwell
+ * anyone who can read one: the art scans faster than thirty-seven words and the name is a 90ms dwell
  * away. It is the wrong trade for a child who cannot yet name the object, because several of these
  * renders are honestly ambiguous — two are telescopes, two are small machines — and a wall of
  * pictures they cannot identify is a wall they have to interview one tile at a time.
@@ -216,7 +216,7 @@ export default function DiscoveryPage(): JSX.Element {
        * THE OBJECTION, AND WHY IT DOES NOT HOLD. Hiding things behind a control is exactly what
        * failed in that study: zero of twelve first-graders found "More Choices". But that control
        * hid CONTENT. This one only narrows a wall that is already complete — a child who never
-       * opens it sees all forty-four, which is the default and the recommended state. Nothing
+       * opens it sees all thirty-seven, which is the default and the recommended state. Nothing
        * becomes unreachable by ignoring it, so the lesson does not transfer.
        *
        * It also fixes a real defect: nine chips could not hold one row below 1600px, and a wrapped
@@ -303,7 +303,7 @@ export default function DiscoveryPage(): JSX.Element {
               {/* Empty alt, deliberately: the picture and the word name the same thing, so
                   describing it would make a screen reader say everything twice.
 
-                  A plain `img` and not `next/image`, because these are forty-four local files that
+                  A plain `img` and not `next/image`, because these are thirty-seven local files that
                   are already sized and already compressed, and routing them through the optimiser
                   buys nothing an export can use. */}
               <img

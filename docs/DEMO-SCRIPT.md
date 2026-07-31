@@ -84,7 +84,7 @@ prettier than its neighbours.
 
 Land on the venue:
 
-> "ABRSM grades this child, not us. Every one of the forty-four has a real external judge — a
+> "ABRSM grades this child, not us. Every one of the thirty-seven has a real external judge — a
 > federation, a competition, a licensing body. A pursuit with nobody to judge it is just a topic."
 
 **Click the game.** Play ten seconds. Close it.

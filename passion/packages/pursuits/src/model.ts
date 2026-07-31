@@ -59,6 +59,44 @@ export interface Skew {
   readonly source: string;
 }
 
+/**
+ * The distinction near the end of school that an admissions reader can check, as distinct from the
+ * `venue` a child can reach now.
+ *
+ * These are two different questions and they select differently, which is the whole reason this is
+ * a separate field rather than a better `venue`. The catalogue was built to ask what a nine-year-old
+ * can reach; the admissions audit
+ * (`docs/decisions/2026-07-30-catalogue-scope.md` §4b) asked what a seventeen-year-old can reach.
+ * Collapsing them would hide the gap, and the gap is the finding: almost none of these open to
+ * anybody while they are still using this product.
+ *
+ * ABSENT MEANS NO DOCUMENTED ROUTE WAS FOUND, which is not the same as none existing. Fifteen
+ * pursuits came back from that audit with a real ceiling and no named precedent; several more had a
+ * precedent that turned out to rest on a person who was independently exceptional. Read a missing
+ * `ceiling` as "we could not evidence this", never as "this leads nowhere".
+ */
+export interface Ceiling {
+  readonly name: string;
+  readonly url: string;
+  /**
+   * Youngest age this specific distinction admits, which is usually well above the pursuit's own
+   * `minAge`. Recorded as a number so a surface can say "opens at 15" rather than quietly implying
+   * a nine-year-old could enter.
+   */
+  readonly opensAt: number;
+  /**
+   * A documented individual whose pre-college hook was this, and where they went. Absent where the
+   * audit found none.
+   *
+   * A NAMED CASE PROVES LESS THAN IT LOOKS. Every one of them was also independently academically
+   * exceptional, and admissions decisions are not public, so this can establish that somebody did
+   * the thing and got in — never that the thing got them in. The one place that gap is closed is
+   * competition maths, where MIT has said outright that it enrolled almost every American IMO
+   * medalist of the last decade.
+   */
+  readonly precedent?: string;
+}
+
 export interface Pursuit {
   readonly id: string;
   /**
@@ -82,6 +120,8 @@ export interface Pursuit {
   /** The published document that defines quality independently of any particular judge. */
   readonly standard: string;
   readonly venue: Venue;
+  /** The later, admissions-legible distinction. Absent means none was evidenced; see `Ceiling`. */
+  readonly ceiling?: Ceiling;
   /**
    * The youngest age at which a child can actually do this and get a verdict.
    *

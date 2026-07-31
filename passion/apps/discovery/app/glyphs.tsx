@@ -8,14 +8,14 @@ import type { JSX } from "react";
 // songwriting, discriminating nothing while adding seven identical pictures to a screen whose whole
 // job is to let the differences between things show.
 //
-// The right level is a mark per pursuit, and that is what the tiles now carry: forty-four rendered
+// The right level is a mark per pursuit, and that is what the tiles now carry: thirty-seven rendered
 // objects, one per pursuit, generated from a single scaffold and normalised to one mean luminance so
 // none of them is prettier than its neighbours. `scripts/build-art.mjs` has that argument.
 //
 // The reading gap is narrowed by them rather than closed. Memo 07 §2.5 is clear that a picture works
 // when it depicts the referent and not otherwise, which is why these are objects rather than
 // symbols — but a six-year-old still cannot read "Watching Stars Change", and the honest mitigation
-// remains that age filtering leaves them eighteen tiles rather than forty-four. Audio labels are
+// remains that age filtering leaves them seventeen tiles rather than thirty-seven. Audio labels are
 // memo 07's actual recommendation and are not built.
 
 /**

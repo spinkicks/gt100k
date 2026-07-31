@@ -46,11 +46,13 @@ does not, and a chess map gets authored first with a hard case beside it. Its re
 learning happens off our surfaces (we point at chess.com, we do not rebuild it), the mechanism is
 milestone attestation as a Socratic-defense session over external links, extending the Maps tab's
 existing artefact-derived standing rather than adding a tab. **The catalogue cut**
-(`docs/decisions/2026-07-30-catalogue-scope.md`) records the owner's decision to prune the 44
-pursuits to those that credibly help a child reach a top-ranked university, the research that says
-domain prestige operates through verification infrastructure rather than stated preference, and a
-recorded dissent, since the evidence does not support cutting on domain. A 44-pursuit audit decides
-the list.
+(`docs/decisions/2026-07-30-catalogue-scope.md`) is **done and applied**: the catalogue is **37
+pursuits**, down from 44. Both admission tests now stand — a venue a child can reach today, and a
+documented path to a distinction an admissions reader can check, the latter recorded per entry as
+`Pursuit.ceiling`. Only entries failing *both* were removed. The most useful number to fall out is
+that **21 of 37 have a ceiling that opens later than the pursuit's own floor**, several not until 15
+or 17, which quantifies a gap the product has to live with: for most of a child's time here the
+admissions-legible distinction is out of reach and the reachable venue is the whole story.
 
 **In flight (🔨):** *nothing actively building.* **D3/D4 access broker (023)** just merged: the combined mentor-relay + audience-broker engine + live adapter + a guide-console **Access tab** (ranked mentor/audience matches, the guide-gated access-transfer lifecycle with a guardian-consent hard blocker, plus wellbeing/stage/craft-floor gates). Next candidates: **D5** (PCDE curriculum), **G4** (safety at scale), or finishing **G3** (identity verification and route auth are what is left). *(The D2 Project Studio app, the guide-console cockpit, and the teammate's themed Evidence Explorer are all merged.)*
 

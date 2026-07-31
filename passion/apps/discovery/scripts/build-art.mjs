@@ -8,7 +8,7 @@
 // WHY THIS EXISTS RATHER THAN "drop the PNGs in public/". Two of the three things it does are
 // measurement controls, not optimisations.
 //
-// The wall shows forty-four things at once and reads a child's choice as evidence of interest. Any
+// The wall shows thirty-seven things at once and reads a child's choice as evidence of interest. Any
 // property that varies across tiles and attracts the eye independently of content is therefore a
 // confound that will be recorded as preference. Javora et al. measured exactly this: children aged
 // 9-11 chose the prettier of two versions of IDENTICAL content 62% of the time, with no learning
