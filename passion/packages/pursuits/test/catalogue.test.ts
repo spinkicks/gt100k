@@ -138,3 +138,79 @@ describe("lookup", () => {
     expect(byId("board-games")).toBeUndefined();
   });
 });
+
+/**
+ * The second admission test (`docs/decisions/2026-07-30-catalogue-scope.md`), which asks a different
+ * question from every other test in this file: not what a child can enter now, but what an
+ * admissions reader can check at seventeen.
+ */
+describe("the later ceiling, which is not the same question as the venue", () => {
+  it("names a ceiling for nearly every pursuit, and absence stays rare enough to mean something", () => {
+    // Not "every": absence is a real state with a documented meaning, and asteroid hunting is the
+    // case that proves it — its terminal honour arrives six to ten years after the application, so
+    // there is genuinely nothing above the venue. But if absence became common the field would stop
+    // carrying information, so it is bounded rather than banned.
+    const without = PURSUITS.filter((p) => p.ceiling === undefined).map((p) => p.id);
+    expect(without.length).toBeLessThan(PURSUITS.length * 0.1);
+  });
+
+  it("gives every ceiling that exists a name and a real url", () => {
+    for (const p of PURSUITS) {
+      if (p.ceiling === undefined) continue;
+      expect(p.ceiling.name.length, p.id).toBeGreaterThan(3);
+      expect(p.ceiling.url, p.id).toMatch(/^https?:\/\//);
+    }
+  });
+
+  it("keeps the ceiling distinct from the venue, rather than restating it", () => {
+    // If a ceiling were allowed to be the same venue, the field would record nothing and the two
+    // tests would silently collapse into one.
+    const same = PURSUITS.filter((p) => p.ceiling?.url === p.venue.url).map((p) => p.id);
+    expect(same).toEqual([]);
+  });
+
+  it("records the age gap rather than hiding it", () => {
+    // The audit's own strongest finding: Scholastic opens at 13, YoungArts at 15, Presidential
+    // Scholar needs a graduating senior. So for most of a child's time in this product the ceiling
+    // is out of reach, and a majority of entries should show that on their face. If this ever falls
+    // to zero, either the data has been flattened or somebody has quietly set every `opensAt` to 0.
+    const later = PURSUITS.filter((p) => (p.ceiling?.opensAt ?? 0) > p.minAge);
+    expect(later.length).toBeGreaterThan(PURSUITS.length / 2);
+  });
+
+  it("keeps every ceiling a pre-college distinction", () => {
+    // The field exists to describe what a reader can see on an application, so a distinction that
+    // only opens at university is the wrong thing in this slot however impressive it is. That was
+    // the mistake that disqualified Speaker Design: the one competition naming loudspeaker design
+    // requires college enrolment.
+    for (const p of PURSUITS) {
+      expect(p.ceiling?.opensAt ?? 0, p.id).toBeLessThanOrEqual(18);
+    }
+  });
+
+  it("allows a ceiling to open before the pursuit's own floor, because they are different floors", () => {
+    // Not a bug, and worth an assertion so nobody 'fixes' it. `minAge` is our effective judgement
+    // about the pursuit; `opensAt` is one venue's stated rule. Birding sits at 13 because eBird bars
+    // under-13s, while the ABA Young Birder award takes entrants from 10 — so a ten-year-old can win
+    // the award and still not be allowed the tool. Both numbers are right.
+    const earlier = PURSUITS.filter(
+      (p) => p.ceiling !== undefined && p.ceiling.opensAt !== 0 && p.ceiling.opensAt < p.minAge,
+    ).map((p) => p.id);
+    expect(earlier).toContain("birding");
+  });
+
+  it("has no ceiling for a pursuit that was cut", () => {
+    // Guards the removal itself. Each of these failed the second test on a structural fact, and the
+    // failure mode is somebody restoring one for a reason that is really about taste.
+    const cut = [
+      "sudoku",
+      "ciphers",
+      "pokemon-tcg",
+      "backgammon",
+      "demoscene",
+      "speaker-design",
+      "weather",
+    ];
+    expect(PURSUITS.filter((p) => cut.includes(p.id))).toEqual([]);
+  });
+});

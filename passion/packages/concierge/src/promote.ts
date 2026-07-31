@@ -71,7 +71,7 @@ function toResource(entry: CacheEntry, domainPath: DomainPath): CuratedResource 
     domainPath,
     // Untagged, and it stays that way until a human files it. The domain path can be inferred from
     // the query because the taxonomy is a vocabulary the inferrer can match against; which of the
-    // forty-four tiles a page belongs on is an editorial call, and guessing it would put unvetted
+    // thirty-seven tiles a page belongs on is an editorial call, and guessing it would put unvetted
     // web material on a child's shelf under the same badge as the curated set.
     pursuits: [],
     affordedModes: PROMOTED_MODES,

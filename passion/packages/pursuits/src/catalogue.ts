@@ -1,15 +1,32 @@
 import type { Pursuit } from "./model.js";
 
 /**
- * The forty-five things a child can actually do, and who will tell them they are getting better.
+ * The thirty-seven things a child can actually do, and who will tell them they are getting better.
  *
- * A CUT IS PENDING against this list (`docs/decisions/2026-07-30-catalogue-scope.md`). The bar is
- * whether a pursuit credibly helps a child reach a top-ranked university, tested per entry as: can
- * someone under 18 reach national-or-regional distinction at a named venue, does it route into a
- * verification channel, and is there a documented admit whose hook was this. Do not add an entry
- * without an answer to those, and read that decision's recorded dissent before removing one — the
- * admissions rubric that leaked in the SFFA litigation grades level and never domain, so "this
- * sounds unserious" is not the test and was explicitly rejected as one.
+ * TWO TESTS, AND AN ENTRY HAS TO PASS BOTH. The first is the original one
+ * (`docs/research/2026-07-28-discovery-catalogue.md` §1): a real venue, reachable by a child in this
+ * product's 6-14 band, that renders a verdict. The second arrived later
+ * (`docs/decisions/2026-07-30-catalogue-scope.md`): a documented path to a distinction near the end
+ * of school that an admissions reader can check, recorded per entry in `ceiling`.
+ *
+ * They are separate because they select differently, and the gap between them is the single most
+ * important thing in this file. Scholastic opens at 13, YoungArts at 15, and Presidential Scholar
+ * needs a graduating senior — so for most of a child's time here, the `ceiling` is not reachable and
+ * the `venue` is the whole story. An entry whose `ceiling` is absent has no documented route to that
+ * later distinction, which is a fact worth surfacing rather than a reason to remove it.
+ *
+ * SEVEN WERE CUT on 2026-07-30 for failing the second test with nothing to appeal to, and each for a
+ * structural reason rather than for sounding unserious — the SFFA rubric grades level and never
+ * domain, and "low status" was explicitly rejected as a criterion. Speaker Design and Demoscene have
+ * no under-18 venue at all; the AES competition that names loudspeaker design requires college
+ * enrolment, so a child is disqualified rather than unlikely. Backgammon's world under-18 event drew
+ * eleven registrants. Weather Watching has no ceiling: its two honours need twenty and twenty-five
+ * years of service. Codes & Ciphers has no world championship. Sudoku's under-18 gold is a
+ * side-classification in an adult event, and Pokémon's divisions are age-graded children's brackets.
+ *
+ * Their curated resources were NOT deleted. A resource keeps its `domainPath` and loses only its
+ * `pursuits` tag, so the concierge still answers with Bletchley Park and NOAA; they simply no longer
+ * stock a tile.
  *
  * Every venue below was checked against a primary source on 2026-07-28. Where a claim could not be
  * verified it is written into `note` rather than smoothed over, because a catalogue whose venues do
@@ -46,6 +63,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "math-puzzles",
     standard: "Math Kangaroo problem sets",
     venue: { name: "Math Kangaroo", url: "https://mathkangaroo.org/" },
+    ceiling: {
+      name: "International Mathematical Olympiad",
+      url: "https://www.imo-official.org/",
+      opensAt: 15,
+      precedent:
+        "Reid Barton (4x IMO gold) and Luke Robitaille (4x IMO gold) to MIT. MIT states it has enrolled almost every American IMO medalist of the last decade, which is the only place on this list where the causal gap is closed.",
+    },
     minAge: 5,
     costUsd: 25,
     cadence: "annual",
@@ -64,6 +88,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "math-puzzles",
     standard: "WCA Regulations and Guidelines",
     venue: { name: "World Cube Association", url: "https://www.worldcubeassociation.org/" },
+    ceiling: {
+      name: "WCA World Championship",
+      url: "https://www.worldcubeassociation.org/competitions",
+      opensAt: 0,
+      precedent:
+        "Collin Burns, 3x3 world record at 15, to Columbia. The WCA runs no age divisions at all, so a teenager competes against adults and can hold an outright world record.",
+    },
     minAge: 5,
     costUsd: 150,
     cadence: "several-yearly",
@@ -71,40 +102,6 @@ export const PURSUITS: readonly Pursuit[] = [
     region: "international",
     skew: { male: 0.9, source: "community queries against the public WCA export, not official" },
     note: "No minimum age; delegates issue DNFs and +2s on the spot and results publish worldwide.",
-  },
-  {
-    id: "sudoku",
-    label: "Sudoku",
-    blurb: "One number per row, and only one way it all fits.",
-    cabin: "math-puzzles",
-    standard: "WPF Grand Prix answer keys",
-    venue: { name: "WPF Sudoku Grand Prix", url: "https://gp.worldpuzzle.org/" },
-    minAge: 7,
-    costUsd: 0,
-    cadence: "monthly",
-    reach: "alone",
-    region: "international",
-    // Sixteen machine-scored verdicts a year for the price of printer paper: the best value in the
-    // catalogue. Narrowed from "logic puzzles" on purpose — nonograms, sudoku and logic grids share
-    // no motor sequence, which is the Scrabble-and-Catan problem in miniature.
-    note: "Eight Sudoku GP rounds and eight Puzzle GP rounds a year, free, email address only.",
-  },
-  {
-    id: "ciphers",
-    label: "Codes & Ciphers",
-    blurb: "Read the message someone tried to hide.",
-    cabin: "math-puzzles",
-    standard: "National Cipher Challenge staged problems",
-    venue: {
-      name: "National Cipher Challenge",
-      url: "https://www.cipherchallenge.org/",
-    },
-    minAge: 11,
-    costUsd: 0,
-    cadence: "annual",
-    reach: "alone",
-    region: "uk",
-    note: "Free and open worldwide, but prizes are UK-only and the organisers say it is not designed for the junior age group.",
   },
 
   // ── Games & Strategy ──────────────────────────────────────────────────────────────────────
@@ -115,6 +112,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "games-strategy",
     standard: "US Chess rating system and Official Rules of Chess",
     venue: { name: "US Chess MSA", url: "https://new.uschess.org/civicrm/player-search" },
+    ceiling: {
+      name: "FIDE Grandmaster title",
+      url: "https://ratings.fide.com/",
+      opensAt: 0,
+      precedent:
+        "Daniel Naroditsky (GM at 17) and Carissa Yip to Stanford; Andrew Tang (GM at 17) to Princeton. Chess scholarships exist but only at Webster, SLU, UT Dallas and Texas Tech, never at a top-ranked school.",
+    },
     minAge: 5,
     costUsd: 24,
     cadence: "monthly",
@@ -130,6 +134,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "games-strategy",
     standard: "AGA Tournament Rules; kyu and dan ratings",
     venue: { name: "North American Kyu Championship", url: "https://www.usgo.org/" },
+    ceiling: {
+      name: "Redmond Cup, Senior division",
+      url: "https://www.usgo.org/redmond-cup",
+      opensAt: 13,
+      precedent:
+        "Aaron Ye, seven-time Redmond Cup champion, to Cornell. No source links the record to the admission.",
+    },
     minAge: 6,
     costUsd: 10,
     cadence: "annual",
@@ -144,6 +155,11 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "games-strategy",
     standard: "ACBL masterpoint ranking",
     venue: { name: "Youth NABC", url: "https://www.acbl.org/youth/" },
+    ceiling: {
+      name: "World Youth Bridge Teams, Under-16 Koc Trophy",
+      url: "http://www.worldbridge.org/",
+      opensAt: 0,
+    },
     minAge: 8,
     costUsd: 5,
     cadence: "monthly",
@@ -155,40 +171,6 @@ export const PURSUITS: readonly Pursuit[] = [
     note: "No stated minimum age was found, only that Youth means under 21.",
   },
   {
-    id: "pokemon-tcg",
-    label: "Pokémon Cards",
-    blurb: "Build a deck, then find out what it cannot beat.",
-    cabin: "games-strategy",
-    standard: "Play! Pokémon Junior division rules and Championship Points",
-    venue: {
-      name: "Play! Pokémon League Challenge",
-      url: "https://www.pokemon.com/us/play-pokemon",
-    },
-    minAge: 6,
-    costUsd: 150,
-    cadence: "monthly",
-    reach: "alone",
-    region: "international",
-    // The only entry where cost scales with wanting to win AND the purchase mechanic is randomised
-    // packs. For a catalogue aimed at children without family resources that is a different kind of
-    // risk from a membership fee, and it should be said on the tile rather than discovered.
-    note: "Highest verdict cadence in the group; entry is often free for Juniors. Deck cost is unverified and unbounded.",
-  },
-  {
-    id: "backgammon",
-    label: "Backgammon",
-    blurb: "Play the odds the dice give you.",
-    cabin: "games-strategy",
-    standard: "FIBS rating formula",
-    venue: { name: "USBGF Kids Backgammon Club", url: "https://usbgf.org/" },
-    minAge: 8,
-    costUsd: 0,
-    cadence: "weekly",
-    reach: "alone",
-    region: "international",
-    note: "Best cadence anywhere: weekly, free, rated. Weakest judge: an encouraging club, and dice variance in every result.",
-  },
-  {
     id: "scrabble",
     label: "Scrabble",
     blurb: "Find the word the board is hiding.",
@@ -197,6 +179,13 @@ export const PURSUITS: readonly Pursuit[] = [
     venue: {
       name: "NASPA Youth SCRABBLE",
       url: "https://www.scrabbleplayers.org/w/NASPA_Youth_SCRABBLE",
+    },
+    ceiling: {
+      name: "WESPA World Youth Scrabble Championship",
+      url: "https://www.wespa.org/",
+      opensAt: 0,
+      precedent:
+        "Mack Meller, youngest player ever to reach expert rating at 11 and highest-rated under-18 in North America 2012-18, to Columbia.",
     },
     minAge: 7,
     costUsd: 15,
@@ -214,6 +203,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "code-computers",
     standard: "USACO contest instructions; 1000-point test-data scoring",
     venue: { name: "USACO", url: "https://usaco.org/" },
+    ceiling: {
+      name: "International Olympiad in Informatics",
+      url: "https://ioinformatics.org/",
+      opensAt: 0,
+      precedent:
+        "Brian Xue (IOI gold, third in the world) and Benjamin Chen (IOI gold) to MIT. Also feeds MIT PRIMES, whose alumni were 12 of the top 25 Putnam scorers in 2025.",
+    },
     minAge: 9,
     costUsd: 0,
     cadence: "several-yearly",
@@ -231,6 +227,14 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "code-computers",
     standard: "picoCTF challenge set and scoring",
     venue: { name: "picoCTF", url: "https://picoctf.org/" },
+    ceiling: {
+      // Not picoCTF: that is already this pursuit's `venue`, so naming it here would record nothing.
+      // MITRE eCTF is the step above, and a high-school team placed sixth nationally in 2024, ahead
+      // of teams from MIT and UCLA.
+      name: "MITRE Embedded Capture the Flag",
+      url: "https://ectf.mitre.org/",
+      opensAt: 14,
+    },
     minAge: 13,
     costUsd: 0,
     cadence: "annual",
@@ -245,6 +249,11 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "code-computers",
     standard: "Ludum Dare eight-category peer rating",
     venue: { name: "Ludum Dare", url: "https://ldjam.com/" },
+    ceiling: {
+      name: "Games for Change Student Challenge",
+      url: "https://www.gamesforchange.org/studentchallenge/",
+      opensAt: 10,
+    },
     minAge: 13,
     costUsd: 0,
     cadence: "several-yearly",
@@ -262,20 +271,6 @@ export const PURSUITS: readonly Pursuit[] = [
     // concluding anything.
     note: "Peer votes are a real non-captive verdict but there is no published rubric, so the standard is weaker than it looks.",
   },
-  {
-    id: "demoscene",
-    label: "Demoscene",
-    blurb: "Make a computer do something it should not be able to.",
-    cabin: "code-computers",
-    standard: "Revision competition rules with jury preselection",
-    venue: { name: "Revision", url: "https://revision-party.net/" },
-    minAge: 12,
-    costUsd: 40,
-    cadence: "annual",
-    reach: "adult-action",
-    region: "international",
-    note: "Jury preselection genuinely rejects entries. No age policy found; a remote ticket avoids the all-night in-person event.",
-  },
 
   // ── Making & Building ─────────────────────────────────────────────────────────────────────
   {
@@ -287,6 +282,11 @@ export const PURSUITS: readonly Pursuit[] = [
     venue: {
       name: "ARRL VEC exam session",
       url: "https://www.arrl.org/find-an-amateur-radio-license-exam-session",
+    },
+    ceiling: {
+      name: "ARRL Hiram Percy Maxim Memorial Award",
+      url: "https://www.arrl.org/hiram-percy-maxim-award",
+      opensAt: 0,
     },
     minAge: 8,
     costUsd: 5,
@@ -308,6 +308,11 @@ export const PURSUITS: readonly Pursuit[] = [
       name: "NAR National Rocketry Competition, A Division",
       url: "https://nar.org/NRCCompetition",
     },
+    ceiling: {
+      name: "FAI World Championship for Space Models, Junior class",
+      url: "https://www.fai.org/page/cia-space-models",
+      opensAt: 0,
+    },
     minAge: 7,
     costUsd: 30,
     cadence: "several-yearly",
@@ -322,6 +327,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "making-engineering",
     standard: "County fairbook standards, Danish judging system",
     venue: { name: "4-H county fair", url: "https://4-h.org/" },
+    ceiling: {
+      name: "SkillsUSA National Cabinetmaking Championship",
+      url: "https://www.skillsusa.org/competitions/skillsusa-championships/",
+      opensAt: 14,
+      precedent:
+        "Ethan Graham, two-time national champion, to Dartmouth on a full scholarship. Note the path needs a school shop programme; an unaffiliated child with a garage cannot enter.",
+    },
     minAge: 8,
     costUsd: 20,
     cadence: "annual",
@@ -342,6 +354,11 @@ export const PURSUITS: readonly Pursuit[] = [
       name: "Make It With Wool, Preteen division",
       url: "https://www.makeitwithwool.com/",
     },
+    ceiling: {
+      name: "Scholastic Art Awards, Fashion category",
+      url: "https://www.artandwriting.org/",
+      opensAt: 13,
+    },
     minAge: 6,
     costUsd: 45,
     cadence: "annual",
@@ -360,6 +377,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "making-engineering",
     standard: "Make:able challenge toolkit, six named criteria",
     venue: { name: "Make:able Challenge", url: "https://www.makeable.org/" },
+    ceiling: {
+      name: "Regeneron International Science and Engineering Fair",
+      url: "https://www.societyforscience.org/isef/",
+      opensAt: 13,
+      precedent:
+        "Kavya Kopparapu, who built a retinopathy screening tool for her grandfather, ISEF finalist, to Harvard.",
+    },
     minAge: 8,
     costUsd: 0,
     cadence: "annual",
@@ -374,6 +398,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "making-engineering",
     standard: "FLL Robot Game Rulebook, plus Core Values, Innovation and Robot Design rubrics",
     venue: { name: "FIRST LEGO League", url: "https://www.firstinspires.org/robotics/fll" },
+    ceiling: {
+      name: "FIRST Dean's List Award",
+      url: "https://www.firstinspires.org/",
+      opensAt: 14,
+      precedent:
+        "Seth Berg, one of ten inaugural Dean's List winners in 2010, to MIT, reported on the MIT Admissions blog by an officer who was present.",
+    },
     minAge: 6,
     costUsd: 700,
     cadence: "annual",
@@ -393,6 +424,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "music-sound",
     standard: "ABRSM Music Performance Grades specification",
     venue: { name: "ABRSM Initial Performance Grade", url: "https://www.abrsm.org/" },
+    ceiling: {
+      name: "Cliburn International Junior Competition",
+      url: "https://cliburn.org/",
+      opensAt: 13,
+      precedent:
+        "Christopher Shin, YoungArts finalist and US Presidential Scholar in the Arts, to Harvard.",
+    },
     minAge: 5,
     costUsd: 65,
     cadence: "on-demand",
@@ -410,6 +448,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "music-sound",
     standard: "ABRSM Bowed Strings syllabus",
     venue: { name: "ABRSM Initial Performance Grade", url: "https://www.abrsm.org/" },
+    ceiling: {
+      name: "Menuhin Competition, Junior division",
+      url: "https://menuhincompetition.org/",
+      opensAt: 0,
+      precedent:
+        "Jinan Laurentia Woo, youngest ever first prize at the Johansen International and sole YoungArts Gold 2023, to Yale.",
+    },
     minAge: 5,
     costUsd: 65,
     cadence: "on-demand",
@@ -424,6 +469,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "music-sound",
     standard: "ABRSM Drum Kit Performance Grades",
     venue: { name: "ABRSM Initial / RSL Debut", url: "https://www.abrsm.org/" },
+    ceiling: {
+      name: "NAfME All-National Jazz Ensemble",
+      url: "https://nafme.org/programs/all-national-honor-ensembles/",
+      opensAt: 14,
+      precedent:
+        "Raghav Mehrotra to Harvard, on professional experience rather than competition: principal cast drummer in School of Rock on Broadway.",
+    },
     minAge: 5,
     costUsd: 70,
     cadence: "on-demand",
@@ -438,6 +490,11 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "music-sound",
     standard: "RSL Debut syllabus",
     venue: { name: "RSL Awards Debut", url: "https://www.rslawards.com/" },
+    ceiling: {
+      name: "Guitar Foundation of America International Youth Competition",
+      url: "https://guitarfoundation.org/",
+      opensAt: 0,
+    },
     minAge: 5,
     costUsd: 75,
     cadence: "on-demand",
@@ -453,6 +510,12 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "music-sound",
     standard: "RSL Vocals / Trinity Initial syllabus",
     venue: { name: "RSL Awards Debut", url: "https://www.rslawards.com/" },
+    ceiling: {
+      name: "YoungArts, Voice",
+      url: "https://youngarts.org/",
+      opensAt: 15,
+      precedent: "Evelyn Carr and Kate Vandermel, both Juilliard Pre-College, to Harvard.",
+    },
     minAge: 5,
     costUsd: 70,
     cadence: "on-demand",
@@ -467,6 +530,11 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "music-sound",
     standard: "ABRSM Creative Musicianship specification",
     venue: { name: "ABRSM CM: Music Production", url: "https://www.abrsm.org/" },
+    ceiling: {
+      name: "GRAMMY Camp, Music Production",
+      url: "https://www.grammymuseum.org/education/grammy-camp/",
+      opensAt: 15,
+    },
     minAge: 8,
     costUsd: 70,
     cadence: "on-demand",
@@ -481,34 +549,17 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "music-sound",
     standard: "ABRSM Creative Musicianship specification",
     venue: { name: "ABRSM CM: Songwriting", url: "https://www.abrsm.org/" },
+    ceiling: {
+      name: "YoungArts, Voice - Singer-Songwriter",
+      url: "https://youngarts.org/",
+      opensAt: 15,
+    },
     minAge: 7,
     costUsd: 70,
     cadence: "on-demand",
     reach: "alone",
     region: "international",
     note: "Lowest equipment barrier in the music group: a voice and a phone.",
-  },
-  {
-    id: "speaker-design",
-    label: "Speaker Design",
-    blurb: "Build a box that moves air exactly the way you meant.",
-    cabin: "music-sound",
-    standard: "ANSI/CTA-2010-C maximum output measurement",
-    venue: {
-      name: "Ohio Speaker Design Competition",
-      url: "https://www.parts-express.com/speaker-design-competition",
-    },
-    minAge: 8,
-    costUsd: 480,
-    cadence: "annual",
-    reach: "adult-action",
-    region: "us",
-    // The standard and the venue are two unconnected paths, not one. The competition judges by
-    // subjective listening to three one-minute clips and uses a microphone only to level-match; it
-    // does not use CTA-2010. Self-measurement against the standard is the real validation, and it
-    // needs a car park: the spec wants the nearest reflector 0.75 wavelengths away, about 26m at
-    // 20 Hz.
-    note: "No age policy found in either direction. Midwest Audiofest no longer exists; Parts Express rebranded it in 2024.",
   },
 
   // ── Art & Animation ───────────────────────────────────────────────────────────────────────
@@ -521,6 +572,13 @@ export const PURSUITS: readonly Pursuit[] = [
     venue: {
       name: "Young Wildlife Photographer of the Year",
       url: "https://www.nhm.ac.uk/wpy/competition",
+    },
+    ceiling: {
+      name: "US Presidential Scholar in the Arts, Photography",
+      url: "https://youngarts.org/",
+      opensAt: 17,
+      precedent:
+        "Zakiriya Gladney, Presidential Scholar for the series Black Hermeneutics, admitted to Princeton early and chose Harvard.",
     },
     minAge: 5,
     costUsd: 0,
@@ -536,6 +594,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "art-motion",
     standard: "Toyota criteria: concept 33.4%, uniqueness 33.3%, artistry 33.3%",
     venue: { name: "Toyota Dream Car Art Contest", url: "https://www.toyota-dreamcarart.com/" },
+    ceiling: {
+      name: "Scholastic Art Awards, Gold Medal Portfolio",
+      url: "https://www.artandwriting.org/",
+      opensAt: 13,
+      precedent:
+        "Matthew Yu, Scholastic Gold Medal, YoungArts Winner with Distinction and Presidential Scholar, to Stanford.",
+    },
     minAge: 4,
     costUsd: 0,
     cadence: "annual",
@@ -550,6 +615,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "art-motion",
     standard: "Young Animator of the Year UK category rules",
     venue: { name: "Young Animator of the Year UK", url: "https://younganimator.uk/" },
+    ceiling: {
+      name: "YoungArts, Film",
+      url: "https://youngarts.org/",
+      opensAt: 15,
+      precedent:
+        "Ian Kim, YoungArts Winner with Distinction for the stop-motion documentary My Sisters In The Stars and Presidential Scholar, to Harvard in Art, Film and Visual Studies.",
+    },
     minAge: 11,
     costUsd: 0,
     cadence: "annual",
@@ -564,6 +636,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "art-motion",
     standard: "Into Film Awards criteria",
     venue: { name: "Into Film Awards", url: "https://www.intofilm.org/awards" },
+    ceiling: {
+      name: "US Presidential Scholar in the Arts, Film",
+      url: "https://youngarts.org/",
+      opensAt: 17,
+      precedent:
+        "A Presidential Scholar in Film is named every year; Ian Kim's 2024 award was for animation work.",
+    },
     minAge: 5,
     costUsd: 0,
     cadence: "annual",
@@ -581,6 +660,11 @@ export const PURSUITS: readonly Pursuit[] = [
       name: "Kitakyushu International Manga Competition",
       url: "https://www.city.kitakyushu.lg.jp/",
     },
+    ceiling: {
+      name: "Scholastic Art Awards, Comic Art",
+      url: "https://www.artandwriting.org/",
+      opensAt: 13,
+    },
     minAge: 6,
     costUsd: 0,
     cadence: "annual",
@@ -595,6 +679,11 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "art-motion",
     standard: "Young Animator of the Year UK 3D category rules",
     venue: { name: "Young Animator of the Year UK", url: "https://younganimator.uk/" },
+    ceiling: {
+      name: "National Film Festival for Talented Youth, Best Animation",
+      url: "https://www.nffty.org/",
+      opensAt: 0,
+    },
     minAge: 11,
     costUsd: 0,
     cadence: "annual",
@@ -611,6 +700,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "science-nature",
     standard: "iNaturalist Research Grade criteria, two-thirds community agreement",
     venue: { name: "iNaturalist to GBIF", url: "https://www.inaturalist.org/" },
+    ceiling: {
+      name: "First authorship on a peer-reviewed species description",
+      url: "https://zookeys.pensoft.net/",
+      opensAt: 0,
+      precedent:
+        "Harper Forbes and Prakrit Jain, 17 and 18, are first authors of the ZooKeys paper naming two scorpion species, found through iNaturalist. They went to Arizona and Berkeley, not to a target school.",
+    },
     minAge: 5,
     costUsd: 0,
     cadence: "continuous",
@@ -628,6 +724,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "science-nature",
     standard: "eBird Reviewer Handbook and per-county filters",
     venue: { name: "eBird", url: "https://ebird.org/about" },
+    ceiling: {
+      name: "ABA Young Birder of the Year",
+      url: "https://www.aba.org/aba-young-birder-of-the-year/",
+      opensAt: 10,
+      precedent:
+        "Dessi Sieburth, Young Birder of the Year 2015, to Stanford. Benjamin Van Doren turned migration study into an Intel STS finalist place and went to Cornell.",
+    },
     minAge: 13,
     costUsd: 0,
     cadence: "continuous",
@@ -642,6 +745,12 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "science-nature",
     standard: "Minor Planet Center astrometric report format",
     venue: { name: "IASC", url: "https://iasc.cosmosearch.org/" },
+    // NO CEILING, DELIBERATELY, and this is the clearest case in the catalogue of what an absent
+    // one means. There is nothing above the venue that a child can reach before they apply: a
+    // provisional designation is the venue's own output, and the terminal honour — numbering, and
+    // the right to name what you found — takes six to ten years and arrives after the application.
+    // Of roughly 3,800 to 7,000 provisional detections since 2006, about 100 have ever been
+    // numbered. Recording the venue again under a second name would manufacture a ceiling.
     minAge: 10,
     costUsd: 0,
     cadence: "monthly",
@@ -659,6 +768,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "science-nature",
     standard: "County fairbook horticulture standards, Danish judging",
     venue: { name: "4-H county fair", url: "https://4-h.org/" },
+    ceiling: {
+      name: "Regeneron ISEF, Plant Sciences",
+      url: "https://www.societyforscience.org/isef/",
+      opensAt: 13,
+      precedent:
+        "Lillian Kay Petersen, Regeneron STS first place for forecasting African crop yields from satellite data, to Harvard. Rohan Wagh, ninth place for a bacteria-powered soil sensor, to MIT. Both computational rather than horticultural.",
+    },
     minAge: 8,
     costUsd: 20,
     cadence: "annual",
@@ -667,26 +783,19 @@ export const PURSUITS: readonly Pursuit[] = [
     note: "Cloverbuds aged 5-7 are frequently barred from competitive judging, which is the point of entering.",
   },
   {
-    id: "weather",
-    label: "Weather Watching",
-    blurb: "Measure the rain where you live, every single day.",
-    cabin: "science-nature",
-    standard: "CoCoRaHS observer protocol",
-    venue: { name: "CoCoRaHS", url: "https://www.cocorahs.org/" },
-    minAge: 7,
-    costUsd: 45,
-    cadence: "continuous",
-    reach: "alone",
-    region: "us",
-    note: "The National Weather Service uses the data, but nothing was found that rejects an individual report, so the verdict is the weak link.",
-  },
-  {
     id: "variable-stars",
     label: "Watching Stars Change",
     blurb: "Some stars get brighter and dimmer. Write down when.",
     cabin: "science-nature",
     standard: "AAVSO Visual Observing Manual",
     venue: { name: "AAVSO", url: "https://www.aavso.org/" },
+    ceiling: {
+      name: "A new variable star accepted into the AAVSO Variable Star Index",
+      url: "https://www.aavso.org/vsx",
+      opensAt: 0,
+      precedent:
+        "The AAVSO reports that 26% of its 2024 journal articles had student first or corresponding authors, half of them high schoolers.",
+    },
     minAge: 10,
     costUsd: 0,
     cadence: "continuous",
@@ -703,6 +812,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "influence-media",
     standard: "Stone Soup editorial criteria",
     venue: { name: "Stone Soup", url: "https://stonesoup.com/submission-guidelines/" },
+    ceiling: {
+      name: "US Presidential Scholar in the Arts, Writing",
+      url: "https://www.artandwriting.org/",
+      opensAt: 13,
+      precedent:
+        "Jessie Leitzel and Isabella Cho, both Presidential Scholars in writing, to Harvard. Amanda Gorman, LA Youth Poet Laureate at 16, to Harvard.",
+    },
     minAge: 6,
     costUsd: 25,
     cadence: "continuous",
@@ -723,6 +839,11 @@ export const PURSUITS: readonly Pursuit[] = [
       name: "NPR Student Podcast Challenge",
       url: "https://www.npr.org/series/662609200/npr-student-podcast-challenge",
     },
+    ceiling: {
+      name: "NPR Student Podcast Challenge",
+      url: "https://www.npr.org/podcastchallenge",
+      opensAt: 14,
+    },
     minAge: 9,
     costUsd: 0,
     cadence: "annual",
@@ -740,6 +861,13 @@ export const PURSUITS: readonly Pursuit[] = [
       name: "Scholastic Kids Press",
       url: "https://kpcnotebook.scholastic.com/page/about-scholastic-kids-press",
     },
+    ceiling: {
+      name: "JEA National High School Journalist of the Year",
+      url: "https://jea.org/wp/home/awards-honors/",
+      opensAt: 14,
+      precedent:
+        "None at a target school: the last three national winners went to Northwestern, Northwestern and Missouri, which reads as self-selection toward Medill.",
+    },
     minAge: 10,
     costUsd: 0,
     cadence: "annual",
@@ -754,6 +882,13 @@ export const PURSUITS: readonly Pursuit[] = [
     cabin: "influence-media",
     standard: "Coolidge Foundation online opens format",
     venue: { name: "Coolidge Foundation debate", url: "https://coolidgefoundation.org/debate/" },
+    ceiling: {
+      name: "NSDA National Tournament champion",
+      url: "https://www.speechanddebate.org/",
+      opensAt: 13,
+      precedent:
+        "Rohan Lingam, 2024 NSDA policy co-champion, stated on the record he would attend Stanford.",
+    },
     minAge: 11,
     costUsd: 0,
     cadence: "several-yearly",

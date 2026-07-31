@@ -33,7 +33,7 @@ describe("every pursuit has a tile", () => {
     expect(orphans).toEqual([]);
   });
 
-  it("keeps every tile small enough to send forty-four of them at once", () => {
+  it("keeps every tile small enough to send thirty-seven of them at once", () => {
     // They all load on first paint, because there is no pager and lazy-loading a visible tile just
     // makes it appear late. 40KB each is the point where the set stops being a rounding error on a
     // slow connection.

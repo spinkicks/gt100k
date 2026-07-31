@@ -64,7 +64,7 @@ export type SolveVerb = "inspect" | "tinker" | "play" | "assemble" | "fix";
  * THE FOURTH COLUMN IS THE MENU, NOT THE MODEL, and the two are deliberately allowed to disagree.
  * `domainPath` is where a belief is held and must not move — a child who plays Balance Scale is
  * telling us about `math-puzzles/foundations` whatever tile they found it under. `pursuits` is which
- * of the 44 tiles on the wall offers the game, and the wall is a different partition of the same
+ * of the 37 tiles on the wall offers the game, and the wall is a different partition of the same
  * space: there is no Foundations tile, because "fractions, ratios and functions" share no action
  * program and so are not a thing a child does.
  *
@@ -79,13 +79,30 @@ export type SolveVerb = "inspect" | "tinker" | "play" | "assemble" | "fix";
 const ROWS = [
   // logic-games — deduction. Solving these is investigating a system, not building one.
   //
-  // All three go to the Sudoku tile, whose shelf is NRICH, Transum and Mathigon's puzzle calendars
-  // — general grid deduction rather than sudoku specifically, which is what these are.
-  ["nonogram", ["math-puzzles", "logic-puzzles"], ["investigate"], "inspect", ["sudoku"]],
-  ["mirror", ["math-puzzles", "logic-puzzles"], ["investigate"], "inspect", ["sudoku"]],
+  // All three went to the Sudoku tile, which was cut on 2026-07-30
+  // (`docs/decisions/2026-07-30-catalogue-scope.md` §4b). They now go to Competition Maths, and the
+  // move is a compromise worth naming: these are grid deduction, not olympiad problem-solving, so
+  // the tile is one cabin-mate wider than the work. The alternative was three of fifteen gadgets
+  // reachable from no tile at all, which is worse for a child and worse for the signal — Nonogram is
+  // also one of the five that can emit `chosen_challenge`, so orphaning it would narrow the only
+  // route a child has to ask for something harder.
+  [
+    "nonogram",
+    ["math-puzzles", "logic-puzzles"],
+    ["investigate"],
+    "inspect",
+    ["competition-maths"],
+  ],
+  ["mirror", ["math-puzzles", "logic-puzzles"], ["investigate"], "inspect", ["competition-maths"]],
   // Routing a pipe network is construction first, deduction second. Both are engaged, so both
   // are afforded, and the verb the emitter uses decides which is primary.
-  ["pipes", ["math-puzzles", "logic-puzzles"], ["build", "investigate"], "tinker", ["sudoku"]],
+  [
+    "pipes",
+    ["math-puzzles", "logic-puzzles"],
+    ["build", "investigate"],
+    "tinker",
+    ["competition-maths"],
+  ],
   ["chess", ["games-strategy", "chess"], ["perform"], "play", ["chess"]],
 
   // math — foundational, not competition. On the belief axis. See the note above for why the tile

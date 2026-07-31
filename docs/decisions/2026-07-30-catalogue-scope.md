@@ -1,7 +1,8 @@
 # What stays in the catalogue, and why prestige is the wrong axis
 
-**Status:** Research complete. **Owner overrode the recommendation in §4 and directed a cut** (see
-§4a). A full 44-pursuit audit against the owner's bar is in flight; the cut list lands there.
+**Status:** **Applied.** The catalogue is 37 pursuits. The seven that failed the second test on a
+structural fact are gone; the fifteen marginals stay, because the owner chose to keep both tests
+rather than replace one with the other (§4c).
 **Date:** 2026-07-30
 **Why now:** we proposed cutting low-status pursuits (Pokémon Cards, Comics & Manga, Speedcubing,
 Scrabble, Backgammon) on the grounds that top universities would not credit them. Three independent
@@ -178,6 +179,133 @@ Woodworking are the ones I expect to be in trouble, and none of them was on the 
 domain, and the named precedents in §4 include admits to Dartmouth and Columbia in exactly the
 pursuits proposed for removal. The decision is a judgement call about product positioning under a
 manager's mandate, not a finding. It should be revisited if the positioning changes.
+
+---
+
+## 4b. The audit result, all 44
+
+Four independent sweeps, each asked the same three questions: is there a named venue where someone
+under 18 can reach national-or-regional distinction with a publicly checkable result; does it route
+into a verification channel; is there a documented admit whose hook was this.
+
+**22 KEEP, 15 MARGINAL, 7 CUT.** Marginal means a real ceiling exists but no named precedent was
+found, sometimes with no channel either.
+
+| Verdict | Pursuits |
+|---|---|
+| **CUT (7)** | Sudoku, Codes & Ciphers, Pokémon Cards, Backgammon, Demoscene, Speaker Design, Weather Watching |
+| **MARGINAL (15)** | Speedcubing, Go, Bridge, Scrabble, Hacking Puzzles (CTF), Making Games, Ham Radio, Sewing, Guitar, Making Tracks, Songwriting, Comics & Manga, 3D Animation, Asteroid Hunting, Podcasting |
+| **KEEP (22)** | Competition Maths, Chess, Programming, Model Rockets, Woodworking, Designing For Someone, Robotics, Growing Things, Piano, Violin, Drums, Singing, Photography, Drawing, Stop-Motion, Filmmaking, Writing Stories, Finding Wildlife, Birding, Watching Stars Change, Reporting, Debating |
+
+### Why each cut is a cut
+
+- **Speaker Design** and **Demoscene**: no under-18 venue exists *at all*. The AES Saul Walker
+  competition names loudspeaker design specifically and requires enrolment in a college programme,
+  so a high-schooler is disqualified from entering rather than merely unlikely to win. Assembly's
+  only under-18 contest is a logo competition for children.
+- **Backgammon**: the 2025 world under-18 event had **11 registrants and 2 recorded placings**.
+- **Codes & Ciphers**: no world championship. The Alan Turing competition no longer runs as a ranked
+  contest, and the NSA Codebreaker Challenge scores schools rather than individuals.
+- **Weather Watching**: there is no ceiling. The two COOP honours require **20 and 25 years of
+  service**, which is structurally impossible for a minor.
+- **Sudoku** and **Pokémon Cards**: both have a technically real under-18 title that is structurally
+  smaller than it sounds. Sudoku's U18 gold is a side-classification inside an adult event and the
+  standalone junior championship drew five countries; Pokémon's divisions are age-graded children's
+  brackets. Note this contradicts §4's earlier reading of Pokémon: the Bradner case is a
+  *continental Senior* title, he was also his school's valedictorian, and no source connects the two.
+
+### Three findings that outrank the table
+
+**1. Every named precedent also had an independently elite academic record.** Burns graduated summa
+cum laude and made Phi Beta Kappa in his junior year; Meller was homeschooled through Stanford
+Online High School; Tang was a four-time AIME qualifier. Admissions decisions are not public, so a
+named case can establish that a person did the thing and got in — never that the thing got them in.
+That gap is closed for exactly one pursuit: MIT has stated it enrolled *almost every American IMO
+medalist of the last decade*. For nothing else on this list is it closed at all.
+
+**2. Harvard's academic rating does not require a competition, which reopens the science pursuits.**
+The verbatim academic-1 criterion (HARV00097938) reads: *"unusual creativity and possible evidence
+of original scholarship, often substantiated by our faculty or other academic mentors."* Competition
+recognition is a separate, hedged second sentence. A peer-reviewed paper with a mentor satisfies the
+operative clause directly. That splits citizen science along a hard line: contributing a **record**
+(an eBird checklist, a CoCoRaHS reading, an IASC detection) is participation, while authoring a
+**result** opens the academic axis. Three pursuits have a documented under-18 route across it —
+Finding Wildlife (a 17- and an 18-year-old are *first authors* of the *ZooKeys* paper naming two
+scorpion species), Birding, and Watching Stars Change (the AAVSO reports 26% of its 2024 journal
+articles had student first or corresponding authors, half of them high schoolers). Asteroid Hunting
+does not: it terminates at a database row, and numbering takes six to ten years, arriving after the
+application.
+
+**3. MIT's Maker Portfolio absorbs seven pursuits regardless of whether any competition exists.**
+It explicitly welcomes "crafts that might not typically be lumped under engineering," is read by
+faculty and alumni, and its launch examples include a chainmail suit and a knitted fractal. That
+weakens a blanket cut. It does not produce a Harvard rating, because the Maker Portfolio is a
+*channel*, not a distinction, and Harvard has no equivalent.
+
+### The finding that undercuts the whole exercise
+
+**Almost none of these ceilings is reachable by anyone in our age band.** Scholastic starts at grade
+7 and age 13. YoungArts requires grades 10–12 or ages 15–18. Presidential Scholar in the Arts
+requires being a graduating senior. Cliburn's junior division is 13–17; Menuhin's is under 16.
+
+So for the overwhelming majority of a child's time in this product, **every KEEP above is a claim
+about a pipeline that opens after they leave us.** The catalogue was built to the tests in
+`docs/research/2026-07-28-discovery-catalogue.md` §1, which asked what a *child* can reach now. This
+audit asks what a *seventeen-year-old* can reach. Cutting on the second test while serving the first
+population is a category error, and it is the strongest argument against acting on this table
+literally.
+
+A related structural point, from the music sweep: the conservatoire is the **training** pipeline,
+not an alternative destination. Woo went through Juilliard Pre-College and landed at Yale. The
+honest claim is that serious training is acquired in a pre-college division and then *spent* at a
+general admissions office through a portfolio — the violin alone opens nothing.
+
+---
+
+## 4c. What was actually applied
+
+**Both tests stand, and neither replaces the other.** A pursuit needs a venue a child can reach now
+(the original test, `docs/research/2026-07-28-discovery-catalogue.md` §1) **and** a documented path
+to a distinction an admissions reader can check. Only entries failing both were removed, so the cut
+is the seven and not the twenty-two non-keeps.
+
+**The distinction is now in the data, not just in this document.** `Pursuit.ceiling` records the
+later distinction — name, url, `opensAt`, and the named precedent where the audit found one — and it
+is deliberately separate from `venue` because the two select differently. The numbers that fall out:
+
+- **37** pursuits, **36** with a ceiling, **25** with a named precedent.
+- **21 of 37** have a ceiling that opens *later* than the pursuit's own floor. That is the age gap,
+  now machine-readable rather than a paragraph.
+- **17 of 37** admit a six-year-old at all.
+
+**An absent ceiling is meaningful and is tested as such.** Asteroid Hunting is the one entry with
+none: a provisional designation is the venue's own output, and numbering — the terminal honour, and
+the right to name what you found — takes six to ten years, arriving after the application. Of
+roughly 3,800 to 7,000 provisional detections since 2006, about a hundred have ever been numbered.
+Naming the venue twice would have manufactured a ceiling, so the field is left empty and the test
+bounds how common that may become.
+
+**Two things the audit got wrong, caught by writing the data down.** The CTF ceiling was picoCTF,
+which is already that pursuit's venue, so it recorded nothing; it is now MITRE eCTF, where a
+high-school team placed sixth nationally in 2024 ahead of MIT and UCLA. And a ceiling may legitimately
+open *before* a pursuit's own floor: Birding sits at 13 because eBird bars under-13s, while the ABA
+Young Birder award takes entrants from 10, so a ten-year-old can win the award and still not be
+allowed the tool. Both numbers are right and there is a test saying so, because it looks like a bug.
+
+### What the cut cost, recorded because it was not free
+
+**Thirty-five curated resources lost their tile but not their place.** A resource keeps its
+`domainPath` and loses only its `pursuits` tag, so Bletchley Park, NOAA, NRICH and UNSW Physics still
+answer through the concierge; they simply no longer stock a wall tile. Nothing was deleted. This
+works because `EMPTY_PURSUIT` means "a pursuit with no shelf", not "a resource with no tile".
+
+**Cutting Sudoku orphaned three of the fifteen games.** Nonogram, Mirror Maze and Pipes all pointed
+at that tile, and Nonogram is one of only five gadgets that can emit `chosen_challenge` — the single
+signal that lets a child ask for something harder. They now point at Competition Maths, which is one
+cabin-mate wider than the work: these are grid deduction, not olympiad problem-solving. The
+alternative was three games reachable from no tile, which is worse for a child and worse for the
+signal. **If the wall ever feels thin on logic puzzles, this is why, and restoring Sudoku is the
+honest fix rather than stretching Competition Maths further.**
 
 ---
 

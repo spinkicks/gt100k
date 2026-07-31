@@ -14,7 +14,7 @@
 import { PURSUITS } from "./catalogue.js";
 import type { Pursuit } from "./model.js";
 
-export type { Cadence, Pursuit, Reach, Region, Skew, Venue } from "./model.js";
+export type { Cadence, Ceiling, Pursuit, Reach, Region, Skew, Venue } from "./model.js";
 export { PURSUITS } from "./catalogue.js";
 
 /**
@@ -23,11 +23,17 @@ export { PURSUITS } from "./catalogue.js";
  * Age is a hard filter rather than a sort, because the alternative is showing a seven-year-old a
  * door that is locked. Most venues open at 10 to 13 — eBird's terms bar under-13s outright, picoCTF
  * and the game jams are 13 by COPPA, and 4-H Cloverbuds are frequently barred from the competitive
- * judging that is the reason to enter. Eight of the forty-five admit a six-year-old.
+ * judging that is the reason to enter. Seventeen of the thirty-seven admit a six-year-old.
  *
  * That thinness is a fact about the world and this function surfaces it rather than hiding it: a
  * caller that gets back a short list for a young child is seeing the truth, and should say so on
  * screen instead of padding it.
+ *
+ * THIS FILTERS ON `minAge`, WHICH IS THE PURSUIT'S OWN DOOR, NOT `ceiling.opensAt`. The two are
+ * different questions and the gap between them is large: twenty-one of the thirty-seven have a
+ * ceiling that opens later than the pursuit itself, and several not until fifteen or seventeen. A
+ * caller showing a child what they can start today wants this function; a caller telling an adult
+ * where a pursuit eventually leads wants `ceiling` and should not pretend the two coincide.
  */
 export function reachableAt(age: number, from: readonly Pursuit[] = PURSUITS): readonly Pursuit[] {
   return from.filter((p) => age >= p.minAge);

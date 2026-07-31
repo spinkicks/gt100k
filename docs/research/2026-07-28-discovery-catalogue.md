@@ -461,3 +461,20 @@ sports no channel at all, since the Common App has no category for them.
 is still a pursuit a child can get genuinely good at. What the cut removes is entries where that is
 true and the fourth test fails anyway, which is a decision about product positioning rather than a
 correction to this research.
+
+**Applied 2026-07-30: the catalogue is 37.** Both tests were kept rather than one replacing the
+other, so only entries failing *both* were removed: Sudoku, Codes & Ciphers, Pokémon Cards,
+Backgammon, Demoscene, Speaker Design and Weather Watching. The fifteen that have a real ceiling but
+no documented precedent stayed.
+
+The fourth test now lives in the data as `Pursuit.ceiling`, separate from `venue` on purpose, and
+the separation immediately paid for itself: **21 of the 37 have a ceiling that opens later than the
+pursuit's own floor.** The gap this document worried about in §4.4 — that the product targets 6–14
+while most venues open at 10 to 13 — turns out to be *wider* than measured here, because the
+admissions-legible distinctions sit higher again. Scholastic opens at 13, YoungArts at 15, and
+Presidential Scholar in the Arts needs a graduating senior.
+
+One correction to §6.1 worth carrying: cutting a pursuit does not orphan its curated resources.
+Thirty-five entries lost their `pursuits` tag and kept their `domainPath`, so they still answer
+through the concierge while stocking no tile. That asymmetry is exactly the one §6.1 identified, run
+in the other direction.

@@ -1,6 +1,6 @@
-/* The discovery wall: forty-four pictured tiles on one screen.
+/* The discovery wall: thirty-seven pictured tiles on one screen.
  *
- * WHY THE TILES CARRY ART. A wall of forty-four words is forty-four reading tasks, and the youngest
+ * WHY THE TILES CARRY ART. A wall of thirty-seven words is thirty-seven reading tasks, and the youngest
  * children this is for cannot yet do them quickly. The study this layout is copied from settles it
  * from the other direction: the flat interface that beat the hierarchy in every grade was a ring of
  * CATEGORY ICONS, not a list of labels, and its predecessor was built on "large, easily clickable
@@ -27,7 +27,7 @@
  * hex: the same eight hues in sRGB differ widely in perceived lightness and one of them wins.
  *
  * WHY THE NAMES ARE NOT ON THE TILES ANY MORE. They were, in a coloured strip under each picture,
- * and forty-four coloured strips is what the wall looked like rather than forty-four things. The
+ * and thirty-seven coloured strips is what the wall looked like rather than thirty-seven things. The
  * reference this layout comes from — a films wall — shows nothing but cover art, and reads as a
  * library instead of a form.
  *
@@ -79,7 +79,7 @@
    * GT is a LIGHT identity: warm off-white paper carries the content, Navy does the structural
    * work, Gold is the accent, and the result should read as a printed academic reference rather
    * than a software dashboard. That happens to be the best possible ground for these tiles. The
-   * renders are dark walnut plates normalised to a mean luminance of 0.13, and forty-four dark
+   * renders are dark walnut plates normalised to a mean luminance of 0.13, and thirty-seven dark
    * plates laid out on warm paper is a museum catalogue — which is what this screen is.
    *
    * Hex rather than OKLCH here, deliberately and against the rest of this file's habit: these are
@@ -127,7 +127,7 @@
   min-height: 100vh;
   /* Paper, and it is a photograph of paper rather than a flat fill.
    *
-   * A flat #fcf4ef is correct and slightly dead: forty-four photographed objects on a colour swatch
+   * A flat #fcf4ef is correct and slightly dead: thirty-seven photographed objects on a colour swatch
    * look like they are floating rather than lying on something. A real sheet under them closes that
    * gap, which is the whole "printed academic reference" posture the identity is after.
    *
@@ -351,7 +351,7 @@
   font: inherit;
   text-align: left;
   cursor: pointer;
-  /* Transform and filter only, so the hover stays on the compositor and forty-four of them do not
+  /* Transform and filter only, so the hover stays on the compositor and thirty-seven of them do not
      make the wall stutter under a moving cursor. */
   transition: transform 160ms ease, filter 160ms ease;
 }
@@ -424,7 +424,7 @@
  * heavy-handed over the dark ones; a gradient to near-black guarantees the contrast ratio whatever
  * the render happens to be doing there. The cabin hue rides in it at low alpha, which is the only
  * place that hue still appears — enough to group by eye when the names are pinned open, and gone
- * entirely at rest, where it would just be forty-four coloured rectangles again.
+ * entirely at rest, where it would just be thirty-seven coloured rectangles again.
  *
  * TWO LINES, FIXED, and this survived the redesign for a reason that is easy to lose. When the
  * label occupied a row it had to be a constant height or the art boxes would differ in size, and a
@@ -468,7 +468,7 @@
  * `:hover` is the pointer. `[aria-current]` is the keyboard and the touch tap, both of which move
  * the selection without a cursor ever existing. `[data-names="on"]` is the wall-level toggle, which
  * is the answer for a child who cannot identify the object at all and should not have to interview
- * forty-four tiles to find out. */
+ * thirty-seven tiles to find out. */
 .tile:hover .tile__label,
 .tile[aria-current="true"] .tile__label,
 [data-names="on"] .tile__label {
