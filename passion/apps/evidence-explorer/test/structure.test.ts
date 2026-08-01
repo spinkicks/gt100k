@@ -63,7 +63,7 @@ describe("CommitLog is a git-log-style, non-linear history", () => {
   it("renders a real short content-address per beat", () => {
     expect(src).toMatch(/shortHash\(beat\.nodeId\)/);
   });
-  it("marks the current beat with aria-current=\"step\"", () => {
+  it('marks the current beat with aria-current="step"', () => {
     expect(src).toMatch(/aria-current/);
     expect(src).toMatch(/"step"/);
   });

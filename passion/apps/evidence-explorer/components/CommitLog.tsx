@@ -20,7 +20,8 @@ export function CommitLog({
   const nodeById = new Map(view.nodes.map((n) => [n.id, n]));
   const currentRowRef = useRef<HTMLLIElement | null>(null);
   useEffect(() => {
-    currentRowRef.current?.scrollIntoView({ block: "nearest" });
+    // Re-scroll the current row into view each time the revealed frontier advances.
+    if (revealedCount > 0) currentRowRef.current?.scrollIntoView({ block: "nearest" });
   }, [revealedCount]);
   return (
     <ol className="commit-log" aria-label="Project history — every step, oldest first">
@@ -30,7 +31,12 @@ export function CommitLog({
         const isCurrent = i === revealedCount - 1;
         const merge = isMerge(view, beat.nodeId);
         const message = STORY_CAPTIONS[beat.birthOrder] ?? node?.label ?? "";
-        const className = ["commit-row", revealed ? "is-revealed" : "is-future", isCurrent ? "is-current" : "", merge ? "is-merge" : ""]
+        const className = [
+          "commit-row",
+          revealed ? "is-revealed" : "is-future",
+          isCurrent ? "is-current" : "",
+          merge ? "is-merge" : "",
+        ]
           .filter(Boolean)
           .join(" ");
         return (
@@ -43,7 +49,11 @@ export function CommitLog({
             <button type="button" className="commit-jump" onClick={() => onSelectBeat(beat.nodeId)}>
               <code className="commit-hash">{shortHash(beat.nodeId)}</code>
               {merge ? (
-                <span className="commit-merge" aria-hidden="true" title="draws on more than one earlier step">
+                <span
+                  className="commit-merge"
+                  aria-hidden="true"
+                  title="draws on more than one earlier step"
+                >
                   ⑂
                 </span>
               ) : null}

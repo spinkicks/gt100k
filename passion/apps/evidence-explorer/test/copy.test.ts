@@ -13,8 +13,14 @@ describe("plain-language copy", () => {
 
   it("every node type has a plain gloss", () => {
     for (const t of [
-      "Artifact", "Attempt", "Transformation", "Claim",
-      "Assistance", "Contribution", "Review", "Outcome",
+      "Artifact",
+      "Attempt",
+      "Transformation",
+      "Claim",
+      "Assistance",
+      "Contribution",
+      "Review",
+      "Outcome",
     ] as const) {
       expect(nodeGloss(t).length).toBeGreaterThan(0);
       expect(nodeGloss(t).toLowerCase()).not.toBe(t.toLowerCase());

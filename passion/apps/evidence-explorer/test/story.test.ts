@@ -23,7 +23,7 @@ describe("story captions", () => {
   it("has a non-empty caption for every one of the 12 beats", () => {
     for (let i = 0; i < count; i++) {
       expect(typeof STORY_CAPTIONS[i]).toBe("string");
-      expect(STORY_CAPTIONS[i].length).toBeGreaterThan(0);
+      expect(STORY_CAPTIONS[i]!.length).toBeGreaterThan(0);
     }
   });
   it("shows the lead-in before the story starts", () => {
@@ -40,25 +40,25 @@ describe("story captions", () => {
 
 describe("captions bind to the real beats (fails loudly if the fixture reorders)", () => {
   it("every beat position has a caption", () => {
-    view.growthTimeline.beats.forEach((beat) => {
+    for (const beat of view.growthTimeline.beats) {
       expect(STORY_CAPTIONS[beat.birthOrder]).toBeDefined();
-    });
+    }
   });
   it("beat 3 and beat 6 are Attempts (the failing then passing run), beat 11 is the Outcome", () => {
-    expect(view.growthTimeline.beats[3].group).toBe("Attempt");
-    expect(view.growthTimeline.beats[6].group).toBe("Attempt");
-    expect(view.growthTimeline.beats[11].group).toBe("Outcome");
+    expect(view.growthTimeline.beats[3]!.group).toBe("Attempt");
+    expect(view.growthTimeline.beats[6]!.group).toBe("Attempt");
+    expect(view.growthTimeline.beats[11]!.group).toBe("Outcome");
   });
 });
 
 describe("shortHash is a real content-address prefix", () => {
   it("every beat node id is a 64-char sha256 hex", () => {
-    view.growthTimeline.beats.forEach((beat) => {
+    for (const beat of view.growthTimeline.beats) {
       expect(beat.nodeId).toMatch(/^[0-9a-f]{64}$/);
-    });
+    }
   });
   it("returns the first 7 chars", () => {
-    const id = view.growthTimeline.beats[0].nodeId;
+    const id = view.growthTimeline.beats[0]!.nodeId;
     expect(shortHash(id)).toBe(id.slice(0, 7));
     expect(shortHash(id)).toHaveLength(7);
   });
@@ -67,16 +67,16 @@ describe("shortHash is a real content-address prefix", () => {
 describe("frontier + merge (the DAG is not linear)", () => {
   it("frontier is null at 0 and the last beat at full reveal", () => {
     expect(frontierNodeId(view, 0)).toBeNull();
-    expect(frontierNodeId(view, count)).toBe(view.growthTimeline.beats[count - 1].nodeId);
+    expect(frontierNodeId(view, count)).toBe(view.growthTimeline.beats[count - 1]!.nodeId);
   });
   it("the two source Artifacts are merges (built from a prior step + cited tutor help)", () => {
     const merges = view.nodes.filter((n) => isMerge(view, n.id));
     expect(merges.length).toBe(2);
-    merges.forEach((n) => expect(n.type).toBe("Artifact"));
+    for (const n of merges) expect(n.type).toBe("Artifact");
   });
   it("a single-parent step is not a merge", () => {
     // The plan (beat 0) has no dependency edges; it is the root, never a merge.
-    expect(isMerge(view, view.growthTimeline.beats[0].nodeId)).toBe(false);
+    expect(isMerge(view, view.growthTimeline.beats[0]!.nodeId)).toBe(false);
   });
 });
 

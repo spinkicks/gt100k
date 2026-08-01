@@ -27,15 +27,30 @@ export function StoryTransport({
       </p>
 
       <div className="story-controls">
-        <button type="button" className="story-prev" onClick={playback.prev} disabled={playback.atStart}>
+        <button
+          type="button"
+          className="story-prev"
+          onClick={playback.prev}
+          disabled={playback.atStart}
+        >
           ‹ Prev
         </button>
         {playback.canAutoPlay ? (
-          <button type="button" className="story-play" onClick={playback.toggle} aria-pressed={playback.playing}>
+          <button
+            type="button"
+            className="story-play"
+            onClick={playback.toggle}
+            aria-pressed={playback.playing}
+          >
             {playback.playing ? "⏸ Pause" : "▶ Play the story"}
           </button>
         ) : null}
-        <button type="button" className="story-next" onClick={playback.next} disabled={playback.atEnd}>
+        <button
+          type="button"
+          className="story-next"
+          onClick={playback.next}
+          disabled={playback.atEnd}
+        >
           Next ›
         </button>
         <input

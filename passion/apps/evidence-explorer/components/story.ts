@@ -65,7 +65,8 @@ export function shortHash(id: string): string {
  * excluded (`authored_by` is already excluded — its target is an actor ref, so `isNodeEdge` is false).
  */
 export function parentCount(view: ExplorerView, nodeId: string): number {
-  return view.edges.filter((e) => e.from === nodeId && e.isNodeEdge && e.type !== "released_as").length;
+  return view.edges.filter((e) => e.from === nodeId && e.isNodeEdge && e.type !== "released_as")
+    .length;
 }
 
 /** A step is a "merge" when it draws on more than one earlier step (DAG, not a line). */

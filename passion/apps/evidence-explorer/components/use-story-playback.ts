@@ -3,7 +3,14 @@
 // Presentation-only — it only moves `revealedCount` via `onScrub`; it never touches the graph,
 // view, or verification. The step arithmetic lives in ./story.js so it is unit-tested there.
 import { useCallback, useEffect, useRef, useState } from "react";
-import { STORY_STEP_MS, canAutoAdvance, isAtEnd, isAtStart, nextCount, prevCount } from "./story.js";
+import {
+  STORY_STEP_MS,
+  canAutoAdvance,
+  isAtEnd,
+  isAtStart,
+  nextCount,
+  prevCount,
+} from "./story.js";
 
 export interface StoryPlayback {
   readonly playing: boolean;

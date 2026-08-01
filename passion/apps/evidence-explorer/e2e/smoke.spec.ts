@@ -74,9 +74,12 @@ test.describe("Story Mode (Phase 2)", () => {
     // The view opens fully grown (the calm baseline), so Play starts by replaying from the top —
     // the caption resets to the lead-in and then advances as the reveal counter ticks forward.
     await page.getByRole("button", { name: /Play the story/ }).click();
-    await expect(page.locator(".story-caption")).not.toHaveText(/Press play to watch how this was built/, {
-      timeout: 10_000,
-    });
+    await expect(page.locator(".story-caption")).not.toHaveText(
+      /Press play to watch how this was built/,
+      {
+        timeout: 10_000,
+      },
+    );
 
     // Let the story run to full reveal — the closing nudge to Verify should appear.
     const nudge = page.locator(".story-nudge");
