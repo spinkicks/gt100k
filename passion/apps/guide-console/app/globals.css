@@ -730,11 +730,14 @@ body {
   color: var(--ink-muted);
   font-size: 0.9rem;
 }
+/* The calibration word sits NEXT TO the figure it qualifies. `space-between` pushed them to opposite
+   ends of a card ~700px wide, so two facts about the same number were as far apart as the layout
+   could put them and read as unrelated. */
 .lb__row {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: flex-start;
+  gap: 14px;
   white-space: nowrap;
 }
 .lb__driver {
@@ -1346,6 +1349,32 @@ body {
   background: var(--warn-bg);
   border-radius: 5px;
   padding: 2px 5px;
+}
+
+/* A map's body, collapsed unless it is the loaded child's. The summary carries the domain and the
+   status, which is what a guide scans a review queue by. */
+.mapcard__summary {
+  cursor: pointer;
+  list-style: none;
+}
+.mapcard__summary::-webkit-details-marker {
+  display: none;
+}
+.mapcard__summary::after {
+  content: "Show the rungs";
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.72rem;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.mapcard__body[open] > .mapcard__summary::after {
+  content: "Hide the rungs";
+}
+.mapcard__summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
 }
 
 /* Coverage line on the Maps tab: what the maps below do and do not say about this child. Warmer
@@ -4200,13 +4229,17 @@ body {
 
 /* Each domain is one thing a guide could go and do, so it gets its own bounded surface on the
    card's own background: the group is the context, these are the choices inside it. */
+/* These are things to offer, not things to click. On `--surface` inside a `--surface-2` panel, with
+   a border, a radius and 600-weight ink, they had the exact figure/ground relationship a button
+   has — so two inert list items read as controls. Given the `.chip` treatment instead, which is the
+   mark this console already uses for a label that sits on a panel. */
 .offer-grp__list li {
   padding: 5px 10px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: var(--surface);
+  background: var(--surface-2);
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink);
 }
 
