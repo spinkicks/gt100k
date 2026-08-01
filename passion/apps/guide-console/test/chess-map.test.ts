@@ -175,6 +175,13 @@ describe("the map covers the real gaps in a beginner's climb", () => {
     // validator also checks E1_CYCLE:
     expect(validateMap(CONSOLE_CHESS_MAP, REVIEW_NOW).errors).toEqual([]);
   });
+
+  it("has no capability that opens with a consumption verb (W6)", () => {
+    const w6 = validateMap(CONSOLE_CHESS_MAP, REVIEW_NOW).warnings.filter(
+      (w) => w.code === "W6_CONSUMPTION_VERB",
+    );
+    expect(w6.map((w) => w.milestoneId)).toEqual([]);
+  });
 });
 
 describe("the chess resource library is real and vetted", () => {

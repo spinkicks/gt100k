@@ -1262,8 +1262,8 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     id: "ch-study-your-games",
     title: "You review your own games for what actually lost them",
     capability:
-      "Review a lost game on your own and name the one move that actually lost it, before " +
-      "running an engine",
+      "Find the one move that actually lost a game of yours, working it out on your own " +
+      "before running an engine",
     requires: ["ch-real-tournament-game"],
     modes: ["investigate"],
     stageFloor: "S3_AUTHORSHIP",

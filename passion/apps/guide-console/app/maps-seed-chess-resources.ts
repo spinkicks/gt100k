@@ -190,7 +190,7 @@ export const FIDE_LAWS_RES: CuratedResource = {
 };
 
 /** Stands in for a US Chess rating-class page — see the file header. Covers the same ground: the
-    rating thresholds a title actually requires (FM 2300, CM 2200 direct; GM/IM norm ratings). */
+    rating thresholds a title actually requires (e.g. FM 2300, CM 2200 by rating; GM/IM by norms). */
 export const FIDE_RATING_TITLES: CuratedResource = {
   id: "cr-chess-fide-title-regs",
   title: "FIDE Title Regulations, effective 1 January 2024 (rating thresholds for CM, FM, IM, GM)",
