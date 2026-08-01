@@ -805,6 +805,45 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     authorship: "human-authored",
   },
   {
+    id: "ch-opening-principles",
+    title: "You open with principles, not a memorized line",
+    capability:
+      "Develop every piece toward the center in the opening, without relying on a memorized line",
+    requires: ["ch-whole-game"],
+    modes: [],
+    stageFloor: "S1_IGNITION",
+    ordering: {
+      reason:
+        "Step 3's own manual gives the opening two dedicated lessons, 'Completing the opening' and " +
+        "'The opening', after Step 2's plus workbook gives it a first, lighter touch. Across all six " +
+        "steps the curriculum never assigns a lesson to a single named opening; whatever repertoire " +
+        "a child eventually wants is exactly the kind of material Step 6 hands the independent " +
+        "learner to go and choose for themselves.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD],
+      limit:
+        "The Steps Method teaches opening PRINCIPLES at Steps 2 and 3 and never assigns a lesson to " +
+        "a named opening or repertoire at any step. 'Principles before repertoire' describes what " +
+        "the six-step ladder actually contains rather than a sequencing the publisher states " +
+        "outright.",
+    },
+    resources: [STEP2_WORKBOOK, STEP3_WORKBOOK, CHESSCOM_LESSONS],
+    practice: [
+      {
+        title: "Same principles, different replies",
+        description:
+          "Open toward the center and get every piece developed against whatever your opponent " +
+          "plays, rather than freezing when the position doesn't match a line you memorized.",
+        solitary: false,
+      },
+    ],
+    demonstration:
+      "A handful of your own opening sequences, each explained by the principle behind it rather " +
+      "than by a named opening",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
     id: "ch-finish-a-won-game",
     title: "You can finish a won game",
     capability: "Force mate with a queen or a rook, and win material with a fork or an exchange",
@@ -903,6 +942,40 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     authorship: "human-authored",
   },
   {
+    id: "ch-king-safety",
+    title: "You keep your king safe",
+    capability:
+      "Castle at the right moment, and recognize when a king is already too exposed to castle into safety",
+    requires: ["ch-opening-principles"],
+    modes: [],
+    stageFloor: "S2_FOUNDATIONS",
+    ordering: {
+      reason:
+        "Castling itself is Step 1's lesson 9, taught as a rule everyone needs to finish a legal " +
+        "game. Weighing king safety as a JUDGMENT — when to castle, and when a king is already too " +
+        "exposed for castling to fix it — is opening-principle territory the curriculum places at " +
+        "Steps 2 and 3, so this follows opening principles rather than the rules milestone directly. " +
+        "FIDE's laws set the legality a castling move has to meet, which this milestone tests " +
+        "directly.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD, FIDE_LAWS],
+    },
+    resources: [STEP1_WORKBOOK, FIDE_LAWS_RES, CHESSCOM_LESSONS],
+    practice: [
+      {
+        title: "Castle early, or say why not",
+        description:
+          "Play games where you decide whether and when to castle, and if you skip it, say out " +
+          "loud what king-safety problem you accepted instead.",
+        solitary: false,
+      },
+    ],
+    demonstration:
+      "A few games with the castling decision, when or a stated reason not to, marked and explained",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
     id: "ch-real-tournament-game",
     title: "You can play a real tournament game",
     capability: "Play under a clock with touch-move and a scoresheet, and sit through a long game",
@@ -952,10 +1025,54 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     authorship: "human-authored",
   },
   {
+    id: "ch-visualize",
+    title: "You can see the board without moving anything",
+    capability:
+      "Picture which squares a piece already attacks and hold a short sequence in your head with " +
+      "the board covered",
+    requires: ["ch-see-the-tactic"],
+    modes: [],
+    stageFloor: "S2_FOUNDATIONS",
+    ordering: {
+      reason:
+        "Step 1's plus workbook names 'Board vision' as its own numbered lesson, taught through " +
+        "route-planner exercises (giving check, going to the right square, trapping, capturing all " +
+        "pieces), well before Step 3 introduces 'thinking ahead' as a distinct calculation skill. " +
+        "This milestone isolates that earlier, narrower skill, tracking what a piece already " +
+        "attacks without moving it, from the fuller forced-line calculation ch-see-ahead covers, " +
+        "and feeds into it for the reason ch-see-ahead's own limit already gives: a search needs " +
+        "something already retrievable to search with.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD],
+      limit:
+        "The publisher's own stated view is that games, not isolated visualization drills, build a " +
+        "child's board vision most: 'The best method for the improvement of children's board " +
+        "vision is to let them play games,' with one child needing perhaps 300 games and another " +
+        "1000. Treating this as a standalone rung with its own demonstration is our scaffolding " +
+        "choice, not a discrete step the curriculum itself prescribes.",
+    },
+    resources: [STEP1_WORKBOOK, STEP3_WORKBOOK, LICHESS_TRAINING],
+    practice: [
+      {
+        title: "Call it before you look",
+        description:
+          "Look at a position, then look away, and say what a piece attacks or where a short " +
+          "sequence lands before checking the board. Getting it wrong here is safe; getting it " +
+          "wrong mid-game is not.",
+        solitary: true,
+      },
+    ],
+    demonstration:
+      "A written log of squares or landing positions called before the board was checked, right " +
+      "and wrong both kept",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
     id: "ch-see-ahead",
     title: "You can see ahead without touching the pieces",
     capability: "Calculate a short forced line in your head and picture the position it reaches",
-    requires: ["ch-see-the-tactic"],
+    requires: ["ch-see-the-tactic", "ch-visualize"],
     modes: [],
     stageFloor: "S2_FOUNDATIONS",
     ordering: {
@@ -1118,6 +1235,49 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       },
     ],
     demonstration: "A converted endgame with the critical decision annotated by you",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-study-your-games",
+    title: "You review your own games for what actually lost them",
+    capability:
+      "Review a lost game on your own and name the one move that actually lost it, before " +
+      "running an engine",
+    requires: ["ch-real-tournament-game"],
+    modes: [],
+    stageFloor: "S3_AUTHORSHIP",
+    ordering: {
+      reason:
+        "The Step 6 manual lists this among what 'a good trainer has been insisting on' " +
+        "throughout all six steps: 'discussion / analysis of the games you played'. Step 6 states " +
+        "it as an instruction to the learner directly: 'Get used to analysing all " +
+        "your games. With a good trainer, with a stronger player or on your own.' Doing so needs a " +
+        "played game to look at, so it follows real tournament play rather than any earlier step.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD],
+      limit:
+        "This habit runs through all six steps under a trainer; Step 6 is where the manual hands " +
+        "it to the learner to do 'on your own'. The manual does not gate it behind tournament play " +
+        "specifically; requiring ch-real-tournament-game first is our own sequencing, since a game " +
+        "worth reviewing has to exist. It sits well before ch-teach-yourself (S4): reviewing a game " +
+        "you already played needs no chosen study material, which is the separate thing that " +
+        "milestone covers.",
+    },
+    resources: [STEP6_WORKBOOK, CHESSCOM_LESSONS],
+    practice: [
+      {
+        title: "Your own view, before the engine's",
+        description:
+          "Go through a game you lost on a real board, deciding on your own where it turned, " +
+          "before you touch an engine or a book. Checking your view against a tool teaches " +
+          "something; skipping straight to the tool teaches nothing.",
+        solitary: true,
+      },
+    ],
+    demonstration:
+      "A game you lost, annotated in your own words at the move you now think it turned, written " +
+      "before you ran an engine",
     opportunities: [],
     authorship: "human-authored",
   },

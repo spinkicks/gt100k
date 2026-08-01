@@ -148,6 +148,33 @@ describe("every rung is runnable and points somewhere real", () => {
   });
 });
 
+describe("the map covers the real gaps in a beginner's climb", () => {
+  it("has grown into a substantial graph", () => {
+    expect(MS.length).toBeGreaterThanOrEqual(16);
+  });
+
+  it("teaches opening principles, king safety, self-review and visualization", () => {
+    for (const id of [
+      "ch-opening-principles",
+      "ch-king-safety",
+      "ch-study-your-games",
+      "ch-visualize",
+    ]) {
+      expect(
+        MS.some((m) => m.id === id),
+        id,
+      ).toBe(true);
+    }
+  });
+
+  it("keeps the graph acyclic with no dangling prerequisite", () => {
+    const ids = new Set(MS.map((m) => m.id));
+    for (const m of MS) for (const r of m.requires) expect(ids.has(r), `${m.id} → ${r}`).toBe(true);
+    // validator also checks E1_CYCLE:
+    expect(validateMap(CONSOLE_CHESS_MAP, REVIEW_NOW).errors).toEqual([]);
+  });
+});
+
 describe("the chess resource library is real and vetted", () => {
   it("carries a substantial, distinct set of resources", () => {
     expect(CHESS_RESOURCES.length).toBeGreaterThanOrEqual(14);
