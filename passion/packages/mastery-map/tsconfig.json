@@ -10,7 +10,8 @@
     { "path": "../specialization-planner" },
     { "path": "../hypothesis-store" },
     { "path": "../research" },
-    { "path": "../guardrails" }
+    { "path": "../guardrails" },
+    { "path": "../socratic-defense" }
   ],
   "include": ["src/**/*.ts", "test/**/*.ts"]
 }

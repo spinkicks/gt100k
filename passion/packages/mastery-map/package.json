@@ -14,7 +14,8 @@
     "@gt100k/specialization-planner": "workspace:*",
     "@gt100k/hypothesis-store": "workspace:*",
     "@gt100k/research": "workspace:*",
-    "@gt100k/guardrails": "workspace:*"
+    "@gt100k/guardrails": "workspace:*",
+    "@gt100k/socratic-defense": "workspace:*"
   },
   "scripts": {
     "test": "vitest run --root ../../.. passion/packages/mastery-map/test"

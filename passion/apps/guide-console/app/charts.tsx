@@ -26,7 +26,7 @@ export function AreaChart({
 }): JSX.Element {
   const w = 560;
   const h = height;
-  const pad = { t: 12, r: 8, b: 26, l: 30 };
+  const pad = { t: 12, r: 20, b: 26, l: 30 };
   const max = Math.max(...series.flatMap((s) => s.data)) * 1.15;
   const n = labels.length;
   const x = (i: number) => pad.l + (i * (w - pad.l - pad.r)) / (n - 1);
@@ -87,7 +87,7 @@ export function BarChart({
 }): JSX.Element {
   const w = 540;
   const h = height;
-  const pad = { t: 12, r: 8, b: 26, l: 30 };
+  const pad = { t: 12, r: 20, b: 26, l: 30 };
   const max = Math.max(...data, ...(compare ?? [])) * 1.2;
   const slot = (w - pad.l - pad.r) / data.length;
   const bw = compare ? slot * 0.3 : slot * 0.45;

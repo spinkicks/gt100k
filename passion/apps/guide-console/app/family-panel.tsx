@@ -77,8 +77,18 @@ export function FamilyPanel({
                 <dd>Non-contingent</dd>
               </div>
               <div>
-                <dt>Decouple worth from outcome</dt>
-                <dd>{read.posture.decoupleWorthFromOutcome ? "Yes" : "No"}</dd>
+                {/* Phrased as a move, like every other value in this list, because the raw boolean
+                    read backwards to the audience it is for. `decoupleWorthFromOutcome` is true
+                    when stakes or pressure are present and this family needs active coaching to
+                    separate the child's worth from their results; false is the healthy baseline. So
+                    a healthy family rendered as "Decouple worth from outcome: No", four inches from
+                    a Healthy badge, and any plain reader takes that for a failing. */}
+                <dt>Separate worth from outcome</dt>
+                <dd>
+                  {read.posture.decoupleWorthFromOutcome
+                    ? "Coach this now"
+                    : "Not needed right now"}
+                </dd>
               </div>
             </dl>
             {observations.length > 0 ? (
@@ -101,20 +111,31 @@ export function FamilyPanel({
               <div className="wbitem__top">
                 <span className="wbitem__spec">Coaching offers</span>
               </div>
-              <ul className="famoffers">
-                {read.asks.map((a) => (
-                  <li key={a}>
-                    <span className="famoffers__k">Door-opening ask</span>
-                    {a}
-                  </li>
-                ))}
-                {read.sharedActivities.map((s) => (
-                  <li key={s}>
-                    <span className="famoffers__k">Shared activity</span>
-                    {s}
-                  </li>
-                ))}
-              </ul>
+              {/* Two groups with one heading each, rather than one interleaved list repeating its
+                  eyebrow above every item. Five uppercase keys for five one-line items meant the
+                  labels took as much vertical space as the content and the block read as ten rows.
+                  `read.asks` and `read.sharedActivities` were already separate arrays; only the
+                  rendering merged them. */}
+              {read.asks.length > 0 ? (
+                <div className="famgroup">
+                  <span className="famoffers__k">Door-opening asks</span>
+                  <ul className="famoffers">
+                    {read.asks.map((a) => (
+                      <li key={a}>{a}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {read.sharedActivities.length > 0 ? (
+                <div className="famgroup">
+                  <span className="famoffers__k">Shared activities</span>
+                  <ul className="famoffers">
+                    {read.sharedActivities.map((s) => (
+                      <li key={s}>{s}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
               <p className="planproject__owns">
                 Offers, not mandates — the child keeps choosing the problem, the method, and the
                 pace.

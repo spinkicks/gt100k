@@ -252,6 +252,21 @@ function Standing({
                     <li key={m.title}>
                       <span className="chip chip--soft">{m.kind}</span>
                       {m.title}
+                      {/* Attested external work carries the address it lives at, and the address is
+                          the checkable half of the claim: a game record on a third party's server
+                          is the part a child cannot fabricate. Showing the standing without a way to
+                          go and look would ask a guide to take our word for the one thing here that
+                          does not need taking on trust. */}
+                      {m.url === undefined ? null : (
+                        <a
+                          className="mapwork__src"
+                          href={m.url}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          Look at it
+                        </a>
+                      )}
                       <span className="mapwork__at">{m.at.slice(0, 10)}</span>
                     </li>
                   ))}

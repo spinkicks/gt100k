@@ -4,6 +4,7 @@ export * from "./model.js";
 export * from "./validate.js";
 export * from "./edit.js";
 export * from "./select.js";
+export * from "./attest.js";
 export * from "./resolve.js";
 export * from "./ports.js";
 export * from "./stub-generator.js";

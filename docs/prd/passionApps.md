@@ -38,8 +38,8 @@
 | **A2** Cabin 3D Interiors | 🟡 partial | `apps/tinker-cabin` (game-side MVP) | one photoreal cabin + realism-loop harness; the rest of the world is the teammate's track |
 | **A4** Taste Apps + Embedding SDK | 🟡 partial | intern apps exist | the embedding SDK + measurable-panel standard is not built |
 
-**Designed, not built (📐):** two decisions landed 2026-07-30 and neither has code behind it yet.
-**The mastery scaffold** (`docs/decisions/2026-07-30-mastery-scaffold.md`) settles how a map for one
+**Designed, not built (📐):** one of the two decisions that landed 2026-07-30 still has no code
+behind it. **The mastery scaffold** (`docs/decisions/2026-07-30-mastery-scaffold.md`) settles how a map for one
 domain generalises: the structure and the domain-general learning principles transfer, the ladder
 does not, and a chess map gets authored first with a hard case beside it. Its real blocker is that
 **nothing tracks where a child stands on a map** — no attestation, no position — and since the
