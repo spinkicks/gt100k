@@ -391,12 +391,15 @@ function ChildStanding({
 function MapCard({
   vm,
   child,
+  open,
   onStatus,
   onCapability,
   onOverride,
 }: {
   vm: MapVM;
   child: ChildReadVM | null;
+  /** Whether this map serves one of the loaded child's specializations. */
+  open: boolean;
   onStatus: (s: MapStatus) => void;
   onCapability: (milestoneId: string, value: string) => void;
   onOverride: (milestoneId: string, note: string) => void;
@@ -407,106 +410,118 @@ function MapCard({
       data-testid="map-card"
       data-status={vm.status}
     >
-      <div className="wbitem__top">
-        <span className="wbitem__spec">{vm.domain}</span>
-        <span className={`wbitem__state mapstatus mapstatus--${vm.status}`}>{vm.statusText}</span>
-      </div>
-      <p className="mapcard__note">{vm.statusNote}</p>
+      {/* COLLAPSED UNLESS IT IS THIS CHILD'S. Four maps of ten to twelve rungs, each rung carrying a
+          capability, an ordering with its basis, resources, practice forms, a demonstration and a
+          child read, ran to twenty-four screens — an order of magnitude longer than any other tab,
+          and reviewing a map is a one-at-a-time job in the first place. `details` rather than state,
+          so the content stays in the DOM for find-in-page and for a screen reader, and so nothing
+          here needs to remember which card was open. */}
+      <details className="mapcard__body" open={open}>
+        <summary className="mapcard__summary">
+          <div className="wbitem__top">
+            <span className="wbitem__spec">{vm.domain}</span>
+            <span className={`wbitem__state mapstatus mapstatus--${vm.status}`}>
+              {vm.statusText}
+            </span>
+          </div>
+          <p className="mapcard__note">{vm.statusNote}</p>
+        </summary>
 
-      {vm.errors.map((p) => (
-        <Flag key={problemKey(p)} kind="error" heading="Blocks use" message={p.message} />
-      ))}
-      {vm.warnings.map((p) => (
-        <Flag key={problemKey(p)} kind="warning" heading="Worth a look" message={p.message} />
-      ))}
-
-      <dl className="plangrid">
-        <div>
-          <dt>Ways of working</dt>
-          <dd>{vm.modes.join(", ")}</dd>
-        </div>
-        <div>
-          <dt>Ages covered</dt>
-          <dd>{vm.ageBands.join(", ")}</dd>
-        </div>
-        <div>
-          <dt>Resources re-checked</dt>
-          {/* Out of date is not the same as wrong, so it is said beside the date rather than
-              treated as a fault with the map. It does hold up putting the map into use. */}
-          <dd>
-            {vm.revalidatedAt.slice(0, 10)}
-            {vm.stale ? (
-              <span className="chip chip--stale" data-testid="map-stale">
-                Out of date
-              </span>
-            ) : null}
-          </dd>
-        </div>
-        <div>
-          <dt>Written by</dt>
-          <dd>{vm.authoredBy}</dd>
-        </div>
-        <div>
-          <dt>Looked at by</dt>
-          {/* Optional by design. Nobody available to us can certify that an ordering of a domain is
-              right, so a map is usable with this empty and the panel says so instead of nagging. */}
-          <dd>{vm.reviewedBy ?? "Nobody, and it does not need anyone"}</dd>
-        </div>
-      </dl>
-
-      {child === null ? null : <ChildStanding vm={child} onOverride={onOverride} />}
-
-      {vm.edits.length > 0 ? (
-        <div className="mapms__block" data-testid="map-edits">
-          <span className="mapms__k">Corrections a guide made</span>
-          <ul className="mapedits">
-            {vm.edits.map((e) => (
-              <li key={`${e.at}:${e.milestone}:${e.field}`}>
-                <span className="mapedits__t">
-                  {e.milestone}, {e.field}, by {e.by}
-                </span>
-                <p className="mapedits__was">Was: {e.before}</p>
-                <p className="mapedits__now">Now: {e.after}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
-      <div className="wbitem__moves">
-        {vm.inUse ? null : (
-          <button
-            type="button"
-            className="btn btn--sm"
-            disabled={!vm.publishable}
-            onClick={() => onStatus("published")}
-          >
-            Put into use
-          </button>
-        )}
-        {vm.withdrawn ? null : (
-          <button
-            type="button"
-            className="btn btn--sm btn--ghost"
-            onClick={() => onStatus("withdrawn")}
-          >
-            Withdraw from use
-          </button>
-        )}
-      </div>
-      {/* A disabled button with no reason beside it is a dead end. Both refusals are things a guide
-          can act on: fix what the validator found, or get the resources re-checked. */}
-      {vm.publishRefusal === null ? null : (
-        <p className="mapcard__refusal" data-testid="map-refusal">
-          {vm.publishRefusal}
-        </p>
-      )}
-
-      <ol className="mapmslist">
-        {vm.milestones.map((ms) => (
-          <Milestone key={ms.id} ms={ms} onCapability={(value) => onCapability(ms.id, value)} />
+        {vm.errors.map((p) => (
+          <Flag key={problemKey(p)} kind="error" heading="Blocks use" message={p.message} />
         ))}
-      </ol>
+        {vm.warnings.map((p) => (
+          <Flag key={problemKey(p)} kind="warning" heading="Worth a look" message={p.message} />
+        ))}
+
+        <dl className="plangrid">
+          <div>
+            <dt>Ways of working</dt>
+            <dd>{vm.modes.join(", ")}</dd>
+          </div>
+          <div>
+            <dt>Ages covered</dt>
+            <dd>{vm.ageBands.join(", ")}</dd>
+          </div>
+          <div>
+            <dt>Resources re-checked</dt>
+            {/* Out of date is not the same as wrong, so it is said beside the date rather than
+              treated as a fault with the map. It does hold up putting the map into use. */}
+            <dd>
+              {vm.revalidatedAt.slice(0, 10)}
+              {vm.stale ? (
+                <span className="chip chip--stale" data-testid="map-stale">
+                  Out of date
+                </span>
+              ) : null}
+            </dd>
+          </div>
+          <div>
+            <dt>Written by</dt>
+            <dd>{vm.authoredBy}</dd>
+          </div>
+          <div>
+            <dt>Looked at by</dt>
+            {/* Optional by design. Nobody available to us can certify that an ordering of a domain is
+              right, so a map is usable with this empty and the panel says so instead of nagging. */}
+            <dd>{vm.reviewedBy ?? "Nobody, and it does not need anyone"}</dd>
+          </div>
+        </dl>
+
+        {child === null ? null : <ChildStanding vm={child} onOverride={onOverride} />}
+
+        {vm.edits.length > 0 ? (
+          <div className="mapms__block" data-testid="map-edits">
+            <span className="mapms__k">Corrections a guide made</span>
+            <ul className="mapedits">
+              {vm.edits.map((e) => (
+                <li key={`${e.at}:${e.milestone}:${e.field}`}>
+                  <span className="mapedits__t">
+                    {e.milestone}, {e.field}, by {e.by}
+                  </span>
+                  <p className="mapedits__was">Was: {e.before}</p>
+                  <p className="mapedits__now">Now: {e.after}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        <div className="wbitem__moves">
+          {vm.inUse ? null : (
+            <button
+              type="button"
+              className="btn btn--sm"
+              disabled={!vm.publishable}
+              onClick={() => onStatus("published")}
+            >
+              Put into use
+            </button>
+          )}
+          {vm.withdrawn ? null : (
+            <button
+              type="button"
+              className="btn btn--sm btn--ghost"
+              onClick={() => onStatus("withdrawn")}
+            >
+              Withdraw from use
+            </button>
+          )}
+        </div>
+        {/* A disabled button with no reason beside it is a dead end. Both refusals are things a guide
+          can act on: fix what the validator found, or get the resources re-checked. */}
+        {vm.publishRefusal === null ? null : (
+          <p className="mapcard__refusal" data-testid="map-refusal">
+            {vm.publishRefusal}
+          </p>
+        )}
+
+        <ol className="mapmslist">
+          {vm.milestones.map((ms) => (
+            <Milestone key={ms.id} ms={ms} onCapability={(value) => onCapability(ms.id, value)} />
+          ))}
+        </ol>
+      </details>
     </li>
   );
 }
@@ -633,6 +648,13 @@ export function MapsPanel({
                 key={vm.id}
                 vm={vm}
                 child={readOf(map)}
+                // Open the maps that are this child's, collapsed for the rest. With no child loaded
+                // the tab is a review queue and everything stays shut, which is the right default
+                // for a surface whose job is then "pick one and read it".
+                open={specs.some((s) => {
+                  const path = asDomainPath(s.domainPath);
+                  return path !== null && servesPath(map.domainPath, path);
+                })}
                 onStatus={(s) => change(vm.id, (m) => withStatus(m, s))}
                 onCapability={(milestoneId, value) =>
                   change(vm.id, (m) => editCapability(m, milestoneId, value))
