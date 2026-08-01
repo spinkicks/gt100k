@@ -92,35 +92,54 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
   // specialization, because it is the signal that this child needs a guide at all, and scoping it
   // would silently hide an escalation sitting one rail-click away. `SpecRail` carries the same dot
   // per specialization so the pair resolves to a place to click rather than a puzzle.
-  const tabs: readonly { id: View; label: string; count: number; review?: boolean }[] = [
+  // `noun` says what the number counts, because it is a different thing on every tab and the bare
+  // figures invite a comparison that means nothing: "Family 5" beside "Wellbeing 1" reads as a
+  // ranking of two quantities that share no unit.
+  const tabs: readonly {
+    id: View;
+    label: string;
+    count: number;
+    noun: string;
+    review?: boolean;
+  }[] = [
     {
       id: "overview",
       label: "Overview",
+      noun: "specializations",
       count: ctrl.vm.cards.length,
       review: ctrl.wellbeing.some((c) => c.read.escalateToHuman),
     },
-    { id: "hypotheses", label: "Hypotheses", count: ctrl.vm.cards.length },
+    {
+      id: "hypotheses",
+      label: "Hypotheses",
+      noun: "specializations",
+      count: ctrl.vm.cards.length,
+    },
     {
       id: "wellbeing",
       label: "Wellbeing",
+      noun: "wellbeing reads for this specialization",
       count: scopedTo(ctrl.wellbeing).length,
       review: ctrl.wellbeing.some((c) => c.read.escalateToHuman),
     },
     {
       id: "plan",
       label: "Plan",
+      noun: "plans for this specialization",
       count: scopedTo(ctrl.plans).length,
       review: ctrl.plans.some((c) => c.plan.escalateToHuman),
     },
     {
       id: "family",
       label: "Family",
+      noun: "coaching offers",
       count: familyOfferCount(ctrl.family),
       review: ctrl.family?.escalateToHuman ?? false,
     },
     {
       id: "access",
       label: "Access",
+      noun: "proposals for this specialization",
       count: accessProposalCount(scopedTo(ctrl.access)),
       review: accessNeedsReview(ctrl.access),
     },
@@ -129,6 +148,7 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
     {
       id: "maps",
       label: "Maps",
+      noun: "maps",
       count: maps.length,
       // Only an ERROR needs a person. Warnings are surfaced inline and never block, and a dot that
       // lit up for every advisory note would stop meaning anything.
@@ -189,6 +209,13 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
                   className={`tab${view === t.id ? " tab--on" : ""}`}
                   onClick={() => setView(t.id)}
                 >
+                  {/* The dot sits at the LEADING EDGE visually, via `order` in the stylesheet, while
+                      staying after the label in the DOM. Between the label and the count it was a
+                      6px amber circle in the exact position and shape of a middot separator, with
+                      colour as its only carrier — the one thing the rest of this console refuses to
+                      do. Moving it in the markup instead put its label in front of the tab's name,
+                      so the tab announced as "needs your review Access" and stopped being findable
+                      by its own name. */}
                   <span>{t.label}</span>
                   {t.review ? (
                     <span
@@ -197,7 +224,9 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
                       title="Needs your review"
                     />
                   ) : null}
-                  <span className="tab__num">{t.count}</span>
+                  <span className="tab__num" title={`${t.count} ${t.noun}`}>
+                    {t.count}
+                  </span>
                 </button>
               ))}
             </nav>

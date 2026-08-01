@@ -49,6 +49,44 @@ const CHANNEL_LABEL: Record<AudienceChannel, string> = {
   COMMUNITY: "Community",
   MARKETPLACE: "Marketplace",
 };
+/**
+ * The broker's reasons, in a guide's words.
+ *
+ * The engine writes them for itself — "domain code-computers/game-dev::build", "fills WARM role",
+ * "reputation 0.92" — and this console is read by mentors rather than engineers, so passing them
+ * through raw would replace one unexplained number with four unexplained strings.
+ *
+ * Reputation becomes a phrase rather than a figure, deliberately. It is the input that decides the
+ * ranking when everything else ties, and 0.92 versus 0.8 invites a precision the underlying number
+ * does not have.
+ */
+function fitInWords(fit: readonly string[]): string {
+  const said: string[] = [];
+  for (const f of fit) {
+    if (f.startsWith("domain ")) said.push("it is in this exact area");
+    else if (f.startsWith("mode ")) said.push("it suits how they like to work");
+    else if (f.startsWith("fills ")) {
+      const role = f.slice("fills ".length).replace(" role", "");
+      const label = MENTOR_LABEL[role as MentorRole];
+      said.push(`it fills the ${(label ?? role).toLowerCase()} role this plan asked for`);
+    } else if (f.endsWith(" source")) {
+      // Dropped: the source layer is already the chip beside the title, and saying it twice in two
+      // registers ("AI" and "the ai layer") is worse than saying it once.
+    } else if (f.endsWith(" audience")) {
+      said.push(`it reaches a ${f.slice(0, -" audience".length).toLowerCase()} audience`);
+    } else if (f.endsWith(" channel")) {
+      const ch = f.slice(0, -" channel".length);
+      said.push(`through ${(CHANNEL_LABEL[ch as AudienceChannel] ?? ch).toLowerCase()}`);
+    } else if (f.startsWith("reputation ")) {
+      const n = Number(f.slice("reputation ".length));
+      said.push(
+        Number.isNaN(n) ? f : n >= 0.9 ? "and it is well regarded" : "and it is established",
+      );
+    } else said.push(f);
+  }
+  return said.join(", ");
+}
+
 const STATE_LABEL: Record<string, string> = {
   proposed: "Proposed",
   approved: "Approved",
@@ -94,8 +132,16 @@ function MatchRow({
       <div className="accmatch__head">
         <span className="accmatch__title">{o.title}</span>
         <span className="chip chip--soft">{source}</span>
-        <span className="accmatch__rel">{Math.round(match.relevance * 100)}% fit</span>
       </div>
+      {/* THE REASONS, NOT THE PERCENTAGE. This used to show "78% fit", which was the only number in
+          the console with no explanation behind it and the one that decides which human meets a
+          child. Its precision was also false: two mentors differing only in source reputation came
+          out 78 and 76, so the panel showed a two-point spread where the real difference was one
+          input, and named neither. `match.fit` already held the reasons and was being thrown away,
+          and `.accmatch__fit` was already in the stylesheet with no component using it. */}
+      {match.fit.length > 0 ? (
+        <p className="accmatch__fit">Why this one: {fitInWords(match.fit)}.</p>
+      ) : null}
       {o.availability?.deadline ? (
         <p className="accmatch__meta">Deadline {o.availability.deadline}</p>
       ) : null}

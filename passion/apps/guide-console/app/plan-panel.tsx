@@ -9,6 +9,7 @@
 import type { JSX } from "react";
 import type { PlanCardVM } from "./plan.js";
 import { specPath, modeLabel } from "./vocab.js";
+import { WhyThis } from "./why.js";
 
 const STAGE_LABEL: Record<string, string> = {
   S1_IGNITION: "Ignition",
@@ -62,12 +63,26 @@ function titleCase(s: string): string {
   return s.length === 0 ? s : s[0] + s.slice(1).toLowerCase();
 }
 
-// The stub brief embeds raw "(https://…)" URLs in the craft-scaffold prose; strip them, because the
-// same vetted resources render as clean clickable links just below.
-function stripUrls(text: string): string {
-  return text
-    .replace(/\s*\(https?:\/\/[^)]+\)/g, "")
+/**
+ * The craft-scaffold prose, ending where the link list takes over.
+ *
+ * The stub brief embeds the vetted resources into the sentence, raw URLs and all, and the same
+ * resources then render as clean links directly below — so a guide read every title twice, once as
+ * unclickable prose and once as a link. Stripping only the URLs left the duplication in place and
+ * made it harder to spot, because what remained looked like ordinary prose.
+ *
+ * So the sentence is cut at its colon and the links finish it. Titles are matched and removed as a
+ * fallback for a brief that lists them without a colon, since a real generator will not follow the
+ * stub's punctuation.
+ */
+function scaffoldProse(text: string, titles: readonly string[]): string {
+  const withoutUrls = text.replace(/\s*\(https?:\/\/[^)]+\)/g, "");
+  const cut = withoutUrls.indexOf("resources:");
+  let out = cut === -1 ? withoutUrls : withoutUrls.slice(0, cut + "resources:".length);
+  if (cut === -1) for (const t of titles) out = out.split(t).join("");
+  return out
     .replace(/\s{2,}/g, " ")
+    .replace(/[;,]\s*\.?$/, "")
     .trim();
 }
 
@@ -143,7 +158,11 @@ function PlanItem({ card }: { card: PlanCardVM }): JSX.Element {
           <strong>How:</strong> {project.authenticMethod}
         </p>
         <p className="planproject__scaffold">
-          <strong>Craft scaffold:</strong> {stripUrls(project.craftScaffold)}
+          <strong>Craft scaffold:</strong>{" "}
+          {scaffoldProse(
+            project.craftScaffold,
+            card.resources.map((r) => r.title),
+          )}
         </p>
         {card.resources.length > 0 ? (
           <ul className="planres">
@@ -160,14 +179,23 @@ function PlanItem({ card }: { card: PlanCardVM }): JSX.Element {
           <strong>Success looks like:</strong> {project.successLooksLike}
         </p>
         <p className="planproject__owns">The child owns the problem, the method, and the pace.</p>
-      </div>
 
-      <div className="planpcde">
-        {p.pcdeFocus.map((k) => (
-          <span key={k} className="chip chip--soft">
-            {PCDE_LABEL[k] ?? k}
+        {/* INSIDE the project box, and labelled. These are `PCDE_BY_STAGE[stage]` — the psychosocial
+            skills this stage of the plan is quietly building besides the craft. They used to sit
+            below the box as four bare uppercase chips: the only unlabelled block on the tab, wearing
+            the mark this console uses for taxonomy tags ON an object, which said they were something
+            the child had earned or the guide had picked. They are neither. Four short nouns are one
+            idea, so they read as a sentence rather than as four objects, and the claim behind them
+            was already written and pointing at nothing. */}
+        <div className="planpcde">
+          <span className="planproject__k">
+            <span className="why-head">
+              What this stage builds in them
+              <WhyThis id="psychosocial-skills" what="these skills are the bottleneck" />
+            </span>
           </span>
-        ))}
+          <p className="planpcde__list">{p.pcdeFocus.map((k) => PCDE_LABEL[k] ?? k).join(", ")}.</p>
+        </div>
       </div>
 
       {p.escalateToHuman ? (
