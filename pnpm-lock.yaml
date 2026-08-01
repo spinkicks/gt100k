@@ -711,6 +711,9 @@ importers:
       '@gt100k/research':
         specifier: workspace:*
         version: link:../research
+      '@gt100k/socratic-defense':
+        specifier: workspace:*
+        version: link:../socratic-defense
       '@gt100k/specialization-planner':
         specifier: workspace:*
         version: link:../specialization-planner

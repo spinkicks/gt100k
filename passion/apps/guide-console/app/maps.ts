@@ -393,6 +393,10 @@ export interface MadeVM {
   readonly title: string;
   readonly kind: string;
   readonly at: string;
+  /** Present on attested external work only, and it is the checkable half of that claim: a record
+      on a third party's server is the part a child cannot fabricate. Absent on studio artefacts,
+      which live in the evidence graph and have no outside address. */
+  readonly url?: string;
 }
 
 /** One link between a project and a milestone, with the things it holds. The artefacts travel with
@@ -553,7 +557,16 @@ export function childReadView(
     return {
       projectId: e.projectId,
       project: link?.project ?? e.projectId,
-      made: (link?.made ?? []).map((m) => ({ title: m.title, kind: m.kind, at: m.at })),
+      // Field by field rather than a spread, so a new field on `MadeThing` has to be considered
+      // here before it can reach a screen. `url` is carried because on attested external work it is
+      // the checkable half of the claim; it stays absent on studio artefacts, which have no address
+      // outside the evidence graph.
+      made: (link?.made ?? []).map((m) => ({
+        title: m.title,
+        kind: m.kind,
+        at: m.at,
+        ...(m.url === undefined ? {} : { url: m.url }),
+      })),
     };
   };
 

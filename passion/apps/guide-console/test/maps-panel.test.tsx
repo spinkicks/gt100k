@@ -235,8 +235,11 @@ describe("MapsPanel reads a map against the child a guide has selected", () => {
     const empty = rows.filter((r) => r.includes('data-strength="none"'));
     expect(offered).toHaveLength(empty.length);
     expect(offered.length).toBeGreaterThan(0);
-    // The two rows with artefacts behind them get no button, because it would change nothing.
-    expect(rows.filter((r) => r.includes('data-strength="multiple"'))).toHaveLength(2);
+    // The rows with artefacts behind them get no button, because it would change nothing. Three of
+    // them now: two from Studio projects and one from attested itch.io work, and the affordance does
+    // not care which, because an override says "do not let a missing record hold this up" and there
+    // is a record either way.
+    expect(rows.filter((r) => r.includes('data-strength="multiple"'))).toHaveLength(3);
     for (const row of rows.filter((r) => r.includes('data-strength="multiple"'))) {
       expect(row).not.toContain('name="note"');
     }
