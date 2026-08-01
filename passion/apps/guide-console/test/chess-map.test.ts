@@ -12,6 +12,7 @@ import { describe, expect, it } from "vitest";
 import { validateMap, type Milestone } from "@gt100k/mastery-map";
 
 import { CONSOLE_CHESS_MAP } from "../app/maps-seed.js";
+import { CHESS_RESOURCES } from "../app/maps-seed-chess-resources.js";
 import { REVIEW_NOW } from "../app/maps.js";
 
 const MS = CONSOLE_CHESS_MAP.milestones;
@@ -120,5 +121,24 @@ describe("what a child has to produce", () => {
     // appears higher up the ladder rather than at the start.
     expect(byId("ch-write-it-down").demonstration).toMatch(/scoresheet/i);
     expect(byId("ch-rating-that-means-something").demonstration).toMatch(/rating/i);
+  });
+});
+
+describe("the chess resource library is real and vetted", () => {
+  it("carries a substantial, distinct set of resources", () => {
+    expect(CHESS_RESOURCES.length).toBeGreaterThanOrEqual(14);
+    const urls = new Set(CHESS_RESOURCES.map((r) => r.url));
+    expect(urls.size).toBe(CHESS_RESOURCES.length); // no duplicate URLs
+  });
+
+  it("every resource is hand-vetted with a real shape", () => {
+    for (const r of CHESS_RESOURCES) {
+      expect(r.provenance, r.id).toBe("curated-library:human-vetted");
+      expect(r.url.startsWith("https://"), r.id).toBe(true);
+      expect(r.ageTiers.length, r.id).toBeGreaterThan(0);
+      expect(r.reputation, r.id).toBeGreaterThan(0);
+      expect(r.pursuits, r.id).toContain("chess");
+      expect(r.domainPath, r.id).toEqual(["games-strategy", "chess"]);
+    }
   });
 });
