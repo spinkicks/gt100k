@@ -116,8 +116,21 @@ const ARI_WORK: ChildWork = {
   ],
 };
 
-// ── Bex: one paper sat, and the next rung open with nothing behind it yet ────────────────────────
-
+// ── Bex: one paper sat on the maths map, and a chess climb that crosses branches ─────────────────
+// Bex is also the chess candidate the hypothesis store already carries (console-data.ts), so she is
+// the honest choice for showing a child climbing the deepened chess map: real work, not a new
+// synthetic kid invented for the occasion. The chess climb below is deliberately spread across
+// TWO OF THE MAP'S MODE BRANCHES plus a trunk rung, because a map that only lit up on one branch
+// would not show the graph shape Task 4 built.
+//
+// The scoresheet and the beginner lesson are things she made and kept, so they arrive as projects,
+// the same way her AMC 8 papers do. The tournament game and the game review happened on chess.com
+// and Lichess, which is the ordinary case attestation exists for (see map-evidence's file comment
+// and DULCE_WORK below): nothing about play on a third party's server reaches this system as a
+// project. Both links use each site's real profile-URL SHAPE with a generic "example" account
+// rather than a specific game id, because I have no way to verify a particular game id is live and
+// the honesty rule here is the same one the map itself is held to: no claim dressed up as more
+// certain than it is.
 const BEX_WORK: ChildWork = {
   kidId: "kid-synthetic-002",
   name: "Bex Ito",
@@ -134,8 +147,94 @@ const BEX_WORK: ChildWork = {
         },
       ],
     },
+    {
+      // Trunk rung ch-write-it-down: kept, not linked, same as the AMC 8 scripts above.
+      id: "proj-chess-scoresheets",
+      title: "Scoresheets from the club ladder",
+      milestoneId: "ch-write-it-down",
+      made: [
+        {
+          title: "A legible scoresheet, both sides recorded, from the Tuesday club ladder",
+          kind: "scoresheet",
+          at: "2026-07-08T18:15:00.000Z",
+        },
+      ],
+    },
+    {
+      // Branch: explain. Bex taught the newest club member one pin pattern; the note is what she
+      // wrote down about it afterwards, not anything chess.com or Lichess ever saw.
+      id: "proj-chess-teach-a-beginner",
+      title: "Teaching the newest kid at the club",
+      milestoneId: "ch-teach-a-beginner",
+      made: [
+        {
+          title:
+            "A ten-minute pin lesson for the newest club member, and what he found the next week",
+          kind: "note",
+          at: "2026-07-22T17:40:00.000Z",
+        },
+      ],
+    },
   ],
   overrides: [],
+  attestations: [
+    {
+      // Branch: perform. Stands. A slow game played and scored under a clock, in a Lichess arena —
+      // an online format but still the tournament conditions ch-real-tournament-game asks for (the
+      // map's own ch-see-the-tactic milestone already points to "a free online arena on Lichess or
+      // Chess.com" as the same kind of opportunity).
+      id: "att-bex-tournament-game",
+      milestoneId: "ch-real-tournament-game",
+      links: [
+        {
+          url: "https://lichess.org/@/example",
+          what:
+            "My Lichess profile, with the slow arena game I also kept a paper scoresheet for — " +
+            "the one where I finally sat through a whole long game without losing on time",
+          at: "2026-07-15T19:00:00.000Z",
+        },
+      ],
+      examined: {
+        at: "2026-07-16T14:00:00.000Z",
+        coverageByFacet: {
+          what: 0.78,
+          why: 0.61,
+          how: 0.82,
+          challenge: 0.71,
+          next: 0.55,
+          audience: 0.5,
+        },
+        gaps: ["next", "audience"],
+      },
+    },
+    {
+      // Branch: investigate. Stands. Reviewing her own lost game, in her own words, before running
+      // an engine, which is exactly what ch-study-your-games asks for.
+      id: "att-bex-study-your-games",
+      milestoneId: "ch-study-your-games",
+      links: [
+        {
+          url: "https://www.chess.com/member/example",
+          what:
+            "My Chess.com profile, with the analysis I wrote on the rook-endgame game I lost — " +
+            "where I thought it turned, written before I ran the computer on it",
+          at: "2026-07-23T20:10:00.000Z",
+        },
+      ],
+      examined: {
+        at: "2026-07-24T13:30:00.000Z",
+        coverageByFacet: {
+          what: 0.7,
+          why: 0.58,
+          how: 0.75,
+          challenge: 0.69,
+          next: 0.4,
+          audience: 0.45,
+        },
+        gaps: ["next", "audience"],
+      },
+    },
+  ],
 };
 
 // ── Cyrus: nothing linked anywhere, which is a state the panel has to render honestly ────────────

@@ -27,6 +27,23 @@
 import type { MasteryMap, Milestone, ValidationRecord } from "@gt100k/mastery-map";
 import type { Source } from "@gt100k/research";
 
+import {
+  CHESSCOM_LESSONS,
+  FIDE_LAWS_RES,
+  FIDE_RATING_TITLES,
+  FIDE_TOURNAMENT_FINDER,
+  LICHESS_ENDGAMES,
+  LICHESS_STUDIES_MATES,
+  LICHESS_TRAINING,
+  NOTATION_GUIDE,
+  STEP1_WORKBOOK,
+  STEP2_WORKBOOK,
+  STEP3_WORKBOOK,
+  STEP4_WORKBOOK,
+  STEP5_WORKBOOK,
+  STEP6_WORKBOOK,
+} from "./maps-seed-chess-resources.js";
+
 /** The concierge's `CuratedResource`, reached through the engine's own type. The console never
     calls the concierge, so it does not take a dependency on it just to name a shape. */
 type CuratedResource = Milestone["resources"][number];
@@ -756,28 +773,23 @@ const CHASE_SIMON: Source = {
   url: "https://doi.org/10.1016/0010-0285(73)90004-2",
 };
 
-const STEPS_WORKBOOKS: CuratedResource = {
-  id: "cr-steps-workbooks",
-  title: "The Steps Method: manuals and workbooks",
-  url: "https://www.stappenmethode.nl/en/",
-  affordedModes: ["investigate", "perform"],
-  domainPath: ["games-strategy", "chess"],
-  pursuits: ["chess"],
-  reputation: 0.95,
-  ageTiers: ["6-8", "9-11", "12-14"],
-  provenance: "curated-library:human-vetted",
+// Learning-by-teaching: the basis for the explain branch's one milestone. Both sources were
+// resolved live through their DOI on 2026-08-01 (Fiorella & Mayer to ScienceDirect pii
+// S0361476X13000209; Chase et al. to Springer's article page), so these are not guessed citations.
+const FIORELLA_MAYER: Source = {
+  authors:
+    "Fiorella & Mayer, 'The relative benefits of learning by teaching and teaching " +
+    "expectancy', Contemporary Educational Psychology 38(4)",
+  year: 2013,
+  url: "https://doi.org/10.1016/j.cedpsych.2013.06.001",
 };
 
-const LICHESS_PRACTICE: CuratedResource = {
-  id: "cr-lichess-practice",
-  title: "Lichess: free puzzles, studies and rated play",
-  url: "https://lichess.org/training",
-  affordedModes: ["perform", "investigate"],
-  domainPath: ["games-strategy", "chess"],
-  pursuits: ["chess"],
-  reputation: 0.9,
-  ageTiers: ["6-8", "9-11", "12-14"],
-  provenance: "curated-library:human-vetted",
+const PROTEGE_EFFECT: Source = {
+  authors:
+    "Chase, Chin, Oppezzo & Schwartz, 'Teachable agents and the protégé effect: " +
+    "increasing the effort towards learning', Journal of Science Education and Technology 18(4)",
+  year: 2009,
+  url: "https://doi.org/10.1007/s10956-009-9180-4",
 };
 
 const CHESS_MILESTONES: readonly Milestone[] = [
@@ -797,7 +809,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       sources: [STEPS_METHOD],
       limit: "The publisher recommends Step 1 from age 8; younger children use Stepping Stones.",
     },
-    resources: [STEPS_WORKBOOKS],
+    resources: [STEP1_WORKBOOK, FIDE_LAWS_RES],
     practice: [
       {
         title: "Finish every game you start",
@@ -808,6 +820,45 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       },
     ],
     demonstration: "A finished game with no illegal moves and an agreed result",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-opening-principles",
+    title: "You open with principles, not a memorized line",
+    capability:
+      "Develop every piece toward the center in the opening, without relying on a memorized line",
+    requires: ["ch-whole-game"],
+    modes: [],
+    stageFloor: "S1_IGNITION",
+    ordering: {
+      reason:
+        "Step 3's own manual gives the opening two dedicated lessons, 'Completing the opening' and " +
+        "'The opening', after Step 2's plus workbook gives it a first, lighter touch. Across all six " +
+        "steps the curriculum never assigns a lesson to a single named opening; whatever repertoire " +
+        "a child eventually wants is exactly the kind of material Step 6 hands the independent " +
+        "learner to go and choose for themselves.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD],
+      limit:
+        "The Steps Method teaches opening PRINCIPLES at Steps 2 and 3 and never assigns a lesson to " +
+        "a named opening or repertoire at any step. 'Principles before repertoire' describes what " +
+        "the six-step ladder actually contains rather than a sequencing the publisher states " +
+        "outright.",
+    },
+    resources: [STEP2_WORKBOOK, STEP3_WORKBOOK, CHESSCOM_LESSONS],
+    practice: [
+      {
+        title: "Same principles, different replies",
+        description:
+          "Open toward the center and get every piece developed against whatever your opponent " +
+          "plays, rather than freezing when the position doesn't match a line you memorized.",
+        solitary: false,
+      },
+    ],
+    demonstration:
+      "A handful of your own opening sequences, each explained by the principle behind it rather " +
+      "than by a named opening",
     opportunities: [],
     authorship: "human-authored",
   },
@@ -826,7 +877,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       basis: "syllabus",
       sources: [STEPS_METHOD],
     },
-    resources: [STEPS_WORKBOOKS],
+    resources: [STEP1_WORKBOOK, STEP2_WORKBOOK, LICHESS_STUDIES_MATES],
     practice: [
       {
         title: "Mate against a bare king, on a clock",
@@ -855,7 +906,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       basis: "syllabus",
       sources: [STEPS_METHOD, FIDE_LAWS],
     },
-    resources: [STEPS_WORKBOOKS],
+    resources: [STEP1_WORKBOOK, NOTATION_GUIDE],
     practice: [
       {
         title: "Notate while you play",
@@ -884,7 +935,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       basis: "syllabus",
       sources: [STEPS_METHOD],
     },
-    resources: [STEPS_WORKBOOKS, LICHESS_PRACTICE],
+    resources: [STEP2_WORKBOOK, LICHESS_TRAINING, CHESSCOM_LESSONS],
     practice: [
       {
         title: "Tactics you get wrong, again",
@@ -895,6 +946,52 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       },
     ],
     demonstration: "A worked page of forks and pins, solutions written out rather than answers",
+    opportunities: [
+      {
+        kind: "competition",
+        description:
+          "A free online arena on Lichess or Chess.com — no rating floor, opponents matched " +
+          "automatically",
+        readinessNote:
+          "Ready as soon as forks and pins get spotted without a hint. Losing on time in an " +
+          "arena is part of the format, not a signal to stop.",
+        stageFloor: "S1_IGNITION",
+      },
+    ],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-king-safety",
+    title: "You keep your king safe",
+    capability:
+      "Castle at the right moment, and recognize when a king is already too exposed to castle " +
+      "into safety",
+    requires: ["ch-opening-principles"],
+    modes: [],
+    stageFloor: "S2_FOUNDATIONS",
+    ordering: {
+      reason:
+        "Castling itself is Step 1's lesson 9, taught as a rule everyone needs to finish a legal " +
+        "game. Weighing king safety as a JUDGMENT — when to castle, and when a king is already too " +
+        "exposed for castling to fix it — is opening-principle territory the curriculum places at " +
+        "Steps 2 and 3, so this follows opening principles rather than the rules milestone directly. " +
+        "FIDE's laws set the legality a castling move has to meet, which this milestone tests " +
+        "directly.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD, FIDE_LAWS],
+    },
+    resources: [STEP1_WORKBOOK, FIDE_LAWS_RES, CHESSCOM_LESSONS],
+    practice: [
+      {
+        title: "Castle early, or say why not",
+        description:
+          "Play games where you decide whether and when to castle, and if you skip it, say out " +
+          "loud what king-safety problem you accepted instead.",
+        solitary: false,
+      },
+    ],
+    demonstration:
+      "A few games with the castling decision, when or a stated reason not to, marked and explained",
     opportunities: [],
     authorship: "human-authored",
   },
@@ -903,7 +1000,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     title: "You can play a real tournament game",
     capability: "Play under a clock with touch-move and a scoresheet, and sit through a long game",
     requires: ["ch-write-it-down", "ch-see-the-tactic"],
-    modes: [],
+    modes: ["perform"],
     stageFloor: "S2_FOUNDATIONS",
     ordering: {
       reason:
@@ -915,7 +1012,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
         "The content here is FIDE's rulebook rather than a progression syllabus; only the " +
         "PLACEMENT comes from the Steps Method. It is a weaker claim than the milestones around it.",
     },
-    resources: [STEPS_WORKBOOKS],
+    resources: [STEP2_WORKBOOK, STEP3_WORKBOOK, FIDE_LAWS_RES],
     practice: [
       {
         title: "Long games, not blitz",
@@ -935,14 +1032,67 @@ const CHESS_MILESTONES: readonly Milestone[] = [
           "rating is usually low and that is what a first rating is for.",
         stageFloor: "S2_FOUNDATIONS",
       },
+      {
+        kind: "community",
+        description: "A scholastic (school-team or grade-level) tournament",
+        readinessNote:
+          "Ready under the same bar as a club tournament: a finished game under a clock, " +
+          "scoresheet included. Scholastic sections are usually the gentlest entry, not a harder " +
+          "one.",
+        stageFloor: "S2_FOUNDATIONS",
+      },
     ],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-visualize",
+    title: "You can see the board without moving anything",
+    capability:
+      "Picture which squares a piece already attacks and hold a short sequence in your head with " +
+      "the board covered",
+    requires: ["ch-see-the-tactic"],
+    modes: [],
+    stageFloor: "S2_FOUNDATIONS",
+    ordering: {
+      reason:
+        "Step 1's plus workbook names 'Board vision' as its own numbered lesson, taught through " +
+        "route-planner exercises (giving check, going to the right square, trapping, capturing all " +
+        "pieces) that drill exactly this: tracking what a piece already attacks without moving it. " +
+        "That lesson sits inside Step 1, well before Step 3 introduces 'thinking ahead' as a " +
+        "distinct calculation skill, which is what makes this rung checkable against the syllabus " +
+        "and puts it ahead of ch-see-ahead, for the reason that milestone's own limit already " +
+        "gives: a search needs something already retrievable to search with.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD],
+      limit:
+        "Step 1's Board vision lesson is real syllabus content, but the Steps Method's own stated " +
+        "view is that gameplay, not this isolated drill, does most of the work of building it: " +
+        "'The best method for the improvement of children's board vision is to let them play " +
+        "games,' with one child needing perhaps 300 games and another 1000. Treat this rung as the " +
+        "syllabus's named checkpoint for the skill, not its primary teaching vehicle.",
+    },
+    resources: [STEP1_WORKBOOK, STEP3_WORKBOOK, LICHESS_TRAINING],
+    practice: [
+      {
+        title: "Call it before you look",
+        description:
+          "Look at a position, then look away, and say what a piece attacks or where a short " +
+          "sequence lands before checking the board. Getting it wrong here is safe; getting it " +
+          "wrong mid-game is not.",
+        solitary: true,
+      },
+    ],
+    demonstration:
+      "A written log of squares or landing positions called before the board was checked, right " +
+      "and wrong both kept",
+    opportunities: [],
     authorship: "human-authored",
   },
   {
     id: "ch-see-ahead",
     title: "You can see ahead without touching the pieces",
     capability: "Calculate a short forced line in your head and picture the position it reaches",
-    requires: ["ch-see-the-tactic"],
+    requires: ["ch-see-the-tactic", "ch-visualize"],
     modes: [],
     stageFloor: "S2_FOUNDATIONS",
     ordering: {
@@ -958,7 +1108,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
         "their finding is that masters lose nearly all their recall advantage on random positions, " +
         "which is about what expertise is made of rather than about what to teach first.",
     },
-    resources: [STEPS_WORKBOOKS],
+    resources: [STEP3_WORKBOOK, LICHESS_TRAINING],
     practice: [
       {
         title: "Solve without moving anything",
@@ -989,7 +1139,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       basis: "syllabus",
       sources: [STEPS_METHOD],
     },
-    resources: [STEPS_WORKBOOKS, LICHESS_PRACTICE],
+    resources: [STEP3_WORKBOOK, LICHESS_ENDGAMES],
     practice: [
       {
         title: "Play the ending out against someone",
@@ -1000,7 +1150,16 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       },
     ],
     demonstration: "A worked set of pawn endings with the winning method written out",
-    opportunities: [],
+    opportunities: [
+      {
+        kind: "community",
+        description: "A weekly chess club meeting — regular opponents rather than a one-off event",
+        readinessNote:
+          "Ready once a won pawn ending gets converted under a clock against a person, not just " +
+          "on a diagram.",
+        stageFloor: "S2_FOUNDATIONS",
+      },
+    ],
     authorship: "human-authored",
   },
   {
@@ -1018,7 +1177,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       basis: "syllabus",
       sources: [STEPS_METHOD],
     },
-    resources: [STEPS_WORKBOOKS],
+    resources: [STEP4_WORKBOOK, LICHESS_TRAINING],
     practice: [
       {
         title: "Find the move before the move",
@@ -1038,7 +1197,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     capability:
       "Improve a position when nothing is hanging: weak pawns, open files, a strong square",
     requires: ["ch-prepare-a-tactic"],
-    modes: [],
+    modes: ["investigate"],
     stageFloor: "S3_AUTHORSHIP",
     ordering: {
       reason:
@@ -1047,7 +1206,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       basis: "syllabus",
       sources: [STEPS_METHOD],
     },
-    resources: [STEPS_WORKBOOKS],
+    resources: [STEP4_WORKBOOK, STEP5_WORKBOOK, CHESSCOM_LESSONS],
     practice: [
       {
         title: "Say what the position needs",
@@ -1059,7 +1218,16 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     ],
     demonstration:
       "An annotated game naming what the position needed before the moves that answered it",
-    opportunities: [],
+    opportunities: [
+      {
+        kind: "showcase",
+        description: "A club demo night or a public annotated-game post, sharing your own analysis",
+        readinessNote:
+          "Ready once the one-sentence diagnosis of a position is your own words, not a " +
+          "memorized template. A showcase is for the reasoning, not just the result.",
+        stageFloor: "S3_AUTHORSHIP",
+      },
+    ],
     authorship: "human-authored",
   },
   {
@@ -1067,7 +1235,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     title: "You can convert",
     capability: "Win a won endgame and defend a bad one: rook endings, pawn races, breakthrough",
     requires: ["ch-play-without-a-target"],
-    modes: [],
+    modes: ["investigate"],
     stageFloor: "S3_AUTHORSHIP",
     ordering: {
       reason:
@@ -1076,7 +1244,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       basis: "syllabus",
       sources: [STEPS_METHOD],
     },
-    resources: [STEPS_WORKBOOKS, LICHESS_PRACTICE],
+    resources: [STEP5_WORKBOOK, STEP6_WORKBOOK, LICHESS_ENDGAMES],
     practice: [
       {
         title: "The ending you lost, replayed",
@@ -1087,6 +1255,49 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       },
     ],
     demonstration: "A converted endgame with the critical decision annotated by you",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-study-your-games",
+    title: "You review your own games for what actually lost them",
+    capability:
+      "Find the one move that actually lost a game of yours, working it out on your own " +
+      "before running an engine",
+    requires: ["ch-real-tournament-game"],
+    modes: ["investigate"],
+    stageFloor: "S3_AUTHORSHIP",
+    ordering: {
+      reason:
+        "The Step 6 manual lists this among what 'a good trainer has been insisting on' " +
+        "throughout all six steps: 'discussion / analysis of the games you played'. Step 6 states " +
+        "it as an instruction to the learner directly: 'Get used to analysing all " +
+        "your games. With a good trainer, with a stronger player or on your own.' Doing so needs a " +
+        "played game to look at, so it follows real tournament play rather than any earlier step.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD],
+      limit:
+        "This habit runs through all six steps under a trainer; Step 6 is where the manual hands " +
+        "it to the learner to do 'on your own'. The manual does not gate it behind tournament play " +
+        "specifically; requiring ch-real-tournament-game first is our own sequencing, since a game " +
+        "worth reviewing has to exist. It sits well before ch-teach-yourself (S4): reviewing a game " +
+        "you already played needs no chosen study material, which is the separate thing that " +
+        "milestone covers.",
+    },
+    resources: [STEP6_WORKBOOK, CHESSCOM_LESSONS],
+    practice: [
+      {
+        title: "Your own view, before the engine's",
+        description:
+          "Go through a game you lost on a real board, deciding on your own where it turned, " +
+          "before you touch an engine or a book. Checking your view against a tool teaches " +
+          "something; skipping straight to the tool teaches nothing.",
+        solitary: true,
+      },
+    ],
+    demonstration:
+      "A game you lost, annotated in your own words at the move you now think it turned, written " +
+      "before you ran an engine",
     opportunities: [],
     authorship: "human-authored",
   },
@@ -1109,7 +1320,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
         "years and found the opposite, with games played dominating and study 'a weak factor at " +
         "best'. The syllabus leg stands on its own; the research is contested and is not settled.",
     },
-    resources: [STEPS_WORKBOOKS, LICHESS_PRACTICE],
+    resources: [STEP6_WORKBOOK, CHESSCOM_LESSONS],
     practice: [
       {
         title: "Your own review, on your own schedule",
@@ -1120,7 +1331,18 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       },
     ],
     demonstration: "Your own study plan naming the material you chose, and the games behind it",
-    opportunities: [],
+    opportunities: [
+      {
+        kind: "mentorship",
+        description:
+          "Periodic review with a stronger player or coach — a second set of eyes on material " +
+          "you chose yourself, not daily instruction",
+        readinessNote:
+          "Ready once you already have a study plan to bring to the session. A mentor here is " +
+          "reviewing your judgment, not replacing it.",
+        stageFloor: "S4_SIGNATURE",
+      },
+    ],
     authorship: "human-authored",
   },
   {
@@ -1128,7 +1350,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     title: "You have a rating that means something",
     capability: "Hold a published federation rating that places you in a named class",
     requires: ["ch-real-tournament-game", "ch-teach-yourself"],
-    modes: [],
+    modes: ["perform"],
     stageFloor: "S4_SIGNATURE",
     ordering: {
       reason:
@@ -1146,7 +1368,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
         "family spending over $200,000. Class A to Expert is an excellent and uncommon outcome for " +
         "a child who starts at eight and works hard. Titles are a different undertaking.",
     },
-    resources: [LICHESS_PRACTICE],
+    resources: [FIDE_RATING_TITLES, FIDE_TOURNAMENT_FINDER, LICHESS_TRAINING],
     practice: [
       {
         title: "Rated games, regularly",
@@ -1164,9 +1386,62 @@ const CHESS_MILESTONES: readonly Milestone[] = [
         readinessNote:
           "Ready when losing a rated game is information rather than a catastrophe. Entering " +
           "before that is how a child learns to dread the thing they liked.",
+        // stageFloor is intentionally below the milestone's: you enter rated events (S3) to EARN
+        // the rating, before it "means something" (S4).
         stageFloor: "S3_AUTHORSHIP",
       },
+      {
+        kind: "competition",
+        description:
+          "Each published rating-class threshold itself — Class C, B, A, Expert, Candidate " +
+          "Master — a checkpoint a stranger can verify without taking your word for it",
+        readinessNote:
+          "Ready the moment a federation rating exists at all; each class is a milestone within " +
+          "the milestone, not a separate bar to clear first.",
+        stageFloor: "S4_SIGNATURE",
+      },
     ],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-teach-a-beginner",
+    title: "You can teach a beginner",
+    capability:
+      "Teach a beginner one tactic in a short lesson, so they can then find it themselves",
+    requires: ["ch-see-the-tactic"],
+    modes: ["explain"],
+    stageFloor: "S3_AUTHORSHIP",
+    ordering: {
+      reason:
+        "Fiorella & Mayer found that students who actually taught material (rather than just " +
+        "expecting to teach it) learned it more durably, with the gain still showing up a week " +
+        "later. Chase et al.'s 'protégé effect' is the reason it works for a child specifically: " +
+        "students try harder for a learner they are responsible for than they do for themselves, " +
+        "an effect that showed up most for lower-achieving students. Both studies are about " +
+        "explaining what you already hold, so this sits after ch-see-the-tactic rather than " +
+        "alongside it: a child needs a tactic worth teaching before teaching it can do anything.",
+      basis: "research",
+      sources: [FIORELLA_MAYER, PROTEGE_EFFECT],
+      limit:
+        "Neither study is about chess. Fiorella & Mayer taught undergraduates a text passage, and " +
+        "Chase et al.'s protégé effect ran on 5th-graders teaching a virtual agent about " +
+        "ecosystems. That a tactic taught to a real beginner produces the same durable gain is our " +
+        "extension of their finding to this domain, not a claim either paper makes.",
+    },
+    resources: [STEP2_WORKBOOK, CHESSCOM_LESSONS, LICHESS_STUDIES_MATES],
+    practice: [
+      {
+        title: "Teach it before you explain it to yourself",
+        description:
+          "Find a genuine beginner — a younger sibling, a new club member, anyone who does not yet " +
+          "see the pattern — and walk them through one tactic until they can find it on their own. " +
+          "Rehearsing the explanation alone is teaching expectancy; a real learner in front of you " +
+          "is the part the research says actually moves the needle.",
+        solitary: false,
+      },
+    ],
+    demonstration: "A short lesson you gave, and what the learner could do after",
+    opportunities: [],
     authorship: "human-authored",
   },
 ];
@@ -1175,7 +1450,7 @@ export const CONSOLE_CHESS_MAP: MasteryMap = {
   id: "map-chess-console",
   version: 1,
   domainPath: ["games-strategy", "chess"],
-  modes: ["perform", "investigate"],
+  modes: ["perform", "investigate", "explain"],
   ageBands: ["6-8", "9-11", "12-14"],
   milestones: CHESS_MILESTONES,
   provenance: {

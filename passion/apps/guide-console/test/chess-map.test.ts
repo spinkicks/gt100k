@@ -10,9 +10,12 @@
  */
 import { describe, expect, it } from "vitest";
 import { validateMap, type Milestone } from "@gt100k/mastery-map";
+import { WORK_MODES } from "@gt100k/two-axis-tagging";
 
 import { CONSOLE_CHESS_MAP } from "../app/maps-seed.js";
-import { REVIEW_NOW } from "../app/maps.js";
+import { CHESS_RESOURCES } from "../app/maps-seed-chess-resources.js";
+import { childReadView, REVIEW_NOW } from "../app/maps.js";
+import { workForKid } from "../app/map-evidence.js";
 
 const MS = CONSOLE_CHESS_MAP.milestones;
 const byId = (id: string): Milestone => {
@@ -120,5 +123,156 @@ describe("what a child has to produce", () => {
     // appears higher up the ladder rather than at the start.
     expect(byId("ch-write-it-down").demonstration).toMatch(/scoresheet/i);
     expect(byId("ch-rating-that-means-something").demonstration).toMatch(/rating/i);
+  });
+});
+
+describe("every rung is runnable and points somewhere real", () => {
+  it("gives most milestones more than one resource, drawn from the library", () => {
+    const libIds = new Set(CHESS_RESOURCES.map((r) => r.id));
+    let multi = 0;
+    for (const m of MS) {
+      expect(m.resources.length, m.id).toBeGreaterThan(0);
+      for (const r of m.resources) expect(libIds.has(r.id), `${m.id} → ${r.id}`).toBe(true);
+      if (m.resources.length >= 2) multi += 1;
+    }
+    expect(multi).toBeGreaterThanOrEqual(MS.length - 2);
+  });
+
+  it("names real-world opportunities across the ladder, not just at the end", () => {
+    const withOpps = MS.filter((m) => m.opportunities.length > 0);
+    expect(withOpps.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("anchors a rating-class checkpoint a stranger could verify", () => {
+    const rating = byId("ch-rating-that-means-something");
+    expect(rating.opportunities.some((o) => o.kind === "competition")).toBe(true);
+    expect(rating.ordering.limit).toContain("2100"); // ceiling caveat preserved
+  });
+});
+
+describe("the map covers the real gaps in a beginner's climb", () => {
+  it("has grown into a substantial graph", () => {
+    expect(MS.length).toBeGreaterThanOrEqual(16);
+  });
+
+  it("teaches opening principles, king safety, self-review and visualization", () => {
+    for (const id of [
+      "ch-opening-principles",
+      "ch-king-safety",
+      "ch-study-your-games",
+      "ch-visualize",
+    ]) {
+      expect(
+        MS.some((m) => m.id === id),
+        id,
+      ).toBe(true);
+    }
+  });
+
+  it("keeps the graph acyclic with no dangling prerequisite", () => {
+    const ids = new Set(MS.map((m) => m.id));
+    for (const m of MS) for (const r of m.requires) expect(ids.has(r), `${m.id} → ${r}`).toBe(true);
+    // validator also checks E1_CYCLE:
+    expect(validateMap(CONSOLE_CHESS_MAP, REVIEW_NOW).errors).toEqual([]);
+  });
+
+  it("has no capability that opens with a consumption verb (W6)", () => {
+    const w6 = validateMap(CONSOLE_CHESS_MAP, REVIEW_NOW).warnings.filter(
+      (w) => w.code === "W6_CONSUMPTION_VERB",
+    );
+    expect(w6.map((w) => w.milestoneId)).toEqual([]);
+  });
+});
+
+describe("the chess resource library is real and vetted", () => {
+  it("carries a substantial, distinct set of resources", () => {
+    expect(CHESS_RESOURCES.length).toBeGreaterThanOrEqual(14);
+    const urls = new Set(CHESS_RESOURCES.map((r) => r.url));
+    expect(urls.size).toBe(CHESS_RESOURCES.length); // no duplicate URLs
+  });
+
+  it("every resource is hand-vetted with a real shape", () => {
+    for (const r of CHESS_RESOURCES) {
+      expect(r.provenance, r.id).toBe("curated-library:human-vetted");
+      expect(r.url.startsWith("https://"), r.id).toBe(true);
+      expect(r.ageTiers.length, r.id).toBeGreaterThan(0);
+      expect(r.reputation, r.id).toBeGreaterThan(0);
+      expect(r.pursuits, r.id).toContain("chess");
+      expect(r.domainPath, r.id).toEqual(["games-strategy", "chess"]);
+    }
+  });
+});
+
+describe("the map reads as a graph, not a single line", () => {
+  it("declares the modes its branches use and no others", () => {
+    for (const mode of CONSOLE_CHESS_MAP.modes) expect(WORK_MODES).toContain(mode);
+    expect(CONSOLE_CHESS_MAP.modes).toContain("explain");
+  });
+
+  it("has real branches whose modes are a subset of the map's", () => {
+    const mapModes = new Set<string>(CONSOLE_CHESS_MAP.modes);
+    const branches = MS.filter((m) => m.modes.length > 0);
+    expect(branches.length).toBeGreaterThanOrEqual(3);
+    for (const b of branches)
+      for (const mode of b.modes) expect(mapModes.has(mode), `${b.id} ${mode}`).toBe(true);
+  });
+
+  it("keeps at most two non-syllabus rungs, the teach branch being one", () => {
+    const nonSyllabus = MS.filter((m) => m.ordering.basis !== "syllabus");
+    expect(nonSyllabus.length).toBeLessThanOrEqual(2);
+    expect(byId("ch-teach-a-beginner").ordering.basis).toBe("research");
+  });
+});
+
+describe("a demo child climbing the deep map across branches", () => {
+  // Bex is the chess candidate the console already carries (console-data.ts), seeded in
+  // map-evidence.ts with a trunk scoresheet, a perform-branch tournament game, an investigate-branch
+  // game review, and an explain-branch beginner lesson. The point of this test is the honesty
+  // invariant: a standing appears ONLY on the rungs that carry real work, on a real read of the
+  // published map — not a guess about the shape of `childReadView`'s output.
+  const vm = childReadView(CONSOLE_CHESS_MAP, workForKid("kid-synthetic-002"), []);
+  const readOf = (id: string) => {
+    const r = vm.reads.find((x) => x.id === id);
+    if (r === undefined) throw new Error(`no read for ${id}`);
+    return r;
+  };
+
+  it("shows a standing on rungs from two different mode branches", () => {
+    const perform = readOf("ch-real-tournament-game");
+    const investigate = readOf("ch-study-your-games");
+    expect(perform.branchModes).toEqual(["Perform"]);
+    expect(investigate.branchModes).toEqual(["Investigate"]);
+    expect(perform.strength).not.toBe("none");
+    expect(investigate.strength).not.toBe("none");
+  });
+
+  it("also carries a trunk rung and an explain-branch rung", () => {
+    const trunk = readOf("ch-write-it-down");
+    const explain = readOf("ch-teach-a-beginner");
+    expect(trunk.isTrunk).toBe(true);
+    expect(trunk.strength).not.toBe("none");
+    expect(explain.branchModes).toEqual(["Explain"]);
+    expect(explain.strength).not.toBe("none");
+  });
+
+  it("every standing it shows carries the work it was derived from", () => {
+    for (const id of [
+      "ch-write-it-down",
+      "ch-real-tournament-game",
+      "ch-study-your-games",
+      "ch-teach-a-beginner",
+    ]) {
+      const r = readOf(id);
+      expect(r.evidence.length, id).toBeGreaterThan(0);
+    }
+  });
+
+  it("leaves a rung with no linked work honestly empty", () => {
+    // ch-convert (investigate) and ch-teach-yourself (trunk) sit in the same branches Bex has real
+    // work in, and neither has anything seeded for her, so both must read as no standing at all.
+    expect(readOf("ch-convert").strength).toBe("none");
+    expect(readOf("ch-convert").evidence).toEqual([]);
+    expect(readOf("ch-teach-yourself").strength).toBe("none");
+    expect(readOf("ch-teach-yourself").evidence).toEqual([]);
   });
 });
