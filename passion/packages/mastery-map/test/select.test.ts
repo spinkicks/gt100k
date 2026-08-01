@@ -334,12 +334,15 @@ describe("what blocks a milestone, said precisely enough to act on", () => {
 // ── The ceiling nobody can currently pass ────────────────────────────────────────────────────────
 
 /**
- * `deriveStage` needs `stretchSeeking` for both S3 and S4, `stretchSeeking` derives solely from
- * `chosen_challenge`, and nothing in production emits that event (escalated in PR #163). So no
- * child is above `S2_FOUNDATIONS`, every branch in both golden maps sits at `S3_AUTHORSHIP`, and a
- * trunk-only reachable set is the correct output rather than a fixture that needs fixing.
+ * `deriveStage` needs `stretchSeeking` for both S3 and S4, and `stretchSeeking` derives solely from
+ * `chosen_challenge`. Nothing emitted that event when this was written (escalated in PR #163);
+ * since #216 one gadget of nine does, so a child above `S2_FOUNDATIONS` is now rare rather than
+ * impossible. What is asserted here is unaffected either way, because it fixes the stage at
+ * `S2_FOUNDATIONS` and asks what `readMap` does from there: every branch in both golden maps sits
+ * at `S3_AUTHORSHIP`, so a trunk-only reachable set is the correct output rather than a fixture
+ * that needs fixing.
  */
-describe("nothing above S2_FOUNDATIONS is reachable by any child today", () => {
+describe("from S2_FOUNDATIONS, only trunk milestones are reachable", () => {
   for (const map of [PIANO_MAP, GAME_DEV_MAP]) {
     it(`reports only trunk milestones as reachable on ${map.id}, even with everything evidenced`, () => {
       const everything = map.milestones.map((m) => made(m.id, 4));

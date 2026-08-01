@@ -1,6 +1,11 @@
 # EvidenceGraph — Architecture & Student-Experience Decision Register
 
-**Status:** Draft — awaiting operator decisions · Owner: (you) · Created 2026-07-23
+**Status:** Answered and folded in. Created 2026-07-23 awaiting operator decisions; the answers are the
+inline notes on each `Decision:` line below, and they were folded into
+[`evidencegraph-v1-design.md`](./evidencegraph-v1-design.md), which is the doc to read for what v1 is.
+Kept as the record of the options considered and what was ruled out. The blanks that stayed blank were
+deferred rather than missed — §12 of the design doc lists them.
+**Owner:** (you) · Created 2026-07-23
 **Purpose:** Lock the open decisions before we build the EvidenceGraph beyond the current synthetic example. Two tracks: **(A–B) how students actually produce and capture evidence**, and **(C–G) how we make the architecture robust and shippable for live child data.**
 **Grounding:** PRD §19 (the full-vision spec + §19.2 D1–D6 gates — now archived at `archive/docs/prd/PRD.md` after the PassionLab reset); the current active spec surface — `docs/prd/passionApps.md` (E1), `docs/prd/passion-roadmap.md` (features 002 + 023-productionization); the two hardening docs (`docs/prd/hardening/evidencegraph-productionization.md` + `docs/research/passion-pipeline/hardening/08-*.md`); the shipped MVP (`passion/packages/evidence-graph`, adapters, `evidence-explorer` app); `docs/prd/GOVERNANCE.md` G7/G9.
 
@@ -356,8 +361,8 @@ The hardening doc says **D2 (verifiable erasure) is the hard pre-live gate**, an
 - `____`
 - `____`
 
-## Once filled, next steps
+## Once filled, next steps — all three done
 
-1. I fold decisions into a new doc just detailing evidence graph and we discuss whats missing
-2. I write a **spec for the first build** (Track 1 workflow ).
-3. We build behind the normal PR/review gate.
+1. ~~I fold decisions into a new doc just detailing evidence graph and we discuss whats missing~~ → `evidencegraph-v1-design.md`.
+2. ~~I write a **spec for the first build** (Track 1 workflow ).~~ → `evidencegraph-v1-buildspec.md`.
+3. ~~We build behind the normal PR/review gate.~~ → built; the spec's five phases are complete.

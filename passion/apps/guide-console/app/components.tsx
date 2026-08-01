@@ -408,6 +408,36 @@ export function ChildSwitcher({ ctrl }: { ctrl: ConsoleController }): JSX.Elemen
   );
 }
 
+/**
+ * Says which specialization a scoped tab is reading. Wellbeing, Plan and Access each answer their
+ * question about one specialization at a time, and the answer is meaningless without knowing which:
+ * "hold, and lower the dose" is advice about a domain, not about a child.
+ *
+ * It names the rail as the way to change it rather than offering its own picker, because two
+ * controls for one piece of state is how they drift apart.
+ */
+export function SpecScope({
+  card,
+  total,
+}: {
+  card: HypothesisCard | undefined;
+  total: number;
+}): JSX.Element | null {
+  if (!card) return null;
+  return (
+    <p className="specscope">
+      <span className="specscope__label">Showing</span>
+      <span className="specscope__name">{specPath(card.domainPath)}</span>
+      <span className="specscope__sub">
+        {stateTerm(card.state).label} · {modeLabel(card.mode)}
+      </span>
+      {total > 1 ? (
+        <span className="specscope__hint">1 of {total} — pick another in Specializations</span>
+      ) : null}
+    </p>
+  );
+}
+
 // Clickable list of the current child's specializations (interest hypotheses).
 export function SpecRail({
   ctrl,
@@ -417,6 +447,14 @@ export function SpecRail({
   onPick?: (card: HypothesisCard, index: number) => void;
 }): JSX.Element {
   const selId = ctrl.selectedCard?.id ?? null;
+  // Which specializations have a lens escalating to a human. Wellbeing, Plan and Access are scoped
+  // to one specialization at a time, so without this the rail is the only place a guide could learn
+  // that a DIFFERENT one needs them, and it was not saying so. The tab dot says "somewhere in this
+  // child"; these say where.
+  const flagged = new Set<string>([
+    ...ctrl.wellbeing.filter((c) => c.read.escalateToHuman).map((c) => c.id),
+    ...ctrl.plans.filter((c) => c.plan.escalateToHuman).map((c) => c.id),
+  ]);
   return (
     <nav className="rail" aria-label="Specializations">
       <p className="nav__label">Specializations</p>
@@ -425,6 +463,7 @@ export function SpecRail({
       ) : (
         ctrl.vm.cards.map((card, i) => {
           const on = selId === card.id;
+          const needsReview = flagged.has(card.id);
           return (
             <button
               key={card.id}
@@ -440,6 +479,14 @@ export function SpecRail({
                   {stateTerm(card.state).label} · {modeLabel(card.mode)}
                 </span>
               </span>
+              {needsReview ? (
+                <span className="railitem__flag" title="Needs your review">
+                  {/* The word, not only the dot: a coloured dot beside a differently-coloured state
+                      dot is two colour codes in one row, and this one has to survive being read by
+                      someone who does not distinguish them. */}
+                  Review
+                </span>
+              ) : null}
             </button>
           );
         })

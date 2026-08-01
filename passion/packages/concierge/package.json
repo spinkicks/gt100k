@@ -11,7 +11,11 @@
   "dependencies": {
     "@gt100k/two-axis-tagging": "workspace:*"
   },
+  "devDependencies": {
+    "@gt100k/pursuits": "workspace:*"
+  },
   "scripts": {
-    "test": "vitest run --root ../../.. passion/packages/concierge/test"
+    "test": "vitest run --root ../../.. passion/packages/concierge/test",
+    "check-links": "tsx scripts/check-links.ts"
   }
 }

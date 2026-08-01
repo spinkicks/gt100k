@@ -1,6 +1,6 @@
 # Engine Spec — Two-Axis Tagging System (C2)
 
-**Status:** Draft v1 · 2026-07-22 · Owner: (eng)
+**Status:** Draft v1 · 2026-07-22 · Built as `@gt100k/two-axis-tagging`; reviewed against it 2026-07-28 · Owner: (eng)
 **Purpose:** Tag everything a kid can engage with along two axes — **domain** (topic) and **work-mode** (style) — so the inference engine (C3) can read interest per `(domain × work-mode)` cell. The whole signal depends on these tags being valid.
 **Grounding:** Discovery App PRD §6.1; measurement-validity hardening spec (tag-validity gate).
 
@@ -35,10 +35,13 @@ The nine: `build, investigate, compose, perform, debug, explain, persuade, colla
 ## 4. Data model (sketch)
 
 ```
-Artifact  { id, domainPath: [cabin, subTopic?], affordedModes: WorkMode[], source, provenance, tagConfidence }
+Artifact  { id, domainPath: [cabin, subTopic?], affordedModes: WorkMode[], kind: gadget|taste-app|resource,
+            source: gold|auto, origin: seed|minted, tagConfidence, tagStatus: TRUSTED|PROVISIONAL }
 ActionEvent { kidId, artifactId, engagedModes: { primary: WorkMode, secondary?: WorkMode },
               depthSignals, timestamp, returnState: voluntary|prompted, noveltyFlag }
 ```
+
+*(Sketch updated 2026-07-28 to the shipped records. It gained `tagStatus`, which is the field §3's trust gate actually writes, plus `kind` and `origin`; the earlier `provenance` field was never built, and a promoted open-web resource carries its content digest as the concierge's `CuratedResource.provenance` instead.)*
 
 `ActionEvent`s are the input to C1 (event capture) → C3 (inference). Domain is carried as a path so inference can aggregate at coarse or fine granularity.
 
@@ -46,4 +49,4 @@ ActionEvent { kidId, artifactId, engagedModes: { primary: WorkMode, secondary?: 
 
 - Final work-mode list may shift after reliability testing (some verbs may merge/split).
 - Auto-tag **drift** over time → periodic re-validation against the gold set.
-- Concierge-minted sub-topics need a light dedup/merge process so the fine taxonomy doesn't fragment.
+- Concierge-minted sub-topics need a light dedup/merge process so the fine taxonomy doesn't fragment. Exact-label collisions are already handled — minting slugifies the label and adds it to a set, so it is idempotent by `(cabin, label)` — but two labels for one idea ("subwoofers" and "sub woofers") still produce two shelves, and nothing merges them.

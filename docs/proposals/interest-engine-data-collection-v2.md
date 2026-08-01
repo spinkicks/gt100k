@@ -13,7 +13,7 @@ Each section below carries its own outcome. Where an item shipped, the section s
 landed rather than what was asked for, because in three cases those differ.
 **Author:** Felipe Caicedo (via research pass 2026-07-25)
 **Affects:** `specs/011-interest-inference` (`@gt100k/interest-inference`), `specs/012-signal-pipeline`,
-`docs/prd/DISCOVERY-APP-PRD.md` §6.2–6.4, and the event-emission side in `passion/apps/mvp-jul24`.
+`docs/prd/DISCOVERY-APP-PRD.md` §6.2–6.4, and the event-emission side in `passion/apps/discovery` (the emitter was originally built in `passion/apps/mvp-jul24`, since ported into `discovery` and archived).
 **Evidence:** `docs/research/passion-pipeline/06-activity-design-ages-6-8.md` — **read §8 first**; raw
 reports in `docs/research/passion-pipeline/raw/`.
 **Scope assumption:** the engine serves a **topic-interest finder** for ages 6–8. Not project

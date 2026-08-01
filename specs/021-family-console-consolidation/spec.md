@@ -2,7 +2,7 @@
 
 **Feature Branch**: `feat/guide-console-cockpit`
 **Created**: 2026-07-23
-**Status**: Draft (grilled + approved design) — **but DELIVERED.** The code is merged and tested; it lives in `the guide console's Family tab`. This field tracks the state of the DOCUMENT, which was never revised after the build, and a reader comparing it against the ✅ in `docs/prd/passionApps.md` should trust the packages and their tests over either. What a ✅ does *not* mean is that a child can use it end to end.
+**Status**: Delivered, and unrevised since. Both halves happened: the guide console carries a Family tab backed by `family.ts` and `family-panel.tsx` over the unmodified `@gt100k/family` engine, and the standalone `apps/family` is gone from the tree, the workspace and the root `tsconfig.json` — the §7 removal checklist is complete. The console has since kept growing, so the "fourth tab" of §3 D1 is now one of seven (Overview, Hypotheses, Wellbeing, Plan, Family, Access, Maps); the consolidation this document argued for held, but its tab count no longer describes the cockpit.
 
 **Input**: Fold the merged **F3 Family Co-Engagement (019)** guide surface into the **guide console** as a fourth tab, so the human lane (F1 guide + F2 wellbeing + F3 family) lives in **one operator cockpit** per child, and retire the standalone `apps/family` app. Design settled via a `/grilling` + brainstorming session (decisions §3). The `@gt100k/family` engine is unchanged; only the *surface* moves.
 

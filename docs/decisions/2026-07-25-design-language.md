@@ -32,8 +32,9 @@ Reference: the MUI dashboard template and Horizon UI, captured during the review
   properties, zero dependencies.** This is what keeps the styling-tool choice reversible
   and lets the Vite/R3F app read the same values without React.
 - The canonical values live on `:root`, so importing the package is enough. No attribute to
-  set, no unthemed flash. Horizon remains only as an opt-in `[data-theme="horizon"]`
-  override for comparison and should be deleted once nobody is comparing.
+  set, no unthemed flash. Horizon remained for a time as an opt-in `[data-theme="horizon"]`
+  override for comparison, on the condition that it go once nobody was comparing. **Removed
+  2026-07-28**, along with the design-lab theme switcher it was the only alternative in.
 - Child and adult are **modes** (same semantic token names, different values), never
   separate token sets. Density is one derived multiplier and never scales type size.
 

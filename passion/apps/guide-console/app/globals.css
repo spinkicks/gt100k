@@ -730,11 +730,14 @@ body {
   color: var(--ink-muted);
   font-size: 0.9rem;
 }
+/* The calibration word sits NEXT TO the figure it qualifies. `space-between` pushed them to opposite
+   ends of a card ~700px wide, so two facts about the same number were as far apart as the layout
+   could put them and read as unrelated. */
 .lb__row {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: flex-start;
+  gap: 14px;
   white-space: nowrap;
 }
 .lb__driver {
@@ -1317,14 +1320,102 @@ body {
   min-width: 0;
   line-height: 1.3;
 }
+/* WRAPS RATHER THAN TRUNCATES, and the reason is specific. The rail leaves about 200px for a name,
+   and the `Review` flag takes ~48px more from exactly the row that carries it — so the one
+   specialization flagged for a guide's attention was the one whose name they could not read
+   ("Science & Nature › Ph…"). A rail of three items can afford two-line rows; a guide being unable
+   to identify the row they most need is not a cosmetic cost. */
 .railitem__name {
   font-size: 0.85rem;
   font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 .railitem__sub {
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+}
+
+/* Marks a specialization whose wellbeing or plan read is escalating. Sits at the end of the row so
+   the rail still scans as a column of names, and carries the word rather than relying on the
+   colour, which is already spent on the state dot beside it. */
+.railitem__flag {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--warn);
+  background: var(--warn-bg);
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+
+/* A map's body, collapsed unless it is the loaded child's. The summary carries the domain and the
+   status, which is what a guide scans a review queue by. */
+.mapcard__summary {
+  cursor: pointer;
+  list-style: none;
+}
+.mapcard__summary::-webkit-details-marker {
+  display: none;
+}
+.mapcard__summary::after {
+  content: "Show the rungs";
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.72rem;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.mapcard__body[open] > .mapcard__summary::after {
+  content: "Hide the rungs";
+}
+.mapcard__summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Coverage line on the Maps tab: what the maps below do and do not say about this child. Warmer
+   than `.specscope` because it is frequently a caveat rather than orientation. */
+.mapcover {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--warn);
+  border-radius: 8px;
+  background: var(--warn-bg);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+/* Says which specialization a scoped tab is reading. Quiet by design: it is orientation, not the
+   content, and it sits between the tab strip and the panel it describes. */
+.specscope {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2, transparent);
+}
+.specscope__label {
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+}
+.specscope__name {
+  font-weight: 600;
+}
+.specscope__sub {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
+.specscope__hint {
+  margin-left: auto;
   font-size: 0.72rem;
   color: var(--ink-muted);
 }
@@ -1410,6 +1501,9 @@ body {
   border-radius: 50%;
   background: var(--warn);
   flex: 0 0 auto;
+  /* Leading edge, not between the label and the count, where it read as a middot separator. Done
+     here rather than in the markup so the tab's accessible name still begins with its own label. */
+  order: -1;
 }
 /* The active tab's content mounts with a quiet fade so switching reads as a state change,
    not a jump. Disabled under prefers-reduced-motion by the global block below. */
@@ -2426,6 +2520,7 @@ body {
   font-size: 0.83rem;
   color: var(--ink-muted);
   line-height: 1.45;
+  max-width: 72ch;
 }
 .wbitem__review .wbitem__reason {
   color: var(--ink);
@@ -2461,11 +2556,16 @@ body {
   letter-spacing: 0.06em;
   color: var(--ink-muted);
 }
+/* THE VALUE OUTRANKS ITS OWN LABEL. `dt` and `dd` were both `--ink-muted`, so "AUDIENCE" and "Just
+   for them (and family)" carried identical ink weight and differed only by case and 0.12rem. Nothing
+   on the panel read as the answer, which is most of why these tabs felt cluttered rather than dense:
+   they were under-ranked, not over-full. The key stays muted; the answer is ink. */
 .plangrid dd {
   margin: 0;
-  font-size: 0.82rem;
-  color: var(--ink-muted);
-  line-height: 1.4;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  line-height: 1.45;
+  max-width: 72ch;
 }
 /* Next project: the one authentic thing to do next, boxed apart from the at-a-glance. */
 .planproject {
@@ -2494,16 +2594,22 @@ body {
   margin: 3px 0 8px;
   font-size: 0.83rem;
   font-style: italic;
-  color: var(--ink-muted);
+  color: var(--ink);
   line-height: 1.45;
+  max-width: 72ch;
 }
 .planproject__method,
 .planproject__scaffold,
 .planproject__success {
   margin: 5px 0 0;
-  font-size: 0.81rem;
-  color: var(--ink-muted);
+  font-size: 0.8125rem;
+  color: var(--ink);
   line-height: 1.45;
+  /* A MEASURE, because `.main--wb` has none. At 1920 these paragraphs ran past 190 characters a
+     line, which is roughly twice the point where the eye stops reliably finding the next one. The
+     stylesheet already knew this — `.offer-grp__why` caps at 62ch — it was just never applied to
+     the panels. */
+  max-width: 72ch;
 }
 .planproject__method strong,
 .planproject__scaffold strong,
@@ -2544,10 +2650,16 @@ body {
 }
 /* PCDE focus chips. */
 .planpcde {
-  margin-top: 11px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.planpcde__list {
+  margin: 4px 0 0;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  line-height: 1.45;
+  max-width: 72ch;
 }
 /* Honest-scope note — shown ONCE per panel, quiet. */
 .planterminal {
@@ -2558,6 +2670,7 @@ body {
   font-style: italic;
   color: var(--ink-muted);
   line-height: 1.45;
+  max-width: 72ch;
 }
 
 /* ---- Family co-engagement tab (021) ---- */
@@ -2587,17 +2700,22 @@ body {
   font-size: 0.82rem;
   color: var(--ink-muted);
 }
+/* One heading per group, so the eyebrow stops repeating above every item. */
+.famgroup + .famgroup {
+  margin-top: 14px;
+}
 .famoffers {
   list-style: none;
   margin: 4px 0 0;
   padding: 0;
   display: grid;
-  gap: 10px;
+  gap: 7px;
 }
 .famoffers li {
-  font-size: 0.83rem;
-  color: var(--ink-muted);
+  font-size: 0.8125rem;
+  color: var(--ink);
   line-height: 1.45;
+  max-width: 72ch;
 }
 .famoffers__k {
   display: block;
@@ -2635,8 +2753,9 @@ body {
 .accgroup__empty {
   margin: 0;
   font-size: 0.82rem;
-  color: var(--ink-muted);
+  color: var(--ink);
   line-height: 1.45;
+  max-width: 72ch;
 }
 .acclist {
   list-style: none;
@@ -2675,6 +2794,7 @@ body {
   font-size: 0.78rem;
   color: var(--ink-muted);
   line-height: 1.4;
+  max-width: 72ch;
 }
 /* A blocked match is a gate that has not been cleared, not a failure: amber, with the reason spelled
    out in the text beside it. */
@@ -2844,6 +2964,7 @@ body {
   font-size: 0.86rem;
   color: var(--ink);
   line-height: 1.45;
+  max-width: 72ch;
 }
 .mapms__after {
   margin: 3px 0 0;
@@ -2854,8 +2975,9 @@ body {
 .mapms__demo {
   margin: 10px 0 0;
   font-size: 0.82rem;
-  color: var(--ink-muted);
+  color: var(--ink);
   line-height: 1.45;
+  max-width: 72ch;
 }
 .mapms__block {
   margin-top: 10px;
@@ -3153,6 +3275,14 @@ body {
   color: var(--ink-faint);
   font-variant-numeric: tabular-nums;
 }
+/* The way out to attested external work. Underlined rather than coloured alone, since this is the
+   only outbound link in a row of plain text and it must not depend on hue to read as one. */
+.mapwork__src {
+  font-size: 0.72rem;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 .mapblock {
   list-style: none;
   margin: 2px 0 0;
@@ -3186,7 +3316,10 @@ body {
 }
 
 /* ── Overview dashboard ───────────────────────────────────────────────────────
-   Lifted from the approved console reference (design-lab/app/console.css). Three names collided
+   Lifted from the approved console reference, a MUI-style mockup that lived at
+   design-lab/app/console.css until 2026-07-28. It was deleted once this console had been restyled
+   past it to the GT School identity and a second console in the old language was only a way to be
+   misled about what the product looks like. These rules are the surviving copy. Three names collided
    with existing rules that mean something else in this console, so they carry an `ov-` prefix here:
    `.legend` is already the collapsible Key disclosure, `.tbl` is already the compact prototype's
    evidence table, and `.ov-sr` / `.ov-blank` / `.ov-foot` / `.ov-none` are new. `.chip`, `.btn` and
@@ -3207,9 +3340,13 @@ body {
   border: 0;
 }
 
+/* TWO SPACING RANKS, NOT ONE. `.ovbody`, `.row2` and `.tiles` all used 20px, so nine cards sat
+   exactly as far apart as the two halves of a single row and the page had no groups in it — only
+   nine equal siblings. Widening the outer gap alone makes a `row2` read as one band, and the page as
+   five topics rather than nine cards. This is the cheapest hierarchy available here. */
 .ovbody {
   display: grid;
-  gap: 20px;
+  gap: 32px;
 }
 
 /* ── Stat tiles ──────────────────────────────────────────────────────────── */
@@ -3229,6 +3366,11 @@ body {
   border-radius: var(--radius-lg);
   box-shadow: var(--elev-raised);
   padding: 18px 20px;
+  /* So the four sparklines share a baseline. One tile's context line wraps to two ("30 of 31 visits
+     came with no prompt") and the others do not, which dropped its spark ~17px below its
+     neighbours and made a row of four comparable numbers look misaligned. */
+  display: flex;
+  flex-direction: column;
 }
 .tile__k {
   font-size: 0.8rem;
@@ -3255,7 +3397,8 @@ body {
 /* Fixed slot so tiles stay aligned when a series is too flat to be worth drawing. */
 .tile__spark {
   height: 34px;
-  margin-top: 6px;
+  margin-top: auto;
+  padding-top: 6px;
 }
 /* The sign in the label ("+50%", "−100%", "No change") is the meaning; hue only reinforces it. */
 .delta {
@@ -3317,6 +3460,11 @@ body {
   display: grid;
   grid-template-columns: 1.55fr 1fr;
   gap: 20px;
+}
+/* A row whose partner did not render. `OfferNext` returns nothing for a child with no offers, which
+   would otherwise leave the Wellbeing card sitting in a two-column grid with a hole beside it. */
+.row2 > :only-child {
+  grid-column: 1 / -1;
 }
 @media (max-width: 1250px) {
   .row2 {
@@ -4081,13 +4229,17 @@ body {
 
 /* Each domain is one thing a guide could go and do, so it gets its own bounded surface on the
    card's own background: the group is the context, these are the choices inside it. */
+/* These are things to offer, not things to click. On `--surface` inside a `--surface-2` panel, with
+   a border, a radius and 600-weight ink, they had the exact figure/ground relationship a button
+   has — so two inert list items read as controls. Given the `.chip` treatment instead, which is the
+   mark this console already uses for a label that sits on a panel. */
 .offer-grp__list li {
   padding: 5px 10px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: var(--surface);
+  background: var(--surface-2);
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink);
 }
 

@@ -70,6 +70,7 @@ const ABRSM_PIANO_PAGE: CuratedResource = {
   title: "ABRSM: piano exam requirements and syllabus downloads",
   url: "https://www.abrsm.org/en-gb/instruments/piano",
   domainPath: ["music-sound", "instruments"],
+  pursuits: ["piano"],
   affordedModes: ["perform"],
   reputation: 0.95,
   ageTiers: ["6-8", "9-11", "12-14"],
@@ -81,6 +82,7 @@ const TRINITY_PAGE: CuratedResource = {
   title: "Trinity College London: supporting tests, including sight reading",
   url: "https://www.trinitycollege.com/qualifications/music/grade-exams/about/supporting-tests",
   domainPath: ["music-sound", "instruments"],
+  pursuits: ["piano"],
   affordedModes: ["perform"],
   reputation: 0.93,
   ageTiers: ["9-11", "12-14"],
@@ -92,6 +94,7 @@ const IMSLP: CuratedResource = {
   title: "IMSLP, the Petrucci Music Library: public-domain scores",
   url: "https://imslp.org/",
   domainPath: ["music-sound", "instruments"],
+  pursuits: ["piano"],
   affordedModes: ["perform", "compose"],
   reputation: 0.88,
   ageTiers: ["9-11", "12-14"],
@@ -295,6 +298,7 @@ const GODOT_TUTORIAL: CuratedResource = {
   title: "Godot Engine docs: Your first 2D game",
   url: "https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html",
   domainPath: ["code-computers", "game-dev"],
+  pursuits: ["game-jam"],
   affordedModes: ["build"],
   reputation: 0.9,
   ageTiers: ["9-11", "12-14"],
@@ -306,6 +310,7 @@ const PRO_GIT_BOOK: CuratedResource = {
   title: "Pro Git, free online edition",
   url: "https://git-scm.com/book/en/v2",
   domainPath: ["code-computers", "game-dev"],
+  pursuits: ["game-jam"],
   affordedModes: ["build", "collaborate"],
   reputation: 0.92,
   ageTiers: ["12-14"],
@@ -317,6 +322,7 @@ const PATTERNS_BOOK: CuratedResource = {
   title: "Game Programming Patterns, free online edition",
   url: "https://gameprogrammingpatterns.com/",
   domainPath: ["code-computers", "game-dev"],
+  pursuits: ["game-jam"],
   affordedModes: ["build", "debug"],
   reputation: 0.89,
   ageTiers: ["12-14"],
@@ -537,6 +543,7 @@ const AMC_PAPERS: CuratedResource = {
   title: "MAA: past AMC papers and answer keys",
   url: "https://maa.org/student-programs/amc/",
   domainPath: ["math-puzzles", "competition-math"],
+  pursuits: ["competition-maths"],
   affordedModes: ["investigate"],
   reputation: 0.94,
   ageTiers: ["9-11", "12-14"],
@@ -548,6 +555,7 @@ const AOPS_LIBRARY: CuratedResource = {
   title: "Art of Problem Solving: introductory subject books",
   url: "https://artofproblemsolving.com/store",
   domainPath: ["math-puzzles", "competition-math"],
+  pursuits: ["competition-maths"],
   affordedModes: ["investigate", "explain"],
   reputation: 0.9,
   ageTiers: ["9-11", "12-14"],
@@ -696,9 +704,497 @@ export const CONSOLE_COMPETITION_MATH_MAP: MasteryMap = {
   revalidatedAt: "2026-01-10T00:00:00.000Z",
 };
 
+// ── Chess ────────────────────────────────────────────────────────────────────────────────────────
+//
+// THE FIRST MAP AUTHORED UNDER `docs/decisions/2026-07-30-mastery-scaffold.md`, and the one the
+// method was derived from. Chess is the most favourable domain that exists for this: a federation, a
+// numeric rating, and a published curriculum in institutional use. That is why it goes first, and
+// also why a second map in a domain with none of those has to follow before we claim the structure
+// generalises.
+//
+// THE SPINE IS THE STEPS METHOD (Stappenmethode), Brunia and van Wijgerden, 1987, six manuals and
+// twenty-six workbooks, in use in a dozen countries. Ten of the twelve milestones below can name a
+// numbered lesson in a purchasable curriculum, which is as strong as `syllabus` basis gets. The
+// ordering is the publisher's, not ours, including the counter-intuitive parts: mate is deliberately
+// postponed inside Step 1, endgames do not appear until Step 3, and "thinking ahead" is introduced
+// only at Step 3 after two full steps of pattern loading.
+//
+// WHAT WE DO NOT CLAIM. The publisher's rating bands are its own, with no stated validation method
+// and no note of whether they mean over-the-board or online. And the whole six-step course tops out
+// at a claimed 2100 — below the lowest FIDE title. The people who wrote the world's leading
+// children's chess curriculum say of Step 5 that "the percentage of students who reach step 5 level
+// is not high". Any copy implying grandmaster is a normal destination would be a lie told to a
+// child; see the last milestone's `limit`.
+
+const STEPS_METHOD: Source = {
+  authors: "Brunia & van Wijgerden, the Steps Method (Stappenmethode), manuals 1-6",
+  year: 2025,
+  url: "https://www.stappenmethode.nl/en/",
+};
+
+const FIDE_HANDBOOK: Source = {
+  authors: "FIDE Handbook B.01, title regulations",
+  year: 2024,
+  url: "https://handbook.fide.com/chapter/B012024",
+};
+
+const FIDE_LAWS: Source = {
+  authors: "FIDE Laws of Chess, Article 8 and Appendix C",
+  year: 2023,
+  url: "https://handbook.fide.com/chapter/E012023",
+};
+
+const US_CHESS_RATINGS: Source = {
+  authors: "US Chess, rating classes and the National Master title",
+  year: 2026,
+  url: "https://new.uschess.org/",
+};
+
+const CHASE_SIMON: Source = {
+  authors: "Chase & Simon, 'Perception in chess', Cognitive Psychology 4(1)",
+  year: 1973,
+  url: "https://doi.org/10.1016/0010-0285(73)90004-2",
+};
+
+const STEPS_WORKBOOKS: CuratedResource = {
+  id: "cr-steps-workbooks",
+  title: "The Steps Method: manuals and workbooks",
+  url: "https://www.stappenmethode.nl/en/",
+  affordedModes: ["investigate", "perform"],
+  domainPath: ["games-strategy", "chess"],
+  pursuits: ["chess"],
+  reputation: 0.95,
+  ageTiers: ["6-8", "9-11", "12-14"],
+  provenance: "curated-library:human-vetted",
+};
+
+const LICHESS_PRACTICE: CuratedResource = {
+  id: "cr-lichess-practice",
+  title: "Lichess: free puzzles, studies and rated play",
+  url: "https://lichess.org/training",
+  affordedModes: ["perform", "investigate"],
+  domainPath: ["games-strategy", "chess"],
+  pursuits: ["chess"],
+  reputation: 0.9,
+  ageTiers: ["6-8", "9-11", "12-14"],
+  provenance: "curated-library:human-vetted",
+};
+
+const CHESS_MILESTONES: readonly Milestone[] = [
+  {
+    id: "ch-whole-game",
+    title: "You can play a whole game",
+    capability: "Play a legal game start to finish, including castling, en passant and a draw",
+    requires: [],
+    modes: [],
+    stageFloor: "S1_IGNITION",
+    ordering: {
+      reason:
+        "Step 1 puts every rule of play in one place and in one order, and nothing else in the " +
+        "curriculum begins until a child can get to the end of a game without an adult correcting " +
+        "the board.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD],
+      limit: "The publisher recommends Step 1 from age 8; younger children use Stepping Stones.",
+    },
+    resources: [STEPS_WORKBOOKS],
+    practice: [
+      {
+        title: "Finish every game you start",
+        description:
+          "Play to the end, including the boring ones. Resigning early is the habit that stops a " +
+          "child ever learning what a won position turns into.",
+        solitary: false,
+      },
+    ],
+    demonstration: "A finished game with no illegal moves and an agreed result",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-finish-a-won-game",
+    title: "You can finish a won game",
+    capability: "Force mate with a queen or a rook, and win material with a fork or an exchange",
+    requires: ["ch-whole-game"],
+    modes: [],
+    stageFloor: "S1_IGNITION",
+    ordering: {
+      reason:
+        "Mate comes near the END of Step 1, not the start, and mating with the rook waits until " +
+        "Step 2. The publisher says outright that 'learning how to mate is postponed as long as " +
+        "possible' and that this 'sounds astonishing and even incredible' but works.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD],
+    },
+    resources: [STEPS_WORKBOOKS],
+    practice: [
+      {
+        title: "Mate against a bare king, on a clock",
+        description:
+          "Set up a queen or a rook against a lone king and force mate. Repeat it until it stops " +
+          "being a puzzle and becomes something your hands already know.",
+        solitary: true,
+      },
+    ],
+    demonstration: "A page of solved positions, forcing mate with a queen and with a rook",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-write-it-down",
+    title: "You can write your game down",
+    capability: "Record both sides' moves in algebraic notation, legibly, for a whole game",
+    requires: ["ch-whole-game"],
+    modes: [],
+    stageFloor: "S1_IGNITION",
+    ordering: {
+      reason:
+        "The last lesson of Step 1, and the gateway to everything after it: a game nobody wrote " +
+        "down cannot be reviewed, annotated or entered anywhere. FIDE requires it of every player " +
+        "in every rated game.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD, FIDE_LAWS],
+    },
+    resources: [STEPS_WORKBOOKS],
+    practice: [
+      {
+        title: "Notate while you play",
+        description:
+          "Write each move as you make it, not afterwards from memory. The point is that the " +
+          "record survives the game, and a reconstruction is not a record.",
+        solitary: false,
+      },
+    ],
+    demonstration: "A legible scoresheet for a whole game, both sides recorded",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-see-the-tactic",
+    title: "You see the tactic",
+    capability: "Find and play forks, pins, discovered attacks and mate in two",
+    requires: ["ch-finish-a-won-game", "ch-write-it-down"],
+    modes: [],
+    stageFloor: "S1_IGNITION",
+    ordering: {
+      reason:
+        "Step 2 is where the curriculum concentrates almost everything, on the publisher's own " +
+        "stated grounds that 'at this level all games are decided by tactics'. It claims a ceiling " +
+        "around 1400, which is most of the distance an ordinary club player ever travels.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD],
+    },
+    resources: [STEPS_WORKBOOKS, LICHESS_PRACTICE],
+    practice: [
+      {
+        title: "Tactics you get wrong, again",
+        description:
+          "Work a themed set, then go back only to the ones you missed. Repeating the ones you " +
+          "already solve is the comfortable version of this and it teaches nothing.",
+        solitary: true,
+      },
+    ],
+    demonstration: "A worked page of forks and pins, solutions written out rather than answers",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-real-tournament-game",
+    title: "You can play a real tournament game",
+    capability: "Play under a clock with touch-move and a scoresheet, and sit through a long game",
+    requires: ["ch-write-it-down", "ch-see-the-tactic"],
+    modes: [],
+    stageFloor: "S2_FOUNDATIONS",
+    ordering: {
+      reason:
+        "The playing rules sit in Step 2's extension work and competitive formats are a Step 3 " +
+        "article, so the curriculum places real competition after tactics rather than before.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD, FIDE_LAWS],
+      limit:
+        "The content here is FIDE's rulebook rather than a progression syllabus; only the " +
+        "PLACEMENT comes from the Steps Method. It is a weaker claim than the milestones around it.",
+    },
+    resources: [STEPS_WORKBOOKS],
+    practice: [
+      {
+        title: "Long games, not blitz",
+        description:
+          "A slow game with a scoresheet is a different skill from fast online play, and it is " +
+          "the one every rated event is made of.",
+        solitary: false,
+      },
+    ],
+    demonstration: "A scoresheet from a played tournament game, win or lose",
+    opportunities: [
+      {
+        kind: "competition",
+        description: "A local rated tournament or a club's internal ladder",
+        readinessNote:
+          "Ready when a whole game can be played to the end under a clock without help. A first " +
+          "rating is usually low and that is what a first rating is for.",
+        stageFloor: "S2_FOUNDATIONS",
+      },
+    ],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-see-ahead",
+    title: "You can see ahead without touching the pieces",
+    capability: "Calculate a short forced line in your head and picture the position it reaches",
+    requires: ["ch-see-the-tactic"],
+    modes: [],
+    stageFloor: "S2_FOUNDATIONS",
+    ordering: {
+      reason:
+        "Step 3 introduces 'thinking ahead' as a named skill only after two full steps of pattern " +
+        "work, arguing that themes have to be retrievable from memory before working memory is " +
+        "free to search.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD],
+      limit:
+        "The placement is the curriculum's. That pattern knowledge must therefore PRECEDE " +
+        "calculation is our reading of Chase & Simon alongside it, and neither source says it: " +
+        "their finding is that masters lose nearly all their recall advantage on random positions, " +
+        "which is about what expertise is made of rather than about what to teach first.",
+    },
+    resources: [STEPS_WORKBOOKS],
+    practice: [
+      {
+        title: "Solve without moving anything",
+        description:
+          "Work the position in your head and only then play it out. Sliding the pieces first " +
+          "turns calculation into trial and error.",
+        solitary: true,
+      },
+    ],
+    demonstration: "A thinking-ahead set with each line written down before the pieces moved",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-first-endgames",
+    title: "You know your first endgames",
+    capability:
+      "Use the square of the pawn, key squares and opposition, and know a won pawn ending",
+    requires: ["ch-see-ahead"],
+    modes: [],
+    stageFloor: "S2_FOUNDATIONS",
+    ordering: {
+      reason:
+        "The first real endgame theory arrives at Step 3, not Step 1. This contradicts the most " +
+        "repeated piece of chess advice there is, and the contradiction is deliberate: 'endgames " +
+        "first' traces to a Capablanca lecture from 1932 and no study supports it, while the " +
+        "leading curriculum places tactics first and endgames third.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD],
+    },
+    resources: [STEPS_WORKBOOKS, LICHESS_PRACTICE],
+    practice: [
+      {
+        title: "Play the ending out against someone",
+        description:
+          "Set up the position and play it from both sides. Knowing the rule and converting it " +
+          "under resistance are different things.",
+        solitary: false,
+      },
+    ],
+    demonstration: "A worked set of pawn endings with the winning method written out",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-prepare-a-tactic",
+    title: "You can prepare a tactic",
+    capability: "Play the quiet move that makes a combination work: luring, blocking, clearing",
+    requires: ["ch-first-endgames"],
+    modes: [],
+    stageFloor: "S3_AUTHORSHIP",
+    ordering: {
+      reason:
+        "Step 4 is defined by the preparatory move, and the publisher notes solutions get about " +
+        "half a move deeper here. It follows Step 3 because you cannot prepare a pattern you " +
+        "cannot yet see.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD],
+    },
+    resources: [STEPS_WORKBOOKS],
+    practice: [
+      {
+        title: "Find the move before the move",
+        description:
+          "Work sets where the combination does not work yet. The answer is what has to happen " +
+          "first, which is a different search from spotting a fork.",
+        solitary: true,
+      },
+    ],
+    demonstration: "Solved Step 4 positions with the preparatory move identified and explained",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-play-without-a-target",
+    title: "You can play without a target",
+    capability:
+      "Improve a position when nothing is hanging: weak pawns, open files, a strong square",
+    requires: ["ch-prepare-a-tactic"],
+    modes: [],
+    stageFloor: "S3_AUTHORSHIP",
+    ordering: {
+      reason:
+        "Positional lessons are seeded through Step 4 and become the backbone of Step 5, after " +
+        "tactics are secure. Step 5 is the last step the publisher teaches in groups.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD],
+    },
+    resources: [STEPS_WORKBOOKS],
+    practice: [
+      {
+        title: "Say what the position needs",
+        description:
+          "Before choosing a move, write one sentence about what is wrong with your position. " +
+          "The sentence is the skill; the move follows from it.",
+        solitary: true,
+      },
+    ],
+    demonstration:
+      "An annotated game naming what the position needed before the moves that answered it",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-convert",
+    title: "You can convert",
+    capability: "Win a won endgame and defend a bad one: rook endings, pawn races, breakthrough",
+    requires: ["ch-play-without-a-target"],
+    modes: [],
+    stageFloor: "S3_AUTHORSHIP",
+    ordering: {
+      reason:
+        "Steps 5 and 6 shift their weight to endgame technique, and Step 6 says endgame study is " +
+        "particularly important for playing strength at this level.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD],
+    },
+    resources: [STEPS_WORKBOOKS, LICHESS_PRACTICE],
+    practice: [
+      {
+        title: "The ending you lost, replayed",
+        description:
+          "Take an endgame you failed to convert and play it against someone until you can. Your " +
+          "own losses are a better set than any book's, because you already care about them.",
+        solitary: false,
+      },
+    ],
+    demonstration: "A converted endgame with the critical decision annotated by you",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-teach-yourself",
+    title: "You can teach yourself",
+    capability: "Choose your own material and improve without a coach in the room",
+    requires: ["ch-convert"],
+    modes: [],
+    stageFloor: "S4_SIGNATURE",
+    ordering: {
+      reason:
+        "Step 6 is the point where the curriculum itself hands over: the publisher describes it " +
+        "not as a trainer's manual but as 'a self-study manual... for the independent learner'.",
+      basis: "syllabus",
+      sources: [STEPS_METHOD],
+      limit:
+        "A tempting second leg is Charness et al. (2005), who found solitary study the strongest " +
+        "predictor of rating. We do not lean on it: Howard (2011) followed 533 players over seven " +
+        "years and found the opposite, with games played dominating and study 'a weak factor at " +
+        "best'. The syllabus leg stands on its own; the research is contested and is not settled.",
+    },
+    resources: [STEPS_WORKBOOKS, LICHESS_PRACTICE],
+    practice: [
+      {
+        title: "Your own review, on your own schedule",
+        description:
+          "Go through your games alone and decide what to work on next. Nobody hands a strong " +
+          "player their plan, and the deciding is most of the skill.",
+        solitary: true,
+      },
+    ],
+    demonstration: "Your own study plan naming the material you chose, and the games behind it",
+    opportunities: [],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-rating-that-means-something",
+    title: "You have a rating that means something",
+    capability: "Hold a published federation rating that places you in a named class",
+    requires: ["ch-real-tournament-game", "ch-teach-yourself"],
+    modes: [],
+    stageFloor: "S4_SIGNATURE",
+    ordering: {
+      reason:
+        "The one rung nobody has to take your word for. Rating classes and title floors are " +
+        "defined and published by federations, and a stranger can look yours up.",
+      basis: "syllabus",
+      sources: [US_CHESS_RATINGS, FIDE_HANDBOOK],
+      limit:
+        "READ THIS BEFORE SAYING ANYTHING TO A FAMILY ABOUT TITLES. Working all six Steps end to " +
+        "end claims a ceiling of about 2100 — below Candidate Master at 2200 and below US Chess " +
+        "National Master, and the publisher says of Step 5 that 'the percentage of students who " +
+        "reach step 5 level is not high'. US Chess reports under 1% of its rated players hold " +
+        "National Master. Grandmaster needs 2500 plus three norms: the youngest ever, at 12 years " +
+        "4 months, got there on years of daily private coaching and norm tournaments abroad, with " +
+        "family spending over $200,000. Class A to Expert is an excellent and uncommon outcome for " +
+        "a child who starts at eight and works hard. Titles are a different undertaking.",
+    },
+    resources: [LICHESS_PRACTICE],
+    practice: [
+      {
+        title: "Rated games, regularly",
+        description:
+          "A rating only means something if it is fed. Play rated games often enough that the " +
+          "number is about how you play now rather than how you played a year ago.",
+        solitary: false,
+      },
+    ],
+    demonstration: "A published federation rating and the games behind it",
+    opportunities: [
+      {
+        kind: "competition",
+        description: "Federation-rated open events, and age-group national championships",
+        readinessNote:
+          "Ready when losing a rated game is information rather than a catastrophe. Entering " +
+          "before that is how a child learns to dread the thing they liked.",
+        stageFloor: "S3_AUTHORSHIP",
+      },
+    ],
+    authorship: "human-authored",
+  },
+];
+
+export const CONSOLE_CHESS_MAP: MasteryMap = {
+  id: "map-chess-console",
+  version: 1,
+  domainPath: ["games-strategy", "chess"],
+  modes: ["perform", "investigate"],
+  ageBands: ["6-8", "9-11", "12-14"],
+  milestones: CHESS_MILESTONES,
+  provenance: {
+    model: "hand-authored",
+    promptVersion: "none",
+    generatedAt: "2026-07-31T00:00:00.000Z",
+    edits: [],
+  },
+  validation: UNVALIDATED,
+  status: "published",
+  vettedBy: null,
+  vettedAt: null,
+  revalidatedAt: "2026-07-31T00:00:00.000Z",
+};
+
 /** The review queue the Maps tab shows. */
 export const REVIEW_MAPS: readonly MasteryMap[] = [
   CONSOLE_PIANO_MAP,
   CONSOLE_GAME_DEV_MAP,
   CONSOLE_COMPETITION_MATH_MAP,
+  CONSOLE_CHESS_MAP,
 ];

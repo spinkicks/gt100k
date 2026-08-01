@@ -1,6 +1,9 @@
 # Wiring projects to milestones
 
-**Status:** spec, implementing immediately.
+**Status:** built. The whole chain exists: `ProjectBrief` and `PlanDeps` carry an optional
+`milestoneId`, the planner stamps it after the generator returns rather than reading it from the
+model's output, a `Project` created from that brief carries it, and the console derives
+`MilestoneEvidence` from real projects instead of the four hand-written seeds.
 **Follows:** mastery-map slice 2. Read
 [`2026-07-26-mastery-map-slice1.md`](2026-07-26-mastery-map-slice1.md) §3 and the design's §9 first.
 **Date:** 2026-07-26
@@ -93,7 +96,8 @@ comes from, not what it is allowed to claim.
 It does not let the planner choose a milestone. The caller chooses; the planner records.
 
 It does not touch reachability. Branch milestones stay unreachable until `chosen_challenge` is
-emitted.
+emitted. *(That happened on 2026-07-27: the game's harder-variant control emits it, through one
+gadget. This spec is unaffected either way — it was never the thing gating reachability.)*
 
 ## 7. Tests
 

@@ -2,7 +2,7 @@
 
 **GT100K** is Alpha School's internal accelerated-gifted layer on TimeBack — an operating system for an intensive, in-person gifted academy that takes an already-admitted child (ages 6–14) from daily academic mastery and passion discovery through to a portable, evidence-backed body of work. Long-horizon goal: MIT-level academic readiness by the end of 8th grade.
 
-> **Status: working monorepo.** 25 packages, 17 adapters, and 9 apps, with **4,295 tests** green (1,109 engine and adapter, 3,186 app). Every engine is pure, deterministic and offline; all data is synthetic. No real child data touches this system until the pre-live gates pass (see [Pre-live gates](#pre-live-gates)): the discovery game can now post a session to the guide console, but only when someone sets `VITE_GT100K_INGEST_URL` (unset everywhere) *and* a guardian's consent for that purpose is on file, which the route checks per request and denies by default.
+> **Status: working monorepo.** 26 packages, 16 adapters, and 9 apps, with **1,493 tests** green (1,160 engine and adapter, 333 app). Every engine is pure, deterministic and offline; all data is synthetic. No real child data touches this system until the pre-live gates pass (see [Pre-live gates](#pre-live-gates)): the discovery game can now post a session to the guide console, but only when someone sets `NEXT_PUBLIC_GT100K_INGEST_URL` (unset everywhere) *and* a guardian's consent for that purpose is on file, which the route checks per request and denies by default.
 
 ## Quick start
 
@@ -12,7 +12,7 @@ Requires Node 20+ and `pnpm` (developed on Node 24 / pnpm 9).
 pnpm install
 pnpm exec biome check passion   # lint + formatter, the same gate CI runs
 pnpm exec tsc -b                # typecheck the whole workspace
-pnpm test                       # 1,109 engine and adapter tests
+pnpm test                       # 1,149 engine and adapter tests
 ```
 
 **Start here:** the front door routes you to the right surface by role.
@@ -30,7 +30,8 @@ pnpm --filter @gt100k/guide-console     dev   # 3020, the guide's cockpit
 pnpm --filter @gt100k/evidence-explorer dev   # 3030, the provenance observatory
 pnpm --filter @gt100k/concierge-app     dev   # 3040, sourced answers
 pnpm --filter @gt100k/parent-guide      dev   # 3055, the parent playbook
-pnpm --filter @gt100k/design-lab        dev   # 3060, design-system reference
+pnpm --filter @gt100k/design-lab        dev   # 3060, the prototype lab
+pnpm --filter @gt100k/discovery         dev   # 3070, the child's discovery wall
 ```
 
 ## How it fits together
@@ -101,8 +102,9 @@ Pure, deterministic, dependency-light. No network, no LLM, no clock.
 | `guide-console` | The guide's cockpit: overview dashboard, hypotheses, wellbeing, plan, family, access |
 | `project-studio` | The child's project journal |
 | `parent-guide` | The Warm-Demanding Parent Playbook (static export, hosted on AWS) |
-| `mvp-jul24`, `tinker-cabin` | The child-facing discovery game (Vite + React Three Fiber) |
-| `concierge`, `design-lab` | Concierge demo; design-system reference |
+| `discovery` | The child-facing surface: thirty-seven pursuits flat on one screen, each offering a game to play and a shelf to read (Next.js) |
+| `tinker-cabin` | An earlier child-facing discovery prototype (Vite) |
+| `concierge`, `design-lab` | Concierge demo; the prototype lab, currently empty — a surface lives here while a question about it is open |
 
 Adapters in `passion/adapters/` supply the real implementations behind engine ports (Postgres, filesystem, live tagging/tutoring), so every engine stays testable with a deterministic stub.
 
@@ -146,7 +148,7 @@ Its adapters (`evidence-hash-node`, `evidence-repo-postgres`, `evidence-repo-mem
 
 These block any real child using the system, and none are complete:
 
-- **G3** identity, consent, retention, and erasure.
+- **G3** identity, consent, retention, and erasure — part built. `@gt100k/consent` decides per purpose, denies by default and in every ambiguous case, treats a withdrawal as absolute, and expires an unreviewed consent after a year; the console's ingest route asks it per request. What is left either needs something this repository has no access to or is simply not written: identity verification, so `guide-asserted` — a guide typing that a parent said yes — is the strongest claim a pilot can honestly make; any consent UI at all; retention as enforced deletion rather than a review prompt; and authentication on the ingest route. Erasure is an interface and nothing behind it. `eraseEverywhere` orchestrates correctly over a set of `ErasableStore`s and reports back the ones that still hold a child's data rather than a success tick — but the only implementations of that interface are two doubles in its own test. `profile-store-fs` does not implement it, so there is today no code path that deletes a child's profile, and `withdraw` has no caller either: taking consent back means hand-editing `consent.json`. Both halves are unfinished for different reasons. The easy one is merely unwritten — a profile is a file. The hard one is E1 D2, where a content-addressed, tamper-evident graph cannot forget without breaking the edges that make it evidence. See [`docs/decisions/2026-07-27-g3-consent.md`](docs/decisions/2026-07-27-g3-consent.md).
 - **E1 productionization** — transparency log, crypto-shredding erasure, export provenance, signing. The hard part is that a right to erasure sits in direct tension with an append-only, tamper-evident store.
 - **G4** content safety at child scale.
 - **G5** inference validation, once real longitudinal outcomes exist to validate against.
@@ -154,4 +156,7 @@ These block any real child using the system, and none are complete:
 ## Tooling
 
 - [`.specify/`](.specify/) — Spec Kit chain (constitution, templates, scripts).
-- `.claude/`, `.github/` — agent skills and CI (gitleaks + hygiene).
+- `.claude/`, `.github/` — agent skills, and CI. One `ci` job is the enforced gate on `main`: a
+  secret scan, a 5MB file block, `biome check`, `tsc -b`, a typecheck of each of the nine apps, the
+  engine and adapter suite, the eight app suites, and a build of each app. Review is a convention
+  rather than a gate; see `.github/CODEOWNERS`.

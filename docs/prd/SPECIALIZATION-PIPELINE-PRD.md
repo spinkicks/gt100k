@@ -1,6 +1,6 @@
 # Specialization & Pipeline PRD — The Passion Lab Student Journey
 
-**Status:** Draft v1 · 2026-07-22 · Owner: (product)
+**Status:** Draft v1 · 2026-07-22, last revised 2026-07-28 (staleness audit against the code) · Owner: (product)
 **Grounding:** Source-of-truth design agreed in a structured design session, grounded in the brainlifts (`docs/research/gtBrainlift.md`, `passionBrainlift.md`, `familyBrainlift.md`), the `@gt100k/evidence-graph` MVP, and the five cited research memos in `docs/research/passion-pipeline/`. Every consequential decision is tied to that evidence.
 
 > **Companion doc:** the discovery half lives in `DISCOVERY-APP-PRD.md`. This PRD owns the **full student pipeline** and the **specialization ascent** — from enrollment through the graduation gate to the age-14 handoff.
@@ -38,7 +38,7 @@ Discovery is **fast and experience-gated**, not an age-bound phase:
 
 ### 2.3 Daily container (the two-block loop)
 
-- **Morning:** TimeBack academics to a raised daily XP gate (minimum per section + discretionary remainder). Discretionary allocation = weak interest prior; achievement = aptitude tilt.
+- **Morning:** TimeBack academics to a raised daily XP gate (minimum per section + discretionary remainder). Discretionary allocation = weak interest prior; achievement = mastery tilt (the field was called `aptitudeTilt` until 2026-07-26; Discovery PRD §6.4 records why the name mattered).
 - **Afternoon:** the **passion block** — Discovery and/or Specialization (they run concurrently across a kid's plural spikes). Reward-neutral; hitting the academic gate *sequences into* it but never *scores* it.
 
 ---
@@ -106,7 +106,7 @@ Psychosocial skills are the **actual rate-limiter** and are **teachable** (Subot
 
 A **living, adaptive, project-first** planner (AI-drafts, human-owns):
 
-- **Input:** the validated spike (`domain × work-mode`) + aptitude tilt + environmental access + current stage + history.
+- **Input:** the validated spike (`domain × work-mode`) + mastery tilt + environmental access + current stage + history. *(What the shipped deriver actually assembles is narrower — see D1 §3.)*
 - **Output:** a **staged sequence of increasingly ambitious Renzulli Type III real-audience projects**, with **bounded deliberate practice embedded** and PCDEs woven in; **ambition scales by widening the audience, not adding hours**.
 - **Generation:** LLM-generated **personalized** project/curriculum drafts, **grounded in a curated library + RAG** (so niche spikes are covered, not just library topics); every draft **human-reviewed**.
 - **Adaptation:** **continuously replans** against progress, mastery, voluntary return, and burnout signals — keeping challenge in the **80–90% stretch zone** and **cutting pressure before difficulty** when strain shows (§8).

@@ -7,10 +7,11 @@
  * placeholder that says so, because a fixture carrying a pre-baked record would be asserting on
  * itself.
  *
- * REACHABILITY, which is why both maps are shaped the way they are. Nothing above `S2_FOUNDATIONS`
- * is reachable by any child today: `deriveStage` needs `stretchSeeking` for both higher stages,
- * `stretchSeeking` derives solely from `chosen_challenge`, and nothing in production emits that
- * event (escalated in PR #163). So each map holds a COMPLETE path made only of trunk milestones at
+ * REACHABILITY, which is why both maps are shaped the way they are. Almost nothing above
+ * `S2_FOUNDATIONS` is reachable today: `deriveStage` needs `stretchSeeking` for both higher stages
+ * and `stretchSeeking` derives solely from `chosen_challenge`. Nothing emitted that event when
+ * these fixtures were written (escalated in PR #163); since #216 one gadget of nine does, through a
+ * single cell. So each map holds a COMPLETE path made only of trunk milestones at
  * or below `S2_FOUNDATIONS`. Every branch here is real and correct and none of it is reachable yet,
  * which is deliberate: the map is authored independently of who can currently walk it, and the
  * branches switch on the day the signal arrives. A fixture whose only complete path ran through a
@@ -82,6 +83,7 @@ const ABRSM_PIANO_PAGE: CuratedResource = {
   title: "ABRSM: piano exam requirements and syllabus downloads",
   url: "https://www.abrsm.org/en-gb/instruments/piano",
   domainPath: ["music-sound", "instruments"],
+  pursuits: ["piano"],
   affordedModes: ["perform"],
   reputation: 0.95,
   ageTiers: ["6-8", "9-11", "12-14"],
@@ -93,6 +95,7 @@ const TRINITY_PAGE: CuratedResource = {
   title: "Trinity College London: supporting tests, including sight reading",
   url: "https://www.trinitycollege.com/qualifications/music/grade-exams/about/supporting-tests",
   domainPath: ["music-sound", "instruments"],
+  pursuits: ["piano"],
   affordedModes: ["perform"],
   reputation: 0.93,
   ageTiers: ["9-11", "12-14"],
@@ -104,6 +107,7 @@ const IMSLP: CuratedResource = {
   title: "IMSLP, the Petrucci Music Library: public-domain scores",
   url: "https://imslp.org/",
   domainPath: ["music-sound", "instruments"],
+  pursuits: ["piano"],
   affordedModes: ["perform", "compose"],
   reputation: 0.88,
   ageTiers: ["9-11", "12-14"],
@@ -407,6 +411,7 @@ const GODOT_TUTORIAL: CuratedResource = {
   title: "Godot Engine docs: Your first 2D game",
   url: "https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html",
   domainPath: ["code-computers", "game-dev"],
+  pursuits: ["game-jam"],
   affordedModes: ["build"],
   reputation: 0.9,
   ageTiers: ["9-11", "12-14"],
@@ -418,6 +423,7 @@ const PRO_GIT_BOOK: CuratedResource = {
   title: "Pro Git, free online edition",
   url: "https://git-scm.com/book/en/v2",
   domainPath: ["code-computers", "game-dev"],
+  pursuits: ["game-jam"],
   affordedModes: ["build", "collaborate"],
   reputation: 0.92,
   ageTiers: ["12-14"],
@@ -429,6 +435,7 @@ const PATTERNS_BOOK: CuratedResource = {
   title: "Game Programming Patterns, free online edition",
   url: "https://gameprogrammingpatterns.com/",
   domainPath: ["code-computers", "game-dev"],
+  pursuits: ["game-jam"],
   affordedModes: ["build", "debug"],
   reputation: 0.89,
   ageTiers: ["12-14"],

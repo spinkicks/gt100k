@@ -1,6 +1,14 @@
 # The Music cabin — design
 
-**Date:** 2026-07-27 · **Status:** live. `tune-repair` + `src/audio` built; the room is not.
+**Date:** 2026-07-27 · **Status:** live. Three of the four gadgets are built — `tune-repair`,
+`chord-fit` and `downbeat`, each with its logic, generator, component, tests and teach-in rule — on
+top of `src/audio`. **None of them is reachable by a child, because the room does not exist yet.**
+`music` is still `active: false` on the map, no music gadget is listed in `gadgets/registry.ts`,
+there is no MUSIC room in `cabin/backdrop/quads.data.ts` and no music cards on the shelf. Both halves
+of §4 have been generated and neither is wired in: the candidate map is `public/art/map-v2.png` and
+the map still renders `map.png`, awaiting the human approval §4.1 requires, and the interior plate is
+`public/art/cabin-music.png`, painted with three prop surfaces rather than §4.2's four because `echo`
+is not built. So what is left is approving and wiring the art, §5's room, and `echo`.
 **Revision note:** §2.1 was rewritten and §1.1/§2.1a added the same day, after the first playtest found
 the original design was a shape puzzle. Superseded text is kept in boxes rather than deleted.
 **App:** `passion/apps/mvp-jul24` · **Target band:** ages 9–12, gifted (PROJECT.md)
@@ -24,7 +32,9 @@ that reversal is the most important thing in this document:**
    cost recorded in §8 rather than wished away.
 2. ~~**This document only.** No implementation until it is reviewed.~~ Done; `tune-repair` and
    `src/audio` are built.
-3. **The map art gets regenerated** so `music` is a near cabin, not a horizon one. Still outstanding.
+3. **The map art gets regenerated** so `music` is a near cabin, not a horizon one. A candidate exists
+   at `public/art/map-v2.png` with three near cabins and two on the horizon; the map still renders
+   `map.png`, which is the behaviour §4.1 asks for until a human approves the replacement.
 
 ---
 

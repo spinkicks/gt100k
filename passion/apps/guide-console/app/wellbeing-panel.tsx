@@ -32,7 +32,9 @@ export function WellbeingPanel({ cards }: { cards: readonly WellbeingCardVM[] })
       </header>
 
       {cards.length === 0 ? (
-        <output className="wbpanel__empty">No spikes to review yet.</output>
+        // Reached only when the child has no specializations at all, since the tab is scoped to the
+        // selected one and every tracked hypothesis produces a wellbeing read.
+        <output className="wbpanel__empty">Nothing to review yet.</output>
       ) : (
         <ul className="wblist">
           {cards.map((c) => (

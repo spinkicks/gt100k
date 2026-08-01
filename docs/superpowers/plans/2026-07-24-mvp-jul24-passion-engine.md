@@ -1,5 +1,22 @@
 # MVP Jul 24 — Passion-Engine Point-and-Click Game — Implementation Plan
 
+> **Built, then substantially rebuilt.** Every task below shipped: `apps/mvp-jul24` exists with the
+> map, the cabin, the gadget framework, the overlay, the interest tracker, the art script and the
+> LAAS shoot/compare loop. Four things it specifies are no longer true of the app, each by a later
+> decision rather than by drift. The readout is no longer a child-facing screen — it is reachable
+> only through `window.__qa`, because a ranked display of the child's own time-on-task is a PRD §11
+> violation. The `?cabin=3d|static` A/B is gone: both backends are parked and the interior is a
+> generated still plate with clickable prop polygons. Logic Grid is parked with them, and the room
+> is now nine gadgets across two cabins. Those three are all in
+> [`2026-07-26-mvp-jul24-room-worth-being-in.md`](2026-07-26-mvp-jul24-room-worth-being-in.md). The
+> fourth is that the emission this plan treats as local-only now posts sessions to the guide
+> console's ingest route.
+>
+> Whether this game stays the child-facing discovery surface is open. It was affirmed on 2026-07-27
+> (`docs/decisions/2026-07-27-discovery-surface.md`), for "the surface we have now" and explicitly
+> not forever, and a browsable-catalogue alternative is being prototyped at
+> `passion/apps/design-lab/app/browse/`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** A demo-quality point-and-click game where a student clicks a cabin on a 2D map, enters a cozy interior, clicks gadgets that open full-screen mini-puzzles, and whose active time-on-gadget is tracked as an interest signal.
@@ -68,7 +85,7 @@ passion/apps/mvp-jul24/
 **Interfaces:**
 - Produces: a runnable app (`pnpm --filter @gt100k/mvp-jul24 dev`) and passing test/typecheck/build.
 
-- [ ] **Step 1: Create `package.json`**
+- [x] **Step 1: Create `package.json`**
 
 ```json
 {
@@ -110,7 +127,7 @@ passion/apps/mvp-jul24/
 }
 ```
 
-- [ ] **Step 2: Create `tsconfig.json`, `vite.config.ts`, `vitest.config.ts`, `index.html`**
+- [x] **Step 2: Create `tsconfig.json`, `vite.config.ts`, `vitest.config.ts`, `index.html`**
 
 `tsconfig.json`:
 ```json
@@ -136,7 +153,7 @@ export default defineConfig({ test: { environment: 'jsdom', globals: true } })
 <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Passion Lab</title></head><body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body></html>
 ```
 
-- [ ] **Step 3: Create `src/main.tsx` + `src/App.tsx` + failing smoke test**
+- [x] **Step 3: Create `src/main.tsx` + `src/App.tsx` + failing smoke test**
 
 `src/App.tsx`:
 ```tsx
@@ -156,11 +173,11 @@ test('renders app root', () => { render(<App />); expect(screen.getByTestId('app
 ```
 Add `@testing-library/react`, `@testing-library/jest-dom` to devDependencies and a `vitest.setup.ts` importing `@testing-library/jest-dom`; reference it in `vitest.config.ts` (`test.setupFiles`).
 
-- [ ] **Step 4: Install + verify**
+- [x] **Step 4: Install + verify**
 
 Run: `pnpm install` (repo root), then `pnpm --filter @gt100k/mvp-jul24 test` → PASS, `pnpm --filter @gt100k/mvp-jul24 typecheck` → clean, `pnpm --filter @gt100k/mvp-jul24 build` → succeeds.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add passion/apps/mvp-jul24 pnpm-lock.yaml
@@ -183,7 +200,7 @@ git commit -m "feat(mvp-jul24): scaffold Vite+React+TS workspace app"
   - `interface Gadget { id: string; topic: TopicId; label: string; hotspot: GadgetHotspot; status: 'active'|'coming-soon'; Puzzle?: React.ComponentType<PuzzleProps> }`
   - `useGame` store: `{ screen; cabinId: TopicId|null; focusedGadgetId: string|null; cabinBackend; openCabin(id); focusGadget(id); closeGadget(); goToMap(); goToReadout(); setBackend(b) }`
 
-- [ ] **Step 1: Write failing store test**
+- [x] **Step 1: Write failing store test**
 
 `src/game/store.test.ts`:
 ```ts
@@ -202,9 +219,9 @@ test('focus then close clears focusedGadgetId', () => {
 })
 ```
 
-- [ ] **Step 2: Run → FAIL** (`store` not found). Run: `pnpm --filter @gt100k/mvp-jul24 test src/game`
+- [x] **Step 2: Run → FAIL** (`store` not found). Run: `pnpm --filter @gt100k/mvp-jul24 test src/game`
 
-- [ ] **Step 3: Implement `types.ts` + `store.ts`**
+- [x] **Step 3: Implement `types.ts` + `store.ts`**
 
 `src/game/types.ts`: the interfaces from the Interfaces block above.
 `src/game/store.ts`:
@@ -229,8 +246,8 @@ export const useGame = create<GameState>((set) => ({
 }))
 ```
 
-- [ ] **Step 4: Run → PASS.** `pnpm --filter @gt100k/mvp-jul24 test src/game`
-- [ ] **Step 5: Commit** — `feat(mvp-jul24): core types and game store`
+- [x] **Step 4: Run → PASS.** `pnpm --filter @gt100k/mvp-jul24 test src/game`
+- [x] **Step 5: Commit** — `feat(mvp-jul24): core types and game store`
 
 ---
 
@@ -248,7 +265,7 @@ export const useGame = create<GameState>((set) => ({
   - `useInterest` store: `{ byGadget: Record<string,{activeMs;opens;solves}>; addActiveMs(id,ms); recordOpen(id); recordSolve(id); reset() }` (persisted to `localStorage` key `mvp-jul24:interest`)
   - `useInterestTracker(): void` — React hook, mount in App, drives store from focus + activity.
 
-- [ ] **Step 1: Failing tests for `activeTime.ts`**
+- [x] **Step 1: Failing tests for `activeTime.ts`**
 
 `src/interest/activeTime.test.ts`:
 ```ts
@@ -262,9 +279,9 @@ test('tickDelta credits elapsed while active', () => { expect(tickDelta(base, 30
 test('tickDelta zero while inactive', () => { expect(tickDelta({ ...base, windowFocused: false }, 3000)).toBe(0) })
 ```
 
-- [ ] **Step 2: Run → FAIL.** `pnpm --filter @gt100k/mvp-jul24 test src/interest/activeTime`
+- [x] **Step 2: Run → FAIL.** `pnpm --filter @gt100k/mvp-jul24 test src/interest/activeTime`
 
-- [ ] **Step 3: Implement `activeTime.ts`**
+- [x] **Step 3: Implement `activeTime.ts`**
 
 ```ts
 export const IDLE_MS = 30_000
@@ -277,9 +294,9 @@ export function tickDelta(s: TrackerState, now: number): number {
 }
 ```
 
-- [ ] **Step 4: Run → PASS.**
+- [x] **Step 4: Run → PASS.**
 
-- [ ] **Step 5: Failing test for the store**
+- [x] **Step 5: Failing test for the store**
 
 `src/interest/store.test.ts`:
 ```ts
@@ -292,7 +309,7 @@ test('accumulates active ms and counts', () => {
 })
 ```
 
-- [ ] **Step 6: Implement `store.ts` (persisted)**
+- [x] **Step 6: Implement `store.ts` (persisted)**
 
 ```ts
 import { create } from 'zustand'
@@ -312,9 +329,9 @@ export const useInterest = create<InterestState>()(persist((set) => ({
 }), { name: 'mvp-jul24:interest' }))
 ```
 
-- [ ] **Step 7: Run → PASS.**
+- [x] **Step 7: Run → PASS.**
 
-- [ ] **Step 8: Implement `useInterestTracker.ts`** (no unit test — verified in the integration smoke, Task 13)
+- [x] **Step 8: Implement `useInterestTracker.ts`** (no unit test — verified in the integration smoke, Task 13)
 
 ```ts
 import { useEffect, useRef } from 'react'
@@ -341,7 +358,7 @@ export function useInterestTracker(): void {
 }
 ```
 
-- [ ] **Step 9: Commit** — `feat(mvp-jul24): interest tracker (active-time logic + store + hook)`
+- [x] **Step 9: Commit** — `feat(mvp-jul24): interest tracker (active-time logic + store + hook)`
 
 ---
 
@@ -361,7 +378,7 @@ export function useInterestTracker(): void {
   - `isSolved(grid: Cell[][], puzzle: NonogramPuzzle): boolean`
   - `blankGrid(size: number): Cell[][]`
 
-- [ ] **Step 1: Failing tests**
+- [x] **Step 1: Failing tests**
 
 `src/puzzles/Nonogram/logic.test.ts`:
 ```ts
@@ -382,8 +399,8 @@ test('isSolved false when a filled cell is wrong', () => {
 })
 ```
 
-- [ ] **Step 2: Run → FAIL.**
-- [ ] **Step 3: Implement `logic.ts`**
+- [x] **Step 2: Run → FAIL.**
+- [x] **Step 3: Implement `logic.ts`**
 
 ```ts
 export type Cell = 'empty' | 'filled' | 'crossed'
@@ -402,8 +419,8 @@ export function isSolved(grid: Cell[][], p: NonogramPuzzle): boolean {
 }
 ```
 
-- [ ] **Step 4: Run → PASS.**
-- [ ] **Step 5: Commit** — `feat(mvp-jul24): nonogram logic + tests`
+- [x] **Step 4: Run → PASS.**
+- [x] **Step 5: Commit** — `feat(mvp-jul24): nonogram logic + tests`
 
 ---
 
@@ -417,7 +434,7 @@ export function isSolved(grid: Cell[][], p: NonogramPuzzle): boolean {
 - Consumes: `PuzzleProps` (Task 2), Nonogram logic (Task 4).
 - Produces: `Nonogram: React.FC<PuzzleProps>` (default export), `PUZZLES: boolean[][][]` (seed picks one via `seed % PUZZLES.length`).
 
-- [ ] **Step 1: Failing render test**
+- [x] **Step 1: Failing render test**
 
 `Nonogram.test.tsx`:
 ```tsx
@@ -432,8 +449,8 @@ test('solving the puzzle calls onSolved', () => {
 })
 ```
 
-- [ ] **Step 2: Run → FAIL.**
-- [ ] **Step 3: Implement `puzzles.data.ts` + `Nonogram.tsx`**
+- [x] **Step 2: Run → FAIL.**
+- [x] **Step 3: Implement `puzzles.data.ts` + `Nonogram.tsx`**
 
 `puzzles.data.ts` — two hand-authored 5×5 solutions (arrays of boolean rows), exported as `PUZZLES`. Include the target `data-fill` markers so the test can find intended cells.
 `Nonogram.tsx` (left-click cycles empty→filled→crossed→empty; render `data-fill` attr = solution value for testability; show row/col clues; call `onSolved()` when `isSolved` flips true; an "Exit" button calls `onExit`):
@@ -458,8 +475,8 @@ export default function Nonogram({ seed, onSolved, onExit }: PuzzleProps) {
 ```
 Fill in the clue rails + grid markup with the `data-fill` attribute and `onClick` handler mutating a copy of `grid`.
 
-- [ ] **Step 4: Run → PASS.** Fix markup until the test's fill-clicks solve it.
-- [ ] **Step 5: Commit** — `feat(mvp-jul24): nonogram UI`
+- [x] **Step 4: Run → PASS.** Fix markup until the test's fill-clicks solve it.
+- [x] **Step 5: Commit** — `feat(mvp-jul24): nonogram UI`
 
 ---
 
@@ -479,7 +496,7 @@ Fill in the clue rails + grid markup with the `data-fill` attribute and `onClick
   - `isSolved(marks: MarkGrid, p: LogicPuzzle): boolean` — every solution pair marked `yes`, and every non-solution pair in a solved category marked `no`.
   - `SPORTS_PUZZLE: LogicPuzzle` (the reference: Brad/Jenny/Frank/Susan × Basketball/Baseball/Volleyball/Soccer + the 3 clues).
 
-- [ ] **Step 1: Failing tests**
+- [x] **Step 1: Failing tests**
 
 ```ts
 import { SPORTS_PUZZLE, emptyMarks, isSolved, key } from './logic'
@@ -491,8 +508,8 @@ test('exact solution marks solve it', () => {
 })
 ```
 
-- [ ] **Step 2: Run → FAIL.**
-- [ ] **Step 3: Implement `logic.ts` + author `SPORTS_PUZZLE`**
+- [x] **Step 2: Run → FAIL.**
+- [x] **Step 3: Implement `logic.ts` + author `SPORTS_PUZZLE`**
 
 Solution for the reference (derivable from clues — Brad→Basketball, Jenny→Soccer, Frank→Baseball, Susan→Volleyball). `key = `${e}|${c}|${v}``. `isSolved`: for each entity+category, the value equal to `solution[e][c]` must be `yes` and all other values for that (e,c) must be `no`.
 
@@ -512,8 +529,8 @@ export function isSolved(m: MarkGrid, p: LogicPuzzle): boolean {
 }
 ```
 
-- [ ] **Step 4: Run → PASS.**
-- [ ] **Step 5: Commit** — `feat(mvp-jul24): logic-grid logic + sports puzzle`
+- [x] **Step 4: Run → PASS.**
+- [x] **Step 5: Commit** — `feat(mvp-jul24): logic-grid logic + sports puzzle`
 
 ---
 
@@ -527,11 +544,11 @@ export function isSolved(m: MarkGrid, p: LogicPuzzle): boolean {
 - Consumes: `PuzzleProps`, LogicGrid logic (Task 6).
 - Produces: `LogicGrid: React.FC<PuzzleProps>` (default export).
 
-- [ ] **Step 1: Failing render test** — render, show clues text, click cells cycling unknown→yes→no; when marks match solution, `onSolved` fires. Use `data-cell="${key}"` for targeting.
-- [ ] **Step 2: Run → FAIL.**
-- [ ] **Step 3: Implement** — a grid table (entities × each category's values), clue list, cell click cycles `unknown→yes→no→unknown`, `useEffect` calls `onSolved()` when `isSolved`. Exit button → `onExit`.
-- [ ] **Step 4: Run → PASS.**
-- [ ] **Step 5: Commit** — `feat(mvp-jul24): logic-grid UI`
+- [x] **Step 1: Failing render test** — render, show clues text, click cells cycling unknown→yes→no; when marks match solution, `onSolved` fires. Use `data-cell="${key}"` for targeting.
+- [x] **Step 2: Run → FAIL.**
+- [x] **Step 3: Implement** — a grid table (entities × each category's values), clue list, cell click cycles `unknown→yes→no→unknown`, `useEffect` calls `onSolved()` when `isSolved`. Exit button → `onExit`.
+- [x] **Step 4: Run → PASS.**
+- [x] **Step 5: Commit** — `feat(mvp-jul24): logic-grid UI`
 
 ---
 
@@ -546,11 +563,11 @@ export function isSolved(m: MarkGrid, p: LogicPuzzle): boolean {
 - Consumes: `Gadget`, `PuzzleProps`, Nonogram (Task 5), LogicGrid (Task 7).
 - Produces: `GADGETS: Gadget[]`, `gadgetsForTopic(topic: TopicId): Gadget[]`, `gadgetById(id: string): Gadget | undefined`.
 
-- [ ] **Step 1: Failing test** — `gadgetsForTopic('math')` includes `nonogram` (active, has `Puzzle`) and `logic-grid` (active), plus coming-soon entries (`mirror`, `chess`, `minesweeper`, `pipes`, `lits`) with `status: 'coming-soon'` and no `Puzzle`.
-- [ ] **Step 2: Run → FAIL.**
-- [ ] **Step 3: Implement** `ComingSoon.tsx` (a `PuzzleProps` component showing "Coming soon" + Back) and `registry.ts` with the 2 active + 5 coming-soon math gadgets, each with a `hotspot {xPct,yPct,label}`.
-- [ ] **Step 4: Run → PASS.**
-- [ ] **Step 5: Commit** — `feat(mvp-jul24): gadget registry`
+- [x] **Step 1: Failing test** — `gadgetsForTopic('math')` includes `nonogram` (active, has `Puzzle`) and `logic-grid` (active), plus coming-soon entries (`mirror`, `chess`, `minesweeper`, `pipes`, `lits`) with `status: 'coming-soon'` and no `Puzzle`.
+- [x] **Step 2: Run → FAIL.**
+- [x] **Step 3: Implement** `ComingSoon.tsx` (a `PuzzleProps` component showing "Coming soon" + Back) and `registry.ts` with the 2 active + 5 coming-soon math gadgets, each with a `hotspot {xPct,yPct,label}`.
+- [x] **Step 4: Run → PASS.**
+- [x] **Step 5: Commit** — `feat(mvp-jul24): gadget registry`
 
 ---
 
@@ -564,11 +581,11 @@ export function isSolved(m: MarkGrid, p: LogicPuzzle): boolean {
 - Consumes: `useGame`, `useInterest`, `gadgetById`.
 - Produces: `GadgetOverlay: React.FC` — reads `focusedGadgetId`; if set, mounts the gadget's `Puzzle` (or `ComingSoon`) full-screen with a `motion` scale-in; calls `recordOpen` on mount, `recordSolve` on solve, `closeGadget` on exit.
 
-- [ ] **Step 1: Failing test** — set `useGame` focusedGadgetId to `nonogram`; render `<GadgetOverlay/>`; assert puzzle present and `useInterest.getState().byGadget.nonogram.opens === 1`.
-- [ ] **Step 2: Run → FAIL.**
-- [ ] **Step 3: Implement** with `motion` (`initial={{scale:.9,opacity:0}} animate={{scale:1,opacity:1}}`); `onSolved` → `recordSolve(id)` then keep overlay with a "Solved!" state + Back; `onExit` → `closeGadget()`.
-- [ ] **Step 4: Run → PASS.**
-- [ ] **Step 5: Commit** — `feat(mvp-jul24): gadget overlay with focus/interest wiring`
+- [x] **Step 1: Failing test** — set `useGame` focusedGadgetId to `nonogram`; render `<GadgetOverlay/>`; assert puzzle present and `useInterest.getState().byGadget.nonogram.opens === 1`.
+- [x] **Step 2: Run → FAIL.**
+- [x] **Step 3: Implement** with `motion` (`initial={{scale:.9,opacity:0}} animate={{scale:1,opacity:1}}`); `onSolved` → `recordSolve(id)` then keep overlay with a "Solved!" state + Back; `onExit` → `closeGadget()`.
+- [x] **Step 4: Run → PASS.**
+- [x] **Step 5: Commit** — `feat(mvp-jul24): gadget overlay with focus/interest wiring`
 
 ---
 
@@ -582,9 +599,9 @@ export function isSolved(m: MarkGrid, p: LogicPuzzle): boolean {
 - Consumes: `gadgetsForTopic`, `useGame.focusGadget`.
 - Produces: `CabinStatic: React.FC<{ topic: TopicId }>` — renders `public/art/cabin-math.png` (may be a placeholder until Task 14) with absolutely-positioned hotspot buttons at each gadget's `hotspot.xPct/yPct`; click → `focusGadget(id)`.
 
-- [ ] **Step 1: Failing test** — render `<CabinStatic topic="math"/>`; a button labelled the nonogram hotspot label exists; clicking sets `useGame.focusedGadgetId`.
-- [ ] **Step 2–4:** implement + pass.
-- [ ] **Step 5: Commit** — `feat(mvp-jul24): static cabin backend + hotspots`
+- [x] **Step 1: Failing test** — render `<CabinStatic topic="math"/>`; a button labelled the nonogram hotspot label exists; clicking sets `useGame.focusedGadgetId`.
+- [x] **Step 2–4:** implement + pass.
+- [x] **Step 5: Commit** — `feat(mvp-jul24): static cabin backend + hotspots`
 
 ---
 
@@ -598,10 +615,10 @@ export function isSolved(m: MarkGrid, p: LogicPuzzle): boolean {
 - Consumes: `gadgetsForTopic`, `useGame.focusGadget`.
 - Produces: `Cabin3D: React.FC<{ topic: TopicId }>` — a `<Canvas>` with a **fixed camera** (no OrbitControls/PointerLock), the lifted cozy room, and drei `<Html>` hotspot markers at gadget anchors; click → `focusGadget(id)`.
 
-- [ ] **Step 1:** Copy the scene files; delete `@react-three/rapier`, `PhysicsController`, `CameraRig` (WASD) usages; set a static `<PerspectiveCamera makeDefault position={...} />` matching the reference screenshot framing.
-- [ ] **Step 2:** Add drei `<Html>` markers per active gadget (a glowing "+" like the reference), `onClick={() => focusGadget(id)}`.
-- [ ] **Step 3:** `pnpm --filter @gt100k/mvp-jul24 typecheck` clean; `dev` renders the room with clickable markers (manual check).
-- [ ] **Step 4: Commit** — `feat(mvp-jul24): 3d cabin backend (fixed-camera, lifted from tinker-cabin)`
+- [x] **Step 1:** Copy the scene files; delete `@react-three/rapier`, `PhysicsController`, `CameraRig` (WASD) usages; set a static `<PerspectiveCamera makeDefault position={...} />` matching the reference screenshot framing.
+- [x] **Step 2:** Add drei `<Html>` markers per active gadget (a glowing "+" like the reference), `onClick={() => focusGadget(id)}`.
+- [x] **Step 3:** `pnpm --filter @gt100k/mvp-jul24 typecheck` clean; `dev` renders the room with clickable markers (manual check).
+- [x] **Step 4: Commit** — `feat(mvp-jul24): 3d cabin backend (fixed-camera, lifted from tinker-cabin)`
 
 ---
 
@@ -616,9 +633,9 @@ export function isSolved(m: MarkGrid, p: LogicPuzzle): boolean {
 - `MapScreen`: renders `public/art/map.png` + cabin nodes from `cabins.data.ts` (only `math` active); click active node → `openCabin('math')`.
 - `ReadoutScreen`: bars per gadget from `useInterest.byGadget` (label + active minutes), sorted desc; a "Back to map" button.
 
-- [ ] **Step 1: Failing tests** — MapScreen: clicking the Math node calls `openCabin`. ReadoutScreen: seed interest store, assert a bar with the gadget label + rounded minutes renders.
-- [ ] **Step 2–4:** implement + pass.
-- [ ] **Step 5: Commit** — `feat(mvp-jul24): cabin view (A/B), map screen, readout screen`
+- [x] **Step 1: Failing tests** — MapScreen: clicking the Math node calls `openCabin`. ReadoutScreen: seed interest store, assert a bar with the gadget label + rounded minutes renders.
+- [x] **Step 2–4:** implement + pass.
+- [x] **Step 5: Commit** — `feat(mvp-jul24): cabin view (A/B), map screen, readout screen`
 
 ---
 
@@ -631,11 +648,11 @@ export function isSolved(m: MarkGrid, p: LogicPuzzle): boolean {
 **Interfaces:**
 - Consumes: `useGame`, `useInterestTracker`, `MapScreen`, `CabinView`, `GadgetOverlay`, `ReadoutScreen`.
 
-- [ ] **Step 1: Failing integration test** — render `<App/>`; click Math node → cabin; click nonogram hotspot → overlay open (`opens===1`); solve → `solves===1`; a header "Interest" button → readout shows the nonogram bar.
-- [ ] **Step 2: Run → FAIL.**
-- [ ] **Step 3: Implement `App.tsx`** — call `useInterestTracker()`; switch on `screen`: `map`→`MapScreen`, `cabin`→`CabinView`+`GadgetOverlay`, `readout`→`ReadoutScreen`; a persistent top bar with "Map" + "Interest" nav + the cabin A/B toggle.
-- [ ] **Step 4: Run → PASS.** Then `pnpm --filter @gt100k/mvp-jul24 build` green.
-- [ ] **Step 5: Commit** — `feat(mvp-jul24): wire map/cabin/overlay/readout + integration test`
+- [x] **Step 1: Failing integration test** — render `<App/>`; click Math node → cabin; click nonogram hotspot → overlay open (`opens===1`); solve → `solves===1`; a header "Interest" button → readout shows the nonogram bar.
+- [x] **Step 2: Run → FAIL.**
+- [x] **Step 3: Implement `App.tsx`** — call `useInterestTracker()`; switch on `screen`: `map`→`MapScreen`, `cabin`→`CabinView`+`GadgetOverlay`, `readout`→`ReadoutScreen`; a persistent top bar with "Map" + "Interest" nav + the cabin A/B toggle.
+- [x] **Step 4: Run → PASS.** Then `pnpm --filter @gt100k/mvp-jul24 build` green.
+- [x] **Step 5: Commit** — `feat(mvp-jul24): wire map/cabin/overlay/readout + integration test`
 
 ---
 
@@ -649,10 +666,10 @@ export function isSolved(m: MarkGrid, p: LogicPuzzle): boolean {
 **Interfaces:**
 - Produces: `public/art/map.png`, `public/art/cabin-math.png` (+ optional props). Reads gateway key from `process.env.ANTHROPIC_CUSTOM_HEADERS` (`x-tfy-api-key`) — never hardcoded.
 
-- [ ] **Step 1: Implement `gen-art.mjs`** — a small Node script: `POST https://tfy.promptlens.trilogy.com/api/llm/images/generations` with `{model, prompt, n:1, size}`; decode `b64_json` or fetch `url`; write PNG to `public/art/`. Prompts: (map) painterly parchment world map, cozy themed cabins for Math/Music/Code/Art nodes, warm; (cabin) cozy wooden cabin interior, fireplace, warm light, gadgets on the wall, first-person fixed view — matching the tinker-cabin reference. Two models selectable via `--model gpt-image-1|gemini-3-pro-image-preview`.
-- [ ] **Step 2: Run** `pnpm --filter @gt100k/mvp-jul24 gen-art` → files land in `public/art/`. Visually check.
-- [ ] **Step 3:** Add `public/art/*.png` to the app's `.gitignore` if large; commit a small map+cabin (or track them if <~1MB). Note licensing in `CREDITS.md` (AI-generated via gateway).
-- [ ] **Step 4: Commit** — `feat(mvp-jul24): gateway art-gen script + first map/cabin art`
+- [x] **Step 1: Implement `gen-art.mjs`** — a small Node script: `POST https://tfy.promptlens.trilogy.com/api/llm/images/generations` with `{model, prompt, n:1, size}`; decode `b64_json` or fetch `url`; write PNG to `public/art/`. Prompts: (map) painterly parchment world map, cozy themed cabins for Math/Music/Code/Art nodes, warm; (cabin) cozy wooden cabin interior, fireplace, warm light, gadgets on the wall, first-person fixed view — matching the tinker-cabin reference. Two models selectable via `--model gpt-image-1|gemini-3-pro-image-preview`.
+- [x] **Step 2: Run** `pnpm --filter @gt100k/mvp-jul24 gen-art` → files land in `public/art/`. Visually check.
+- [x] **Step 3:** Add `public/art/*.png` to the app's `.gitignore` if large; commit a small map+cabin (or track them if <~1MB). Note licensing in `CREDITS.md` (AI-generated via gateway).
+- [x] **Step 4: Commit** — `feat(mvp-jul24): gateway art-gen script + first map/cabin art`
 
 ---
 
@@ -665,18 +682,18 @@ export function isSolved(m: MarkGrid, p: LogicPuzzle): boolean {
 **Interfaces:**
 - Produces: `pnpm --filter @gt100k/mvp-jul24 shoot` (Playwright screenshot of `dev`/`preview` at fixed viewport → `shots/`), `... compare` (sharp diff vs `reference/`).
 
-- [ ] **Step 1:** Copy tinker-cabin's `tools/shoot.ts` + `compare.ts`; retarget URL to `http://localhost:5178`, viewport to the demo size, and the reference image path.
-- [ ] **Step 2:** Run the loop once (shoot → compare) to confirm it produces a delta score/artifact.
-- [ ] **Step 3: Commit** — `chore(mvp-jul24): LAAS shoot/compare loop`
+- [x] **Step 1:** Copy tinker-cabin's `tools/shoot.ts` + `compare.ts`; retarget URL to `http://localhost:5178`, viewport to the demo size, and the reference image path.
+- [x] **Step 2:** Run the loop once (shoot → compare) to confirm it produces a delta score/artifact.
+- [x] **Step 3: Commit** — `chore(mvp-jul24): LAAS shoot/compare loop`
 
 ---
 
 ### Task 16: Full-flow polish pass + PR
 
-- [ ] **Step 1:** webapp-testing (Playwright) smoke of the full loop on both `?cabin=3d` and `?cabin=static`: map → cabin → nonogram → solve → logic-grid → solve → readout shows both bars. Fix any breaks.
-- [ ] **Step 2:** One LAAS delta pass on the map + static cabin (name hero frame, list gaps, do the two cheapest).
-- [ ] **Step 3:** Run root `pnpm lint` (Biome), `pnpm --filter @gt100k/mvp-jul24 test` + `typecheck` + `build` — all green. Verify with `superpowers:verification-before-completion`.
-- [ ] **Step 4:** Push branch, open **draft PR** (`gh pr create --draft`) referencing the spec. Body ends with the Claude Code line.
+- [x] **Step 1:** webapp-testing (Playwright) smoke of the full loop on both `?cabin=3d` and `?cabin=static`: map → cabin → nonogram → solve → logic-grid → solve → readout shows both bars. Fix any breaks.
+- [x] **Step 2:** One LAAS delta pass on the map + static cabin (name hero frame, list gaps, do the two cheapest).
+- [x] **Step 3:** Run root `pnpm lint` (Biome), `pnpm --filter @gt100k/mvp-jul24 test` + `typecheck` + `build` — all green. Verify with `superpowers:verification-before-completion`.
+- [x] **Step 4:** Push branch, open **draft PR** (`gh pr create --draft`) referencing the spec. Body ends with the Claude Code line.
 
 ---
 

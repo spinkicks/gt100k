@@ -173,14 +173,32 @@ describe("Evidence from real projects: what a link is made of", () => {
 describe("Evidence from the console's seeds: the same rule, on the demo data", () => {
   it("makes one link per project that names a milestone, with every artefact on it", () => {
     const dulce = workForKid("kid-synthetic-004");
-    const links = evidenceFor(dulce);
+    const byProject = new Map(dulce.projects.map((p) => [p.id, p]));
+    // `evidenceFor` folds two sources now: projects made in the Studio, and attested work done
+    // somewhere we do not run. This test owns the first rule, so it takes the project-derived links
+    // and asserts the count against the projects rather than against the whole fold.
+    const links = evidenceFor(dulce).filter((l) => byProject.has(l.projectId));
     expect(links).toHaveLength(dulce.projects.filter((p) => p.milestoneId !== undefined).length);
     for (const link of links) {
-      const project = dulce.projects.find((p) => p.id === link.projectId)!;
+      const project = byProject.get(link.projectId)!;
       expect(link.milestoneId).toBe(project.milestoneId);
       expect(link.artifactCount).toBe(project.made.length);
       expect(link.made).toEqual(project.made);
     }
+  });
+
+  it("folds attested external work in alongside the projects, without disturbing them", () => {
+    // The two sources have to coexist on one child: Dulce builds in the Studio AND ships on itch.io.
+    // Only the attestation that survived its defense contributes, so her three claims yield one
+    // link, not three.
+    const dulce = workForKid("kid-synthetic-004");
+    const projectIds = new Set(dulce.projects.map((p) => p.id));
+    const attested = evidenceFor(dulce).filter((l) => !projectIds.has(l.projectId));
+    expect(attested).toHaveLength(1);
+    expect(attested[0]?.projectId).toBe("att-dulce-playtests");
+    expect(attested[0]?.artifactCount).toBe(3);
+    // And it carries the address, which is the half of an external claim a child cannot fabricate.
+    for (const m of attested[0]?.made ?? []) expect(m.url).toMatch(/^https:\/\//);
   });
 
   it("makes no link for a seed project that names no milestone", () => {

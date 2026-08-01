@@ -20,9 +20,17 @@
 // (1988) is the reason: a bare verdict with no task anchoring behaves like a grade, and in 132
 // children aged roughly 10 to 12 it depressed interest and later performance. So every row below
 // carries the artefacts it was derived from, including when there are none.
+//
+// SLICE 3 IS DESIGNED AND LANDS HERE, not in a new tab: milestone attestation, where a child brings
+// back external links as the artefact (the work happens on chess.com, not on our surfaces) and a
+// scoped socratic-defense session examines them, because a link proves the game happened and only
+// the examination proves it was theirs. That extends the artefact source this panel already reads
+// rather than changing what it renders. See `docs/decisions/2026-07-30-mastery-scaffold.md` §5.
 import { useState, type JSX } from "react";
-import type { HypothesisStore } from "@gt100k/hypothesis-store";
-import type { MapStatus, MasteryMap } from "@gt100k/mastery-map";
+import type { HypothesisCard, HypothesisStore } from "@gt100k/hypothesis-store";
+import { servesPath, type MapStatus, type MasteryMap } from "@gt100k/mastery-map";
+import { CABINS, type DomainPath } from "@gt100k/two-axis-tagging";
+import { specPath } from "./vocab.js";
 import type { ChildWork } from "./map-evidence.js";
 import {
   childReadView,
@@ -244,6 +252,21 @@ function Standing({
                     <li key={m.title}>
                       <span className="chip chip--soft">{m.kind}</span>
                       {m.title}
+                      {/* Attested external work carries the address it lives at, and the address is
+                          the checkable half of the claim: a game record on a third party's server
+                          is the part a child cannot fabricate. Showing the standing without a way to
+                          go and look would ask a guide to take our word for the one thing here that
+                          does not need taking on trust. */}
+                      {m.url === undefined ? null : (
+                        <a
+                          className="mapwork__src"
+                          href={m.url}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          Look at it
+                        </a>
+                      )}
                       <span className="mapwork__at">{m.at.slice(0, 10)}</span>
                     </li>
                   ))}
@@ -368,12 +391,15 @@ function ChildStanding({
 function MapCard({
   vm,
   child,
+  open,
   onStatus,
   onCapability,
   onOverride,
 }: {
   vm: MapVM;
   child: ChildReadVM | null;
+  /** Whether this map serves one of the loaded child's specializations. */
+  open: boolean;
   onStatus: (s: MapStatus) => void;
   onCapability: (milestoneId: string, value: string) => void;
   onOverride: (milestoneId: string, note: string) => void;
@@ -384,119 +410,195 @@ function MapCard({
       data-testid="map-card"
       data-status={vm.status}
     >
-      <div className="wbitem__top">
-        <span className="wbitem__spec">{vm.domain}</span>
-        <span className={`wbitem__state mapstatus mapstatus--${vm.status}`}>{vm.statusText}</span>
-      </div>
-      <p className="mapcard__note">{vm.statusNote}</p>
+      {/* COLLAPSED UNLESS IT IS THIS CHILD'S. Four maps of ten to twelve rungs, each rung carrying a
+          capability, an ordering with its basis, resources, practice forms, a demonstration and a
+          child read, ran to twenty-four screens — an order of magnitude longer than any other tab,
+          and reviewing a map is a one-at-a-time job in the first place. `details` rather than state,
+          so the content stays in the DOM for find-in-page and for a screen reader, and so nothing
+          here needs to remember which card was open. */}
+      <details className="mapcard__body" open={open}>
+        <summary className="mapcard__summary">
+          <div className="wbitem__top">
+            <span className="wbitem__spec">{vm.domain}</span>
+            <span className={`wbitem__state mapstatus mapstatus--${vm.status}`}>
+              {vm.statusText}
+            </span>
+          </div>
+          <p className="mapcard__note">{vm.statusNote}</p>
+        </summary>
 
-      {vm.errors.map((p) => (
-        <Flag key={problemKey(p)} kind="error" heading="Blocks use" message={p.message} />
-      ))}
-      {vm.warnings.map((p) => (
-        <Flag key={problemKey(p)} kind="warning" heading="Worth a look" message={p.message} />
-      ))}
-
-      <dl className="plangrid">
-        <div>
-          <dt>Ways of working</dt>
-          <dd>{vm.modes.join(", ")}</dd>
-        </div>
-        <div>
-          <dt>Ages covered</dt>
-          <dd>{vm.ageBands.join(", ")}</dd>
-        </div>
-        <div>
-          <dt>Resources re-checked</dt>
-          {/* Out of date is not the same as wrong, so it is said beside the date rather than
-              treated as a fault with the map. It does hold up putting the map into use. */}
-          <dd>
-            {vm.revalidatedAt.slice(0, 10)}
-            {vm.stale ? (
-              <span className="chip chip--stale" data-testid="map-stale">
-                Out of date
-              </span>
-            ) : null}
-          </dd>
-        </div>
-        <div>
-          <dt>Written by</dt>
-          <dd>{vm.authoredBy}</dd>
-        </div>
-        <div>
-          <dt>Looked at by</dt>
-          {/* Optional by design. Nobody available to us can certify that an ordering of a domain is
-              right, so a map is usable with this empty and the panel says so instead of nagging. */}
-          <dd>{vm.reviewedBy ?? "Nobody, and it does not need anyone"}</dd>
-        </div>
-      </dl>
-
-      {child === null ? null : <ChildStanding vm={child} onOverride={onOverride} />}
-
-      {vm.edits.length > 0 ? (
-        <div className="mapms__block" data-testid="map-edits">
-          <span className="mapms__k">Corrections a guide made</span>
-          <ul className="mapedits">
-            {vm.edits.map((e) => (
-              <li key={`${e.at}:${e.milestone}:${e.field}`}>
-                <span className="mapedits__t">
-                  {e.milestone}, {e.field}, by {e.by}
-                </span>
-                <p className="mapedits__was">Was: {e.before}</p>
-                <p className="mapedits__now">Now: {e.after}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
-      <div className="wbitem__moves">
-        {vm.inUse ? null : (
-          <button
-            type="button"
-            className="btn btn--sm"
-            disabled={!vm.publishable}
-            onClick={() => onStatus("published")}
-          >
-            Put into use
-          </button>
-        )}
-        {vm.withdrawn ? null : (
-          <button
-            type="button"
-            className="btn btn--sm btn--ghost"
-            onClick={() => onStatus("withdrawn")}
-          >
-            Withdraw from use
-          </button>
-        )}
-      </div>
-      {/* A disabled button with no reason beside it is a dead end. Both refusals are things a guide
-          can act on: fix what the validator found, or get the resources re-checked. */}
-      {vm.publishRefusal === null ? null : (
-        <p className="mapcard__refusal" data-testid="map-refusal">
-          {vm.publishRefusal}
-        </p>
-      )}
-
-      <ol className="mapmslist">
-        {vm.milestones.map((ms) => (
-          <Milestone key={ms.id} ms={ms} onCapability={(value) => onCapability(ms.id, value)} />
+        {vm.errors.map((p) => (
+          <Flag key={problemKey(p)} kind="error" heading="Blocks use" message={p.message} />
         ))}
-      </ol>
+        {vm.warnings.map((p) => (
+          <Flag key={problemKey(p)} kind="warning" heading="Worth a look" message={p.message} />
+        ))}
+
+        <dl className="plangrid">
+          <div>
+            <dt>Ways of working</dt>
+            <dd>{vm.modes.join(", ")}</dd>
+          </div>
+          <div>
+            <dt>Ages covered</dt>
+            <dd>{vm.ageBands.join(", ")}</dd>
+          </div>
+          <div>
+            <dt>Resources re-checked</dt>
+            {/* Out of date is not the same as wrong, so it is said beside the date rather than
+              treated as a fault with the map. It does hold up putting the map into use. */}
+            <dd>
+              {vm.revalidatedAt.slice(0, 10)}
+              {vm.stale ? (
+                <span className="chip chip--stale" data-testid="map-stale">
+                  Out of date
+                </span>
+              ) : null}
+            </dd>
+          </div>
+          <div>
+            <dt>Written by</dt>
+            <dd>{vm.authoredBy}</dd>
+          </div>
+          <div>
+            <dt>Looked at by</dt>
+            {/* Optional by design. Nobody available to us can certify that an ordering of a domain is
+              right, so a map is usable with this empty and the panel says so instead of nagging. */}
+            <dd>{vm.reviewedBy ?? "Nobody, and it does not need anyone"}</dd>
+          </div>
+        </dl>
+
+        {child === null ? null : <ChildStanding vm={child} onOverride={onOverride} />}
+
+        {vm.edits.length > 0 ? (
+          <div className="mapms__block" data-testid="map-edits">
+            <span className="mapms__k">Corrections a guide made</span>
+            <ul className="mapedits">
+              {vm.edits.map((e) => (
+                <li key={`${e.at}:${e.milestone}:${e.field}`}>
+                  <span className="mapedits__t">
+                    {e.milestone}, {e.field}, by {e.by}
+                  </span>
+                  <p className="mapedits__was">Was: {e.before}</p>
+                  <p className="mapedits__now">Now: {e.after}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        <div className="wbitem__moves">
+          {vm.inUse ? null : (
+            <button
+              type="button"
+              className="btn btn--sm"
+              disabled={!vm.publishable}
+              onClick={() => onStatus("published")}
+            >
+              Put into use
+            </button>
+          )}
+          {vm.withdrawn ? null : (
+            <button
+              type="button"
+              className="btn btn--sm btn--ghost"
+              onClick={() => onStatus("withdrawn")}
+            >
+              Withdraw from use
+            </button>
+          )}
+        </div>
+        {/* A disabled button with no reason beside it is a dead end. Both refusals are things a guide
+          can act on: fix what the validator found, or get the resources re-checked. */}
+        {vm.publishRefusal === null ? null : (
+          <p className="mapcard__refusal" data-testid="map-refusal">
+            {vm.publishRefusal}
+          </p>
+        )}
+
+        <ol className="mapmslist">
+          {vm.milestones.map((ms) => (
+            <Milestone key={ms.id} ms={ms} onCapability={(value) => onCapability(ms.id, value)} />
+          ))}
+        </ol>
+      </details>
     </li>
+  );
+}
+
+/**
+ * A view card widens `domainPath` to `readonly string[]`, so that the view layer does not have to
+ * import the taxonomy's literal union. `servesPath` needs the narrow type, and the rule it holds is
+ * the kind that must not be reimplemented (see `mastery-map/resolve.ts`), so this narrows instead —
+ * a real check against the cabin list rather than a cast, because a cast here would be a claim
+ * about data that arrived from a store this file does not own.
+ */
+function asDomainPath(path: readonly string[]): DomainPath | null {
+  const [cabin, sub] = path;
+  if (path.length !== 2 || cabin === undefined || sub === undefined) return null;
+  return (CABINS as readonly string[]).includes(cabin) ? ([cabin, sub] as DomainPath) : null;
+}
+
+/**
+ * What the maps below do and do not cover of THIS child's specializations.
+ *
+ * The Maps tab is the one place where the rail and the main pane can describe disjoint sets: the
+ * rail lists what a child is actually into, the maps list the domains somebody has written a map
+ * for, and today those barely overlap. Without this line a guide reads "Where Ari would go next on
+ * this map" under a domain Ari has never touched and can reasonably take it for Ari's path.
+ *
+ * It is a coverage statement, not a filter. Scoping the tab to the selected specialization the way
+ * Wellbeing and Plan are scoped would empty it for almost every child and take the map review
+ * surface with it, and reviewing a map is a job that has nothing to do with which child is loaded.
+ */
+function MapCoverage({
+  maps,
+  specs,
+}: {
+  maps: readonly MasteryMap[];
+  specs: readonly HypothesisCard[];
+}): JSX.Element | null {
+  if (specs.length === 0) return null;
+  const covered = specs.filter((s) => {
+    const path = asDomainPath(s.domainPath);
+    return path !== null && maps.some((m) => servesPath(m.domainPath, path));
+  });
+  const missing = specs.filter((s) => !covered.includes(s));
+  const names = (cards: readonly HypothesisCard[]): string =>
+    cards.map((c) => specPath(c.domainPath)).join(", ");
+  return (
+    <p className="mapcover">
+      {covered.length === 0 ? (
+        <>
+          <strong>No map yet for what this child is actually into.</strong> Their specializations
+          are {names(specs)}. The maps below are the ones that exist, shown so you can review them;
+          none of them is this child&rsquo;s path.
+        </>
+      ) : missing.length === 0 ? (
+        <>Every one of this child&rsquo;s specializations has a map below.</>
+      ) : (
+        <>
+          Mapped: {names(covered)}. <strong>Not yet mapped:</strong> {names(missing)} — so nothing
+          below describes {missing.length === 1 ? "that one" : "those"}.
+        </>
+      )}
+    </p>
   );
 }
 
 export function MapsPanel({
   maps,
   work,
+  specs = [],
   store,
 }: {
   maps: readonly MasteryMap[];
   /** The selected child and what they have made. Absent means the tab is showing the maps alone,
       which is a coherent thing to look at: a map is domain knowledge and holds nobody in it. */
   work?: ChildWork;
+  /** The child's tracked specializations, for the coverage line only. Empty renders no line, which
+      is right for a console showing the maps with no child loaded. */
+  specs?: readonly HypothesisCard[];
   /** The live lifecycle store. Where a child stands on a map comes from their plan, and a plan
       exists only for a certified spike, so without this the tab would report the seed's answer and
       ignore a certification the guide made this session. */
@@ -529,6 +631,10 @@ export function MapsPanel({
         </span>
       </header>
 
+      {/* `current`, not `shown`: coverage is a question about the maps themselves, and `shown` is
+          their view models, which carry a display string rather than a path to match on. */}
+      <MapCoverage maps={current} specs={specs} />
+
       {shown.length === 0 ? (
         <output className="wbpanel__empty">
           No mastery map has been written for a domain yet.
@@ -542,6 +648,13 @@ export function MapsPanel({
                 key={vm.id}
                 vm={vm}
                 child={readOf(map)}
+                // Open the maps that are this child's, collapsed for the rest. With no child loaded
+                // the tab is a review queue and everything stays shut, which is the right default
+                // for a surface whose job is then "pick one and read it".
+                open={specs.some((s) => {
+                  const path = asDomainPath(s.domainPath);
+                  return path !== null && servesPath(map.domainPath, path);
+                })}
                 onStatus={(s) => change(vm.id, (m) => withStatus(m, s))}
                 onCapability={(milestoneId, value) =>
                   change(vm.id, (m) => editCapability(m, milestoneId, value))

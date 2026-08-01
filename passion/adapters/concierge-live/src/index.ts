@@ -192,6 +192,13 @@ interface WikiSearchBody {
   pages?: Array<{ key?: string; title?: string; excerpt?: string; description?: string }>;
 }
 
+// Wikimedia's API policy REQUIRES a descriptive User-Agent (app + contact); UA-less requests are
+// rate-limited with HTTP 429, which surfaces here as `res.ok === false` ⇒ `[]` ⇒ the pipeline
+// refuses with `no-grounded-source`. Send a compliant UA so real retrieval works; operators can
+// override it via `WIKI_USER_AGENT`. See https://meta.wikimedia.org/wiki/User-Agent_policy.
+const DEFAULT_WIKI_USER_AGENT =
+  "GT100K-Concierge/1.0 (https://github.com/spinkicks/gt100k; children's learning product)";
+
 /**
  * Fetch real, reputable evidence for a query. The default source is the Wikipedia REST search API
  * (allowlisted, child-appropriate, no API key, no extra dep); more allowlisted sources can be added
@@ -208,7 +215,12 @@ export class AllowlistRetriever implements Retriever {
     )}&limit=${this.maxDocs}`;
     let body: WikiSearchBody;
     try {
-      const res = await fetch(endpoint, { headers: { Accept: "application/json" } });
+      const res = await fetch(endpoint, {
+        headers: {
+          Accept: "application/json",
+          "User-Agent": process.env.WIKI_USER_AGENT ?? DEFAULT_WIKI_USER_AGENT,
+        },
+      });
       if (!res.ok) return [];
       body = (await res.json()) as WikiSearchBody;
     } catch {

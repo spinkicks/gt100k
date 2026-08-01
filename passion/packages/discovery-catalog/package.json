@@ -11,6 +11,9 @@
   "dependencies": {
     "@gt100k/two-axis-tagging": "workspace:*"
   },
+  "devDependencies": {
+    "@gt100k/pursuits": "workspace:*"
+  },
   "scripts": {
     "test": "vitest run --root ../../.. passion/packages/discovery-catalog/test"
   }

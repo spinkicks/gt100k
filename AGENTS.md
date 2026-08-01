@@ -2,8 +2,9 @@
 
 > Single source of truth for how agents (Claude Code, Codex, Cursor) and humans work in this repo.
 > `CLAUDE.md` and tool configs point here. If any tool-specific file disagrees with this, **this wins** —
-> **except** that `.specify/memory/constitution.md` and `GOVERNANCE.md` (G-class rights/safety) supersede
-> this file; AGENTS.md governs workflow only (authority order in the Constitution's Governance section).
+> **except** that `.specify/memory/constitution.md` and `docs/prd/GOVERNANCE.md` (G-class rights/safety)
+> supersede this file; AGENTS.md governs workflow only (authority order in the Constitution's Governance
+> section).
 
 ## Project
 - **GT100K** — the PassionLab spec lives in `docs/prd/` (`DISCOVERY-APP-PRD.md`, `SPECIALIZATION-PIPELINE-PRD.md`, `passionApps.md`, `passion-roadmap.md`); `docs/research/` (brainlifts + `passion-pipeline/`) holds the evidence base. The prior full-program PRD is archived under `archive/docs/prd/`.
@@ -32,11 +33,17 @@ Cross-agent skills are configured for this repo (from [`mattpocock/skills`](http
 - **pnpm** (not npm/yarn) for JS/TS. **uv** for Python.
 
 ## Merging & pushing
-- All changes via **PR → merge queue**. **No direct pushes to `main`.**
+- All changes via **PR**, squash-merged once the required `ci` check passes. **No direct pushes to `main`.**
+  (A merge queue is not enabled; CI subscribes to `merge_group` so turning one on later needs no change here.)
 - Force-push ONLY your own branch, ONLY `--force-with-lease --force-if-includes`. NEVER `--no-verify`. NEVER bypass required checks.
+- Push and open PRs as **`spinkicks`**, via the `gh` CLI. Never as an agent vendor's GitHub account —
+  the commit trail has to name a person who can answer for the change.
 
 ## Before opening a PR
 - Rebase on `origin/main`. Keep PRs **< ~400 lines**. CI green. Address the AI reviewer's comments.
+- Run the same gates CI runs, in this order: `pnpm lint` (biome), `pnpm typecheck` (`tsc -b`), `pnpm test`
+  (vitest). CI additionally typechecks, tests and builds every app under `passion/apps/`, which the root
+  scripts do not cover — a green local run is necessary and not sufficient.
 
 ## Security (this repo is PUBLIC)
 - Never commit `.env*`, credentials, tokens, or anything under `secrets/`. `gitleaks` runs in CI.

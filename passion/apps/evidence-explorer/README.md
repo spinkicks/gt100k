@@ -15,13 +15,16 @@ build, because sharing one design system across GT surfaces is a cohesion decisi
 ## Run
 
 ```bash
-pnpm --filter @gt100k/evidence-explorer dev     # local dev server
+pnpm --filter @gt100k/evidence-explorer dev     # local dev server on :3030
 pnpm --filter @gt100k/evidence-explorer build   # production build (part of the gate)
 pnpm --filter @gt100k/evidence-explorer test    # app smoke tests (vitest)
 ```
 
-No secrets are required. Non-secret `NEXT_PUBLIC_*` knobs (with safe defaults) are documented in
-`.env.local.example`; copy it to a git-ignored `.env.local` to override locally.
+No secrets are required, and there is nothing to copy: the two knobs both have working defaults.
+`NEXT_PUBLIC_EXPLORER_SEED` (default 42) seeds the starfield, which is byte-reproducible from it and
+carries no data; `PGLITE_DATA_DIR` moves the embedded Postgres the project store writes to, which
+otherwise lands in a git-ignored `.pglite-data` beside the app. Set either in a git-ignored
+`.env.local` if you need to.
 
 ## Surface
 
@@ -44,6 +47,14 @@ Presentation flags (filter / trace / plain-mode / reduced-motion / captions) nev
 > The 3D "cosmos" render tier was retired in the Phase 1 clean-2D rebuild. The reusable 3D layout/camera
 > code still lives in `@gt100k/evidence-explorer-view` (`layout3d` / `camera` / `tiers`), so the option can
 > return behind a flag, but the app ships **2D only**.
+
+## Adding to the graph
+
+The observatory is not read-only. An **Add** drawer in the rail appends nodes and edges to the working
+graph, append-only, with no edit or delete affordance. Hashing and validation are server-side — the
+Node SHA-256 hasher never reaches the client — and the domain's DAG and no-dangling invariants are
+what reject a bad add, returned as an inline message rather than an accusation. The working graph
+persists in an embedded Postgres (PGlite) on disk, which is what `PGLITE_DATA_DIR` above points at.
 
 ## Accessibility & performance
 

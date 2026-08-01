@@ -512,16 +512,23 @@ describe("Child read: the standing comes from artefacts and from nothing else", 
    */
   it("shows the artefacts the link stands for rather than deriving them a second time", () => {
     const vm = childReadView(CONSOLE_GAME_DEV_MAP, DULCE, DULCE.overrides);
+    let checked = 0;
     for (const ms of vm.reads) {
       for (const e of ms.evidence) {
-        const project = DULCE.projects.find((p) => p.id === e.projectId)!;
+        // Attested external work goes through the same shape and is checked by its own test below;
+        // it has no project to look up, which is exactly the difference. Skipping by id rather than
+        // by title, so a rename cannot turn this into a silent no-op.
+        const project = DULCE.projects.find((p) => p.id === e.projectId);
+        if (project === undefined) continue;
         expect(e.project).toBe(project.title);
         // The link is on the milestone the PROJECT was aimed at, which is where a real one carries
         // it, and it holds that project's whole body of work rather than a slice of it.
         expect(project.milestoneId).toBe(ms.id);
         expect(e.made.map((m) => m.title)).toEqual(project.made.map((m) => m.title));
+        checked++;
       }
     }
+    expect(checked).toBeGreaterThan(0);
   });
 
   /** Every field on a link reaches the screen. `at` did not: it was computed, carried and never
@@ -533,6 +540,8 @@ describe("Child read: the standing comes from artefacts and from nothing else", 
     );
     for (const e of ms.evidence)
       expect(Object.keys(e).sort()).toEqual(["made", "project", "projectId"]);
+    // `gd-reproduce-a-bug` is studio-only on purpose here. The `url` an attested artefact carries is
+    // the one field allowed to be absent, and it is shown — see the attestation tests at the end.
   });
 });
 
@@ -552,8 +561,24 @@ describe("Child read: reachable is an offering decision, not a mastery claim", (
   });
 
   it("calls a milestone with nothing made reachable, so reachable cannot be read as a standing", () => {
-    const ms = readOf(childReadView(MATH_IN_USE, BEX, BEX.overrides), "cm-write-one-solution");
+    // Bex WITHOUT her attested external work, because this test is about the map read and not about
+    // her: with the attestations in, `cm-write-one-solution` has three artefacts behind it and stops
+    // being an example of a reachable rung with nothing made. The invariant is unchanged.
+    const studioOnly = { ...BEX, attestations: [] };
+    const ms = readOf(
+      childReadView(MATH_IN_USE, studioOnly, studioOnly.overrides),
+      "cm-write-one-solution",
+    );
     expect(ms.reachable).toBe(true);
+    expect(ms.strength).toBe("none");
+    expect(ms.evidence).toEqual([]);
+  });
+
+  it("does not let a submitted-but-unexamined claim make a rung look evidenced", () => {
+    // The state that would be most tempting to render as progress: Bex has posted work against
+    // `cm-retry-what-broke` and nobody has sat down with her yet. An unexamined link is not
+    // evidence, which is the whole reason attestation is not just "read the URLs".
+    const ms = readOf(childReadView(MATH_IN_USE, BEX, BEX.overrides), "cm-retry-what-broke");
     expect(ms.strength).toBe("none");
     expect(ms.evidence).toEqual([]);
   });
@@ -580,8 +605,25 @@ describe("Child read: reachable is an offering decision, not a mastery claim", (
     expect(readOf(vm, "gd-playtest").blockedBy).toEqual([
       "Gated at Foundations, and the planner has Dulce Park at Ignition.",
     ]);
-    // And one with both problems names both, the prerequisite by its title rather than its id.
+    // `gd-version-control` is gated too, and its prerequisite is NOT in the way any more: the rung
+    // before it is `gd-playtest`, which Dulce satisfied with attested itch.io work rather than
+    // anything in the Studio. Attested work clearing a downstream prerequisite is the mechanism
+    // doing its job — the map cannot see a climb that happens elsewhere unless something carries it.
     expect(readOf(vm, "gd-version-control").blockedBy).toEqual([
+      "Gated at Foundations, and the planner has Dulce Park at Ignition.",
+    ]);
+  });
+
+  it("still names a missing prerequisite where the rung before really is empty", () => {
+    // The other half, so the test above cannot pass by the blocker having been deleted. Strip the
+    // attestations and `gd-playtest` is empty again, which puts the prerequisite back in the way.
+    const studioOnly = { ...DULCE, attestations: [] };
+    expect(
+      readOf(
+        childReadView(CONSOLE_GAME_DEV_MAP, studioOnly, studioOnly.overrides),
+        "gd-version-control",
+      ).blockedBy,
+    ).toEqual([
       'Nothing behind "Watch someone else play it" yet, and that one comes first.',
       "Gated at Foundations, and the planner has Dulce Park at Ignition.",
     ]);
@@ -748,7 +790,13 @@ describe("Child read: the override affordance", () => {
     // An override on a milestone that already has an artefact would change nothing: satisfaction
     // for the purpose of offering is any evidence at all OR an override.
     expect(readOf(vm, "gd-one-screen-game").canOverride).toBe(false);
-    expect(readOf(vm, "gd-playtest").canOverride).toBe(true);
+    expect(readOf(vm, "gd-version-control").canOverride).toBe(true);
+    // And the rule does not care WHERE the artefact came from. `gd-playtest` has nothing in the
+    // Studio and three attested links from itch.io, and that is enough to withhold the affordance —
+    // an override says "do not let a missing record hold this up", which is not the situation when
+    // there is a record, wherever it lives.
+    expect(readOf(vm, "gd-playtest").evidence).not.toEqual([]);
+    expect(readOf(vm, "gd-playtest").canOverride).toBe(false);
   });
 
   /** And withheld once one has been recorded, for the same reason: a second one changes nothing a
@@ -783,8 +831,13 @@ describe("Child read: the override affordance", () => {
   });
 
   it("unlocks what came after it without making anything appear on the milestone itself", () => {
-    const vm = childReadView(CONSOLE_GAME_DEV_MAP, DULCE, [
-      ...DULCE.overrides,
+    // Dulce WITHOUT her attested work, because this test is about what an override does on its own
+    // and she now has three itch.io links behind `gd-playtest`. With those in, the rung is satisfied
+    // by evidence and the override would be doing nothing observable — which is a different rule,
+    // tested above under the affordance.
+    const studioOnly = { ...DULCE, attestations: [] };
+    const vm = childReadView(CONSOLE_GAME_DEV_MAP, studioOnly, [
+      ...studioOnly.overrides,
       overrideFor("gd-playtest", "She ran two playtests at code club.", AT),
     ]);
     expect(readOf(vm, "gd-playtest").strength).toBe("none");
@@ -969,6 +1022,57 @@ describe("Child read: no completion measure is derivable from it either", () => 
         expect(["none", "single", "multiple"]).toContain(ms.strength);
         expect(ms.strengthText).not.toMatch(/\b(pass|passed|complete|done|mastered|met)\b/i);
       }
+    }
+  });
+});
+
+/**
+ * Attested external work reaching the same read as studio work.
+ *
+ * The case the whole mechanism exists for: Dulce builds in the Studio and also ships on itch.io, and
+ * nothing about the second reaches this system as a project. Her three claims are deliberately in
+ * three different states, because a guide who cannot tell them apart is worse off than one shown
+ * nothing — only the first is a standing.
+ */
+describe("work done somewhere we do not run", () => {
+  const dulce = childReadView(CONSOLE_GAME_DEV_MAP, DULCE, DULCE.overrides);
+
+  it("puts an examined claim's links behind the rung, counted as artefacts", () => {
+    const ms = readOf(dulce, "gd-playtest");
+    expect(ms.strength).toBe("multiple");
+    expect(ms.evidence.flatMap((e) => e.made)).toHaveLength(3);
+  });
+
+  it("carries the address, because that is the half of the claim a child cannot fake", () => {
+    // A link is a public record on a third party's server. The examination is what proves it was
+    // theirs; the url is what lets a guide go and check the record exists at all. Losing it would
+    // leave the standing resting on our say-so, which is the one thing here that need not.
+    const made = readOf(dulce, "gd-playtest").evidence.flatMap((e) => e.made);
+    for (const m of made) expect(m.url).toMatch(/^https:\/\//);
+  });
+
+  it("contributes nothing for a claim the child could not account for", () => {
+    // `cm-next-rung`: the links are real and the problems are solved, but she could not say how she
+    // got there or what went wrong. That is the shape copied work leaves behind — and equally the
+    // shape of work she genuinely did and has forgotten. Neither reading earns a standing.
+    const ms = readOf(dulce, "gd-profile-a-scene");
+    expect(ms.strength).toBe("none");
+    expect(ms.evidence).toEqual([]);
+  });
+
+  it("keeps studio work distinguishable from work merely vouched for", () => {
+    // A guide reading the row has to know which kind of evidence they are looking at: one was made
+    // under our eye, and one was attested after the fact from somewhere else.
+    const attested = readOf(dulce, "gd-playtest").evidence.map((e) => e.project);
+    const studio = readOf(dulce, "gd-reproduce-a-bug").evidence.map((e) => e.project);
+    expect(attested).toEqual(["Made elsewhere"]);
+    expect(studio).not.toContain("Made elsewhere");
+  });
+
+  it("still never states a verdict about attested work either", () => {
+    // The guardrail has to survive the new evidence source, not just the old one.
+    for (const ms of dulce.reads) {
+      expect(ms.strengthText).not.toMatch(/\b(pass|passed|verified|proven|confirmed)\b/i);
     }
   });
 });

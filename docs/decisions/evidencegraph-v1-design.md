@@ -1,6 +1,9 @@
 # EvidenceGraph v1 — Standalone Design
 
-**Status:** Draft for discussion · Owner: (you) · Created 2026-07-23
+**Status:** Agreed and built. Created 2026-07-23 as a draft for discussion; §14's changes all landed and
+the build spec derived from it is complete (see [`evidencegraph-v1-buildspec.md`](./evidencegraph-v1-buildspec.md)).
+The §3 and §12 defer lists still hold — none of that machinery exists.
+**Owner:** (you)
 **Companion:** decisions in [`evidencegraph-decisions.md`](./evidencegraph-decisions.md) (this doc folds those in).
 **Grounding:** the shipped MVP (`passion/packages/evidence-graph`, adapters, `evidence-explorer` app); PRD §19 (the full vision this is a deliberately-scoped-down slice of — archived at `archive/docs/prd/PRD.md` post-reset; current active surface: `docs/prd/passionApps.md` E1 + `docs/prd/passion-roadmap.md`).
 
@@ -148,4 +151,4 @@ Concrete changes from today's MVP:
 
 ---
 
-**Next:** once we align on §13, I write the build spec (v1 workflow + the refactor + the Postgres/S3 adapter + the Explore/manual-add surfaces) and we build behind the normal PR/review gate.
+**Next, as it stood:** once we align on §13, I write the build spec (v1 workflow + the refactor + the Postgres/S3 adapter + the Explore/manual-add surfaces) and we build behind the normal PR/review gate. That happened — the spec is `evidencegraph-v1-buildspec.md` and it shipped.

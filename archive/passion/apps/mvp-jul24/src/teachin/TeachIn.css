@@ -1,0 +1,330 @@
+/* ------------------------------------------------------------------------------------------------
+ * The shared teach-in. Uses only theme.css tokens, so it looks native inside all twelve activities
+ * without any of them knowing it is there.
+ *
+ * WHY IT POSITIONS ITSELF AND TOUCHES NO PUZZLE CSS. All twelve puzzle roots are
+ * `display: flex; flex-direction: column; align-items: center` and none of them is a positioned
+ * ancestor. Rather than adding `position: relative` to twelve stylesheets — twelve files owned by
+ * whoever wrote each puzzle, changed for a reason that has nothing to do with that puzzle — `.ti` is
+ * its own containing block: a zero-height, full-width anchor mounted as the puzzle's first child. It
+ * costs exactly one of the parent's flex gaps and reflows nothing.
+ * ---------------------------------------------------------------------------------------------- */
+
+.ti {
+  position: relative;
+  /*
+   * Lifts the whole teach-in above everything the puzzle paints after it.
+   *
+   * This is not belt-and-braces. `.ti-anchor` below uses `transform` to centre itself, which makes it
+   * a stacking context — so the `z-index` values *inside* it become private and stop competing with
+   * the puzzle's own boxes. Without a z-index here, `.ti` and a later sibling like
+   * FunctionMachine's `.fm-machine` (`position: relative`, `z-index: auto`) would paint in tree
+   * order and the machine would sit on top of the `?`, swallowing clicks aimed at it. Found by
+   * Playwright reporting "`<div class="fm-machine">` intercepts pointer events".
+   */
+  z-index: 3;
+  /* `align-self: stretch` is doing real work: the parents centre their items, so without it this
+     anchor would collapse to zero width at the middle and the `?` would land in the centre. */
+  align-self: stretch;
+  width: 100%;
+  height: 0;
+}
+
+/*
+ * The box the `?` and the panel share.
+ *
+ * Centred on the activity and never narrower than a readable measure. Several puzzles size their own
+ * panel to a small board — Nonogram's 5×5 is about 17rem wide — and inheriting that would wrap two
+ * sentences into six ragged lines, which is exactly the friction the ~20 second budget cannot
+ * absorb. `max()` means wide activities still get their full width, and the cap stops a wide one
+ * from stretching the rule to an unreadable measure.
+ */
+.ti-anchor {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max(100%, 20rem);
+  max-width: 26rem;
+  height: 0;
+}
+
+/* — The persistent `?`. Always present, whether the panel is up or not. — */
+.ti-help {
+  position: absolute;
+  top: 0;
+  right: 0;
+  /* Above the panel, so it stays reachable while the panel is up and reads as the panel's own
+     affordance rather than as a stray badge floating over it. */
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  padding: 0;
+  border: 2px solid var(--wood-frame);
+  border-radius: var(--r-pill);
+  background: linear-gradient(180deg, var(--parchment-hi), var(--parchment-edge));
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: transform 120ms var(--ease-out), background 160ms var(--ease-out), box-shadow 160ms
+    var(--ease-out);
+}
+
+.ti-help:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+  box-shadow: var(--shadow-soft), var(--glow-ember);
+}
+
+.ti-help[aria-expanded="true"] {
+  background: linear-gradient(180deg, var(--ember-bright), var(--ember));
+}
+
+/* — The panel. — */
+.ti-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  /*
+   * THE LOAD-BEARING LINE. PROJECT.md: "dismisses on first interaction — it never blocks a child who
+   * already gets it." With pointer-events off, the first touch passes straight through the panel to
+   * the board underneath: the cell registers the click *and* the panel goes away, in one gesture.
+   * Turning this on would make the panel a modal in everything but name, and would mean the child's
+   * first click was spent on the tutorial instead of on the puzzle.
+   *
+   * It costs nothing in accessibility: the rule is text in the DOM, `role="note"` names it, and the
+   * `?` button (pointer-events restored above) is the keyboard and screen-reader route back to it.
+   */
+  pointer-events: none;
+  /* Room on the right for the `?` to sit inside the panel's corner without colliding with text. */
+  padding: 0.7rem 2.6rem 0.6rem 0.9rem;
+  border: 2px solid var(--wood-frame);
+  border-radius: var(--r-md);
+  background: linear-gradient(170deg, var(--parchment-hi) 0%, var(--parchment) 70%);
+  color: var(--ink);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), var(--shadow-panel);
+  text-align: center;
+  animation: ti-in 200ms var(--ease-out) both;
+}
+
+/* Animates the `translate` property rather than `transform`: `.ti-anchor` above is already using
+   `transform` for the horizontal centring, and keeping the two properties separate means neither can
+   overwrite the other. theme.css already flattens every animation under prefers-reduced-motion, so
+   this needs no companion media query — the panel simply appears. */
+@keyframes ti-in {
+  from {
+    opacity: 0;
+    translate: 0 -6px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* Left-aligned, not centred: a two-sentence rule wraps to three or four lines at this width, and
+   centred ragged prose is measurably slower to read than a flush left edge. The diagram and the
+   caption stay centred, because both are single objects rather than running text. */
+.ti-rule {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: left;
+  text-wrap: pretty;
+}
+
+.ti-caption {
+  margin: 0.3rem 0 0;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+}
+
+/* — Diagram primitives, shared by all twelve sketches (see diagrams.tsx). — */
+.ti-sketch {
+  display: block;
+  width: 100%;
+  max-width: 17rem;
+  height: auto;
+  margin: 0 auto;
+}
+
+.ti-tag {
+  fill: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.ti-big {
+  fill: var(--ink);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.ti-mark {
+  fill: var(--ink);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ti-cell,
+.ti-tile,
+.ti-sq,
+.ti-pan,
+.ti-jar,
+.ti-machine,
+.ti-prism,
+.ti-crystal {
+  fill: var(--parchment-hi);
+  stroke: var(--wood-frame);
+  stroke-width: 1.5;
+}
+
+.ti-cell-on {
+  fill: var(--wood-light);
+}
+
+.ti-cell-open {
+  fill: var(--parchment-edge);
+}
+
+.ti-sq-dark {
+  fill: var(--parchment-edge);
+}
+
+.ti-tile,
+.ti-jar {
+  fill: none;
+  stroke-dasharray: 3 3;
+}
+
+.ti-prism,
+.ti-crystal {
+  fill: var(--parchment-edge);
+}
+
+/* Parchment rather than wood: "the hidden rule" is captioned *inside* this box, and ink on wood
+   would not clear 4.5:1 at 9px. */
+.ti-machine {
+  fill: var(--parchment-edge);
+}
+
+.ti-piece {
+  fill: var(--wood);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.ti-cross line {
+  stroke: var(--ember-deep);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+.ti-pipe,
+.ti-beam,
+.ti-beam-thick,
+.ti-mirror,
+.ti-beam-arm,
+.ti-hanger {
+  stroke-linecap: round;
+  fill: none;
+}
+
+/* Wood, not parchment-edge: a dry pipe drawn in #e0c99e on a parchment panel is barely a shape. The
+   puzzle itself can use a pale pipe because its tiles are dark; this panel cannot. */
+.ti-pipe {
+  stroke: var(--wood-light);
+  stroke-width: 5;
+}
+
+.ti-pipe-on {
+  stroke: var(--ember);
+}
+
+.ti-beam {
+  stroke: var(--ember);
+  stroke-width: 3;
+}
+
+.ti-beam-thick {
+  stroke-width: 6;
+}
+
+.ti-mirror {
+  stroke: var(--wood-frame);
+  stroke-width: 4;
+}
+
+.ti-node {
+  fill: var(--parchment-edge);
+  stroke: var(--wood-frame);
+  stroke-width: 1.5;
+}
+
+.ti-node-on {
+  fill: var(--ember-bright);
+}
+
+.ti-beam-arm {
+  stroke: var(--wood-frame);
+  stroke-width: 4;
+}
+
+.ti-hanger {
+  stroke: var(--wood-frame);
+  stroke-width: 2;
+}
+
+.ti-fulcrum {
+  fill: var(--wood-frame);
+}
+
+.ti-gear {
+  fill: var(--parchment-edge);
+  stroke: var(--wood-frame);
+  stroke-width: 1.5;
+}
+
+.ti-gear-hub {
+  fill: var(--wood-frame);
+}
+
+.ti-tooth {
+  stroke: var(--wood-frame);
+  stroke-width: 2;
+}
+
+/* The one tooth the child is told to watch. Thicker as well as ember, because at this size colour
+   alone does not separate one 2px tick from twenty-three others. */
+.ti-tooth-mark {
+  stroke: var(--ember-deep);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+}
+
+.ti-arrow line {
+  stroke: var(--ember-deep);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.ti-arrow polygon {
+  fill: var(--ember-deep);
+}

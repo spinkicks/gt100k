@@ -1,5 +1,11 @@
 # Two-Axis Tagging Implementation Plan
 
+> **Complete.** `@gt100k/two-axis-tagging` ships the work-mode and domain taxonomies, the
+> engaged-mode resolver, the tagging pipeline, the Krippendorff validity harness, the public API and
+> the README, with `tagger-stub` and `tagger-tfy` beside it. One subtopic has been minted since:
+> `math-puzzles/foundations`, for the discovery game's crosswalk
+> (`../specs/2026-07-27-measurement-lane.md` §4).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build the `009-two-axis-tagging` feature — the taxonomy, records, deterministic engaged-mode resolver, tagging pipeline, validity harness, and the TrueFoundry auto-tagger behind a port — per `specs/009-two-axis-tagging/spec.md`.
@@ -36,7 +42,7 @@
 **Interfaces:**
 - Produces: the package `@gt100k/two-axis-tagging` with an empty `src/index.ts` that later tasks extend.
 
-- [ ] **Step 1: Write the failing smoke test**
+- [x] **Step 1: Write the failing smoke test**
 
 ```ts
 // passion/packages/two-axis-tagging/test/smoke.test.ts
@@ -50,7 +56,7 @@ describe("package", () => {
 });
 ```
 
-- [ ] **Step 2: Create package.json**
+- [x] **Step 2: Create package.json**
 
 ```json
 {
@@ -65,7 +71,7 @@ describe("package", () => {
 }
 ```
 
-- [ ] **Step 3: Create tsconfig.json**
+- [x] **Step 3: Create tsconfig.json**
 
 ```json
 {
@@ -75,23 +81,23 @@ describe("package", () => {
 }
 ```
 
-- [ ] **Step 4: Create the empty entrypoint**
+- [x] **Step 4: Create the empty entrypoint**
 
 ```ts
 // passion/packages/two-axis-tagging/src/index.ts
 export {};
 ```
 
-- [ ] **Step 5: Add the project reference to root tsconfig.json**
+- [x] **Step 5: Add the project reference to root tsconfig.json**
 
 **Append** `{ "path": "passion/packages/two-axis-tagging" }` to the `references` array in root `tsconfig.json` — keep every existing entry (e.g. `passion/packages/evidence-explorer-view`). Do not replace the array.
 
-- [ ] **Step 6: Run the gate**
+- [x] **Step 6: Run the gate**
 
 Run: `pnpm exec tsc -b && pnpm test`
 Expected: PASS (smoke test green, build clean).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add passion/packages/two-axis-tagging tsconfig.json
@@ -109,7 +115,7 @@ git commit -m "feat(tagging): scaffold @gt100k/two-axis-tagging package"
 **Interfaces:**
 - Produces: `type WorkMode`, `WORK_MODES: WorkMode[]` (golden order), `WORK_MODE_DEFS: Record<WorkMode, WorkModeDef>`, `isWorkMode(x): x is WorkMode`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // test/work-modes.test.ts
@@ -137,9 +143,9 @@ describe("work-modes", () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails** — `pnpm test` → FAIL (module not found).
+- [x] **Step 2: Run test to verify it fails** — `pnpm test` → FAIL (module not found).
 
-- [ ] **Step 3: Implement work-modes.ts**
+- [x] **Step 3: Implement work-modes.ts**
 
 ```ts
 // src/work-modes.ts
@@ -185,9 +191,9 @@ export function isWorkMode(x: unknown): x is WorkMode {
 }
 ```
 
-- [ ] **Step 4: Run test** — `pnpm test` → PASS.
+- [x] **Step 4: Run test** — `pnpm test` → PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add passion/packages/two-axis-tagging
@@ -205,7 +211,7 @@ git commit -m "feat(tagging): work-mode taxonomy (9 defined modes)"
 **Interfaces:**
 - Produces: `type CabinId`, `CABINS: CabinId[]`, `SEED_SUBTOPICS: Record<CabinId, string[]>`, `type DomainPath = [CabinId] | [CabinId, string]`, `createTaxonomy()`, `Taxonomy.hasCabin`, `Taxonomy.hasPath`, `Taxonomy.mintSubTopic(cabin, label) -> DomainPath`, `serializePath`, `isValidPath`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // test/taxonomy.test.ts
@@ -241,9 +247,9 @@ describe("taxonomy", () => {
 });
 ```
 
-- [ ] **Step 2: Run test** → FAIL.
+- [x] **Step 2: Run test** → FAIL.
 
-- [ ] **Step 3: Implement taxonomy.ts**
+- [x] **Step 3: Implement taxonomy.ts**
 
 ```ts
 // src/taxonomy.ts
@@ -313,9 +319,9 @@ export function createTaxonomy(): Taxonomy {
 }
 ```
 
-- [ ] **Step 4: Run test** → PASS.
+- [x] **Step 4: Run test** → PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add passion/packages/two-axis-tagging
@@ -333,7 +339,7 @@ git commit -m "feat(tagging): hierarchical domain taxonomy + sub-topic minting"
 **Interfaces:**
 - Produces: `Artifact`, `ActionEvent`, `RawAction`, `TagSuggestion`, `DepthSignal` types + `makeArtifact` validator that enforces `affordedModes.length >= 1`, a valid `domainPath`, and dedups modes.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // test/records.test.ts
@@ -365,9 +371,9 @@ describe("records", () => {
 });
 ```
 
-- [ ] **Step 2: Run test** → FAIL.
+- [x] **Step 2: Run test** → FAIL.
 
-- [ ] **Step 3: Implement records.ts**
+- [x] **Step 3: Implement records.ts**
 
 ```ts
 // src/records.ts
@@ -439,9 +445,9 @@ export interface TagSuggestion {
 }
 ```
 
-- [ ] **Step 4: Run test** → PASS.
+- [x] **Step 4: Run test** → PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add passion/packages/two-axis-tagging
@@ -461,7 +467,7 @@ git commit -m "feat(tagging): Artifact/ActionEvent/RawAction/TagSuggestion recor
 - Consumes: `Artifact`, `RawAction`, `WorkMode` (Task 3), `WORK_MODES` order (Task 1).
 - Produces: `ACTION_MODE_RULES: Record<string, WorkMode[]>`, `resolveEngagedModes(artifact, action): ResolveResult` where `ResolveResult = { ok: true, engagedModes } | { ok: false, reason: "invalid-for-artifact" | "unresolved" }`.
 
-- [ ] **Step 1: Write the fixture**
+- [x] **Step 1: Write the fixture**
 
 ```ts
 // src/__fixtures__/resolver-cases.ts
@@ -512,7 +518,7 @@ export const RESOLVER_CASES: ReadonlyArray<{
 ];
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 ```ts
 // test/resolver.test.ts
@@ -549,9 +555,9 @@ describe("resolveEngagedModes (golden)", () => {
 });
 ```
 
-- [ ] **Step 3: Run test** → FAIL.
+- [x] **Step 3: Run test** → FAIL.
 
-- [ ] **Step 4: Implement resolver.ts**
+- [x] **Step 4: Implement resolver.ts**
 
 ```ts
 // src/resolver.ts
@@ -598,9 +604,9 @@ export function resolveEngagedModes(artifact: Artifact, action: RawAction): Reso
 export const GLOBAL_MODE_ORDER: readonly WorkMode[] = WORK_MODES;
 ```
 
-- [ ] **Step 5: Run test** → PASS.
+- [x] **Step 5: Run test** → PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add passion/packages/two-axis-tagging
@@ -620,7 +626,7 @@ git commit -m "feat(tagging): deterministic engaged-mode resolver (afforded-cons
 - Consumes: `Taxonomy` (Task 2), `makeArtifact`/`TagSuggestion` (Task 3), `isWorkMode` (Task 1).
 - Produces: `interface Tagger { suggest(ref): Promise<TagSuggestion> }`, `interface ArtifactRef`, `validateSuggestion(tax, suggestion): ValidationResult`, `acceptSuggestion(tax, ref, suggestion): Artifact` (mints sub-topic if novel), `CONFIDENCE_FLOOR`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // test/pipeline.test.ts
@@ -656,9 +662,9 @@ describe("pipeline", () => {
 });
 ```
 
-- [ ] **Step 2: Run test** → FAIL.
+- [x] **Step 2: Run test** → FAIL.
 
-- [ ] **Step 3: Implement ports.ts**
+- [x] **Step 3: Implement ports.ts**
 
 ```ts
 // src/ports.ts
@@ -676,7 +682,7 @@ export interface Tagger {
 }
 ```
 
-- [ ] **Step 4: Implement pipeline.ts**
+- [x] **Step 4: Implement pipeline.ts**
 
 ```ts
 // src/pipeline.ts
@@ -725,9 +731,9 @@ export function acceptSuggestion(tax: Taxonomy, ref: ArtifactRef, s: TagSuggesti
 }
 ```
 
-- [ ] **Step 5: Run test** → PASS.
+- [x] **Step 5: Run test** → PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add passion/packages/two-axis-tagging
@@ -748,7 +754,7 @@ git commit -m "feat(tagging): Tagger port + suggest→validate→accept pipeline
 
 **Golden math (hand-verified):** For 2 raters over 4 units with categories `{build, perform}` — u1=[build,build], u2=[build,build], u3=[perform,perform], u4=[build,perform] — nominal α = **0.5333** (±0.001). Derivation: coincidences o_bb=4, o_pp=2, o_bp=o_pb=1; n_b=5, n_p=3, n=8; Σo_cc=6, Σn_c²=34; α = 1 − (n−1)(n − Σo_cc)/(n² − Σn_c²) = 1 − 7·2/30 = 0.5333. Since 0.5333 < ALPHA_BAR (0.667), the topic is `PROVISIONAL`. A perfect-agreement fixture gives α = 1.0 → `TRUSTED`.
 
-- [ ] **Step 1: Write the rater fixture**
+- [x] **Step 1: Write the rater fixture**
 
 ```ts
 // src/__fixtures__/rater-fixture.ts
@@ -767,7 +773,7 @@ export const PERFECT_UNITS: ReadonlyArray<ReadonlyArray<string | undefined>> = [
 ];
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 ```ts
 // test/validity.test.ts
@@ -800,9 +806,9 @@ describe("review queue", () => {
 });
 ```
 
-- [ ] **Step 3: Run test** → FAIL.
+- [x] **Step 3: Run test** → FAIL.
 
-- [ ] **Step 4: Implement validity.ts**
+- [x] **Step 4: Implement validity.ts**
 
 ```ts
 // src/validity.ts
@@ -890,9 +896,9 @@ export function createReviewQueue(): ReviewQueue {
 }
 ```
 
-- [ ] **Step 5: Run test** → PASS (α = 0.5333 and 1.0 exactly).
+- [x] **Step 5: Run test** → PASS (α = 0.5333 and 1.0 exactly).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add passion/packages/two-axis-tagging
@@ -914,7 +920,7 @@ git commit -m "feat(tagging): validity harness (Krippendorff alpha + trust gate 
 - Consumes: `Tagger`, `ArtifactRef`, `TagSuggestion` from `@gt100k/two-axis-tagging`.
 - Produces: `class StubTagger implements Tagger` — deterministic suggestion from a seeded lookup keyed by `ref.id`, default fallback suggestion.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // passion/adapters/tagger-stub/test/stub.test.ts
@@ -939,7 +945,7 @@ describe("StubTagger", () => {
 });
 ```
 
-- [ ] **Step 2: Create package.json**
+- [x] **Step 2: Create package.json**
 
 ```json
 {
@@ -955,7 +961,7 @@ describe("StubTagger", () => {
 }
 ```
 
-- [ ] **Step 3: Create tsconfig.json**
+- [x] **Step 3: Create tsconfig.json**
 
 ```json
 {
@@ -966,7 +972,7 @@ describe("StubTagger", () => {
 }
 ```
 
-- [ ] **Step 4: Implement src/index.ts**
+- [x] **Step 4: Implement src/index.ts**
 
 ```ts
 // passion/adapters/tagger-stub/src/index.ts
@@ -984,7 +990,7 @@ export class StubTagger implements Tagger {
 }
 ```
 
-- [ ] **Step 5: Write the domain index barrel** so the adapters resolve `Tagger`/`ArtifactRef`/`TagSuggestion`/`isWorkMode`/`isCabinId`/`WORK_MODES`/`CABINS`. Overwrite `passion/packages/two-axis-tagging/src/index.ts`:
+- [x] **Step 5: Write the domain index barrel** so the adapters resolve `Tagger`/`ArtifactRef`/`TagSuggestion`/`isWorkMode`/`isCabinId`/`WORK_MODES`/`CABINS`. Overwrite `passion/packages/two-axis-tagging/src/index.ts`:
 
 ```ts
 // passion/packages/two-axis-tagging/src/index.ts
@@ -999,11 +1005,11 @@ export * from "./validity.js";
 
 (Task 9 re-asserts this same barrel; writing it here unblocks Tasks 7–8.)
 
-- [ ] **Step 6: Add root tsconfig reference** — **append** `{ "path": "passion/adapters/tagger-stub" }` (keep all existing entries).
+- [x] **Step 6: Add root tsconfig reference** — **append** `{ "path": "passion/adapters/tagger-stub" }` (keep all existing entries).
 
-- [ ] **Step 7: Install + gate** → run `pnpm install` at the repo root first (creates the workspace symlinks for the new `@gt100k/tagger-stub` and links `@gt100k/two-axis-tagging` into it — without this `tsc -b` fails `TS2307`), then `pnpm exec tsc -b && pnpm test` → PASS.
+- [x] **Step 7: Install + gate** → run `pnpm install` at the repo root first (creates the workspace symlinks for the new `@gt100k/tagger-stub` and links `@gt100k/two-axis-tagging` into it — without this `tsc -b` fails `TS2307`), then `pnpm exec tsc -b && pnpm test` → PASS.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add passion/adapters/tagger-stub tsconfig.json passion/packages/two-axis-tagging pnpm-lock.yaml
@@ -1031,14 +1037,14 @@ git commit -m "feat(tagging): deterministic StubTagger adapter"
 - Consumes: `Tagger`, `ArtifactRef`, `TagSuggestion`, `isWorkMode`, `isCabinId`, `WORK_MODES`, `CABINS` from the domain (all exported from its index — Task 9 / add-when-referenced).
 - Produces: `class TfyTagger implements Tagger`, `parseTfySuggestion(raw: string): TagSuggestion | null`, `tfyConfigFromEnv(env?)`.
 
-- [ ] **Step 1: Record the real TFY response fixture** (captured from the live call) — a `.ts` file, NOT `.json` (the repo tsconfig does not set `resolveJsonModule`, so a JSON import would fail `tsc -b`)
+- [x] **Step 1: Record the real TFY response fixture** (captured from the live call) — a `.ts` file, NOT `.json` (the repo tsconfig does not set `resolveJsonModule`, so a JSON import would fail `tsc -b`)
 
 ```ts
 // src/__fixtures__/tfy-response.ts
 export const TFY_RESPONSE = { domainPath: ["making-engineering"], affordedModes: ["build", "investigate", "explain"], confidence: 0.97, rationale: "Designing and constructing a subwoofer enclosure using Thiele-Small parameters — an engineering/building topic that supports building, investigating enclosure acoustics, and explaining the basics." };
 ```
 
-- [ ] **Step 2: Write the failing parse test**
+- [x] **Step 2: Write the failing parse test**
 
 ```ts
 // test/parse.test.ts
@@ -1064,9 +1070,9 @@ describe("parseTfySuggestion", () => {
 });
 ```
 
-- [ ] **Step 3: Run test** → FAIL.
+- [x] **Step 3: Run test** → FAIL.
 
-- [ ] **Step 4: Create package.json** (no runtime deps beyond the workspace domain)
+- [x] **Step 4: Create package.json** (no runtime deps beyond the workspace domain)
 
 ```json
 {
@@ -1082,7 +1088,7 @@ describe("parseTfySuggestion", () => {
 }
 ```
 
-- [ ] **Step 5: Create tsconfig.json**
+- [x] **Step 5: Create tsconfig.json**
 
 ```json
 {
@@ -1093,7 +1099,7 @@ describe("parseTfySuggestion", () => {
 }
 ```
 
-- [ ] **Step 6: Implement parse.ts**
+- [x] **Step 6: Implement parse.ts**
 
 ```ts
 // src/parse.ts
@@ -1130,7 +1136,7 @@ export function parseTfySuggestion(raw: string): TagSuggestion | null {
 
 > `isCabinId`/`isWorkMode` must be exported from the domain index (Task 9). If building in order, add those exports now.
 
-- [ ] **Step 7: Implement index.ts (native fetch, no SDK)**
+- [x] **Step 7: Implement index.ts (native fetch, no SDK)**
 
 ```ts
 // src/index.ts
@@ -1189,7 +1195,7 @@ export class TfyTagger implements Tagger {
 }
 ```
 
-- [ ] **Step 8: Implement the opt-in live script**
+- [x] **Step 8: Implement the opt-in live script**
 
 ```ts
 // scripts/tag-live.ts
@@ -1203,7 +1209,7 @@ async function main() {
 main().catch((e) => { console.error(e); process.exit(1); });
 ```
 
-- [ ] **Step 9: Create `.env.local.example`**
+- [x] **Step 9: Create `.env.local.example`**
 
 ```bash
 # passion/adapters/tagger-tfy/.env.local.example
@@ -1212,11 +1218,11 @@ TFY_BASE_URL=https://tfy.promptlens.trilogy.com/openai/v1
 TFY_TAGGER_MODEL=gpt-5.4-mini
 ```
 
-- [ ] **Step 10: Add root tsconfig reference** — **append** `{ "path": "passion/adapters/tagger-tfy" }` (keep all existing entries).
+- [x] **Step 10: Add root tsconfig reference** — **append** `{ "path": "passion/adapters/tagger-tfy" }` (keep all existing entries).
 
-- [ ] **Step 11: Install + gate** → run `pnpm install` (links the new `@gt100k/tagger-tfy` + `@gt100k/two-axis-tagging` into it), then `pnpm exec tsc -b && pnpm test` → PASS (parse tests green; no network in CI; no external npm dependency).
+- [x] **Step 11: Install + gate** → run `pnpm install` (links the new `@gt100k/tagger-tfy` + `@gt100k/two-axis-tagging` into it), then `pnpm exec tsc -b && pnpm test` → PASS (parse tests green; no network in CI; no external npm dependency).
 
-- [ ] **Step 12: Commit**
+- [x] **Step 12: Commit**
 
 ```bash
 git add passion/adapters/tagger-tfy tsconfig.json pnpm-lock.yaml
@@ -1236,7 +1242,7 @@ git commit -m "feat(tagging): TrueFoundry auto-tagger adapter (native fetch, opt
 **Interfaces:**
 - Produces: the complete public API; a `runDemo()` returning a coverage matrix `{ cell: string; count: number }[]`.
 
-- [ ] **Step 1: Write the failing demo test**
+- [x] **Step 1: Write the failing demo test**
 
 ```ts
 // test/demo.test.ts
@@ -1255,7 +1261,7 @@ describe("demo", () => {
 });
 ```
 
-- [ ] **Step 2: Implement the public index.ts**
+- [x] **Step 2: Implement the public index.ts**
 
 ```ts
 // src/index.ts
@@ -1268,7 +1274,7 @@ export * from "./pipeline.js";
 export * from "./validity.js";
 ```
 
-- [ ] **Step 3: Implement demo.ts** (inline `Tagger` — the domain package must not import an adapter)
+- [x] **Step 3: Implement demo.ts** (inline `Tagger` — the domain package must not import an adapter)
 
 ```ts
 // src/demo.ts
@@ -1312,11 +1318,11 @@ export async function runDemo(): Promise<CoverageCell[]> {
 
 > The demo depends only on the domain's own modules — no adapter import, no dependency cycle, no extra install.
 
-- [ ] **Step 4: Write the README** (mirror `evidence-graph/README.md`: quick start, public API table, ports/adapters, the TFY env note, `pnpm --filter @gt100k/two-axis-tagging test`).
+- [x] **Step 4: Write the README** (mirror `evidence-graph/README.md`: quick start, public API table, ports/adapters, the TFY env note, `pnpm --filter @gt100k/two-axis-tagging test`).
 
-- [ ] **Step 5: Run the gate** → `pnpm exec tsc -b && pnpm test` → PASS.
+- [x] **Step 5: Run the gate** → `pnpm exec tsc -b && pnpm test` → PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add passion/packages/two-axis-tagging tsconfig.json

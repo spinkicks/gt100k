@@ -21,11 +21,17 @@ The passion-design agenda below was resolved in a grilling session and captured 
   return-after-a-gap + full-term durability + a perseverance artifact + a human autonomy sign-off.
   → `DISCOVERY-APP-PRD.md` §8/§10; `SPECIALIZATION-PIPELINE-PRD.md` §3.
 - [x] **Discovery vehicle** — 2D walkable overworld + bounded 3D cabin interiors; three-layer interaction.
-  → `DISCOVERY-APP-PRD.md` §5.2/§5.4.
+  → `DISCOVERY-APP-PRD.md` §5.2/§5.4. **Revised 2026-07-25 — there is no locomotion anywhere; both
+  layers are point-and-click.** The two halves changed with different status and should not be read as
+  one decision: the walkable 3D interior is **withdrawn permanently** (fixed camera, on art economics
+  that budget does not change), while the walkable 2D overworld is **deferred, not rejected** and is
+  today a click-to-select map of cabin signposts. See PRD §5.2 as revised, and
+  `docs/decisions/2026-07-27-discovery-surface.md` §-1, which keeps the game as the child-facing
+  surface and rules out a second child-facing app.
 - [x] **Scoped cabins + concierge** — bounded-but-porous: curated cabins as triggers + an on-demand
   concierge opening the long tail. → `DISCOVERY-APP-PRD.md` §5.3/§5.5.
 - [x] **Gadget→resource** — showroom → best-effort on-platform taste → external curated resource; live
-  open-web behind a child-safe harness. → `DISCOVERY-APP-PRD.md` §5.4; **ADR-0002**; `hardening/child-safe-rag.md`.
+  open-web behind a child-safe harness. → `DISCOVERY-APP-PRD.md` §5.4; **ADR-0002**; `../prd/hardening/child-safe-rag.md`.
 - [x] **App architecture** — the 30-artifact catalog + flow + build order. → `passionApps.md`,
   `passion-roadmap.md`.
 - [x] **Social influence** — family/peers = a weak additive prior in discovery + a strong amplifier in

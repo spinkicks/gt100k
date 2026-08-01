@@ -1,6 +1,6 @@
 # Hardening Mini-Spec — Measurement Validity & Cold-Start (Weak Point #1)
 
-**Status:** Draft v1 · 2026-07-22 · Owner: (product)
+**Status:** Draft v1 · 2026-07-22 · Reviewed against the code 2026-07-28 (see §3 and §4) · Owner: (product)
 **Addresses:** Weak point #1 — the interest model has no answer key for years, so we could be silently wrong about many kids and never notice; signal is also thin for external resources and depends on tag quality.
 **Decision:** the **leaner** program — behavior + a light kid/family check-in, **no** sampled human cross-check, **no** randomized-exploration slice. We keep the two zero-cost, no-human safeguards: the model can say "not sure yet," and we bank long-term outcome data from day one. Accepted trade-off: early mis-reads are harder to catch, and there is some self-fulfilling-prophecy risk.
 **Grounding:** `docs/research/passion-pipeline/hardening/06-measurement-validity-coldstart.md`.
@@ -22,12 +22,15 @@ A way to keep the interest read honest when we can't yet check it against realit
 ## 3. What's out (dropped by decision) + the accepted risk
 
 - **No sampled blinded human cross-check** — removes the strongest early warning that a read is wrong before the long-term data arrives.
-- **No randomized-exploration slice** — every probe is optimized, which is efficient but risks a self-fulfilling loop (we mostly show a kid what we already think they like, they return to it, "confirming" a possibly-wrong guess).
-- **Mitigations that partially offset:** the "not sure yet" default and the coverage pass (kids still sample ≥6 domains early) blunt, but do not eliminate, the loop risk; the banked long-term data is the eventual backstop.
+- **No randomized-exploration slice** — a probe is chosen rather than drawn, which is efficient but risks a self-fulfilling loop (we mostly show a kid what we already think they like, they return to it, "confirming" a possibly-wrong guess).
+  - **Partly answered since, by a deterministic hold-out rather than a random one.** `@gt100k/surfacing` reserves a **falsification probe** on every slate: the believed domain the model rates *lowest*, offered precisely because a read that only ever tests its own favourite cannot be shown to be wrong. It is not randomization and does not carry randomization's unbiasedness, but it does close the specific hole this bullet describes — the engine now bets against itself on the record. The same policy pays **maintenance debts before breadth**: a domain that has been triggered is owed four spaced re-exposures before it may be dropped, because a triggered-then-abandoned domain ends measurably below an untouched one.
+- **Mitigations that partially offset:** the "not sure yet" default, the coverage pass (kids still sample ≥6 domains early) and the falsification probe blunt, but do not eliminate, the loop risk; the banked long-term data is the eventual backstop.
 
 ## 4. Where it lives
 
 The Calibration/Validation Harness (**G5** in `passionApps.md`) owns the tag-quality checks, the confidence calibration, the cold-start priors, and the long-term outcome bank. It reads from the event capture (C1) and inference engine (C3) and writes calibration back to C3.
+
+G5 itself is unbuilt, and three of its four pieces have landed elsewhere in the meantime, which is worth naming so nobody builds them twice. **Tag quality** is `@gt100k/two-axis-tagging`: Krippendorff's alpha over rater samples against a 0.667 bar, a review queue for spot-audits, and a per-topic gate that leaves an artifact `PROVISIONAL` until its topic clears. **Cold-start priors** are the three weighted tilts on C3's Beta prior, though the partial pooling toward similar kids is not among them. **The loop tripwires** — coverage breadth and reopen rate — are `@gt100k/guardrails`. What has no home yet is the part this spec calls the only path to real validation: **nothing records what "this kid developed a lasting passion" will look like later, and nothing collects it.** The append-only interaction log is the substrate it would be built on, not the bank itself.
 
 ## 5. Open items / limits
 

@@ -17,19 +17,27 @@ limiting, so it is a local seam and not something to expose. It is a calm, legib
 ## Run
 
 ```bash
-pnpm --filter @gt100k/guide-console dev     # local dev server
+pnpm --filter @gt100k/guide-console dev     # local dev server on :3020
 pnpm --filter @gt100k/guide-console build   # production build (part of the gate)
-pnpm --filter @gt100k/guide-console start   # serve the production build (used by LOOP_QA)
+pnpm --filter @gt100k/guide-console start   # serve the production build on :3020 (used by LOOP_QA)
 pnpm --filter @gt100k/guide-console test    # app smoke tests (vitest, node env — no jsdom)
 ```
 
-No secrets are required. Two optional env vars: `GT100K_PROFILE_DIR` (where ingested profiles and
-`consent.json` live, default `.profiles`) and nothing else.
+No secrets are required. Two optional env vars, both for the ingest path: `GT100K_PROFILE_DIR` (where
+ingested profiles and `consent.json` live, default `.profiles`) and `GT100K_INGEST_ORIGIN` (the one
+origin `POST /api/ingest` answers a preflight for, default `http://localhost:5178`, which is where the
+discovery game runs). It is never `*`: the route takes children's behavioural data and writes it to
+disk under a `kidId` the caller chooses.
 
 ## What the console shows
 
-For the seeded synthetic kid, a ranked list of **hypothesis cards** (ordered by `lowerBound` desc), each
-with:
+Seven tabs — **Overview, Hypotheses, Wellbeing, Plan, Family, Access, Maps** — each carrying a count
+and a review dot when that lens holds an escalation. **Overview** is the landing view rather than
+Hypotheses: guides are not technical, and the summary is what orients them before they act. Switching
+child returns there, so a tab is never left pointing at the previous kid's section.
+
+The Hypotheses tab is the core read: for the selected kid, a ranked list of **hypothesis cards**
+(ordered by `lowerBound` desc), each with:
 
 - **domain path + mode** and the **lifecycle state** (`EXPLORING → EMERGING → CANDIDATE → ACTIVE`, plus
   `PARKED / CONTESTED / REOPENED`), carried by a **glyph + text label** so meaning never rests on colour
@@ -47,7 +55,7 @@ with:
 Buttons drive the in-memory store through the domain package's human-owned transitions (`promote` /
 `park` / `reopen` / `contest`) with a synthetic `guide` actor, then re-render. Nothing is ever deleted
 (park is reversible → reopen returns to `EMERGING`). A first-run kid with no hypotheses shows
-*"No hypotheses yet — exploration in progress."*
+*"No hypotheses yet. Exploration in progress."*
 
 ## The `window.__qa` contract (spec §9)
 
@@ -59,7 +67,7 @@ usability gate drives. The page installs the contract once, backed by a `ref`, s
 |---|---|
 | `ready` | `true` once the client component has mounted |
 | `error` | `null` (no init error) |
-| `state()` | `{ selectedId, count, states }` — a small, stable snapshot; `states` is the ranked lifecycle list, so a promote is observable in the diff |
+| `state()` | `{ selectedId, count, states, escalations }` — a small, stable snapshot; `states` is the ranked lifecycle list, so a promote is observable in the diff, and `escalations` counts the child's spikes the wellbeing engine flagged for a human |
 | `primaryAction()` | promotes the **top gate-passed `EMERGING` candidate** (synthetic guide + passed gate + autonomy sign-off); a no-op only if no candidate has passed its gate |
 
 The seed includes one confident hypothesis whose gate passes (a perseverance-artifact ref + a return
@@ -75,7 +83,7 @@ dead by reading `window.__qa.state()` before and after a promote:
 pnpm --filter @gt100k/guide-console build
 LOOP_QA=1 \
 LOOP_QA_CMD="pnpm --filter @gt100k/guide-console start" \
-LOOP_QA_PORT=<port> \
+LOOP_QA_PORT=3020 \
   <run the loop harness>
 ```
 

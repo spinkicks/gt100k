@@ -1,5 +1,12 @@
 # `mvp-jul24` — a room worth being in: Implementation Plan
 
+> **Complete.** All nine tasks landed. The readout is behind `window.__qa`, `backdrop` is the only
+> rendered cabin backend with `3d` and `static` parked, PRD §5.2 carries the dormant-canvas rule and
+> the backend note, the three stale docs are reconciled, Nonogram and Pipes alternate size by round,
+> the harder-variant control ships as an untracked `tier` prop, the Mirror Maze / Fraction Laser
+> pair cross-reference each other in prose, and the math backdrop plate was regenerated for the
+> function machine.
+
 > **Historical, 2026-07-27.** This plan pins `EMISSION_ENABLED = false` and tests for it. Emission
 > was turned on in #216 once its precondition was met rather than waived, so those two lines describe
 > a state the app has left. Nothing else here changed.
@@ -44,7 +51,7 @@ The highest-priority task, and independent of every other one. `App.tsx` puts an
 
 Keep `goToReadout` on the store and `"readout"` in the `Screen` union. The screen stays reachable — through `window.__qa.showReadout()` only. That is what "in tree, behind the QA gate" means here, and it keeps `ReadoutScreen.test.tsx` meaningful instead of leaving a dead component.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `passion/apps/mvp-jul24/src/App.test.tsx`:
 
@@ -91,7 +98,7 @@ test("the readout is still reachable behind the QA gate, for an operator", async
 
 Check `interest/store.ts`'s actual `byGadget` value shape before running, and match it exactly — if the fields differ from `{activeMs, opens, solves}`, use the real ones in `setState`.
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 ```bash
 cd passion/apps/mvp-jul24 && pnpm vitest run src/App.test.tsx
@@ -99,7 +106,7 @@ cd passion/apps/mvp-jul24 && pnpm vitest run src/App.test.tsx
 
 Expected: the first two tests FAIL (the "Interest" button is present; the container prints `1.5 min`), and the third FAILS on `Cannot find module './qa'`.
 
-- [ ] **Step 3: Create the QA contract**
+- [x] **Step 3: Create the QA contract**
 
 Create `passion/apps/mvp-jul24/src/qa.ts`, modelled on `passion/apps/guide-console/app/qa.ts`:
 
@@ -135,7 +142,7 @@ export function installQa(): void {
 }
 ```
 
-- [ ] **Step 4: Remove the nav button from `App.tsx`**
+- [x] **Step 4: Remove the nav button from `App.tsx`**
 
 Delete the whole second `<button>` (lines 48–55), leaving the "Map" button as the only child of `<nav>`. Update the file's header comment, which currently says "a persistent top bar (Map / Interest nav)" and also mentions a "cabin A/B backend toggle" that no longer exists:
 
@@ -154,7 +161,7 @@ Delete the whole second `<button>` (lines 48–55), leaving the "Map" button as 
 
 Leave line 66 (`{screen === "readout" ? <ReadoutScreen /> : null}`) exactly as it is: the screen is now only entered through the QA gate.
 
-- [ ] **Step 5: Install the contract at startup**
+- [x] **Step 5: Install the contract at startup**
 
 In `passion/apps/mvp-jul24/src/main.tsx`, import and call it before render:
 
@@ -164,7 +171,7 @@ import { installQa } from "./qa";
 installQa();
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 ```bash
 cd passion/apps/mvp-jul24 && pnpm vitest run src/App.test.tsx src/interest
@@ -172,7 +179,7 @@ cd passion/apps/mvp-jul24 && pnpm vitest run src/App.test.tsx src/interest
 
 Expected: PASS, including the pre-existing `ReadoutScreen.test.tsx` and `interest/store.test.ts`, which must not need changes — if they do, the counters were altered rather than relocated, which is wrong.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add passion/apps/mvp-jul24/src/qa.ts passion/apps/mvp-jul24/src/App.tsx \
@@ -214,7 +221,7 @@ different entry point."
 
 `CabinStatic.test.tsx` and any `scene3d` tests keep passing because they render the components directly. Do not touch them.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `passion/apps/mvp-jul24/src/cabin/CabinView.test.tsx`:
 
@@ -257,7 +264,7 @@ test("the store exposes no backend selector", () => {
 });
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 ```bash
 cd passion/apps/mvp-jul24 && pnpm vitest run src/cabin/CabinView.test.tsx
@@ -265,7 +272,7 @@ cd passion/apps/mvp-jul24 && pnpm vitest run src/cabin/CabinView.test.tsx
 
 Expected: FAIL — the last test finds `cabinBackend` and `setBackend` still on the store.
 
-- [ ] **Step 3: Simplify `CabinView.tsx`**
+- [x] **Step 3: Simplify `CabinView.tsx`**
 
 Replace the whole file:
 
@@ -321,7 +328,7 @@ export default CabinView;
 
 Keep `data-backend="backdrop"` — `CabinView.css` and the smoke tooling both key off `.cabin-view`, and a stable attribute costs nothing.
 
-- [ ] **Step 4: Remove the backend from the store**
+- [x] **Step 4: Remove the backend from the store**
 
 In `game/store.ts`, delete `SELECTABLE_BACKENDS`, `requested`, `initialBackend`, the `cabinBackend` field, the `setBackend` action, and both of their entries in `interface GameState`. Replace the long header comment with:
 
@@ -338,7 +345,7 @@ In `game/store.ts`, delete `SELECTABLE_BACKENDS`, `requested`, `initialBackend`,
 
 Leave `game/types.ts`'s `CabinBackend` type in place if the parked components reference it; if nothing references it after this change, delete the type. Check with `grep -rn "CabinBackend" passion/apps/mvp-jul24/src` and act on what you find — do not leave an unreferenced type.
 
-- [ ] **Step 5: Repoint the headless tooling**
+- [x] **Step 5: Repoint the headless tooling**
 
 `store.ts` recorded that `?cabin=static` is "what the headless screenshot tooling drives … since it needs no GPU". `backdrop` needs no GPU either — it is an `<img>` plus SVG — so the tooling drops the param and takes the default. Three edits:
 
@@ -354,7 +361,7 @@ In `tools/smoke.ts`, in the static function (line ~99): change `${base}/?cabin=s
 
 Then delete `shoot3dCabin` entirely along with its call in `smoke()`. It exists only to screenshot a parked backend, and its `canvasCount === 0` warning would now fire every run.
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 ```bash
 cd passion/apps/mvp-jul24 && pnpm vitest run src/cabin src/game
@@ -368,7 +375,7 @@ cd passion/apps/mvp-jul24 && pnpm typecheck
 
 Expected: exit 0. A failure here means something was deleted rather than parked.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add passion/apps/mvp-jul24/src/cabin/CabinView.tsx \
@@ -408,7 +415,7 @@ This is a separate PR because `docs/prd/` is a different CODEOWNERS lane from `p
 
 §5.2 currently requires "**One cabin's 3D loads at a time**, on a **single persistent canvas whose contents swap** on enter/exit (never a fresh scene per cabin — the one architectural rule that must not be violated)." After task 2 there is no 3D canvas in the product's only path, so the rule is moot rather than met. Do not delete it: its justification is a ~3× art-budget saving, which is exactly the kind of reasoning that gets forgotten and then re-violated.
 
-- [ ] **Step 1: Amend the Layer 2 bullet**
+- [x] **Step 1: Amend the Layer 2 bullet**
 
 Append to that bullet, after "(never a fresh scene per cabin — the one architectural rule that must not be violated)":
 
@@ -424,7 +431,7 @@ budget saving it protects is the reason the fixed camera is permanent, and a fut
 free-camera interior needs to argue with this sentence first.
 ```
 
-- [ ] **Step 2: Note the parked backend where the reader will look for it**
+- [x] **Step 2: Note the parked backend where the reader will look for it**
 
 In the same section, after the "Life comes from camera motion inside the frame" paragraph, add:
 
@@ -439,11 +446,11 @@ argument. Note this does **not** reopen Layer 3: `backdrop` needing no WebGL is 
 has nothing to do with the accessibility mirror, which is still required on its own grounds.
 ```
 
-- [ ] **Step 3: Verify the section still reads coherently**
+- [x] **Step 3: Verify the section still reads coherently**
 
 Re-read §5.2 start to finish. The three status notes it now carries must not contradict each other: the walkable overworld is **deferred**, the fixed camera is **permanent**, and the persistent-canvas rule is **dormant**. If any sentence still implies 3D is the shipping interior, fix it.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add docs/prd/DISCOVERY-APP-PRD.md
@@ -471,7 +478,7 @@ not reopen the Layer 3 accessibility mirror."
 
 Three claims were true before #179 and are false after it. `math` has five authored activities and `BACKDROP_ROOMS` contains both `LOGIC_GAMES` and `MATH`.
 
-- [ ] **Step 1: Fix `registry.ts`'s header comment**
+- [x] **Step 1: Fix `registry.ts`'s header comment**
 
 Replace the paragraph beginning "The `math` entries carry no `hotspot` that means anything yet":
 
@@ -488,7 +495,7 @@ Also fix the sentence above it — "Consumers of `gadgetsForTopic` must still to
  * `cabin/backdrop/CabinBackdrop.tsx` renders a normal empty room for them.
 ```
 
-- [ ] **Step 2: Amend `PROJECT.md` — the backend fork**
+- [x] **Step 2: Amend `PROJECT.md` — the backend fork**
 
 In *Visual direction*, the bullet claiming "**3D is the direction and the winner**" and the later sentence "Which becomes the default is **still open**" are both superseded. Write the reversal as a reversal — do not delete the old sentence silently:
 
@@ -511,7 +518,7 @@ the tree, still compiled, still covered by their own passing tests — the LITS/
 `cabin/CabinView.tsx` carries the reversal instructions.
 ```
 
-- [ ] **Step 3: Amend `PROJECT.md` — the readout, and the stale `math` claims**
+- [x] **Step 3: Amend `PROJECT.md` — the readout, and the stale `math` claims**
 
 Add to *Risks logged but not solved* or a new *Corrected* section:
 
@@ -541,7 +548,7 @@ Then correct the two stale `math` statements. In *Risks*, "`math` currently has 
 
 Also update the *Explicitly deferred* entry for live previews and the *Risks* entry about backdrop emission if either still describes `math` as unauthored, and fix the *Visual direction* line saying `?cabin=backdrop` "opts in" — it is now the only path and there is no query param.
 
-- [ ] **Step 4: Verify no stale claim survives**
+- [x] **Step 4: Verify no stale claim survives**
 
 ```bash
 cd passion/apps/mvp-jul24 && grep -rn "cabin=static\|cabin=3d\|cabin=backdrop\|zero activities\|not authored\|still open" PROJECT.md src/ tools/
@@ -549,7 +556,7 @@ cd passion/apps/mvp-jul24 && grep -rn "cabin=static\|cabin=3d\|cabin=backdrop\|z
 
 Expected: no hit that asserts a query param exists, that `math` is unauthored, or that the backend choice is open. Hits inside the parked components' own comments are fine if they describe those components accurately.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add passion/apps/mvp-jul24/PROJECT.md passion/apps/mvp-jul24/src/gadgets/registry.ts
@@ -576,7 +583,7 @@ interest readout is gone so it is not re-added as a feature."
 
 `PROJECT.md` logs this and gives the instruction: the backdrop's prop polygons and the bookshelf emit nothing, so records are *silently partial* — well-formed, and under-counting every prop opened through the backdrop. Its words: "Either wire the backdrop props into emission before trusting any of it, or gate the backdrop out of sessions whose records are analysed. **Do not split the difference.**" After task 2 the backdrop is the only backend, so the under-count is total. Wiring emission is measurement work and out of scope; this makes the off-state explicit so nobody reads missing engagement as absence of engagement.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `passion/apps/mvp-jul24/src/signals/session.test.ts`:
 
@@ -602,7 +609,7 @@ test("with emission off the log accepts calls and records nothing", () => {
 
 The existing tests in this file assert that `recordSurfaced` *does* record. They now contradict the new behaviour, so move them to test `createSignalLog` directly (which keeps working — it is the log, not the session wrapper) rather than deleting them. `signals/log.test.ts` already covers `createSignalLog` and needs no change.
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 ```bash
 cd passion/apps/mvp-jul24 && pnpm vitest run src/signals
@@ -610,7 +617,7 @@ cd passion/apps/mvp-jul24 && pnpm vitest run src/signals
 
 Expected: FAIL on `EMISSION_ENABLED` not being exported.
 
-- [ ] **Step 3: Add the switch**
+- [x] **Step 3: Add the switch**
 
 Rewrite `signals/session.ts`:
 
@@ -661,7 +668,7 @@ export const sessionLog: typeof live = EMISSION_ENABLED ? live : off;
 
 If `session.ts` currently exports anything else, keep it exactly as it was.
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 ```bash
 cd passion/apps/mvp-jul24 && pnpm vitest run src/signals src/cabin src/overlay
@@ -669,7 +676,7 @@ cd passion/apps/mvp-jul24 && pnpm vitest run src/signals src/cabin src/overlay
 
 Expected: PASS. `signals/log.test.ts` is unchanged and still green — the log itself is untouched. `signals/wiring.test.tsx` may assert that opening a gadget produces a record; if so, repoint it at `createSignalLog` so it still tests the wiring shape, and add a comment saying why the session-level log is off.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add passion/apps/mvp-jul24/src/signals/session.ts passion/apps/mvp-jul24/src/signals/session.test.ts
@@ -701,7 +708,7 @@ branching on emission."
 
 **The convention, stated once:** `logic-games` gets **alternation**, matching the majority of `math` (`GearTrain`, `BalanceScale`, `RatioMixing` all alternate; `RatioMixing.tsx` records it as deliberate — "Tiers alternate so a session meets both benches"). Not climb-and-cap: a monotonic climb is an escalation the child never chose, which is the objection task 7 exists to answer. `FunctionMachine` and `FractionLaser` keep their climb-and-cap and are **out of scope** — they are not broken.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `passion/apps/mvp-jul24/src/puzzles/Nonogram/Nonogram.test.tsx`:
 
@@ -727,7 +734,7 @@ test("every size is one the generator can actually satisfy", () => {
 
 Then the equivalent in `passion/apps/mvp-jul24/src/puzzles/Pipes/Pipes.test.tsx`, importing `sizeForRound` and `SIZES` from `./Pipes`. If a test file already exists for either, append rather than overwrite.
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 ```bash
 cd passion/apps/mvp-jul24 && pnpm vitest run src/puzzles/Nonogram src/puzzles/Pipes
@@ -735,7 +742,7 @@ cd passion/apps/mvp-jul24 && pnpm vitest run src/puzzles/Nonogram src/puzzles/Pi
 
 Expected: FAIL on `sizeForRound` not being exported.
 
-- [ ] **Step 3: Add rounds and alternation to `Nonogram`**
+- [x] **Step 3: Add rounds and alternation to `Nonogram`**
 
 `Nonogram` has no round concept — its "Next puzzle" regenerates in place. Add one, and export the tier function so it is testable:
 
@@ -789,11 +796,11 @@ function generateFreshPuzzle(base: number, size: number, avoid?: boolean[][]): N
 
 The existing `useEffect` that resets the grid keys on `[puzzle]`, so it already handles a size change — `blankGrid(puzzle.size)` reads the new size. Verify that, and do not add a second reset effect.
 
-- [ ] **Step 4: Add the same to `Pipes`**
+- [x] **Step 4: Add the same to `Pipes`**
 
 `Pipes` already takes a `size`; it just always receives the default. Read `Pipes/generate.ts` for its existing presets (`EASY_SIZE` and any others) and use the real constants rather than inventing numbers. Export `SIZES` and `sizeForRound` with the same alternating shape and the same comment, then replace the `size` default at the `generateLevel(genSeed, size)` call so it comes from a round the component owns. If `Pipes` takes `size` as a prop from outside, keep the prop and use it as an override — `sizeForRound(round)` becomes the default only.
 
-- [ ] **Step 5: Inspect `Mirror` and `Chess`, and record what you find**
+- [x] **Step 5: Inspect `Mirror` and `Chess`, and record what you find**
 
 The other two `logic-games` activities may have no sensible difficulty axis, and the spec is explicit that this gets **recorded, not forced**.
 
@@ -810,7 +817,7 @@ Then act on what is actually there:
 
 Either way one of the two outcomes is written down. Leaving it silent is the failure mode — the next person re-derives it.
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 ```bash
 cd passion/apps/mvp-jul24 && pnpm vitest run src/puzzles
@@ -824,7 +831,7 @@ cd passion/apps/mvp-jul24 && pnpm vitest run src/puzzles/Nonogram/generate.test.
 
 If a 7×7 generation throws or hangs, drop the harder size to 6 and say so in the `SIZES` comment. Do not raise `MAX_ATTEMPTS` to force it.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add passion/apps/mvp-jul24/src/puzzles/Nonogram passion/apps/mvp-jul24/src/puzzles/Pipes \
@@ -865,7 +872,7 @@ FractionLaser keep their climb-and-cap; they are not broken."
 
 **Three constraints, all load-bearing.** It is a choice, never a gate — `shelf/types.ts` carries the argument, and gating depth on completion would launder an ability measure into a depth measure. No achievement copy. And **no visible tier number**, which would reintroduce exactly the quantified display task 1 removed.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 (Correction, post-implementation: this file already existed with 5 passing tests by the time this
 task was reached — "Create" should read "extend". Add the tests below to the existing
@@ -915,7 +922,7 @@ test("no tier or level number is ever rendered", async () => {
 });
 ```
 
-- [ ] **Step 2: Give the test a way to solve a puzzle**
+- [x] **Step 2: Give the test a way to solve a puzzle**
 
 Solving a generated nonogram through the DOM is slow and brittle, and it would test the generator rather than the overlay. Mock the registry instead, so the overlay renders a stub puzzle that solves on click. Put this **above** the `import GadgetOverlay` line in the test file — `vi.mock` is hoisted, but the stub has to be defined inside the factory:
 
@@ -967,7 +974,7 @@ test("the chosen tier reaches the puzzle", async () => {
 });
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 ```bash
 cd passion/apps/mvp-jul24 && pnpm vitest run src/overlay/GadgetOverlay.test.tsx
@@ -975,7 +982,7 @@ cd passion/apps/mvp-jul24 && pnpm vitest run src/overlay/GadgetOverlay.test.tsx
 
 Expected: FAIL — no button matching `/harder/i` exists.
 
-- [ ] **Step 4: Add the optional `tier` to `PuzzleProps`**
+- [x] **Step 4: Add the optional `tier` to `PuzzleProps`**
 
 In `game/types.ts`:
 
@@ -996,7 +1003,7 @@ export interface PuzzleProps {
 }
 ```
 
-- [ ] **Step 5: Own the tier in the overlay and offer the choice**
+- [x] **Step 5: Own the tier in the overlay and offer the choice**
 
 In `GadgetOverlay`, hold the tier and reset it per gadget, then pass it down and offer the bump from `Solved`:
 
@@ -1062,7 +1069,7 @@ function GadgetPuzzle({ id, tier, onSolved }: { id: string; tier: number; onSolv
     />
 ```
 
-- [ ] **Step 6: Let `Nonogram` honour the prop**
+- [x] **Step 6: Let `Nonogram` honour the prop**
 
 `Nonogram` owns a round from task 6. The `tier` prop overrides where it starts:
 
@@ -1076,7 +1083,7 @@ export default function Nonogram({ seed, tier = 0, onSolved, onExit }: PuzzlePro
 
 Leave the other eight puzzles alone. They ignore `tier` and keep working — that is what optional buys.
 
-- [ ] **Step 7: Run the tests to verify they pass**
+- [x] **Step 7: Run the tests to verify they pass**
 
 ```bash
 cd passion/apps/mvp-jul24 && pnpm vitest run src/overlay src/puzzles && pnpm typecheck
@@ -1084,7 +1091,7 @@ cd passion/apps/mvp-jul24 && pnpm vitest run src/overlay src/puzzles && pnpm typ
 
 Expected: PASS and exit 0.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add passion/apps/mvp-jul24/src/game/types.ts passion/apps/mvp-jul24/src/overlay \
@@ -1120,7 +1127,7 @@ The pair is the design's load-bearing comparison — same shell, only the conten
 
 **Inert cross-reference only.** Not "you liked this, try that": a system-surfaced nudge is the `prompted`-versus-voluntary distinction the whole engine turns on, and priming a child toward the twin destroys the comparison the pair exists to enable. Static prose in a card the child chose to open is not a nudge. A banner, a toast, a highlight on the map, or anything appearing *because* the other was played, is.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `passion/apps/mvp-jul24/src/shelf/cards.data.test.ts`:
 
@@ -1159,7 +1166,7 @@ test("both cards still have exactly two paragraphs", () => {
 
 Check the real export name and the real card ids first — the `logic-games` mirror card is `id: "mirror-reflection"` with `gadgetId: "mirror"`, and the deck export may not be called `DECKS`. Match what `cards.data.ts` actually exports.
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 ```bash
 cd passion/apps/mvp-jul24 && pnpm vitest run src/shelf/cards.data.test.ts
@@ -1167,7 +1174,7 @@ cd passion/apps/mvp-jul24 && pnpm vitest run src/shelf/cards.data.test.ts
 
 Expected: FAIL — neither card mentions the other.
 
-- [ ] **Step 3: Extend the two cards' second paragraphs**
+- [x] **Step 3: Extend the two cards' second paragraphs**
 
 Add a sentence to the end of `mirror-reflection`'s second paragraph. It states a fact about the world, not a suggestion:
 
@@ -1181,11 +1188,11 @@ And to the `fraction-laser` card's second paragraph:
  The Mirror Maze in the Logic Games cabin is this same board with the fractions taken out: the beam still reflects, but nothing has to be divided, so what is left is the spatial reasoning on its own.
 ```
 
-- [ ] **Step 4: Mention it in the two teach-ins**
+- [x] **Step 4: Mention it in the two teach-ins**
 
 In `teachin/rules.tsx`, find the `mirror` and `fraction-laser` rule entries and add one clause each in the same register — describing what the other activity *is*, never suggesting the child go there. Keep it to a single sentence; the teach-in dismisses on first interaction and is not a place for prose.
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 ```bash
 cd passion/apps/mvp-jul24 && pnpm vitest run src/shelf src/teachin
@@ -1193,7 +1200,7 @@ cd passion/apps/mvp-jul24 && pnpm vitest run src/shelf src/teachin
 
 Expected: PASS, including the pre-existing deck-shape tests (3–6 cards, exactly one `invitation`).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add passion/apps/mvp-jul24/src/shelf/cards.data.ts \
@@ -1229,21 +1236,21 @@ enable. A test pins the phrasing."
 
 `PROJECT.md` names this the weakest of the five math props — "closer to a curio cabinet than a machine" — and the first to improve if any is revisited. PRD §5.3 asks a prop for a **clear affordance**: the child must see "that is the function machine". Recognition is the whole job; a prop is not load-bearing for accuracy, and `PROJECT.md` records why the exactness path was built and rejected twice on appearance.
 
-- [ ] **Step 1: Read the two constraints before touching the art**
+- [x] **Step 1: Read the two constraints before touching the art**
 
 Read `PROJECT.md`'s "The generated-still backdrop, and why props are inexact on purpose" and the prop-to-activity map. Two things bind: the plate is **one composed frame at dusk**, shared lighting and camera with `logic-games`, so a regenerated object must match colour temperature and grain or it reads as pasted in — the failure mode that killed both earlier exactness attempts. And `quads.data.test.ts` requires the `MATH` room to cover all five gadgets **exactly once** with **non-overlapping** polygons, so the new object must not grow into a neighbour's quad.
 
-- [ ] **Step 2: Regenerate just that object**
+- [x] **Step 2: Regenerate just that object**
 
 Use `scripts/gen-art.mjs` / `scripts/gen-cabins.mjs` as they are already used for this plate — read them for the prompt and parameter conventions rather than inventing a call. Target a recognisable machine: a hopper or funnel in, a crank or gear housing, a chute or tray out, so the in→transform→out reading is visible at prop size. Keep it on the same surface the current curio cabinet occupies so the composition does not move.
 
 Verify at prop scale, not full size: `scripts/art-inspect.mjs` exists for this. A prop that reads well at 100% and not at its on-wall size has not been improved.
 
-- [ ] **Step 3: Re-trace the polygon**
+- [x] **Step 3: Re-trace the polygon**
 
 Update the `function-machine` prop's polygon points in the `MATH` room in `quads.data.ts` to trace the new object's silhouette in the plate's own pixel coordinates. Follow the surrounding entries' style exactly — they carry comments recording what each vertex follows.
 
-- [ ] **Step 4: Run the tests**
+- [x] **Step 4: Run the tests**
 
 ```bash
 cd passion/apps/mvp-jul24 && pnpm vitest run src/cabin/backdrop
@@ -1251,7 +1258,7 @@ cd passion/apps/mvp-jul24 && pnpm vitest run src/cabin/backdrop
 
 Expected: PASS, specifically the exactly-once coverage test and the non-overlap test. An overlap failure means the new object grew into a neighbour — shrink the polygon, do not relax the test.
 
-- [ ] **Step 5: Screenshot the room and look at it**
+- [x] **Step 5: Screenshot the room and look at it**
 
 ```bash
 cd passion/apps/mvp-jul24 && pnpm dev
@@ -1259,7 +1266,7 @@ cd passion/apps/mvp-jul24 && pnpm dev
 
 In a second shell: `cd passion/apps/mvp-jul24 && pnpm shoot`. Open the `math` cabin output and check three things — the object reads as a machine at prop size; its focus trace follows the silhouette rather than a box; and the room still looks like one photograph rather than a collage. If the last one fails, the regeneration was the problem, not the polygon.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add passion/apps/mvp-jul24/public/art/cabin-backdrop-math.png \

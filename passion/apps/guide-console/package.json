@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start -p 3020",
     "test": "vitest run --config vitest.config.mts",
-    "consent": "tsx scripts/grant-consent.ts"
+    "consent": "tsx scripts/grant-consent.ts",
+    "seed-demo": "tsx scripts/seed-demo-session.ts"
   },
   "dependencies": {
     "@gt100k/access-broker": "workspace:*",

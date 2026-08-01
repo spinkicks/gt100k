@@ -1,5 +1,12 @@
 # Student Profile + Discovery Orchestrator Implementation Plan
 
+> **Complete.** `@gt100k/student-profile` ships `runCycle`, the gates, the store port, the pilot
+> fixtures and the golden orchestration test, with `@gt100k/profile-store-fs` behind it, and the
+> guide console reads genuinely-derived data rather than a hand-built seed.
+> `docs/prd/passionApps.md` records G1 as done. Two things have been added to the seam since: real
+> TimeBack priors flow in through G2/020, and the ingest route enforces per-purpose consent through
+> `@gt100k/consent`.
+
 > **Amended 2026-07-27.** `surfaced` moved off `OrchestratorContext` onto the profile as a second
 > append-only log, and `runCycle` now takes a `CycleBatch { interactions, surfaced }` rather than a bare
 > array (`EMPTY_BATCH` for a no-op cycle). Nothing had ever populated the context field, so every read
@@ -28,8 +35,8 @@
 
 **Files:** `passion/packages/student-profile/{package.json,tsconfig.json,src/index.ts,test/smoke.test.ts}`; root `tsconfig.json`.
 
-- [ ] **Step 1: failing smoke test** `test/smoke.test.ts` → `import` from `../src/index.js`, assert a trivial export exists.
-- [ ] **Step 2: package.json**
+- [x] **Step 1: failing smoke test** `test/smoke.test.ts` → `import` from `../src/index.js`, assert a trivial export exists.
+- [x] **Step 2: package.json**
 ```json
 {
   "name": "@gt100k/student-profile", "version": "0.1.0", "private": true, "type": "module",
@@ -43,11 +50,11 @@
   "scripts": { "test": "vitest run --root ../.. packages/student-profile/test" }
 }
 ```
-- [ ] **Step 3: tsconfig.json** — extends base; `references` to `../signal-pipeline`, `../interest-inference`, `../hypothesis-store`, `../two-axis-tagging`; include `src`+`test`.
-- [ ] **Step 4:** `src/index.ts` → `export * from "./model.js";` (create a stub `model.ts` with `export {};` for now, or start with `export {}` and populate in Task 1).
-- [ ] **Step 5:** append `{ "path": "passion/packages/student-profile" }` to the root `tsconfig.json` references (keep existing).
-- [ ] **Step 6: Install + gate** → `pnpm install` then `pnpm exec tsc -b && pnpm test` → PASS.
-- [ ] **Step 7: Commit** → `feat(profile): scaffold @gt100k/student-profile` (include pnpm-lock.yaml).
+- [x] **Step 3: tsconfig.json** — extends base; `references` to `../signal-pipeline`, `../interest-inference`, `../hypothesis-store`, `../two-axis-tagging`; include `src`+`test`.
+- [x] **Step 4:** `src/index.ts` → `export * from "./model.js";` (create a stub `model.ts` with `export {};` for now, or start with `export {}` and populate in Task 1).
+- [x] **Step 5:** append `{ "path": "passion/packages/student-profile" }` to the root `tsconfig.json` references (keep existing).
+- [x] **Step 6: Install + gate** → `pnpm install` then `pnpm exec tsc -b && pnpm test` → PASS.
+- [x] **Step 7: Commit** → `feat(profile): scaffold @gt100k/student-profile` (include pnpm-lock.yaml).
 
 ---
 
@@ -85,7 +92,7 @@ export function emptyProfile(
 
 **`orchestrator.ts`:** `runCycle(profile, newInteractions, ctx, now)` implementing spec §3.2 steps 1–6, using `deriveSignals` (012), `runInference` (011), `applyInterestRead` + `emptyStore` (013). Step 5 `attachArtifacts(store, kidId, refs)`: for each `[cellKey, ref]`, if `store.byId["${kidId}::${cellKey}"]` exists, return a new store with `{ ...hyp, perseveranceArtifactRef: ref }` (immutably). Reuse 013's id convention `${kidId}::${cellKey}`.
 
-- [ ] **Step 1: Failing tests**
+- [x] **Step 1: Failing tests**
 ```ts
 // test/orchestrator.test.ts
 import { describe, it, expect } from "vitest";
@@ -103,9 +110,9 @@ describe("runCycle", () => {
   });
 });
 ```
-- [ ] **Step 2:** implement `emptyProfile`, `runCycle`, `attachArtifacts`. `runCycle` deep-equality note: `applyInterestRead` is designed to be re-applied; verify the idempotency test passes (if 013 bumps `version`/`updatedAt` on identical reads, treat that as a **defect to surface**, not to paper over — escalate; the spec's SC-2 requires state stability).
-- [ ] **Step 3:** `src/index.ts` → `export * from "./model.js"; export * from "./orchestrator.js";`
-- [ ] **Step 4: gate** `pnpm exec tsc -b && pnpm test` → PASS. **Commit** `feat(profile): StudentProfile + runCycle (full replay, idempotent)`.
+- [x] **Step 2:** implement `emptyProfile`, `runCycle`, `attachArtifacts`. `runCycle` deep-equality note: `applyInterestRead` is designed to be re-applied; verify the idempotency test passes (if 013 bumps `version`/`updatedAt` on identical reads, treat that as a **defect to surface**, not to paper over — escalate; the spec's SC-2 requires state stability).
+- [x] **Step 3:** `src/index.ts` → `export * from "./model.js"; export * from "./orchestrator.js";`
+- [x] **Step 4: gate** `pnpm exec tsc -b && pnpm test` → PASS. **Commit** `feat(profile): StudentProfile + runCycle (full replay, idempotent)`.
 
 ---
 
@@ -122,9 +129,9 @@ export function deriveGates(
 ```
 `deriveGates`: run `deriveSignals` over `profile.interactions`; for each hypothesis of `profile.kidId` in `profile.store`, collect the timestamps of `cellEvents` with `kind === "voluntary_return" && novelty === false` whose `serializeCellKey(domainPath, mode)` matches the hyp's `cellKey`, sort ascending, then `evaluateGate(hyp, timeline, Date.parse(now))`. (Note: `deriveGates` needs `ctx` for the catalog — update the signature vs the spec's `deriveGates(profile, now)`; record this as a `minor` decision in `.loop/decisions.md`.)
 
-- [ ] **Step 1: Failing golden temporal test** — build a profile whose log has voluntary non-novel returns at day 0 / +20 / +60 for one cell + a `perseveranceArtifacts` entry; assert `deriveGates` → that hyp's `GateStatus.passed === true`; then drop the day-60 return (→ `durable:false`), drop the artifact (→ `hasArtifact:false`), and collapse the gap (→ `gapSurvived:false`), asserting each flag flips alone.
-- [ ] **Step 2:** implement `currentRead` + `deriveGates`. Reuse `serializeCellKey` (011) for matching.
-- [ ] **Step 3: gate + commit** → `feat(profile): deriveGates from the interaction log + currentRead`.
+- [x] **Step 1: Failing golden temporal test** — build a profile whose log has voluntary non-novel returns at day 0 / +20 / +60 for one cell + a `perseveranceArtifacts` entry; assert `deriveGates` → that hyp's `GateStatus.passed === true`; then drop the day-60 return (→ `durable:false`), drop the artifact (→ `hasArtifact:false`), and collapse the gap (→ `gapSurvived:false`), asserting each flag flips alone.
+- [x] **Step 2:** implement `currentRead` + `deriveGates`. Reuse `serializeCellKey` (011) for matching.
+- [x] **Step 3: gate + commit** → `feat(profile): deriveGates from the interaction log + currentRead`.
 
 ---
 
@@ -143,8 +150,8 @@ export function createMemoryProfileStore(seed?: readonly StudentProfile[]): Prof
 ```
 Memory adapter: Map-backed; `save`/`load` **deep-clone** (`structuredClone`) so callers can't mutate stored state.
 
-- [ ] **Step 1: Failing test** — save a profile, load it (deep-equal but not same reference); mutate the returned object → stored copy unchanged; `list()` returns the kidIds.
-- [ ] **Step 2:** implement. **Commit** → `feat(profile): ProfileStore port + in-memory adapter`.
+- [x] **Step 1: Failing test** — save a profile, load it (deep-equal but not same reference); mutate the returned object → stored copy unchanged; `list()` returns the kidIds.
+- [x] **Step 2:** implement. **Commit** → `feat(profile): ProfileStore port + in-memory adapter`.
 
 ---
 
@@ -152,8 +159,8 @@ Memory adapter: Map-backed; `save`/`load` **deep-clone** (`structuredClone`) so 
 
 **Files:** `passion/adapters/profile-store-fs/{package.json,tsconfig.json,src/index.ts,test/fs-store.test.ts}`; root `tsconfig.json`; optional `scripts/demo.ts`.
 
-- [ ] **Step 1: scaffold** package.json (`@gt100k/profile-store-fs`, dep `@gt100k/student-profile`), tsconfig (reference `../../packages/student-profile`), append root reference. `pnpm install`.
-- [ ] **Step 2: Failing round-trip test**
+- [x] **Step 1: scaffold** package.json (`@gt100k/profile-store-fs`, dep `@gt100k/student-profile`), tsconfig (reference `../../packages/student-profile`), append root reference. `pnpm install`.
+- [x] **Step 2: Failing round-trip test**
 ```ts
 // test/fs-store.test.ts — uses a temp dir, no network
 import { mkdtemp, rm } from "node:fs/promises";
@@ -162,9 +169,9 @@ import { join } from "node:path";
 import { createFsProfileStore } from "../src/index.js";
 // build a profile via student-profile's emptyProfile/runCycle, save, reload → deep-equal; list() → [kidId]
 ```
-- [ ] **Step 3:** implement `createFsProfileStore(dir)`: `save` → `writeFile(join(dir, `${kidId}.json`), JSON.stringify(profile))` (ensure dir via `mkdir({recursive})`); `load` → read+`JSON.parse` (return `null` if missing); `list` → `readdir` → strip `.json`. `StudentProfile` is JSON-safe (store = `{ byId: Record<…> }`, interactions/priors are plain). Convert the `perseveranceArtifacts` object as-is.
-- [ ] **Step 4 (headless demo):** `scripts/demo.ts` — build Ari's profile via `runCycle`, `save` to a temp dir, `load` it back, print `consoleViewModel(loaded.store, kidId, deriveGates(loaded, ctx, now))`. Runnable via `pnpm exec tsx passion/adapters/profile-store-fs/scripts/demo.ts` (no network). Keep it tiny; the round-trip **test** is the real gate.
-- [ ] **Step 5: gate + commit** → `feat(profile): @gt100k/profile-store-fs JSON-per-kid adapter + demo`.
+- [x] **Step 3:** implement `createFsProfileStore(dir)`: `save` → `writeFile(join(dir, `${kidId}.json`), JSON.stringify(profile))` (ensure dir via `mkdir({recursive})`); `load` → read+`JSON.parse` (return `null` if missing); `list` → `readdir` → strip `.json`. `StudentProfile` is JSON-safe (store = `{ byId: Record<…> }`, interactions/priors are plain). Convert the `perseveranceArtifacts` object as-is.
+- [x] **Step 4 (headless demo):** `scripts/demo.ts` — build Ari's profile via `runCycle`, `save` to a temp dir, `load` it back, print `consoleViewModel(loaded.store, kidId, deriveGates(loaded, ctx, now))`. Runnable via `pnpm exec tsx passion/adapters/profile-store-fs/scripts/demo.ts` (no network). Keep it tiny; the round-trip **test** is the real gate.
+- [x] **Step 5: gate + commit** → `feat(profile): @gt100k/profile-store-fs JSON-per-kid adapter + demo`.
 
 ---
 
@@ -179,7 +186,7 @@ import { createFsProfileStore } from "../src/index.js";
 - Cyrus: only prompted returns / skips → everything stays `EXPLORING`. Dulce: two confident cells; the fixture builder promotes `go` → `ACTIVE` and `production` → `CANDIDATE` via 013's `promote` (human actor) after `runCycle`, and parks `climbing`. Bex: a gate-passed `chess` (`EMERGING`, promotable) + an `EMERGING` `software` short of its gate.
 - `buildPilotRoster(now): Roster` — `runCycle(emptyProfile(...), log, { catalog: PILOT_CATALOG }, now)` per kid, applying the human transitions noted above; a fixed `PILOT_NOW` constant.
 
-- [ ] **Step 1: Failing golden test** `test/pilot.test.ts`:
+- [x] **Step 1: Failing golden test** `test/pilot.test.ts`:
 ```ts
 import { buildPilotRoster, PILOT_NOW } from "../src/index.js";
 import { getForKid } from "@gt100k/hypothesis-store";
@@ -187,8 +194,8 @@ import { getForKid } from "@gt100k/hypothesis-store";
 // Ari: movement-body/dance::perform is EXPLORING
 // Cyrus: all EXPLORING; Dulce: has an ACTIVE + a CANDIDATE + a PARKED
 ```
-- [ ] **Step 2:** author the fixtures; **tune Ari's return cluster until the golden test passes** (the test is the oracle — evidenceMass ≥ 3 ⇒ confident; timeline ⇒ gate). Assert `lowerBound` with a small tolerance (`>= 0.6`), flags/states exact.
-- [ ] **Step 3: gate + commit** → `feat(profile): synthetic pilot roster + golden orchestration test`.
+- [x] **Step 2:** author the fixtures; **tune Ari's return cluster until the golden test passes** (the test is the oracle — evidenceMass ≥ 3 ⇒ confident; timeline ⇒ gate). Assert `lowerBound` with a small tolerance (`>= 0.6`), flags/states exact.
+- [x] **Step 3: gate + commit** → `feat(profile): synthetic pilot roster + golden orchestration test`.
 
 ---
 
@@ -205,19 +212,19 @@ import { PILOT_CATALOG } from "@gt100k/student-profile"; // via barrel
 ```
 Keep the exports `useConsole` already relies on (`CHILDREN`, a way to get a kid's store + gates, `childInitials`). Keep `SEED_KID = "kid-synthetic-001"` = Ari so `window.__qa` + `console-state.ts` (`buildQaState`, `topPromotableId`, `applyGuidePrimaryAction`) are unchanged. **The existing 013 app test (`test/state.test.ts`) may assert the old hand-built seed — update it to assert the derived roster (Ari promotable) rather than deleting coverage.**
 
-- [ ] **Step 1:** add dep + `transpilePackages` for `@gt100k/student-profile` (+ its transitive workspace deps) in `next.config.mjs` (mirror how 013 transpiles `@gt100k/*`). `pnpm install`.
-- [ ] **Step 2:** rewrite `console-data.ts` to source the roster from `buildPilotRoster`; ensure `useConsole` still gets `{ children, store-per-kid, gates-per-kid }`. Do **not** touch the UI components.
-- [ ] **Step 3:** update `test/state.test.ts` → the derived Ari has `music-sound/audio-systems::build` EMERGING + gate passed; `topPromotableId` returns it; `applyGuidePrimaryAction` promotes it (state changes). Keep the pure-surface coverage.
-- [ ] **Step 4: gates** `pnpm exec tsc -b && pnpm test`; then **stop any dev server on the port first**, `pnpm --filter @gt100k/guide-console build`, and run `LOOP_QA` (`next start` + the harness) → the console loads, `window.__qa.ready === true`, and `primaryAction()` moves Ari `EMERGING → CANDIDATE` in both `state()` and the DOM.
-- [ ] **Step 5: Commit** → `feat(console): feed the guide console from the student-profile orchestrator (real derived reads)`.
+- [x] **Step 1:** add dep + `transpilePackages` for `@gt100k/student-profile` (+ its transitive workspace deps) in `next.config.mjs` (mirror how 013 transpiles `@gt100k/*`). `pnpm install`.
+- [x] **Step 2:** rewrite `console-data.ts` to source the roster from `buildPilotRoster`; ensure `useConsole` still gets `{ children, store-per-kid, gates-per-kid }`. Do **not** touch the UI components.
+- [x] **Step 3:** update `test/state.test.ts` → the derived Ari has `music-sound/audio-systems::build` EMERGING + gate passed; `topPromotableId` returns it; `applyGuidePrimaryAction` promotes it (state changes). Keep the pure-surface coverage.
+- [x] **Step 4: gates** `pnpm exec tsc -b && pnpm test`; then **stop any dev server on the port first**, `pnpm --filter @gt100k/guide-console build`, and run `LOOP_QA` (`next start` + the harness) → the console loads, `window.__qa.ready === true`, and `primaryAction()` moves Ari `EMERGING → CANDIDATE` in both `state()` and the DOM.
+- [x] **Step 5: Commit** → `feat(console): feed the guide console from the student-profile orchestrator (real derived reads)`.
 
 ---
 
 ### Final verification (SC-8)
-- [ ] `pnpm exec tsc -b` clean; `pnpm test` all green (domain + adapter + app pure tests).
-- [ ] `pnpm --filter @gt100k/guide-console build` clean; `LOOP_QA` usability pass.
-- [ ] `passionApps.md`: flip **G1** to ✅ (student-profile + orchestrator) and note the console now reads derived data; leave the doc update as the last commit or a follow-up PR.
-- [ ] Open PR (gh, pushed as `spinkicks`); squash-merge after CI + branch-up-to-date.
+- [x] `pnpm exec tsc -b` clean; `pnpm test` all green (domain + adapter + app pure tests).
+- [x] `pnpm --filter @gt100k/guide-console build` clean; `LOOP_QA` usability pass.
+- [x] `passionApps.md`: flip **G1** to ✅ (student-profile + orchestrator) and note the console now reads derived data; leave the doc update as the last commit or a follow-up PR.
+- [x] Open PR (gh, pushed as `spinkicks`); squash-merge after CI + branch-up-to-date.
 
 ## Notes on likely snags (pre-solved)
 - **Idempotency (SC-2):** `applyInterestRead` must produce a stable store when re-applied with the same read. If it bumps `version`/`updatedAt` on an unchanged belief, that breaks SC-2 — surface it and fix in 013 (or scope `deep-equal` to the belief+state+history-length), don't silently loosen the test.

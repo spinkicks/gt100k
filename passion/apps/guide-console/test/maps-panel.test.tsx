@@ -16,6 +16,7 @@ import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import type { MasteryMap } from "@gt100k/mastery-map";
+import type { HypothesisCard } from "@gt100k/hypothesis-store";
 
 import { workForKid, type ChildWork } from "../app/map-evidence.js";
 import { MapsPanel } from "../app/maps-panel.js";
@@ -234,8 +235,11 @@ describe("MapsPanel reads a map against the child a guide has selected", () => {
     const empty = rows.filter((r) => r.includes('data-strength="none"'));
     expect(offered).toHaveLength(empty.length);
     expect(offered.length).toBeGreaterThan(0);
-    // The two rows with artefacts behind them get no button, because it would change nothing.
-    expect(rows.filter((r) => r.includes('data-strength="multiple"'))).toHaveLength(2);
+    // The rows with artefacts behind them get no button, because it would change nothing. Three of
+    // them now: two from Studio projects and one from attested itch.io work, and the affordance does
+    // not care which, because an override says "do not let a missing record hold this up" and there
+    // is a record either way.
+    expect(rows.filter((r) => r.includes('data-strength="multiple"'))).toHaveLength(3);
     for (const row of rows.filter((r) => r.includes('data-strength="multiple"'))) {
       expect(row).not.toContain('name="note"');
     }
@@ -486,5 +490,63 @@ describe("The stylesheet cannot turn a read row into a tally either", () => {
     const chip = rulesOf(CSS).filter((r) => r.selector.includes(".mapoffer--yes"));
     expect(chip).toHaveLength(1);
     expect((chip[0] as { body: string }).body).not.toMatch(/accent/);
+  });
+});
+
+/**
+ * The coverage line, which exists because this tab is the one place the rail and the main pane can
+ * describe disjoint sets. Every seeded map is for a domain no synthetic child specializes in, so
+ * "Where Ari would go next on this map" renders under domains Ari has never touched. That is a
+ * legitimate review surface and a misleading read on a child at the same time, and the difference
+ * between them is entirely in whether the tab says so.
+ */
+describe("what the maps do and do not cover of this child", () => {
+  const spec = (path: readonly string[]): HypothesisCard =>
+    ({
+      id: `h-${path.join("-")}`,
+      domainPath: path,
+      state: "EMERGING",
+      mode: "BUILD",
+    }) as unknown as HypothesisCard;
+
+  const withSpecs = (specs: readonly HypothesisCard[], maps = REVIEW_MAPS): string =>
+    renderToStaticMarkup(<MapsPanel maps={maps} specs={specs} />);
+
+  it("says plainly when nothing below is this child's domain", () => {
+    // Ari's real case: audio-systems and dance, against maps for instruments and game-dev.
+    const html = withSpecs([spec(["music-sound", "audio-systems"]), spec(["art-motion", "dance"])]);
+    expect(html).toContain("No map yet for what this child is actually into");
+  });
+
+  it("names the unmapped specializations, so the gap is actionable rather than a mood", () => {
+    const html = withSpecs([spec(["music-sound", "audio-systems"])]);
+    expect(html.toLowerCase()).toContain("audio systems");
+  });
+
+  it("recognises a map that serves the child's exact domain", () => {
+    const html = withSpecs([spec(["music-sound", "instruments"])]);
+    expect(html).toContain("Every one of this child");
+    expect(html).not.toContain("No map yet");
+  });
+
+  it("splits mapped from unmapped when the child is partly covered", () => {
+    const html = withSpecs([spec(["music-sound", "instruments"]), spec(["art-motion", "dance"])]);
+    expect(html).toContain("Not yet mapped");
+    expect(html).not.toContain("No map yet");
+  });
+
+  it("says nothing at all when no child is loaded", () => {
+    // The tab is a coherent thing to look at with no child in it, and a coverage line about nobody
+    // would be noise on the surface whose whole job is reviewing the maps themselves.
+    expect(renderToStaticMarkup(<MapsPanel maps={REVIEW_MAPS} />)).not.toContain("mapcover");
+  });
+
+  it("keeps the progress ban: coverage counts specializations, never milestones", () => {
+    // The line reports how many DOMAINS have a map, which is a fact about the library. The moment
+    // it reported how far along a map anyone is, it would be the banned number wearing a new label.
+    const html = withSpecs([spec(["music-sound", "instruments"]), spec(["art-motion", "dance"])]);
+    const cover = html.slice(html.indexOf("mapcover"), html.indexOf("mapcover") + 400);
+    expect(cover).not.toMatch(TALLY_IN_WORDS);
+    expect(cover).not.toMatch(/\d+\s*%/);
   });
 });

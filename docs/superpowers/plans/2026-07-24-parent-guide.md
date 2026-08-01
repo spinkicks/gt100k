@@ -1,5 +1,16 @@
 # The Warm-Demanding Parent Playbook Implementation Plan
 
+> **Shipped, but not by these steps — the boxes are unticked because the steps as written were not
+> the steps taken.** The Playbook went out in #149 as a static-exported Next app at
+> `passion/apps/parent-guide`, not as the single self-contained `parent-guide/index.html` this plan
+> describes; nothing was ever committed at the repo-root `parent-guide/`. Everything the plan asks
+> for exists in that app: the Parts 0–9 prose and the Sources list in `app/lib/copy.ts` and
+> `app/lib/sections.ts`, the Family Check-In as `app/CheckIn.tsx` over `app/lib/decide.ts`, and the
+> exact-parity test against `assessFamily` across all 512 signal combinations in
+> `test/decide.test.ts`. Task 2's inline-drift guard has no counterpart and needs none: the widget
+> imports its decision logic instead of inlining a copy of it, which is the drift this plan was
+> guarding against. `docs/prd/passionApps.md` records F4 as done and hosted.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a single self-contained static webpage, `parent-guide/index.html`, that turns our family research + coaching engine into a plain-language "Warm-Demanding Parent Playbook" for homeschool parents, including a Family Check-In widget that faithfully mirrors the `@gt100k/family` engine's decision logic.

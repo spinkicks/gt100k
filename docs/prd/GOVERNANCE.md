@@ -1,4 +1,6 @@
 > **GT100K Governance & Policy.** The rights, safety, consent, legal, and decision-authority rules extracted from `PRD.md` so the PRD stays software/product-focused. Companion to `PRD.md` (product/engineering) and `.specify/memory/constitution.md` (supreme invariants). Where this conflicts with the PRD on a rights/safety limit, this doc and the constitution win.
+>
+> **Pointer note, 2026-07-28.** `PRD.md` now lives at `archive/docs/prd/PRD.md`; active product work moved to `DISCOVERY-APP-PRD.md` and `SPECIALIZATION-PIPELINE-PRD.md`. Every `*(was PRD §N)*` attribution below resolves against the archived document. **This is a location correction only — nothing in G1–G9 is archived, deprecated, or weakened by it.** These rules bind regardless of which PRD is current, and the authority order in the header is unchanged.
 
 ## G1. Prohibited product behavior
 

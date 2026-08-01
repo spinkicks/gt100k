@@ -19,8 +19,10 @@
 //
 // SYNTHETIC. Four synthetic children, no real child data, same as every other console seed.
 import {
+  evidenceFromAttestations,
   samePath,
   servesPath,
+  type Attestation,
   type GuideOverride,
   type MilestoneEvidence,
 } from "@gt100k/mastery-map";
@@ -39,6 +41,14 @@ export interface MadeThing {
   readonly title: string;
   readonly kind: string;
   readonly at: string;
+  /**
+   * Where it lives, when it does not live here.
+   *
+   * Present only on attested external work. A studio artefact has no url because it is in the
+   * evidence graph; a chess.com game does, and the url IS the checkable part — it is a public record
+   * on a third party's server, which is the half of the claim a link can actually carry.
+   */
+  readonly url?: string;
 }
 
 /** The console's stand-in for a `Project`, field for field on the two things a standing needs.
@@ -57,6 +67,14 @@ export interface ChildWork {
   readonly projects: readonly ChildProject[];
   /** Overrides a guide had already recorded before this session. The console appends to these. */
   readonly overrides: readonly GuideOverride[];
+  /**
+   * Claims on a milestone for work done somewhere we do not run, each with the examination of it.
+   *
+   * The ordinary case for most of the catalogue: the map says play rated games weekly and chess.com
+   * already exists, so nothing about that climb reaches this system as a project. Only an attestation
+   * that survived its defense contributes, and `@gt100k/mastery-map`'s `refusalFor` is what decides.
+   */
+  readonly attestations?: readonly Attestation[];
 }
 
 /** The same guide the console signs an edit as, written out here for the same reason `maps-seed.ts`
@@ -186,6 +204,92 @@ const DULCE_WORK: ChildWork = {
     },
   ],
   overrides: [],
+  // WORK DONE SOMEWHERE WE DO NOT RUN, which is the ordinary case and the reason attestation exists.
+  // Dulce builds in the Studio and also ships on itch.io, and nothing about the second reaches this
+  // system as a project. All three states are seeded because a guide who cannot tell them apart is
+  // worse off than one shown nothing: only the first is a standing.
+  //
+  // The game-dev map rather than competition maths, because that map is a `draft` and the panel
+  // rightly refuses to read any child against a map nobody has put into use.
+  attestations: [
+    {
+      // Stands. Examined, and she accounted for the work on every facet that speaks to authorship,
+      // so these three links become three artefacts behind the rung.
+      id: "att-dulce-playtests",
+      milestoneId: "gd-playtest",
+      links: [
+        {
+          url: "https://itch.io/jam/gmtk-jam/rate/1938201",
+          what: "Jam entry with the ratings and comments strangers left on it",
+          at: "2026-07-11T18:30:00.000Z",
+        },
+        {
+          url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          what: "Recording of two friends playing it while I said nothing",
+          at: "2026-07-18T15:10:00.000Z",
+        },
+        {
+          url: "https://itch.io/jam/gmtk-jam/rate/194155",
+          what: "The second build, after I changed the bit everyone got stuck on",
+          at: "2026-07-25T12:00:00.000Z",
+        },
+      ],
+      examined: {
+        at: "2026-07-28T14:00:00.000Z",
+        coverageByFacet: {
+          what: 0.84,
+          why: 0.73,
+          how: 0.9,
+          challenge: 0.81,
+          next: 0.52,
+          audience: 0.66,
+        },
+        // `next` is thin and it does not matter: where she goes next is the planner's question, not
+        // evidence about what already happened.
+        gaps: ["next"],
+      },
+    },
+    {
+      // Queued. Submitted, nobody has sat down with her yet. That is a fact about our capacity
+      // rather than about Dulce, and the panel has to keep the two distinguishable.
+      id: "att-dulce-repo",
+      milestoneId: "gd-version-control",
+      links: [
+        {
+          url: "https://github.com/example/toaster-rescue/commits/main",
+          what: "My commit history, including the day I broke it and rolled back",
+          at: "2026-07-27T17:15:00.000Z",
+        },
+      ],
+    },
+    {
+      // Refused, and the most important row a guide can be shown. The link is real and the work
+      // behind it is real; she could not say how she got there or what went wrong. That is the shape
+      // copied work leaves behind — and equally the shape of work genuinely done and forgotten. The
+      // panel names the gap and does not diagnose which, because it cannot.
+      id: "att-dulce-profiler",
+      milestoneId: "gd-profile-a-scene",
+      links: [
+        {
+          url: "https://gist.github.com/example/9f2b1c4e",
+          what: "Profiler output from the scene that was dropping frames",
+          at: "2026-07-20T13:00:00.000Z",
+        },
+      ],
+      examined: {
+        at: "2026-07-29T15:30:00.000Z",
+        coverageByFacet: {
+          what: 0.66,
+          why: 0.48,
+          how: 0.19,
+          challenge: 0.17,
+          next: 0.4,
+          audience: 0.3,
+        },
+        gaps: ["how", "challenge", "next"],
+      },
+    },
+  ],
 };
 
 const WORK: readonly ChildWork[] = [ARI_WORK, BEX_WORK, CYRUS_WORK, DULCE_WORK];
@@ -230,7 +334,37 @@ export interface WorkLink extends MilestoneEvidence {
  * `none` either way, which is the point: starting a milestone is not evidence of finishing it.
  */
 export function evidenceFor(work: ChildWork): readonly WorkLink[] {
-  return linksFrom(work.projects);
+  return [...linksFrom(work.projects), ...linksFromAttestations(work.attestations ?? [])];
+}
+
+/**
+ * Attested external work, in the same shape studio work arrives in.
+ *
+ * DELIBERATELY THE SAME SHAPE, so the panel's rule survives without knowing about attestation at
+ * all: a standing is never shown without the work under it, and the work under an attested standing
+ * is the list of links the child was examined on. If external work had its own render path, that
+ * guarantee would have to be re-implemented and could drift.
+ *
+ * `evidenceFromAttestations` decides what counts, so an unexamined or failed claim never reaches
+ * here. That is the same division of labour `linksFrom` has with the projects: this function shapes,
+ * it does not judge.
+ */
+function linksFromAttestations(attestations: readonly Attestation[]): readonly WorkLink[] {
+  const standing = new Map(evidenceFromAttestations(attestations).map((e) => [e.projectId, e]));
+  return attestations.flatMap((a) => {
+    const ev = standing.get(a.id);
+    if (ev === undefined) return [];
+    return [
+      {
+        ...ev,
+        // Named as work done elsewhere rather than given the milestone's title, because a guide
+        // reading the row needs to know which of the two kinds of evidence they are looking at:
+        // one was made under our eye and one was vouched for after the fact.
+        project: "Made elsewhere",
+        made: a.links.map((l) => ({ title: l.what, kind: "external", at: l.at, url: l.url })),
+      },
+    ];
+  });
 }
 
 /**

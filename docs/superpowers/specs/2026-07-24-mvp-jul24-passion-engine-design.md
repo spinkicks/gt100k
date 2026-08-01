@@ -1,7 +1,13 @@
 # MVP Jul 24 — Passion-Engine point-and-click game (design)
 
 **Date:** 2026-07-24 · **Owner:** Felipe · **App:** `passion/apps/mvp-jul24`
-**Status:** approved design, pre-implementation.
+**Status:** built, and since moved on. The app exists and everything in §2 shipped. Four things here
+no longer describe it: the readout is behind `window.__qa` rather than a child-facing screen, the
+`?cabin=3d|static` A/B is gone in favour of one generated-still backend, the room is nine gadgets
+across two cabins rather than two puzzles, and the app now posts sessions to the guide console
+instead of being local-only. See
+[`2026-07-26-mvp-jul24-room-worth-being-in-design.md`](2026-07-26-mvp-jul24-room-worth-being-in-design.md)
+and [`2026-07-27-measurement-lane.md`](2026-07-27-measurement-lane.md).
 
 ## 1. What this is
 

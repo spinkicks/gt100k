@@ -29,6 +29,7 @@ const CHESS: CuratedResource = {
   title: "Chess Openings for Beginners",
   url: "https://www.khanacademy.org/chess-openings",
   domainPath: ["games-strategy", "chess"],
+  pursuits: ["chess"],
   affordedModes: ["perform", "explain"],
   reputation: 0.95,
   ageTiers: ["6-8", "9-11", "12-14"],

@@ -11,6 +11,14 @@
 //
 // Everything else here is the same idea one level down: an entry that cannot be followed, cannot
 // form a cell, or claims an age it cannot serve is a dead end wearing a label.
+//
+// COVERAGE IS CHECKED TWICE, OVER TWO DIFFERENT PARTITIONS. A subtopic is where the concierge
+// looks; a pursuit is what a child taps on the browse wall. They divide the same material
+// differently and neither implies the other, so a library can be complete in one and full of holes
+// in the other — which is what happened. At 157 resources every one of the 29 subtopics was
+// stocked and the validator said so, while 22 of the 44 tiles had nothing of their own and the wall
+// papered over it by widening to the cabin. `EMPTY_PURSUIT` is the second question, asked in the
+// child's terms.
 import {
   CABINS,
   SEED_SUBTOPICS,
@@ -37,9 +45,15 @@ export type LibraryProblemCode =
   | "NOT_CURATED"
   | "DUPLICATE_ID"
   | "DUPLICATE_URL"
-  | "EMPTY_SUBTOPIC";
+  | "EMPTY_SUBTOPIC"
+  | "UNKNOWN_PURSUIT"
+  | "EMPTY_PURSUIT";
 
-export type LibraryWarningCode = "TIER_UNSERVED" | "THIN_SUBTOPIC";
+export type LibraryWarningCode =
+  | "TIER_UNSERVED"
+  | "THIN_SUBTOPIC"
+  | "THIN_PURSUIT"
+  | "PURSUIT_TIER_UNSERVED";
 
 export interface LibraryProblem {
   readonly code: LibraryProblemCode;
@@ -68,6 +82,15 @@ export interface ValidateLibraryOptions {
   readonly requireFullCoverage?: boolean;
   /** Below this, a subtopic is stocked but thin. A warning, since one good resource beats three weak. */
   readonly thinBelow?: number;
+  /**
+   * Every pursuit id the browse wall can show, if the caller knows them.
+   *
+   * Passed in rather than imported so this package does not depend on `@gt100k/pursuits` — see the
+   * note on `CuratedResource.pursuits`. Omitting it skips both pursuit rules, which is what a
+   * fragment or a fixture wants; the shipped library's test passes the real set, so a typo in a
+   * tag fails there.
+   */
+  readonly knownPursuits?: readonly string[];
 }
 
 const DEFAULTS = { requireFullCoverage: true, thinBelow: 2 } as const;
@@ -77,11 +100,13 @@ export function validateLibrary(
   options: ValidateLibraryOptions = {},
 ): LibraryReport {
   const { requireFullCoverage, thinBelow } = { ...DEFAULTS, ...options };
+  const { knownPursuits } = options;
   const problems: LibraryProblem[] = [];
   const warnings: LibraryWarning[] = [];
 
   const seenIds = new Set<string>();
   const seenUrlByPath = new Set<string>();
+  const seenUrlByPursuit = new Set<string>();
 
   for (const r of library) {
     const at = r.id || "(no id)";
@@ -176,6 +201,28 @@ export function validateLibrary(
       });
     }
     seenUrlByPath.add(urlKey);
+
+    for (const p of r.pursuits) {
+      if (knownPursuits !== undefined && !knownPursuits.includes(p)) {
+        problems.push({
+          code: "UNKNOWN_PURSUIT",
+          where: at,
+          detail: `no tile is named ${p}, so this entry stocks nothing`,
+        });
+      }
+      // The same check one partition over. Two entries can legitimately share a url under
+      // different paths, and a url can legitimately stock two tiles — what a child cannot be shown
+      // is the same link twice on the shelf they opened, and the shelf is keyed by pursuit.
+      const perPursuit = `${p}::${r.url}`;
+      if (seenUrlByPursuit.has(perPursuit)) {
+        problems.push({
+          code: "DUPLICATE_URL",
+          where: at,
+          detail: `the same url is filed twice under ${p}, so it would appear twice on one shelf`,
+        });
+      }
+      seenUrlByPursuit.add(perPursuit);
+    }
   }
 
   // Coverage. Counted per SUBTOPIC, because that is the shelf a child actually opens: an entry filed
@@ -211,6 +258,46 @@ export function validateLibrary(
           code: "TIER_UNSERVED",
           where,
           detail: `nothing here for ${missing.join(", ")}`,
+        });
+      }
+    }
+  }
+
+  // The same coverage question asked of the MENU rather than the taxonomy, which is the one a child
+  // experiences. Both are needed and neither substitutes: the subtopic loop above protects the
+  // concierge, which resolves by domain path, and this protects the wall, which resolves by tile.
+  // A library can pass the first and fail this one — it did, at 157 resources across 29 stocked
+  // subtopics and 22 tiles with nothing of their own.
+  if (knownPursuits !== undefined) {
+    for (const p of knownPursuits) {
+      const here = library.filter((r) => r.pursuits.includes(p));
+
+      if (here.length === 0) {
+        if (requireFullCoverage) {
+          problems.push({
+            code: "EMPTY_PURSUIT",
+            where: p,
+            detail: "a child can tap this tile and would find nothing",
+          });
+        }
+        continue;
+      }
+
+      if (here.length < thinBelow) {
+        warnings.push({
+          code: "THIN_PURSUIT",
+          where: p,
+          detail: `${here.length} resource(s); a child who does not like the first has nowhere to go`,
+        });
+      }
+
+      const served = new Set<AgeTier>(here.flatMap((r) => r.ageTiers));
+      const missing = AGE_TIERS.filter((t) => !served.has(t));
+      if (missing.length > 0) {
+        warnings.push({
+          code: "PURSUIT_TIER_UNSERVED",
+          where: p,
+          detail: `nothing on this tile's shelf for ${missing.join(", ")}`,
         });
       }
     }

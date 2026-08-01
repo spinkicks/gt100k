@@ -126,6 +126,56 @@ export function curatedForCell(
     .slice(0, limit);
 }
 
+/**
+ * How many tiles a resource stocks, ascending — the shelf's first sort key.
+ *
+ * REPUTATION RANKS TRUST, NOT RELEVANCE, and on a tile's shelf those come apart. The four orchestral
+ * overviews (a symphony's education site, a philharmonic's instrument guide) are trusted sources and
+ * score 0.85-0.9, while the Benedetti Foundation's violin course scores 0.8 because the charity is
+ * six years old. Rank on reputation alone and a child who taps Violin gets one violin part followed
+ * by four pages about orchestras, with every violin lesson pushed off the end. That is a subtler
+ * version of the bug this function was written to fix: the right cabin, and still not the thing they
+ * asked for.
+ *
+ * The fix uses a signal already in the data and needs no new field. A resource hand-tagged to four
+ * tiles is, by the curator's own judgement, about none of them in particular; one tagged to a single
+ * tile is about that tile. So specificity leads and trust breaks its ties.
+ *
+ * WHERE THE HEURISTIC IS WRONG: a narrow-but-mediocre resource tagged to one tile will outrank a
+ * broad-but-excellent one, and a generic hub that nobody thought to cross-tag looks specific. Both
+ * are curation errors that show up on the shelf rather than hiding, which is the failure mode to
+ * prefer. It changes nothing for the great majority of entries, which stock exactly one tile.
+ */
+function bySpecificityThenReputation(a: CuratedResource, b: CuratedResource): number {
+  if (a.pursuits.length !== b.pursuits.length) return a.pursuits.length - b.pursuits.length;
+  return byReputationThenId(a, b);
+}
+
+/**
+ * Every age-eligible resource stocking one browse tile, ranked.
+ *
+ * The wall's lookup. `curatedForCell` answers "what is in this part of the taxonomy", which is the
+ * right question for the concierge and the wrong one for a tile: the taxonomy's cells and the
+ * menu's tiles are different partitions, so a cell lookup hands Speaker Design the violin shelf.
+ *
+ * NO FALLBACK, DELIBERATELY. The obvious kindness here is to widen to the cabin when a pursuit
+ * comes back empty, and it is the exact bug this function replaced — it cannot be distinguished
+ * from a correct answer at the call site, so an untagged pursuit would look stocked forever.
+ * Returning `[]` is the honest report, and `validateLibrary` makes reaching it a build failure.
+ */
+export function curatedForPursuit(
+  lib: CuratedLibrary,
+  pursuit: string,
+  ageTiers: readonly AgeTier[],
+  limit = MAX_DOCS,
+): readonly CuratedResource[] {
+  return lib
+    .filter((r) => r.pursuits.includes(pursuit) && r.ageTiers.some((t) => ageTiers.includes(t)))
+    .slice()
+    .sort(bySpecificityThenReputation)
+    .slice(0, limit);
+}
+
 /** Whether the library can answer this request from curated material (curated-first gate). */
 export function covers(lib: CuratedLibrary, request: ConciergeRequest): boolean {
   return lib.some((r) => matchesRequest(r, request));

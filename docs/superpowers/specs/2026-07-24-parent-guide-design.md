@@ -1,7 +1,12 @@
 # Design: The Warm-Demanding Parent Playbook (parent-guide)
 
 **Date:** 2026-07-24
-**Status:** Draft v2 (approved in brainstorming; revised after a 3-subagent gap review; pending written-spec review)
+**Status:** Built and hosted. Shipped as `passion/apps/parent-guide`, a static-exported Next app: the
+Parts 0–9 prose and the Sources list, the Family Check-In whose branch logic is proven an exact
+mirror of `assessFamily` across all 512 signal combinations, and the printable self-assessment. The
+one thing this design did not anticipate is that it shipped as an app rather than as a single
+self-contained HTML file. Durability is the open item, not the content: it is hosted on an intern
+sandbox AWS account.
 **Owners:** us (the parent/guide side of GT 100k). Teammate owns the kid platform.
 
 ## 1. Why this exists

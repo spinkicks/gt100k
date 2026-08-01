@@ -1,9 +1,19 @@
 # `mvp-jul24`: a room worth being in
 
-**Status:** design, approved 2026-07-26. Not yet planned or built.
+**Status:** built. Planned as
+[`../plans/2026-07-26-mvp-jul24-room-worth-being-in.md`](../plans/2026-07-26-mvp-jul24-room-worth-being-in.md)
+and all nine of its tasks landed. One thing this design assumes has since changed: it puts the
+measurement lane out of scope, and the lane was subsequently connected — emission is on, the
+crosswalk exists, and a session posts to the guide console. B2's harder-variant control is what made
+`chosen_challenge` observable, which is the outcome B2 itself names as the reason to build the
+affordance whether or not measurement was ever resumed.
 **App:** [`passion/apps/mvp-jul24`](../../../passion/apps/mvp-jul24) — its
 [`PROJECT.md`](../../../passion/apps/mvp-jul24/PROJECT.md) is the durable brief and this design
 amends it in three places (recorded in §6).
+**Open question, added 2026-07-28:** whether this game stays the child-facing discovery surface at
+all. It was affirmed on 2026-07-27 for "the surface we have now" and explicitly not forever
+(`docs/decisions/2026-07-27-discovery-surface.md` §-1), and a browsable catalogue is being prototyped
+at `passion/apps/design-lab/app/browse/`. Nothing in this design assumes the answer.
 **Reads with:** `docs/prd/DISCOVERY-APP-PRD.md` §5.2 / §5.3 / §11,
 `docs/research/passion-pipeline/06-activity-design-ages-6-8.md` §2.1 / §2.3 / §8.5.
 **Date:** 2026-07-26

@@ -455,11 +455,6 @@ export function buildOverview(
       const idx = monthIndex.get(monthKey(ms(i.timestamp)));
       if (idx !== undefined) perMonth[idx]! += 1;
     }
-    let acc = 0;
-    const cumulative = perMonth.map((n) => {
-      acc += n;
-      return acc;
-    });
     return {
       id: card.id,
       index,
@@ -467,7 +462,12 @@ export function buildOverview(
       mode: modeLabel(card.mode),
       stage: stateTerm(card.state).label,
       confidence: Math.round(card.lowerBound * 100),
-      spark: sparkOrNull(cumulative),
+      // PER MONTH, NOT A RUNNING TOTAL. It used to accumulate, which made the line incapable of
+      // falling: a PARKED interest was drawn with a rising activity line, which is a false statement
+      // about a child and the exact opposite of what parked means. It also collided with the tile
+      // sparklines above, which are per-month and can fall — the same mark at the same size and
+      // colour meaning two different things, with neither labelled.
+      spark: sparkOrNull(perMonth),
       status,
       statusLabel:
         status === "bad" ? "Needs review" : status === "warn" ? "Needs a look" : "On track",
