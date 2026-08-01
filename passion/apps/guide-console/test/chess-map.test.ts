@@ -10,6 +10,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { validateMap, type Milestone } from "@gt100k/mastery-map";
+import { WORK_MODES } from "@gt100k/two-axis-tagging";
 
 import { CONSOLE_CHESS_MAP } from "../app/maps-seed.js";
 import { CHESS_RESOURCES } from "../app/maps-seed-chess-resources.js";
@@ -191,5 +192,26 @@ describe("the chess resource library is real and vetted", () => {
       expect(r.pursuits, r.id).toContain("chess");
       expect(r.domainPath, r.id).toEqual(["games-strategy", "chess"]);
     }
+  });
+});
+
+describe("the map reads as a graph, not a single line", () => {
+  it("declares the modes its branches use and no others", () => {
+    for (const mode of CONSOLE_CHESS_MAP.modes) expect(WORK_MODES).toContain(mode);
+    expect(CONSOLE_CHESS_MAP.modes).toContain("explain");
+  });
+
+  it("has real branches whose modes are a subset of the map's", () => {
+    const mapModes = new Set<string>(CONSOLE_CHESS_MAP.modes);
+    const branches = MS.filter((m) => m.modes.length > 0);
+    expect(branches.length).toBeGreaterThanOrEqual(3);
+    for (const b of branches)
+      for (const mode of b.modes) expect(mapModes.has(mode), `${b.id} ${mode}`).toBe(true);
+  });
+
+  it("keeps at most two non-syllabus rungs, the teach branch being one", () => {
+    const nonSyllabus = MS.filter((m) => m.ordering.basis !== "syllabus");
+    expect(nonSyllabus.length).toBeLessThanOrEqual(2);
+    expect(byId("ch-teach-a-beginner").ordering.basis).toBe("research");
   });
 });

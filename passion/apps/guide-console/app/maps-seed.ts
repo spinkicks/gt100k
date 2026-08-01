@@ -773,6 +773,25 @@ const CHASE_SIMON: Source = {
   url: "https://doi.org/10.1016/0010-0285(73)90004-2",
 };
 
+// Learning-by-teaching: the basis for the explain branch's one milestone. Both sources were
+// resolved live through their DOI on 2026-08-01 (Fiorella & Mayer to ScienceDirect pii
+// S0361476X13000209; Chase et al. to Springer's article page), so these are not guessed citations.
+const FIORELLA_MAYER: Source = {
+  authors:
+    "Fiorella & Mayer, 'The relative benefits of learning by teaching and teaching " +
+    "expectancy', Contemporary Educational Psychology 38(4)",
+  year: 2013,
+  url: "https://doi.org/10.1016/j.cedpsych.2013.06.001",
+};
+
+const PROTEGE_EFFECT: Source = {
+  authors:
+    "Chase, Chin, Oppezzo & Schwartz, 'Teachable agents and the protégé effect: " +
+    "increasing the effort towards learning', Journal of Science Education and Technology 18(4)",
+  year: 2009,
+  url: "https://doi.org/10.1007/s10956-009-9180-4",
+};
+
 const CHESS_MILESTONES: readonly Milestone[] = [
   {
     id: "ch-whole-game",
@@ -981,7 +1000,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     title: "You can play a real tournament game",
     capability: "Play under a clock with touch-move and a scoresheet, and sit through a long game",
     requires: ["ch-write-it-down", "ch-see-the-tactic"],
-    modes: [],
+    modes: ["perform"],
     stageFloor: "S2_FOUNDATIONS",
     ordering: {
       reason:
@@ -1178,7 +1197,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     capability:
       "Improve a position when nothing is hanging: weak pawns, open files, a strong square",
     requires: ["ch-prepare-a-tactic"],
-    modes: [],
+    modes: ["investigate"],
     stageFloor: "S3_AUTHORSHIP",
     ordering: {
       reason:
@@ -1216,7 +1235,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     title: "You can convert",
     capability: "Win a won endgame and defend a bad one: rook endings, pawn races, breakthrough",
     requires: ["ch-play-without-a-target"],
-    modes: [],
+    modes: ["investigate"],
     stageFloor: "S3_AUTHORSHIP",
     ordering: {
       reason:
@@ -1246,7 +1265,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       "Review a lost game on your own and name the one move that actually lost it, before " +
       "running an engine",
     requires: ["ch-real-tournament-game"],
-    modes: [],
+    modes: ["investigate"],
     stageFloor: "S3_AUTHORSHIP",
     ordering: {
       reason:
@@ -1331,7 +1350,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     title: "You have a rating that means something",
     capability: "Hold a published federation rating that places you in a named class",
     requires: ["ch-real-tournament-game", "ch-teach-yourself"],
-    modes: [],
+    modes: ["perform"],
     stageFloor: "S4_SIGNATURE",
     ordering: {
       reason:
@@ -1384,13 +1403,54 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     ],
     authorship: "human-authored",
   },
+  {
+    id: "ch-teach-a-beginner",
+    title: "You can teach a beginner",
+    capability:
+      "Teach a beginner one tactic in a short lesson, so they can then find it themselves",
+    requires: ["ch-see-the-tactic"],
+    modes: ["explain"],
+    stageFloor: "S3_AUTHORSHIP",
+    ordering: {
+      reason:
+        "Fiorella & Mayer found that students who actually taught material (rather than just " +
+        "expecting to teach it) learned it more durably, with the gain still showing up a week " +
+        "later. Chase et al.'s 'protégé effect' is the reason it works for a child specifically: " +
+        "students try harder for a learner they are responsible for than they do for themselves, " +
+        "an effect that showed up most for lower-achieving students. Both studies are about " +
+        "explaining what you already hold, so this sits after ch-see-the-tactic rather than " +
+        "alongside it: a child needs a tactic worth teaching before teaching it can do anything.",
+      basis: "research",
+      sources: [FIORELLA_MAYER, PROTEGE_EFFECT],
+      limit:
+        "Neither study is about chess. Fiorella & Mayer taught undergraduates a text passage, and " +
+        "Chase et al.'s protégé effect ran on 5th-graders teaching a virtual agent about " +
+        "ecosystems. That a tactic taught to a real beginner produces the same durable gain is our " +
+        "extension of their finding to this domain, not a claim either paper makes.",
+    },
+    resources: [STEP2_WORKBOOK, CHESSCOM_LESSONS, LICHESS_STUDIES_MATES],
+    practice: [
+      {
+        title: "Teach it before you explain it to yourself",
+        description:
+          "Find a genuine beginner — a younger sibling, a new club member, anyone who does not yet " +
+          "see the pattern — and walk them through one tactic until they can find it on their own. " +
+          "Rehearsing the explanation alone is teaching expectancy; a real learner in front of you " +
+          "is the part the research says actually moves the needle.",
+        solitary: false,
+      },
+    ],
+    demonstration: "A short lesson you gave, and what the learner could do after",
+    opportunities: [],
+    authorship: "human-authored",
+  },
 ];
 
 export const CONSOLE_CHESS_MAP: MasteryMap = {
   id: "map-chess-console",
   version: 1,
   domainPath: ["games-strategy", "chess"],
-  modes: ["perform", "investigate"],
+  modes: ["perform", "investigate", "explain"],
   ageBands: ["6-8", "9-11", "12-14"],
   milestones: CHESS_MILESTONES,
   provenance: {
