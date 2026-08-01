@@ -14,7 +14,8 @@ import { WORK_MODES } from "@gt100k/two-axis-tagging";
 
 import { CONSOLE_CHESS_MAP } from "../app/maps-seed.js";
 import { CHESS_RESOURCES } from "../app/maps-seed-chess-resources.js";
-import { REVIEW_NOW } from "../app/maps.js";
+import { childReadView, REVIEW_NOW } from "../app/maps.js";
+import { workForKid } from "../app/map-evidence.js";
 
 const MS = CONSOLE_CHESS_MAP.milestones;
 const byId = (id: string): Milestone => {
@@ -213,5 +214,58 @@ describe("the map reads as a graph, not a single line", () => {
     const nonSyllabus = MS.filter((m) => m.ordering.basis !== "syllabus");
     expect(nonSyllabus.length).toBeLessThanOrEqual(2);
     expect(byId("ch-teach-a-beginner").ordering.basis).toBe("research");
+  });
+});
+
+describe("a demo child climbing the deep map across branches", () => {
+  // Bex is the chess candidate the console already carries (console-data.ts), seeded in
+  // map-evidence.ts with a trunk scoresheet, a perform-branch tournament game, an investigate-branch
+  // game review, and an explain-branch beginner lesson. The point of this test is the honesty
+  // invariant: a standing appears ONLY on the rungs that carry real work, on a real read of the
+  // published map — not a guess about the shape of `childReadView`'s output.
+  const vm = childReadView(CONSOLE_CHESS_MAP, workForKid("kid-synthetic-002"), []);
+  const readOf = (id: string) => {
+    const r = vm.reads.find((x) => x.id === id);
+    if (r === undefined) throw new Error(`no read for ${id}`);
+    return r;
+  };
+
+  it("shows a standing on rungs from two different mode branches", () => {
+    const perform = readOf("ch-real-tournament-game");
+    const investigate = readOf("ch-study-your-games");
+    expect(perform.branchModes).toEqual(["Perform"]);
+    expect(investigate.branchModes).toEqual(["Investigate"]);
+    expect(perform.strength).not.toBe("none");
+    expect(investigate.strength).not.toBe("none");
+  });
+
+  it("also carries a trunk rung and an explain-branch rung", () => {
+    const trunk = readOf("ch-write-it-down");
+    const explain = readOf("ch-teach-a-beginner");
+    expect(trunk.isTrunk).toBe(true);
+    expect(trunk.strength).not.toBe("none");
+    expect(explain.branchModes).toEqual(["Explain"]);
+    expect(explain.strength).not.toBe("none");
+  });
+
+  it("every standing it shows carries the work it was derived from", () => {
+    for (const id of [
+      "ch-write-it-down",
+      "ch-real-tournament-game",
+      "ch-study-your-games",
+      "ch-teach-a-beginner",
+    ]) {
+      const r = readOf(id);
+      expect(r.evidence.length, id).toBeGreaterThan(0);
+    }
+  });
+
+  it("leaves a rung with no linked work honestly empty", () => {
+    // ch-convert (investigate) and ch-teach-yourself (trunk) sit in the same branches Bex has real
+    // work in, and neither has anything seeded for her, so both must read as no standing at all.
+    expect(readOf("ch-convert").strength).toBe("none");
+    expect(readOf("ch-convert").evidence).toEqual([]);
+    expect(readOf("ch-teach-yourself").strength).toBe("none");
+    expect(readOf("ch-teach-yourself").evidence).toEqual([]);
   });
 });
