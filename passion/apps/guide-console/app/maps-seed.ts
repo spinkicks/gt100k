@@ -1206,6 +1206,8 @@ const CHESS_MILESTONES: readonly Milestone[] = [
         readinessNote:
           "Ready when losing a rated game is information rather than a catastrophe. Entering " +
           "before that is how a child learns to dread the thing they liked.",
+        // stageFloor is intentionally below the milestone's: you enter rated events (S3) to EARN
+        // the rating, before it "means something" (S4).
         stageFloor: "S3_AUTHORSHIP",
       },
       {
