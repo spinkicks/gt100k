@@ -945,7 +945,8 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     id: "ch-king-safety",
     title: "You keep your king safe",
     capability:
-      "Castle at the right moment, and recognize when a king is already too exposed to castle into safety",
+      "Castle at the right moment, and recognize when a king is already too exposed to castle " +
+      "into safety",
     requires: ["ch-opening-principles"],
     modes: [],
     stageFloor: "S2_FOUNDATIONS",
@@ -1037,19 +1038,19 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       reason:
         "Step 1's plus workbook names 'Board vision' as its own numbered lesson, taught through " +
         "route-planner exercises (giving check, going to the right square, trapping, capturing all " +
-        "pieces), well before Step 3 introduces 'thinking ahead' as a distinct calculation skill. " +
-        "This milestone isolates that earlier, narrower skill, tracking what a piece already " +
-        "attacks without moving it, from the fuller forced-line calculation ch-see-ahead covers, " +
-        "and feeds into it for the reason ch-see-ahead's own limit already gives: a search needs " +
-        "something already retrievable to search with.",
+        "pieces) that drill exactly this: tracking what a piece already attacks without moving it. " +
+        "That lesson sits inside Step 1, well before Step 3 introduces 'thinking ahead' as a " +
+        "distinct calculation skill, which is what makes this rung checkable against the syllabus " +
+        "and puts it ahead of ch-see-ahead, for the reason that milestone's own limit already " +
+        "gives: a search needs something already retrievable to search with.",
       basis: "syllabus",
       sources: [STEPS_METHOD],
       limit:
-        "The publisher's own stated view is that games, not isolated visualization drills, build a " +
-        "child's board vision most: 'The best method for the improvement of children's board " +
-        "vision is to let them play games,' with one child needing perhaps 300 games and another " +
-        "1000. Treating this as a standalone rung with its own demonstration is our scaffolding " +
-        "choice, not a discrete step the curriculum itself prescribes.",
+        "Step 1's Board vision lesson is real syllabus content, but the Steps Method's own stated " +
+        "view is that gameplay, not this isolated drill, does most of the work of building it: " +
+        "'The best method for the improvement of children's board vision is to let them play " +
+        "games,' with one child needing perhaps 300 games and another 1000. Treat this rung as the " +
+        "syllabus's named checkpoint for the skill, not its primary teaching vehicle.",
     },
     resources: [STEP1_WORKBOOK, STEP3_WORKBOOK, LICHESS_TRAINING],
     practice: [
