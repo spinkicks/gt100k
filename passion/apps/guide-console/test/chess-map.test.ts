@@ -124,6 +124,30 @@ describe("what a child has to produce", () => {
   });
 });
 
+describe("every rung is runnable and points somewhere real", () => {
+  it("gives most milestones more than one resource, drawn from the library", () => {
+    const libIds = new Set(CHESS_RESOURCES.map((r) => r.id));
+    let multi = 0;
+    for (const m of MS) {
+      expect(m.resources.length, m.id).toBeGreaterThan(0);
+      for (const r of m.resources) expect(libIds.has(r.id), `${m.id} → ${r.id}`).toBe(true);
+      if (m.resources.length >= 2) multi += 1;
+    }
+    expect(multi).toBeGreaterThanOrEqual(MS.length - 2);
+  });
+
+  it("names real-world opportunities across the ladder, not just at the end", () => {
+    const withOpps = MS.filter((m) => m.opportunities.length > 0);
+    expect(withOpps.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("anchors a rating-class checkpoint a stranger could verify", () => {
+    const rating = byId("ch-rating-that-means-something");
+    expect(rating.opportunities.some((o) => o.kind === "competition")).toBe(true);
+    expect(rating.ordering.limit).toContain("2100"); // ceiling caveat preserved
+  });
+});
+
 describe("the chess resource library is real and vetted", () => {
   it("carries a substantial, distinct set of resources", () => {
     expect(CHESS_RESOURCES.length).toBeGreaterThanOrEqual(14);

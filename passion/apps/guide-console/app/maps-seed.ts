@@ -27,6 +27,23 @@
 import type { MasteryMap, Milestone, ValidationRecord } from "@gt100k/mastery-map";
 import type { Source } from "@gt100k/research";
 
+import {
+  CHESSCOM_LESSONS,
+  FIDE_LAWS_RES,
+  FIDE_RATING_TITLES,
+  FIDE_TOURNAMENT_FINDER,
+  LICHESS_ENDGAMES,
+  LICHESS_STUDIES_MATES,
+  LICHESS_TRAINING,
+  NOTATION_GUIDE,
+  STEP1_WORKBOOK,
+  STEP2_WORKBOOK,
+  STEP3_WORKBOOK,
+  STEP4_WORKBOOK,
+  STEP5_WORKBOOK,
+  STEP6_WORKBOOK,
+} from "./maps-seed-chess-resources.js";
+
 /** The concierge's `CuratedResource`, reached through the engine's own type. The console never
     calls the concierge, so it does not take a dependency on it just to name a shape. */
 type CuratedResource = Milestone["resources"][number];
@@ -756,30 +773,6 @@ const CHASE_SIMON: Source = {
   url: "https://doi.org/10.1016/0010-0285(73)90004-2",
 };
 
-const STEPS_WORKBOOKS: CuratedResource = {
-  id: "cr-steps-workbooks",
-  title: "The Steps Method: manuals and workbooks",
-  url: "https://www.stappenmethode.nl/en/",
-  affordedModes: ["investigate", "perform"],
-  domainPath: ["games-strategy", "chess"],
-  pursuits: ["chess"],
-  reputation: 0.95,
-  ageTiers: ["6-8", "9-11", "12-14"],
-  provenance: "curated-library:human-vetted",
-};
-
-const LICHESS_PRACTICE: CuratedResource = {
-  id: "cr-lichess-practice",
-  title: "Lichess: free puzzles, studies and rated play",
-  url: "https://lichess.org/training",
-  affordedModes: ["perform", "investigate"],
-  domainPath: ["games-strategy", "chess"],
-  pursuits: ["chess"],
-  reputation: 0.9,
-  ageTiers: ["6-8", "9-11", "12-14"],
-  provenance: "curated-library:human-vetted",
-};
-
 const CHESS_MILESTONES: readonly Milestone[] = [
   {
     id: "ch-whole-game",
@@ -797,7 +790,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       sources: [STEPS_METHOD],
       limit: "The publisher recommends Step 1 from age 8; younger children use Stepping Stones.",
     },
-    resources: [STEPS_WORKBOOKS],
+    resources: [STEP1_WORKBOOK, FIDE_LAWS_RES],
     practice: [
       {
         title: "Finish every game you start",
@@ -826,7 +819,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       basis: "syllabus",
       sources: [STEPS_METHOD],
     },
-    resources: [STEPS_WORKBOOKS],
+    resources: [STEP1_WORKBOOK, STEP2_WORKBOOK, LICHESS_STUDIES_MATES],
     practice: [
       {
         title: "Mate against a bare king, on a clock",
@@ -855,7 +848,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       basis: "syllabus",
       sources: [STEPS_METHOD, FIDE_LAWS],
     },
-    resources: [STEPS_WORKBOOKS],
+    resources: [STEP1_WORKBOOK, NOTATION_GUIDE],
     practice: [
       {
         title: "Notate while you play",
@@ -884,7 +877,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       basis: "syllabus",
       sources: [STEPS_METHOD],
     },
-    resources: [STEPS_WORKBOOKS, LICHESS_PRACTICE],
+    resources: [STEP2_WORKBOOK, LICHESS_TRAINING, CHESSCOM_LESSONS],
     practice: [
       {
         title: "Tactics you get wrong, again",
@@ -895,7 +888,18 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       },
     ],
     demonstration: "A worked page of forks and pins, solutions written out rather than answers",
-    opportunities: [],
+    opportunities: [
+      {
+        kind: "competition",
+        description:
+          "A free online arena on Lichess or Chess.com — no rating floor, opponents matched " +
+          "automatically",
+        readinessNote:
+          "Ready as soon as forks and pins get spotted without a hint. Losing on time in an " +
+          "arena is part of the format, not a signal to stop.",
+        stageFloor: "S1_IGNITION",
+      },
+    ],
     authorship: "human-authored",
   },
   {
@@ -915,7 +919,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
         "The content here is FIDE's rulebook rather than a progression syllabus; only the " +
         "PLACEMENT comes from the Steps Method. It is a weaker claim than the milestones around it.",
     },
-    resources: [STEPS_WORKBOOKS],
+    resources: [STEP2_WORKBOOK, STEP3_WORKBOOK, FIDE_LAWS_RES],
     practice: [
       {
         title: "Long games, not blitz",
@@ -933,6 +937,15 @@ const CHESS_MILESTONES: readonly Milestone[] = [
         readinessNote:
           "Ready when a whole game can be played to the end under a clock without help. A first " +
           "rating is usually low and that is what a first rating is for.",
+        stageFloor: "S2_FOUNDATIONS",
+      },
+      {
+        kind: "community",
+        description: "A scholastic (school-team or grade-level) tournament",
+        readinessNote:
+          "Ready under the same bar as a club tournament: a finished game under a clock, " +
+          "scoresheet included. Scholastic sections are usually the gentlest entry, not a harder " +
+          "one.",
         stageFloor: "S2_FOUNDATIONS",
       },
     ],
@@ -958,7 +971,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
         "their finding is that masters lose nearly all their recall advantage on random positions, " +
         "which is about what expertise is made of rather than about what to teach first.",
     },
-    resources: [STEPS_WORKBOOKS],
+    resources: [STEP3_WORKBOOK, LICHESS_TRAINING],
     practice: [
       {
         title: "Solve without moving anything",
@@ -989,7 +1002,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       basis: "syllabus",
       sources: [STEPS_METHOD],
     },
-    resources: [STEPS_WORKBOOKS, LICHESS_PRACTICE],
+    resources: [STEP3_WORKBOOK, LICHESS_ENDGAMES],
     practice: [
       {
         title: "Play the ending out against someone",
@@ -1000,7 +1013,16 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       },
     ],
     demonstration: "A worked set of pawn endings with the winning method written out",
-    opportunities: [],
+    opportunities: [
+      {
+        kind: "community",
+        description: "A weekly chess club meeting — regular opponents rather than a one-off event",
+        readinessNote:
+          "Ready once a won pawn ending gets converted under a clock against a person, not just " +
+          "on a diagram.",
+        stageFloor: "S2_FOUNDATIONS",
+      },
+    ],
     authorship: "human-authored",
   },
   {
@@ -1018,7 +1040,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       basis: "syllabus",
       sources: [STEPS_METHOD],
     },
-    resources: [STEPS_WORKBOOKS],
+    resources: [STEP4_WORKBOOK, LICHESS_TRAINING],
     practice: [
       {
         title: "Find the move before the move",
@@ -1047,7 +1069,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       basis: "syllabus",
       sources: [STEPS_METHOD],
     },
-    resources: [STEPS_WORKBOOKS],
+    resources: [STEP4_WORKBOOK, STEP5_WORKBOOK, CHESSCOM_LESSONS],
     practice: [
       {
         title: "Say what the position needs",
@@ -1059,7 +1081,16 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     ],
     demonstration:
       "An annotated game naming what the position needed before the moves that answered it",
-    opportunities: [],
+    opportunities: [
+      {
+        kind: "showcase",
+        description: "A club demo night or a public annotated-game post, sharing your own analysis",
+        readinessNote:
+          "Ready once the one-sentence diagnosis of a position is your own words, not a " +
+          "memorized template. A showcase is for the reasoning, not just the result.",
+        stageFloor: "S3_AUTHORSHIP",
+      },
+    ],
     authorship: "human-authored",
   },
   {
@@ -1076,7 +1107,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       basis: "syllabus",
       sources: [STEPS_METHOD],
     },
-    resources: [STEPS_WORKBOOKS, LICHESS_PRACTICE],
+    resources: [STEP5_WORKBOOK, STEP6_WORKBOOK, LICHESS_ENDGAMES],
     practice: [
       {
         title: "The ending you lost, replayed",
@@ -1109,7 +1140,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
         "years and found the opposite, with games played dominating and study 'a weak factor at " +
         "best'. The syllabus leg stands on its own; the research is contested and is not settled.",
     },
-    resources: [STEPS_WORKBOOKS, LICHESS_PRACTICE],
+    resources: [STEP6_WORKBOOK, CHESSCOM_LESSONS],
     practice: [
       {
         title: "Your own review, on your own schedule",
@@ -1120,7 +1151,18 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       },
     ],
     demonstration: "Your own study plan naming the material you chose, and the games behind it",
-    opportunities: [],
+    opportunities: [
+      {
+        kind: "mentorship",
+        description:
+          "Periodic review with a stronger player or coach — a second set of eyes on material " +
+          "you chose yourself, not daily instruction",
+        readinessNote:
+          "Ready once you already have a study plan to bring to the session. A mentor here is " +
+          "reviewing your judgment, not replacing it.",
+        stageFloor: "S4_SIGNATURE",
+      },
+    ],
     authorship: "human-authored",
   },
   {
@@ -1146,7 +1188,7 @@ const CHESS_MILESTONES: readonly Milestone[] = [
         "family spending over $200,000. Class A to Expert is an excellent and uncommon outcome for " +
         "a child who starts at eight and works hard. Titles are a different undertaking.",
     },
-    resources: [LICHESS_PRACTICE],
+    resources: [FIDE_RATING_TITLES, FIDE_TOURNAMENT_FINDER, LICHESS_TRAINING],
     practice: [
       {
         title: "Rated games, regularly",
@@ -1165,6 +1207,16 @@ const CHESS_MILESTONES: readonly Milestone[] = [
           "Ready when losing a rated game is information rather than a catastrophe. Entering " +
           "before that is how a child learns to dread the thing they liked.",
         stageFloor: "S3_AUTHORSHIP",
+      },
+      {
+        kind: "competition",
+        description:
+          "Each published rating-class threshold itself — Class C, B, A, Expert, Candidate " +
+          "Master — a checkpoint a stranger can verify without taking your word for it",
+        readinessNote:
+          "Ready the moment a federation rating exists at all; each class is a milestone within " +
+          "the milestone, not a separate bar to clear first.",
+        stageFloor: "S4_SIGNATURE",
       },
     ],
     authorship: "human-authored",
