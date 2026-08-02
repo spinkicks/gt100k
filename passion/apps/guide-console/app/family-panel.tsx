@@ -8,6 +8,7 @@ import type { JSX } from "react";
 import type { GuideDecision } from "./decisions.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 import { CoachingLog, MadeHistory } from "./family-history.js";
+import { FindOutPanel } from "./find-out-panel.js";
 import type { FamilyRead } from "@gt100k/family";
 
 const KNOB_LABEL: Record<string, string> = { up: "Dial up", steady: "Hold steady" };
@@ -21,12 +22,15 @@ export function FamilyPanel({
   read,
   observations,
   kidId,
+  domainPath,
   decisions,
   cards,
 }: {
   read: FamilyRead | undefined;
   observations: readonly string[];
   kidId: string;
+  /** The selected specialization, so the domain-specific moves match what is on screen. */
+  domainPath?: readonly string[];
   decisions: readonly GuideDecision[];
   cards: readonly HypothesisCard[];
 }): JSX.Element {
@@ -149,6 +153,11 @@ export function FamilyPanel({
       {/* WHAT HAPPENED, under what to do. Advice with no history behind it is a conversation about
           the engine's current opinion, which is the least useful thing to bring a parent. Neither
           list is generated: the decisions are the guide's own, the artefacts are the child's. */}
+      {/* WHAT TO FIND OUT, beside what to offer next. Placed in Family because both are about a
+          conversation with a person rather than a change to a plan, and because the moves this
+          surface recommends are aimed at the adults in the room. */}
+      <FindOutPanel domainPath={domainPath} />
+
       <div className="fhistwrap">
         <div>
           <span className="planproject__k">What you decided</span>

@@ -2678,6 +2678,99 @@ body {
   content: " \25b4";
 }
 
+/* What to find out: the questions a log cannot answer, and the moves aimed at the adults. */
+.findout {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.findout__lede {
+  margin: 0 0 14px;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  line-height: 1.45;
+  max-width: 72ch;
+}
+.findout__probes,
+.findout__moves {
+  list-style: none;
+  margin: 6px 0 18px;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.findout__probes > li,
+.findout__moves > li {
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.findout__title {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  list-style: none;
+}
+.findout__title::-webkit-details-marker {
+  display: none;
+}
+.findout__title::after {
+  content: " \25be";
+  color: var(--accent);
+}
+.findout details[open] > .findout__title::after {
+  content: " \25b4";
+}
+.findout__moveTop {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.findout__moveTop strong {
+  font-size: 0.8125rem;
+}
+.findout__how,
+.findout__does,
+.findout__why {
+  margin: 6px 0 0;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  line-height: 1.45;
+  max-width: 72ch;
+}
+.findout__why {
+  color: var(--ink-muted);
+}
+.findout__readings {
+  list-style: disc;
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+.findout__readings li {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  max-width: 72ch;
+  margin-bottom: 4px;
+}
+/* Never quiet, never folded. The whole difference between a probe and a detector is this line. */
+.findout__cannot {
+  margin: 9px 0 0;
+  padding: 7px 10px;
+  border-left: 2px solid var(--accent);
+  background: var(--surface);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  max-width: 72ch;
+}
+/* Reasoning is marked as the weakest, the same way a `model` map ordering is. */
+.chip--grade-reasoned {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
 /* Family history: what was decided beside what was made. Two columns because they are read against
    each other, and a parent's question is usually about the gap between them. */
 .fhistwrap {
