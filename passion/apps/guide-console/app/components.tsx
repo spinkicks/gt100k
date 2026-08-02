@@ -10,9 +10,6 @@ import type { ConsoleController } from "./useConsole.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 import { ProgressRing } from "./progress.js";
 import {
-  ACTIONS,
-  SIGNALS,
-  STATES,
   actionTerm,
   attributionTerm,
   domainLabel,
@@ -316,7 +313,7 @@ export function SpecCard({
 
 export function FilterNav({ ctrl }: { ctrl: ConsoleController }): JSX.Element {
   const filters = [
-    { key: "ALL" as const, label: "All hypotheses", count: ctrl.vm.cards.length },
+    { key: "ALL" as const, label: "All interests", count: ctrl.vm.cards.length },
     ...STATE_ORDER.filter((s) => ctrl.counts.has(s)).map((s) => ({
       key: s as string,
       label: stateTerm(s).label,
@@ -531,40 +528,7 @@ export function EmptyState({ ctrl }: { ctrl: ConsoleController }): JSX.Element {
     <output className="empty">
       {ctrl.vm.cards.length === 0
         ? "Nothing tracked yet. Keep offering new things."
-        : "No hypotheses in this view."}
+        : "No interests in this view."}
     </output>
-  );
-}
-
-// The Key: plain-language definitions for every term. Collapsible; pass `open` to keep it expanded.
-export function Legend({ open = false }: { open?: boolean }): JSX.Element {
-  const group = (
-    title: string,
-    entries: [string, { label: string; desc: string }][],
-  ): JSX.Element => (
-    <div className="legend__group">
-      <h5>{title}</h5>
-      <dl>
-        {entries.map(([k, t]) => (
-          <div className="legend__row" key={k}>
-            <dt>{t.label}</dt>
-            <dd>{t.desc}</dd>
-          </div>
-        ))}
-      </dl>
-    </div>
-  );
-  return (
-    <details className="legend" open={open || undefined}>
-      <summary className="legend__summary">
-        <Icon name="help" size={15} />
-        Key: what these terms mean
-      </summary>
-      <div className="legend__body">
-        {group("Lifecycle", Object.entries(STATES))}
-        {group("Evidence signals", Object.entries(SIGNALS))}
-        {group("Actions", Object.entries(ACTIONS))}
-      </div>
-    </details>
   );
 }

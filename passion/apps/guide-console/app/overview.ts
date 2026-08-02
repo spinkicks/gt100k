@@ -420,13 +420,13 @@ export function buildOverview(
     },
     {
       key: "depth",
-      label: "Depth signals",
+      label: "Going deeper",
       value: String(depthTotal),
       context:
         depthTotal === 0
           ? "No going-deeper moments logged yet"
           : `Logged on ${depthTotal} of ${log.length} visits`,
-      trend: trendFrom(depthPrev, depthCurr, windowDays, "Depth signals"),
+      trend: trendFrom(depthPrev, depthCurr, windowDays, "Going deeper"),
       spark: sparkOrNull(depthByMonth),
     },
     {
