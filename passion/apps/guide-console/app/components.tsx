@@ -372,11 +372,18 @@ export function ChildSwitcher({ ctrl }: { ctrl: ConsoleController }): JSX.Elemen
     ? ctrl.children.filter((c) => c.name.toLowerCase().includes(query))
     : ctrl.children;
   const summaryFor = (id: string) =>
-    ctrl.summaries.get(id) ?? { tracked: 0, gateReady: 0, topState: null, attention: STEADY_FALLBACK };
+    ctrl.summaries.get(id) ?? {
+      tracked: 0,
+      gateReady: 0,
+      topState: null,
+      attention: STEADY_FALLBACK,
+    };
   // Whoever needs the guide floats up; roster order breaks ties (stable sort), so a level never
   // reshuffles children within it as the store changes underneath.
   const list = [...filtered].sort(
-    (a, b) => attentionRank(summaryFor(a.id).attention.level) - attentionRank(summaryFor(b.id).attention.level),
+    (a, b) =>
+      attentionRank(summaryFor(a.id).attention.level) -
+      attentionRank(summaryFor(b.id).attention.level),
   );
   return (
     <div className="kids">

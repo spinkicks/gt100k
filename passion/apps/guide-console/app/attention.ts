@@ -77,5 +77,10 @@ export function attentionFor(input: AttentionInputs): Attention {
       headline: `Ready to promote ${specPath(ready.domainPath)}`,
     };
   }
-  return { level: "STEADY", reason: "STEADY", specId: null, headline: "Steady. Nothing needs you." };
+  return {
+    level: "STEADY",
+    reason: "STEADY",
+    specId: null,
+    headline: "Steady. Nothing needs you.",
+  };
 }
