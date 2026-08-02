@@ -260,7 +260,7 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
           ) : null}
 
           {view === "wellbeing" ? <WellbeingPanel cards={scopedTo(ctrl.wellbeing)} /> : null}
-          {view === "plan" ? <PlanPanel cards={scopedTo(ctrl.plans)} /> : null}
+          {view === "plan" ? <PlanPanel cards={scopedTo(ctrl.plans)} kidId={ctrl.kid} /> : null}
           {/* Not scoped, and cannot be: the family read (019/021) is derived per child, not per
               specialization, so there is no id here to filter on. Scoping it would mean inventing a
               per-specialization family signal that the engine does not produce. */}

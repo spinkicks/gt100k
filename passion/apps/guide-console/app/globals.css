@@ -2649,6 +2649,92 @@ body {
   border-radius: 2px;
 }
 /* PCDE focus chips. */
+/* The templated project, folded away while a real rung is showing. */
+.planproject__summary {
+  cursor: pointer;
+  list-style: none;
+}
+.planproject__summary::-webkit-details-marker {
+  display: none;
+}
+.planproject__summary::after {
+  content: " — show";
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.planproject[open] > .planproject__summary::after {
+  content: " — hide";
+}
+
+/* The rung: the only block on this panel that knows the domain. Given the accent edge the project
+   box does not have, because if a guide reads one thing here it should be this. */
+.planrung {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.planrung--none {
+  border-left-color: var(--line);
+}
+.planrung__title {
+  margin: 4px 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.planrung__cap,
+.planrung__why,
+.planrung__demo,
+.planrung__opp {
+  margin: 5px 0 0;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  line-height: 1.45;
+  max-width: 72ch;
+}
+/* The honest caveat on an ordering, quieter than the ordering itself but never hidden. */
+.planrung__limit {
+  margin: 5px 0 0;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--ink-muted);
+  line-height: 1.45;
+  max-width: 72ch;
+}
+.planrung__strength {
+  margin: 10px 0 0;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--ink-muted);
+  max-width: 72ch;
+}
+/* What the ordering rests on. `model` is marked because it is the one that means nobody outside
+   this repository vouches for the order, and it must not look like the others. */
+.chip--basis {
+  text-transform: none;
+  letter-spacing: 0;
+}
+.chip--basis-model {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+.planres--plain {
+  list-style: disc;
+  padding-left: 18px;
+}
+.planres--plain li {
+  font-size: 0.8125rem;
+  color: var(--ink);
+  line-height: 1.45;
+  max-width: 72ch;
+}
+
 .planpcde {
   margin-top: 12px;
   padding-top: 10px;
