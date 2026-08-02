@@ -136,11 +136,9 @@ function OfferNext({ kidId }: { kidId: string }): JSX.Element | null {
 export function OverviewPanel({
   ctrl,
   onReview,
-  onOpenWellbeing,
 }: {
   ctrl: ConsoleController;
   onReview: (card: HypothesisCard, index: number) => void;
-  onOpenWellbeing: () => void;
 }): JSX.Element {
   const ov = useMemo(
     () => buildOverview(ctrl.kid, ctrl.vm.cards, ctrl.wellbeing),
@@ -252,36 +250,10 @@ export function OverviewPanel({
       <section className="row2">
         <OfferNext kidId={ctrl.kid} />
 
-        <div className={`card${wellbeing.status === "good" ? "" : " card--alarm"}`}>
-          <div className="card__hd">
-            <div>
-              <div className="why-head">
-                <h2>Wellbeing</h2>
-                <WhyThis id="wellbeing-behaviour-only" what="wellbeing from behaviour alone" />
-              </div>
-              <p>Behaviour only. No cameras, no emotion detection.</p>
-            </div>
-            <span className={`badge badge--${wellbeing.status}`}>{wellbeing.badge}</span>
-          </div>
-          {wellbeing.tracked === 0 ? (
-            <Blank reason="There are no tracked specializations for this child yet, so there is nothing to read." />
-          ) : (
-            <>
-              <ul className="checks">
-                {wellbeing.checks.map((c) => (
-                  <li key={c.key}>
-                    <span className={`pip pip--${c.status}`} aria-hidden="true" />
-                    {c.label}
-                    <b>{c.value}</b>
-                  </li>
-                ))}
-              </ul>
-              <button className="btn btn--primary" type="button" onClick={onOpenWellbeing}>
-                Open wellbeing review
-              </button>
-            </>
-          )}
-        </div>
+        {/* The wellbeing card that stood here is gone. It summarised the Wellbeing tab, and
+            wellbeing is no longer a tab: the strip above carries the state, both moves and the
+            review flag on every screen. A summary of something that is already on screen is
+            not a summary, it is a second copy that can disagree with the first. */}
       </section>
 
       {/* The charts, below the decisions. They are context rather than a call to act, and a guide who

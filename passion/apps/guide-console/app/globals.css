@@ -2649,6 +2649,112 @@ body {
   border-radius: 2px;
 }
 /* PCDE focus chips. */
+/* THE WELLBEING STRIP. Above the tabs on every screen, because the back-off read is a precondition
+   for using any other read rather than a seventh thing to remember to check. It has to earn its
+   height on every screen, so it is one dense line per specialization. */
+.wbstrip {
+  display: grid;
+  gap: 1px;
+  margin: 0 0 14px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.wbstrip__row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  padding: 8px 12px;
+  background: var(--surface);
+  font-size: 0.78rem;
+  color: var(--ink);
+}
+.wbstrip__row--review {
+  background: var(--warn-bg);
+}
+.wbstrip__state {
+  font-weight: 700;
+}
+.wbstrip__spec {
+  color: var(--ink-muted);
+}
+.wbstrip__moves {
+  display: flex;
+  gap: 14px;
+  margin-left: auto;
+}
+.wbstrip__k {
+  margin-right: 5px;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+/* Takes the whole next line rather than being clipped. A flag a guide cannot read without opening
+   something else is a flag that gets ignored. */
+.wbstrip__review {
+  flex: 1 0 100%;
+  color: var(--warn);
+  line-height: 1.4;
+}
+.wbstrip__reviewk {
+  margin-right: 7px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+}
+
+/* Map review, beside the child switcher rather than in a tab: domain work, not work on a child. */
+.mapq {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  text-align: left;
+}
+.mapq:hover {
+  border-color: var(--accent);
+}
+.mapq--on {
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+.mapq__num {
+  margin-left: auto;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.mapdrawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(760px, 92vw);
+  z-index: 40;
+  overflow-y: auto;
+  padding: 18px 20px 40px;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: -8px 0 32px rgb(0 0 0 / 12%);
+}
+.mapdrawer__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  font-weight: 700;
+}
+
 /* The road to a plan: what an exploring child's Plan tab shows instead of one sentence saying no. */
 .roadmap__lede {
   margin: 0 0 14px;

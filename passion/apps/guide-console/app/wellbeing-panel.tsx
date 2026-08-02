@@ -8,7 +8,7 @@ import type { JSX } from "react";
 import type { WellbeingCardVM } from "./wellbeing.js";
 import { specPath } from "./vocab.js";
 
-const STATE_LABEL: Record<string, string> = {
+export const STATE_LABEL: Record<string, string> = {
   UNDER_CHALLENGED: "Under-challenged",
   IN_ZONE: "In the zone",
   OVER_CHALLENGED: "Over-challenged",
@@ -17,12 +17,15 @@ const STATE_LABEL: Record<string, string> = {
   BURNOUT_TIP: "Possible tip into burnout",
   GAP: "Quiet period",
 };
-const CHALLENGE_LABEL: Record<string, string> = {
+export const CHALLENGE_LABEL: Record<string, string> = {
   PUSH: "Push",
   HOLD: "Hold",
   SCAFFOLD: "Scaffold",
 };
-const PRESSURE_LABEL: Record<string, string> = { AUTONOMY_UP: "Autonomy ↑", STEADY: "Steady" };
+export const PRESSURE_LABEL: Record<string, string> = {
+  AUTONOMY_UP: "Autonomy ↑",
+  STEADY: "Steady",
+};
 
 export function WellbeingPanel({ cards }: { cards: readonly WellbeingCardVM[] }): JSX.Element {
   return (

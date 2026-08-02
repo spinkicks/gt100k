@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useEffect, useState, type JSX } from "react";
 import { useConsole } from "./useConsole.js";
 import { ChildSwitcher, EmptyState, Legend, SpecCard, SpecRail, SpecScope } from "./components.js";
-import { WellbeingPanel } from "./wellbeing-panel.js";
+import { WellbeingStrip } from "./wellbeing-strip.js";
 import { PlanPanel } from "./plan-panel.js";
 import { FamilyPanel } from "./family-panel.js";
 import { AccessPanel } from "./access-panel.js";
@@ -28,7 +28,18 @@ import type { StudentProfile } from "@gt100k/student-profile";
 import { setIngested } from "./console-data.js";
 import { scopeToSpec } from "./console-state.js";
 
-type View = "overview" | "hypotheses" | "wellbeing" | "plan" | "family" | "access" | "maps";
+/**
+ * Three, down from seven.
+ *
+ * Seven tabs asked a guide to hold a seven-item checklist and to know which of the seven answered
+ * the question in front of them. Four of the seven were not peers of the other three: Overview was a
+ * summary OF the others, Wellbeing was a precondition FOR them, Access was half of Plan, and Maps
+ * was domain work rather than work on a child. Each has moved to where it belongs — the child
+ * header, the strip above the tabs, inside Plan, and a queue beside the child switcher — and what
+ * remains is three questions a guide actually has: what might this child be into, what do we do
+ * next, and what do we tell the family.
+ */
+type View = "hypotheses" | "plan" | "family";
 
 export interface GuideConsoleProps {
   /**
@@ -45,14 +56,17 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
   setIngested(ingested);
 
   const ctrl = useConsole();
-  const [view, setView] = useState<View>("overview");
+  // Hypotheses, because the first question about a child is what they might be into. Overview used
+  // to hold this slot and was a summary of tabs that no longer exist.
+  const [view, setView] = useState<View>("hypotheses");
+  const [mapsOpen, setMapsOpen] = useState(false);
   // Domain knowledge, not a read on a child, so it does not move when the child switcher does.
   const maps = mapsForReview();
 
   // Switching child returns to the default summary so a tab never points at a stale kid's section.
   // biome-ignore lint/correctness/useExhaustiveDependencies: ctrl.kid is the trigger, not a value read in the body — dropping it would run the reset once and never again.
   useEffect(() => {
-    setView("overview");
+    setView("hypotheses");
   }, [ctrl.kid]);
 
   function pick(card: HypothesisCard, i: number): void {
@@ -100,15 +114,7 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
     label: string;
     count: number;
     noun: string;
-    review?: boolean;
   }[] = [
-    {
-      id: "overview",
-      label: "Overview",
-      noun: "specializations",
-      count: ctrl.vm.cards.length,
-      review: ctrl.wellbeing.some((c) => c.read.escalateToHuman),
-    },
     {
       id: "hypotheses",
       label: "Hypotheses",
@@ -116,45 +122,24 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
       count: ctrl.vm.cards.length,
     },
     {
-      id: "wellbeing",
-      label: "Wellbeing",
-      noun: "wellbeing reads for this specialization",
-      count: scopedTo(ctrl.wellbeing).length,
-      review: ctrl.wellbeing.some((c) => c.read.escalateToHuman),
-    },
-    {
       id: "plan",
-      label: "Plan",
+      // Named for what it now contains. Access folded in, and a tab called "Plan" that also brokers
+      // mentors and audiences should say so rather than surprise the guide who opens it.
+      label: "Plan and access",
       noun: "plans for this specialization",
       count: scopedTo(ctrl.plans).length,
-      review: ctrl.plans.some((c) => c.plan.escalateToHuman),
     },
     {
       id: "family",
       label: "Family",
-      noun: "coaching offers",
-      count: familyOfferCount(ctrl.family),
-      review: ctrl.family?.escalateToHuman ?? false,
-    },
-    {
-      id: "access",
-      label: "Access",
-      noun: "proposals for this specialization",
-      count: accessProposalCount(scopedTo(ctrl.access)),
-      review: accessNeedsReview(ctrl.access),
-    },
-    // How many maps exist, which is the same treatment every other tab gets. Deliberately not how
-    // far through one anybody is: a map carries no progress and this console never derives one.
-    {
-      id: "maps",
-      label: "Maps",
-      noun: "maps",
-      count: maps.length,
-      // Only an ERROR needs a person. Warnings are surfaced inline and never block, and a dot that
-      // lit up for every advisory note would stop meaning anything.
-      review: maps.some((m) => !m.valid),
+      noun: "coaching moves",
+      count: (ctrl.family?.asks.length ?? 0) + (ctrl.family?.sharedActivities.length ?? 0),
     },
   ];
+
+  // The review flag no longer rides a tab. It lives on the wellbeing strip, which is on screen
+  // whatever the guide is looking at, so a flag can no longer be missed by not opening the tab that
+  // carried it.
 
   return (
     <>
@@ -195,6 +180,22 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
 
         <div className="railcol">
           <SpecRail ctrl={ctrl} onPick={selectSpec} />
+
+          {/* MAP REVIEW LIVES HERE, NOT IN A TAB. Reviewing a map is work on a DOMAIN: it does not
+              depend on which child is loaded, it is not scoped to a specialization, and it is done
+              once for everybody rather than per child. As a seventh tab beside six child tabs it
+              read as a seventh thing to check for this child, which it never was.
+              Beside the switcher it also gives on-demand generated drafts somewhere to be reviewed,
+              which is the next thing this queue has to hold. */}
+          <button
+            type="button"
+            className={`mapq${mapsOpen ? " mapq--on" : ""}`}
+            onClick={() => setMapsOpen((v) => !v)}
+            aria-expanded={mapsOpen}
+          >
+            <span className="mapq__label">Maps to review</span>
+            <span className="mapq__num">{REVIEW_MAPS.length}</span>
+          </button>
         </div>
 
         <main className="main main--wb" aria-label="Guide console">
@@ -209,21 +210,7 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
                   className={`tab${view === t.id ? " tab--on" : ""}`}
                   onClick={() => setView(t.id)}
                 >
-                  {/* The dot sits at the LEADING EDGE visually, via `order` in the stylesheet, while
-                      staying after the label in the DOM. Between the label and the count it was a
-                      6px amber circle in the exact position and shape of a middot separator, with
-                      colour as its only carrier — the one thing the rest of this console refuses to
-                      do. Moving it in the markup instead put its label in front of the tab's name,
-                      so the tab announced as "needs your review Access" and stopped being findable
-                      by its own name. */}
                   <span>{t.label}</span>
-                  {t.review ? (
-                    <span
-                      className="tab__dot"
-                      aria-label="needs your review"
-                      title="Needs your review"
-                    />
-                  ) : null}
                   <span className="tab__num" title={`${t.count} ${t.noun}`}>
                     {t.count}
                   </span>
@@ -232,22 +219,33 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
             </nav>
           </header>
 
-          {view === "overview" ? (
-            <OverviewPanel
-              ctrl={ctrl}
-              onReview={pick}
-              onOpenWellbeing={() => setView("wellbeing")}
-            />
-          ) : null}
+          {/* THE WELLBEING STRIP, above whichever tab is open rather than inside one of them.
+              Wellbeing was a tab, which meant a guide could plan a child's next fortnight without
+              ever seeing that the engine wanted them to back off. That is the wrong way round: the
+              back-off read is a precondition for reading anything else, not a seventh thing to
+              remember to check. It carries the read, the two moves and the review flag, and it is
+              scoped to the selected specialization exactly as the tab was. */}
+          <WellbeingStrip cards={scopedTo(ctrl.wellbeing)} />
 
           {view === "hypotheses" ? (
             ctrl.visible.length === 0 ? (
               <EmptyState ctrl={ctrl} />
             ) : (
-              <div className="grid grid--wb" role="tabpanel">
-                {ctrl.visible.map((card, i) => (
-                  <SpecCard key={card.id} card={card} ctrl={ctrl} domId={`sc-${i}`} />
-                ))}
+              <div role="tabpanel">
+                <div className="grid grid--wb">
+                  {ctrl.visible.map((card, i) => (
+                    <SpecCard key={card.id} card={card} ctrl={ctrl} domId={`sc-${i}`} />
+                  ))}
+                </div>
+
+                {/* WHAT SURVIVED OVERVIEW. Overview was a summary of the six tabs beside it, and
+                    most of it duplicated them: its wellbeing block is now the strip, its hypothesis
+                    block is the cards directly above. What it alone held was the EVIDENCE behind
+                    the beliefs — voluntary against prompted returns, coverage of what was offered,
+                    engagement over time — and that is not a summary of anything. It belongs under
+                    the beliefs it supports, because the bars say what we think and these charts say
+                    how much the data behind that is worth. */}
+                <OverviewPanel ctrl={ctrl} onReview={pick} />
               </div>
             )
           ) : null}
@@ -255,13 +253,18 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
           {/* Names the specialization the tab is scoped to. Without it a scoped tab is ambiguous in
               the worst way: it looks like the whole child, so an empty Access tab reads as "no
               opportunities for this kid" when it means "none for this one specialization". */}
-          {view === "wellbeing" || view === "plan" || view === "access" ? (
-            <SpecScope card={spec} total={ctrl.vm.cards.length} />
-          ) : null}
+          {view === "plan" ? <SpecScope card={spec} total={ctrl.vm.cards.length} /> : null}
 
-          {view === "wellbeing" ? <WellbeingPanel cards={scopedTo(ctrl.wellbeing)} /> : null}
+          {/* Access renders INSIDE Plan, because it always was the other half of it. A plan says
+              what a child should make next; access says who could mentor it and who could see it.
+              They are scoped identically, they are read in the same breath, and splitting them
+              across two tabs meant a guide could finish planning without ever being shown that a
+              real audience was available for the thing they had just planned. */}
           {view === "plan" ? (
-            <PlanPanel cards={scopedTo(ctrl.plans)} kidId={ctrl.kid} exploring={spec} />
+            <>
+              <PlanPanel cards={scopedTo(ctrl.plans)} kidId={ctrl.kid} exploring={spec} />
+              <AccessPanel cards={scopedTo(ctrl.access)} />
+            </>
           ) : null}
           {/* Not scoped, and cannot be: the family read (019/021) is derived per child, not per
               specialization, so there is no id here to filter on. Scoping it would mean inventing a
@@ -269,17 +272,22 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
           {view === "family" ? (
             <FamilyPanel read={ctrl.family} observations={ctrl.familyObservations} />
           ) : null}
-          {view === "access" ? <AccessPanel cards={scopedTo(ctrl.access)} /> : null}
-          {/* The maps themselves, not the view models: the panel owns the changes a guide can make,
-              and each of them is a change to the map or to what a guide has said about this child.
-              Keyed by child so the recorded overrides never carry across a switch.
+          <Legend />
+        </main>
 
-              Not scoped to the selected specialization, unlike Wellbeing/Plan/Access. A map is
-              domain knowledge and reviewing one is a job that does not depend on which child is
-              loaded, and today almost no child's specializations have a map at all, so scoping
-              would empty the tab. `specs` is passed for the coverage line, which says that out
-              loud instead of letting the mismatch pass as a read on the child. */}
-          {view === "maps" ? (
+        {/* The maps themselves, not the view models: the panel owns the changes a guide can make,
+            and each of them is a change to the map or to what a guide has said about this child.
+            Keyed by child so the recorded overrides never carry across a switch. `specs` is passed
+            for the coverage line, which says out loud that almost no child's specializations have a
+            map, instead of letting the mismatch pass as a read on the child. */}
+        {mapsOpen ? (
+          <aside className="mapdrawer" aria-label="Maps to review">
+            <div className="mapdrawer__head">
+              <span>Maps to review</span>
+              <button type="button" className="linkbtn" onClick={() => setMapsOpen(false)}>
+                Close
+              </button>
+            </div>
             <MapsPanel
               key={ctrl.kid}
               maps={REVIEW_MAPS}
@@ -287,10 +295,8 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
               specs={ctrl.vm.cards}
               store={ctrl.store}
             />
-          ) : null}
-
-          <Legend />
-        </main>
+          </aside>
+        ) : null}
       </div>
     </>
   );
