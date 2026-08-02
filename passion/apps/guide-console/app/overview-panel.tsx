@@ -161,7 +161,6 @@ export function OverviewPanel({
         <div className="card__hd">
           <div>
             <h2>Specializations</h2>
-            <p></p>
           </div>
         </div>
         {ov.rows.length === 0 ? (
