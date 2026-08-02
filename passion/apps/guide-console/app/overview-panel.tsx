@@ -152,97 +152,102 @@ export function OverviewPanel({
         ))}
       </section>
 
-      {/* SPECIALIZATIONS AND WELLBEING COME BEFORE THE CHARTS, because they are the only two things
-          on this tab a guide can act on and they used to sit at positions 6 and 9 of 9. The three
-          charts support no decision and were taking roughly 55% of the vertical space above them, so
-          at 1440x900 the primary button landed on the fold and the table was entirely below it. The
-          tab that exists to orient a guide was putting both decision surfaces out of sight. */}
-      <section className="card">
-        <div className="card__hd">
-          <div>
-            <h2>Specializations</h2>
+      {/* THE SPECIALIZATIONS TABLE FOLDS AWAY, because the same list is already the canonical read
+          twice on this tab: the bars above (every spike, click to open) and the rail beside them
+          (navigation that also scopes the other tabs). A third full re-render was the "same list
+          three times" the usability review flagged. What the table alone adds is tabular detail
+          (stage, confidence, visits per month, status) that a guide wants on demand, not on the way
+          to the decision the bars already carry. It keeps its Open buttons and reuses the .ovcharts
+          disclosure styling. */}
+      <details className="ovcharts">
+        <summary className="ovcharts__summary">Show the specializations table</summary>
+        <section className="card">
+          <div className="card__hd">
+            <div>
+              <h2>Specializations</h2>
+            </div>
           </div>
-        </div>
-        {ov.rows.length === 0 ? (
-          <Blank reason="Nothing tracked yet." />
-        ) : (
-          <table className="ov-tbl">
-            <thead>
-              <tr>
-                <th scope="col">Area</th>
-                <th scope="col">Work style</th>
-                <th scope="col">Stage</th>
-                <th scope="col">
-                  <span className="why-head">
-                    Confidence
-                    <WhyThis id="confidence-lower-bound" what="confidence this way" />
-                  </span>
-                </th>
-                {/* Named for what it plots. "Activity" said nothing about the unit, which mattered
+          {ov.rows.length === 0 ? (
+            <Blank reason="Nothing tracked yet." />
+          ) : (
+            <table className="ov-tbl">
+              <thead>
+                <tr>
+                  <th scope="col">Area</th>
+                  <th scope="col">Work style</th>
+                  <th scope="col">Stage</th>
+                  <th scope="col">
+                    <span className="why-head">
+                      Confidence
+                      <WhyThis id="confidence-lower-bound" what="confidence this way" />
+                    </span>
+                  </th>
+                  {/* Named for what it plots. "Activity" said nothing about the unit, which mattered
                     more than it looks: the same mark above the table is per-month, and this one used
                     to be a running total that could never fall. */}
-                <th scope="col">Visits per month</th>
-                <th scope="col">Status</th>
-                <th scope="col">
-                  <span className="ov-sr">Action</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {ov.rows.map((r) => {
-                const card = ctrl.vm.cards[r.index];
-                return (
-                  <tr key={r.id}>
-                    <td className="ov-tbl__name">{r.area}</td>
-                    <td>
-                      <span className="chip">{r.mode}</span>
-                    </td>
-                    <td>{r.stage}</td>
-                    <td>
-                      <div className="meter">
-                        <div className="meter__bar">
-                          <span style={{ width: `${r.confidence}%` }} data-s={r.status} />
+                  <th scope="col">Visits per month</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">
+                    <span className="ov-sr">Action</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {ov.rows.map((r) => {
+                  const card = ctrl.vm.cards[r.index];
+                  return (
+                    <tr key={r.id}>
+                      <td className="ov-tbl__name">{r.area}</td>
+                      <td>
+                        <span className="chip">{r.mode}</span>
+                      </td>
+                      <td>{r.stage}</td>
+                      <td>
+                        <div className="meter">
+                          <div className="meter__bar">
+                            <span style={{ width: `${r.confidence}%` }} data-s={r.status} />
+                          </div>
+                          <span className="meter__n">{r.confidence}%</span>
                         </div>
-                        <span className="meter__n">{r.confidence}%</span>
-                      </div>
-                    </td>
-                    <td>
-                      {r.spark ? (
-                        <>
-                          <Spark data={r.spark} color="var(--chart-1)" />
-                          {/* The sparkline is `aria-hidden`, so without this the whole column is
+                      </td>
+                      <td>
+                        {r.spark ? (
+                          <>
+                            <Spark data={r.spark} color="var(--chart-1)" />
+                            {/* The sparkline is `aria-hidden`, so without this the whole column is
                               empty to a screen reader. The numbers are the column's content; the
                               drawing is one way of showing them. */}
-                          <span className="ov-sr">{r.spark.join(", ")} visits by month</span>
-                        </>
-                      ) : (
-                        <span className="ov-none">Too little to show</span>
-                      )}
-                    </td>
-                    <td>
-                      <span className={`badge badge--${r.status}`}>{r.statusLabel}</span>
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn--sm"
-                        type="button"
-                        onClick={() => (card ? onReview(card, r.index) : undefined)}
-                      >
-                        {/* "Open", not "Review". Three things on this row said review and meant
+                            <span className="ov-sr">{r.spark.join(", ")} visits by month</span>
+                          </>
+                        ) : (
+                          <span className="ov-none">Too little to show</span>
+                        )}
+                      </td>
+                      <td>
+                        <span className={`badge badge--${r.status}`}>{r.statusLabel}</span>
+                      </td>
+                      <td>
+                        <button
+                          className="btn btn--sm"
+                          type="button"
+                          onClick={() => (card ? onReview(card, r.index) : undefined)}
+                        >
+                          {/* "Open", not "Review". Three things on this row said review and meant
                             different things: the status badge and the rail chip both mean a
                             wellbeing escalation, while this button only navigates to the Hypotheses
                             tab. A button labelled with a verb it does not perform is the one of the
                             three most likely to be acted on. */}
-                        Open<span className="ov-sr"> {r.area}</span>
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </section>
+                          Open<span className="ov-sr"> {r.area}</span>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </section>
+      </details>
 
       <section className="row2">
         <OfferNext kidId={ctrl.kid} />
