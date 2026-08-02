@@ -11,7 +11,7 @@
 import Link from "next/link";
 import { useEffect, useState, type JSX } from "react";
 import { useConsole } from "./useConsole.js";
-import { ChildSwitcher, EmptyState, Legend, SpecCard, SpecRail, SpecScope } from "./components.js";
+import { ChildSwitcher, EmptyState, SpecCard, SpecRail, SpecScope } from "./components.js";
 import { ActionLine } from "./action-line.js";
 import { WellbeingStrip } from "./wellbeing-strip.js";
 import { PlanPanel } from "./plan-panel.js";
@@ -302,7 +302,6 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
               cards={ctrl.vm.cards}
             />
           ) : null}
-          <Legend />
         </main>
 
         {/* The maps themselves, not the view models: the panel owns the changes a guide can make,

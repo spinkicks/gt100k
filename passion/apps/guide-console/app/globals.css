@@ -1698,81 +1698,6 @@ body {
   transform: none;
 }
 
-/* ── The Key (Legend) ────────────────────────────────────────────────────── */
-.legend {
-  margin-top: 22px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  box-shadow: var(--elev-raised);
-  padding: 0 20px;
-}
-.legend > summary {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 0;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--ink-muted);
-  list-style: none;
-  user-select: none;
-}
-.legend > summary::-webkit-details-marker {
-  display: none;
-}
-.legend > summary:hover {
-  color: var(--ink);
-}
-.legend > summary:focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: 2px;
-  border-radius: 6px;
-}
-.legend > summary .icon {
-  color: var(--ink-muted);
-}
-.legend[open] > summary {
-  border-bottom: 1px solid var(--line);
-}
-.legend__body {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-  padding: 16px 0 18px;
-}
-.legend__group h5 {
-  margin: 0 0 10px;
-  font-size: 0.69rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--ink-muted);
-}
-.legend__group dl {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-.legend__row {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-.legend__row dt {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--ink);
-}
-.legend__row dd {
-  margin: 0;
-  font-size: 0.78rem;
-  color: var(--ink-muted);
-  line-height: 1.4;
-}
-
 /* ── Verbose evidence (inline descriptions) ──────────────────────────────── */
 .ev2--verbose ul {
   gap: 11px;
@@ -3820,7 +3745,8 @@ body {
    past it to the GT School identity and a second console in the old language was only a way to be
    misled about what the product looks like. These rules are the surviving copy. Three names collided
    with existing rules that mean something else in this console, so they carry an `ov-` prefix here:
-   `.legend` is already the collapsible Key disclosure, `.tbl` is already the compact prototype's
+   `.legend` was the collapsible Key disclosure (since retired; the prefix stays for stability),
+   `.tbl` is already the compact prototype's
    evidence table, and `.ov-sr` / `.ov-blank` / `.ov-foot` / `.ov-none` are new. `.chip`, `.btn` and
    `.btn--primary` already exist with exactly this meaning, so they are reused rather than redefined.
    Colour is always doubled by text: every pip, badge and meter sits beside a written label. */
