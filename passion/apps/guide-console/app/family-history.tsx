@@ -17,6 +17,7 @@
  * the point: it is the part of the conversation that is not up for debate.
  */
 import type { JSX } from "react";
+import { Look } from "./look.js";
 
 import type { GuideDecision } from "./decisions.js";
 import { workForKid } from "./map-evidence.js";
@@ -82,14 +83,7 @@ export function MadeHistory({ kidId }: { kidId: string }): JSX.Element {
             {p.made.map((m) => (
               <li key={m.title}>
                 {m.title}
-                {m.url === undefined ? null : (
-                  <>
-                    {" "}
-                    <a href={m.url} target="_blank" rel="noreferrer">
-                      Look at it
-                    </a>
-                  </>
-                )}
+                <Look url={m.url} />
               </li>
             ))}
           </ul>

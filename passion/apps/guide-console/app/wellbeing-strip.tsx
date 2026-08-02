@@ -65,16 +65,27 @@ export function WellbeingStrip({
           className={`wbstrip__row${c.read.escalateToHuman ? " wbstrip__row--review" : ""}`}
           data-state={c.read.state}
         >
-          <span className="wbstrip__state">{STATE_LABEL[c.read.state] ?? c.read.state}</span>
-          <span className="wbstrip__spec">{specPath(c.domainPath)}</span>
+          {/* THE TWO MOVES ARE THE POINT, so they are the two biggest things here. They used to sit
+              as small grey key-value pairs at the end of a sentence-shaped row, and disappeared into
+              the surrounding prose -- which is a real failure, because they are the only instruction
+              on screen that applies whatever tab is open. Now they read as two settings on an
+              instrument: the label small above, the value large below. */}
+          <span className="wbstrip__now">
+            <span className="wbstrip__state">{STATE_LABEL[c.read.state] ?? c.read.state}</span>
+            <span className="wbstrip__spec">{specPath(c.domainPath)}</span>
+          </span>
           <span className="wbstrip__moves">
             <span className="wbstrip__move">
               <span className="wbstrip__k">Difficulty</span>
-              {CHALLENGE_LABEL[c.read.challenge] ?? c.read.challenge}
+              <span className="wbstrip__v">
+                {CHALLENGE_LABEL[c.read.challenge] ?? c.read.challenge}
+              </span>
             </span>
             <span className="wbstrip__move">
               <span className="wbstrip__k">Freedom</span>
-              {PRESSURE_LABEL[c.read.pressure] ?? c.read.pressure}
+              <span className="wbstrip__v">
+                {PRESSURE_LABEL[c.read.pressure] ?? c.read.pressure}
+              </span>
             </span>
           </span>
           {c.read.escalateToHuman ? (

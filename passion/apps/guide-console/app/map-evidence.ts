@@ -35,6 +35,17 @@ import { children } from "./console-data.js";
 import type { HypothesisStore } from "@gt100k/hypothesis-store";
 import { plansForKid } from "./plan.js";
 
+/**
+ * SYNTHETIC ADDRESSES USE example.com ON PURPOSE. These fixtures stand in for a real child's work
+ * and there is no real child, so every address here has to be invented. They used to be invented
+ * against real hosts -- a lichess profile that does not exist, a GitHub repo that does not exist,
+ * and a YouTube id that is a Rickroll -- and the console rendered each as a clickable "Look at it".
+ * Clicking one in a demo answers with a 404 or a joke, and a link that goes nowhere is worse than no
+ * link because it invites the click.
+ *
+ * example.com is IANA-reserved for exactly this, so it can never belong to anybody, and `isDemoUrl`
+ * in `maps.ts` keeps the UI from linkifying it.
+ */
 /** One thing the child made. `kind` is the artefact kind a `WorkEvent` already carries. It holds no
     milestone of its own: which rung the work was aimed at is a fact about the project. */
 export interface MadeThing {
@@ -187,7 +198,7 @@ const BEX_WORK: ChildWork = {
       milestoneId: "ch-real-tournament-game",
       links: [
         {
-          url: "https://lichess.org/@/example",
+          url: "https://example.com/demo/lichess-profile",
           what:
             "My Lichess profile, with the slow arena game I also kept a paper scoresheet for — " +
             "the one where I finally sat through a whole long game without losing on time",
@@ -214,7 +225,7 @@ const BEX_WORK: ChildWork = {
       milestoneId: "ch-study-your-games",
       links: [
         {
-          url: "https://www.chess.com/member/example",
+          url: "https://example.com/demo/chesscom-profile",
           what:
             "My Chess.com profile, with the analysis I wrote on the rook-endgame game I lost — " +
             "where I thought it turned, written before I ran the computer on it",
@@ -318,17 +329,17 @@ const DULCE_WORK: ChildWork = {
       milestoneId: "gd-playtest",
       links: [
         {
-          url: "https://itch.io/jam/gmtk-jam/rate/1938201",
+          url: "https://example.com/demo/jam-entry",
           what: "Jam entry with the ratings and comments strangers left on it",
           at: "2026-07-11T18:30:00.000Z",
         },
         {
-          url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          url: "https://example.com/demo/playtest-recording",
           what: "Recording of two friends playing it while I said nothing",
           at: "2026-07-18T15:10:00.000Z",
         },
         {
-          url: "https://itch.io/jam/gmtk-jam/rate/194155",
+          url: "https://example.com/demo/jam-entry-2",
           what: "The second build, after I changed the bit everyone got stuck on",
           at: "2026-07-25T12:00:00.000Z",
         },
@@ -355,7 +366,7 @@ const DULCE_WORK: ChildWork = {
       milestoneId: "gd-version-control",
       links: [
         {
-          url: "https://github.com/example/toaster-rescue/commits/main",
+          url: "https://example.com/demo/commit-history",
           what: "My commit history, including the day I broke it and rolled back",
           at: "2026-07-27T17:15:00.000Z",
         },
@@ -370,7 +381,7 @@ const DULCE_WORK: ChildWork = {
       milestoneId: "gd-profile-a-scene",
       links: [
         {
-          url: "https://gist.github.com/example/9f2b1c4e",
+          url: "https://example.com/demo/profiler-output",
           what: "Profiler output from the scene that was dropping frames",
           at: "2026-07-20T13:00:00.000Z",
         },

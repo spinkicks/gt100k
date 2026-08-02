@@ -30,6 +30,8 @@ import { useState, type JSX } from "react";
 import type { HypothesisCard, HypothesisStore } from "@gt100k/hypothesis-store";
 import { servesPath, type MapStatus, type MasteryMap } from "@gt100k/mastery-map";
 import { CABINS, type DomainPath } from "@gt100k/two-axis-tagging";
+import { Look } from "./look.js";
+import { WhyThis } from "./why.js";
 import { specPath } from "./vocab.js";
 import type { ChildWork } from "./map-evidence.js";
 import {
@@ -80,115 +82,124 @@ function Milestone({
 }): JSX.Element {
   return (
     <li className="mapms" data-testid="map-milestone" data-basis={ms.basis} data-id={ms.id}>
-      <div className="mapms__top">
-        <span className="mapms__title">{ms.title}</span>
-        <span className="mapms__where">
-          {ms.isTrunk ? "Trunk" : `Branch: ${ms.branchModes.join(", ")}`} · {ms.stage}
-        </span>
-      </div>
+      {/* COLLAPSED BY DEFAULT, and this is what made the drawer unreadable. Each rung printed its
+          ordering rationale, its resources with age chips, its practice forms, its demonstration and
+          its own always-open capability edit form. Seventeen rungs of that is roughly six hundred
+          lines in one scroll, and a guide looking for one rung had to read all of them.
 
-      <p className="mapms__cap">{ms.capability}</p>
-      {ms.after.length > 0 ? (
-        <p className="mapms__after">Comes after {ms.after.join(", ")}.</p>
-      ) : (
-        <p className="mapms__after">Nothing comes before this one.</p>
-      )}
+          What a reviewer needs first is the LIST: the rungs, in order, with where each sits. The
+          detail is what they read once they have found the one they care about. */}
+      <details className="mapms__d">
+        <summary className="mapms__top">
+          <span className="mapms__title">{ms.title}</span>
+          <span className="mapms__where">
+            {ms.isTrunk ? "Trunk" : `Branch: ${ms.branchModes.join(", ")}`} · {ms.stage}
+          </span>
+        </summary>
 
-      <OrderingWhy ordering={ms.ordering} />
+        <p className="mapms__cap">{ms.capability}</p>
+        {ms.after.length > 0 ? (
+          <p className="mapms__after">Comes after {ms.after.join(", ")}.</p>
+        ) : (
+          <p className="mapms__after">Nothing comes before this one.</p>
+        )}
 
-      <p className="mapms__demo">
-        <span className="mapms__k">Shows it by</span> {ms.demonstration}
-      </p>
+        <OrderingWhy ordering={ms.ordering} />
 
-      {ms.resources.length > 0 ? (
-        <div className="mapms__block">
-          <span className="mapms__k">Resources</span>
-          <ul className="mapres">
-            {ms.resources.map((r) => (
-              <li key={r.id}>
-                <a href={r.url} target="_blank" rel="noreferrer">
-                  {r.title}
-                </a>
-                {r.ageTiers.map((t) => (
-                  <span key={t} className="chip chip--soft">
-                    Ages {t}
-                  </span>
-                ))}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+        <p className="mapms__demo">
+          <span className="mapms__k">Shows it by</span> {ms.demonstration}
+        </p>
 
-      {ms.practice.length > 0 ? (
-        <div className="mapms__block">
-          <span className="mapms__k">What practice looks like</span>
-          <ul className="mappractice">
-            {ms.practice.map((p) => (
-              <li key={p.title}>
-                <span className="mappractice__t">{p.title}</span>
-                {/* Solitary study is often the highest-yield mode and the least visible to an
+        {ms.resources.length > 0 ? (
+          <div className="mapms__block">
+            <span className="mapms__k">Resources</span>
+            <ul className="mapres">
+              {ms.resources.map((r) => (
+                <li key={r.id}>
+                  <a href={r.url} target="_blank" rel="noreferrer">
+                    {r.title}
+                  </a>
+                  {r.ageTiers.map((t) => (
+                    <span key={t} className="chip chip--soft">
+                      Ages {t}
+                    </span>
+                  ))}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        {ms.practice.length > 0 ? (
+          <div className="mapms__block">
+            <span className="mapms__k">What practice looks like</span>
+            <ul className="mappractice">
+              {ms.practice.map((p) => (
+                <li key={p.title}>
+                  <span className="mappractice__t">{p.title}</span>
+                  {/* Solitary study is often the highest-yield mode and the least visible to an
                     adult, so which one it is gets said rather than left to be guessed. */}
-                <span className="chip chip--soft">{p.solitary ? "Alone" : "With others"}</span>
-                <p className="mappractice__d">{p.description}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+                  <span className="chip chip--soft">{p.solitary ? "Alone" : "With others"}</span>
+                  <p className="mappractice__d">{p.description}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
 
-      {ms.opportunities.length > 0 ? (
-        <div className="mapms__block">
-          <span className="mapms__k">Out in the world</span>
-          <ul className="mapopps">
-            {ms.opportunities.map((o) => (
-              <li key={o.description}>
-                <span className="chip chip--soft">{OPPORTUNITY_TEXT[o.kind] ?? o.kind}</span>
-                {o.description}
-                <p className="mapopps__ready">{o.readinessNote}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+        {ms.opportunities.length > 0 ? (
+          <div className="mapms__block">
+            <span className="mapms__k">Out in the world</span>
+            <ul className="mapopps">
+              {ms.opportunities.map((o) => (
+                <li key={o.description}>
+                  <span className="chip chip--soft">{OPPORTUNITY_TEXT[o.kind] ?? o.kind}</span>
+                  {o.description}
+                  <p className="mapopps__ready">{o.readinessNote}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
 
-      {ms.errors.map((p) => (
-        <Flag key={problemKey(p)} kind="error" heading="Blocks use" message={p.message} />
-      ))}
-      {ms.warnings.map((p) => (
-        <Flag key={problemKey(p)} kind="warning" heading="Worth a look" message={p.message} />
-      ))}
+        {ms.errors.map((p) => (
+          <Flag key={problemKey(p)} kind="error" heading="Blocks use" message={p.message} />
+        ))}
+        {ms.warnings.map((p) => (
+          <Flag key={problemKey(p)} kind="warning" heading="Worth a look" message={p.message} />
+        ))}
 
-      {/* The one edit on offer, and it is the sentence a guide can actually judge: what the child
+        {/* The one edit on offer, and it is the sentence a guide can actually judge: what the child
           can DO afterwards. Saving records both sides of the change, marks the milestone as
           human-edited and takes the map back to draft, because the validation it was carrying was
           earned by the sentence that has just been replaced. */}
-      <form
-        className="mapedit"
-        onSubmit={(e) => {
-          e.preventDefault();
-          const next = new FormData(e.currentTarget).get("capability");
-          if (typeof next === "string" && next.trim() !== "" && next !== ms.capability) {
-            onCapability(next);
-          }
-        }}
-      >
-        <label className="mapms__k" htmlFor={`cap-${ms.id}`}>
-          Correct what this says the child can do
-        </label>
-        <div className="mapedit__row">
-          <input
-            id={`cap-${ms.id}`}
-            name="capability"
-            className="mapedit__in"
-            type="text"
-            defaultValue={ms.capability}
-          />
-          <button type="submit" className="btn btn--sm btn--ghost">
-            Save correction
-          </button>
-        </div>
-      </form>
+        <form
+          className="mapedit"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const next = new FormData(e.currentTarget).get("capability");
+            if (typeof next === "string" && next.trim() !== "" && next !== ms.capability) {
+              onCapability(next);
+            }
+          }}
+        >
+          <label className="mapms__k" htmlFor={`cap-${ms.id}`}>
+            Correct what this says the child can do
+          </label>
+          <div className="mapedit__row">
+            <input
+              id={`cap-${ms.id}`}
+              name="capability"
+              className="mapedit__in"
+              type="text"
+              defaultValue={ms.capability}
+            />
+            <button type="submit" className="btn btn--sm btn--ghost">
+              Save correction
+            </button>
+          </div>
+        </form>
+      </details>
     </li>
   );
 }
@@ -234,46 +245,40 @@ function Standing({
           {read.reachable ? "Could be offered next" : "Not on offer yet"}
         </span>
       </div>
-      <p className="mapread__note">{read.strengthNote}</p>
 
       {/* The work, beside the standing, every time. An empty one says so in words rather than
           leaving a judgment sitting on the screen with nothing under it. */}
-      <div className="mapms__block" data-testid="map-read-work">
-        <span className="mapms__k">What they made</span>
-        {read.evidence.length === 0 ? (
-          <p className="mapread__nowork">Nothing has been linked to this milestone.</p>
-        ) : (
-          <ul className="mapwork">
-            {read.evidence.map((e) => (
-              <li key={e.projectId}>
-                <span className="mapwork__proj">{e.project}</span>
-                <ul className="mapwork__things">
-                  {e.made.map((m) => (
-                    <li key={m.title}>
-                      <span className="chip chip--soft">{m.kind}</span>
-                      {m.title}
-                      {/* Attested external work carries the address it lives at, and the address is
+      {/* Only when there IS work. An empty one used to print a heading and a sentence saying
+          nothing was linked -- on every rung, under a chip that already said so. Seventeen rungs
+          made that the same two lines seventeen times, and it is most of why this drawer ran to
+          seven hundred lines. */}
+      <div className="mapms__block" data-testid="map-read-work" hidden={read.evidence.length === 0}>
+        {read.evidence.length === 0 ? null : (
+          <>
+            <span className="mapms__k">What they made</span>
+            <ul className="mapwork">
+              {read.evidence.map((e) => (
+                <li key={e.projectId}>
+                  <span className="mapwork__proj">{e.project}</span>
+                  <ul className="mapwork__things">
+                    {e.made.map((m) => (
+                      <li key={m.title}>
+                        <span className="chip chip--soft">{m.kind}</span>
+                        {m.title}
+                        {/* Attested external work carries the address it lives at, and the address is
                           the checkable half of the claim: a game record on a third party's server
                           is the part a child cannot fabricate. Showing the standing without a way to
                           go and look would ask a guide to take our word for the one thing here that
                           does not need taking on trust. */}
-                      {m.url === undefined ? null : (
-                        <a
-                          className="mapwork__src"
-                          href={m.url}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                        >
-                          Look at it
-                        </a>
-                      )}
-                      <span className="mapwork__at">{m.at.slice(0, 10)}</span>
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
+                        {m.url === undefined ? null : <Look url={m.url} />}
+                        <span className="mapwork__at">{m.at.slice(0, 10)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
       </div>
 
@@ -303,30 +308,32 @@ function Standing({
           the only places it does anything: a milestone with an artefact behind it already lets the
           next one be offered, and a second override would overwrite a record somebody signed. */}
       {read.canOverride ? (
-        <form
-          className="mapedit"
-          onSubmit={(e) => {
-            e.preventDefault();
-            const note = new FormData(e.currentTarget).get("note");
-            if (typeof note === "string" && note.trim() !== "") onOverride(note.trim());
-          }}
-        >
-          <label className="mapms__k" htmlFor={`ov-${read.id}`}>
-            Say this should not hold the next thing up
-          </label>
-          <div className="mapedit__row">
-            <input
-              id={`ov-${read.id}`}
-              name="note"
-              className="mapedit__in"
-              type="text"
-              placeholder="Why. This is recorded against your name."
-            />
-            <button type="submit" className="btn btn--sm btn--ghost">
-              Record override
-            </button>
-          </div>
-        </form>
+        <details className="mapedit">
+          <summary className="mapedit__open">Override</summary>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const note = new FormData(e.currentTarget).get("note");
+              if (typeof note === "string" && note.trim() !== "") onOverride(note.trim());
+            }}
+          >
+            <label className="mapms__k" htmlFor={`ov-${read.id}`}>
+              Say this should not hold the next thing up
+            </label>
+            <div className="mapedit__row">
+              <input
+                id={`ov-${read.id}`}
+                name="note"
+                className="mapedit__in"
+                type="text"
+                placeholder="Why. This is recorded against your name."
+              />
+              <button type="submit" className="btn btn--sm btn--ghost">
+                Record override
+              </button>
+            </div>
+          </form>
+        </details>
       ) : null}
     </li>
   );
@@ -353,25 +360,35 @@ function ChildStanding({
         </p>
       ) : (
         <>
-          {/* Said once, at the top, because a guide who reads a standing as a pass has been misled
-              by the screen and not by the data under it. */}
+          {/* ONE LINE, AND THE ARGUMENT BEHIND IT ON DEMAND. This was four paragraphs standing
+              between a guide and the first rung: what a standing is and is not, why a rung can be
+              out of reach for two different reasons, and what the planner does or does not decide.
+              All true, all worth being able to read, and none of it the thing somebody opened this
+              drawer to find out. The claim a guide must not get wrong is the short one; the rest is
+              the case for it, and the case belongs behind the affordance this console already uses
+              for exactly that. */}
           <p className="mapchild__note">
-            Every standing here is read off what {vm.childName} actually made. Nobody ticks
-            anything, and none of it says they have a capability: a single artefact cannot carry
-            that claim and neither can several. Whether to offer something next is a different
-            question, and it is the only one below that comes out yes or no.
+            Read off what {vm.childName} made, not a judgement about what they can do.
+            <WhyThis id="standing-from-artefacts" what="a standing is not a pass" />
           </p>
           {/* Two different facts, never the same sentence. One rung can be out of reach because
-              nobody can reach it yet, and another because of where the planner has this child. */}
-          {vm.ceilingNote === null ? null : (
-            <p className="mapchild__note" data-testid="map-ceiling">
-              {vm.ceilingNote}
-            </p>
-          )}
-          {vm.stageGateNote === null ? null : (
-            <p className="mapchild__note" data-testid="map-stage-gate">
-              {vm.stageGateNote}
-            </p>
+              nobody can reach it yet, and another because of where the planner has this child.
+              Folded together because both are about the MAP rather than about the child, and a
+              guide reads them once when they wonder why something is greyed out. */}
+          {vm.ceilingNote === null && vm.stageGateNote === null ? null : (
+            <details className="mapchild__why">
+              <summary>Why some rungs are out of reach</summary>
+              {vm.ceilingNote === null ? null : (
+                <p className="mapchild__note" data-testid="map-ceiling">
+                  {vm.ceilingNote}
+                </p>
+              )}
+              {vm.stageGateNote === null ? null : (
+                <p className="mapchild__note" data-testid="map-stage-gate">
+                  {vm.stageGateNote}
+                </p>
+              )}
+            </details>
           )}
           <ol className="mapreadlist">
             {vm.reads.map((read) => (
