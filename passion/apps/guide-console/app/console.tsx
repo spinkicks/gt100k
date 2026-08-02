@@ -125,7 +125,7 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
   }[] = [
     {
       id: "hypotheses",
-      label: "Hypotheses",
+      label: "Interests",
       noun: "specializations",
       count: ctrl.vm.cards.length,
     },
@@ -139,7 +139,7 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
     },
     {
       id: "family",
-      label: "Family",
+      label: "Family & coaching",
       noun: "coaching moves",
       count: (ctrl.family?.asks.length ?? 0) + (ctrl.family?.sharedActivities.length ?? 0),
     },

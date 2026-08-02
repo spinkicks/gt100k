@@ -316,7 +316,7 @@ export function SpecCard({
 
 export function FilterNav({ ctrl }: { ctrl: ConsoleController }): JSX.Element {
   const filters = [
-    { key: "ALL" as const, label: "All hypotheses", count: ctrl.vm.cards.length },
+    { key: "ALL" as const, label: "All interests", count: ctrl.vm.cards.length },
     ...STATE_ORDER.filter((s) => ctrl.counts.has(s)).map((s) => ({
       key: s as string,
       label: stateTerm(s).label,
@@ -531,7 +531,7 @@ export function EmptyState({ ctrl }: { ctrl: ConsoleController }): JSX.Element {
     <output className="empty">
       {ctrl.vm.cards.length === 0
         ? "Nothing tracked yet. Keep offering new things."
-        : "No hypotheses in this view."}
+        : "No interests in this view."}
     </output>
   );
 }

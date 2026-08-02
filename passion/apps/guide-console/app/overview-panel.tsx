@@ -361,7 +361,7 @@ function EngagementCard({ s }: { s: TimeSeries }): JSX.Element {
           />
           <p className="ov-sr">
             {seriesSentence("Sessions by week", s.labels, s.a)}{" "}
-            {seriesSentence("Depth signals by week", s.labels, s.b)}
+            {seriesSentence("Going deeper by week", s.labels, s.b)}
           </p>
           <p className="ov-foot">{s.range}</p>
         </>
