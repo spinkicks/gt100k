@@ -6,11 +6,17 @@
 // decision through.
 //
 // The finding it carries is the one that makes it worth surfacing at all. From
-// `06-activity-design-ages-6-8.md` §2.3: in a multi-session maths game (n = 212), children whose
-// situational interest was triggered and then not maintained ended BELOW children never triggered
-// at all. Showing a child something new is not free, it is a debt. A guide who can see which
-// domains are owed spaced re-exposure can pay them; a guide who cannot is being asked to avoid a
-// harm they have no way of seeing.
+// `06-activity-design-ages-6-8.md` §2.3: in a multi-session maths game (Number Navigation, n = 212),
+// children whose situational interest was not maintained across sessions showed a marked decline in
+// domain interest pre-to-post. Showing a child something new is not free, it is a debt. A guide who
+// can see which domains are owed spaced re-exposure can pay them; a guide who cannot is being asked
+// to avoid a harm they have no way of seeing.
+//
+// CORRECTED. This used to read "ended BELOW children never triggered at all". That ranks one
+// study's unmaintained group against a DIFFERENT study's untouched control — a four-week
+// primary-science trial, whose control also decayed — and no such comparison was run. Both patterns
+// lose ground and only trigger-plus-maintenance gains, which is the same reason to build this panel
+// and one the sources actually carry.
 import { selectHoldOut, type Exposure, type HoldOutReason } from "@gt100k/surfacing";
 import { CABINS } from "@gt100k/two-axis-tagging";
 import type { StudentProfile } from "@gt100k/student-profile";

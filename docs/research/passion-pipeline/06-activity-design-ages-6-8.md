@@ -64,7 +64,12 @@ differences appeared **only at delayed test** (F(2,48) = 7.49, p < .001, partial
 
 This is the single most important finding for `mvp-jul24`, which currently measures in-session engagement exclusively.
 
-### 2.3 A triggered-but-unmaintained domain ends up worse than untouched *(medium, 2-1)*
+### 2.3 Trigger-and-abandon loses ground, and so does never triggering *(medium, 2-1)*
+
+> **Heading corrected.** It previously read "ends up worse than untouched", which the paragraph below
+> does not show and which was then cited in two code comments as though it did. The two effects come
+> from two different studies with different populations and designs, so neither can be ranked against
+> the other. What holds is that both lose ground and only trigger-plus-maintenance gains.
 
 In a multi-session digital maths game (Number Navigation, n = 212), situational interest was stable *within* sessions
 but declined *across* them — and children whose in-game situational interest was **not maintained showed a marked
