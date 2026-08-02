@@ -165,6 +165,23 @@ export const CLAIMS: readonly Claim[] = [
       "Where a quantity cannot be estimated honestly, the right answer is to state the evidence and the agreement and give no number at all.",
   },
   {
+    // Backs the one line the maps drawer now leads with. Four paragraphs used to carry this claim
+    // in front of every child read; the claim is short and the case for it belongs behind a
+    // WhyThis, which is what this registry exists for.
+    id: "standing-from-artefacts",
+    label: "Standing is read, never awarded",
+    area: "How we measure",
+    basis: "evidence",
+    band: "9-11",
+    why: "We show what a child has made rather than ticking a box to say they can do something, because a verdict with no work under it behaves like a grade and grades reduce interest in the thing itself.",
+    sources: [
+      { authors: "Butler", year: 1988, url: "https://doi.org/10.1111/j.2044-8279.1988.tb00874.x" },
+      { authors: "Mueller & Dweck", year: 1998, url: "https://doi.org/10.1037/0022-3514.75.1.33" },
+    ],
+    limit:
+      "Butler studied 132 children of about 10 to 12 receiving feedback on their own work. It is about feedback to the child; we apply it to a screen an adult reads, on the reasoning that the adult passes it on.",
+  },
+  {
     id: "no-single-score",
     label: "No single score",
     area: "How we measure",

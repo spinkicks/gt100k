@@ -298,6 +298,7 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
               read={ctrl.family}
               observations={ctrl.familyObservations}
               kidId={ctrl.kid}
+              domainPath={spec?.domainPath}
               decisions={ctrl.decisions}
               cards={ctrl.vm.cards}
             />

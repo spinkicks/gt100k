@@ -2712,6 +2712,99 @@ body {
   content: " \25b4";
 }
 
+/* What to find out: the questions a log cannot answer, and the moves aimed at the adults. */
+.findout {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.findout__lede {
+  margin: 0 0 14px;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  line-height: 1.45;
+  max-width: 72ch;
+}
+.findout__probes,
+.findout__moves {
+  list-style: none;
+  margin: 6px 0 18px;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.findout__probes > li,
+.findout__moves > li {
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.findout__title {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  list-style: none;
+}
+.findout__title::-webkit-details-marker {
+  display: none;
+}
+.findout__title::after {
+  content: " \25be";
+  color: var(--accent);
+}
+.findout details[open] > .findout__title::after {
+  content: " \25b4";
+}
+.findout__moveTop {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.findout__moveTop strong {
+  font-size: 0.8125rem;
+}
+.findout__how,
+.findout__does,
+.findout__why {
+  margin: 6px 0 0;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  line-height: 1.45;
+  max-width: 72ch;
+}
+.findout__why {
+  color: var(--ink-muted);
+}
+.findout__readings {
+  list-style: disc;
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+.findout__readings li {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  max-width: 72ch;
+  margin-bottom: 4px;
+}
+/* Never quiet, never folded. The whole difference between a probe and a detector is this line. */
+.findout__cannot {
+  margin: 9px 0 0;
+  padding: 7px 10px;
+  border-left: 2px solid var(--accent);
+  background: var(--surface);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  max-width: 72ch;
+}
+/* Reasoning is marked as the weakest, the same way a `model` map ordering is. */
+.chip--grade-reasoned {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
 /* Family history: what was decided beside what was made. Two columns because they are read against
    each other, and a parent's question is usually about the gap between them. */
 .fhistwrap {
@@ -2758,76 +2851,138 @@ body {
   color: var(--ink-muted);
 }
 
-/* THE BARS. One row per tracked specialization, tallest first, so "which of these matters" is
-   answered by looking rather than by reading three decimals and holding them in your head. */
+/* A map rung, collapsed to its title until a reviewer opens it. */
+.mapms__d > .mapms__top {
+  cursor: pointer;
+  list-style: none;
+}
+.mapms__d > .mapms__top::-webkit-details-marker {
+  display: none;
+}
+.mapms__d > .mapms__top::after {
+  content: "\25be";
+  margin-left: 8px;
+  color: var(--accent);
+}
+.mapms__d[open] > .mapms__top::after {
+  content: "\25b4";
+}
+.mapms__d > .mapms__top:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* The override, behind a disclosure rather than an open form on every rung. */
+.mapedit__open {
+  cursor: pointer;
+  font-size: 0.72rem;
+  color: var(--accent);
+  list-style: none;
+}
+.mapedit__open::-webkit-details-marker {
+  display: none;
+}
+
+/* A demo address, named rather than linked. */
+.look--demo {
+  font-size: 0.7rem;
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+/* THE BARS, turned on their side. As full-width rows, six filled a third of the screen and forty --
+   what a child who has really explored the catalogue produces -- would have been a 1300px scroll
+   with nothing else on it. As columns the same forty fit one band, and heights on a shared baseline
+   compare more easily than lengths stacked down a page. */
 .bars {
   margin: 0 0 18px;
 }
-.bars__list {
+.bars__plot {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
   gap: 4px;
+  /* CAPPED, so six columns do not stretch to the full width and read as six empty panels. Past
+     roughly twenty-five the cap stops binding and the columns narrow instead, which is the case
+     this layout exists for. */
+  /* 88px is what a two-word label needs. Below about sixteen specializations the cap binds and the
+     columns stay legible; above it the cap stops mattering, the columns narrow, and the labels turn
+     off -- which is the trade this layout is for. */
+  max-width: min(100%, calc(var(--n) * 88px));
+  /* Rows rather than fixed heights on the children: the bar area, then the label. The previous
+     version set an explicit height on the list AND on each column, and the labels overflowed it and
+     landed on top of the key line underneath. */
+  grid-auto-rows: auto;
+  align-items: end;
+  border-bottom: 1px solid var(--line);
 }
-.bar {
+.col {
   display: grid;
-  grid-template-columns: minmax(120px, 210px) 1fr 72px;
-  align-items: center;
-  gap: 12px;
+  grid-template-rows: 64px auto;
+  gap: 5px;
+  align-items: end;
   width: 100%;
-  padding: 6px 10px;
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
+  padding: 0;
+  border: 0;
   background: none;
   font: inherit;
-  font-size: 0.78rem;
-  color: var(--ink);
   cursor: pointer;
-  text-align: left;
 }
-.bar:hover {
-  background: var(--surface-2);
+/* No filled track behind the bar. A full-height light box under a short bar reads as an empty
+   container rather than as headroom, and six of them looked like six empty panels. */
+.col__track {
+  display: flex;
+  align-items: flex-end;
+  height: 64px;
 }
-.bar--on {
-  border-color: var(--accent);
-  background: var(--surface-2);
-}
-.bar__name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.bar__mode {
-  margin-left: 7px;
-  color: var(--ink-muted);
-}
-.bar__track {
-  height: 14px;
-  border-radius: 3px;
-  background: var(--surface-2);
-  overflow: hidden;
-}
-.bar--on .bar__track {
-  background: var(--surface);
-}
-.bar__fill {
+.col__fill {
   display: block;
-  height: 100%;
+  width: 100%;
+  min-height: 2px;
+  border-radius: 2px 2px 0 0;
   background: var(--accent);
 }
-/* HOLLOW MEANS NOT YET CONFIDENT. A tall bar built on one afternoon and a tall bar built on six
-   weeks must not look the same, so the fill is outlined rather than solid. The word "needs more"
-   beside it carries the same fact, because a difference in fill alone is one nobody notices. */
-.bar__fill--thin {
+/* STRIPED MEANS NOT YET CONFIDENT. A tall column on one afternoon and a tall column on six weeks
+   are the same number, so fill has to distinguish them -- and the accessible name says it too,
+   because a texture is invisible to a screen reader and hard for many eyes. */
+.col__fill--thin {
   background: repeating-linear-gradient(135deg, var(--accent) 0 2px, transparent 2px 5px);
   border: 1px solid var(--accent);
-  border-radius: 3px;
+  border-bottom: 0;
 }
-.bar__note {
-  font-size: 0.7rem;
+.col:hover .col__fill,
+.col:focus-visible .col__fill {
+  filter: brightness(0.9);
+}
+.col--on .col__fill {
+  background: var(--ink);
+}
+.col--on .col__fill--thin {
+  background: repeating-linear-gradient(135deg, var(--ink) 0 2px, transparent 2px 5px);
+  border-color: var(--ink);
+}
+.col__name {
+  min-height: 16px;
+  font-size: 0.64rem;
+  line-height: 1.2;
   color: var(--ink-muted);
-  text-align: right;
+  text-align: left;
+  /* Clipped rather than wrapped. A wrapped label in a narrow column becomes a vertical stack of
+     three-character fragments, which is unreadable and takes the height of four lines to be so. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.col--on .col__name {
+  color: var(--ink);
+  font-weight: 700;
+}
+.bars__key {
+  margin: 9px 0 0;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
 }
 .bars__rest {
   margin: 12px 0 0;
@@ -2835,62 +2990,89 @@ body {
   color: var(--ink-muted);
 }
 
-/* THE WELLBEING STRIP. Above the tabs on every screen, because the back-off read is a precondition
-   for using any other read rather than a seventh thing to remember to check. It has to earn its
-   height on every screen, so it is one dense line per specialization. */
+/* THE WELLBEING STRIP. Above the tabs on every screen, because the back-off read governs how every
+   other read should be used. It was styled as a sentence-shaped row of small grey text and vanished
+   into the prose around it, which defeats the whole reason it was promoted out of a tab. It now
+   reads as an instrument: a solid panel, and the two moves set in large type as the only values on
+   the screen that apply whatever tab is open. */
 .wbstrip {
   display: grid;
-  gap: 1px;
-  margin: 0 0 14px;
-  background: var(--line);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
+  gap: 8px;
+  margin: 0 0 16px;
 }
 .wbstrip__row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 10px 14px;
-  padding: 8px 12px;
+  gap: 12px 24px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-sm);
   background: var(--surface);
-  font-size: 0.78rem;
   color: var(--ink);
 }
 .wbstrip__row--review {
+  border-left-color: var(--warn);
   background: var(--warn-bg);
 }
+.wbstrip__now {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 150px;
+}
 .wbstrip__state {
+  font-size: 0.9rem;
   font-weight: 700;
+  line-height: 1.2;
 }
 .wbstrip__spec {
+  font-size: 0.7rem;
   color: var(--ink-muted);
 }
 .wbstrip__moves {
   display: flex;
-  gap: 14px;
+  gap: 28px;
   margin-left: auto;
 }
+.wbstrip__move {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
 .wbstrip__k {
-  margin-right: 5px;
+  /* Merge of two readability passes: PR2's 0.68rem legibility floor (larger) plus #265's 0.08em
+     tracking (wider) — the more legible of each. #265 also dropped the old margin-right here. */
   font-size: 0.68rem;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-muted);
 }
-/* Takes the whole next line rather than being clipped. A flag a guide cannot read without opening
+/* The instruction. Set at the largest size on the strip because it is the one thing here a guide
+   acts on, and it competes with an entire tab of prose for attention. */
+.wbstrip__v {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+/* Takes the whole next line rather than being clipped: a flag a guide cannot read without opening
    something else is a flag that gets ignored. */
 .wbstrip__review {
   flex: 1 0 100%;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  font-size: 0.8125rem;
   color: var(--warn);
   line-height: 1.4;
 }
 .wbstrip__reviewk {
-  margin-right: 7px;
+  margin-right: 8px;
   font-weight: 700;
   text-transform: uppercase;
+  /* Same reconciliation: PR2's 0.68rem floor + #265's 0.08em tracking. */
   font-size: 0.68rem;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 /* Map review, beside the child switcher rather than in a tab: domain work, not work on a child. */

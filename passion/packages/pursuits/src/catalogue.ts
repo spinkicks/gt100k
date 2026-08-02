@@ -266,40 +266,46 @@ export const PURSUITS: readonly Pursuit[] = [
     label: "Making Games",
     blurb: "Build a whole small game before the clock runs out.",
     cabin: "code-computers",
-    standard: "Ludum Dare eight-category peer rating",
-    venue: { name: "Ludum Dare", url: "https://ldjam.com/" },
-    ceiling: {
+    standard: "G4C Student Challenge rubric: social impact, creativity and theme",
+    venue: {
       name: "Games for Change Student Challenge",
-      url: "https://www.gamesforchange.org/studentchallenge/",
-      opensAt: 10,
+      url: "https://learn.gamesforchange.org/student-challenge/competition",
     },
-    minAge: 13,
-    minAgeBasis: "judgement",
+    minAge: 10,
+    minAgeBasis: "verified",
+    minAgeQuote:
+      "Creators must be between the ages of 10 and 25. If they are aged 10-13, they will submit to the \u201cJunior\u201d competition categories.",
+    minAgeSource: "https://g4cstudentchallenge.secure-platform.com/a/page/faq",
     costUsd: 0,
-    cadence: "several-yearly",
+    cadence: "annual",
     reach: "alone",
     region: "international",
     // "Game development" failed the action-program test as written: art, audio, code and level
-    // design share no motor sequence. Narrowed to shipping a game to a jam deadline, it passes.
+    // design share no motor sequence. Narrowed to shipping a game to a deadline, it passes.
     //
-    // THIS COMMENT USED TO BLAME OUR OWN NETWORK, AND IT WAS WRONG. It read: "an egress limitation
-    // here, not evidence about the site, which has run since 2002 — re-verify from somewhere else
-    // before concluding anything." Re-verified from somewhere else, and the fault is the site's.
-    // `ldjam.com` serves a Let's Encrypt certificate that expired on 16 June 2026, so browsers
-    // refuse the connection outright; forcing past it returns HTTP 400. The outage is corroborated
-    // publicly from 29 May 2026 (JamBrain issue 2311) and by third parties. `ludumdare.com` still
-    // loads but is stale, with its newest post from April 2025 and its schedule still advertising
-    // LD 57.
+    // VENUE MOVED FROM LUDUM DARE, and the reason is worth keeping because it corrected a mistake in
+    // how this entry was being judged. Ludum Dare went offline in May 2026 on an expired certificate,
+    // cancelled its 2025 events and has announced a wind-down. The instinct was to find an equally
+    // prestigious jam, and that was the wrong instinct: MIT's Maker Portfolio is a CHANNEL rather
+    // than a distinction (see `2026-07-30-catalogue-scope.md` §3), so what reaches an admissions
+    // reader for this pursuit is the shipped game, never a jam placing. Nobody is admitted anywhere
+    // for a Ludum Dare rank. The venue therefore has to be alive and judged, not famous.
     //
-    // The venue is also ending. Ludum Dare has announced a wind-down with a final scheduled event in
-    // October 2028, and every 2025 event was cancelled. This entry needs a replacement venue, and
-    // the obvious substitute is still not available: Global Game Jam is unjudged, so taking it would
-    // cost this pursuit the external-validation test that is the reason it is in the catalogue.
-    // Kept for now with the truth recorded rather than quietly swapped for something weaker.
+    // G4C is better than Ludum Dare on every test this catalogue applies, not merely a substitute.
+    // It is externally judged by industry and theme experts rather than by fellow entrants, so the
+    // verdict is not captive. It states a floor, which Ludum Dare never did -- this entry's old 13
+    // had no published basis at all and appears to have been assumed from COPPA. It admits an
+    // unaffiliated child by name: "It's not required to be formally enrolled in an educational
+    // institution to enter." And its Game of the Year carries a $10,000 scholarship, which is the
+    // same reason Pokemon TCG survived the scope audit: a prize awarded as a scholarship produces an
+    // artefact that reads as an award.
     //
-    // The floor of 13 has no published basis. Unlike `ctf`, where picoCTF states 13 in its terms,
-    // nothing on Ludum Dare sets a minimum and the number appears to have been assumed from COPPA.
-    note: "Peer votes are a real non-captive verdict but there is no published rubric, so the standard is weaker than it looks. Venue is offline as of mid-2026 and the programme is winding down; needs replacing.",
+    // NO CEILING, AND THAT IS A FINDING RATHER THAN A GAP. G4C was this entry's ceiling and is now
+    // its venue, and the `ctf` entry already argues that naming one programme as both records
+    // nothing. The honest position is the scope decision's: this pursuit's route to a selective
+    // admissions reader is the Maker Portfolio, which is a channel and not a distinction, so there
+    // is no pre-college distinction to name here.
+    note: "Judged by outside experts against a published rubric. Regional and global rounds run November to April.",
   },
 
   // ── Making & Building ─────────────────────────────────────────────────────────────────────
