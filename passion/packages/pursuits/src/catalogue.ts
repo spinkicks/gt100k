@@ -51,6 +51,18 @@ import type { Pursuit } from "./model.js";
  *   Poetry, as a separate entry. The Rattle Young Poets Anthology ended in 2024 and Poetry Out Loud
  *   is grades 9-12 and recitation rather than composition. Poetry is a mode of writing here.
  *
+ *   SPORT, ENTIRELY, and on scope rather than on evidence. Track and field, orienteering and sport
+ *   stacking were all verified as passing the four tests -- USATF Rule 306.1(g) lets an athlete
+ *   "withdraw their club affiliation and compete unattached" all the way to Nationals, and
+ *   orienteering's Junior Nationals name homeschooling in eligibility. They are still out.
+ *
+ *   Two reasons. It is already well understood that children reach selective universities through
+ *   sport, so it is not a route anybody needs us to find. And it needs a world-class coach, which is
+ *   the opposite of this catalogue's premise: an unaffiliated child clears the ENTRY gate in
+ *   athletics and clears nothing at the TRAINING gate, because entering a meet without a club is
+ *   not the same as becoming competitive without one. The absence is deliberate; see
+ *   `docs/decisions/2026-08-02-catalogue-additions.md` before re-opening it.
+ *
  *   Mahjong. No youth division.
  *
  *   PUBLIC SPEAKING WAS CUT ON A FACT THAT IS WRONG, and the correction is worth keeping visible.
