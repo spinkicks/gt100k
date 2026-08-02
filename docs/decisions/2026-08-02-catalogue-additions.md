@@ -55,7 +55,32 @@ mechanism is general; the floor is not.
 
 ---
 
-## 2. Blocked: the athletic channel has no cabin to live in
+## 2. RULED OUT: sport, on scope rather than on evidence
+
+**Decided 2026-08-02 by the owner. This is a scope boundary, not a finding, and it should not be
+re-litigated by a future sweep that notices the athletic channel is empty.**
+
+Sport is out of scope for this catalogue. Not because these pursuits fail the four tests — three of
+them pass, and track and field passes better than most of what is already in — but because the
+admissions route they lead to is not the one this product exists to open.
+
+Two reasons, and the second is the load-bearing one:
+
+1. It is already well understood that children reach selective universities through sport. It is not
+   a route anybody needs us to discover for them.
+2. **It needs a world-class coach, and the whole premise here is the child who has not got one.**
+   The catalogue's third test asks whether an unaffiliated child can take part. Athletics clears that
+   test at the *entry* gate — USATF unattached status is real and it runs to Nationals — but clears
+   nothing at the *training* gate. A child who can enter a meet without a club still cannot become
+   competitive without coaching, facilities and a squad. That is the same distinction that removed
+   judo below, and it applies across sport.
+
+So the athletic gap in the catalogue is deliberate, and the note below records what was verified in
+case the boundary is ever revisited.
+
+### What was verified before the boundary was drawn
+
+
 
 `track-and-field`, `orienteering` and `sport-stacking` all pass cleanly, and track and field passes
 better than most of what is already in the catalogue. USATF Rule 306.1(g): *"An athlete may withdraw
@@ -64,15 +89,10 @@ the National Championship. Orienteering's rules admit any age to a national cham
 its Junior National Championships name homeschooling in eligibility, which nothing else we checked
 does. Sport stacking bars a family member from judging a final, by rule.
 
-**They cannot be added.** `CABINS` in `two-axis-tagging` is a closed eight-element array with no
-athletic cabin, and `art-motion` is visual arts despite the name — its subtopics are `visual`,
-`animation`, `video-editing`, `3d-modeling`. The taxonomy comment says minting "never creates a new
-cabin."
-
-So the athletic hole is not an oversight in the catalogue; it is enforced by the type. Adding a cabin
-is a real change — cabins are the coarse unit a belief accumulates in, so a new one touches the
-inference engine's coverage maths and the browse wall's grouping. **This needs a decision, not a
-patch.**
+There was also a mechanical blocker, now moot: `CABINS` is a closed eight-element array with no
+athletic cabin, and `art-motion` is visual arts despite the name. Adding one would have touched the
+inference engine's coverage maths and the browse wall's grouping. With sport out of scope the
+taxonomy stays as it is, which is the cheaper answer to the same question.
 
 `juggling` is verified but recommended against on its merits: its published standard rewards "a stage
 performed juggling act that is entertaining and marketable to a broad audience," which is an
