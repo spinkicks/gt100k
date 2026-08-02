@@ -235,6 +235,49 @@ body {
   font-size: 0.72rem;
   color: var(--ink-muted);
 }
+/* The attention verdict: word + dot on the first line, the reason under it, the tracked count
+   demoted to the quietest thing in the row. Colour is a reinforcement; the word carries the meaning. */
+.kid__flag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.kid__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  background: var(--ink-muted);
+}
+.kid__flag--needs_you {
+  color: var(--bad, #b23b3b);
+}
+.kid__dot--needs_you {
+  background: var(--bad, #b23b3b);
+}
+.kid__flag--ready {
+  color: var(--good, #2f7d5b);
+}
+.kid__dot--ready {
+  background: var(--good, #2f7d5b);
+}
+.kid__flag--steady {
+  color: var(--ink-muted);
+}
+.kid__headline {
+  font-size: 0.72rem;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kid__sub--muted {
+  font-size: 0.68rem;
+  color: var(--ink-faint, var(--ink-muted));
+  opacity: 0.75;
+}
 
 /* View filters (sidebar) */
 .nav {

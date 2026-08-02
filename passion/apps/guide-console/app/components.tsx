@@ -5,6 +5,7 @@
 // with a description on hover/focus and in the Key. No raw variable names, no underscores, no em dashes.
 import { useState, type JSX } from "react";
 import { childInitials } from "./console-data.js";
+import { attentionRank, type Attention } from "./attention.js";
 import type { ConsoleController } from "./useConsole.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 import { ProgressRing } from "./progress.js";
@@ -348,13 +349,35 @@ export function FilterNav({ ctrl }: { ctrl: ConsoleController }): JSX.Element {
   );
 }
 
+// A child whose summary has not been computed yet reads as STEADY, never as an alarm: an absent
+// verdict is the absence of a reason to act, not a hidden one.
+const STEADY_FALLBACK: Attention = {
+  level: "STEADY",
+  headline: "Steady. Nothing needs you.",
+  reason: "STEADY",
+  specId: null,
+};
+
+const FLAG_WORD: Record<Attention["level"], string> = {
+  NEEDS_YOU: "Needs you",
+  READY: "Ready",
+  STEADY: "Steady",
+};
+
 // Children switcher with a search box (guides will have many children to page through).
 export function ChildSwitcher({ ctrl }: { ctrl: ConsoleController }): JSX.Element {
   const [q, setQ] = useState("");
   const query = q.trim().toLowerCase();
-  const list = query
+  const filtered = query
     ? ctrl.children.filter((c) => c.name.toLowerCase().includes(query))
     : ctrl.children;
+  const summaryFor = (id: string) =>
+    ctrl.summaries.get(id) ?? { tracked: 0, gateReady: 0, topState: null, attention: STEADY_FALLBACK };
+  // Whoever needs the guide floats up; roster order breaks ties (stable sort), so a level never
+  // reshuffles children within it as the store changes underneath.
+  const list = [...filtered].sort(
+    (a, b) => attentionRank(summaryFor(a.id).attention.level) - attentionRank(summaryFor(b.id).attention.level),
+  );
   return (
     <div className="kids">
       <p className="nav__label">Children</p>
@@ -374,8 +397,10 @@ export function ChildSwitcher({ ctrl }: { ctrl: ConsoleController }): JSX.Elemen
           <p className="kids__empty">No matches</p>
         ) : (
           list.map((c) => {
-            const s = ctrl.summaries.get(c.id) ?? { tracked: 0, gateReady: 0, topState: null };
+            const s = summaryFor(c.id);
+            const a = s.attention;
             const active = ctrl.kid === c.id;
+            const level = a.level.toLowerCase();
             return (
               <button
                 key={c.id}
@@ -389,7 +414,12 @@ export function ChildSwitcher({ ctrl }: { ctrl: ConsoleController }): JSX.Elemen
                 </span>
                 <span className="kid__meta">
                   <span className="kid__name">{c.name}</span>
-                  <span className="kid__sub">
+                  <span className={`kid__flag kid__flag--${level}`}>
+                    <span className={`kid__dot kid__dot--${level}`} aria-hidden="true" />
+                    <span className="kid__flagword">{FLAG_WORD[a.level]}</span>
+                  </span>
+                  <span className="kid__headline">{a.headline}</span>
+                  <span className="kid__sub kid__sub--muted">
                     {s.tracked} tracked{s.gateReady ? ` · ${s.gateReady} ready` : ""}
                   </span>
                 </span>
