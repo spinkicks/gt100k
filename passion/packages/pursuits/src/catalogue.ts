@@ -115,7 +115,7 @@ export const PURSUITS: readonly Pursuit[] = [
     blurb: "Out-think the person across the board.",
     cabin: "games-strategy",
     standard: "US Chess rating system and Official Rules of Chess",
-    venue: { name: "US Chess MSA", url: "https://new.uschess.org/civicrm/player-search" },
+    venue: { name: "US Chess MSA", url: "https://ratings.uschess.org/" },
     ceiling: {
       name: "FIDE Grandmaster title",
       url: "https://ratings.fide.com/",
@@ -147,7 +147,7 @@ export const PURSUITS: readonly Pursuit[] = [
     venue: { name: "North American Kyu Championship", url: "https://www.usgo.org/" },
     ceiling: {
       name: "Redmond Cup, Senior division",
-      url: "https://www.usgo.org/redmond-cup",
+      url: "https://www.usgo-archive.org/redmond-cup",
       opensAt: 13,
       precedent:
         "Aaron Ye, seven-time Redmond Cup champion, to Cornell. No source links the record to the admission.",
@@ -166,7 +166,7 @@ export const PURSUITS: readonly Pursuit[] = [
     blurb: "Win tricks with a partner who cannot tell you their hand.",
     cabin: "games-strategy",
     standard: "ACBL masterpoint ranking",
-    venue: { name: "Youth NABC", url: "https://www.acbl.org/youth/" },
+    venue: { name: "Youth NABC", url: "https://acbl.org/portfolio/ynabc/" },
     ceiling: {
       name: "World Youth Bridge Teams, Under-16 Koc Trophy",
       url: "http://www.worldbridge.org/",
@@ -251,7 +251,10 @@ export const PURSUITS: readonly Pursuit[] = [
       opensAt: 14,
     },
     minAge: 13,
-    minAgeBasis: "judgement",
+    minAgeBasis: "verified",
+    minAgeQuote:
+      "Be at least 13 years old (if under 18, have consent of parent or legal guardian).",
+    minAgeSource: "https://picoctf.org/competitions/2026-spring.html",
     costUsd: 0,
     cadence: "annual",
     reach: "alone",
@@ -279,14 +282,24 @@ export const PURSUITS: readonly Pursuit[] = [
     // "Game development" failed the action-program test as written: art, audio, code and level
     // design share no motor sequence. Narrowed to shipping a game to a jam deadline, it passes.
     //
-    // THE ONE VENUE `check-links.ts` CANNOT CLEAR, and it is kept rather than swapped. `ldjam.com`
-    // resolves (Cloudflare DoH returns both A and AAAA records) but is unreachable from this
-    // machine over either family, including by direct IP — an egress limitation here, not evidence
-    // about the site, which has run since 2002. Global Game Jam was the obvious substitute and was
-    // rejected on the merits: it is not judged at all, so taking it would have cost this pursuit its
-    // external-validation test to satisfy a network fault. Re-verify from somewhere else before
-    // concluding anything.
-    note: "Peer votes are a real non-captive verdict but there is no published rubric, so the standard is weaker than it looks.",
+    // THIS COMMENT USED TO BLAME OUR OWN NETWORK, AND IT WAS WRONG. It read: "an egress limitation
+    // here, not evidence about the site, which has run since 2002 — re-verify from somewhere else
+    // before concluding anything." Re-verified from somewhere else, and the fault is the site's.
+    // `ldjam.com` serves a Let's Encrypt certificate that expired on 16 June 2026, so browsers
+    // refuse the connection outright; forcing past it returns HTTP 400. The outage is corroborated
+    // publicly from 29 May 2026 (JamBrain issue 2311) and by third parties. `ludumdare.com` still
+    // loads but is stale, with its newest post from April 2025 and its schedule still advertising
+    // LD 57.
+    //
+    // The venue is also ending. Ludum Dare has announced a wind-down with a final scheduled event in
+    // October 2028, and every 2025 event was cancelled. This entry needs a replacement venue, and
+    // the obvious substitute is still not available: Global Game Jam is unjudged, so taking it would
+    // cost this pursuit the external-validation test that is the reason it is in the catalogue.
+    // Kept for now with the truth recorded rather than quietly swapped for something weaker.
+    //
+    // The floor of 13 has no published basis. Unlike `ctf`, where picoCTF states 13 in its terms,
+    // nothing on Ludum Dare sets a minimum and the number appears to have been assumed from COPPA.
+    note: "Peer votes are a real non-captive verdict but there is no published rubric, so the standard is weaker than it looks. Venue is offline as of mid-2026 and the programme is winding down; needs replacing.",
   },
 
   // ── Making & Building ─────────────────────────────────────────────────────────────────────
@@ -295,7 +308,10 @@ export const PURSUITS: readonly Pursuit[] = [
     label: "Ham Radio",
     blurb: "Get licensed, then talk to a stranger a continent away.",
     cabin: "making-engineering",
-    standard: "FCC Element 2 question pool, published verbatim",
+    // The FCC designates the element number; the pool is written and maintained by the NCVEC
+    // Question Pool Committee and shared by all fourteen VECs. A standard that names the wrong
+    // author is one a reader cannot go and check.
+    standard: "NCVEC Technician (Element 2) question pool, published verbatim",
     venue: {
       name: "ARRL VEC exam session",
       url: "https://www.arrl.org/find-an-amateur-radio-license-exam-session",
@@ -332,7 +348,10 @@ export const PURSUITS: readonly Pursuit[] = [
       opensAt: 0,
     },
     minAge: 7,
-    minAgeBasis: "judgement",
+    minAgeBasis: "verified",
+    minAgeQuote:
+      "A Division 7 - 13 years old. If the member turns 7 during the contest year, he/she may compete after his/her 7th birthday.",
+    minAgeSource: "https://www.nar.org/CompetitionMeets",
     costUsd: 30,
     cadence: "several-yearly",
     reach: "adult-action",
@@ -354,7 +373,10 @@ export const PURSUITS: readonly Pursuit[] = [
         "Ethan Graham, two-time national champion, to Dartmouth on a full scholarship. Note the path needs a school shop programme; an unaffiliated child with a garage cannot enter.",
     },
     minAge: 8,
-    minAgeBasis: "judgement",
+    minAgeBasis: "verified",
+    minAgeQuote:
+      "4-H programs are available for youth and teens ages 8-18. 4-H Cloverbud programs are available for youth ages 5-7.",
+    minAgeSource: "https://4-h.org/programs/",
     costUsd: 20,
     cadence: "annual",
     reach: "adult-action",
@@ -379,7 +401,12 @@ export const PURSUITS: readonly Pursuit[] = [
       url: "https://www.artandwriting.org/",
       opensAt: 13,
     },
-    minAge: 6,
+    // 6 -> 8. Make It With Wool states divisions rather than a floor, so this stays a judgement, but
+    // the reason it was wrong is one already recorded on `growing-plants` and missing here. Where the
+    // optional 5-7 "Young Sewers" split is used that division is explicitly non-competitive -- "No
+    // placing or ranking of participants is permitted" -- so a six-year-old gets a certificate and a
+    // gift rather than a verdict, which fails the test this catalogue exists to apply.
+    minAge: 8,
     minAgeBasis: "judgement",
     costUsd: 45,
     cadence: "annual",
@@ -397,7 +424,7 @@ export const PURSUITS: readonly Pursuit[] = [
     blurb: "Design a thing that solves one real person's problem.",
     cabin: "making-engineering",
     standard: "Make:able challenge toolkit, six named criteria",
-    venue: { name: "Make:able Challenge", url: "https://www.makeable.org/" },
+    venue: { name: "Make:able Challenge", url: "https://www.makeablechallenge.com/" },
     ceiling: {
       name: "Regeneron International Science and Engineering Fair",
       url: "https://www.societyforscience.org/isef/",
@@ -418,6 +445,9 @@ export const PURSUITS: readonly Pursuit[] = [
     label: "Robotics",
     blurb: "Build a machine that senses and moves on its own.",
     cabin: "making-engineering",
+    // Challenge instruments, and the floor above is now Challenge's 9 rather than Explore's 6. The
+    // two used to disagree: Explore has neither a Robot Game nor a Robot Design rubric, so a
+    // six-year-old was priced in at one division and judged by another division's rubric.
     standard: "FLL Robot Game Rulebook, plus Core Values, Innovation and Robot Design rubrics",
     venue: { name: "FIRST LEGO League", url: "https://www.firstinspires.org/robotics/fll" },
     ceiling: {
@@ -427,8 +457,12 @@ export const PURSUITS: readonly Pursuit[] = [
       precedent:
         "Seth Berg, one of ten inaugural Dean's List winners in 2010, to MIT, reported on the MIT Admissions blog by an officer who was present.",
     },
-    minAge: 6,
-    minAgeBasis: "judgement",
+    minAge: 9,
+    minAgeBasis: "verified",
+    minAgeQuote:
+      "Participants must not be younger than 9 years old or older than 14 years old for US/Canada.",
+    minAgeSource:
+      "https://firstinspires.blob.core.windows.net/fll/challenge/2024-25/fll-challenge-submerged-participation-rules.pdf",
     costUsd: 700,
     cadence: "annual",
     reach: "needs-organisation",
@@ -628,7 +662,10 @@ export const PURSUITS: readonly Pursuit[] = [
     label: "Drawing",
     blurb: "Make something people want to keep looking at.",
     cabin: "art-motion",
-    standard: "Toyota criteria: concept 33.4%, uniqueness 33.3%, artistry 33.3%",
+    // Toyota weights its three criteria equally. The old 33.4/33.3/33.3 was invented precision, and
+    // false precision in a standard is worse than vagueness: it implies we read a rubric that says
+    // something it does not say.
+    standard: "Toyota criteria: message, uniqueness and artistry, weighted equally",
     venue: { name: "Toyota Dream Car Art Contest", url: "https://www.toyota-dreamcarart.com/" },
     ceiling: {
       name: "Scholastic Art Awards, Gold Medal Portfolio",
@@ -660,7 +697,9 @@ export const PURSUITS: readonly Pursuit[] = [
         "Ian Kim, YoungArts Winner with Distinction for the stop-motion documentary My Sisters In The Stars and Presidential Scholar, to Harvard in Art, Film and Visual Studies.",
     },
     minAge: 11,
-    minAgeBasis: "judgement",
+    minAgeBasis: "verified",
+    minAgeQuote: "Free to enter, open to anyone 11-22 living in the UK.",
+    minAgeSource: "https://younganimator.uk/",
     costUsd: 0,
     cadence: "annual",
     reach: "alone",
@@ -682,10 +721,13 @@ export const PURSUITS: readonly Pursuit[] = [
         "A Presidential Scholar in Film is named every year; Ian Kim's 2024 award was for animation work.",
     },
     minAge: 5,
-    minAgeBasis: "judgement",
+    minAgeBasis: "verified",
+    minAgeQuote: "Filmmakers must be aged between 5-19 years at the time of submitting.",
+    minAgeSource: "https://www.intofilm.org/into-film-awards-entry-criteria",
     costUsd: 0,
     cadence: "annual",
-    reach: "alone",
+    // Into Film requires the submitter to be 20 or over, so a child cannot file this alone.
+    reach: "adult-action",
     region: "uk",
     note: "Bands at 5-11 and 12-15, free. NFFTY is the international alternative and its youngest ever director was 5.",
   },
@@ -697,7 +739,7 @@ export const PURSUITS: readonly Pursuit[] = [
     standard: "Kitakyushu Junior Division rules, set theme",
     venue: {
       name: "Kitakyushu International Manga Competition",
-      url: "https://www.city.kitakyushu.lg.jp/",
+      url: "https://kitakyushu-mangataisho.com/",
     },
     ceiling: {
       name: "Scholastic Art Awards, Comic Art",
@@ -725,7 +767,9 @@ export const PURSUITS: readonly Pursuit[] = [
       opensAt: 0,
     },
     minAge: 11,
-    minAgeBasis: "judgement",
+    minAgeBasis: "verified",
+    minAgeQuote: "Free to enter, open to anyone 11-22 living in the UK.",
+    minAgeSource: "https://younganimator.uk/",
     costUsd: 0,
     cadence: "annual",
     reach: "alone",
@@ -774,7 +818,9 @@ export const PURSUITS: readonly Pursuit[] = [
         "Dessi Sieburth, Young Birder of the Year 2015, to Stanford. Benjamin Van Doren turned migration study into an Intel STS finalist place and went to Cornell.",
     },
     minAge: 13,
-    minAgeBasis: "judgement",
+    minAgeBasis: "verified",
+    minAgeQuote: "If you're under the age of 13, do not use or access our Services.",
+    minAgeSource: "https://www.birds.cornell.edu/home/terms-of-use/",
     costUsd: 0,
     cadence: "continuous",
     reach: "alone",
@@ -820,7 +866,10 @@ export const PURSUITS: readonly Pursuit[] = [
         "Lillian Kay Petersen, Regeneron STS first place for forecasting African crop yields from satellite data, to Harvard. Rohan Wagh, ninth place for a bacteria-powered soil sensor, to MIT. Both computational rather than horticultural.",
     },
     minAge: 8,
-    minAgeBasis: "judgement",
+    minAgeBasis: "verified",
+    minAgeQuote:
+      "4-H programs are available for youth and teens ages 8-18. 4-H Cloverbud programs are available for youth ages 5-7.",
+    minAgeSource: "https://4-h.org/programs/",
     costUsd: 20,
     cadence: "annual",
     reach: "adult-action",
@@ -869,7 +918,8 @@ export const PURSUITS: readonly Pursuit[] = [
     minAgeBasis: "judgement",
     costUsd: 25,
     cadence: "continuous",
-    reach: "alone",
+    // Stone Soup requires a parent or guardian name, email and signature on every submission by a minor.
+    reach: "adult-action",
     region: "international",
     // The only writing venue found with no lower age bound, and its published criteria are unusually
     // explicit about rejection: "We do not ask whether a piece is good for the writer's age. We do
@@ -892,7 +942,11 @@ export const PURSUITS: readonly Pursuit[] = [
       opensAt: 14,
     },
     minAge: 9,
-    minAgeBasis: "judgement",
+    minAgeBasis: "verified",
+    minAgeQuote:
+      "The Contest is open only to individual 4th - 12th grade teachers who are legal residents of the fifty (50) United States.",
+    minAgeSource:
+      "https://www.npr.org/2018/11/15/662979069/npr-student-podcast-challenge-official-rules",
     costUsd: 0,
     cadence: "annual",
     reach: "adult-action",
@@ -917,7 +971,10 @@ export const PURSUITS: readonly Pursuit[] = [
         "None at a target school: the last three national winners went to Northwestern, Northwestern and Missouri, which reads as self-selection toward Medill.",
     },
     minAge: 10,
-    minAgeBasis: "judgement",
+    minAgeBasis: "verified",
+    minAgeQuote:
+      "Applicants must be between 10 and 14 years old at the start of the school year, or enrolled in fifth through eighth grade.",
+    minAgeSource: "https://kpcnotebook.scholastic.com/page/about-scholastic-kids-press",
     costUsd: 0,
     cadence: "annual",
     reach: "alone",
@@ -939,7 +996,10 @@ export const PURSUITS: readonly Pursuit[] = [
         "Rohan Lingam, 2024 NSDA policy co-champion, stated on the record he would attend Stanford.",
     },
     minAge: 11,
-    minAgeBasis: "judgement",
+    minAgeBasis: "verified",
+    minAgeQuote: "Eligibility: All students currently enrolled in grades 6-12.",
+    minAgeSource:
+      "https://coolidgefoundation.org/debate/national-debate-tournament-series/coolidge-north-carolina-open/",
     costUsd: 0,
     cadence: "several-yearly",
     reach: "alone",

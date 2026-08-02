@@ -50,9 +50,9 @@ function decide(s: WellbeingSignals): Decision {
       rest: true,
       escalate: true,
       escalationReason:
-        "Possible devaluation or an obsessive tip. A human should decide on a guilt-free, reversible break, and broaden identity by re-opening plural spikes.",
+        "They keep showing up but seem to have stopped caring, or it has taken over everything. Offer a break with no guilt attached, and open some other doors.",
       rationale:
-        "Presence without depth (or an obsessive tip) is the earliest alarm. Hold the challenge, lift pressure (more autonomy), and hand this to a mentor for a guilt-free, reversible rest.",
+        "Turning up without engaging is the earliest warning sign. Keep the difficulty steady, ease off, and offer a break they can undo.",
       notes: ["weight devaluation over exhaustion", HUMAN_DISPOSES, NEVER_GAMIFY],
     };
   }
@@ -65,10 +65,9 @@ function decide(s: WellbeingSignals): Decision {
       pressure: "AUTONOMY_UP",
       backOff: true,
       escalate: true,
-      escalationReason:
-        "Early exhaustion pattern. Cut load and pressure, and route a warm human check-in.",
+      escalationReason: "They look worn out. Cut back how much and how often, and check in warmly.",
       rationale:
-        "An early exhaustion pattern (shorter or later sessions with declining return and depth). Back off (pressure down and load down before touching challenge) and route a warm check-in to a mentor.",
+        "Sessions are getting shorter and further apart. Ease off the amount before you change the difficulty.",
       notes: ["back off = pressure down first", HUMAN_DISPOSES, NEVER_GAMIFY],
     };
   }
@@ -80,10 +79,8 @@ function decide(s: WellbeingSignals): Decision {
       challenge: "HOLD",
       pressure: "STEADY",
       escalate: true,
-      escalationReason:
-        "A per-spike quiet period. A gap is a question, not a verdict, so a human should check in (never an automated nudge or label).",
-      rationale:
-        "A quiet period on this spike. A gap is a question, not a verdict: no automated nudge and no label. A human decides whether to check in.",
+      escalationReason: "Quiet for a while. Worth asking them about it yourself.",
+      rationale: "Quiet for a while. That is a question rather than an answer, so ask them.",
       notes: [
         "missingness routes to a human check-in, never an auto-nudge/label",
         HUMAN_DISPOSES,
@@ -140,8 +137,7 @@ function decide(s: WellbeingSignals): Decision {
     state: "IN_ZONE",
     challenge: "HOLD",
     pressure: "STEADY",
-    rationale:
-      "In the zone. Consolidate and vary reps; resist adding stakes or streaks and protect the child's autonomy.",
+    rationale: "In the zone. Keep practice varied, and do not add points, streaks or stakes.",
     notes: ["resist adding stakes; protect autonomy", NEVER_GAMIFY],
   };
 }

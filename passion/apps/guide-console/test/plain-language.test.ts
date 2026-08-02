@@ -47,6 +47,17 @@ const OURS: readonly RegExp[] = [
   /\bprovenance\b/i,
   /\bidempoten/i,
   /\bheuristic\b/i,
+  // Added after an audit measured the on-screen word counts and named these. Each was on a screen a
+  // guide sees on every visit.
+  /\bcertified spike\b/i, // our phrase for an interest a human has confirmed
+  /\bspikes?\b/i,
+  /\bbroker(ing|ed)?\b/i,
+  /\bscaffold(ing)?\b/i, // education theory
+  /\bautonomy\b/i, // self-determination theory
+  /\bunprompted\b/i, // means "without suggesting it", which is what we now say
+  /\bsituational interest\b/i,
+  /\beminence\b/i,
+  /\baccrued\b/i,
 ];
 
 /** Mathematical notation, which is a register problem rather than a vocabulary one. */
@@ -120,12 +131,16 @@ describe("what an engine puts in front of a guide", () => {
     for (const kid of KIDS) {
       for (const card of plansForKid(kid)) {
         const p = card.plan.nextProject;
+        // Everything the panel prints, not a sample of it. "off the primary spike" was in the rest
+        // line and survived the first sweep because only these five fields were being checked.
         const text = [
           p.title,
           p.drivingQuestion,
           p.authenticMethod,
           p.successLooksLike,
           card.plan.terminalNote,
+          card.plan.rationale,
+          ...card.plan.guardrailNotes,
         ].join(" ");
         for (const bad of OURS) {
           expect(text, `plan prose for ${kid} uses our vocabulary`).not.toMatch(bad);

@@ -8,6 +8,7 @@
 // terminal note. Guide-facing only, grayscale-safe: NO child-facing text, NO reward/score/grade.
 import type { JSX } from "react";
 import type { PlanCardVM } from "./plan.js";
+import type { CuratedResource } from "@gt100k/specialization-planner";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 import { specPath, modeLabel } from "./vocab.js";
 import { WhyThis } from "./why.js";
@@ -99,7 +100,7 @@ function humanizeStages(text: string): string {
 }
 
 function restLine(r: PlanCardVM["plan"]["restCadence"]): string {
-  return `${r.daysOffPerWeek} days/week off, ${r.monthsOffPerYear} months/year off the primary spike (in ~${r.offInIncrementsOfMonths}-month breaks)`;
+  return `${r.daysOffPerWeek} days a week off, and ${r.monthsOffPerYear} months a year away from it, in blocks of about ${r.offInIncrementsOfMonths} month${r.offInIncrementsOfMonths === 1 ? "" : "s"}`;
 }
 
 function doseLine(dose: number): string {
@@ -119,7 +120,7 @@ function doseLine(dose: number): string {
 function Rung({ ms }: { ms: PlanMilestoneVM }): JSX.Element {
   return (
     <div className="planrung">
-      <span className="planproject__k">Where they are on the map</span>
+      <span className="planproject__k">Their next step</span>
       <p className="planrung__title">{ms.title}</p>
       <p className="planrung__cap">{ms.capability}</p>
 
@@ -189,15 +190,25 @@ function Rung({ ms }: { ms: PlanMilestoneVM }): JSX.Element {
  * the filler this whole change removes. An empty answer that names why it is empty is worth more
  * than a full one that means nothing.
  */
-function NoMap(): JSX.Element {
+function NoMap({ resources }: { resources: readonly CuratedResource[] }): JSX.Element {
   return (
     <div className="planrung planrung--none">
-      <span className="planproject__k">Where they are on the map</span>
-      <p className="planrung__cap">
-        Nobody has written a map for this domain yet, so there are no rungs to place them on. The
-        pace above is real and comes from the planner; the project below is a general shape rather
-        than this domain&rsquo;s next step.
-      </p>
+      <span className="planproject__k">Their next step</span>
+      <p className="planrung__cap">No roadmap for this subject yet.</p>
+      {resources.length === 0 ? null : (
+        <>
+          <span className="planproject__k">Vetted material to work from</span>
+          <ul className="planres">
+            {resources.map((r) => (
+              <li key={r.id}>
+                <a href={r.url} target="_blank" rel="noreferrer">
+                  {r.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   );
 }
@@ -226,12 +237,7 @@ const BASIS_LABEL: Record<string, string> = {
  */
 function RoadToAPlan({ card }: { card?: HypothesisCard }): JSX.Element {
   if (card === undefined) {
-    return (
-      <output className="wbpanel__empty">
-        Nothing is being tracked for this child yet, so there is no road to show. Exploration comes
-        first.
-      </output>
-    );
+    return <output className="wbpanel__empty">Nothing tracked yet.</output>;
   }
 
   const gate = card.gate;
@@ -249,11 +255,10 @@ function RoadToAPlan({ card }: { card?: HypothesisCard }): JSX.Element {
   return (
     <div className="roadmap" data-testid="road-to-a-plan">
       <p className="roadmap__lede">
-        There is no plan here yet, because a plan is for a certified spike. This is what would make
-        it one.
+        No plan yet. A plan starts once you have confirmed the interest. Here is what that takes.
       </p>
 
-      <span className="planproject__k">What a spike has to show</span>
+      <span className="planproject__k">What it takes</span>
       <ul className="roadmap__checks">
         {checks.map((c) => (
           <li key={c.k} data-done={c.done}>
@@ -271,10 +276,7 @@ function RoadToAPlan({ card }: { card?: HypothesisCard }): JSX.Element {
       <span className="planproject__k">What to offer next</span>
       <p className="roadmap__probe">{card.nextProbe}</p>
 
-      <p className="planproject__owns">
-        None of this advances on its own. A spike is certified by a human, and the checks above are
-        what that human is looking at.
-      </p>
+      <p className="planproject__owns">You decide when it is ready.</p>
     </div>
   );
 }
@@ -328,7 +330,7 @@ function PlanItem({ card, kidId }: { card: PlanCardVM; kidId: string }): JSX.Ele
           this child is learning chess or audio production; everything below is a project brief
           templated from the stage with the domain name substituted in. A guide who reads only one
           block should read this one. */}
-      {milestone === null ? <NoMap /> : <Rung ms={milestone} />}
+      {milestone === null ? <NoMap resources={card.resources} /> : <Rung ms={milestone} />}
 
       {/* COLLAPSED WHENEVER A RUNG IS SHOWING, and this is a judgement worth recording. Side by side
           the two blocks make the argument on their own: the rung says "Make a bug happen on purpose,
@@ -339,11 +341,9 @@ function PlanItem({ card, kidId }: { card: PlanCardVM; kidId: string }): JSX.Ele
           It is kept rather than deleted because `planner-live` will fill it with a brief grounded on
           the rung above, at which point it stops being a template and should open by default. Until
           then it is behind a summary that says what it is. */}
-      <details className="planproject" open={milestone === null}>
+      <details className="planproject">
         <summary className="planproject__summary">
-          <span className="planproject__k">
-            {milestone === null ? "Next project" : "A general project shape for this stage"}
-          </span>
+          <span className="planproject__k">A general project shape for this stage</span>
         </summary>
         <p className="planproject__title">{project.title}</p>
         <p className="planproject__q">{project.drivingQuestion}</p>
@@ -427,7 +427,6 @@ export function PlanPanel({
               <PlanItem key={c.id} card={c} kidId={kidId} />
             ))}
           </ul>
-          {cards[0] ? <p className="planterminal">{cards[0].plan.terminalNote}</p> : null}
         </>
       )}
     </section>
