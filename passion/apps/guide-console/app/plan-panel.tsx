@@ -7,6 +7,7 @@
 // "Needs your review" replan (rest / deload / stage-advance) with a plain rationale + the honest
 // terminal note. Guide-facing only, grayscale-safe: NO child-facing text, NO reward/score/grade.
 import type { JSX } from "react";
+import { Look } from "./look.js";
 import type { PlanCardVM } from "./plan.js";
 import type { CuratedResource } from "@gt100k/specialization-planner";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
@@ -165,14 +166,7 @@ function Rung({ ms }: { ms: PlanMilestoneVM }): JSX.Element {
             e.made.map((m) => (
               <li key={`${e.projectId}-${m.title}`}>
                 {m.title}
-                {m.url === undefined ? null : (
-                  <>
-                    {" "}
-                    <a className="mapwork__src" href={m.url} target="_blank" rel="noreferrer">
-                      Look at it
-                    </a>
-                  </>
-                )}
+                <Look url={m.url} />
               </li>
             )),
           )}

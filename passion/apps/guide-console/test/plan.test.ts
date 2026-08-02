@@ -30,7 +30,14 @@ describe("guide-console Plan view-model (018-D1)", () => {
     const prod = plans.find((c) => c.cellKey === "music-sound/production::build");
     expect(prod).toBeDefined();
     expect(prod!.resources.length).toBeGreaterThan(0);
-    expect(prod!.plan.nextProject.craftScaffold).toContain("https://curated.example");
+    // Asserts the GROUNDING rather than the address. Pinning "https://curated.example" pinned the
+    // placeholder in place: the whole point of this test is that the scaffold cites the vetted
+    // library, and pointing that library at real resources is an improvement it should not resist.
+    const cited = prod!.resources.map((r) => r.url);
+    expect(cited.length).toBeGreaterThan(0);
+    expect(cited.some((u) => prod!.plan.nextProject.craftScaffold.includes(u))).toBe(true);
+    // And no placeholder ever comes back: a link a guide can click has to go somewhere.
+    expect(prod!.plan.nextProject.craftScaffold).not.toContain("example");
   });
 
   it("carries no child-facing score/grade/reward field anywhere on a plan card", () => {

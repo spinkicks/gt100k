@@ -402,6 +402,19 @@ export interface MadeVM {
 /** One link between a project and a milestone, with the things it holds. The artefacts travel with
     it because decision 4 says a standing is never shown without the work it rests on, and they are
     the artefacts ON the link rather than a second derivation that could drift from it. */
+/**
+ * Whether an address is a demo placeholder rather than somewhere a guide can actually go.
+ *
+ * The synthetic roster has to carry addresses because attestation requires one -- the address is the
+ * half of a claim a child cannot fake -- but there is no real child, so every one is invented.
+ * IANA reserves example.com for this. A UI that linkifies them offers a click that answers with a
+ * 404, which reads as a broken product rather than as demo data.
+ */
+export function isDemoUrl(url: string | undefined): boolean {
+  if (url === undefined) return false;
+  return /^https?:\/\/(www\.)?example\.(com|org|net)(\/|$)/i.test(url);
+}
+
 export interface EvidenceVM {
   readonly projectId: string;
   readonly project: string;

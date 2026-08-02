@@ -181,7 +181,12 @@ describe("MapsPanel reads a map against the child a guide has selected", () => {
     const html = markup([CONSOLE_GAME_DEV_MAP], DULCE);
     expect(html).toContain("Several things made");
     expect(html).toContain("Nothing made here yet");
-    expect(html).toMatch(/nowhere near enough to say the capability is there|still well short/i);
+    // Said once for the whole map rather than repeated per rung. It used to print on every one of
+    // seventeen rungs, roughly 350 words of identical text, which is not emphasis -- it is the
+    // reason a guide stops reading. The requirement is that a guide cannot read a standing as a
+    // pass without meeting the caveat, and once at the top of the block satisfies that.
+    expect(html).toMatch(/not a judgement about what they can do/i);
+    expect(html).toMatch(/read off what .* made/i);
     // The two questions are told apart on the screen, not only in the data.
     expect(html).toContain("Could be offered next");
     expect(html).toContain("Not on offer yet");
@@ -333,10 +338,13 @@ describe("MapsPanel never renders a standing without the work under it", () => {
     for (const work of [ARI, DULCE]) {
       for (const row of markup(REVIEW_MAPS, work).split('data-testid="map-read"').slice(1)) {
         if (row.includes('data-strength="none"')) {
-          expect(row).toContain("Nothing has been linked to this milestone.");
+          // The chip beside the title already carries this. A heading plus a sentence repeating
+          // it, on every empty rung, was two more lines per rung for no added fact.
+          expect(row).toContain("Nothing made here yet");
+          expect(row).not.toMatch(/<ul class="mapwork">/);
           continue;
         }
-        expect(row).not.toContain("Nothing has been linked to this milestone.");
+        expect(row).not.toContain("Nothing made here yet");
         expect(row).toMatch(/<ul class="mapwork">[\s\S]*?<li>/);
         expect([...row.matchAll(/class="mapwork__at"/g)].length).toBeGreaterThan(0);
         checked += 1;
@@ -347,7 +355,10 @@ describe("MapsPanel never renders a standing without the work under it", () => {
 
   it("says out loud that nothing has been linked rather than leaving a bare standing", () => {
     const html = markup([CONSOLE_PIANO_MAP], ARI);
-    expect(html).toContain("Nothing has been linked to this milestone.");
+    // Still said out loud, in the chip rather than in a sentence under an otherwise empty heading.
+    // The rule this protects is that a standing never appears without the work under it, or without
+    // an explicit statement that there is none -- not that it is phrased in one particular way.
+    expect(html).toContain("Nothing made here yet");
   });
 
   /**
