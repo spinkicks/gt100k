@@ -32,10 +32,6 @@ export function FamilyPanel({
 }): JSX.Element {
   return (
     <section className="wbpanel" aria-label="Family co-engagement" data-testid="family-panel">
-      <header className="wbpanel__head">
-        <span className="wbpanel__sub">The system proposes coaching, you decide.</span>
-      </header>
-
       {!read ? (
         <output className="wbpanel__empty">No coaching read yet.</output>
       ) : (
@@ -65,7 +61,7 @@ export function FamilyPanel({
           {/* Warm-demanding coaching posture. */}
           <li className="wbitem">
             <div className="wbitem__top">
-              <span className="wbitem__spec">Warm-demanding posture</span>
+              <span className="wbitem__spec">How to be with them right now</span>
               {!read.escalateToHuman ? (
                 <span className="wbitem__state">
                   {RISK_LABEL[read.pressureWatch.risk] ?? read.pressureWatch.risk}
@@ -83,7 +79,7 @@ export function FamilyPanel({
               </div>
               <div>
                 <dt>Warmth</dt>
-                <dd>Non-contingent</dd>
+                <dd>Not tied to how the work goes</dd>
               </div>
               <div>
                 {/* Phrased as a move, like every other value in this list, because the raw boolean
@@ -127,7 +123,7 @@ export function FamilyPanel({
                   rendering merged them. */}
               {read.asks.length > 0 ? (
                 <div className="famgroup">
-                  <span className="famoffers__k">Door-opening asks</span>
+                  <span className="famoffers__k">Doors you can open</span>
                   <ul className="famoffers">
                     {read.asks.map((a) => (
                       <li key={a}>{a}</li>
@@ -145,15 +141,7 @@ export function FamilyPanel({
                   </ul>
                 </div>
               ) : null}
-              <p className="planproject__owns">
-                Offers, not mandates — the child keeps choosing the problem, the method, and the
-                pace.
-              </p>
             </li>
-          ) : null}
-
-          {!read.escalateToHuman ? (
-            <p className="wbitem__reason wbitem__reason--muted">{read.rationale}</p>
           ) : null}
         </ul>
       )}

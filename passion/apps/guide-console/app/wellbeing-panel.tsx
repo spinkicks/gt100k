@@ -30,10 +30,6 @@ export const PRESSURE_LABEL: Record<string, string> = {
 export function WellbeingPanel({ cards }: { cards: readonly WellbeingCardVM[] }): JSX.Element {
   return (
     <section className="wbpanel" aria-label="Wellbeing">
-      <header className="wbpanel__head">
-        <span className="wbpanel__sub">The system proposes, you decide.</span>
-      </header>
-
       {cards.length === 0 ? (
         // Reached only when the child has no specializations at all, since the tab is scoped to the
         // selected one and every tracked hypothesis produces a wellbeing read.

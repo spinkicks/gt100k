@@ -413,10 +413,6 @@ export function PlanPanel({
 }): JSX.Element {
   return (
     <section className="wbpanel" aria-label="Specialization plan" data-testid="plan-panel">
-      <header className="wbpanel__head">
-        <span className="wbpanel__sub">The system proposes a plan, you decide.</span>
-      </header>
-
       {cards.length === 0 ? (
         // A third of the workflow used to live here as one sentence. "Not a certified spike yet, so
         // there is no plan" is true and useless: most children are exploring most of the time, so
