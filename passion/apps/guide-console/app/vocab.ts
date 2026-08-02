@@ -31,7 +31,7 @@ export const SIGNALS: Record<string, Term> = {
   },
   external_report: {
     label: "Noticed At Home",
-    desc: "A parent or guide reported, weeks later, that this had carried over into the child's own time and into the subject itself, not just the activity we gave them. It counts for less than something we watched them do, and on its own it can never make a read confident.",
+    desc: "A parent said it carried over into the child's own time. Counts, but less than something we watched.",
   },
   gap_survived: {
     label: "Survived a Break",
@@ -47,7 +47,7 @@ export const SIGNALS: Record<string, Term> = {
   },
   decline: {
     label: "Passed Over",
-    desc: "Was there to pick and they picked something else. They have never tried this one, so it counts for very little.",
+    desc: "Never tried it, so it barely counts. They have never tried this one, so it counts for very little.",
   },
   devaluation: {
     label: "Cooling Off",
@@ -129,7 +129,7 @@ export function stateTerm(key: string): Term {
 export const ACTIONS: Record<string, Term> = {
   promote: {
     label: "Promote",
-    desc: "Move this up a stage. Needs a passed gate and your autonomy sign-off.",
+    desc: "Move this up a stage. Only once the three checks pass and the child wants it.",
   },
   park: {
     label: "Park",

@@ -60,31 +60,37 @@ const CHANNEL_LABEL: Record<AudienceChannel, string> = {
  * ranking when everything else ties, and 0.92 versus 0.8 invites a precision the underlying number
  * does not have.
  */
-function fitInWords(fit: readonly string[]): string {
+/**
+ * CHIPS, NOT A SENTENCE. This used to build "Why this one: it is in this exact area, it fills the
+ * warm mentor role this plan asked for, and it is well regarded" -- 24 words, repeated on every
+ * match row. With four matches on one screen that is the same sentence four times with a word
+ * changed, and a guide scanning for the difference between two mentors had to read both in full to
+ * find it. As chips the differences are the only thing that moves.
+ */
+function fitChips(fit: readonly string[]): readonly string[] {
   const said: string[] = [];
   for (const f of fit) {
-    if (f.startsWith("domain ")) said.push("it is in this exact area");
-    else if (f.startsWith("mode ")) said.push("it suits how they like to work");
+    if (f.startsWith("domain ")) said.push("Right subject");
+    else if (f.startsWith("mode ")) said.push("Suits how they work");
     else if (f.startsWith("fills ")) {
       const role = f.slice("fills ".length).replace(" role", "");
-      const label = MENTOR_LABEL[role as MentorRole];
-      said.push(`it fills the ${(label ?? role).toLowerCase()} role this plan asked for`);
+      said.push(MENTOR_LABEL[role as MentorRole] ?? role);
     } else if (f.endsWith(" source")) {
       // Dropped: the source layer is already the chip beside the title, and saying it twice in two
       // registers ("AI" and "the ai layer") is worse than saying it once.
     } else if (f.endsWith(" audience")) {
-      said.push(`it reaches a ${f.slice(0, -" audience".length).toLowerCase()} audience`);
+      said.push(`${f.slice(0, -" audience".length)} audience`);
     } else if (f.endsWith(" channel")) {
       const ch = f.slice(0, -" channel".length);
-      said.push(`through ${(CHANNEL_LABEL[ch as AudienceChannel] ?? ch).toLowerCase()}`);
+      said.push(CHANNEL_LABEL[ch as AudienceChannel] ?? ch);
     } else if (f.startsWith("reputation ")) {
+      // A phrase rather than a figure, deliberately: reputation decides the ranking when everything
+      // else ties, and 0.92 against 0.8 invites a precision the underlying number does not have.
       const n = Number(f.slice("reputation ".length));
-      said.push(
-        Number.isNaN(n) ? f : n >= 0.9 ? "and it is well regarded" : "and it is established",
-      );
+      said.push(Number.isNaN(n) ? f : n >= 0.9 ? "Well regarded" : "Established");
     } else said.push(f);
   }
-  return said.join(", ");
+  return said;
 }
 
 const STATE_LABEL: Record<string, string> = {
@@ -92,7 +98,7 @@ const STATE_LABEL: Record<string, string> = {
   approved: "Approved",
   introduced: "Introduced",
   active: "Active",
-  transferred: "Access transferred",
+  transferred: "Handed over",
   declined: "Declined",
 };
 
@@ -140,7 +146,13 @@ function MatchRow({
           input, and named neither. `match.fit` already held the reasons and was being thrown away,
           and `.accmatch__fit` was already in the stylesheet with no component using it. */}
       {match.fit.length > 0 ? (
-        <p className="accmatch__fit">Why this one: {fitInWords(match.fit)}.</p>
+        <p className="accmatch__fit">
+          {fitChips(match.fit).map((c) => (
+            <span key={c} className="chip chip--soft">
+              {c}
+            </span>
+          ))}
+        </p>
       ) : null}
       {o.availability?.deadline ? (
         <p className="accmatch__meta">Deadline {o.availability.deadline}</p>
@@ -195,7 +207,7 @@ function MatchRow({
               className="btn btn--primary"
               onClick={() => onAdvance("transferred")}
             >
-              Mark access transferred
+              Mark handed over
             </button>
           ) : null}
           {!terminal ? (
@@ -264,18 +276,16 @@ function AccessSpike({ card }: { card: AccessCardVM }): JSX.Element {
         <span className="wbitem__spec">
           {specPath(card.domainPath)} · {modeLabel(card.mode)}
         </span>
-        <span className="wbitem__state">
-          {card.state === "ACTIVE" ? "Active spike" : "Candidate"}
-        </span>
+        <span className="wbitem__state">{card.state === "ACTIVE" ? "Active" : "Candidate"}</span>
       </div>
 
       <dl className="plangrid">
         <div>
-          <dt>Mentor to broker</dt>
+          <dt>Mentor</dt>
           <dd>{MENTOR_LABEL[card.mentorRole]}</dd>
         </div>
         <div>
-          <dt>Audience to reach</dt>
+          <dt>Who sees it</dt>
           <dd>{AUDIENCE_LABEL[card.audience]}</dd>
         </div>
       </dl>
@@ -283,10 +293,7 @@ function AccessSpike({ card }: { card: AccessCardVM }): JSX.Element {
       {brokerPlan.held ? (
         <div className="wbitem__review" role="note">
           <span className="wbitem__reviewk">Holding new access</span>
-          <p className="wbitem__reason">
-            This spike is in a rest or back-off window, so we are not widening the audience right
-            now. Protecting the child comes before adding stakes.
-          </p>
+          <p className="wbitem__reason">On a rest break, so no new audiences right now.</p>
         </div>
       ) : (
         <>
@@ -303,7 +310,7 @@ function AccessSpike({ card }: { card: AccessCardVM }): JSX.Element {
             <span className="accgroup__k">Audience options</span>
             {card.audience === "SELF" ? (
               <p className="accgroup__empty">
-                Just for them for now. No outside audience to broker at this stage.
+                Just for them for now. No outside audience at this stage.
               </p>
             ) : brokerPlan.audienceMatches.length > 0 ? (
               <ul className="acclist">{brokerPlan.audienceMatches.map(renderMatch)}</ul>
@@ -334,9 +341,7 @@ export function AccessPanel({ cards }: { cards: readonly AccessCardVM[] }): JSX.
         // it would be actively misleading here: "no mentor options for this kid" is the sort of
         // thing a guide acts on, and it may be false one rail row away.
         <output className="wbpanel__empty">
-          This one is not a certified spike yet, so there is nothing to broker for it. A spike gets
-          mentor and audience options once you promote it to a candidate or an active
-          specialization.
+          No mentors or audiences yet. Promote this interest first.
         </output>
       ) : (
         <ul className="wblist" data-testid="access-list">

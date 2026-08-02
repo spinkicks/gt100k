@@ -234,11 +234,11 @@ export function Evidence({
 }): JSX.Element {
   return (
     <div className={`ev2${verbose ? " ev2--verbose" : ""}`}>
-      <EvidenceColumn items={card.supporting} kind="pos" heading="Supporting" verbose={verbose} />
+      <EvidenceColumn items={card.supporting} kind="pos" heading="Points to it" verbose={verbose} />
       <EvidenceColumn
         items={card.disconfirming}
         kind="neg"
-        heading="Disconfirming"
+        heading="Points away"
         verbose={verbose}
       />
     </div>
@@ -264,7 +264,7 @@ export function Actions({
   return (
     /* biome-ignore lint/a11y/useSemanticElements: <fieldset> groups form controls, not a toolbar of
        actions, and its UA groove border, padding and min-inline-size would reshape this flex row. */
-    <div className="acts" role="group" aria-label={`Actions for ${card.cellKey}`}>
+    <div className="acts" role="group" aria-label={`Actions for ${specPath(card.domainPath)}`}>
       {card.allowedActions.map((action) => {
         const t = actionTerm(action);
         return (
@@ -323,7 +323,7 @@ export function FilterNav({ ctrl }: { ctrl: ConsoleController }): JSX.Element {
     })),
   ];
   return (
-    <nav className="nav" aria-label="Filter hypotheses by lifecycle state">
+    <nav className="nav" aria-label="Filter by stage">
       <p className="nav__label">View</p>
       {filters.map((f) => (
         <button
@@ -493,7 +493,7 @@ export function EmptyState({ ctrl }: { ctrl: ConsoleController }): JSX.Element {
   return (
     <output className="empty">
       {ctrl.vm.cards.length === 0
-        ? "No hypotheses yet. Exploration in progress."
+        ? "Nothing tracked yet. Keep offering new things."
         : "No hypotheses in this view."}
     </output>
   );

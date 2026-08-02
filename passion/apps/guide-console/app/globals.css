@@ -2649,6 +2649,35 @@ body {
   border-radius: 2px;
 }
 /* PCDE focus chips. */
+.accmatch__fit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 5px 0 0;
+}
+
+/* The evidence charts, folded away. Available to anyone challenging a number, absent from the path
+   to a decision. */
+.ovcharts {
+  margin-top: 4px;
+}
+.ovcharts__summary {
+  cursor: pointer;
+  padding: 8px 0;
+  font-size: 0.78rem;
+  color: var(--accent);
+  list-style: none;
+}
+.ovcharts__summary::-webkit-details-marker {
+  display: none;
+}
+.ovcharts__summary::after {
+  content: " \25be";
+}
+.ovcharts[open] > .ovcharts__summary::after {
+  content: " \25b4";
+}
+
 /* Family history: what was decided beside what was made. Two columns because they are read against
    each other, and a parent's question is usually about the gap between them. */
 .fhistwrap {

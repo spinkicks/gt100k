@@ -20,7 +20,35 @@ import type { JSX } from "react";
 
 import { specPath } from "./vocab.js";
 import type { WellbeingCardVM } from "./wellbeing.js";
-import { CHALLENGE_LABEL, PRESSURE_LABEL, STATE_LABEL } from "./wellbeing-panel.js";
+/**
+ * The engine's states and moves in a guide's words.
+ *
+ * These lived in `wellbeing-panel.tsx` alongside a component that stopped rendering when wellbeing
+ * became a strip. Only the maps were still imported, so the panel was dead code carrying live copy
+ * -- and any edit made to the words in it would silently have done nothing.
+ *
+ * "Scaffold" and "Autonomy" are gone. Both are terms of art: scaffolding is education theory and
+ * autonomy is self-determination theory, and neither tells a teacher what to do on Monday. The
+ * engine's own vocabulary is unchanged; only what a guide reads has.
+ */
+export const STATE_LABEL: Record<string, string> = {
+  UNDER_CHALLENGED: "Not stretched enough",
+  IN_ZONE: "In the zone",
+  OVER_CHALLENGED: "Stretched too far",
+  DANGER_WINDOW: "Watch closely",
+  EARLY_BURNOUT: "Early signs of exhaustion",
+  BURNOUT_TIP: "Close to burning out",
+  GAP: "Quiet for a while",
+};
+export const CHALLENGE_LABEL: Record<string, string> = {
+  PUSH: "Make it harder",
+  HOLD: "Keep it where it is",
+  SCAFFOLD: "Make it easier",
+};
+export const PRESSURE_LABEL: Record<string, string> = {
+  AUTONOMY_UP: "Give more freedom",
+  STEADY: "Leave as is",
+};
 
 export function WellbeingStrip({
   cards,
@@ -41,11 +69,11 @@ export function WellbeingStrip({
           <span className="wbstrip__spec">{specPath(c.domainPath)}</span>
           <span className="wbstrip__moves">
             <span className="wbstrip__move">
-              <span className="wbstrip__k">Challenge</span>
+              <span className="wbstrip__k">Difficulty</span>
               {CHALLENGE_LABEL[c.read.challenge] ?? c.read.challenge}
             </span>
             <span className="wbstrip__move">
-              <span className="wbstrip__k">Pressure</span>
+              <span className="wbstrip__k">Freedom</span>
               {PRESSURE_LABEL[c.read.pressure] ?? c.read.pressure}
             </span>
           </span>

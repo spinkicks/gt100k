@@ -97,9 +97,7 @@ function OfferNext({ kidId }: { kidId: string }): JSX.Element | null {
       <div className="card__hd">
         <div>
           <h2>What to offer next</h2>
-          <p>
-            Based on what this child has already been shown, not on what we think they will like
-          </p>
+          <p>From what they have already been offered</p>
         </div>
       </div>
       {/* Grouped by reason, not one flat list. The reason sentence belongs to the reason code, so a
@@ -163,11 +161,11 @@ export function OverviewPanel({
         <div className="card__hd">
           <div>
             <h2>Specializations</h2>
-            <p>What the evidence suggests, and how confident we are</p>
+            <p></p>
           </div>
         </div>
         {ov.rows.length === 0 ? (
-          <Blank reason="No specializations are being tracked for this child yet. Exploration is still in progress." />
+          <Blank reason="Nothing tracked yet." />
         ) : (
           <table className="ov-tbl">
             <thead>
@@ -256,15 +254,31 @@ export function OverviewPanel({
             not a summary, it is a second copy that can disagree with the first. */}
       </section>
 
-      {/* The charts, below the decisions. They are context rather than a call to act, and a guide who
-          wants them scrolls; a guide who does not is no longer scrolling past them to reach the
-          table. Engagement runs full width because it plots weeks and had the least room. */}
-      <section className="row2">
-        <ReturnsCard s={returns} />
-        <ShareCard ok={share.ok} reason={share.reason} slices={share.slices} total={share.total} />
-      </section>
+      {/* FOLDED AWAY, and the previous comment here explains why it had to be. It said the charts
+          "are context rather than a call to act", which is the same as saying they support no
+          decision — and roughly 150 words of headings, subtitles, legends and footers were sitting
+          on the landing tab to deliver that. Scrolling past them was the cost of reaching the thing
+          a guide came for.
 
-      <EngagementCard s={engagement} />
+          Kept rather than deleted, because they are the only place the EVIDENCE behind a belief can
+          be inspected: voluntary against prompted returns, coverage of what was offered, engagement
+          over time. That is exactly what somebody challenging a number wants, and exactly what
+          nobody wants on the way to Monday's decision. Engagement runs full width because it plots
+          weeks and had the least room. */}
+      <details className="ovcharts">
+        <summary className="ovcharts__summary">Show the data behind this</summary>
+        <section className="row2">
+          <ReturnsCard s={returns} />
+          <ShareCard
+            ok={share.ok}
+            reason={share.reason}
+            slices={share.slices}
+            total={share.total}
+          />
+        </section>
+
+        <EngagementCard s={engagement} />
+      </details>
     </div>
   );
 }
@@ -278,7 +292,7 @@ function ReturnsCard({ s }: { s: TimeSeries }): JSX.Element {
             <h2>Returns over time</h2>
             <WhyThis id="prompted-vs-voluntary" what="voluntary and prompted returns separately" />
           </div>
-          <p>Unprompted returns are the signal. Prompted ones are shown for contrast.</p>
+          <p>Came back on their own, versus after a nudge. Prompted ones are shown for contrast.</p>
         </div>
         {/* A legend for a chart that is not drawn would promise data the card does not have. */}
         {s.ok ? (

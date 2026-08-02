@@ -82,10 +82,14 @@ const STAGE_PURPOSE: Record<Stage, string> = {
 // child: a forecast rung becomes a quota, and a quota is the family pressure the wellbeing and
 // family engines exist to detect (mastery-map design §8). The path runs all the way up; the pace is
 // read off the child. The second half is right and is untouched.
+// SHORTENED FROM 48 WORDS. It used to end "Eminence is adult; this plan protects the trajectory,
+// never claims to manufacture it." True, and written for somebody challenging the product rather
+// than for the teacher it appeared in front of, under every plan card on every visit, with no
+// decision attached to any of it. The console no longer renders it at all -- the full argument
+// belongs on the Evidence base page, where a reader has come to ask how the product thinks -- and
+// what remains here is the part a guide would act on if it were shown.
 const TERMINAL_NOTE =
-  "How far a child goes here is theirs, and the path runs as far as they take it: what this plan " +
-  "paces by is the wellbeing read, never a target date, and it forecasts no rung for anybody. " +
-  "Eminence is adult; this plan protects the trajectory, never claims to manufacture it.";
+  "How far they go is up to them. This plan is paced by how they are doing, not by a target date.";
 
 /** Demote a stage by one (S4→S3→S2→S1), floored at S1 — the strain hold (never advance) [D-C]. */
 function demoteOne(stage: Stage): Stage {
@@ -213,7 +217,7 @@ function derivePlanCore(inputs: PlanInputs, resources: readonly CuratedResource[
   if (inputs.stretchSeeking) signals.push("voluntarily reaching for harder work");
   if (inputs.producerIdentity) signals.push("shipping/sharing for others");
 
-  const rationale = `On readiness signals (${signals.join(", ")}), this spike sits at ${stage}, to ${STAGE_PURPOSE[stage]}. ${inputs.monthsInPursuit} months in pursuit is indicative only; stages advance on readiness, never age. ${
+  const rationale = `On readiness signals (${signals.join(", ")}), this sits at ${stage}, to ${STAGE_PURPOSE[stage]}. ${inputs.monthsInPursuit} months in is a rough guide only; stages advance on readiness, never on age. ${
     strained
       ? "The wellbeing read shows strain, so we hold the stage and propose a guilt-free rest / deload and more autonomy, to protect the rage to master."
       : "The mentor is a relay and the audience widens with authenticity; deliberate practice stays small and serves the child's own project."
@@ -221,9 +225,9 @@ function derivePlanCore(inputs: PlanInputs, resources: readonly CuratedResource[
 
   const guardrailNotes: readonly string[] = [
     `DP is bounded: ${dpDose} < ${INVESTMENT_LOAD} investment-year load. Practice serves the project, never the reverse.`,
-    `Rest is mandatory: ${REST_DAYS_PER_WEEK} days/week and ${REST_MONTHS_PER_YEAR} months/year off the primary spike, in ~${REST_INCREMENT_MONTHS}-month increments.`,
+    `Rest is not optional: ${REST_DAYS_PER_WEEK} days a week and ${REST_MONTHS_PER_YEAR} months a year away from it, in blocks of about ${REST_INCREMENT_MONTHS} months.`,
     "The child owns the problem, method, and pace. This brief is an offer (opportunity/structure/access), never an assignment.",
-    "Trajectory, not eminence: this plan protects a climb, it does not forecast where it ends.",
+    "This plan protects a climb. It does not predict where the climb ends.",
     ...(strained
       ? [
           "Strain present, so we hold the stage and propose rest/deload to protect the rage to master.",
