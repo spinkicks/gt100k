@@ -236,6 +236,9 @@ export function useConsole() {
     // can read the guide's decisions rather than the module-scope seed.
     store,
     decisionCount: decisions.length,
+    // The log itself, for the Family tab's coaching history. The count alone answers "have I done
+    // anything"; the family conversation needs "what, and about which specialization".
+    decisions,
     resetDecisions,
     kid,
     setKid,

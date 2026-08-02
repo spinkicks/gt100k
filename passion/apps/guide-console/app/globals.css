@@ -2649,6 +2649,129 @@ body {
   border-radius: 2px;
 }
 /* PCDE focus chips. */
+/* Family history: what was decided beside what was made. Two columns because they are read against
+   each other, and a parent's question is usually about the gap between them. */
+.fhistwrap {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.fhist {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 7px;
+}
+.fhist > li {
+  font-size: 0.8125rem;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.fhist__when {
+  margin-right: 8px;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.fhist__why {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+}
+.fhist__made {
+  list-style: disc;
+  margin: 3px 0 0;
+  padding-left: 18px;
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
+.fhist__none {
+  margin: 6px 0 0;
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
+
+/* THE BARS. One row per tracked specialization, tallest first, so "which of these matters" is
+   answered by looking rather than by reading three decimals and holding them in your head. */
+.bars {
+  margin: 0 0 18px;
+}
+.bars__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+.bar {
+  display: grid;
+  grid-template-columns: minmax(120px, 210px) 1fr 72px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  font: inherit;
+  font-size: 0.78rem;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+.bar:hover {
+  background: var(--surface-2);
+}
+.bar--on {
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+.bar__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bar__mode {
+  margin-left: 7px;
+  color: var(--ink-muted);
+}
+.bar__track {
+  height: 14px;
+  border-radius: 3px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.bar--on .bar__track {
+  background: var(--surface);
+}
+.bar__fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+/* HOLLOW MEANS NOT YET CONFIDENT. A tall bar built on one afternoon and a tall bar built on six
+   weeks must not look the same, so the fill is outlined rather than solid. The word "needs more"
+   beside it carries the same fact, because a difference in fill alone is one nobody notices. */
+.bar__fill--thin {
+  background: repeating-linear-gradient(135deg, var(--accent) 0 2px, transparent 2px 5px);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+}
+.bar__note {
+  font-size: 0.7rem;
+  color: var(--ink-muted);
+  text-align: right;
+}
+.bars__rest {
+  margin: 12px 0 0;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+}
+
 /* THE WELLBEING STRIP. Above the tabs on every screen, because the back-off read is a precondition
    for using any other read rather than a seventh thing to remember to check. It has to earn its
    height on every screen, so it is one dense line per specialization. */

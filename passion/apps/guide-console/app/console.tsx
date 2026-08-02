@@ -17,6 +17,7 @@ import { PlanPanel } from "./plan-panel.js";
 import { FamilyPanel } from "./family-panel.js";
 import { AccessPanel } from "./access-panel.js";
 import { OverviewPanel } from "./overview-panel.js";
+import { HypothesisBars, detailed } from "./hypothesis-bars.js";
 import { MapsPanel } from "./maps-panel.js";
 import { familyOfferCount } from "./family.js";
 import { accessNeedsReview, accessProposalCount } from "./access.js";
@@ -60,6 +61,12 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
   // to hold this slot and was a summary of tabs that no longer exist.
   const [view, setView] = useState<View>("hypotheses");
   const [mapsOpen, setMapsOpen] = useState(false);
+  // Full cards for the top few, plus whichever the guide clicked, so a bar always opens something.
+  const shown = ((): readonly HypothesisCard[] => {
+    const top = detailed(ctrl.visible);
+    const picked = ctrl.visible.find((c) => c.id === ctrl.selectedId);
+    return picked === undefined || top.some((c) => c.id === picked.id) ? top : [picked, ...top];
+  })();
   // Domain knowledge, not a read on a child, so it does not move when the child switcher does.
   const maps = mapsForReview();
 
@@ -232,11 +239,25 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
               <EmptyState ctrl={ctrl} />
             ) : (
               <div role="tabpanel">
+                {/* Every tracked specialization as a bar, then full cards for the top few only. A
+                    wall of equal cards made a guide read all of them to find out which mattered. */}
+                <HypothesisBars
+                  cards={ctrl.visible}
+                  selectedId={ctrl.selectedId}
+                  onPick={ctrl.setSelectedId}
+                />
+
                 <div className="grid grid--wb">
-                  {ctrl.visible.map((card, i) => (
+                  {shown.map((card, i) => (
                     <SpecCard key={card.id} card={card} ctrl={ctrl} domId={`sc-${i}`} />
                   ))}
                 </div>
+                {ctrl.visible.length > shown.length ? (
+                  <p className="bars__rest">
+                    {ctrl.visible.length - shown.length} more above, in the bars. Click one to open
+                    it.
+                  </p>
+                ) : null}
 
                 {/* WHAT SURVIVED OVERVIEW. Overview was a summary of the six tabs beside it, and
                     most of it duplicated them: its wellbeing block is now the strip, its hypothesis
@@ -270,7 +291,13 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
               specialization, so there is no id here to filter on. Scoping it would mean inventing a
               per-specialization family signal that the engine does not produce. */}
           {view === "family" ? (
-            <FamilyPanel read={ctrl.family} observations={ctrl.familyObservations} />
+            <FamilyPanel
+              read={ctrl.family}
+              observations={ctrl.familyObservations}
+              kidId={ctrl.kid}
+              decisions={ctrl.decisions}
+              cards={ctrl.vm.cards}
+            />
           ) : null}
           <Legend />
         </main>

@@ -5,6 +5,9 @@
 // escalation + the synthetic guide observations + rationale. No approve/preview, no child/family-facing
 // label, no score (019 guardrails). Dark-console styling, reusing the wbpanel/wbitem/plangrid patterns.
 import type { JSX } from "react";
+import type { GuideDecision } from "./decisions.js";
+import type { HypothesisCard } from "@gt100k/hypothesis-store";
+import { CoachingLog, MadeHistory } from "./family-history.js";
 import type { FamilyRead } from "@gt100k/family";
 
 const KNOB_LABEL: Record<string, string> = { up: "Dial up", steady: "Hold steady" };
@@ -17,9 +20,15 @@ const RISK_LABEL: Record<string, string> = {
 export function FamilyPanel({
   read,
   observations,
+  kidId,
+  decisions,
+  cards,
 }: {
   read: FamilyRead | undefined;
   observations: readonly string[];
+  kidId: string;
+  decisions: readonly GuideDecision[];
+  cards: readonly HypothesisCard[];
 }): JSX.Element {
   return (
     <section className="wbpanel" aria-label="Family co-engagement" data-testid="family-panel">
@@ -148,6 +157,20 @@ export function FamilyPanel({
           ) : null}
         </ul>
       )}
+
+      {/* WHAT HAPPENED, under what to do. Advice with no history behind it is a conversation about
+          the engine's current opinion, which is the least useful thing to bring a parent. Neither
+          list is generated: the decisions are the guide's own, the artefacts are the child's. */}
+      <div className="fhistwrap">
+        <div>
+          <span className="planproject__k">What you decided</span>
+          <CoachingLog decisions={decisions} cards={cards} />
+        </div>
+        <div>
+          <span className="planproject__k">What they made</span>
+          <MadeHistory kidId={kidId} />
+        </div>
+      </div>
     </section>
   );
 }
