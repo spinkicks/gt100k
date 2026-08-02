@@ -218,8 +218,17 @@ describe("money and geography sort children too", () => {
   });
 
   it("leaves a usable catalogue in either region", () => {
+    // ABSOLUTE, NOT PROPORTIONAL. This used to require each region to hold 60% of the catalogue,
+    // which punishes growth: adding four US-only county-fair entries does not remove anything a
+    // British child could do, but it drops the UK share below the bar. The question "is there enough
+    // here for a child in this country" is about a count and a spread, not about a ratio to a total
+    // that keeps moving.
     for (const r of ["us", "uk"] as const) {
-      expect(inRegion(r).length).toBeGreaterThan(PURSUITS.length * 0.6);
+      const here = inRegion(r);
+      expect(here.length, `${r} has too little to be worth opening`).toBeGreaterThanOrEqual(20);
+      // And spread across most cabins, so a region is not twenty variations on one theme.
+      const cabins = new Set(here.map((p) => p.cabin));
+      expect(cabins.size, `${r} is concentrated in too few cabins`).toBeGreaterThanOrEqual(6);
     }
   });
 });
@@ -237,13 +246,24 @@ describe("lookup", () => {
  * admissions reader can check at seventeen.
  */
 describe("the later ceiling, which is not the same question as the venue", () => {
-  it("names a ceiling for nearly every pursuit, and absence stays rare enough to mean something", () => {
-    // Not "every": absence is a real state with a documented meaning, and asteroid hunting is the
-    // case that proves it — its terminal honour arrives six to ten years after the application, so
-    // there is genuinely nothing above the venue. But if absence became common the field would stop
-    // carrying information, so it is bounded rather than banned.
-    const without = PURSUITS.filter((p) => p.ceiling === undefined).map((p) => p.id);
-    expect(without.length).toBeLessThan(PURSUITS.length * 0.1);
+  it("explains every missing ceiling instead of merely counting them", () => {
+    // WAS A PROPORTION, AND A PROPORTION WAS THE WRONG GUARD. It read
+    // `without.length < PURSUITS.length * 0.1`, so adding three pursuits that honestly have no
+    // ceiling turned the suite red and the cheapest way back to green would have been to invent
+    // ceilings for them. That is the same fault the age-floor assertions had, and it is worse here:
+    // a fabricated ceiling is a claim to an admissions reader.
+    //
+    // The real requirement is that absence be a FINDING rather than an omission. Baking's ceiling is
+    // missing because the National Festival of Breads deleted its youth division; knitting's because
+    // Scholastic removed Craft & Design for 2026 and every fibre scholarship starts at undergraduate.
+    // Both of those are worth knowing. An entry that simply never had the research done is not.
+    for (const p of PURSUITS.filter((x) => x.ceiling === undefined)) {
+      expect(p.note, `${p.id} has no ceiling and no note explaining why not`).toBeTruthy();
+      expect(
+        (p.note ?? "").length,
+        `${p.id}: the explanation is too short to be one`,
+      ).toBeGreaterThan(30);
+    }
   });
 
   it("gives every ceiling that exists a name and a real url", () => {

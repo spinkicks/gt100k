@@ -51,8 +51,19 @@ import type { Pursuit } from "./model.js";
  *   Poetry, as a separate entry. The Rattle Young Poets Anthology ended in 2024 and Poetry Out Loud
  *   is grades 9-12 and recitation rather than composition. Poetry is a mode of writing here.
  *
- *   Mahjong, and public speaking as its own leaf. No youth division in the first; the second needs
- *   a chartered Gavel Club that an individual child cannot start.
+ *   Mahjong. No youth division.
+ *
+ *   PUBLIC SPEAKING WAS CUT ON A FACT THAT IS WRONG, and the correction is worth keeping visible.
+ *   The note here said it "needs a chartered Gavel Club that an individual child cannot start."
+ *   Toastmasters' Gavel Clubs do work that way, but they are not the only door. LAMDA runs Speaking
+ *   in Public as an Ofqual-regulated graded ladder from Entry Level to Grade 8, the examiner is
+ *   external by regulation and cannot be the child's own teacher, and a parent books it directly:
+ *   "Your teacher may arrange for you to take an exam, but you can also book one yourself." The
+ *   syllabus states "There are no minimum age restrictions."
+ *
+ *   The same mechanism reaches acting and recitation. Verified but NOT YET ADDED, because two of
+ *   the three have no cabin to live in and that is a wider decision than an append; see
+ *   `docs/decisions/2026-08-02-catalogue-additions.md`.
  */
 export const PURSUITS: readonly Pursuit[] = [
   // ── Puzzles & Numbers ─────────────────────────────────────────────────────────────────────
@@ -363,6 +374,135 @@ export const PURSUITS: readonly Pursuit[] = [
     reach: "adult-action",
     region: "us",
     note: "A Division is 7-13 by age on 1 July. The school-sponsored national challenge is grades 6-12 and $800-1200, which is the wrong route for us.",
+  },
+  // ── The county-fair mechanism, through OPEN CLASS rather than 4-H ─────────────────────────────
+  //
+  // `woodworking` and `growing-plants` reach the fair through 4-H, which costs a membership, a
+  // county residency and a floor of 8 -- Cloverbuds, the 5-7 band, are barred from competitive
+  // judging and receive a participation ribbon rather than a verdict. Almost every county fair also
+  // runs an OPEN CLASS beside 4-H, and for an unaffiliated child it is the better door on every
+  // count: no membership, no residency ("Exhibitors do not need to be Larimer County residents to
+  // enter"), and no published age floor at all. Its youth classes are still competitively placed,
+  // carry premium money and award Champion and Reserve Champion, so the verdict is real.
+  //
+  // That is what restores making activities to the bottom of the band. The same fair's Creative
+  // Crafts department runs a judged class for "Children, 4 and under, any craft".
+  //
+  // A NAMED FAIR, DELIBERATELY. Open-class rules are set fair by fair and vary in both directions --
+  // Erie County's Needle Arts competition is "Anyone 13 years old and older", which would exclude
+  // most of this band. So these entries name Larimer County's fair books rather than gesturing at
+  // county fairs in general, and the floors below are judgements about the activity rather than
+  // quoted rules, because the venue publishes none.
+  {
+    id: "baking",
+    label: "Baking",
+    blurb: "Get the rise right, get the crumb right, then let a stranger cut into it.",
+    cabin: "making-engineering",
+    standard:
+      "Larimer County Fair Open Class Baked Products rules: outside, inside and eating quality",
+    venue: {
+      name: "Larimer County Fair Open Class",
+      url: "https://www.treventscomplex.com/assets/doc/Baked-Products-Fairbook-9e1f0a8593.pdf",
+    },
+    minAge: 7,
+    minAgeBasis: "judgement",
+    costUsd: 30,
+    cadence: "annual",
+    reach: "adult-action",
+    region: "us",
+    skew: {
+      male: 0.43,
+      source: "Mintel UK home-baking, adults; no youth competitive figure exists",
+    },
+    // NO CEILING, AND ONE WAS LOST RATHER THAN NEVER EXISTING. The National Festival of Breads ran a
+    // youth division with a published floor of eight -- "open to any AMATEUR YOUTH baker 8 to 17
+    // years of age" in 2017 -- and its 2025 rules read "open to ADULT home bakers, 18 years of age
+    // and older". SkillsUSA's Baking contest is restricted to CTE programmes with baking as the
+    // occupational objective, and C-CAP requires attending a partner high school, so both disqualify
+    // a home baker outright rather than merely disfavouring one.
+    note: "Cake decorating is a different action program and is not folded in: piping and fondant share no motor sequence with mixing, proving and baking, and the fair judges them separately.",
+  },
+  {
+    id: "food-preservation",
+    label: "Preserving Food",
+    blurb: "Put summer in a jar so it is still good in February.",
+    cabin: "making-engineering",
+    standard:
+      "Larimer County Fair Open Class Preserved Food Products rules: seal, pack, headspace, clarity",
+    venue: {
+      name: "Larimer County Fair Open Class",
+      url: "https://www.treventscomplex.com/assets/doc/Preserved-Food-Products-Fair-Book-0ae44a83f0.pdf",
+    },
+    // Nine rather than the seven used for baking. The venue publishes no floor for either, but this
+    // is the one activity in the cluster carrying a scald and a botulism risk.
+    minAge: 9,
+    minAgeBasis: "judgement",
+    costUsd: 40,
+    cadence: "annual",
+    reach: "adult-action",
+    region: "us",
+    note: "The dried-product class is the cheap way in: no jars, no canner, no pressure equipment. No national youth distinction exists above the county fair, so this pursuit has no ceiling.",
+  },
+  {
+    id: "knitting",
+    label: "Knitting",
+    blurb: "Two needles and one long piece of string, turned into something with a shape.",
+    cabin: "making-engineering",
+    standard: "Larimer County Fair Open Class rules: workmanship, design, suitability to purpose",
+    venue: {
+      name: "Larimer County Fair Open Class",
+      url: "https://www.treventscomplex.com/assets/doc/Knitting-Crochet-Felting-Fairbook-69c7935e74.pdf",
+    },
+    minAge: 7,
+    minAgeBasis: "judgement",
+    costUsd: 25,
+    cadence: "annual",
+    reach: "adult-action",
+    region: "us",
+    skew: { male: 0.29, source: "AFCI craft participation study, adults" },
+    // NOT "FIBRE CRAFT". Knitting is two needles, crochet is one hook, weaving is a loom, and they
+    // share no motor sequence -- the "crafts" failure mode one level down. The fair books refuse to
+    // bundle them either, listing crochet, hand knit and felted items as separate judged classes.
+    // Weaving is left out on cost: a floor loom is $200 to $1,500 before any yarn, and there is no
+    // ceiling above the county ribbon to justify it.
+    //
+    // NO CEILING, and this is a real gap rather than a failed search. Scholastic removed its Craft &
+    // Design category for 2026, and both Handweavers Guild scholarships require current enrolment in
+    // an accredited undergraduate or graduate programme.
+    note: "Crochet would be an equally defensible separate entry on identical evidence; it is left out only to avoid two near-identical tiles.",
+  },
+  {
+    id: "pottery",
+    label: "Pottery",
+    blurb: "Push wet clay into a shape, then fire it so it stays that way forever.",
+    cabin: "making-engineering",
+    standard: "Colorado 4-H Ceramics unit score sheets and the Colorado Guide for Ceramic Judges",
+    // THROUGH 4-H, NOT OPEN CLASS, and it is the one entry in this group where that is right. Open
+    // class has no ceramics department: clay appears only inside a Creative Crafts class for an
+    // "item of paper, clay, stone, or any other medium not listed", judged on "workmanship, beauty
+    // of design, general appearance, creativity". That names nothing about clay -- no wall
+    // thickness, no glaze fault, no firing -- so it is a bundle judged by a generic rubric. The 4-H
+    // score sheets are genuinely criterion-referenced, and the price of that door is the floor of 8.
+    venue: {
+      name: "4-H county fair, Ceramics",
+      url: "https://co4h.colostate.edu/4h-project/4-h-ceramics-project/",
+    },
+    ceiling: {
+      name: "National K-12 Ceramic Exhibition",
+      url: "https://www.k12clay.org/",
+      opensAt: 5,
+      precedent:
+        "Juried by a single named juror from the ceramic art world, 150 pieces from over a thousand entries, with scholarships. Teacher-submitted, and no precedent linking a selection to a university was found.",
+    },
+    minAge: 8,
+    minAgeBasis: "verified",
+    minAgeQuote: "Designed for members 8-18 years old.",
+    minAgeSource: "https://co4h.colostate.edu/4h-project/4-h-ceramics-project/",
+    costUsd: 120,
+    cadence: "annual",
+    reach: "adult-action",
+    region: "us",
+    note: "Needs a kiln. Units 1-2 must be bisque fired and the glaze units fired again, so a child with no club and no school art room has to buy firing from a community studio; where that does not exist locally this is effectively needs-organisation.",
   },
   {
     id: "woodworking",
