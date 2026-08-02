@@ -2649,6 +2649,52 @@ body {
   border-radius: 2px;
 }
 /* PCDE focus chips. */
+/* The road to a plan: what an exploring child's Plan tab shows instead of one sentence saying no. */
+.roadmap__lede {
+  margin: 0 0 14px;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  line-height: 1.45;
+  max-width: 72ch;
+}
+.roadmap__checks {
+  list-style: none;
+  margin: 4px 0 16px;
+  padding: 0;
+  display: grid;
+  gap: 7px;
+  max-width: 72ch;
+}
+.roadmap__checks li {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  font-size: 0.8125rem;
+  color: var(--ink);
+}
+.roadmap__mark {
+  flex: 0 0 auto;
+  width: 14px;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+.roadmap__checks li[data-done="true"] .roadmap__mark {
+  color: var(--ok, var(--accent));
+}
+/* Carried in words as well as in the mark, because this list is scanned rather than read. */
+.roadmap__state {
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+}
+.roadmap__probe {
+  margin: 4px 0 14px;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  line-height: 1.45;
+  max-width: 72ch;
+}
+
 /* The templated project, folded away while a real rung is showing. */
 .planproject__summary {
   cursor: pointer;

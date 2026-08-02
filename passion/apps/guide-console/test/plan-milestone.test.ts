@@ -17,6 +17,8 @@ import { describe, expect, it } from "vitest";
 import { milestoneForPlan } from "../app/plan-milestone.js";
 import { plansForKid } from "../app/plan.js";
 import type { PlanCardVM } from "../app/plan.js";
+import { consoleViewModel } from "@gt100k/hypothesis-store";
+import { buildRosterGates, profileFor } from "../app/console-data.js";
 
 /** Dulce is the one synthetic child with a certified spike in a domain that has a published map. */
 const DULCE = "kid-synthetic-004";
@@ -81,5 +83,51 @@ describe("what the join refuses", () => {
   it("gives back nothing for a child with no plans at all", () => {
     // Cyrus has nothing tracked, so there is no card to join anything to.
     expect(plansForKid("kid-synthetic-003")).toEqual([]);
+  });
+});
+
+/**
+ * The exploring child, who is most children most of the time.
+ *
+ * This tab used to answer them with one sentence — "not a certified spike yet, so there is no plan"
+ * — which is true and tells a guide nothing they can act on. The road shows the three gate checks
+ * and the next thing to offer, all of which the store already computed and only one tab was reading.
+ */
+describe("the road to a plan", () => {
+  const BEX = "kid-synthetic-002";
+  /** The same cards the panel renders: view models with gates attached, not raw hypotheses. */
+  const bexCards = () => {
+    const store = profileFor(BEX)!.store;
+    return consoleViewModel(store, BEX, buildRosterGates(store)).cards;
+  };
+
+  it("has no plan to show for a child who is still exploring", () => {
+    // The precondition. If this ever stops being true the road stops being reachable.
+    expect(plansForKid(BEX)).toEqual([]);
+  });
+
+  it("reads the gate checks and the next probe off the card the store already built", () => {
+    const cards = bexCards();
+    expect(cards.length).toBeGreaterThan(0);
+    for (const c of cards) {
+      expect(c.nextProbe.length).toBeGreaterThan(10);
+      // A card past EXPLORING carries a gate; the road renders its three checks by name rather than
+      // as a tally, because "two of three" invites reading a child as two-thirds of the way to
+      // something, which is the progress measure this product refuses everywhere else.
+      if (c.state !== "EXPLORING" && c.gate !== undefined) {
+        expect(typeof c.gate.gapSurvived).toBe("boolean");
+        expect(typeof c.gate.durable).toBe("boolean");
+        expect(typeof c.gate.hasArtifact).toBe("boolean");
+      }
+    }
+  });
+
+  it("never says the child is a fraction of the way to a spike", () => {
+    // The road is three named facts, not a score. Guarding the wording the same way the maps panel
+    // guards its own, because this is the surface most likely to grow a percentage.
+    for (const c of bexCards()) {
+      expect(c.nextProbe).not.toMatch(/\d+\s*%/);
+      expect(c.nextProbe).not.toMatch(/\b\d+\s+of\s+\d+\b/);
+    }
   });
 });

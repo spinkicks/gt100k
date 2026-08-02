@@ -8,6 +8,7 @@
 // terminal note. Guide-facing only, grayscale-safe: NO child-facing text, NO reward/score/grade.
 import type { JSX } from "react";
 import type { PlanCardVM } from "./plan.js";
+import type { HypothesisCard } from "@gt100k/hypothesis-store";
 import { specPath, modeLabel } from "./vocab.js";
 import { WhyThis } from "./why.js";
 import { milestoneForPlan, type PlanMilestoneVM } from "./plan-milestone.js";
@@ -209,6 +210,75 @@ const BASIS_LABEL: Record<string, string> = {
   model: "Our own reasoning",
 };
 
+/**
+ * What a guide sees for a specialization that has no plan yet, which is most of them most of the
+ * time.
+ *
+ * NOT A PLAN, AND IT MUST NOT LOOK LIKE ONE. An exploring child does not have a specialization plan
+ * and inventing a screen that resembles one would be the filler problem in a new place. What this
+ * shows is the road to one: the three gate checks, which are cleared, and the single next thing to
+ * offer. Every field is already computed by the hypothesis store and was being read by exactly one
+ * tab.
+ *
+ * The checks are deliberately shown as what they ARE rather than as a count. "Two of three" invites
+ * reading a child as two-thirds of the way to something, which is the progress measure this product
+ * refuses everywhere else.
+ */
+function RoadToAPlan({ card }: { card?: HypothesisCard }): JSX.Element {
+  if (card === undefined) {
+    return (
+      <output className="wbpanel__empty">
+        Nothing is being tracked for this child yet, so there is no road to show. Exploration comes
+        first.
+      </output>
+    );
+  }
+
+  const gate = card.gate;
+  const checks: readonly { readonly k: string; readonly label: string; readonly done: boolean }[] =
+    [
+      { k: "gap", label: "Came back after a long quiet gap", done: gate?.gapSurvived === true },
+      {
+        k: "durable",
+        label: "Came back across several different days",
+        done: gate?.durable === true,
+      },
+      { k: "artefact", label: "Made something", done: gate?.hasArtifact === true },
+    ];
+
+  return (
+    <div className="roadmap" data-testid="road-to-a-plan">
+      <p className="roadmap__lede">
+        There is no plan here yet, because a plan is for a certified spike. This is what would make
+        it one.
+      </p>
+
+      <span className="planproject__k">What a spike has to show</span>
+      <ul className="roadmap__checks">
+        {checks.map((c) => (
+          <li key={c.k} data-done={c.done}>
+            {/* The word, not only the mark. A tick and a dash differing by shape alone is the same
+                colour-only failure the tab dot had, and this list is read at a glance. */}
+            <span className="roadmap__mark" aria-hidden="true">
+              {c.done ? "✓" : "–"}
+            </span>
+            {c.label}
+            <span className="roadmap__state">{c.done ? "yes" : "not yet"}</span>
+          </li>
+        ))}
+      </ul>
+
+      <span className="planproject__k">What to offer next</span>
+      <p className="roadmap__probe">{card.nextProbe}</p>
+
+      <p className="planproject__owns">
+        None of this advances on its own. A spike is certified by a human, and the checks above are
+        what that human is looking at.
+      </p>
+    </div>
+  );
+}
+
 function PlanItem({ card, kidId }: { card: PlanCardVM; kidId: string }): JSX.Element {
   const p = card.plan;
   const project = p.nextProject;
@@ -334,9 +404,12 @@ function PlanItem({ card, kidId }: { card: PlanCardVM; kidId: string }): JSX.Ele
 export function PlanPanel({
   cards,
   kidId,
+  exploring,
 }: {
   cards: readonly PlanCardVM[];
   kidId: string;
+  /** The specialization the tab is scoped to, needed only when it has no plan yet. */
+  exploring?: HypothesisCard;
 }): JSX.Element {
   return (
     <section className="wbpanel" aria-label="Specialization plan" data-testid="plan-panel">
@@ -345,13 +418,12 @@ export function PlanPanel({
       </header>
 
       {cards.length === 0 ? (
-        // Singular, because the tab is scoped to one specialization and the banner above has just
-        // named it. The old plural read as a claim about the whole child, which is a different and
-        // wronger statement: the child may well have a planned spike sitting on the next rail row.
-        <output className="wbpanel__empty">
-          This one is not a certified spike yet, so there is no plan for it. A spike is planned once
-          you promote it to a candidate or an active specialization.
-        </output>
+        // A third of the workflow used to live here as one sentence. "Not a certified spike yet, so
+        // there is no plan" is true and useless: most children are exploring most of the time, so
+        // for most of a guide's session this tab said nothing. It now shows the ROAD to a plan --
+        // which gate checks are cleared, what is missing, and what to offer next -- all of which the
+        // engine already computes and only the Hypotheses tab was reading.
+        <RoadToAPlan card={exploring} />
       ) : (
         <>
           <ul className="wblist" data-testid="plan-list">
