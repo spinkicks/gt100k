@@ -83,28 +83,120 @@ describe("age is a hard filter, because a locked door is worse than no door", ()
     expect(reachableAt(6).length).toBeLessThan(reachableAt(14).length / 2);
   });
 
-  it("records how thin the bottom of the band really is", () => {
-    // Not a target, a measurement. Most venues open at 10 to 13: eBird's terms bar under-13s,
-    // picoCTF and the game jams are 13 by COPPA, and 4-H Cloverbuds are usually barred from the
-    // competitive judging that is the reason to enter. If this number moves, the world changed or
-    // somebody entered an age floor they did not verify.
-    expect(reachableAt(6).length).toBeGreaterThanOrEqual(15);
-    expect(reachableAt(6).length).toBeLessThanOrEqual(30);
-  });
-
   it("never admits a child below a venue's stated floor", () => {
     for (const age of [6, 9, 13]) {
       for (const p of reachableAt(age)) expect(p.minAge).toBeLessThanOrEqual(age);
     }
   });
+});
 
-  it("has at least one pursuit in reach of a six-year-old in most cabins", () => {
-    // Deliberately "most" and not "every". Birding genuinely has no route below thirteen, and the
-    // catalogue should not invent one to make a test pass.
-    const covered = new Set(reachableAt(6).map((p) => p.cabin));
-    expect(covered.size).toBeGreaterThanOrEqual(6);
+/**
+ * WHAT THESE REPLACED, AND WHY THE OLD ONES HAD TO GO.
+ *
+ * Two assertions used to guard this data by counting it: at least fifteen pursuits reachable at six,
+ * and six cabins covered at six. Their own comment gave the game away — "if this number moves, the
+ * world changed or somebody entered an age floor they did not verify" — because the third
+ * possibility, that somebody CORRECTED a floor they had entered wrongly, breaks the test in exactly
+ * the same way. The assertion constrained the data it was meant to validate. When verification found
+ * robotics was 9 and not 6, the suite went red and the only ways to green it were to revert the
+ * correction or to lower a different floor to compensate. A test that argues for keeping a known
+ * error is worse than no test.
+ *
+ * The replacements assert PROVENANCE instead of distribution: every floor says where it came from,
+ * verified floors carry the venue's own words, and no entry cites a standard belonging to a
+ * different programme than its venue. These are claims about honesty rather than about shape. They
+ * cannot be satisfied by fudging a number, they do not fight corrections, and one of them is the
+ * check that would have caught the FLL Explore fault on the day it was introduced.
+ */
+describe("every age floor says where it came from", () => {
+  it("declares a basis for every pursuit, so a fact and an opinion are never confusable", () => {
+    for (const p of PURSUITS) {
+      expect(["verified", "judgement"], `${p.id} must declare a basis`).toContain(p.minAgeBasis);
+    }
+  });
+
+  it("backs a verified floor with the venue's own words and a page to read them on", () => {
+    for (const p of PURSUITS.filter((x) => x.minAgeBasis === "verified")) {
+      expect(p.minAgeQuote, `${p.id} claims verified and must quote the rule`).toBeTruthy();
+      expect((p.minAgeQuote ?? "").length, `${p.id} quote too short to be a rule`).toBeGreaterThan(
+        8,
+      );
+      // The landing page is acceptable only when the rule is genuinely on it; otherwise the page
+      // actually read must be named, because a reader checking us needs to reach the same words.
+      const src = p.minAgeSource ?? p.venue.url;
+      expect(src.startsWith("https://"), `${p.id} needs a real source url`).toBe(true);
+    }
+  });
+
+  it("keeps a judgement clean of borrowed authority", () => {
+    // A judgement with a quote attached would read as verified at a glance, which is the exact
+    // confusion this field exists to remove.
+    for (const p of PURSUITS.filter((x) => x.minAgeBasis === "judgement")) {
+      expect(p.minAgeQuote, `${p.id} is a judgement and must not quote a rule`).toBeUndefined();
+    }
+  });
+
+  it("does not let judgements quietly become the whole catalogue", () => {
+    // Not a distribution target: a floor is verified or it is not, and we do not get to choose. This
+    // guards the opposite failure from the old assertions — that the field gets added and then every
+    // entry is marked `judgement` because that requires no work, leaving the honest-looking schema
+    // carrying no information at all.
+    const verified = PURSUITS.filter((p) => p.minAgeBasis === "verified");
+    expect(verified.length, "no floor has been verified against a venue").toBeGreaterThan(0);
+  });
+
+  it("cites no standard belonging to a different programme than its venue", () => {
+    // THE CHECK THAT WOULD HAVE CAUGHT THE FLL EXPLORE FAULT. An entry named one programme's venue
+    // and another programme's rubric, so the standard a child would be judged against was not the
+    // standard we told them to work to. Compared on significant words rather than exact strings,
+    // because a venue and its standard legitimately word themselves differently.
+    const significant = (s: string): readonly string[] =>
+      s
+        .toLowerCase()
+        .split(/[^a-z0-9]+/)
+        // Three characters and up, because the programme names most likely to be shared between a
+        // venue and its standard are acronyms: RSL, FLL, AMC, USACO. A four-character floor drops
+        // exactly the words that carry the match.
+        .filter((w) => w.length > 2 && !STOP.has(w));
+
+    for (const p of PURSUITS) {
+      const venueWords = new Set(significant(p.venue.name));
+      const standardWords = significant(p.standard);
+      const shares = standardWords.some((w) => venueWords.has(w));
+      // Sharing a word is sufficient but not necessary: plenty of venues run a standard under an
+      // unrelated name. Where nothing is shared the entry must say why in its `note`, which is what
+      // makes the mismatch a recorded decision rather than an unnoticed fault.
+      if (!shares) {
+        expect(
+          p.note,
+          `${p.id}: standard "${p.standard}" shares no word with venue "${p.venue.name}" and no note explains it`,
+        ).toBeTruthy();
+      }
+    }
   });
 });
+
+const STOP = new Set([
+  "the",
+  "and",
+  "for",
+  "with",
+  "from",
+  "your",
+  "youth",
+  "junior",
+  "national",
+  "international",
+  "association",
+  "federation",
+  "official",
+  "program",
+  "programme",
+  "level",
+  "levels",
+  "grade",
+  "grades",
+]);
 
 describe("the unaffiliated child", () => {
   it("excludes anything needing an organisation that may not exist nearby", () => {

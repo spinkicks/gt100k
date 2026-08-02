@@ -227,7 +227,15 @@ export const CLAIMS: readonly Claim[] = [
     area: "Wellbeing",
     basis: "evidence",
     band: "12-14",
-    why: "A child going quietly through the motions matters more than a child saying they are tired, because that quiet fade is what predicts dropping out.",
+    // WAS: "...because that quiet fade is what predicts dropping out." Downgraded, because the
+    // sources do not carry it. Raedeke & Smith (2001) is a validation study for a burnout
+    // QUESTIONNAIRE, and devaluation is one of its three subscales; Isoard-Gautheur et al. (2016)
+    // profiles burnout in adolescent athletes. Both are cross-sectional and correlational, neither
+    // follows children to a dropout outcome, and "predicts" claims a longitudinal result nobody
+    // here measured. The population is competitive adolescent athletes, which is not the population
+    // this product serves. The observation is still worth acting on and the reason to act on it is
+    // now stated at the strength the evidence supports.
+    why: "A child going quietly through the motions is worth more attention than one who says they are tired, because saying nothing is the easier thing to miss.",
     sources: [
       { authors: "Raedeke & Smith", year: 2001, url: "https://doi.org/10.1123/jsep.23.4.281" },
       {
@@ -236,6 +244,8 @@ export const CLAIMS: readonly Claim[] = [
         url: "https://doi.org/10.1123/tsp.2014-0140",
       },
     ],
+    limit:
+      "Both studies are of competitive adolescent athletes, and both are cross-sectional. Devaluation is a recognised part of burnout; that it predicts a child leaving is not something these studies followed anyone long enough to show.",
   },
   {
     id: "wellbeing-counter-cyclical",

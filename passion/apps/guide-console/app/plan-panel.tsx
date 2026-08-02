@@ -8,8 +8,10 @@
 // terminal note. Guide-facing only, grayscale-safe: NO child-facing text, NO reward/score/grade.
 import type { JSX } from "react";
 import type { PlanCardVM } from "./plan.js";
+import type { HypothesisCard } from "@gt100k/hypothesis-store";
 import { specPath, modeLabel } from "./vocab.js";
 import { WhyThis } from "./why.js";
+import { milestoneForPlan, type PlanMilestoneVM } from "./plan-milestone.js";
 
 const STAGE_LABEL: Record<string, string> = {
   S1_IGNITION: "Ignition",
@@ -107,9 +109,180 @@ function doseLine(dose: number): string {
     : `${pct}% bounded, chosen practice`;
 }
 
-function PlanItem({ card }: { card: PlanCardVM }): JSX.Element {
+/**
+ * The rung this child is on, in the domain's own words.
+ *
+ * This is the block that replaces filler with fact. Where the project brief says "Play with Game
+ * Dev", this says "Write a solution someone else can follow" — because it comes from a map somebody
+ * authored against a published curriculum rather than from a template with the domain name in it.
+ */
+function Rung({ ms }: { ms: PlanMilestoneVM }): JSX.Element {
+  return (
+    <div className="planrung">
+      <span className="planproject__k">Where they are on the map</span>
+      <p className="planrung__title">{ms.title}</p>
+      <p className="planrung__cap">{ms.capability}</p>
+
+      {/* The basis, in the open. A guide is entitled to know whether the order of these rungs rests
+          on a published curriculum or on our own reasoning, and `model` means nobody vouches for it
+          but us. Hiding that would make an authored map and a guessed one look identical. */}
+      <p className="planrung__why">
+        <span className={`chip chip--basis chip--basis-${ms.basis}`}>{BASIS_LABEL[ms.basis]}</span>{" "}
+        {ms.why}
+      </p>
+      {ms.limit === null ? null : <p className="planrung__limit">{ms.limit}</p>}
+
+      {ms.practice.length > 0 ? (
+        <>
+          <span className="planproject__k">What practice looks like here</span>
+          <ul className="planres planres--plain">
+            {ms.practice.map((pr) => (
+              <li key={pr.title}>
+                <strong>{pr.title}.</strong> {pr.description}
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : null}
+
+      <p className="planrung__demo">
+        <strong>Shows it:</strong> {ms.demonstration}
+      </p>
+      {ms.opportunity === null ? null : (
+        <p className="planrung__opp">
+          <strong>Out in the world:</strong> {ms.opportunity}
+        </p>
+      )}
+
+      {/* Standing, and never without the work under it. Same rule the Maps tab holds to, for the
+          same reason: Butler (1988) found a bare verdict with no task anchoring behaves like a
+          grade and depressed interest in 132 children aged roughly 10 to 12. */}
+      <p className="planrung__strength">{ms.strengthText}</p>
+      {ms.evidence.length === 0 ? null : (
+        <ul className="planres planres--plain">
+          {ms.evidence.flatMap((e) =>
+            e.made.map((m) => (
+              <li key={`${e.projectId}-${m.title}`}>
+                {m.title}
+                {m.url === undefined ? null : (
+                  <>
+                    {" "}
+                    <a className="mapwork__src" href={m.url} target="_blank" rel="noreferrer">
+                      Look at it
+                    </a>
+                  </>
+                )}
+              </li>
+            )),
+          )}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/**
+ * What a guide sees where nobody has written a map for this domain.
+ *
+ * Said plainly rather than filled in. Four maps exist against a catalogue of dozens of pursuits, so
+ * this is the ordinary case, and a generated sentence about "playing with" the domain is exactly
+ * the filler this whole change removes. An empty answer that names why it is empty is worth more
+ * than a full one that means nothing.
+ */
+function NoMap(): JSX.Element {
+  return (
+    <div className="planrung planrung--none">
+      <span className="planproject__k">Where they are on the map</span>
+      <p className="planrung__cap">
+        Nobody has written a map for this domain yet, so there are no rungs to place them on. The
+        pace above is real and comes from the planner; the project below is a general shape rather
+        than this domain&rsquo;s next step.
+      </p>
+    </div>
+  );
+}
+
+/** What an ordering rests on, in a guide's words rather than the engine's. */
+const BASIS_LABEL: Record<string, string> = {
+  syllabus: "Published curriculum",
+  research: "Research",
+  community: "Community practice",
+  model: "Our own reasoning",
+};
+
+/**
+ * What a guide sees for a specialization that has no plan yet, which is most of them most of the
+ * time.
+ *
+ * NOT A PLAN, AND IT MUST NOT LOOK LIKE ONE. An exploring child does not have a specialization plan
+ * and inventing a screen that resembles one would be the filler problem in a new place. What this
+ * shows is the road to one: the three gate checks, which are cleared, and the single next thing to
+ * offer. Every field is already computed by the hypothesis store and was being read by exactly one
+ * tab.
+ *
+ * The checks are deliberately shown as what they ARE rather than as a count. "Two of three" invites
+ * reading a child as two-thirds of the way to something, which is the progress measure this product
+ * refuses everywhere else.
+ */
+function RoadToAPlan({ card }: { card?: HypothesisCard }): JSX.Element {
+  if (card === undefined) {
+    return (
+      <output className="wbpanel__empty">
+        Nothing is being tracked for this child yet, so there is no road to show. Exploration comes
+        first.
+      </output>
+    );
+  }
+
+  const gate = card.gate;
+  const checks: readonly { readonly k: string; readonly label: string; readonly done: boolean }[] =
+    [
+      { k: "gap", label: "Came back after a long quiet gap", done: gate?.gapSurvived === true },
+      {
+        k: "durable",
+        label: "Came back across several different days",
+        done: gate?.durable === true,
+      },
+      { k: "artefact", label: "Made something", done: gate?.hasArtifact === true },
+    ];
+
+  return (
+    <div className="roadmap" data-testid="road-to-a-plan">
+      <p className="roadmap__lede">
+        There is no plan here yet, because a plan is for a certified spike. This is what would make
+        it one.
+      </p>
+
+      <span className="planproject__k">What a spike has to show</span>
+      <ul className="roadmap__checks">
+        {checks.map((c) => (
+          <li key={c.k} data-done={c.done}>
+            {/* The word, not only the mark. A tick and a dash differing by shape alone is the same
+                colour-only failure the tab dot had, and this list is read at a glance. */}
+            <span className="roadmap__mark" aria-hidden="true">
+              {c.done ? "✓" : "–"}
+            </span>
+            {c.label}
+            <span className="roadmap__state">{c.done ? "yes" : "not yet"}</span>
+          </li>
+        ))}
+      </ul>
+
+      <span className="planproject__k">What to offer next</span>
+      <p className="roadmap__probe">{card.nextProbe}</p>
+
+      <p className="planproject__owns">
+        None of this advances on its own. A spike is certified by a human, and the checks above are
+        what that human is looking at.
+      </p>
+    </div>
+  );
+}
+
+function PlanItem({ card, kidId }: { card: PlanCardVM; kidId: string }): JSX.Element {
   const p = card.plan;
   const project = p.nextProject;
+  const milestone = milestoneForPlan(kidId, card);
   return (
     <li
       className={`wbitem${p.escalateToHuman ? " wbitem--review" : ""}`}
@@ -150,8 +323,28 @@ function PlanItem({ card }: { card: PlanCardVM }): JSX.Element {
         </div>
       </dl>
 
-      <div className="planproject">
-        <span className="planproject__k">Next project</span>
+      {/* THE RUNG COMES FIRST, because it is the only part of this panel that knows anything about
+          the domain. Everything above is pace, which the planner computes without knowing whether
+          this child is learning chess or audio production; everything below is a project brief
+          templated from the stage with the domain name substituted in. A guide who reads only one
+          block should read this one. */}
+      {milestone === null ? <NoMap /> : <Rung ms={milestone} />}
+
+      {/* COLLAPSED WHENEVER A RUNG IS SHOWING, and this is a judgement worth recording. Side by side
+          the two blocks make the argument on their own: the rung says "Make a bug happen on purpose,
+          reproduce it on demand and publish the fix with a note on the cause", and the project below
+          says "Play with Game Dev. Run lots of short, playful build experiments." The second is the
+          stub generator's per-stage template with the domain name in it, and next to real domain
+          knowledge it does not read as a lesser answer, it reads as noise.
+          It is kept rather than deleted because `planner-live` will fill it with a brief grounded on
+          the rung above, at which point it stops being a template and should open by default. Until
+          then it is behind a summary that says what it is. */}
+      <details className="planproject" open={milestone === null}>
+        <summary className="planproject__summary">
+          <span className="planproject__k">
+            {milestone === null ? "Next project" : "A general project shape for this stage"}
+          </span>
+        </summary>
         <p className="planproject__title">{project.title}</p>
         <p className="planproject__q">{project.drivingQuestion}</p>
         <p className="planproject__method">
@@ -196,7 +389,7 @@ function PlanItem({ card }: { card: PlanCardVM }): JSX.Element {
           </span>
           <p className="planpcde__list">{p.pcdeFocus.map((k) => PCDE_LABEL[k] ?? k).join(", ")}.</p>
         </div>
-      </div>
+      </details>
 
       {p.escalateToHuman ? (
         <div className="wbitem__review" role="note">
@@ -208,26 +401,30 @@ function PlanItem({ card }: { card: PlanCardVM }): JSX.Element {
   );
 }
 
-export function PlanPanel({ cards }: { cards: readonly PlanCardVM[] }): JSX.Element {
+export function PlanPanel({
+  cards,
+  kidId,
+  exploring,
+}: {
+  cards: readonly PlanCardVM[];
+  kidId: string;
+  /** The specialization the tab is scoped to, needed only when it has no plan yet. */
+  exploring?: HypothesisCard;
+}): JSX.Element {
   return (
     <section className="wbpanel" aria-label="Specialization plan" data-testid="plan-panel">
-      <header className="wbpanel__head">
-        <span className="wbpanel__sub">The system proposes a plan, you decide.</span>
-      </header>
-
       {cards.length === 0 ? (
-        // Singular, because the tab is scoped to one specialization and the banner above has just
-        // named it. The old plural read as a claim about the whole child, which is a different and
-        // wronger statement: the child may well have a planned spike sitting on the next rail row.
-        <output className="wbpanel__empty">
-          This one is not a certified spike yet, so there is no plan for it. A spike is planned once
-          you promote it to a candidate or an active specialization.
-        </output>
+        // A third of the workflow used to live here as one sentence. "Not a certified spike yet, so
+        // there is no plan" is true and useless: most children are exploring most of the time, so
+        // for most of a guide's session this tab said nothing. It now shows the ROAD to a plan --
+        // which gate checks are cleared, what is missing, and what to offer next -- all of which the
+        // engine already computes and only the Hypotheses tab was reading.
+        <RoadToAPlan card={exploring} />
       ) : (
         <>
           <ul className="wblist" data-testid="plan-list">
             {cards.map((c) => (
-              <PlanItem key={c.id} card={c} />
+              <PlanItem key={c.id} card={c} kidId={kidId} />
             ))}
           </ul>
           {cards[0] ? <p className="planterminal">{cards[0].plan.terminalNote}</p> : null}

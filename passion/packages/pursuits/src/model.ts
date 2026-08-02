@@ -75,6 +75,14 @@ export interface Skew {
  * precedent that turned out to rest on a person who was independently exceptional. Read a missing
  * `ceiling` as "we could not evidence this", never as "this leads nowhere".
  */
+/**
+ * Whether an age floor is quoted from a venue's published rules or is our own reasoning.
+ *
+ * Only two values, and no third for "partly". A floor is either written down somewhere we can point
+ * at or it is not, and a middle value would be used to make judgements look better than they are.
+ */
+export type AgeBasis = "verified" | "judgement";
+
 export interface Ceiling {
   readonly name: string;
   readonly url: string;
@@ -139,6 +147,35 @@ export interface Pursuit {
    * at 10 to 13, so a large part of the catalogue is out of reach at the bottom of the band.
    */
   readonly minAge: number;
+  /**
+   * Where `minAge` came from, which the number alone cannot say.
+   *
+   * The doc comment above has always drawn this distinction and the data has never recorded it, so
+   * a floor quoted from a venue's own eligibility rules and a floor we reasoned out ourselves have
+   * been indistinguishable on the page and in every test. That is the more dangerous of the two:
+   * one of them is a fact about the world and the other is an opinion, and an opinion that looks
+   * like a fact does not get revisited.
+   *
+   * It is also what lets the tests check the right thing. Asserting how many pursuits are reachable
+   * at six was circular — the assertion constrained the data it was meant to validate, so correcting
+   * a wrong floor broke the suite and the suite argued for keeping the error. Asserting instead that
+   * every floor declares its own provenance is a claim about honesty rather than about distribution,
+   * and it cannot be satisfied by fudging a number.
+   */
+  readonly minAgeBasis: AgeBasis;
+  /**
+   * The venue's own words, required when the basis is `verified` and absent otherwise.
+   *
+   * Short and literal. A paraphrase would defeat the point, because the reason to keep the quote is
+   * so a later reader can tell whether the rule we read is the rule that was written.
+   */
+  readonly minAgeQuote?: string;
+  /**
+   * Where the quote was read, when it is not the venue's own `url`. Eligibility usually lives on a
+   * rules or FAQ page rather than the landing page, and a reader checking us needs the page we
+   * actually read.
+   */
+  readonly minAgeSource?: string;
   /** Roughly what a year of doing this seriously costs a family in USD, excluding the instrument. */
   readonly costUsd: number;
   readonly cadence: Cadence;

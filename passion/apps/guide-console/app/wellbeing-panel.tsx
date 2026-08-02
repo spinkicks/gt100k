@@ -8,7 +8,7 @@ import type { JSX } from "react";
 import type { WellbeingCardVM } from "./wellbeing.js";
 import { specPath } from "./vocab.js";
 
-const STATE_LABEL: Record<string, string> = {
+export const STATE_LABEL: Record<string, string> = {
   UNDER_CHALLENGED: "Under-challenged",
   IN_ZONE: "In the zone",
   OVER_CHALLENGED: "Over-challenged",
@@ -17,20 +17,19 @@ const STATE_LABEL: Record<string, string> = {
   BURNOUT_TIP: "Possible tip into burnout",
   GAP: "Quiet period",
 };
-const CHALLENGE_LABEL: Record<string, string> = {
+export const CHALLENGE_LABEL: Record<string, string> = {
   PUSH: "Push",
   HOLD: "Hold",
   SCAFFOLD: "Scaffold",
 };
-const PRESSURE_LABEL: Record<string, string> = { AUTONOMY_UP: "Autonomy ↑", STEADY: "Steady" };
+export const PRESSURE_LABEL: Record<string, string> = {
+  AUTONOMY_UP: "Autonomy ↑",
+  STEADY: "Steady",
+};
 
 export function WellbeingPanel({ cards }: { cards: readonly WellbeingCardVM[] }): JSX.Element {
   return (
     <section className="wbpanel" aria-label="Wellbeing">
-      <header className="wbpanel__head">
-        <span className="wbpanel__sub">The system proposes, you decide.</span>
-      </header>
-
       {cards.length === 0 ? (
         // Reached only when the child has no specializations at all, since the tab is scoped to the
         // selected one and every tracked hypothesis produces a wellbeing read.

@@ -160,34 +160,28 @@ function attributionView(card: HypothesisCard): { label: string; desc: string } 
   return { label: base.label, desc: base.desc };
 }
 
-export function LowerBound({ card }: { card: HypothesisCard }): JSX.Element {
+/**
+ * WHAT THIS USED TO SAY, AND WHY IT NO LONGER SAYS IT.
+ *
+ * Three lines: `Lower-bound: 0.52`, then `Uncertain`, then `Driver: Topic + Work-style`. Every one
+ * of the four terms in that is ours rather than a guide's — "lower-bound", "calibrated",
+ * "uncertain", "driver" — and the first two are now drawn as a bar directly above this card, which
+ * is both plainer and comparable at a glance. Printing them again in words underneath is the same
+ * fact twice in the harder-to-read form.
+ *
+ * What survives is the one thing the bar cannot show and a guide can act on: whether the pull is the
+ * SUBJECT or the WAY OF WORKING. That difference changes what you offer next -- a child drawn to
+ * building things wants a different second offer from one drawn to games -- so it stays, in words
+ * anybody reads without a tooltip.
+ */
+export function LowerBound({ card }: { card: HypothesisCard }): JSX.Element | null {
   const a = attributionView(card);
+  if (!a) return null;
   return (
     <div className="lb">
-      <div className="lb__row">
-        <span className="lb__val">
-          <Term
-            label="Lower-bound"
-            desc="A conservative floor for how strong this interest looks, not a score or a label. Higher means the evidence is more convincing."
-          />
-          {": "}
-          <span className="mono strong">{card.lowerBound.toFixed(2)}</span>
-        </span>
-        <Term
-          className={card.confident ? "lb__cal is-cal" : "lb__cal"}
-          label={card.confident ? "Calibrated" : "Uncertain"}
-          desc={
-            card.confident
-              ? "Enough evidence has accrued to trust this estimate."
-              : "Not enough evidence yet, so treat this as provisional."
-          }
-        />
+      <div className="lb__driver">
+        <span className="lb__driverk">Drawn to</span> <Term label={a.label} desc={a.desc} />
       </div>
-      {a ? (
-        <div className="lb__driver">
-          <span className="lb__driverk">Driver:</span> <Term label={a.label} desc={a.desc} />
-        </div>
-      ) : null}
     </div>
   );
 }

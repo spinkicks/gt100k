@@ -5,6 +5,9 @@
 // escalation + the synthetic guide observations + rationale. No approve/preview, no child/family-facing
 // label, no score (019 guardrails). Dark-console styling, reusing the wbpanel/wbitem/plangrid patterns.
 import type { JSX } from "react";
+import type { GuideDecision } from "./decisions.js";
+import type { HypothesisCard } from "@gt100k/hypothesis-store";
+import { CoachingLog, MadeHistory } from "./family-history.js";
 import type { FamilyRead } from "@gt100k/family";
 
 const KNOB_LABEL: Record<string, string> = { up: "Dial up", steady: "Hold steady" };
@@ -17,16 +20,18 @@ const RISK_LABEL: Record<string, string> = {
 export function FamilyPanel({
   read,
   observations,
+  kidId,
+  decisions,
+  cards,
 }: {
   read: FamilyRead | undefined;
   observations: readonly string[];
+  kidId: string;
+  decisions: readonly GuideDecision[];
+  cards: readonly HypothesisCard[];
 }): JSX.Element {
   return (
     <section className="wbpanel" aria-label="Family co-engagement" data-testid="family-panel">
-      <header className="wbpanel__head">
-        <span className="wbpanel__sub">The system proposes coaching, you decide.</span>
-      </header>
-
       {!read ? (
         <output className="wbpanel__empty">No coaching read yet.</output>
       ) : (
@@ -56,7 +61,7 @@ export function FamilyPanel({
           {/* Warm-demanding coaching posture. */}
           <li className="wbitem">
             <div className="wbitem__top">
-              <span className="wbitem__spec">Warm-demanding posture</span>
+              <span className="wbitem__spec">How to be with them right now</span>
               {!read.escalateToHuman ? (
                 <span className="wbitem__state">
                   {RISK_LABEL[read.pressureWatch.risk] ?? read.pressureWatch.risk}
@@ -74,7 +79,7 @@ export function FamilyPanel({
               </div>
               <div>
                 <dt>Warmth</dt>
-                <dd>Non-contingent</dd>
+                <dd>Not tied to how the work goes</dd>
               </div>
               <div>
                 {/* Phrased as a move, like every other value in this list, because the raw boolean
@@ -118,7 +123,7 @@ export function FamilyPanel({
                   rendering merged them. */}
               {read.asks.length > 0 ? (
                 <div className="famgroup">
-                  <span className="famoffers__k">Door-opening asks</span>
+                  <span className="famoffers__k">Doors you can open</span>
                   <ul className="famoffers">
                     {read.asks.map((a) => (
                       <li key={a}>{a}</li>
@@ -136,18 +141,24 @@ export function FamilyPanel({
                   </ul>
                 </div>
               ) : null}
-              <p className="planproject__owns">
-                Offers, not mandates — the child keeps choosing the problem, the method, and the
-                pace.
-              </p>
             </li>
-          ) : null}
-
-          {!read.escalateToHuman ? (
-            <p className="wbitem__reason wbitem__reason--muted">{read.rationale}</p>
           ) : null}
         </ul>
       )}
+
+      {/* WHAT HAPPENED, under what to do. Advice with no history behind it is a conversation about
+          the engine's current opinion, which is the least useful thing to bring a parent. Neither
+          list is generated: the decisions are the guide's own, the artefacts are the child's. */}
+      <div className="fhistwrap">
+        <div>
+          <span className="planproject__k">What you decided</span>
+          <CoachingLog decisions={decisions} cards={cards} />
+        </div>
+        <div>
+          <span className="planproject__k">What they made</span>
+          <MadeHistory kidId={kidId} />
+        </div>
+      </div>
     </section>
   );
 }

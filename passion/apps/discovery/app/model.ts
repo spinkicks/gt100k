@@ -145,10 +145,17 @@ export function gamesFor(pursuit: string): readonly GameRef[] {
  * because grid position is a large and unmeasured confound for children specifically — every
  * eye-tracking study of grid attention has been run on adults.
  *
- * Random membership is a different thing and it is dangerous. Rotating fresh topics in every
- * session is the trigger-and-abandon pattern, and in a multi-session study (n = 212) children whose
- * interest was triggered and then not maintained finished BELOW children never triggered at all.
- * So the set is fixed; only the order moves.
+ * Random membership is a different thing and it is dangerous. Rotating fresh topics in every session
+ * is the trigger-and-abandon pattern: in a multi-session maths game (Number Navigation, n = 212)
+ * children whose situational interest was not maintained across sessions showed a marked decline in
+ * domain interest from pre-test to post-test. So the set is fixed; only the order moves.
+ *
+ * CORRECTED. This used to say those children "finished BELOW children never triggered at all", which
+ * the source does not support. The untriggered comparison comes from a DIFFERENT study — a four-week
+ * primary-science trial where the untouched control also decayed — and ranking one study's treated
+ * group against another study's control is not a comparison anybody ran. What both show is that
+ * trigger-and-abandon and never-trigger each lose ground, and only trigger plus maintenance gains.
+ * The design conclusion is unchanged, which is why the overstatement was worth nothing to keep.
  *
  * Seeded rather than `Math.random` so a session is stable across re-renders: a grid that reshuffles
  * under a child's hand as they reach for a tile is a different and much worse product.
