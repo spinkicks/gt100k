@@ -228,18 +228,21 @@ export function modeLabel(m: string): string {
 
 // Attribution: whether the interest looks driven by the topic, the work-style, or both. This is what
 // the "style" / "topic" tag in the evidence line means.
+// Read as "Drawn to ___" on the card, so each label completes that sentence. "Topic" and
+// "Work-style" were ours; "the subject" and "the way of working" are what the labels always meant
+// and cost a guide no tooltip.
 export const ATTRIBUTIONS: Record<string, Term> = {
   domain: {
-    label: "Topic",
-    desc: "Driven by the subject itself (e.g. music), across different ways of working.",
+    label: "the subject",
+    desc: "Music itself, say, whatever they are doing with it.",
   },
   style: {
-    label: "Work-style",
-    desc: "Driven by the way of working (e.g. building), across different topics, more than any one subject.",
+    label: "the way of working",
+    desc: "Building things, say, whatever the subject happens to be.",
   },
   mixed: {
-    label: "Topic + Work-style",
-    desc: "Both the subject and the way of working seem to matter.",
+    label: "both the subject and the way of working",
+    desc: "Neither one on its own explains it.",
   },
 };
 

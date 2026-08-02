@@ -87,16 +87,27 @@ describe("consoleViewModel", () => {
   it("gives each card a next distinguishing probe (never a fixed label)", () => {
     const s = applyInterestRead(emptyStore(), "kid-1", read, NOW);
     const vm = consoleViewModel(s, "kid-1");
-    // EMERGING, no gate supplied → the gap-survival probe.
+
+    // Asserted by BEHAVIOUR rather than by exact copy. These two assertions used to pin the strings
+    // character for character, which made a wording change a test failure and quietly argued
+    // against ever improving the words. The old copy said "Offer the cell again unprompted" —
+    // `cell` being our internal name for a domain-by-mode pair — on the most-read actionable line
+    // in the console, and a test that locks that in place is working against the product.
     expect(vm.cards[0]!.state).toBe("EMERGING");
-    expect(vm.cards[0]!.nextProbe).toBe("Watch for a voluntary return after a ≥14-day quiet gap.");
-    // EXPLORING (thin) → offer the cell again unprompted.
     expect(vm.cards[1]!.state).toBe("EXPLORING");
-    expect(vm.cards[1]!.nextProbe).toBe(
-      "Offer the cell again unprompted and watch for a voluntary return.",
-    );
-    // language is a next test, never "you are an X".
-    expect(vm.cards[0]!.nextProbe.toLowerCase()).not.toContain("you are");
+
+    // What actually has to hold: different states get different instructions, and each one is an
+    // instruction rather than a verdict.
+    expect(vm.cards[0]!.nextProbe).not.toBe(vm.cards[1]!.nextProbe);
+    for (const c of vm.cards) {
+      expect(c.nextProbe.length).toBeGreaterThan(10);
+      // Never "you are an X" — the probe is a next test, not a label for the child.
+      expect(c.nextProbe.toLowerCase()).not.toContain("you are");
+      // Written for the guide, not for us. `cell` is the clearest tell because it is the one word
+      // here that has a meaning in this codebase and no meaning to a teacher.
+      expect(c.nextProbe.toLowerCase()).not.toMatch(/\bcells?\b/);
+      expect(c.nextProbe).not.toMatch(/[≥≤]/);
+    }
   });
 
   it("allowedActions reflect state (exact actionsFor output)", () => {
@@ -125,9 +136,11 @@ describe("consoleViewModel", () => {
     const vm = consoleViewModel(s, "kid-1", new Map([[id, gate]]));
     expect(vm.cards[0]!.gate).toEqual(gate);
     expect(vm.cards[1]!.gate).toBeUndefined();
-    // a passed gate re-points the next probe at the human decision (sign-off), not another test.
-    expect(vm.cards[0]!.nextProbe).toBe(
-      "Gate passed. A human may promote with an autonomy sign-off.",
-    );
+    // A passed gate re-points the probe at the HUMAN DECISION rather than at another test, and the
+    // decision is conditional on the child wanting it. Both facts are asserted; the wording that
+    // carries them is not, so the copy can be improved without breaking this.
+    expect(vm.cards[0]!.nextProbe).toMatch(/promote/i);
+    expect(vm.cards[0]!.nextProbe).toMatch(/\bthey want it\b|\bconsent|\bwants? it\b/i);
+    expect(vm.cards[0]!.nextProbe).not.toBe(vm.cards[1]!.nextProbe);
   });
 });

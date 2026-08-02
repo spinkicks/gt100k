@@ -52,28 +52,41 @@ function actionsFor(state: InterestHypothesis["state"]): string[] {
 // The smallest distinguishing next test for a hypothesis (spec §3.5). Deterministic; a *next test*,
 // never a fixed label. When a gate is supplied, the probe points at the first unmet gate check (or,
 // once passed, at the human sign-off decision); otherwise it is derived from the lifecycle state.
+/**
+ * The one line on the card that tells a guide what to DO, so it is written for the person doing it.
+ *
+ * It used to be written for us. "Offer the cell again unprompted and watch for a voluntary return"
+ * puts the engine's internal word for a domain-by-mode pair -- `cell` -- in front of a teacher, and
+ * "re-sample", "disconfirming skips", "perseverance artifact", "autonomy sign-off" and "≥14-day"
+ * are all the same mistake: our vocabulary, our notation, our register, on the most-read and most
+ * actionable line in the console. A guide who has to decode an instruction will not follow it.
+ *
+ * Meaning is unchanged. "Without suggesting it" is what unprompted means and is the whole point of
+ * the measurement, so it stays explicit rather than being simplified away.
+ */
 function nextProbe(state: InterestHypothesis["state"], gate: GateStatus | undefined): string {
   switch (state) {
     case "PARKED":
-      return "Parked. Reopen to resume exploring.";
+      return "Parked. Reopen it whenever you want to try again.";
     case "CONTESTED":
-      return "Re-sample unprompted; a voluntary return distinguishes renewed interest from a dip.";
+      return "Offer it again without suggesting it. Coming back on their own tells you the interest is real rather than a dip.";
     case "EXPLORING":
-      return "Offer the cell again unprompted and watch for a voluntary return.";
+      return "Offer this again without suggesting it, and see whether they come back on their own.";
     case "ACTIVE":
-      return "Sustain the interest; watch for disconfirming skips.";
+      return "Keep it going, and watch for them starting to skip it.";
     default:
       break; // EMERGING / CANDIDATE — gate-driven below.
   }
   if (gate) {
-    if (!gate.gapSurvived) return "Watch for a voluntary return after a ≥14-day quiet gap.";
-    if (!gate.durable) return "Confirm ≥2 return occasions sustained across ≥8 weeks.";
-    if (!gate.hasArtifact) return "Capture a perseverance artifact (iteration past a failure).";
-    return "Gate passed. A human may promote with an autonomy sign-off.";
+    if (!gate.gapSurvived) return "Leave it alone for two weeks, then see if they come back to it.";
+    if (!gate.durable) return "Needs a couple more returns, spread over a month or two.";
+    if (!gate.hasArtifact)
+      return "Nothing made yet. Look for something they finished after it went wrong.";
+    return "All three are met. You can promote this, as long as they want it.";
   }
   return state === "CANDIDATE"
-    ? "Confirm sustained returns across the term before activating."
-    : "Watch for a voluntary return after a ≥14-day quiet gap.";
+    ? "Keep watching for them coming back this term before making it active."
+    : "Leave it alone for two weeks, then see if they come back to it.";
 }
 
 // Domain×mode combinations the child has been observed on one axis but not yet sampled on the other.
