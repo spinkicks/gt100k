@@ -13,6 +13,7 @@ import { serializeCellKey } from "@gt100k/interest-inference";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 import type { StudentProfile } from "@gt100k/student-profile";
 import { PILOT_CATALOG, profileFor } from "./console-data.js";
+import { MIN_TREND_EVENTS } from "./engagement.js";
 import type { WellbeingCardVM } from "./wellbeing.js";
 import { domainLabel, modeLabel, specPath, stateTerm } from "./vocab.js";
 
@@ -22,7 +23,6 @@ type Interaction = StudentProfile["interactions"][number];
 // A line or a bar chart claims a *trend*, so it needs more than a handful of events spread over more
 // than one period; below that a chart would over-read noise and mislead a guide. A share chart makes
 // no claim about time, so it needs less. These are the only magic numbers in the file.
-const MIN_TREND_EVENTS = 5;
 const MIN_ACTIVE_PERIODS = 2;
 const MIN_SHARE_EVENTS = 4;
 /** A window shorter than this cannot be split into two comparable halves. */
@@ -201,6 +201,9 @@ function trendFrom(
 ): Trend | null {
   if (windowDays < MIN_TREND_WINDOW_DAYS) return null;
   if (previous <= 0) return null;
+  // A percentage off a tiny baseline (2 -> 0 reads as "-100%") is indistinguishable from a
+  // large-sample collapse and misleads exactly the guide scanning fast. State the count, omit the %.
+  if (previous + current < MIN_TREND_EVENTS) return null;
   const pct = Math.round(((current - previous) / previous) * 100);
   if (pct === 0) {
     return {

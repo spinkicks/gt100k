@@ -138,10 +138,12 @@ describe("the sparse child (003 Cyrus) reads as intentional, not broken", () => 
     expect(ov.share.ok).toBe(true);
     expect(ov.share.slices.map((s) => s.percent)).toEqual([50, 50]);
     const voluntary = ov.tiles.find((t) => t.key === "voluntary");
-    // He came twice on his own early on and not once since; both later visits were prompted.
+    // He came twice on his own early on and not once since; both later visits were prompted. Two
+    // events is below the minimum a trend needs, so we state the COUNT (2) but omit the percentage:
+    // "-100% versus a two-visit baseline" reads identically to a large-sample collapse and is not an
+    // honest claim about this child (same rule this file opens with).
     expect(voluntary?.value).toBe("2");
-    expect(voluntary?.trend?.dir).toBe("down");
-    expect(voluntary?.trend?.label).toBe("\u2212100%");
+    expect(voluntary?.trend).toBeNull();
     // No depth signals at all: no number to trend and no line to draw.
     const depth = ov.tiles.find((t) => t.key === "depth");
     expect(depth?.value).toBe("0");
