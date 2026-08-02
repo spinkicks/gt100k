@@ -22,7 +22,9 @@ import {
 } from "./decisions.js";
 import { installQa } from "./qa.js";
 import { children, buildRosterGates, buildRosterStore, type Child } from "./console-data.js";
-import { escalationCount, wellbeingForKid } from "./wellbeing.js";
+import { escalationCount, wellbeingForKid, type WellbeingCardVM } from "./wellbeing.js";
+import { attentionFor, type Attention } from "./attention.js";
+import { voluntaryReturns } from "./engagement.js";
 import { familyForKid, familyObservationsForKid } from "./family.js";
 import { plansForKid } from "./plan.js";
 import { accessForKid } from "./access.js";
@@ -36,6 +38,31 @@ export interface ChildSummary {
   readonly tracked: number;
   readonly gateReady: number;
   readonly topState: string | null;
+  readonly attention: Attention;
+}
+
+// Fold the three composed reads (wellbeing escalation, engagement fading, gate-ready) into one
+// verdict. Kept here rather than in `attention.ts` so that module stays free of the domain
+// view-model types and remains trivially unit-testable on plain inputs.
+function attentionForKid(
+  kidId: string,
+  cards: readonly HypothesisCard[],
+  wb: readonly WellbeingCardVM[],
+): Attention {
+  return attentionFor({
+    wellbeing: wb.map((w) => ({
+      id: w.id,
+      state: w.read.state,
+      escalateToHuman: w.read.escalateToHuman,
+      domainPath: w.domainPath,
+    })),
+    cards: cards.map((c) => ({
+      id: c.id,
+      gatePassed: c.gate?.passed === true,
+      domainPath: c.domainPath,
+    })),
+    fading: voluntaryReturns(kidId).fading,
+  });
 }
 
 export function useConsole() {
@@ -151,14 +178,22 @@ export function useConsole() {
     const m = new Map<string, ChildSummary>();
     for (const child of children()) {
       const cvm = consoleViewModel(store, child.id, gates);
+      const wb = wellbeingForKid(child.id);
       m.set(child.id, {
         tracked: cvm.cards.length,
         gateReady: cvm.cards.filter((c) => c.gate?.passed === true).length,
         topState: cvm.cards[0]?.state ?? null,
+        attention: attentionForKid(child.id, cvm.cards, wb),
       });
     }
     return m;
   }, [store, gates]);
+
+  // The selected child's verdict, reusing the already-memoized view-model + wellbeing reads.
+  const attention = useMemo(
+    () => attentionForKid(kid, vm.cards, wellbeing),
+    [kid, vm.cards, wellbeing],
+  );
 
   const visible = filter === "ALL" ? vm.cards : vm.cards.filter((c) => c.state === filter);
   const selectedCard: HypothesisCard | undefined =
@@ -249,6 +284,7 @@ export function useConsole() {
     setFilter,
     counts,
     summaries,
+    attention,
     wellbeing,
     family,
     familyObservations,

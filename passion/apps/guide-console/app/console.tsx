@@ -11,7 +11,8 @@
 import Link from "next/link";
 import { useEffect, useState, type JSX } from "react";
 import { useConsole } from "./useConsole.js";
-import { ChildSwitcher, EmptyState, Legend, SpecCard, SpecRail, SpecScope } from "./components.js";
+import { ChildSwitcher, EmptyState, SpecCard, SpecRail, SpecScope } from "./components.js";
+import { ActionLine } from "./action-line.js";
 import { WellbeingStrip } from "./wellbeing-strip.js";
 import { PlanPanel } from "./plan-panel.js";
 import { FamilyPanel } from "./family-panel.js";
@@ -124,7 +125,7 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
   }[] = [
     {
       id: "hypotheses",
-      label: "Hypotheses",
+      label: "Interests",
       noun: "specializations",
       count: ctrl.vm.cards.length,
     },
@@ -138,7 +139,7 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
     },
     {
       id: "family",
-      label: "Family",
+      label: "Family & coaching",
       noun: "coaching moves",
       count: (ctrl.family?.asks.length ?? 0) + (ctrl.family?.sharedActivities.length ?? 0),
     },
@@ -206,6 +207,8 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
         </div>
 
         <main className="main main--wb" aria-label="Guide console">
+          {/* Do-this-next, above the tabs: the guide reads one line and acts, or reads on. */}
+          <ActionLine ctrl={ctrl} />
           <header className="ghead">
             <nav className="tabs" role="tablist" aria-label="Console views">
               {tabs.map((t) => (
@@ -300,7 +303,6 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
               cards={ctrl.vm.cards}
             />
           ) : null}
-          <Legend />
         </main>
 
         {/* The maps themselves, not the view models: the panel owns the changes a guide can make,
