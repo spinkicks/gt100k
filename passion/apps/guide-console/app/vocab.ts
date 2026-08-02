@@ -96,20 +96,20 @@ export const STATES: Record<string, Term> = {
     desc: "Just sampling. Not enough signal yet to say anything.",
   },
   EMERGING: {
-    label: "Emerging",
-    desc: "A real pattern is forming. Worth watching and giving more chances to.",
+    label: "Taking hold",
+    desc: "Emerging: a real pattern is forming. Worth watching and giving more chances to.",
   },
   CANDIDATE: {
-    label: "Candidate",
-    desc: "Strong, durable signal. Ready to consider specializing.",
+    label: "Worth a real look",
+    desc: "Candidate: strong, durable signal. Ready to consider specializing.",
   },
   ACTIVE: {
-    label: "Active",
-    desc: "An owned specialization the child is actively building.",
+    label: "Committed",
+    desc: "Active: an owned specialization the child is actively building.",
   },
   PARKED: {
-    label: "Parked",
-    desc: "Set aside for now. Fully reversible; can be reopened anytime.",
+    label: "Set aside",
+    desc: "Parked: set aside for now. Fully reversible; can be reopened anytime.",
   },
   CONTESTED: {
     label: "Contested",
