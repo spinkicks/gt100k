@@ -7,9 +7,10 @@
 // calm acknowledgement, not an alarm: the act was legitimate, this is only its receipt.
 //
 // Rendered once, above both modes, so wherever the guide acted (a roster row or a detail-pane
-// button) the same receipt appears in the same place. `role="status"` announces it to assistive tech
-// without stealing focus, because feedback a sighted user gets for free should not be the one thing a
-// screen-reader user has to go hunting for.
+// button) the same receipt appears in the same place. It is an `<output>` -- the element whose
+// implicit role is `status`, matching the house pattern for live acknowledgements -- so it announces
+// to assistive tech without stealing focus, because feedback a sighted user gets for free should not
+// be the one thing a screen-reader user has to go hunting for.
 import type { JSX } from "react";
 import type { ConsoleController } from "./useConsole.js";
 
@@ -17,11 +18,11 @@ export function PromoteFlash({ ctrl }: { ctrl: ConsoleController }): JSX.Element
   const a = ctrl.lastAction;
   if (!a) return null;
   return (
-    <div className="flash" role="status">
+    <output className="flash">
       <span className="flash__msg">
         {a.verb} <strong>{a.label}</strong> for {a.child}.
       </span>
-      <div className="flash__acts">
+      <span className="flash__acts">
         <button type="button" className="flash__undo" onClick={ctrl.undoLast}>
           Undo
         </button>
@@ -33,7 +34,7 @@ export function PromoteFlash({ ctrl }: { ctrl: ConsoleController }): JSX.Element
         >
           Dismiss
         </button>
-      </div>
-    </div>
+      </span>
+    </output>
   );
 }
