@@ -85,8 +85,12 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
     trigger: RecoveryTrigger;
     specId: string | null;
   } | null>(null);
-  const onRecover = (trigger: RecoveryTrigger, specId: string | null): void =>
+  // Both drawers are `position: fixed`, full-height, same side -- opening one must close the other
+  // or they fully overlap.
+  const onRecover = (trigger: RecoveryTrigger, specId: string | null): void => {
+    setMapsOpen(false);
     setRecovery({ trigger, specId });
+  };
   // Full cards for the top few, plus whichever the guide clicked, so a bar always opens something.
   const shown = ((): readonly HypothesisCard[] => {
     const top = detailed(ctrl.visible);
@@ -272,7 +276,13 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
             <button
               type="button"
               className={`mapq${mapsOpen ? " mapq--on" : ""}`}
-              onClick={() => setMapsOpen((v) => !v)}
+              onClick={() => {
+                // Opening this drawer must close the recovery one -- both are fixed, full-height,
+                // same side, and would otherwise fully overlap. Only clear it when actually opening
+                // (mapsOpen is still the pre-click value here), not on every toggle.
+                if (!mapsOpen) setRecovery(null);
+                setMapsOpen((v) => !v);
+              }}
               aria-expanded={mapsOpen}
               title="A shared review queue for domain maps, the same for every child (not this child's count)."
             >

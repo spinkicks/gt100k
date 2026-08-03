@@ -35,4 +35,10 @@ describe("latestNoteFor", () => {
   test("a logged note gives the roster something to show for a child", () => {
     expect(latestNoteFor([NOTE], "001")?.note).toBe("Started a 1-week step-away");
   });
+
+  test("on identical timestamps, the most recently logged note wins", () => {
+    const first: RecoveryNote = { ...NOTE, note: "first", at: "2026-08-03T10:00:00.000Z" };
+    const second: RecoveryNote = { ...NOTE, note: "second", at: "2026-08-03T10:00:00.000Z" };
+    expect(latestNoteFor([first, second], "001")?.note).toBe("second");
+  });
 });

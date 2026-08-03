@@ -59,9 +59,17 @@ export function parseRecoveryLog(raw: string | null): RecoveryNote[] {
   return parsed.filter(isNote);
 }
 
-/** The most recent note for a child (by ISO `at`), or null. Pure; the caller supplies the notes. */
+/**
+ * The most recent note for a child (by ISO `at`), or null. Pure; the caller supplies the notes.
+ *
+ * `>=`, not `>`: two notes for the same child commonly share an identical `at`, because a real
+ * child's clock (`nowFor`) is pinned to their last-played moment and does not advance between two
+ * notes logged in the same session. `mine` preserves insertion order (logRecovery appends), so on a
+ * tie `>=` keeps the LATER-appended note as the winner instead of getting stuck on the first one
+ * logged. Distinct timestamps still resolve to the true max either way.
+ */
 export function latestNoteFor(notes: readonly RecoveryNote[], kidId: string): RecoveryNote | null {
   const mine = notes.filter((n) => n.kidId === kidId);
   if (mine.length === 0) return null;
-  return mine.reduce((a, b) => (b.at > a.at ? b : a));
+  return mine.reduce((a, b) => (b.at >= a.at ? b : a));
 }
