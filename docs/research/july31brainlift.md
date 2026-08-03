@@ -1,4 +1,4 @@
-# GT100K BrainLift: Making It Real by Reading, Sustaining, and Proving the Spike at Scale
+# GT100K BrainLift: Making It Real by Reading, Sustaining, and Proving the Spike
 
 ## Owners
 
@@ -8,19 +8,18 @@
 
 ## Purpose
 
-Three convictions are taken as given here: that every child clears an academic floor, that above it they build one exceptional thing measured by voluntary return, and that the thing is proved by process plus a human defense rather than by a finished artifact. This document asks the question you only meet once you start building: **what does it take to run those convictions against real children, real scale, and real regulation without the design betraying them?**
+Three convictions are taken as given here: that every child clears an academic floor, that above it they build one exceptional thing measured by voluntary return, and that the thing is proved by process plus a human defense rather than by a finished artifact. This document asks the question you only meet once you start building: **what does it take to run those convictions against real children and real regulation without the design betraying them?**
 
-The answer is a set of positions about *how*: how we read a child's interest, how we keep an intensive path from breaking them, how we make the evidence record theirs rather than a surveillance file, and how we select into the program and serve it at scale. The market sells a shortcut at every one: read the face, gamify the record, buy the biggest model, reach for a "fairer" test, trust that intensity regulates itself. Each is wrong on the evidence, and most are wrong twice — worse for the child and worse for the operator. The honest, autonomy-preserving path is also the cheap and legal one.
+The answer is a set of positions about *how*: how we read a child's interest, how we keep an intensive path from breaking them, and how we make the evidence record theirs rather than a surveillance file. The market sells a shortcut at every one: read the face, gamify the record, trust that intensity regulates itself, believe the log can tell you why. Each is wrong on the evidence, and most are wrong twice — worse for the child and worse for the operator.
 
 Each SPOV below breaks with a live consensus and holds up anyway. Where a claim was only edgy, or only true, we cut it.
 
 ### In scope
 
-- Reading a durable-interest signal from **competence and behavior**, not from self-report or from a child's face, voice, or pulse — and the limits of what behavior alone can name (SPOV 9).
-- What **elite admissions actually rewards**, from the litigation record rather than from consultancy folklore, and what it has never measured (SPOV 8).
+- Reading a durable-interest signal from **competence and behavior**, not from self-report or from a child's face, voice, or pulse — and the limits of what behavior alone can name (SPOV 1, SPOV 2).
+- What **elite admissions actually rewards**, from the litigation record rather than from consultancy folklore, and what it has never measured (SPOV 6).
 - Treating **burnout as a monitored operating variable** an intensive program can measure and design against, not an accepted cost of ambition.
 - Making the **evidence record legible, motivating, and non-punitive** to a child, and being honest about where the provenance stack ends.
-- **Equitable identification** into the program, and the real **economics of serving AI tutoring** at 100,000-student scale.
 
 ### Out of scope
 
@@ -43,17 +42,21 @@ They group by pillar of the running system, with a unifying idea at the end.
    - **Consensus it breaks:** both "self-selection reveals the passion," and the SDT-lite reflex that competence-building is the master lever for durable interest.
    - **Backing:** Quested et al. (2013); Mabbe et al. (2018); Patall, Cooper & Robinson (2008); Deci, Koestner & Ryan (1999); Skjesol et al. (2025); the Childhood-and-Beyond cohort (2013); Review of Educational Research (2022) SDT meta-analysis. Honest limit: the research *weakened* this SPOV. The two best direct tests at 9–12 point opposite ways, and voluntary return is a synthesis across sport, music and classroom work rather than a validated 9–12 metric. The negative claim survives; any ranking of competence over autonomy does not.
 
-- **Spiky POV 2: You cannot read a child's inner state from their face, voice, gaze, or pulse, so we instrument behavior and never biometrics.**
-   - **Elaboration:** The affective-computing pitch is that a camera or a wearable can sense a child's interest, engagement, or stress. It cannot, and in the EU it is illegal to try in a school. Emotion "cannot be reliably read from facial configurations"; variability is the norm. Remote photoplethysmography (reading pulse from video) degrades more than 2× on the darkest skin (mean absolute error ~4.2 bpm on lighter tones to ~13.6 bpm on Fitzpatrick VI) and correlates only ~0.58 with true heart rate "in the wild," and even a valid pulse is not a valid *stress* readout. Voice-stress analysis is, in the literature's words, pseudoscience. The EU AI Act prohibits emotion inference in education (Article 5(1)(f), in force 2 February 2025). So the signal layer reads what a child *does*: what they return to, how deep they go, how long they stay. Those we can measure, and they predict learning. What a child's body is said to broadcast, we leave alone. Of every claim in this document, this one rests on the firmest evidence.
-   - **Consensus it breaks:** the wellness-wearable and engagement-camera premise that inner state is senseable from the body.
-   - **Backing:** Barrett et al. (2019); npj Digital Medicine (2025); EU AI Act Art. 5(1)(f); Fredricks et al. (2004); Saqr et al. (2022). Honest limit: these sensors *are* valid for narrow targets under controlled conditions. The invalidity is the leap to emotion, stress or interest, and to real-world child conditions.
+- **Spiky POV 2: Behaviour is the only thing worth instrumenting, and it still cannot tell you *why*. So the software reports what it saw and asks the guide for the rest.**
+   - **Elaboration:** The affective-computing pitch is that a camera or a wearable can sense a child's interest, engagement or stress. It cannot, and in an EU school it is illegal to try. Emotion "cannot be reliably read from facial configurations"; remote photoplethysmography degrades more than 2× on the darkest skin (~4.2 bpm error on lighter tones against ~13.6 on Fitzpatrick VI) and correlates only ~0.58 with true heart rate in the wild; voice-stress analysis is, in the literature's words, pseudoscience; and the EU AI Act has prohibited emotion inference in education since February 2025. So we read what a child *does* — what they return to, how deep they go, how long they stay. That much is measurable and it predicts learning.
+
+  **But it buys less than it looks like, and this is the half that matters.** Behaviour is a good instrument for *what* a child is drawn to and a useless one for *why*, and the field says so about its own tools. The authors of SDT's situational scale write that the free-choice measure "cannot assess other important motivational concepts derived from self-determination theory, namely identified regulation, external regulation, and amotivation" — every instrument that separates the regulations is a questionnaire. Worse for a product built on voluntary return: under ego-involvement, free-choice persistence **inverts** with prior feedback. After success the internally-pressured child returns *less*; after a setback, *more*; and reports no enjoyment either way. **Praise from an adult flips the sign of our core signal, and we do not log feedback history beside returns, so we cannot see it happen.** Fredricks and colleagues say the same of behavioural engagement: it makes "no distinction… between effort aimed merely at fulfilling behavioral expectations and that aimed at understanding." And the folk category an operator most wants to detect dissolves on contact: across 94 studies and 1,308 effect sizes, harmonious and obsessive passion correlate with deliberate practice *indistinguishably*, obsessive slightly **more** with hours per week. Volume, the one thing an adult can see, is the one variable that does not separate the child you should feed from the child you should intervene on, so a quadrant keyed on intensity flags the absorbed child and misses the pressured one.
+
+  What survives is not a detector but three things a program can do: the **interruption test** (watch what happens when the activity becomes unavailable, which is where the meta-analytic separation lives), the **exit test** (offer a real, cost-free exit — attraction declines it, entrapment cannot hear it), and **intervening on the adults by subtraction**, where the only controlled child evidence in the field sits: a coach-behaviour workshop cut next-season dropout from **26% to 5%** with no change in win-loss records. **This is why asking is not a fallback but the design.** The log carries behaviour; the guide carries everything else.
+   - **Consensus it breaks:** the wellness-wearable and engagement-camera premise that inner state is senseable from the body, and — the harder one — that a rich enough behavioural log can infer *why* a child is doing something, which is the premise under most learning analytics. Also the folk category "over-motivated" as a single detectable state.
+   - **Backing:** Barrett et al. (2019); npj Digital Medicine (2025); EU AI Act Art. 5(1)(f); Guay, Vallerand & Blanchard (2000); Ryan, Koestner & Deci (1991); Fredricks, Blumenfeld & Paris (2004); Curran et al. (2015); Raedeke (1997); Smith, Smoll & Curtis (1979) and Barnett, Smoll & Smith (1992); Volpe, McConaughy & Hintze (2009). Honest limit: the biometric refusal is the firmest evidence here, but the sensors *are* valid for narrow targets under controlled conditions — the invalidity is the leap to emotion and to real-world child conditions. The behavioural half is a negative claim, and those are cheap to make and hard to falsify. Excluding self-report is *our* design choice rather than a finding, and it is what forces the software into "here is what we saw, you decide." The child Passion Scale runs α = .60–.66, and in the youngest sample properly tested the two passions correlated r = .73 with obsessive passion *unrelated* to burnout — the mechanism is weakest exactly where we operate.
 
 ### On sustaining the child
 
-- **Spiky POV 3: Burnout is a measurable operating variable we design against, "good stress" is a myth, and early specialization is not required for elite results.**
-   - **Elaboration:** The hothousing debate is stuck in a false binary: intensity and damage, or safety and mediocrity. The evidence dissolves it. First, the achievement case for hothousing is weak on its own terms. The predictors of rapid *junior* success sit close to the *opposite* of long-term senior success, and most elite performers specialize in mid-to-late adolescence, so "specialize early or fall behind" is not what the data says. This corrects a position we held earlier: take the early *start*, refuse the early *lock-in*. Second, the harm does not come from volume. It comes from **controlled motivation and contingent self-worth**. In music schools, controlled motivation raises dropout (β ≈ .19) while autonomous motivation protects (β ≈ −.17), and encouraging parental involvement is the single strongest protective factor (β ≈ −.39); autonomy-supportive coaching predicts resilience (β ≈ .52). Third, retire the folk model of "optimal arousal." Yerkes-Dodson rests on a 1908 experiment with a handful of mice that never measured arousal, and both "challenge" and "hindrance" stress relate *negatively* to strain, so hard-but-motivating is not free. What follows is operational, and monitored as first-class program metrics: validated burnout instruments (the School Burnout Inventory and kin), sleep floors of 9–12h for 6–12s, distributed practice, scheduled deloads, autonomy-supportive delivery. School burnout quadruples dropout risk, and high-pressure environments run 2–3× the population norms for anxiety and depression.
+- **Spiky POV 3: Burnout is a measurable operating variable we design against, "good stress" is a myth, and the early *start* is required while the early *lock-in* is not.**
+   - **Elaboration:** The hothousing debate is stuck in a false binary: intensity and damage, or safety and mediocrity. The evidence dissolves it. First, separate two things the phrase "early specialization" runs together. **An early start is well supported and we keep it**: in chess, the odds of reaching International Master were roughly 1 in 4 for players who began serious study by 12 against 1 in 55 for those who began later, and the graded music ladders assume years of accumulated practice before the junior competitions open at 13. **Early lock-in is a different claim and it fails.** The predictors of rapid *junior* success sit close to the *opposite* of long-term senior success, and most elite performers specialize in mid-to-late adolescence, so "commit to one domain early or fall behind" is not what the data says. This corrects a position we held earlier: take the early start, refuse the early lock-in. It is also why the product tracks several live hypotheses per child and makes parking reversible. Second, the harm does not come from volume. It comes from **controlled motivation and contingent self-worth**. In music schools, controlled motivation raises dropout (β ≈ .19) while autonomous motivation protects (β ≈ −.17), and encouraging parental involvement is the single strongest protective factor (β ≈ −.39); autonomy-supportive coaching predicts resilience (β ≈ .52). Third, retire the folk model of "optimal arousal." Yerkes-Dodson rests on a 1908 experiment with a handful of mice that never measured arousal, and both "challenge" and "hindrance" stress relate *negatively* to strain, so hard-but-motivating is not free. What follows is operational, and monitored as first-class program metrics: validated burnout instruments (the School Burnout Inventory and kin), sleep floors of 9–12h for 6–12s, distributed practice, scheduled deloads, autonomy-supportive delivery. School burnout quadruples dropout risk, and high-pressure environments run 2–3× the population norms for anxiety and depression.
    - **Consensus it breaks:** that intensity's damage is either inherent (so cap ambition) or negligible (so push harder), and that "good stress" is real.
-   - **Backing:** Frontiers (2023) specialization review; Salmela-Aro et al. (2009); Luthar & Becker (2002); Curran & Hill (2019); the CBT/mindfulness burnout meta-analysis; the Yerkes-Dodson critique (2024). Honest limit: no validated self-report burnout instrument exists at age 8, so the youngest band needs observer input; the athletic "deload" transfer to academics is reasoned rather than validated; and one review finds no direct specialization-to-burnout link, best read as harm running through pressure rather than load.
+   - **Backing:** Frontiers (2023) specialization review; Gobet & Campitelli (2007); Salmela-Aro et al. (2009); Luthar & Becker (2002); Curran & Hill (2019); the CBT/mindfulness burnout meta-analysis; the Yerkes-Dodson critique (2024). Honest limit: the chess starting-age figures come from a title-enriched club sample and are not a base rate for children; no validated self-report burnout instrument exists at age 8, so the youngest band needs observer input; the athletic "deload" transfer to academics is reasoned rather than validated; and one review finds no direct specialization-to-burnout link, best read as harm running through pressure rather than load.
 
 ### On the record the child builds
 
@@ -67,33 +70,12 @@ They group by pillar of the running system, with a unifying idea at the end.
    - **Consensus it breaks:** that this is either already built, or that its hard problem is authenticity/tamper-evidence.
    - **Backing:** Open Badges 3.0 / CLR 2.0 / W3C VC; in-toto, SLSA, Sigstore; Workflow-Run RO-Crate ↔ PROV; C2PA 2.1; EDPB Guidelines 02/2025; Weber-Wulff et al. (2023); Liang et al. (2023); Zhang et al. (2024). Honest limit: the novelty verdict infers from an *absence* in the surveyed corpus, so a proprietary build cannot be ruled out; the EDPB guidance is a consultation draft; and the oral-defense evidence is largely higher-education.
 
-### On selecting into the program
-
-- **Spiky POV 6: Equity in identification comes from universal screening and local norms, not from a "fairer" test or a higher bar. The referral system is where the bias lives.**
-   - **Elaboration:** When gifted programs under-represent poor and minority children, the reflex is to blame the test and reach for a nonverbal "culture-fair" one. That is the wrong lever. The bias enters upstream, at *referral and nomination*: qualified Black, Hispanic, low-income, English-learner, and female students go under-referred. Replace referral with **universal screening** and the picture changes. In Broward County, gifted placement rose from ~3.3% to ~5.5% overall, and the odds of identification rose **+174%** for disadvantaged students (Hispanic +130%, Black +80%) *with no change to eligibility standards*. Discretion is measurable too: Black students taught by a Black teacher were identified **3×** as often as similar-ability peers taught by others. And the "culture-fair" fix backfires: nonverbal tests showed a *larger* Black–White gap (d ≈ .63) than achievement tests (d ≈ .57) or teacher ratings (d ≈ .34). Admission ranks on family commitment above two floors; this SPOV hardens the *floor* itself so it stops discarding the children the program exists to find.
-   - **Consensus it breaks:** that under-representation is a test-bias problem solved by nonverbal tests and defended by high national-norm cutoffs.
-   - **Backing:** Card & Giuliano (2016); Grissom & Redding (2016); Dixson et al. (2025); Ozen et al. (2025). Honest limit: the strongest causal evidence is single-district, several key papers are not yet peer-reviewed, and how much residual under-representation is biased *procedure* versus upstream *opportunity gap* is genuinely unresolved.
-
 ### On proving the spike was worth building
 
-- **Spiky POV 8: The spike does not beat the academic floor. It differentiates among the children who have already cleared it, and nobody has ever measured whether starting at six helps.**
+- **Spiky POV 6: The spike does not beat the academic floor. It differentiates among the children who have already cleared it, and nobody has ever measured whether starting at six helps.**
    - **Elaboration:** The pitch deck version of this program says a spiky profile matters more than scores. The litigation record says something narrower and more useful. Harvard rates four *separate* dimensions, and the discovery data compares them: applicants with four ratings of 2 (solid across academic, extracurricular, personal and athletic) were admitted at **68%**, while applicants with a top extracurricular rating and no other top rating were admitted at **48%**. Read carelessly that says breadth beats the spike. But every row conditions on "no other 1s", so it compares a spike *without* the academic floor against balanced competence, and the profile this program builds — strong academics plus one exceptional thing — is not in the table at all. What the model says about *that* profile is supportive and additive: academic-1 carries a logit coefficient of **4.094** and extracurricular-1 **4.232**, both large, and only **7%** of the pool earns a 2 or better on three dimensions. Two further findings matter more than the numbers. The reader rubric **grades level, never domain** — it defines a 1 as "national-level achievement… truly unusual achievement" and enumerates no approved activities anywhere — so the folk hierarchy of prestigious pursuits is not in the instrument. Where domain *does* bite is the verification machinery: a separate academic rating that only academic competition triggers, faculty-reviewed portfolios for music, art and making, and athletic recruiting, all of which exist for some pursuits and not others. **Prestige lives in who can check your claim, not in what a reader is told to value** — precisely the gap the EvidenceGraph is built to close, and the strongest admissions argument this program has.
    - **Consensus it breaks:** both the admissions-consulting orthodoxy that a "spike" outranks a strong all-round profile, and the opposite school-counsellor reflex that extracurriculars are decoration on a transcript. Also the assumption, widespread in this market, that the spike's value depends on the subject being prestigious.
    - **Backing:** Harvard Reading Procedures, Class of 2023 (HARV00097939); Card expert report Exhibit 4; Arcidiacono, Kinsler & Ransom (2022); Chetty, Deming & Friedman (2025); Stu Schmill, MIT Admissions (2006). **Honest limit, and it is severe.** Every figure is a correlation, and the rating is a reader's judgment of a whole file rather than an attribute of a child, so improving a pursuit and improving the number a reader writes down are different operations. **No study establishes causation for any activity**, and **nothing here observes anyone under 17** — the link from six to seventeen, the premise of the program, is unevidenced.
-
-### On reading motivation
-
-- **Spiky POV 9: Behaviour cannot identify a motivational state either. So the software asks the guide what they saw instead of telling the guide what the child feels.**
-   - **Elaboration:** SPOV 2 refused the body and kept behaviour. The uncomfortable extension: **behaviour cannot name a motivational state either**, and the field says so about its own instruments. The authors of SDT's situational scale write that the free-choice measure "cannot assess other important motivational concepts derived from self-determination theory, namely identified regulation, external regulation, and amotivation" — every instrument that separates the regulations is a questionnaire. Worse for a product built on voluntary return: under ego-involvement, free-choice persistence **inverts** with prior feedback. After success the internally-pressured child returns *less*; after a setback, *more*; and reports no enjoyment either way. **Praise from an adult flips the sign of our core signal, and we do not log feedback history beside returns, so we cannot see it happen.** Fredricks and colleagues say the same of behavioural engagement in their own words: it makes "no distinction… between effort aimed merely at fulfilling behavioral expectations and that aimed at understanding." And the folk category an operator most wants to detect dissolves on contact: across 94 studies and 1,308 effect sizes, harmonious and obsessive passion correlate with deliberate practice *indistinguishably*, obsessive slightly **more** with hours per week. Volume, the one thing an adult can see, is the one variable that does not separate the child you should feed from the child you should intervene on, so a quadrant keyed on intensity flags the absorbed child and misses the pressured one. What survives is not a detector but three things a program can actually do: the **interruption test** (watch what happens when the activity becomes unavailable, which is where the meta-analytic separation lives), the **exit test** (offer a real, cost-free exit — attraction declines it, entrapment cannot hear it), and **intervening on the adults by subtraction**, which is where the only controlled child evidence in the field sits: a coach-behaviour workshop cut next-season dropout from **26% to 5%** with no change in win-loss records.
-   - **Consensus it breaks:** that a rich enough behavioural log, given enough data, can infer *why* a child is doing something — the premise under most learning analytics. And the folk category "over-motivated" as a single detectable state.
-   - **Backing:** Guay, Vallerand & Blanchard (2000); Ryan, Koestner & Deci (1991); Fredricks, Blumenfeld & Paris (2004); Curran et al. (2015); Raedeke (1997); Smith, Smoll & Curtis (1979) and Barnett, Smoll & Smith (1992); Volpe, McConaughy & Hintze (2009). **Honest limit:** a negative claim, and those are cheap to make and hard to falsify. Excluding self-report is *our* design choice rather than a finding, and it is what forces the software into "here is what we saw, you decide." The child Passion Scale runs α = .60–.66, and in the youngest sample properly tested the two passions correlated r = .73 with obsessive passion *unrelated* to burnout — the mechanism is weakest exactly where we operate.
-
-### The unifying idea
-
-- **Spiky POV 7: The honest, autonomy-preserving path is also the cheap and legal one. You do not need surveillance or frontier models to run this at scale.**
-   - **Elaboration:** Across every SPOV above, the disciplined choice and the cheap choice keep turning out to be the same choice. Refusing biometrics is both the lawful path and the free one. Refusing gamification protects the signal and saves the build. And on raw compute, where everyone assumes elite AI tutoring must be ruinously expensive, the measured numbers run the other way. Serving real-time Socratic tutoring at scale runs on the order of **a few to a few tens of dollars per student per year**. The strongest real anchor is Khan Academy, which bundles GPT-4-based Khanmigo into district licenses at roughly $10–$15/student/year and cut that price from $60 to $35 in late 2023, attributing the cut to engineering work that lowered its compute cost. The dominant cost lever is not GPU count but **model selection and batching**: continuous batching plus paged attention swings cost-per-token by ~23–44× and let one operator halve its serving fleet, and difficulty-routing keeps ~95–97% of frontier quality at ~15–30% of cost (RouteLLM: ~85% savings retaining ~95% of GPT-4 quality, needing the strong model on only ~14% of queries; MixLLM: 97.25% quality at 24.18% cost). Small fine-tuned models match year-old 70B models on targeted tasks. And it composes with the friction thesis: a system engineered to *withhold* the answer does not want a frontier model dispensing solutions. Cheap, small and disciplined is not a compromise here; it is the design.
-   - **Consensus it breaks:** that scale forces a choice between cost and quality, and that elite AI tutoring needs frontier models and heavy GPU spend.
-   - **Backing:** Khan Academy district pricing and the 2023 price cut; the ITAS four-agent study; RouteLLM (ICLR 2025); MixLLM (NAACL 2025); vLLM/PagedAttention benchmarks. Follows from SPOV 2, SPOV 4 and the friction thesis. Honest limit: no source benchmarks 100,000 concurrent K-8 students; the per-student band leans on one preprint extrapolating from a ≤50-user *graduate* deployment; much of the GPU economics comes from vendor blogs; and the routing headlines are *oracle-router* ceilings practical routers barely beat. The deepest gap is pedagogical rather than economic — whether a small model clears the child-safety and teaching bar is unvalidated.
 
 ---
 
@@ -102,20 +84,8 @@ They group by pillar of the running system, with a unifying idea at the end.
 - **Lisa Feldman Barrett**
    - **Who:** Psychologist and neuroscientist, Northeastern University.
    - **Focus:** The science of emotion; that emotion cannot be reliably inferred from facial configurations.
-   - **Why Follow:** The evidence base for refusing facial-emotion detection, and the boundary SPOV 2 draws between unreadable inner state and measurable behavior.
+   - **Why Follow:** The evidence base for refusing facial-emotion detection, and the first half of the line SPOV 2 draws between what is unreadable and what is merely insufficient.
    - **Where:** https://doi.org/10.1177/1529100619832930
-
-- **David Card & Laura Giuliano**
-   - **Who:** Economists (UC Berkeley; University of Miami).
-   - **Focus:** The Broward County universal-screening experiment for gifted identification.
-   - **Why Follow:** The single cleanest causal result behind SPOV 6: universal screening, not a different test, is what surfaces under-represented talent.
-   - **Where:** https://www.pnas.org/doi/10.1073/pnas.1605043113
-
-- **Jason Grissom**
-   - **Who:** Education researcher, Vanderbilt University.
-   - **Focus:** Discretion, teacher effects, and disproportionality in gifted assignment.
-   - **Why Follow:** Quantifies the bias that lives in referral and discretion, the mechanism SPOV 6 says universal screening removes.
-   - **Where:** https://journals.sagepub.com/doi/full/10.1177/2332858415622175
 
 - **Katariina Salmela-Aro**
    - **Who:** Educational psychologist, University of Helsinki.
@@ -180,26 +150,20 @@ They group by pillar of the running system, with a unifying idea at the end.
 - **Raj Chetty, David Deming & John Friedman**
    - **Who:** Economists (Harvard; Harvard; Brown), Opportunity Insights.
    - **Focus:** The causal effect of Ivy-Plus attendance, identified from waitlist variation, and what drives the top-1% admissions advantage.
-   - **Why Follow:** The only credible causal design in this literature, and the most uncomfortable finding in SPOV 8 — non-academic ratings track private schooling and do not predict post-college outcomes.
+   - **Why Follow:** The only credible causal design in this literature, and the most uncomfortable finding in SPOV 6 — non-academic ratings track private schooling and do not predict post-college outcomes.
    - **Where:** https://opportunityinsights.org/paper/diversifying-society-s-leaders/
 
 - **Robert Vallerand & Thomas Curran**
    - **Who:** Psychologists (Université du Québec à Montréal; LSE).
    - **Focus:** The Dualistic Model of Passion, and the meta-analysis testing it across 94 studies.
-   - **Why Follow:** Vallerand built the harmonious/obsessive distinction the whole burnout conversation runs on; Curran's meta-analysis is what shows the distinction cannot be made from the outside, which is the load-bearing evidence in SPOV 9.
+   - **Why Follow:** Vallerand built the harmonious/obsessive distinction the whole burnout conversation runs on; Curran's meta-analysis is what shows the distinction cannot be made from the outside, which is the load-bearing evidence in SPOV 2.
    - **Where:** https://doi.org/10.1007/s11031-015-9503-0
 
 - **Ronald Smith & Frank Smoll**
    - **Who:** Sport psychologists, University of Washington.
    - **Focus:** Coach Effectiveness Training and the Mastery Approach to Coaching; changing adult behaviour rather than child behaviour.
-   - **Why Follow:** The 26%-to-5% dropout result is the strongest controlled child evidence in the motivation literature, and it is the reason SPOV 9's intervention points at the adults.
+   - **Why Follow:** The 26%-to-5% dropout result is the strongest controlled child evidence in the motivation literature, and it is the reason SPOV 2's intervention points at the adults.
    - **Where:** https://doi.org/10.1080/10413209208406459
-
-- **The efficient-inference research community (RouteLLM, MixLLM, vLLM)**
-   - **Who:** Systems and ML researchers behind model routing, cascades, and high-throughput serving.
-   - **Focus:** Retaining frontier quality at a fraction of the cost through routing and batching.
-   - **Why Follow:** The concrete proof of SPOV 7: scale is a scheduling and model-selection problem, not a GPU-spend problem.
-   - **Where:** https://arxiv.org/html/2603.04445v2 ; https://arxiv.org/html/2606.27457
 
 ---
 
@@ -229,23 +193,17 @@ Original conclusions we reached after processing the sources. These bridge the K
 - **Insight 12:** The provenance stack is commodity and the integration is the novelty. Every layer exists and is battle-tested; the differentiated asset is composing them for a child plus pairing them with the in-person defense that artifact-only competitors cannot run. (→ SPOV 5)
 - **Insight 13:** The hard problem is inverted from the marketing. Tamper-evidence is solved; *verifiable deletion on an append-only child-data store* is not, regulators reject immutability as an excuse, and this is the binding pre-live gate, and the competitive scan confirms it as the frontier. (→ SPOV 5)
 
-### Selecting and serving
-
-- **Insight 14:** The bias in gifted identification is upstream of the test, in referral and discretion. Universal screening moves representation with no change to standards, while nonverbal "culture-fair" tests can widen the gap, so the fix is a process change, not a test swap. This hardens the child-side admission floor. (→ SPOV 6)
-- **Insight 15:** Serving elite AI tutoring at scale is cheap when architected right: routing and batching, not GPUs, set the bill, and small models increasingly suffice. The *cost* objection to 100k-scale Socratic tutoring is an architecture problem the systems literature has addressed. The *fitness* objection is not: routing's best numbers are oracle ceilings, and no one has shown a small model clears the pedagogy-and-safety bar for young children at this scale. Cost is solved on paper; pedagogy at scale is not. (→ SPOV 7)
-- **Insight 16:** The disciplined path and the cheap path coincide. Refusing biometrics, refusing gamification, and running small routed models under a friction design are each at once the more ethical, the more legal, and the less expensive choice. That unifying claim makes the whole system operable at scale rather than only defensible in principle. (→ SPOV 7)
-
 ### Proving the spike was worth building
 
-- **Insight 17:** The admissions comparison everyone quotes is the wrong comparison. "Four ratings of 2 beat a single extracurricular 1" sounds like breadth beating depth, but every row in that table conditions on *no other top ratings*, so it contrasts a spike **without** the academic floor against balanced competence. The profile this program builds — floor cleared, then one exceptional thing — is absent from the table, and the coefficients say it is additive rather than substitutive. The spike does not replace academics; it separates people who already have them. (→ SPOV 8)
-- **Insight 18:** The reader rubric grades **level, never domain**, and enumerates no approved activities. Domain prestige is real but it lives in the *verification machinery* — a second rating axis for academic competition, faculty portfolios for music, art and making, recruiting for athletics — not in what a reader is told to value. That reframes the EvidenceGraph from a nice-to-have into the direct answer: it is a verification channel for pursuits that have none. (→ SPOV 8, SPOV 5)
-- **Insight 19:** The largest hole under this program is not in the admissions data, it is in its age range. **Nothing in this literature observes anyone under 17.** Every finding above describes seventeen-year-olds at the point of application, so the claim that starting at six improves the outcome is not supported or contradicted by any of it — it is simply unmeasured, and it is the premise everything else rests on. (→ SPOV 8)
+- **Insight 14:** The admissions comparison everyone quotes is the wrong comparison. "Four ratings of 2 beat a single extracurricular 1" sounds like breadth beating depth, but every row in that table conditions on *no other top ratings*, so it contrasts a spike **without** the academic floor against balanced competence. The profile this program builds — floor cleared, then one exceptional thing — is absent from the table, and the coefficients say it is additive rather than substitutive. The spike does not replace academics; it separates people who already have them. (→ SPOV 6)
+- **Insight 15:** The reader rubric grades **level, never domain**, and enumerates no approved activities. Domain prestige is real but it lives in the *verification machinery* — a second rating axis for academic competition, faculty portfolios for music, art and making, recruiting for athletics — not in what a reader is told to value. That reframes the EvidenceGraph from a nice-to-have into the direct answer: it is a verification channel for pursuits that have none. (→ SPOV 6, SPOV 5)
+- **Insight 16:** The largest hole under this program is not in the admissions data, it is in its age range. **Nothing in this literature observes anyone under 17.** Every finding above describes seventeen-year-olds at the point of application, so the claim that starting at six improves the outcome is not supported or contradicted by any of it — it is simply unmeasured, and it is the premise everything else rests on. (→ SPOV 6)
 
 ### Reading motivation
 
-- **Insight 20:** Refusing biometrics (SPOV 2) bought less than it looked like. The behavioural channel we kept **also** cannot name a motivational state, and SDT says so about its own instrument. The honest architecture that follows is not a better inference; it is a division of labour — the log carries behaviour, the guide carries everything else, and the software's job is to ask rather than to conclude. (→ SPOV 9, SPOV 2)
-- **Insight 21:** Our core signal can invert under adult praise. Free-choice persistence rises after a setback and falls after success for the internally-pressured child, so the same voluntary return means opposite things depending on what an adult said last session. **Feedback history and concurrent alternatives are therefore not enrichment, they are preconditions for the return being interpretable at all** — and neither is currently logged. This is the cheapest high-value change available to the signal layer. (→ SPOV 9, SPOV 1)
-- **Insight 22:** "Over-motivated" is not one state, and the axis an adult would use to detect it carries no information: obsessive and harmonious passion correlate with practice hours indistinguishably, obsessive slightly more. So the deliverable a stakeholder asks for — a quadrant keyed on intensity — is not merely unbuildable, it would be wrong in a predictable direction, flagging absorbed children and missing pressured ones. What replaces it is probes a guide *runs* and interventions aimed at adults, which is also where the only controlled child evidence in the field sits. (→ SPOV 9, SPOV 3)
+- **Insight 17:** Refusing biometrics bought less than it looked like. The behavioural channel kept in their place **also** cannot name a motivational state, and SDT says so about its own instrument. The honest architecture that follows is not a better inference; it is a division of labour — the log carries behaviour, the guide carries everything else, and the software's job is to ask rather than to conclude. (→ SPOV 2)
+- **Insight 18:** Our core signal can invert under adult praise. Free-choice persistence rises after a setback and falls after success for the internally-pressured child, so the same voluntary return means opposite things depending on what an adult said last session. **Feedback history and concurrent alternatives are therefore not enrichment, they are preconditions for the return being interpretable at all** — and neither is currently logged. This is the cheapest high-value change available to the signal layer. (→ SPOV 2, SPOV 1)
+- **Insight 19:** "Over-motivated" is not one state, and the axis an adult would use to detect it carries no information: obsessive and harmonious passion correlate with practice hours indistinguishably, obsessive slightly more. So the deliverable a stakeholder asks for — a quadrant keyed on intensity — is not merely unbuildable, it would be wrong in a predictable direction, flagging absorbed children and missing pressured ones. What replaces it is probes a guide *runs* and interventions aimed at adults, which is also where the only controlled child evidence in the field sits. (→ SPOV 2, SPOV 3)
 
 ---
 
@@ -310,6 +268,30 @@ Organized sources and the facts and summaries we built our insights on. DOK 1 fa
    - **DOK 2 - Summary:**
       - Even where a physiological sensor is partly valid it is biased by skin tone and brittle in real conditions, and the further leap to "stress" or "emotion" is unsupported, so behavioral signals, not biometrics, are the only defensible instrument.
    - **Link:** (npj Digital Medicine 2025 rPPG study, as cited in the 2026-07-21 burnout research report)
+
+#### Subcategory 1.3: Why behaviour cannot name a motivational state
+
+- **Source: Guay, Vallerand & Blanchard (2000); Ryan, Koestner & Deci (1991); Fredricks, Blumenfeld & Paris (2004)**
+   - **DOK 1 - Facts:**
+      - On the free-choice measure, SDT's own authors: it "is unidimensional and consequently cannot assess other important motivational concepts derived from self-determination theory, namely identified regulation, external regulation, and amotivation."
+      - Ryan, Koestner & Deci (1991), three experiments: after **positive** feedback, ego-involved participants persisted **less** than task-involved ones; after nonconfirming or no feedback they persisted **more**; in neither case did they report interest, enjoyment or perceived choice.
+      - Fredricks et al.: "no distinction is made between effort aimed merely at fulfilling behavioral expectations and that aimed at understanding the material and mastering the content."
+      - Skinner et al. (2008, N = 805, grades 4–7): emotional components of engagement drove later changes in behavioural ones; feedback from behaviour to emotion was not as consistent.
+      - Volpe, McConaughy & Hintze (2009, ages 6–11): for on-task behaviour, person variance was 10.6% and person-by-occasion plus residual 70.4%; ~14 sessions were needed for a dependable person-level estimate.
+   - **DOK 2 - Summary:**
+      - Regulation type is defined by the reason for acting, which is not in the behaviour stream, and the field's one behavioural measure is documented as unable to separate the regulations. Worse, the sign of a voluntary return inverts with prior feedback — so adult praise flips our core signal, and feedback history must be logged beside returns for a return to be interpretable at all. Behaviour is also a lagging indicator by construction, since emotion leads it.
+   - **Link:** https://selfdeterminationtheory.org/wp-content/uploads/2014/04/2000_GuayVallerandBlanchard_MO.pdf ; https://doi.org/10.1007/BF00995170
+
+- **Source: Curran, Hill, Appleton, Vallerand & Standage (2015); Raedeke (1997); Smith, Smoll & Curtis (1979) and Barnett, Smoll & Smith (1992)**
+   - **DOK 1 - Facts:**
+      - Meta-analysis of the passion literature, 94 studies and 1,308 effect sizes: harmonious and obsessive passion correlate with deliberate practice to a statistically indistinguishable degree (Hotelling's T = .48, ns); obsessive correlates **slightly more** with hours per week; obsessive passion is **unrelated to objective performance**. The only large clean separation is on activity dependence — itself a questionnaire.
+      - Curran et al. (2011, n = 149 junior soccer players, mean age 16.2): harmonious and obsessive passion correlated **r = .73**, and obsessive passion was **unrelated to athlete burnout**.
+      - The child version of the Passion Scale (Mageau et al. 2009, n = 163, mean age 11) ran α = .60 harmonious and .66 obsessive.
+      - Raedeke (1997, 236 age-group swimmers): attraction ("I want to be here") and entrapment ("I have to be here") produce the same attendance record; entrapped clusters carried elevated burnout.
+      - Coach Effectiveness Training (18 Little League coaches, ~ages 10–12): next-season attrition **5% in the trained group versus 26% in control**, with no difference in win-loss records; the largest self-esteem gains went to the children who started lowest.
+   - **DOK 2 - Summary:**
+      - The observable quantity adults use to diagnose over-motivation is the one variable that does not separate the healthy state from the unhealthy one, so a framework keyed on intensity misclassifies in both directions. What can be done is to run probes rather than wait for signals — interruption and a real exit — and to intervene on adult behaviour, which is where the only controlled child evidence in the field sits, and where the reliably achievable change is subtraction rather than addition.
+   - **Link:** https://doi.org/10.1007/s11031-015-9503-0 ; https://doi.org/10.1123/jsep.19.4.396
 
 ### Category 2: Sustaining the child
 
@@ -433,52 +415,9 @@ Organized sources and the facts and summaries we built our insights on. DOK 1 fa
       - Verifiable deletion on an append-only child-data store is the unsolved problem and the binding pre-live gate, the opposite of the "authenticity is the hard part" framing.
    - **Link:** https://www.edpb.europa.eu/our-work-tools/documents/public-consultations/2025/guidelines-022025-processing-personal-data_en
 
-### Category 4: Selecting and serving at scale
+### Category 4: Proving the spike was worth building
 
-#### Subcategory 4.1: Equitable identification
-
-- **Source: Card & Giuliano (2016), universal screening in Broward County**
-   - **DOK 1 - Facts:**
-      - Gifted placement rose ~3.3% → 5.5% overall; odds of identification rose +174% for disadvantaged students, +130% Hispanic, +80% Black, with no change to eligibility standards.
-      - Newly identified "complier" students had IQ distributions similar to referral-identified peers.
-   - **DOK 2 - Summary:**
-      - Universal screening, not a different test, is what surfaces under-represented talent; the bias lives in referral, which screening removes.
-   - **Link:** https://www.pnas.org/doi/10.1073/pnas.1605043113
-
-- **Source: Grissom & Redding (2016); Dixson et al. (2025); Ozen et al. (2025)**
-   - **DOK 1 - Facts:**
-      - Black students taught by Black teachers were identified ~3× more often than similar-ability peers taught by other-race teachers (ECLS-K).
-      - Nonverbal ability tests showed a *larger* Black–White gap (d ≈ .63) than achievement tests (d ≈ .57) or teacher ratings (d ≈ .34).
-      - CogAT meta-analytic criterion validity r ≈ .63 (24 studies).
-   - **DOK 2 - Summary:**
-      - Discretion injects measurable bias and "culture-fair" nonverbal tests can widen the gap, so the fix is a process change (universal screening, local norms), not a test swap. CogAT remains a valid instrument once the process around it is fixed.
-   - **Link:** https://journals.sagepub.com/doi/full/10.1177/2332858415622175 ; https://edworkingpapers.com/sites/default/files/ai25-1118.pdf
-
-#### Subcategory 4.2: Serving AI tutoring at scale
-
-- **Source: Khanmigo / Khan Academy pricing (incl. 2023 price cut); ITAS four-agent tutoring study**
-   - **DOK 1 - Facts:**
-      - Khanmigo consumer: $4/mo ($44/yr); Khan Academy Districts: ~$10–$15/student/year bundled (≥1,000 seats); standalone Student Tutor add-on list price up to $90; above 1,000 licenses is quote-only.
-      - Khan Academy publicly cut the district Khanmigo price from $60 to $35/student/year (Nov 2023), attributing the cut to engineering work that reduced computational cost.
-      - ITAS four-agent Gemini-2.5-Flash study (measured, 3,100 requests): ~7,438 tokens/interaction, ~$0.0039–$0.0071 each; a 675-question semester ≈ $2.63–$4.79/student (projection); median latency held flat 3.5–4.0s from 1–50 concurrent users on Priority tier.
-   - **DOK 2 - Summary:**
-      - Real-time Socratic tutoring at scale costs on the order of a few to a few tens of dollars per student per year, and a vendor cutting price while citing lower compute cost is the cleanest non-marketing signal that the trend is downward, though the per-student band still leans on one graduate-scale preprint and no source reaches the 100k-K-8 target.
-   - **Link:** https://www.khanacademy.org/schools/pricing ; https://thejournal.com/articles/2023/11/16/khan-academy-cuts-district-price-of-khanmigo-ai-teaching-assistant.aspx ; https://arxiv.org/pdf/2604.24110
-
-- **Source: RouteLLM (ICLR 2025); MixLLM (NAACL 2025); continuous-batching benchmarks; small-model capability**
-   - **DOK 1 - Facts:**
-      - RouteLLM: ~85% cost savings retaining ~95% of GPT-4 quality, needing the strong model on only ~14% of queries.
-      - MixLLM: 97.25% of GPT-4 quality at 24.18% of cost (~4× reduction).
-      - Continuous batching yields 3–24× higher throughput; the cost-per-token swing scales with batch depth, ~23–44× at batch-128 (the fresh-scan figure) up to ~100× at batch-256 (~$258/M → ~$2.30/M on 8×H100 serving a 70B model).
-      - Phi-4 (14B): 84.8 MMLU, 82.6 HumanEval, beating a prior-generation 70B on code.
-      - Caveat from the fresh scan: the ~95–97% quality-at-15–30%-cost figures are largely *oracle-router* ceilings; practical routers can barely beat a trivial baseline and depend on judge accuracy, and benchmarks show current LLMs only marginally reproduce established intelligent-tutoring-system adaptivity.
-   - **DOK 2 - Summary:**
-      - Model routing and batching, not GPU count, set the bill, and small models increasingly suffice, so architecture, not spend, is the cost lever. But the routing gains are best-case and the pedagogical fitness of small models for young children at scale is unproven, so the cost case is far stronger than the pedagogy case.
-   - **Link:** https://arxiv.org/html/2603.04445v2 ; https://arxiv.org/html/2606.27457
-
-### Category 5: Proving the spike was worth building
-
-#### Subcategory 5.1: What elite admissions actually rewards
+#### Subcategory 4.1: What elite admissions actually rewards
 
 - **Source: *SFFA v. Harvard* discovery — Reading Procedures, Class of 2023 (HARV00097939); Card expert report; Findings of Fact (D. Mass. 2019)**
    - **DOK 1 - Facts:**
@@ -508,27 +447,3 @@ Organized sources and the facts and summaries we built our insights on. DOK 1 fa
    - **DOK 2 - Summary:**
       - The premise that starting at six improves a seventeen-year-old's outcome is neither supported nor contradicted by this literature; it is unmeasured. That is the largest open claim the program makes and it should be stated rather than left for a reader to find.
    - **Link:** https://doi.org/10.1037/0012-1649.43.1.159
-
-#### Subcategory 5.2: Why behaviour cannot name a motivational state
-
-- **Source: Guay, Vallerand & Blanchard (2000); Ryan, Koestner & Deci (1991); Fredricks, Blumenfeld & Paris (2004)**
-   - **DOK 1 - Facts:**
-      - On the free-choice measure, SDT's own authors: it "is unidimensional and consequently cannot assess other important motivational concepts derived from self-determination theory, namely identified regulation, external regulation, and amotivation."
-      - Ryan, Koestner & Deci (1991), three experiments: after **positive** feedback, ego-involved participants persisted **less** than task-involved ones; after nonconfirming or no feedback they persisted **more**; in neither case did they report interest, enjoyment or perceived choice.
-      - Fredricks et al.: "no distinction is made between effort aimed merely at fulfilling behavioral expectations and that aimed at understanding the material and mastering the content."
-      - Skinner et al. (2008, N = 805, grades 4–7): emotional components of engagement drove later changes in behavioural ones; feedback from behaviour to emotion was not as consistent.
-      - Volpe, McConaughy & Hintze (2009, ages 6–11): for on-task behaviour, person variance was 10.6% and person-by-occasion plus residual 70.4%; ~14 sessions were needed for a dependable person-level estimate.
-   - **DOK 2 - Summary:**
-      - Regulation type is defined by the reason for acting, which is not in the behaviour stream, and the field's one behavioural measure is documented as unable to separate the regulations. Worse, the sign of a voluntary return inverts with prior feedback — so adult praise flips our core signal, and feedback history must be logged beside returns for a return to be interpretable at all. Behaviour is also a lagging indicator by construction, since emotion leads it.
-   - **Link:** https://selfdeterminationtheory.org/wp-content/uploads/2014/04/2000_GuayVallerandBlanchard_MO.pdf ; https://doi.org/10.1007/BF00995170
-
-- **Source: Curran, Hill, Appleton, Vallerand & Standage (2015); Raedeke (1997); Smith, Smoll & Curtis (1979) and Barnett, Smoll & Smith (1992)**
-   - **DOK 1 - Facts:**
-      - Meta-analysis of the passion literature, 94 studies and 1,308 effect sizes: harmonious and obsessive passion correlate with deliberate practice to a statistically indistinguishable degree (Hotelling's T = .48, ns); obsessive correlates **slightly more** with hours per week; obsessive passion is **unrelated to objective performance**. The only large clean separation is on activity dependence — itself a questionnaire.
-      - Curran et al. (2011, n = 149 junior soccer players, mean age 16.2): harmonious and obsessive passion correlated **r = .73**, and obsessive passion was **unrelated to athlete burnout**.
-      - The child version of the Passion Scale (Mageau et al. 2009, n = 163, mean age 11) ran α = .60 harmonious and .66 obsessive.
-      - Raedeke (1997, 236 age-group swimmers): attraction ("I want to be here") and entrapment ("I have to be here") produce the same attendance record; entrapped clusters carried elevated burnout.
-      - Coach Effectiveness Training (18 Little League coaches, ~ages 10–12): next-season attrition **5% in the trained group versus 26% in control**, with no difference in win-loss records; the largest self-esteem gains went to the children who started lowest.
-   - **DOK 2 - Summary:**
-      - The observable quantity adults use to diagnose over-motivation is the one variable that does not separate the healthy state from the unhealthy one, so a framework keyed on intensity misclassifies in both directions. What can be done is to run probes rather than wait for signals — interruption and a real exit — and to intervene on adult behaviour, which is where the only controlled child evidence in the field sits, and where the reliably achievable change is subtraction rather than addition.
-   - **Link:** https://doi.org/10.1007/s11031-015-9503-0 ; https://doi.org/10.1123/jsep.19.4.396
