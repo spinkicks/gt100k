@@ -5118,3 +5118,60 @@ body {
     display: grid;
   }
 }
+
+/* Recovery drawer — opened on demand from the wellbeing strip / action line, same aside pattern as
+   the maps drawer. The moves are the loudest thing; guardrails read as a warning, not a step. */
+.recoverydrawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(760px, 92vw);
+  z-index: 40;
+  overflow-y: auto;
+  padding: 18px 20px 40px;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: -8px 0 32px rgb(0 0 0 / 12%);
+}
+.recovery__headline {
+  font-size: 1.05rem;
+  margin: 0 0 0.75rem;
+}
+.recovery__moves {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.recmove {
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
+  background: #f4f7f9;
+}
+.recmove__does {
+  display: block;
+  color: #33505c;
+}
+.recmove__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+.recmove__grade {
+  font-size: 0.72rem;
+  color: #4a6470;
+}
+.recmove--avoid {
+  background: #fbf2ef;
+}
+.recovery__subhd {
+  font-size: 0.9rem;
+  color: #33505c;
+  margin: 0.9rem 0 0.35rem;
+}
+.recovery__break,
+.recovery__pivot,
+.recovery__avoid {
+  margin-top: 0.8rem;
+}
