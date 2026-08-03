@@ -1771,6 +1771,21 @@ body {
   color: var(--accent);
   background: var(--accent-weak);
 }
+/* The count pill and its unit word travel together, so the number never sits on the face as a bare
+   integer inviting a cross-tab comparison that shares no unit. */
+.tab__count {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+}
+.tab__unit {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+.tab--on .tab__unit {
+  color: var(--accent);
+}
 /* At-a-glance "needs your review" marker on a tab (separate from the count pill). Amber, because it
    is an unattended state rather than a fault; the tab's title attribute names it in words. */
 .tab__dot {

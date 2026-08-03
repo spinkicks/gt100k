@@ -397,7 +397,7 @@ export function ChildSwitcher({ ctrl }: { ctrl: ConsoleController }): JSX.Elemen
   const summaryFor = (id: string) =>
     ctrl.summaries.get(id) ?? {
       tracked: 0,
-      gateReady: 0,
+      promotableCount: 0,
       topState: null,
       attention: STEADY_FALLBACK,
       promotableId: null,
@@ -451,7 +451,11 @@ export function ChildSwitcher({ ctrl }: { ctrl: ConsoleController }): JSX.Elemen
                   </span>
                   <span className="kid__headline">{a.headline}</span>
                   <span className="kid__sub kid__sub--muted">
-                    {s.tracked} tracked{s.gateReady ? ` · ${s.gateReady} ready` : ""}
+                    {/* "to promote", not "ready": the verdict chip above already owns "Ready", and a
+                        lowercase "ready" count beside it read as the same word twice. Counts
+                        promotable specs, so it matches the action and drains on promote. */}
+                    {s.tracked} tracked
+                    {s.promotableCount ? ` · ${s.promotableCount} to promote` : ""}
                   </span>
                 </span>
               </button>

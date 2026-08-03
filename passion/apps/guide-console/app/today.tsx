@@ -23,7 +23,7 @@ const WORD: Record<Attention["level"], string> = {
 // verdict is the absence of a reason to act, not a hidden one. Matches the switcher's fallback.
 const STEADY_FALLBACK: ChildSummary = {
   tracked: 0,
-  gateReady: 0,
+  promotableCount: 0,
   topState: null,
   promotableId: null,
   attention: {
@@ -92,7 +92,12 @@ export function TodayRoster({
                   </span>
                   <span className="todayrow__headline">{a.headline}</span>
                   <span className="kid__sub kid__sub--muted">
-                    {s.tracked} tracked{s.gateReady ? ` · ${s.gateReady} ready` : ""}
+                    {/* "to promote", not "ready": the verdict chip one line up already owns the word
+                        "Ready", and printing it again as a lowercase count read as the same fact
+                        stuttering. This counts promotable specs (see `promotableCount`), so it agrees
+                        with the Promote button and empties the moment a promote lands. */}
+                    {s.tracked} tracked
+                    {s.promotableCount ? ` · ${s.promotableCount} to promote` : ""}
                   </span>
                 </span>
               </button>

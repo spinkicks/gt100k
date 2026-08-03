@@ -36,7 +36,12 @@ export type Filter = "ALL" | string;
 
 export interface ChildSummary {
   readonly tracked: number;
-  readonly gateReady: number;
+  // How many of this child's specializations are ready to promote right now: EMERGING with a passed
+  // gate, the same rule `topPromotableId` and the attention verdict use -- NOT merely gate-passed. A
+  // promoted card keeps its passed gate, so counting gate-passed left the roster saying "1 ready" for
+  // a child with nothing left to promote, and beside a "Ready" verdict chip the word collided with
+  // itself. Counting promotable drains the number the instant a promote lands.
+  readonly promotableCount: number;
   readonly topState: string | null;
   readonly attention: Attention;
   // The card the guide's primary action would promote for THIS child, or null if none is promotable.
@@ -187,7 +192,8 @@ export function useConsole() {
       const wb = wellbeingForKid(child.id);
       m.set(child.id, {
         tracked: cvm.cards.length,
-        gateReady: cvm.cards.filter((c) => c.gate?.passed === true).length,
+        promotableCount: cvm.cards.filter((c) => c.state === "EMERGING" && c.gate?.passed === true)
+          .length,
         topState: cvm.cards[0]?.state ?? null,
         attention: attentionForKid(child.id, cvm.cards, wb),
         promotableId: topPromotableId(store, child.id, gates),
