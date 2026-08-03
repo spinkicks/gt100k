@@ -790,6 +790,119 @@ export const PURSUITS: readonly Pursuit[] = [
   },
 
   // ── Art & Animation ───────────────────────────────────────────────────────────────────────
+  // ── The graded-exam ladder, beyond music ──────────────────────────────────────────────────────
+  //
+  // `piano`, `violin`, `drums`, `guitar` and `singing` all reach a verdict the same way: a published
+  // syllabus, an examiner the awarding body sends, and a parent who books directly. It works because
+  // the examiner cannot be the child's own teacher and nobody has to join anything.
+  //
+  // LAMDA runs the same machinery for speech and stage, and is if anything BETTER on the
+  // unaffiliated-child test than ABRSM: Ofqual regulation makes the examiner external by rule, and
+  // the venue says in terms that a candidate may book without a teacher at all. Its floor is not
+  // merely unstated but explicitly disclaimed -- "There are no minimum age restrictions" -- so the
+  // ages below are judgements about the activity, exactly as they are for the music entries.
+  //
+  // REGION IS THE REAL WEAKNESS HERE, not age and not affiliation. Both drama boards are UK-first.
+  // LAMDA holds exam events in about 36 other countries, but outside the UK the route runs through a
+  // regional representative rather than self-service, so `reach: alone` is honest for a British
+  // child and optimistic for an American one. Recorded rather than hidden, the same way the music
+  // entries carry it.
+  {
+    id: "acting",
+    label: "Acting",
+    blurb: "Be someone else, out loud, from memory.",
+    cabin: "art-motion",
+    standard:
+      "LAMDA Performance Graded Examinations syllabus (2024): Acting, Entry Level to Grade 8",
+    venue: { name: "LAMDA Exams", url: "https://www.lamda.ac.uk/lamda-exams" },
+    ceiling: {
+      name: "ESU National Shakespeare Competition",
+      url: "https://www.esuus.org/what-we-do/shakespeare-competition/",
+      opensAt: 14,
+      precedent:
+        "Delilah Delgado, 2021 national winner, started at Williams that autumn. The cleanest single precedent in the 2026-08 sweep, and still correlational: nothing links the award to the admission.",
+    },
+    minAge: 5,
+    minAgeBasis: "judgement",
+    costUsd: 75,
+    cadence: "on-demand",
+    reach: "alone",
+    region: "international",
+    skew: {
+      male: 0.25,
+      source:
+        "Tonic Theatre 2012, youth drama organisations rather than LAMDA candidates; a proxy, not a measurement",
+    },
+    // NOT THE GRADE 8 MEDAL, AND NOT UCAS POINTS, though both are the first things a reader reaches
+    // for. UCAS points are a tariff route -- the Maker Portfolio problem, a channel and not a
+    // distinction. The medal is the venue's own output, which is the `ctf` problem: one programme
+    // named as both venue and ceiling records nothing.
+    note: "YoungArts Theater is the alternative ceiling with no affiliation requirement at all, opening at 15 on a video submission.",
+  },
+  {
+    id: "reciting",
+    label: "Reciting",
+    blurb: "Learn a poem by heart and make a room feel it.",
+    cabin: "art-motion",
+    standard:
+      "LAMDA Communication Graded Examinations syllabus (2024): Speaking Verse and Prose, Entry Level to Grade 8",
+    venue: {
+      name: "LAMDA Exams",
+      url: "https://www.lamda.ac.uk/lamda-exams/our-exams/communication",
+    },
+    ceiling: {
+      name: "Poetry Out Loud",
+      url: "https://poetryoutloud.org/rules-eligibility/",
+      opensAt: 14,
+      precedent:
+        "National champion takes $20,000, and the rules name unaffiliated children: homeschooled students may compete at a local school or with other local homeschooled students. No precedent linking a champion to a selective university was found.",
+    },
+    minAge: 6,
+    minAgeBasis: "judgement",
+    costUsd: 70,
+    cadence: "on-demand",
+    reach: "alone",
+    region: "international",
+    // This resolves a standing rejection. Poetry was cut as a pursuit partly because Poetry Out Loud
+    // is recitation rather than composition, which made it a dead end for a writing entry. Recitation
+    // is its own action program, so the same competition becomes a ceiling instead.
+    note: "Close to acting and deliberately separate: speaking a text as yourself is a different job from inhabiting a character, and LAMDA examines them as different subjects.",
+  },
+  {
+    id: "speaking-in-public",
+    label: "Speaking In Public",
+    blurb: "Write your own speech, then stand up and give it.",
+    // `rhetoric` rather than `performance`, and the taxonomy comment already draws this line: it
+    // exists so formal debate is not folded into marketing. Writing and delivering your own argument
+    // belongs beside debate, not beside acting.
+    cabin: "influence-media",
+    standard:
+      "LAMDA Communication Graded Examinations syllabus (2024): Speaking in Public, Entry Level to Grade 8",
+    venue: {
+      name: "LAMDA Exams",
+      url: "https://www.lamda.ac.uk/lamda-exams/our-exams/communication/speaking-in-public",
+    },
+    ceiling: {
+      name: "Optimist International Oratorical World Championship",
+      url: "https://www.optimist.org/member/scholarships4.cfm",
+      opensAt: 0,
+      precedent:
+        "World champion takes a $15,000 scholarship and there is no minimum age. No precedent at a selective university was found, and its legibility should not be oversold: it is a service-club contest rather than NSDA.",
+    },
+    minAge: 7,
+    minAgeBasis: "judgement",
+    costUsd: 70,
+    cadence: "on-demand",
+    // The exam is bookable directly, but the ceiling needs a local Optimist Club to be running a
+    // contest, and the club sets the deadline rather than the child.
+    reach: "adult-action",
+    region: "international",
+    // A DIFFERENT ACTION PROGRAM FROM `debate`, which is why both exist. Here the child researches
+    // and writes their own material, there is no opponent and no assigned side. NSDA Original
+    // Oratory would be the more recognisable ceiling, but `debate` already spends NSDA and naming it
+    // twice would record nothing.
+    note: "Available as a remote online assessment at every grade, which is the cheapest route in from outside the UK.",
+  },
   {
     id: "photography",
     label: "Photography",
