@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { attentionFor, attentionRank, type AttentionInputs } from "../app/attention.js";
+import {
+  attentionFor,
+  attentionRank,
+  orderByAttention,
+  type AttentionInputs,
+  type AttentionLevel,
+} from "../app/attention.js";
 
 const base: AttentionInputs = { wellbeing: [], cards: [], fading: false };
 const path = ["chess"];
@@ -67,5 +73,46 @@ describe("attentionFor", () => {
   it("ranks needs-you before ready before steady", () => {
     expect(attentionRank("NEEDS_YOU")).toBeLessThan(attentionRank("READY"));
     expect(attentionRank("READY")).toBeLessThan(attentionRank("STEADY"));
+  });
+});
+
+describe("orderByAttention", () => {
+  interface Row {
+    readonly id: string;
+    readonly level: AttentionLevel;
+  }
+  const levelOf = (r: Row): AttentionLevel => r.level;
+
+  it("puts needs-you first, then ready, then steady", () => {
+    const rows: Row[] = [
+      { id: "a", level: "STEADY" },
+      { id: "b", level: "READY" },
+      { id: "c", level: "NEEDS_YOU" },
+    ];
+    expect(orderByAttention(rows, levelOf).map((r) => r.id)).toEqual(["c", "b", "a"]);
+  });
+
+  it("keeps input order within a level (stable)", () => {
+    const rows: Row[] = [
+      { id: "a", level: "NEEDS_YOU" },
+      { id: "b", level: "STEADY" },
+      { id: "c", level: "NEEDS_YOU" },
+      { id: "d", level: "STEADY" },
+      { id: "e", level: "READY" },
+    ];
+    expect(orderByAttention(rows, levelOf).map((r) => r.id)).toEqual(["a", "c", "e", "b", "d"]);
+  });
+
+  it("returns an empty list for an empty input", () => {
+    expect(orderByAttention([], levelOf)).toEqual([]);
+  });
+
+  it("does not mutate the input", () => {
+    const rows: Row[] = [
+      { id: "a", level: "STEADY" },
+      { id: "b", level: "NEEDS_YOU" },
+    ];
+    orderByAttention(rows, levelOf);
+    expect(rows.map((r) => r.id)).toEqual(["a", "b"]);
   });
 });
