@@ -7,3 +7,4 @@ export const WELLBEING_PACKAGE = "@gt100k/wellbeing" as const;
 export * from "./model.js";
 export * from "./assess.js";
 export * from "./derive.js";
+export * from "./recovery.js";
