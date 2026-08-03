@@ -1,5 +1,6 @@
 // One attention verdict per child: what does this child need from me right now? Priority order
-// mirrors the wellbeing engine's own ordering: safety first (a wellbeing escalation), then a fading
+// mirrors the wellbeing engine's own ordering: safety first (a wellbeing escalation, then a flagged
+// family-pressure pattern -- both are the child's safety and must outrank opportunity), then a fading
 // interest (engagement is cooling even if affect is calm -- a calm read must not stand alone over a
 // dying interest), then opportunity (a promote gate has passed), then quiet. Pure and deterministic.
 import { specPath } from "./vocab.js";
@@ -10,7 +11,7 @@ export type AttentionLevel = "NEEDS_YOU" | "READY" | "STEADY";
 export interface Attention {
   readonly level: AttentionLevel;
   readonly headline: string;
-  readonly reason: "WELLBEING" | "ENGAGEMENT_FADING" | "GATE_READY" | "STEADY";
+  readonly reason: "WELLBEING" | "FAMILY_PRESSURE" | "ENGAGEMENT_FADING" | "GATE_READY" | "STEADY";
   readonly specId: string | null;
 }
 
@@ -35,10 +36,23 @@ export interface CardSignal {
   readonly domainPath: readonly string[];
 }
 
+// The family co-engagement read, folded in so the verdict can see a pressure pattern the guide would
+// otherwise meet only by opening the Family tab. The engine (assess.ts) escalates elevated pressure or
+// strain to a human; `escalate` carries that decision. It is a whole-child, whole-family read, not a
+// per-specialization one, so it names no specId -- it says "look before you act", not "act on this
+// card". Optional so callers and tests that predate it still compile; absent reads as no family flag.
+export interface FamilyPressureSignal {
+  readonly escalate: boolean;
+  // "none" | "watch" | "elevated" from the engine's PressureRisk. Only `escalate` gates the verdict;
+  // the risk word rides along for a caller that wants to colour the caution.
+  readonly risk: string;
+}
+
 export interface AttentionInputs {
   readonly wellbeing: readonly WellbeingSignal[];
   readonly cards: readonly CardSignal[];
   readonly fading: boolean;
+  readonly family?: FamilyPressureSignal;
 }
 
 // Severity for choosing which escalating spike names the headline. Matches assess.ts priority: a
@@ -83,6 +97,19 @@ export function attentionFor(input: AttentionInputs): Attention {
       reason: "WELLBEING",
       specId: worst.id,
       headline: STATE_LABEL[worst.state] ?? worst.state,
+    };
+  }
+  // A flagged family-pressure pattern is a safety read, so it outranks the promote gate: the loudest,
+  // lowest-friction action on the roster used to be "Promote" for the very interest the family layer
+  // says is under pressure and should be eased, and the guide saw the flag only if they opened the
+  // Family tab. Making the verdict NEEDS_YOU replaces that one-tap Promote with Review, routing the
+  // guide to look before they escalate. specId is null: the read is about the family, not one card.
+  if (input.family?.escalate) {
+    return {
+      level: "NEEDS_YOU",
+      reason: "FAMILY_PRESSURE",
+      specId: null,
+      headline: "Family pressure flagged. Review before promoting.",
     };
   }
   if (input.fading) {

@@ -60,6 +60,9 @@ function attentionForKid(
   cards: readonly HypothesisCard[],
   wb: readonly WellbeingCardVM[],
 ): Attention {
+  // The family co-engagement read for this child, so a flagged pressure pattern reaches the verdict
+  // rather than sitting unseen in the Family tab. Escalation is the engine's own escalateToHuman.
+  const fam = familyForKid(kidId);
   return attentionFor({
     wellbeing: wb.map((w) => ({
       id: w.id,
@@ -77,6 +80,7 @@ function attentionForKid(
       domainPath: c.domainPath,
     })),
     fading: voluntaryReturns(kidId).fading,
+    family: fam ? { escalate: fam.escalateToHuman, risk: fam.pressureWatch.risk } : undefined,
   });
 }
 

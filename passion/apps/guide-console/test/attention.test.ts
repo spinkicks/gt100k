@@ -80,6 +80,52 @@ describe("attentionFor", () => {
     expect(a.reason).toBe("WELLBEING");
   });
 
+  it("flags NEEDS_YOU on a family-pressure escalation, naming no spec", () => {
+    // The safety win: a flagged family-pressure pattern must reach the verdict, not hide in a tab.
+    const a = attentionFor({ ...base, family: { escalate: true, risk: "elevated" } });
+    expect(a.level).toBe("NEEDS_YOU");
+    expect(a.reason).toBe("FAMILY_PRESSURE");
+    expect(a.specId).toBeNull(); // a whole-family read names no single card
+    expect(a.headline).toBe("Family pressure flagged. Review before promoting.");
+  });
+
+  it("family pressure outranks a gate-ready card, so the loud one-tap Promote is withheld", () => {
+    // The exact contradiction this closes: without the family read, this child is READY (one-tap
+    // Promote) on the very interest the family layer flags. Family pressure must win.
+    const a = attentionFor({
+      ...base,
+      cards: [{ id: "c1", state: "EMERGING", gatePassed: true, domainPath: path }],
+      family: { escalate: true, risk: "elevated" },
+    });
+    expect(a.reason).toBe("FAMILY_PRESSURE");
+  });
+
+  it("family pressure outranks a fading interest but yields to a wellbeing spike", () => {
+    const overFading = attentionFor({
+      ...base,
+      fading: true,
+      family: { escalate: true, risk: "elevated" },
+    });
+    expect(overFading.reason).toBe("FAMILY_PRESSURE");
+    const underWellbeing = attentionFor({
+      wellbeing: [{ id: "w1", state: "BURNOUT_TIP", escalateToHuman: true, domainPath: path }],
+      cards: [],
+      fading: false,
+      family: { escalate: true, risk: "elevated" },
+    });
+    expect(underWellbeing.reason).toBe("WELLBEING");
+  });
+
+  it("a non-escalating family read does not change the verdict", () => {
+    // watch-level pressure that the engine did not escalate must not gate the promote.
+    const a = attentionFor({
+      ...base,
+      cards: [{ id: "c1", state: "EMERGING", gatePassed: true, domainPath: path }],
+      family: { escalate: false, risk: "watch" },
+    });
+    expect(a.reason).toBe("GATE_READY");
+  });
+
   it("is READY when a gate has passed and nothing needs attention", () => {
     const a = attentionFor({
       ...base,

@@ -3331,6 +3331,11 @@ body {
   border-color: var(--accent);
   background: var(--surface-2);
 }
+.mapq__scope {
+  color: var(--ink-muted);
+  font-size: 0.68rem;
+  font-style: italic;
+}
 .mapq__num {
   margin-left: auto;
   color: var(--ink-muted);

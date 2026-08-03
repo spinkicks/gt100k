@@ -111,12 +111,20 @@ export function TodayRoster({
                   </span>
                   <span className="todayrow__headline">{a.headline}</span>
                   <span className="kid__sub kid__sub--muted">
-                    {/* "to promote", not "ready": the verdict chip one line up already owns the word
-                        "Ready", and printing it again as a lowercase count read as the same fact
-                        stuttering. This counts promotable specs (see `promotableCount`), so it agrees
-                        with the Promote button and empties the moment a promote lands. */}
+                    {/* This counts promotable specs (see `promotableCount`), so it agrees with the
+                        Promote button and empties the moment a promote lands. But a promotable card
+                        does not always mean promoting is the next move: when the verdict is Needs-you
+                        (a wellbeing or family-pressure flag), the row offers Review, not Promote, so
+                        "N to promote" beside a Review button would beckon toward an action the row
+                        withholds. In that case it says "ready, review first" -- the promote is there,
+                        but only after the guide has looked. `canPromote` is the same guard the button
+                        uses, so the words and the button can never disagree. */}
                     {s.tracked} tracked
-                    {s.promotableCount ? ` · ${s.promotableCount} to promote` : ""}
+                    {s.promotableCount
+                      ? canPromote
+                        ? ` · ${s.promotableCount} to promote`
+                        : ` · ${s.promotableCount} ready, review first`
+                      : ""}
                   </span>
                 </span>
               </button>

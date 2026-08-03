@@ -264,15 +264,23 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
               className={`mapq${mapsOpen ? " mapq--on" : ""}`}
               onClick={() => setMapsOpen((v) => !v)}
               aria-expanded={mapsOpen}
+              title="A shared review queue for domain maps, the same for every child (not this child's count)."
             >
+              {/* This count is domain work, shared across all children (see the note above), but it
+                  sits in the per-child rail and its number never moves when the switcher does -- three
+                  reviewers each read the "4" as THIS child's and could not tell it was a catalogue.
+                  The scope line says whose it is on the face of the button, so the figure stops posing
+                  as a per-child triage number. */}
               <span className="mapq__label">Maps to review</span>
+              <span className="mapq__scope">shared across children</span>
               <span className="mapq__num">{REVIEW_MAPS.length}</span>
             </button>
           </div>
 
           <main className="main main--wb" aria-label="Guide console">
-            {/* Do-this-next, above the tabs: the guide reads one line and acts, or reads on. */}
-            <ActionLine ctrl={ctrl} />
+            {/* Do-this-next, above the tabs: the guide reads one line and acts, or reads on. A
+                family-pressure verdict routes straight to the Family tab, where its flag lives. */}
+            <ActionLine ctrl={ctrl} onReviewFamily={() => setView("family")} />
             <header className="ghead">
               <nav className="tabs" role="tablist" aria-label="Console views">
                 {tabs.map((t) => (
