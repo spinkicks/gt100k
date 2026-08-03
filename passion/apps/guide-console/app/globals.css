@@ -3332,6 +3332,30 @@ body {
   font-size: 0.68rem;
   letter-spacing: 0.08em;
 }
+/* The strip's own recovery trigger: the same quiet accent outline as the action line's Review
+   button (.actionline__do--review), so a guide learns one "there's more to do" affordance instead
+   of two -- just sized to sit inside this compact row rather than the taller action line. It stays
+   an outline, not a filled button, because the strip's two moves are the loudest thing on the row
+   and this is an on-demand escape hatch out of the summary, not a third move. */
+.wbstrip__recover {
+  flex: 0 0 auto;
+  border: 1px solid var(--accent);
+  border-radius: var(--r-sm);
+  padding: 4px 10px;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: var(--accent);
+}
+.wbstrip__recover:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.wbstrip__recover:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
 
 /* Map review, beside the child switcher rather than in a tab: domain work, not work on a child. */
 .mapq {
