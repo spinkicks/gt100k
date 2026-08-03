@@ -15,6 +15,7 @@ import { useConsole } from "./useConsole.js";
 import { ChildSwitcher, EmptyState, SpecCard, SpecRail, SpecScope } from "./components.js";
 import { ActionLine } from "./action-line.js";
 import { TodayRoster } from "./today.js";
+import { PromoteFlash } from "./promote-flash.js";
 import { WellbeingStrip } from "./wellbeing-strip.js";
 import { PlanPanel } from "./plan-panel.js";
 import { FamilyPanel } from "./family-panel.js";
@@ -205,6 +206,11 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
           {ctrl.activeChild ? `${ctrl.activeChild.name}'s console` : "Child console"}
         </button>
       </nav>
+
+      {/* The receipt for the last consequential action, above both modes: a promote from a roster row
+          and a park from a detail-pane button both leave their acknowledgement (and undo) in the same
+          place, so acting is never silent whichever surface you acted from. */}
+      <PromoteFlash ctrl={ctrl} />
 
       {mode === "today" ? (
         <TodayRoster ctrl={ctrl} onOpen={openChild} ingestedCount={ingested.length} />

@@ -18,6 +18,38 @@ describe("attentionFor", () => {
     expect(a.specId).toBeNull();
   });
 
+  it("STEADY with zero cards says nothing is tracked, not that nothing needs you", () => {
+    // No cards is no signal at all. It must not borrow the reassuring "Nothing needs you" a
+    // genuinely-observed calm child earns -- that would read a blank slate as a clean bill of health.
+    expect(attentionFor(base).headline).toBe("Nothing tracked yet.");
+  });
+
+  it("STEADY with cards but none confident says signal is still gathering", () => {
+    // Tracked, calm, but not yet enough evidence to be sure: distinct from both the empty slate and
+    // the settled-and-sure child, so the guide knows the quiet is provisional.
+    const a = attentionFor({
+      ...base,
+      cards: [
+        { id: "c1", state: "EMERGING", gatePassed: false, confident: false, domainPath: path },
+      ],
+    });
+    expect(a.level).toBe("STEADY");
+    expect(a.headline).toBe("Quiet so far. Still gathering signal.");
+  });
+
+  it("STEADY with at least one confident card reads as settled calm", () => {
+    // Evidence is sufficient and nothing is escalating or gate-ready: this is the earned "Nothing
+    // needs you", the only one of the three STEADY headlines that reassures.
+    const a = attentionFor({
+      ...base,
+      cards: [
+        { id: "c1", state: "CANDIDATE", gatePassed: true, confident: true, domainPath: path },
+      ],
+    });
+    expect(a.level).toBe("STEADY");
+    expect(a.headline).toBe("Steady. Nothing needs you.");
+  });
+
   it("flags NEEDS_YOU on a wellbeing escalation, naming the worst state", () => {
     const a = attentionFor({
       ...base,

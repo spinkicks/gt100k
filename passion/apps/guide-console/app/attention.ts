@@ -27,6 +27,11 @@ export interface CardSignal {
   // gate after it is promoted, so the verdict has to see the state to know the act is already done.
   readonly state: string;
   readonly gatePassed: boolean;
+  // Whether the estimate behind this card rests on enough evidence to rely on (the card's own
+  // `confident` flag). Optional so callers and tests that predate it still compile; absent reads as
+  // not-yet-confident. It is what tells a quiet-because-settled child from a quiet-because-unobserved
+  // one, which otherwise wear the identical calm verdict.
+  readonly confident?: boolean;
   readonly domainPath: readonly string[];
 }
 
@@ -103,10 +108,20 @@ export function attentionFor(input: AttentionInputs): Attention {
       headline: `Ready to promote ${specPath(ready.domainPath)}`,
     };
   }
+  // STEADY, but not all quiet is the same quiet. "Steady. Nothing needs you." on a child we have
+  // barely observed reads as "assessed and fine" when it means "we have almost no signal" -- a false
+  // reassurance that could let a guide leave a child alone precisely when there is nothing yet to go
+  // on. A calm read backed by evidence and a calm read backed by nothing must not share one line, so
+  // the headline says which quiet this is. The level stays STEADY either way: there is still nothing
+  // to act on, and inventing an alarm from thin evidence would be the opposite mistake.
+  if (input.cards.length === 0) {
+    return { level: "STEADY", reason: "STEADY", specId: null, headline: "Nothing tracked yet." };
+  }
+  const anyConfident = input.cards.some((c) => c.confident === true);
   return {
     level: "STEADY",
     reason: "STEADY",
     specId: null,
-    headline: "Steady. Nothing needs you.",
+    headline: anyConfident ? "Steady. Nothing needs you." : "Quiet so far. Still gathering signal.",
   };
 }

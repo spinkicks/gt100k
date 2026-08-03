@@ -28,7 +28,10 @@ const STEADY_FALLBACK: ChildSummary = {
   promotableId: null,
   attention: {
     level: "STEADY",
-    headline: "Steady. Nothing needs you.",
+    // A child with no computed summary has no signal at all, so it says exactly that rather than the
+    // reassuring "Nothing needs you" a genuinely-assessed calm child earns. Matches attentionFor's
+    // own no-cards branch.
+    headline: "Nothing tracked yet.",
     reason: "STEADY",
     specId: null,
   },

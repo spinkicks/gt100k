@@ -24,6 +24,7 @@ import { installQa } from "./qa.js";
 import { children, buildRosterGates, buildRosterStore, type Child } from "./console-data.js";
 import { escalationCount, wellbeingForKid, type WellbeingCardVM } from "./wellbeing.js";
 import { attentionFor, type Attention } from "./attention.js";
+import { specPath } from "./vocab.js";
 import { voluntaryReturns } from "./engagement.js";
 import { familyForKid, familyObservationsForKid } from "./family.js";
 import { plansForKid } from "./plan.js";
@@ -70,6 +71,9 @@ function attentionForKid(
       id: c.id,
       state: c.state,
       gatePassed: c.gate?.passed === true,
+      // Carries the card's evidence sufficiency so the STEADY verdict can tell a settled-and-sure
+      // child from a barely-observed one instead of calling both "Nothing needs you".
+      confident: c.confident,
       domainPath: c.domainPath,
     })),
     fading: voluntaryReturns(kidId).fading,
@@ -85,6 +89,17 @@ export function useConsole() {
   const [kid, setKidRaw] = useState<string>(children()[0]!.id);
   const [filter, setFilter] = useState<Filter>("ALL");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // The most recent human action, for the confirm-after-the-fact + undo affordance. A promote (or
+  // park / contest / reopen) used to fire silently: the row simply changed, and a harried guide could
+  // not tell their click had landed, let alone take it back -- and a consequential act with no
+  // acknowledgement and no way back is exactly the kind a fat-finger commits. This names what just
+  // happened and to whom; `undoLast` reverses it. Every recorded action appends exactly one decision,
+  // so this always describes the log's last entry and `undoLast` always removes that same entry.
+  const [lastAction, setLastAction] = useState<{
+    readonly verb: string;
+    readonly label: string;
+    readonly child: string;
+  } | null>(null);
 
   const gates = useMemo(() => buildRosterGates(store), [store]);
   const vm = useMemo(() => consoleViewModel(store, kid, gates), [store, kid, gates]);
@@ -147,7 +162,32 @@ export function useConsole() {
     setDecisions([]);
     setStore(buildRosterStore());
     setSelectedId(null);
+    setLastAction(null);
   }
+
+  /**
+   * Take back the most recent recorded decision. The log is the record and the store is its result
+   * (see decisions.ts: we persist the log and replay it, never a store snapshot), so dropping the
+   * last entry and replaying the rest from the seed is the exact inverse of having recorded it -- no
+   * separate "unpromote" transition to keep in step with the forward one. A no-op with nothing to
+   * undo. Runs from an event handler, so reading `decisions` from the closure is current.
+   */
+  function undoLast(): void {
+    if (decisions.length === 0) return;
+    const next = decisions.slice(0, -1);
+    try {
+      if (next.length === 0) window.localStorage.removeItem(DECISIONS_KEY);
+      else window.localStorage.setItem(DECISIONS_KEY, JSON.stringify(next));
+    } catch {
+      // Session-only from here; the in-memory rebuild below is still what the guide asked for.
+    }
+    setDecisions(next);
+    setStore(applyDecisions(buildRosterStore(), next, buildRosterGates()).store);
+    setLastAction(null);
+  }
+
+  /** Dismiss the confirmation without undoing -- the guide has seen it and moved on. */
+  const clearLastAction = (): void => setLastAction(null);
 
   const ref = useRef({ store, kid, selectedId, gates });
   ref.current = { store, kid, selectedId, gates };
@@ -232,8 +272,16 @@ export function useConsole() {
     const id = topPromotableId(store, kidId, gates);
     const next = applyGuidePrimaryAction(store, kidId, gates, now);
     if (next && id) {
+      // Read the spec name off the pre-mutation store (where the card is still the one being
+      // promoted) so the confirmation can say WHAT was promoted, not just that something was.
+      const card = consoleViewModel(store, kidId, gates).cards.find((c) => c.id === id);
       record({ action: "promote", hypothesisId: id, at: now });
       setStore(next);
+      setLastAction({
+        verb: "Promoted",
+        label: card ? specPath(card.domainPath) : "specialization",
+        child: children().find((c) => c.id === kidId)?.name ?? "this child",
+      });
       return id;
     }
     return null;
@@ -248,6 +296,14 @@ export function useConsole() {
 
   const PARK_REASON = "guide parked from console";
   const CONTEST_REASON = "guide contested from console";
+  // Past-tense verb for the confirmation line, so it reads "Parked Chess" rather than echoing the raw
+  // action token. Anything unmapped falls back to a neutral "Updated".
+  const ACTION_VERB: Record<string, string> = {
+    promote: "Promoted",
+    park: "Parked",
+    reopen: "Reopened",
+    contest: "Contested",
+  };
 
   function runAction(action: string, card: HypothesisCard): void {
     const now = isoNow();
@@ -290,6 +346,13 @@ export function useConsole() {
       ...(reason === undefined ? {} : { reason }),
     });
     setStore(next);
+    // Same confirm-and-undo the roster's promote gets: a card action from the detail pane is just as
+    // silent otherwise, and undo reverses whichever of these was last (they each record one decision).
+    setLastAction({
+      verb: ACTION_VERB[action] ?? "Updated",
+      label: specPath(card.domainPath),
+      child: children().find((c) => c.id === kid)?.name ?? "this child",
+    });
   }
 
   // Promote from EMERGING requires a passed gate; CANDIDATE→ACTIVE does not. Disable the button when
@@ -310,6 +373,10 @@ export function useConsole() {
     // anything"; the family conversation needs "what, and about which specialization".
     decisions,
     resetDecisions,
+    // The last action's confirmation + the ways to resolve it: take it back, or acknowledge it.
+    lastAction,
+    undoLast,
+    clearLastAction,
     kid,
     setKid,
     activeChild,

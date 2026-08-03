@@ -376,7 +376,10 @@ export function FilterNav({ ctrl }: { ctrl: ConsoleController }): JSX.Element {
 // verdict is the absence of a reason to act, not a hidden one.
 const STEADY_FALLBACK: Attention = {
   level: "STEADY",
-  headline: "Steady. Nothing needs you.",
+  // No computed summary is no signal at all, so it says exactly that rather than the reassuring
+  // "Nothing needs you" a genuinely-assessed calm child earns. Matches attentionFor's no-cards branch
+  // and the Today roster's own fallback.
+  headline: "Nothing tracked yet.",
   reason: "STEADY",
   specId: null,
 };
