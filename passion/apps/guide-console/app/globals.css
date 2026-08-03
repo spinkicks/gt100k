@@ -783,6 +783,19 @@ body {
   gap: 14px;
   white-space: nowrap;
 }
+.lb__pct {
+  margin-left: 7px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+/* Carried in words beside the figure, the way the bar carries it as hatching. A high number on one
+   afternoon and a high number on six weeks are the same number. */
+.lb__thin {
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+}
 .lb__driver {
   margin-top: 4px;
   white-space: nowrap;
@@ -2923,6 +2936,12 @@ body {
 .hbar--on .hbar__fill--thin {
   background: repeating-linear-gradient(135deg, var(--ink) 0 2px, transparent 2px 5px);
   border-color: var(--ink);
+}
+.hbar__pct {
+  display: block;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  font-weight: 700;
 }
 .hbar__name {
   min-height: 16px;

@@ -162,24 +162,50 @@ function attributionView(card: HypothesisCard): { label: string; desc: string } 
  * WHAT THIS USED TO SAY, AND WHY IT NO LONGER SAYS IT.
  *
  * Three lines: `Lower-bound: 0.52`, then `Uncertain`, then `Driver: Topic + Work-style`. Every one
+ * of those terms is ours rather than a guide's, and the same number appeared a second time further
+ * down the same screen as `Confidence 52%` -- one fact, two names, two formats, one screen.
+ *
+ * REMOVING ONE COPY WAS RIGHT AND LEAVING ZERO WAS NOT. The first pass cut this row entirely on the
+ * grounds that the bar above draws the same magnitude. It does, but a bar answers "which of these is
+ * biggest" and not "how strong is this one", and the only remaining figure sat inside a collapsed
+ * table two clicks away. So the number is back, once, in the place the card is already about.
+ *
+ * "Confidence" rather than "lower bound", and a percentage rather than two decimals, because that is
+ * what the specializations table calls it and one name is the whole point. It is still the
+ * pessimistic end of the interval, which the tooltip says; what it is NOT is a score out of a
+ * hundred, and nothing here should be summed, averaged or compared across children.
+ * Three lines: `Lower-bound: 0.52`, then `Uncertain`, then `Driver: Topic + Work-style`. Every one
  * of the four terms in that is ours rather than a guide's — "lower-bound", "calibrated",
  * "uncertain", "driver" — and the first two are now drawn as a bar directly above this card, which
  * is both plainer and comparable at a glance. Printing them again in words underneath is the same
  * fact twice in the harder-to-read form.
  *
- * What survives is the one thing the bar cannot show and a guide can act on: whether the pull is the
- * SUBJECT or the WAY OF WORKING. That difference changes what you offer next -- a child drawn to
- * building things wants a different second offer from one drawn to games -- so it stays, in words
- * anybody reads without a tooltip.
+ * The driver line stays for the reason it always did: it is the one thing the bar cannot show and a
+ * guide can act on, because a child drawn to building things wants a different second offer from one
+ * drawn to games.
  */
 export function LowerBound({ card }: { card: HypothesisCard }): JSX.Element | null {
   const a = attributionView(card);
-  if (!a) return null;
+  const pct = Math.round(card.lowerBound * 100);
   return (
     <div className="lb">
-      <div className="lb__driver">
-        <span className="lb__driverk">Drawn to</span> <Term label={a.label} desc={a.desc} />
+      <div className="lb__row">
+        <span className="lb__val">
+          <Term
+            label="Confidence"
+            desc="The cautious end of our estimate, not a score. Higher means the evidence behind it is stronger."
+          />
+          <span className="lb__pct">{pct}%</span>
+        </span>
+        {/* The same distinction the bar carries as hatching, in words. A high number on one
+            afternoon and a high number on six weeks read identically without it. */}
+        {card.confident ? null : <span className="lb__thin">needs more evidence</span>}
       </div>
+      {a ? (
+        <div className="lb__driver">
+          <span className="lb__driverk">Drawn to</span> <Term label={a.label} desc={a.desc} />
+        </div>
+      ) : null}
     </div>
   );
 }
