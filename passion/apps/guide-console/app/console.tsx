@@ -1,18 +1,20 @@
 "use client";
 
-// The guide console — one operator cockpit per child. A searchable child switcher (left), a clickable
-// rail of the current child's specializations (middle), and a tabbed main pane (right): Overview (the
-// charts-and-metrics summary), Hypotheses (the core interest read), Wellbeing (F2), and Plan (D1),
-// each with a "needs your review" badge. Picking a specialization — from the rail or from the
-// Overview table's Review button — jumps to the Hypotheses tab and highlights its card. Installs
-// window.__qa (via useConsole) for the LOOP_QA usability gate; the contract is driven from the
-// controller, so it stays live whichever tab is showing. Overview is the default landing view: guides
-// are not technical, and the summary is what orients them before they act.
+// The guide console. Two top-level modes, switched by the toggle at the very top: Today (a cross-
+// child roster, and the view the console lands on -- every child as a row with its attention verdict
+// and one inline action, so a guide sees who needs them before opening anyone) and the single-child
+// console (a searchable child switcher on the left, a clickable rail of that child's specializations
+// in the middle, and a tabbed main pane on the right: Interests, Plan and access, Family & coaching).
+// Drilling into a Today row loads that child and flips to the child mode. Picking a specialization --
+// from the rail or from the Overview table's Review button -- jumps to the Interests tab and
+// highlights its card. Installs window.__qa (via useConsole) for the LOOP_QA usability gate; the
+// contract is driven from the controller, so it stays live in whichever mode is showing.
 import Link from "next/link";
 import { useEffect, useState, type JSX } from "react";
 import { useConsole } from "./useConsole.js";
 import { ChildSwitcher, EmptyState, SpecCard, SpecRail, SpecScope } from "./components.js";
 import { ActionLine } from "./action-line.js";
+import { TodayRoster } from "./today.js";
 import { WellbeingStrip } from "./wellbeing-strip.js";
 import { PlanPanel } from "./plan-panel.js";
 import { FamilyPanel } from "./family-panel.js";
@@ -43,6 +45,15 @@ import { scopeToSpec } from "./console-state.js";
  */
 type View = "hypotheses" | "plan" | "family";
 
+/**
+ * The top-level mode, above the per-child tabs. "today" is the cross-child roster the console lands
+ * on; "child" is the single-child workbench. A guide opens the console asking "who needs me", not
+ * "tell me about this one child" -- so the roster is the default, and drilling into a row switches to
+ * the child mode with that child loaded. `View` (the tabs) lives one level down and belongs to the
+ * child mode.
+ */
+type Mode = "today" | "child";
+
 export interface GuideConsoleProps {
   /**
    * Children whose play has actually been ingested, read from the profile store by the server
@@ -58,6 +69,9 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
   setIngested(ingested);
 
   const ctrl = useConsole();
+  // Today, the cross-child roster, because the first question a guide has is which child needs them,
+  // not which tab of one child to open. Drilling into a row flips this to "child".
+  const [mode, setMode] = useState<Mode>("today");
   // Hypotheses, because the first question about a child is what they might be into. Overview used
   // to hold this slot and was a summary of tabs that no longer exist.
   const [view, setView] = useState<View>("hypotheses");
@@ -76,6 +90,16 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
   useEffect(() => {
     setView("hypotheses");
   }, [ctrl.kid]);
+
+  // Drill from the Today roster into one child's console. `setKid` clears the selection and filter,
+  // then an optional spec id re-selects the card the guide asked to review (Review from a row); both
+  // are batched into the one render, so the last write to the selection wins. The `ctrl.kid` effect
+  // below resets the tab to Hypotheses, which is where a Review lands to act on the card.
+  function openChild(kidId: string, specId: string | null): void {
+    ctrl.setKid(kidId);
+    if (specId) ctrl.setSelectedId(specId);
+    setMode("child");
+  }
 
   function pick(card: HypothesisCard, i: number): void {
     setView("hypotheses");
@@ -151,183 +175,210 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
 
   return (
     <>
-      <div className="app app--workbench">
-        {/* No Brand here any more: the shared ProductHeader above states the product and the
+      {/* The top-level switch, above everything: Today (the roster) or this child's console. It is
+          the one control that changes what the whole screen is, so it sits above the app shell
+          rather than inside either view. The child button names the loaded child so the guide knows
+          which console they would return to. */}
+      <nav className="viewtoggle" aria-label="Console view">
+        <button
+          type="button"
+          className={`viewtoggle__btn${mode === "today" ? " viewtoggle__btn--on" : ""}`}
+          aria-current={mode === "today" ? "page" : undefined}
+          onClick={() => setMode("today")}
+        >
+          Today
+        </button>
+        <button
+          type="button"
+          className={`viewtoggle__btn${mode === "child" ? " viewtoggle__btn--on" : ""}`}
+          aria-current={mode === "child" ? "page" : undefined}
+          onClick={() => setMode("child")}
+        >
+          {ctrl.activeChild ? `${ctrl.activeChild.name}'s console` : "Child console"}
+        </button>
+      </nav>
+
+      {mode === "today" ? (
+        <TodayRoster ctrl={ctrl} onOpen={openChild} />
+      ) : (
+        <div className="app app--workbench">
+          {/* No Brand here any more: the shared ProductHeader above states the product and the
             surface, so a second wordmark right under it was the same claim twice. The sidebar's
             job is the roster. */}
-        <aside className="sidebar">
-          <ChildSwitcher ctrl={ctrl} />
-          <div className="sidebar__foot">
-            {/* Stops being true the moment a real session is ingested, and a false reassurance about
+          <aside className="sidebar">
+            <ChildSwitcher ctrl={ctrl} />
+            <div className="sidebar__foot">
+              {/* Stops being true the moment a real session is ingested, and a false reassurance about
                 data provenance is worse than none: it is the label someone checks before deciding
                 what they may do with what is on screen. */}
-            <span className="chip chip--soft">
-              {ingested.length === 0
-                ? "Synthetic data only"
-                : `Synthetic, plus ${ingested.length} ingested`}
-            </span>
-            {/* Says where the decisions live, because the honest answer is "this browser" and a
+              <span className="chip chip--soft">
+                {ingested.length === 0
+                  ? "Synthetic data only"
+                  : `Synthetic, plus ${ingested.length} ingested`}
+              </span>
+              {/* Says where the decisions live, because the honest answer is "this browser" and a
                 guide should not assume more than that. Absent until there is something to say, so
                 a fresh console is not cluttered by a count of nothing. */}
-            {ctrl.decisionCount === 0 ? null : (
-              <p className="sidebar__saved">
-                {ctrl.decisionCount} decision{ctrl.decisionCount === 1 ? "" : "s"} saved in this
-                browser.{" "}
-                <button type="button" className="linkbtn" onClick={ctrl.resetDecisions}>
-                  Reset
-                </button>
-              </p>
-            )}
-            {/* Every number on the Overview can be asked "why?" in place; this is the same material
+              {ctrl.decisionCount === 0 ? null : (
+                <p className="sidebar__saved">
+                  {ctrl.decisionCount} decision{ctrl.decisionCount === 1 ? "" : "s"} saved in this
+                  browser.{" "}
+                  <button type="button" className="linkbtn" onClick={ctrl.resetDecisions}>
+                    Reset
+                  </button>
+                </p>
+              )}
+              {/* Every number on the Overview can be asked "why?" in place; this is the same material
               read end to end, which is also how a new guide gets oriented. */}
-            <Link className="why-link" href="/evidence">
-              Evidence base
-            </Link>
-          </div>
-        </aside>
+              <Link className="why-link" href="/evidence">
+                Evidence base
+              </Link>
+            </div>
+          </aside>
 
-        <div className="railcol">
-          <SpecRail ctrl={ctrl} onPick={selectSpec} />
+          <div className="railcol">
+            <SpecRail ctrl={ctrl} onPick={selectSpec} />
 
-          {/* MAP REVIEW LIVES HERE, NOT IN A TAB. Reviewing a map is work on a DOMAIN: it does not
+            {/* MAP REVIEW LIVES HERE, NOT IN A TAB. Reviewing a map is work on a DOMAIN: it does not
               depend on which child is loaded, it is not scoped to a specialization, and it is done
               once for everybody rather than per child. As a seventh tab beside six child tabs it
               read as a seventh thing to check for this child, which it never was.
               Beside the switcher it also gives on-demand generated drafts somewhere to be reviewed,
               which is the next thing this queue has to hold. */}
-          <button
-            type="button"
-            className={`mapq${mapsOpen ? " mapq--on" : ""}`}
-            onClick={() => setMapsOpen((v) => !v)}
-            aria-expanded={mapsOpen}
-          >
-            <span className="mapq__label">Maps to review</span>
-            <span className="mapq__num">{REVIEW_MAPS.length}</span>
-          </button>
-        </div>
+            <button
+              type="button"
+              className={`mapq${mapsOpen ? " mapq--on" : ""}`}
+              onClick={() => setMapsOpen((v) => !v)}
+              aria-expanded={mapsOpen}
+            >
+              <span className="mapq__label">Maps to review</span>
+              <span className="mapq__num">{REVIEW_MAPS.length}</span>
+            </button>
+          </div>
 
-        <main className="main main--wb" aria-label="Guide console">
-          {/* Do-this-next, above the tabs: the guide reads one line and acts, or reads on. */}
-          <ActionLine ctrl={ctrl} />
-          <header className="ghead">
-            <nav className="tabs" role="tablist" aria-label="Console views">
-              {tabs.map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={view === t.id}
-                  className={`tab${view === t.id ? " tab--on" : ""}`}
-                  onClick={() => setView(t.id)}
-                >
-                  <span>{t.label}</span>
-                  <span className="tab__num" title={`${t.count} ${t.noun}`}>
-                    {t.count}
-                  </span>
-                </button>
-              ))}
-            </nav>
-          </header>
+          <main className="main main--wb" aria-label="Guide console">
+            {/* Do-this-next, above the tabs: the guide reads one line and acts, or reads on. */}
+            <ActionLine ctrl={ctrl} />
+            <header className="ghead">
+              <nav className="tabs" role="tablist" aria-label="Console views">
+                {tabs.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={view === t.id}
+                    className={`tab${view === t.id ? " tab--on" : ""}`}
+                    onClick={() => setView(t.id)}
+                  >
+                    <span>{t.label}</span>
+                    <span className="tab__num" title={`${t.count} ${t.noun}`}>
+                      {t.count}
+                    </span>
+                  </button>
+                ))}
+              </nav>
+            </header>
 
-          {/* THE WELLBEING STRIP, above whichever tab is open rather than inside one of them.
+            {/* THE WELLBEING STRIP, above whichever tab is open rather than inside one of them.
               Wellbeing was a tab, which meant a guide could plan a child's next fortnight without
               ever seeing that the engine wanted them to back off. That is the wrong way round: the
               back-off read is a precondition for reading anything else, not a seventh thing to
               remember to check. It carries the read, the two moves and the review flag, and it is
               scoped to the selected specialization exactly as the tab was. */}
-          <WellbeingStrip cards={scopedTo(ctrl.wellbeing)} />
+            <WellbeingStrip cards={scopedTo(ctrl.wellbeing)} />
 
-          {view === "hypotheses" ? (
-            ctrl.visible.length === 0 ? (
-              <EmptyState ctrl={ctrl} />
-            ) : (
-              <div role="tabpanel">
-                {/* Every tracked specialization as a bar, then full cards for the top few only. A
+            {view === "hypotheses" ? (
+              ctrl.visible.length === 0 ? (
+                <EmptyState ctrl={ctrl} />
+              ) : (
+                <div role="tabpanel">
+                  {/* Every tracked specialization as a bar, then full cards for the top few only. A
                     wall of equal cards made a guide read all of them to find out which mattered. */}
-                <HypothesisBars
-                  cards={ctrl.visible}
-                  selectedId={ctrl.selectedId}
-                  onPick={ctrl.setSelectedId}
-                />
+                  <HypothesisBars
+                    cards={ctrl.visible}
+                    selectedId={ctrl.selectedId}
+                    onPick={ctrl.setSelectedId}
+                  />
 
-                <div className="grid grid--wb">
-                  {shown.map((card, i) => (
-                    <SpecCard key={card.id} card={card} ctrl={ctrl} domId={`sc-${i}`} />
-                  ))}
-                </div>
-                {ctrl.visible.length > shown.length ? (
-                  <p className="bars__rest">
-                    {ctrl.visible.length - shown.length} more above, in the bars. Click one to open
-                    it.
-                  </p>
-                ) : null}
+                  <div className="grid grid--wb">
+                    {shown.map((card, i) => (
+                      <SpecCard key={card.id} card={card} ctrl={ctrl} domId={`sc-${i}`} />
+                    ))}
+                  </div>
+                  {ctrl.visible.length > shown.length ? (
+                    <p className="bars__rest">
+                      {ctrl.visible.length - shown.length} more above, in the bars. Click one to
+                      open it.
+                    </p>
+                  ) : null}
 
-                {/* WHAT SURVIVED OVERVIEW. Overview was a summary of the six tabs beside it, and
+                  {/* WHAT SURVIVED OVERVIEW. Overview was a summary of the six tabs beside it, and
                     most of it duplicated them: its wellbeing block is now the strip, its hypothesis
                     block is the cards directly above. What it alone held was the EVIDENCE behind
                     the beliefs — voluntary against prompted returns, coverage of what was offered,
                     engagement over time — and that is not a summary of anything. It belongs under
                     the beliefs it supports, because the bars say what we think and these charts say
                     how much the data behind that is worth. */}
-                <OverviewPanel ctrl={ctrl} onReview={pick} />
-              </div>
-            )
-          ) : null}
+                  <OverviewPanel ctrl={ctrl} onReview={pick} />
+                </div>
+              )
+            ) : null}
 
-          {/* Names the specialization the tab is scoped to. Without it a scoped tab is ambiguous in
+            {/* Names the specialization the tab is scoped to. Without it a scoped tab is ambiguous in
               the worst way: it looks like the whole child, so an empty Access tab reads as "no
               opportunities for this kid" when it means "none for this one specialization". */}
-          {view === "plan" ? <SpecScope card={spec} total={ctrl.vm.cards.length} /> : null}
+            {view === "plan" ? <SpecScope card={spec} total={ctrl.vm.cards.length} /> : null}
 
-          {/* Access renders INSIDE Plan, because it always was the other half of it. A plan says
+            {/* Access renders INSIDE Plan, because it always was the other half of it. A plan says
               what a child should make next; access says who could mentor it and who could see it.
               They are scoped identically, they are read in the same breath, and splitting them
               across two tabs meant a guide could finish planning without ever being shown that a
               real audience was available for the thing they had just planned. */}
-          {view === "plan" ? (
-            <>
-              <PlanPanel cards={scopedTo(ctrl.plans)} kidId={ctrl.kid} exploring={spec} />
-              <AccessPanel cards={scopedTo(ctrl.access)} />
-            </>
-          ) : null}
-          {/* Not scoped, and cannot be: the family read (019/021) is derived per child, not per
+            {view === "plan" ? (
+              <>
+                <PlanPanel cards={scopedTo(ctrl.plans)} kidId={ctrl.kid} exploring={spec} />
+                <AccessPanel cards={scopedTo(ctrl.access)} />
+              </>
+            ) : null}
+            {/* Not scoped, and cannot be: the family read (019/021) is derived per child, not per
               specialization, so there is no id here to filter on. Scoping it would mean inventing a
               per-specialization family signal that the engine does not produce. */}
-          {view === "family" ? (
-            <FamilyPanel
-              read={ctrl.family}
-              observations={ctrl.familyObservations}
-              kidId={ctrl.kid}
-              domainPath={spec?.domainPath}
-              decisions={ctrl.decisions}
-              cards={ctrl.vm.cards}
-            />
-          ) : null}
-        </main>
+            {view === "family" ? (
+              <FamilyPanel
+                read={ctrl.family}
+                observations={ctrl.familyObservations}
+                kidId={ctrl.kid}
+                domainPath={spec?.domainPath}
+                decisions={ctrl.decisions}
+                cards={ctrl.vm.cards}
+              />
+            ) : null}
+          </main>
 
-        {/* The maps themselves, not the view models: the panel owns the changes a guide can make,
+          {/* The maps themselves, not the view models: the panel owns the changes a guide can make,
             and each of them is a change to the map or to what a guide has said about this child.
             Keyed by child so the recorded overrides never carry across a switch. `specs` is passed
             for the coverage line, which says out loud that almost no child's specializations have a
             map, instead of letting the mismatch pass as a read on the child. */}
-        {mapsOpen ? (
-          <aside className="mapdrawer" aria-label="Maps to review">
-            <div className="mapdrawer__head">
-              <span>Maps to review</span>
-              <button type="button" className="linkbtn" onClick={() => setMapsOpen(false)}>
-                Close
-              </button>
-            </div>
-            <MapsPanel
-              key={ctrl.kid}
-              maps={REVIEW_MAPS}
-              work={workForKid(ctrl.kid)}
-              specs={ctrl.vm.cards}
-              store={ctrl.store}
-            />
-          </aside>
-        ) : null}
-      </div>
+          {mapsOpen ? (
+            <aside className="mapdrawer" aria-label="Maps to review">
+              <div className="mapdrawer__head">
+                <span>Maps to review</span>
+                <button type="button" className="linkbtn" onClick={() => setMapsOpen(false)}>
+                  Close
+                </button>
+              </div>
+              <MapsPanel
+                key={ctrl.kid}
+                maps={REVIEW_MAPS}
+                work={workForKid(ctrl.kid)}
+                specs={ctrl.vm.cards}
+                store={ctrl.store}
+              />
+            </aside>
+          ) : null}
+        </div>
+      )}
     </>
   );
 }

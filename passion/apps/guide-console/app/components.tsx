@@ -400,6 +400,7 @@ export function ChildSwitcher({ ctrl }: { ctrl: ConsoleController }): JSX.Elemen
       gateReady: 0,
       topState: null,
       attention: STEADY_FALLBACK,
+      promotableId: null,
     };
   // Whoever needs the guide floats up; roster order breaks ties (stable sort), so a level never
   // reshuffles children within it as the store changes underneath.

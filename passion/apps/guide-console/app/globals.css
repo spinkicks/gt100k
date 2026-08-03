@@ -1560,6 +1560,162 @@ body {
   border: 1px solid var(--accent);
 }
 
+/* ── Top-level view toggle (Today / this child's console) ─────────────────── */
+/* A two-button segmented control above the whole shell. It changes what the screen IS, so it reads
+   as one control with two states rather than two links: a shared pill, the active half filled. */
+.viewtoggle {
+  display: inline-flex;
+  gap: 2px;
+  margin: 18px 24px 0;
+  padding: 3px;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.viewtoggle__btn {
+  border: 0;
+  border-radius: calc(var(--r-sm) - 2px);
+  padding: 6px 16px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--ink-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+.viewtoggle__btn:hover {
+  color: var(--ink);
+}
+.viewtoggle__btn--on {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.06));
+}
+.viewtoggle__btn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ── Today roster (the cross-child landing view) ─────────────────────────── */
+.today {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 22px 24px 40px;
+}
+.today__head {
+  margin-bottom: 18px;
+}
+.today__title {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 1.7rem;
+  margin: 0;
+  color: var(--ink);
+}
+.today__sub {
+  margin: 4px 0 0;
+  color: var(--ink-muted);
+  font-size: 0.86rem;
+}
+.today__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+/* One row per child: the meta block (drill-in) and, when there is one, an inline action. The row is
+   a plain surface panel; NEEDS_YOU warms it so it reads first, the way the action line does. */
+.todayrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 14px 4px 4px;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.todayrow--needs_you {
+  background: color-mix(in srgb, var(--bad, #b23b3b) 6%, var(--surface));
+  border-color: color-mix(in srgb, var(--bad, #b23b3b) 20%, var(--line));
+}
+/* The whole meta block is the drill-in target: a wide, quiet button that fills the row. */
+.todayrow__open {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+.todayrow__open:hover {
+  background: var(--surface-2);
+}
+.todayrow__open:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.todayrow__meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.35;
+  gap: 1px;
+}
+.todayrow__line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.todayrow__name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.todayrow__headline {
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* The inline action, mirroring the action line's buttons: filled Promote, outlined Review. */
+.todayrow__do {
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: var(--r-sm);
+  padding: 7px 16px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--accent);
+  color: var(--surface);
+}
+.todayrow__do:hover {
+  filter: brightness(0.94);
+}
+.todayrow__do:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.todayrow__do--review {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
 .ghead {
   display: block;
   border-bottom: 1px solid var(--line);

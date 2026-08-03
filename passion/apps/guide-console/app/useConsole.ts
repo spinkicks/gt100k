@@ -39,6 +39,11 @@ export interface ChildSummary {
   readonly gateReady: number;
   readonly topState: string | null;
   readonly attention: Attention;
+  // The card the guide's primary action would promote for THIS child, or null if none is promotable.
+  // Carried per child (not just for the selected one) so the Today roster's Promote button can guard
+  // itself the same way the action line does: `attention` reports a passed gate, but only this says
+  // the store will actually let the promote through. See `topPromotableId` for the gap between them.
+  readonly promotableId: string | null;
 }
 
 // Fold the three composed reads (wellbeing escalation, engagement fading, gate-ready) into one
@@ -184,6 +189,7 @@ export function useConsole() {
         gateReady: cvm.cards.filter((c) => c.gate?.passed === true).length,
         topState: cvm.cards[0]?.state ?? null,
         attention: attentionForKid(child.id, cvm.cards, wb),
+        promotableId: topPromotableId(store, child.id, gates),
       });
     }
     return m;
@@ -201,14 +207,27 @@ export function useConsole() {
 
   const promotableId = topPromotableId(store, kid, gates);
 
-  function advanceTop(): void {
+  // Promote the primary card for ANY child, not only the selected one -- the Today roster acts on a
+  // row without first switching to it. Returns the promoted card's id (so a caller can select it) or
+  // null when the store refuses. Deliberately does not touch `kid` or `selectedId`: acting from the
+  // roster leaves the guide on the roster.
+  function promoteKid(kidId: string): string | null {
     const now = isoNow();
-    const next = applyGuidePrimaryAction(store, kid, gates, now);
-    if (next && promotableId) {
-      setSelectedId(promotableId);
-      record({ action: "promote", hypothesisId: promotableId, at: now });
+    const id = topPromotableId(store, kidId, gates);
+    const next = applyGuidePrimaryAction(store, kidId, gates, now);
+    if (next && id) {
+      record({ action: "promote", hypothesisId: id, at: now });
       setStore(next);
+      return id;
     }
+    return null;
+  }
+
+  // The single-child console's primary action: promote this child's top card and select it, so the
+  // detail pane lands on what just changed. Delegates to `promoteKid` so both paths share one rule.
+  function advanceTop(): void {
+    const id = promoteKid(kid);
+    if (id) setSelectedId(id);
   }
 
   const PARK_REASON = "guide parked from console";
@@ -295,6 +314,7 @@ export function useConsole() {
     selectedCard,
     promotableId,
     advanceTop,
+    promoteKid,
     runAction,
     isDisabled,
   };

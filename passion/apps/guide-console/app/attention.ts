@@ -47,6 +47,23 @@ export function attentionRank(level: AttentionLevel): number {
   return level === "NEEDS_YOU" ? 0 : level === "READY" ? 1 : 2;
 }
 
+// Sort any list into triage order: whoever needs the guide floats up. Ties keep their input order
+// (an explicit index tiebreaker, not a reliance on the engine's sort stability), so a child never
+// reshuffles within its level as the store changes underneath. Pure -- the same list the roster and
+// the switcher both order, so the two can never disagree about who is first.
+export function orderByAttention<T>(
+  items: readonly T[],
+  levelOf: (item: T) => AttentionLevel,
+): T[] {
+  return items
+    .map((item, index) => ({ item, index }))
+    .sort(
+      (a, b) =>
+        attentionRank(levelOf(a.item)) - attentionRank(levelOf(b.item)) || a.index - b.index,
+    )
+    .map((x) => x.item);
+}
+
 export function attentionFor(input: AttentionInputs): Attention {
   const escalating = input.wellbeing.filter((w) => w.escalateToHuman);
   if (escalating.length > 0) {
