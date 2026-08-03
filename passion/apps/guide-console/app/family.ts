@@ -50,3 +50,17 @@ export function familyObservationsForKid(kidId: string): readonly string[] {
 export function familyOfferCount(read: FamilyRead | undefined): number {
   return read ? read.asks.length + read.sharedActivities.length : 0;
 }
+
+/**
+ * Does an unresolved family-pressure flag hold this child's promote? True only when the engine
+ * escalated the pressure to a human AND the guide has not yet reviewed it.
+ *
+ * This is the ONE rule every promote path consults -- the attention verdict, the card's own PROMOTE
+ * button, and the roster's inline action -- so a flag can never gate one surface while leaving
+ * another open. That split is exactly the bug a review found: the action line withheld Promote on a
+ * flagged child while the card's own PROMOTE stayed fully live, so the safety warning read like a
+ * guardrail with nothing behind it.
+ */
+export function familyPressureBlocks(read: FamilyRead | undefined, acknowledged: boolean): boolean {
+  return read?.escalateToHuman === true && !acknowledged;
+}

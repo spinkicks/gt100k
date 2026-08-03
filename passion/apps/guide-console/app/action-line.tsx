@@ -13,7 +13,15 @@ const WORD: Record<Attention["level"], string> = {
   STEADY: "Steady",
 };
 
-export function ActionLine({ ctrl }: { ctrl: ConsoleController }): JSX.Element {
+export function ActionLine({
+  ctrl,
+  onReviewFamily,
+}: {
+  ctrl: ConsoleController;
+  // Opens the Family & coaching tab. A family-pressure verdict names no specialization, so its
+  // caution has no card to open; this is the one action that resolves it -- go and read the flag.
+  onReviewFamily?: () => void;
+}): JSX.Element {
   const a = ctrl.attention;
   const level = a.level.toLowerCase();
   // Promote is offered only when the gate has genuinely passed AND the store agrees there is a
@@ -28,6 +36,16 @@ export function ActionLine({ ctrl }: { ctrl: ConsoleController }): JSX.Element {
       {canPromote ? (
         <button type="button" className="actionline__do" onClick={ctrl.advanceTop}>
           Promote
+        </button>
+      ) : a.reason === "FAMILY_PRESSURE" && onReviewFamily ? (
+        // The caution's own resolution: the flag lives in the Family tab, so send the guide there
+        // rather than to a specialization the pressure read never named.
+        <button
+          type="button"
+          className="actionline__do actionline__do--review"
+          onClick={onReviewFamily}
+        >
+          Review family
         </button>
       ) : a.specId !== null ? (
         <button

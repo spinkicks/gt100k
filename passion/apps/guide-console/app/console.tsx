@@ -15,6 +15,7 @@ import { useConsole } from "./useConsole.js";
 import { ChildSwitcher, EmptyState, SpecCard, SpecRail, SpecScope } from "./components.js";
 import { ActionLine } from "./action-line.js";
 import { TodayRoster } from "./today.js";
+import { PromoteFlash } from "./promote-flash.js";
 import { WellbeingStrip } from "./wellbeing-strip.js";
 import { PlanPanel } from "./plan-panel.js";
 import { FamilyPanel } from "./family-panel.js";
@@ -138,18 +139,24 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
   // specialization, because it is the signal that this child needs a guide at all, and scoping it
   // would silently hide an escalation sitting one rail-click away. `SpecRail` carries the same dot
   // per specialization so the pair resolves to a place to click rather than a puzzle.
-  // `noun` says what the number counts, because it is a different thing on every tab and the bare
-  // figures invite a comparison that means nothing: "Family 5" beside "Wellbeing 1" reads as a
-  // ranking of two quantities that share no unit.
+  // `unit` rides on the face of the count and `noun` fills the tooltip, because the number counts a
+  // different thing on every tab and a bare figure invites a comparison that means nothing: "Plan 5"
+  // beside "Family 1" reads as a ranking of two quantities that share no unit. Worse, the Plan and
+  // Family counts are derived, not tallies of rows a guide can see, so a bare "0" on Plan read as a
+  // broken tab rather than "no plans for the specialization you have selected". A unit turns "0" into
+  // "0 plans" -- an answer, not a fault -- and the badge is dropped entirely at zero so an empty tab
+  // is quiet rather than alarming.
   const tabs: readonly {
     id: View;
     label: string;
     count: number;
+    unit: string;
     noun: string;
   }[] = [
     {
       id: "hypotheses",
       label: "Interests",
+      unit: "spec",
       noun: "specializations",
       count: ctrl.vm.cards.length,
     },
@@ -158,12 +165,14 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
       // Named for what it now contains. Access folded in, and a tab called "Plan" that also brokers
       // mentors and audiences should say so rather than surprise the guide who opens it.
       label: "Plan and access",
+      unit: "plan",
       noun: "plans for this specialization",
       count: scopedTo(ctrl.plans).length,
     },
     {
       id: "family",
       label: "Family & coaching",
+      unit: "move",
       noun: "coaching moves",
       count: (ctrl.family?.asks.length ?? 0) + (ctrl.family?.sharedActivities.length ?? 0),
     },
@@ -198,8 +207,13 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
         </button>
       </nav>
 
+      {/* The receipt for the last consequential action, above both modes: a promote from a roster row
+          and a park from a detail-pane button both leave their acknowledgement (and undo) in the same
+          place, so acting is never silent whichever surface you acted from. */}
+      <PromoteFlash ctrl={ctrl} />
+
       {mode === "today" ? (
-        <TodayRoster ctrl={ctrl} onOpen={openChild} />
+        <TodayRoster ctrl={ctrl} onOpen={openChild} ingestedCount={ingested.length} />
       ) : (
         <div className="app app--workbench">
           {/* No Brand here any more: the shared ProductHeader above states the product and the
@@ -250,15 +264,23 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
               className={`mapq${mapsOpen ? " mapq--on" : ""}`}
               onClick={() => setMapsOpen((v) => !v)}
               aria-expanded={mapsOpen}
+              title="A shared review queue for domain maps, the same for every child (not this child's count)."
             >
+              {/* This count is domain work, shared across all children (see the note above), but it
+                  sits in the per-child rail and its number never moves when the switcher does -- three
+                  reviewers each read the "4" as THIS child's and could not tell it was a catalogue.
+                  The scope line says whose it is on the face of the button, so the figure stops posing
+                  as a per-child triage number. */}
               <span className="mapq__label">Maps to review</span>
+              <span className="mapq__scope">shared across children</span>
               <span className="mapq__num">{REVIEW_MAPS.length}</span>
             </button>
           </div>
 
           <main className="main main--wb" aria-label="Guide console">
-            {/* Do-this-next, above the tabs: the guide reads one line and acts, or reads on. */}
-            <ActionLine ctrl={ctrl} />
+            {/* Do-this-next, above the tabs: the guide reads one line and acts, or reads on. A
+                family-pressure verdict routes straight to the Family tab, where its flag lives. */}
+            <ActionLine ctrl={ctrl} onReviewFamily={() => setView("family")} />
             <header className="ghead">
               <nav className="tabs" role="tablist" aria-label="Console views">
                 {tabs.map((t) => (
@@ -271,9 +293,19 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
                     onClick={() => setView(t.id)}
                   >
                     <span>{t.label}</span>
-                    <span className="tab__num" title={`${t.count} ${t.noun}`}>
-                      {t.count}
-                    </span>
+                    {/* The unit rides on the face so the three tabs never look like comparable
+                        integers, and the badge is dropped at zero so an empty tab reads as quiet, not
+                        broken. The full noun stays in the tooltip and the accessible name. */}
+                    {t.count > 0 ? (
+                      <span
+                        className="tab__count"
+                        title={`${t.count} ${t.noun}`}
+                        aria-label={`${t.count} ${t.noun}`}
+                      >
+                        <span className="tab__num">{t.count}</span>
+                        <span className="tab__unit">{t.count === 1 ? t.unit : `${t.unit}s`}</span>
+                      </span>
+                    ) : null}
                   </button>
                 ))}
               </nav>
@@ -351,6 +383,11 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
                 domainPath={spec?.domainPath}
                 decisions={ctrl.decisions}
                 cards={ctrl.vm.cards}
+                // The review that releases the held promote lives here, on the escalation itself,
+                // because this tab is where the flag is read -- the action line sends the guide here.
+                acknowledged={ctrl.familyReviewed}
+                onAcknowledge={() => ctrl.acknowledgeFamily(ctrl.kid)}
+                onUndoAcknowledge={() => ctrl.unacknowledgeFamily(ctrl.kid)}
               />
             ) : null}
           </main>

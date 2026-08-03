@@ -24,8 +24,10 @@ import { installQa } from "./qa.js";
 import { children, buildRosterGates, buildRosterStore, type Child } from "./console-data.js";
 import { escalationCount, wellbeingForKid, type WellbeingCardVM } from "./wellbeing.js";
 import { attentionFor, type Attention } from "./attention.js";
+import { specPath } from "./vocab.js";
 import { voluntaryReturns } from "./engagement.js";
-import { familyForKid, familyObservationsForKid } from "./family.js";
+import { familyForKid, familyObservationsForKid, familyPressureBlocks } from "./family.js";
+import { FAMILY_REVIEWS_KEY, parseFamilyReviews } from "./family-reviews.js";
 import { plansForKid } from "./plan.js";
 import { accessForKid } from "./access.js";
 
@@ -36,7 +38,12 @@ export type Filter = "ALL" | string;
 
 export interface ChildSummary {
   readonly tracked: number;
-  readonly gateReady: number;
+  // How many of this child's specializations are ready to promote right now: EMERGING with a passed
+  // gate, the same rule `topPromotableId` and the attention verdict use -- NOT merely gate-passed. A
+  // promoted card keeps its passed gate, so counting gate-passed left the roster saying "1 ready" for
+  // a child with nothing left to promote, and beside a "Ready" verdict chip the word collided with
+  // itself. Counting promotable drains the number the instant a promote lands.
+  readonly promotableCount: number;
   readonly topState: string | null;
   readonly attention: Attention;
   // The card the guide's primary action would promote for THIS child, or null if none is promotable.
@@ -53,7 +60,15 @@ function attentionForKid(
   kidId: string,
   cards: readonly HypothesisCard[],
   wb: readonly WellbeingCardVM[],
+  familyAcknowledged: boolean,
 ): Attention {
+  // The family co-engagement read for this child, so a flagged pressure pattern reaches the verdict
+  // rather than sitting unseen in the Family tab. Pass the engine's raw escalateToHuman AND the guide's
+  // review separately: an unreviewed flag holds the promote ("review before promoting"); a reviewed one
+  // lifts the hold but the verdict stays honest ("promoting is your call"), never a green "ready to
+  // promote" that would read as the concern being resolved. `familyPressureBlocks` (family.ts) is the
+  // matching rule the promote paths consult.
+  const fam = familyForKid(kidId);
   return attentionFor({
     wellbeing: wb.map((w) => ({
       id: w.id,
@@ -63,10 +78,21 @@ function attentionForKid(
     })),
     cards: cards.map((c) => ({
       id: c.id,
+      state: c.state,
       gatePassed: c.gate?.passed === true,
+      // Carries the card's evidence sufficiency so the STEADY verdict can tell a settled-and-sure
+      // child from a barely-observed one instead of calling both "Nothing needs you".
+      confident: c.confident,
       domainPath: c.domainPath,
     })),
     fading: voluntaryReturns(kidId).fading,
+    family: fam
+      ? {
+          escalate: fam.escalateToHuman,
+          acknowledged: familyAcknowledged,
+          risk: fam.pressureWatch.risk,
+        }
+      : undefined,
   });
 }
 
@@ -79,6 +105,22 @@ export function useConsole() {
   const [kid, setKidRaw] = useState<string>(children()[0]!.id);
   const [filter, setFilter] = useState<Filter>("ALL");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // The most recent human action, for the confirm-after-the-fact + undo affordance. A promote (or
+  // park / contest / reopen) used to fire silently: the row simply changed, and a harried guide could
+  // not tell their click had landed, let alone take it back -- and a consequential act with no
+  // acknowledgement and no way back is exactly the kind a fat-finger commits. This names what just
+  // happened and to whom; `undoLast` reverses it. Every recorded action appends exactly one decision,
+  // so this always describes the log's last entry and `undoLast` always removes that same entry.
+  const [lastAction, setLastAction] = useState<{
+    readonly verb: string;
+    readonly label: string;
+    readonly child: string;
+  } | null>(null);
+  // Which children's flagged family pressure the guide has reviewed. A whole-child acknowledgment,
+  // kept beside the store like `decisions` but in its OWN list (family-reviews.ts): it is not a
+  // hypothesis transition, so it must not enter the replayable decision log. While a child is absent
+  // from this set and its read escalates, every promote path for that child is held.
+  const [familyReviews, setFamilyReviews] = useState<readonly string[]>([]);
 
   const gates = useMemo(() => buildRosterGates(store), [store]);
   const vm = useMemo(() => consoleViewModel(store, kid, gates), [store, kid, gates]);
@@ -106,11 +148,44 @@ export function useConsole() {
   // Load after mount, never during render: reading storage while rendering would make the server
   // and client markup disagree, and this is a client-only fact about one browser.
   useEffect(() => {
+    const reviews = parseFamilyReviews(window.localStorage.getItem(FAMILY_REVIEWS_KEY));
+    if (reviews.length > 0) setFamilyReviews(reviews);
     const log = parseDecisionLog(window.localStorage.getItem(DECISIONS_KEY));
     if (log.length === 0) return;
     setDecisions(log);
     setStore(applyDecisions(buildRosterStore(), log, buildRosterGates()).store);
   }, []);
+
+  // Persist the review set the same forgiving way `record` persists decisions: a write that throws
+  // (private mode, quota) leaves the acknowledgment live for this session rather than pretending the
+  // guide never reviewed.
+  const persistReviews = useCallback((next: readonly string[]): void => {
+    try {
+      window.localStorage.setItem(FAMILY_REVIEWS_KEY, JSON.stringify(next));
+    } catch {
+      // Session-only from here; the gate still releases, it just will not survive a reload.
+    }
+  }, []);
+
+  /** Record that the guide has reviewed this child's family pressure, releasing the held promote. */
+  function acknowledgeFamily(kidId: string): void {
+    setFamilyReviews((prev) => {
+      if (prev.includes(kidId)) return prev;
+      const next = [...prev, kidId];
+      persistReviews(next);
+      return next;
+    });
+  }
+
+  /** Take back a family review, so the pressure flag holds the promote again. */
+  function unacknowledgeFamily(kidId: string): void {
+    setFamilyReviews((prev) => {
+      if (!prev.includes(kidId)) return prev;
+      const next = prev.filter((id) => id !== kidId);
+      persistReviews(next);
+      return next;
+    });
+  }
 
   /**
    * Append one decision and write the log. Writing can throw (private mode, quota), and when it
@@ -135,13 +210,42 @@ export function useConsole() {
   function resetDecisions(): void {
     try {
       window.localStorage.removeItem(DECISIONS_KEY);
+      // The family reviews are decisions too, so a full reset must clear them or a released promote
+      // would silently outlive the seed it was released against.
+      window.localStorage.removeItem(FAMILY_REVIEWS_KEY);
     } catch {
       // Nothing to do: the in-memory reset below is what the guide asked for either way.
     }
     setDecisions([]);
+    setFamilyReviews([]);
     setStore(buildRosterStore());
     setSelectedId(null);
+    setLastAction(null);
   }
+
+  /**
+   * Take back the most recent recorded decision. The log is the record and the store is its result
+   * (see decisions.ts: we persist the log and replay it, never a store snapshot), so dropping the
+   * last entry and replaying the rest from the seed is the exact inverse of having recorded it -- no
+   * separate "unpromote" transition to keep in step with the forward one. A no-op with nothing to
+   * undo. Runs from an event handler, so reading `decisions` from the closure is current.
+   */
+  function undoLast(): void {
+    if (decisions.length === 0) return;
+    const next = decisions.slice(0, -1);
+    try {
+      if (next.length === 0) window.localStorage.removeItem(DECISIONS_KEY);
+      else window.localStorage.setItem(DECISIONS_KEY, JSON.stringify(next));
+    } catch {
+      // Session-only from here; the in-memory rebuild below is still what the guide asked for.
+    }
+    setDecisions(next);
+    setStore(applyDecisions(buildRosterStore(), next, buildRosterGates()).store);
+    setLastAction(null);
+  }
+
+  /** Dismiss the confirmation without undoing -- the guide has seen it and moved on. */
+  const clearLastAction = (): void => setLastAction(null);
 
   const ref = useRef({ store, kid, selectedId, gates });
   ref.current = { store, kid, selectedId, gates };
@@ -186,24 +290,40 @@ export function useConsole() {
       const wb = wellbeingForKid(child.id);
       m.set(child.id, {
         tracked: cvm.cards.length,
-        gateReady: cvm.cards.filter((c) => c.gate?.passed === true).length,
+        promotableCount: cvm.cards.filter((c) => c.state === "EMERGING" && c.gate?.passed === true)
+          .length,
         topState: cvm.cards[0]?.state ?? null,
-        attention: attentionForKid(child.id, cvm.cards, wb),
+        attention: attentionForKid(child.id, cvm.cards, wb, familyReviews.includes(child.id)),
         promotableId: topPromotableId(store, child.id, gates),
       });
     }
     return m;
-  }, [store, gates]);
+  }, [store, gates, familyReviews]);
+
+  // Whether THIS child's family pressure has been reviewed, and whether an unresolved flag is
+  // holding their promote. Derived once here so the verdict, the card buttons, and the Family tab
+  // all read the same state (see family.ts:familyPressureBlocks).
+  const familyReviewed = familyReviews.includes(kid);
+  const familyBlocksPromote = familyPressureBlocks(family, familyReviewed);
 
   // The selected child's verdict, reusing the already-memoized view-model + wellbeing reads.
   const attention = useMemo(
-    () => attentionForKid(kid, vm.cards, wellbeing),
-    [kid, vm.cards, wellbeing],
+    () => attentionForKid(kid, vm.cards, wellbeing, familyReviewed),
+    [kid, vm.cards, wellbeing, familyReviewed],
   );
 
   const visible = filter === "ALL" ? vm.cards : vm.cards.filter((c) => c.state === filter);
+  // With no explicit pick, default to the specialization the child's verdict names -- the escalating
+  // wellbeing spike, or the gate-ready card -- rather than the top-ranked card. The wellbeing strip
+  // and the scoped tabs read off this selection, so defaulting to an unrelated top card made the
+  // strip calmly say "In the zone, leave as is" directly under a red "Needs you" banner about a
+  // different spec, and buried the read that named the verdict behind a rail click. Landing on
+  // `attention.specId` puts the reason for the alarm on screen without one. Falls back to the top
+  // card when the verdict names nothing (Steady, or a whole-child fading read).
   const selectedCard: HypothesisCard | undefined =
-    vm.cards.find((c) => c.id === selectedId) ?? vm.cards[0];
+    vm.cards.find((c) => c.id === selectedId) ??
+    vm.cards.find((c) => c.id === attention.specId) ??
+    vm.cards[0];
 
   const promotableId = topPromotableId(store, kid, gates);
 
@@ -212,12 +332,25 @@ export function useConsole() {
   // null when the store refuses. Deliberately does not touch `kid` or `selectedId`: acting from the
   // roster leaves the guide on the roster.
   function promoteKid(kidId: string): string | null {
+    // The one gate that is not about the gate: an unresolved family-pressure flag holds the promote
+    // for this child on every surface, the roster included, until the guide reviews it. The roster
+    // already hides the button for a flagged child (the verdict is no longer GATE_READY); this makes
+    // the store-mutating path itself refuse, so no caller can promote past the flag.
+    if (familyPressureBlocks(familyForKid(kidId), familyReviews.includes(kidId))) return null;
     const now = isoNow();
     const id = topPromotableId(store, kidId, gates);
     const next = applyGuidePrimaryAction(store, kidId, gates, now);
     if (next && id) {
+      // Read the spec name off the pre-mutation store (where the card is still the one being
+      // promoted) so the confirmation can say WHAT was promoted, not just that something was.
+      const card = consoleViewModel(store, kidId, gates).cards.find((c) => c.id === id);
       record({ action: "promote", hypothesisId: id, at: now });
       setStore(next);
+      setLastAction({
+        verb: "Promoted",
+        label: card ? specPath(card.domainPath) : "specialization",
+        child: children().find((c) => c.id === kidId)?.name ?? "this child",
+      });
       return id;
     }
     return null;
@@ -232,10 +365,22 @@ export function useConsole() {
 
   const PARK_REASON = "guide parked from console";
   const CONTEST_REASON = "guide contested from console";
+  // Past-tense verb for the confirmation line, so it reads "Parked Chess" rather than echoing the raw
+  // action token. Anything unmapped falls back to a neutral "Updated".
+  const ACTION_VERB: Record<string, string> = {
+    promote: "Promoted",
+    park: "Parked",
+    reopen: "Reopened",
+    contest: "Contested",
+  };
 
   function runAction(action: string, card: HypothesisCard): void {
     const now = isoNow();
     setSelectedId(card.id);
+    // A promote is held while this child's family pressure is unresolved. The card button is
+    // disabled for this case (isDisabled), but guarding here too means the transition never fires
+    // even from a stray programmatic call -- the flag is a safety gate, not a styling state.
+    if (action === "promote" && familyBlocksPromote) return;
     // Computed eagerly rather than inside a `setStore` updater. The updater runs during the later
     // render, so a throw from it would escape this try entirely and surface as a render error; the
     // guard only works if the transition is attempted here. It also means a refused action records
@@ -274,11 +419,23 @@ export function useConsole() {
       ...(reason === undefined ? {} : { reason }),
     });
     setStore(next);
+    // Same confirm-and-undo the roster's promote gets: a card action from the detail pane is just as
+    // silent otherwise, and undo reverses whichever of these was last (they each record one decision).
+    setLastAction({
+      verb: ACTION_VERB[action] ?? "Updated",
+      label: specPath(card.domainPath),
+      child: children().find((c) => c.id === kid)?.name ?? "this child",
+    });
   }
 
   // Promote from EMERGING requires a passed gate; CANDIDATE→ACTIVE does not. Disable the button when
   // the action would throw so the surface never lies about what is legal.
   function isDisabled(action: string, card: HypothesisCard): boolean {
+    // The family-pressure hold comes first: a promote stays disabled on a flagged child even when
+    // the gate has passed, which is exactly the case this closes -- a gate-ready card whose family
+    // layer says "not yet". Cards shown are always the current child's, so `familyBlocksPromote` is
+    // the right scope.
+    if (action === "promote" && familyBlocksPromote) return true;
     return action === "promote" && card.state === "EMERGING" && card.gate?.passed !== true;
   }
 
@@ -294,6 +451,16 @@ export function useConsole() {
     // anything"; the family conversation needs "what, and about which specialization".
     decisions,
     resetDecisions,
+    // The last action's confirmation + the ways to resolve it: take it back, or acknowledge it.
+    lastAction,
+    undoLast,
+    clearLastAction,
+    // The family-pressure review gate for the selected child: whether it is reviewed, whether an
+    // unresolved flag is holding the promote, and the two ways to move that state.
+    familyReviewed,
+    familyBlocksPromote,
+    acknowledgeFamily,
+    unacknowledgeFamily,
     kid,
     setKid,
     activeChild,

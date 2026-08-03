@@ -269,11 +269,23 @@ export function Evidence({
   );
 }
 
-export function Probe({ card }: { card: HypothesisCard }): JSX.Element {
+export function Probe({
+  card,
+  held = false,
+}: {
+  card: HypothesisCard;
+  /** The promote is held by the family-pressure flag, so the gate-passed next probe ("you can promote
+      this") would contradict the disabled button. When held, the real next step is the review. */
+  held?: boolean;
+}): JSX.Element {
   return (
-    <p className="probe2">
+    <p className={`probe2${held ? " probe2--held" : ""}`}>
       <span className="probe2__k">Next test</span>
-      <span>{card.nextProbe}</span>
+      <span>
+        {held
+          ? "Review this child's family-pressure flag first (Family & coaching). Promote is held until you do."
+          : card.nextProbe}
+      </span>
     </p>
   );
 }
@@ -291,6 +303,10 @@ export function Actions({
     <div className="acts" role="group" aria-label={`Actions for ${specPath(card.domainPath)}`}>
       {card.allowedActions.map((action) => {
         const t = actionTerm(action);
+        // A promote disabled by the family-pressure hold reads as a broken button unless it says
+        // why: name the reason and where to resolve it, rather than a dead grey control the guide
+        // pokes at. Only the promote is ever held this way.
+        const familyHeld = action === "promote" && ctrl.familyBlocksPromote;
         return (
           <button
             key={action}
@@ -298,8 +314,14 @@ export function Actions({
             className={`btn${action === "promote" ? " btn--go" : ""}`}
             disabled={ctrl.isDisabled(action, card)}
             onClick={() => ctrl.runAction(action, card)}
-            data-tip={t.desc}
-            aria-label={`${t.label}. ${t.desc}`}
+            data-tip={
+              familyHeld ? "Review the family-pressure flag first (Family & coaching)." : t.desc
+            }
+            aria-label={
+              familyHeld
+                ? `${t.label} held. Review this child's family-pressure flag first, in Family and coaching.`
+                : `${t.label}. ${t.desc}`
+            }
           >
             {t.label}
           </button>
@@ -320,6 +342,9 @@ export function SpecCard({
   domId?: string;
 }): JSX.Element {
   const on = ctrl.selectedId === card.id;
+  // The promote on this card is held by the family-pressure flag, so the gate-passed probe copy would
+  // read "you can promote this" next to a dead button. Tell the card to show the review instead.
+  const promoteHeld = card.allowedActions.includes("promote") && ctrl.familyBlocksPromote;
   return (
     <article id={domId} className={`hcard${on ? " hcard--selected" : ""}`}>
       <div className="hcard__top">
@@ -328,7 +353,7 @@ export function SpecCard({
       </div>
       <LowerBound card={card} />
       <Evidence card={card} />
-      <Probe card={card} />
+      <Probe card={card} held={promoteHeld} />
       <div className="hcard__foot">
         <Actions card={card} ctrl={ctrl} />
         <ProgressRing state={card.state} gate={card.gate} size={54} />
@@ -376,7 +401,10 @@ export function FilterNav({ ctrl }: { ctrl: ConsoleController }): JSX.Element {
 // verdict is the absence of a reason to act, not a hidden one.
 const STEADY_FALLBACK: Attention = {
   level: "STEADY",
-  headline: "Steady. Nothing needs you.",
+  // No computed summary is no signal at all, so it says exactly that rather than the reassuring
+  // "Nothing needs you" a genuinely-assessed calm child earns. Matches attentionFor's no-cards branch
+  // and the Today roster's own fallback.
+  headline: "Nothing tracked yet.",
   reason: "STEADY",
   specId: null,
 };
@@ -397,7 +425,7 @@ export function ChildSwitcher({ ctrl }: { ctrl: ConsoleController }): JSX.Elemen
   const summaryFor = (id: string) =>
     ctrl.summaries.get(id) ?? {
       tracked: 0,
-      gateReady: 0,
+      promotableCount: 0,
       topState: null,
       attention: STEADY_FALLBACK,
       promotableId: null,
@@ -451,7 +479,11 @@ export function ChildSwitcher({ ctrl }: { ctrl: ConsoleController }): JSX.Elemen
                   </span>
                   <span className="kid__headline">{a.headline}</span>
                   <span className="kid__sub kid__sub--muted">
-                    {s.tracked} tracked{s.gateReady ? ` · ${s.gateReady} ready` : ""}
+                    {/* "to promote", not "ready": the verdict chip above already owns "Ready", and a
+                        lowercase "ready" count beside it read as the same word twice. Counts
+                        promotable specs, so it matches the action and drains on promote. */}
+                    {s.tracked} tracked
+                    {s.promotableCount ? ` · ${s.promotableCount} to promote` : ""}
                   </span>
                 </span>
               </button>

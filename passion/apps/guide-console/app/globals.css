@@ -121,6 +121,63 @@ body {
   flex: 0 0 auto;
 }
 
+/* The action receipt (promote-flash.tsx). A calm acknowledgement, not an alert: a quiet tile washed
+   with a faint accent tint so it reads as "here is what you just did" rather than "something is
+   wrong". A uniform border, deliberately NOT a one-sided accent bar. Sits between the view toggle and
+   whichever mode is showing. */
+.flash {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 0 0 14px;
+  padding: 9px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+}
+.flash__msg {
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+.flash__acts {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+.flash__undo,
+.flash__dismiss {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: var(--r-sm);
+  padding: 5px 12px;
+}
+.flash__undo {
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+}
+.flash__undo:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+.flash__dismiss {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink-muted);
+}
+.flash__dismiss:hover {
+  color: var(--ink);
+}
+.flash__undo:focus-visible,
+.flash__dismiss:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
 /* ── App shell ───────────────────────────────────────────────────────────── */
 /* Every full-height rule below is the viewport MINUS the shared product header (--plh-h, published
    by @gt100k/ui): the shell starts under the bar, so a plain 100vh would push the page into a
@@ -892,6 +949,12 @@ body {
   color: var(--ink-muted);
   transform: translateY(-1px);
 }
+/* Held-by-family-pressure variant: recolour the card's existing accent to the same caution tone the
+   Family review item uses, so a card whose Promote is disabled reads as "needs review", not broken. */
+.probe2--held {
+  border-color: var(--warn);
+  background: var(--warn-bg);
+}
 
 .empty {
   display: block;
@@ -1605,6 +1668,14 @@ body {
 .today__head {
   margin-bottom: 18px;
 }
+/* Title and the provenance chip share a line: the chip is a caption on "Today", not a row of its
+   own, and baselining it against the title keeps it read as one before the guide starts acting. */
+.today__headrow {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
 .today__title {
   font-family: var(--font-display);
   font-weight: 300;
@@ -1691,9 +1762,14 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* The inline action, mirroring the action line's buttons: filled Promote, outlined Review. */
+/* The inline action, mirroring the action line's buttons: filled Promote, outlined Review. On the
+   roster the two diverge in kind -- Promote commits in place, Review navigates into the child's
+   console -- so the outlined Review also carries a chevron the filled Promote does not. */
 .todayrow__do {
   flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   border: 0;
   border-radius: var(--r-sm);
   padding: 7px 16px;
@@ -1714,6 +1790,17 @@ body {
   background: transparent;
   color: var(--accent);
   border: 1px solid var(--accent);
+}
+/* The navigation cue: this Review goes somewhere (opens the console), unlike the action line's
+   Review, which only selects a card in place. It nudges right on hover the way a link's chevron does,
+   reinforcing "takes you there" over Promote's "does it here". */
+.todayrow__go {
+  font-size: 1.05em;
+  line-height: 1;
+  transition: transform 120ms ease;
+}
+.todayrow__do--review:hover .todayrow__go {
+  transform: translateX(2px);
 }
 
 .ghead {
@@ -1770,6 +1857,21 @@ body {
 .tab--on .tab__num {
   color: var(--accent);
   background: var(--accent-weak);
+}
+/* The count pill and its unit word travel together, so the number never sits on the face as a bare
+   integer inviting a cross-tab comparison that shares no unit. */
+.tab__count {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+}
+.tab__unit {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+.tab--on .tab__unit {
+  color: var(--accent);
 }
 /* At-a-glance "needs your review" marker on a tab (separate from the count pill). Amber, because it
    is an unattended state rather than a fault; the tab's title attribute names it in words. */
@@ -2693,6 +2795,26 @@ body {
   margin-top: 8px;
   color: var(--ink-muted);
 }
+/* The review-to-release control on the family-pressure flag: the note + the button that lifts the
+   promote hold, or the reviewed confirmation with an undo. Sits under the reason on the escalation
+   item, so the resolution is where the flag is read. */
+.famack {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+.famack__note {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+}
+.famack__done {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--good);
+}
 
 /* ---- Specialization plan panel (018 / D1) ---- */
 /* Stage purpose sits right under the header row. */
@@ -3234,6 +3356,11 @@ body {
 .mapq--on {
   border-color: var(--accent);
   background: var(--surface-2);
+}
+.mapq__scope {
+  color: var(--ink-muted);
+  font-size: 0.68rem;
+  font-style: italic;
 }
 .mapq__num {
   margin-left: auto;
