@@ -63,9 +63,11 @@ function attentionForKid(
   familyAcknowledged: boolean,
 ): Attention {
   // The family co-engagement read for this child, so a flagged pressure pattern reaches the verdict
-  // rather than sitting unseen in the Family tab. Escalation is the engine's own escalateToHuman,
-  // but only until the guide reviews it: once acknowledged, the verdict falls back through so the
-  // held Promote is released. `familyPressureBlocks` is the shared rule (see family.ts).
+  // rather than sitting unseen in the Family tab. Pass the engine's raw escalateToHuman AND the guide's
+  // review separately: an unreviewed flag holds the promote ("review before promoting"); a reviewed one
+  // lifts the hold but the verdict stays honest ("promoting is your call"), never a green "ready to
+  // promote" that would read as the concern being resolved. `familyPressureBlocks` (family.ts) is the
+  // matching rule the promote paths consult.
   const fam = familyForKid(kidId);
   return attentionFor({
     wellbeing: wb.map((w) => ({
@@ -85,7 +87,11 @@ function attentionForKid(
     })),
     fading: voluntaryReturns(kidId).fading,
     family: fam
-      ? { escalate: familyPressureBlocks(fam, familyAcknowledged), risk: fam.pressureWatch.risk }
+      ? {
+          escalate: fam.escalateToHuman,
+          acknowledged: familyAcknowledged,
+          risk: fam.pressureWatch.risk,
+        }
       : undefined,
   });
 }

@@ -11,7 +11,13 @@ export type AttentionLevel = "NEEDS_YOU" | "READY" | "STEADY";
 export interface Attention {
   readonly level: AttentionLevel;
   readonly headline: string;
-  readonly reason: "WELLBEING" | "FAMILY_PRESSURE" | "ENGAGEMENT_FADING" | "GATE_READY" | "STEADY";
+  readonly reason:
+    | "WELLBEING"
+    | "FAMILY_PRESSURE"
+    | "FAMILY_REVIEWED"
+    | "ENGAGEMENT_FADING"
+    | "GATE_READY"
+    | "STEADY";
   readonly specId: string | null;
 }
 
@@ -42,8 +48,15 @@ export interface CardSignal {
 // per-specialization one, so it names no specId -- it says "look before you act", not "act on this
 // card". Optional so callers and tests that predate it still compile; absent reads as no family flag.
 export interface FamilyPressureSignal {
+  // The engine's raw escalateToHuman, NOT folded with the guide's review. Kept raw so the verdict can
+  // tell an unreviewed flag (hold + "review before promoting") from a reviewed one (hold lifted, but
+  // the concern is still live so the headline must not become a green "ready to promote").
   readonly escalate: boolean;
-  // "none" | "watch" | "elevated" from the engine's PressureRisk. Only `escalate` gates the verdict;
+  // Whether the guide has reviewed this child's escalated family pressure. A review lifts the hold; it
+  // does NOT mean the pressure is gone, so a reviewed child reads "promoting is your call", never the
+  // celebratory gate-pass headline. Absent reads as not-yet-reviewed.
+  readonly acknowledged?: boolean;
+  // "none" | "watch" | "elevated" from the engine's PressureRisk. Only escalation gates the verdict;
   // the risk word rides along for a caller that wants to colour the caution.
   readonly risk: string;
 }
@@ -104,7 +117,7 @@ export function attentionFor(input: AttentionInputs): Attention {
   // says is under pressure and should be eased, and the guide saw the flag only if they opened the
   // Family tab. Making the verdict NEEDS_YOU replaces that one-tap Promote with Review, routing the
   // guide to look before they escalate. specId is null: the read is about the family, not one card.
-  if (input.family?.escalate) {
+  if (input.family?.escalate && !input.family.acknowledged) {
     return {
       level: "NEEDS_YOU",
       reason: "FAMILY_PRESSURE",
@@ -128,6 +141,20 @@ export function attentionFor(input: AttentionInputs): Attention {
   // instant the promote takes, and the read never asks for something the store now refuses.
   const ready = input.cards.find((c) => c.state === "EMERGING" && c.gatePassed);
   if (ready) {
+    // A child whose family pressure the guide has REVIEWED is no longer NEEDS_YOU -- the guide acted --
+    // but the concern is still live: escalateToHuman has not changed, only the hold was lifted. So the
+    // verdict must not fall through to the celebratory "Ready to promote X", which reads as "the issue
+    // is resolved, go ahead" and actively urges promoting the very child the tool warned about a click
+    // ago. Keep the promote reachable (specId points at the gate-ready spec, so the release means what
+    // it says) but frame it as the guide's judgement, not an automatic green light.
+    if (input.family?.escalate && input.family.acknowledged) {
+      return {
+        level: "READY",
+        reason: "FAMILY_REVIEWED",
+        specId: ready.id,
+        headline: "Family pressure reviewed. Promoting is your call.",
+      };
+    }
     return {
       level: "READY",
       reason: "GATE_READY",

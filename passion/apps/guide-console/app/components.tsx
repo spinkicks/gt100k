@@ -269,11 +269,23 @@ export function Evidence({
   );
 }
 
-export function Probe({ card }: { card: HypothesisCard }): JSX.Element {
+export function Probe({
+  card,
+  held = false,
+}: {
+  card: HypothesisCard;
+  /** The promote is held by the family-pressure flag, so the gate-passed next probe ("you can promote
+      this") would contradict the disabled button. When held, the real next step is the review. */
+  held?: boolean;
+}): JSX.Element {
   return (
-    <p className="probe2">
+    <p className={`probe2${held ? " probe2--held" : ""}`}>
       <span className="probe2__k">Next test</span>
-      <span>{card.nextProbe}</span>
+      <span>
+        {held
+          ? "Review this child's family-pressure flag first (Family & coaching). Promote is held until you do."
+          : card.nextProbe}
+      </span>
     </p>
   );
 }
@@ -330,6 +342,9 @@ export function SpecCard({
   domId?: string;
 }): JSX.Element {
   const on = ctrl.selectedId === card.id;
+  // The promote on this card is held by the family-pressure flag, so the gate-passed probe copy would
+  // read "you can promote this" next to a dead button. Tell the card to show the review instead.
+  const promoteHeld = card.allowedActions.includes("promote") && ctrl.familyBlocksPromote;
   return (
     <article id={domId} className={`hcard${on ? " hcard--selected" : ""}`}>
       <div className="hcard__top">
@@ -338,7 +353,7 @@ export function SpecCard({
       </div>
       <LowerBound card={card} />
       <Evidence card={card} />
-      <Probe card={card} />
+      <Probe card={card} held={promoteHeld} />
       <div className="hcard__foot">
         <Actions card={card} ctrl={ctrl} />
         <ProgressRing state={card.state} gate={card.gate} size={54} />

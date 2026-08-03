@@ -949,6 +949,12 @@ body {
   color: var(--ink-muted);
   transform: translateY(-1px);
 }
+/* Held-by-family-pressure variant: recolour the card's existing accent to the same caution tone the
+   Family review item uses, so a card whose Promote is disabled reads as "needs review", not broken. */
+.probe2--held {
+  border-color: var(--warn);
+  background: var(--warn-bg);
+}
 
 .empty {
   display: block;

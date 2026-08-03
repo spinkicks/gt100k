@@ -126,6 +126,54 @@ describe("attentionFor", () => {
     expect(a.reason).toBe("GATE_READY");
   });
 
+  it("a reviewed family flag lifts the hold without cheerleading the promote", () => {
+    // The bug this closes: once the guide marked the flag reviewed, the verdict fell through to the
+    // green "Ready to promote X", actively urging a promote on a child whose family pressure is still
+    // live. A review lifts the hold (specId points at the ready spec, so promote is reachable) but the
+    // headline must stay honest -- it is the guide's judgement, not a resolved concern.
+    const a = attentionFor({
+      ...base,
+      cards: [{ id: "c1", state: "EMERGING", gatePassed: true, domainPath: path }],
+      family: { escalate: true, acknowledged: true, risk: "elevated" },
+    });
+    expect(a.level).toBe("READY");
+    expect(a.reason).toBe("FAMILY_REVIEWED");
+    expect(a.specId).toBe("c1");
+    expect(a.headline).toBe("Family pressure reviewed. Promoting is your call.");
+    expect(a.headline).not.toContain("Ready to promote");
+  });
+
+  it("a reviewed family flag with nothing gate-ready does not invent a promote prompt", () => {
+    // Reviewing a flag on a child with no promotable spec must not manufacture a FAMILY_REVIEWED
+    // "promoting is your call" -- there is nothing to promote, so it falls through to the quiet read.
+    const a = attentionFor({
+      ...base,
+      cards: [{ id: "c1", state: "EMERGING", gatePassed: false, domainPath: path }],
+      family: { escalate: true, acknowledged: true, risk: "elevated" },
+    });
+    expect(a.reason).not.toBe("FAMILY_REVIEWED");
+    expect(a.reason).not.toBe("FAMILY_PRESSURE");
+    expect(a.level).toBe("STEADY");
+  });
+
+  it("a reviewed family flag still yields to a fading interest and a wellbeing spike", () => {
+    // A review is not a licence to bury a fresh safety signal: fading and wellbeing still outrank it.
+    const overFading = attentionFor({
+      ...base,
+      cards: [{ id: "c1", state: "EMERGING", gatePassed: true, domainPath: path }],
+      fading: true,
+      family: { escalate: true, acknowledged: true, risk: "elevated" },
+    });
+    expect(overFading.reason).toBe("ENGAGEMENT_FADING");
+    const underWellbeing = attentionFor({
+      wellbeing: [{ id: "w1", state: "BURNOUT_TIP", escalateToHuman: true, domainPath: path }],
+      cards: [{ id: "c1", state: "EMERGING", gatePassed: true, domainPath: path }],
+      fading: false,
+      family: { escalate: true, acknowledged: true, risk: "elevated" },
+    });
+    expect(underWellbeing.reason).toBe("WELLBEING");
+  });
+
   it("is READY when a gate has passed and nothing needs attention", () => {
     const a = attentionFor({
       ...base,
