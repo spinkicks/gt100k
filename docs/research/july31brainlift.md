@@ -16,7 +16,7 @@ Each SPOV below breaks with a live consensus and holds up anyway. Where a claim 
 
 ### In scope
 
-- Reading a durable-interest signal from **competence and behavior**, not from self-report or from a child's face, voice, or pulse — and the limits of what behavior alone can name (SPOV 7).
+- Reading a durable-interest signal from **competence and behavior**, not from self-report or from a child's face, voice, or pulse — and the limits of what behavior alone can name (SPOV 1, SPOV 2).
 - What **elite admissions actually rewards**, from the litigation record rather than from consultancy folklore, and what it has never measured (SPOV 6).
 - Treating **burnout as a monitored operating variable** an intensive program can measure and design against, not an accepted cost of ambition.
 - Making the **evidence record legible, motivating, and non-punitive** to a child, and being honest about where the provenance stack ends.
@@ -42,10 +42,14 @@ They group by pillar of the running system, with a unifying idea at the end.
    - **Consensus it breaks:** both "self-selection reveals the passion," and the SDT-lite reflex that competence-building is the master lever for durable interest.
    - **Backing:** Quested et al. (2013); Mabbe et al. (2018); Patall, Cooper & Robinson (2008); Deci, Koestner & Ryan (1999); Skjesol et al. (2025); the Childhood-and-Beyond cohort (2013); Review of Educational Research (2022) SDT meta-analysis. Honest limit: the research *weakened* this SPOV. The two best direct tests at 9–12 point opposite ways, and voluntary return is a synthesis across sport, music and classroom work rather than a validated 9–12 metric. The negative claim survives; any ranking of competence over autonomy does not.
 
-- **Spiky POV 2: You cannot read a child's inner state from their face, voice, gaze, or pulse, so we instrument behavior and never biometrics.**
-   - **Elaboration:** The affective-computing pitch is that a camera or a wearable can sense a child's interest, engagement, or stress. It cannot, and in the EU it is illegal to try in a school. Emotion "cannot be reliably read from facial configurations"; variability is the norm. Remote photoplethysmography (reading pulse from video) degrades more than 2× on the darkest skin (mean absolute error ~4.2 bpm on lighter tones to ~13.6 bpm on Fitzpatrick VI) and correlates only ~0.58 with true heart rate "in the wild," and even a valid pulse is not a valid *stress* readout. Voice-stress analysis is, in the literature's words, pseudoscience. The EU AI Act prohibits emotion inference in education (Article 5(1)(f), in force 2 February 2025). So the signal layer reads what a child *does*: what they return to, how deep they go, how long they stay. Those we can measure, and they predict learning. What a child's body is said to broadcast, we leave alone. Of every claim in this document, this one rests on the firmest evidence.
-   - **Consensus it breaks:** the wellness-wearable and engagement-camera premise that inner state is senseable from the body.
-   - **Backing:** Barrett et al. (2019); npj Digital Medicine (2025); EU AI Act Art. 5(1)(f); Fredricks et al. (2004); Saqr et al. (2022). Honest limit: these sensors *are* valid for narrow targets under controlled conditions. The invalidity is the leap to emotion, stress or interest, and to real-world child conditions.
+- **Spiky POV 2: Behaviour is the only thing worth instrumenting, and it still cannot tell you *why*. So the software reports what it saw and asks the guide for the rest.**
+   - **Elaboration:** The affective-computing pitch is that a camera or a wearable can sense a child's interest, engagement or stress. It cannot, and in an EU school it is illegal to try. Emotion "cannot be reliably read from facial configurations"; remote photoplethysmography degrades more than 2× on the darkest skin (~4.2 bpm error on lighter tones against ~13.6 on Fitzpatrick VI) and correlates only ~0.58 with true heart rate in the wild; voice-stress analysis is, in the literature's words, pseudoscience; and the EU AI Act has prohibited emotion inference in education since February 2025. So we read what a child *does* — what they return to, how deep they go, how long they stay. That much is measurable and it predicts learning.
+
+  **But it buys less than it looks like, and this is the half that matters.** Behaviour is a good instrument for *what* a child is drawn to and a useless one for *why*, and the field says so about its own tools. The authors of SDT's situational scale write that the free-choice measure "cannot assess other important motivational concepts derived from self-determination theory, namely identified regulation, external regulation, and amotivation" — every instrument that separates the regulations is a questionnaire. Worse for a product built on voluntary return: under ego-involvement, free-choice persistence **inverts** with prior feedback. After success the internally-pressured child returns *less*; after a setback, *more*; and reports no enjoyment either way. **Praise from an adult flips the sign of our core signal, and we do not log feedback history beside returns, so we cannot see it happen.** Fredricks and colleagues say the same of behavioural engagement: it makes "no distinction… between effort aimed merely at fulfilling behavioral expectations and that aimed at understanding." And the folk category an operator most wants to detect dissolves on contact: across 94 studies and 1,308 effect sizes, harmonious and obsessive passion correlate with deliberate practice *indistinguishably*, obsessive slightly **more** with hours per week. Volume, the one thing an adult can see, is the one variable that does not separate the child you should feed from the child you should intervene on, so a quadrant keyed on intensity flags the absorbed child and misses the pressured one.
+
+  What survives is not a detector but three things a program can do: the **interruption test** (watch what happens when the activity becomes unavailable, which is where the meta-analytic separation lives), the **exit test** (offer a real, cost-free exit — attraction declines it, entrapment cannot hear it), and **intervening on the adults by subtraction**, where the only controlled child evidence in the field sits: a coach-behaviour workshop cut next-season dropout from **26% to 5%** with no change in win-loss records. **This is why asking is not a fallback but the design.** The log carries behaviour; the guide carries everything else.
+   - **Consensus it breaks:** the wellness-wearable and engagement-camera premise that inner state is senseable from the body, and — the harder one — that a rich enough behavioural log can infer *why* a child is doing something, which is the premise under most learning analytics. Also the folk category "over-motivated" as a single detectable state.
+   - **Backing:** Barrett et al. (2019); npj Digital Medicine (2025); EU AI Act Art. 5(1)(f); Guay, Vallerand & Blanchard (2000); Ryan, Koestner & Deci (1991); Fredricks, Blumenfeld & Paris (2004); Curran et al. (2015); Raedeke (1997); Smith, Smoll & Curtis (1979) and Barnett, Smoll & Smith (1992); Volpe, McConaughy & Hintze (2009). Honest limit: the biometric refusal is the firmest evidence here, but the sensors *are* valid for narrow targets under controlled conditions — the invalidity is the leap to emotion and to real-world child conditions. The behavioural half is a negative claim, and those are cheap to make and hard to falsify. Excluding self-report is *our* design choice rather than a finding, and it is what forces the software into "here is what we saw, you decide." The child Passion Scale runs α = .60–.66, and in the youngest sample properly tested the two passions correlated r = .73 with obsessive passion *unrelated* to burnout — the mechanism is weakest exactly where we operate.
 
 ### On sustaining the child
 
@@ -73,13 +77,6 @@ They group by pillar of the running system, with a unifying idea at the end.
    - **Consensus it breaks:** both the admissions-consulting orthodoxy that a "spike" outranks a strong all-round profile, and the opposite school-counsellor reflex that extracurriculars are decoration on a transcript. Also the assumption, widespread in this market, that the spike's value depends on the subject being prestigious.
    - **Backing:** Harvard Reading Procedures, Class of 2023 (HARV00097939); Card expert report Exhibit 4; Arcidiacono, Kinsler & Ransom (2022); Chetty, Deming & Friedman (2025); Stu Schmill, MIT Admissions (2006). **Honest limit, and it is severe.** Every figure is a correlation, and the rating is a reader's judgment of a whole file rather than an attribute of a child, so improving a pursuit and improving the number a reader writes down are different operations. **No study establishes causation for any activity**, and **nothing here observes anyone under 17** — the link from six to seventeen, the premise of the program, is unevidenced.
 
-### On reading motivation
-
-- **Spiky POV 7: Behaviour cannot identify a motivational state either. So the software asks the guide what they saw instead of telling the guide what the child feels.**
-   - **Elaboration:** SPOV 2 refused the body and kept behaviour. The uncomfortable extension: **behaviour cannot name a motivational state either**, and the field says so about its own instruments. The authors of SDT's situational scale write that the free-choice measure "cannot assess other important motivational concepts derived from self-determination theory, namely identified regulation, external regulation, and amotivation" — every instrument that separates the regulations is a questionnaire. Worse for a product built on voluntary return: under ego-involvement, free-choice persistence **inverts** with prior feedback. After success the internally-pressured child returns *less*; after a setback, *more*; and reports no enjoyment either way. **Praise from an adult flips the sign of our core signal, and we do not log feedback history beside returns, so we cannot see it happen.** Fredricks and colleagues say the same of behavioural engagement in their own words: it makes "no distinction… between effort aimed merely at fulfilling behavioral expectations and that aimed at understanding." And the folk category an operator most wants to detect dissolves on contact: across 94 studies and 1,308 effect sizes, harmonious and obsessive passion correlate with deliberate practice *indistinguishably*, obsessive slightly **more** with hours per week. Volume, the one thing an adult can see, is the one variable that does not separate the child you should feed from the child you should intervene on, so a quadrant keyed on intensity flags the absorbed child and misses the pressured one. What survives is not a detector but three things a program can actually do: the **interruption test** (watch what happens when the activity becomes unavailable, which is where the meta-analytic separation lives), the **exit test** (offer a real, cost-free exit — attraction declines it, entrapment cannot hear it), and **intervening on the adults by subtraction**, which is where the only controlled child evidence in the field sits: a coach-behaviour workshop cut next-season dropout from **26% to 5%** with no change in win-loss records.
-   - **Consensus it breaks:** that a rich enough behavioural log, given enough data, can infer *why* a child is doing something — the premise under most learning analytics. And the folk category "over-motivated" as a single detectable state.
-   - **Backing:** Guay, Vallerand & Blanchard (2000); Ryan, Koestner & Deci (1991); Fredricks, Blumenfeld & Paris (2004); Curran et al. (2015); Raedeke (1997); Smith, Smoll & Curtis (1979) and Barnett, Smoll & Smith (1992); Volpe, McConaughy & Hintze (2009). **Honest limit:** a negative claim, and those are cheap to make and hard to falsify. Excluding self-report is *our* design choice rather than a finding, and it is what forces the software into "here is what we saw, you decide." The child Passion Scale runs α = .60–.66, and in the youngest sample properly tested the two passions correlated r = .73 with obsessive passion *unrelated* to burnout — the mechanism is weakest exactly where we operate.
-
 ---
 
 ## Experts
@@ -87,7 +84,7 @@ They group by pillar of the running system, with a unifying idea at the end.
 - **Lisa Feldman Barrett**
    - **Who:** Psychologist and neuroscientist, Northeastern University.
    - **Focus:** The science of emotion; that emotion cannot be reliably inferred from facial configurations.
-   - **Why Follow:** The evidence base for refusing facial-emotion detection, and the boundary SPOV 2 draws between unreadable inner state and measurable behavior.
+   - **Why Follow:** The evidence base for refusing facial-emotion detection, and the first half of the line SPOV 2 draws between what is unreadable and what is merely insufficient.
    - **Where:** https://doi.org/10.1177/1529100619832930
 
 - **Katariina Salmela-Aro**
@@ -159,13 +156,13 @@ They group by pillar of the running system, with a unifying idea at the end.
 - **Robert Vallerand & Thomas Curran**
    - **Who:** Psychologists (Université du Québec à Montréal; LSE).
    - **Focus:** The Dualistic Model of Passion, and the meta-analysis testing it across 94 studies.
-   - **Why Follow:** Vallerand built the harmonious/obsessive distinction the whole burnout conversation runs on; Curran's meta-analysis is what shows the distinction cannot be made from the outside, which is the load-bearing evidence in SPOV 7.
+   - **Why Follow:** Vallerand built the harmonious/obsessive distinction the whole burnout conversation runs on; Curran's meta-analysis is what shows the distinction cannot be made from the outside, which is the load-bearing evidence in SPOV 2.
    - **Where:** https://doi.org/10.1007/s11031-015-9503-0
 
 - **Ronald Smith & Frank Smoll**
    - **Who:** Sport psychologists, University of Washington.
    - **Focus:** Coach Effectiveness Training and the Mastery Approach to Coaching; changing adult behaviour rather than child behaviour.
-   - **Why Follow:** The 26%-to-5% dropout result is the strongest controlled child evidence in the motivation literature, and it is the reason SPOV 7's intervention points at the adults.
+   - **Why Follow:** The 26%-to-5% dropout result is the strongest controlled child evidence in the motivation literature, and it is the reason SPOV 2's intervention points at the adults.
    - **Where:** https://doi.org/10.1080/10413209208406459
 
 ---
@@ -204,9 +201,9 @@ Original conclusions we reached after processing the sources. These bridge the K
 
 ### Reading motivation
 
-- **Insight 17:** Refusing biometrics (SPOV 2) bought less than it looked like. The behavioural channel we kept **also** cannot name a motivational state, and SDT says so about its own instrument. The honest architecture that follows is not a better inference; it is a division of labour — the log carries behaviour, the guide carries everything else, and the software's job is to ask rather than to conclude. (→ SPOV 7, SPOV 2)
-- **Insight 18:** Our core signal can invert under adult praise. Free-choice persistence rises after a setback and falls after success for the internally-pressured child, so the same voluntary return means opposite things depending on what an adult said last session. **Feedback history and concurrent alternatives are therefore not enrichment, they are preconditions for the return being interpretable at all** — and neither is currently logged. This is the cheapest high-value change available to the signal layer. (→ SPOV 7, SPOV 1)
-- **Insight 19:** "Over-motivated" is not one state, and the axis an adult would use to detect it carries no information: obsessive and harmonious passion correlate with practice hours indistinguishably, obsessive slightly more. So the deliverable a stakeholder asks for — a quadrant keyed on intensity — is not merely unbuildable, it would be wrong in a predictable direction, flagging absorbed children and missing pressured ones. What replaces it is probes a guide *runs* and interventions aimed at adults, which is also where the only controlled child evidence in the field sits. (→ SPOV 7, SPOV 3)
+- **Insight 17:** Refusing biometrics bought less than it looked like. The behavioural channel kept in their place **also** cannot name a motivational state, and SDT says so about its own instrument. The honest architecture that follows is not a better inference; it is a division of labour — the log carries behaviour, the guide carries everything else, and the software's job is to ask rather than to conclude. (→ SPOV 2)
+- **Insight 18:** Our core signal can invert under adult praise. Free-choice persistence rises after a setback and falls after success for the internally-pressured child, so the same voluntary return means opposite things depending on what an adult said last session. **Feedback history and concurrent alternatives are therefore not enrichment, they are preconditions for the return being interpretable at all** — and neither is currently logged. This is the cheapest high-value change available to the signal layer. (→ SPOV 2, SPOV 1)
+- **Insight 19:** "Over-motivated" is not one state, and the axis an adult would use to detect it carries no information: obsessive and harmonious passion correlate with practice hours indistinguishably, obsessive slightly more. So the deliverable a stakeholder asks for — a quadrant keyed on intensity — is not merely unbuildable, it would be wrong in a predictable direction, flagging absorbed children and missing pressured ones. What replaces it is probes a guide *runs* and interventions aimed at adults, which is also where the only controlled child evidence in the field sits. (→ SPOV 2, SPOV 3)
 
 ---
 
@@ -271,6 +268,30 @@ Organized sources and the facts and summaries we built our insights on. DOK 1 fa
    - **DOK 2 - Summary:**
       - Even where a physiological sensor is partly valid it is biased by skin tone and brittle in real conditions, and the further leap to "stress" or "emotion" is unsupported, so behavioral signals, not biometrics, are the only defensible instrument.
    - **Link:** (npj Digital Medicine 2025 rPPG study, as cited in the 2026-07-21 burnout research report)
+
+#### Subcategory 1.3: Why behaviour cannot name a motivational state
+
+- **Source: Guay, Vallerand & Blanchard (2000); Ryan, Koestner & Deci (1991); Fredricks, Blumenfeld & Paris (2004)**
+   - **DOK 1 - Facts:**
+      - On the free-choice measure, SDT's own authors: it "is unidimensional and consequently cannot assess other important motivational concepts derived from self-determination theory, namely identified regulation, external regulation, and amotivation."
+      - Ryan, Koestner & Deci (1991), three experiments: after **positive** feedback, ego-involved participants persisted **less** than task-involved ones; after nonconfirming or no feedback they persisted **more**; in neither case did they report interest, enjoyment or perceived choice.
+      - Fredricks et al.: "no distinction is made between effort aimed merely at fulfilling behavioral expectations and that aimed at understanding the material and mastering the content."
+      - Skinner et al. (2008, N = 805, grades 4–7): emotional components of engagement drove later changes in behavioural ones; feedback from behaviour to emotion was not as consistent.
+      - Volpe, McConaughy & Hintze (2009, ages 6–11): for on-task behaviour, person variance was 10.6% and person-by-occasion plus residual 70.4%; ~14 sessions were needed for a dependable person-level estimate.
+   - **DOK 2 - Summary:**
+      - Regulation type is defined by the reason for acting, which is not in the behaviour stream, and the field's one behavioural measure is documented as unable to separate the regulations. Worse, the sign of a voluntary return inverts with prior feedback — so adult praise flips our core signal, and feedback history must be logged beside returns for a return to be interpretable at all. Behaviour is also a lagging indicator by construction, since emotion leads it.
+   - **Link:** https://selfdeterminationtheory.org/wp-content/uploads/2014/04/2000_GuayVallerandBlanchard_MO.pdf ; https://doi.org/10.1007/BF00995170
+
+- **Source: Curran, Hill, Appleton, Vallerand & Standage (2015); Raedeke (1997); Smith, Smoll & Curtis (1979) and Barnett, Smoll & Smith (1992)**
+   - **DOK 1 - Facts:**
+      - Meta-analysis of the passion literature, 94 studies and 1,308 effect sizes: harmonious and obsessive passion correlate with deliberate practice to a statistically indistinguishable degree (Hotelling's T = .48, ns); obsessive correlates **slightly more** with hours per week; obsessive passion is **unrelated to objective performance**. The only large clean separation is on activity dependence — itself a questionnaire.
+      - Curran et al. (2011, n = 149 junior soccer players, mean age 16.2): harmonious and obsessive passion correlated **r = .73**, and obsessive passion was **unrelated to athlete burnout**.
+      - The child version of the Passion Scale (Mageau et al. 2009, n = 163, mean age 11) ran α = .60 harmonious and .66 obsessive.
+      - Raedeke (1997, 236 age-group swimmers): attraction ("I want to be here") and entrapment ("I have to be here") produce the same attendance record; entrapped clusters carried elevated burnout.
+      - Coach Effectiveness Training (18 Little League coaches, ~ages 10–12): next-season attrition **5% in the trained group versus 26% in control**, with no difference in win-loss records; the largest self-esteem gains went to the children who started lowest.
+   - **DOK 2 - Summary:**
+      - The observable quantity adults use to diagnose over-motivation is the one variable that does not separate the healthy state from the unhealthy one, so a framework keyed on intensity misclassifies in both directions. What can be done is to run probes rather than wait for signals — interruption and a real exit — and to intervene on adult behaviour, which is where the only controlled child evidence in the field sits, and where the reliably achievable change is subtraction rather than addition.
+   - **Link:** https://doi.org/10.1007/s11031-015-9503-0 ; https://doi.org/10.1123/jsep.19.4.396
 
 ### Category 2: Sustaining the child
 
@@ -426,27 +447,3 @@ Organized sources and the facts and summaries we built our insights on. DOK 1 fa
    - **DOK 2 - Summary:**
       - The premise that starting at six improves a seventeen-year-old's outcome is neither supported nor contradicted by this literature; it is unmeasured. That is the largest open claim the program makes and it should be stated rather than left for a reader to find.
    - **Link:** https://doi.org/10.1037/0012-1649.43.1.159
-
-#### Subcategory 4.2: Why behaviour cannot name a motivational state
-
-- **Source: Guay, Vallerand & Blanchard (2000); Ryan, Koestner & Deci (1991); Fredricks, Blumenfeld & Paris (2004)**
-   - **DOK 1 - Facts:**
-      - On the free-choice measure, SDT's own authors: it "is unidimensional and consequently cannot assess other important motivational concepts derived from self-determination theory, namely identified regulation, external regulation, and amotivation."
-      - Ryan, Koestner & Deci (1991), three experiments: after **positive** feedback, ego-involved participants persisted **less** than task-involved ones; after nonconfirming or no feedback they persisted **more**; in neither case did they report interest, enjoyment or perceived choice.
-      - Fredricks et al.: "no distinction is made between effort aimed merely at fulfilling behavioral expectations and that aimed at understanding the material and mastering the content."
-      - Skinner et al. (2008, N = 805, grades 4–7): emotional components of engagement drove later changes in behavioural ones; feedback from behaviour to emotion was not as consistent.
-      - Volpe, McConaughy & Hintze (2009, ages 6–11): for on-task behaviour, person variance was 10.6% and person-by-occasion plus residual 70.4%; ~14 sessions were needed for a dependable person-level estimate.
-   - **DOK 2 - Summary:**
-      - Regulation type is defined by the reason for acting, which is not in the behaviour stream, and the field's one behavioural measure is documented as unable to separate the regulations. Worse, the sign of a voluntary return inverts with prior feedback — so adult praise flips our core signal, and feedback history must be logged beside returns for a return to be interpretable at all. Behaviour is also a lagging indicator by construction, since emotion leads it.
-   - **Link:** https://selfdeterminationtheory.org/wp-content/uploads/2014/04/2000_GuayVallerandBlanchard_MO.pdf ; https://doi.org/10.1007/BF00995170
-
-- **Source: Curran, Hill, Appleton, Vallerand & Standage (2015); Raedeke (1997); Smith, Smoll & Curtis (1979) and Barnett, Smoll & Smith (1992)**
-   - **DOK 1 - Facts:**
-      - Meta-analysis of the passion literature, 94 studies and 1,308 effect sizes: harmonious and obsessive passion correlate with deliberate practice to a statistically indistinguishable degree (Hotelling's T = .48, ns); obsessive correlates **slightly more** with hours per week; obsessive passion is **unrelated to objective performance**. The only large clean separation is on activity dependence — itself a questionnaire.
-      - Curran et al. (2011, n = 149 junior soccer players, mean age 16.2): harmonious and obsessive passion correlated **r = .73**, and obsessive passion was **unrelated to athlete burnout**.
-      - The child version of the Passion Scale (Mageau et al. 2009, n = 163, mean age 11) ran α = .60 harmonious and .66 obsessive.
-      - Raedeke (1997, 236 age-group swimmers): attraction ("I want to be here") and entrapment ("I have to be here") produce the same attendance record; entrapped clusters carried elevated burnout.
-      - Coach Effectiveness Training (18 Little League coaches, ~ages 10–12): next-season attrition **5% in the trained group versus 26% in control**, with no difference in win-loss records; the largest self-esteem gains went to the children who started lowest.
-   - **DOK 2 - Summary:**
-      - The observable quantity adults use to diagnose over-motivation is the one variable that does not separate the healthy state from the unhealthy one, so a framework keyed on intensity misclassifies in both directions. What can be done is to run probes rather than wait for signals — interruption and a real exit — and to intervene on adult behaviour, which is where the only controlled child evidence in the field sits, and where the reliably achievable change is subtraction rather than addition.
-   - **Link:** https://doi.org/10.1007/s11031-015-9503-0 ; https://doi.org/10.1123/jsep.19.4.396
