@@ -1883,52 +1883,13 @@ body {
   margin-top: 18px;
   align-items: start;
 }
-.col {
-  background: var(--surface-2);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  display: flex;
-  flex-direction: column;
-  min-height: 120px;
-}
-.col__head {
-  padding: 14px 14px 12px;
-  border-bottom: 1px solid var(--line);
-}
-.col__title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-.col__n {
-  margin-left: auto;
-  color: var(--ink-muted);
-  font-size: 0.76rem;
-  font-weight: 700;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 1px 7px;
-}
-.col__desc {
-  margin: 6px 0 0;
-  font-size: 0.78rem;
-  color: var(--ink-muted);
-  line-height: 1.4;
-}
-.col__body {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 12px;
-}
-.col__empty {
-  margin: 8px 0;
-  text-align: center;
-  color: var(--ink-muted);
-}
+/* The `.col` card block that stood here is gone. It styled a column layout -- `.col__head`,
+   `.col__title`, `.col__n`, `.col__desc`, `.col__body`, `.col__empty` -- that no component has
+   rendered for some time. It was not harmless: the hypothesis bars were also class `.col`, so the
+   dead rule's `min-height: 120px` cascaded onto them and stretched every column to nearly twice its
+   intended height. Two bugs in one, and the collision is why the bars rendered as solid blocks.
+   The bars are now `.hbar`, which nothing else can claim. */
+
 .bcard {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -2918,7 +2879,7 @@ body {
   align-items: end;
   border-bottom: 1px solid var(--line);
 }
-.col {
+.hbar {
   display: grid;
   grid-template-rows: 64px auto;
   gap: 5px;
@@ -2932,12 +2893,12 @@ body {
 }
 /* No filled track behind the bar. A full-height light box under a short bar reads as an empty
    container rather than as headroom, and six of them looked like six empty panels. */
-.col__track {
+.hbar__track {
   display: flex;
   align-items: flex-end;
   height: 64px;
 }
-.col__fill {
+.hbar__fill {
   display: block;
   width: 100%;
   min-height: 2px;
@@ -2947,23 +2908,23 @@ body {
 /* STRIPED MEANS NOT YET CONFIDENT. A tall column on one afternoon and a tall column on six weeks
    are the same number, so fill has to distinguish them -- and the accessible name says it too,
    because a texture is invisible to a screen reader and hard for many eyes. */
-.col__fill--thin {
+.hbar__fill--thin {
   background: repeating-linear-gradient(135deg, var(--accent) 0 2px, transparent 2px 5px);
   border: 1px solid var(--accent);
   border-bottom: 0;
 }
-.col:hover .col__fill,
-.col:focus-visible .col__fill {
+.hbar:hover .hbar__fill,
+.hbar:focus-visible .hbar__fill {
   filter: brightness(0.9);
 }
-.col--on .col__fill {
+.hbar--on .hbar__fill {
   background: var(--ink);
 }
-.col--on .col__fill--thin {
+.hbar--on .hbar__fill--thin {
   background: repeating-linear-gradient(135deg, var(--ink) 0 2px, transparent 2px 5px);
   border-color: var(--ink);
 }
-.col__name {
+.hbar__name {
   min-height: 16px;
   font-size: 0.64rem;
   line-height: 1.2;
@@ -2975,7 +2936,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.col--on .col__name {
+.hbar--on .hbar__name {
   color: var(--ink);
   font-weight: 700;
 }

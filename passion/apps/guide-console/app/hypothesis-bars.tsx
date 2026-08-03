@@ -74,7 +74,7 @@ export function HypothesisBars({
             <li key={c.id}>
               <button
                 type="button"
-                className={`col${selectedId === c.id ? " col--on" : ""}`}
+                className={`hbar${selectedId === c.id ? " hbar--on" : ""}`}
                 onClick={() => onPick(c.id)}
                 // Everything the column shows visually, said in words. A screen reader gets no
                 // height and no hatching, and the confidence distinction is the one that must never
@@ -84,15 +84,15 @@ export function HypothesisBars({
                 }`}
                 title={`${specPath(c.domainPath)} · ${modeLabel(c.mode)}`}
               >
-                <span className="col__track">
+                <span className="hbar__track">
                   <span
-                    className={`col__fill${c.confident ? "" : " col__fill--thin"}`}
+                    className={`hbar__fill${c.confident ? "" : " hbar__fill--thin"}`}
                     style={{ height: `${pct}%` }}
                   />
                 </span>
                 {/* Only the top few, and only where there is room. Everything else is on hover,
                     on focus and in the accessible name. */}
-                <span className="col__name" aria-hidden="true">
+                <span className="hbar__name" aria-hidden="true">
                   {ranked.length <= LABEL_UP_TO && i < LABELLED ? shortName(c.domainPath) : ""}
                 </span>
               </button>
