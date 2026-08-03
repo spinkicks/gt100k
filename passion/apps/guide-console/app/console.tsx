@@ -383,6 +383,11 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
                 domainPath={spec?.domainPath}
                 decisions={ctrl.decisions}
                 cards={ctrl.vm.cards}
+                // The review that releases the held promote lives here, on the escalation itself,
+                // because this tab is where the flag is read -- the action line sends the guide here.
+                acknowledged={ctrl.familyReviewed}
+                onAcknowledge={() => ctrl.acknowledgeFamily(ctrl.kid)}
+                onUndoAcknowledge={() => ctrl.unacknowledgeFamily(ctrl.kid)}
               />
             ) : null}
           </main>

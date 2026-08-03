@@ -25,6 +25,9 @@ export function FamilyPanel({
   domainPath,
   decisions,
   cards,
+  acknowledged,
+  onAcknowledge,
+  onUndoAcknowledge,
 }: {
   read: FamilyRead | undefined;
   observations: readonly string[];
@@ -33,6 +36,10 @@ export function FamilyPanel({
   domainPath?: readonly string[];
   decisions: readonly GuideDecision[];
   cards: readonly HypothesisCard[];
+  /** Whether the guide has reviewed this child's escalated family pressure (releases the promote). */
+  acknowledged: boolean;
+  onAcknowledge: () => void;
+  onUndoAcknowledge: () => void;
 }): JSX.Element {
   return (
     <section className="wbpanel" aria-label="Family co-engagement" data-testid="family-panel">
@@ -59,6 +66,31 @@ export function FamilyPanel({
                 </div>
               ) : null}
               <p className="wbitem__reason">{read.escalationReason ?? read.rationale}</p>
+              {/* The review that RELEASES the held promote. Until the guide marks this reviewed, a
+                  promote is held for this child on every surface (family.ts:familyPressureBlocks);
+                  this is the one control that resolves it, so it lives on the flag itself rather
+                  than leaving the guide to guess why the promote is greyed out. */}
+              <div className="famack" data-testid="family-ack">
+                {acknowledged ? (
+                  <>
+                    <span className="famack__done">
+                      Reviewed. Promote is released for this child.
+                    </span>
+                    <button type="button" className="linkbtn" onClick={onUndoAcknowledge}>
+                      Undo review
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="famack__note">
+                      Promote is held for this child until you review this.
+                    </p>
+                    <button type="button" className="btn btn--go" onClick={onAcknowledge}>
+                      Mark family reviewed
+                    </button>
+                  </>
+                )}
+              </div>
             </li>
           ) : null}
 

@@ -291,6 +291,10 @@ export function Actions({
     <div className="acts" role="group" aria-label={`Actions for ${specPath(card.domainPath)}`}>
       {card.allowedActions.map((action) => {
         const t = actionTerm(action);
+        // A promote disabled by the family-pressure hold reads as a broken button unless it says
+        // why: name the reason and where to resolve it, rather than a dead grey control the guide
+        // pokes at. Only the promote is ever held this way.
+        const familyHeld = action === "promote" && ctrl.familyBlocksPromote;
         return (
           <button
             key={action}
@@ -298,8 +302,14 @@ export function Actions({
             className={`btn${action === "promote" ? " btn--go" : ""}`}
             disabled={ctrl.isDisabled(action, card)}
             onClick={() => ctrl.runAction(action, card)}
-            data-tip={t.desc}
-            aria-label={`${t.label}. ${t.desc}`}
+            data-tip={
+              familyHeld ? "Review the family-pressure flag first (Family & coaching)." : t.desc
+            }
+            aria-label={
+              familyHeld
+                ? `${t.label} held. Review this child's family-pressure flag first, in Family and coaching.`
+                : `${t.label}. ${t.desc}`
+            }
           >
             {t.label}
           </button>

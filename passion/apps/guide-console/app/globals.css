@@ -2789,6 +2789,26 @@ body {
   margin-top: 8px;
   color: var(--ink-muted);
 }
+/* The review-to-release control on the family-pressure flag: the note + the button that lifts the
+   promote hold, or the reviewed confirmation with an undo. Sits under the reason on the escalation
+   item, so the resolution is where the flag is read. */
+.famack {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+.famack__note {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+}
+.famack__done {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--good);
+}
 
 /* ---- Specialization plan panel (018 / D1) ---- */
 /* Stage purpose sits right under the header row. */

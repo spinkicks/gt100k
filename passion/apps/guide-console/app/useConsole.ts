@@ -26,7 +26,8 @@ import { escalationCount, wellbeingForKid, type WellbeingCardVM } from "./wellbe
 import { attentionFor, type Attention } from "./attention.js";
 import { specPath } from "./vocab.js";
 import { voluntaryReturns } from "./engagement.js";
-import { familyForKid, familyObservationsForKid } from "./family.js";
+import { familyForKid, familyObservationsForKid, familyPressureBlocks } from "./family.js";
+import { FAMILY_REVIEWS_KEY, parseFamilyReviews } from "./family-reviews.js";
 import { plansForKid } from "./plan.js";
 import { accessForKid } from "./access.js";
 
@@ -59,9 +60,12 @@ function attentionForKid(
   kidId: string,
   cards: readonly HypothesisCard[],
   wb: readonly WellbeingCardVM[],
+  familyAcknowledged: boolean,
 ): Attention {
   // The family co-engagement read for this child, so a flagged pressure pattern reaches the verdict
-  // rather than sitting unseen in the Family tab. Escalation is the engine's own escalateToHuman.
+  // rather than sitting unseen in the Family tab. Escalation is the engine's own escalateToHuman,
+  // but only until the guide reviews it: once acknowledged, the verdict falls back through so the
+  // held Promote is released. `familyPressureBlocks` is the shared rule (see family.ts).
   const fam = familyForKid(kidId);
   return attentionFor({
     wellbeing: wb.map((w) => ({
@@ -80,7 +84,9 @@ function attentionForKid(
       domainPath: c.domainPath,
     })),
     fading: voluntaryReturns(kidId).fading,
-    family: fam ? { escalate: fam.escalateToHuman, risk: fam.pressureWatch.risk } : undefined,
+    family: fam
+      ? { escalate: familyPressureBlocks(fam, familyAcknowledged), risk: fam.pressureWatch.risk }
+      : undefined,
   });
 }
 
@@ -104,6 +110,11 @@ export function useConsole() {
     readonly label: string;
     readonly child: string;
   } | null>(null);
+  // Which children's flagged family pressure the guide has reviewed. A whole-child acknowledgment,
+  // kept beside the store like `decisions` but in its OWN list (family-reviews.ts): it is not a
+  // hypothesis transition, so it must not enter the replayable decision log. While a child is absent
+  // from this set and its read escalates, every promote path for that child is held.
+  const [familyReviews, setFamilyReviews] = useState<readonly string[]>([]);
 
   const gates = useMemo(() => buildRosterGates(store), [store]);
   const vm = useMemo(() => consoleViewModel(store, kid, gates), [store, kid, gates]);
@@ -131,11 +142,44 @@ export function useConsole() {
   // Load after mount, never during render: reading storage while rendering would make the server
   // and client markup disagree, and this is a client-only fact about one browser.
   useEffect(() => {
+    const reviews = parseFamilyReviews(window.localStorage.getItem(FAMILY_REVIEWS_KEY));
+    if (reviews.length > 0) setFamilyReviews(reviews);
     const log = parseDecisionLog(window.localStorage.getItem(DECISIONS_KEY));
     if (log.length === 0) return;
     setDecisions(log);
     setStore(applyDecisions(buildRosterStore(), log, buildRosterGates()).store);
   }, []);
+
+  // Persist the review set the same forgiving way `record` persists decisions: a write that throws
+  // (private mode, quota) leaves the acknowledgment live for this session rather than pretending the
+  // guide never reviewed.
+  const persistReviews = useCallback((next: readonly string[]): void => {
+    try {
+      window.localStorage.setItem(FAMILY_REVIEWS_KEY, JSON.stringify(next));
+    } catch {
+      // Session-only from here; the gate still releases, it just will not survive a reload.
+    }
+  }, []);
+
+  /** Record that the guide has reviewed this child's family pressure, releasing the held promote. */
+  function acknowledgeFamily(kidId: string): void {
+    setFamilyReviews((prev) => {
+      if (prev.includes(kidId)) return prev;
+      const next = [...prev, kidId];
+      persistReviews(next);
+      return next;
+    });
+  }
+
+  /** Take back a family review, so the pressure flag holds the promote again. */
+  function unacknowledgeFamily(kidId: string): void {
+    setFamilyReviews((prev) => {
+      if (!prev.includes(kidId)) return prev;
+      const next = prev.filter((id) => id !== kidId);
+      persistReviews(next);
+      return next;
+    });
+  }
 
   /**
    * Append one decision and write the log. Writing can throw (private mode, quota), and when it
@@ -160,10 +204,14 @@ export function useConsole() {
   function resetDecisions(): void {
     try {
       window.localStorage.removeItem(DECISIONS_KEY);
+      // The family reviews are decisions too, so a full reset must clear them or a released promote
+      // would silently outlive the seed it was released against.
+      window.localStorage.removeItem(FAMILY_REVIEWS_KEY);
     } catch {
       // Nothing to do: the in-memory reset below is what the guide asked for either way.
     }
     setDecisions([]);
+    setFamilyReviews([]);
     setStore(buildRosterStore());
     setSelectedId(null);
     setLastAction(null);
@@ -239,17 +287,23 @@ export function useConsole() {
         promotableCount: cvm.cards.filter((c) => c.state === "EMERGING" && c.gate?.passed === true)
           .length,
         topState: cvm.cards[0]?.state ?? null,
-        attention: attentionForKid(child.id, cvm.cards, wb),
+        attention: attentionForKid(child.id, cvm.cards, wb, familyReviews.includes(child.id)),
         promotableId: topPromotableId(store, child.id, gates),
       });
     }
     return m;
-  }, [store, gates]);
+  }, [store, gates, familyReviews]);
+
+  // Whether THIS child's family pressure has been reviewed, and whether an unresolved flag is
+  // holding their promote. Derived once here so the verdict, the card buttons, and the Family tab
+  // all read the same state (see family.ts:familyPressureBlocks).
+  const familyReviewed = familyReviews.includes(kid);
+  const familyBlocksPromote = familyPressureBlocks(family, familyReviewed);
 
   // The selected child's verdict, reusing the already-memoized view-model + wellbeing reads.
   const attention = useMemo(
-    () => attentionForKid(kid, vm.cards, wellbeing),
-    [kid, vm.cards, wellbeing],
+    () => attentionForKid(kid, vm.cards, wellbeing, familyReviewed),
+    [kid, vm.cards, wellbeing, familyReviewed],
   );
 
   const visible = filter === "ALL" ? vm.cards : vm.cards.filter((c) => c.state === filter);
@@ -272,6 +326,11 @@ export function useConsole() {
   // null when the store refuses. Deliberately does not touch `kid` or `selectedId`: acting from the
   // roster leaves the guide on the roster.
   function promoteKid(kidId: string): string | null {
+    // The one gate that is not about the gate: an unresolved family-pressure flag holds the promote
+    // for this child on every surface, the roster included, until the guide reviews it. The roster
+    // already hides the button for a flagged child (the verdict is no longer GATE_READY); this makes
+    // the store-mutating path itself refuse, so no caller can promote past the flag.
+    if (familyPressureBlocks(familyForKid(kidId), familyReviews.includes(kidId))) return null;
     const now = isoNow();
     const id = topPromotableId(store, kidId, gates);
     const next = applyGuidePrimaryAction(store, kidId, gates, now);
@@ -312,6 +371,10 @@ export function useConsole() {
   function runAction(action: string, card: HypothesisCard): void {
     const now = isoNow();
     setSelectedId(card.id);
+    // A promote is held while this child's family pressure is unresolved. The card button is
+    // disabled for this case (isDisabled), but guarding here too means the transition never fires
+    // even from a stray programmatic call -- the flag is a safety gate, not a styling state.
+    if (action === "promote" && familyBlocksPromote) return;
     // Computed eagerly rather than inside a `setStore` updater. The updater runs during the later
     // render, so a throw from it would escape this try entirely and surface as a render error; the
     // guard only works if the transition is attempted here. It also means a refused action records
@@ -362,6 +425,11 @@ export function useConsole() {
   // Promote from EMERGING requires a passed gate; CANDIDATE→ACTIVE does not. Disable the button when
   // the action would throw so the surface never lies about what is legal.
   function isDisabled(action: string, card: HypothesisCard): boolean {
+    // The family-pressure hold comes first: a promote stays disabled on a flagged child even when
+    // the gate has passed, which is exactly the case this closes -- a gate-ready card whose family
+    // layer says "not yet". Cards shown are always the current child's, so `familyBlocksPromote` is
+    // the right scope.
+    if (action === "promote" && familyBlocksPromote) return true;
     return action === "promote" && card.state === "EMERGING" && card.gate?.passed !== true;
   }
 
@@ -381,6 +449,12 @@ export function useConsole() {
     lastAction,
     undoLast,
     clearLastAction,
+    // The family-pressure review gate for the selected child: whether it is reviewed, whether an
+    // unresolved flag is holding the promote, and the two ways to move that state.
+    familyReviewed,
+    familyBlocksPromote,
+    acknowledgeFamily,
+    unacknowledgeFamily,
     kid,
     setKid,
     activeChild,
