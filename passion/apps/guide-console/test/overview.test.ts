@@ -163,7 +163,10 @@ test("row status is derived at the view layer from wellbeing and calibration", (
     const expected = escalates ? "bad" : card.confident ? "good" : "warn";
     expect(r.status).toBe(expected);
   }
-  expect(rows.map((r) => r.statusLabel)).toEqual(["On track", "On track", "Needs review"]);
+  // Dulce's ACTIVE and CANDIDATE spikes are on track; her reversibly PARKED cell is not an active
+  // pursuit, so the pressure half is held for it — a quiet parked cell is not a burnout escalation —
+  // and it reads as a warn ("Needs a look"), not "Needs review".
+  expect(rows.map((r) => r.statusLabel)).toEqual(["On track", "On track", "Needs a look"]);
   // Bex has no escalations anywhere, so his wellbeing card says so in words.
   expect(overviewFor(BEX).wellbeing.badge).toBe("Looks steady");
 });

@@ -4,6 +4,7 @@
 // child. No child-facing label/score anywhere (guardrail).
 import type { DomainPath } from "@gt100k/interest-inference";
 import { getForKid } from "@gt100k/hypothesis-store";
+import { isPlannableState } from "@gt100k/specialization-planner";
 import { assessWellbeing, deriveWellbeingSignals, type WellbeingRead } from "@gt100k/wellbeing";
 import { PILOT_CATALOG, ROSTER_NOW, profileFor } from "./console-data.js";
 
@@ -22,12 +23,17 @@ export function wellbeingForKid(kidId: string): readonly WellbeingCardVM[] {
   if (!profile) return [];
   const cards = getForKid(profile.store, kidId).map((h): WellbeingCardVM => {
     const signals = deriveWellbeingSignals(profile, h.cellKey, ROSTER_NOW, PILOT_CATALOG);
+    // Phase gate: the pressure/burnout half fires only once a spike is an active specialization
+    // (a human-gated CANDIDATE/ACTIVE state). A spike still in discovery — or one parked, contested
+    // or being reconsidered — is not an active pursuit, so a child cannot be burning out on it, and
+    // only challenge calibration should surface. Keyed on the 013 lifecycle state, never on age.
+    const pressureActive = isPlannableState(h.state);
     return {
       id: h.id,
       cellKey: h.cellKey,
       domainPath: h.domainPath,
       mode: h.mode,
-      read: assessWellbeing(signals),
+      read: assessWellbeing(signals, { pressureActive }),
     };
   });
   return [...cards].sort((a, b) => Number(b.read.escalateToHuman) - Number(a.read.escalateToHuman));

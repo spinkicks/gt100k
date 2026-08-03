@@ -65,6 +65,21 @@ export interface WellbeingRead {
   readonly guardrailNotes: readonly string[];
 }
 
+/**
+ * Optional context for `assessWellbeing`. The engine stays pure and keyed on BEHAVIOUR, never age;
+ * this only says whether the PRESSURE/burnout half is live for THIS spike.
+ */
+export interface AssessOptions {
+  /**
+   * Whether the pressure/burnout half of the engine is live for this spike. Defaults to true, so
+   * every existing caller is unchanged. Set false while a spike is still in DISCOVERY — a child only
+   * sampling an interest has too little invested to be burning out on it — and the four pressure
+   * states (BURNOUT_TIP, EARLY_BURNOUT, GAP, DANGER_WINDOW) are skipped, so the read falls through to
+   * the always-on challenge calibration. Keyed on pursuit PHASE (013 lifecycle), NEVER on age.
+   */
+  readonly pressureActive?: boolean;
+}
+
 // ── Golden constants (§3.6) — do not re-open ─────────────────────────────────────
 /** success above which (with rising return + stretch) → PUSH. */
 export const PUSH_SUCCESS = 0.9;
