@@ -42,7 +42,7 @@ describe("a finding established on adults has to admit it", () => {
   it("finds the ones there are, so a regression to silence fails here", () => {
     // Pinned at the number actually verified. If this drops, either someone relabelled a band
     // without new evidence or a claim lost its sources, and both should fail rather than pass.
-    expect(onAdults.length).toBe(7);
+    expect(onAdults.length).toBe(13);
   });
 
   it("states the limit in plain language on every one of them", () => {

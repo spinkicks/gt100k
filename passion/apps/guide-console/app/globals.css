@@ -1802,6 +1802,14 @@ body {
 .todayrow__do--review:hover .todayrow__go {
   transform: translateX(2px);
 }
+/* A logged recovery note, advisory only: quiet enough that it never competes with the verdict line
+   above it, but on screen without opening the child. */
+.todayrow__recovery {
+  font-size: 0.78rem;
+  color: #4a6470;
+  margin-top: 0.2rem;
+  display: block;
+}
 
 .ghead {
   display: block;
@@ -3331,6 +3339,30 @@ body {
   /* Same reconciliation: PR2's 0.68rem floor + #265's 0.08em tracking. */
   font-size: 0.68rem;
   letter-spacing: 0.08em;
+}
+/* The strip's own recovery trigger: the same quiet accent outline as the action line's Review
+   button (.actionline__do--review), so a guide learns one "there's more to do" affordance instead
+   of two -- just sized to sit inside this compact row rather than the taller action line. It stays
+   an outline, not a filled button, because the strip's two moves are the loudest thing on the row
+   and this is an on-demand escape hatch out of the summary, not a third move. */
+.wbstrip__recover {
+  flex: 0 0 auto;
+  border: 1px solid var(--accent);
+  border-radius: var(--r-sm);
+  padding: 4px 10px;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: var(--accent);
+}
+.wbstrip__recover:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.wbstrip__recover:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
 }
 
 /* Map review, beside the child switcher rather than in a tab: domain work, not work on a child. */
@@ -5117,4 +5149,112 @@ body {
   .offer-grp__list {
     display: grid;
   }
+}
+
+/* Recovery drawer — opened on demand from the wellbeing strip / action line, same aside pattern as
+   the maps drawer. The moves are the loudest thing; guardrails read as a warning, not a step. */
+.recoverydrawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(760px, 92vw);
+  z-index: 40;
+  overflow-y: auto;
+  padding: 18px 20px 40px;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: -8px 0 32px rgb(0 0 0 / 12%);
+}
+.recovery__headline {
+  font-size: 1.05rem;
+  margin: 0 0 0.75rem;
+}
+.recovery__moves {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.recmove {
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
+  background: #f4f7f9;
+}
+.recmove__does {
+  display: block;
+  color: #33505c;
+}
+.recmove__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+.recmove__grade {
+  font-size: 0.72rem;
+  color: #4a6470;
+}
+.recmove--avoid {
+  background: #fbf2ef;
+}
+.recovery__subhd {
+  font-size: 0.9rem;
+  color: #33505c;
+  margin: 0.9rem 0 0.35rem;
+}
+.recovery__break,
+.recovery__pivot,
+.recovery__avoid {
+  margin-top: 0.8rem;
+}
+/* The logging form: quiet record-keeping, not another move to weigh against the ones above it, so
+   it sits apart with a hairline rule rather than the moves' filled background. */
+.recovery__log {
+  margin-top: 1.1rem;
+  padding-top: 0.8rem;
+  border-top: 1px dashed var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.recovery__logk {
+  flex: 1 0 100%;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #33505c;
+}
+.recovery__loginput {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 6px 9px;
+  font: inherit;
+  font-size: 0.85rem;
+  color: #33505c;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+}
+.recovery__loginput:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 1px;
+}
+.recovery__logbtn {
+  flex: 0 0 auto;
+  border: 1px solid var(--accent);
+  border-radius: var(--r-sm);
+  padding: 6px 14px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: transparent;
+  cursor: pointer;
+}
+.recovery__logbtn:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+.recovery__logbtn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
 }

@@ -22,6 +22,12 @@ import {
 } from "./decisions.js";
 import { installQa } from "./qa.js";
 import { children, buildRosterGates, buildRosterStore, type Child } from "./console-data.js";
+import {
+  latestNoteFor,
+  parseRecoveryLog,
+  RECOVERY_KEY,
+  type RecoveryNote,
+} from "./recovery-log.js";
 import { escalationCount, wellbeingForKid, type WellbeingCardVM } from "./wellbeing.js";
 import { attentionFor, type Attention } from "./attention.js";
 import { specPath } from "./vocab.js";
@@ -102,6 +108,10 @@ export function useConsole() {
   // because the store is the RESULT and the log is the record: see `decisions.ts` for why we
   // persist the second and replay it, instead of snapshotting the first.
   const [decisions, setDecisions] = useState<readonly GuideDecision[]>([]);
+  // What a guide recorded about a recovery decision (browser-local, see recovery-log.ts). Held beside
+  // `decisions` but NOT folded into that log: a recovery note is advisory record-keeping, not a
+  // hypothesis-store transition, so it must stay out of the replayable decision log.
+  const [recoveryNotes, setRecoveryNotes] = useState<readonly RecoveryNote[]>([]);
   const [kid, setKidRaw] = useState<string>(children()[0]!.id);
   const [filter, setFilter] = useState<Filter>("ALL");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -151,9 +161,11 @@ export function useConsole() {
     const reviews = parseFamilyReviews(window.localStorage.getItem(FAMILY_REVIEWS_KEY));
     if (reviews.length > 0) setFamilyReviews(reviews);
     const log = parseDecisionLog(window.localStorage.getItem(DECISIONS_KEY));
-    if (log.length === 0) return;
-    setDecisions(log);
-    setStore(applyDecisions(buildRosterStore(), log, buildRosterGates()).store);
+    if (log.length > 0) {
+      setDecisions(log);
+      setStore(applyDecisions(buildRosterStore(), log, buildRosterGates()).store);
+    }
+    setRecoveryNotes(parseRecoveryLog(window.localStorage.getItem(RECOVERY_KEY)));
   }, []);
 
   // Persist the review set the same forgiving way `record` persists decisions: a write that throws
@@ -246,6 +258,29 @@ export function useConsole() {
 
   /** Dismiss the confirmation without undoing -- the guide has seen it and moved on. */
   const clearLastAction = (): void => setLastAction(null);
+
+  /**
+   * Append one recovery note and write the log. Mirrors `record`'s forgiving write (a throw from
+   * localStorage still keeps the note for this session), but does NOT touch `store` or `decisions`:
+   * a recovery note is advisory record-keeping, not a hypothesis-store transition.
+   */
+  const logRecovery = useCallback((note: RecoveryNote): void => {
+    setRecoveryNotes((prev) => {
+      const next = [...prev, note];
+      try {
+        window.localStorage.setItem(RECOVERY_KEY, JSON.stringify(next));
+      } catch {
+        // Session-only from here; the note still applies, it just will not survive a reload.
+      }
+      return next;
+    });
+  }, []);
+
+  /** The most recent recovery note for a child, or null. See `latestNoteFor` (recovery-log.ts). */
+  const latestRecoveryNote = useCallback(
+    (kidId: string): RecoveryNote | null => latestNoteFor(recoveryNotes, kidId),
+    [recoveryNotes],
+  );
 
   const ref = useRef({ store, kid, selectedId, gates });
   ref.current = { store, kid, selectedId, gates };
@@ -451,6 +486,11 @@ export function useConsole() {
     // anything"; the family conversation needs "what, and about which specialization".
     decisions,
     resetDecisions,
+    // The guide's recovery notes (browser-local, advisory only — see recovery-log.ts): the full log,
+    // a way to append to it, and a per-child read for the Today roster marker.
+    recoveryNotes,
+    logRecovery,
+    latestRecoveryNote,
     // The last action's confirmation + the ways to resolve it: take it back, or acknowledge it.
     lastAction,
     undoLast,

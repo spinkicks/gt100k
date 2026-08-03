@@ -18,6 +18,8 @@
  */
 import type { JSX } from "react";
 
+import { recoveryTriggerForState } from "./recovery.js";
+import type { RecoveryTrigger } from "./recovery.js";
 import { specPath } from "./vocab.js";
 import type { WellbeingCardVM } from "./wellbeing.js";
 /**
@@ -52,7 +54,13 @@ export const PRESSURE_LABEL: Record<string, string> = {
 
 export function WellbeingStrip({
   cards,
-}: { cards: readonly WellbeingCardVM[] }): JSX.Element | null {
+  onRecover,
+}: {
+  readonly cards: readonly WellbeingCardVM[];
+  // Opens the recovery drawer (console.tsx) for a row whose state has a plan (the two burnout
+  // states). Absent on any caller that predates recovery, and on those the button never renders.
+  readonly onRecover?: (trigger: RecoveryTrigger, specId: string | null) => void;
+}): JSX.Element | null {
   // Nothing tracked for this child, so there is no read to carry. Rendering an empty strip on every
   // tab would cost height on every screen to say nothing.
   if (cards.length === 0) return null;
@@ -95,6 +103,17 @@ export function WellbeingStrip({
               <span className="wbstrip__reviewk">Needs your review</span>
               {c.read.escalationReason ?? c.read.rationale}
             </span>
+          ) : null}
+          {onRecover !== undefined && recoveryTriggerForState(c.read.state) !== null ? (
+            // Action-first, evidence-on-demand: the strip stays the summary, and the concrete
+            // recovery steps open in a drawer only when the guide asks for them.
+            <button
+              type="button"
+              className="wbstrip__recover"
+              onClick={() => onRecover(recoveryTriggerForState(c.read.state)!, c.id)}
+            >
+              See recovery steps
+            </button>
           ) : null}
         </div>
       ))}

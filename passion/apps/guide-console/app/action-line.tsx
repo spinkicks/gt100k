@@ -5,6 +5,7 @@
 // the same one the roster shows (attention.ts), so the switcher and this line never disagree.
 import type { JSX } from "react";
 import type { Attention } from "./attention.js";
+import type { RecoveryTrigger } from "./recovery.js";
 import type { ConsoleController } from "./useConsole.js";
 
 const WORD: Record<Attention["level"], string> = {
@@ -16,11 +17,15 @@ const WORD: Record<Attention["level"], string> = {
 export function ActionLine({
   ctrl,
   onReviewFamily,
+  onRecover,
 }: {
   ctrl: ConsoleController;
   // Opens the Family & coaching tab. A family-pressure verdict names no specialization, so its
   // caution has no card to open; this is the one action that resolves it -- go and read the flag.
   onReviewFamily?: () => void;
+  // Opens the recovery drawer (console.tsx) for a fading verdict. Absent on any caller that
+  // predates recovery, and on those the button never renders.
+  onRecover?: (trigger: RecoveryTrigger, specId: string | null) => void;
 }): JSX.Element {
   const a = ctrl.attention;
   const level = a.level.toLowerCase();
@@ -46,6 +51,14 @@ export function ActionLine({
           onClick={onReviewFamily}
         >
           Review family
+        </button>
+      ) : onRecover !== undefined && a.reason === "ENGAGEMENT_FADING" ? (
+        <button
+          type="button"
+          className="actionline__do actionline__recover"
+          onClick={() => onRecover("ENGAGEMENT_FADING", a.specId)}
+        >
+          See recovery steps
         </button>
       ) : a.specId !== null ? (
         <button

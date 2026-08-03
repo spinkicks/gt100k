@@ -126,6 +126,15 @@ export function TodayRoster({
                         : ` · ${s.promotableCount} ready, review first`
                       : ""}
                   </span>
+                  {(() => {
+                    // A recovery note is advisory record-keeping, surfaced here so a guide sees that
+                    // a step-away is in progress without opening the child. It changes nothing about
+                    // the verdict or the child surface.
+                    const note = ctrl.latestRecoveryNote(c.id);
+                    return note ? (
+                      <span className="todayrow__recovery">Recovery logged: {note.note}</span>
+                    ) : null;
+                  })()}
                 </span>
               </button>
               {canPromote ? (
