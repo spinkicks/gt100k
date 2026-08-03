@@ -90,10 +90,17 @@ export function HypothesisBars({
                     style={{ height: `${pct}%` }}
                   />
                 </span>
-                {/* Only the top few, and only where there is room. Everything else is on hover,
-                    on focus and in the accessible name. */}
+                {/* Only where there is room. Everything else is on hover, on focus and in the
+                    accessible name. The figure is printed on every labelled column rather than only
+                    the top few, because a bar whose height a guide is reading should say what the
+                    height is -- and it is the same number, in the same format, as the card below. */}
                 <span className="hbar__name" aria-hidden="true">
-                  {ranked.length <= LABEL_UP_TO && i < LABELLED ? shortName(c.domainPath) : ""}
+                  {ranked.length <= LABEL_UP_TO ? (
+                    <>
+                      <span className="hbar__pct">{pct}%</span>
+                      {i < LABELLED ? shortName(c.domainPath) : ""}
+                    </>
+                  ) : null}
                 </span>
               </button>
             </li>
