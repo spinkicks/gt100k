@@ -63,13 +63,15 @@ jobs:
   #     prose-only PR used to pay the full six minutes; the docs lane is busy
   #     enough here that this is most of the win on those PRs.
   #
-  #   apps — the app list, derived from the workspace instead of hand-maintained.
+  #   apps — the app list, derived from the workspace instead of hand-maintained,
+  #     and on a pull request narrowed to the apps the diff can actually affect.
   #     Three separate hardcoded lists used to encode it (typecheck by directory
   #     name, test and build by package name, each with its own omissions and its
   #     own "add a line when an app gains a suite" comment). They agreed with
   #     reality as of this commit, which is the most you can say for a list a
   #     human has to remember. Now an app's own package.json decides what runs
-  #     against it, and a new app is in CI the moment it exists.
+  #     against it, a new app is in CI the moment it exists, and an app is left
+  #     out of a run only when nothing it is built from changed.
   plan:
     name: plan
     runs-on: ubuntu-latest
@@ -115,28 +117,120 @@ jobs:
             echo "::notice::Docs-only change — skipping lint, typecheck, test and build."
           fi
 
-      - name: Enumerate apps
+      # The build matrix: every app, or — on a pull request — only the apps the
+      # diff can affect. An app is affected when its own files changed, when a
+      # workspace package it depends on (transitively) changed, or when a shared
+      # root file changed (the lockfile, a root tsconfig, the biome config, this
+      # workflow, the workspace manifest), which forces every app. Building the
+      # dependency graph from each package.json is the only way to get the middle
+      # case right: touch `@gt100k/hypothesis-store` and every app that imports it
+      # rebuilds, touch one app and only it does. A merge-queue run or a push to
+      # main gates the trunk, so it always runs the full set (BASE is empty there,
+      # which the script reads as "full").
+      - name: Select affected apps
         id: apps
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
         run: |
-          python3 - <<'PY' >> "$GITHUB_OUTPUT"
-          import json, pathlib, sys
+          if [ "$EVENT" = "pull_request" ]; then
+            git fetch --no-tags --depth=1 origin "$BASE"
+            git diff --name-only "$BASE" HEAD > "$RUNNER_TEMP/changed.txt"
+            FULL=0
+          else
+            : > "$RUNNER_TEMP/changed.txt"
+            FULL=1
+          fi
+          FULL="$FULL" CHANGED="$RUNNER_TEMP/changed.txt" python3 - >> "$GITHUB_OUTPUT" <<'PY'
+          import json, os, pathlib, re, sys
 
-          apps = []
-          for pkg in sorted(pathlib.Path("passion/apps").glob("*/package.json")):
-              meta = json.loads(pkg.read_text())
+          full = os.environ["FULL"] == "1"
+          changed = [l.strip() for l in pathlib.Path(os.environ["CHANGED"]).read_text().splitlines() if l.strip()]
+
+          # Every workspace package (apps, packages, adapters live two levels under
+          # passion/): its directory, its internal (@gt100k) dependency edges, and —
+          # for apps — what CI runs against it. Same package.json-driven derivation
+          # the app list has always used, now covering the whole graph.
+          pkgs = {}
+          for pj in pathlib.Path(".").glob("passion/*/*/package.json"):
+              meta = json.loads(pj.read_text())
+              name = meta.get("name")
+              if not name:
+                  continue
+              deps = set()
+              for field in ("dependencies", "devDependencies", "peerDependencies"):
+                  deps |= set(meta.get(field, {}))
+              d = pj.parent
               scripts = meta.get("scripts", {})
-              app_dir = pkg.parent
-              apps.append({
-                  "dir": app_dir.name,
-                  "name": meta["name"],
+              pkgs[name] = {
+                  "dir": d.as_posix(),
+                  "app_dir": d.name,
+                  "deps": deps,
+                  "is_app": d.parent.name == "apps",
                   "test": "test" in scripts,
                   "build": "build" in scripts,
                   # Only Next apps have a .next/cache worth restoring.
-                  "next": any(app_dir.glob("next.config.*")),
-              })
-          print("apps=" + json.dumps(apps))
-          for a in apps:
-              print(f"{a['name']}: test={a['test']} build={a['build']} next={a['next']}", file=sys.stderr)
+                  "next": any(d.glob("next.config.*")),
+              }
+
+          internal = set(pkgs)
+          for info in pkgs.values():
+              info["deps"] &= internal  # keep only edges to other workspace packages
+
+          all_apps = [n for n, i in pkgs.items() if i["is_app"]]
+
+          def matrix(names):
+              out = []
+              for n in sorted(names):
+                  i = pkgs[n]
+                  out.append({"dir": i["app_dir"], "name": n,
+                              "test": i["test"], "build": i["build"], "next": i["next"]})
+              return out
+
+          def emit(names):
+              print("apps=" + json.dumps(matrix(names)))
+              for n in sorted(names):
+                  print(f"affected: {n}", file=sys.stderr)
+
+          if full:
+              emit(all_apps)
+              sys.exit(0)
+
+          # Which package owns each changed file. Checked before prose, so a
+          # load-bearing package README counts as a change to its package. A code
+          # file under no package dir (root tsconfig, biome config, pnpm-lock.yaml,
+          # .github/**, the workspace manifest) is shared and forces the full set;
+          # prose outside every package is ignored. Longest dir first so a nested
+          # package wins over a parent that shares its prefix.
+          prose = re.compile(r'^(docs/|archive/|[^/]*\.md$|LICENSE$)')
+          dirs = sorted(((i["dir"], n) for n, i in pkgs.items()), key=lambda t: -len(t[0]))
+          changed_pkgs = set()
+          for f in changed:
+              owner = next((n for d, n in dirs if f == d or f.startswith(d + "/")), None)
+              if owner:
+                  changed_pkgs.add(owner)
+              elif prose.match(f):
+                  continue
+              else:
+                  print(f"shared infra changed: {f} — building every app", file=sys.stderr)
+                  emit(all_apps)
+                  sys.exit(0)
+
+          # Close over reverse dependencies: an app builds if it, or anything it
+          # depends on transitively, changed.
+          dependents = {n: set() for n in internal}
+          for n, info in pkgs.items():
+              for dep in info["deps"]:
+                  dependents[dep].add(n)
+          affected, stack = set(changed_pkgs), list(changed_pkgs)
+          while stack:
+              n = stack.pop()
+              for dn in dependents[n]:
+                  if dn not in affected:
+                      affected.add(dn)
+                      stack.append(dn)
+
+          emit([a for a in all_apps if a in affected])
           PY
 
   # Everything that looks at the repo as a whole rather than one app: the linter,
@@ -176,9 +270,12 @@ jobs:
       - name: Test (engines + adapters)
         run: pnpm test
 
-  # One job per app, all at once. The slowest single app now sets the wall clock
-  # instead of the sum of all nine, and a failure names the app in the check list
-  # rather than somewhere inside a 300-line fold.
+  # One job per app, all at once — and on a pull request, only the apps the plan
+  # job found affected by the diff. The slowest single app sets the wall clock
+  # instead of the sum of them all, a failure names the app in the check list
+  # rather than somewhere inside a 300-line fold, and a one-app PR no longer pays
+  # to rebuild the other eight. An empty matrix (a change with no app downstream)
+  # skips this job cleanly; `ci` treats that skip as a pass.
   #
   # `tsc -b` follows the root project references, which list packages and
   # adapters and deliberately not apps: a Next app is built by `next build`, not
