@@ -39,13 +39,20 @@ export type CabinId = (typeof CABINS)[number];
  * `security` and `rhetoric` exist for the narrower reason that folding capture-the-flag into
  * `hardware`, or formal debate into `marketing`, would conflate two different things inside one
  * belief.
+ *
+ * `performance` was added in August 2026 and widens this cabin past its original reading. Everything
+ * else under `art-motion` is something made on a screen, so the cabin had drifted into meaning
+ * "visual art" despite its name. Acting and recitation are the same cabin by the test that matters
+ * here -- a child who is drawn to making something an audience receives -- and the alternative was
+ * filing stage performance under `influence-media/storytelling`, which would have put acting in the
+ * same belief as marketing.
  */
 export const SEED_SUBTOPICS: Record<CabinId, readonly string[]> = {
   "music-sound": ["audio-systems", "production", "instruments", "music-theory"],
   "code-computers": ["game-dev", "python", "hardware", "agentic-engineering", "security"],
   "games-strategy": ["chess", "odds-and-chance", "board-games"],
   "making-engineering": ["robotics", "electronics", "3d-printing", "handcraft", "rocketry"],
-  "art-motion": ["visual", "animation", "video-editing", "3d-modeling"],
+  "art-motion": ["visual", "animation", "video-editing", "3d-modeling", "performance"],
   "influence-media": ["marketing", "storytelling", "psychology", "publishing", "rhetoric"],
   "science-nature": ["botany", "physics", "astronomy", "wildlife", "weather"],
   "math-puzzles": ["competition-math", "logic-puzzles", "foundations", "statistics"],
