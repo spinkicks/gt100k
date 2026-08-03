@@ -39,4 +39,11 @@ describe("RecoveryPanel", () => {
     // presence proves the move's citation is wired through to the registry.
     expect(render("ENGAGEMENT_FADING")).toContain("why-btn");
   });
+
+  test("offers to record a decision when a logger is supplied", () => {
+    const html = renderToStaticMarkup(
+      <RecoveryPanel plan={recoveryFor("EARLY_BURNOUT")!} onLog={() => {}} />,
+    );
+    expect(html).toContain("Record what you chose");
+  });
 });

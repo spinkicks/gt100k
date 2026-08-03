@@ -7,7 +7,7 @@
 // guide takes when they decide to act. The moves are the point, so they are the loudest thing here;
 // each carries a quiet "why?" resolving to the research behind it, and the two guardrails sit apart
 // as things to avoid rather than as two more steps. No child-facing content, ever.
-import type { JSX } from "react";
+import { useState, type JSX } from "react";
 
 import type { EvidenceGrade, RecoveryMove, RecoveryPlan } from "./recovery.js";
 import { WhyThis } from "./why.js";
@@ -37,11 +37,19 @@ function Move({ move }: { move: RecoveryMove }): JSX.Element {
   );
 }
 
-export function RecoveryPanel({ plan }: { plan: RecoveryPlan }): JSX.Element {
+export function RecoveryPanel({
+  plan,
+  onLog,
+}: {
+  readonly plan: RecoveryPlan;
+  /** When present, the guide can record what they chose. Advisory only — see recovery-log.ts. */
+  readonly onLog?: (note: string) => void;
+}): JSX.Element {
   // The active moves lead; the guardrails ("what not to do") sit in their own group so a guide does
   // not read "Don't make the child quit" as the next thing to try.
   const active = plan.moves.filter((m) => m.kind !== "DO_NOT");
   const avoid = plan.moves.filter((m) => m.kind === "DO_NOT");
+  const [draft, setDraft] = useState("");
 
   return (
     <div className="recovery">
@@ -85,6 +93,34 @@ export function RecoveryPanel({ plan }: { plan: RecoveryPlan }): JSX.Element {
             ))}
           </ul>
         </section>
+      ) : null}
+
+      {onLog !== undefined ? (
+        <form
+          className="recovery__log"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const text = draft.trim();
+            if (text !== "") {
+              onLog(text);
+              setDraft("");
+            }
+          }}
+        >
+          <label className="recovery__logk" htmlFor="recovery-note">
+            Record what you chose
+          </label>
+          <input
+            id="recovery-note"
+            className="recovery__loginput"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="e.g. Started a 1-week step-away"
+          />
+          <button type="submit" className="recovery__logbtn">
+            Save to this browser
+          </button>
+        </form>
       ) : null}
     </div>
   );

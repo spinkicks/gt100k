@@ -1802,6 +1802,14 @@ body {
 .todayrow__do--review:hover .todayrow__go {
   transform: translateX(2px);
 }
+/* A logged recovery note, advisory only: quiet enough that it never competes with the verdict line
+   above it, but on screen without opening the child. */
+.todayrow__recovery {
+  font-size: 0.78rem;
+  color: #4a6470;
+  margin-top: 0.2rem;
+  display: block;
+}
 
 .ghead {
   display: block;
@@ -5198,4 +5206,55 @@ body {
 .recovery__pivot,
 .recovery__avoid {
   margin-top: 0.8rem;
+}
+/* The logging form: quiet record-keeping, not another move to weigh against the ones above it, so
+   it sits apart with a hairline rule rather than the moves' filled background. */
+.recovery__log {
+  margin-top: 1.1rem;
+  padding-top: 0.8rem;
+  border-top: 1px dashed var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.recovery__logk {
+  flex: 1 0 100%;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #33505c;
+}
+.recovery__loginput {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 6px 9px;
+  font: inherit;
+  font-size: 0.85rem;
+  color: #33505c;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+}
+.recovery__loginput:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 1px;
+}
+.recovery__logbtn {
+  flex: 0 0 auto;
+  border: 1px solid var(--accent);
+  border-radius: var(--r-sm);
+  padding: 6px 14px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: transparent;
+  cursor: pointer;
+}
+.recovery__logbtn:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+.recovery__logbtn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
 }

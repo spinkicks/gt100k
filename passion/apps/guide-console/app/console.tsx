@@ -32,7 +32,7 @@ import { REVIEW_MAPS } from "./maps-seed.js";
 import { workForKid } from "./map-evidence.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 import type { StudentProfile } from "@gt100k/student-profile";
-import { setIngested } from "./console-data.js";
+import { nowFor, setIngested } from "./console-data.js";
 import { scopeToSpec } from "./console-state.js";
 
 /**
@@ -440,7 +440,18 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
                   Close
                 </button>
               </div>
-              <RecoveryPanel plan={recoveryFor(recovery.trigger)!} />
+              <RecoveryPanel
+                plan={recoveryFor(recovery.trigger)!}
+                onLog={(note) =>
+                  ctrl.logRecovery({
+                    kidId: ctrl.kid,
+                    specId: recovery.specId,
+                    trigger: recovery.trigger,
+                    note,
+                    at: nowFor(ctrl.kid),
+                  })
+                }
+              />
             </aside>
           ) : null}
         </div>

@@ -31,4 +31,8 @@ describe("latestNoteFor", () => {
     expect(latestNoteFor([older, NOTE], "001")?.note).toBe("Started a 1-week step-away");
     expect(latestNoteFor([NOTE], "999")).toBeNull();
   });
+
+  test("a logged note gives the roster something to show for a child", () => {
+    expect(latestNoteFor([NOTE], "001")?.note).toBe("Started a 1-week step-away");
+  });
 });
