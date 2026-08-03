@@ -37,9 +37,13 @@ const STEADY_FALLBACK: ChildSummary = {
 export function TodayRoster({
   ctrl,
   onOpen,
+  ingestedCount,
 }: {
   ctrl: ConsoleController;
   onOpen: (kidId: string, specId: string | null) => void;
+  // How many real sessions have been ingested, for the provenance chip. The label someone checks
+  // before deciding what a promote means belongs where the promote is, not one drill-in away.
+  ingestedCount: number;
 }): JSX.Element {
   const summaryFor = (id: string): ChildSummary => ctrl.summaries.get(id) ?? STEADY_FALLBACK;
   // The same triage order the switcher uses, so the roster and the sidebar never disagree about who
@@ -50,7 +54,19 @@ export function TodayRoster({
   return (
     <section className="today" aria-label="Today">
       <header className="today__head">
-        <h1 className="today__title">Today</h1>
+        <div className="today__headrow">
+          <h1 className="today__title">Today</h1>
+          {/* The same data-provenance chip the child console carries in its sidebar, brought to the
+              surface a guide acts on: Promote is one click from every row here, and the label
+              someone checks before deciding what a promote means must sit where the promote is, not
+              one drill-in away. A false reassurance about provenance is worse than none, so it says
+              synthetic plainly. Wording is kept in step with the sidebar chip (console.tsx). */}
+          <span className="chip chip--soft">
+            {ingestedCount === 0
+              ? "Synthetic data only"
+              : `Synthetic, plus ${ingestedCount} ingested`}
+          </span>
+        </div>
         <p className="today__sub">
           {/* Says what the list is sorted by, and how much of it is asking for you, so the order is
               not a mystery the guide has to infer from the dots. */}
@@ -102,20 +118,32 @@ export function TodayRoster({
                 </span>
               </button>
               {canPromote ? (
+                // Promote commits here and leaves you on the roster; the label says so, because two
+                // same-shaped buttons in this slot otherwise read as the same kind of commit.
                 <button
                   type="button"
                   className="todayrow__do"
                   onClick={() => ctrl.promoteKid(c.id)}
+                  aria-label={`Promote ${c.name}. Acts here; you stay on Today.`}
+                  title="Promotes now. You stay on Today."
                 >
                   Promote
                 </button>
               ) : a.specId !== null ? (
+                // Review does NOT commit anything: it opens this child's console to look. The chevron
+                // marks it as a move to another view, the one visible difference from Promote's
+                // in-place action, so the two buttons stop reading as a matched pair of commits.
                 <button
                   type="button"
                   className="todayrow__do todayrow__do--review"
                   onClick={() => onOpen(c.id, a.specId)}
+                  aria-label={`Open ${c.name}'s console to review`}
+                  title="Opens this child's console"
                 >
                   Review
+                  <span className="todayrow__go" aria-hidden="true">
+                    ›
+                  </span>
                 </button>
               ) : null}
             </li>

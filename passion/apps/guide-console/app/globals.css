@@ -1605,6 +1605,14 @@ body {
 .today__head {
   margin-bottom: 18px;
 }
+/* Title and the provenance chip share a line: the chip is a caption on "Today", not a row of its
+   own, and baselining it against the title keeps it read as one before the guide starts acting. */
+.today__headrow {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
 .today__title {
   font-family: var(--font-display);
   font-weight: 300;
@@ -1691,9 +1699,14 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* The inline action, mirroring the action line's buttons: filled Promote, outlined Review. */
+/* The inline action, mirroring the action line's buttons: filled Promote, outlined Review. On the
+   roster the two diverge in kind -- Promote commits in place, Review navigates into the child's
+   console -- so the outlined Review also carries a chevron the filled Promote does not. */
 .todayrow__do {
   flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   border: 0;
   border-radius: var(--r-sm);
   padding: 7px 16px;
@@ -1714,6 +1727,17 @@ body {
   background: transparent;
   color: var(--accent);
   border: 1px solid var(--accent);
+}
+/* The navigation cue: this Review goes somewhere (opens the console), unlike the action line's
+   Review, which only selects a card in place. It nudges right on hover the way a link's chevron does,
+   reinforcing "takes you there" over Promote's "does it here". */
+.todayrow__go {
+  font-size: 1.05em;
+  line-height: 1;
+  transition: transform 120ms ease;
+}
+.todayrow__do--review:hover .todayrow__go {
+  transform: translateX(2px);
 }
 
 .ghead {

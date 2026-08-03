@@ -207,7 +207,7 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
       </nav>
 
       {mode === "today" ? (
-        <TodayRoster ctrl={ctrl} onOpen={openChild} />
+        <TodayRoster ctrl={ctrl} onOpen={openChild} ingestedCount={ingested.length} />
       ) : (
         <div className="app app--workbench">
           {/* No Brand here any more: the shared ProductHeader above states the product and the
