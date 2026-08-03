@@ -304,6 +304,133 @@ export const CLAIMS: readonly Claim[] = [
     limit:
       "The 85% figure has never been tested on a child, or on any person. Wilson et al. derived it mathematically for gradient-descent learners and demonstrated it on three simulations: a one-layer Perceptron with artificial stimuli, a two-layer network sorting MNIST handwritten digits, and a model of monkeys learning a Random Dot Motion task. The scaffolding work alongside it studied thirty children aged three to five, below this product's whole range. Treating 85% as a target for a nine-year-old is an extrapolation across species and substrate, not only across age. The idea that difficulty has a sweet spot is well supported; the number is not a finding about children.",
   },
+  {
+    id: "autonomy-strongest-lever",
+    label: "Hand back real choices",
+    area: "Wellbeing",
+    basis: "evidence",
+    band: "adult",
+    why: "Handing real choices back to a child — over the bigger goal, not just today's task — is the most reliable way to rebuild interest that has faded.",
+    sources: [
+      { authors: "Ryan & Deci", year: 2020, url: "https://doi.org/10.1016/j.cedpsych.2020.101860" },
+      {
+        authors: "Vasconcellos, Parker, Hilland et al.",
+        year: 2020,
+        url: "https://doi.org/10.1037/edu0000420",
+      },
+    ],
+    limit:
+      "The largest effects here were measured in adolescents and adults rather than in nine-to-twelves; the direction is well established, the exact size is not a finding about this age.",
+  },
+  {
+    id: "overjustification-reward-backfire",
+    label: "Rewards can backfire",
+    area: "Wellbeing",
+    basis: "evidence",
+    band: "structural",
+    why: "Rewarding or grading something a child already enjoys can make them do it less once the reward stops, so praise the effort rather than paying for the result.",
+    sources: [
+      { authors: "Lepper, Greene & Nisbett", year: 1973, url: "https://doi.org/10.1037/h0035519" },
+      {
+        authors: "Deci, Koestner & Ryan",
+        year: 1999,
+        url: "https://doi.org/10.1037/0033-2909.125.6.627",
+      },
+    ],
+    limit:
+      "The classic demonstration was in preschoolers; a later meta-analysis finds the effect across ages, strongest when the child was already interested and the reward was expected.",
+  },
+  {
+    id: "do-not-force-quit",
+    label: "Don't force a full stop",
+    area: "Wellbeing",
+    basis: "evidence",
+    band: "adult",
+    why: "Making a child quit a loved activity outright tends to leave them worse off than a supported break does, so rest rather than stop.",
+    sources: [
+      {
+        authors: "Gustafsson, Madigan & Lundkvist",
+        year: 2017,
+        url: "https://doi.org/10.1016/j.copsyc.2017.04.002",
+      },
+    ],
+    limit:
+      "The burnout-recovery evidence here is from competitive athletes, mostly adolescents and adults, and is correlational rather than a controlled trial in younger children.",
+  },
+  {
+    id: "rest-alone-insufficient",
+    label: "Rest alone isn't enough",
+    area: "Wellbeing",
+    basis: "evidence",
+    band: "adult",
+    why: "A break helps only if what drained the child is changed before they return, because rest without lowering the load lets the same strain rebuild.",
+    sources: [
+      {
+        authors: "Kellmann, Bertollo, Bosquet et al.",
+        year: 2018,
+        url: "https://doi.org/10.1123/ijspp.2017-0759",
+      },
+      {
+        authors: "American Academy of Pediatrics (Brenner et al.)",
+        year: 2024,
+        url: "https://doi.org/10.1542/peds.2023-065129",
+      },
+    ],
+    limit:
+      "This comes from recovery research and clinical guidance in youth and adult sport, not from a controlled study of a learning app, so treat it as a strong steer rather than a measured result here.",
+  },
+  {
+    id: "break-dosage",
+    label: "How long a break",
+    area: "Wellbeing",
+    basis: "evidence",
+    band: "adult",
+    why: "A short break of a few days to about a week is usually enough to reset a child, and time off should still be active rather than idle.",
+    sources: [
+      { authors: "Ryan & Deci", year: 2020, url: "https://doi.org/10.1016/j.cedpsych.2020.101860" },
+      {
+        authors: "American Academy of Pediatrics (Brenner et al.)",
+        year: 2024,
+        url: "https://doi.org/10.1542/peds.2023-065129",
+      },
+    ],
+    limit:
+      'Sources diverge on length: re-engagement research favours short windows of days to a month, while youth-sport medicine prescribes weeks to months for more severe cases; either way, "off" means doing other things, not total inactivity.',
+  },
+  {
+    id: "dip-vs-disengagement",
+    label: "A dip or a dead end",
+    area: "Wellbeing",
+    basis: "evidence",
+    band: "adult",
+    why: "A short dip in interest usually recovers within about two weeks, so a fade that lasts longer is a sign the goal itself needs to change.",
+    sources: [
+      {
+        authors: "Meeusen, Duclos, Foster et al.",
+        year: 2013,
+        url: "https://doi.org/10.1249/MSS.0b013e318279a10a",
+      },
+    ],
+    limit:
+      "The two-week guide comes from the overtraining literature in athletes and is a rule of thumb for reading recovery, not a diagnostic threshold to apply to a particular child.",
+  },
+  {
+    id: "goal-disengage-reengage",
+    label: "Swap the goal, don't just stop",
+    area: "Wellbeing",
+    basis: "evidence",
+    band: "adult",
+    why: "When a goal has become a dead end, helping a child let it go and take up a new one protects wellbeing better than pushing on or simply stopping.",
+    sources: [
+      {
+        authors: "Wrosch, Scheier, Miller, Schulz & Carver",
+        year: 2003,
+        url: "https://doi.org/10.1177/0146167203256921",
+      },
+    ],
+    limit:
+      "This was established in adults, and the part that predicts better wellbeing is the pairing — letting go of the old goal and taking up a new one — not letting go on its own.",
+  },
 
   // ---------------------------------------------------------------- The plan
   {

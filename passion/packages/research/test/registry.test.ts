@@ -54,4 +54,17 @@ describe("research registry", () => {
     expect(claim("voluntary-returns")?.basis).toBe("evidence");
     expect(claim("nope")).toBeUndefined();
   });
+
+  it("resolves every recovery claim", () => {
+    const ids = [
+      "autonomy-strongest-lever",
+      "overjustification-reward-backfire",
+      "do-not-force-quit",
+      "rest-alone-insufficient",
+      "break-dosage",
+      "dip-vs-disengagement",
+      "goal-disengage-reengage",
+    ];
+    for (const id of ids) expect(claim(id)?.area, `${id} missing`).toBe("Wellbeing");
+  });
 });
