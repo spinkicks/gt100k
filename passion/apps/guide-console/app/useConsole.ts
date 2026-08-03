@@ -63,6 +63,7 @@ function attentionForKid(
     })),
     cards: cards.map((c) => ({
       id: c.id,
+      state: c.state,
       gatePassed: c.gate?.passed === true,
       domainPath: c.domainPath,
     })),
@@ -202,8 +203,17 @@ export function useConsole() {
   );
 
   const visible = filter === "ALL" ? vm.cards : vm.cards.filter((c) => c.state === filter);
+  // With no explicit pick, default to the specialization the child's verdict names -- the escalating
+  // wellbeing spike, or the gate-ready card -- rather than the top-ranked card. The wellbeing strip
+  // and the scoped tabs read off this selection, so defaulting to an unrelated top card made the
+  // strip calmly say "In the zone, leave as is" directly under a red "Needs you" banner about a
+  // different spec, and buried the read that named the verdict behind a rail click. Landing on
+  // `attention.specId` puts the reason for the alarm on screen without one. Falls back to the top
+  // card when the verdict names nothing (Steady, or a whole-child fading read).
   const selectedCard: HypothesisCard | undefined =
-    vm.cards.find((c) => c.id === selectedId) ?? vm.cards[0];
+    vm.cards.find((c) => c.id === selectedId) ??
+    vm.cards.find((c) => c.id === attention.specId) ??
+    vm.cards[0];
 
   const promotableId = topPromotableId(store, kid, gates);
 

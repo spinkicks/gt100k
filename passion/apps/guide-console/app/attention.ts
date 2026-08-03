@@ -23,6 +23,9 @@ export interface WellbeingSignal {
 
 export interface CardSignal {
   readonly id: string;
+  // The lifecycle state, because "ready to promote" is not "gate passed": a card keeps its passed
+  // gate after it is promoted, so the verdict has to see the state to know the act is already done.
+  readonly state: string;
   readonly gatePassed: boolean;
   readonly domainPath: readonly string[];
 }
@@ -85,7 +88,13 @@ export function attentionFor(input: AttentionInputs): Attention {
       headline: "Interest is cooling. Returns are down.",
     };
   }
-  const ready = input.cards.find((c) => c.gatePassed);
+  // Ready means promotable, not merely gate-passed. A card keeps its passed gate after it becomes a
+  // CANDIDATE, so keying off the gate alone left the roster and the action line advertising "Ready to
+  // promote X" for a child who had just been promoted and had nothing left to promote -- the button
+  // silently became Review while the words stayed put, so the guide could not tell their click had
+  // landed. Match `topPromotableId`'s rule (state EMERGING + gate passed) so the verdict clears the
+  // instant the promote takes, and the read never asks for something the store now refuses.
+  const ready = input.cards.find((c) => c.state === "EMERGING" && c.gatePassed);
   if (ready) {
     return {
       level: "READY",

@@ -42,7 +42,7 @@ describe("attentionFor", () => {
   it("wellbeing escalation wins over both fading and gate-ready", () => {
     const a = attentionFor({
       wellbeing: [{ id: "w1", state: "GAP", escalateToHuman: true, domainPath: path }],
-      cards: [{ id: "c1", gatePassed: true, domainPath: path }],
+      cards: [{ id: "c1", state: "EMERGING", gatePassed: true, domainPath: path }],
       fading: true,
     });
     expect(a.reason).toBe("WELLBEING");
@@ -52,14 +52,28 @@ describe("attentionFor", () => {
     const a = attentionFor({
       ...base,
       cards: [
-        { id: "c1", gatePassed: false, domainPath: path },
-        { id: "c2", gatePassed: true, domainPath: ["music-sound"] },
+        { id: "c1", state: "EMERGING", gatePassed: false, domainPath: path },
+        { id: "c2", state: "EMERGING", gatePassed: true, domainPath: ["music-sound"] },
       ],
     });
     expect(a.level).toBe("READY");
     expect(a.reason).toBe("GATE_READY");
     expect(a.specId).toBe("c2");
     expect(a.headline).toBe("Ready to promote Music & Sound");
+  });
+
+  it("is not READY for a gate-passed card that is no longer EMERGING (already promoted)", () => {
+    // The bug this guards: a promote turns an EMERGING card into a CANDIDATE but leaves its gate
+    // passed, so keying "ready" off the gate alone kept the verdict advertising "Ready to promote"
+    // for a child with nothing left to promote. A CANDIDATE with a passed gate is a settled act,
+    // not a pending one, so the verdict must fall through to STEADY.
+    const a = attentionFor({
+      ...base,
+      cards: [{ id: "c1", state: "CANDIDATE", gatePassed: true, domainPath: path }],
+    });
+    expect(a.level).toBe("STEADY");
+    expect(a.reason).toBe("STEADY");
+    expect(a.specId).toBeNull();
   });
 
   it("ignores a non-escalating wellbeing state", () => {
