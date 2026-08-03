@@ -7,6 +7,7 @@
 // child, and no state ever yields a child-facing label/score/reward. Any invalid/thrown input falls
 // back to the SAFE default (IN_ZONE/HOLD/STEADY, no escalation) — it NEVER fabricates a PUSH.
 import {
+  type AssessOptions,
   SCAFFOLD_SUCCESS,
   type Trend,
   type WellbeingRead,
@@ -20,6 +21,10 @@ const isTrend = (x: unknown): x is Trend => typeof x === "string" && TRENDS.has(
 // A never-gamify note carried on every read as a standing reminder of the contract.
 const NEVER_GAMIFY = "never gamify; no child-facing label or score";
 const HUMAN_DISPOSES = "system proposes, human disposes";
+// Carried on the read when the pressure half is held for a spike still in discovery: the four
+// pressure states are skipped so the read is challenge-only. Keyed on pursuit phase, never on age.
+const PRESSURE_HELD =
+  "pressure half held: discovery phase (can't burn out on what you're sampling)";
 
 interface Decision {
   readonly state: WellbeingState;
@@ -34,15 +39,22 @@ interface Decision {
   readonly notes: readonly string[];
 }
 
-/** Pick the winning state from the priority-ordered table. */
-function decide(s: WellbeingSignals): Decision {
+/**
+ * Pick the winning state from the priority-ordered table.
+ *
+ * `pressureActive` gates the four PRESSURE states (priorities 1–4). When false — a spike still in
+ * discovery, where a child has too little invested to be burning out — those branches are skipped
+ * and evaluation falls through to the always-on CHALLENGE calibration (priorities 5–7). Keyed on
+ * pursuit phase, NEVER on age.
+ */
+function decide(s: WellbeingSignals, pressureActive: boolean): Decision {
   const returnTrend: Trend = isTrend(s.returnTrend) ? s.returnTrend : "stable";
   const depthTrend: Trend = isTrend(s.depthTrend) ? s.depthTrend : "stable";
   const successKnown = typeof s.successRate === "number" && !Number.isNaN(s.successRate);
   const success = successKnown ? (s.successRate as number) : undefined;
 
   // 1. BURNOUT_TIP: quiet devaluation (weighted HIGHEST) or an obsessive tip.
-  if (s.devaluation === true || s.obsessiveTip === true) {
+  if (pressureActive && (s.devaluation === true || s.obsessiveTip === true)) {
     return {
       state: "BURNOUT_TIP",
       challenge: "HOLD",
@@ -58,7 +70,12 @@ function decide(s: WellbeingSignals): Decision {
   }
 
   // 2. EARLY_BURNOUT: an exhaustion pattern with declining depth AND return.
-  if (s.exhaustion === true && depthTrend === "declining" && returnTrend === "declining") {
+  if (
+    pressureActive &&
+    s.exhaustion === true &&
+    depthTrend === "declining" &&
+    returnTrend === "declining"
+  ) {
     return {
       state: "EARLY_BURNOUT",
       challenge: "HOLD",
@@ -73,7 +90,7 @@ function decide(s: WellbeingSignals): Decision {
   }
 
   // 3. GAP: a per-spike quiet period. NEVER an auto-nudge / label; escalate for a human check-in.
-  if (s.missing === true) {
+  if (pressureActive && s.missing === true) {
     return {
       state: "GAP",
       challenge: "HOLD",
@@ -90,7 +107,7 @@ function decide(s: WellbeingSignals): Decision {
   }
 
   // 4. DANGER_WINDOW: a stakes event. Counter-cyclical: autonomy up + reduce evaluative surfacing.
-  if (s.stakesEvent === true) {
+  if (pressureActive && s.stakesEvent === true) {
     return {
       state: "DANGER_WINDOW",
       challenge: "HOLD",
@@ -145,13 +162,18 @@ function decide(s: WellbeingSignals): Decision {
 /**
  * Turn per-spike behavioral signals into a guide-facing recommendation on two independent knobs
  * (challenge × pressure) plus back-off / rest / escalate. Pure + deterministic.
+ *
+ * `opts.pressureActive` (default true) gates the pressure/burnout half: pass false for a spike still
+ * in discovery so only challenge calibration can fire. Keyed on pursuit phase, NEVER on age.
  */
-export function assessWellbeing(signals: WellbeingSignals): WellbeingRead {
+export function assessWellbeing(signals: WellbeingSignals, opts?: AssessOptions): WellbeingRead {
   const kidId = typeof signals?.kidId === "string" ? signals.kidId : "";
   const cellKey = typeof signals?.cellKey === "string" ? signals.cellKey : "";
+  // Default true: an omitted/undefined flag keeps every existing caller's behaviour unchanged.
+  const pressureActive = opts?.pressureActive !== false;
   let d: Decision;
   try {
-    d = decide(signals);
+    d = decide(signals, pressureActive);
   } catch {
     // Never let a malformed input fabricate a PUSH — fall back to the benign zone.
     d = {
@@ -168,6 +190,10 @@ export function assessWellbeing(signals: WellbeingSignals): WellbeingRead {
   // GUARDRAIL: any back-off or rest ALWAYS escalates to a human (system proposes, human disposes).
   const escalateToHuman = d.escalate === true || backOff || rest;
 
+  // Make the held pressure half visible on the read itself, so a guide (and a test) can see the
+  // discovery-phase gate was applied rather than infer it from the absence of a pressure state.
+  const guardrailNotes = pressureActive ? d.notes : [...d.notes, PRESSURE_HELD];
+
   const read: WellbeingRead = {
     kidId,
     cellKey,
@@ -179,7 +205,7 @@ export function assessWellbeing(signals: WellbeingSignals): WellbeingRead {
     reduceEvaluativeSurfacing: d.reduceEvaluativeSurfacing === true,
     escalateToHuman,
     rationale: d.rationale,
-    guardrailNotes: d.notes,
+    guardrailNotes,
     ...(escalateToHuman && d.escalationReason ? { escalationReason: d.escalationReason } : {}),
   };
   return read;

@@ -124,17 +124,19 @@ describe("derived gates + primary action", () => {
 });
 
 describe("wellbeing panel data (016) — system proposes, human disposes", () => {
-  it("derives a read per spike for the selected kid, escalations sorted first", () => {
+  it("holds the pressure half for a child still sampling (discovery-phase spikes never escalate)", () => {
     const cards = wellbeingForKid(ARI);
     expect(cards).toHaveLength(2);
-    // Ari's thin dance cell has gone quiet → GAP (escalate); his audio cell is IN_ZONE. Escalation
-    // sorts to the top so the guide sees "needs your review" first.
-    expect(cards[0]!.read.state).toBe("GAP");
-    expect(cards[0]!.read.escalateToHuman).toBe(true);
-    expect(cards[0]!.read.escalationReason).toBeTruthy();
-    expect(cards[1]!.read.escalateToHuman).toBe(false);
-    // Every read carries the two-knob recommendation and never a child-facing label/score.
+    // Both of Ari's spikes are pre-specialization (audio EMERGING, dance EXPLORING). His dance cell
+    // has gone quiet, which for an ACTIVE pursuit would be a GAP escalation — but you can't burn out
+    // on what you're only sampling, so the pressure half is held and only challenge calibration can
+    // surface. Neither spike routes a review to a human, and each read shows the gate was applied.
+    const PRESSURE_STATES = ["BURNOUT_TIP", "EARLY_BURNOUT", "GAP", "DANGER_WINDOW"];
     for (const c of cards) {
+      expect(c.read.escalateToHuman).toBe(false);
+      expect(PRESSURE_STATES).not.toContain(c.read.state);
+      expect(c.read.guardrailNotes.some((n) => n.includes("discovery"))).toBe(true);
+      // Every read carries the two-knob recommendation and never a child-facing label/score.
       expect(["PUSH", "HOLD", "SCAFFOLD"]).toContain(c.read.challenge);
       expect(["AUTONOMY_UP", "STEADY"]).toContain(c.read.pressure);
       for (const key of Object.keys(c.read)) {
@@ -143,8 +145,10 @@ describe("wellbeing panel data (016) — system proposes, human disposes", () =>
     }
   });
 
-  it("the escalation count matches the flagged spikes (Ari 1, Bex 0)", () => {
-    expect(escalationCount(ARI)).toBe(1);
+  it("discovery-phase children raise no escalations (Ari 0, Bex 0)", () => {
+    // Ari and Bex are both pre-specialization, so the pressure half is held for every spike and
+    // nothing routes to a human. A quiet sampling cell is exploration, not burnout.
+    expect(escalationCount(ARI)).toBe(0);
     expect(escalationCount("kid-synthetic-002")).toBe(0);
   });
 
