@@ -17,6 +17,8 @@ import { ActionLine } from "./action-line.js";
 import { TodayRoster } from "./today.js";
 import { PromoteFlash } from "./promote-flash.js";
 import { WellbeingStrip } from "./wellbeing-strip.js";
+import { RecoveryPanel } from "./recovery-panel.js";
+import { recoveryFor, type RecoveryTrigger } from "./recovery.js";
 import { PlanPanel } from "./plan-panel.js";
 import { FamilyPanel } from "./family-panel.js";
 import { AccessPanel } from "./access-panel.js";
@@ -77,6 +79,14 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
   // to hold this slot and was a summary of tabs that no longer exist.
   const [view, setView] = useState<View>("hypotheses");
   const [mapsOpen, setMapsOpen] = useState(false);
+  // The recovery drawer: opened on demand from the strip (a burnout row) or the action line (a
+  // fading verdict), holding the trigger so the panel shows the tailored plan. Null = closed.
+  const [recovery, setRecovery] = useState<{
+    trigger: RecoveryTrigger;
+    specId: string | null;
+  } | null>(null);
+  const onRecover = (trigger: RecoveryTrigger, specId: string | null): void =>
+    setRecovery({ trigger, specId });
   // Full cards for the top few, plus whichever the guide clicked, so a bar always opens something.
   const shown = ((): readonly HypothesisCard[] => {
     const top = detailed(ctrl.visible);
@@ -280,7 +290,11 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
           <main className="main main--wb" aria-label="Guide console">
             {/* Do-this-next, above the tabs: the guide reads one line and acts, or reads on. A
                 family-pressure verdict routes straight to the Family tab, where its flag lives. */}
-            <ActionLine ctrl={ctrl} onReviewFamily={() => setView("family")} />
+            <ActionLine
+              ctrl={ctrl}
+              onReviewFamily={() => setView("family")}
+              onRecover={onRecover}
+            />
             <header className="ghead">
               <nav className="tabs" role="tablist" aria-label="Console views">
                 {tabs.map((t) => (
@@ -317,7 +331,7 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
               back-off read is a precondition for reading anything else, not a seventh thing to
               remember to check. It carries the read, the two moves and the review flag, and it is
               scoped to the selected specialization exactly as the tab was. */}
-            <WellbeingStrip cards={scopedTo(ctrl.wellbeing)} />
+            <WellbeingStrip cards={scopedTo(ctrl.wellbeing)} onRecover={onRecover} />
 
             {view === "hypotheses" ? (
               ctrl.visible.length === 0 ? (
@@ -412,6 +426,21 @@ export function GuideConsole({ ingested = [] }: GuideConsoleProps = {}): JSX.Ele
                 specs={ctrl.vm.cards}
                 store={ctrl.store}
               />
+            </aside>
+          ) : null}
+
+          {/* The recovery drawer, opened on demand from a burnout row on the strip or a fading
+            verdict on the action line. It shows the plan for whichever trigger opened it, not a
+            child-wide summary, mirroring the maps drawer's own on-demand pattern. */}
+          {recovery !== null ? (
+            <aside className="mapdrawer recoverydrawer" aria-label="Recovery steps">
+              <div className="mapdrawer__head">
+                <span>Recovery steps</span>
+                <button type="button" className="linkbtn" onClick={() => setRecovery(null)}>
+                  Close
+                </button>
+              </div>
+              <RecoveryPanel plan={recoveryFor(recovery.trigger)!} />
             </aside>
           ) : null}
         </div>

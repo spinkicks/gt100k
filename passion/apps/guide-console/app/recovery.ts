@@ -14,7 +14,14 @@ import {
 } from "@gt100k/wellbeing";
 
 export { recoveryFor };
-export type { BreakGuidance, EvidenceGrade, PivotGuidance, RecoveryMove, RecoveryPlan, RecoveryTrigger };
+export type {
+  BreakGuidance,
+  EvidenceGrade,
+  PivotGuidance,
+  RecoveryMove,
+  RecoveryPlan,
+  RecoveryTrigger,
+};
 
 /** A wellbeing read.state has a recovery plan only for the two burnout states. Everything else — a
  *  healthy or merely watchful state — returns null so no trigger button appears. */

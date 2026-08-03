@@ -23,6 +23,7 @@ import { buildRosterGates, children, profileFor } from "../app/console-data.js";
 import { consoleViewModel } from "@gt100k/hypothesis-store";
 import { wellbeingForKid } from "../app/wellbeing.js";
 import { plansForKid } from "../app/plan.js";
+import { recoveryFor } from "@gt100k/wellbeing";
 
 /**
  * Words that mean something to us and nothing to a teacher.
@@ -144,6 +145,26 @@ describe("what an engine puts in front of a guide", () => {
         ].join(" ");
         for (const bad of OURS) {
           expect(text, `plan prose for ${kid} uses our vocabulary`).not.toMatch(bad);
+        }
+      }
+    }
+  });
+
+  it("keeps recovery guidance in the guide's words", () => {
+    const triggers = ["BURNOUT_TIP", "EARLY_BURNOUT", "ENGAGEMENT_FADING"] as const;
+    for (const t of triggers) {
+      const plan = recoveryFor(t)!;
+      const strings = [
+        plan.headline,
+        ...plan.moves.map((m) => m.does),
+        plan.breakGuidance?.headline ?? "",
+        plan.breakGuidance?.detail ?? "",
+        plan.pivotGuidance.headline,
+        plan.pivotGuidance.detail,
+      ];
+      for (const s of strings) {
+        for (const bad of OURS) {
+          expect(s, `recovery copy for ${t} uses our vocabulary: "${s}"`).not.toMatch(bad);
         }
       }
     }
