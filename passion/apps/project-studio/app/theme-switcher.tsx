@@ -53,15 +53,17 @@ export function ThemeSwitcher(): JSX.Element {
         type="button"
         className="themebtn"
         aria-expanded={open}
-        aria-haspopup="dialog"
         onClick={() => setOpen((v) => !v)}
       >
         <span className="themebtn__dot" aria-hidden="true" />
         Theme
       </button>
 
+      {/* A radiogroup, not a dialog: these are mutually exclusive choices, exactly one of which is
+          always in force. That also earns a screen reader "3 of 8" for free, which eight
+          independent `aria-pressed` toggles would not. */}
       {open ? (
-        <div className="themepop" role="dialog" aria-label="Pick a look">
+        <div className="themepop" role="radiogroup" aria-label="Pick a look">
           {THEME_GROUPS.map((g) => (
             <div key={g.family} className="themepop__group">
               <p className="themepop__label">
@@ -72,8 +74,13 @@ export function ThemeSwitcher(): JSX.Element {
                   <button
                     key={p.id}
                     type="button"
+                    // biome-ignore lint/a11y/useSemanticElements: an <input type="radio"> cannot
+                    // contain the three colour chips and the name, and restyling a native radio
+                    // into a swatch card means hiding the input and faking focus, which is worse
+                    // for a keyboard user than a button carrying the role honestly.
+                    role="radio"
                     className={`swatch${p.id === active ? " swatch--on" : ""}`}
-                    aria-pressed={p.id === active}
+                    aria-checked={p.id === active}
                     onClick={() => pick(p.id)}
                   >
                     <span className="swatch__chips" aria-hidden="true">
