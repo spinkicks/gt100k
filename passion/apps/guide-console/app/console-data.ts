@@ -28,6 +28,7 @@ import {
   type StudentProfile,
 } from "@gt100k/student-profile";
 import { CATALOG as GADGET_CATALOG } from "@gt100k/discovery-catalog";
+import { SEED_LIBRARY, catalogFrom } from "@gt100k/concierge";
 import type { Artifact } from "@gt100k/two-axis-tagging";
 
 export interface Child {
@@ -44,14 +45,19 @@ export const ROSTER_NOW = PILOT_NOW;
 /**
  * Every artifact either half of the roster can refer to.
  *
- * The pilot fixtures use their own synthetic artifacts and the game uses the gadget crosswalk, so a
- * roster containing both needs both. Ids are disjoint (the fixtures' are synthetic names, the
- * gadgets' are `nonogram`, `chess`, …), and if that ever stops being true the collision would
- * silently retag one child's play, so `mergedCatalog` throws instead.
+ * Three sources. The pilot fixtures use their own synthetic artifacts; the game uses the gadget
+ * crosswalk; and the curated shelf is the third, because a followed link is now a real signal and
+ * for the thirty-six pursuits with no game it is the ONLY one. The ingest route resolves against
+ * all three, and this is what the console re-derives with, so leaving the shelf out here would mean
+ * a follow counted on the way in and vanished on the way back out.
+ *
+ * Ids are disjoint (the fixtures' are synthetic names, the gadgets' are `nonogram`, `chess`, the
+ * resources' are `cr-…`), and if that ever stops being true the collision would silently retag one
+ * child's play, so this throws instead.
  */
 function mergedCatalog(): ReadonlyMap<string, Artifact> {
   const out = new Map(PILOT_CATALOG);
-  for (const [id, art] of GADGET_CATALOG) {
+  for (const [id, art] of [...GADGET_CATALOG, ...catalogFrom(SEED_LIBRARY)]) {
     const clash = out.get(id);
     if (clash && clash.domainPath.join("/") !== art.domainPath.join("/")) {
       throw new Error(

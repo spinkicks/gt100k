@@ -41,7 +41,7 @@ its log only to `localStorage`.
 
 ## 4. Play
 
-Pick any topic on the wall, then a subtopic, then open a game from its panel and close it again. The
+Pick any tile on the wall, then open a game from its panel and close it again. The
 open is recorded when the game overlay closes, not when it opens.
 
 A session flushes when the tab is hidden, and otherwise every 30 seconds. To force one without
@@ -64,7 +64,7 @@ a reassurance about data provenance that has quietly stopped being true is worse
 ## What you should expect to see, and not see
 
 **Surfaced records arrive immediately.** Every tile on a browse screen is recorded as *offered* with
-its position, and so is every game in a subtopic's panel. That is half the measurement and it is the
+its position, and so is every game in a tile's panel. That is half the measurement and it is the
 half most systems throw away.
 
 **One open will not produce a hypothesis, and that is correct.** An `open` resolves to no work-mode:

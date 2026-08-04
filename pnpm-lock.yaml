@@ -225,6 +225,9 @@ importers:
       '@gt100k/two-axis-tagging':
         specifier: workspace:*
         version: link:../../packages/two-axis-tagging
+      '@gt100k/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       chess.js:
         specifier: ^1.4.0
         version: 1.4.0

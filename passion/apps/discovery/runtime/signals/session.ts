@@ -33,11 +33,13 @@ export const SESSION_ID = newSessionId();
  *     via `PuzzleHost`; solving records the gadget's crosswalk verb (the one record that forms a
  *     work-mode cell); asking for a harder board records that same verb tagged `chosen_challenge`.
  *   - **The resource links.** Following a curated link out records `follow-source`, attributed to the
- *     subtopic cell the child left — see `recordSourceFollow` for why that subject, not "the panel".
+ *     resource the child opened — see `recordSourceFollow` for why that subject, not the tile. For
+ *     the thirty-six pursuits with no game this is the only act that can become evidence.
  *
  * WHAT IS STILL NOT EMITTED, so this stays truth-in-labelling rather than a claim of completeness:
- * `failure_recovery` and `self_authored_scope`, which have no affordance on this surface to emit
- * from. Records are complete for what the child DID.
+ * `self_authored_scope` and `unrequired_revision`, which have no affordance on this surface to emit
+ * from. `failure_recovery` used to be on that list and no longer is: chess reports each attempt, so
+ * a solve that took more than one go carries it. Records are complete for what the child DID.
  *
  * Note what this is NOT: it is not a privacy control. It governs whether records are WRITTEN, and
  * writing is local. Whether anything is SENT is `INGEST_URL` below, which is a separate switch on

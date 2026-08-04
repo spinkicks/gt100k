@@ -26,7 +26,8 @@ export function AreaChart({
 }): JSX.Element {
   const w = 560;
   const h = height;
-  const pad = { t: 12, r: 20, b: 26, l: 30 };
+  // Wider left gutter than before, to fit the axis numbers rather than clip them.
+  const pad = { t: 12, r: 20, b: 30, l: 42 };
   const max = Math.max(...series.flatMap((s) => s.data)) * 1.15;
   const n = labels.length;
   const x = (i: number) => pad.l + (i * (w - pad.l - pad.r)) / (n - 1);
@@ -34,16 +35,19 @@ export function AreaChart({
 
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="chart" role="img" aria-label="Returns over time">
-      {[0, 0.25, 0.5, 0.75, 1].map((g) => (
-        <line
-          key={g}
-          x1={pad.l}
-          x2={w - pad.r}
-          y1={pad.t + g * (h - pad.t - pad.b)}
-          y2={pad.t + g * (h - pad.t - pad.b)}
-          className="chart__grid"
-        />
-      ))}
+      {/* Every grid line carries its value. Unlabelled they are decoration: a reader can see the
+          shape and has no idea whether the peak is three visits or thirty. */}
+      {[0, 0.25, 0.5, 0.75, 1].map((g) => {
+        const gy = pad.t + g * (h - pad.t - pad.b);
+        return (
+          <g key={g}>
+            <line x1={pad.l} x2={w - pad.r} y1={gy} y2={gy} className="chart__grid" />
+            <text x={pad.l - 6} y={gy + 3} className="chart__tick" textAnchor="end">
+              {Math.round(max * (1 - g))}
+            </text>
+          </g>
+        );
+      })}
       {series.map((s) => {
         const pts = s.data.map((v, i) => [x(i), y(v)] as [number, number]);
         const line = smoothPath(pts);
@@ -62,10 +66,20 @@ export function AreaChart({
         );
       })}
       {labels.map((l, i) => (
-        <text key={l} x={x(i)} y={h - 8} className="chart__lab" textAnchor="middle">
+        <text key={l} x={x(i)} y={h - 10} className="chart__lab" textAnchor="middle">
           {l}
         </text>
       ))}
+      {/* What the numbers on the left are. A count with no unit is a number, not a measurement. */}
+      <text
+        x={10}
+        y={pad.t + (h - pad.t - pad.b) / 2}
+        className="chart__axis"
+        textAnchor="middle"
+        transform={`rotate(-90 10 ${pad.t + (h - pad.t - pad.b) / 2})`}
+      >
+        Visits
+      </text>
     </svg>
   );
 }
@@ -87,23 +101,25 @@ export function BarChart({
 }): JSX.Element {
   const w = 540;
   const h = height;
-  const pad = { t: 12, r: 20, b: 26, l: 30 };
+  const pad = { t: 12, r: 20, b: 30, l: 42 };
   const max = Math.max(...data, ...(compare ?? [])) * 1.2;
   const slot = (w - pad.l - pad.r) / data.length;
   const bw = compare ? slot * 0.3 : slot * 0.45;
 
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="chart" role="img" aria-label="Weekly returns">
-      {[0, 0.5, 1].map((g) => (
-        <line
-          key={g}
-          x1={pad.l}
-          x2={w - pad.r}
-          y1={pad.t + g * (h - pad.t - pad.b)}
-          y2={pad.t + g * (h - pad.t - pad.b)}
-          className="chart__grid"
-        />
-      ))}
+      {/* Same rule as the area chart: a grid line without its value is decoration. */}
+      {[0, 0.5, 1].map((g) => {
+        const gy = pad.t + g * (h - pad.t - pad.b);
+        return (
+          <g key={g}>
+            <line x1={pad.l} x2={w - pad.r} y1={gy} y2={gy} className="chart__grid" />
+            <text x={pad.l - 6} y={gy + 3} className="chart__tick" textAnchor="end">
+              {Math.round(max * (1 - g))}
+            </text>
+          </g>
+        );
+      })}
       {data.map((v, i) => {
         const bh = (v / max) * (h - pad.t - pad.b);
         const cx = pad.l + i * slot + slot / 2;

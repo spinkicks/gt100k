@@ -38,6 +38,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from "react";
 
 import { solveVerbFor } from "@gt100k/discovery-catalog";
+import { HomeLink } from "./home-link.js";
 import { depthFor, missed, newTally, solved, type TryTally } from "../runtime/signals/tries";
 
 import { ExternalGlyph, PlayGlyph } from "./glyphs.js";
@@ -228,6 +229,7 @@ export default function DiscoveryPage(): JSX.Element {
        * bar cost the panel a 60px row at every laptop size. */}
       <header className="browse__bar">
         <p className="browse__lede">Find something worth getting good at.</p>
+        <HomeLink />
 
         <div className="browse__view">
           <label className="browse__pick">

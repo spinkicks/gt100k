@@ -8,7 +8,10 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: #0d0f12;
+  /* From the tokens, not a hardcoded shell. A dark chrome around a light prototype tells you
+     nothing about how the prototype will look where it actually ships. */
+  background: var(--surface, #fcf4ef);
+  color: var(--ink, #002a3a);
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
@@ -16,7 +19,7 @@ body {
   max-width: 46rem;
   margin: 0 auto;
   padding: 5rem 1.5rem;
-  color: #eef1f5;
+  color: var(--ink, #002a3a);
 }
 
 .index h1 {
