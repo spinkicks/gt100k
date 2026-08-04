@@ -393,10 +393,12 @@ export default function DiscoveryPage(): JSX.Element {
                         target="_blank"
                         rel="noreferrer noopener"
                         className="row"
-                        // Following a link out is the one act on the panel worth recording, and it
-                        // is attributed to the pursuit the child is standing on — never to the
-                        // shelf — so a follow reads as "left THIS tile to learn more".
-                        onClick={() => sessionLog.recordSourceFollow(current.id)}
+                        // Following a link out is the one act on the panel worth recording, and
+                        // for the pursuits with no game in the product it is the only one that can
+                        // ever become evidence. Attributed to the RESOURCE rather than the tile:
+                        // the resource carries a domainPath and the modes it affords, so it
+                        // resolves to a cell, where a pursuit id resolves to nothing at all.
+                        onClick={() => sessionLog.recordSourceFollow(r.id)}
                       >
                         <span className="row__title">{r.title}</span>
                         <ExternalGlyph />

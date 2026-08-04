@@ -1,7 +1,10 @@
+import { PILOT_KID_ID } from "@gt100k/two-axis-tagging";
 import type { DwellBucket, EmittedInteraction, SurfacedRecord } from "./types";
 
 /** Synthetic local identity — this demo holds no child PII. */
-export const KID_ID = "local-demo";
+// The shared pilot identity, so signals from the wall and journeys from the studio describe the
+// same child. They used to disagree: this was "local-demo" and the studio was "kid-demo".
+export const KID_ID = PILOT_KID_ID;
 
 const STORAGE_KEY = "mvp-jul24:signals";
 
@@ -176,6 +179,14 @@ export function createSignalLog({ sessionId, now }: SignalLogOptions) {
      * away.
      *
      * Not floor-gated: following a link is a discrete act, complete the moment it happens.
+     */
+    /**
+     * A child followed a curated link out.
+     *
+     * Attributed to the RESOURCE, not to the tile they were standing on. The resource is what the
+     * catalogue knows: it carries a `domainPath` and the modes it affords, so the pipeline can
+     * resolve it to a cell. A pursuit id resolves to nothing, which is why every follow logged
+     * before this was recorded faithfully and then dropped at the firewall as `unknown-artifact`.
      */
     recordSourceFollow(subjectId: string): void {
       const s = read();

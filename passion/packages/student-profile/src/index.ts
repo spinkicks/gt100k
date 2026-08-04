@@ -4,3 +4,4 @@ export * from "./gates.js";
 export * from "./ingest.js";
 export * from "./store-port.js";
 export * from "./__fixtures__/pilot.js";
+export * from "./perseverance.js";
