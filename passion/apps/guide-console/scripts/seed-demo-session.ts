@@ -4,7 +4,7 @@
  *
  * WHY THIS EXISTS. Playing the wall live produces exactly one `open`, and an open resolves to no
  * work-mode: it proves the child was there, not that they worked. So Demo Child lands in the console
- * reading "0 tracked" beside four synthetic children with two and three, which looks like the
+ * reading "0 tracked" beside five synthetic children with two and three, which looks like the
  * ingest failed when in fact it is the engine being careful. A belief needs a child to DO something
  * — solve, assemble, fix — and a confident one needs voluntary returns across distinct days, which
  * no live demo can produce.

@@ -9,12 +9,14 @@
 // separate product wearing the console's clothes, and the first thing to diverge would be the
 // derivation itself.
 //
-// The four canonical synthetic kids (built in insertion order by `buildPilotRoster`):
+// The five canonical synthetic kids (built in insertion order by `buildPilotRoster`):
 //   001 Ari    — music-sound/audio-systems::build EMERGING + gate-passed (the window.__qa kid);
 //                art-motion/dance::perform stays EXPLORING
 //   002 Bex    — a gate-passed EMERGING candidate (chess) + an EMERGING one short of its gate (python)
 //   003 Cyrus  — sparse: everything EXPLORING, nothing confident yet
 //   004 Dulce  — established: an ACTIVE spike, a CANDIDATE, and a reversibly PARKED cell
+//   005 Elle   — an ACTIVE specialization that has gone quiet: a real BURNOUT_TIP escalation, so the
+//                recovery surface has a live trigger to demo (built in two clock phases; see pilot.ts)
 import type { GateStatus, HypothesisStore } from "@gt100k/hypothesis-store";
 import {
   buildPilotRoster,

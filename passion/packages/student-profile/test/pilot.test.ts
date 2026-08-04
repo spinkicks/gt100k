@@ -14,6 +14,7 @@ const ARI = "kid-synthetic-001";
 const BEX = "kid-synthetic-002";
 const CYRUS = "kid-synthetic-003";
 const DULCE = "kid-synthetic-004";
+const ELLE = "kid-synthetic-005";
 
 const ARI_BUILD_KEY = serializeCellKey(["music-sound", "audio-systems"], "build");
 const ARI_DANCE_KEY = serializeCellKey(["art-motion", "dance"], "perform");
@@ -29,10 +30,19 @@ function hyp(kidId: string, cellKey: string) {
 }
 
 describe("buildPilotRoster — golden orchestration (SC-6)", () => {
-  it("builds the four canonical synthetic kids", () => {
-    expect([...roster.keys()].sort()).toEqual([ARI, BEX, CYRUS, DULCE]);
+  it("builds the five canonical synthetic kids", () => {
+    expect([...roster.keys()].sort()).toEqual([ARI, BEX, CYRUS, DULCE, ELLE]);
     expect(roster.get(ARI)!.displayName).toBe("Ari Mercado");
     expect(roster.get(DULCE)!.displayName).toBe("Dulce Park");
+    expect(roster.get(ELLE)!.displayName).toBe("Elle Nkemelu");
+  });
+
+  it("Elle's music-sound/production::build is ACTIVE after her hot-then-quiet two-phase log", () => {
+    // Promoted to ACTIVE at the earlier clock she was thriving at, then only prompted returns since.
+    // 013 never demotes on silence, so the human ACTIVE state persists — the precondition for her
+    // ACTIVE spike to raise a (wellbeing) burnout escalation the console can demo recovery against.
+    const states = getForKid(roster.get(ELLE)!.store, ELLE).map((h) => h.state);
+    expect(states).toContain("ACTIVE");
   });
 
   it("Ari's music-sound/audio-systems::build is a confident EMERGING cell with lowerBound ≥ 0.6", () => {

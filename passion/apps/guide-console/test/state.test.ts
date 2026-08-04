@@ -23,12 +23,13 @@ const ARI_BUILD_KEY = serializeCellKey(["music-sound", "audio-systems"], "build"
 const ARI_TOP_ID = `${ARI}::${ARI_BUILD_KEY}`;
 
 describe("guide-console derived roster", () => {
-  it("renders the four canonical synthetic kids, Ari first (the window.__qa kid)", () => {
+  it("renders the five canonical synthetic kids, Ari first (the window.__qa kid)", () => {
     expect(children().map((c) => c.id)).toEqual([
       "kid-synthetic-001",
       "kid-synthetic-002",
       "kid-synthetic-003",
       "kid-synthetic-004",
+      "kid-synthetic-005",
     ]);
     expect(children()[0]).toEqual({ id: ARI, name: "Ari Mercado" });
     expect(ROSTER_NOW).toBe("2026-04-01T00:00:00.000Z");
@@ -150,6 +151,20 @@ describe("wellbeing panel data (016) — system proposes, human disposes", () =>
     // nothing routes to a human. A quiet sampling cell is exploration, not burnout.
     expect(escalationCount(ARI)).toBe(0);
     expect(escalationCount("kid-synthetic-002")).toBe(0);
+  });
+
+  it("an ACTIVE specialization gone quiet DOES escalate (Elle) — the recovery surface's live trigger", () => {
+    // The mirror image of the discovery children above: Elle's music-sound/production spike was
+    // promoted to ACTIVE when she was thriving and has since gone prompted-only (devaluation). Because
+    // it is an active pursuit, the pressure half is LIVE, so it reads BURNOUT_TIP and routes a review
+    // to a human — the realistic trigger the #282 recovery surface needs to demo against. No held-gate
+    // note here: this is exactly the case the phase gate is meant to let through.
+    const elle = wellbeingForKid("kid-synthetic-005");
+    const prod = elle.find((c) => c.read.state === "BURNOUT_TIP");
+    expect(prod).toBeDefined();
+    expect(prod!.read.escalateToHuman).toBe(true);
+    expect(prod!.read.guardrailNotes.some((n) => n.includes("discovery"))).toBe(false);
+    expect(escalationCount("kid-synthetic-005")).toBeGreaterThanOrEqual(1);
   });
 
   it("a healthy confident spike is IN_ZONE / HOLD (push only from strength: no PUSH without instrumented success)", () => {

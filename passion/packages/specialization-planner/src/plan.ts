@@ -219,7 +219,7 @@ function derivePlanCore(inputs: PlanInputs, resources: readonly CuratedResource[
 
   const rationale = `On readiness signals (${signals.join(", ")}), this sits at ${stage}, to ${STAGE_PURPOSE[stage]}. ${inputs.monthsInPursuit} months in is a rough guide only; stages advance on readiness, never on age. ${
     strained
-      ? "The wellbeing read shows strain, so we hold the stage and propose a guilt-free rest / deload and more autonomy, to protect the rage to master."
+      ? "The wellbeing read shows strain, so we hold the stage and propose a guilt-free rest / lighter load and more say over how they work, to protect the rage to master."
       : "The mentor is a relay and the audience widens with authenticity; deliberate practice stays small and serves the child's own project."
   }`;
 

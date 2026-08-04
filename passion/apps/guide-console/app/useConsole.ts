@@ -29,7 +29,7 @@ import {
   type RecoveryNote,
 } from "./recovery-log.js";
 import { escalationCount, wellbeingForKid, type WellbeingCardVM } from "./wellbeing.js";
-import { attentionFor, type Attention } from "./attention.js";
+import { attentionFor, engagementFading, type Attention } from "./attention.js";
 import { specPath } from "./vocab.js";
 import { voluntaryReturns } from "./engagement.js";
 import { familyForKid, familyObservationsForKid, familyPressureBlocks } from "./family.js";
@@ -75,6 +75,15 @@ function attentionForKid(
   // promote" that would read as the concern being resolved. `familyPressureBlocks` (family.ts) is the
   // matching rule the promote paths consult.
   const fam = familyForKid(kidId);
+  const cardSignals = cards.map((c) => ({
+    id: c.id,
+    state: c.state,
+    gatePassed: c.gate?.passed === true,
+    // Carries the card's evidence sufficiency so the STEADY verdict can tell a settled-and-sure
+    // child from a barely-observed one instead of calling both "Nothing needs you".
+    confident: c.confident,
+    domainPath: c.domainPath,
+  }));
   return attentionFor({
     wellbeing: wb.map((w) => ({
       id: w.id,
@@ -82,16 +91,11 @@ function attentionForKid(
       escalateToHuman: w.read.escalateToHuman,
       domainPath: w.domainPath,
     })),
-    cards: cards.map((c) => ({
-      id: c.id,
-      state: c.state,
-      gatePassed: c.gate?.passed === true,
-      // Carries the card's evidence sufficiency so the STEADY verdict can tell a settled-and-sure
-      // child from a barely-observed one instead of calling both "Nothing needs you".
-      confident: c.confident,
-      domainPath: c.domainPath,
-    })),
-    fading: voluntaryReturns(kidId).fading,
+    cards: cardSignals,
+    // Gate the child-level cooling trend on an active pursuit: you can't be fading on what you're
+    // only sampling. Same phase gate the wellbeing engine applies to its pressure half, applied here
+    // to the ENGAGEMENT_FADING verdict. Keyed on the 013 lifecycle state, never on age.
+    fading: engagementFading(voluntaryReturns(kidId).fading, cardSignals),
     family: fam
       ? {
           escalate: fam.escalateToHuman,
