@@ -38,6 +38,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from "react";
 
 import { solveVerbFor } from "@gt100k/discovery-catalog";
+import { depthFor, missed, newTally, solved, type TryTally } from "../runtime/signals/tries";
 
 import { ExternalGlyph, PlayGlyph } from "./glyphs.js";
 import {
@@ -116,6 +117,10 @@ export default function DiscoveryPage(): JSX.Element {
   const [offered, setOffered] = useState(0);
   // The gadget id currently mounted over the wall, or null.
   const [playing, setPlaying] = useState<string | null>(null);
+  // Wrong goes per gadget, for runs in progress. A ref rather than state: nothing renders from it,
+  // and a re-render per wrong move would be a visible tell that the app is counting, which is the
+  // one thing a child must never see.
+  const tries = useRef<TryTally>(newTally());
 
   // Age first, then cabin. Age is a hard filter because the alternative is showing a child a door
   // that is locked; cabin is a soft one the child chose.
@@ -472,9 +477,14 @@ export default function DiscoveryPage(): JSX.Element {
           gadgetId={playing}
           onExit={() => setPlaying(null)}
           onOpen={(id, activeMs) => sessionLog.recordOpen(id, activeMs)}
+          onAttempt={(id, correct) => {
+            if (!correct) missed(tries.current, id);
+          }}
           onSolve={(id) => {
             const verb = solveVerbFor(id);
-            if (verb) sessionLog.recordAction(id, verb);
+            if (!verb) return;
+            const { tries: n, recovered } = solved(tries.current, id);
+            sessionLog.recordAction(id, verb, depthFor(recovered), n);
           }}
           onHarder={(id) => {
             const verb = solveVerbFor(id);

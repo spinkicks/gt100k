@@ -5268,3 +5268,28 @@ body {
   color: var(--ink-muted);
   font-style: italic;
 }
+
+/* The ask-for-a-real-brief control, and what it says when it cannot. */
+.planproject__write {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.planproject__refused,
+.planproject__src {
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+}
+.planproject__src {
+  margin: 0 0 8px;
+  font-style: italic;
+}
+
+/* What the difficulty call rests on. Quiet: it explains the value above it rather than competing. */
+.wbstrip__why {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+}

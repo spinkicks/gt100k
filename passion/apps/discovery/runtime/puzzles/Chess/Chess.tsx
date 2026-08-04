@@ -36,7 +36,7 @@ export interface ChessProps extends PuzzleProps {
 // (e.g. a numeric `rating` or `mateInN: number`) that `pickRandomTactic` could bucket into an
 // easier/harder band and select from via `round % 2`, the same shape every other alternating puzzle
 // in this cabin uses.
-export default function Chess({ onSolved, onExit, rng = Math.random }: ChessProps) {
+export default function Chess({ onSolved, onExit, onAttempt, rng = Math.random }: ChessProps) {
   const [mode, setMode] = useState<Mode>("tactics");
   const [puzzle, setPuzzle] = useState<ChessPuzzle>(() => pickRandomTactic(rng));
   const [state, setState] = useState<ChessGameState>(() => initState(puzzle));
@@ -96,11 +96,13 @@ export default function Chess({ onSolved, onExit, rng = Math.random }: ChessProp
     const result = attemptMove(puzzle, state, { from: selected, to: square });
     setSelected(null);
     if (result.kind === "wrong") {
+      onAttempt?.(false);
       setState(result.state);
       setMessage(puzzle.hint ?? "Not quite — try again.");
       return;
     }
     if (result.kind === "correct") {
+      onAttempt?.(true);
       setState(result.state);
     }
   };

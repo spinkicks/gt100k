@@ -18,7 +18,7 @@
  * a six-turn session, and with one turn there is nothing to select. Wiring a judge in would create
  * an "understanding" score for a screen to render, which is the thing §3 forbids.
  */
-import type { Facet, Interviewer, ProjectProfile } from "@gt100k/socratic-defense";
+import type { Facet } from "@gt100k/socratic-defense";
 import type { Project, Thinness } from "@gt100k/project-workspace";
 
 /** What the studio needs to show a question and log the answer. */
@@ -47,7 +47,7 @@ export function facetFor(t: Thinness): Facet {
  * never told they are suspected of anything, because a false positive teaches a child who did the
  * work that a machine thinks they cheated, and cheating-accusation anxiety rises with grade level.
  */
-const FALLBACK: Record<Facet, string> = {
+export const FALLBACK: Record<Facet, string> = {
   challenge: "What was the trickiest part of getting this working?",
   how: "How does this bit actually work? Walk me through it.",
   what: "What is this, in your own words?",
@@ -56,33 +56,61 @@ const FALLBACK: Record<Facet, string> = {
   audience: "Who is this for, and what will they notice first?",
 };
 
+/** What the route needs to ask a grounded question. Serialisable: it crosses a network boundary. */
+export interface InterviewAsk {
+  readonly projectId: string;
+  readonly kidId: string;
+  readonly title: string;
+  readonly drivingQuestion: string;
+  readonly method: string;
+  readonly artifacts: readonly string[];
+  /** The last few entries in the child's own words, so the question can be about today's work. */
+  readonly recent: readonly string[];
+  readonly facet: Facet;
+}
+
+/** How many recent entries ride along. Enough to locate the child in their work, short enough that
+    a long journey does not push the actual question out of the model's attention. */
+const RECENT = 6;
+
+export function askFor(project: Project, t: Thinness): InterviewAsk {
+  return {
+    projectId: project.id,
+    kidId: project.kidId,
+    title: project.title,
+    drivingQuestion: project.drivingQuestion,
+    method: project.authenticMethod,
+    artifacts: project.events
+      .filter((e) => e.kind === "artifact")
+      .map((e) => e.artifact?.title ?? e.text),
+    recent: project.events.slice(-RECENT).map((e) => `${e.kind}: ${e.text}`),
+    facet: facetFor(t),
+  };
+}
+
 /**
  * Ask about one artefact.
  *
- * Takes the `Interviewer` port rather than a model, so the live TFY adapter drops in unchanged and
- * the offline path is a real question rather than a stub string.
+ * Goes through `POST /interview` because the model key cannot reach a browser. Every failure path
+ * still returns a real question: the child is mid-build with something to say, and a model outage
+ * should cost them specificity rather than the whole exchange.
  */
-export async function askAbout(
-  project: Project,
-  t: Thinness,
-  interviewer?: Interviewer,
-): Promise<PendingQuestion> {
-  const facet = facetFor(t);
-  const question = interviewer
-    ? await interviewer
-        .nextQuestion({
-          profile: profileOf(project),
-          transcript: [],
-          targetFacet: facet,
-          isFollowUp: false,
-          // Always the gentlest register. A mid-build question is an interruption, and the child has
-          // not asked to be examined; the depth that suits an end-of-project defense does not suit
-          // somebody who is still holding the thing they are being asked about.
-          readinessLevel: "emerging",
-        })
-        .catch(() => FALLBACK[facet])
-    : FALLBACK[facet];
-  return { artifactId: t.artifactId, facet, question };
+export async function askAbout(project: Project, t: Thinness): Promise<PendingQuestion> {
+  const ask = askFor(project, t);
+  const offline = { artifactId: t.artifactId, facet: ask.facet, question: FALLBACK[ask.facet] };
+  try {
+    const res = await fetch("/interview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(ask),
+    });
+    if (!res.ok) return offline;
+    const body = (await res.json()) as { question?: unknown };
+    if (typeof body.question !== "string" || body.question.trim().length === 0) return offline;
+    return { artifactId: t.artifactId, facet: ask.facet, question: body.question };
+  } catch {
+    return offline;
+  }
 }
 
 /**
@@ -100,19 +128,5 @@ export function answerEntry(
     kind: "reflection",
     text: `${q.question}\n\n${answer.trim()}`,
     refs: [q.artifactId],
-  };
-}
-
-/** The engine's profile shape, from what the studio already holds. */
-function profileOf(p: Project): ProjectProfile {
-  return {
-    id: p.id,
-    studentId: p.kidId,
-    title: p.title,
-    domain: p.drivingQuestion,
-    summary: p.authenticMethod,
-    artifactRefs: p.events
-      .filter((e) => e.kind === "artifact")
-      .map((e) => e.artifact?.title ?? e.text),
   };
 }

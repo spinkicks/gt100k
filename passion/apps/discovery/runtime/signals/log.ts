@@ -120,7 +120,12 @@ export function createSignalLog({ sessionId, now }: SignalLogOptions) {
      * action and does not resolve to a mode on its own, so `recordDepth`'s records were silently
      * discarded as `unresolved-action`. Attached to a real verb they arrive.
      */
-    recordAction(artifactId: string, verb: string, depth?: readonly string[]): void {
+    recordAction(
+      artifactId: string,
+      verb: string,
+      depth?: readonly string[],
+      tries?: number,
+    ): void {
       const s = read();
       s.interactions.push({
         kidId: KID_ID,
@@ -132,6 +137,7 @@ export function createSignalLog({ sessionId, now }: SignalLogOptions) {
         ...(depth && depth.length > 0
           ? { depthSignals: depth.map((kind) => ({ kind, value: 1 })) }
           : {}),
+        ...(typeof tries === "number" && tries > 0 ? { tries } : {}),
       });
       write(s);
     },

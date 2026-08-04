@@ -52,6 +52,21 @@ export const PRESSURE_LABEL: Record<string, string> = {
   STEADY: "Leave as is",
 };
 
+/**
+ * The success rate in words.
+ *
+ * Prose rather than a percentage, deliberately. A number invites a guide to chase it, and this one
+ * is a rate over a handful of puzzles in a fortnight, which cannot carry that weight. The bands are
+ * wide for the same reason.
+ */
+export function howItIsGoing(rate: number | undefined): string {
+  if (rate === undefined) return "Not enough judged work to tell yet";
+  if (rate >= 0.85) return "Getting nearly all of them first go";
+  if (rate >= 0.6) return "Getting most of them, missing some";
+  if (rate >= 0.35) return "Missing about as often as landing";
+  return "Missing far more than landing";
+}
+
 export function WellbeingStrip({
   cards,
   onRecover,
@@ -88,6 +103,9 @@ export function WellbeingStrip({
               <span className="wbstrip__v">
                 {CHALLENGE_LABEL[c.read.challenge] ?? c.read.challenge}
               </span>
+              {/* What the recommendation rests on. A guide who can only see "make it harder" has to
+                  take it on faith, and the honest answer for most spikes is that we cannot tell. */}
+              <span className="wbstrip__why">{howItIsGoing(c.successRate)}</span>
             </span>
             <span className="wbstrip__move">
               <span className="wbstrip__k">Freedom</span>

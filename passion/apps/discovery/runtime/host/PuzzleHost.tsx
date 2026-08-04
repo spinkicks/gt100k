@@ -33,6 +33,8 @@ export interface PuzzleHostProps {
   onSolve?: (gadgetId: string) => void;
   /** Fired when the child voluntarily asks for a harder board (`chosen_challenge`). */
   onHarder?: (gadgetId: string) => void;
+  /** One try and whether it worked. Absent for puzzles that cannot tell the difference. */
+  onAttempt?: (gadgetId: string, correct: boolean) => void;
 }
 
 export default function PuzzleHost({
@@ -41,6 +43,7 @@ export default function PuzzleHost({
   onOpen,
   onSolve,
   onHarder,
+  onAttempt,
 }: PuzzleHostProps): JSX.Element {
   const [solved, setSolved] = useState(false);
   const [tier, setTier] = useState(0);
@@ -118,6 +121,7 @@ export default function PuzzleHost({
                 onSolve?.(gadget.id);
                 setSolved(true);
               }}
+              onAttempt={(correct) => onAttempt?.(gadget.id, correct)}
               onExit={onExit}
             />
           )}
@@ -199,11 +203,13 @@ function GadgetPuzzle({
   tier,
   onSolved,
   onExit,
+  onAttempt,
 }: {
   gadget: Gadget;
   tier: number;
   onSolved: () => void;
   onExit: () => void;
+  onAttempt: (correct: boolean) => void;
 }): JSX.Element {
   const Puzzle = gadget.status !== "coming-soon" ? gadget.Puzzle : undefined;
   const Component = Puzzle ?? ComingSoon;
@@ -211,5 +217,7 @@ function GadgetPuzzle({
   // via useState so the value is created once on the client, never at module load (SSR-safe).
   const [seed] = useState(() => Math.floor(Math.random() * 1_000_000_000));
 
-  return <Component seed={seed} tier={tier} onSolved={onSolved} onExit={onExit} />;
+  return (
+    <Component seed={seed} tier={tier} onSolved={onSolved} onExit={onExit} onAttempt={onAttempt} />
+  );
 }
