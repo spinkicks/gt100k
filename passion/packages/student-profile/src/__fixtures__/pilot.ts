@@ -64,6 +64,8 @@ const ARTIFACTS: readonly Artifact[] = [
   artifact("dulce-gamedev", ["code-computers", "game-dev"], ["build"]),
   artifact("dulce-prod", ["music-sound", "production"], ["build"]),
   artifact("dulce-physics", ["science-nature", "physics"], ["investigate"]),
+  // Elle
+  artifact("elle-production", ["music-sound", "production"], ["build"]),
 ];
 
 export const PILOT_CATALOG: ReadonlyMap<string, Artifact> = new Map(
@@ -83,6 +85,7 @@ export const PILOT_PRIORS: Readonly<Record<string, readonly DomainPrior[]>> = {
   "kid-synthetic-002": [prior("games-strategy"), prior("code-computers")],
   "kid-synthetic-003": [prior("games-strategy"), prior("science-nature")],
   "kid-synthetic-004": [prior("code-computers"), prior("music-sound"), prior("science-nature")],
+  "kid-synthetic-005": [prior("music-sound")],
 };
 
 // ── Log builders ────────────────────────────────────────────────────────────────
@@ -215,6 +218,62 @@ function quietLog(
 const DULCE_GAMEDEV = serializeCellKey(["code-computers", "game-dev"], "build");
 const DULCE_PROD = serializeCellKey(["music-sound", "production"], "build");
 const DULCE_PHYSICS = serializeCellKey(["science-nature", "physics"], "investigate");
+const ELLE_PROD = serializeCellKey(["music-sound", "production"], "build");
+
+// ── Elle (kid-synthetic-005): an ACTIVE specialization that has gone quiet ────────────
+// The one synthetic child whose ACTIVE pursuit raises a wellbeing escalation, so the 016 recovery
+// surface (#282) has a realistic trigger to demo. She is built in TWO clock phases on purpose: a
+// single-clock fixture cannot make a cell BOTH confident-at-now (which it must be to have been
+// promoted to ACTIVE) AND gone-quiet (the burnout signal). The 14-day recency half-life means a cell
+// quiet long enough to read as devaluation has already decayed below the MIN_EVIDENCE_MASS floor. So
+// we run her hot log at an EARLIER clock (`ELLE_HOT_NOW`), promote to ACTIVE there — exactly as a
+// guide would have when she was thriving — then append only prompted returns and re-derive at
+// PILOT_NOW. 013 never demotes on silence, so the ACTIVE state persists while wellbeing now reads
+// devaluation (still turning up, but prompted-only and no longer going deep) ⇒ BURNOUT_TIP.
+const ELLE_HOT_NOW = "2026-03-08T00:00:00.000Z"; // when she was thriving and a guide promoted her
+const ELLE_NOVEL = "2025-12-20";
+const ELLE_SPREAD = ["2026-01-02", "2026-01-20"]; // gate spread: a >14d gap and a >56d term
+// A dense voluntary cluster every other day, ending two days before ELLE_HOT_NOW so it is confident
+// AT THAT CLOCK. By PILOT_NOW these have aged into the 21-42d "prior voluntary depth" window.
+const ELLE_HOT = [
+  "2026-02-16",
+  "2026-02-18",
+  "2026-02-20",
+  "2026-02-22",
+  "2026-02-24",
+  "2026-02-26",
+  "2026-02-28",
+  "2026-03-02",
+  "2026-03-04",
+  "2026-03-06",
+];
+// Since promotion she only shows up when nudged: prompted, no depth, no voluntary return. This is the
+// devaluation pattern — presence without depth — inside the recent 21-day wellbeing window.
+const ELLE_PROMPTED = ["2026-03-13", "2026-03-16", "2026-03-20", "2026-03-24", "2026-03-28"];
+
+/** Elle's hot phase: novel + gate spread + a confident voluntary cluster (depth on the last). */
+function elleHotLog(): Interaction[] {
+  const returns = [...ELLE_SPREAD, ...ELLE_HOT];
+  return [
+    mk("kid-synthetic-005", "elle-production", "assemble", ELLE_NOVEL, "elle-prod-x0"),
+    ...returns.map((d, i) =>
+      mk("kid-synthetic-005", "elle-production", "assemble", d, `elle-prod-r${i}`, {
+        ...(i === returns.length - 1
+          ? { depthSignals: [{ kind: "artifact_competence", value: 1 }] }
+          : {}),
+      }),
+    ),
+  ];
+}
+
+/** Elle's quiet phase: prompted-only returns, no depth (the devaluation the escalation reads). */
+const ELLE_PROMPTED_LOG: Interaction[] = ELLE_PROMPTED.map((d, i) =>
+  mk("kid-synthetic-005", "elle-production", "assemble", d, `elle-prod-p${i}`, { prompted: true }),
+);
+
+const ELLE_ARTIFACTS = {
+  [ELLE_PROD]: "defense-record-305",
+};
 
 // ── Per-kid interaction logs ─────────────────────────────────────────────────────
 const ARI_LOG: Interaction[] = [
@@ -323,5 +382,45 @@ export function buildPilotRoster(now: string = PILOT_NOW): Roster {
   store = park(store, physicsId, GUIDE, "parked — revisit next term", now);
 
   roster.set("kid-synthetic-004", { ...dulce0, store });
+
+  // Elle: promote to ACTIVE at the earlier clock she was thriving at, then re-derive at `now` with
+  // only prompted returns appended (013 never demotes on silence). See ELLE_* block above.
+  const elleHot = runCycle(
+    emptyProfile(
+      "kid-synthetic-005",
+      "Elle Nkemelu",
+      PILOT_PRIORS["kid-synthetic-005"],
+      ELLE_ARTIFACTS,
+    ),
+    { interactions: elleHotLog(), surfaced: [] },
+    ctx,
+    ELLE_HOT_NOW,
+  );
+  const elleId = `kid-synthetic-005::${ELLE_PROD}`;
+  const elleGate = deriveGates(elleHot, ctx, ELLE_HOT_NOW).get(elleId)!;
+  let elleStore = elleHot.store;
+  // production: EMERGING → CANDIDATE → ACTIVE (a guide promoted her when the pursuit was thriving)
+  elleStore = promote(
+    elleStore,
+    elleId,
+    GUIDE,
+    { gate: elleGate, autonomySignOff: true },
+    ELLE_HOT_NOW,
+  );
+  elleStore = promote(
+    elleStore,
+    elleId,
+    GUIDE,
+    { gate: elleGate, autonomySignOff: true },
+    ELLE_HOT_NOW,
+  );
+  // Re-derive at `now` with the quiet prompted-only tail appended; ACTIVE is preserved.
+  const elle = runCycle(
+    { ...elleHot, store: elleStore },
+    { interactions: ELLE_PROMPTED_LOG, surfaced: [] },
+    ctx,
+    now,
+  );
+  roster.set("kid-synthetic-005", elle);
   return roster;
 }

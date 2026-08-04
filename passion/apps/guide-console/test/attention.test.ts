@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   attentionFor,
   attentionRank,
+  engagementFading,
   orderByAttention,
   type AttentionInputs,
   type AttentionLevel,
@@ -254,5 +255,35 @@ describe("orderByAttention", () => {
     ];
     orderByAttention(rows, levelOf);
     expect(rows.map((r) => r.id)).toEqual(["a", "b"]);
+  });
+});
+
+describe("engagementFading — the ENGAGEMENT_FADING phase gate", () => {
+  it("a cooling trend counts as fading when the child has an ACTIVE pursuit", () => {
+    expect(engagementFading(true, [{ state: "ACTIVE" }])).toBe(true);
+  });
+
+  it("a cooling trend counts as fading when the child has a CANDIDATE pursuit", () => {
+    expect(engagementFading(true, [{ state: "CANDIDATE" }])).toBe(true);
+  });
+
+  it("a cooling trend is held (not fading) when everything is still in discovery", () => {
+    // You can't be fading on what you're only sampling: EMERGING/EXPLORING is discovery, and drifting
+    // off a thing you tried is how sampling is supposed to work, not a specialization going cold.
+    expect(engagementFading(true, [{ state: "EMERGING" }, { state: "EXPLORING" }])).toBe(false);
+  });
+
+  it("no cooling trend is never fading, whatever the phase", () => {
+    expect(engagementFading(false, [{ state: "ACTIVE" }])).toBe(false);
+  });
+
+  it("a child with no cards at all is never fading", () => {
+    expect(engagementFading(true, [])).toBe(false);
+  });
+
+  it("one active pursuit among many discovery cards is enough to let the trend through", () => {
+    expect(
+      engagementFading(true, [{ state: "EXPLORING" }, { state: "EMERGING" }, { state: "ACTIVE" }]),
+    ).toBe(true);
   });
 });

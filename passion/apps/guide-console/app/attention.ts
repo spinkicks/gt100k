@@ -3,6 +3,7 @@
 // family-pressure pattern -- both are the child's safety and must outrank opportunity), then a fading
 // interest (engagement is cooling even if affect is calm -- a calm read must not stand alone over a
 // dying interest), then opportunity (a promote gate has passed), then quiet. Pure and deterministic.
+import { isPlannableState } from "@gt100k/specialization-planner";
 import { specPath } from "./vocab.js";
 import { STATE_LABEL } from "./wellbeing-strip.js";
 
@@ -80,6 +81,24 @@ const SEVERITY: Record<string, number> = {
 
 export function attentionRank(level: AttentionLevel): number {
   return level === "NEEDS_YOU" ? 0 : level === "READY" ? 1 : 2;
+}
+
+/**
+ * Whether a child's cooling voluntary-return trend should count as a fading INTEREST.
+ *
+ * A child can only be "fading" on a pursuit they are actually invested in. If everything they have is
+ * still in discovery (no CANDIDATE/ACTIVE card), a declining return trend is ordinary sampling —
+ * trying a thing and drifting off is how discovery is supposed to work — not a specialization going
+ * cold. So the child-level `fading` trend is gated on the child having at least one active pursuit:
+ * the same phase gate the wellbeing engine applies to its pressure half, applied here at the child
+ * level. Keyed on the 013 lifecycle state, NEVER on age. Kept as a pure predicate so it is testable
+ * on plain inputs; the glue (`attentionForKid`) feeds it the child's real trend and cards.
+ */
+export function engagementFading(
+  fading: boolean,
+  cards: readonly { readonly state: string }[],
+): boolean {
+  return fading && cards.some((c) => isPlannableState(c.state));
 }
 
 // Sort any list into triage order: whoever needs the guide floats up. Ties keep their input order
