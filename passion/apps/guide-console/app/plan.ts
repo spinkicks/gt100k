@@ -14,7 +14,7 @@ import {
   type DomainPath,
   type SpecializationPlan,
 } from "@gt100k/specialization-planner";
-import { PILOT_CATALOG, ROSTER_NOW, profileFor } from "./console-data.js";
+import { CONSOLE_CATALOG, nowFor, profileFor } from "./console-data.js";
 import { wellbeingForKid } from "./wellbeing.js";
 import { PLAN_AGE_TIER, PLAN_LIBRARY } from "./plan-library.js";
 
@@ -62,12 +62,15 @@ export function plansForKid(kidId: string, store?: HypothesisStore): readonly Pl
       lifecycle,
       h.cellKey,
       read,
-      ROSTER_NOW,
-      PILOT_CATALOG,
+      // The whole catalogue and the CHILD's clock. This used to be the pilot fixtures and a fixed
+      // April date, so a real child's gadget ids resolved to nothing, `voluntary` came back empty,
+      // and the panel showed no plan at all for anyone who had actually been promoted.
+      nowFor(kidId),
+      CONSOLE_CATALOG,
     );
     if (!inputs) continue; // no voluntary engagement → not a specialization cell
     const resources = curatedForCell(PLAN_LIBRARY, inputs.domainPath, PLAN_AGE_TIER);
-    const plan = planSpecializationWithStub(inputs, resources, ROSTER_NOW);
+    const plan = planSpecializationWithStub(inputs, resources, nowFor(kidId));
     out.push({
       id: h.id,
       cellKey: h.cellKey,

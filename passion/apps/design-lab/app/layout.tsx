@@ -32,7 +32,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }): JSX.Element {
   return (
-    <html lang="en" className={`${serif.variable} ${sans.variable}`}>
+    // `data-theme="gt"` for the same reason this app exists at all: a prototype is only worth
+    // looking at if it renders under the contract the real apps render under. Without it the lab
+    // imported the tokens and then ignored them, so anything built here looked like a different
+    // product the moment it moved.
+    <html lang="en" data-theme="gt" className={`${serif.variable} ${sans.variable}`}>
       <body>{children}</body>
     </html>
   );

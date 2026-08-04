@@ -963,3 +963,39 @@
     transform: none;
   }
 }
+
+/* The child's way home. Sized as a real target and kept visually quiet: it is an exit, not an
+   invitation, and it should never compete with the wall for a child's attention. */
+.homelink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--gt-line, rgba(0, 42, 58, 0.18));
+  border-radius: 6px;
+  color: var(--gt-navy, #002a3a);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.homelink:hover {
+  background: rgba(0, 42, 58, 0.05);
+}
+.homelink:focus-visible {
+  outline: 3px solid var(--gt-gold, #e48b53);
+  outline-offset: 2px;
+}
+.homelink__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--gt-navy, #002a3a);
+  color: var(--gt-off-white, #fcf4ef);
+  font-size: 0.72rem;
+  font-weight: 700;
+}

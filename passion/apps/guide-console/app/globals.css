@@ -5293,3 +5293,34 @@ body {
   font-size: 0.75rem;
   color: var(--ink-muted);
 }
+
+/* Moves read as a scannable list, with the argument behind each one click away. */
+.findout__moves summary {
+  cursor: pointer;
+  list-style: none;
+}
+.findout__moves summary::-webkit-details-marker {
+  display: none;
+}
+.findout__moveTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.findout__moves summary:hover strong {
+  text-decoration: underline;
+}
+
+/* Axis numbers and the unit they count. Quiet enough not to compete with the data, large enough
+   to read: a chart whose scale is unreadable is a shape, not a measurement. */
+.chart__tick {
+  font-size: 10px;
+  fill: var(--ink-muted);
+}
+.chart__axis {
+  font-size: 10px;
+  fill: var(--ink-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

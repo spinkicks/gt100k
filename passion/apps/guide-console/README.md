@@ -31,10 +31,12 @@ disk under a `kidId` the caller chooses.
 
 ## What the console shows
 
-Seven tabs — **Overview, Hypotheses, Wellbeing, Plan, Family, Access, Maps** — each carrying a count
-and a review dot when that lens holds an escalation. **Overview** is the landing view rather than
-Hypotheses: guides are not technical, and the summary is what orients them before they act. Switching
-child returns there, so a tab is never left pointing at the previous kid's section.
+Three tabs — **Interests, Plan and access, Family and coaching** — each carrying a count
+and a review dot when that lens holds an escalation. Above them sits a persistent wellbeing strip,
+because how hard to push is a standing question rather than one lens among several, and the mastery
+maps live in a drawer rather than a tab for the opposite reason: most children have no map. Today's
+roster is the landing view, so a guide opens on who needs them rather than on a child. Switching
+child returns to Interests, so a tab is never left pointing at the previous kid's section.
 
 The Hypotheses tab is the core read: for the selected kid, a ranked list of **hypothesis cards**
 (ordered by `lowerBound` desc), each with:

@@ -72,15 +72,20 @@ export function FindOutPanel({
         If something needs changing, change it in the adults first
         {domainPath === undefined ? null : <> ({specPath(domainPath)})</>}
       </span>
+      {/* Titles first, reasoning one click away. Rendered flat, all six carried about five hundred
+          words and a guide with six children and ten minutes reads none of it. The title and the
+          grade are what choose a move; the argument behind it is what you read once, if at all. */}
       <ul className="findout__moves">
-        {moves.map((m) => (
+        {moves.map((m, i) => (
           <li key={m.id}>
-            <div className="findout__moveTop">
-              <strong>{m.title}</strong>
-              <Grade m={m} />
-            </div>
-            <p className="findout__does">{m.does}</p>
-            <p className="findout__why">{m.why}</p>
+            <details open={i === 0}>
+              <summary className="findout__moveTop">
+                <strong>{m.title}</strong>
+                <Grade m={m} />
+              </summary>
+              <p className="findout__does">{m.does}</p>
+              <p className="findout__why">{m.why}</p>
+            </details>
           </li>
         ))}
       </ul>
