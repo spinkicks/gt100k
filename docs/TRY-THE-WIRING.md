@@ -24,10 +24,10 @@ this walkthrough, and it is written that way so the difference stays visible.
 ## 2. Start the console
 
 ```bash
-GT100K_INGEST_ORIGIN=http://localhost:3070 pnpm --filter @gt100k/guide-console dev   # http://localhost:3020
+GT100K_INGEST_ORIGIN=http://localhost:3080 pnpm --filter @gt100k/guide-console dev   # http://localhost:3020
 ```
 
-The discovery app serves on `:3070`; the route's built-in origin allowlist still names the old
+The discovery app serves on `:3080`; the route's built-in origin allowlist still names the old
 `:5178` surface, so pass `GT100K_INGEST_ORIGIN` to let the browser's cross-origin post through.
 
 ## 3. Start the game, pointed at it
@@ -36,7 +36,7 @@ The discovery app serves on `:3070`; the route's built-in origin allowlist still
 NEXT_PUBLIC_GT100K_INGEST_URL=http://localhost:3020/api/ingest pnpm --filter @gt100k/discovery dev
 ```
 
-`http://localhost:3070`. Without that variable the game behaves exactly as it always has and writes
+`http://localhost:3080`. Without that variable the game behaves exactly as it always has and writes
 its log only to `localStorage`.
 
 ## 4. Play
@@ -86,7 +86,7 @@ The uplink never disturbs the child, so it fails quietly. It does warn in devtoo
 - `403 ... "reason":"withdrawn"` or `"expired"` — the record is there and not currently valid.
 - **A CORS error** — the console is allowing a different origin than the game's. The route permits
   `http://localhost:5178` unless `GT100K_INGEST_ORIGIN` is set, so start the console with
-  `GT100K_INGEST_ORIGIN=http://localhost:3070` (step 2) to match the discovery app.
+  `GT100K_INGEST_ORIGIN=http://localhost:3080` (step 2) to match the discovery app.
 - **Nothing at all in the network tab** — `NEXT_PUBLIC_GT100K_INGEST_URL` is not set. Next.js only
   reads it at startup, so restart the game after setting it.
 

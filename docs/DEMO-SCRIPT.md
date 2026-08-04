@@ -14,6 +14,14 @@ Every port below is pinned in the app's own `dev` script and matches the surface
 `@gt100k/ui`, so the in-product links resolve to each other. Start an app on a different port and its
 neighbours will still point at the pinned one.
 
+> **Run everything with `dev`, not from a build.** `resolveOne` in `@gt100k/ui` only falls back to a
+> localhost URL when `NODE_ENV === "development"`; in a production build it returns `null` unless
+> `NEXT_PUBLIC_SURFACE_URL_*` is set, and nothing sets it. The front door is a static export, so a
+> built copy renders all four role cards as **"Not reachable from here"** with no links at all. That
+> asymmetry is deliberate — a deployed site must not hardcode localhost — but it means the first
+> screen of a built demo is a dead end. If you must present from a build, set the six variables
+> first.
+
 ```bash
 pnpm --filter @gt100k/guide-console consent       # once: lets the console accept `local-demo`
 pnpm --filter @gt100k/guide-console seed-demo     # once: a scripted week of play, via the real route
@@ -67,7 +75,7 @@ The claim to make, because this audience will ask why:
 > And of twelve first-graders, zero found the 'More Choices' control on their own. So there is no
 > pager here, ever. Whatever is on this screen is, for a small child, the whole world."
 
-**Two controls, quickly.** Toggle **Names** on and off. Drop **Age** to 6 and watch eight tiles
+**Two controls, quickly.** Toggle **Names** on and off. Drop **Age** to 6 and watch twenty-two tiles
 leave: *"nothing here is locked, but we do not show a nine-year-old a thing that needs a licence."*
 
 If asked about the pictures: every tile is one render from one scaffold, normalised to the same mean
@@ -84,7 +92,7 @@ prettier than its neighbours.
 
 Land on the venue:
 
-> "ABRSM grades this child, not us. Every one of the thirty-seven has a real external judge — a
+> "ABRSM grades this child, not us. Every one of the forty-four has a real external judge — a
 > federation, a competition, a licensing body. A pursuit with nobody to judge it is just a topic."
 
 **Click the game.** Play ten seconds. Close it.
@@ -117,14 +125,14 @@ Open Demo Child. Then the honest beat, which is the strongest thirty seconds in 
 Show a synthetic child for the fuller read if the panels are thin. **Ari Mercado** is the one to
 pick, because he has two specializations and that is what makes the next beat work.
 
-**Click between the two rows in the Specializations rail** with **Wellbeing** open. The read changes
+**Click between the two rows in the Specializations rail.** The wellbeing strip sits above the tabs and is always on screen. The read changes
 under you, and the banner names which one you are looking at.
 
 > "A child is not one thing, and none of this advice is about a child. 'Hold, and lower the dose' is
 > a sentence about a domain. He is steady in audio and the dance read is the one asking for a human,
 > so the tab is scoped to whichever you picked and the rail says which one needs you."
 
-If someone asks why Maps looks different, that is the honest one to take:
+If someone opens **Maps to review** beside the child switcher, that is the honest question to take:
 
 > "Those are the maps that exist, and none of them is his. The banner says so rather than letting a
 > piano map read as his path. Writing the maps for what children are actually into is the next
@@ -161,5 +169,5 @@ position. That is half the measurement and it is the half most systems throw awa
 decline and a never-shown are the same row.
 
 **"Is the order the same every time?"** Random per session, fixed roster. Random order decorrelates
-position from preference. A random *roster* would be trigger-and-abandon, which finishes below never
-having triggered the interest at all.
+position from preference. A random *roster* would be trigger-and-abandon, and
+children whose interest is triggered and then not maintained show a marked decline in it.

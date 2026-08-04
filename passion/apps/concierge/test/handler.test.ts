@@ -23,7 +23,7 @@ describe("handleAsk (stub deps, seeded synthetic data)", () => {
     const res = await handleAsk({ message: SEED_COVERED_QUESTION }, buildStubDeps());
     expect(res.kind).toBe("answer");
     expect(res.resources?.map((r) => r.id)).toEqual(["res-chess-openings"]);
-    expect(res.citations?.[0]?.url).toBe("https://www.khanacademy.org/chess-openings");
+    expect(res.citations?.[0]?.url).toBe("https://lichess.org/opening");
     expect(res.probe).toBeTruthy();
   });
 

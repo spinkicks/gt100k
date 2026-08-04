@@ -1,7 +1,7 @@
 import type { Pursuit } from "./model.js";
 
 /**
- * The thirty-seven things a child can actually do, and who will tell them they are getting better.
+ * The forty-four things a child can actually do, and who will tell them they are getting better.
  *
  * TWO TESTS, AND AN ENTRY HAS TO PASS BOTH. The first is the original one
  * (`docs/research/2026-07-28-discovery-catalogue.md` §1): a real venue, reachable by a child in this

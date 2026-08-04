@@ -466,7 +466,7 @@ export const CLAIMS: readonly Claim[] = [
       {
         authors: "Renzulli",
         year: 1977,
-        url: "https://gifted.uconn.edu/schoolwide-enrichment-model/the-enrichment-triad-model/",
+        url: "https://gifted.media.uconn.edu/wp-content/uploads/sites/961/2022/06/The_Enrichment_Triad_Model.pdf",
       },
       {
         authors: "Macnamara, Hambrick & Oswald",

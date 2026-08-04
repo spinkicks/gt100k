@@ -1,6 +1,6 @@
 # What stays in the catalogue, and why prestige is the wrong axis
 
-**Status:** **Applied.** The catalogue is 37 pursuits. The seven that failed the second test on a
+**Status:** **Applied, then added to.** The cut described here took the catalogue to 37. It is now **44**: PR #267 added four county-fair pursuits, #269 added acting, reciting and public speaking, and #268 ruled sport out of scope. The cuts below still stand; the number does not. The seven that failed the second test on a
 structural fact are gone; the fifteen marginals stay, because the owner chose to keep both tests
 rather than replace one with the other (§4c).
 **Date:** 2026-07-30

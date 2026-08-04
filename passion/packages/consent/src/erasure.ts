@@ -17,8 +17,10 @@
 // forget it, so a guardian is told the truth rather than shown a green tick.
 //
 // Which is why the ingest path built alongside this deliberately does not feed the graph. A child's
-// discovery record is erasable today. Their project evidence is not, and that gap is the reason the
-// gate is still shut.
+// discovery record is erasable in principle, because a profile is a single file, but nothing calls
+// this: `profile-store-fs` does not implement `ErasableStore` and the only implementations are the
+// doubles in this package's own test. Their project evidence cannot be erased even in principle,
+// and between them that is why the gate is still shut.
 
 /** Somewhere a child's data might live. */
 export interface ErasableStore {
