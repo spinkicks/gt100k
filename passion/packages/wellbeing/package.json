@@ -13,7 +13,8 @@
     "@gt100k/hypothesis-store": "workspace:*",
     "@gt100k/interest-inference": "workspace:*",
     "@gt100k/signal-pipeline": "workspace:*",
-    "@gt100k/two-axis-tagging": "workspace:*"
+    "@gt100k/two-axis-tagging": "workspace:*",
+    "@gt100k/adult-report": "workspace:*"
   },
   "scripts": {
     "test": "vitest run --root ../../.. passion/packages/wellbeing/test"

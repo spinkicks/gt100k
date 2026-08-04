@@ -320,6 +320,9 @@ importers:
       '@gt100k/access-broker':
         specifier: workspace:*
         version: link:../../packages/access-broker
+      '@gt100k/adult-report':
+        specifier: workspace:*
+        version: link:../../packages/adult-report
       '@gt100k/concierge':
         specifier: workspace:*
         version: link:../../packages/concierge
@@ -451,6 +454,9 @@ importers:
       '@gt100k/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
+      '@gt100k/family':
+        specifier: workspace:*
+        version: link:../../packages/family
       '@gt100k/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -473,9 +479,6 @@ importers:
       '@fontsource-variable/literata':
         specifier: ^5.3.0
         version: 5.3.0
-      '@gt100k/family':
-        specifier: workspace:*
-        version: link:../../packages/family
       '@types/react':
         specifier: ^18.3.12
         version: 18.3.31
@@ -604,6 +607,8 @@ importers:
       '@gt100k/wellbeing':
         specifier: workspace:*
         version: link:../wellbeing
+
+  passion/packages/adult-report: {}
 
   passion/packages/boundaries: {}
 
@@ -841,6 +846,9 @@ importers:
 
   passion/packages/wellbeing:
     dependencies:
+      '@gt100k/adult-report':
+        specifier: workspace:*
+        version: link:../adult-report
       '@gt100k/hypothesis-store':
         specifier: workspace:*
         version: link:../hypothesis-store

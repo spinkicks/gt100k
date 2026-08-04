@@ -2,34 +2,37 @@
   "files": [],
   "references": [
     {
-      "path": "passion/packages/evidence-explorer-view"
+      "path": "./passion/packages/adult-report"
     },
     {
-      "path": "passion/packages/interest-inference"
+      "path": "./passion/packages/motivation"
     },
     {
-      "path": "passion/packages/surfacing"
+      "path": "passion/adapters/access-broker-live"
     },
     {
-      "path": "passion/packages/discovery-catalog"
+      "path": "passion/adapters/concierge-live"
     },
     {
-      "path": "passion/packages/consent"
+      "path": "passion/adapters/evidence-deferred"
     },
     {
-      "path": "passion/packages/socratic-defense"
+      "path": "passion/adapters/evidence-repo-memory"
     },
     {
-      "path": "passion/adapters/tutor-stub"
+      "path": "passion/adapters/evidence-repo-postgres"
     },
     {
-      "path": "passion/adapters/tutor-tfy"
+      "path": "passion/adapters/mastery-map-live"
     },
     {
-      "path": "passion/packages/two-axis-tagging"
+      "path": "passion/adapters/planner-live"
     },
     {
-      "path": "passion/packages/pursuits"
+      "path": "passion/adapters/profile-store-fs"
+    },
+    {
+      "path": "passion/adapters/project-evidence-sink"
     },
     {
       "path": "passion/adapters/tagger-stub"
@@ -38,19 +41,34 @@
       "path": "passion/adapters/tagger-tfy"
     },
     {
-      "path": "passion/packages/signal-pipeline"
+      "path": "passion/adapters/timeback-live"
     },
     {
-      "path": "passion/packages/hypothesis-store"
+      "path": "passion/adapters/tutor-stub"
     },
     {
-      "path": "passion/packages/student-profile"
+      "path": "passion/adapters/tutor-tfy"
     },
     {
-      "path": "passion/adapters/profile-store-fs"
+      "path": "passion/packages/access-broker"
     },
     {
-      "path": "passion/packages/wellbeing"
+      "path": "passion/packages/boundaries"
+    },
+    {
+      "path": "passion/packages/concierge"
+    },
+    {
+      "path": "passion/packages/consent"
+    },
+    {
+      "path": "passion/packages/discovery-catalog"
+    },
+    {
+      "path": "passion/packages/evidence-explorer-view"
+    },
+    {
+      "path": "passion/packages/evidence-tiny-game"
     },
     {
       "path": "passion/packages/family"
@@ -59,61 +77,46 @@
       "path": "passion/packages/guardrails"
     },
     {
-      "path": "passion/packages/concierge"
+      "path": "passion/packages/hypothesis-store"
     },
     {
-      "path": "passion/adapters/concierge-live"
-    },
-    {
-      "path": "passion/packages/evidence-tiny-game"
-    },
-    {
-      "path": "passion/adapters/evidence-repo-postgres"
-    },
-    {
-      "path": "passion/adapters/evidence-repo-memory"
-    },
-    {
-      "path": "passion/adapters/evidence-deferred"
-    },
-    {
-      "path": "passion/packages/specialization-planner"
-    },
-    {
-      "path": "passion/adapters/planner-live"
-    },
-    {
-      "path": "passion/packages/timeback"
-    },
-    {
-      "path": "passion/adapters/timeback-live"
-    },
-    {
-      "path": "passion/packages/project-workspace"
-    },
-    {
-      "path": "passion/adapters/project-evidence-sink"
-    },
-    {
-      "path": "passion/packages/access-broker"
-    },
-    {
-      "path": "passion/adapters/access-broker-live"
-    },
-    {
-      "path": "passion/packages/ui"
+      "path": "passion/packages/interest-inference"
     },
     {
       "path": "passion/packages/mastery-map"
     },
     {
-      "path": "passion/adapters/mastery-map-live"
+      "path": "passion/packages/project-workspace"
     },
     {
-      "path": "passion/packages/boundaries"
+      "path": "passion/packages/pursuits"
     },
     {
-      "path": "./passion/packages/motivation"
+      "path": "passion/packages/signal-pipeline"
+    },
+    {
+      "path": "passion/packages/socratic-defense"
+    },
+    {
+      "path": "passion/packages/specialization-planner"
+    },
+    {
+      "path": "passion/packages/student-profile"
+    },
+    {
+      "path": "passion/packages/surfacing"
+    },
+    {
+      "path": "passion/packages/timeback"
+    },
+    {
+      "path": "passion/packages/two-axis-tagging"
+    },
+    {
+      "path": "passion/packages/ui"
+    },
+    {
+      "path": "passion/packages/wellbeing"
     }
   ]
 }

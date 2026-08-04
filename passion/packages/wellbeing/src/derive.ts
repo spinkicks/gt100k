@@ -8,13 +8,21 @@
 //
 // `successRate` comes from `Interaction.tries` and is read off the RAW log rather than the cell
 // stream, because tries are deliberately absent from `CellEvent`: performance must never become
-// interest evidence. `exhaustion`/`obsessiveTip`/`stakesEvent` have no affordance yet → undefined.
+// interest evidence.
+//
+// `exhaustion` and `stakesEvent` come from `@gt100k/adult-report`, because neither can be read from
+// behaviour: the best published attempt to sense exhaustion from traces managed an ROC AUC of 0.56
+// against a chance level of 0.50, and a competition date is a calendar fact rather than anything a
+// log contains. `obsessiveTip` used to sit in this list and has been deleted, since the theory it
+// borrowed from does not contain a tipping point at all. See
+// `docs/decisions/2026-08-04-what-can-be-sensed.md`.
 import type { StudentProfile } from "@gt100k/student-profile";
 import { deriveSignals } from "@gt100k/signal-pipeline";
 import type { Artifact } from "@gt100k/two-axis-tagging";
 import type { CellEvent } from "@gt100k/interest-inference";
 import { isDepthFamily, serializeCellKey } from "@gt100k/interest-inference";
 import { GAP_DAYS, TREND_WINDOW_DAYS, type Trend, type WellbeingSignals } from "./model.js";
+import { NO_REPORTS, restDirection, stakesWindow, type AdultReports } from "@gt100k/adult-report";
 
 const DAY_MS = 86_400_000;
 
@@ -44,6 +52,8 @@ export function deriveWellbeingSignals(
   cellKey: string,
   now: string,
   catalog: ReadonlyMap<string, Artifact> = new Map(),
+  /** What adults have told us. Defaults to nothing, which reads as no report rather than no risk. */
+  reports: AdultReports = NO_REPORTS,
 ): WellbeingSignals {
   const nowMs = Date.parse(now);
   const validNow = !Number.isNaN(nowMs);
@@ -134,6 +144,25 @@ export function deriveWellbeingSignals(
     devaluation,
     missing,
     ...(successRate === undefined ? {} : { successRate }),
+    // Asked, never inferred. `flagging` deliberately does not set this: the engine turns exhaustion
+    // into a rest recommendation, and one adult noticing a quiet week is not grounds for standing a
+    // child down from something they chose. It reaches the guide either way.
+    ...(restDirection(reports, now) === "worn-out" ? { exhaustion: true } : {}),
+    // Scoped to THIS cell when the adult named one. A recital does not make a child's chess fragile.
+    ...(stakesFor(reports, cellKey, now) ? { stakesEvent: true } : {}),
     now,
   };
+}
+
+/**
+ * Whether something with stakes is coming that belongs to THIS spike.
+ *
+ * An event an adult filed without naming a specialization counts for all of them, because a child
+ * with a competition on Saturday is a child with a competition on Saturday. One filed against a
+ * different cell does not: a piano recital says nothing about how hard to push their chess.
+ */
+function stakesFor(reports: AdultReports, cellKey: string, now: string): boolean {
+  const w = stakesWindow(reports, now);
+  if (w === undefined) return false;
+  return w.event.cellKey === undefined || w.event.cellKey === cellKey;
 }

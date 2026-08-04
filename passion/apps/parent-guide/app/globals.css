@@ -760,3 +760,73 @@ li {
     break-before: page;
   }
 }
+
+/* The month in the child's own words. Given the page's most prominent block, because it is the
+   only part that is about their actual child, and deliberately carrying no figures of any kind. */
+.digest {
+  margin: 0 0 40px;
+  padding: 24px 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--r, 8px);
+  background: var(--paper-2, var(--surface-2));
+}
+.digest h2 {
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+}
+.digest__words {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+.digest__said {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  max-width: 60ch;
+}
+.digest__about {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+.digest__none {
+  margin: 0 0 20px;
+  max-width: 60ch;
+  color: var(--ink-muted);
+}
+.digest__one {
+  padding: 14px 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--paper, var(--surface));
+}
+/* When the advice is to do nothing, it should not look like a task. */
+.digest__one--quiet {
+  border-left-color: var(--line);
+}
+.digest__k {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.digest__say {
+  margin: 0 0 8px;
+  font-weight: 600;
+  max-width: 60ch;
+}
+.digest__because {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+  max-width: 62ch;
+}
+.digest__consent {
+  margin: 16px 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  max-width: 62ch;
+}

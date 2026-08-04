@@ -53,8 +53,14 @@ function decide(s: WellbeingSignals, pressureActive: boolean): Decision {
   const successKnown = typeof s.successRate === "number" && !Number.isNaN(s.successRate);
   const success = successKnown ? (s.successRate as number) : undefined;
 
-  // 1. BURNOUT_TIP: quiet devaluation (weighted HIGHEST) or an obsessive tip.
-  if (pressureActive && (s.devaluation === true || s.obsessiveTip === true)) {
+  // 1. BURNOUT_TIP: quiet devaluation, weighted highest.
+  //
+  // This used to also fire on `obsessiveTip`, which has been deleted rather than deferred. The
+  // Dualistic Model of Passion does not contain a tipping point: harmonious and obsessive passion
+  // are two dimensions measured at once and a person can score high on both, so the signal asked
+  // for a date the theory does not claim exists. No instrument detects obsessive passion from
+  // behaviour at any age, and none is validated in children at all.
+  if (pressureActive && s.devaluation === true) {
     return {
       state: "BURNOUT_TIP",
       challenge: "HOLD",

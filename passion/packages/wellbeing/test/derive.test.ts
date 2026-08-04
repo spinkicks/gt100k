@@ -26,7 +26,6 @@ describe("deriveWellbeingSignals (SC-7)", () => {
     // This fixture logs no judged work, so there is no rate to have. Never fabricated.
     expect(signals.successRate).toBeUndefined();
     expect(signals.exhaustion).toBeUndefined();
-    expect(signals.obsessiveTip).toBeUndefined();
     expect(signals.stakesEvent).toBeUndefined();
   });
 
@@ -128,5 +127,77 @@ describe("successRate", () => {
   it("ignores work older than the trend window", () => {
     const p = profileOf([solve(1, 60), solve(1, 61), solve(1, 62), solve(1, 63)]);
     expect(deriveWellbeingSignals(p, CELL, NOW, CATALOG as never).successRate).toBeUndefined();
+  });
+});
+
+describe("what adults tell us reaches the engine", () => {
+  const KID = "kid-ar";
+  const NOW = "2026-08-04T12:00:00.000Z";
+  const CELL = "games-strategy/chess::solve";
+  const profile = { kidId: KID, interactions: [], surfaced: [] } as never;
+
+  it("takes exhaustion from an adult, never from the log", () => {
+    // The whole point of the rework. Behavioural traces cannot carry this: the best published
+    // attempt reached ROC AUC 0.56 where chance is 0.50.
+    const worn = deriveWellbeingSignals(profile, CELL, NOW, new Map(), {
+      sightings: [],
+      stakes: [],
+      rest: [
+        {
+          kidId: KID,
+          reporter: "parent",
+          at: "2026-08-03T00:00:00.000Z",
+          direction: "worn-out",
+          because: "flat all week, did not want to go",
+        },
+      ],
+    });
+    expect(worn.exhaustion).toBe(true);
+  });
+
+  it("does not stand a child down because one adult saw a quiet week", () => {
+    // `flagging` reaches the guide and does not set the flag the engine turns into a rest
+    // recommendation. A child chose this; noticing they seem a bit off is not grounds for stopping
+    // them, and the adult who noticed is the one who should decide.
+    const flagging = deriveWellbeingSignals(profile, CELL, NOW, new Map(), {
+      sightings: [],
+      stakes: [],
+      rest: [
+        { kidId: KID, reporter: "parent", at: "2026-08-03T00:00:00.000Z", direction: "flagging" },
+      ],
+    });
+    expect(flagging.exhaustion).toBeUndefined();
+  });
+
+  it("opens the stakes window from a date, for the spike it belongs to", () => {
+    const near = {
+      sightings: [],
+      rest: [],
+      stakes: [
+        {
+          kidId: KID,
+          kind: "competition" as const,
+          what: "county chess",
+          on: "2026-08-07",
+          cellKey: CELL,
+        },
+      ],
+    };
+    expect(deriveWellbeingSignals(profile, CELL, NOW, new Map(), near).stakesEvent).toBe(true);
+    // A chess tournament says nothing about how hard to push their piano.
+    const other = deriveWellbeingSignals(
+      profile,
+      "music-sound/instruments::perform",
+      NOW,
+      new Map(),
+      near,
+    );
+    expect(other.stakesEvent).toBeUndefined();
+  });
+
+  it("reads no reports as no report, not as no risk", () => {
+    const bare = deriveWellbeingSignals(profile, CELL, NOW);
+    expect(bare.exhaustion).toBeUndefined();
+    expect(bare.stakesEvent).toBeUndefined();
   });
 });
