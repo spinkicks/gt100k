@@ -8,6 +8,8 @@ import type { JSX } from "react";
 import type { GuideDecision } from "./decisions.js";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 import { CoachingLog, MadeHistory } from "./family-history.js";
+import { TellUsPanel } from "./tell-us-panel.js";
+import { children } from "./console-data.js";
 import { FindOutPanel } from "./find-out-panel.js";
 import type { FamilyRead } from "@gt100k/family";
 
@@ -189,6 +191,8 @@ export function FamilyPanel({
           conversation with a person rather than a change to a plan, and because the moves this
           surface recommends are aimed at the adults in the room. */}
       <FindOutPanel domainPath={domainPath} />
+
+      <TellUsPanel kidName={children().find((c) => c.id === kidId)?.name ?? "them"} />
 
       <div className="fhistwrap">
         <div>

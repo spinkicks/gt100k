@@ -32,11 +32,29 @@ export interface WellbeingSignals {
   readonly stretchSeeking?: boolean;
   /** compliance-without-depth / cancels / stopped sharing. */
   readonly devaluation?: boolean;
-  /** shorter sessions / latency / sleep encroachment (optional). */
+  /**
+   * An adult has reported the child seems worn out by this. NOT derived from behaviour.
+   *
+   * The old spec here was "shorter sessions, latency, sleep encroachment", which does not survive
+   * the evidence. The best published attempt to read exhaustion from traces reached an ROC AUC of
+   * 0.56 against a chance level of 0.50, in adults, with far richer sensing than we have. The sleep
+   * half inverts: the validated instrument asks whether the child sleeps badly *because of* the
+   * activity, which is an attribution only they can make, and reported sleep tracks wellbeing
+   * better than measured sleep does.
+   *
+   * There is also no threshold to fire on. Mind Garden withdrew every MBI cut-off in 2016 for
+   * having no diagnostic validity. So this is a direction an adult noticed, never a verdict, and
+   * `RestReport` carries the words they used.
+   *
+   * Nothing in this literature is validated below about age 9.
+   */
   readonly exhaustion?: boolean;
-  /** can't take a day off / guilt / plays hurt / single-identity (optional). */
-  readonly obsessiveTip?: boolean;
-  /** competition / deadline / audience / specialization / parental-valuation spike. */
+  /**
+   * A competition, audition, recital or deadline is coming up.
+   *
+   * The one signal here that is not a mental state. It is a date an adult already knows, so we ask
+   * for it and there is no inference to get wrong. See `docs/decisions/2026-08-04-what-can-be-sensed.md`.
+   */
   readonly stakesEvent?: boolean;
   /** per-spike quiet-period gap (weak-point #2). */
   readonly missing?: boolean;

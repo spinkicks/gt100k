@@ -5324,3 +5324,59 @@ body {
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
+
+/* The three things only an adult can tell us. Presented as inputs rather than readings, and placed
+   above the coaching log for that reason: this is where a guide puts something in. */
+.tellus {
+  margin: 0 0 20px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--surface-2);
+}
+.tellus__lede {
+  margin: 0 0 14px;
+  max-width: 66ch;
+  color: var(--ink);
+}
+.tellus__block + .tellus__block {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.tellus__hint {
+  margin: 4px 0 10px;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  max-width: 68ch;
+}
+.tellus__field {
+  display: block;
+  margin-bottom: 10px;
+}
+.tellus__field span {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  margin-bottom: 4px;
+}
+.tellus__field input,
+.tellus__field textarea {
+  width: 100%;
+  max-width: 52ch;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm, 6px);
+  font: inherit;
+  font-size: 0.9rem;
+}
+.tellus__row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tellus__done {
+  margin-left: 10px;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}

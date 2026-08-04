@@ -1,6 +1,7 @@
 import { Toc } from "./Toc.js";
 import { ReadingProgress } from "./ReadingProgress.js";
 import { CheckIn } from "./CheckIn.js";
+import { Digest } from "./Digest.js";
 
 function Cite({ children }: { children: string }): JSX.Element {
   return (
@@ -26,6 +27,7 @@ export default function Page(): JSX.Element {
       <div className="layout">
         <Toc />
         <main className="main">
+          <Digest />
           <header className="page-header">
             <p className="kicker">A guide for homeschool parents</p>
             <h1>The Warm-Demanding Parent Playbook</h1>

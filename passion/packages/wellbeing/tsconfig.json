@@ -5,11 +5,24 @@
     "outDir": "dist"
   },
   "references": [
-    { "path": "../student-profile" },
-    { "path": "../hypothesis-store" },
-    { "path": "../interest-inference" },
-    { "path": "../signal-pipeline" },
-    { "path": "../two-axis-tagging" }
+    {
+      "path": "../adult-report"
+    },
+    {
+      "path": "../hypothesis-store"
+    },
+    {
+      "path": "../interest-inference"
+    },
+    {
+      "path": "../signal-pipeline"
+    },
+    {
+      "path": "../student-profile"
+    },
+    {
+      "path": "../two-axis-tagging"
+    }
   ],
   "include": ["src/**/*.ts", "test/**/*.ts"]
 }
