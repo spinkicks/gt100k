@@ -3,6 +3,7 @@
 // brief drops in unchanged later) + a self-authored one. The first project carries a pre-logged
 // journey that includes the perseverance chain (stuck, revision, artifact). No clock/random here;
 // refs are captured from the real derived event ids as the journey is built.
+import { PILOT_KID_ID } from "@gt100k/two-axis-tagging";
 import {
   logEvent,
   startProject,
@@ -12,7 +13,9 @@ import {
 } from "@gt100k/project-workspace";
 
 export const STUDIO_NOW = "2026-04-01T00:00:00.000Z";
-export const DEMO_KID = "kid-demo";
+// The shared pilot identity. This used to be "kid-demo" while the discovery wall wrote
+// "local-demo", so a child's browsing and their projects belonged to two different people.
+export const DEMO_KID = PILOT_KID_ID;
 export const DEMO_AGE_BAND = "9-11" as const;
 
 const BRIEFS: readonly ProjectBrief[] = [

@@ -165,7 +165,25 @@ export function TodayRoster({
                     ›
                   </span>
                 </button>
-              ) : null}
+              ) : (
+                // A child flagged for family pressure has no specialization attached to the flag,
+                // so both branches above skipped them and the row fell through to nothing. That put
+                // the child at the TOP of "needs you" as the only one with no way to act, which is
+                // the wrong way round. Opening their console is the action; the Family tab is where
+                // the flag gets cleared.
+                <button
+                  type="button"
+                  className="todayrow__do todayrow__do--review"
+                  onClick={() => onOpen(c.id, null)}
+                  aria-label={`Open ${c.name}'s console to review the family flag`}
+                  title="Opens this child's console"
+                >
+                  Review
+                  <span className="todayrow__go" aria-hidden="true">
+                    ›
+                  </span>
+                </button>
+              )}
             </li>
           );
         })}

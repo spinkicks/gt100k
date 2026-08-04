@@ -20,7 +20,8 @@ describe("assessFamily — the 5 §3.3 postures (SC-1)", () => {
     expect(r.posture.decoupleWorthFromOutcome).toBe(true);
     expect(r.escalateToHuman).toBe(true);
     expect(r.escalationReason).toBeTruthy();
-    expect(r.pressureWatch.antecedents).toContain("parental over-valuation");
+    // Described rather than labelled: see the wording test in guardrails.test.ts.
+    expect(r.pressureWatch.antecedents.length).toBeGreaterThan(0);
   });
 
   it("2. rising stakes → risk watch, autonomy up / structure steady, decouple, NO escalation", () => {

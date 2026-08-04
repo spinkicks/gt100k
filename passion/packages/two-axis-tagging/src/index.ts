@@ -5,3 +5,4 @@ export * from "./resolver.js";
 export * from "./ports.js";
 export * from "./pipeline.js";
 export * from "./validity.js";
+export * from "./pilot-child.js";

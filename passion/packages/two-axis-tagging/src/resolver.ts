@@ -14,6 +14,27 @@ export const ACTION_MODE_RULES: Record<string, readonly WorkMode[]> = {
   pitch: ["persuade"],
   "co-work": ["collaborate"],
   tend: ["care"],
+  /**
+   * Following a curated link out to go and learn.
+   *
+   * WHY IT AFFORDS EVERY MODE. Every other verb here names what the child DID, so the verb
+   * constrains the mode and the artifact narrows it. A follow names only that they left to learn
+   * more, and what kind of work that is belongs entirely to the thing they opened: a throwing
+   * tutorial affords `build`, a documentary affords `investigate`. Listing all nine lets the
+   * intersection with `affordedModes` return exactly what the resource declares, which is the only
+   * party here that actually knows.
+   *
+   * WHY IT IS NOT MODELESS like `open`. An open is presence on a tile the system put in front of
+   * them. A follow is a child choosing to leave for a specific thing, and for the 36 pursuits with
+   * no game in the product it is the ONLY act that can ever become evidence. Treating it as
+   * presence would mean four fifths of the catalogue could never certify an interest however often
+   * a child came back to it.
+   *
+   * HONEST LIMIT: a click is not the work. We know they opened it, not that they read or made
+   * anything. What carries the weight is the same thing that carries it everywhere else, coming
+   * back on a later day unprompted; one follow on one day proves very little and is scored as such.
+   */
+  "follow-source": WORK_MODES,
 };
 
 export type ResolveResult =

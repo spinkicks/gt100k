@@ -96,21 +96,44 @@ describe("guardrail: non-contingent warmth + no gamification (SC-4)", () => {
 
 // SC-3 — elevated pressure escalates + names the antecedents that fired.
 describe("guardrail: elevated pressure escalates (SC-3)", () => {
+  // Named by what fired, not by the sentence it produces. The wording is guide-facing copy and
+  // should be free to improve; what must hold is that SOMETHING is named, and that it reads as an
+  // observation a person could have watched rather than a construct from a paper.
   const cases: ReadonlyArray<readonly [typeof ELEVATED_SIGNALS, string]> = [
     [ELEVATED_SIGNALS, "parental over-valuation"],
     [CONDITIONAL_REGARD_SIGNALS, "conditional regard"],
-    [FAMILY_CONTROL_SIGNALS, "family control / intrusion"],
-    [PRESSURED_SPECIALIZATION_SIGNALS, "pressured specialization with declining return"],
-    [OVER_IDENTIFICATION_SIGNALS, "over-identification under rising stakes"],
+    [FAMILY_CONTROL_SIGNALS, "family control"],
+    [PRESSURED_SPECIALIZATION_SIGNALS, "pressured specialization"],
+    [OVER_IDENTIFICATION_SIGNALS, "over-identification"],
   ];
-  for (const [signals, label] of cases) {
-    it(`${label} → risk elevated + escalate + antecedent named`, () => {
+  for (const [signals, what] of cases) {
+    it(`${what} → risk elevated + escalate + antecedent named`, () => {
       const r = assessFamily(signals);
       expect(r.pressureWatch.risk).toBe("elevated");
       expect(r.escalateToHuman).toBe(true);
-      expect(r.pressureWatch.antecedents).toContain(label);
+      expect(r.pressureWatch.antecedents.length).toBeGreaterThan(0);
     });
   }
+
+  it("names the antecedent in words a guide can act on", () => {
+    // The load-bearing one. A guide shown "CONDITIONAL REGARD" about a real family learns nothing;
+    // shown what to look for, they can recognise it or raise it with the parent.
+    for (const signals of [
+      ELEVATED_SIGNALS,
+      CONDITIONAL_REGARD_SIGNALS,
+      FAMILY_CONTROL_SIGNALS,
+      PRESSURED_SPECIALIZATION_SIGNALS,
+      OVER_IDENTIFICATION_SIGNALS,
+    ]) {
+      for (const a of assessFamily(signals).pressureWatch.antecedents) {
+        expect(a).not.toMatch(
+          /conditional regard|over-valuation|intrusion|specialization|identification/i,
+        );
+        // Long enough to be a description rather than a label.
+        expect(a.split(/\s+/).length).toBeGreaterThan(4);
+      }
+    }
+  });
 });
 
 // SC-5 — over-identification protects plurality/reversibility; never narrows to one identity.

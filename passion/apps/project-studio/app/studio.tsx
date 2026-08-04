@@ -352,6 +352,17 @@ function TimelineItem({ event, index }: { event: WorkEvent; index: number }): JS
 }
 
 function Showcase({ project, onClose }: { project: Project; onClose: () => void }): JSX.Element {
+  // Escape listened for on the document, not on the overlay. Focus stays on the button that opened
+  // this, so a keyed handler on the div never fires and a keyboard user is stuck here until they
+  // find the close control by eye.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent): void {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   return (
     <div
       /* biome-ignore lint/a11y/useSemanticElements: this overlay is conditionally rendered and never
@@ -365,14 +376,14 @@ function Showcase({ project, onClose }: { project: Project; onClose: () => void 
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
+      // Two Escape paths, and both are needed. This one covers focus already inside the overlay;
+      // the document listener in the effect above covers the ordinary case, where focus is still
+      // on the button that opened this and a handler here would never fire at all.
       onKeyDown={(e) => {
         if (e.key === "Escape") onClose();
       }}
     >
       <div className="modal__card">
-        <div className="deco-emoji" style={{ fontSize: "2.4rem" }} aria-hidden="true">
-          🎉🌟🎈
-        </div>
         <div className="modal__h">Showtime!</div>
         <p className="modal__body">
           You&rsquo;d share <b>{project.title}</b> with{" "}

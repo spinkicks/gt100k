@@ -114,7 +114,7 @@ function decide(s: WellbeingSignals, pressureActive: boolean): Decision {
       pressure: "AUTONOMY_UP",
       reduceEvaluativeSurfacing: true,
       rationale:
-        "A stakes event (competition, deadline, audience, or valuation spike). Act counter-cyclically: hold challenge, lift autonomy, and reduce evaluative surfacing. Never add stakes or streaks.",
+        "Something high-stakes is coming up. Keep the difficulty where it is, give them more say in how they prepare, and talk less about the result. Do not add points or streaks.",
       notes: ["counter-cyclical autonomy on a stakes event", NEVER_GAMIFY],
     };
   }
@@ -127,7 +127,7 @@ function decide(s: WellbeingSignals, pressureActive: boolean): Decision {
       challenge: "SCAFFOLD",
       pressure: "STEADY",
       rationale:
-        "Success is below the comfortable stretch zone and return is not rising. Scaffold: lower difficulty or add support to bring success back toward the 80 to 90% setpoint.",
+        "They are missing more than they are landing, and they are not coming back more often. Make it easier, or sit with them, until most attempts work again.",
       notes: ["setpoint 80 to 90% success", NEVER_GAMIFY],
     };
   }
@@ -144,7 +144,7 @@ function decide(s: WellbeingSignals, pressureActive: boolean): Decision {
       challenge: "PUSH",
       pressure: "STEADY",
       rationale:
-        "Rising return and depth with the child voluntarily reaching for harder work. Push from strength: raise difficulty or fade scaffold, co-set with the child, and hold pressure steady.",
+        "They are coming back more, going deeper, and asking for harder work themselves. Offer something harder, decide it together, and keep everything else the same.",
       notes: ["push only from strength (rising return + depth + stretch-seeking)", NEVER_GAMIFY],
     };
   }

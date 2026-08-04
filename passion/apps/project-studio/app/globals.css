@@ -232,10 +232,17 @@
 
 * {
   box-sizing: border-box;
-  scrollbar-width: none;
+  /* `thin`, not `none`. Hiding the scrollbar entirely left a long quest log with no cue that
+     there was more below it, which reads as an empty page rather than a scrollable one. */
+  scrollbar-width: thin;
 }
 *::-webkit-scrollbar {
-  display: none;
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 5px;
 }
 
 html,
@@ -1550,6 +1557,12 @@ body {
   align-items: center;
   gap: 7px;
   white-space: nowrap;
+  /* `.btn` supplies light ink and NO background, so every modifier has to bring its own fill.
+     Without this the control rendered near-white on near-white and read as an empty square. */
+  background: var(--accent-2);
+  font-size: 0.85rem;
+  padding: 0 18px;
+  min-height: 44px;
 }
 
 .ask__pending {
@@ -1620,8 +1633,8 @@ body {
   padding: 14px 16px;
   border: 1px solid var(--line);
   border-left: 3px solid var(--accent);
-  border-radius: var(--radius-sm, 6px);
-  background: var(--surface-2);
+  border-radius: var(--r-sm);
+  background: var(--paper-2);
 }
 .interview__q {
   margin: 0 0 10px;
@@ -1635,8 +1648,8 @@ body {
   width: 100%;
   padding: 9px 11px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-sm, 6px);
-  background: var(--surface);
+  border-radius: var(--r-sm);
+  background: var(--paper);
   color: var(--ink);
   font: inherit;
   font-size: 0.875rem;
@@ -1652,4 +1665,31 @@ body {
   background: none;
   border: 1px solid var(--line);
   color: var(--ink-muted, var(--ink));
+}
+
+/* Narrow screens: stack the header instead of letting the controls squeeze the title.
+   In one flex row at 390px the title column collapsed to about 76px and rendered as
+   "My Project Studi", so the first thing a child saw was a broken name. */
+@media (max-width: 560px) {
+  .topbar {
+    flex-wrap: wrap;
+  }
+  .brand {
+    flex: 1 1 100%;
+  }
+  .topbar__spacer {
+    display: none;
+  }
+  .brand__title {
+    font-size: 1.25rem;
+  }
+}
+
+/* Log-entry controls: the 44px target was already met, but the label inside it was 13.4px.
+   A tap target a six-year-old can hit is no use if they cannot read what it says. */
+.kindbtn {
+  font-size: 0.9rem;
+}
+.mini {
+  font-size: 0.8rem;
 }

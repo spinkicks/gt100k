@@ -14,6 +14,7 @@ import {
 } from "@gt100k/student-profile";
 import { createFsProfileStore } from "@gt100k/profile-store-fs";
 import { CATALOG } from "@gt100k/discovery-catalog";
+import { SEED_LIBRARY, catalogFrom } from "@gt100k/concierge";
 import { decideConsent, type ConsentRecord } from "@gt100k/consent";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -101,6 +102,16 @@ async function consentRecords(): Promise<readonly ConsentRecord[]> {
   }
 }
 
+/**
+ * Everything a child can act on, in one catalogue.
+ *
+ * The gadgets are the games. The curated shelf is the rest, and it is the larger half: only eight
+ * of the forty-four pursuits have a game, so for the other thirty-six a followed link is the only
+ * act that can ever become evidence. Without the resources here those follows arrive, fail to
+ * resolve, and are dropped as `unknown-artifact` -- which is what used to happen to all of them.
+ */
+const INGEST_CATALOG = new Map([...CATALOG, ...catalogFrom(SEED_LIBRARY)]);
+
 export async function POST(request: Request): Promise<NextResponse> {
   // On every path below, including the refusals. A 403 the browser throws away for want of a header
   // is indistinguishable from a network failure, and "no consent" is precisely the answer an emitter
@@ -157,7 +168,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     existing ??
     emptyProfile(kidId, typeof body.displayName === "string" ? body.displayName : kidId);
 
-  const result = ingest(profile, batch, { catalog: CATALOG }, new Date().toISOString());
+  const result = ingest(profile, batch, { catalog: INGEST_CATALOG }, new Date().toISOString());
   await store.save(result.profile);
 
   // `rejected` is returned rather than logged, so a misconfigured emitter finds out from the

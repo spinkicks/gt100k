@@ -95,17 +95,27 @@ function baseline(): Branch {
   };
 }
 
-/** Which named obsessive-tip antecedents fired (§3.3 branch 1), in a stable order. */
+/**
+ * What a guide is being told, in a stable order.
+ *
+ * These are named after the constructs they come from in the literature, and a guide reading
+ * "CONDITIONAL REGARD" on a card about a real family learns nothing from it. Each one is now the
+ * observation itself, phrased as something a person could have watched happen, because that is
+ * what a guide has to recognise or discuss with a parent.
+ */
 function elevatedAntecedents(s: FamilySignals): string[] {
   const out: string[] = [];
-  if (s.parentalOverValuation === true) out.push("parental over-valuation");
-  if (s.conditionalRegardObserved === true) out.push("conditional regard");
-  if (s.familyControlObserved === true) out.push("family control / intrusion");
+  if (s.parentalOverValuation === true)
+    out.push("a parent who cares about this more than the child does");
+  if (s.conditionalRegardObserved === true)
+    out.push("warmth that arrives after wins and cools after losses");
+  if (s.familyControlObserved === true)
+    out.push("a parent steering the practice rather than supporting it");
   if (s.pressuredSpecialization === true && s.anyDevaluation === true) {
-    out.push("pressured specialization with declining return");
+    out.push("pushed into this, and now going off it");
   }
   if (s.overIdentification === true && s.anyStakesEvent === true) {
-    out.push("over-identification under rising stakes");
+    out.push("their whole sense of self is in this, with something big coming up");
   }
   return out;
 }

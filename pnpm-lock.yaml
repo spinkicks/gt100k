@@ -317,6 +317,9 @@ importers:
       '@gt100k/access-broker':
         specifier: workspace:*
         version: link:../../packages/access-broker
+      '@gt100k/concierge':
+        specifier: workspace:*
+        version: link:../../packages/concierge
       '@gt100k/consent':
         specifier: workspace:*
         version: link:../../packages/consent

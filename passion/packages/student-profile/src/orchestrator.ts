@@ -6,6 +6,7 @@ import { deriveSignals } from "@gt100k/signal-pipeline";
 import { runInference } from "@gt100k/interest-inference";
 import type { HypothesisStore, InterestHypothesis } from "@gt100k/hypothesis-store";
 import { applyInterestRead } from "@gt100k/hypothesis-store";
+import { mergePerseverance, perseveranceRefs } from "./perseverance.js";
 import type { SurfacedRecord } from "@gt100k/signal-pipeline";
 import type { StudentProfile, OrchestratorContext, CycleBatch } from "./model.js";
 
@@ -35,7 +36,10 @@ export function attachArtifacts(
 /**
  * Run one discovery cycle. `batch` is appended to the two logs (order preserved); the full history
  * is re-derived and re-inferred, applied onto the EXISTING store (preserving human transitions),
- * then synthetic perseverance artifacts are re-attached.
+ * then perseverance references are re-attached: the ones the profile already held, plus any the
+ * child has earned since through a `failure_recovery`. Before that second half existed the gate's
+ * artefact leg was unsatisfiable for anyone outside the pilot fixtures, so no real child could ever
+ * be promoted.
  *
  * Invariant (SC-2): `runCycle(p, EMPTY_BATCH, ctx, now).store` deep-equals `p.store`.
  */
@@ -59,6 +63,10 @@ export function runCycle(
   });
   const read = runInference(cellEvents, profile.priors, Date.parse(now));
   const applied = applyInterestRead(profile.store, profile.kidId, read, now);
-  const store = attachArtifacts(applied, profile.kidId, profile.perseveranceArtifacts);
-  return { ...profile, interactions, surfaced, store, updatedAt: now };
+  const perseveranceArtifacts = mergePerseverance(
+    profile.perseveranceArtifacts,
+    perseveranceRefs(cellEvents),
+  );
+  const store = attachArtifacts(applied, profile.kidId, perseveranceArtifacts);
+  return { ...profile, interactions, surfaced, store, perseveranceArtifacts, updatedAt: now };
 }

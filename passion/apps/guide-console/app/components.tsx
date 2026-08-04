@@ -159,43 +159,47 @@ function attributionView(card: HypothesisCard): { label: string; desc: string } 
 }
 
 /**
- * WHAT THIS USED TO SAY, AND WHY IT NO LONGER SAYS IT.
+ * How strong the evidence behind one interest is.
  *
- * Three lines: `Lower-bound: 0.52`, then `Uncertain`, then `Driver: Topic + Work-style`. Every one
- * of those terms is ours rather than a guide's, and the same number appeared a second time further
- * down the same screen as `Confidence 52%` -- one fact, two names, two formats, one screen.
+ * WHY THIS IS NOT A PERCENTAGE ANY MORE. It used to print `Confidence 80%`. The number is a Beta
+ * lower bound over a handful of events, and it was correct in the sense that it was the figure the
+ * engine held; it was wrong in the sense that a teacher reads a percentage as a grade. Guides rank
+ * children with them, chase a hundred, and read the hatched "needs more evidence" state as a low
+ * mark rather than as an absence of data. None of that is a misuse a caption can prevent.
  *
- * REMOVING ONE COPY WAS RIGHT AND LEAVING ZERO WAS NOT. The first pass cut this row entirely on the
- * grounds that the bar above draws the same magnitude. It does, but a bar answers "which of these is
- * biggest" and not "how strong is this one", and the only remaining figure sat inside a collapsed
- * table two clicks away. So the number is back, once, in the place the card is already about.
- *
- * "Confidence" rather than "lower bound", and a percentage rather than two decimals, because that is
- * what the specializations table calls it and one name is the whole point. It is still the
- * pessimistic end of the interval, which the tooltip says; what it is NOT is a score out of a
- * hundred, and nothing here should be summed, averaged or compared across children.
- * Three lines: `Lower-bound: 0.52`, then `Uncertain`, then `Driver: Topic + Work-style`. Every one
- * of the four terms in that is ours rather than a guide's — "lower-bound", "calibrated",
- * "uncertain", "driver" — and the first two are now drawn as a bar directly above this card, which
- * is both plainer and comparable at a glance. Printing them again in words underneath is the same
- * fact twice in the harder-to-read form.
+ * The bar above already carries magnitude, which is what comparison needs. What this line adds is
+ * how much to trust it, and three words carry that as well as two digits while being much harder to
+ * mistake for a score. The precision was false anyway.
  *
  * The driver line stays for the reason it always did: it is the one thing the bar cannot show and a
- * guide can act on, because a child drawn to building things wants a different second offer from one
- * drawn to games.
+ * guide can act on, because a child drawn to building things wants a different second offer from
+ * one drawn to games.
  */
+const BANDS: readonly (readonly [number, string])[] = [
+  [0.7, "Strong"],
+  [0.45, "Building"],
+  [0, "Early"],
+];
+
+/** The band a lower bound falls in. Wide on purpose: the underlying figure cannot carry more. */
+export function evidenceBand(lowerBound: number): string {
+  for (const [floor, word] of BANDS) {
+    if (lowerBound >= floor) return word;
+  }
+  return "Early";
+}
+
 export function LowerBound({ card }: { card: HypothesisCard }): JSX.Element | null {
   const a = attributionView(card);
-  const pct = Math.round(card.lowerBound * 100);
   return (
     <div className="lb">
       <div className="lb__row">
         <span className="lb__val">
           <Term
-            label="Confidence"
-            desc="The cautious end of our estimate, not a score. Higher means the evidence behind it is stronger."
+            label="Evidence"
+            desc="How much we have seen, not how good they are. Strong means they have come back to this often enough, over enough days, that the read is unlikely to be noise."
           />
-          <span className="lb__pct">{pct}%</span>
+          <span className="lb__pct">{evidenceBand(card.lowerBound)}</span>
         </span>
         {/* The same distinction the bar carries as hatching, in words. A high number on one
             afternoon and a high number on six weeks read identically without it. */}
