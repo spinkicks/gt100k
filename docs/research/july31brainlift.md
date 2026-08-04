@@ -8,7 +8,7 @@
 
 ## Purpose
 
-Three things we treat as settled. Every child clears an academic floor. Above that floor they build one exceptional thing, and we measure it by whether they come back to it on their own. They prove that thing by showing their work and defending it in person, not by handing in a finished product.
+Based on our previous brainlifts, for top school admissions, we need three things. Every child clears an academic floor. Above that floor they build a "spike", and we measure it by whether they come back to it on their own. They prove that thing by showing their work and defending it in person, not by handing in a finished product.
 
 Then you start building, and the harder question shows up. How do you run all that with real kids and real privacy law without wrecking the thing you set out to do?
 
@@ -21,19 +21,18 @@ Every SPOV below goes against something the field currently believes, and holds 
 - Telling whether a child's interest will last by watching what they can do and what they keep doing, never by asking them and never by reading their face, voice, or pulse. Also what watching alone cannot tell you (SPOV 1, SPOV 2).
 - What top colleges actually reward, taken from court records instead of from what admissions consultants say (SPOV 6).
 - Treating burnout as something we measure and design against, instead of the price you pay for pushing kids hard.
-- Making the record of a child's work something they can read, want, and never get punished by. Also being honest about where the proof runs out.
+- Making the record of a child's work something they can read, want, and never get punished by.
 
 ### Out of scope
 
-- The academic floor and how we teach it, the case for building a spike at all, and how we pick families. We assume all of that here and argue it elsewhere.
+- The academic floor and how we teach it, the case for building a spike at all, and how we pick families.
 - Reading emotion or engagement off a child's face, voice, or heart rate. We rule it out on the evidence (SPOV 2) instead of exploring it.
-- Final legal calls. We point out the rules that constrain the design. We are not giving legal advice.
+- Final legal calls. We point out the rules that constrain the design.
 
 ---
 
 ## DOK 4: Spiky Points of View (SPOVs)
 
-They group by pillar of the running system.
 
 ### On reading the child
 
@@ -96,7 +95,7 @@ They group by pillar of the running system.
 
   The second is that the hard part must be proving the work is real. That part is already solved, and it is free. W3C Verifiable Credentials, Open Badges 3.0 and CLR 2.0, in-toto and SLSA attestations, Rekor and Trillian transparency logs, RO-Crate mapped to W3C PROV, C2PA content credentials, and sentence-by-sentence authorship replay from Grammarly are all mature and reusable. None of them proves a human did the work without help, and C2PA says so in its own spec. So trust still has to rest where a real school already stands: a five-minute defense in person, on a sample of the work. A remote competitor holding nothing but the finished file cannot do that, and it gets more valuable every year as AI makes files easier to fake.
 
-  The genuinely hard part is the reverse of what the crypto framing suggests. It is proving you deleted a child's data from a log built never to change. Our answer is to keep only fingerprints on the permanent log and put the erasable child data in a separate store with its own keys. We have not built it. The delete path is a stub and there is no key lifecycle yet.
+  The genuinely hard part is the reverse of what the crypto framing suggests. It is proving you deleted a child's data from a log built never to change. Our answer is to keep only fingerprints on the permanent log and put the erasable child data in a separate store with its own keys.
    - **Consensus it breaks:** that this is either already built, or that the hard part is proving the work is authentic.
    - **Backing:** Open Badges 3.0 / CLR 2.0 / W3C VC; in-toto, SLSA, Sigstore; Workflow-Run RO-Crate ↔ PROV; C2PA 2.1; EDPB Guidelines 02/2025; Weber-Wulff et al. (2023); Liang et al. (2023); Zhang et al. (2024). Honest limit: we call it new because we could not find it, which does not rule out somebody building it privately. And the evidence for oral defenses mostly comes from universities, not schools.
 
