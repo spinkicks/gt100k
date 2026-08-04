@@ -9,6 +9,7 @@ import {
   type ConciergeDeps,
   type ConciergeResponse,
 } from "@gt100k/concierge";
+import type { DomainPath } from "@gt100k/two-axis-tagging";
 import { SEED_AGE_TIER, SEED_KID_ID, SEED_SESSION_ID } from "./ask-seed.js";
 
 export interface AskInput {
@@ -16,6 +17,8 @@ export interface AskInput {
   readonly ageTier?: AgeTier;
   readonly sessionId?: string;
   readonly kidId?: string;
+  /** The open project's domain, so a question that names no subject still finds its shelf. */
+  readonly workingOn?: DomainPath;
 }
 
 /** Deterministic clock for the served pipeline (never `Date.now()` — keeps responses reproducible). */
@@ -29,6 +32,7 @@ export async function handleAsk(input: AskInput, deps: ConciergeDeps): Promise<C
       ageTier: input.ageTier ?? SEED_AGE_TIER,
       message: input.message,
       sessionId: input.sessionId ?? SEED_SESSION_ID,
+      ...(input.workingOn === undefined ? {} : { workingOn: input.workingOn }),
     },
     deps,
     FIXED_NOW,

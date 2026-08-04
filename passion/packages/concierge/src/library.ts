@@ -71,7 +71,12 @@ function pathsCompatible(a: DomainPath, b: DomainPath): boolean {
 
 function matchesRequest(resource: CuratedResource, request: ConciergeRequest): boolean {
   if (!resource.ageTiers.includes(request.ageTier)) return false;
-  const inferred = inferDomainPaths(request.message);
+  // The child's open project counts as a named domain. Without it, the questions a child actually
+  // asks while making something -- "how do I make it bounce?" -- name no domain, match nothing and
+  // get refused, even though the caller knows exactly what they are working on. Additive, never
+  // restrictive: a message that names its own domain still matches on that.
+  const inferred = [...inferDomainPaths(request.message)];
+  if (request.workingOn !== undefined) inferred.push(request.workingOn);
   return inferred.some((p) => pathsCompatible(p, resource.domainPath));
 }
 

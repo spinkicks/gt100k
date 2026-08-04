@@ -497,6 +497,12 @@ importers:
       '@gt100k/project-workspace':
         specifier: workspace:*
         version: link:../../packages/project-workspace
+      '@gt100k/socratic-defense':
+        specifier: workspace:*
+        version: link:../../packages/socratic-defense
+      '@gt100k/two-axis-tagging':
+        specifier: workspace:*
+        version: link:../../packages/two-axis-tagging
       '@gt100k/ui':
         specifier: workspace:*
         version: link:../../packages/ui

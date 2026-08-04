@@ -118,3 +118,49 @@ describe("curated library — withResource (immutable append)", () => {
     expect([CHESS]).toHaveLength(1);
   });
 });
+
+describe("the child's open project as context", () => {
+  it("finds a resource for a question that names no domain", () => {
+    // The case this exists for. A child mid-build asks "how do I make it bounce?", which matches no
+    // taxonomy token, so retrieval finds nothing and the concierge refuses -- while the caller knows
+    // they have a chess project open.
+    const message = "how do I get better at this?";
+    const bare = resolve(LIB, {
+      kidId: "k",
+      ageTier: "9-11",
+      message,
+      sessionId: "s",
+    });
+    const withContext = resolve(LIB, {
+      kidId: "k",
+      ageTier: "9-11",
+      message,
+      sessionId: "s",
+      workingOn: ["games-strategy", "chess"],
+    });
+    expect(withContext.length).toBeGreaterThanOrEqual(bare.length);
+  });
+
+  it("never narrows a match the message already earned", () => {
+    // Additive only. A child asking about chess while a piano project is open still gets chess.
+    const named = {
+      kidId: "k",
+      ageTier: "9-11" as const,
+      message: "chess openings",
+      sessionId: "s",
+    };
+    const withOther = resolve(LIB, {
+      ...named,
+      workingOn: ["music-sound", "instruments"] as const,
+    });
+    const without = resolve(LIB, named);
+    for (const r of without) {
+      expect(withOther.map((x) => x.id)).toContain(r.id);
+    }
+  });
+
+  it("changes nothing when the caller supplies no context", () => {
+    const req = { kidId: "k", ageTier: "9-11" as const, message: "chess", sessionId: "s" };
+    expect(resolve(LIB, req)).toEqual(resolve(LIB, { ...req }));
+  });
+});

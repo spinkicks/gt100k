@@ -5258,3 +5258,13 @@ body {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
+
+/* What stood behind an artefact, shown only when the record is thin. Deliberately quiet: it is a
+   note about the log, not a flag on the child, and anything louder would read as an accusation. */
+.fhist__behind {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  font-style: italic;
+}

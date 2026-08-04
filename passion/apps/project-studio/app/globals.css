@@ -1611,3 +1611,45 @@ body {
     flex-wrap: wrap;
   }
 }
+
+/* The mid-build question. Given the accent edge the log entries do not have, because it is the one
+   thing on this screen asking the child for something rather than recording what they gave. It is
+   never a modal and never blocks: the artefact is already saved by the time this appears. */
+.interview {
+  margin: 16px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--surface-2);
+}
+.interview__q {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.4;
+  max-width: 60ch;
+}
+.interview__in {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.875rem;
+  resize: vertical;
+}
+.interview__row {
+  display: flex;
+  gap: 9px;
+  margin-top: 10px;
+}
+/* Quiet beside Send, because declining is a real option and should not look like a mistake. */
+.btn--interview-skip {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--ink-muted, var(--ink));
+}
