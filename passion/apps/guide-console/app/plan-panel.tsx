@@ -15,17 +15,24 @@ import { specPath, modeLabel } from "./vocab.js";
 import { WhyThis } from "./why.js";
 import { milestoneForPlan, type PlanMilestoneVM } from "./plan-milestone.js";
 
+/**
+ * Stage names as a teacher would say them.
+ *
+ * The engine's four names are precise and mean nothing to the person reading this screen. A
+ * homeschool parent asked what "Authorship" meant would guess writing. These say what the child is
+ * doing; the engine keeps its own vocabulary internally, where precision is worth more.
+ */
 const STAGE_LABEL: Record<string, string> = {
-  S1_IGNITION: "Ignition",
-  S2_FOUNDATIONS: "Foundations",
-  S3_AUTHORSHIP: "Authorship",
-  S4_SIGNATURE: "Signature",
+  S1_IGNITION: "Getting hooked",
+  S2_FOUNDATIONS: "Learning the basics",
+  S3_AUTHORSHIP: "Making real things",
+  S4_SIGNATURE: "Finding their own voice",
 };
 const STAGE_PURPOSE: Record<string, string> = {
   S1_IGNITION: "Fall in love and keep coming back.",
   S2_FOUNDATIONS: "Get precise without killing the fun.",
   S3_AUTHORSHIP: "Make it real for a community.",
-  S4_SIGNATURE: "Find your voice: portfolio-defining work.",
+  S4_SIGNATURE: "Find their own voice in the work.",
 };
 const MENTOR_LABEL: Record<string, string> = {
   WARM: "Warm mentor",
@@ -42,25 +49,32 @@ const AUDIENCE_LABEL: Record<string, string> = {
 const CADENCE_LABEL: Record<string, string> = {
   MANY_SHORT: "Many short playful projects",
   TERM_LENGTH: "A term-length project",
-  MAJOR_TYPE_III: "A major real project",
-  FLAGSHIP: "A flagship plus a body of work",
+  MAJOR_TYPE_III: "One big real project",
+  FLAGSHIP: "A standout piece plus a body of work",
 };
+/**
+ * What a stage builds in a child, in words a parent uses.
+ *
+ * These come from the sport-psychology literature and arrive as its terms. "Relatedness" and
+ * "producer identity" are load-bearing there and opaque here, and a guide who skips the line
+ * because they cannot parse it gets nothing from it at all.
+ */
 const PCDE_LABEL: Record<string, string> = {
-  enjoyment: "Enjoyment",
-  relatedness: "Relatedness",
-  identity: "Identity spark",
-  self_regulation: "Self-regulation",
-  goal_setting: "Goal-setting",
-  quality_practice: "Quality practice",
-  planning: "Planning",
-  self_evaluation: "Realistic self-evaluation",
-  coping_feedback: "Coping with feedback",
-  strategic_risk: "Strategic risk",
-  self_advocacy: "Self-advocacy",
-  self_direction: "Self-direction",
-  resilience: "Resilience under stakes",
-  networking: "Networking",
-  producer_identity: "Producer identity",
+  enjoyment: "Enjoying it",
+  relatedness: "Feeling they belong",
+  identity: "Starting to see themselves in it",
+  self_regulation: "Managing themselves",
+  goal_setting: "Setting their own goals",
+  quality_practice: "Practising well, not just a lot",
+  planning: "Planning ahead",
+  self_evaluation: "Judging their own work honestly",
+  coping_feedback: "Taking criticism",
+  strategic_risk: "Trying things that might not work",
+  self_advocacy: "Asking for what they need",
+  self_direction: "Choosing their own next step",
+  resilience: "Holding up when it counts",
+  networking: "Finding their people",
+  producer_identity: "Seeing themselves as someone who makes things",
 };
 
 function titleCase(s: string): string {
@@ -93,11 +107,13 @@ function scaffoldProse(text: string, titles: readonly string[]): string {
 // The engine's rationale/escalation prose can contain raw stage tokens (e.g. "S1_IGNITION");
 // render them with the friendly stage name so no enum leaks into the guide-facing copy.
 function humanizeStages(text: string): string {
-  return text
-    .replace(/S1_IGNITION/g, "Ignition")
-    .replace(/S2_FOUNDATIONS/g, "Foundations")
-    .replace(/S3_AUTHORSHIP/g, "Authorship")
-    .replace(/S4_SIGNATURE/g, "Signature");
+  // Reads from the same table the labels use, so a stage cannot be renamed on the card and left
+  // stale inside a sentence.
+  let out = text;
+  for (const [token, label] of Object.entries(STAGE_LABEL)) {
+    out = out.replaceAll(token, label.toLowerCase());
+  }
+  return out;
 }
 
 function restLine(r: PlanCardVM["plan"]["restCadence"]): string {
@@ -341,7 +357,7 @@ function PlanItem({ card, kidId }: { card: PlanCardVM; kidId: string }): JSX.Ele
           <dd>{CADENCE_LABEL[p.cadence] ?? p.cadence}</dd>
         </div>
         <div>
-          <dt>Practice dose</dt>
+          <dt>How much practice</dt>
           <dd>{doseLine(p.dpDose)}</dd>
         </div>
         <div>
@@ -371,13 +387,13 @@ function PlanItem({ card, kidId }: { card: PlanCardVM; kidId: string }): JSX.Ele
           <span className="planproject__k">
             {written === null
               ? "A general project shape for this stage"
-              : "A project written for this spike"}
+              : "A project written for this interest"}
           </span>
         </summary>
         {written === null ? (
           <div className="planproject__write">
             <button type="button" className="btn btn--ghost" onClick={write} disabled={asking}>
-              {asking ? "Writing…" : "Write one for this spike"}
+              {asking ? "Writing…" : "Write one for this interest"}
             </button>
             {/* Named, not swallowed: the guide pressed a button, and the template is still below. */}
             {refused === null ? null : <span className="planproject__refused">{refused}</span>}
@@ -391,7 +407,7 @@ function PlanItem({ card, kidId }: { card: PlanCardVM; kidId: string }): JSX.Ele
           <strong>How:</strong> {project.authenticMethod}
         </p>
         <p className="planproject__scaffold">
-          <strong>Craft scaffold:</strong>{" "}
+          <strong>Practice tip:</strong>{" "}
           {scaffoldProse(
             project.craftScaffold,
             card.resources.map((r) => r.title),
@@ -452,7 +468,7 @@ export function PlanPanel({
   exploring?: HypothesisCard;
 }): JSX.Element {
   return (
-    <section className="wbpanel" aria-label="Specialization plan" data-testid="plan-panel">
+    <section className="wbpanel" aria-label="Interest plan" data-testid="plan-panel">
       {cards.length === 0 ? (
         // A third of the workflow used to live here as one sentence. "Not a certified spike yet, so
         // there is no plan" is true and useless: most children are exploring most of the time, so

@@ -376,6 +376,12 @@ function Showcase({ project, onClose }: { project: Project; onClose: () => void 
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
+      // Two Escape paths, and both are needed. This one covers focus already inside the overlay;
+      // the document listener in the effect above covers the ordinary case, where focus is still
+      // on the button that opened this and a handler here would never fire at all.
+      onKeyDown={(e) => {
+        if (e.key === "Escape") onClose();
+      }}
     >
       <div className="modal__card">
         <div className="modal__h">Showtime!</div>

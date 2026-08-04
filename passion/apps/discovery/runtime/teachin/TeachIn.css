@@ -147,7 +147,8 @@
 .ti-caption {
   margin: 0.3rem 0 0;
   font-family: var(--font-body);
-  font-size: 0.72rem;
+  /* Was 0.72rem. Floor for anything a six-year-old has to read is 14px. */
+  font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--ink-soft);
@@ -165,7 +166,8 @@
 .ti-tag {
   fill: var(--ink-soft);
   font-family: var(--font-body);
-  font-size: 9px;
+  /* Was 9px, which is a diagram annotation nobody young can read. */
+  font-size: 12px;
   font-weight: 700;
 }
 

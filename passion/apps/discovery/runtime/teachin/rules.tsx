@@ -72,39 +72,39 @@ export const TEACH_INS = {
   // --- logic-games -----------------------------------------------------------------------------
   nonogram: {
     title: "Nonogram",
-    rule: "Each number along a row or column is a block of filled squares, in the order written, with at least one blank square between blocks. Click once to fill a square, again to cross it out as definitely empty.",
+    rule: "Numbers tell you how many squares to fill, in that order. Leave a gap between blocks. Click to fill, click again to cross out.",
     Diagram: NonogramDiagram,
   },
   pipes: {
     title: "Pipes",
-    rule: "Every click turns a pipe one quarter-turn. Turn them until one unbroken run of pipe carries the flow from the source to every end.",
+    rule: "Click a pipe to turn it. Keep turning until the water can reach every end.",
     Diagram: PipesDiagram,
   },
   mirror: {
     title: "Mirror Maze",
-    rule: "Click a mirror to rotate it and guide the beam to the target. A mirror always bends the beam a quarter-turn, and the two slants bend it opposite ways — the same board as Fraction Laser, where fractions do the bending instead of slants.",
+    rule: "Click a mirror to turn it. Each mirror bends the beam a quarter turn. Send the beam to the target.",
     Diagram: MirrorDiagram,
   },
   chess: {
     title: "Chess Puzzle",
-    rule: "Click one of your own pieces, then click the square it should move to. The line above the board says what to find, and exactly one move does it.",
+    rule: "Click your piece, then click where it should go. The line above says what to look for. Only one move works.",
     Diagram: ChessDiagram,
   },
   "logic-grid": {
     title: "Logic Grid",
-    rule: "Each clue either rules a pairing in or rules it out: click a square once for ✓ when it must be true and again for ✗ when it cannot be. Every row and every column ends with exactly one ✓.",
+    rule: "Each clue tells you a pair is true or false. Click once for yes, twice for no. Every row and column gets one yes.",
     Diagram: LogicGridDiagram,
   },
   lits: {
     title: "LITS",
     // The one rule that does not really fit in two sentences: four separate constraints, three of
     // them global. Recorded as a finding rather than padded into a third sentence — see the report.
-    rule: "Shade four cells in every outlined region, shaped like an L, an I, a T or an S. All shaded cells must join into one group, no 2×2 square may be fully shaded, and two touching shapes may not be the same letter.",
+    rule: "Shade four cells in each region, shaped like L, I, T or S. All shaded cells must touch. No solid 2 by 2 block. Touching shapes must differ.",
     Diagram: LitsDiagram,
   },
   minesweeper: {
     title: "Minesweeper",
-    rule: "A revealed number says how many of that square's eight neighbours hide a mine. Uncover every safe square and flag the mines instead of clicking them.",
+    rule: "A number counts the mines touching that square. Uncover the safe squares. Flag the mines instead of clicking them.",
     Diagram: MinesweeperDiagram,
   },
 
@@ -115,7 +115,7 @@ export const TEACH_INS = {
     // both pans", which left the two moves that actually decide the puzzle — breaking a stone, and
     // splitting both pans — undescribed. Splitting is never legal on the opening board, so a child
     // told nothing about it had no reason to believe it existed.
-    rule: "Both pans always weigh the same, so anything you do to one you must do to the other. Take matching stones off, break a stone into smaller ones, or split both pans evenly — until one bag stands alone.",
+    rule: "The two pans always weigh the same. Do the same thing to both. Keep going until one bag is left alone.",
     Diagram: BalanceScaleDiagram,
   },
   "gear-train": {
@@ -123,22 +123,22 @@ export const TEACH_INS = {
     // Says what a "crank turn" IS, because the goal is stated in them. The first version assumed the
     // unit was self-evident; playing it showed it was not — nothing on the bench told you a turn was
     // a thing you did, so the target was a number attached to nothing.
-    rule: "Press the crank to turn it once, and every gear moves by its own speed — more teeth means slower. Fit three gears so the ember tooth is back on top after exactly the number of crank turns asked for, and not before.",
+    rule: "Turn the crank and every gear moves. More teeth means slower. Pick three gears so the marked tooth comes back on top at the right turn.",
     Diagram: GearTrainDiagram,
   },
   "fraction-laser": {
     title: "Fraction Laser",
-    rule: "Each prism sends part of the light straight on and the rest out of its side port — the two parts always make one whole. Set every prism so each crystal gets exactly the fraction written on it — the same board as Mirror Maze without fractions.",
+    rule: "Each glass splits the light into two parts. The two parts always add up to one. Set them so every crystal gets the share written on it.",
     Diagram: FractionLaserDiagram,
   },
   "function-machine": {
     title: "Function Machine",
-    rule: "Run inputs through the machine, work out what it does to them, then predict the one it refuses. A wrong prediction costs nothing and hands you that input as a clue.",
+    rule: "Feed numbers in and watch what comes out. Work out the rule. Then guess the one number it will not take.",
     Diagram: FunctionMachineDiagram,
   },
   "ratio-mixing": {
     title: "Ratio Mixing",
-    rule: "Fill the jar to the brim so the mix holds dye and water in exactly the ratio on the order card. A poured ladle cannot be taken back, but pouring the jar out and starting again is always free.",
+    rule: "Fill the jar with dye and water in the amounts on the card. You cannot take a ladle back. Emptying the jar and starting over is free.",
     Diagram: RatioMixingDiagram,
   },
 
@@ -149,21 +149,21 @@ export const TEACH_INS = {
     // an ordinary row. An earlier wording described the picture first, which quietly invited a child to
     // hunt for a shape; the shape is not the puzzle and there is no shape to find.
     // Deliberately does not name the key: being told it would turn listening into lookup.
-    rule: "Press play and listen: one note does not belong in this tune's key, so it sounds sour. Click the note you think it is, then nudge it up or down a step until nothing sounds wrong.",
+    rule: "Listen. One note sounds wrong. Click it, then move it up or down until the tune sounds right.",
     Diagram: TuneRepairDiagram,
   },
   "chord-fit": {
     title: "Chord Fit",
     // Says that the options are only tellable apart by ear, because the screen shows three identical
     // buttons and a child could otherwise reasonably assume they were meant to look for a difference.
-    rule: "One note is sounding, and three chords could go under it. Only one of them contains that note, so play each one and pick the chord that holds the note up instead of fighting it.",
+    rule: "One note is playing. Three chords could go under it. Try each one and pick the chord that fits.",
     Diagram: ChordFitDiagram,
   },
   downbeat: {
     title: "Downbeat",
     // Names LOUDER explicitly, because every pulse looks identical and a child could otherwise spend the
     // whole activity hunting the strip for a difference that is deliberately not drawn.
-    rule: "Every pulse in this loop looks the same, but some of them sound louder, and a louder pulse is where a new bar starts. Play it, then mark every pulse you hear stressed.",
+    rule: "Every beat looks the same, but some sound louder. A louder beat starts a new bar. Play it, then mark the loud ones.",
     Diagram: DownbeatDiagram,
   },
 
@@ -174,7 +174,7 @@ export const TEACH_INS = {
     // path behind the creature, so a child could otherwise reasonably read the job as matching a
     // shape — which is the one reading rule X2 exists to prevent. "Blocks" names the tray so it reads
     // as the place to begin without the copy having to gesture at it.
-    rule: "One creature keeps moving in a pattern, over and over. Build yours out of blocks so it goes the same places, in the same order, at the same speed.",
+    rule: "One creature moves in a pattern, again and again. Use blocks to make yours move the same way.",
     Diagram: SpriteLoopDiagram,
   },
   "trace-repair": {
@@ -183,7 +183,7 @@ export const TEACH_INS = {
     // fault -- several lines could explain where the creature stops, and only the middle of the run
     // separates them. A child who reads only the final board will blame the wrong line, so the one
     // instruction worth spending a sentence on is the scrubber.
-    rule: "This program was meant to move the pale creature's way, but one line sends yours somewhere else. Drag the slider to step through both and watch for the moment they stop agreeing, then retype that line.",
+    rule: "One line of this program is wrong. Drag the slider to step through both creatures. Find where they split, then fix that line.",
     Diagram: TraceRepairDiagram,
   },
   "teach-helper": {
@@ -191,7 +191,7 @@ export const TEACH_INS = {
     // Says OTHER FLOORS YOU WILL NOT SEE, and stops there. Naming the trap outright -- "so take
     // everywhere" -- would replace the insight with an instruction, and the insight is the thing this
     // door detects. A child has to be told the rules of the game; they must not be told the answer.
-    rule: "Write instructions and the helper will follow them on this floor and on other floors you will not see, which have parcels in different places. It only picks something up if you tell it to take while it is standing there.",
+    rule: "Write steps for the helper. It will try them on floors you cannot see, where the parcels sit elsewhere. Say take when it is standing on one.",
     Diagram: TeachHelperDiagram,
   },
 } satisfies Record<string, ActivityTeachIn>;

@@ -42,6 +42,9 @@ import {
   STEP4_WORKBOOK,
   STEP5_WORKBOOK,
   STEP6_WORKBOOK,
+  LICHESS_MASTER_STUDIES,
+  LICHESS_OPENINGS,
+  US_CHESS_CLUBS,
 } from "./maps-seed-chess-resources.js";
 
 /** The concierge's `CuratedResource`, reached through the engine's own type. The console never
@@ -730,7 +733,7 @@ export const CONSOLE_COMPETITION_MATH_MAP: MasteryMap = {
 // generalises.
 //
 // THE SPINE IS THE STEPS METHOD (Stappenmethode), Brunia and van Wijgerden, 1987, six manuals and
-// twenty-six workbooks, in use in a dozen countries. Ten of the twelve milestones below can name a
+// twenty-six workbooks, in use in a dozen countries. Ten of the twenty milestones below can name a
 // numbered lesson in a purchasable curriculum, which is as strong as `syllabus` basis gets. The
 // ordering is the publisher's, not ours, including the counter-intuitive parts: mate is deliberately
 // postponed inside Step 1, endgames do not appear until Step 3, and "thinking ahead" is introduced
@@ -940,8 +943,9 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       {
         title: "Tactics you get wrong, again",
         description:
-          "Work a themed set, then go back only to the ones you missed. Repeating the ones you " +
-          "already solve is the comfortable version of this and it teaches nothing.",
+          "Twenty or so puzzles a day, one theme at a time, then back over only the ones you " +
+          "missed. Repeating the ones you already solve is the comfortable version of this and it " +
+          "teaches nothing. Accuracy first: a fast wrong answer is worse than a slow right one.",
         solitary: true,
       },
     ],
@@ -1018,7 +1022,9 @@ const CHESS_MILESTONES: readonly Milestone[] = [
         title: "Long games, not blitz",
         description:
           "A slow game with a scoresheet is a different skill from fast online play, and it is " +
-          "the one every rated event is made of.",
+          "the one every rated event is made of. Name the clock: at least fifteen minutes each " +
+          "with an increment online, or a thirty-minute game over the board. Improvement does not " +
+          "carry over from bullet, because there is no time in it to think about anything.",
         solitary: false,
       },
     ],
@@ -1346,6 +1352,140 @@ const CHESS_MILESTONES: readonly Milestone[] = [
     authorship: "human-authored",
   },
   {
+    id: "ch-a-repertoire-of-your-own",
+    title: "You have openings you actually know",
+    capability:
+      "Play one opening as White and an answer to e4 and d4 as Black, and say why each move is there",
+    requires: ["ch-opening-principles", "ch-king-safety"],
+    modes: ["investigate", "perform"],
+    stageFloor: "S2_FOUNDATIONS",
+    ordering: {
+      reason:
+        "Principles carry a child to roughly 1400 and then stop. Above that, opponents have " +
+        "preparation, and a player deciding every opening from scratch at the board arrives in " +
+        "middlegames they have no plan for. This is the rung the Steps course leaves out, because " +
+        "it deliberately never assigns a named opening at any step.",
+      basis: "community",
+      sources: [STEPS_METHOD, US_CHESS_RATINGS],
+      limit:
+        "Memorising lines earlier than this is the classic wasted year. A child who can recite " +
+        "twelve moves of a Najdorf and hangs a piece on move fourteen has learned nothing that " +
+        "wins games. The order matters more than the content, and this rung sits after king " +
+        "safety for that reason.",
+    },
+    resources: [LICHESS_OPENINGS, CHESSCOM_LESSONS, STEP4_WORKBOOK],
+    practice: [
+      {
+        title: "One system, played over and over",
+        description:
+          "Pick one opening for White and one reply to each of e4 and d4. Play only those for a " +
+          "month, including when they go badly, and write down what you did not know each time " +
+          "you were surprised. Breadth here is the enemy of depth.",
+        solitary: false,
+      },
+    ],
+    demonstration:
+      "Your own written repertoire notes plus games you played from them, with the plan for each side named",
+    opportunities: [
+      {
+        kind: "competition",
+        description: "Club or online rated games played only from your chosen repertoire",
+        readinessNote:
+          "Ready once the child can say what their opening is trying to do, not just what the " +
+          "first moves are.",
+        stageFloor: "S2_FOUNDATIONS",
+      },
+    ],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-study-a-master-game",
+    title: "You can learn from a game you did not play",
+    capability: "Explain what each side was trying to do in a game you did not play",
+    requires: ["ch-first-endgames", "ch-see-the-tactic"],
+    modes: ["investigate"],
+    stageFloor: "S3_AUTHORSHIP",
+    ordering: {
+      reason:
+        "Reviewing your own games finds your own mistakes, which is a ceiling: you cannot learn a " +
+        "plan you have never seen anyone play. Master games are where the plans come from, and " +
+        "they are free.",
+      basis: "community",
+      sources: [STEPS_METHOD],
+      limit:
+        "Playing through moves is not studying them. A child who clicks to the end of a Capablanca " +
+        "game in ninety seconds has watched it, not read it, and this rung asks for the harder " +
+        "thing.",
+    },
+    resources: [LICHESS_MASTER_STUDIES, STEP5_WORKBOOK, CHESSCOM_LESSONS],
+    practice: [
+      {
+        title: "Guess the move before you look",
+        description:
+          "Cover the winner's moves and pick your own at each turn, then compare. Where you " +
+          "disagreed is the lesson; where you agreed is confirmation you already knew it.",
+        solitary: true,
+      },
+    ],
+    demonstration:
+      "One master game written up in your own words, naming what each side wanted and where it turned",
+    opportunities: [
+      {
+        kind: "showcase",
+        description: "Present the game to a club or a group of peers",
+        readinessNote:
+          "Ready when the child can explain the turning point without reading their notes.",
+        stageFloor: "S3_AUTHORSHIP",
+      },
+    ],
+    authorship: "human-authored",
+  },
+  {
+    id: "ch-someone-stronger-looks-at-your-games",
+    title: "Someone stronger looks at your games",
+    capability:
+      "Work with a coach or club trainer who reviews your games and sets you something to fix",
+    requires: ["ch-real-tournament-game"],
+    modes: ["explain"],
+    stageFloor: "S2_FOUNDATIONS",
+    ordering: {
+      reason:
+        "The curriculum this whole map is built on assumes a trainer: every step ships a workbook " +
+        "for the student and a manual of scripted lessons for the teacher, and the publisher says " +
+        "the teacher's own chess strength matters less than having one. Self-study also plateaus " +
+        "invisibly, because you cannot review for a mistake you do not know is a mistake.",
+      basis: "syllabus",
+      sources: [US_CHESS_RATINGS, STEPS_METHOD],
+      limit:
+        "This is the rung that costs money, and that is worth saying out loud rather than hiding " +
+        "in a recommendation. A club with a trainer is the cheap version and is enough here; a " +
+        "private grandmaster is not what this asks for and is not what most strong juniors had.",
+    },
+    resources: [US_CHESS_CLUBS, CHESSCOM_LESSONS],
+    practice: [
+      {
+        title: "Bring the losses, not the wins",
+        description:
+          "Take your worst recent game to whoever is stronger, not your best one. Come away with " +
+          "one thing to work on, and work on that one thing before going back.",
+        solitary: false,
+      },
+    ],
+    demonstration:
+      "The games you took to a stronger player, and the one thing you changed afterwards",
+    opportunities: [
+      {
+        kind: "mentorship",
+        description: "A club trainer, a school coach, or the strongest player at your local club",
+        readinessNote:
+          "Ready once the child plays regularly enough to bring real games. Before that there is " +
+          "nothing for a coach to work with.",
+        stageFloor: "S2_FOUNDATIONS",
+      },
+    ],
+    authorship: "human-authored",
+  },
+  {
     id: "ch-rating-that-means-something",
     title: "You have a rating that means something",
     capability: "Hold a published federation rating that places you in a named class",
@@ -1393,11 +1533,14 @@ const CHESS_MILESTONES: readonly Milestone[] = [
       {
         kind: "competition",
         description:
-          "Each published rating-class threshold itself — Class C, B, A, Expert, Candidate " +
-          "Master — a checkpoint a stranger can verify without taking your word for it",
+          "The published class thresholds, in order: roughly 1000 to start, then Class D at 1200, " +
+          "C at 1400, B at 1600, A at 1800, Expert at 2000, National Master at 2200. A stranger " +
+          "can verify any of them without taking your word for it",
         readinessNote:
-          "Ready the moment a federation rating exists at all; each class is a milestone within " +
-          "the milestone, not a separate bar to clear first.",
+          "Ready the moment a federation rating exists at all. Each class is a checkpoint inside " +
+          "this rung rather than a separate bar to clear first, and the gaps between them get " +
+          "wider: 1200 often comes within a year, 1800 takes several, and under one per cent of " +
+          "rated US Chess players ever hold National Master.",
         stageFloor: "S4_SIGNATURE",
       },
     ],

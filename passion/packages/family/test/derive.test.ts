@@ -40,7 +40,7 @@ describe("deriveFamilySignals → assessFamily (SC-7)", () => {
     expect(read.escalateToHuman).toBe(true);
     expect(read.pressureWatch.antecedents.length).toBeGreaterThan(0);
     // over-identification under rising stakes is the antecedent that fired.
-    expect(read.pressureWatch.antecedents).toContain("over-identification under rising stakes");
+    expect(read.pressureWatch.antecedents.some((a) => /coming up/.test(a))).toBe(true);
   });
 });
 

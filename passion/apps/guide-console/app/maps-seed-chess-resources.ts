@@ -217,8 +217,53 @@ export const FIDE_TOURNAMENT_FINDER: CuratedResource = {
   provenance: PROVENANCE,
 };
 
+/** A free, curated repertoire starting point. Lichess's opening explorer is the standard free tool
+    for building and checking one rather than memorising a book. */
+export const LICHESS_OPENINGS: CuratedResource = {
+  id: "cr-chess-lichess-openings",
+  title: "Lichess Opening Explorer: build a repertoire from real games rather than memorised lines",
+  url: "https://lichess.org/opening",
+  domainPath: ["games-strategy", "chess"],
+  pursuits: ["chess"],
+  affordedModes: ["investigate", "perform"],
+  reputation: 0.85,
+  ageTiers: ["9-11", "12-14"],
+  provenance: PROVENANCE,
+};
+
+/** Annotated master games, free. What own-game review cannot supply: plans a child has never seen
+    anyone play, from people who played them well. */
+export const LICHESS_MASTER_STUDIES: CuratedResource = {
+  id: "cr-chess-lichess-master-studies",
+  title: "Lichess Studies: annotated master games, searchable and free to copy into your own board",
+  url: "https://lichess.org/study/all/popular",
+  domainPath: ["games-strategy", "chess"],
+  pursuits: ["chess"],
+  affordedModes: ["investigate"],
+  reputation: 0.85,
+  ageTiers: ["9-11", "12-14"],
+  provenance: PROVENANCE,
+};
+
+/** Where a coach or club actually comes from. Federations list affiliated clubs; a club trainer is
+    the realistic version of coaching for most families, not a private grandmaster. */
+export const US_CHESS_CLUBS: CuratedResource = {
+  id: "cr-chess-uschess-clubs",
+  title: "US Chess affiliate and club directory: find a club, a trainer, and rated events near you",
+  url: "https://new.uschess.org/clubs",
+  domainPath: ["games-strategy", "chess"],
+  pursuits: ["chess"],
+  affordedModes: ["collaborate", "perform"],
+  reputation: 0.9,
+  ageTiers: ["9-11", "12-14"],
+  provenance: PROVENANCE,
+};
+
 /** Every singleton above, in one array — what `maps-seed.ts` and its tests draw on. */
 export const CHESS_RESOURCES: readonly CuratedResource[] = [
+  LICHESS_OPENINGS,
+  LICHESS_MASTER_STUDIES,
+  US_CHESS_CLUBS,
   STEP1_WORKBOOK,
   STEP2_WORKBOOK,
   STEP3_WORKBOOK,
