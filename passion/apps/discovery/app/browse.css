@@ -456,6 +456,10 @@
   font-weight: 600;
   line-height: 1.2;
   letter-spacing: -0.01em;
+  /* Explicit, and light. Inheriting `--ink` put near-black text on a near-black scrim, so the
+     name was invisible in exactly the mode that exists for children who cannot read the object:
+     Names on, age 6. The scrim is dark by design, so the ink has to be stated here. */
+  color: var(--gt-off-white, #fcf4ef);
   /* Hidden by default and revealed by the states below. `opacity` and `transform` only: `display`
      or `visibility` cannot be transitioned, and animating height would relayout every frame. */
   opacity: 0;
