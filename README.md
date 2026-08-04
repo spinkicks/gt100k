@@ -2,7 +2,7 @@
 
 **GT100K** is Alpha School's internal accelerated-gifted layer on TimeBack — an operating system for an intensive, in-person gifted academy that takes an already-admitted child (ages 6–14) from daily academic mastery and passion discovery through to a portable, evidence-backed body of work. Long-horizon goal: MIT-level academic readiness by the end of 8th grade.
 
-> **Status: working monorepo.** 26 packages, 16 adapters, and 9 apps, with **1,493 tests** green (1,160 engine and adapter, 333 app). Every engine is pure, deterministic and offline; all data is synthetic. No real child data touches this system until the pre-live gates pass (see [Pre-live gates](#pre-live-gates)): the discovery game can now post a session to the guide console, but only when someone sets `NEXT_PUBLIC_GT100K_INGEST_URL` (unset everywhere) *and* a guardian's consent for that purpose is on file, which the route checks per request and denies by default.
+> **Status: working monorepo.** 27 packages, 16 adapters, and 9 apps, with **1,696 tests** green (1,215 engine and adapter, 481 app). Every engine is pure, deterministic and offline; all data is synthetic. No real child data touches this system until the pre-live gates pass (see [Pre-live gates](#pre-live-gates)): the discovery game can now post a session to the guide console, but only when someone sets `NEXT_PUBLIC_GT100K_INGEST_URL` (unset everywhere) *and* a guardian's consent for that purpose is on file, which the route checks per request and denies by default.
 
 ## Quick start
 
@@ -12,7 +12,7 @@ Requires Node 20+ and `pnpm` (developed on Node 24 / pnpm 9).
 pnpm install
 pnpm exec biome check passion   # lint + formatter, the same gate CI runs
 pnpm exec tsc -b                # typecheck the whole workspace
-pnpm test                       # 1,149 engine and adapter tests
+pnpm test                       # 1,215 engine and adapter tests
 ```
 
 **Start here:** the front door routes you to the right surface by role.
@@ -31,7 +31,7 @@ pnpm --filter @gt100k/evidence-explorer dev   # 3030, the provenance observatory
 pnpm --filter @gt100k/concierge-app     dev   # 3040, sourced answers
 pnpm --filter @gt100k/parent-guide      dev   # 3055, the parent playbook
 pnpm --filter @gt100k/design-lab        dev   # 3060, the prototype lab
-pnpm --filter @gt100k/discovery         dev   # 3070, the child's discovery wall
+pnpm --filter @gt100k/discovery         dev   # 3080, the child's discovery wall
 ```
 
 ## How it fits together
@@ -99,10 +99,10 @@ Pure, deterministic, dependency-light. No network, no LLM, no clock.
 | App | Audience |
 |---|---|
 | `home` | The front door. Routes by role and does nothing else |
-| `guide-console` | The guide's cockpit: overview dashboard, hypotheses, wellbeing, plan, family, access |
+| `guide-console` | The guide's cockpit: a Today roster across children, then per child Interests / Plan and access / Family & coaching, with the wellbeing read as a strip and maps in a drawer |
 | `project-studio` | The child's project journal |
 | `parent-guide` | The Warm-Demanding Parent Playbook (static export, hosted on AWS) |
-| `discovery` | The child-facing surface: thirty-seven pursuits flat on one screen, each offering a game to play and a shelf to read (Next.js) |
+| `discovery` | The child-facing surface: forty-four pursuits flat on one screen, each with a shelf to read and eight of them with a game to play (Next.js) |
 | `tinker-cabin` | An earlier child-facing discovery prototype (Vite) |
 | `concierge`, `design-lab` | Concierge demo; the prototype lab, currently empty — a surface lives here while a question about it is open |
 

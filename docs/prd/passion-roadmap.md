@@ -13,7 +13,7 @@
 | Lane | Status |
 |---|---|
 | **Discovery spine** (C1/C2/C3/C4 + G1 orchestrator) | ✅ built + merged — `009` `011` `012` `013` `014` |
-| **Guide-console cockpit** (F1) | ✅ merged — 7-tab (Overview/Hypotheses/Wellbeing/Plan/Family/Access/Maps), Overview the landing view, + polish + Galaxy backdrop |
+| **Guide-console cockpit** (F1) | ✅ merged — Today roster is the landing view, then three per-child tabs (Interests / Plan and access / Family & coaching); wellbeing is an always-on strip and maps are a drawer, + polish + Galaxy backdrop |
 | **Assessment / defense** (E2 engine) | ✅ built + merged — `010` |
 | **Concierge + child-safe RAG + curated library** (B1/B2/A6) | ✅ built + merged — `015` |
 | **Wellbeing** (F2) | ✅ built + merged — `016` |

@@ -67,7 +67,7 @@ The claim to make, because this audience will ask why:
 > And of twelve first-graders, zero found the 'More Choices' control on their own. So there is no
 > pager here, ever. Whatever is on this screen is, for a small child, the whole world."
 
-**Two controls, quickly.** Toggle **Names** on and off. Drop **Age** to 6 and watch eight tiles
+**Two controls, quickly.** Toggle **Names** on and off. Drop **Age** to 6 and watch twenty-two tiles
 leave: *"nothing here is locked, but we do not show a nine-year-old a thing that needs a licence."*
 
 If asked about the pictures: every tile is one render from one scaffold, normalised to the same mean
@@ -84,7 +84,7 @@ prettier than its neighbours.
 
 Land on the venue:
 
-> "ABRSM grades this child, not us. Every one of the thirty-seven has a real external judge — a
+> "ABRSM grades this child, not us. Every one of the forty-four has a real external judge — a
 > federation, a competition, a licensing body. A pursuit with nobody to judge it is just a topic."
 
 **Click the game.** Play ten seconds. Close it.
@@ -161,5 +161,5 @@ position. That is half the measurement and it is the half most systems throw awa
 decline and a never-shown are the same row.
 
 **"Is the order the same every time?"** Random per session, fixed roster. Random order decorrelates
-position from preference. A random *roster* would be trigger-and-abandon, which finishes below never
-having triggered the interest at all.
+position from preference. A random *roster* would be trigger-and-abandon, and
+children whose interest is triggered and then not maintained show a marked decline in it.
