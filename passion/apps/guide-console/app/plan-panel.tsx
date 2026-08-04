@@ -6,10 +6,10 @@
 // title→link, who it is for), the bounded practice dose + mandatory rest, the PCDE focus, and any
 // "Needs your review" replan (rest / deload / stage-advance) with a plain rationale + the honest
 // terminal note. Guide-facing only, grayscale-safe: NO child-facing text, NO reward/score/grade.
-import type { JSX } from "react";
+import { useState, type JSX } from "react";
 import { Look } from "./look.js";
 import type { PlanCardVM } from "./plan.js";
-import type { CuratedResource } from "@gt100k/specialization-planner";
+import type { CuratedResource, ProjectBrief } from "@gt100k/specialization-planner";
 import type { HypothesisCard } from "@gt100k/hypothesis-store";
 import { specPath, modeLabel } from "./vocab.js";
 import { WhyThis } from "./why.js";
@@ -277,8 +277,39 @@ function RoadToAPlan({ card }: { card?: HypothesisCard }): JSX.Element {
 
 function PlanItem({ card, kidId }: { card: PlanCardVM; kidId: string }): JSX.Element {
   const p = card.plan;
-  const project = p.nextProject;
   const milestone = milestoneForPlan(kidId, card);
+  // A brief written for THIS spike, fetched on request. Until one exists the stub template stands,
+  // which is why the section below stays collapsed and says what it is.
+  const [written, setWritten] = useState<ProjectBrief | null>(null);
+  const [asking, setAsking] = useState(false);
+  const [refused, setRefused] = useState<string | null>(null);
+  const project = written ?? p.nextProject;
+
+  async function write(): Promise<void> {
+    setAsking(true);
+    setRefused(null);
+    try {
+      const res = await fetch("/brief", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          domainPath: card.domainPath,
+          mode: card.mode,
+          stage: p.stage,
+          audience: p.nextProject.audience,
+          craftFloorHint: p.nextProject.craftScaffold,
+          resources: card.resources,
+        }),
+      });
+      const body = (await res.json()) as { brief?: ProjectBrief; refused?: string };
+      if (body.brief) setWritten(body.brief);
+      else setRefused(body.refused ?? "Could not write a brief just now.");
+    } catch {
+      setRefused("Could not write a brief just now.");
+    } finally {
+      setAsking(false);
+    }
+  }
   return (
     <li
       className={`wbitem${p.escalateToHuman ? " wbitem--review" : ""}`}
@@ -335,10 +366,25 @@ function PlanItem({ card, kidId }: { card: PlanCardVM; kidId: string }): JSX.Ele
           It is kept rather than deleted because `planner-live` will fill it with a brief grounded on
           the rung above, at which point it stops being a template and should open by default. Until
           then it is behind a summary that says what it is. */}
-      <details className="planproject">
+      <details className="planproject" open={written !== null}>
         <summary className="planproject__summary">
-          <span className="planproject__k">A general project shape for this stage</span>
+          <span className="planproject__k">
+            {written === null
+              ? "A general project shape for this stage"
+              : "A project written for this spike"}
+          </span>
         </summary>
+        {written === null ? (
+          <div className="planproject__write">
+            <button type="button" className="btn btn--ghost" onClick={write} disabled={asking}>
+              {asking ? "Writing…" : "Write one for this spike"}
+            </button>
+            {/* Named, not swallowed: the guide pressed a button, and the template is still below. */}
+            {refused === null ? null : <span className="planproject__refused">{refused}</span>}
+          </div>
+        ) : (
+          <p className="planproject__src">Written by a model. Read it before you offer it.</p>
+        )}
         <p className="planproject__title">{project.title}</p>
         <p className="planproject__q">{project.drivingQuestion}</p>
         <p className="planproject__method">

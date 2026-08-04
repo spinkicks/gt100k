@@ -38,6 +38,20 @@ export interface PuzzleProps {
   tier?: number;
   onSolved: () => void;
   onExit: () => void;
+  /**
+   * One try, and whether it worked. OPTIONAL for the same reason `tier` is: a puzzle that cannot
+   * tell a wrong move from a right one simply omits it.
+   *
+   * WHY THIS EXISTS. The wellbeing engine already decides SCAFFOLD from a success rate and already
+   * refuses to fabricate a PUSH without one, but nothing ever gave it a number, so the question
+   * "is this child bored or drowning" could not be answered from behaviour at all. A solve on its
+   * own cannot answer it either: solving in one try and solving in twenty look identical once the
+   * board is clear.
+   *
+   * Never rendered, like `tier`. A visible tally of a child's wrong moves is a score, and the
+   * moment one exists a screen renders it.
+   */
+  onAttempt?: (correct: boolean) => void;
 }
 
 export interface Gadget {

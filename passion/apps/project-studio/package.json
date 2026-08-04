@@ -21,7 +21,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "@gt100k/socratic-defense": "workspace:*",
-    "@gt100k/two-axis-tagging": "workspace:*"
+    "@gt100k/two-axis-tagging": "workspace:*",
+    "@gt100k/tutor-tfy": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",

@@ -13,6 +13,7 @@ import {
 import { useStudio } from "./useStudio.js";
 import { Mascot } from "./mascot.js";
 import { HomeLink } from "./home-link.js";
+import { ThemeSwitcher } from "./theme-switcher.js";
 import { KindIcon, SparkIcon } from "./icons.js";
 import { AskPanel } from "./ask-panel.js";
 import { InterviewPanel } from "./interview-panel.js";
@@ -58,6 +59,7 @@ export function Studio(): JSX.Element {
             </div>
           </div>
           <div className="topbar__spacer" />
+          <ThemeSwitcher />
           <HomeLink />
         </header>
 

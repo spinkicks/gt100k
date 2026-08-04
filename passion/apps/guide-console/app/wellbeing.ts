@@ -14,6 +14,14 @@ export interface WellbeingCardVM {
   readonly domainPath: DomainPath;
   readonly mode: string;
   readonly read: WellbeingRead;
+  /**
+   * How the work is actually going, when enough of it has been judged to say.
+   *
+   * The difficulty recommendation is derived from this, and a guide who can only see the
+   * recommendation has to take it on faith. Absent for most spikes, because most surfaces cannot
+   * tell a right answer from a wrong one, and saying so is better than implying we know.
+   */
+  readonly successRate?: number;
 }
 
 // Escalations sort to the top so a guide sees "needs your review" first; ties keep the store's
@@ -34,6 +42,7 @@ export function wellbeingForKid(kidId: string): readonly WellbeingCardVM[] {
       domainPath: h.domainPath,
       mode: h.mode,
       read: assessWellbeing(signals, { pressureActive }),
+      ...(signals.successRate === undefined ? {} : { successRate: signals.successRate }),
     };
   });
   return [...cards].sort((a, b) => Number(b.read.escalateToHuman) - Number(a.read.escalateToHuman));

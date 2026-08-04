@@ -4,8 +4,11 @@
 // The raw 014 log carries `artifactId`, not a cell — so it is resolved to the canonical CellEvent
 // stream through the tested 012 Signal Firewall (`deriveSignals`), which needs the artifact catalog.
 // The catalog is therefore a 4th input (default empty → no cell events → the SAFE default: stable
-// trends, no devaluation, no missingness, and NEVER a fabricated PUSH). `successRate`/`exhaustion`/
-// `obsessiveTip`/`stakesEvent` are not yet instrumented → left undefined.
+// trends, no devaluation, no missingness, and NEVER a fabricated PUSH).
+//
+// `successRate` comes from `Interaction.tries` and is read off the RAW log rather than the cell
+// stream, because tries are deliberately absent from `CellEvent`: performance must never become
+// interest evidence. `exhaustion`/`obsessiveTip`/`stakesEvent` have no affordance yet → undefined.
 import type { StudentProfile } from "@gt100k/student-profile";
 import { deriveSignals } from "@gt100k/signal-pipeline";
 import type { Artifact } from "@gt100k/two-axis-tagging";
@@ -14,6 +17,16 @@ import { isDepthFamily, serializeCellKey } from "@gt100k/interest-inference";
 import { GAP_DAYS, TREND_WINDOW_DAYS, type Trend, type WellbeingSignals } from "./model.js";
 
 const DAY_MS = 86_400_000;
+
+/**
+ * How many judged pieces of work before a success rate means anything.
+ *
+ * OURS, NOT A FINDING. Below this the ratio swings on a single puzzle, and the engine turns a low
+ * rate into SCAFFOLD, so a child having one bad afternoon would get their difficulty pulled down.
+ * Staying undefined is the safe answer: the engine already refuses to fabricate a PUSH without a
+ * rate, and treats an absent one as "no reason to back off".
+ */
+const MIN_JUDGED = 4;
 
 /** rising if recent activity exceeds older; declining if it falls; else stable. */
 function trend(recent: number, older: number): Trend {
@@ -82,6 +95,31 @@ export function deriveWellbeingSignals(
   const devaluation =
     validNow && hadPriorVoluntaryDepth && recentComplianceOnly && returnTrend === "declining";
 
+  // successRate: solves over tries, across the recent window only, from interactions this cell's
+  // artifacts produced. Absent unless the child actually met enough judged work to say anything --
+  // one lucky puzzle is not a success rate, and a wrong number here moves a real recommendation.
+  // Resolved through the CATALOG, not the cell stream: `CellEvent` deliberately drops `artifactId`,
+  // which is the firewall doing its job. An artifact belongs to this cell when its domain matches
+  // and it affords the cell's mode -- the same join the firewall itself makes.
+  const inCell = (artifactId: string): boolean => {
+    const a = catalog.get(artifactId);
+    if (!a) return false;
+    return a.affordedModes.some((m) => serializeCellKey(a.domainPath, m) === cellKey);
+  };
+  const judged = profile.interactions.filter(
+    (i) =>
+      typeof i.tries === "number" &&
+      i.tries > 0 &&
+      inCell(i.artifactId) &&
+      !Number.isNaN(Date.parse(i.timestamp)) &&
+      inRecent(i.timestamp),
+  );
+  const totalTries = judged.reduce((n, i) => n + (i.tries ?? 0), 0);
+  const successRate =
+    validNow && judged.length >= MIN_JUDGED && totalTries > 0
+      ? judged.length / totalTries
+      : undefined;
+
   // missingness: prior voluntary engagement, but no voluntary return within GAP_DAYS (a quiet period).
   const volTimes = events.filter(isVol).map((e) => Date.parse(e.timestamp));
   const latestVol = volTimes.length ? Math.max(...volTimes) : undefined;
@@ -95,6 +133,7 @@ export function deriveWellbeingSignals(
     stretchSeeking,
     devaluation,
     missing,
+    ...(successRate === undefined ? {} : { successRate }),
     now,
   };
 }

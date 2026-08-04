@@ -22,6 +22,7 @@ export interface GameLauncherProps {
   readonly onSolve?: (gadgetId: string) => void;
   /** The child asked for a harder board (`chosen_challenge`). */
   readonly onHarder?: (gadgetId: string) => void;
+  onAttempt?: (gadgetId: string, correct: boolean) => void;
 }
 
 export default function GameLauncher({
@@ -30,6 +31,7 @@ export default function GameLauncher({
   onOpen,
   onSolve,
   onHarder,
+  onAttempt,
 }: GameLauncherProps): JSX.Element | null {
   const gadget = gadgetById(gadgetId);
   // An id with no gadget means the index and registry drifted. Fail closed and quiet rather than
@@ -42,6 +44,7 @@ export default function GameLauncher({
       onOpen={onOpen}
       onSolve={onSolve}
       onHarder={onHarder}
+      onAttempt={onAttempt}
     />
   );
 }

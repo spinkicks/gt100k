@@ -341,6 +341,9 @@ importers:
       '@gt100k/motivation':
         specifier: workspace:*
         version: link:../../packages/motivation
+      '@gt100k/planner-live':
+        specifier: workspace:*
+        version: link:../../adapters/planner-live
       '@gt100k/profile-store-fs':
         specifier: workspace:*
         version: link:../../adapters/profile-store-fs
@@ -500,6 +503,9 @@ importers:
       '@gt100k/socratic-defense':
         specifier: workspace:*
         version: link:../../packages/socratic-defense
+      '@gt100k/tutor-tfy':
+        specifier: workspace:*
+        version: link:../../adapters/tutor-tfy
       '@gt100k/two-axis-tagging':
         specifier: workspace:*
         version: link:../../packages/two-axis-tagging

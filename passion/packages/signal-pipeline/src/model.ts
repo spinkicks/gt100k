@@ -20,6 +20,23 @@ export interface Interaction {
   readonly depthSignals?: readonly DepthSignal[];
   /** How long the open held attention, bucketed. See `DwellBucket`. */
   readonly dwellBucket?: DwellBucket;
+  /**
+   * How many tries this took, when the surface can tell a right answer from a wrong one.
+   *
+   * WHY IT IS HERE. The wellbeing engine decides SCAFFOLD from a success rate and refuses to
+   * fabricate a PUSH without one, but nothing ever supplied a number, so "is this child bored or
+   * drowning" could not be answered from behaviour. A solve alone cannot answer it: solving in one
+   * try and solving in twenty look identical once the board is clear.
+   *
+   * DELIBERATELY NOT ON `CellEvent`, for the same reason as `dwellBucket`. The belief math only
+   * ever sees `CellEvent`s, so keeping this off that type makes it structurally impossible for
+   * performance to become interest evidence. A child who loves a thing they are bad at must read
+   * exactly as interested as one who finds it easy, and that guarantee is worth more as a type
+   * boundary than as a comment asking people not to.
+   *
+   * Absent where a surface cannot judge correctness, which is most of them.
+   */
+  readonly tries?: number;
 }
 
 /**

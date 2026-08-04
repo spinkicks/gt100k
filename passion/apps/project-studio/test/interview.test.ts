@@ -6,11 +6,10 @@
  * never told they are suspected of anything, because a false positive teaches a child who did the
  * work that a machine thinks they cheated.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { answerEntry, askAbout, facetFor } from "../app/interview.js";
 import type { Project, Thinness } from "@gt100k/project-workspace";
-import type { Interviewer } from "@gt100k/socratic-defense";
 
 const project: Project = {
   id: "p1",
@@ -74,30 +73,55 @@ describe("the question itself", () => {
     }
   });
 
-  it("uses a live interviewer when one is supplied", async () => {
-    const live: Interviewer = {
-      async nextQuestion(ctx) {
-        expect(ctx.targetFacet).toBe("challenge");
-        // Always the gentlest register: the child did not ask to be examined and is still holding
-        // the thing being asked about.
-        expect(ctx.readinessLevel).toBe("emerging");
-        expect(ctx.isFollowUp).toBe(false);
-        return "What bit fought you hardest?";
-      },
-    };
-    const q = await askAbout(project, thin(), live);
+  it("uses the question the route returns", async () => {
+    const seen: unknown[] = [];
+    vi.stubGlobal("fetch", async (_u: string, init: RequestInit) => {
+      seen.push(JSON.parse(String(init.body)));
+      return new Response(JSON.stringify({ question: "What bit fought you hardest?" }));
+    });
+    const q = await askAbout(project, thin());
     expect(q.question).toBe("What bit fought you hardest?");
+    // The route is told which facet to ask, so the choice stays here and is testable without a model.
+    expect((seen[0] as { facet: string }).facet).toBe("challenge");
+    vi.unstubAllGlobals();
   });
 
-  it("falls back to a real question when the model fails", async () => {
-    // A network error must not leave the child staring at an empty panel, and must not surface an
-    // error either -- they did nothing wrong.
-    const broken: Interviewer = {
-      nextQuestion: () => Promise.reject(new Error("gateway down")),
+  it("sends the recent journey, so the question can be about today's work", async () => {
+    // Without this the model only sees a title and asks something generic, which defeats the point
+    // of asking mid-build rather than at the end.
+    let body: { recent?: string[] } = {};
+    vi.stubGlobal("fetch", async (_u: string, init: RequestInit) => {
+      body = JSON.parse(String(init.body));
+      return new Response(JSON.stringify({ question: "A real question about the servo." }));
+    });
+    const withWork: Project = {
+      ...project,
+      events: [
+        { id: "e1", kind: "attempt", at: "2026-08-04T10:00:00.000Z", text: "bent the bracket" },
+      ],
     };
-    const q = await askAbout(project, thin(), broken);
+    await askAbout(withWork, thin());
+    expect(body.recent).toContain("attempt: bent the bracket");
+    vi.unstubAllGlobals();
+  });
+
+  it("still asks when the route fails", async () => {
+    // Fails OPEN, unlike the concierge. The child is mid-build with something to say, so an outage
+    // should cost them specificity rather than the whole exchange.
+    vi.stubGlobal("fetch", async () => {
+      throw new Error("offline");
+    });
+    const q = await askAbout(project, thin());
     expect(q.question.length).toBeGreaterThan(15);
     expect(q.question).not.toMatch(/error|failed|sorry/i);
+    vi.unstubAllGlobals();
+  });
+
+  it("still asks when the route returns nothing usable", async () => {
+    vi.stubGlobal("fetch", async () => new Response(JSON.stringify({ question: "   " })));
+    const q = await askAbout(project, thin());
+    expect(q.question.length).toBeGreaterThan(15);
+    vi.unstubAllGlobals();
   });
 });
 
