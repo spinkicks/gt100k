@@ -60,6 +60,19 @@ export interface MadeThing {
    * on a third party's server, which is the half of the claim a link can actually carry.
    */
   readonly url?: string;
+  /**
+   * How much work stood behind this before it existed: attempts, revisions and outcomes that broke.
+   *
+   * Carried as counts rather than the whole journey, because the console needs the shape of the
+   * record and not its contents. An artefact with almost nothing behind it is the signature of a
+   * project a model produced in one shot, which operators report and the end-of-project defense
+   * cannot catch, since by then there is nothing left to observe but the result.
+   *
+   * NOT A VERDICT, and a guide must not read it as one. A thin record has an innocent reading -- a
+   * short task, or a child who worked without logging -- and `saysFor` carries that reading in the
+   * sentence itself. Absent when the work came from somewhere we do not run.
+   */
+  readonly behind?: { readonly effort: number; readonly everStuck: boolean };
 }
 
 /** The console's stand-in for a `Project`, field for field on the two things a standing needs.
@@ -111,6 +124,10 @@ const ARI_WORK: ChildWork = {
           title: "G major, hands together, one steady pulse",
           kind: "recording",
           at: "2026-07-14T16:20:00.000Z",
+          // Nothing logged before this appeared, which is exactly the ambiguous case: Ari's earliest
+          // work was never kept, so a thin record here is far likelier to mean "worked off the
+          // record" than anything else. The sentence a guide reads says so.
+          behind: { effort: 0, everStuck: false },
         },
       ],
     },
@@ -280,11 +297,13 @@ const DULCE_WORK: ChildWork = {
           title: "One-screen build, finished end to end",
           kind: "build",
           at: "2026-06-28T18:40:00.000Z",
+          behind: { effort: 5, everStuck: true },
         },
         {
           title: "Playable link her cousin got to the end of",
           kind: "link",
           at: "2026-07-02T17:10:00.000Z",
+          behind: { effort: 6, everStuck: true },
         },
       ],
     },

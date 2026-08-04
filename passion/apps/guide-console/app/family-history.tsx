@@ -17,6 +17,7 @@
  * the point: it is the part of the conversation that is not up for debate.
  */
 import type { JSX } from "react";
+import { EFFORT_EXPECTED, saysFor } from "@gt100k/project-workspace";
 import { Look } from "./look.js";
 
 import type { GuideDecision } from "./decisions.js";
@@ -84,6 +85,14 @@ export function MadeHistory({ kidId }: { kidId: string }): JSX.Element {
               <li key={m.title}>
                 {m.title}
                 <Look url={m.url} />
+                {/* What stood behind it. Shown only when the record is thin, because the ordinary
+                    case needs no comment and a count on every line would train guides to skim it.
+                    The sentence carries the innocent reading; see `saysFor`. */}
+                {m.behind !== undefined && m.behind.effort < EFFORT_EXPECTED ? (
+                  <span className="fhist__behind">
+                    {saysFor(m.behind.effort, m.behind.everStuck)}
+                  </span>
+                ) : null}
               </li>
             ))}
           </ul>

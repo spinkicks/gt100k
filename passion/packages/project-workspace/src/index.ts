@@ -23,3 +23,4 @@ export * from "./plan.js";
 // fixture this package does rather than a look-alike. Same pattern as
 // `@gt100k/evidence-explorer-view`, which exports its `explorer.fixture` from its barrel.
 export * from "./__fixtures__/project.js";
+export * from "./thinness.js";

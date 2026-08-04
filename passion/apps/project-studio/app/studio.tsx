@@ -3,7 +3,7 @@
 // The Project Studio surface: the kid's own projects (left), and the open project's quest, its big
 // question, a quest-entry composer, and the journey log (newest first) with a Showtime showcase.
 // Encouraging and theme-able; celebrates trying, iterating, and making. NO score, rank, or streak.
-import { useMemo, useState, type CSSProperties, type JSX } from "react";
+import { useEffect, useMemo, useState, type CSSProperties, type JSX } from "react";
 import {
   hasPerseverance,
   type Project,
@@ -15,6 +15,9 @@ import { Mascot } from "./mascot.js";
 import { HomeLink } from "./home-link.js";
 import { KindIcon, SparkIcon } from "./icons.js";
 import { AskPanel } from "./ask-panel.js";
+import { InterviewPanel } from "./interview-panel.js";
+import { answerEntry, askAbout, type PendingQuestion } from "./interview.js";
+import { thinnessOf } from "@gt100k/project-workspace";
 import { ENTRY_GROUPS, ENTRY_KINDS, audienceLabel, entryFor } from "./studio-state.js";
 
 export function Studio(): JSX.Element {
@@ -155,6 +158,9 @@ function Quest({
   const [kind, setKind] = useState<WorkEventKind>("attempt");
   const [text, setText] = useState("");
   const [stuck, setStuck] = useState(false);
+  // Set when an artefact is logged with almost nothing behind it. Never blocks: the entry is already
+  // saved by the time this appears, and dismissing it costs the child nothing.
+  const [pending, setPending] = useState<PendingQuestion | null>(null);
   const persevered = useMemo(() => hasPerseverance(project), [project]);
   const entries = useMemo(() => [...project.events].reverse(), [project.events]);
 
@@ -162,6 +168,31 @@ function Quest({
     ctrl.addEntry(kind, text, kind === "outcome" ? { stuck } : {});
     setText("");
     setStuck(false);
+  }
+
+  // Watches the journey rather than firing inside `submit`, because `addEntry` goes through state
+  // and the artefact to read is the one that has actually landed. Keyed on the last event's id so it
+  // runs once per entry and never re-asks about an artefact already answered.
+  const lastEvent = project.events.at(-1);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: keyed on the event id, not the object.
+  useEffect(() => {
+    if (lastEvent?.kind !== "artifact") return;
+    const t = thinnessOf(project).at(-1);
+    if (t?.thin !== true || t.artifactId !== lastEvent.id) return;
+    let live = true;
+    void askAbout(project, t).then((q) => {
+      if (live) setPending(q);
+    });
+    return () => {
+      live = false;
+    };
+  }, [lastEvent?.id]);
+
+  function sendAnswer(answer: string): void {
+    if (pending === null) return;
+    const entry = answerEntry(pending, answer);
+    ctrl.addEntry(entry.kind, entry.text, { refs: entry.refs });
+    setPending(null);
   }
 
   const mascotMsg =
@@ -256,6 +287,10 @@ function Quest({
 
       {/* Below the composer and above the log: the question comes up while you are working, so it
           is answered where you are working. It used to be a separate application. */}
+      {pending === null ? null : (
+        <InterviewPanel pending={pending} onAnswer={sendAnswer} onSkip={() => setPending(null)} />
+      )}
+
       <AskPanel />
 
       <div className="timeline" aria-label="Quest log">

@@ -15,6 +15,18 @@ export interface ConciergeRequest {
   readonly ageTier: AgeTier;
   readonly message: string;
   readonly sessionId: string;
+  /**
+   * What the child is working on, when the caller knows.
+   *
+   * Retrieval otherwise infers the domain from the message alone, which fails on exactly the
+   * questions a child working on something actually asks. "How do I make it bounce?" names no
+   * domain, matches nothing, and gets refused -- while the same child has a robotics project open
+   * in front of them. This widens the match rather than narrowing it: a message that names its own
+   * domain still matches on that, and this only adds a path when the child's own work supplies one.
+   *
+   * Optional because not every caller has it. The studio does; a bare ask box does not.
+   */
+  readonly workingOn?: DomainPath;
 }
 
 /** Where a claim came from — attached to a grounded answer. */

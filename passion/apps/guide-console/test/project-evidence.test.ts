@@ -27,6 +27,7 @@ import {
 } from "@gt100k/specialization-planner";
 import { getForKid } from "@gt100k/hypothesis-store";
 import { describe, expect, it } from "vitest";
+import { EFFORT_EXPECTED, saysFor } from "@gt100k/project-workspace";
 
 import { PILOT_CATALOG, ROSTER_NOW, profileFor } from "../app/console-data.js";
 import { evidenceFor, evidenceFromProjects, workForKid } from "../app/map-evidence.js";
@@ -272,5 +273,40 @@ describe("End to end: a chosen milestone reaches a standing and goes nowhere els
       );
       expect(read.evidence).toEqual([]);
     }
+  });
+});
+
+const SEEDED = [
+  "kid-synthetic-001",
+  "kid-synthetic-002",
+  "kid-synthetic-003",
+  "kid-synthetic-004",
+] as const;
+
+describe("what stood behind an artefact", () => {
+  it("is carried on the seed so the console has both cases to show", () => {
+    // One worked-on record and one that arrived with nothing behind it. Without both, the panel is
+    // only ever exercised in the state that renders nothing.
+    const all = SEEDED.flatMap((id) => workForKid(id).projects).flatMap((p) => p.made);
+    const counted = all.filter((m) => m.behind !== undefined);
+    expect(counted.length).toBeGreaterThan(0);
+    expect(counted.some((m) => m.behind!.effort < EFFORT_EXPECTED)).toBe(true);
+    expect(counted.some((m) => m.behind!.effort >= EFFORT_EXPECTED)).toBe(true);
+  });
+
+  it("never states a conclusion about the child", () => {
+    // The sentence describes the RECORD. The guide console is where an adult acts on this, so the
+    // words that would turn a count into an allegation are banned at the point of display too.
+    for (const m of SEEDED.flatMap((id) => workForKid(id).projects).flatMap((p) => p.made)) {
+      if (m.behind === undefined) continue;
+      const says = saysFor(m.behind.effort, m.behind.everStuck);
+      expect(says).not.toMatch(/\b(cheat|copied|plagiar|dishonest|faked|suspicious|lied)\b/i);
+    }
+  });
+
+  it("offers the innocent reading whenever it flags a thin record", () => {
+    // A guide who reads this as proof has been misled by us, so the escape hatch is in the sentence
+    // rather than in a tooltip nobody opens.
+    expect(saysFor(0, false)).toMatch(/quick|off the record/i);
   });
 });
