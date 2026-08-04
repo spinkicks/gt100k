@@ -137,10 +137,12 @@ export default function Chess({ onSolved, onExit, rng = Math.random }: ChessProp
 
       {mode === "tactics" ? (
         <>
-          <p className="cx-prompt">
-            {puzzle.prompt}
-            {puzzle.label ? <span className="cx-tag"> ({puzzle.label})</span> : null}
-          </p>
+          {/* The label is NOT appended here. For every `material` puzzle -- twenty of the
+              thirty-two in the bank -- `bank.ts` already builds the prompt as
+              "<colour> to move — <label>", so printing the tag beside it read
+              "White to move — win a free knight. (Win a free knight)". Only the mate puzzles
+              phrase their prompt independently, and those do not need the tag either. */}
+          <p className="cx-prompt">{puzzle.prompt}</p>
           <BoardGrid
             board={state.board}
             selected={selected}

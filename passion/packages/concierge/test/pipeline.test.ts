@@ -27,7 +27,7 @@ import {
 const CHESS: CuratedResource = {
   id: "res-chess-openings",
   title: "Chess Openings for Beginners",
-  url: "https://www.khanacademy.org/chess-openings",
+  url: "https://lichess.org/opening",
   domainPath: ["games-strategy", "chess"],
   pursuits: ["chess"],
   affordedModes: ["perform", "explain"],

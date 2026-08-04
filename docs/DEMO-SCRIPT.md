@@ -14,6 +14,14 @@ Every port below is pinned in the app's own `dev` script and matches the surface
 `@gt100k/ui`, so the in-product links resolve to each other. Start an app on a different port and its
 neighbours will still point at the pinned one.
 
+> **Run everything with `dev`, not from a build.** `resolveOne` in `@gt100k/ui` only falls back to a
+> localhost URL when `NODE_ENV === "development"`; in a production build it returns `null` unless
+> `NEXT_PUBLIC_SURFACE_URL_*` is set, and nothing sets it. The front door is a static export, so a
+> built copy renders all four role cards as **"Not reachable from here"** with no links at all. That
+> asymmetry is deliberate — a deployed site must not hardcode localhost — but it means the first
+> screen of a built demo is a dead end. If you must present from a build, set the six variables
+> first.
+
 ```bash
 pnpm --filter @gt100k/guide-console consent       # once: lets the console accept `local-demo`
 pnpm --filter @gt100k/guide-console seed-demo     # once: a scripted week of play, via the real route
@@ -117,14 +125,14 @@ Open Demo Child. Then the honest beat, which is the strongest thirty seconds in 
 Show a synthetic child for the fuller read if the panels are thin. **Ari Mercado** is the one to
 pick, because he has two specializations and that is what makes the next beat work.
 
-**Click between the two rows in the Specializations rail** with **Wellbeing** open. The read changes
+**Click between the two rows in the Specializations rail.** The wellbeing strip sits above the tabs and is always on screen. The read changes
 under you, and the banner names which one you are looking at.
 
 > "A child is not one thing, and none of this advice is about a child. 'Hold, and lower the dose' is
 > a sentence about a domain. He is steady in audio and the dance read is the one asking for a human,
 > so the tab is scoped to whichever you picked and the rail says which one needs you."
 
-If someone asks why Maps looks different, that is the honest one to take:
+If someone opens **Maps to review** beside the child switcher, that is the honest question to take:
 
 > "Those are the maps that exist, and none of them is his. The banner says so rather than letting a
 > piano map read as his path. Writing the maps for what children are actually into is the next

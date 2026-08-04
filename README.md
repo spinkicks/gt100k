@@ -115,9 +115,9 @@ Everything under the `@gt100k/evidence-*` name is a **separate product**, not a 
 | Package | What it does |
 |---|---|
 | `evidence-graph` | Content-addressed, tamper-evident record of how work was actually made. Pure domain: no framework, storage, network, clock or runtime crypto |
-| `evidence-explorer-view` | The deterministic view model behind the observatory, 2D and 3D |
+| `evidence-explorer-view` | The deterministic view model behind the observatory |
 | `evidence-tiny-game` | The reproducible demo journey — a small game built over N steps |
-| `apps/evidence-explorer` | The provenance observatory (port 3030), 2D and 3D |
+| `apps/evidence-explorer` | The provenance observatory (port 3030), 2D. The 3D view was removed and `test/no-3d.test.ts` keeps it out |
 
 Its adapters (`evidence-hash-node`, `evidence-repo-postgres`, `evidence-repo-memory`, `evidence-verifier-stub`, `evidence-deferred`) sit behind its own ports, on the same stub-plus-real pattern.
 

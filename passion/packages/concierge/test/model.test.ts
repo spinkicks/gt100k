@@ -54,7 +54,7 @@ describe("concierge model — type smoke (spec §3.1)", () => {
     const resource: CuratedResource = {
       id: "res-chess-openings",
       title: "Chess Openings for Beginners",
-      url: "https://www.khanacademy.org/chess-openings",
+      url: "https://lichess.org/opening",
       domainPath: ["games-strategy", "chess"],
       pursuits: ["chess"],
       affordedModes: ["perform", "explain"],

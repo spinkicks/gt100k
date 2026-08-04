@@ -10,8 +10,8 @@ import type { CuratedLibrary, CuratedResource, RetrievedDoc, StubCorpus } from "
 
 const CHESS: CuratedResource = {
   id: "res-chess-openings",
-  title: "Chess Openings for Beginners",
-  url: "https://www.khanacademy.org/chess-openings",
+  title: "Lichess Opening Explorer",
+  url: "https://lichess.org/opening",
   domainPath: ["games-strategy", "chess"],
   pursuits: ["chess"],
   affordedModes: ["perform", "explain"],
