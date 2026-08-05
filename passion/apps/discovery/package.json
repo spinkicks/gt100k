@@ -8,7 +8,6 @@
     "start": "next start -p 3080",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --config vitest.config.mts",
-    "build-art": "node scripts/build-art.mjs",
     "shoot": "node scripts/shoot.mjs"
   },
   "dependencies": {

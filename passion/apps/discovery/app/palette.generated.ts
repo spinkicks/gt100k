@@ -3,5 +3,14 @@
 export const STROKE = "#002a3a";
 export const HIGHLIGHT = "#fcf4ef";
 export const STROKE_WIDTH = 9;
-export const FILLS = ["#e7857d","#dc9150","#a9ab48","#68ba7b","#06bbc3","#6ea7ef","#b092e5","#d785bd"] as const;
+export const FILLS = [
+  "#e7857d",
+  "#dc9150",
+  "#a9ab48",
+  "#68ba7b",
+  "#06bbc3",
+  "#6ea7ef",
+  "#b092e5",
+  "#d785bd",
+] as const;
 export const ALLOWED_FILLS: ReadonlySet<string> = new Set([...FILLS, "#ffffff", HIGHLIGHT]);
