@@ -25,13 +25,13 @@ import { parentDigest, type InterestPhase, type TheirWords } from "@gt100k/famil
  */
 const WORDS: readonly TheirWords[] = [
   {
-    about: "getting the servo to stop jamming",
-    said: "I reprinted the bracket twice and the second one finally held",
+    about: "getting the drum loop to stop sounding stiff",
+    said: "I nudged everything off the grid a tiny bit and it finally sounded human",
     on: "2026-07-20",
   },
   {
-    about: "a knight fork",
-    said: "I saw it two moves early this time instead of after",
+    about: "the bass drowning everything out",
+    said: "I turned it down until you could hear the hi-hat again",
     on: "2026-07-28",
   },
 ];

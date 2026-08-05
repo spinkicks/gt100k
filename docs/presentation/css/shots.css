@@ -1,0 +1,262 @@
+/* ============================================================================
+   GT100K deck — additions for product screenshots, user flows, and the
+   inference arithmetic. Inherits every colour token from theme.css, so a
+   slide marked .act-eg flips these to the cool palette automatically.
+   ========================================================================== */
+
+/* ---------- product screenshots ---------- */
+
+.reveal .shot {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background: var(--ground-2);
+  line-height: 0;
+}
+
+.reveal .shot {
+  display: flex;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.reveal .shot img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  margin: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+/* a screenshot that carries the slide, with a thin title above it */
+.reveal .shot-hero {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 0.45em;
+  align-content: start;
+}
+
+.reveal .shot-hero .shot img { max-height: 452px; }
+
+/* screenshot beside a short column of points */
+.reveal .shot-split {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 1.4em;
+  align-items: center;
+}
+
+.reveal .shot-split.left { grid-template-columns: 1fr 1.25fr; }
+.reveal .shot-split .shot img { max-height: 450px; }
+
+/* a tall, narrow crop sitting beside text */
+.reveal .shot-split.panel { grid-template-columns: 0.58fr 1fr; align-items: center; }
+.reveal .shot-split.panel .shot img { max-height: 480px; }
+
+/* a wide, short crop that sits under a heading */
+.reveal .shot-band .shot img { max-height: 190px; }
+
+/* pulled-out quote of real product copy */
+.reveal .uicopy {
+  font-family: var(--font-mono);
+  font-size: 0.62em;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  border-left: 2px solid var(--brand);
+  padding: 0.15em 0 0.15em 0.7em;
+  margin: 0.5em 0;
+  display: block;
+}
+
+/* ---------- user-flow chain ---------- */
+
+.reveal .flow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr auto 1fr;
+  align-items: stretch;
+  gap: 0.5em;
+  margin: 0.7em 0;
+}
+
+.reveal .flow .node {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--chip-bg);
+  padding: 0.6em 0.7em;
+}
+
+.reveal .flow .node b {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.72em;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  margin-bottom: 0.2em;
+}
+
+.reveal .flow .node span {
+  display: block;
+  font-size: 0.58em;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.reveal .flow .node.actor-child { border-left: 3px solid var(--brand); }
+.reveal .flow .node.actor-guide { border-left: 3px solid var(--accent); }
+.reveal .flow .node.actor-sys   { border-left: 3px solid var(--muted); }
+.reveal .flow .node.gap         { border-style: dashed; background: transparent; }
+
+.reveal .flow .to {
+  align-self: center;
+  color: var(--muted);
+  font-size: 0.85em;
+}
+
+.reveal .legend {
+  display: flex;
+  gap: 1.2em;
+  font-size: 0.55em;
+  color: var(--muted);
+  margin-top: 0.3em;
+}
+
+.reveal .legend i { font-style: normal; }
+.reveal .legend i::before {
+  content: "";
+  display: inline-block;
+  width: 0.7em; height: 0.7em;
+  border-radius: 2px;
+  margin-right: 0.4em;
+  vertical-align: baseline;
+}
+.reveal .legend .c::before { background: var(--brand); }
+.reveal .legend .g::before { background: var(--accent); }
+.reveal .legend .s::before { background: var(--muted); }
+
+/* ---------- the arithmetic ---------- */
+
+.reveal table.calc {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.6em;
+  margin: 0.5em 0;
+}
+
+.reveal table.calc th {
+  text-align: left;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+  padding: 0.35em 0.6em 0.35em 0;
+}
+
+.reveal table.calc td {
+  padding: 0.34em 0.6em 0.34em 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-soft);
+  vertical-align: top;
+}
+
+.reveal table.calc td.w {
+  font-family: var(--font-mono);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.reveal table.calc tr.zero td { color: var(--muted); }
+.reveal table.calc tr.zero td.w { color: var(--muted); }
+.reveal table.calc td b { color: var(--ink); font-weight: 600; }
+
+.reveal .formula {
+  font-family: var(--font-mono);
+  font-size: 0.62em;
+  line-height: 1.85;
+  background: var(--chip-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.8em 1em;
+  color: var(--ink);
+  margin: 0.5em 0;
+}
+
+.reveal .formula .c { color: var(--muted); }
+.reveal .formula b { color: var(--brand); font-weight: 600; }
+
+/* three gates / checks */
+.reveal .gates { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 0.7em; margin: 0.6em 0; }
+.reveal .gates .gate {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.6em 0.75em;
+  background: var(--chip-bg);
+}
+.reveal .gates .gate b { display: block; font-size: 0.7em; color: var(--ink); margin-bottom: 0.15em; }
+.reveal .gates .gate span { display: block; font-size: 0.56em; line-height: 1.45; color: var(--muted); }
+
+/* ---------- refused list ---------- */
+
+.reveal ul.refused { list-style: none; margin: 0.4em 0; padding: 0; columns: 2; column-gap: 2em; }
+.reveal ul.refused li {
+  font-size: 0.62em;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  padding-left: 1.3em;
+  position: relative;
+  break-inside: avoid;
+}
+.reveal ul.refused li::before {
+  content: "\00d7";
+  position: absolute; left: 0.25em; top: 0;
+  width: auto; height: auto;
+  background: none; border-radius: 0;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ---------- timeline ---------- */
+
+.reveal .timeline { display: flex; gap: 0.6em; margin: 0.6em 0; }
+.reveal .timeline .wk { flex: 1 1 0; border-top: 2px solid var(--line); padding-top: 0.55em; }
+.reveal .timeline .wk.hit { border-top-color: var(--brand); }
+.reveal .timeline .wk b { display: block; font-family: var(--font-mono); font-size: 0.58em; color: var(--muted); letter-spacing: 0.06em; }
+.reveal .timeline .wk strong { display: block; font-size: 0.66em; color: var(--ink); margin: 0.18em 0; font-weight: 600; }
+.reveal .timeline .wk span { display: block; font-size: 0.55em; line-height: 1.45; color: var(--muted); }
+
+/* ---------- status chips for the honesty slide ---------- */
+
+.reveal .status { display: flex; flex-direction: column; gap: 0.4em; margin: 0.5em 0; }
+.reveal .status .row { display: grid; grid-template-columns: 5.5em 1fr; gap: 0.8em; align-items: baseline; font-size: 0.62em; }
+.reveal .status .tag {
+  font-family: var(--font-mono); font-size: 0.82em; letter-spacing: 0.05em;
+  text-transform: uppercase; padding: 0.12em 0.5em; border-radius: 4px; text-align: center;
+}
+.reveal .status .tag.built { background: rgba(47,125,91,0.14); color: var(--brand); }
+.reveal .status .tag.stub  { background: rgba(228,87,46,0.14); color: var(--accent); }
+.reveal section.act-eg .status .tag.built { background: rgba(52,211,153,0.14); color: var(--brand); }
+.reveal section.act-eg .status .tag.stub  { background: rgba(245,165,36,0.16); color: var(--highlight); }
+.reveal .status .what { color: var(--ink-soft); line-height: 1.5; }
+
+/* tighten headings when a slide carries an image */
+.reveal .shot-hero h2, .reveal .shot-split h2 { margin-bottom: 0.12em; }
+.reveal .subhead { font-size: 0.66em; color: var(--muted); line-height: 1.5; margin: 0 0 0.4em; }
+
+/* three-up cast row (no arrows) */
+.reveal .flow.three { grid-template-columns: repeat(3, 1fr); }
+.reveal .flow .node.actor-fam { border-left: 3px solid var(--highlight); }
+.reveal .flow.three .node b { font-size: 0.8em; }
+.reveal .flow.three .node span { font-size: 0.6em; }
+
+/* the two weeks that carry the argument are "nothing happened" weeks; mark them */
+.reveal .timeline .wk.key { border-top-color: var(--accent); }
+.reveal .timeline .wk.key strong { color: var(--accent); }
