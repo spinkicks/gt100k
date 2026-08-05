@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- headphone band -->
+    <path fill="#b092e5" d="M 52 128 C 52 66, 92 34, 120 34 C 148 34, 188 66, 188 128 L 170 128 C 170 82, 144 52, 120 52 C 96 52, 70 82, 70 128 Z"/>
+    <!-- left ear cup -->
+    <rect x="38" y="118" width="34" height="56" rx="16" fill="#6ea7ef"/>
+    <!-- right ear cup -->
+    <rect x="168" y="118" width="34" height="56" rx="16" fill="#6ea7ef"/>
+    <!-- mic grille -->
+    <rect x="98" y="88" width="44" height="48" rx="22" fill="#6ea7ef"/>
+    <!-- mic body -->
+    <rect x="104" y="126" width="32" height="62" rx="12" fill="#e7857d"/>
+    <!-- mic stand neck -->
+    <rect x="114" y="186" width="12" height="12" fill="#e7857d"/>
+    <!-- mic base -->
+    <rect x="94" y="196" width="52" height="14" rx="7" fill="#e7857d"/>
+  </g>
+  <!-- grille texture -->
+  <g fill="#002a3a">
+    <rect x="106" y="100" width="28" height="6" rx="3"/>
+    <rect x="106" y="112" width="28" height="6" rx="3"/>
+  </g>
+</svg>

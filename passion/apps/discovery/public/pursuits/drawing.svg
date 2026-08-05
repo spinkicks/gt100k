@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g transform="translate(55,190) scale(1.22) translate(-55,-190)">
+    <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+      <!-- pencil barrel -->
+      <polygon fill="#dc9150" points="55,190 84,180 186,70 164,50 62,160"/>
+      <!-- eraser cap -->
+      <polygon fill="#d785bd" points="164,50 186,70 196,60 174,40"/>
+      <!-- sparkle star -->
+      <polygon fill="#e7857d" points="35,112 42,133 58,140 42,147 35,168 28,147 12,140 28,133"/>
+    </g>
+    <!-- graphite tip -->
+    <polygon fill="#002a3a" points="55,190 82,180 64,168"/>
+  </g>
+  <!-- wavy drawn line trailing from the tip -->
+  <path d="M 55 190 Q 38 200 52 210 Q 66 218 48 224" fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round"/>
+</svg>

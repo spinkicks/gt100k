@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g transform="translate(118,120) scale(1.18) translate(-118,-120)">
+    <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+      <!-- bright star -->
+      <path fill="#dc9150" d="M78,62 L93.6,104.4 L136,120 L93.6,135.6 L78,178 L62.4,135.6 L20,120 L62.4,104.4 Z"/>
+      <!-- brightness graph card -->
+      <rect x="140" y="90" width="76" height="76" rx="14" fill="#6ea7ef"/>
+    </g>
+    <!-- star shine -->
+    <circle cx="78" cy="120" r="10" fill="#fcf4ef"/>
+    <!-- graph baseline -->
+    <rect x="150" y="146" width="56" height="6" rx="3" fill="#fcf4ef"/>
+    <!-- brightness line -->
+    <path d="M152,140 L165,110 L178,150 L191,120 L204,140" fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- data point dots -->
+    <circle cx="165" cy="110" r="7" fill="#fcf4ef"/>
+    <circle cx="191" cy="120" r="7" fill="#fcf4ef"/>
+  </g>
+</svg>

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- palm -->
+    <path fill="#dc9150" d="M 50 190
+      C 40 158 46 128 72 116
+      C 92 106 132 106 152 116
+      C 176 128 184 156 176 182
+      C 168 202 138 208 118 205
+      C 94 202 60 206 50 190 Z"/>
+    <!-- thumb -->
+    <rect x="28" y="140" width="42" height="24" rx="12" fill="#dc9150"/>
+    <!-- gadget -->
+    <rect x="95" y="132" width="50" height="38" rx="10" fill="#6ea7ef"/>
+    <!-- fingers -->
+    <rect x="66" y="64" width="20" height="54" rx="10" fill="#dc9150"/>
+    <rect x="90" y="50" width="20" height="68" rx="10" fill="#dc9150"/>
+    <rect x="114" y="46" width="20" height="72" rx="10" fill="#dc9150"/>
+    <rect x="138" y="58" width="20" height="60" rx="10" fill="#dc9150"/>
+    <!-- heart spark -->
+    <path fill="#e7857d" d="M 178 90
+      C 158 74 156 54 172 50
+      C 178 48 178 56 178 60
+      C 178 56 178 48 184 50
+      C 200 54 198 74 178 90 Z"/>
+  </g>
+  <!-- gadget light -->
+  <circle cx="120" cy="151" r="6" fill="#002a3a"/>
+  <!-- spark ticks -->
+  <g stroke="#002a3a" stroke-width="9" stroke-linecap="round">
+    <line x1="200" y1="44" x2="208" y2="36"/>
+    <line x1="210" y1="58" x2="220" y2="54"/>
+    <line x1="152" y1="40" x2="146" y2="32"/>
+  </g>
+</svg>

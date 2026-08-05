@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- headstock -->
+    <rect x="98" y="16" width="44" height="26" rx="8" fill="#a9ab48"/>
+    <!-- neck -->
+    <rect x="108" y="40" width="24" height="70" rx="6" fill="#a9ab48"/>
+    <!-- body -->
+    <path fill="#dc9150" d="M120 108
+      C150 108, 170 122, 168 145
+      C166 158, 150 158, 148 168
+      C168 178, 182 195, 175 210
+      C168 222, 145 226, 120 226
+      C95 226, 72 222, 65 210
+      C58 195, 72 178, 92 168
+      C90 158, 74 158, 72 145
+      C70 122, 90 108, 120 108 Z"/>
+  </g>
+  <!-- frets -->
+  <rect x="110" y="52" width="20" height="3" rx="1.5" fill="#002a3a"/>
+  <rect x="110" y="66" width="20" height="3" rx="1.5" fill="#002a3a"/>
+  <rect x="110" y="80" width="20" height="3" rx="1.5" fill="#002a3a"/>
+  <rect x="110" y="94" width="20" height="3" rx="1.5" fill="#002a3a"/>
+  <!-- strings -->
+  <rect x="112" y="44" width="3" height="152" rx="1.5" fill="#002a3a"/>
+  <rect x="117" y="44" width="3" height="152" rx="1.5" fill="#002a3a"/>
+  <rect x="123" y="44" width="3" height="152" rx="1.5" fill="#002a3a"/>
+  <rect x="128" y="44" width="3" height="152" rx="1.5" fill="#002a3a"/>
+  <!-- tuning pegs -->
+  <circle cx="92" cy="22" r="5" fill="#002a3a"/>
+  <circle cx="92" cy="36" r="5" fill="#002a3a"/>
+  <circle cx="148" cy="22" r="5" fill="#002a3a"/>
+  <circle cx="148" cy="36" r="5" fill="#002a3a"/>
+  <!-- sound hole -->
+  <circle cx="120" cy="165" r="24" fill="#002a3a"/>
+  <!-- bridge -->
+  <rect x="95" y="196" width="50" height="10" rx="5" fill="#002a3a"/>
+</svg>

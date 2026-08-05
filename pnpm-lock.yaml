@@ -253,6 +253,9 @@ importers:
       playwright:
         specifier: ^1.48.0
         version: 1.61.1
+      sharp:
+        specifier: ^0.33.5
+        version: 0.33.5
 
   passion/apps/evidence-explorer:
     dependencies:

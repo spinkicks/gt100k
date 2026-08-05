@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- podium body -->
+    <path fill="#6ea7ef" d="M 62 205 L 178 205 L 158 115 L 82 115 Z"/>
+    <!-- podium top plate -->
+    <path fill="#dc9150" d="M 74 118 L 166 118 L 178 96 L 62 96 Z"/>
+    <!-- accent stripe -->
+    <rect x="86" y="158" width="68" height="16" rx="8" fill="#dc9150"/>
+    <!-- mic stand pole -->
+    <line x1="120" y1="96" x2="120" y2="56"/>
+    <!-- mic clip -->
+    <rect x="104" y="50" width="32" height="16" rx="8" fill="#a9ab48"/>
+    <!-- mic head -->
+    <ellipse cx="120" cy="36" rx="28" ry="32" fill="#a9ab48"/>
+  </g>
+</svg>

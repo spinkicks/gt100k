@@ -43,10 +43,11 @@ export const CABIN_LABEL: Record<CabinId, string> = {
  * app's `public/` directory and not about the pursuit. A missing file would otherwise be invisible
  * until someone looked at the wall, so `test/art.test.ts` asserts the set is complete.
  *
- * Built by `scripts/build-art.mjs`, which is where the reasoning about uniformity lives.
+ * The icons are hand-authored flat SVGs locked to `app/palette.generated.ts`; the reasoning about
+ * uniformity lives in that palette and the `test/icon-conformance.ts` guard (`test/art.test.ts`).
  */
 export function artFor(p: Pursuit): string {
-  return `/pursuits/${p.id}.webp`;
+  return `/pursuits/${p.id}.svg`;
 }
 
 /**
