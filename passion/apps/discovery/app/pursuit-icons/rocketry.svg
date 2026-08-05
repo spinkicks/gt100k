@@ -1,18 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
-  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
-    <!-- flame -->
-    <path fill="#dc9150" d="M 100 165 C 100 190 108 215 120 228 C 132 215 140 190 140 165 Z"/>
-    <!-- fins -->
-    <path fill="#e7857d" d="M 95 130 L 58 172 L 95 172 Z"/>
-    <path fill="#e7857d" d="M 145 130 L 182 172 L 145 172 Z"/>
-    <!-- body -->
-    <rect x="95" y="55" width="50" height="110" rx="25" fill="#fcf4ef"/>
-    <!-- nose cone -->
-    <path fill="#e7857d" d="M 95 62 Q 120 16 145 62 Z"/>
+  <g transform="translate(120,124) scale(1.18) translate(-120,-124)">
+    <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+      <!-- flame -->
+      <path fill="#dc9150" d="M 100 165 C 100 190 108 215 120 228 C 132 215 140 190 140 165 Z"/>
+      <!-- fins -->
+      <path fill="#e7857d" d="M 95 130 L 58 172 L 95 172 Z"/>
+      <path fill="#e7857d" d="M 145 130 L 182 172 L 145 172 Z"/>
+      <!-- body -->
+      <rect x="95" y="55" width="50" height="110" rx="25" fill="#6ea7ef"/>
+      <!-- nose cone -->
+      <path fill="#e7857d" d="M 95 62 Q 120 16 145 62 Z"/>
+    </g>
+    <!-- inner flame flicker -->
+    <path fill="#e7857d" d="M 112 170 C 112 188 116 205 120 214 C 124 205 128 188 128 170 Z"/>
+    <!-- porthole window -->
+    <circle cx="120" cy="95" r="17" fill="#002a3a"/>
+    <circle cx="113" cy="88" r="5" fill="#fcf4ef"/>
   </g>
-  <!-- inner flame flicker -->
-  <path fill="#e7857d" d="M 112 170 C 112 188 116 205 120 214 C 124 205 128 188 128 170 Z"/>
-  <!-- porthole window -->
-  <circle cx="120" cy="95" r="17" fill="#002a3a"/>
-  <circle cx="113" cy="88" r="5" fill="#fcf4ef"/>
 </svg>

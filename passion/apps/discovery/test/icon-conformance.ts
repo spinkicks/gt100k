@@ -1,5 +1,6 @@
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
+import sharp from "sharp";
 import { ALLOWED_FILLS, STROKE, STROKE_WIDTH } from "../app/palette.generated";
 
 export function listIconSvgs(dir: string): string[] {
@@ -45,4 +46,28 @@ export function assertConformant(svgText: string): string[] {
   for (const w of strokeWidths)
     if (w !== STROKE_WIDTH) problems.push(`stroke-width ${w} is not ${STROKE_WIDTH}`);
   return problems;
+}
+
+export async function energyOf(svgPath: string): Promise<number> {
+  const { data, info } = await sharp(svgPath, { density: 144 })
+    .resize(240, 240, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .raw()
+    .ensureAlpha()
+    .toBuffer({ resolveWithObject: true });
+  const px = info.width * info.height;
+  let covered = 0;
+  let satSum = 0;
+  for (let i = 0; i < px; i++) {
+    const r = data[i * 4] ?? 0;
+    const g = data[i * 4 + 1] ?? 0;
+    const b = data[i * 4 + 2] ?? 0;
+    const a = data[i * 4 + 3] ?? 0;
+    if (a < 32) continue; // transparent: not part of the subject
+    covered++;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    satSum += max === 0 ? 0 : (max - min) / max; // sRGB saturation, 0..1
+  }
+  if (covered === 0) return 0;
+  return (satSum / covered) * (covered / px); // mean saturation × coverage
 }

@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g transform="translate(122,115) scale(1.16) translate(-122,-115)">
   <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
     <!-- mic head -->
     <rect x="90" y="40" width="60" height="90" rx="30" fill="#6ea7ef"/>
@@ -21,4 +22,5 @@
   <!-- note B stem + flag -->
   <rect x="53" y="112" width="6" height="58" rx="3" fill="#002a3a"/>
   <path fill="#002a3a" d="M57 112 C71 117, 73 131, 61 136 C64 126, 59 119, 54 116 Z"/>
+  </g>
 </svg>

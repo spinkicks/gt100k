@@ -2,9 +2,9 @@
   <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
     <!-- 4-panel grid -->
     <rect x="32" y="32" width="86" height="86" rx="12" fill="#68ba7b"/>
-    <rect x="122" y="32" width="86" height="86" rx="12" fill="#6ea7ef"/>
-    <rect x="32" y="122" width="86" height="86" rx="12" fill="#6ea7ef"/>
-    <rect x="122" y="122" width="86" height="86" rx="12" fill="#68ba7b"/>
+    <rect x="122" y="32" width="86" height="86" rx="12" fill="#fcf4ef"/>
+    <rect x="32" y="122" width="86" height="86" rx="12" fill="#fcf4ef"/>
+    <rect x="122" y="122" width="86" height="86" rx="12" fill="#ffffff"/>
     <!-- speech bubble -->
     <rect x="70" y="54" width="100" height="58" rx="24" fill="#e7857d"/>
     <polygon fill="#e7857d" points="118,110 132,110 108,132"/>

@@ -2,14 +2,14 @@
   <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
     <!-- left card -->
     <g transform="rotate(-18 120 215)">
-      <rect x="88" y="119" width="64" height="96" rx="10" fill="#ffffff"/>
+      <rect x="80" y="95" width="80" height="120" rx="13" fill="#06bbc3"/>
     </g>
     <!-- right card -->
     <g transform="rotate(18 120 215)">
-      <rect x="88" y="119" width="64" height="96" rx="10" fill="#ffffff"/>
+      <rect x="80" y="95" width="80" height="120" rx="13" fill="#dc9150"/>
     </g>
     <!-- center card, frontmost -->
-    <rect x="88" y="119" width="64" height="96" rx="10" fill="#fcf4ef"/>
+    <rect x="80" y="95" width="80" height="120" rx="13" fill="#68ba7b"/>
   </g>
   <!-- spade pip, left card -->
   <g transform="rotate(-18 120 215)">
@@ -18,7 +18,7 @@
   </g>
   <!-- diamond pip, right card -->
   <g transform="rotate(18 120 215)">
-    <path d="M 120 128 L 138 148 L 120 168 L 102 148 Z" fill="#6ea7ef"/>
+    <path d="M 120 128 L 138 148 L 120 168 L 102 148 Z" fill="#ffffff"/>
   </g>
   <!-- heart pip, center card -->
   <path d="M 120 150 C 120 138, 104 132, 104 144 C 104 154, 112 160, 120 168 C 128 160, 136 154, 136 144 C 136 132, 120 138, 120 150 Z" fill="#e7857d"/>

@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { assertConformant, listIconSvgs } from "./icon-conformance";
+import { assertConformant, energyOf, listIconSvgs } from "./icon-conformance";
 
 const SRC = resolve(dirname(fileURLToPath(import.meta.url)), "..", "app", "pursuit-icons");
 
@@ -68,5 +68,13 @@ describe("assertConformant contract", () => {
       <circle cx="120" cy="120" r="40" fill="url(#g)" stroke="#002a3a" stroke-width="9"/>
     </svg>`;
     expect(assertConformant(svg)).not.toEqual([]);
+  });
+});
+
+describe("no staged icon is louder than another", () => {
+  it("holds color-energy spread within 1.6x", async () => {
+    const svgs = listIconSvgs(SRC);
+    const energies = await Promise.all(svgs.map(energyOf));
+    expect(Math.max(...energies) / Math.min(...energies)).toBeLessThan(1.6);
   });
 });

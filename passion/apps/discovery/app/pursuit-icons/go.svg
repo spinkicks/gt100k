@@ -1,23 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
-  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
-    <!-- outer frame -->
-    <rect x="36" y="36" width="168" height="168" rx="16" fill="#a9ab48"/>
-    <!-- playing surface -->
-    <rect x="52" y="52" width="136" height="136" rx="10" fill="#dc9150"/>
+  <g transform="translate(120,120) scale(0.86) translate(-120,-120)">
+    <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+      <!-- outer frame -->
+      <rect x="36" y="36" width="168" height="168" rx="16" fill="#a9ab48"/>
+      <!-- playing surface -->
+      <rect x="52" y="52" width="136" height="136" rx="10" fill="#fcf4ef"/>
+    </g>
+    <!-- board-corner grid -->
+    <g stroke="#002a3a" stroke-width="9" stroke-linecap="round">
+      <line x1="70" y1="70" x2="70" y2="172"/>
+      <line x1="104" y1="70" x2="104" y2="172"/>
+      <line x1="138" y1="70" x2="138" y2="172"/>
+      <line x1="172" y1="70" x2="172" y2="172"/>
+      <line x1="70" y1="70" x2="172" y2="70"/>
+      <line x1="70" y1="104" x2="172" y2="104"/>
+      <line x1="70" y1="138" x2="172" y2="138"/>
+      <line x1="70" y1="172" x2="172" y2="172"/>
+    </g>
+    <!-- stones -->
+    <circle cx="104" cy="104" r="15" fill="#002a3a" stroke="#002a3a" stroke-width="9"/>
+    <circle cx="138" cy="138" r="15" fill="#fcf4ef" stroke="#002a3a" stroke-width="9"/>
+    <circle cx="104" cy="138" r="15" fill="#002a3a" stroke="#002a3a" stroke-width="9"/>
   </g>
-  <!-- board-corner grid -->
-  <g stroke="#002a3a" stroke-width="9" stroke-linecap="round">
-    <line x1="70" y1="70" x2="70" y2="172"/>
-    <line x1="104" y1="70" x2="104" y2="172"/>
-    <line x1="138" y1="70" x2="138" y2="172"/>
-    <line x1="172" y1="70" x2="172" y2="172"/>
-    <line x1="70" y1="70" x2="172" y2="70"/>
-    <line x1="70" y1="104" x2="172" y2="104"/>
-    <line x1="70" y1="138" x2="172" y2="138"/>
-    <line x1="70" y1="172" x2="172" y2="172"/>
-  </g>
-  <!-- stones -->
-  <circle cx="104" cy="104" r="15" fill="#002a3a" stroke="#002a3a" stroke-width="9"/>
-  <circle cx="138" cy="138" r="15" fill="#fcf4ef" stroke="#002a3a" stroke-width="9"/>
-  <circle cx="104" cy="138" r="15" fill="#002a3a" stroke="#002a3a" stroke-width="9"/>
 </svg>
