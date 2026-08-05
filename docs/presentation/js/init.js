@@ -92,7 +92,15 @@ Reveal.initialize({
   hash: true,
   controls: true,
   progress: true,
-  slideNumber: 'c/t',
+  // 'c/t' counts vertical slides too, so the depth slides inflate the total and
+  // pressing down bumps the counter. Count horizontals only.
+  slideNumber: (slide) => {
+    const i = Reveal.getIndices(slide).h;
+    const n = Reveal.getHorizontalSlides().filter(
+      (s) => s.getAttribute('data-visibility') !== 'uncounted',
+    ).length;
+    return i < n ? [i + 1, ' / ', n] : [''];
+  },
   transition: 'fade',
   transitionSpeed: 'default',
   backgroundTransition: 'fade',

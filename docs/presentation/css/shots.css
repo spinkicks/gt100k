@@ -41,7 +41,7 @@
   align-content: start;
 }
 
-.reveal .shot-hero .shot img { max-height: 520px; }
+.reveal .shot-hero .shot img { max-height: 452px; }
 
 /* screenshot beside a short column of points */
 .reveal .shot-split {
@@ -250,3 +250,13 @@
 /* tighten headings when a slide carries an image */
 .reveal .shot-hero h2, .reveal .shot-split h2 { margin-bottom: 0.12em; }
 .reveal .subhead { font-size: 0.66em; color: var(--muted); line-height: 1.5; margin: 0 0 0.4em; }
+
+/* three-up cast row (no arrows) */
+.reveal .flow.three { grid-template-columns: repeat(3, 1fr); }
+.reveal .flow .node.actor-fam { border-left: 3px solid var(--highlight); }
+.reveal .flow.three .node b { font-size: 0.8em; }
+.reveal .flow.three .node span { font-size: 0.6em; }
+
+/* the two weeks that carry the argument are "nothing happened" weeks; mark them */
+.reveal .timeline .wk.key { border-top-color: var(--accent); }
+.reveal .timeline .wk.key strong { color: var(--accent); }
