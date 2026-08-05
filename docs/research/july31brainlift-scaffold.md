@@ -194,6 +194,234 @@ standard and venue.
 
 ---
 
+# Experts: raw material for Focus and Why Follow
+
+Fragments to turn into your own sentences. Pattern that works, from the first three you
+wrote: Focus says what they study, Why Follow names a concrete thing our product does or
+refuses because of them.
+
+## Robert Vallerand & Thomas Curran (SPOV 2)
+**Focus**
+- the split between healthy and obsessive passion
+- Vallerand built the distinction, Curran ran the meta-analysis testing it: 94 studies, 1,308 effect sizes
+
+**Why Follow**
+- the two kinds of passion predict the *same* practice hours, statistically indistinguishable
+- obsessive passion is unrelated to objective performance
+- so you cannot tell healthy from unhealthy by watching how much a kid does
+- we deleted the "obsessive tipping point" field rather than deferring it: the theory never claimed a tipping point exists
+- what replaced it is probes a guide runs, not a quadrant on a dashboard
+
+## Ronald Smith & Frank Smoll (SPOV 2)
+**Focus**
+- training the coach instead of the child
+- Coach Effectiveness Training
+
+**Why Follow**
+- 18 Little League coaches, ages ~10 to 12: next-season dropout 5% trained against 26% control
+- no difference in win-loss records, so it was not about winning more
+- the biggest self-esteem gains went to the kids who started lowest
+- strongest controlled evidence on actual children anywhere in this literature
+- it is why the one guide move we grade as controlled-in-children is subtracting outcome talk
+- the lever is the adult
+
+## Rebecca Dizon-Ross (SPOV 2)
+**Focus**
+- what parents believe about their own child's ability, and what happens when you correct it
+- field experiment, N > 2,700
+
+**Why Follow**
+- parents were about 30% wrong on which of their own two children was academically stronger
+- correcting the belief changed real spending on that child
+- so a number a parent can watch move is never neutral, it reallocates investment
+- this is why our adult-report channel is write-only, the adult never sees their report change anything
+- and why adult report is weighted 0.25: it can corroborate an interest, never establish one
+
+## Thomas Raedeke & Alan Smith (SPOV 3)
+**Focus**
+- measuring burnout in young athletes
+- the three parts: exhaustion, reduced sense of accomplishment, and devaluation
+
+**Why Follow**
+- devaluation is the quiet one, a kid who stopped caring rather than a kid who is tired
+- it arrives before the loud symptoms do
+- so our engine treats devaluation as a first-class signal and weights it above exhaustion
+- the earliest escalation state fires on it
+- pairs with the finding that a higher-burnout profile carried 2.2 to 2.4 times the dropout six years later
+
+## Suniya Luthar (SPOV 3)
+**Focus**
+- what pressure to achieve costs kids in high-achieving schools
+- affluent, high-performing environments treated as a risk category rather than a safe one
+
+**Why Follow**
+- students in these schools carry elevated anxiety, depression and substance use against national norms
+- that is exactly the population we are building for, so the risk is ours by default
+- she names the harm we design against: a child whose worth depends on how they perform
+- it is why safeguards are in from the start rather than added after a kid gets hurt
+
+## Ruth Butler (SPOV 4)
+**Focus**
+- how different kinds of feedback change what a student does next
+- grades against written comments
+
+**Why Follow**
+- randomly assigned fifth and sixth graders to grades, comments, or both
+- interest was highest after comments
+- grades-plus-comments performed like grades *alone*: the number did not dilute the comment, it erased it
+- our exact age band, which almost nothing else in this literature is
+- it is why the parent digest carries the child's own words and no number at all
+- and why "just add a small score next to the narrative" is not a compromise that exists
+
+## Phillip Dawson (SPOV 5)
+**Focus**
+- keeping assessment honest now that AI can write the artifact
+- interactive oral assessment, and splitting work into secured and open lanes
+
+**Why Follow**
+- no test on a finished file proves a human made it
+- so the check has to be a conversation rather than a scan
+- his work is the basis for our five-minute spoken defense on a sample
+- that is the one thing a remote competitor holding only the finished file cannot run
+- and it gets more valuable every year that AI makes files easier to fake
+
+## The EDPB & CNIL (SPOV 5)
+**Focus**
+- European data-protection regulators
+- specifically how the right to erasure applies to a system built never to change
+
+**Why Follow**
+- they say technical immutability "cannot be invoked to justify non-compliance"
+- crypto-shredding counts as a supplement, not a complete guarantee
+- personal data should not go on an immutable structure even hashed
+- they set the bar our architecture has to clear, and we do not clear it yet
+- worth admitting here: our shred path is a stub and there is no key lifecycle
+
+## David Card & Peter Arcidiacono (SPOV 6)
+**Focus**
+- six years of Harvard applicant data, entered as evidence in *SFFA v. Harvard*
+- they appeared as opposing expert witnesses
+
+**Why Follow**
+- they disagreed about what the numbers meant and agreed about the numbers themselves
+- so where they overlap is the firmest evidence anyone has on what elite admissions rewards
+- the lawsuit is also the only reason the reading rubric is public at all
+- the rubric grades level, never subject, and lists no approved activity anywhere
+- which kills the folk hierarchy of prestigious hobbies
+
+## Raj Chetty, David Deming & John Friedman (SPOV 6)
+**Focus**
+- what attending an Ivy-Plus college actually causes, identified from waitlist admissions
+- what drives the admissions advantage held by the richest applicants
+
+**Why Follow**
+- the only study in our bank that can claim cause rather than correlation
+- about 30% of the top-1% advantage comes from stronger non-academic ratings
+- conditional on test scores, private-school students have no higher academic ratings but much higher non-academic ones
+- non-academic ratings do not predict how a student turns out after college; academic credentials do
+- this is the uncomfortable half of our own argument, and saying so is worth more than hiding it
+- part of what the non-academic rating measures is a school's skill at packaging a kid
+
+---
+
+# DOK 2 summaries: raw material
+
+One to three sentences each. The job of a summary is to connect the finding to the
+mechanism on the **Shipped as:** line. Facts are already above it, so do not restate them.
+
+## 1. Hidi & Renninger / Harackiewicz / Nye / O'Keefe
+- what a kid says they like barely predicts anything, r = .20 to .36
+- what does predict: coming back unprompted. Harackiewicz saw interest during a course drive choices seven semesters later while enjoyment drove nothing
+- Hidi gives the thing a name: the later phases of interest are self-generated re-engagement
+- so we log whether a visit was prompted, and only the unprompted ones count
+- O'Keefe is the flip side: call it a kid's passion and you have made it a fixed thing they can fail at
+
+## 2. Habgood & Ainsworth / Rotgans & Schmidt
+- at 7 to 8, watching a kid in the moment separated nothing. Only the delayed test did
+- so a first click is worth zero to us
+- and interest left alone slides backwards, minus .03 against plus .03
+- which makes the menu a maintenance job rather than a one-time offer: four spaced re-exposures owed per domain
+
+## 3. Barrett / EU AI Act
+- faces do not encode emotion reliably, and Barrett's review is the strongest statement of it
+- the EU made inferring emotion in schools illegal in February 2025
+- so there is no emotion field anywhere in our system. Not disabled, not permission-gated, it does not exist as a type
+- the science reason and the legal reason land in exactly the same place
+
+## 4. Guay / Ryan, Koestner & Deci / Fredricks
+- the field's own measure cannot separate the kinds of motivation, and its authors say so in print
+- Ryan 1991 is worse than that: praise ran persistence backwards for ego-involved people
+- Fredricks: a log cannot tell doing-what's-expected apart from actually wanting to
+- so we build no motivation detector at all. A guide asks whose idea it was instead
+
+## 5. Curran / Raedeke / Barnett, Smoll & Smith
+- 94 studies: healthy and obsessive passion produce the same practice hours
+- Raedeke: kids who want to be there and kids who feel stuck show the same attendance
+- so intensity tells you nothing, and the tipping-point field got deleted rather than deferred
+- what did work was training the coaches. 26% dropout down to 5%, same win-loss record
+- so the intervention points at the adult
+
+## 6. Achenbach / Dizon-Ross
+- adults agree about a child at r ≈ .28, and that has held for forty years
+- they read what a kid is good at far better than what a kid likes
+- Dizon-Ross: 30% of parents wrong about their own two children, and fixing the belief moved real money
+- so adult report is weighted 0.25 and can corroborate an interest but never establish one
+- and the channel is write-only, because a number a parent can watch would change how they treat the kid
+
+## 7. Wilson, the 85% rule
+- optimal error lands near 15%, so about 85% success
+- that is our difficulty setpoint: push above .9, hold between .8 and .9, scaffold below .7
+- the part that matters: difficulty is a separate dial from pressure, and pressure always comes down first
+
+## 8. Raedeke & Smith / Isoard-Gautheur
+- burnout has three parts and devaluation is the quiet one
+- a kid who stopped caring still shows up, so attendance hides it
+- the higher-burnout profile carried 2.2 to 2.4 times the dropout six years on
+- so devaluation is a first-class signal, weighted above exhaustion, and it fires the earliest warning we have
+
+## 9. AAP / Luthar
+- the AAP puts a dosage on rest: 1 to 2 days a week, roughly 3 months a year
+- Luthar: high-achieving schools carry elevated anxiety, depression and substance use
+- that is our exact population, so the risk is ours whether we design for it or not
+- so rest ships as a number attached to every plan rather than left to a guide's judgment
+
+## 10. Deci / Lepper / Butler
+- rewards cut interest, and they cut it harder in children than in adults
+- Lepper: an expected award killed preschoolers' free drawing
+- Butler is the one in our age band, and it is the sharpest: comments raised interest, grades did not, and grades plus comments performed like grades alone
+- so a number does not sit beside feedback, it replaces it
+- hence no score anywhere in the record, and a parent digest built from the child's own words
+
+## 11. RFC 6962 / in-toto / PROV / Weber-Wulff / Liang
+- the crypto is all off the shelf: content-addressed nodes, RFC-6962 roots, an in-toto statement shape, PROV vocabulary
+- what it proves is that nobody altered the file
+- what it cannot prove is that a human made it
+- detectors cannot cover that gap either. 14 failed, and 7 flagged non-native English at a 61% false-positive rate
+- so no detector ever triggers a consequence for a child, and the check is a spoken defense instead
+- stay honest: signing is deferred and the transparency log returns an empty proof
+
+## 12. COPPA / EDPB / NIST
+- EDPB: "our system cannot change" is not an excuse for failing to delete
+- personal data should not go on an immutable structure even hashed
+- NIST: crypto-erase counts only if every copy of the key dies
+- COPPA 2025: indefinite retention is out
+- this is the unsolved half. A node's id *is* the hash of its content, the shred path is a stub, and there is no key lifecycle
+- say it plainly. A document about provenance cannot overstate its own
+
+## 13. SFFA v. Harvard / Card
+- the rubric grades level, never subject, and lists no approved activity anywhere
+- so the folk ranking of prestigious hobbies is not in the instrument at all
+- the table everyone quotes conditions every row on "no other 1s," which compares a spike from a kid *without* the grades against a well-rounded kid. Our profile is not in the table
+- where the subject does bite is verification: academic competitions trigger a second rating, music and art get faculty review, athletes get recruited
+- pursuits with no verification route are the gap, and closing it is why the record exists
+
+## 14. Arcidiacono / Chetty
+- the coefficients add rather than trade: 4.094 academic, 4.232 extracurricular
+- Chetty is the uncomfortable half. 30% of the rich-applicant advantage is non-academic ratings, private-school kids show the same academic ratings but much better non-academic ones, and non-academic ratings do not predict how anyone turns out
+- the answer worth writing: Chetty measures the *rating*, and a rating is a reader's impression of a file. A verifiable record of real work is a different object, and the gap between them is the whole thesis
+
+---
+
 # Writing notes
 
 - Your own tics are the asset. The emphatic capital, the question you answer yourself, the
