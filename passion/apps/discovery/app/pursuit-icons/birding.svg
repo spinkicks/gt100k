@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- tail (behind body) -->
+    <path fill="#68ba7b" d="M 158 118 L 208 92 L 198 138 Z"/>
+    <!-- body -->
+    <ellipse cx="116" cy="126" rx="60" ry="56" fill="#68ba7b"/>
+    <!-- belly -->
+    <path fill="#fcf4ef" d="M 66 132
+      C 66 158, 88 178, 116 178
+      C 116 150, 100 132, 66 132 Z"/>
+    <!-- wing -->
+    <path fill="#dc9150" d="M 128 108
+      C 158 108, 168 128, 150 146
+      C 132 150, 118 132, 128 108 Z"/>
+    <!-- beak -->
+    <path fill="#dc9150" d="M 60 116 L 30 124 L 60 134 Z"/>
+  </g>
+  <!-- eye -->
+  <circle cx="92" cy="106" r="8" fill="#002a3a"/>
+</svg>

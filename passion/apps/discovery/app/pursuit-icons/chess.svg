@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- base slab -->
+    <rect x="58" y="190" width="124" height="20" rx="10" fill="#06bbc3"/>
+    <!-- collar -->
+    <rect x="74" y="174" width="92" height="20" rx="10" fill="#06bbc3"/>
+    <!-- knight head, facing left -->
+    <path fill="#6ea7ef" d="M 150 178
+      C 158 140, 158 100, 132 76
+      C 126 60, 112 52, 102 64
+      C 98 52, 86 50, 80 62
+      C 74 78, 70 88, 60 96
+      C 48 106, 44 118, 50 128
+      C 54 134, 62 133, 70 128
+      C 74 134, 76 142, 74 150
+      C 72 162, 80 172, 92 176 Z"/>
+    <!-- mane strokes -->
+    <path fill="none" stroke-width="9" d="M 140 88 L 126 98"/>
+    <path fill="none" stroke-width="9" d="M 146 108 L 132 116"/>
+    <path fill="none" stroke-width="9" d="M 147 128 L 133 134"/>
+  </g>
+  <!-- eye -->
+  <circle cx="97" cy="98" r="7" fill="#002a3a"/>
+</svg>
