@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How the interest number is made · PassionLab</title>
+<link rel="stylesheet" href="css/fonts.css">
+<style>
+:root{
+  --ground:#fbf6ee; --panel:#fffdf9; --panel-2:#f6efe3;
+  --ink:#241e1a; --ink-soft:#4a4038; --muted:#8a7969; --line:#e3d7c4;
+  --for:#2f7d5b; --for-bg:rgba(47,125,91,.08);
+  --against:#c1502e; --against-bg:rgba(193,80,46,.08);
+  --zero:#9b8b7a; --zero-bg:rgba(155,139,122,.09);
+  --gate:#8a6d1f; --gate-bg:rgba(233,162,59,.13);
+  --serif:"Newsreader",Georgia,serif;
+  --sans:"IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:var(--sans); font-size:16px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.page{max-width:1280px;margin:0 auto;padding:56px 40px 120px}
+
+/* ---------- masthead ---------- */
+.mast{border-bottom:2px solid var(--ink);padding-bottom:28px;margin-bottom:14px}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--for);margin-bottom:14px}
+h1{font-family:var(--serif);font-weight:500;font-size:56px;line-height:1.05;margin:0 0 14px;letter-spacing:-.015em}
+.dek{font-size:19px;color:var(--ink-soft);max-width:70ch;margin:0}
+.mast-meta{display:flex;gap:28px;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin-top:22px}
+
+/* ---------- section scaffolding ---------- */
+section{margin-top:64px;scroll-margin-top:20px}
+.snum{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--for);display:block;margin-bottom:8px}
+h2{font-family:var(--serif);font-weight:500;font-size:34px;line-height:1.15;margin:0 0 10px;letter-spacing:-.01em}
+h3{font-family:var(--sans);font-weight:600;font-size:15px;letter-spacing:.02em;margin:30px 0 10px;color:var(--ink)}
+.intro{font-size:17px;color:var(--ink-soft);max-width:78ch;margin:0 0 22px}
+.rule{height:1px;background:var(--line);margin:0 0 24px}
+
+/* ---------- pipeline ---------- */
+.pipe{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:28px 0 8px}
+.pstep{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 14px 16px;position:relative}
+.pstep b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--for);text-transform:uppercase;margin-bottom:8px}
+.pstep strong{display:block;font-size:14.5px;font-weight:600;line-height:1.3;margin-bottom:6px}
+.pstep span{display:block;font-size:12.5px;color:var(--muted);line-height:1.45}
+.pstep::after{content:"→";position:absolute;right:-11px;top:50%;transform:translateY(-50%);color:var(--line);font-size:15px;z-index:2}
+.pstep:last-child::after{content:none}
+
+/* ---------- tables ---------- */
+table{width:100%;border-collapse:collapse;margin:6px 0 4px;font-size:14.5px}
+th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:0 14px 9px 0;border-bottom:1.5px solid var(--line);vertical-align:bottom}
+td{padding:12px 14px 12px 0;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-soft)}
+td.k{font-family:var(--mono);font-size:13px;color:var(--ink);white-space:nowrap}
+td.n{font-family:var(--mono);font-size:13.5px;color:var(--ink);white-space:nowrap;text-align:right}
+td strong{color:var(--ink);font-weight:600}
+tr.is-for td.k{color:var(--for)}
+tr.is-against td.k{color:var(--against)}
+tr.is-zero td,tr.is-zero td.k,tr.is-zero td.n{color:var(--zero)}
+.side{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;padding:2.5px 7px;border-radius:4px;white-space:nowrap}
+.side.for{background:var(--for-bg);color:var(--for)}
+.side.against{background:var(--against-bg);color:var(--against)}
+.side.zero{background:var(--zero-bg);color:var(--zero)}
+.side.gate{background:var(--gate-bg);color:var(--gate)}
+
+/* ---------- math ---------- */
+.math{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--for);border-radius:8px;padding:20px 24px;margin:18px 0;font-family:var(--mono);font-size:15px;line-height:2.05;color:var(--ink);overflow-x:auto}
+.math .c{color:var(--muted)}
+.math .hl{color:var(--for);font-weight:500}
+.math .hlr{color:var(--against);font-weight:500}
+.math .lbl{display:inline-block;min-width:132px;color:var(--muted);font-size:13px}
+
+/* ---------- grids ---------- */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+.four{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.card b{display:block;font-family:var(--mono);font-size:13px;color:var(--ink);margin-bottom:7px}
+.card span{display:block;font-size:13px;color:var(--muted);line-height:1.5}
+.card.gate{border-top:3px solid var(--gate)}
+
+/* ---------- worked examples ---------- */
+.cases{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+.case{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.case header{padding:14px 16px 12px;border-bottom:1px solid var(--line);min-height:96px}
+.case header b{display:block;font-size:14.5px;font-weight:600;line-height:1.3;color:var(--ink)}
+.case header span{display:block;font-size:12.5px;color:var(--muted);margin-top:5px;line-height:1.45}
+.case dl{margin:0;padding:12px 16px;flex:1;font-family:var(--mono);font-size:12.5px}
+.case dl div{display:flex;justify-content:space-between;gap:10px;padding:3.5px 0}
+.case dt{color:var(--muted)}
+.case dd{margin:0;color:var(--ink)}
+.case dd.pass{color:var(--for)}
+.case dd.fail{color:var(--against);font-weight:500}
+.case footer{padding:11px 16px;font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;text-align:center}
+.case footer.yes{background:var(--for-bg);color:var(--for)}
+.case footer.no{background:var(--against-bg);color:var(--against)}
+
+/* ---------- callout ---------- */
+.note{background:var(--panel-2);border-radius:8px;padding:16px 20px;margin:20px 0;font-size:14.5px;color:var(--ink-soft);line-height:1.6}
+.note b{color:var(--ink)}
+.excluded{border-left:3px solid var(--against)}
+
+/* ---------- decay strip ---------- */
+.decay{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;margin:18px 0 6px}
+.decay div{text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:9px 4px}
+.decay b{display:block;font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:4px}
+.decay span{display:block;font-family:var(--mono);font-size:14px;color:var(--ink)}
+.decay .bar{height:3px;background:var(--for);border-radius:2px;margin-top:7px}
+
+.foot{margin-top:72px;padding-top:22px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.6}
+.foot code{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+
+@media print{
+  body{background:#fff}
+  .page{max-width:none;padding:0}
+  section{break-inside:avoid;page-break-inside:avoid}
+  .case,.card,.math,table,.pipe,.decay,.four,.note,.cases{break-inside:avoid}
+  .pipe{grid-template-columns:repeat(3,1fr)}
+  h2{break-after:avoid}
+}
+@media (max-width:1080px){
+  .pipe,.four,.cases{grid-template-columns:repeat(2,1fr)}
+  .two{grid-template-columns:1fr}
+  .pstep::after{content:none}
+  .decay{grid-template-columns:repeat(5,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="mast">
+  <div class="kicker">PassionLab · interest inference</div>
+  <h1>How the number is made</h1>
+  <p class="dek">Everything that goes into deciding a child has a spike, from a single click on a screen
+     to a candidate a guide is allowed to promote. Every constant, definition and formula below is read
+     from the running engine, and every worked figure was computed by it.</p>
+  <div class="mast-meta">
+    <span>Beta-Bernoulli, one cell at a time</span>
+    <span>Engine · @gt100k/interest-inference</span>
+    <span>Signals · @gt100k/signal-pipeline</span>
+  </div>
+</header>
+
+<!-- ============ PIPELINE ============ -->
+<section>
+  <span class="snum">00 · THE SHAPE OF IT</span>
+  <h2>Six stages, and the last one is a person.</h2>
+  <div class="pipe">
+    <div class="pstep"><b>01 raw</b><strong>Interaction</strong><span>A child touches something. Who, what, when, and whether we nudged them there.</span></div>
+    <div class="pstep"><b>02 classify</b><strong>Event kind</strong><span>One of eleven kinds. Three of them can never score.</span></div>
+    <div class="pstep"><b>03 weight</b><strong>Evidence for and against</strong><span>Each kind carries a fixed weight, aged by how long ago it happened.</span></div>
+    <div class="pstep"><b>04 fold</b><strong>&alpha; and &beta; per cell</strong><span>A cell is one subject crossed with one way of working.</span></div>
+    <div class="pstep"><b>05 posterior</b><strong>Mean, spread, lower bound</strong><span>We report the pessimistic edge, not the average.</span></div>
+    <div class="pstep"><b>06 gate</b><strong>Candidate</strong><span>Four conditions at once, then a named human decides.</span></div>
+  </div>
+  <div class="note"><b>A cell is the unit of belief.</b> Not a subject, and not a child. It is one
+    <em>(domain&nbsp;&times;&nbsp;mode)</em> pair, for example <span class="side for">Music &amp; Sound &times; build</span>
+    or <span class="side for">Math &amp; Puzzles &times; investigate</span>. The same child holds a separate belief for every
+    cell they have touched, which is how the system can say a child is drawn to the subject, the way of working, or both.</div>
+</section>
+
+<!-- ============ DEFINITIONS ============ -->
+<section>
+  <span class="snum">01 · DEFINITIONS</span>
+  <h2>What each event kind actually means.</h2>
+  <p class="intro">These are the exact rules, not paraphrases. There is no <em>voluntary return</em> event kind,
+     because the concept was too vague to score: it once covered both "reopened it thirty seconds later" and
+     "came back on day four unprompted", which are not the same claim. The two kinds below replaced it.
+     <code>voluntary</code> survives only as a flag on the raw interaction, meaning "we did not nudge them".</p>
+  <div class="rule"></div>
+  <table>
+    <thead><tr><th style="width:20%">Kind</th><th style="width:44%">Fires when</th><th style="width:24%">What it asserts</th><th style="width:12%;text-align:right">Weight</th></tr></thead>
+    <tbody>
+      <tr class="is-for">
+        <td class="k">cross_day_return</td>
+        <td>The <strong>latest</strong> engagement of this same cell by this same child strictly before this one, prompted or not, falls on an <strong>earlier UTC calendar day</strong>, and the child was not prompted here. Only the single most recent predecessor is consulted, so a same-day re-entry masks an earlier-day one.</td>
+        <td>They came back on their own after a night away.<br><span class="side for">the signal</span></td>
+        <td class="n">&alpha; +1.0</td>
+      </tr>
+      <tr class="is-zero">
+        <td class="k">same_day_engagement</td>
+        <td>Everything else that is an engagement: a first-ever touch, a reopen inside one session, or a re-entry in a <em>different</em> session on the <em>same</em> calendar day.</td>
+        <td>Nothing about delayed return. A return hours later has not survived a night away.</td>
+        <td class="n">0</td>
+      </tr>
+      <tr class="is-zero">
+        <td class="k">prompted_return</td>
+        <td>The interaction arrived with <code>returnState === "prompted"</code>. The system surfaced, nudged or recommended the child into it.</td>
+        <td>That we are good at recommending. Shown to a guide as disconfirming context.</td>
+        <td class="n">0</td>
+      </tr>
+      <tr class="is-for">
+        <td class="k">unrequired_revision<br>chosen_challenge<br>failure_recovery<br>self_authored_scope</td>
+        <td>The occurrence exhibited one of these four depth families. Presence is what counts; magnitude is never read as a strength, only tested for being positive.</td>
+        <td>They did something harder than they had to. This is the within-day discriminator that time was supposed to be.</td>
+        <td class="n">&alpha; +0.5</td>
+      </tr>
+      <tr class="is-zero">
+        <td class="k">artifact_competence</td>
+        <td>The fifth depth family. Emitted, stored, and read by the specialization planner.</td>
+        <td>How good the made thing is, which is a different question. A child can do competent work in something that bores them.</td>
+        <td class="n">0</td>
+      </tr>
+      <tr class="is-for">
+        <td class="k">external_report<br><span style="color:var(--muted);font-size:11.5px">scope: broad</span></td>
+        <td>An <code>external_report</code> event carries <code>reportScope: "broad"</code>, meaning the interest reached <em>the topic itself</em> rather than the materials the child was handed. Attributed to a named adult, and collected in a delayed interview.</td>
+        <td>Weak corroboration. Deliberately below a depth signal, and it never marks a day.</td>
+        <td class="n">&alpha; +0.25</td>
+      </tr>
+      <tr class="is-zero">
+        <td class="k">external_report<br><span style="color:var(--muted);font-size:11.5px">scope: focused</span></td>
+        <td>The same report, coded as having stayed bound to the materials.</td>
+        <td>Evidence about the wrapper, not the domain. Scoring it would throw away the discrimination the coding exists to make.</td>
+        <td class="n">0</td>
+      </tr>
+      <tr class="is-against">
+        <td class="k">skip</td>
+        <td>The cell was on offer in a session, the child did not take it, and the child <strong>has engaged this cell</strong> at some point in the processed history.</td>
+        <td>They know what it is and passed anyway.</td>
+        <td class="n">&beta; +0.5<br><span style="color:var(--muted);font-size:11px">&divide; choice set</span></td>
+      </tr>
+      <tr class="is-against">
+        <td class="k">decline</td>
+        <td>The cell was on offer, not taken, and the child has <strong>never engaged it</strong> at all. Disjoint from skip by construction; one cell in one session yields at most one of the two.</td>
+        <td>Much weaker. You cannot tire of something you never tried.</td>
+        <td class="n">&beta; +0.15<br><span style="color:var(--muted);font-size:11px">&divide; choice set</span></td>
+      </tr>
+      <tr class="is-zero">
+        <td class="k">novelty<br><span style="color:var(--muted);font-size:11.5px">a flag, not a kind</span></td>
+        <td>A boolean set on <em>any</em> event, checked before the kind is. True within <strong>3 days</strong> of that child's first exposure to the cell, and first exposure itself is novelty. First exposure means first engagement for engagement events, and first engagement <em>or surfacing</em> for skips and declines. An unparseable timestamp is treated as novelty.</td>
+        <td>Triggered situational interest. Excluded entirely, in both directions.</td>
+        <td class="n">0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note excluded"><b>Two rules keep the negatives honest.</b>
+    A session in which the child neither engaged nor opened anything produces no skips and no declines, because
+    a child who could not find a way in is not a child who rejected everything. And merely opening something counts as
+    taking it, not as passing it over, so a child who glances and leaves does not earn a decrement against the
+    one cell they demonstrably chose to look at.</div>
+</section>
+
+<!-- ============ CHOICE SET ============ -->
+<section>
+  <span class="snum">02 · THE CHOICE SET</span>
+  <h2>One choice moment is worth one skip, however many things were on screen.</h2>
+  <p class="intro"><code>choiceSetSize</code> is the number of cells that were offered, <em>not</em> taken, and
+     past their novelty window. Each one's weight is divided by it, so the six alternatives you passed over to
+     pick a seventh share a single skip's worth of disconfirming mass between them rather than each taking a
+     full one. Without this, a child who returns to their favourite cell every session accrues a full decrement
+     against every other known cell every session, and breadth of discovery would suppress the very spike the
+     engine exists to find.</p>
+  <table>
+    <thead><tr><th>choiceSetSize <span style="text-transform:none;letter-spacing:0">(cells offered, not taken, past novelty)</span></th><th style="text-align:right">One skip adds to &beta;</th><th style="text-align:right">One decline adds to &beta;</th></tr></thead>
+    <tbody>
+      <tr><td class="k">1 &nbsp;<span style="color:var(--muted)">or absent, or zero</span></td><td class="n">0.5000</td><td class="n">0.1500</td></tr>
+      <tr><td class="k">2</td><td class="n">0.2500</td><td class="n">0.0750</td></tr>
+      <tr><td class="k">3</td><td class="n">0.1667</td><td class="n">0.0500</td></tr>
+      <tr><td class="k">5</td><td class="n">0.1000</td><td class="n">0.0300</td></tr>
+      <tr><td class="k">7</td><td class="n">0.0714</td><td class="n">0.0214</td></tr>
+      <tr><td class="k">10</td><td class="n">0.0500</td><td class="n">0.0150</td></tr>
+    </tbody>
+  </table>
+  <p class="intro" style="margin-top:14px">Figures above are before recency decay. This single rule is the
+     difference between case&nbsp;B passing and case&nbsp;B failing, which is the callout under the worked examples.</p>
+</section>
+
+<!-- ============ PRIOR ============ -->
+<section>
+  <span class="snum">03 · WHERE A CELL STARTS</span>
+  <h2>A coin flip, nudged by circumstance.</h2>
+  <p class="intro">Before a child does anything, every cell sits at even odds. Three facts about the child's
+     world can tilt the starting point, and only upward.</p>
+  <div class="math">
+    <span class="lbl">&alpha;&#8320; =</span> 1 &nbsp;+&nbsp; <span class="hl">0.5</span>&nbsp;if the domain exists in their environment<br>
+    <span class="lbl"></span>&nbsp;&nbsp;&nbsp;+&nbsp; <span class="hl">0.5</span>&nbsp;&times; masteryTilt &nbsp;<span class="c">// how they already do in it at school, [0,1]</span><br>
+    <span class="lbl"></span>&nbsp;&nbsp;&nbsp;+&nbsp; <span class="hl">0.5</span>&nbsp;&times; discretionaryTilt &nbsp;<span class="c">// free-choice time they already give it, [0,1]</span><br>
+    <span class="lbl">&beta;&#8320; =</span> 1 &nbsp;<span class="c">// nothing tilts the against side. There is no prior reason to disbelieve.</span>
+  </div>
+  <table>
+    <thead><tr><th>Situation</th><th style="text-align:right">&alpha;&#8320;</th><th style="text-align:right">&beta;&#8320;</th><th style="text-align:right">Starting mean</th></tr></thead>
+    <tbody>
+      <tr><td>Nothing known about the child</td><td class="n">1.0</td><td class="n">1.0</td><td class="n">0.500</td></tr>
+      <tr><td>Domain exists in their environment</td><td class="n">1.5</td><td class="n">1.0</td><td class="n">0.600</td></tr>
+      <tr><td>Environment, top mastery, top discretionary time</td><td class="n">2.5</td><td class="n">1.0</td><td class="n">0.714</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>A prior can never make a cell confident.</b> The sufficiency gates in stage 06 count only
+    evidence recorded after the prior, and the day gate counts only days the child acted, so the most favourable
+    prior in the world still leaves a cell uncertain until the child has actually done something on separate days. This is also why morning
+    academic data can seed an afternoon prior without ever gating what a child may explore.</div>
+</section>
+
+<!-- ============ DECAY ============ -->
+<section>
+  <span class="snum">04 · RECENCY</span>
+  <h2>Everything halves every fourteen days.</h2>
+  <div class="math">
+    <span class="lbl">r(t) =</span> 0.5 ^ ( age in days &divide; <span class="hl">14</span> )
+    &nbsp;&nbsp;<span class="c">// applied to every weight before it reaches &alpha; or &beta;</span>
+  </div>
+  <div class="decay">
+    <div><b>today</b><span>1.000</span><div class="bar" style="width:100%"></div></div>
+    <div><b>1 day</b><span>0.952</span><div class="bar" style="width:95%"></div></div>
+    <div><b>3 days</b><span>0.862</span><div class="bar" style="width:86%"></div></div>
+    <div><b>7 days</b><span>0.707</span><div class="bar" style="width:71%"></div></div>
+    <div><b>14 days</b><span>0.500</span><div class="bar" style="width:50%"></div></div>
+    <div><b>21 days</b><span>0.354</span><div class="bar" style="width:35%"></div></div>
+    <div><b>28 days</b><span>0.250</span><div class="bar" style="width:25%"></div></div>
+    <div><b>42 days</b><span>0.125</span><div class="bar" style="width:13%"></div></div>
+    <div><b>56 days</b><span>0.063</span><div class="bar" style="width:6%"></div></div>
+  </div>
+  <div class="note"><b>Two masses, because decay answers the wrong question twice.</b>
+    Decay is geometric, so a steady cadence converges: fortnightly returns ceiling at a decayed mass of 2.0
+    against a sufficiency floor of 6, meaning a child who came back every other week for years could never be
+    confident at any number of visits. So the engine keeps both.
+    <br><br>
+    <span class="side for">&alpha; and &beta;</span> carry the decayed weights and answer <em>what do we believe now.</em>
+    <span class="side gate">observedMass</span> sums the same weights <strong>undecayed</strong> and answers
+    <em>have we seen enough to say anything at all.</em> Observing does not un-happen because time passed.</div>
+</section>
+
+<!-- ============ POSTERIOR ============ -->
+<section>
+  <span class="snum">05 · THE POSTERIOR</span>
+  <h2>The whole posterior, in seven lines.</h2>
+  <div class="math">
+    <span class="lbl">&alpha; =</span> &alpha;&#8320; + &Sigma; ( <span class="hl">weight</span> &times; roleScale &times; r(t) ) &nbsp;<span class="c">// returns and depth</span><br>
+    <span class="lbl"></span>&nbsp;&nbsp;&nbsp;+&nbsp;&Sigma; ( <span class="hl">0.25</span> &times; r(t) ) &nbsp;<span class="c">// broad reports; they carry no role</span><br>
+    <span class="lbl">&beta; =</span> &beta;&#8320; + &Sigma; ( <span class="hlr">weight</span> &times; r(t) &divide; max(1, choiceSetSize) ) &nbsp;<span class="c">// skips and declines</span><br><br>
+    <span class="lbl">n =</span> &alpha; + &beta;<br>
+    <span class="lbl">mean =</span> &alpha; &divide; n<br>
+    <span class="lbl">variance =</span> (&alpha; &times; &beta;) &divide; ( n &times; n &times; (n + 1) ) &nbsp;<span class="c">// Beta distribution variance</span><br>
+    <span class="lbl">sd =</span> &radic;variance<br>
+    <span class="lbl">lowerBound =</span> max( 0 , mean &minus; <span class="hl">1.0</span> &times; sd ) &nbsp;<span class="c">// the number everything downstream reads</span>
+  </div>
+  <div class="two">
+    <div>
+      <h3>Why the lower bound and not the mean</h3>
+      <p class="intro" style="font-size:15px">A cell with two events and a cell with twenty can share a mean of
+        0.85. Subtracting a standard deviation separates them, because the thin one has a wider spread and
+        loses more. The system under-claims by construction, and the penalty falls hardest on exactly the
+        evidence that deserves least trust.</p>
+    </div>
+    <div>
+      <h3>What it is not</h3>
+      <p class="intro" style="font-size:15px">This is a deliberately cheap conservative point estimate, not a
+        Beta credible interval. A proper quantile is the obvious upgrade and is not built. Said plainly here
+        so nobody has to discover it under questioning.</p>
+    </div>
+  </div>
+  <div class="note"><b>roleScale</b> is the only remaining multiplier, and it is 0.5 for the secondary reading
+    of a two-mode action, where the mode was afforded rather than directly acted. It exists as a named engine
+    constant rather than a number on the event, because the field it replaced was free-numeric and an emitter
+    could have filled it with active time.</div>
+</section>
+
+<!-- ============ GATES ============ -->
+<section>
+  <span class="snum">06 · THE GATES</span>
+  <h2>Four conditions, all at once, then a human.</h2>
+  <p class="intro">A cell becomes a promotable candidate only when every one of these holds. Three of them
+     govern whether the engine is allowed to have an opinion; the fourth is the opinion itself.</p>
+  <div class="four">
+    <div class="card gate"><b>observedMass &ge; 6</b><span>Undecayed. Roughly a week of coming back, because at most one return banks per day.</span></div>
+    <div class="card gate"><b>distinctDays &ge; 2</b><span>Distinct UTC days that <em>moved</em> the belief. A count can be run up in one sitting; a calendar cannot.</span></div>
+    <div class="card gate"><b>2 &times; sd &le; 0.35</b><span>The band has to be narrow enough to be worth saying out loud.</span></div>
+    <div class="card gate"><b>lowerBound &ge; 0.6</b><span>A cell with no evidence sits at 0.5. This is meaningfully better than knowing nothing.</span></div>
+  </div>
+  <div class="note"><b>Only three kinds of thing can mark a day:</b> a cross-day return, a scoring depth family,
+    or a skip or decline. A prompted return, a same-day engagement, a novelty event and an adult report all
+    leave <code>distinctDays</code> where they found it.
+    <br><br>
+    The adult report is the pointed one. It <em>does</em> count toward the mass floor, and it never marks a day,
+    so no quantity of parent reports can make a cell confident on its own. A child must have acted on at least
+    two separate days before anyone is allowed an opinion.</div>
+  <h3>After the gates</h3>
+  <p class="intro">Passing cells are ranked by lower bound and the top <strong>3</strong> are surfaced. Each is
+     attributed to <span class="side for">domain</span>, <span class="side for">style</span> or
+     <span class="side for">mixed</span> by comparing the evidence-weighted marginal across that subject
+     against the marginal across that way of working, with a margin of <strong>0.1</strong>. None of this
+     promotes anything. Promotion is a separate human action behind three further checks.</p>
+</section>
+
+<!-- ============ WORKED ============ -->
+<section>
+  <span class="snum">07 · WORKED EXAMPLES</span>
+  <h2>Six returns, and how little it takes to change the verdict.</h2>
+  <p class="intro">Every figure below was computed by running the engine, not by hand. All four start from a flat
+     prior of &alpha;&#8320;&nbsp;=&nbsp;&beta;&#8320;&nbsp;=&nbsp;1. A and B share the same six returns; B survives ten skips on
+     top of them. C and D then fail on <em>different</em> gates while scoring well above threshold, which is the
+     point: the four conditions are not redundant, and a high number alone is never enough.</p>
+  <div class="cases">
+
+    <div class="case">
+      <header><b>A · Clean</b><span>Six unprompted cross-day returns at 1, 3, 6, 9, 12 and 15 days ago. No skips.</span></header>
+      <dl>
+        <div><dt>&alpha;</dt><dd>5.2250</dd></div>
+        <div><dt>&beta;</dt><dd>1.0000</dd></div>
+        <div><dt>n</dt><dd>6.2250</dd></div>
+        <div><dt>mean</dt><dd>0.8394</dd></div>
+        <div><dt>sd</dt><dd>0.1366</dd></div>
+        <div><dt>2&middot;sd &le;.35</dt><dd class="pass">0.2732</dd></div>
+        <div><dt>mass &ge;6</dt><dd class="pass">6.000</dd></div>
+        <div><dt>days &ge;2</dt><dd class="pass">6</dd></div>
+        <div><dt>LB &ge;0.6</dt><dd class="pass">0.7027</dd></div>
+      </dl>
+      <footer class="yes">Candidate</footer>
+    </div>
+
+    <div class="case">
+      <header><b>B · Same six, plus ten skips</b><span>Each skip taken from a choice set of seven, so each contributes 0.5&divide;7.</span></header>
+      <dl>
+        <div><dt>&alpha;</dt><dd>5.2250</dd></div>
+        <div><dt>&beta;</dt><dd>1.5230</dd></div>
+        <div><dt>n</dt><dd>6.7480</dd></div>
+        <div><dt>mean</dt><dd>0.7743</dd></div>
+        <div><dt>sd</dt><dd>0.1502</dd></div>
+        <div><dt>2&middot;sd &le;.35</dt><dd class="pass">0.3004</dd></div>
+        <div><dt>mass &ge;6</dt><dd class="pass">6.714</dd></div>
+        <div><dt>days &ge;2</dt><dd class="pass">13</dd></div>
+        <div><dt>LB &ge;0.6</dt><dd class="pass">0.6241</dd></div>
+      </dl>
+      <footer class="yes">Candidate, narrowly</footer>
+    </div>
+
+    <div class="case">
+      <header><b>C · All in one day</b><span>Six returns forced onto one calendar day. The pipeline cannot produce this; it isolates the day gate.</span></header>
+      <dl>
+        <div><dt>&alpha;</dt><dd>6.7102</dd></div>
+        <div><dt>&beta;</dt><dd>1.0000</dd></div>
+        <div><dt>n</dt><dd>7.7102</dd></div>
+        <div><dt>mean</dt><dd>0.8703</dd></div>
+        <div><dt>sd</dt><dd>0.1138</dd></div>
+        <div><dt>2&middot;sd &le;.35</dt><dd class="pass">0.2277</dd></div>
+        <div><dt>mass &ge;6</dt><dd class="pass">6.000</dd></div>
+        <div><dt>days &ge;2</dt><dd class="fail">1</dd></div>
+        <div><dt>LB &ge;0.6</dt><dd class="pass">0.7565</dd></div>
+      </dl>
+      <footer class="no">Fails the day gate</footer>
+    </div>
+
+    <div class="case">
+      <header><b>D · Three returns, three days</b><span>The score is high enough. There simply is not enough of it yet.</span></header>
+      <dl>
+        <div><dt>&alpha;</dt><dd>3.7194</dd></div>
+        <div><dt>&beta;</dt><dd>1.0000</dd></div>
+        <div><dt>n</dt><dd>4.7194</dd></div>
+        <div><dt>mean</dt><dd>0.7881</dd></div>
+        <div><dt>sd</dt><dd>0.1709</dd></div>
+        <div><dt>2&middot;sd &le;.35</dt><dd class="pass">0.3417</dd></div>
+        <div><dt>mass &ge;6</dt><dd class="fail">3.000</dd></div>
+        <div><dt>days &ge;2</dt><dd class="pass">3</dd></div>
+        <div><dt>LB &ge;0.6</dt><dd class="pass">0.6172</dd></div>
+      </dl>
+      <footer class="no">Fails the mass gate</footer>
+    </div>
+
+  </div>
+
+  <div class="note"><b>Case B is the one worth arguing about.</b> Ten skips barely move it, because each is a
+    single share of a seven-way choice. Remove the choice-set normalisation and the identical behaviour scores
+    <strong>&beta;&nbsp;=&nbsp;4.66</strong>, mean&nbsp;0.5285, <strong>lower bound&nbsp;0.3772</strong>, and the
+    child loses their spike for the crime of looking at six other things. That is the whole argument for the
+    divisor, in one number.</div>
+
+  <h3>Case A, event by event</h3>
+  <table>
+    <thead><tr><th>Event</th><th style="text-align:right">Age</th><th style="text-align:right">r(t)</th><th style="text-align:right">Adds to &alpha;</th><th style="text-align:right">Running &alpha;</th><th style="text-align:right">Undecayed mass</th></tr></thead>
+    <tbody>
+      <tr><td class="k" style="color:var(--muted)">prior</td><td class="n">&mdash;</td><td class="n">&mdash;</td><td class="n">&mdash;</td><td class="n">1.0000</td><td class="n">0.0</td></tr>
+      <tr class="is-for"><td class="k">cross_day_return</td><td class="n">1 d</td><td class="n">0.9517</td><td class="n">+0.9517</td><td class="n">1.9517</td><td class="n">1.0</td></tr>
+      <tr class="is-for"><td class="k">cross_day_return</td><td class="n">3 d</td><td class="n">0.8620</td><td class="n">+0.8620</td><td class="n">2.8137</td><td class="n">2.0</td></tr>
+      <tr class="is-for"><td class="k">cross_day_return</td><td class="n">6 d</td><td class="n">0.7430</td><td class="n">+0.7430</td><td class="n">3.5567</td><td class="n">3.0</td></tr>
+      <tr class="is-for"><td class="k">cross_day_return</td><td class="n">9 d</td><td class="n">0.6404</td><td class="n">+0.6404</td><td class="n">4.1971</td><td class="n">4.0</td></tr>
+      <tr class="is-for"><td class="k">cross_day_return</td><td class="n">12 d</td><td class="n">0.5520</td><td class="n">+0.5520</td><td class="n">4.7492</td><td class="n">5.0</td></tr>
+      <tr class="is-for"><td class="k">cross_day_return</td><td class="n">15 d</td><td class="n">0.4758</td><td class="n">+0.4758</td><td class="n">5.2250</td><td class="n">6.0</td></tr>
+      <tr><td colspan="4"><strong>n = 6.2250 &nbsp;·&nbsp; mean = 0.8394 &nbsp;·&nbsp; sd = 0.1366</strong></td><td class="n"><strong>LB 0.7027</strong></td><td class="n"><strong>6.0 &check;</strong></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ EXCLUDED ============ -->
+<section>
+  <span class="snum">08 · WHAT NEVER REACHES THE NUMBER</span>
+  <h2>The exclusions are the design.</h2>
+  <p class="intro">Most of what a system like this could measure is noise, and some of it is actively
+     misleading. Each of these is recorded, most are shown to a guide, and none of them can move a belief.</p>
+  <div class="rule"></div>
+  <table>
+    <thead><tr><th style="width:22%">Excluded</th><th style="width:46%">Why</th><th style="width:32%">How the exclusion is enforced</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="k">Time on task</td>
+        <td>Dwell is non-monotonic in interest. Stronger performers stay as progress rises, weaker ones stay with the most familiar option. Same number, opposite meaning. At ages 7 to 8, in-session engagement failed to separate an intrinsically motivating task from a boring one; only a delayed test did.</td>
+        <td>Captured as one of four ordinal buckets on the raw interaction, and deliberately absent from the event type the belief math sees. A closed enum cannot be multiplied into &alpha;.</td>
+      </tr>
+      <tr>
+        <td class="k">Attempts and success rate</td>
+        <td>A child who loves a thing they are bad at must read exactly as interested as one who finds it easy.</td>
+        <td>Lives on the raw interaction for the wellbeing engine. Never copied onto the event type.</td>
+      </tr>
+      <tr>
+        <td class="k">Work quality</td>
+        <td>Competent work in a boring subject is common, and so is poor work in a beloved one.</td>
+        <td><code>artifact_competence</code> is filtered out of the interest-scoring depth set by name.</td>
+      </tr>
+      <tr>
+        <td class="k">Position on screen</td>
+        <td>People pick the top of a list far more often than the bottom whatever is in it.</td>
+        <td>Recorded at surfacing time and otherwise unused, because the size of the effect cannot be known before the surface exists. The wall also randomises order per session.</td>
+      </tr>
+      <tr>
+        <td class="k">Anything the child says they like</td>
+        <td>Self-report predicts behaviour only modestly, and at these ages almost every child says yes to almost every question.</td>
+        <td>There is no such input.</td>
+      </tr>
+      <tr>
+        <td class="k">Any reward for exploring</td>
+        <td>Attach one and every child explores, so the signal measures prize-chasing. For children who already had the interest, an expected tangible reward can crowd it out.</td>
+        <td>No streaks, badges, points, notifications or unlocks exist on the discovery surface.</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="note excluded"><b>The structural guarantee.</b> Duration, attempts and dwell all live on the raw
+    interaction type. The belief math only ever receives the event type. Keeping these fields off that type
+    makes it impossible for performance or time to become interest evidence, which is a stronger promise than
+    a comment asking people not to do it.</div>
+</section>
+
+<!-- ============ CONSTANTS ============ -->
+<section>
+  <span class="snum">09 · EVERY CONSTANT</span>
+  <h2>The whole model is twenty numbers.</h2>
+  <div class="two">
+    <div>
+      <h3>Weights</h3>
+      <table>
+        <tbody>
+          <tr class="is-for"><td class="k">A_RETURN</td><td class="n">1.0</td><td>cross-day return</td></tr>
+          <tr class="is-for"><td class="k">A_DEPTH</td><td class="n">0.5</td><td>scoring depth family</td></tr>
+          <tr class="is-for"><td class="k">A_REPORT_BROAD</td><td class="n">0.25</td><td>adult report, broad</td></tr>
+          <tr class="is-against"><td class="k">B_SKIP</td><td class="n">0.5</td><td>known, passed over</td></tr>
+          <tr class="is-against"><td class="k">B_DECLINED</td><td class="n">0.15</td><td>never tried, passed over</td></tr>
+          <tr><td class="k">A_SECONDARY</td><td class="n">0.5</td><td>afforded, not acted</td></tr>
+        </tbody>
+      </table>
+      <h3>Prior</h3>
+      <table>
+        <tbody>
+          <tr><td class="k">ALPHA0 / BETA0</td><td class="n">1 / 1</td><td>even odds</td></tr>
+          <tr><td class="k">W_ENV</td><td class="n">0.5</td><td>in their environment</td></tr>
+          <tr><td class="k">W_MASTERY</td><td class="n">0.5</td><td>school achievement tilt</td></tr>
+          <tr><td class="k">W_XP</td><td class="n">0.5</td><td>discretionary time tilt</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3>Gates</h3>
+      <table>
+        <tbody>
+          <tr><td class="k">MIN_EVIDENCE_MASS</td><td class="n">6</td><td>undecayed, raised from 3</td></tr>
+          <tr><td class="k">MIN_DISTINCT_DAYS</td><td class="n">2</td><td>UTC days that scored</td></tr>
+          <tr><td class="k">MAX_CI_WIDTH</td><td class="n">0.35</td><td>on 2&middot;sd</td></tr>
+          <tr><td class="k">SPIKE_THRESHOLD</td><td class="n">0.6</td><td>on the lower bound</td></tr>
+          <tr><td class="k">K_LCB</td><td class="n">1.0</td><td>sd multiplier</td></tr>
+        </tbody>
+      </table>
+      <h3>Time and output</h3>
+      <table>
+        <tbody>
+          <tr><td class="k">HALFLIFE_DAYS</td><td class="n">14</td><td>recency half-life</td></tr>
+          <tr><td class="k">noveltyWindowDays</td><td class="n">3</td><td>excluded after first exposure</td></tr>
+          <tr><td class="k">MAX_CANDIDATES</td><td class="n">3</td><td>surfaced at once</td></tr>
+          <tr><td class="k">ATTR_MARGIN</td><td class="n">0.1</td><td>domain versus style</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="note"><b>These are priors, not fitted parameters.</b> They were chosen from the literature and
+    from arguments recorded next to each one in the source. Nobody has calibrated them against a real cohort,
+    because no real child has used this. The first cohort recalibrates all of them, and the two most likely to
+    move are the mass floor and the spike threshold.</div>
+</section>
+
+<!-- ============ AFTER ============ -->
+<section>
+  <span class="snum">10 · AND THEN IT STOPS</span>
+  <h2>The engine never promotes anything.</h2>
+  <p class="intro">A candidate is the most the arithmetic is allowed to produce. Turning one into a
+     specialization a child actually pursues requires three further checks and a named adult who clicks.</p>
+  <div class="four">
+    <div class="card"><b>Survived a gap</b><span>Two <em>consecutive</em> returns at least 14 days apart. A real quiet spell they came back from.</span></div>
+    <div class="card"><b>Durable</b><span>Two review cycles spanning at least 56 days.</span></div>
+    <div class="card"><b>Made something</b><span>An artifact that survived a setback.</span></div>
+    <div class="card" style="border-top:3px solid var(--for)"><b>A person</b><span>Who also confirms the child wants it, and whose name is on it.</span></div>
+  </div>
+  <div class="note"><b>Nothing demotes on silence.</b> A quiet month is not evidence of not caring. What moves
+    a hypothesis down is contesting evidence, and unresolved family pressure holds promotion for that child
+    entirely until a guide reviews it.</div>
+</section>
+
+<footer class="foot">
+  Constants and rules read from <code>@gt100k/interest-inference</code> (<code>model.ts</code>,
+  <code>fold.ts</code>, <code>posterior.ts</code>, <code>aggregate.ts</code>) and
+  <code>@gt100k/signal-pipeline</code> (<code>returns.ts</code>, <code>skips.ts</code>,
+  <code>novelty.ts</code>, <code>model.ts</code>).
+  All worked figures computed by executing the engine, not derived by hand.
+  <br><br>
+  Every child, name and number in the product screenshots accompanying this document is synthetic.
+  No real child has used any of this.
+</footer>
+
+</div>
+</body>
+</html>
