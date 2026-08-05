@@ -1,9 +1,9 @@
-# Developing and proviung a student's spike
+# Developing and proving a student's spike
 
 ## Owners
 
+- David Ordonez
 - Felipe Caicedo
-- David Ordoñez
 
 
 ## Purpose
@@ -67,7 +67,7 @@ We also developed a way for students to "prove" their spike (to admissions offic
 
    - **Consensus it breaks:** Pushing too hard at youth causes burnout, and that early lock in is the only path to success.
 
-   - **Backing:** Wilson et al. (2019); Raedeke & Smith (2001); Isoard-Gautheur, Guillet-Descas & Gustafsson (2016); American Academy of Pediatrics / Brenner et al. (2024); Luthar, Kumar & Zillmer (2020).
+   - **Backing:** Gobet & Campitelli (2007); Wilson et al. (2019); Raedeke & Smith (2001); Isoard-Gautheur, Guillet-Descas & Gustafsson (2016); American Academy of Pediatrics / Brenner et al. (2024); Luthar, Kumar & Zillmer (2020).
 
 ### On the record the child builds
 
@@ -123,7 +123,7 @@ We also developed a way for students to "prove" their spike (to admissions offic
 - **Ronald Smith & Frank Smoll** (SPOV 2)
    - **Who:** Sport psychologists, University of Washington.
    - **Focus:** Training the coach instead of the student.
-   - **Why Follow:** This paper provides the strongest controlled evidence on kids. It shows that the biggest dropout rates aren't because they lost a lot. It was because of the lack of a coach. And the kids that started lowest and had good coaches had the biggest self esteem gains... so we see that the lever is the adult.
+   - **Why Follow:** This paper provides the strongest controlled evidence on kids. It shows that the biggest dropout rates aren't because they lost a lot. It was because of the lack of a good coach. And the kids that started lowest and had good coaches had the biggest self esteem gains... so we see that the lever is the adult.
    - **Where:** https://doi.org/10.1123/tsp.6.2.111
 
 - **Rebecca Dizon-Ross** (SPOV 2)
@@ -290,6 +290,15 @@ Every source below changed something we built. The line after each block names w
    - **Link:** https://doi.org/10.1037/0033-2909.101.2.213 ; https://doi.org/10.1257/aer.20171172
 
 ### Category 2: Sustaining the child
+
+- **Source: Gobet & Campitelli (2007)**
+   - **DOK 1 - Facts:**
+      - N = 104 chess players. The probability of reaching International Master ran about 1 in 4 for those who began serious study by age 12, against 1 in 55 for those who started later.
+      - The sample was recruited from a prestigious Buenos Aires club and is heavily title-enriched, so these are not base rates for children in general.
+      - The finding is domain-specific. In most sports the pattern runs the other way, with world-class athletes tending to start later and sample more widely before narrowing.
+   - **Shipped as:** the premise the whole program rests on. It is why we start at six rather than at twelve, and it is what buys enough runway for a child to switch pursuits and still have time to get world class.
+   - **DOK 2 - Summary:**
+   - **Link:** https://doi.org/10.1037/0012-1649.43.1.159
 
 - **Source: Wilson et al. (2019), the 85% rule**
    - **DOK 1 - Facts:**
