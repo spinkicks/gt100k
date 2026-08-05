@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- worksheet card -->
+    <rect x="42" y="34" width="156" height="178" rx="20" fill="#fcf4ef"/>
+    <!-- spiral holes -->
+    <circle cx="76" cy="54" r="7" fill="#ffffff"/>
+    <circle cx="120" cy="54" r="7" fill="#ffffff"/>
+    <circle cx="164" cy="54" r="7" fill="#ffffff"/>
+    <!-- bold x -->
+    <rect x="82" y="90" width="26" height="110" rx="13" fill="#e7857d" transform="rotate(45 95 145)"/>
+    <rect x="82" y="90" width="26" height="110" rx="13" fill="#e7857d" transform="rotate(-45 95 145)"/>
+    <!-- sparkle -->
+    <path d="M 172 34 L 178 52 L 196 58 L 178 64 L 172 82 L 166 64 L 148 58 L 166 52 Z" fill="#a9ab48"/>
+  </g>
+  <!-- exponent 2 -->
+  <path d="M 144 92 C 144 78, 180 78, 180 94 C 180 108, 160 114, 148 128 L 148 134 L 184 134"
+        fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

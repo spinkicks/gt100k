@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- waveform bars -->
+    <rect x="31" y="95" width="18" height="60" rx="9" fill="#b092e5"/>
+    <rect x="61" y="70" width="18" height="110" rx="9" fill="#68ba7b"/>
+    <rect x="91" y="45" width="18" height="160" rx="9" fill="#b092e5"/>
+    <rect x="121" y="70" width="18" height="110" rx="9" fill="#68ba7b"/>
+    <rect x="151" y="95" width="18" height="60" rx="9" fill="#b092e5"/>
+    <!-- fader track -->
+    <rect x="195" y="35" width="14" height="185" rx="7" fill="#fcf4ef"/>
+    <!-- fader knob -->
+    <rect x="178" y="136" width="48" height="28" rx="12" fill="#dc9150"/>
+  </g>
+  <!-- knob grip line -->
+  <line x1="188" y1="150" x2="216" y2="150" stroke="#002a3a" stroke-width="9" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- spool flanges -->
+    <ellipse cx="120" cy="62" rx="44" ry="16" fill="#fcf4ef"/>
+    <ellipse cx="120" cy="178" rx="44" ry="16" fill="#fcf4ef"/>
+    <!-- spool sides -->
+    <line x1="76" y1="62" x2="76" y2="178"/>
+    <line x1="164" y1="62" x2="164" y2="178"/>
+    <!-- wound thread -->
+    <ellipse cx="120" cy="120" rx="54" ry="48" fill="#e7857d"/>
+  </g>
+  <!-- thread texture -->
+  <g fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round">
+    <path d="M 70 100 Q 120 112 170 100"/>
+    <path d="M 66 120 Q 120 134 174 120"/>
+    <path d="M 70 142 Q 120 154 170 142"/>
+  </g>
+  <!-- needle -->
+  <path fill="#6ea7ef" stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"
+    d="M -7 75 L -7 -55 L 0 -75 L 7 -55 L 7 75 Z" transform="translate(158,78) rotate(35)"/>
+  <!-- needle eye -->
+  <ellipse cx="0" cy="45" rx="6" ry="10" fill="#fcf4ef" stroke="#002a3a" stroke-width="9"
+    transform="translate(158,78) rotate(35)"/>
+  <!-- thread through eye -->
+  <path fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round" d="M 132 115 Q 128 95 120 82"/>
+</svg>

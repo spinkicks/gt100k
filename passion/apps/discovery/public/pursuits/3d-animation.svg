@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- top face -->
+    <path fill="#06bbc3" d="M 64 96 L 92 64 L 188 64 L 160 96 Z"/>
+    <!-- side face -->
+    <path fill="#b092e5" d="M 160 96 L 188 64 L 188 160 L 160 192 Z"/>
+    <!-- front face -->
+    <rect x="64" y="96" width="96" height="96" rx="18" fill="#6ea7ef"/>
+    <!-- rotation arrows -->
+    <path d="M 46 58 Q 120 14 194 52" fill="none" stroke-width="9"/>
+    <path d="M 194 188 Q 120 232 46 196" fill="none" stroke-width="9"/>
+  </g>
+  <!-- arrowheads -->
+  <polygon fill="#002a3a" points="196,44 206,58 188,60"/>
+  <polygon fill="#002a3a" points="44,204 34,190 52,188"/>
+</svg>

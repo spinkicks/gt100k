@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- notebook page -->
+    <rect x="42" y="40" width="136" height="176" rx="16" fill="#fcf4ef"/>
+    <!-- music note head -->
+    <circle cx="100" cy="150" r="15" fill="#b092e5"/>
+    <!-- pencil graphite tip -->
+    <path fill="#002a3a" d="M62.29 211.81 L47.71 198.19 L40 221 Z"/>
+    <!-- pencil body -->
+    <path fill="#dc9150" d="M62.29 211.81 L47.71 198.19 L167.71 68.19 L182.29 81.81 Z"/>
+    <!-- pencil eraser -->
+    <path fill="#d785bd" d="M182.29 81.81 L167.71 68.19 L181.3 53.6 L195.9 67.2 Z"/>
+  </g>
+  <!-- ruled lines -->
+  <g stroke="#002a3a" stroke-width="9" stroke-linecap="round" fill="none">
+    <line x1="62" y1="70" x2="158" y2="70"/>
+    <line x1="62" y1="95" x2="158" y2="95"/>
+    <line x1="62" y1="195" x2="158" y2="195"/>
+  </g>
+  <!-- spiral binding -->
+  <circle cx="38" cy="65" r="6" fill="#002a3a"/>
+  <circle cx="38" cy="100" r="6" fill="#002a3a"/>
+  <circle cx="38" cy="135" r="6" fill="#002a3a"/>
+  <circle cx="38" cy="170" r="6" fill="#002a3a"/>
+  <circle cx="38" cy="205" r="6" fill="#002a3a"/>
+  <!-- note stem + flag -->
+  <rect x="112" y="98" width="7" height="55" rx="3.5" fill="#002a3a"/>
+  <path fill="#002a3a" d="M119 98 C135 103, 137 119, 123 124 C127 112, 121 104, 115 101 Z"/>
+</svg>

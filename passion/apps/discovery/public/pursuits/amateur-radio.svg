@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- feet -->
+    <rect x="64" y="196" width="20" height="14" rx="6" fill="#dc9150"/>
+    <rect x="156" y="196" width="20" height="14" rx="6" fill="#dc9150"/>
+    <!-- body -->
+    <rect x="40" y="92" width="160" height="108" rx="20" fill="#dc9150"/>
+    <!-- speaker panel -->
+    <rect x="54" y="108" width="56" height="76" rx="10" fill="#fcf4ef"/>
+    <!-- tuning dial -->
+    <circle cx="158" cy="146" r="30" fill="#6ea7ef"/>
+    <line x1="158" y1="146" x2="158" y2="122"/>
+    <!-- antenna -->
+    <line x1="165" y1="78" x2="195" y2="34"/>
+    <circle cx="195" cy="28" r="9" fill="#dc9150"/>
+  </g>
+  <!-- signal waves -->
+  <g fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round">
+    <path d="M 178 46 A 24 24 0 0 1 202 22"/>
+    <path d="M 168 58 A 40 40 0 0 1 210 16"/>
+    <path d="M 158 70 A 56 56 0 0 1 218 12"/>
+  </g>
+  <!-- dial hub -->
+  <circle cx="158" cy="146" r="6" fill="#002a3a"/>
+  <!-- speaker grille dots -->
+  <circle cx="66" cy="126" r="5" fill="#002a3a"/>
+  <circle cx="82" cy="126" r="5" fill="#002a3a"/>
+  <circle cx="98" cy="126" r="5" fill="#002a3a"/>
+  <circle cx="66" cy="146" r="5" fill="#002a3a"/>
+  <circle cx="82" cy="146" r="5" fill="#002a3a"/>
+  <circle cx="98" cy="146" r="5" fill="#002a3a"/>
+  <circle cx="66" cy="166" r="5" fill="#002a3a"/>
+  <circle cx="82" cy="166" r="5" fill="#002a3a"/>
+  <circle cx="98" cy="166" r="5" fill="#002a3a"/>
+</svg>

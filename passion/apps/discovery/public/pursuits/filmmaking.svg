@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- board -->
+    <rect x="44" y="112" width="152" height="96" rx="14" fill="#6ea7ef"/>
+    <!-- label slate -->
+    <rect x="64" y="136" width="112" height="48" rx="8" fill="#fcf4ef"/>
+    <!-- open clapper stick, tilted -->
+    <g transform="rotate(-8 52 74)">
+      <rect x="40" y="56" width="160" height="34" rx="10" fill="#fcf4ef" stroke="#002a3a" stroke-width="9" stroke-linejoin="round"/>
+      <rect x="62" y="56" width="14" height="34" fill="#002a3a"/>
+      <rect x="92" y="56" width="14" height="34" fill="#002a3a"/>
+      <rect x="122" y="56" width="14" height="34" fill="#002a3a"/>
+      <rect x="152" y="56" width="14" height="34" fill="#002a3a"/>
+    </g>
+    <!-- hinge bolt -->
+    <circle cx="52" cy="74" r="9" fill="#dc9150"/>
+  </g>
+</svg>

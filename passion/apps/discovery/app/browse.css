@@ -16,10 +16,10 @@
  * WHERE THE ACTUAL RISK IS, AND WHAT PAYS FOR IT. Javora measured children aged 9-11 choosing the
  * prettier of two versions of identical content 62% of the time with no learning benefit. On a wall
  * that reads a click as evidence of interest, a tile that is merely more attractive than its
- * neighbours will be recorded as a passion. So the art is uniform by construction and by
- * measurement: one generation scaffold — one object, one camera, one light, one palette, one
- * background — and then `scripts/build-art.mjs` pulls every tile to the same mean luminance,
- * closing a 3.84:1 spread to 1.06:1. Nothing else about a tile varies.
+ * neighbours will be recorded as a passion. So the art is uniform by construction: every icon is a
+ * flat SVG drawn to one locked palette (a single navy outline at one fixed weight, fills at CONSTANT
+ * lightness and chroma) on one warm-white card, and `test/icon-conformance.ts` holds the color-energy
+ * spread within 1.6:1. Nothing else about a tile varies.
  *
  * That is also why the cabin hue never washes over the image. A colour laid over the art would
  * change each area's brightness, which is the confound arriving by the back door. The hues
@@ -383,11 +383,15 @@
   height: auto;
   aspect-ratio: 3 / 2;
   display: block;
-  object-fit: cover;
-  /* The renders put the subject in the middle sixty percent of the frame, so a centred crop keeps
-     it whole across every column width the grid produces. */
+  /* Square icons on a wider card: contain (never cover) so nothing is cropped, centered with
+     side margins that read as a framed sticker. */
+  object-fit: contain;
   object-position: 50% 50%;
-  background: #1c1510;
+  padding: 10px;
+  box-sizing: border-box;
+  /* Was #1c1510 for dark renders; the flat icons sit on one warm-white card so no tile's
+     background can out-shine another. */
+  background: #ffffff;
 }
 
 /* One source for the eight hue assignments, matched on the attribute alone rather than on `.tile`,
@@ -566,13 +570,13 @@
 
 /* ── the object ── */
 
-/* The same render, larger than the tile but capped.
+/* The same icon, larger than the tile but capped.
  *
  * It confirms the guess: the tile is small enough that a child may have read the object wrong, and
  * this is where the picture and the word are seen together. At full 3:2 in a 384px column that is
- * 231px of a 833px panel, which is what pushed the venue block off the bottom — so it is capped and
- * cropped from the centre instead. The renders put the subject in the middle sixty percent of the
- * frame, so the crop takes background rather than object. */
+ * 231px of a 833px panel, which pushed the venue block off the bottom — so it is capped instead.
+ * Contain (never cover) so the flat icon is never cropped, on the same warm-white card as the tile
+ * so the navy outline keeps its contrast — a dark background here would swallow it. */
 .panel__art {
   width: 100%;
   max-height: 168px;
@@ -580,9 +584,11 @@
   display: block;
   margin: 0 0 0.85rem;
   border-radius: 8px;
-  object-fit: cover;
+  object-fit: contain;
   object-position: 50% 50%;
-  background: #1c1510;
+  padding: 12px;
+  box-sizing: border-box;
+  background: #ffffff;
 }
 
 /* Roughly twice the body, which is the point: this is the answer to the question the child asked by

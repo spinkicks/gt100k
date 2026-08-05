@@ -4,7 +4,7 @@
 //
 // The second half is the point. The wall makes three claims that are invisible in an image: that
 // every tile fits on one screen, that no name is cut off, and that every picture actually loaded.
-// A missing `.webp` renders as a tile-shaped gap that reads as deliberate negative space, a label
+// A missing icon renders as a tile-shaped gap that reads as deliberate negative space, a label
 // clipped at the second line reads as a short label, and a grid that overflows by forty pixels
 // looks fine in a screenshot taken of the top of it. So this measures all three in the live DOM and
 // prints them next to the file it wrote.

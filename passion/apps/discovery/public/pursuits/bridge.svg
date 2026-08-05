@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- left card -->
+    <g transform="rotate(-18 120 215)">
+      <rect x="80" y="95" width="80" height="120" rx="13" fill="#06bbc3"/>
+    </g>
+    <!-- right card -->
+    <g transform="rotate(18 120 215)">
+      <rect x="80" y="95" width="80" height="120" rx="13" fill="#dc9150"/>
+    </g>
+    <!-- center card, frontmost -->
+    <rect x="80" y="95" width="80" height="120" rx="13" fill="#68ba7b"/>
+  </g>
+  <!-- spade pip, left card -->
+  <g transform="rotate(-18 120 215)">
+    <path d="M 120 126 C 140 146, 132 162, 120 162 C 108 162, 100 146, 120 126 Z" fill="#002a3a"/>
+    <rect x="117" y="160" width="6" height="10" fill="#002a3a"/>
+  </g>
+  <!-- diamond pip, right card -->
+  <g transform="rotate(18 120 215)">
+    <path d="M 120 128 L 138 148 L 120 168 L 102 148 Z" fill="#ffffff"/>
+  </g>
+  <!-- heart pip, center card -->
+  <path d="M 120 150 C 120 138, 104 132, 104 144 C 104 154, 112 160, 120 168 C 128 160, 136 154, 136 144 C 136 132, 120 138, 120 150 Z" fill="#e7857d"/>
+</svg>

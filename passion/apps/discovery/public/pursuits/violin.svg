@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- scroll -->
+    <circle cx="120" cy="32" r="16" fill="#dc9150"/>
+    <!-- neck -->
+    <rect x="108" y="40" width="24" height="76" rx="8" fill="#dc9150"/>
+    <!-- body (hourglass bouts) -->
+    <path fill="#dc9150" d="M120 112
+      C95 112, 80 122, 82 140
+      C84 152, 96 156, 98 162
+      C88 172, 74 184, 78 200
+      C82 216, 100 224, 120 224
+      C140 224, 158 216, 162 200
+      C166 184, 152 172, 142 162
+      C144 156, 156 152, 158 140
+      C160 122, 145 112, 120 112 Z"/>
+    <!-- bow -->
+    <path fill="#a9ab48" d="M48.24 214.49 L35.76 201.51 L191.76 51.51 L204.24 64.49 Z"/>
+    <!-- bow frog -->
+    <circle cx="42" cy="208" r="11" fill="#fcf4ef"/>
+  </g>
+  <!-- strings -->
+  <rect x="111" y="48" width="3" height="158" rx="1.5" fill="#002a3a"/>
+  <rect x="117" y="48" width="3" height="158" rx="1.5" fill="#002a3a"/>
+  <rect x="123" y="48" width="3" height="158" rx="1.5" fill="#002a3a"/>
+  <rect x="129" y="48" width="3" height="158" rx="1.5" fill="#002a3a"/>
+  <!-- f-holes -->
+  <rect x="99" y="152" width="6" height="30" rx="3" fill="#002a3a"/>
+  <rect x="135" y="152" width="6" height="30" rx="3" fill="#002a3a"/>
+</svg>

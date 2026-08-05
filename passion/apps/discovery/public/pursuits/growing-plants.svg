@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- pot -->
+    <path fill="#dc9150" d="M65,155 L175,155 L158,222 L82,222 Z"/>
+    <!-- pot rim -->
+    <rect x="58" y="142" width="124" height="20" rx="10" fill="#dc9150"/>
+    <!-- soil -->
+    <ellipse cx="120" cy="140" rx="52" ry="13" fill="#a9ab48"/>
+    <!-- stem -->
+    <rect x="111" y="40" width="18" height="102" rx="9" fill="#68ba7b"/>
+    <!-- leaf left -->
+    <path fill="#68ba7b" d="M120,54 C90,40 62,50 70,74 C78,92 104,88 120,62 Z"/>
+    <!-- leaf right -->
+    <path fill="#68ba7b" d="M120,54 C150,40 178,50 170,74 C162,92 136,88 120,62 Z"/>
+  </g>
+</svg>

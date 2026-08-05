@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <!-- needles (crossed, behind ball) -->
+  <path fill="#b092e5" stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"
+    d="M -7 75 L -7 -55 L 0 -75 L 7 -55 L 7 75 Z" transform="translate(95,155) rotate(-30)"/>
+  <path fill="#b092e5" stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"
+    d="M -7 75 L -7 -55 L 0 -75 L 7 -55 L 7 75 Z" transform="translate(150,155) rotate(30)"/>
+  <!-- yarn ball -->
+  <circle cx="118" cy="145" r="62" fill="#d785bd" stroke="#002a3a" stroke-width="9"/>
+  <!-- yarn swirl texture -->
+  <g fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round">
+    <path d="M 70 120 Q 118 100 166 120"/>
+    <path d="M 62 150 Q 118 175 174 150"/>
+    <path d="M 90 95 Q 100 145 90 195"/>
+    <path d="M 146 95 Q 136 145 146 195"/>
+  </g>
+  <!-- loose thread end -->
+  <path fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round"
+    d="M 175 130 Q 195 120 198 100 Q 200 85 188 82"/>
+</svg>
