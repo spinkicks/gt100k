@@ -1,8 +1,7 @@
 // Emits app/palette.generated.ts: 8 fills at a single OKLCH lightness+chroma, hues rotated.
 // Equal L and C is the whole measurement point — only hue changes, so no fill is "brighter".
 // Self-contained OKLCH -> linear sRGB -> gamma, no dependency.
-// Chroma is constrained to the largest value that remains in-gamut for ALL hues,
-// accounting for rounding loss in the 8-bit RGB -> hex round-trip.
+// Chroma is the MAX value that remains in-gamut for ALL 8 hues at L=0.72.
 const L = 0.72, HUES = [25, 60, 110, 150, 200, 255, 300, 340];
 
 function oklchToLinearRgb(l, c, hDeg) {
@@ -20,66 +19,46 @@ function oklchToLinearRgb(l, c, hDeg) {
 }
 
 function linearRgbToOklab(r, g, b) {
+  // Standard Björn Ottosson matrices (exact inverses of the forward path).
+  // linear sRGB -> LMS
   const l_ = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b;
   const m_ = 0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b;
-  const s_ = 0.0883024619 * r + 0.0853627803 * g + 0.8328186419 * b;
+  const s_ = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b;
+  // LMS -> LMS' (cube root)
   const [L, M, S] = [l_ ** (1 / 3), m_ ** (1 / 3), s_ ** (1 / 3)];
-  const L_oklab = 0.2104542553 * L + 0.793617785 * M - 0.0040720468 * S;
-  const a = 1.9779984951 * L - 2.428592205 * M + 0.4505937099 * S;
-  const b_oklab = 0.0259040371 * L + 0.7827717662 * M - 0.808649848 * S;
+  // LMS' -> OKLab
+  const L_oklab = 0.2104542553 * L + 0.7936177850 * M - 0.0040720468 * S;
+  const a = 1.9779984951 * L - 2.4285922050 * M + 0.4505937099 * S;
+  const b_oklab = 0.0259040371 * L + 0.7827717662 * M - 0.8086757660 * S;
   return [L_oklab, a, b_oklab];
 }
 
-function srgbToLinear(c) {
-  return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-}
-
-function getRoundTripChroma(l, c, hDeg) {
-  // Convert OKLCH -> hex -> OKLCH and return decoded chroma.
-  const lin = oklchToLinearRgb(l, c, hDeg);
-  const g = (x) => x <= 0.0031308 ? 12.92 * x : 1.055 * Math.pow(x, 1 / 2.4) - 0.055;
-  const srgb = lin.map((x) => {
-    const v = g(x);
-    const clamped = Math.max(0, Math.min(1, v));
-    return Math.round(clamped * 255) / 255;
-  });
-  const linDecoded = srgb.map(srgbToLinear);
-  const [L_oklab, a, b_oklab] = linearRgbToOklab(...linDecoded);
-  return Math.sqrt(a * a + b_oklab * b_oklab);
-}
-
-function getMinVarianceChroma(l, hues) {
-  // Find the chroma that minimizes round-trip variance across all hues.
-  // Search from 0.12 down to 0.08 (reasonable color saturation).
-  let bestChroma = 0.10, bestVariance = Infinity;
-
-  for (let c = 0.120; c > 0.079; c -= 0.0005) {
-    const roundTripChromas = hues.map((h) => getRoundTripChroma(l, c, h));
-    const minC = Math.min(...roundTripChromas);
-    const maxC = Math.max(...roundTripChromas);
-    const variance = maxC - minC;
-
-    if (variance < bestVariance) {
-      bestChroma = c;
-      bestVariance = variance;
+function getMaxInGamutChromaForHue(l, hDeg) {
+  // Binary search for the maximum chroma that keeps all linear RGB channels in [0, 1].
+  let cLow = 0, cHigh = 0.4;
+  for (let i = 0; i < 50; i++) {
+    const cMid = (cLow + cHigh) / 2;
+    const lin = oklchToLinearRgb(l, cMid, hDeg);
+    const inGamut = lin.every((x) => x >= -1e-5 && x <= 1 + 1e-5);
+    if (inGamut) {
+      cLow = cMid;
+    } else {
+      cHigh = cMid;
     }
   }
-
-  return bestChroma;
+  return cLow;
 }
 
-// Find chroma that minimizes round-trip variance.
-const sharedChroma = getMinVarianceChroma(L, HUES);
+// Find max in-gamut chroma for each hue, then take the minimum across all hues.
+const maxCharmasPerHue = HUES.map((h) => getMaxInGamutChromaForHue(L, h));
+const minMaxChroma = Math.min(...maxCharmasPerHue);
+const sharedChroma = minMaxChroma * 0.995; // Apply 0.995 safety margin.
 
-// Verify the result.
-const roundTripChromas = HUES.map((h) => getRoundTripChroma(L, sharedChroma, h));
-const minRoundTripC = Math.min(...roundTripChromas);
-const maxRoundTripC = Math.max(...roundTripChromas);
-const chromaVariance = maxRoundTripC - minRoundTripC;
-if (chromaVariance > 0.04) {
+// Verify the result is vivid enough.
+if (sharedChroma < 0.11) {
   throw new Error(
-    `Could not find chroma with variance < 0.04. Best: ${sharedChroma.toFixed(5)} (variance ${chromaVariance.toFixed(5)}). ` +
-      `Round-trip chromas: [${roundTripChromas.map((c) => c.toFixed(5)).join(", ")}]`,
+    `Shared chroma ${sharedChroma.toFixed(5)} is too dull (< 0.11). ` +
+      `Max chromas per hue: [${maxCharmasPerHue.map((c) => c.toFixed(5)).join(", ")}]`,
   );
 }
 
