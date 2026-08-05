@@ -169,13 +169,13 @@ We also developed a way for students to "prove" their spike (to admissions offic
 - **David Card & Peter Arcidiacono** (SPOV 5)
    - **Who:** Economists (UC Berkeley; Duke), opposing expert witnesses in *SFFA v. Harvard*.
    - **Focus:** Harvard applicant data.
-   - **Why Follow:** It shows that the reading rubric actually grades level and not the specific subject with no approved activities, devaluing the importance of prestigious hobbies.
+   - **Why Follow:** It shows that the reading rubric actually grades level and not the specific subject with no approved activities, devaluing the importance of prestigious hobbies. They were opposing expert witnesses who fought about interpretation and agreed on the numbers, which is what makes those numbers trustworthy. The lawsuit is also the only reason the rubric is public at all.
    - **Where:** https://www.nber.org/papers/w29964
 
 - **Raj Chetty, David Deming & John Friedman** (SPOV 5)
    - **Who:** Economists (Harvard; Harvard; Brown), Opportunity Insights.
    - **Focus:** Effects of attending a top university. 
-   - **Why Follow:** This study can actually claim cause and not just correlation. They used the waitlist to study students (instead of accepted vs rejected). It shows that the richest students get admitted at much higher rates even with similar academic scores. 30% of that extra advantage of because of ECs, even though what matters of how students do after college is actually academics and not ECs. The spike we make top schools already know how to inflate. They were opposing expert witnesses who fought about interpretation and agreed on the numbers.
+   - **Why Follow:** This study can actually claim cause and not just correlation. They used the waitlist to study students (instead of accepted vs rejected). It shows that the richest students get admitted at much higher rates even with similar academic scores. 30% of that extra advantage of because of ECs, even though what matters of how students do after college is actually academics and not ECs. The spike we make top schools already know how to inflate.
    - **Where:** https://www.nber.org/papers/w31492
 
 ---
