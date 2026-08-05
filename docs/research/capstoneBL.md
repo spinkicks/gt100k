@@ -7,22 +7,24 @@
 
 
 ## Purpose
+A student needs more than academic excellence (ie 1500+ SAT, BC Calc, Physics C, etc) to stand out in "elite" college admissions. The best way for this is for the student to choose a "spike", and develop it deeply. However, forcing a student to study piano, competitive math, chess, etc. intensely from an early age often backfires. Our philosophy is to allow the students to explore different potential spikes. We then measure what they choose to return to, to choose the spike which maximizes intrinsic motivation, and give them a curriculum to go in depth with this spike. We then monitor them closely to make sure they are not being overpressured, and give them a certain flexibility to switch if they lose this motivation. One of the benefits of starting this early is that we can afford to have the student swithc and still have time to become world class, thus sidestepping one of the major causes of burnout (the pressure of being locked into this one thing).
 
+We also developed a way for students to "prove" their spike (to admissions officers, etc.). Based on the premise that a finished artifact hides the process, we propose a way to record the entire process of creation, to have a way to verify that this work was actually done by a student, not an AI, a mentor, or a parent.
 
 
 
 ### In scope
 
--
--
--
+- Help students discover what their spike will be.
+- Creating a curriculum for students to develop their extracurricular "spike".
+- Prevent burnout and manage student's wellbeing, through guide and parental support.
+- Keep a record of a student's work, as proof of process and honesty.
 -
 
 ### Out of scope
 
--
--
--
+- How the student reaches the "academic threshold"
+- Specific discovery games, game design, in depth curricula for every topic
 
 ---
 
@@ -32,65 +34,68 @@
 
 ### On reading the child
 
-- **Spiky POV 1:** [CLAIM: what a child picks is not the signal / the unprompted return is / interest is built, not found]
-   - **Elaboration:**
+- **Spiky POV 1:** What a student chooses to do isnt a reliable indicator, but what they choose to **return** to is.[CLAIM: what a child picks is not the signal / the unprompted return is / interest is built, not found]
+   - **Elaboration:** What a child says (especially ages 6-8), rarely correlates to their future involvement with the subject. What research shows is the best signal is what they voluntarily return to.
+
+   While higher skill allows a student to tackle harder problems, it doesn't necessarily increase their interest for the subject However, since skill is one of the variables we can measure and improve, we build it, while allowing choice in the domain, and noting what they return to.
+
+   While their first pick is not necessarily signal, you still must give a child options, which is why we have the discovery wall. This allows students to explore a wide selection of subjects and **return** to subjects they are intrinsically drawn to.
 
 
-   - **Consensus it breaks:**
+   - **Consensus it breaks:** That an initial choice and skill are reliable indicators for interest. Instead we build skill to better allow exploration, and measure return, as a better indicator of interest.
 
    - **Backing:** Hidi & Renninger (2006); Harackiewicz et al. (2008); Nye et al. (2012); O'Keefe, Dweck & Walton (2018); Habgood & Ainsworth (2011); Rotgans & Schmidt (2017).
    - **Honest limit:**
 
-- **Spiky POV 2:** [CLAIM: behaviour is the only thing worth instrumenting / it cannot name a motive / the guide is asked, not the log]
-   - **Elaboration:**
+- **Spiky POV 2:** Tracking beyond simple behavior is unreliable at best, and we can't infer motivation automatically from behavior.[CLAIM: behaviour is the only thing worth instrumenting / it cannot name a motive / the guide is asked, not the log]
+   - **Elaboration:** Biometric scanning is often more trouble than it is worth, and illegal in the EU since 2025. Instead, we measure what topics they interact with, and what they return to, and reason from there.
+   
+   However, it is still hard to the motivation behind these actions.
+
+   What we can try is a variety of different things: For example, a workshop that trained coaches cut dropout rates from 26% to 5%, without affecting a team's performance. By training the guides, we can help them manage the kids effectively. We can also try giving the kids breaks from their "spike", by allowing them a week or two to explore something different, and observe their reaction, their return, and how they feel about taking time away from their pursuit.
 
 
-   - **Consensus it breaks:**
+   - **Consensus it breaks:** You can tell a childs emotions usingr biometric data, and that the "why" of a childs actions can be inferred from detailed enough records.
 
    - **Backing:** Barrett et al. (2019); EU AI Act Art. 5(1)(f); Guay, Vallerand & Blanchard (2000); Ryan, Koestner & Deci (1991); Fredricks, Blumenfeld & Paris (2004); Curran et al. (2015); Raedeke (1997); Barnett, Smoll & Smith (1992); Achenbach, McConaughy & Howell (1987); Dizon-Ross (2019).
    - **Honest limit:**
 
 ### On sustaining the child
 
-- **Spiky POV 3:** [CLAIM: pressure is the damage channel, not volume / the setpoint is ~85% / devaluation is the early warning]
-   - **Elaboration:**
+- **Spiky POV 3:** Burnout is something we try to prevent. Starting early matters, but locking a child into one thing early does not.[CLAIM: pressure is the damage channel, not volume / the setpoint is ~85% / devaluation is the early warning]
+   - **Elaboration:** The pervasive narrative is that elite outcomes require kids to lock in early, but that this causes catastrophic burnout and trauma. First, an early start does massively help, which is why we incorporate it, but without forcing them to stick to any subject, especially during the first years. By allowing this flexibility, students aren't pressured, which is what truly can damage a student and make them drop a spike.
+
+   If a student is pursuing a spike of their own volition, they are more likely to keep doing it, especially compared to those doing it because of parents/teacher pressure.
 
 
-   - **Consensus it breaks:**
+   - **Consensus it breaks:** Pushing too hard at youth causes burnout, and that early lock in is the only path to success.
 
    - **Backing:** Wilson et al. (2019); Raedeke & Smith (2001); Isoard-Gautheur, Guillet-Descas & Gustafsson (2016); American Academy of Pediatrics / Brenner et al. (2024); Luthar, Kumar & Zillmer (2020).
    - **Honest limit:**
 
 ### On the record the child builds
 
-- **Spiky POV 4:** [CLAIM: the record must be legible and wanted, else surveillance / a number erases a comment]
-   - **Elaboration:**
+- **Spiky POV 4:** An overdetailed record feels like surveillance, not a proof of process.[CLAIM: the record must be legible and wanted, else surveillance / a number erases a comment]
+   - **Elaboration:** We want the record of a student's project to be a proof of process they can check, that they are proud of, not a tool to "catch" their cheating. Dashboards, gamification, badges, and leaderboards raise pressure on a student and reduce interest.
+
+   One aspect does survive, which is to show a child their progress compared to their past. We build the record to reflect their process, which they own and can reflect on.
+
+   Overbearing data collection feels like surveillance, and encourages students to attempt to circumvent it. Simple, clear, and honest data collection reframes it as proof of process, not as trying to catch the student.
 
 
-   - **Consensus it breaks:**
+   - **Consensus it breaks:** Gamification and extrinsic motivators are necessary for digital tools and that more information is better.
 
    - **Backing:** Deci, Koestner & Ryan (1999); Lepper, Greene & Nisbett (1973); Butler (1988).
    - **Honest limit:**
 
-- **Spiky POV 5:** [CLAIM: the crypto is commodity / the in-person defense is the trust root / deletion is the hard problem]
-   - **Elaboration:**
+- **Spiky POV 5:** Guaranteeing tamper-proof logs is already possible, the hard part is establishing a point of trust so the entire system can be trusted, which we achieve through in-person defense. [CLAIM: the crypto is commodity / the in-person defense is the trust root / deletion is the hard problem]
+   - **Elaboration:** Existing software already allows the creation of tamper proof logs through Merkle trees. However, no one has implemented this structure for ensuring the integrity of a student's project. With a tamper proof process, the only things that need to be trusted are the logs, which can easily be verified through external witnesses, and where the content comes from. Through an in person defense of the project, which can for example be done as a short relfection with a guide, we can reduce the trust points to just the school attesting to these reflections. This creates concrete accountability and therefore trust for the project's provenance.
 
 
-   - **Consensus it breaks:**
+   - **Consensus it breaks:** that software like this already exists.
 
    - **Backing:** RFC 6962; in-toto Statement / SLSA; W3C PROV; Weber-Wulff et al. (2023); Liang et al. (2023); COPPA; EDPB Guidelines 02/2025 v2.0; NIST SP 800-88 Rev. 2 (2025).
-   - **Honest limit:**
-
-### On proving the spike was worth building
-
-- **Spiky POV 6:** [CLAIM: the spike sorts above the floor, never substitutes for it / prestige lives in verification]
-   - **Elaboration:**
-
-
-   - **Consensus it breaks:**
-
-   - **Backing:** Harvard Reading Procedures, Class of 2023 (HARV00097939); Card expert report Exhibits 4 and 5; Arcidiacono, Kinsler & Ransom (2022); Chetty, Deming & Friedman (2025).
-   - **Honest limit:**
+   - **Honest limit:** Keeping children's data on a non alterable database is illegal and interferes with students rght to delete their data. We fix this by only storing hashes of encrypted data on the graph, and delete encryption keys, so data becomes unrecoverable.
 
 ---
 
