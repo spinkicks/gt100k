@@ -19,7 +19,6 @@ We also developed a way for students to "prove" their spike (to admissions offic
 - Creating a curriculum for students to develop their extracurricular "spike".
 - Prevent burnout and manage student's wellbeing, through guide and parental support.
 - Keep a record of a student's work, as proof of process and honesty.
--
 
 ### Out of scope
 
@@ -34,7 +33,7 @@ We also developed a way for students to "prove" their spike (to admissions offic
 
 ### On reading the child
 
-- **Spiky POV 1:** What a student chooses to do isnt a reliable indicator, but what they choose to **return** to is.[CLAIM: what a child picks is not the signal / the unprompted return is / interest is built, not found]
+- **Spiky POV 1:** What a student chooses to do isnt a reliable indicator, but what they choose to **return** to is.
    - **Elaboration:** What a child says (especially ages 6-8), rarely correlates to their future involvement with the subject. What research shows is the best signal is what they voluntarily return to.
 
    While higher skill allows a student to tackle harder problems, it doesn't necessarily increase their interest for the subject However, since skill is one of the variables we can measure and improve, we build it, while allowing choice in the domain, and noting what they return to.
@@ -47,7 +46,7 @@ We also developed a way for students to "prove" their spike (to admissions offic
    - **Backing:** Hidi & Renninger (2006); Harackiewicz et al. (2008); Nye et al. (2012); O'Keefe, Dweck & Walton (2018); Habgood & Ainsworth (2011); Rotgans & Schmidt (2017).
    - **Honest limit:**
 
-- **Spiky POV 2:** Tracking beyond simple behavior is unreliable at best, and we can't infer motivation automatically from behavior.[CLAIM: behaviour is the only thing worth instrumenting / it cannot name a motive / the guide is asked, not the log]
+- **Spiky POV 2:** Tracking beyond simple behavior is unreliable at best, and we can't infer motivation automatically from behavior.
    - **Elaboration:** Biometric scanning is often more trouble than it is worth, and illegal in the EU since 2025. Instead, we measure what topics they interact with, and what they return to, and reason from there.
    
    However, it is still hard to the motivation behind these actions.
@@ -62,7 +61,7 @@ We also developed a way for students to "prove" their spike (to admissions offic
 
 ### On sustaining the child
 
-- **Spiky POV 3:** Burnout is something we try to prevent. Starting early matters, but locking a child into one thing early does not.[CLAIM: pressure is the damage channel, not volume / the setpoint is ~85% / devaluation is the early warning]
+- **Spiky POV 3:** Burnout is something we try to prevent. Starting early matters, but locking a child into one thing early does not.
    - **Elaboration:** The pervasive narrative is that elite outcomes require kids to lock in early, but that this causes catastrophic burnout and trauma. First, an early start does massively help, which is why we incorporate it, but without forcing them to stick to any subject, especially during the first years. By allowing this flexibility, students aren't pressured, which is what truly can damage a student and make them drop a spike.
 
    If a student is pursuing a spike of their own volition, they are more likely to keep doing it, especially compared to those doing it because of parents/teacher pressure.
@@ -75,7 +74,7 @@ We also developed a way for students to "prove" their spike (to admissions offic
 
 ### On the record the child builds
 
-- **Spiky POV 4:** An overdetailed record feels like surveillance, not a proof of process.[CLAIM: the record must be legible and wanted, else surveillance / a number erases a comment]
+- **Spiky POV 4:** An overdetailed record feels like surveillance, not a proof of process.
    - **Elaboration:** We want the record of a student's project to be a proof of process they can check, that they are proud of, not a tool to "catch" their cheating. Dashboards, gamification, badges, and leaderboards raise pressure on a student and reduce interest.
 
    One aspect does survive, which is to show a child their progress compared to their past. We build the record to reflect their process, which they own and can reflect on.
@@ -88,14 +87,14 @@ We also developed a way for students to "prove" their spike (to admissions offic
    - **Backing:** Deci, Koestner & Ryan (1999); Lepper, Greene & Nisbett (1973); Butler (1988).
    - **Honest limit:**
 
-- **Spiky POV 5:** Guaranteeing tamper-proof logs is already possible, the hard part is establishing a point of trust so the entire system can be trusted, which we achieve through in-person defense. [CLAIM: the crypto is commodity / the in-person defense is the trust root / deletion is the hard problem]
+- **Spiky POV 5:** Guaranteeing tamper-proof logs is already possible, the hard part is establishing a point of trust so the entire system can be trusted, which we achieve through in-person defense.
    - **Elaboration:** Existing software already allows the creation of tamper proof logs through Merkle trees. However, no one has implemented this structure for ensuring the integrity of a student's project. With a tamper proof process, the only things that need to be trusted are the logs, which can easily be verified through external witnesses, and where the content comes from. Through an in person defense of the project, which can for example be done as a short relfection with a guide, we can reduce the trust points to just the school attesting to these reflections. This creates concrete accountability and therefore trust for the project's provenance.
 
 
    - **Consensus it breaks:** that software like this already exists.
 
    - **Backing:** RFC 6962; in-toto Statement / SLSA; W3C PROV; Weber-Wulff et al. (2023); Liang et al. (2023); COPPA; EDPB Guidelines 02/2025 v2.0; NIST SP 800-88 Rev. 2 (2025).
-   - **Honest limit:** Keeping children's data on a non alterable database is illegal and interferes with students rght to delete their data. We fix this by only storing hashes of encrypted data on the graph, and delete encryption keys, so data becomes unrecoverable.
+   - **Honest limit:** Keeping a child's data on a store that cannot change conflicts with their right to have it deleted, and regulators have said outright that immutability is not an excuse. Today this is not yet a problem for us, because the graph lives in our own database and erasing a project deletes its rows and blobs outright. The problem arrives the moment we anchor roots to an external transparency log we do not control, since we could no longer reach in and delete. The intended answer is to keep only content commitments on that log and hold the erasable data in a separately keyed store, so destroying the key destroys the data. Neither half is built. The anchoring is a stub, the shred call returns a tombstone and does nothing, and there is no key lifecycle. This is the frontier of the work rather than a solved piece of it.
 
 ---
 
@@ -167,13 +166,13 @@ We also developed a way for students to "prove" their spike (to admissions offic
    - **Why Follow:** Part of our project we deferred for personal data. We can't have immutable data stored even if it's hashed.
    - **Where:** https://www.edpb.europa.eu/our-work-tools/documents/public-consultations/2025/guidelines-022025-processing-personal-data_en
 
-- **David Card & Peter Arcidiacono** (SPOV 6)
+- **David Card & Peter Arcidiacono** (SPOV 5)
    - **Who:** Economists (UC Berkeley; Duke), opposing expert witnesses in *SFFA v. Harvard*.
    - **Focus:** Harvard applicant data.
    - **Why Follow:** It shows that the reading rubric actually grades level and not the specific subject with no approved activities, devaluing the importance of prestigious hobbies.
    - **Where:** https://www.nber.org/papers/w29964
 
-- **Raj Chetty, David Deming & John Friedman** (SPOV 6)
+- **Raj Chetty, David Deming & John Friedman** (SPOV 5)
    - **Who:** Economists (Harvard; Harvard; Brown), Opportunity Insights.
    - **Focus:** Effects of attending a top university. 
    - **Why Follow:** This study can actually claim cause and not just correlation. They used the waitlist to study students (instead of accepted vs rejected). It shows that the richest students get admitted at much higher rates even with similar academic scores. 30% of that extra advantage of because of ECs, even though what matters of how students do after college is actually academics and not ECs. The spike we make top schools already know how to inflate. They were opposing expert witnesses who fought about interpretation and agreed on the numbers.
@@ -196,9 +195,9 @@ We also developed a way for students to "prove" their spike (to admissions offic
 
 - **Insight 5:** How a kid feels is unreadable from facial expressions, but we can read behaviour. (→ SPOV 2)
 - **Insight 6:** Praise from an adult can invert the core signal. (→ SPOV 2, SPOV 1)
-- **Insight 7:** [You can't spot an unhealthy obsession by how much a kid does. The hours look the same either way.] (→ SPOV 2, SPOV 3)
-- **Insight 8:** [Instead of building a detector, we run small tests and we train the adults.] (→ SPOV 2)
-- **Insight 9:** [Adults are bad at reporting on a kid, and the reason is memory. Ask what they saw last week, not what they think the kid likes.] (→ SPOV 2)
+- **Insight 7:** Healthy vs obsessive passion is indistinguishable from looking at practice hours alone. (→ SPOV 2, SPOV 3)
+- **Insight 8:** Instead of a motivation detector it's more effective to train the adults guiding the child. (→ SPOV 2)
+- **Insight 9:** Adults are ineffective reporters due to memory. It's better to ask them what the kid did last week rather than what they think the kid likes. (→ SPOV 2)
 
 ### Sustaining the child
 
@@ -215,10 +214,10 @@ We also developed a way for students to "prove" their spike (to admissions offic
 - **Insight 17:** Anyone can buy the crypto pieces. We change how to put them together. We also have the in-person defense. (→ SPOV 5)
 - **Insight 18:** It's difficult to fully delete a kid's data when the data was initially supposed to be immutable. (→ SPOV 5)
 
-### Proving the spike was worth building
+### What elite admissions rewards
 
-- **Insight 19:** People usually just compare rejected vs admitted students, which is the wrong group to compare to begin with. The right group is waitlisted vs admitted. So the conclusions drawn from the original comparison are wrong. (→ SPOV 6)
-- **Insight 20:** Top schools want depth and to see how good you did in a certain subject, and the subject itself doesn't matter much. (→ SPOV 6, SPOV 5)
+- **Insight 19:** People usually just compare rejected vs admitted students, which is the wrong group to compare to begin with. The right group is waitlisted vs admitted. So the conclusions drawn from the original comparison are wrong.
+- **Insight 20:** Top schools want depth and to see how good you did in a certain subject, and the subject itself doesn't matter much. (→ SPOV 5)
 
 ---
 
@@ -361,7 +360,7 @@ Every source below changed something we built. The line after each block names w
       - The regulators have closed the excuse we would otherwise be tempted by. A system that cannot change is not thereby exempt from deleting, hashing is not anonymising, and crypto-shredding only counts if every copy of the key is genuinely gone. That is a hard bar and we do not clear it. Our node identifiers are hashes of the content they describe, the erasure service returns a stub, and there is no key lifecycle yet. Live child data is blocked at the consent gate for exactly that reason. A document arguing that provenance should be honest cannot make an exception for its own.
    - **Link:** https://www.ecfr.gov/current/title-16/chapter-I/subchapter-C/part-312 ; https://www.edpb.europa.eu/our-work-tools/documents/public-consultations/2025/guidelines-022025-processing-personal-data_en ; https://csrc.nist.gov/pubs/sp/800/88/r2/ipd
 
-### Category 4: Proving the spike was worth building
+### Category 4: What elite admissions rewards
 
 - **Source: *SFFA v. Harvard* discovery. Reading Procedures, Class of 2023 (HARV00097939); Card expert report Exhibits 4 and 5**
    - **DOK 1 - Facts:**
