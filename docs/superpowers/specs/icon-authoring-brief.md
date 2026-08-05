@@ -8,6 +8,9 @@ Draw one flat-SVG icon per pursuit, "Bold Sticker" style. Read this in full.
   `stroke-linecap="round"`, `stroke-linejoin="round"`. No other stroke color or width.
 - Fills: flat only, and ONLY the hex values exported in `app/palette.generated.ts` (the 8 `FILLS`,
   plus `#ffffff` and the off-white `#fcf4ef` for highlights/eyes). Never invent a color.
+- The navy `#002a3a` may also be used as a FILL for small solid ink marks (eyes, pupils, dots) — it
+  is ink, not a palette color, and is allowed.
+- Set colors with `fill=`/`stroke=` attributes, never a CSS `style=` attribute or a `<style>` block.
 - Forbidden: gradients, filters, `<text>`, embedded `<image>`, drop shadows, 3D shading.
 - One subject, instantly legible to a 9–12-year-old — the fixed subject is in the plan's subject map.
 - Living things may carry a simple friendly eye. Keep ink weight even across the icon so it does not

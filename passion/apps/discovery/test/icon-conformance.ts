@@ -31,6 +31,10 @@ export function assertConformant(svgText: string): string[] {
     problems.push("uses a gradient or filter");
   if (/<text\b/i.test(svgText)) problems.push("contains <text>");
   if (!/viewBox="0 0 240 240"/.test(svgText)) problems.push("viewBox is not 0 0 240 240");
+  if (/<style\b/i.test(svgText)) problems.push("contains a <style> block");
+  for (const m of svgText.matchAll(/style="([^"]*)"/gi))
+    if (/fill|stroke/i.test(m[1] ?? ""))
+      problems.push(`style attribute "${m[1]}" sets fill/stroke outside the palette lock`);
 
   const { fills, strokes, strokeWidths } = parseColors(svgText);
   for (const f of fills)
