@@ -1,4 +1,4 @@
-# [TITLE]
+# Developing and proviung a student's spike
 
 ## Owners
 
@@ -44,7 +44,6 @@ We also developed a way for students to "prove" their spike (to admissions offic
    - **Consensus it breaks:** That an initial choice and skill are reliable indicators for interest. Instead we build skill to better allow exploration, and measure return, as a better indicator of interest.
 
    - **Backing:** Hidi & Renninger (2006); Harackiewicz et al. (2008); Nye et al. (2012); O'Keefe, Dweck & Walton (2018); Habgood & Ainsworth (2011); Rotgans & Schmidt (2017).
-   - **Honest limit:**
 
 - **Spiky POV 2:** Tracking beyond simple behavior is unreliable at best, and we can't infer motivation automatically from behavior.
    - **Elaboration:** Biometric scanning is often more trouble than it is worth, and illegal in the EU since 2025. Instead, we measure what topics they interact with, and what they return to, and reason from there.
@@ -57,7 +56,6 @@ We also developed a way for students to "prove" their spike (to admissions offic
    - **Consensus it breaks:** You can tell a childs emotions usingr biometric data, and that the "why" of a childs actions can be inferred from detailed enough records.
 
    - **Backing:** Barrett et al. (2019); EU AI Act Art. 5(1)(f); Guay, Vallerand & Blanchard (2000); Ryan, Koestner & Deci (1991); Fredricks, Blumenfeld & Paris (2004); Curran et al. (2015); Raedeke (1997); Barnett, Smoll & Smith (1992); Achenbach, McConaughy & Howell (1987); Dizon-Ross (2019).
-   - **Honest limit:**
 
 ### On sustaining the child
 
@@ -70,7 +68,6 @@ We also developed a way for students to "prove" their spike (to admissions offic
    - **Consensus it breaks:** Pushing too hard at youth causes burnout, and that early lock in is the only path to success.
 
    - **Backing:** Wilson et al. (2019); Raedeke & Smith (2001); Isoard-Gautheur, Guillet-Descas & Gustafsson (2016); American Academy of Pediatrics / Brenner et al. (2024); Luthar, Kumar & Zillmer (2020).
-   - **Honest limit:**
 
 ### On the record the child builds
 
@@ -85,7 +82,6 @@ We also developed a way for students to "prove" their spike (to admissions offic
    - **Consensus it breaks:** Gamification and extrinsic motivators are necessary for digital tools and that more information is better.
 
    - **Backing:** Deci, Koestner & Ryan (1999); Lepper, Greene & Nisbett (1973); Butler (1988).
-   - **Honest limit:**
 
 - **Spiky POV 5:** Guaranteeing tamper-proof logs is already possible, the hard part is establishing a point of trust so the entire system can be trusted, which we achieve through in-person defense.
    - **Elaboration:** Existing software already allows the creation of tamper proof logs through Merkle trees. However, no one has implemented this structure for ensuring the integrity of a student's project. With a tamper proof process, the only things that need to be trusted are the logs, which can easily be verified through external witnesses, and where the content comes from. Through an in person defense of the project, which can for example be done as a short relfection with a guide, we can reduce the trust points to just the school attesting to these reflections. This creates concrete accountability and therefore trust for the project's provenance.
