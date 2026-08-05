@@ -20,21 +20,6 @@ function oklchToLinearRgb(l, c, hDeg) {
   ];
 }
 
-function linearRgbToOklab(r, g, b) {
-  // Standard Björn Ottosson matrices (exact inverses of the forward path).
-  // linear sRGB -> LMS
-  const l_ = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b;
-  const m_ = 0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b;
-  const s_ = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b;
-  // LMS -> LMS' (cube root)
-  const [L, M, S] = [l_ ** (1 / 3), m_ ** (1 / 3), s_ ** (1 / 3)];
-  // LMS' -> OKLab
-  const L_oklab = 0.2104542553 * L + 0.793617785 * M - 0.0040720468 * S;
-  const a = 1.9779984951 * L - 2.428592205 * M + 0.4505937099 * S;
-  const b_oklab = 0.0259040371 * L + 0.7827717662 * M - 0.808675766 * S;
-  return [L_oklab, a, b_oklab];
-}
-
 function getMaxInGamutChromaForHue(l, hDeg) {
   // Binary search for the maximum chroma that keeps all linear RGB channels in [0, 1].
   let cLow = 0;
