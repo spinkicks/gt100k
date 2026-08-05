@@ -72,6 +72,12 @@ const SKIP_DIRECTORIES: ReadonlySet<string> = new Set([
   // A fixture is allowed to be broken on purpose — that is what makes it a fixture.
   "__fixtures__",
   "__mocks__",
+  // Third-party build output we vendor rather than install, so the same reasoning as node_modules
+  // applies: we do not own the token vocabulary and cannot fix it. It also defeats the scanner
+  // outright. `maskSourceComments` blanks from `//` to end of line, and a minified bundle is one
+  // enormous line, so a `//` inside any regex literal hides every `setProperty("--token", …)` after
+  // it and the tokens read as undefined.
+  "vendor",
 ]);
 
 const STYLESHEET = /\.css$/;
