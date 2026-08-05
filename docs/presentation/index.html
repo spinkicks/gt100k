@@ -242,10 +242,12 @@
               <div class="gate"><b>lowerBound ≥ 0.6</b><span>Meaningfully better than the 0.5 coin flip.</span></div>
             </div>
             <div class="formula">
-              six clean returns, no skips <span class="c">→</span> <b>0.75</b> <span class="c">· candidate</span><br>
-              the same six, plus ten skips <span class="c">→</span> <b>0.53</b> <span class="c">· not a candidate</span>
+              six clean returns <span class="c">→</span> lowerBound <b>0.70</b> <span class="c">· candidate</span><br>
+              the same six, all on one day <span class="c">→</span> <b>0.76</b> <span class="c">· fails the day gate</span><br>
+              three returns, three days <span class="c">→</span> <b>0.62</b> <span class="c">· fails the mass gate</span>
             </div>
-            <p class="note">At most one return banks per day, so six units is roughly a week of coming back.</p>
+            <p class="note">Figures computed by the engine. Full derivation, every definition and all twenty
+               constants: <strong>prediction-model.html</strong>, beside this deck.</p>
           </div>
           <aside class="notes">
             The worked pair is the thing to say out loud. Same child, same returns. The only difference is that
@@ -404,7 +406,7 @@
             <h2>Three more checks, and then a person.</h2>
             </div>
           <div class="gates">
-            <div class="gate"><b>Came back after a long quiet gap</b><span>Two returns at least 14 days apart.</span></div>
+            <div class="gate"><b>Came back after a long quiet gap</b><span>Two <em>consecutive</em> returns at least 14 days apart.</span></div>
             <div class="gate"><b>Came back across several days</b><span>Two cycles across 56 days.</span></div>
             <div class="gate"><b>Made something</b><span>An artifact that survived a setback.</span></div>
           </div>
