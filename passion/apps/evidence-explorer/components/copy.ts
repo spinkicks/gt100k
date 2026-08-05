@@ -8,7 +8,7 @@ import type { NodeType } from "@gt100k/evidence-graph";
 
 /** Story-first framing for the header. Swap freely — kept general (works for any project). */
 export const HEADLINE = "How this project was built";
-export const SUBTITLE = "A record of every step of the work — that can't be faked.";
+export const SUBTITLE = "A record of every step of the work, and that can't be faked.";
 export const DEMO_BADGE = "Demo data";
 
 const GLOSS: Record<NodeType, string> = {
@@ -30,6 +30,6 @@ export function nodeGloss(type: NodeType): string {
 /** The plain top-line verify result. Technical checks stay verbatim in the Verify detail. */
 export function verifyLine(verified: boolean): string {
   return verified
-    ? "Verified — nothing here has changed since it was recorded."
-    : "Changed — this record no longer matches what was originally recorded.";
+    ? "Verified. Nothing here has changed since it was recorded."
+    : "Changed. This record no longer matches what was originally recorded.";
 }

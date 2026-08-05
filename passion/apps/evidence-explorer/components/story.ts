@@ -7,7 +7,7 @@ import type { ExplorerView } from "@gt100k/evidence-explorer-view";
 export const STORY_STEP_MS = 2600;
 
 /** Shown before the story starts (revealedCount === 0). */
-export const STORY_LEAD_IN = "Press play to watch how this was built — one real step at a time.";
+export const STORY_LEAD_IN = "Press play to watch how this was built, one real step at a time.";
 
 /** Shown at full reveal; pairs with the Verify call-to-action. */
 export const STORY_END_NUDGE = "…and here's the proof it's all real →";
@@ -21,17 +21,17 @@ export const STORY_VERIFY_CTA = "Verify";
  */
 export const STORY_CAPTIONS: Record<number, string> = {
   0: "First, a plan: build a one-button endless runner.",
-  1: "Asked a tutor how a game loop works — and noted that the help was used.",
+  1: "Asked a tutor how a game loop works, and noted that the help was used.",
   2: "First real code: a canvas and a game loop.",
-  3: "First run — the player falls through the floor. It didn't pass yet, and that's recorded too.",
-  4: "Asked the tutor how to add ground collision — help cited again.",
+  3: "First run: the player falls through the floor. It didn't pass yet, and that's recorded too.",
+  4: "Asked the tutor how to add ground collision, help cited again.",
   5: "A new version: ground collision and a jump.",
-  6: "Next run passes — the jump and the collision work.",
-  7: "Used a free CC0 sprite sheet — and credited where it came from.",
+  6: "Next run passes. The jump and the collision work.",
+  7: "Used a free CC0 sprite sheet, and credited where it came from.",
   8: 'A reflection: "I understand the game loop and collision now."',
   9: "The playable build is released.",
   10: "A mentor reviews the craft and suggests a score counter.",
-  11: "And the final grade — decided by a person, not a machine.",
+  11: "And the final grade, decided by a person, not a machine.",
 };
 
 /** The frontier beat = the newest revealed one (1-based position === revealedCount). */
