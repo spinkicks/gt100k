@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- jar body -->
+    <path fill="#fcf4ef" d="M 66 90
+      C 66 78 72 70 82 70
+      L 158 70
+      C 168 70 174 78 174 90
+      L 174 195
+      C 174 205 166 212 156 212
+      L 84 212
+      C 74 212 66 205 66 195 Z"/>
+    <!-- neck band -->
+    <rect x="82" y="64" width="76" height="14" rx="6" fill="#dc9150"/>
+    <!-- lid -->
+    <rect x="78" y="40" width="84" height="26" rx="10" fill="#dc9150"/>
+    <!-- fruit -->
+    <circle cx="100" cy="122" r="22" fill="#e7857d"/>
+    <circle cx="145" cy="112" r="20" fill="#e7857d"/>
+    <circle cx="118" cy="162" r="24" fill="#e7857d"/>
+  </g>
+  <!-- lid seam -->
+  <line x1="88" y1="53" x2="152" y2="53" stroke="#002a3a" stroke-width="9" stroke-linecap="round"/>
+  <!-- stem -->
+  <line x1="145" y1="92" x2="150" y2="80" stroke="#002a3a" stroke-width="9" stroke-linecap="round"/>
+</svg>

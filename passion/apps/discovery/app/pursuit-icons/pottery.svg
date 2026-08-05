@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- vase body -->
+    <path fill="#dc9150" d="M 85 70
+      C 60 90 55 130 70 160
+      C 80 182 100 196 120 196
+      C 140 196 160 182 170 160
+      C 185 130 180 90 155 70
+      C 150 60 132 55 120 55
+      C 108 55 90 60 85 70 Z"/>
+    <!-- foot ring -->
+    <ellipse cx="120" cy="193" rx="30" ry="10" fill="#e7857d"/>
+    <!-- rim -->
+    <ellipse cx="120" cy="58" rx="38" ry="14" fill="#e7857d"/>
+  </g>
+  <!-- throwing rings -->
+  <g fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round">
+    <path d="M 78 112 Q 120 122 162 112"/>
+    <path d="M 75 150 Q 120 162 165 150"/>
+  </g>
+  <!-- glaze highlight -->
+  <path fill="#fcf4ef" d="M 90 95 C 84 115 84 145 92 165 C 88 145 88 115 96 97 Z"/>
+</svg>

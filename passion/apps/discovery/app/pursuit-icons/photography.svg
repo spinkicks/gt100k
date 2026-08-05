@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- viewfinder bump -->
+    <rect x="94" y="64" width="52" height="30" rx="10" fill="#6ea7ef"/>
+    <!-- shutter button -->
+    <rect x="100" y="54" width="18" height="12" rx="5" fill="#dc9150"/>
+    <!-- body -->
+    <rect x="34" y="90" width="172" height="104" rx="20" fill="#6ea7ef"/>
+    <!-- flash -->
+    <rect x="168" y="104" width="20" height="14" rx="5" fill="#fcf4ef"/>
+    <!-- lens outer ring -->
+    <circle cx="120" cy="146" r="48" fill="#dc9150"/>
+    <!-- lens glass -->
+    <circle cx="120" cy="146" r="30" fill="#fcf4ef"/>
+  </g>
+  <!-- lens center -->
+  <circle cx="120" cy="146" r="12" fill="#002a3a"/>
+</svg>

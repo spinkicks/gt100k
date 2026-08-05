@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- shell -->
+    <rect x="58" y="118" width="124" height="86" rx="16" fill="#e7857d"/>
+    <!-- drum head -->
+    <ellipse cx="120" cy="118" rx="64" ry="26" fill="#fcf4ef"/>
+    <!-- drumstick A -->
+    <path fill="#dc9150" d="M66.74 69.04 L73.26 58.96 L178.26 126.96 L171.74 137.04 Z"/>
+    <!-- drumstick B -->
+    <path fill="#dc9150" d="M173.26 69.04 L166.74 58.96 L61.74 126.96 L68.26 137.04 Z"/>
+    <!-- bead A -->
+    <circle cx="70" cy="64" r="12" fill="#fcf4ef"/>
+    <!-- bead B -->
+    <circle cx="170" cy="64" r="12" fill="#fcf4ef"/>
+  </g>
+  <!-- lugs -->
+  <rect x="71" y="106" width="14" height="24" rx="7" fill="#002a3a"/>
+  <rect x="104" y="106" width="14" height="24" rx="7" fill="#002a3a"/>
+  <rect x="137" y="106" width="14" height="24" rx="7" fill="#002a3a"/>
+  <rect x="170" y="106" width="14" height="24" rx="7" fill="#002a3a"/>
+</svg>

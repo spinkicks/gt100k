@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- bottom loaf -->
+    <ellipse cx="120" cy="158" rx="72" ry="52" fill="#dc9150"/>
+    <!-- top knob -->
+    <circle cx="120" cy="92" r="40" fill="#e7857d"/>
+  </g>
+  <!-- score marks on top knob -->
+  <g fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round">
+    <path d="M 100 75 Q 120 85 108 110"/>
+    <path d="M 120 68 Q 125 88 120 116"/>
+    <path d="M 140 75 Q 120 85 132 110"/>
+  </g>
+  <!-- score marks on bottom loaf -->
+  <g fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round">
+    <path d="M 75 140 Q 120 155 100 188"/>
+    <path d="M 120 132 Q 125 160 120 194"/>
+    <path d="M 165 140 Q 120 155 140 188"/>
+  </g>
+  <!-- flour dust -->
+  <ellipse cx="88" cy="178" rx="10" ry="6" fill="#fcf4ef"/>
+  <ellipse cx="152" cy="112" rx="8" ry="5" fill="#fcf4ef"/>
+  <ellipse cx="104" cy="68" rx="7" ry="4" fill="#fcf4ef"/>
+</svg>

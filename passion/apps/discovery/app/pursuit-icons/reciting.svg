@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- left page -->
+    <path fill="#6ea7ef" d="M 120 150 L 48 138 L 40 205 L 120 214 Z"/>
+    <!-- right page -->
+    <path fill="#b092e5" d="M 120 150 L 192 138 L 200 205 L 120 214 Z"/>
+    <!-- spine -->
+    <line x1="120" y1="150" x2="120" y2="214"/>
+    <!-- ribbon bookmark -->
+    <path fill="#dc9150" d="M 112 150 L 120 168 L 128 150 Z"/>
+  </g>
+  <!-- page fold accents -->
+  <path d="M 55 150 Q 75 170 60 195" fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round"/>
+  <path d="M 185 150 Q 165 170 180 195" fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round"/>
+  <!-- voice / sound arcs -->
+  <path d="M 148 120 Q 172 104 150 72" fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round"/>
+  <path d="M 148 112 Q 188 90 150 50" fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round"/>
+  <path d="M 148 104 Q 204 76 150 28" fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round"/>
+</svg>

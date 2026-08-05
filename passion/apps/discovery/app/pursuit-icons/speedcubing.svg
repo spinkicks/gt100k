@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- top layer, caught mid-turn -->
+    <g transform="rotate(9 119.5 92.5)">
+      <rect x="52" y="70" width="45" height="45" rx="6" fill="#ffffff"/>
+      <rect x="97" y="70" width="45" height="45" rx="6" fill="#e7857d"/>
+      <rect x="142" y="70" width="45" height="45" rx="6" fill="#6ea7ef"/>
+    </g>
+    <!-- middle row -->
+    <rect x="52" y="115" width="45" height="45" rx="6" fill="#e7857d"/>
+    <rect x="97" y="115" width="45" height="45" rx="6" fill="#6ea7ef"/>
+    <rect x="142" y="115" width="45" height="45" rx="6" fill="#ffffff"/>
+    <!-- bottom row -->
+    <rect x="52" y="160" width="45" height="45" rx="6" fill="#6ea7ef"/>
+    <rect x="97" y="160" width="45" height="45" rx="6" fill="#ffffff"/>
+    <rect x="142" y="160" width="45" height="45" rx="6" fill="#e7857d"/>
+    <!-- turn motion arc -->
+    <path d="M 84 58 A 40 40 0 0 1 156 58" fill="none"/>
+  </g>
+  <!-- arrowhead -->
+  <path d="M 150 46 L 164 54 L 152 66 Z" fill="#002a3a"/>
+</svg>

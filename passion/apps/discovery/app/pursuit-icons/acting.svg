@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- tragedy mask, behind, left -->
+    <ellipse cx="86" cy="132" rx="54" ry="64" fill="#dc9150"/>
+    <!-- comedy mask, front, right -->
+    <ellipse cx="154" cy="118" rx="58" ry="68" fill="#e7857d"/>
+  </g>
+  <!-- tragedy brow (sad, sloped down toward center) -->
+  <path d="M 54 100 L 78 114" fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round"/>
+  <!-- tragedy eye -->
+  <circle cx="62" cy="124" r="7" fill="#002a3a"/>
+  <!-- tragedy frown -->
+  <path d="M 48 160 Q 68 144 86 158" fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round"/>
+  <!-- comedy brows (happy, arched up) -->
+  <path d="M 136 86 Q 150 72 166 84" fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round"/>
+  <path d="M 174 84 Q 188 76 198 90" fill="none" stroke="#002a3a" stroke-width="9" stroke-linecap="round"/>
+  <!-- comedy eyes -->
+  <circle cx="146" cy="106" r="8" fill="#002a3a"/>
+  <circle cx="184" cy="106" r="8" fill="#002a3a"/>
+  <!-- comedy grin -->
+  <path d="M 128 140 Q 160 176 194 138 Z" fill="#fcf4ef" stroke="#002a3a" stroke-width="9" stroke-linejoin="round"/>
+</svg>

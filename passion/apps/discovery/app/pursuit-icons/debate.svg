@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- left bubble (palette fill) -->
+    <rect x="22" y="48" width="104" height="92" rx="24" fill="#68ba7b"/>
+    <path fill="#68ba7b" d="M 120 80 L 120 100 L 150 90 Z"/>
+    <!-- right bubble (white, navy outline) -->
+    <rect x="114" y="100" width="104" height="92" rx="24" fill="#ffffff"/>
+    <path fill="#ffffff" d="M 114 150 L 114 170 L 84 160 Z"/>
+  </g>
+</svg>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g stroke="#002a3a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- grips -->
+    <circle cx="60" cy="145" r="38" fill="#68ba7b"/>
+    <circle cx="180" cy="145" r="38" fill="#68ba7b"/>
+    <!-- body -->
+    <rect x="40" y="110" width="160" height="70" rx="35" fill="#68ba7b"/>
+    <!-- d-pad -->
+    <rect x="45" y="139" width="30" height="12" rx="4" fill="#fcf4ef"/>
+    <rect x="54" y="130" width="12" height="30" rx="4" fill="#fcf4ef"/>
+    <!-- buttons -->
+    <circle cx="172" cy="133" r="9" fill="#dc9150"/>
+    <circle cx="190" cy="157" r="9" fill="#dc9150"/>
+    <!-- clock, racing the deadline -->
+    <circle cx="196" cy="78" r="26" fill="#ffffff"/>
+  </g>
+  <!-- clock hands -->
+  <g stroke="#002a3a" stroke-width="9" stroke-linecap="round">
+    <line x1="196" y1="78" x2="196" y2="62"/>
+    <line x1="196" y1="78" x2="208" y2="84"/>
+  </g>
+  <circle cx="196" cy="78" r="3" fill="#002a3a"/>
+</svg>
