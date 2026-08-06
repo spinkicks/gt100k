@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PassionLab × EvidenceGraph · 5-minute demo</title>
+  <title>PassionLab · 5-minute demo</title>
 
   <link rel="stylesheet" href="vendor/reveal/reset.css">
   <link rel="stylesheet" href="vendor/reveal/reveal.css">
@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="css/shots.css">
 
   <style>
-    /* Placeholder intro layout — Alex's template slide replaces this whole block. */
+    /* Placeholder intro layout, Alex's template slide replaces this whole block. */
     .reveal .team { display: flex; gap: 2.5rem; margin-top: 2rem; }
     .reveal .person { display: flex; align-items: center; gap: 1rem; }
     .reveal .person .avatar {
@@ -35,26 +35,45 @@
       max-width: 22em;
     }
     .reveal .problem-stmt .accent { color: var(--brand); font-style: italic; }
-    /* compact spiky-POV list */
-    .reveal ol.spov { counter-reset: s; margin: 1.2rem 0 0; padding: 0; list-style: none; }
-    .reveal ol.spov li {
-      counter-increment: s; position: relative; padding-left: 2.2rem;
-      margin: 0 0 0.7rem; line-height: 1.32; color: var(--ink-soft); font-size: 27px;
+    /* insight slide, the North Star, alone and large */
+    .reveal .insight {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4.4vw, 3.2rem);
+      line-height: 1.14; letter-spacing: -0.015em; color: var(--ink);
+      max-width: 20em;
     }
-    .reveal ol.spov li::before {
-      content: counter(s); position: absolute; left: 0; top: 0.05em;
-      width: 1.5rem; height: 1.5rem; border-radius: 50%;
-      background: var(--chip-bg); border: 1px solid var(--brand);
-      color: var(--brand); font-family: var(--font-mono); font-size: 17px;
-      display: flex; align-items: center; justify-content: center;
+    /* the black-box pipeline, as a real left-to-right flow diagram */
+    .reveal .flow { display: flex; align-items: stretch; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.8rem; }
+    .reveal .flow-node {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 0.7rem 0.95rem; border: 1px solid var(--line); border-radius: 8px;
+      background: var(--ground-2); color: var(--ink); font-family: var(--font-display);
+      font-size: 22px; line-height: 1.15; text-align: center; min-width: 8.2rem;
     }
-    .reveal ol.spov li b { color: var(--ink); font-weight: 600; }
+    .reveal .flow-node small {
+      display: block; font-family: var(--font-mono); font-size: 13px;
+      color: var(--muted); margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .reveal .flow-node.engine { border-color: var(--brand); background: var(--chip-bg); color: var(--brand); }
+    .reveal .flow-arrow { display: flex; align-items: center; color: var(--muted); font-size: 26px; }
+    /* the loop: wall → console → issue db → back to wall as a fix */
+    .reveal .loop { display: flex; align-items: stretch; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.8rem; }
+    .reveal .flow-arrow.back {
+      color: var(--brand); font-family: var(--font-mono); font-size: 16px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .reveal .answers { display: flex; gap: 1rem; margin-top: 1.9rem; flex-wrap: wrap; }
+    .reveal .answer {
+      flex: 1 1 18rem; padding: 0.85rem 1.1rem; border-left: 3px solid var(--brand);
+      background: var(--ground-2); border-radius: 0 8px 8px 0;
+      font-family: var(--font-display); font-size: 22px; color: var(--ink-soft); line-height: 1.25;
+    }
+    .reveal .answer b { color: var(--ink); }
     /* big live-demo divider */
     .reveal .demo-hero { display: flex; flex-direction: column; justify-content: center; height: 100%; }
     .reveal .demo-hero .live-tag { font-size: 24px; }
     .reveal .demo-hero h2 { font-size: clamp(2.6rem, 6vw, 4.2rem); }
     .reveal .demo-hero .subhead { font-size: 30px; color: var(--ink-soft); max-width: 22em; }
-    .reveal section.act-eg .demo-hero .live-tag { color: var(--accent); }
   </style>
 </head>
 <body>
@@ -62,202 +81,247 @@
     <div class="slides">
 
       <!-- ============================================================
-           1 · INTRO  (0:00 – 0:15)
-           Placeholder — Alex's headshot template slide replaces this.
+           SLIDE 1 · "PassionLab" (title + team)  (0:00 – 0:15)
+           Placeholder, Alex's headshot template slide replaces this.
            ============================================================ -->
       <section class="act-pl" data-background-color="#fbf6ee">
         <div class="stack wrap">
           <div class="kicker-brand">Capstone · GT100K</div>
-          <h1 class="title-h">PassionLab <span class="accent">×</span> EvidenceGraph</h1>
-          <p class="lead">Help a child find a real spike, grow it without burning out, and prove
-             they actually made the work.</p>
+          <h1 class="title-h">PassionLab</h1>
           <div class="team">
             <div class="person">
-              <div class="avatar">headshot</div>
-              <div class="who">David Ordoñez<small>school · year</small></div>
+              <div class="who">David Ordoñez<small>UT Austin · '28</small></div>
             </div>
             <div class="person">
-              <div class="avatar">headshot</div>
-              <div class="who">Felipe Caicedo<small>school · year</small></div>
+              <div class="who">Felipe Caicedo<small>MIT · '29</small></div>
             </div>
           </div>
         </div>
         <aside class="notes">
-          0:00–0:15 · DAVID opens. Do NOT go name-by-name — Alex's template slide replaces this layout
+          0:00–0:15 · DAVID opens. Do NOT go name-by-name, Alex's template slide replaces this layout
           (headshots, names, schools/years). One breath on the project and its goal, then move:
-          "We build the afternoon. The morning — academics — is the solved part. Ours is the part that
-          actually sets a child apart: a genuine spike, and proof they made it."
+          "We find the beginning of a real spike for a young child, six to eight, and grow it, in about two
+          months at half an hour a day. Not force it. Find the one thing they keep coming back to, and protect it."
           [PLACEHOLDER: swap this slide for Alex's template when it arrives; keep the one-line goal.]
-          Speaking split so nobody is stacked: David runs Intro + Problem + Solution + the Guide Console
-          demo; Felipe runs the EvidenceGraph demo + Close.
+          Speaking split (adjustable): David runs Intro + Problem + Solution + the Discovery Wall / chess demo;
+          Felipe runs the Guide Console demo + Close. Nobody stacked.
         </aside>
       </section>
 
       <!-- ============================================================
-           2 · PROBLEM STATEMENT  (0:15 – 0:45)
+           SLIDE 2 · "The frame" (mornings are solved)  (0:15 – 0:30)
+           Positioning: the morning/academics is solved; we build the afternoon.
+           Adapted from index.html (big deck) slide 2, trimmed to the single-product scope.
+           ============================================================ -->
+      <section class="act-pl" data-background-color="#fbf6ee">
+        <div class="stack wrap">
+          <div class="eyebrow">The frame</div>
+          <h2>The morning is the solved part.</h2>
+          <p>Mastery-based academics handle the floor: the part every top applicant already has.</p>
+        </div>
+        <aside class="notes">
+          0:15–0:30 · DAVID. Pure setup: do NOT reveal the spike or the product yet; that lands over the next two
+          slides. The morning (academics) is the solved part, mastery-based learning, and that floor is table
+          stakes: every top applicant already has it (our claim, not a cited fact). So what separates a child has
+          to come from somewhere else. Also quietly seeds distribution later, an afternoon layer on a solved
+          morning. Hand into the problem statement.
+        </aside>
+      </section>
+
+      <!-- ============================================================
+           SLIDE 3 · Problem statement  (0:30 – 1:00)
            Rubric: the statement, and nothing else, on the slide.
            ============================================================ -->
       <section class="act-pl" data-background-color="#fbf6ee">
         <div class="stack wrap">
-          <p class="problem-stmt">A child's <span class="accent">spike</span> is what sets them apart.
-             Today it's either forced into them, or impossible to prove they made it.</p>
+          <p class="problem-stmt">Top scores get a child considered. In elite admissions,
+             a <span class="accent">spike</span> is what sets them apart.</p>
         </div>
         <aside class="notes">
-          0:15–0:45 · DAVID. Read the statement, then land WHY the market has no answer — casually, as
-          someone who has lived in this space for weeks:
-          • Enrichment and tutoring chase the spike by locking a child into one thing early. The controlled
-            evidence is the other way: pressure, not practice hours, is what drives burnout and dropout
-            (Raedeke & Smith; AAP prescribes rest as a dosage). Nobody builds for "let them switch and
-            still have time to reach the top of a field."
-          • On proof: portfolios and version history LOOK like proof and aren't — they're typed-in,
-            rewritable, back-datable. AI detectors fail (14 detectors, 754 cases, none over 80%) and are
-            biased — flagging non-native English writers as AI 61% of the time. So the honest answer to
-            "did the child make this?" does not exist in the market.
-          • Nobody does discovery + wellbeing + provenance as one product. If it existed, a child's spike
-            would be both genuinely theirs AND verifiable to someone who wasn't in the room. That's the unlock.
+          0:30–1:00 · DAVID. Read the statement, then land WHY it's the real differentiator, and why it's hard,
+          casually, as someone who has lived in this for weeks:
+          • The stakes: at the top of admissions, scores are table stakes, everyone in the pile has them. What
+            actually separates a candidate is a genuine spike: a deep, self-driven obsession in one thing. That's
+            what sets a child apart, and it's the thing no test prep can manufacture.
+          • Why it's hard: you can't ask a six-year-old what theirs is, they don't know, and what they SAY they
+            like and what they actually return to differ. And forcing one early backfires: pressure, not practice
+            hours, drives burnout and dropout (Raedeke & Smith; AAP prescribes rest as a dosage).
+          • And motivation dies quietly, a child keeps showing up long after they've stopped caring, so by the
+            time anyone notices, the spike is already gone. That's the gap we build for.
           Keep the SLIDE to just the statement.
         </aside>
       </section>
 
       <!-- ============================================================
-           3 · SOLUTION / SPIKY POV  (0:45 – 1:30)
-           Core insight (North Star) + the 5 SPOVs + who it's for.
+           SLIDE 4 · "Our spiky POV" (the insight)  (1:00 – 1:15)
+           North Star, alone and large.
            ============================================================ -->
       <section class="act-pl" data-background-color="#fbf6ee">
         <div class="stack wrap">
           <div class="eyebrow">Our spiky POV</div>
-          <h2>You can't ask a child what they love, and you can't force it.</h2>
-          <p class="lead">So measure what they <strong>return to</strong>, protect them from pressure, and
-             prove the work by <strong>recording how it was made</strong>.</p>
-          <ol class="spov">
-            <li>What a child <b>returns to</b> beats what they pick, or say they like.</li>
-            <li>You can't read motivation from behaviour, so we build the tool for the <b>guide</b>, not a detector for the child.</li>
-            <li>Burnout comes from <b>pressure, not hours</b>: start early, but never lock in early.</li>
-            <li>An over-detailed record is surveillance; a simple honest one is <b>proof of process</b>, so nothing child-facing is scored.</li>
-            <li>Tamper-proof logs are easy; the missing piece is a <b>trust anchor</b>: an in-person defense.</li>
-          </ol>
+          <p class="insight">You can't ask a child what they love.<br>
+             You can't force it either.</p>
+          <p class="lead">So we do neither. We watch what they <strong>do</strong>, and that's how PassionLab
+             builds the afternoon: the spike.</p>
         </div>
         <aside class="notes">
-          0:45–1:30 · DAVID. State the North Star, then the five in one breath each. Then WHO this is for
-          and why that flips the usual playbook — this is the part aimed straight at Joe:
-          "Our users are children, roughly nine to twelve, and their guides. A child's motivation profile is
-          the opposite of a med-school applicant's — you cannot pay a nine-year-old into a real passion.
-          Expected rewards measurably crowd out intrinsic motivation, and worse for children than adults
-          (Deci, Koestner & Ryan). So there is no score, streak, badge or leaderboard anywhere a child can
-          see. We are NOT anti-reward — reward is the right tool in the morning, where the target behaviour
-          is defined. Attach it to exploration and every child explores, and now you're measuring
-          prize-chasing instead of interest."
-          Backing to have ready: return signal = Hidi & Renninger, Habgood & Ainsworth; train-the-adult =
-          Barnett/Smoll/Smith (dropout 26%→5%, no change in win-loss); devaluation-first = Raedeke & Smith;
-          no-score = Butler 1988. Hand straight into the live product.
+          0:45–1:05 · DAVID. Land the North Star, then the intrinsic-motivation thesis, this beat is aimed
+          straight at Joe, so head off the "so you're anti-reward" objection before he raises it:
+          "To be clear, we are NOT against extrinsic motivators. Reward and support have their place, a parent
+          doing the activity, praise, even a bribe, and we use them when a child needs a push. Our bet is about
+          WHERE you spend that support. Instead of pushing every topic equally, we find the one topic where
+          intrinsic motivation is highest, the thing they return to on their own, so it takes the LEAST support
+          to get going. Pick that right and your support budget goes to helping, not dragging. And we'll help them
+          when they need it, that's the whole back half of the product."
+          The one place we hold the line: we don't gamify DISCOVERY. A visible score would just have a child chase
+          the score instead of the thing, corrupting the very signal we read (Butler 1988; Deci, Koestner & Ryan).
+          Land it: "We don't ask, and we don't force, we watch what they do, and back the topic that needs the
+          least push." Hand into the two principle slides.
         </aside>
       </section>
 
       <!-- ============================================================
-           4 · LIVE DEMO — GUIDE CONSOLE  (1:30 – 3:15, ~2 min)
-           Divider only. Everything here is the live product.
+           SLIDE 5 · "Reading a real spike"  (1:15 – 1:30)
+           SPOVs about honest measurement, as cards.
+           ============================================================ -->
+      <section class="act-pl" data-background-color="#fbf6ee">
+        <div class="stack wrap">
+          <div class="eyebrow">Reading a real spike</div>
+          <div class="cards">
+            <div class="card">
+              <h3>What they do, not what they say</h3>
+              <p>We read what a child <strong>does</strong>: what they return to, choose, and push through.</p>
+            </div>
+            <div class="card">
+              <h3>No score to chase</h3>
+              <p>Discovery isn't gamified, because it would ruin the signal we're trying to measure.</p>
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          1:05–1:20 · DAVID, one breath each.
+          • We read a RANGE of behavioural signals, not one, which games they voluntarily return to, the
+            difficulty they choose, engagement across different challenges, and how they respond after a setback.
+            It's what they DO, not what they say they like (Hidi & Renninger; Habgood & Ainsworth).
+          • No child-facing score in discovery, a prize to chase would corrupt the very signal we're
+            reading (Butler 1988). (Aside if asked: the tool is for the guide, not a detector pointed at the child.)
+        </aside>
+      </section>
+
+      <!-- ============================================================
+           SLIDE 6 · "How it fits" (the loop)  (1:30 – 1:45)
+           A tight three-node loop: Wall feeds the console, console reads the
+           Issue DB, the fix flows back to the wall.
+           ============================================================ -->
+      <section class="act-pl" data-background-color="#fbf6ee">
+        <div class="stack wrap">
+          <div class="eyebrow">How it fits</div>
+          <h2>One loop that keeps a spike alive.</h2>
+          <div class="loop">
+            <div class="flow-node">Discovery Wall<small>chess this week</small></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node">Guide Console<small>two answers</small></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node">Issue DB<small>reason to fix</small></div>
+            <span class="flow-arrow back">↺ fix</span>
+          </div>
+          <div class="answers">
+            <div class="answer"><b>1 · Is this a spike?</b> How likely, read from return.</div>
+            <div class="answer"><b>2 · Is motivation holding?</b> And if it's slipping, why.</div>
+          </div>
+        </div>
+        <aside class="notes">
+          1:30–1:45 · DAVID. Walk the loop once, plainly:
+          "The Discovery Wall is where the child plays, chess this week, and it quietly produces signals. The Guide
+          Console turns those signals into two answers: how likely this is a real spike, and whether motivation is
+          holding. When motivation slips, the Issue DB names the likely reason and a fix to try, and that fix flows
+          back to the wall, a different challenge, a break, a nudge. That loop is the product."
+          The Engine that computes the two answers is a black box today; we do not open it here. Hand into the demo.
+        </aside>
+      </section>
+
+      <!-- ============================================================
+           SLIDE 7 · "Demo · Discovery Wall" (chess, child side)  (1:55 – 3:20, ~1.5 min)
+           The child side. Signals originate here.
            ============================================================ -->
       <section class="act-pl" data-background-color="#fbf6ee">
         <div class="demo-hero wrap">
-          <div class="live-tag">Live · Guide Console</div>
-          <h2>The adult side of a real week.</h2>
-          <p class="subhead">Same child, adult view. The read changes per specialization, and the console
-             says who needs a human today.</p>
+          <div class="live-tag">Demo · Discovery Wall</div>
+          <h2>The child side.</h2>
+          <p class="subhead">A wall of apps, one per spike. We built the first. What matters isn't the game,
+             it's the signal underneath: every move, retry, and voluntary return.</p>
         </div>
         <aside class="notes">
-          1:30–3:15 · DAVID drives the live product. Movie-trailer pace, macro step-by-step, narrate the
-          decision at each stop. Optional 15s cold-open on the child's Discovery Wall if time: 44 pursuits,
-          flat on one screen, no pager — copied from the closest study (flat beat a category hierarchy;
-          0 of 12 first-graders found "More choices"). Each pursuit has a real external judge (drums →
-          ABRSM). "A pursuit with nobody to judge it is just a topic."
-          THE CONSOLE (the payoff):
-          • Open a child. "One session of opening things produces nothing here — an open proves they showed
-            up, not that they worked. A confident belief needs voluntary return across different days."
-            This is the honest beat; say it out loud.
-          • Wellbeing strip, scoped per specialization. "None of this is a label on the child — it's advice
-            about a domain. It's read from behaviour, never mood or minutes: is voluntary return falling
-            while he keeps showing up, his success rate, does he still choose harder. Devaluation — showing
-            up but no longer caring — outranks tiredness, because it comes first and hides in attendance."
-          • "Pressure comes down before difficulty. Every back-off escalates to a person. There is no score
-            on this screen, for the child or the parent — a number a parent could watch move stops being a
-            readout and becomes an intervention."
-          Reiterate the spiky POV once here: return, not clicks; the tool is for the guide.
+          1:45–3:15 · DAVID drives the child side. Movie-trailer pace, macro step-by-step. Keep the focus on the
+          SIGNAL, not the game: the app is just the first one we built, and any spike app would work the same way.
+          [LIVE-vs-WALKTHROUGH PLACEHOLDER: if the pipeline is real on demo day, change the tag to "Live ·" and
+          say the signals are landing in PostHog as we play. If not, say plainly "this is the built app driven by
+          a scripted session"; never imply live if it isn't.]
+          • The wall: one app per spike, flat on one screen, no pager. Copied from the closest study (flat beat a
+            category hierarchy; 0 of 12 first-graders found "More choices").
+          • The app we built: the child just plays. It captures behaviour automatically, no extra work for the child,
+            and emits signals to PostHog: moves, retries, time-on-task, and above all VOLUNTARY RETURN across days.
+          • The honest beat, say it out loud: "One session of showing up produces almost nothing here. An open proves
+            they showed up, not that this is a spike. A confident read needs voluntary return across different days."
+          Reiterate the POV once: return, not clicks; nothing here is scored in front of the child.
         </aside>
       </section>
 
       <!-- ============================================================
-           5 · LIVE DEMO — EVIDENCEGRAPH  (3:15 – 4:15, ~1 min)
-           The Google Docs extension → tamper-proof graph.
+           SLIDE 8 · "Demo · Guide Console" (adult side)  (3:20 – 4:20, ~1 min)
+           The adult side. The Engine's two answers + a fix.
            ============================================================ -->
-      <section class="act-eg" data-background-color="#0a0e13">
+      <section class="act-pl" data-background-color="#fbf6ee">
         <div class="demo-hero wrap">
-          <div class="live-tag">Live · EvidenceGraph</div>
-          <h2>Record the making, not the result.</h2>
-          <p class="subhead">A Google Docs extension captures the work as it happens, into a graph that
-             can't be quietly rewritten.</p>
+          <div class="live-tag">Demo · Guide Console</div>
+          <h2>The adult side: two answers, and what to do.</h2>
+          <p class="subhead">For each child: how likely this is a real spike, whether motivation is holding,
+             and, if it's slipping, the likely reason and a fix to try.</p>
         </div>
         <aside class="notes">
-          3:15–4:15 · FELIPE drives. Palette is cool now — this is the second product.
-          Frame in one line: "A finished artifact can't tell you who made it — a child, an AI, a tutor, or
-          paid help. Detecting the AI is the reflex, and it fails the wrong kids, so we never point a
-          detector at a child. Instead we record the making."
-          LIVE, macro steps:
-          • Write in a real Google Doc with the extension on. It captures steps automatically — no extra work
-            for the child. "This is the same idea as version history, except each step's id IS its content
-            (a SHA-256 fingerprint), so it can't be back-dated or silently edited."
-          • It's an append-only Merkle graph: a correction is a NEW node pointing back, never a rewrite. The
-            whole graph rolls up to one root a verifier recomputes independently. It's its own engine, a
-            separate repo from PassionLab.
-          • Tamper flip (the most convincing 10 seconds): change one saved step → the root mismatches and the
-            graph visibly fractures → undo restores it. "That's how you know nothing was edited since."
-          Honest scope in a breath: "This proves nobody altered the record. It does NOT prove the child
-            understood the work — that's what the in-person reflection is for. Declared help is fine; only
-            hidden help passed off as solo is the problem."
+          3:15–4:15 · FELIPE drives the adult side. This is the payoff.
+          [LIVE-vs-WALKTHROUGH PLACEHOLDER: promote the tag to "Live ·" only if the Engine is reading real signals;
+          otherwise say the console is showing a representative child, not a trained engine.]
+          • ANSWER ONE, spike probability. "How likely chess is a real spike for this child, read from return, not
+            from one big session." Show the refine action: turn a soft read into one or two strong HYPOTHESES to test,
+            e.g. show different content / a harder ladder, that the child then spends more time on.
+          • ANSWER TWO, motivation. Read from BEHAVIOUR, never mood or minutes: is voluntary return falling while he
+            keeps showing up, success rate, does he still choose harder. Devaluation, showing up but no longer caring,
+            outranks tiredness, because it comes first and hides in attendance.
+          • THE FIX (Issue DB). If motivation is dropping, the console names the likely reason, plateau/frustration,
+            burnout, loss of interest, and recommends a fix to try: a break, parent involvement (praise, or doing the
+            activity together), and worst case, switch to one of the other hypotheses. "There is no score on this screen
+            for the child or the parent, a number a parent could watch move stops being a readout and becomes pressure."
+          Reiterate: the tool is for the guide, not a detector for the child.
         </aside>
       </section>
 
       <!-- ============================================================
-           6 · CLOSING  (4:15 – 5:00)
+           SLIDE 9 · "What's next" (closing)  (4:20 – 5:05)
            Refresher + why it's right + what's next. Stop at 5:00.
            ============================================================ -->
       <section class="act-pl" data-background-color="#fbf6ee">
         <div class="stack wrap">
           <div class="eyebrow">What's next <span class="dim">· 3–6 months</span></div>
-          <h2>A spike that's genuinely theirs, and provable.</h2>
-          <p>The floor is the morning. The spike sits on top: found by return, kept without pressure,
-             proven by its record.</p>
-          <div class="cards">
-            <div class="card">
-              <h3>Build</h3>
-              <p>Write the specialization maps, the domain ladders the whole climb depends on. Calibrate the
-                 hand-set weights on a first real cohort.</p>
-            </div>
-            <div class="card">
-              <h3>Go-live gates</h3>
-              <p>Verified consent, auth + rate-limiting on ingest, and the deletion fix: keyed store +
-                 crypto-shred so an immutable record can still honour erasure.</p>
-            </div>
-            <div class="card">
-              <h3>Distribution</h3>
-              <p>The afternoon layer on a solved morning: seed it inside the 2 Hour Learning / TimeBack
-                 ecosystem, where the families and the mastery data already are.</p>
-            </div>
+          <h2>A spike that's genuinely theirs, found early, kept alive.</h2>
+          <div class="answers">
+            <div class="answer"><b>More apps</b> on the wall, one signal stream.</div>
+            <div class="answer"><b>Validate the Engine</b> on a real cohort.</div>
+            <div class="answer"><b>Close the loop</b>: reason to fix, and back.</div>
           </div>
-          <p class="pull"><span class="accent">A spike no one can verify is just a claim.</span></p>
+          <p class="pull"><span class="accent">You can't force a spike, but you can notice one, and protect it.</span></p>
         </div>
         <aside class="notes">
-          4:15–5:00 · FELIPE closes. Concise refreshers so Joe can question — NOT a redo.
-          • Problem, restated: a spike is what sets a child apart, but today it's either forced (burnout) or
-            unprovable. We make it genuine (measure return, manage wellbeing) and verifiable (record the making).
-          • Why we're confident it's the right shape: every product decision traces to the research — return
-            over stated interest, train-the-adult over a motivation detector, no child-facing score, record
-            over detector. The negatives are enforced in code; the numbers are defensible priors awaiting a cohort.
-          • Volunteer the honest gates before he finds them: nothing here has been in front of a real child;
-            consent is guide-asserted; the deletion frontier is designed, not built. Naming the boundary is
-            the credibility signal — Joe rewards that.
-          • What's next: maps + cohort calibration → the go-live gates → distribution through TimeBack. If we
-            had 3–6 months: ship the maps for the top pursuits, run one real afternoon cohort, and close the
-            erasure model so it can hold live child data.
+          4:15–5:00 · FELIPE closes. Concise refreshers so Joe can question, NOT a redo.
+          • Problem, restated: a spike is what sets a child apart, but you can't ask a six-year-old what it is, and
+            forcing one early kills it. We find it by return, and protect it by watching motivation.
+          • Why we're confident it's the right shape: every decision traces to the research, return over stated
+            interest, watch motivation over progress, no child-facing score, a fix over a flag. The Engine's scoring
+            is the open bet; we've black-boxed it here on purpose because that's the part the cohort has to calibrate.
+          • Volunteer the honest gates before he finds them: nothing here has been in front of a real child yet;
+            the Engine's math is designed, not validated; only chess exists so far. Naming the boundary is the
+            credibility signal, Joe rewards that.
+          • What's next: more walls → validate the Engine on one real afternoon cohort → close the fix loop in the Issue DB.
           STOP at 5:00. Leave the pull quote on screen through Q&A.
         </aside>
       </section>
@@ -268,7 +332,7 @@
   <script src="vendor/reveal/reveal.js"></script>
   <script src="vendor/reveal/plugin/notes/notes.js"></script>
   <script>
-    // Self-contained boot — UMD globals, runs offline / from file://.
+    // Self-contained boot, UMD globals, runs offline / from file://.
     Reveal.initialize({
       hash: true,
       slideNumber: 'c/t',
