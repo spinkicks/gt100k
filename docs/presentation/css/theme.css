@@ -182,6 +182,17 @@
   margin-top: 1.6rem;
 }
 
+/* Lightweight inline source line — a citation without the full evidence box */
+.reveal .cite {
+  display: block;
+  margin-top: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 /* ============================================================================
    Beat markers — Find · Build · Prove (a real sequence)
    ========================================================================== */
