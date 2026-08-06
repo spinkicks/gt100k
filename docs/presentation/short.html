@@ -233,14 +233,18 @@
             <div class="answer"><b>1 · Is this a spike?</b></div>
             <div class="answer"><b>2 · Is motivation holding?</b> And if it's slipping, why.</div>
           </div>
+          <p class="dim">A formula we hand-built from the research. It reports a confidence range, not a verdict, and real child data is what calibrates it.</p>
         </div>
         <aside class="notes">
           1:35–1:50 · The two things we measure, said plainly:
-          • ONE: how likely this is a real spike, read from what the child returns to.
+          • ONE: how likely this is a real spike, read from which app the child keeps choosing, day after day.
           • TWO: whether motivation is holding, and if it's slipping, why.
-          The Engine that computes both is a black box today; we do not open it here. Then the payoff worth
-          previewing: when motivation drops we don't just flag it, we name a likely reason and a fix to try, and
-          that fix feeds back into what the child sees next. Hand into the demo.
+          The Engine that computes both is a formula we hand-crafted from the research (Deci/Ryan, Butler, Renninger);
+          we don't walk the math here. Two things to say out loud about it: it outputs a CONFIDENCE INTERVAL, not a
+          yes/no, so it stays honest about how sure it is; and it is designed, not yet validated, so real child data
+          is exactly what will calibrate the weights. Then the payoff worth previewing: when motivation drops we don't
+          just flag it, we name a likely reason and a fix to try, and that fix feeds back into what the child sees next.
+          Hand into the demo.
         </aside>
       </section>
 
@@ -253,7 +257,7 @@
           <div class="live-tag">Demo · Discovery Wall</div>
           <h2>The child side.</h2>
           <p class="subhead">A wall of apps, one per spike. We built the first. What matters isn't the game,
-             it's the signal underneath: every move, retry, and voluntary return.</p>
+             it's the signal underneath: which app they choose, and keep choosing, move by move.</p>
         </div>
         <aside class="notes">
           1:50–3:15 · Child side. Movie-trailer pace, macro step-by-step. Keep the focus on the
@@ -264,10 +268,14 @@
           • The wall: one app per spike, flat on one screen, no pager. Copied from the closest study (flat beat a
             category hierarchy; 0 of 12 first-graders found "More choices").
           • The app we built: the child just plays. It captures behaviour automatically, no extra work for the child,
-            and emits signals to PostHog: moves, retries, time-on-task, and above all VOLUNTARY RETURN across days.
-          • The honest beat, say it out loud: "One session of showing up produces almost nothing here. An open proves
-            they showed up, not that this is a spike. A confident read needs voluntary return across different days."
-          Reiterate the POV once: return, not clicks; nothing here is scored in front of the child.
+            and emits signals to PostHog: moves, retries, time-on-task, difficulty chosen, and above all WHICH APP ON
+            THE WALL they keep returning to across days.
+          • Why the return signal is clean, say it out loud: the afternoon block is scheduled, about half an hour a day,
+            so showing up is a given, not a choice. That is on purpose. It takes the parent's routine out of the signal,
+            and what is left is the child's: which app they spend that guaranteed time on, and whether they keep choosing it.
+          • The honest beat: "One day of picking an app proves almost nothing. A confident read is the same choice
+            returning across different days."
+          Reiterate the POV once: which app they return to, not clicks; nothing here is scored in front of the child.
         </aside>
       </section>
 
@@ -286,12 +294,13 @@
           3:15–4:20 · Adult side. This is the payoff.
           [LIVE-vs-WALKTHROUGH PLACEHOLDER: promote the tag to "Live ·" only if the Engine is reading real signals;
           otherwise say the console is showing a representative child, not a trained engine.]
-          • ANSWER ONE, spike probability. "How likely chess is a real spike for this child, read from return, not
-            from one big session." Show the refine action: turn a soft read into one or two strong HYPOTHESES to test,
-            e.g. show different content / a harder ladder, that the child then spends more time on.
-          • ANSWER TWO, motivation. Read from BEHAVIOUR, never mood or minutes: is voluntary return falling while he
-            keeps showing up, success rate, does he still choose harder. Devaluation, showing up but no longer caring,
-            outranks tiredness, because it comes first and hides in attendance.
+          • ANSWER ONE, spike probability. "How likely chess is a real spike for this child, read from repeated choice
+            across days, not from one big session." Show the refine action: turn a soft read into one or two strong
+            HYPOTHESES to test, e.g. show different content / a harder ladder, that the child then spends more time on.
+          • ANSWER TWO, motivation. Read from BEHAVIOUR, never mood or minutes: the block means he always shows up, so
+            the tell is whether he still CHOOSES chess and still pushes, success rate, does he still choose harder.
+            Devaluation, present but no longer caring, comes first and hides in attendance; a mandated block is exactly
+            what surfaces it.
           • THE FIX (Issue DB). If motivation is dropping, the console names the likely reason, plateau/frustration,
             burnout, loss of interest, and recommends a fix to try: a break, parent involvement (praise, or doing the
             activity together), and worst case, switch to one of the other hypotheses. "There is no score on this screen
@@ -320,11 +329,12 @@
           • Problem, restated: a spike is what sets a child apart, but you can't ask a six-year-old what it is, and
             forcing one early kills it. We find it by return, and protect it by watching motivation.
           • Why we're confident it's the right shape: every decision traces to the research, return over stated
-            interest, watch motivation over progress, no child-facing score, a fix over a flag. The Engine's scoring
-            is the open bet; we've black-boxed it here on purpose because that's the part the cohort has to calibrate.
+            interest, watch motivation over progress, no child-facing score, a fix over a flag. The Engine's formula
+            is hand-built from that same research and reports confidence intervals, not verdicts; the open bet is
+            calibrating its weights, which is exactly what a real cohort gives us.
           • Volunteer the honest gates before he finds them: nothing here has been in front of a real child yet;
-            the Engine's math is designed, not validated; only chess exists so far. Naming the boundary is the
-            credibility signal, Joe rewards that.
+            the formula is designed from research, not yet validated on data; only chess exists so far. Naming the
+            boundary is the credibility signal, Joe rewards that.
           • What's next: more walls → validate the Engine on one real afternoon cohort → close the fix loop in the Issue DB.
           STOP at 5:00. Leave the pull quote on screen through Q&A.
         </aside>
