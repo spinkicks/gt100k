@@ -198,8 +198,9 @@ predicts them quitting. It is a cheap onboarding question and an early risk mark
 
 Constrained in the engine. A guide cannot configure their way into a harmful design.
 
-1. **Inputs only.** Puzzles attempted, sessions started, drills completed. Never rating, contest result
-   or placement. Paying $2 per book read produced 0.180σ on reading comprehension; paying for test
+1. **Inputs only, and this rule does not change after promotion.** While building the spike the
+   inputs are practice components: drills finished, puzzles attempted, sessions started. Outputs are
+   rating, tournament placement, contest result. Reward the endgame drill, never the win. Paying $2 per book read produced 0.180σ on reading comprehension; paying for test
    scores produced roughly zero, because a child offered money for a score does not know what to do
    differently.
 2. **Clearable.** The standard is set so the child clears it at least four times in five, and rises
@@ -229,6 +230,12 @@ The one pursuit built deep this week. Everything the engine needs comes from her
 - **Hints** with dwell time, so hint abuse separates from genuine help-seeking
 - **Difficulty choice** offered, never assigned
 - **Replay** distinguishable as after-solve versus after-fail
+- **"Find a better line"** on an already-solved puzzle → emits `unrequired_revision`, which has no
+  producer anywhere in the product today
+- **"Set my own target"** (own drill set, or "beat this in under 3 moves") → emits
+  `self_authored_scope`, also currently dead
+- **Reward window.** When a guide logs a reward, returns inside the window are marked `prompted` and
+  score zero. Without this a paid return is counted as free choice and the internal term lies
 
 ---
 
