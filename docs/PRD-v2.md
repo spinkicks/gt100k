@@ -1,6 +1,7 @@
 # PassionLab v2 · PRD
 
 **Status:** draft 2 · 2026-08-06 · supersedes the nine-app scope
+**Signals:** specified in full in `SIGNALS.md`
 **One line:** We find and build the beginning of a student's spike, ages 6 to 14.
 **Input:** roughly 30 minutes a day. **Output within two months:** ranked hypotheses for what a child
 will stay with, plus a motivation read that tells a guide when to intervene and how.
@@ -331,5 +332,7 @@ and never sees a number without a button beside it.
    Harter 8 to 14, AMS 13+), scored natively and never cross-compared. Nobody has ever vertically
    scaled a motivation instrument.
 3. COPPA review on PostHog before any real child.
-4. Does Joe's cash sit inside the constrained architecture or beside it? If beside it, rules 1 to 4
-   stop being enforceable and the external measurement stops being clean.
+4. ~~Does Joe's cash sit inside the constrained architecture or beside it?~~ **Decided:** cash sits
+   with the guides, given at their discretion. The engine observes rewards rather than controlling
+   them, so §6 becomes advice, and a one-tap reward log becomes mandatory. Without it a paid return
+   is silently counted as free choice. See `SIGNALS.md` Part C.
